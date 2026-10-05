@@ -28,7 +28,7 @@ see, checked at bake time. The App shows one case at a time; Experiments and Ben
 | C02 corporate PD across 1 to 5 year horizons | credit-scoring | UCI Polish bankruptcy (mirror-allowed) | real outcomes | U14 | planned |
 | C03 SME PD by vintage through 2008 | credit-scoring | SBA 7(a) FOIA (mirror-allowed) | real outcomes | U6 | planned |
 | C04 rating transitions and TTC PD by grade | ratings-calibration | ESMA CEREP (mirror-allowed), a CTMC generator | real aggregates, known truth | U4 | planned |
-| C05 low-default portfolios and PD calibration | ratings-calibration | published tables, a Vasicek generator | published answers, known truth | U2 | planned |
+| [C05](C05.md) low-default portfolios and PD calibration | ratings-calibration | Tasche (2013) and Pluto and Tasche (2005), their tables (derived-only); a Vasicek generator | published answers, known truth | U2 | built |
 | C06 mortgage lifetime PD, IFRS 9 staging and ECL | provisions | Freddie Mac (derived-only), Fed scenarios; SBA twin | real outcomes | U5 | planned |
 | C07 Chile provisions trilogy: CMF B-1, IFRS 9, BdE Annex 9 | provisions | synthetic Banco Andino calibrated to CMF aggregates | synthetic calibrated | U5 | planned |
 | C08 LGD and downturn LGD | lgd-ead | Freddie Mac loss fields; SBA charge-off twin | real outcomes | U6 | planned |

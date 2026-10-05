@@ -188,7 +188,8 @@ export interface ModelSummary {
   licence: string;
   calibration: Calibration | null;
   parameters: Record<string, { value: number; unit: string }>;
-  checkpoint_sha256: string;
+  /** The weights' hash for a fitted model; null for a formula (C05's approaches and estimators). */
+  checkpoint_sha256: string | null;
 }
 
 /** A model record with its internals (points tables, shape functions, grids), in the models artifact. */
@@ -301,12 +302,13 @@ export interface LaneBlock {
   reasons: string[];
 }
 
-export interface VariantArtifact {
+/** One variant's artifact; `O` is the case's outputs (C01's by default, C05's two kinds below). */
+export interface VariantArtifact<O = VariantOutputs> {
   schema: string;
   case_id: string;
   variant_id: string;
   model: ModelSummary[];
-  outputs: VariantOutputs;
+  outputs: O;
   tests: TestRow[];
   impact: Record<string, ImpactItem>;
   findings: Finding[];
@@ -347,12 +349,12 @@ export interface FitInfo {
   reason_stability: ReasonStability | null;
 }
 
-export interface ModelsArtifact {
+export interface ModelsArtifact<F = FitInfo> {
   schema: string;
   case_id: string;
   fit_id: string;
   model: ModelRecord[];
-  fit: FitInfo;
+  fit: F;
   provenance: Provenance;
   lane: LaneBlock;
 }
@@ -461,7 +463,7 @@ export const MODEL_SUMMARY = {
     nullable: { object: { kind: 'string', fitted_on: 'string', x: nums, y: nums } satisfies Record<keyof Calibration, Kind> },
   },
   parameters: { map: { object: { value: num, unit: 'string' } } },
-  checkpoint_sha256: 'string',
+  checkpoint_sha256: nStr,
 } satisfies Record<keyof ModelSummary, Kind>;
 
 export const MODEL_RECORD = { ...MODEL_SUMMARY, details: 'json' } satisfies Record<keyof ModelRecord, Kind>;
@@ -795,3 +797,299 @@ export const CONTRACT_INDEX = {
   schema: 'string',
   families: { array: { object: { family: 'string', title: 'text', path: 'string' } } },
 } satisfies Record<keyof ContractIndex, Kind>;
+
+// --- C05, low-default portfolios and PD calibration (data-pipeline/pipeline/cases/c05_ldp_calibration.py) --------
+
+export interface C05Irb {
+  regime: string;
+  asset_class: string;
+  lgd: number;
+  maturity: number;
+  pd_floor: number;
+  references: Record<string, string>;
+}
+
+export interface C05IrbPoint {
+  regime: string;
+  asset_class: string;
+  pd: number;
+  lgd: number;
+  maturity: number;
+  risk_weight: number;
+}
+
+export interface C05Approach {
+  curve: number[];
+  /** The approach's own forecast of the unconditional PD. */
+  pd: number;
+  /** The PD its curve implies under the observed forecast profile. */
+  pd_under_profile1: number;
+  accuracy_ratio: number;
+  constants: Record<string, number>;
+}
+
+export interface C05GoldenCell {
+  grade: string;
+  printed: number;
+  ours: number;
+  gap: number;
+}
+
+export interface C05SpGolden {
+  table5: C05GoldenCell[];
+  table6: C05GoldenCell[];
+  table7: Record<string, C05GoldenCell[]>;
+  table7_p_values: Array<{ approach: string; printed_pct: number; ours_pct: number; mc_se_pct: number }>;
+  table8: Array<{ approach: string; printed_pct: number; ours_pct: number; printed_p_value: string }>;
+  table9_2009: Array<{ grade: string; printed: number; ours: number }>;
+  max_gap_table7_pct_beyond_relative: number;
+  tolerances: Record<string, string>;
+}
+
+export interface C05SpOutputs {
+  kind: 'sp-calibration';
+  year: number;
+  grades: string[];
+  profile0: number[];
+  profile1: number[];
+  default_rate0: number[];
+  default_rate1: number[];
+  default_profile0: number[];
+  pd0: number;
+  pd1: number;
+  ar0: number;
+  ar1: number;
+  qmm0: { curve: number[]; alpha: number; beta: number; scores: number[]; start: number[]; pd: number };
+  approaches: Record<string, C05Approach>;
+  case3_profile_tests: Record<string, { statistic: number; dof: number; p_value: number }>;
+  golden: C05SpGolden;
+  parity: { calibration: { pd_grid: number[]; curves: Record<string, Record<string, number[]>> }; irb: C05IrbPoint[] };
+  irb: C05Irb;
+  n_obligors: number;
+  n_defaults: number;
+}
+
+export interface C05Scaled {
+  pd: number[];
+  k: number;
+  target: number;
+}
+
+export interface C05Bounds {
+  independent: number[][];
+  correlated: number[][];
+  scaled_upper_bound: C05Scaled[];
+  scaled_upper_bound_correlated: C05Scaled[];
+  scaled_central_tendency: C05Scaled[];
+}
+
+export interface C05CoverageRow {
+  gamma: number;
+  coverage: number;
+  se: number;
+  ratio_q25: number;
+  ratio_median: number;
+  ratio_q75: number;
+}
+
+export interface C05KnownTruth {
+  years: number;
+  coverage: Record<string, Record<string, C05CoverageRow[]>>;
+  tests: Record<string, Record<string, { reject_5: number; reject_1: number }>>;
+  patterns: number;
+  overdispersion: { variance_simulated: number; variance_model: number; variance_independent: number; rho_moment_estimate: number };
+  total_defaults_histogram: number[];
+  total_defaults_tail: number;
+  share_of_defaults_by_grade: number[];
+}
+
+export interface C05LdpGoldenCell {
+  table: number;
+  row: string;
+  gamma: number;
+  printed: number;
+  ours: number;
+  gap: number;
+}
+
+export interface C05LdpOutputs {
+  kind: 'ldp';
+  grades: string[];
+  obligors: number[];
+  defaults: number[];
+  gammas: number[];
+  expert_pd: number[];
+  true_pd: number[] | null;
+  rho: number;
+  bounds: C05Bounds;
+  irb: C05Irb;
+  parity: {
+    bounds: { obligors: number[]; points: Array<{ defaults: number[]; gamma: number; rho: number; pd: number[]; scaled_upper_bound: number[] }> };
+    irb: C05IrbPoint[];
+  };
+  known_truth: C05KnownTruth | null;
+  golden: { cells: C05LdpGoldenCell[]; notes: Record<string, string> } | null;
+  generated_year: { index: number; factor: number } | null;
+}
+
+export interface C05SpFit {
+  estimation_year: number;
+  targets: { pd: number; accuracy_ratio: number };
+}
+
+export interface C05LdpFit {
+  obligors: number[];
+  expert_pd: number[];
+}
+
+const C05_IRB = {
+  regime: 'string',
+  asset_class: 'string',
+  lgd: num,
+  maturity: num,
+  pd_floor: num,
+  references: { map: 'string' },
+} satisfies Record<keyof C05Irb, Kind>;
+
+const C05_IRB_POINTS = {
+  array: {
+    object: { regime: 'string', asset_class: 'string', pd: num, lgd: num, maturity: num, risk_weight: num } satisfies Record<keyof C05IrbPoint, Kind>,
+  },
+} as const;
+
+const C05_CELLS = {
+  array: { object: { grade: 'string', printed: num, ours: num, gap: num } satisfies Record<keyof C05GoldenCell, Kind> },
+} as const;
+
+export const C05_SP_OUTPUTS = {
+  kind: 'string',
+  year: 'integer',
+  grades: { array: 'string' },
+  profile0: nums,
+  profile1: nums,
+  default_rate0: nums,
+  default_rate1: nums,
+  default_profile0: nums,
+  pd0: num,
+  pd1: num,
+  ar0: num,
+  ar1: num,
+  qmm0: { object: { curve: nums, alpha: num, beta: num, scores: nums, start: nums, pd: num } },
+  approaches: {
+    map: {
+      object: { curve: nums, pd: num, pd_under_profile1: num, accuracy_ratio: num, constants: { map: num } } satisfies Record<keyof C05Approach, Kind>,
+    },
+  },
+  case3_profile_tests: { map: { object: { statistic: num, dof: 'integer', p_value: num } } },
+  golden: {
+    object: {
+      table5: C05_CELLS,
+      table6: C05_CELLS,
+      table7: { map: C05_CELLS },
+      table7_p_values: { array: { object: { approach: 'string', printed_pct: num, ours_pct: num, mc_se_pct: num } } },
+      table8: { array: { object: { approach: 'string', printed_pct: num, ours_pct: num, printed_p_value: 'string' } } },
+      table9_2009: { array: { object: { grade: 'string', printed: num, ours: num } } },
+      max_gap_table7_pct_beyond_relative: num,
+      tolerances: { map: 'string' },
+    } satisfies Record<keyof C05SpGolden, Kind>,
+  },
+  parity: { object: { calibration: { object: { pd_grid: nums, curves: { map: { map: nums } } } }, irb: C05_IRB_POINTS } },
+  irb: { object: C05_IRB },
+  n_obligors: 'integer',
+  n_defaults: 'integer',
+} satisfies Record<keyof C05SpOutputs, Kind>;
+
+const C05_SCALED = { array: { object: { pd: nums, k: num, target: num } satisfies Record<keyof C05Scaled, Kind> } } as const;
+const C05_COVERAGE_ROWS = {
+  array: {
+    object: { gamma: num, coverage: num, se: num, ratio_q25: num, ratio_median: num, ratio_q75: num } satisfies Record<keyof C05CoverageRow, Kind>,
+  },
+} as const;
+
+export const C05_LDP_OUTPUTS = {
+  kind: 'string',
+  grades: { array: 'string' },
+  obligors: { array: 'integer' },
+  defaults: { array: 'integer' },
+  gammas: nums,
+  expert_pd: nums,
+  true_pd: { nullable: nums },
+  rho: num,
+  bounds: {
+    object: {
+      independent: { array: nums },
+      correlated: { array: nums },
+      scaled_upper_bound: C05_SCALED,
+      scaled_upper_bound_correlated: C05_SCALED,
+      scaled_central_tendency: C05_SCALED,
+    } satisfies Record<keyof C05Bounds, Kind>,
+  },
+  irb: { object: C05_IRB },
+  parity: {
+    object: {
+      bounds: {
+        object: {
+          obligors: { array: 'integer' },
+          points: { array: { object: { defaults: { array: 'integer' }, gamma: num, rho: num, pd: nums, scaled_upper_bound: nums } } },
+        },
+      },
+      irb: C05_IRB_POINTS,
+    },
+  },
+  known_truth: {
+    nullable: {
+      object: {
+        years: 'integer',
+        coverage: { map: { map: C05_COVERAGE_ROWS } },
+        tests: { map: { map: { object: { reject_5: num, reject_1: num } } } },
+        patterns: 'integer',
+        overdispersion: { object: { variance_simulated: num, variance_model: num, variance_independent: num, rho_moment_estimate: num } },
+        total_defaults_histogram: { array: 'integer' },
+        total_defaults_tail: 'integer',
+        share_of_defaults_by_grade: nums,
+      } satisfies Record<keyof C05KnownTruth, Kind>,
+    },
+  },
+  golden: {
+    nullable: {
+      object: {
+        cells: {
+          array: {
+            object: { table: 'integer', row: 'string', gamma: num, printed: num, ours: num, gap: num } satisfies Record<keyof C05LdpGoldenCell, Kind>,
+          },
+        },
+        notes: { map: 'string' },
+      },
+    },
+  },
+  generated_year: { nullable: { object: { index: 'integer', factor: num } } },
+} satisfies Record<keyof C05LdpOutputs, Kind>;
+
+export const VARIANT_C05_SP = { ...VARIANT, outputs: { object: C05_SP_OUTPUTS } } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C05_LDP = { ...VARIANT, outputs: { object: C05_LDP_OUTPUTS } } satisfies Record<keyof VariantArtifact, Kind>;
+
+export const MODELS_C05_SP = {
+  ...MODELS,
+  fit: { object: { estimation_year: 'integer', targets: { object: { pd: num, accuracy_ratio: num } } } satisfies Record<keyof C05SpFit, Kind> },
+} satisfies Record<keyof ModelsArtifact, Kind>;
+export const MODELS_C05_LDP = {
+  ...MODELS,
+  fit: { object: { obligors: { array: 'integer' }, expert_pd: nums } satisfies Record<keyof C05LdpFit, Kind> },
+} satisfies Record<keyof ModelsArtifact, Kind>;
+
+/** The variant descriptor an artifact is read against: by its outputs' kind (C05) or C01's. */
+export function variantKind(doc: { outputs?: { kind?: string } }): typeof VARIANT | typeof VARIANT_C05_SP | typeof VARIANT_C05_LDP {
+  const kind = doc.outputs?.kind;
+  return kind === 'sp-calibration' ? VARIANT_C05_SP : kind === 'ldp' ? VARIANT_C05_LDP : VARIANT;
+}
+
+/** The models descriptor an artifact is read against, by its fit. */
+export function modelsKind(doc: { case_id?: string; fit_id?: string }): typeof MODELS | typeof MODELS_C05_SP | typeof MODELS_C05_LDP {
+  if (doc.case_id === 'C05') return doc.fit_id === 'ldp' ? MODELS_C05_LDP : MODELS_C05_SP;
+  return MODELS;
+}
+
+/** The quadrature the live most prudent bounds use, in the C05 ldp models artifact (the engine's 256 nodes). */
+export interface QuadratureDetails {
+  quadrature: { rule: string; nodes: number[]; weights: number[] };
+}

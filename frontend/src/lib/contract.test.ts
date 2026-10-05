@@ -9,12 +9,12 @@ import {
   FAMILY_CONTRACT,
   INDEX,
   MANIFEST,
-  MODELS,
   MODELS_ENTRY,
   SCHEMAS,
   SCORECARD_DETAILS,
-  VARIANT,
   VARIANT_ENTRY,
+  modelsKind,
+  variantKind,
   type CaseIndex,
   type CaseManifest,
   type ContractIndex,
@@ -52,7 +52,7 @@ describe('CONTRACT 2: the committed artifacts are exactly what the web declares'
       it(`${entry.case_id}/${a.variant_id}: the ${a.role} artifact conforms`, () => {
         const doc = read(a.path);
         if (a.role === 'models') {
-          expect(conform(doc, { object: MODELS })).toEqual([]);
+          expect(conform(doc, { object: modelsKind(doc as { case_id?: string; fit_id?: string }) })).toEqual([]);
           const models = doc as ModelsArtifact;
           expect(models.schema).toBe(SCHEMAS.models);
           const sc = models.model.find((x) => x.id === 'P1-scorecard');
@@ -60,7 +60,7 @@ describe('CONTRACT 2: the committed artifacts are exactly what the web declares'
           const ebm = models.model.find((x) => x.id === 'P3-ebm');
           if (ebm) expect(conform((ebm.details as { export: unknown }).export, { object: EBM_EXPORT })).toEqual([]);
         } else {
-          expect(conform(doc, { object: VARIANT })).toEqual([]);
+          expect(conform(doc, { object: variantKind(doc as { outputs?: { kind?: string } }) })).toEqual([]);
           const v = doc as VariantArtifact;
           expect(v.schema).toBe(SCHEMAS.variant);
           expect(v.variant_id).toBe(a.variant_id);
