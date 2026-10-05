@@ -38,9 +38,10 @@ Unit U2, its first case: C05 end to end.
 
 ### Base
 
-- The residue guard and its tests are those of CAOS_PRODUCT_TEMPLATE 0.02.004 (template PR #14, not yet tagged):
-  its immunisation marker matched the hyphenated finding id `F-SCALED-COVERAGE`. `.template-version` names 0.02.003
-  until the tag exists.
+- On CAOS_PRODUCT_TEMPLATE 0.02.004 (tag `v0.02.004`), whose two guards this product's C05 work found wrong; both are
+  copied verbatim with their tests. The residue guard's immunisation marker matched the hyphenated finding id
+  `F-SCALED-COVERAGE`; the doc-path guard judged the disk, so it passed here and failed the develop CI on two docs
+  naming the gate's screenshot folder (`frontend/gate-output/shots`, ignored on purpose).
 
 ## [0.01.000], 2026-10-05
 

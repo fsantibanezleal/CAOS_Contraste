@@ -7,6 +7,11 @@ Checks, in every tracked Markdown file:
 External links, anchors, globs and placeholders (<...>, {...}, *) are skipped. The gates named by a feature's
 requirements.md opened `Status: planned` are skipped too: they are the tests the unit will write, and
 scripts/check_sdd.py holds them to naming a file (the two guards agree). Exit 1 on any missing path.
+
+A path exists when the repository holds it as git sees it (its tracked and untracked-not-ignored files, and every
+folder above them), never because this machine's disk has it: a gate's screenshots or a build output passed the
+check on the machine that had made them and failed it in CI (CAOS_Contraste, 2026-10-05). A document may still name a
+path the repository ignores on purpose (`git check-ignore`), an output its tools write; local runs and CI agree.
 Usage: python scripts/check_doc_paths.py [repo_root]
 """
 from __future__ import annotations
@@ -37,12 +42,30 @@ def tracked() -> list[str]:
     return sorted({ln.strip() for ln in out.splitlines() if ln.strip()})
 
 
+def ignored(rel: str) -> bool:
+    """A path the repository's ignore rules cover: an output its tools write, whether or not it exists here. A folder
+    named alone is also tried with its slash, which a folder-only rule (`out/`) needs when the folder is absent."""
+    return any(subprocess.run(["git", "check-ignore", "-q", "--no-index", p], cwd=ROOT).returncode == 0
+               for p in (rel, f"{rel}/"))
+
+
 def main() -> int:
     files = [f for f in tracked() if (ROOT / f).is_file()]
     if not any(f.endswith(".md") for f in files):
         print("doc paths: no Markdown file to check; this is not a product tree")
         return 1
     tops = {f.split("/", 1)[0] for f in files}
+    # what the repository holds: its files and every folder above them
+    present = set(files)
+    for f in files:
+        parts = f.split("/")
+        present.update("/".join(parts[:i]) for i in range(1, len(parts)))
+    root = ROOT.resolve()
+
+    def known(rel_path: str) -> bool:
+        rel_path = rel_path.strip("/")
+        return rel_path in ("", ".") or rel_path in present or ignored(rel_path)
+
     missing: list[str] = []
     for rel in files:
         # the changelog records history, including files that were removed
@@ -62,7 +85,12 @@ def main() -> int:
                 target = target.split("#", 1)[0]
                 if not target or SKIP.search(target):
                     continue
-                if not (md.parent / target).resolve().exists():
+                try:
+                    to = (md.parent / target).resolve().relative_to(root).as_posix()
+                except ValueError:
+                    missing.append(f"{rel}:{n}: link to {target}, outside the repository")
+                    continue
+                if not known(to):
                     missing.append(f"{rel}:{n}: link to {target}")
             for span in (CODE.findall(line) if spans_checked else ()):
                 # a test id (file::test) names its file here; check_sdd.py checks the test itself
@@ -72,7 +100,7 @@ def main() -> int:
                     continue
                 if head not in tops or SKIP.search(span):
                     continue
-                if not (ROOT / span).exists():
+                if not known(span):
                     missing.append(f"{rel}:{n}: names {span}")
     for m in missing:
         print(f"doc paths: {m}")
