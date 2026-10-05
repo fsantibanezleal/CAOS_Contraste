@@ -1,6 +1,6 @@
 # Requirements: U1, the six-route web companion
 
-Status: planned
+Status: live
 
 EARS (Mavin et al., RE'09, doi:10.1109/RE.2009.9). Every requirement names the gate that fails when it is violated.
 
