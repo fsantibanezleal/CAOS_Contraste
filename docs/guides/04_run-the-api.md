@@ -1,14 +1,15 @@
-# Guide, run the API (only if `app/` is activated)
+# Guide: the dormant API
 
-The `app/` FastAPI backend is **DORMANT** by default, most products are static deterministic-replay and never
-need it. Activate ONLY on an ADR-0002 trigger (server-side processing of uploaded data, auth-gated private data,
-paid heavy compute).
+Contraste has no backend. Its deploy place is GitHub Pages (`deploy/TARGET`): the web replays the committed artifacts
+and computes the live views in the browser, and no ADR-0002 trigger applies (no server-side processing of uploaded
+data, no private data, no paid heavy compute; SDD section 7). A reader's own scored sample is validated on the
+reader's machine ([guide 02](02_validate-your-own-model.md)), never uploaded.
 
-To activate:
-1. Pin deps in `requirements-api.txt` (`fastapi`, `uvicorn[standard]`, …); `scripts/setup.sh` (or `setup.ps1`) then creates `.venv` with them.
-2. `uvicorn app.main:app --reload` (or `scripts/dev.{sh,ps1}` auto-starts it when `app/` is active).
-3. Endpoints (`GET /api/cases`, `/api/cases/{id}/manifest`, `/api/cases/{id}/trace`, `/health`) serve the SAME
-   committed `data/derived` artifacts read-only, a thin layer over `data/`, never a re-implementation of the
-   engine. Deploy via the dormant VPS templates in `deploy/`.
+The template's `app/` stays in the repository, dormant, so a future trigger has a starting point: a FastAPI app that
+serves the committed documents read-only and unchanged, `GET /api/cases` (the index), `GET /api/cases/{id}/manifest`
+and `GET /api/artifacts/{path}` (any artifact a manifest names, by its path under `data/derived`), and nothing outside
+`data/derived` (`tests/test_dormant_api.py`, which runs without the API lane installed).
 
-Keep the data-pipeline + contract discipline even with a backend: the API serves what the pipeline baked.
+Activating it would not be a configuration change: a backend moves the deploy place to the VPS and removes Pages
+(one place, never two), so it is a re-plan of the deploy section of the plan, with `requirements-api.txt` pinned and
+verified at that time.

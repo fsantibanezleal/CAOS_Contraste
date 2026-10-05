@@ -14,7 +14,7 @@ had never been instantiated. This version:
   - fails on the template blueprint files that must not ship (STRUCTURE.md, .vscode/).
 
 Scanned set: git-tracked text files. Allowlist: scripts/.template_residue_allow (path fragments, one per line).
-Usage: python scripts/check_template_residue.py
+Usage: python scripts/check_template_residue.py [repo_root]
 """
 from __future__ import annotations
 
@@ -24,24 +24,28 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent
 SENTINEL = ".template-source"
 TEMPLATE_REPO = "CAOS_PRODUCT_TEMPLATE"
-SELF = {"scripts/check_template_residue.py", "scripts/.template_residue_allow", "CHANGELOG.md"}
+# the guard, its allowlist, the history, and the guard's own tests (which must name what it looks for)
+SELF = {"scripts/check_template_residue.py", "scripts/.template_residue_allow", "CHANGELOG.md", "tests/test_guards.py"}
 
 # (name, pattern): each one is unambiguous for the template's example.
 MARKERS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("the example SIR model", re.compile(r"\bSIR\b")),
     ("an example case id", re.compile(r"\b(?:EX0[1-4]_[a-z_]+|CTRL_degenerate)\b")),
-    ("the placeholder product name", re.compile(r'"name"\s*:\s*"CAOS Product"|\bcaos-product(?:-frontend)?\b')),
+    # the placeholder package name, never a longer identifier that starts with it (the Vite plugin caos-product-html)
+    ("the placeholder product name", re.compile(r'"name"\s*:\s*"CAOS Product"|\bcaos-product(?:-frontend)?(?![\w-])')),
     ("an example contract schema id", re.compile(r"\bexample\.(?:trace|manifest|index)/v\d+\b")),
     ("an example reference", re.compile(r"\b(?:Kermack|McKendrick|Hethcote)\b")),
     ("the example immunisation variants", re.compile(r"\bCOVERAGE\b|herd threshold")),
+    ("prose about the example engine", re.compile(r"\bEXAMPLE engine\b|\bteaching engine\b")),
 )
 FORBIDDEN_FILES = ("STRUCTURE.md", ".vscode/")
+# the helper scripts too: precompute.sh and precompute.ps1 named an example case and were never scanned
 TEXT_SUFFIXES = {
     ".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".py", ".md", ".json", ".css", ".html", ".svg",
-    ".yml", ".yaml", ".toml", ".txt", ".cfg", ".ini",
+    ".yml", ".yaml", ".toml", ".txt", ".cfg", ".ini", ".sh", ".ps1",
 }
 
 

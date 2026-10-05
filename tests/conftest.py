@@ -1,8 +1,8 @@
 """Test sandbox (T8 of the 2026-10-04 base requirements).
 
-Tests must never write the committed scientific artifacts. Until 2026-10-04 this template's own manifest test
-called the pipeline without an output root and rewrote data/derived/manifests/EX02_epidemic.json with its seed
-(7) and its metrics, so the committed manifest recorded a test run rather than the release bake. Two defences:
+Tests must never write the committed scientific artifacts. Until 2026-10-04 the template's own manifest test
+called the pipeline without an output root and rewrote a committed manifest with its seed (7) and its metrics, so
+the manifest recorded a test run rather than the release bake. Two defences:
 
 1. every test runs with the pipeline's canonical roots (DERIVED, MANIFESTS, MODELS) pointed at a temporary
    directory, so a call that forgets ``output_root`` writes into the sandbox, never the repository;

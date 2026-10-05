@@ -49,5 +49,6 @@ export default defineConfig({
     __BUILD_ID__: JSON.stringify(SHA.slice(0, 7)),
   },
   resolve: { dedupe: ['react', 'react-dom', 'react-router'] },
-  test: { environment: 'node', include: ['src/**/*.test.ts'] },
+  // component tests (.test.tsx) render views on the server from the committed artifacts
+  test: { environment: 'node', include: ['src/**/*.test.ts', 'src/**/*.test.tsx'] },
 });

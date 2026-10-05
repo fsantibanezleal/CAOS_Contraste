@@ -4,8 +4,10 @@
 Checks, in every tracked Markdown file:
   - relative link targets ([text](path), images included), resolved against the file's folder;
   - inline code spans that name a repository path (start with a top-level folder or file of this repository).
-External links, anchors, globs and placeholders (<...>, {...}, *) are skipped. Exit 1 on any missing path.
-Usage: python scripts/check_doc_paths.py
+External links, anchors, globs and placeholders (<...>, {...}, *) are skipped. The gates named by a feature's
+requirements.md opened `Status: planned` are skipped too: they are the tests the unit will write, and
+scripts/check_sdd.py holds them to naming a file (the two guards agree). Exit 1 on any missing path.
+Usage: python scripts/check_doc_paths.py [repo_root]
 """
 from __future__ import annotations
 
@@ -14,10 +16,18 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent
 LINK = re.compile(r"!?\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 CODE = re.compile(r"`([^`\s]+)`")
 SKIP = re.compile(r"^(?:[a-z]+:|#|mailto:)|[<>{}*$]|\.\.\.")
+PLANNED = re.compile(r"^Status:\s*planned", re.M | re.I)
+
+
+def planned_requirements(rel: str, text: str) -> bool:
+    """A feature's requirements opened before its gates exist (check_sdd.py's `Status: planned`)."""
+    parts = rel.split("/")
+    return (len(parts) == 5 and parts[:3] == ["docs", "design", "features"] and parts[4] == "requirements.md"
+            and PLANNED.search("\n".join(text.splitlines()[:6])) is not None)
 
 
 def tracked() -> list[str]:
@@ -40,6 +50,7 @@ def main() -> int:
             continue
         md = ROOT / rel
         text = md.read_text(encoding="utf-8", errors="ignore")
+        spans_checked = not planned_requirements(rel, text)
         in_fence = False
         for n, line in enumerate(text.splitlines(), 1):
             if line.lstrip().startswith("```"):
@@ -53,7 +64,7 @@ def main() -> int:
                     continue
                 if not (md.parent / target).resolve().exists():
                     missing.append(f"{rel}:{n}: link to {target}")
-            for span in CODE.findall(line):
+            for span in (CODE.findall(line) if spans_checked else ()):
                 # a test id (file::test) names its file here; check_sdd.py checks the test itself
                 span = span.split("::", 1)[0].rstrip(".,;:")
                 head = span.split("/", 1)[0]

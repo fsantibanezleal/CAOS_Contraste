@@ -1,122 +1,135 @@
-"""The guards fail on what they exist to catch (ADR-0078: the base validates itself). Each test plants a violation
-in a throwaway tree and runs the real script against it."""
+"""The base guards fail on what they exist to catch, and pass on what they must allow (ADR-0078: the base validates
+itself). Each test builds a throwaway tree, plants the case, and runs the real script on it."""
 from __future__ import annotations
 
-import hashlib
 import json
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
+# instantiate.py runs only in the template, whose sentinel it deletes: in a product the test has nothing to run on
+TEMPLATE_ONLY = pytest.mark.skipif(not (ROOT / ".template-source").exists(),
+                                   reason="instantiate runs only in the template repository (.template-source)")
 
 
-def _run(script: str, root: Path) -> subprocess.CompletedProcess:
-    return subprocess.run([sys.executable, str(SCRIPTS / script), str(root)], capture_output=True, text=True)
+def _run(script: str, *args: str, cwd: Path | None = None) -> subprocess.CompletedProcess:
+    return subprocess.run([sys.executable, str(SCRIPTS / script), *args], capture_output=True, text=True, cwd=cwd)
 
 
-def _tree(tmp: Path) -> Path:
+def _put(root: Path, rel: str, doc) -> int:
+    p = root / rel
+    p.parent.mkdir(parents=True, exist_ok=True)
+    data = doc if isinstance(doc, str) else json.dumps(doc)
+    p.write_bytes(data.encode("utf-8"))
+    return p.stat().st_size
+
+
+def _git_tree(tmp: Path) -> Path:
     tree = tmp / "tree"
-    (tree / "data-pipeline" / "config").mkdir(parents=True)
-    shutil.copy(ROOT / "data-pipeline" / "config" / "sources.json", tree / "data-pipeline" / "config" / "sources.json")
+    tree.mkdir()
     for i in range(10):
-        (tree / f"file{i}.txt").write_text(f"filler {i}\n", encoding="utf-8")
+        _put(tree, f"filler{i}.txt", f"filler {i}\n")
     subprocess.run(["git", "init", "-q"], cwd=tree, check=True)
     return tree
 
 
-def _manifest(tree: Path, sources: dict) -> None:
-    p = tree / "data" / "sources" / "manifest.json"
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps({"schema": "contraste.licence-manifest/v1", "sources": sources}), encoding="utf-8")
+def test_check_artifacts_reads_one_or_many_artifacts_and_the_index_files(tmp_path):
+    d = tmp_path / "data" / "derived"
+    n_single = _put(d, "A/trace.json", {"t": [0, 1]})
+    n_v1 = _put(d, "B/v1.json", {"x": 1})
+    n_v2 = _put(d, "B/v2.json", {"x": 22})
+    _put(d, "contract/index.json", {"families": []})
+    gate = {"lane": "live"}
+    _put(d, "manifests/A.json", {"artifact": {"path": "A/trace.json", "bytes": n_single}, "lane": "live", "gate": gate})
+    _put(d, "manifests/B.json", {"artifacts": [{"path": "B/v1.json", "bytes": n_v1, "lane": "live", "gate": gate},
+                                               {"path": "B/v2.json", "bytes": n_v2, "lane": "live", "gate": gate}]})
+    index = {"files": ["contract/index.json"], "cases": [{"case_id": "A", "manifest_path": "manifests/A.json"},
+                                                         {"case_id": "B", "manifest_path": "manifests/B.json"}]}
+    _put(d, "manifests/index.json", index)
+    ok = _run("check_artifacts.py", str(tmp_path))
+    assert ok.returncode == 0 and "2 cases, 3 artifacts" in ok.stdout, ok.stdout
+    # drift in the second variant, a lane that disagrees with its gate, a declared file gone
+    _put(d, "manifests/B.json", {"artifacts": [{"path": "B/v1.json", "bytes": n_v1, "lane": "live", "gate": gate},
+                                               {"path": "B/v2.json", "bytes": n_v2 + 1, "lane": "precompute", "gate": gate}]})
+    (d / "contract" / "index.json").unlink()
+    bad = _run("check_artifacts.py", str(tmp_path))
+    assert bad.returncode == 1
+    assert "byte drift" in bad.stdout and "B/v2.json" in bad.stdout
+    assert "lane/gate mismatch: B B/v2.json" in bad.stdout
+    assert "declared by the index but missing or empty" in bad.stdout
 
 
-def test_data_classes_catches_raw_rows_and_copies(tmp_path):
-    tree = _tree(tmp_path)
-    secret = b"loan_id|upb|ltv\n1|200000|80\n"
-    _manifest(tree, {"freddie-mac-sflld": {"class": "derived-only", "files": [
-        {"name": "sample_orig_2008.txt", "sha256": hashlib.sha256(secret).hexdigest(), "bytes": len(secret)}]}})
-    assert _run("check_data_classes.py", tree).returncode == 0
-    (tree / "data" / "raw" / "freddie-mac-sflld").mkdir(parents=True)
-    (tree / "data" / "raw" / "freddie-mac-sflld" / "rows.txt").write_text("1|2|3\n", encoding="utf-8")
-    (tree / "docs").mkdir()
-    (tree / "docs" / "renamed-copy.bin").write_bytes(secret)
-    res = _run("check_data_classes.py", tree)
-    assert res.returncode == 1
-    assert "raw rows of freddie-mac-sflld, which is derived-only" in res.stdout
-    assert "docs/renamed-copy.bin: carries the bytes of freddie-mac-sflld/sample_orig_2008.txt" in res.stdout
+REQ = """# Requirements: a unit not built yet
+
+{status}
+
+| ID | Requirement | Gate |
+|---|---|---|
+| UX-001 | THE unit SHALL do its job. | `tests/test_not_written_yet.py::test_its_job` |
+"""
 
 
-def test_data_classes_catches_a_manifest_that_disagrees_with_the_registry(tmp_path):
-    tree = _tree(tmp_path)
-    _manifest(tree, {"uci-taiwan": {"class": "derived-only", "files": []}, "made-up": {"class": "mirror-allowed"}})
-    res = _run("check_data_classes.py", tree)
-    assert res.returncode == 1
-    assert "uci-taiwan is recorded derived-only, the registry says mirror-allowed" in res.stdout
-    assert "made-up is not in the source registry" in res.stdout
+def test_doc_paths_skips_the_gates_of_planned_requirements_only(tmp_path):
+    tree = _git_tree(tmp_path)
+    _put(tree, "tests/test_exists.py", "def test_x():\n    pass\n")
+    _put(tree, "docs/design/features/unit/requirements.md", REQ.format(status="Status: planned"))
+    ok = _run("check_doc_paths.py", str(tree))
+    assert ok.returncode == 0, ok.stdout
+    _put(tree, "docs/design/features/unit/requirements.md", REQ.format(status="Status: live"))
+    bad = _run("check_doc_paths.py", str(tree))
+    assert bad.returncode == 1 and "names tests/test_not_written_yet.py" in bad.stdout
+    # a planned file anywhere else is not exempt
+    _put(tree, "docs/design/features/unit/requirements.md", REQ.format(status="Status: planned"))
+    _put(tree, "docs/notes.md", "See `tests/test_missing.py`.\n\nStatus: planned\n")
+    other = _run("check_doc_paths.py", str(tree))
+    assert other.returncode == 1 and "docs/notes.md:1: names tests/test_missing.py" in other.stdout
 
 
-def _write(p: Path, doc: dict) -> None:
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(doc), encoding="utf-8")
-
-
-def _provenance_tree(tmp: Path, *, inputs: list[dict], truth: str = "real-outcomes", sources: list[str]) -> Path:
-    tree = _tree(tmp)
-    _manifest(tree, {"uci-taiwan": {"class": "mirror-allowed", "files": [{"name": "t.zip", "sha256": "a" * 64}]}})
-    d = tree / "data" / "derived"
-    _write(d / "manifests" / "index.json", {"cases": [{"case_id": "C01", "manifest_path": "manifests/C01.json"}]})
-    _write(d / "manifests" / "C01.json", {"case_id": "C01", "sources": sources, "artifacts": [
-        {"variant_id": "holdout", "path": "C01/holdout.json", "truth_status": "real-outcomes"}]})
-    _write(d / "C01" / "holdout.json", {"provenance": {
-        "truth_status": truth, "inputs": inputs, "generators": [],
-        "licence_classes": {i["source"]: i["class"] for i in inputs}}})
-    return tree
-
-
-def test_provenance_passes_when_true_and_fails_when_not(tmp_path):
-    good = [{"source": "uci-taiwan", "class": "mirror-allowed", "files": [{"name": "t.zip", "sha256": "a" * 64}]}]
-    ok = _provenance_tree(tmp_path / "ok", inputs=good, sources=["uci-taiwan"])
-    assert _run("check_provenance.py", ok).returncode == 0, _run("check_provenance.py", ok).stdout
-    bad_inputs = [
-        {"source": "uci-taiwan", "class": "mirror-allowed", "files": [{"name": "t.zip", "sha256": "b" * 64}]},
-        {"source": "fannie-mae-sflp", "class": "link-only", "files": [{"name": "f.zip", "sha256": "c" * 64}]},
-    ]
-    bad = _provenance_tree(tmp_path / "bad", inputs=bad_inputs, truth="real", sources=["uci-taiwan"])
-    res = _run("check_provenance.py", bad)
-    assert res.returncode == 1
-    assert "truth status 'real'" in res.stdout
-    assert "uci-taiwan/t.zip hash is not the one the licence manifest pins" in res.stdout
-    assert "fannie-mae-sflp is link-only; the artifact may not be published" in res.stdout
-    assert "the manifest names sources ['uci-taiwan'], the artifacts read ['fannie-mae-sflp', 'uci-taiwan']" in res.stdout
-
-
-def test_licence_guard_catches_a_forbidden_or_unverified_requirement(tmp_path, monkeypatch):
+def test_residue_marker_flags_the_placeholder_name_and_not_the_plugin_name():
     sys.path.insert(0, str(SCRIPTS))
-    import check_licences as cl
+    import check_template_residue as r
 
-    assert cl.FORBIDDEN.search("GPL-3.0-or-later") and cl.FORBIDDEN.search("AGPL-3.0")
-    assert cl.FORBIDDEN.search("Business Source License 1.1") and cl.FORBIDDEN.search("BUSL-1.1")
-    assert not cl.FORBIDDEN.search("LGPL-2.1") and not cl.FORBIDDEN.search("BSL-1.0")  # Boost is permissive
-    req = tmp_path / "requirements-precompute.txt"
-    req.write_text("numpy==2.4.6\nsdv==1.0  # tabular synthesis\n", encoding="utf-8")
-    table = tmp_path / "licences.json"
-    table.write_text(json.dumps({"python": {"numpy": {"licence": "BSD-3-Clause"},
-                                            "sdv": {"licence": "Business Source License 1.1"}}}), encoding="utf-8")
-    lock = tmp_path / "package-lock.json"
-    lock.write_text(json.dumps({"packages": {"": {}, "node_modules/a": {"license": "MIT"},
-                                             "node_modules/b": {"license": "GPL-2.0"}, "node_modules/c": {}}}),
-                    encoding="utf-8")
-    monkeypatch.setattr(cl, "ROOT", tmp_path)
-    monkeypatch.setattr(cl, "TABLE", table)
-    monkeypatch.setattr(cl, "LOCK", lock)
-    monkeypatch.setattr(cl, "ROOTS", ("requirements-precompute.txt",))
-    findings, n_py, n_js = cl.static_findings()
-    text = "\n".join(findings)
-    assert n_py == 2 and n_js == 3
-    assert "sdv is licensed Business Source License 1.1" in text
-    assert "node_modules/b is licensed GPL-2.0" in text and "node_modules/c declares no licence" in text
-    table.write_text(json.dumps({"python": {"numpy": {"licence": "BSD-3-Clause"}}}), encoding="utf-8")
-    assert any("sdv has no verified licence" in f for f in cl.static_findings()[0])
+    marker = dict(r.MARKERS)["the placeholder product name"]
+    assert marker.search('"name": "caos-product-frontend"')
+    assert marker.search("npm run build in caos-product")
+    assert marker.search('"name": "CAOS Product"')
+    assert not marker.search("name: 'caos-product-html',")
+    assert not marker.search('"name": "contraste-frontend"')
+
+
+def test_residue_guard_scans_the_helper_scripts_and_skips_its_own_tests(tmp_path):
+    tree = _git_tree(tmp_path)
+    _put(tree, "scripts/precompute.ps1", "# E.g.:  ./scripts/precompute.ps1 EX02_epidemic --seed 7\n")
+    _put(tree, "scripts/precompute.sh", "# the tiny teaching engine\n")
+    # the guard's own tests must name the placeholder they look for
+    _put(tree, "tests/test_guards.py", "assert marker.search('\"name\": \"caos-product-frontend\"')\n")
+    res = _run("check_template_residue.py", str(tree))
+    assert res.returncode == 1, res.stdout
+    assert "scripts/precompute.ps1:1: an example case id" in res.stdout
+    assert "scripts/precompute.sh:1: prose about the example engine" in res.stdout
+    assert "tests/test_guards.py" not in res.stdout
+
+
+@TEMPLATE_ONLY
+def test_instantiate_renames_the_lockfile_and_drops_the_template_guide(tmp_path):
+    copy = tmp_path / "product"
+    ignore = shutil.ignore_patterns(".git", "node_modules", ".venv*", "dist", "public/data", "__pycache__",
+                                    ".pytest_cache", ".ruff_cache", "gate-output")
+    shutil.copytree(ROOT, copy, ignore=ignore)
+    # the script resolves its root from its own location: run the COPY's script, never this repository's
+    res = subprocess.run([sys.executable, str(copy / "scripts" / "instantiate.py"), "--slug", "probe", "--name", "Probe",
+                          "--repo", "CAOS_Probe", "--deploy", "pages", "--visibility", "public", "--tagline-en",
+                          "A probe.", "--tagline-es", "Una sonda.", "--no-run"], capture_output=True, text=True, cwd=copy)
+    assert res.returncode == 0, res.stdout + res.stderr
+    lock = json.loads((copy / "frontend" / "package-lock.json").read_text(encoding="utf-8"))
+    assert lock["name"] == "probe-frontend" and lock["version"] == "0.1.0"
+    assert lock["packages"][""]["name"] == "probe-frontend" and lock["packages"][""]["version"] == "0.1.0"
+    assert "caos-product" not in (copy / "frontend" / "package-lock.json").read_text(encoding="utf-8")
+    assert not (copy / "docs" / "guides" / "00_instantiate.md").exists()
+    assert "00_instantiate" not in (copy / "docs" / "guides.md").read_text(encoding="utf-8")
+    assert not (copy / ".template-source").exists()

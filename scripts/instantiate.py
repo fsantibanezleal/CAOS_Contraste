@@ -9,14 +9,15 @@
 What it does, in order:
   1. refuses unless this tree is the template (the .template-source sentinel is present);
   2. writes product.json (name, slug, taglines in both languages, repository, visibility, licence, holder, year)
-     and the frontend package name;
+     and the frontend package name (package.json and its lockfile);
   3. resets VERSION to 0.01.000, starts CHANGELOG.md with the instantiation entry, and records the template release
      it started from in .template-version (ADR-0078: a product adopts a later base deliberately);
   4. writes the MIT LICENSE with the year and the holder;
   5. writes deploy/TARGET and removes the other deploy place (one deploy place, decided first): `pages` removes the
      VPS unit and site templates and, with --domain, writes frontend/public/CNAME; `vps` removes the Pages workflow
      and fills the unit and site templates with the slug and domain;
-  6. deletes the sentinel and the template blueprint files (STRUCTURE.md, .vscode/);
+  6. deletes the sentinel, the template blueprint files (STRUCTURE.md, .vscode/) and the template's own guide to
+     instantiating (docs/guides/00_instantiate.md);
   7. writes a README for the product (its name, taglines, badges, how to run it);
   8. unless --no-run: bakes the cases, runs the tests, builds the web once, and reports what of the example remains
      (scripts/check_template_residue.py), which is the list of what the product replaces next.
@@ -174,6 +175,15 @@ def main() -> int:
     pkg = json.loads(pkg_path.read_text(encoding="utf-8"))
     pkg.update({"name": f"{a.slug}-frontend", "version": "0.1.0", "license": "MIT"})
     write("frontend/package.json", json.dumps(pkg, indent=2) + "\n")
+    # the lockfile repeats the package's name and version (at its top and under packages[""]); left alone, it keeps
+    # the template's identity, and the residue guard flags it (CAOS_Contraste, 2026-10-05)
+    lock_path = ROOT / "frontend" / "package-lock.json"
+    if lock_path.exists():
+        lock = json.loads(lock_path.read_text(encoding="utf-8"))
+        lock.update({"name": pkg["name"], "version": pkg["version"]})
+        if "" in lock.get("packages", {}):
+            lock["packages"][""].update({"name": pkg["name"], "version": pkg["version"]})
+        write("frontend/package-lock.json", json.dumps(lock, indent=2) + "\n")
 
     write("VERSION", "0.01.000\n")
     # The release tag names the template commit; the product repository cannot see it (a repository created from a
@@ -212,6 +222,12 @@ def main() -> int:
 
     for rel in (".template-source", "STRUCTURE.md", ".vscode"):
         remove(rel)
+    # the guide to instantiating is the template's, read before this step; in a product it only names the example
+    remove("docs/guides/00_instantiate.md")
+    guides = ROOT / "docs" / "guides.md"
+    if guides.exists():
+        kept = [ln for ln in guides.read_text(encoding="utf-8").splitlines() if "guides/00_instantiate.md" not in ln]
+        write("docs/guides.md", "\n".join(kept) + "\n")
     write("README.md", readme(a))
 
     if a.no_run:
