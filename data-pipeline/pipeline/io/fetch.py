@@ -87,7 +87,8 @@ def write_manifest(data: dict[str, Any], path: Path | None = None) -> None:
     path = path if path is not None else MANIFEST
     path.parent.mkdir(parents=True, exist_ok=True)
     ordered = {"schema": MANIFEST_SCHEMA, "sources": {k: data["sources"][k] for k in sorted(data["sources"])}}
-    path.write_text(json.dumps(ordered, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    # bytes, so the file has LF line ends on every OS (text mode writes CRLF on Windows)
+    path.write_bytes((json.dumps(ordered, indent=2, ensure_ascii=False) + "\n").encode("utf-8"))
 
 
 def _stream_to(dest: Path, chunks: Iterator[bytes]) -> tuple[str, int]:
