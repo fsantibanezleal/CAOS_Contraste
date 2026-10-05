@@ -38,7 +38,8 @@ MARKERS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("the placeholder product name", re.compile(r'"name"\s*:\s*"CAOS Product"|\bcaos-product(?:-frontend)?(?![\w-])')),
     ("an example contract schema id", re.compile(r"\bexample\.(?:trace|manifest|index)/v\d+\b")),
     ("an example reference", re.compile(r"\b(?:Kermack|McKendrick|Hethcote)\b")),
-    ("the example immunisation variants", re.compile(r"\bCOVERAGE\b|herd threshold")),
+    # the example's constant, never a hyphenated id that contains the word (CAOS_Contraste's finding F-SCALED-COVERAGE)
+    ("the example immunisation variants", re.compile(r"(?<![\w-])COVERAGE(?![\w-])|herd threshold")),
     ("prose about the example engine", re.compile(r"\bEXAMPLE engine\b|\bteaching engine\b")),
 )
 FORBIDDEN_FILES = ("STRUCTURE.md", ".vscode/")
