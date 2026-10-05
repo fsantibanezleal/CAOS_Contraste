@@ -1,157 +1,117 @@
-// What each case costs: the committed artifact against its byte budget, the surrogate's held-out error, and the
-// live engine timed in this browser against the run budget the lane gate set. Every number is read from the
-// artifacts or measured here; none is typed in.
-import { DocPage, DocSection, PlotCard, Verdict, formatNumber, useShellLang } from '@fasl-work/caos-app-shell';
-import { useEffect, useState } from 'react';
-import { loadAllCases, useArtifact, type CaseData } from '../api/artifacts';
-import { simulate } from '../engine/sir';
+// The held-out comparisons: every rung against the champion on each case's holdout, with the interval of its AUC and
+// the paired DeLong test, its calibration, and the decision it would make. Every number is read from the committed
+// artifacts at load time; none is typed in. The claim each table supports is only what its test shows.
+import { Cite, DocPage, DocSection, PlotCard, Verdict, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
+import { useMemo } from 'react';
+import { loadAllManifests, loadAllVariants, useArtifact } from '../api/artifacts';
+import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
+import { COMMITTED, relight } from '../lib/policy';
 import { P, useT } from '../content/bi';
+import { CHAMPION, extra, test, value } from '../workbench/model';
 
-interface Timing {
-  caseId: string;
-  medianMs: number;
+function Comparison({ v, title }: { v: VariantArtifact; title: string }) {
+  const lang = useShellLang();
+  const t = useT();
+  const rows = v.model
+    .filter((m) => m.id !== 'P0-constant')
+    .map((m) => {
+      const auc = test(v, 'disc.auc', m.id);
+      const dl = test(v, 'disc.delong', m.id);
+      return {
+        m,
+        auc: value(auc),
+        lo: extra(auc, 'ci95_low'),
+        hi: extra(auc, 'ci95_high'),
+        dl,
+        brier: value(test(v, 'pd.brier', m.id)),
+        jef: test(v, 'pd.jeffreys', m.id),
+      };
+    });
+  const champ = rows.find((r) => r.m.id === CHAMPION);
+  const better = rows.filter((r) => r.dl && relight(r.dl, COMMITTED) !== 'green' && (extra(r.dl, 'difference') ?? 0) > 0);
+  return (
+    <PlotCard title={{ en: title, es: title }} lane="replay" provenance={v.provenance.truth_status === 'real-outcomes' ? 'real' : 'synthetic'}>
+      <Verdict
+        compact
+        title={{ en: 'What the paired test supports', es: 'Lo que respalda la prueba pareada' }}
+        tone={better.length ? 'accent' : 'neutral'}
+        verdict={
+          better.length
+            ? {
+                en: `${better.map((r) => r.m.id).join(', ')} rank significantly better than the scorecard (DeLong, policy 5%) on ${formatNumber(v.outputs.n, 'en')} held-out records; the gain in AUC is ${better.map((r) => formatNumber(extra(r.dl, 'difference'), 'en', { decimals: 3 })).join(', ')}.`,
+                es: `${better.map((r) => r.m.id).join(', ')} ordenan significativamente mejor que la scorecard (DeLong, política 5%) en ${formatNumber(v.outputs.n, 'es')} registros reservados; la ganancia en AUC es ${better.map((r) => formatNumber(extra(r.dl, 'difference'), 'es', { decimals: 3 })).join(', ')}.`,
+              }
+            : { en: 'No rung ranks significantly better than the scorecard here.', es: 'Ningún peldaño ordena significativamente mejor que la scorecard aquí.' }
+        }
+      />
+      <table className="caos-table">
+        <thead>
+          <tr>
+            <th className="caos-col-text">{t('Rung', 'Peldaño')}</th>
+            <th>AUC</th>
+            <th>{t('95% interval', 'Intervalo 95%')}</th>
+            <th>{t('Difference to P1', 'Diferencia con P1')}</th>
+            <th>{t('DeLong p', 'p de DeLong')}</th>
+            <th>Brier</th>
+            <th>{t('Jeffreys p (portfolio)', 'p de Jeffreys (cartera)')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.m.id}>
+              <td className="caos-col-text">
+                {r.m.rung} {pick(r.m.title, lang)}
+              </td>
+              <td>{formatNumber(r.auc, lang, { decimals: 4 })}</td>
+              <td>{r.lo !== null && r.hi !== null ? `${formatNumber(r.lo, lang, { decimals: 4 })} - ${formatNumber(r.hi, lang, { decimals: 4 })}` : ''}</td>
+              <td>{r.m.id === CHAMPION ? '' : formatNumber(r.auc !== null && champ?.auc != null ? r.auc - champ.auc : null, lang, { decimals: 4 })}</td>
+              <td>{r.dl ? formatNumber(r.dl.p_value, lang, { digits: 3 }) : ''}</td>
+              <td>{formatNumber(r.brier, lang, { decimals: 4 })}</td>
+              <td>{formatNumber(r.jef?.p_value ?? null, lang, { digits: 3 })}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </PlotCard>
+  );
 }
 
-/**
- * Times the live engine on every case, after the page has rendered, outside any animation frame. A browser coarsens
- * its clock (to 0.1 ms or more), so each sample times a batch of runs long enough to measure, and the median of seven
- * samples is divided back to one run.
- */
-function useTimings(cases: CaseData[] | null): Timing[] | null {
-  const [out, setOut] = useState<Timing[] | null>(null);
-  useEffect(() => {
-    if (!cases) return;
-    const id = window.setTimeout(() => {
-      setOut(
-        cases.map(({ manifest }) => {
-          let batch = 1;
-          for (;;) {
-            const t0 = performance.now();
-            for (let k = 0; k < batch; k += 1) simulate(manifest.params);
-            if (performance.now() - t0 >= 20 || batch >= 1 << 16) break;
-            batch *= 2;
-          }
-          const runs: number[] = [];
-          for (let k = 0; k < 7; k += 1) {
-            const t0 = performance.now();
-            for (let j = 0; j < batch; j += 1) simulate(manifest.params);
-            runs.push((performance.now() - t0) / batch);
-          }
-          runs.sort((a, b) => a - b);
-          return { caseId: manifest.case_id, medianMs: runs[3] };
-        }),
-      );
-    }, 0);
-    return () => window.clearTimeout(id);
-  }, [cases]);
-  return out;
+function CaseBenchmark({ manifest }: { manifest: CaseManifest }) {
+  const all = useArtifact<VariantArtifact[]>((s) => loadAllVariants(manifest, s), [manifest.case_id]);
+  const t = useT();
+  const picks = useMemo(() => {
+    if (all.state !== 'ready') return null;
+    // the variants whose rows are the data as observed: the holdout, the small sample, the twin
+    return all.data.filter((v) => v.provenance.truth_status === 'real-outcomes');
+  }, [all]);
+  if (!picks) return <p className="caos-pending" data-state="loading">{t('Loading the comparisons', 'Cargando las comparaciones')}</p>;
+  const titles = Object.fromEntries(manifest.artifacts.map((a) => [a.variant_id, a.title]));
+  return (
+    <div data-state="ready">
+      {picks.map((v) => (
+        <Comparison key={v.variant_id} v={v} title={`${manifest.case_id}, ${t(titles[v.variant_id]?.en ?? v.variant_id, titles[v.variant_id]?.es ?? v.variant_id)}`} />
+      ))}
+    </div>
+  );
 }
 
 export function Benchmark() {
-  const lang = useShellLang();
   const t = useT();
-  const all = useArtifact((s) => loadAllCases(s), []);
-  const cases = all.state === 'ready' ? all.data.cases : null;
-  const timings = useTimings(cases);
-  const ready = cases && timings;
-  const worst = ready ? Math.max(...cases.map((c, i) => timings[i].medianMs / c.manifest.gate.run_ms_budget)) : 0;
-
+  const all = useArtifact((s) => loadAllManifests(s), []);
   return (
-    <DocPage wide title={{ en: 'Benchmark', es: 'Benchmark' }} lede={t('What each case costs, baked and live, against the budgets its lane was given.', 'Lo que cuesta cada caso, precalculado y en vivo, contra los presupuestos que se le asignaron a su carril.')}>
-      <DocSection title={{ en: 'Budgets and timings', es: 'Presupuestos y tiempos' }} noRefsReason={{ en: 'Measures this build.', es: 'Mide esta compilación.' }}>
+    <DocPage wide title={{ en: 'Benchmark', es: 'Benchmark' }} lede={t('Every rung against the champion on held-out data: discrimination with its interval and the paired test, calibration, and only the claims those tests support.', 'Cada peldaño contra el campeón en datos reservados: discriminación con su intervalo y la prueba pareada, calibración, y solo las afirmaciones que esas pruebas respaldan.')}>
+      <DocSection title={{ en: 'How to read the comparisons', es: 'Cómo leer las comparaciones' }} refs={['delong1988', 'lessmann2015']}>
         <P
-          en="The pipeline's lane gate decides, per case, whether the live engine may re-run it in the browser: the engine must be light, the committed trace small, and the run fast. This page reads each budget from the manifest and measures the live engine here, as the median of seven timed batches of runs, so the verdict is about this browser on this device."
-          es="La compuerta de carril del pipeline decide, por caso, si el motor en vivo puede volver a correrlo en el navegador: el motor debe ser liviano, la traza comprometida pequeña y la corrida rápida. Esta página lee cada presupuesto desde el manifiesto y mide aquí el motor en vivo, como la mediana de siete lotes de corridas medidos, así que el veredicto es sobre este navegador en este dispositivo."
+          en={<>A challenger beats the champion only when the paired DeLong test on the same obligors says so <Cite id="delong1988" />, and only by the difference it measures: the literature reports gains of a few AUC points for tree ensembles on retail data <Cite id="lessmann2015" />, and this page shows whether each case agrees. A significant gain in ranking says nothing of calibration, which the Jeffreys column and the Validation group of the App report separately.</>}
+          es={<>Un retador supera al campeón solo cuando la prueba pareada de DeLong sobre los mismos deudores lo dice <Cite id="delong1988" />, y solo por la diferencia que mide: la literatura reporta ganancias de unos pocos puntos de AUC para los ensambles de árboles en datos minoristas <Cite id="lessmann2015" />, y esta página muestra si cada caso coincide. Una ganancia significativa en el orden no dice nada de la calibración, que la columna de Jeffreys y el grupo Validación de la App reportan por separado.</>}
         />
-        {ready ? (
-          <>
-            <PlotCard title={{ en: 'The live lane on this device', es: 'El carril en vivo en este dispositivo' }} lane="live" provenance="synthetic">
-              <Verdict
-                title={{ en: 'Run budget', es: 'Presupuesto de corrida' }}
-                tone={worst <= 1 ? 'good' : 'bad'}
-                verdict={
-                  worst <= 1
-                    ? { en: `Every case runs within its budget; the slowest uses ${formatNumber(worst, 'en', { percent: true, digits: 2 })} of it.`, es: `Cada caso corre dentro de su presupuesto; el más lento usa ${formatNumber(worst, 'es', { percent: true, digits: 2 })} de él.` }
-                    : { en: 'A case exceeds its run budget on this device: the live lane would be slow here.', es: 'Un caso excede su presupuesto de corrida en este dispositivo: el carril en vivo sería lento aquí.' }
-                }
-              />
-            </PlotCard>
-            <table className="caos-table" data-state="ready">
-              <thead>
-                <tr>
-                  <th>{t('Case', 'Caso')}</th>
-                  <th>{t('Lane', 'Carril')}</th>
-                  <th>{t('Trace (bytes)', 'Traza (bytes)')}</th>
-                  <th>{t('Byte budget', 'Presupuesto de bytes')}</th>
-                  <th>{t('Live run (ms)', 'Corrida en vivo (ms)')}</th>
-                  <th>{t('Run budget (ms)', 'Presupuesto de corrida (ms)')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cases.map((c, i) => (
-                  <tr key={c.manifest.case_id}>
-                    <td>{c.manifest.title[lang]}</td>
-                    <td>{c.manifest.lane === 'live' ? t('live', 'en vivo') : t('precompute', 'precálculo')}</td>
-                    <td>{formatNumber(c.manifest.artifact.bytes, lang, { decimals: 0 })}</td>
-                    <td>{formatNumber(c.manifest.gate.trace_bytes_budget, lang, { decimals: 0 })}</td>
-                    <td>{formatNumber(timings[i].medianMs, lang, { digits: 3 })}</td>
-                    <td>{formatNumber(c.manifest.gate.run_ms_budget, lang, { decimals: 0 })}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </>
-        ) : (
-          <p className="caos-pending" data-state={all.state === 'error' ? 'error' : 'loading'}>
-            {all.state === 'error' ? all.error : t('Loading the artifacts and timing the live engine', 'Cargando los artefactos y midiendo el motor en vivo')}
-          </p>
-        )}
       </DocSection>
-      <DocSection title={{ en: 'The surrogate', es: 'El sustituto' }} noRefsReason={{ en: 'Measures this build.', es: 'Mide esta compilación.' }}>
-        <P
-          en="The pipeline also trains a small surrogate that predicts the peak share from the case parameters, and evaluates it on twenty held-out parameter sets drawn with a seed disjoint from training. It is there to show where a learned model sits in the pipeline; its error is reported, not hidden."
-          es="El pipeline también entrena un sustituto pequeño que predice la fracción del pico a partir de los parámetros del caso, y lo evalúa en veinte conjuntos de parámetros reservados, sorteados con una semilla disjunta del entrenamiento. Está ahí para mostrar dónde se ubica un modelo aprendido en el pipeline; su error se reporta, no se oculta."
-        />
-        {cases ? (
-          (() => {
-            const sets = [...new Set(cases.map((c) => JSON.stringify(c.manifest.metrics)))];
-            const m = cases[0].manifest.metrics;
-            return (
-              <>
-                {sets.length > 1 && (
-                  <Verdict
-                    title={{ en: 'One evaluation per bake', es: 'Una evaluación por precálculo' }}
-                    tone="bad"
-                    verdict={{ en: `The manifests carry ${sets.length} different evaluations: some were written by a different run than the release bake.`, es: `Los manifiestos traen ${sets.length} evaluaciones distintas: algunos los escribió una corrida distinta del precálculo de la versión.` }}
-                  />
-                )}
-                <table className="caos-table" data-state="ready">
-                  <thead>
-                    <tr>
-                      <th>{t('Evaluation', 'Evaluación')}</th>
-                      <th>{t('Held-out R squared', 'R cuadrado reservado')}</th>
-                      <th>{t('Held-out RMSE', 'RMSE reservado')}</th>
-                      <th>{t('Held-out sets', 'Conjuntos reservados')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{t('This bake, all cases', 'Este precálculo, todos los casos')}</td>
-                      <td>{formatNumber(m.surrogate_peakfrac_r2 ?? null, lang, { decimals: 4 })}</td>
-                      <td>{formatNumber(m.surrogate_peakfrac_rmse ?? null, lang, { decimals: 5 })}</td>
-                      <td>{formatNumber(m.n_holdout ?? null, lang, { decimals: 0 })}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </>
-            );
-          })()
-        ) : (
-          <p className="caos-pending" data-state={all.state === 'error' ? 'error' : 'loading'}>
-            {t('Loading the artifacts', 'Cargando los artefactos')}
-          </p>
-        )}
-      </DocSection>
+      {all.state === 'ready' &&
+        all.data.manifests.map((m) => (
+          <DocSection key={m.case_id} title={{ en: `${m.case_id}: ${m.title.en}`, es: `${m.case_id}: ${m.title.es}` }} noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos comprometidos.' }}>
+            <CaseBenchmark manifest={m} />
+          </DocSection>
+        ))}
     </DocPage>
   );
 }

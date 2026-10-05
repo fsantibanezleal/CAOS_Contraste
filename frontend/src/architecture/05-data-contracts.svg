@@ -1,98 +1,92 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" class="arch-svg" role="img" aria-label="The two data contracts and their checks">
-  <!-- Hand-authored; shell tokens only; both languages in one file (ADR-0058). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" class="arch-svg" role="img" aria-label="The sources, the licence manifest and the two data contracts">
+  <!-- Hand-authored. Every colour is a shell token; every label is written twice (l-en, l-es) (ADR-0058). -->
   <style>
     .arch-svg text { font-family: var(--font-sans); }
-    .arch-svg .mono { font-family: var(--font-mono); }
-    .arch-svg .c1 { fill: var(--color-surface); stroke: var(--color-magenta); stroke-width: 1.4; }
-    .arch-svg .c2 { fill: var(--color-surface); stroke: var(--color-good); stroke-width: 1.4; }
-    .arch-svg .web { fill: var(--color-surface); stroke: var(--color-accent); stroke-width: 1.4; }
+    .arch-svg .mono { font-family: var(--font-mono); font-size: 10.5px; fill: var(--color-fg); }
+    .arch-svg .pn { fill: var(--color-surface); stroke: var(--color-border); stroke-width: 1.2; }
     .arch-svg .bx { fill: var(--color-surface-2); stroke: var(--color-border); stroke-width: 1; }
+    .arch-svg .on { fill: var(--color-accent-soft); stroke: var(--color-accent); stroke-width: 1.2; }
     .arch-svg .ttl { fill: var(--color-fg); font-size: 15px; font-weight: 700; }
-    .arch-svg .h1 { fill: var(--color-magenta); font-size: 12.5px; font-weight: 700; }
-    .arch-svg .h2 { fill: var(--color-good); font-size: 12.5px; font-weight: 700; }
-    .arch-svg .h3 { fill: var(--color-accent); font-size: 12.5px; font-weight: 700; }
-    .arch-svg .it { fill: var(--color-fg); font-size: 11px; font-weight: 600; }
-    .arch-svg .k { fill: var(--color-fg-subtle); font-size: 10px; }
+    .arch-svg .h { fill: var(--color-fg); font-size: 12px; font-weight: 700; }
+    .arch-svg .it { fill: var(--color-fg); font-size: 11px; }
     .arch-svg .sub { fill: var(--color-fg-subtle); font-size: 10.5px; }
-    .arch-svg .flow { fill: none; stroke: var(--color-fg-faint); stroke-width: 1.4; }
+    .arch-svg .bad { fill: var(--color-bad); font-size: 10.5px; font-weight: 600; }
+    .arch-svg .ar { stroke: var(--color-accent); stroke-width: 1.8; fill: none; marker-end: url(#a5); }
+    .arch-svg .tip { fill: var(--color-accent); }
   </style>
-  <defs>
-    <marker id="dc5-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L8,4 L0,8 z" fill="var(--color-fg-faint)"/>
-    </marker>
-  </defs>
+  <defs><marker id="a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tip" d="M0 0 L10 5 L0 10 z"/></marker></defs>
 
-  <text class="ttl l-en" x="20" y="30">Two contracts, each checked where it is crossed</text>
-  <text class="ttl l-es" x="20" y="30">Dos contratos, cada uno verificado donde se cruza</text>
+  <text class="ttl l-en" x="20" y="30">Data in, artifacts out: every byte with its licence</text>
+  <text class="ttl l-es" x="20" y="30">Datos de entrada, artefactos de salida: cada byte con su licencia</text>
 
-  <rect class="c1" x="20" y="50" width="250" height="390" rx="10"/>
-  <text class="h1 l-en" x="36" y="76">CONTRACT 1: ingestion</text>
-  <text class="h1 l-es" x="36" y="76">CONTRATO 1: ingesta</text>
-  <rect class="bx" x="36" y="92" width="218" height="90" rx="6"/>
-  <text class="it l-en" x="48" y="112">The case registry</text>
-  <text class="it l-es" x="48" y="112">El registro de casos</text>
-  <text class="k mono" x="48" y="130">id · title · category</text>
-  <text class="k mono" x="48" y="146">params · expected_band</text>
-  <text class="k mono" x="48" y="162">expect: ranges per metric</text>
-  <rect class="bx" x="36" y="194" width="218" height="96" rx="6"/>
-  <text class="it l-en" x="48" y="214">Validated before a run</text>
-  <text class="it l-es" x="48" y="214">Validado antes de correr</text>
-  <text class="sub l-en" x="48" y="234">a bad value is rejected</text>
-  <text class="sub l-es" x="48" y="234">un valor inválido se rechaza</text>
-  <text class="sub l-en" x="48" y="250">with its reason, never coerced;</text>
-  <text class="sub l-es" x="48" y="250">con su razón, nunca se fuerza;</text>
-  <text class="sub l-en" x="48" y="266">an unusual one is flagged</text>
-  <text class="sub l-es" x="48" y="266">uno inusual se marca</text>
-  <text class="k mono" x="48" y="282">io/contract.py</text>
+  <rect class="bx" x="20" y="52" width="270" height="106" rx="8"/>
+  <text class="mono" x="32" y="74">data-pipeline/config/sources.json</text>
+  <text class="sub l-en" x="32" y="94">49 sources, each with the verbatim fragment</text>
+  <text class="sub l-es" x="32" y="94">49 fuentes, cada una con el fragmento literal</text>
+  <text class="sub l-en" x="32" y="110">of its licence, its class and its cases;</text>
+  <text class="sub l-es" x="32" y="110">de su licencia, su clase y sus casos;</text>
+  <text class="bad l-en" x="32" y="130">a link-only or unusable source is never read</text>
+  <text class="bad l-es" x="32" y="130">una fuente solo enlace o inutilizable nunca se lee</text>
+  <path class="ar" d="M292 104 H328"/>
+  <rect class="bx" x="332" y="52" width="250" height="106" rx="8"/>
+  <text class="mono" x="344" y="74">data-pipeline/fetch.py</text>
+  <text class="sub l-en" x="344" y="94">downloads into the device data root,</text>
+  <text class="sub l-es" x="344" y="94">descarga a la raíz de datos del equipo,</text>
+  <text class="sub l-en" x="344" y="110">never into the repository; hashes each</text>
+  <text class="sub l-es" x="344" y="110">nunca al repositorio; calcula el hash de</text>
+  <text class="sub l-en" x="344" y="126">file; a changed hash fails unless refreshed</text>
+  <text class="sub l-es" x="344" y="126">cada archivo; un hash cambiado falla</text>
+  <path class="ar" d="M584 104 H620"/>
+  <rect class="on" x="624" y="52" width="256" height="106" rx="8"/>
+  <text class="mono" x="636" y="74">data/sources/manifest.json</text>
+  <text class="sub l-en" x="636" y="94">the licence manifest: URL, date,</text>
+  <text class="sub l-es" x="636" y="94">el manifiesto de licencias: URL, fecha,</text>
+  <text class="sub l-en" x="636" y="110">class, licence text, SHA-256 and</text>
+  <text class="sub l-es" x="636" y="110">clase, texto de licencia, SHA-256 y</text>
+  <text class="sub l-en" x="636" y="126">bytes of every file (committed)</text>
+  <text class="sub l-es" x="636" y="126">bytes de cada archivo (comprometido)</text>
 
-  <rect class="c2" x="325" y="50" width="250" height="390" rx="10"/>
-  <text class="h2 l-en" x="341" y="76">CONTRACT 2: artifacts</text>
-  <text class="h2 l-es" x="341" y="76">CONTRATO 2: artefactos</text>
-  <rect class="bx" x="341" y="92" width="218" height="74" rx="6"/>
-  <text class="it" x="353" y="112">index.json (v2)</text>
-  <text class="k mono" x="353" y="130">n_cases · default_case</text>
-  <text class="k mono" x="353" y="146">cases: id, title, category</text>
-  <rect class="bx" x="341" y="176" width="218" height="104" rx="6"/>
-  <text class="it" x="353" y="196">&lt;case&gt;.json (manifest v3)</text>
-  <text class="k mono" x="353" y="214">params · seed · engine</text>
-  <text class="k mono" x="353" y="230">artifact · lane · gate</text>
-  <text class="k mono" x="353" y="246">metrics · expect · flags</text>
-  <text class="k mono" x="353" y="262">title · expected_band (en, es)</text>
-  <rect class="bx" x="341" y="290" width="218" height="74" rx="6"/>
-  <text class="it" x="353" y="310">&lt;case&gt;/trace.json (v1)</text>
-  <text class="k mono" x="353" y="328">t · S · I · R  (200 points)</text>
-  <text class="k mono" x="353" y="344">summary: peak, day, attack</text>
-  <text class="sub l-en" x="341" y="392">The bake fails on a result</text>
-  <text class="sub l-es" x="341" y="392">El precálculo falla con un resultado</text>
-  <text class="sub l-en" x="341" y="408">outside its expected range.</text>
-  <text class="sub l-es" x="341" y="408">fuera de su rango esperado.</text>
+  <rect class="pn" x="20" y="176" width="420" height="264" rx="10"/>
+  <text class="h l-en" x="36" y="200">Contract 1: what may enter</text>
+  <text class="h l-es" x="36" y="200">Contrato 1: lo que puede entrar</text>
+  <text class="sub l-en" x="36" y="222">eight families, one per kind of source data:</text>
+  <text class="sub l-es" x="36" y="222">ocho familias, una por tipo de dato fuente:</text>
+  <text class="it" x="36" y="242">scored_sample, loan_panel, rating_history,</text>
+  <text class="it" x="36" y="258">market_series, curve, balance_sheet,</text>
+  <text class="it" x="36" y="274">loss_events, macro_path</text>
+  <text class="sub l-en" x="36" y="300">each field with its kind, unit and range; rules across</text>
+  <text class="sub l-es" x="36" y="300">cada campo con su tipo, unidad y rango; reglas entre</text>
+  <text class="sub l-en" x="36" y="316">fields and records; parsed strictly, never coerced</text>
+  <text class="sub l-es" x="36" y="316">campos y registros; leído estrictamente, nunca forzado</text>
+  <text class="sub l-en" x="36" y="340">reject: refused, with the field, value, range, policy</text>
+  <text class="sub l-es" x="36" y="340">rechazo: rehusado, con campo, valor, rango, política</text>
+  <text class="sub l-en" x="36" y="356">flag: accepted and counted (codes off the codebook)</text>
+  <text class="sub l-es" x="36" y="356">marca: aceptado y contado (códigos fuera del libro)</text>
+  <text class="sub l-en" x="36" y="372">exclude: valid, outside the use, counted</text>
+  <text class="sub l-es" x="36" y="372">exclusión: válido, fuera del uso, contado</text>
+  <text class="mono" x="36" y="400">data/derived/contract/*.json</text>
+  <text class="sub l-en" x="36" y="418">exported for the web, mirrored in TypeScript</text>
+  <text class="sub l-es" x="36" y="418">exportado para la web, reflejado en TypeScript</text>
 
-  <rect class="web" x="630" y="50" width="250" height="390" rx="10"/>
-  <text class="h3 l-en" x="646" y="76">The web's declaration</text>
-  <text class="h3 l-es" x="646" y="76">La declaración de la web</text>
-  <rect class="bx" x="646" y="92" width="218" height="74" rx="6"/>
-  <text class="it" x="658" y="112">contract.types.ts</text>
-  <text class="sub l-en" x="658" y="132">interfaces and run-time</text>
-  <text class="sub l-es" x="658" y="132">interfaces y descriptores</text>
-  <text class="sub l-en" x="658" y="148">descriptors, tied by tsc</text>
-  <text class="sub l-es" x="658" y="148">en ejecución, unidos por tsc</text>
-  <rect class="bx" x="646" y="176" width="218" height="104" rx="6"/>
-  <text class="it" x="658" y="196">contract.test.ts</text>
-  <text class="sub l-en" x="658" y="216">every committed artifact read</text>
-  <text class="sub l-es" x="658" y="216">cada artefacto comprometido leído</text>
-  <text class="sub l-en" x="658" y="232">both ways: a key written and not</text>
-  <text class="sub l-es" x="658" y="232">en ambos sentidos: falla una clave</text>
-  <text class="sub l-en" x="658" y="248">read, or read and not written,</text>
-  <text class="sub l-es" x="658" y="248">escrita y no leída, o leída y no</text>
-  <text class="sub l-en" x="658" y="264">fails; booleans are not numbers</text>
-  <text class="sub l-es" x="658" y="264">escrita; un booleano no es número</text>
-  <rect class="bx" x="646" y="290" width="218" height="74" rx="6"/>
-  <text class="it" x="658" y="310">sir.parity.test.ts</text>
-  <text class="sub l-en" x="658" y="330">the live engine against</text>
-  <text class="sub l-es" x="658" y="330">el motor en vivo contra</text>
-  <text class="sub l-en" x="658" y="346">every baked trace</text>
-  <text class="sub l-es" x="658" y="346">cada traza precalculada</text>
+  <path class="ar" d="M442 308 H478"/>
 
-  <path class="flow" d="M270,240 H323" marker-end="url(#dc5-arrow)"/>
-  <path class="flow" d="M575,228 H628" marker-end="url(#dc5-arrow)"/>
+  <rect class="pn" x="482" y="176" width="398" height="264" rx="10"/>
+  <text class="h l-en" x="498" y="200">Contract 2: what the pipeline commits</text>
+  <text class="h l-es" x="498" y="200">Contrato 2: lo que el pipeline compromete</text>
+  <text class="mono" x="498" y="224">manifests/index.json, manifests/C01.json</text>
+  <text class="mono" x="498" y="242">C01/models-*.json, C01/&lt;variant&gt;.json</text>
+  <text class="sub l-en" x="498" y="266">model records, outputs, TestResult rows, impact,</text>
+  <text class="sub l-es" x="498" y="266">registros de modelos, salidas, filas TestResult, impacto,</text>
+  <text class="sub l-en" x="498" y="282">findings, provenance (truth status, licence class</text>
+  <text class="sub l-es" x="498" y="282">hallazgos, procedencia (estado de verdad, clase de</text>
+  <text class="sub l-en" x="498" y="298">and file hashes of every input), lane</text>
+  <text class="sub l-es" x="498" y="298">licencia y hashes de cada entrada), carril</text>
+  <text class="bad l-en" x="498" y="324">the export refuses a non-publishable lineage</text>
+  <text class="bad l-es" x="498" y="324">la exportación rechaza un linaje no publicable</text>
+  <text class="sub l-en" x="498" y="350">held by: the two-way contract test of the web, the</text>
+  <text class="sub l-es" x="498" y="350">sujeto por: la prueba de contrato en dos sentidos, la</text>
+  <text class="sub l-en" x="498" y="366">provenance, data-class and licence guards in CI,</text>
+  <text class="sub l-es" x="498" y="366">guardas de procedencia, clases de datos y licencias en CI,</text>
+  <text class="sub l-en" x="498" y="382">and each case's expected ranges at bake time</text>
+  <text class="sub l-es" x="498" y="382">y los rangos esperados de cada caso al precalcular</text>
 </svg>

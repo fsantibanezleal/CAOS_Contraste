@@ -1,113 +1,127 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" class="arch-svg" role="img" aria-label="The three lanes: offline, replay and live">
-  <!-- Hand-authored; shell tokens only; both languages in one file (ADR-0058). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" class="arch-svg" role="img" aria-label="Contraste end to end: sources, the offline pipeline, the artifacts, the web">
+  <!-- Hand-authored. Every colour is a shell token; every label is written twice (l-en, l-es) (ADR-0058). -->
   <style>
     .arch-svg text { font-family: var(--font-sans); }
     .arch-svg .mono { font-family: var(--font-mono); }
+    .arch-svg .pn { fill: var(--color-surface); stroke: var(--color-border); stroke-width: 1.2; }
     .arch-svg .bx { fill: var(--color-surface-2); stroke: var(--color-border); stroke-width: 1; }
-    .arch-svg .ln-off { fill: none; stroke: var(--color-magenta); stroke-width: 1.4; }
-    .arch-svg .ln-rep { fill: none; stroke: var(--color-good); stroke-width: 1.4; }
-    .arch-svg .ln-live { fill: none; stroke: var(--color-accent); stroke-width: 1.4; }
+    .arch-svg .on { fill: var(--color-accent-soft); stroke: var(--color-accent); stroke-width: 1.2; }
     .arch-svg .ttl { fill: var(--color-fg); font-size: 15px; font-weight: 700; }
-    .arch-svg .t-off { fill: var(--color-magenta); font-size: 12.5px; font-weight: 700; }
-    .arch-svg .t-rep { fill: var(--color-good); font-size: 12.5px; font-weight: 700; }
-    .arch-svg .t-live { fill: var(--color-accent); font-size: 12.5px; font-weight: 700; }
+    .arch-svg .h { fill: var(--color-fg); font-size: 12px; font-weight: 700; }
     .arch-svg .it { fill: var(--color-fg); font-size: 11px; }
     .arch-svg .sub { fill: var(--color-fg-subtle); font-size: 10.5px; }
-    .arch-svg .cd { fill: var(--color-fg-subtle); font-size: 10px; }
-    .arch-svg .flow { fill: none; stroke: var(--color-fg-faint); stroke-width: 1.4; }
+    .arch-svg .acc { fill: var(--color-accent); font-size: 11px; font-weight: 600; }
+    .arch-svg .ar { stroke: var(--color-accent); stroke-width: 1.8; fill: none; marker-end: url(#a2); }
+    .arch-svg .tip { fill: var(--color-accent); }
   </style>
-  <defs>
-    <marker id="ln2-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0,0 L8,4 L0,8 z" fill="var(--color-fg-faint)"/>
-    </marker>
-  </defs>
+  <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tip" d="M0 0 L10 5 L0 10 z"/></marker></defs>
 
-  <text class="ttl l-en" x="20" y="30">Three lanes: where each number is computed</text>
-  <text class="ttl l-es" x="20" y="30">Tres carriles: dónde se calcula cada número</text>
+  <text class="ttl l-en" x="20" y="30">Three lanes: offline computes, replay shows, live recomputes what is light</text>
+  <text class="ttl l-es" x="20" y="30">Tres carriles: fuera de línea calcula, la reproducción muestra, en vivo recalcula lo liviano</text>
 
-  <!-- offline -->
-  <rect class="ln-off" x="20" y="50" width="270" height="390" rx="10"/>
-  <text class="t-off l-en" x="36" y="76">OFFLINE, on a workstation</text>
-  <text class="t-off l-es" x="36" y="76">FUERA DE LÍNEA, en una estación</text>
-  <rect class="bx" x="36" y="92" width="238" height="70" rx="6"/>
-  <text class="it l-en" x="48" y="112">The pipeline, in Python</text>
-  <text class="it l-es" x="48" y="112">El pipeline, en Python</text>
-  <text class="cd mono" x="48" y="130">data-pipeline/run.py</text>
-  <text class="sub l-en" x="48" y="148">named stages, seeded, deterministic</text>
-  <text class="sub l-es" x="48" y="148">etapas con nombre, semilla, determinista</text>
-  <rect class="bx" x="36" y="174" width="238" height="70" rx="6"/>
-  <text class="it l-en" x="48" y="194">Each case checked at bake</text>
-  <text class="it l-es" x="48" y="194">Cada caso verificado al precalcular</text>
-  <text class="cd mono" x="48" y="212">core/expect.py</text>
-  <text class="sub l-en" x="48" y="230">a result outside its range fails</text>
-  <text class="sub l-es" x="48" y="230">un resultado fuera de rango falla</text>
-  <rect class="bx" x="36" y="256" width="238" height="70" rx="6"/>
-  <text class="it l-en" x="48" y="276">Writes the artifacts</text>
-  <text class="it l-es" x="48" y="276">Escribe los artefactos</text>
-  <text class="cd mono" x="48" y="294">data/derived/</text>
-  <text class="sub l-en" x="48" y="312">tests write only to a sandbox</text>
-  <text class="sub l-es" x="48" y="312">las pruebas escriben sólo en un sandbox</text>
-  <text class="sub l-en" x="36" y="360">Run on a data or model change;</text>
-  <text class="sub l-es" x="36" y="360">Se corre al cambiar datos o modelo;</text>
-  <text class="sub l-en" x="36" y="376">never in CI, never in the browser.</text>
-  <text class="sub l-es" x="36" y="376">nunca en CI, nunca en el navegador.</text>
+  <rect class="pn" x="20" y="50" width="190" height="380" rx="10"/>
+  <text class="h l-en" x="34" y="74">Sources</text>
+  <text class="h l-es" x="34" y="74">Fuentes</text>
+  <rect class="bx" x="34" y="86" width="162" height="62" rx="6"/>
+  <text class="it l-en" x="44" y="104">Public data</text>
+  <text class="it l-es" x="44" y="104">Datos públicos</text>
+  <text class="sub l-en" x="44" y="120">UCI Taiwan, German Credit,</text>
+  <text class="sub l-es" x="44" y="120">UCI Taiwán, German Credit,</text>
+  <text class="sub l-en" x="44" y="134">SBA, Fed, FDIC, CMF, BCCh</text>
+  <text class="sub l-es" x="44" y="134">SBA, Fed, FDIC, CMF, BCCh</text>
+  <rect class="bx" x="34" y="158" width="162" height="62" rx="6"/>
+  <text class="it l-en" x="44" y="176">Generators</text>
+  <text class="it l-es" x="44" y="176">Generadores</text>
+  <text class="sub l-en" x="44" y="192">known truth: planted shifts</text>
+  <text class="sub l-es" x="44" y="192">verdad conocida: cambios</text>
+  <text class="sub l-en" x="44" y="206">and defects of known size</text>
+  <text class="sub l-es" x="44" y="206">y defectos de tamaño conocido</text>
+  <rect class="on" x="34" y="230" width="162" height="186" rx="6"/>
+  <text class="it l-en" x="44" y="248">Licence classes</text>
+  <text class="it l-es" x="44" y="248">Clases de licencia</text>
+  <text class="sub l-en" x="44" y="266">mirror-allowed: rows may ship</text>
+  <text class="sub l-es" x="44" y="266">espejo: las filas pueden ir</text>
+  <text class="sub l-en" x="44" y="282">derived-only: results only</text>
+  <text class="sub l-es" x="44" y="282">solo derivados: solo resultados</text>
+  <text class="sub l-en" x="44" y="298">link-only: linked, never read</text>
+  <text class="sub l-es" x="44" y="298">solo enlace: nunca leída</text>
+  <text class="sub l-en" x="44" y="314">unusable: the terms forbid it</text>
+  <text class="sub l-es" x="44" y="314">inutilizable: los términos lo impiden</text>
+  <text class="acc l-en" x="44" y="342">every file hashed in the</text>
+  <text class="acc l-es" x="44" y="342">cada archivo con su hash en</text>
+  <text class="acc l-en" x="44" y="358">licence manifest</text>
+  <text class="acc l-es" x="44" y="358">el manifiesto de licencias</text>
 
-  <!-- replay -->
-  <rect class="ln-rep" x="315" y="50" width="270" height="390" rx="10"/>
-  <text class="t-rep l-en" x="331" y="76">REPLAY, committed</text>
-  <text class="t-rep l-es" x="331" y="76">REPRODUCCIÓN, comprometida</text>
-  <rect class="bx" x="331" y="92" width="238" height="70" rx="6"/>
-  <text class="it l-en" x="343" y="112">Index, manifests, traces</text>
-  <text class="it l-es" x="343" y="112">Índice, manifiestos, trazas</text>
-  <text class="cd mono" x="343" y="130">index/v2 · manifest/v3 · trace/v1</text>
-  <text class="sub l-en" x="343" y="148">small, reviewable, in git</text>
-  <text class="sub l-es" x="343" y="148">pequeños, revisables, en git</text>
-  <rect class="bx" x="331" y="174" width="238" height="70" rx="6"/>
-  <text class="it l-en" x="343" y="194">Copied into the site</text>
-  <text class="it l-es" x="343" y="194">Copiados al sitio</text>
-  <text class="cd mono" x="343" y="212">frontend/scripts/copy-data.mjs</text>
-  <text class="sub l-en" x="343" y="230">exactly what the index declares</text>
-  <text class="sub l-es" x="343" y="230">exactamente lo que declara el índice</text>
-  <rect class="bx" x="331" y="256" width="238" height="70" rx="6"/>
-  <text class="it l-en" x="343" y="276">Fetched as JSON</text>
-  <text class="it l-es" x="343" y="276">Pedidos como JSON</text>
-  <text class="cd mono" x="343" y="294">data/...json?v=VERSION</text>
-  <text class="sub l-en" x="343" y="312">an HTML answer is an error</text>
-  <text class="sub l-es" x="343" y="312">una respuesta HTML es un error</text>
-  <text class="sub l-en" x="331" y="360">The web reads them; nothing</text>
-  <text class="sub l-es" x="331" y="360">La web los lee; nada</text>
-  <text class="sub l-en" x="331" y="376">baked is recomputed here.</text>
-  <text class="sub l-es" x="331" y="376">precalculado se recalcula aquí.</text>
+  <path class="ar" d="M212 240 H248"/>
 
-  <!-- live -->
-  <rect class="ln-live" x="610" y="50" width="270" height="390" rx="10"/>
-  <text class="t-live l-en" x="626" y="76">LIVE, in the browser</text>
-  <text class="t-live l-es" x="626" y="76">EN VIVO, en el navegador</text>
-  <rect class="bx" x="626" y="92" width="238" height="70" rx="6"/>
-  <text class="it l-en" x="638" y="112">The engine, in TypeScript</text>
-  <text class="it l-es" x="638" y="112">El motor, en TypeScript</text>
-  <text class="cd mono" x="638" y="130">frontend/src/engine/sir.ts</text>
-  <text class="sub l-en" x="638" y="148">re-runs on every control change</text>
-  <text class="sub l-es" x="638" y="148">recalcula con cada cambio de control</text>
-  <rect class="bx" x="626" y="174" width="238" height="70" rx="6"/>
-  <text class="it l-en" x="638" y="194">Held to the baked traces</text>
-  <text class="it l-es" x="638" y="194">Sujeto a las trazas precalculadas</text>
-  <text class="cd mono" x="638" y="212">engine/sir.parity.test.ts</text>
-  <text class="sub l-en" x="638" y="230">every case, to the trace rounding</text>
-  <text class="sub l-es" x="638" y="230">cada caso, al redondeo de la traza</text>
-  <rect class="bx" x="626" y="256" width="238" height="70" rx="6"/>
-  <text class="it l-en" x="638" y="276">Views keyed by the selection</text>
-  <text class="it l-es" x="638" y="276">Vistas con la clave de la selección</text>
-  <text class="cd mono" x="638" y="294">data-state-key</text>
-  <text class="sub l-en" x="638" y="312">an old view says it is old</text>
-  <text class="sub l-es" x="638" y="312">una vista antigua avisa que lo es</text>
-  <text class="sub l-en" x="626" y="360">Within the run budget the lane</text>
-  <text class="sub l-es" x="626" y="360">Dentro del presupuesto de corrida</text>
-  <text class="sub l-en" x="626" y="376">gate set (see Benchmark).</text>
-  <text class="sub l-es" x="626" y="376">que fijó la compuerta (ver Benchmark).</text>
+  <rect class="pn" x="252" y="50" width="300" height="380" rx="10"/>
+  <text class="h l-en" x="266" y="74">Offline (canonical): the pipeline</text>
+  <text class="h l-es" x="266" y="74">Fuera de línea (canónico): el pipeline</text>
+  <rect class="bx" x="266" y="86" width="272" height="64" rx="6"/>
+  <text class="it l-en" x="276" y="104">ingest, contract 1, leakage-safe split</text>
+  <text class="it l-es" x="276" y="104">ingesta, contrato 1, partición sin fugas</text>
+  <text class="sub l-en" x="276" y="120">holdout 30% locked; calibration slice disjoint;</text>
+  <text class="sub l-es" x="276" y="120">reservada 30% cerrada; tramo de calibración disjunto;</text>
+  <text class="sub l-en" x="276" y="136">every fit on the training slice only</text>
+  <text class="sub l-es" x="276" y="136">todo ajuste solo en el tramo de entrenamiento</text>
+  <rect class="bx" x="266" y="160" width="272" height="64" rx="6"/>
+  <text class="it l-en" x="276" y="178">the ladder: optbinning, statsmodels,</text>
+  <text class="it l-es" x="276" y="178">la escalera: optbinning, statsmodels,</text>
+  <text class="it l-en" x="276" y="194">scikit-learn, InterpretML, LightGBM,</text>
+  <text class="it l-es" x="276" y="194">scikit-learn, InterpretML, LightGBM,</text>
+  <text class="it l-en" x="276" y="210">XGBoost, SHAP, TabPFN (extra)</text>
+  <text class="it l-es" x="276" y="210">XGBoost, SHAP, TabPFN (extra)</text>
+  <rect class="on" x="266" y="234" width="272" height="64" rx="6"/>
+  <text class="it l-en" x="276" y="252">the battery: riskvalidation</text>
+  <text class="it l-es" x="276" y="252">la batería: riskvalidation</text>
+  <text class="sub l-en" x="276" y="268">one TestResult per test, H0, reference,</text>
+  <text class="sub l-es" x="276" y="268">un TestResult por prueba, H0, referencia,</text>
+  <text class="sub l-en" x="276" y="284">versioned policy, light</text>
+  <text class="sub l-es" x="276" y="284">política versionada, luz</text>
+  <rect class="bx" x="266" y="308" width="272" height="108" rx="6"/>
+  <text class="it l-en" x="276" y="326">export, contract 2, lineage</text>
+  <text class="it l-es" x="276" y="326">exportación, contrato 2, linaje</text>
+  <text class="sub l-en" x="276" y="342">refuses a link-only or unusable input;</text>
+  <text class="sub l-es" x="276" y="342">rechaza una entrada solo enlace o inutilizable;</text>
+  <text class="sub l-en" x="276" y="358">checks each case's expected ranges;</text>
+  <text class="sub l-es" x="276" y="358">verifica los rangos esperados de cada caso;</text>
+  <text class="sub l-en" x="276" y="374">writes models and variant artifacts</text>
+  <text class="sub l-es" x="276" y="374">escribe artefactos de modelos y de variantes</text>
+  <text class="acc l-en" x="276" y="400">never in CI, never in the browser</text>
+  <text class="acc l-es" x="276" y="400">nunca en CI, nunca en el navegador</text>
 
-  <path class="flow" d="M274,291 H329" marker-end="url(#ln2-arrow)"/>
-  <path class="flow" d="M569,209 H624" marker-end="url(#ln2-arrow)"/>
-  <text class="sub l-en" x="262" y="420">artifacts flow left to right; the parity test ties the right lane to the middle one</text>
-  <text class="sub l-es" x="232" y="420">los artefactos fluyen de izquierda a derecha; la prueba de paridad une el carril derecho al central</text>
+  <path class="ar" d="M554 240 H590"/>
+
+  <rect class="pn" x="594" y="50" width="286" height="380" rx="10"/>
+  <text class="h l-en" x="608" y="74">The web</text>
+  <text class="h l-es" x="608" y="74">La web</text>
+  <rect class="bx" x="608" y="86" width="258" height="96" rx="6"/>
+  <text class="it l-en" x="618" y="104">Replay</text>
+  <text class="it l-es" x="618" y="104">Reproducción</text>
+  <text class="sub l-en" x="618" y="122">committed artifacts, fetched with the version;</text>
+  <text class="sub l-es" x="618" y="122">artefactos comprometidos, pedidos con la versión;</text>
+  <text class="sub l-en" x="618" y="138">GBM and TabPFN scores are always replayed</text>
+  <text class="sub l-es" x="618" y="138">los puntajes GBM y TabPFN siempre se reproducen</text>
+  <text class="sub l-en" x="618" y="154">(ONNX Runtime Web has no tree-ensemble kernel)</text>
+  <text class="sub l-es" x="618" y="154">(ONNX Runtime Web no tiene núcleo de ensambles)</text>
+  <rect class="on" x="608" y="192" width="258" height="112" rx="6"/>
+  <text class="it l-en" x="618" y="210">Live</text>
+  <text class="it l-es" x="618" y="210">En vivo</text>
+  <text class="sub l-en" x="618" y="228">the scorecard and EBM scores of an applicant;</text>
+  <text class="sub l-es" x="618" y="228">los puntajes scorecard y EBM de un solicitante;</text>
+  <text class="sub l-en" x="618" y="244">every light under the reader's policy;</text>
+  <text class="sub l-es" x="618" y="244">cada luz con la política del lector;</text>
+  <text class="sub l-en" x="618" y="260">the decision at any approval rate and LGD</text>
+  <text class="sub l-es" x="618" y="260">la decisión con cualquier tasa de aprobación y LGD</text>
+  <text class="acc l-en" x="618" y="286">held to the pipeline by parity tests</text>
+  <text class="acc l-es" x="618" y="286">sujeto al pipeline por pruebas de paridad</text>
+  <rect class="bx" x="608" y="314" width="258" height="102" rx="6"/>
+  <text class="it l-en" x="618" y="332">Next: the engine in the browser</text>
+  <text class="it l-es" x="618" y="332">Siguiente: el motor en el navegador</text>
+  <text class="sub l-en" x="618" y="350">riskvalidation is pure NumPy and SciPy;</text>
+  <text class="sub l-es" x="618" y="350">riskvalidation es NumPy y SciPy puros;</text>
+  <text class="sub l-en" x="618" y="366">once on PyPI it runs in Pyodide, admitted</text>
+  <text class="sub l-es" x="618" y="366">al estar en PyPI corre en Pyodide, admitido</text>
+  <text class="sub l-en" x="618" y="382">only when its cold start is measured</text>
+  <text class="sub l-es" x="618" y="382">solo cuando se mide su arranque en frío</text>
 </svg>

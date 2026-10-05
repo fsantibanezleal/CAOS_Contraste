@@ -1,9 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" class="arch-svg" role="img" aria-label="The App route: the rail and the instrument">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" class="arch-svg" role="img" aria-label="The App route of Contraste: the rail and the six groups of the instrument">
   <!-- Hand-authored. Every colour is a shell token, so the diagram repaints with the theme; every label is written
        twice (l-en, l-es) and the modal shows one language (ADR-0058). -->
   <style>
     .arch-svg text { font-family: var(--font-sans); }
-    .arch-svg .mono { font-family: var(--font-mono); }
     .arch-svg .pn { fill: var(--color-surface); stroke: var(--color-border); stroke-width: 1.2; }
     .arch-svg .bx { fill: var(--color-surface-2); stroke: var(--color-border); stroke-width: 1; }
     .arch-svg .on { fill: var(--color-accent-soft); stroke: var(--color-accent); stroke-width: 1.2; }
@@ -12,81 +11,88 @@
     .arch-svg .it { fill: var(--color-fg); font-size: 11px; }
     .arch-svg .sub { fill: var(--color-fg-subtle); font-size: 10.5px; }
     .arch-svg .acc { fill: var(--color-accent); font-size: 11px; font-weight: 600; }
-    .arch-svg .s { fill: none; stroke: var(--color-accent); stroke-width: 2; }
-    .arch-svg .i { fill: none; stroke: var(--color-bad); stroke-width: 2; }
-    .arch-svg .r { fill: none; stroke: var(--color-good); stroke-width: 2; }
-    .arch-svg .rp { fill: none; stroke: var(--color-fg-subtle); stroke-width: 1.4; stroke-dasharray: 6 4; }
-    .arch-svg .ax { stroke: var(--color-fg-faint); stroke-width: 1; }
+    .arch-svg .ln { stroke: var(--color-accent); stroke-width: 1.6; fill: none; }
   </style>
 
-  <text class="ttl l-en" x="20" y="30">The App: what you choose on the left, what it shows on the right</text>
-  <text class="ttl l-es" x="20" y="30">La App: lo que se elige a la izquierda, lo que muestra a la derecha</text>
+  <text class="ttl l-en" x="20" y="30">The App: the inputs on the left, the six questions on the right</text>
+  <text class="ttl l-es" x="20" y="30">La App: las entradas a la izquierda, las seis preguntas a la derecha</text>
 
-  <!-- the rail -->
-  <rect class="pn" x="20" y="50" width="250" height="390" rx="10"/>
-  <text class="h l-en" x="34" y="74">Rail</text>
-  <text class="h l-es" x="34" y="74">Panel</text>
-  <rect class="bx" x="34" y="86" width="222" height="40" rx="6"/>
-  <text class="it l-en" x="46" y="104">Case: Epidemic</text>
-  <text class="it l-es" x="46" y="104">Caso: Epidemia</text>
-  <text class="sub l-en" x="46" y="118">from the index; ?case= links it</text>
-  <text class="sub l-es" x="46" y="118">desde el índice; ?case= lo enlaza</text>
-  <rect class="bx" x="34" y="136" width="222" height="56" rx="6"/>
-  <text class="it l-en" x="46" y="154">Immunisation: 0%, 30%, 60%</text>
-  <text class="it l-es" x="46" y="154">Inmunización: 0%, 30%, 60%</text>
-  <text class="sub l-en" x="46" y="170">the variants of the case,</text>
-  <text class="sub l-es" x="46" y="170">las variantes del caso,</text>
-  <text class="sub l-en" x="46" y="184">re-run by the live engine</text>
-  <text class="sub l-es" x="46" y="184">recalculadas por el motor en vivo</text>
-  <rect class="bx" x="34" y="202" width="222" height="70" rx="6"/>
-  <text class="it l-en" x="46" y="220">Contact rate and recovery rate</text>
-  <text class="it l-es" x="46" y="220">Tasa de contacto y de recuperación</text>
-  <line class="ax" x1="46" y1="238" x2="244" y2="238"/>
-  <circle cx="120" cy="238" r="5" fill="var(--color-accent)"/>
-  <line class="ax" x1="46" y1="258" x2="244" y2="258"/>
-  <circle cx="90" cy="258" r="5" fill="var(--color-accent)"/>
-  <rect class="bx" x="34" y="282" width="222" height="96" rx="6"/>
-  <text class="it l-en" x="46" y="300">Live values</text>
-  <text class="it l-es" x="46" y="300">Valores en vivo</text>
-  <text class="sub l-en" x="46" y="318">R0, peak infected, peak day,</text>
-  <text class="sub l-es" x="46" y="318">R0, pico de contagiados, día del pico,</text>
-  <text class="sub l-en" x="46" y="332">attack rate, recomputed on</text>
-  <text class="sub l-es" x="46" y="332">tasa de ataque, recalculados en</text>
-  <text class="sub l-en" x="46" y="346">every change, with their units</text>
-  <text class="sub l-es" x="46" y="346">cada cambio, con sus unidades</text>
-  <text class="sub l-en" x="46" y="366">badges: live, synthetic</text>
-  <text class="sub l-es" x="46" y="366">insignias: en vivo, sintéticos</text>
-  <text class="sub l-en" x="34" y="410">Pickers and numbers live here, so</text>
-  <text class="sub l-es" x="34" y="410">Selectores y números viven aquí, así</text>
-  <text class="sub l-en" x="34" y="424">the drawing keeps the instrument.</text>
-  <text class="sub l-es" x="34" y="424">el dibujo conserva el instrumento.</text>
+  <rect class="pn" x="20" y="48" width="250" height="392" rx="10"/>
+  <text class="h l-en" x="34" y="72">Rail</text>
+  <text class="h l-es" x="34" y="72">Panel</text>
+  <rect class="bx" x="34" y="82" width="222" height="44" rx="6"/>
+  <text class="it l-en" x="46" y="100">Case, by category; its variant</text>
+  <text class="it l-es" x="46" y="100">Caso, por categoría; su variante</text>
+  <text class="sub l-en" x="46" y="116">?case= links it; a variant reloads every view</text>
+  <text class="sub l-es" x="46" y="116">?case= lo enlaza; una variante recarga cada vista</text>
+  <rect class="on" x="34" y="136" width="222" height="86" rx="6"/>
+  <text class="it l-en" x="46" y="154">Decision</text>
+  <text class="it l-es" x="46" y="154">Decisión</text>
+  <text class="sub l-en" x="46" y="170">the challenger; the approval rate;</text>
+  <text class="sub l-es" x="46" y="170">el retador; la tasa de aprobación;</text>
+  <text class="sub l-en" x="46" y="184">the LGD (50%, the QRRE floor)</text>
+  <text class="sub l-es" x="46" y="184">la LGD (50%, el piso QRRE)</text>
+  <text class="acc l-en" x="46" y="206">live: bad rate, expected loss</text>
+  <text class="acc l-es" x="46" y="206">en vivo: tasa de malos, pérdida esperada</text>
+  <rect class="on" x="34" y="232" width="222" height="86" rx="6"/>
+  <text class="it l-en" x="46" y="250">Policy</text>
+  <text class="it l-es" x="46" y="250">Política</text>
+  <text class="sub l-en" x="46" y="266">amber and red thresholds on p-values,</text>
+  <text class="sub l-es" x="46" y="266">umbrales ámbar y rojo sobre valores p,</text>
+  <text class="sub l-en" x="46" y="280">labelled as policy, never regulation</text>
+  <text class="sub l-es" x="46" y="280">rotulados como política, nunca regulación</text>
+  <text class="acc l-en" x="46" y="302">live: every light re-computed</text>
+  <text class="acc l-es" x="46" y="302">en vivo: cada luz recalculada</text>
+  <rect class="on" x="34" y="328" width="222" height="96" rx="6"/>
+  <text class="it l-en" x="46" y="346">Applicant</text>
+  <text class="it l-es" x="46" y="346">Solicitante</text>
+  <text class="sub l-en" x="46" y="362">one of 50 holdout applicants,</text>
+  <text class="sub l-es" x="46" y="362">uno de 50 solicitantes reservados,</text>
+  <text class="sub l-en" x="46" y="376">scored from the points table and the EBM</text>
+  <text class="sub l-es" x="46" y="376">puntuado con la tabla de puntos y el EBM</text>
+  <text class="acc l-en" x="46" y="398">live: score, PD, the four reasons</text>
+  <text class="acc l-es" x="46" y="398">en vivo: puntaje, PD, las cuatro razones</text>
 
-  <!-- the instrument -->
-  <rect class="pn" x="286" y="50" width="594" height="390" rx="10"/>
-  <text class="h l-en" x="300" y="74">Instrument</text>
-  <text class="h l-es" x="300" y="74">Instrumento</text>
-  <rect class="on" x="300" y="84" width="90" height="26" rx="6"/>
-  <text class="acc l-en" x="314" y="101">Dynamics</text>
-  <text class="acc l-es" x="314" y="101">Dinámica</text>
-  <text class="it l-en" x="404" y="101">Validation</text>
-  <text class="it l-es" x="404" y="101">Validación</text>
-  <text class="it l-en" x="482" y="101">Compare immunisation</text>
-  <text class="it l-es" x="482" y="101">Comparar inmunización</text>
-  <text class="it l-en" x="640" y="101">Context</text>
-  <text class="it l-es" x="640" y="101">Contexto</text>
-  <line class="ax" x1="300" y1="116" x2="866" y2="116"/>
+  <rect class="pn" x="290" y="48" width="590" height="392" rx="10"/>
+  <text class="h l-en" x="306" y="72">Instrument: one row of six groups</text>
+  <text class="h l-es" x="306" y="72">Instrumento: una fila de seis grupos</text>
+  <rect class="on" x="306" y="84" width="88" height="30" rx="6"/>
+  <text class="it l-en" x="318" y="104">Model</text>
+  <text class="it l-es" x="318" y="104">Modelo</text>
+  <rect class="bx" x="400" y="84" width="88" height="30" rx="6"/>
+  <text class="it l-en" x="410" y="104">Validation</text>
+  <text class="it l-es" x="410" y="104">Validación</text>
+  <rect class="bx" x="494" y="84" width="88" height="30" rx="6"/>
+  <text class="it l-en" x="508" y="104">Impact</text>
+  <text class="it l-es" x="506" y="104">Impacto</text>
+  <rect class="bx" x="588" y="84" width="88" height="30" rx="6"/>
+  <text class="it l-en" x="600" y="104">Findings</text>
+  <text class="it l-es" x="598" y="104">Hallazgos</text>
+  <rect class="bx" x="682" y="84" width="88" height="30" rx="6"/>
+  <text class="it l-en" x="694" y="104">Variants</text>
+  <text class="it l-es" x="692" y="104">Variantes</text>
+  <rect class="bx" x="776" y="84" width="88" height="30" rx="6"/>
+  <text class="it l-en" x="790" y="104">Context</text>
+  <text class="it l-es" x="788" y="104">Contexto</text>
 
-  <rect class="bx" x="300" y="126" width="566" height="300" rx="8"/>
-  <line class="ax" x1="340" y1="390" x2="850" y2="390"/>
-  <line class="ax" x1="340" y1="150" x2="340" y2="390"/>
-  <path class="s" d="M340,160 C440,162 500,190 560,280 S700,372 850,376"/>
-  <path class="r" d="M340,388 C450,386 520,350 580,260 S720,180 850,176"/>
-  <path class="i" d="M340,388 C420,386 470,330 520,300 S600,350 700,384 L850,388"/>
-  <path class="rp" d="M340,388 C420,385 470,328 520,298 S600,348 700,383 L850,388"/>
-  <text class="sub l-en" x="560" y="146">solid: the live run; dashed: the committed replay</text>
-  <text class="sub l-es" x="560" y="146">continua: corrida en vivo; segmentada: reproducción comprometida</text>
-  <text class="sub l-en" x="560" y="408">day</text>
-  <text class="sub l-es" x="560" y="408">día</text>
-  <text class="sub l-en" x="300" y="420">The open view takes the height the tab row leaves.</text>
-  <text class="sub l-es" x="300" y="420">La vista abierta toma la altura que deja la fila de pestañas.</text>
+  <rect class="bx" x="306" y="128" width="558" height="296" rx="8"/>
+  <text class="it l-en" x="322" y="150">Model: the ladder (P0 anchors, P1 scorecard, P2 L1 and PLTR, P3 EBM, P4 monotone GBM, P5 TabPFN)</text>
+  <text class="it l-es" x="322" y="150">Modelo: la escalera (anclas P0, scorecard P1, L1 y PLTR P2, EBM P3, GBM monótono P4, TabPFN P5)</text>
+  <text class="sub l-en" x="322" y="168">with each rung's engine, licence, AUC and interval; the points table; EBM shapes; GBM partial dependence</text>
+  <text class="sub l-es" x="322" y="168">con el motor, la licencia, la AUC y su intervalo de cada peldaño; la tabla de puntos; formas EBM; dependencia parcial GBM</text>
+  <text class="it l-en" x="322" y="198">Validation: the battery, test by rung; calibration by grade; discrimination; stability; by group</text>
+  <text class="it l-es" x="322" y="198">Validación: la batería, prueba por peldaño; calibración por grado; discriminación; estabilidad; por grupo</text>
+  <text class="it l-en" x="322" y="228">Impact: champion and challenger at the same approval rate; the swap sets at 80%</text>
+  <text class="it l-es" x="322" y="228">Impacto: campeón y retador con la misma tasa de aprobación; los conjuntos de intercambio al 80%</text>
+  <text class="it l-en" x="322" y="258">Findings: S1 to S4, each with its evidence: a test, a contract rule or a stated limit</text>
+  <text class="it l-es" x="322" y="258">Hallazgos: S1 a S4, cada uno con su evidencia: una prueba, una regla del contrato o un límite declarado</text>
+  <text class="it l-en" x="322" y="288">Variants: the regimes side by side (drift, prior shift, label noise, small sample, the German twin)</text>
+  <text class="it l-es" x="322" y="288">Variantes: los regímenes lado a lado (deriva, cambio de prior, ruido de etiqueta, muestra pequeña, el gemelo alemán)</text>
+  <text class="it l-en" x="322" y="318">Context: the question, the sources and their licences, the split, the write-up</text>
+  <text class="it l-es" x="322" y="318">Contexto: la pregunta, las fuentes y sus licencias, la partición, el desarrollo</text>
+  <path class="ln" d="M322 352 h520"/>
+  <text class="sub l-en" x="322" y="376">Every view carries its lane (live or replay) and its data (real or synthetic),</text>
+  <text class="sub l-es" x="322" y="376">Cada vista lleva su carril (en vivo o reproducción) y sus datos (reales o sintéticos),</text>
+  <text class="sub l-en" x="322" y="392">and the key of the selection it shows: a view behind the rail says so.</text>
+  <text class="sub l-es" x="322" y="392">y la clave de la selección que muestra: una vista atrasada respecto del panel lo indica.</text>
 </svg>
