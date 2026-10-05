@@ -11,6 +11,16 @@ import { Pending } from './Pending';
 /** Money in millions, so a sum of exposures reads at a glance. */
 const MILLION = 1e6;
 
+/** The pipeline's rows at 80% approval, in the champion-then-challenger pairs the table shows. */
+const PAIRS: Array<{ a: string; b: string; label: { en: string; es: string } }> = [
+  { a: 'bad_rate_champion', b: 'bad_rate_challenger', label: { en: 'Bad rate', es: 'Tasa de malos' } },
+  { a: 'el_champion', b: 'el_challenger', label: { en: 'Expected loss', es: 'Pérdida esperada' } },
+  { a: 'loss_champion', b: 'loss_challenger', label: { en: 'Realised loss', es: 'Pérdida realizada' } },
+  { a: 'swap_out', b: 'swap_in', label: { en: 'Approved by this model only', es: 'Aprobados solo por este modelo' } },
+  { a: 'swap_out_bad_rate', b: 'swap_in_bad_rate', label: { en: 'Their bad rate', es: 'Su tasa de malos' } },
+  { a: 'min_cost_champion', b: 'min_cost_challenger', label: { en: 'Least cost (German matrix)', es: 'Costo mínimo (matriz alemana)' } },
+];
+
 export function ImpactView({ sel }: { sel: Selection | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
@@ -20,7 +30,8 @@ export function ImpactView({ sel }: { sel: Selection | null }) {
     const x = grid(0.3, 1, 71);
     const c = v.outputs.rungs[CHAMPION].cutoff;
     const h = v.outputs.rungs[sel.challenger].cutoff;
-    return { x, champion: interp(c.approval_rate, c.bad_rate, x), challenger: interp(h.approval_rate, h.bad_rate, x) };
+    const el = (cut: typeof c) => interp(cut.approval_rate, cut.pd_ead, x).map((y) => (y === null ? null : (y * sel.lgd) / MILLION));
+    return { x, champion: interp(c.approval_rate, c.bad_rate, x), challenger: interp(h.approval_rate, h.bad_rate, x), elChampion: el(c), elChallenger: el(h) };
   }, [sel]);
   if (!sel || !curves) return <Pending />;
   const v = sel.data.variant;
@@ -32,25 +43,12 @@ export function ImpactView({ sel }: { sel: Selection | null }) {
   const im = v.impact;
   const currency = im.el_champion?.unit ?? '';
   const money = { en: `million ${currency}`, es: `millones de ${currency}` };
-  const pairs: Array<[string, string]> = [
-    ['bad_rate_champion', 'bad_rate_challenger'],
-    ['el_champion', 'el_challenger'],
-    ['loss_champion', 'loss_challenger'],
-    ['swap_out', 'swap_in'],
-    ['swap_out_bad_rate', 'swap_in_bad_rate'],
-    ['min_cost_champion', 'min_cost_challenger'],
-  ];
   const fmt = (key: string) => {
     const it = im[key];
     if (!it) return '-';
     if (it.unit === 'fraction') return formatNumber(it.value, lang, { percent: true, decimals: 1 });
     if (it.unit === currency) return formatNumber(it.value !== null ? it.value / MILLION : null, lang, { digits: 3 });
     return formatNumber(it.value, lang, { digits: 4 });
-  };
-  const unitOf = (key: string) => {
-    const u = im[key]?.unit;
-    if (!u || u === 'fraction') return '';
-    return u === currency ? ` (${pick(money, lang)})` : ` (${u})`;
   };
   return (
     <>
@@ -128,7 +126,7 @@ export function ImpactView({ sel }: { sel: Selection | null }) {
             lane={REPLAY}
             provenance={prov}
             dataKey={stateKey}
-            note={{ en: 'Swap sets: the applicants one model approves and the other rejects. Ties broken by the raw score, so both approve the same count.', es: 'Conjuntos de intercambio: los solicitantes que un modelo aprueba y el otro rechaza. Empates resueltos por el puntaje crudo, así ambos aprueban la misma cantidad.' }}
+            note={{ en: `Swap sets: the applicants one model approves and the other rejects; ties broken by the raw score, so both approve the same count. Losses at LGD 50%, in ${pick(money, 'en')}.`, es: `Conjuntos de intercambio: los solicitantes que un modelo aprueba y el otro rechaza; empates resueltos por el puntaje crudo, así ambos aprueban la misma cantidad. Pérdidas con LGD 50%, en ${pick(money, 'es')}.` }}
           >
             <div className="ct-scroll">
               <table className="caos-table">
@@ -140,22 +138,38 @@ export function ImpactView({ sel }: { sel: Selection | null }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {pairs
-                    .filter(([a]) => im[a])
-                    .map(([a, b]) => (
-                      <tr key={a}>
-                        <td className="caos-col-text">
-                          {pick(im[a].label, lang).replace(/ \(LGD 50%\)/, '').replace(/, (champion|campeón)$/, '')}
-                          {unitOf(a)}
-                        </td>
-                        <td>{fmt(a)}</td>
-                        <td>{fmt(b)}</td>
-                      </tr>
-                    ))}
+                  {PAIRS.filter((r) => im[r.a]).map((r) => (
+                    <tr key={r.a} title={pick(im[r.a].label, lang)}>
+                      <td className="caos-col-text">{pick(r.label, lang)}</td>
+                      <td>{fmt(r.a)}</td>
+                      <td>{fmt(r.b)}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
           </PlotCard>
+          <div className="ct-tall-only">
+            <PlotCard
+              fill
+              title={{ en: 'Expected loss against approval rate', es: 'Pérdida esperada contra tasa de aprobación' }}
+              lane="live"
+              provenance={prov}
+              dataKey={stateKey}
+              note={{ en: `LGD from the rail (${formatNumber(sel.lgd, 'en', { percent: true, decimals: 0 })}) times the sum of PD x EAD of the approved, in ${pick(money, 'en')}.`, es: `LGD del panel (${formatNumber(sel.lgd, 'es', { percent: true, decimals: 0 })}) por la suma de PD x EAD de los aprobados, en ${pick(money, 'es')}.` }}
+            >
+              <UPlotChart
+                height="fill"
+                x={{ values: curves.x, label: { en: 'Approval rate', es: 'Tasa de aprobación' }, format: { percent: true, decimals: 0 } }}
+                y={{ label: { en: 'Expected loss', es: 'Pérdida esperada' }, unit: money, format: { digits: 3 } }}
+                series={[
+                  { label: names[0], values: curves.elChampion, color: '--color-accent', width: 2 },
+                  { label: names[1], values: curves.elChallenger, color: '--color-magenta', width: 2 },
+                ]}
+                marks={[{ x: sel.approval, label: { en: 'rail', es: 'panel' } }]}
+              />
+            </PlotCard>
+          </div>
         </div>
       </div>
     </>

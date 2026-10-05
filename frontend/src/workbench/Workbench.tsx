@@ -23,12 +23,31 @@ import { ebmLogit, scoreScorecard, sigmoid } from '../engine/scorer';
 import { ContextView } from './ContextView';
 import { FindingsView } from './FindingsView';
 import { ImpactView } from './ImpactView';
-import { CHAMPION, challengers, defaultChallenger, provenanceOf, shortName, test, type Selection } from './model';
+import { atApproval, CHAMPION, challengers, defaultChallenger, provenanceOf, rung, shortName, test, type Selection } from './model';
 import { ModelGroup } from './ModelViews';
 import { ValidationGroup } from './ValidationViews';
 import { VariantsView } from './VariantsView';
 
 const LGD_FLOOR = 0.5; // CRE32.58: the Basel III LGD input floor for QRRE, the default assumption
+
+function DecisionReadout({ sel }: { sel: Selection | null }) {
+  const stateKey = useWorkbenchState()?.stateKey;
+  const v = sel?.data.variant;
+  const champ = v && sel ? atApproval(v.outputs.rungs[CHAMPION].cutoff, sel.approval) : null;
+  const chall = v && sel ? atApproval(v.outputs.rungs[sel.challenger]?.cutoff ?? v.outputs.rungs[CHAMPION].cutoff, sel.approval) : null;
+  return (
+    <Readout
+      title={{ en: 'Bad rate of the approved', es: 'Tasa de malos aprobados' }}
+      lane="live"
+      provenance={provenanceOf(v?.provenance.truth_status)}
+      dataKey={stateKey}
+      items={[
+        { label: shortName(v ? rung(v, CHAMPION) : undefined, CHAMPION), value: champ?.bad ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'From the committed cut-off curve; the Impact group draws it.', es: 'Desde la curva de corte comprometida; el grupo Impacto la dibuja.' } },
+        { label: shortName(v && sel ? rung(v, sel.challenger) : undefined, sel?.challenger ?? ''), value: chall?.bad ?? null, unitless: true, format: { percent: true, decimals: 2 } },
+      ]}
+    />
+  );
+}
 
 function PolicyReadout({ sel }: { sel: Selection | null }) {
   const stateKey = useWorkbenchState()?.stateKey;
@@ -52,10 +71,10 @@ function PolicyReadout({ sel }: { sel: Selection | null }) {
       provenance={provenanceOf(sel?.data.variant.provenance.truth_status)}
       dataKey={stateKey}
       items={[
-        { label: { en: 'Red lights, champion and challenger', es: 'Luces rojas, campeón y retador' }, value: counts?.red ?? null, unit: { en: 'tests', es: 'pruebas' } },
+        { label: { en: 'Red lights', es: 'Luces rojas' }, value: counts?.red ?? null, unit: { en: 'tests', es: 'pruebas' }, hint: { en: 'Of the champion and the challenger.', es: 'Del campeón y del retador.' } },
         { label: { en: 'Amber lights', es: 'Luces ámbar' }, value: counts?.amber ?? null, unit: { en: 'tests', es: 'pruebas' } },
         {
-          label: { en: 'Jeffreys test of the champion (portfolio)', es: 'Prueba de Jeffreys del campeón (cartera)' },
+          label: { en: 'Jeffreys, champion', es: 'Jeffreys, campeón' },
           text: counts?.jeffreys ? LIGHT_TEXT[counts.jeffreys] : undefined,
           unitless: true,
           tone: counts?.jeffreys ? LIGHT_TONE[counts.jeffreys] : 'neutral',
@@ -75,10 +94,10 @@ function ApplicantReadout({ sel }: { sel: Selection | null }) {
       provenance={provenanceOf(sel?.data.variant.provenance.truth_status)}
       dataKey={stateKey}
       items={[
-        { label: { en: 'Scorecard score', es: 'Puntaje de la scorecard' }, value: live?.score ?? null, unit: { en: 'points', es: 'puntos' }, format: { decimals: 0 } },
+        { label: { en: 'Score', es: 'Puntaje' }, value: live?.score ?? null, unit: { en: 'points', es: 'puntos' }, format: { decimals: 0 }, hint: { en: 'The scorecard, from the committed points table.', es: 'La scorecard, desde la tabla de puntos comprometida.' } },
         { label: { en: 'PD, scorecard', es: 'PD, scorecard' }, value: live?.pdScorecard ?? null, unitless: true, format: { percent: true, decimals: 2 } },
-        { label: { en: 'PD, EBM (before calibration)', es: 'PD, EBM (antes de calibrar)' }, value: live?.pdEbm ?? null, unitless: true, format: { percent: true, decimals: 2 } },
-        { label: { en: 'Observed outcome', es: 'Resultado observado' }, text: live ? (live.defaulted ? { en: 'defaulted', es: 'incumplió' } : { en: 'did not default', es: 'no incumplió' }) : undefined, unitless: true },
+        { label: { en: 'PD, EBM (raw)', es: 'PD, EBM (cruda)' }, value: live?.pdEbm ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'Before its calibration map.', es: 'Antes de su mapa de calibración.' } },
+        { label: { en: 'Outcome', es: 'Resultado' }, text: live ? (live.defaulted ? { en: 'defaulted', es: 'incumplió' } : { en: 'did not default', es: 'no incumplió' }) : undefined, unitless: true },
       ]}
     />
   );
@@ -129,7 +148,7 @@ export function Workbench() {
   const variants = data
     ? data.manifest.artifacts
         .filter((a) => a.role === 'variant')
-        .map((a) => ({ id: a.variant_id, label: a.short_title, note: a.regime, lane: 'replay' as const }))
+        .map((a) => ({ id: a.variant_id, label: a.short_title, note: a.title, lane: 'replay' as const }))
     : [];
   const activeVariant = data?.variant.variant_id ?? '';
   const moved = alphas.amber !== COMMITTED.amber || alphas.red !== COMMITTED.red;
@@ -144,13 +163,18 @@ export function Workbench() {
           <ChipGroup
             id="challenger"
             label={{ en: 'Challenger', es: 'Retador' }}
-            options={options.map((o) => ({ id: o.id, label: shortName(o, o.id), hint: o.title }))}
+            options={options.map((o) => {
+              const name = shortName(o, o.id);
+              const bare = (t: string) => t.replace(/^P\d[a-z]?\s+/, '');
+              return { id: o.id, label: { en: bare(name.en), es: bare(name.es) }, hint: o.title };
+            })}
             value={chosen ?? ''}
             onChange={setChallenger}
           />
+          <div className="ct-pair">
           <Knob
             id="approval"
-            label={{ en: 'Approval rate', es: 'Tasa de aprobación' }}
+            label={{ en: 'Approval', es: 'Aprobación' }}
             hint={{ en: 'The share of applicants approved, lowest PD first.', es: 'La fracción de solicitantes aprobados, de menor PD a mayor.' }}
             value={approval}
             min={0.5}
@@ -161,8 +185,8 @@ export function Workbench() {
           />
           <Knob
             id="lgd"
-            label={{ en: 'Loss given default', es: 'Pérdida dado el incumplimiento' }}
-            hint={{ en: 'Assumed for every approved account; 50% is the Basel III input floor for QRRE (CRE32.58).', es: 'Supuesta para toda cuenta aprobada; 50% es el piso de Basilea III para QRRE (CRE32.58).' }}
+            label={{ en: 'LGD', es: 'LGD' }}
+            hint={{ en: 'Loss given default, assumed for every approved account; 50% is the Basel III input floor for QRRE (CRE32.58).', es: 'Pérdida dado el incumplimiento, supuesta para toda cuenta aprobada; 50% es el piso de Basilea III para QRRE (CRE32.58).' }}
             value={lgd}
             min={0.1}
             max={1}
@@ -170,6 +194,8 @@ export function Workbench() {
             format={{ percent: true, decimals: 0 }}
             onChange={setLgd}
           />
+          </div>
+          <DecisionReadout sel={sel} />
         </>
       ),
     },
@@ -178,9 +204,10 @@ export function Workbench() {
       label: { en: 'Policy', es: 'Política' },
       content: (
         <>
+          <div className="ct-pair">
           <Knob
             id="alpha-amber"
-            label={{ en: 'Amber below p =', es: 'Ámbar bajo p =' }}
+            label={{ en: 'Amber below p', es: 'Ámbar bajo p' }}
             hint={{ en: 'A policy choice, not a regulatory one: the ECB 2019 instructions set no pass or fail thresholds.', es: 'Una elección de política, no regulatoria: las instrucciones del BCE de 2019 no fijan umbrales de aprobación.' }}
             value={alphas.amber}
             min={0.01}
@@ -191,7 +218,7 @@ export function Workbench() {
           />
           <Knob
             id="alpha-red"
-            label={{ en: 'Red below p =', es: 'Rojo bajo p =' }}
+            label={{ en: 'Red below p', es: 'Rojo bajo p' }}
             hint={{ en: 'Never above the amber threshold.', es: 'Nunca sobre el umbral ámbar.' }}
             value={alphas.red}
             min={0.001}
@@ -200,14 +227,20 @@ export function Workbench() {
             format={{ decimals: 3 }}
             onChange={(red) => setAlphas({ amber: Math.max(alphas.amber, red), red })}
           />
+          </div>
           <PolicyReadout sel={sel} />
+          {moved && (
+            <button type="button" className="ct-linkbutton" onClick={() => setAlphas(COMMITTED)}>
+              {pick({ en: 'Back to the committed policy', es: 'Volver a la política comprometida' }, lang)}
+            </button>
+          )}
         </>
       ),
     },
     {
       id: 'applicant',
       label: { en: 'Applicant', es: 'Solicitante' },
-      content: (
+      content: sample ? (
         <>
           <Knob
             id="applicant"
@@ -215,15 +248,15 @@ export function Workbench() {
             hint={{ en: 'One of the 50 holdout applicants scored live from the committed points table and EBM.', es: 'Uno de los 50 solicitantes de la muestra reservada puntuados en vivo con la tabla de puntos y el EBM comprometidos.' }}
             value={applicant + 1}
             min={1}
-            max={sample ? sample.ids.length : 1}
+            max={sample.ids.length}
             step={1}
             format={{ decimals: 0 }}
-            disabled={!sample}
             onChange={(n) => setApplicant(Math.round(n) - 1)}
           />
-          {!sample && <p className="caos-pending">{pick({ en: 'This variant resamples the holdout, so it carries no scored sample; pick the holdout or the German twin.', es: 'Esta variante remuestrea la muestra reservada, así que no trae muestra puntuada; elija la muestra reservada o el gemelo alemán.' }, lang)}</p>}
           <ApplicantReadout sel={sel} />
         </>
+      ) : (
+        <p className="ct-note">{pick({ en: 'This variant resamples the holdout, so it carries no scored applicants: pick Holdout or German.', es: 'Esta variante remuestrea la muestra reservada, así que no trae solicitantes puntuados: elija Reservada o Alemán.' }, lang)}</p>
       ),
     },
   ];
@@ -242,8 +275,6 @@ export function Workbench() {
         },
         layout: 'select',
         deepLink: true,
-        modifiedFromId: moved ? selected : null,
-        onResetToCanonical: () => setAlphas(COMMITTED),
       }}
       controls={{ challenger: chosen, amber: alphas.amber, red: alphas.red, approval, lgd, applicant }}
       variants={{ variants, activeId: activeVariant, onSelect: setVariantId, title: { en: 'Variant', es: 'Variante' }, lane: 'replay' }}

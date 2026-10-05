@@ -8,7 +8,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useMemo, type ReactElement } from 'react';
 import type { EbmExport, GbmDetails, ModelRecord, ScorecardDetails } from '../lib/contract.types';
 import { liveScores } from './Workbench';
-import { CHAMPION, REPLAY, extra, grid, interp, provenanceOf, rung, shortName, test, value, type Selection } from './model';
+import { CHAMPION, REPLAY, extra, grid, interp, provenanceOf, rung, shortName, test, unionPoints, value, type Selection } from './model';
 import { Pending } from './Pending';
 
 const PALETTE = ['--color-fg-subtle', '--color-accent', '--color-accent-2', '--color-magenta', '--color-good', '--color-warn', '--color-bad', '--color-fg'] as const;
@@ -53,7 +53,14 @@ export function LadderView({ sel }: { sel: Selection | null }) {
     }));
     return { x, series };
   }, [sel]);
-  if (!sel || !rows || !roc) return <Pending />;
+  const rel = useMemo(() => {
+    if (!sel) return null;
+    const v = sel.data.variant;
+    const ms = v.model.filter((m) => m.id !== 'P0-constant');
+    const u = unionPoints(ms.map((m) => ({ x: v.outputs.rungs[m.id].reliability.map((b) => b.pd), y: v.outputs.rungs[m.id].reliability.map((b) => b.dr) })));
+    return { x: u.x, series: ms.map((m, k) => ({ label: shortName(m, m.id), values: u.ys[k], color: PALETTE[(k + 1) % PALETTE.length], mode: 'points' as const })) };
+  }, [sel]);
+  if (!sel || !rows || !roc || !rel) return <Pending />;
   const prov = provenanceOf(sel.data.variant.provenance.truth_status);
   const f = (v: number | null, d = 3) => formatNumber(v, lang, { decimals: d });
   return (
@@ -97,6 +104,23 @@ export function LadderView({ sel }: { sel: Selection | null }) {
             </table>
           </div>
         </PlotCard>
+        <div className="ct-tall-only">
+          <PlotCard
+            fill
+            title={{ en: 'Calibration of every rung, by decile of its PD', es: 'Calibración de cada peldaño, por decil de su PD' }}
+            lane={REPLAY}
+            provenance={prov}
+            dataKey={stateKey}
+            note={{ en: 'Observed default rate against the mean PD of each decile; on the diagonal, calibrated.', es: 'Tasa observada contra la PD media de cada decil; sobre la diagonal, calibrado.' }}
+          >
+            <UPlotChart
+              height="fill"
+              x={{ values: rel.x, label: { en: 'Mean PD of the decile', es: 'PD media del decil' }, format: { percent: true, decimals: 0 } }}
+              y={{ label: { en: 'Observed default rate', es: 'Tasa de incumplimiento observada' }, format: { percent: true, decimals: 0 } }}
+              series={[{ label: { en: 'Perfect calibration', es: 'Calibración perfecta' }, values: rel.x, color: '--color-fg-faint', dash: [4, 4], width: 1 }, ...rel.series]}
+            />
+          </PlotCard>
+        </div>
       </div>
       <div className="ct-col ct-share-2">
         <PlotCard
@@ -174,7 +198,7 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
               <thead>
                 <tr>
                   <th>{pick({ en: 'Characteristic', es: 'Característica' }, lang)}</th>
-                  <th className="caos-col-text">{pick({ en: 'Bin', es: 'Tramo' }, lang)}</th>
+                  <th className="ct-text">{pick({ en: 'Bin', es: 'Tramo' }, lang)}</th>
                   <th className="ct-wide-only">{pick({ en: 'Count', es: 'Cantidad' }, lang)}</th>
                   <th>{pick({ en: 'Default rate', es: 'Tasa de incumplimiento' }, lang)}</th>
                   <th className="ct-wide-only">WoE</th>
@@ -190,7 +214,7 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
                     return (
                       <tr key={`${r.feature}-${r.row}`} data-current={here ? 'true' : undefined} className={here ? 'ct-current' : undefined}>
                         <td>{r.feature}</td>
-                        <td className="caos-col-text">{r.bin}</td>
+                        <td className="ct-text">{r.bin}</td>
                         <td className="ct-wide-only">{formatNumber(r.count, lang)}</td>
                         <td>{formatNumber(r.event_rate, lang, { percent: true, decimals: 1 })}</td>
                         <td className="ct-wide-only">{f(r.woe)}</td>
@@ -238,7 +262,29 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
               </tbody>
             </table>
           ) : (
-            <p className="caos-pending">{pick({ en: 'This variant carries no scored sample: pick the holdout or the German twin.', es: 'Esta variante no trae muestra puntuada: elija la muestra reservada o el gemelo alemán.' }, lang)}</p>
+            <>
+              <p className="ct-note">{pick({ en: 'This variant resamples the holdout, so it carries no scored applicants (pick Holdout or German); below, the characteristics by information value on the training slice.', es: 'Esta variante remuestrea la muestra reservada, así que no trae solicitantes puntuados (elija Reservada o Alemán); abajo, las características según su valor de información en el tramo de entrenamiento.' }, lang)}</p>
+              <table className="caos-table">
+                <thead>
+                  <tr>
+                    <th className="caos-col-text">{pick({ en: 'Characteristic', es: 'Característica' }, lang)}</th>
+                    <th>{pick({ en: 'Information value', es: 'Valor de información' }, lang)}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sc.features
+                    .map((f) => ({ f, iv: sc.iv[f] }))
+                    .sort((a, b) => b.iv - a.iv)
+                    .slice(0, 6)
+                    .map((r) => (
+                      <tr key={r.f}>
+                        <td className="caos-col-text">{r.f}</td>
+                        <td>{formatNumber(r.iv, lang, { decimals: 3 })}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </>
           )}
         </PlotCard>
         <PlotCard

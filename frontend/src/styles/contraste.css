@@ -69,3 +69,18 @@
 /* a verdict over a scrolling table, inside one filling card */
 .ct-stack { display: flex; flex-direction: column; gap: 0.5rem; height: 100%; min-height: 0; }
 .ct-stack > .ct-scroll { flex: 1 1 0; height: auto; }
+
+/* Below 900 px the shell stacks the row and the document scrolls: a wrapper is as tall as its cards (the row's
+   zero basis would collapse it, since the document gives the row no height) */
+@media (max-width: 900px) { .ct-col { flex: none; } }
+
+/* a view a tall screen has room for (a second drawing under a table); a short screen keeps the one it needs */
+.ct-tall-only { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+@media (max-height: 1099px) { .ct-tall-only { display: none; } }
+
+/* two knobs side by side in the rail, each with a one-line label (the hint carries the full name) */
+.ct-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; min-width: 0; }
+
+/* a text column that may be narrow (a bin label wraps at its space on a phone): left-aligned, wrapping, without the
+   shell's 16ch minimum of a text column */
+th.ct-text, td.ct-text { text-align: left; white-space: normal; }

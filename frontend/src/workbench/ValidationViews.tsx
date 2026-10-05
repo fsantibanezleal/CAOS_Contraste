@@ -181,6 +181,7 @@ export function CalibrationView({ sel }: { sel: Selection | null }) {
 
 /** ROC of the champion and the challenger, the DeLong test between them, and the score distributions. */
 export function DiscriminationView({ sel }: { sel: Selection | null }) {
+  const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
   const chart = useMemo(() => {
     if (!sel) return null;
@@ -220,6 +221,36 @@ export function DiscriminationView({ sel }: { sel: Selection | null }) {
               : { en: 'The champion is not compared with itself.', es: 'El campeón no se compara consigo mismo.' }
           }
         />
+        <table className="caos-table">
+          <thead>
+            <tr>
+              <th>{pick({ en: 'Held-out AUC', es: 'AUC fuera de muestra' }, lang)}</th>
+              <th>{pick(names[0], lang)}</th>
+              <th>{pick(names[1], lang)}</th>
+              <th>{pick({ en: 'Difference', es: 'Diferencia' }, lang)}</th>
+              <th>{pick({ en: 'DeLong p', es: 'p de DeLong' }, lang)}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{pick({ en: 'with the 95% interval', es: 'con el intervalo 95%' }, lang)}</td>
+              <td>
+                {formatNumber(value(test(v, 'disc.auc', CHAMPION)), lang, { decimals: 4 })}{' '}
+                <span className="ct-wide-only">
+                  ({formatNumber(extra(test(v, 'disc.auc', CHAMPION), 'ci95_low'), lang, { decimals: 3 })} - {formatNumber(extra(test(v, 'disc.auc', CHAMPION), 'ci95_high'), lang, { decimals: 3 })})
+                </span>
+              </td>
+              <td>
+                {formatNumber(value(test(v, 'disc.auc', sel.challenger)), lang, { decimals: 4 })}{' '}
+                <span className="ct-wide-only">
+                  ({formatNumber(extra(test(v, 'disc.auc', sel.challenger), 'ci95_low'), lang, { decimals: 3 })} - {formatNumber(extra(test(v, 'disc.auc', sel.challenger), 'ci95_high'), lang, { decimals: 3 })})
+                </span>
+              </td>
+              <td>{formatNumber(extra(dl, 'difference'), lang, { decimals: 4 })}</td>
+              <td>{dl ? formatNumber(dl.p_value, lang, { digits: 2 }) : '-'}</td>
+            </tr>
+          </tbody>
+        </table>
       </PlotCard>
       <div className="caos-views-row" data-views="2">
         <PlotCard fill title={{ en: 'ROC: champion and challenger', es: 'ROC: campeón y retador' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
@@ -270,79 +301,79 @@ export function StabilityView({ sel }: { sel: Selection | null }) {
   return (
     <div className="caos-views-row" data-views="2">
       <div className="ct-col ct-share-2">
-      <PlotCard
-        title={{ en: 'Population stability of the PD', es: 'Estabilidad poblacional de la PD' }}
-        lane="live"
-        provenance={prov}
-        dataKey={stateKey}
-        note={{ en: 'The light uses the chi-square benchmark of Yurdakul and Naranjo (2020): PSI > (1/n + 1/m) chi2(1 - alpha, B - 1). The bands 0.10 and 0.25 are a convention with no error control.', es: 'La luz usa el umbral chi-cuadrado de Yurdakul y Naranjo (2020): PSI > (1/n + 1/m) chi2(1 - alfa, B - 1). Las bandas 0,10 y 0,25 son una convención sin control de error.' }}
-      >
-        <table className="caos-table">
-          <thead>
-            <tr>
-              <th>{pick({ en: 'Rung', es: 'Peldaño' }, lang)}</th>
-              <th>PSI</th>
-              <th className="ct-room-only">{pick({ en: 'Benchmark at 5%', es: 'Umbral al 5%' }, lang)}</th>
-              <th className="ct-room-only">{pick({ en: 'Conventional band', es: 'Banda convencional' }, lang)}</th>
-              <th>{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {psi.map(({ m, t }) => (
-              <tr key={m.id}>
-                <td title={pick(m.title, lang)}>{pick(shortName(m, m.id), lang)}</td>
-                <td>{formatNumber(value(t), lang, { decimals: 4 })}</td>
-                <td className="ct-room-only">{formatNumber(extra(t, 'benchmark_05'), lang, { decimals: 4 })}</td>
-                <td className="ct-room-only">{String(t?.extras?.band ?? '')}</td>
-                <LightCell row={t} alphas={sel.alphas} />
+        <PlotCard
+          title={{ en: 'Population stability of the PD', es: 'Estabilidad poblacional de la PD' }}
+          lane="live"
+          provenance={prov}
+          dataKey={stateKey}
+          note={{ en: 'The light uses the chi-square benchmark of Yurdakul and Naranjo (2020): PSI > (1/n + 1/m) chi2(1 - alpha, B - 1). The bands 0.10 and 0.25 are a convention with no error control.', es: 'La luz usa el umbral chi-cuadrado de Yurdakul y Naranjo (2020): PSI > (1/n + 1/m) chi2(1 - alfa, B - 1). Las bandas 0,10 y 0,25 son una convención sin control de error.' }}
+        >
+          <table className="caos-table">
+            <thead>
+              <tr>
+                <th>{pick({ en: 'Rung', es: 'Peldaño' }, lang)}</th>
+                <th>PSI</th>
+                <th className="ct-room-only">{pick({ en: 'Benchmark at 5%', es: 'Umbral al 5%' }, lang)}</th>
+                <th className="ct-room-only">{pick({ en: 'Conventional band', es: 'Banda convencional' }, lang)}</th>
+                <th>{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </PlotCard>
-          <PlotCard fill title={{ en: 'Characteristic stability of every input', es: 'Estabilidad de cada característica' }} lane="live" provenance={prov} dataKey={stateKey}>
-            <div className="ct-scroll">
-              <table className="caos-table">
-                <thead>
-                  <tr>
-                    <th className="caos-col-text">{pick({ en: 'Characteristic', es: 'Característica' }, lang)}</th>
-                    <th>CSI</th>
-                    <th>{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
+            </thead>
+            <tbody>
+              {psi.map(({ m, t }) => (
+                <tr key={m.id}>
+                  <td title={pick(m.title, lang)}>{pick(shortName(m, m.id), lang)}</td>
+                  <td>{formatNumber(value(t), lang, { decimals: 4 })}</td>
+                  <td className="ct-room-only">{formatNumber(extra(t, 'benchmark_05'), lang, { decimals: 4 })}</td>
+                  <td className="ct-room-only">{String(t?.extras?.band ?? '')}</td>
+                  <LightCell row={t} alphas={sel.alphas} />
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </PlotCard>
+        <PlotCard fill title={{ en: 'Characteristic stability of every input', es: 'Estabilidad de cada característica' }} lane="live" provenance={prov} dataKey={stateKey}>
+          <div className="ct-scroll">
+            <table className="caos-table">
+              <thead>
+                <tr>
+                  <th className="caos-col-text">{pick({ en: 'Characteristic', es: 'Característica' }, lang)}</th>
+                  <th>CSI</th>
+                  <th>{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {csi.map((t) => (
+                  <tr key={t.segment ?? t.inputs_hash}>
+                    <td className="caos-col-text">{(t.segment ?? '').replace('characteristic:', '')}</td>
+                    <td>{formatNumber(value(t), lang, { decimals: 4 })}</td>
+                    <LightCell row={t} alphas={sel.alphas} />
                   </tr>
-                </thead>
-                <tbody>
-                  {csi.map((t) => (
-                    <tr key={t.segment ?? t.inputs_hash}>
-                      <td className="caos-col-text">{(t.segment ?? '').replace('characteristic:', '')}</td>
-                      <td>{formatNumber(value(t), lang, { decimals: 4 })}</td>
-                      <LightCell row={t} alphas={sel.alphas} />
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </PlotCard>
-        </div>
-        <div className="ct-col ct-share-3">
-          <PlotCard
-            fill
-            title={{ en: 'Where the PD distribution moved', es: 'Dónde se movió la distribución de la PD' }}
-            lane={REPLAY}
-            provenance={prov}
-            dataKey={stateKey}
-            note={{ en: "Each decile's contribution to the PSI, on the training slice's PD deciles; the PSI is their sum.", es: 'La contribución de cada decil al PSI, sobre los deciles de PD del tramo de entrenamiento; el PSI es su suma.' }}
-          >
-            <UPlotChart
-              height="fill"
-              x={{ values: x, label: { en: 'Training decile of the PD (1 = lowest)', es: 'Decil de PD de entrenamiento (1 = el más bajo)' }, format: { decimals: 0 } }}
-              y={{ label: { en: 'PSI contribution', es: 'Contribución al PSI' }, format: { decimals: 5 } }}
-              series={[
-                { label: shortName(rung(v, CHAMPION), CHAMPION), values: champ, color: '--color-accent', width: 2 },
-                { label: shortName(rung(v, sel.challenger), sel.challenger), values: chall, color: '--color-magenta', width: 2 },
-              ]}
-            />
-          </PlotCard>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </PlotCard>
+      </div>
+      <div className="ct-col ct-share-3">
+        <PlotCard
+          fill
+          title={{ en: 'Where the PD distribution moved', es: 'Dónde se movió la distribución de la PD' }}
+          lane={REPLAY}
+          provenance={prov}
+          dataKey={stateKey}
+          note={{ en: "Each decile's contribution to the PSI, on the training slice's PD deciles; the PSI is their sum.", es: 'La contribución de cada decil al PSI, sobre los deciles de PD del tramo de entrenamiento; el PSI es su suma.' }}
+        >
+          <UPlotChart
+            height="fill"
+            x={{ values: x, label: { en: 'Training decile of the PD (1 = lowest)', es: 'Decil de PD de entrenamiento (1 = el más bajo)' }, format: { decimals: 0 } }}
+            y={{ label: { en: 'PSI contribution', es: 'Contribución al PSI' }, format: { decimals: 5 } }}
+            series={[
+              { label: shortName(rung(v, CHAMPION), CHAMPION), values: champ, color: '--color-accent', width: 2 },
+              { label: shortName(rung(v, sel.challenger), sel.challenger), values: chall, color: '--color-magenta', width: 2 },
+            ]}
+          />
+        </PlotCard>
+      </div>
     </div>
   );
 }
