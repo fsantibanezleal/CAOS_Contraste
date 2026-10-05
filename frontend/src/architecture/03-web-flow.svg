@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" class="arch-svg" role="img" aria-label="How the web loads a case and keeps every view on the current selection">
+  <!-- Hand-authored. Every colour is a shell token; every label is written twice (l-en, l-es) (ADR-0058). -->
+  <style>
+    .arch-svg text { font-family: var(--font-sans); }
+    .arch-svg .mono { font-family: var(--font-mono); font-size: 10.5px; fill: var(--color-fg); }
+    .arch-svg .pn { fill: var(--color-surface); stroke: var(--color-border); stroke-width: 1.2; }
+    .arch-svg .bx { fill: var(--color-surface-2); stroke: var(--color-border); stroke-width: 1; }
+    .arch-svg .on { fill: var(--color-accent-soft); stroke: var(--color-accent); stroke-width: 1.2; }
+    .arch-svg .ttl { fill: var(--color-fg); font-size: 15px; font-weight: 700; }
+    .arch-svg .h { fill: var(--color-fg); font-size: 12px; font-weight: 700; }
+    .arch-svg .it { fill: var(--color-fg); font-size: 11px; }
+    .arch-svg .sub { fill: var(--color-fg-subtle); font-size: 10.5px; }
+    .arch-svg .ar { stroke: var(--color-accent); stroke-width: 1.8; fill: none; marker-end: url(#a3); }
+    .arch-svg .tip { fill: var(--color-accent); }
+  </style>
+  <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tip" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+
+  <text class="ttl l-en" x="20" y="30">The web: from the index to a view, and the gate that walks it</text>
+  <text class="ttl l-es" x="20" y="30">La web: del índice a una vista, y la compuerta que la recorre</text>
+
+  <rect class="bx" x="20" y="60" width="200" height="74" rx="8"/>
+  <text class="mono" x="32" y="82">manifests/index.json</text>
+  <text class="sub l-en" x="32" y="102">the cases by category, the case</text>
+  <text class="sub l-es" x="32" y="102">los casos por categoría, el caso</text>
+  <text class="sub l-en" x="32" y="118">the App opens on, the contract files</text>
+  <text class="sub l-es" x="32" y="118">en que abre la App, los contratos</text>
+  <path class="ar" d="M222 97 H262"/>
+  <rect class="bx" x="266" y="60" width="200" height="74" rx="8"/>
+  <text class="mono" x="278" y="82">manifests/C01.json</text>
+  <text class="sub l-en" x="278" y="102">question, sources and licences,</text>
+  <text class="sub l-es" x="278" y="102">pregunta, fuentes y licencias,</text>
+  <text class="sub l-en" x="278" y="118">variants, expected ranges</text>
+  <text class="sub l-es" x="278" y="118">variantes, rangos esperados</text>
+  <path class="ar" d="M468 97 H508"/>
+  <rect class="on" x="512" y="52" width="368" height="92" rx="8"/>
+  <text class="mono" x="524" y="74">C01/models-taiwan.json, C01/holdout.json ...</text>
+  <text class="sub l-en" x="524" y="94">a models artifact per fit (points table, EBM, PDP);</text>
+  <text class="sub l-es" x="524" y="94">un artefacto de modelos por ajuste (puntos, EBM, PDP);</text>
+  <text class="sub l-en" x="524" y="110">a variant artifact per regime (outputs, TestResult rows,</text>
+  <text class="sub l-es" x="524" y="110">un artefacto por régimen (salidas, filas TestResult,</text>
+  <text class="sub l-en" x="524" y="126">impact, findings, provenance), each fetched once</text>
+  <text class="sub l-es" x="524" y="126">impacto, hallazgos, procedencia), pedido una vez</text>
+
+  <path class="ar" d="M696 146 V178"/>
+  <rect class="pn" x="20" y="182" width="860" height="122" rx="10"/>
+  <text class="h l-en" x="36" y="206">The selection and its key</text>
+  <text class="h l-es" x="36" y="206">La selección y su clave</text>
+  <text class="it l-en" x="36" y="228">case + variant + challenger + policy thresholds + approval rate + LGD + applicant = the state key</text>
+  <text class="it l-es" x="36" y="228">caso + variante + retador + umbrales de política + tasa de aprobación + LGD + solicitante = la clave de estado</text>
+  <text class="sub l-en" x="36" y="248">Every PlotCard and Readout is drawn for a key; when the rail moves and a view has not caught up, it shows itself stale.</text>
+  <text class="sub l-es" x="36" y="248">Cada PlotCard y Readout se dibuja para una clave; cuando el panel cambia y una vista no lo alcanza, se muestra desactualizada.</text>
+  <text class="sub l-en" x="36" y="266">Live computations (scores, lights, the decision) read only the committed artifacts, so they are reproducible.</text>
+  <text class="sub l-es" x="36" y="266">Los cálculos en vivo (puntajes, luces, la decisión) leen solo los artefactos comprometidos, así son reproducibles.</text>
+  <text class="sub l-en" x="36" y="284">Parity tests hold them to the pipeline: points and scores exactly, PDs and logits within 1e-9.</text>
+  <text class="sub l-es" x="36" y="284">Las pruebas de paridad los sujetan al pipeline: puntos y puntajes exactos, PD y logits dentro de 1e-9.</text>
+
+  <rect class="bx" x="20" y="322" width="860" height="118" rx="10"/>
+  <text class="h l-en" x="36" y="346">Before any deploy: the measured gate</text>
+  <text class="h l-es" x="36" y="346">Antes de cualquier despliegue: la compuerta medida</text>
+  <text class="sub l-en" x="36" y="366">Serves the build as GitHub Pages would and walks every route, group, sub-tab, case and variant at five sizes,</text>
+  <text class="sub l-es" x="36" y="366">Sirve la compilación como GitHub Pages y recorre cada ruta, grupo, sub-pestaña, caso y variante en cinco tamaños,</text>
+  <text class="sub l-en" x="36" y="382">both themes and both languages; fails on an error, a dead link, a view out of reach, a blank or small drawing,</text>
+  <text class="sub l-es" x="36" y="382">ambos temas e idiomas; falla ante un error, un enlace muerto, una vista inalcanzable, un dibujo vacío o pequeño,</text>
+  <text class="sub l-en" x="36" y="398">a loop at rest, or a control that changes no view's key.</text>
+  <text class="sub l-es" x="36" y="398">un ciclo en reposo, o un control que no cambia la clave de ninguna vista.</text>
+</svg>

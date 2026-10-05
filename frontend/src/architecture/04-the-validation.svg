@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" class="arch-svg" role="img" aria-label="The validation: from the ladder to the battery, the findings and the impact">
+  <!-- Hand-authored. Every colour is a shell token; every label is written twice (l-en, l-es) (ADR-0058). -->
+  <style>
+    .arch-svg text { font-family: var(--font-sans); }
+    .arch-svg .pn { fill: var(--color-surface); stroke: var(--color-border); stroke-width: 1.2; }
+    .arch-svg .bx { fill: var(--color-surface-2); stroke: var(--color-border); stroke-width: 1; }
+    .arch-svg .on { fill: var(--color-accent-soft); stroke: var(--color-accent); stroke-width: 1.2; }
+    .arch-svg .ttl { fill: var(--color-fg); font-size: 15px; font-weight: 700; }
+    .arch-svg .h { fill: var(--color-fg); font-size: 12px; font-weight: 700; }
+    .arch-svg .it { fill: var(--color-fg); font-size: 11px; }
+    .arch-svg .sub { fill: var(--color-fg-subtle); font-size: 10.5px; }
+    .arch-svg .good { fill: var(--color-good); font-size: 10.5px; font-weight: 600; }
+    .arch-svg .warn { fill: var(--color-warn); font-size: 10.5px; font-weight: 600; }
+    .arch-svg .bad { fill: var(--color-bad); font-size: 10.5px; font-weight: 600; }
+    .arch-svg .ar { stroke: var(--color-accent); stroke-width: 1.8; fill: none; marker-end: url(#a4); }
+    .arch-svg .tip { fill: var(--color-accent); }
+  </style>
+  <defs><marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tip" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+
+  <text class="ttl l-en" x="20" y="30">The validation: what a validator and a supervisor would run</text>
+  <text class="ttl l-es" x="20" y="30">La validación: lo que correrían un validador y un supervisor</text>
+
+  <rect class="pn" x="20" y="50" width="200" height="390" rx="10"/>
+  <text class="h l-en" x="34" y="74">The ladder</text>
+  <text class="h l-es" x="34" y="74">La escalera</text>
+  <text class="it" x="34" y="100">P0</text>
+  <text class="sub l-en" x="62" y="100">constant, one variable</text>
+  <text class="sub l-es" x="62" y="100">constante, una variable</text>
+  <text class="it" x="34" y="126">P1</text>
+  <text class="sub l-en" x="62" y="126">WoE scorecard (champion)</text>
+  <text class="sub l-es" x="62" y="126">scorecard WoE (campeón)</text>
+  <text class="it" x="34" y="152">P2</text>
+  <text class="sub l-en" x="62" y="152">L1 logistic, PLTR</text>
+  <text class="sub l-es" x="62" y="152">logística L1, PLTR</text>
+  <text class="it" x="34" y="178">P3</text>
+  <text class="sub l-en" x="62" y="178">EBM (GA2M)</text>
+  <text class="sub l-es" x="62" y="178">EBM (GA2M)</text>
+  <text class="it" x="34" y="204">P4</text>
+  <text class="sub l-en" x="62" y="204">monotone GBM, calibrated</text>
+  <text class="sub l-es" x="62" y="204">GBM monótono, calibrado</text>
+  <text class="it" x="34" y="230">P5</text>
+  <text class="sub l-en" x="62" y="230">TabPFN v2 (small data)</text>
+  <text class="sub l-es" x="62" y="230">TabPFN v2 (pocos datos)</text>
+  <text class="sub l-en" x="34" y="270">fitted on the training slice;</text>
+  <text class="sub l-es" x="34" y="270">ajustados en el tramo de</text>
+  <text class="sub l-en" x="34" y="286">calibrated on a disjoint slice;</text>
+  <text class="sub l-es" x="34" y="286">entrenamiento; calibrados en un</text>
+  <text class="sub l-en" x="34" y="302">tested on the locked holdout</text>
+  <text class="sub l-es" x="34" y="302">tramo disjunto; probados en la</text>
+  <text class="sub l-es" x="34" y="318">muestra reservada cerrada</text>
+
+  <path class="ar" d="M222 245 H258"/>
+
+  <rect class="pn" x="262" y="50" width="380" height="390" rx="10"/>
+  <text class="h l-en" x="276" y="74">The battery (riskvalidation)</text>
+  <text class="h l-es" x="276" y="74">La batería (riskvalidation)</text>
+  <rect class="bx" x="276" y="86" width="352" height="74" rx="6"/>
+  <text class="it l-en" x="286" y="104">Discrimination</text>
+  <text class="it l-es" x="286" y="104">Discriminación</text>
+  <text class="sub l-en" x="286" y="120">AUC with its DeLong variance; AUC against initial</text>
+  <text class="sub l-es" x="286" y="120">AUC con su varianza de DeLong; AUC contra la inicial</text>
+  <text class="sub l-en" x="286" y="136">validation (ECB 2019); DeLong against the champion; KS</text>
+  <text class="sub l-es" x="286" y="136">(BCE 2019); DeLong contra el campeón; KS</text>
+  <rect class="on" x="276" y="168" width="352" height="74" rx="6"/>
+  <text class="it l-en" x="286" y="186">Calibration level: is the average PD right?</text>
+  <text class="it l-es" x="286" y="186">Nivel de calibración: ¿es correcta la PD media?</text>
+  <text class="sub l-en" x="286" y="202">Jeffreys per grade and portfolio (ECB); binomial and</text>
+  <text class="sub l-es" x="286" y="202">Jeffreys por grado y cartera (BCE); binomial y</text>
+  <text class="sub l-en" x="286" y="218">Vasicek-adjusted binomial with R = 0.04 (WP14)</text>
+  <text class="sub l-es" x="286" y="218">binomial ajustada de Vasicek con R = 0,04 (WP14)</text>
+  <rect class="bx" x="276" y="250" width="352" height="74" rx="6"/>
+  <text class="it l-en" x="286" y="268">Calibration fit: is it right across the range?</text>
+  <text class="it l-es" x="286" y="268">Ajuste de calibración: ¿es correcta en todo el rango?</text>
+  <text class="sub l-en" x="286" y="284">chi-square over grades, Hosmer-Lemeshow, Spiegelhalter;</text>
+  <text class="sub l-es" x="286" y="284">chi-cuadrado sobre grados, Hosmer-Lemeshow, Spiegelhalter;</text>
+  <text class="sub l-en" x="286" y="300">Brier with the Murphy decomposition; ECE</text>
+  <text class="sub l-es" x="286" y="300">Brier con la descomposición de Murphy; ECE</text>
+  <rect class="bx" x="276" y="332" width="352" height="74" rx="6"/>
+  <text class="it l-en" x="286" y="350">Stability and concentration</text>
+  <text class="it l-es" x="286" y="350">Estabilidad y concentración</text>
+  <text class="sub l-en" x="286" y="366">PSI of the PD and CSI of each input, with the chi-square</text>
+  <text class="sub l-es" x="286" y="366">PSI de la PD y CSI de cada entrada, con el umbral</text>
+  <text class="sub l-en" x="286" y="382">benchmark; Herfindahl of the grades (ECB)</text>
+  <text class="sub l-es" x="286" y="382">chi-cuadrado; Herfindahl de los grados (BCE)</text>
+  <text class="sub l-en" x="276" y="428">Thresholds are policy: the ECB sets none.</text>
+  <text class="sub l-es" x="276" y="428">Los umbrales son política: el BCE no fija ninguno.</text>
+
+  <path class="ar" d="M644 160 H676"/>
+  <path class="ar" d="M644 330 H676"/>
+
+  <rect class="pn" x="680" y="50" width="200" height="220" rx="10"/>
+  <text class="h l-en" x="694" y="74">Findings</text>
+  <text class="h l-es" x="694" y="74">Hallazgos</text>
+  <text class="bad l-en" x="694" y="98">S2: a red level test</text>
+  <text class="bad l-es" x="694" y="98">S2: una prueba de nivel roja</text>
+  <text class="warn l-en" x="694" y="118">S3: an amber level test,</text>
+  <text class="warn l-es" x="694" y="118">S3: una prueba de nivel ámbar,</text>
+  <text class="warn l-en" x="694" y="134">a red fit test, a stated limit</text>
+  <text class="warn l-es" x="694" y="134">una de ajuste roja, un límite</text>
+  <text class="good l-en" x="694" y="154">S4: an amber fit test,</text>
+  <text class="good l-es" x="694" y="154">S4: una de ajuste ámbar,</text>
+  <text class="good l-en" x="694" y="170">a data-quality flag</text>
+  <text class="good l-es" x="694" y="170">una marca de calidad de datos</text>
+  <text class="sub l-en" x="694" y="198">each cites its evidence:</text>
+  <text class="sub l-es" x="694" y="198">cada uno cita su evidencia:</text>
+  <text class="sub l-en" x="694" y="214">a test, a contract rule,</text>
+  <text class="sub l-es" x="694" y="214">una prueba, una regla del</text>
+  <text class="sub l-en" x="694" y="230">or a design limit</text>
+  <text class="sub l-es" x="694" y="230">contrato o un límite de diseño</text>
+
+  <rect class="pn" x="680" y="280" width="200" height="160" rx="10"/>
+  <text class="h l-en" x="694" y="304">Impact</text>
+  <text class="h l-es" x="694" y="304">Impacto</text>
+  <text class="sub l-en" x="694" y="326">champion and challenger at the</text>
+  <text class="sub l-es" x="694" y="326">campeón y retador con la misma</text>
+  <text class="sub l-en" x="694" y="342">same approval rate: bad rate,</text>
+  <text class="sub l-es" x="694" y="342">tasa de aprobación: tasa de malos,</text>
+  <text class="sub l-en" x="694" y="358">expected and realised loss,</text>
+  <text class="sub l-es" x="694" y="358">pérdida esperada y realizada,</text>
+  <text class="sub l-en" x="694" y="374">the swap sets; capital under</text>
+  <text class="sub l-es" x="694" y="374">los intercambios; capital IRB</text>
+  <text class="sub l-en" x="694" y="390">the IRB formula with U2</text>
+  <text class="sub l-es" x="694" y="390">con la unidad U2</text>
+</svg>
