@@ -1,0 +1,13 @@
+{
+  "name": "Contraste",
+  "slug": "contraste",
+  "tagline": {
+    "en": "Build financial risk models, then validate them the way a model risk function and a supervisor would.",
+    "es": "Construir modelos de riesgo financiero y validarlos como lo harían una función de riesgo de modelos y un supervisor."
+  },
+  "repo": "https://github.com/fsantibanezleal/CAOS_Contraste",
+  "visibility": "public",
+  "license": "MIT",
+  "holder": "Felipe Santibáñez-Leal",
+  "year": 2026
+}

@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" class="arch-svg" role="img" aria-label="The App route of Contraste: the rail and the six groups of the instrument">
+  <!-- Hand-authored. Every colour is a shell token, so the diagram repaints with the theme; every label is written
+       twice (l-en, l-es) and the modal shows one language (ADR-0058). -->
+  <style>
+    .arch-svg text { font-family: var(--font-sans); }
+    .arch-svg .pn { fill: var(--color-surface); stroke: var(--color-border); stroke-width: 1.2; }
+    .arch-svg .bx { fill: var(--color-surface-2); stroke: var(--color-border); stroke-width: 1; }
+    .arch-svg .on { fill: var(--color-accent-soft); stroke: var(--color-accent); stroke-width: 1.2; }
+    .arch-svg .ttl { fill: var(--color-fg); font-size: 15px; font-weight: 700; }
+    .arch-svg .h { fill: var(--color-fg); font-size: 12px; font-weight: 700; }
+    .arch-svg .it { fill: var(--color-fg); font-size: 11px; }
+    .arch-svg .sub { fill: var(--color-fg-subtle); font-size: 10.5px; }
+    .arch-svg .acc { fill: var(--color-accent); font-size: 11px; font-weight: 600; }
+    .arch-svg .ln { stroke: var(--color-accent); stroke-width: 1.6; fill: none; }
+  </style>
+
+  <text class="ttl l-en" x="20" y="30">The App: the inputs on the left, the six questions on the right</text>
+  <text class="ttl l-es" x="20" y="30">La App: las entradas a la izquierda, las seis preguntas a la derecha</text>
+
+  <rect class="pn" x="20" y="48" width="250" height="392" rx="10"/>
+  <text class="h l-en" x="34" y="72">Rail</text>
+  <text class="h l-es" x="34" y="72">Panel</text>
+  <rect class="bx" x="34" y="82" width="222" height="44" rx="6"/>
+  <text class="it l-en" x="46" y="100">Case, by category; its variant</text>
+  <text class="it l-es" x="46" y="100">Caso, por categoría; su variante</text>
+  <text class="sub l-en" x="46" y="116">?case= links it; a variant reloads every view</text>
+  <text class="sub l-es" x="46" y="116">?case= lo enlaza; una variante recarga cada vista</text>
+  <rect class="on" x="34" y="136" width="222" height="86" rx="6"/>
+  <text class="it l-en" x="46" y="154">Decision</text>
+  <text class="it l-es" x="46" y="154">Decisión</text>
+  <text class="sub l-en" x="46" y="170">the challenger; the approval rate;</text>
+  <text class="sub l-es" x="46" y="170">el retador; la tasa de aprobación;</text>
+  <text class="sub l-en" x="46" y="184">the LGD (50%, the QRRE floor)</text>
+  <text class="sub l-es" x="46" y="184">la LGD (50%, el piso QRRE)</text>
+  <text class="acc l-en" x="46" y="206">live: bad rate, expected loss</text>
+  <text class="acc l-es" x="46" y="206">en vivo: tasa de malos, pérdida esperada</text>
+  <rect class="on" x="34" y="232" width="222" height="86" rx="6"/>
+  <text class="it l-en" x="46" y="250">Policy</text>
+  <text class="it l-es" x="46" y="250">Política</text>
+  <text class="sub l-en" x="46" y="266">amber and red thresholds on p-values,</text>
+  <text class="sub l-es" x="46" y="266">umbrales ámbar y rojo sobre valores p,</text>
+  <text class="sub l-en" x="46" y="280">labelled as policy, never regulation</text>
+  <text class="sub l-es" x="46" y="280">rotulados como política, nunca regulación</text>
+  <text class="acc l-en" x="46" y="302">live: every light re-computed</text>
+  <text class="acc l-es" x="46" y="302">en vivo: cada luz recalculada</text>
+  <rect class="on" x="34" y="328" width="222" height="96" rx="6"/>
+  <text class="it l-en" x="46" y="346">Applicant</text>
+  <text class="it l-es" x="46" y="346">Solicitante</text>
+  <text class="sub l-en" x="46" y="362">one of 50 holdout applicants,</text>
+  <text class="sub l-es" x="46" y="362">uno de 50 solicitantes reservados,</text>
+  <text class="sub l-en" x="46" y="376">scored from the points table and the EBM</text>
+  <text class="sub l-es" x="46" y="376">puntuado con la tabla de puntos y el EBM</text>
+  <text class="acc l-en" x="46" y="398">live: score, PD, the four reasons</text>
+  <text class="acc l-es" x="46" y="398">en vivo: puntaje, PD, las cuatro razones</text>
+
+  <rect class="pn" x="290" y="48" width="590" height="392" rx="10"/>
+  <text class="h l-en" x="306" y="72">Instrument: one row of six groups</text>
+  <text class="h l-es" x="306" y="72">Instrumento: una fila de seis grupos</text>
+  <rect class="on" x="306" y="84" width="88" height="30" rx="6"/>
+  <text class="it l-en" x="318" y="104">Model</text>
+  <text class="it l-es" x="318" y="104">Modelo</text>
+  <rect class="bx" x="400" y="84" width="88" height="30" rx="6"/>
+  <text class="it l-en" x="410" y="104">Validation</text>
+  <text class="it l-es" x="410" y="104">Validación</text>
+  <rect class="bx" x="494" y="84" width="88" height="30" rx="6"/>
+  <text class="it l-en" x="508" y="104">Impact</text>
+  <text class="it l-es" x="506" y="104">Impacto</text>
+  <rect class="bx" x="588" y="84" width="88" height="30" rx="6"/>
+  <text class="it l-en" x="600" y="104">Findings</text>
+  <text class="it l-es" x="598" y="104">Hallazgos</text>
+  <rect class="bx" x="682" y="84" width="88" height="30" rx="6"/>
+  <text class="it l-en" x="694" y="104">Variants</text>
+  <text class="it l-es" x="692" y="104">Variantes</text>
+  <rect class="bx" x="776" y="84" width="88" height="30" rx="6"/>
+  <text class="it l-en" x="790" y="104">Context</text>
+  <text class="it l-es" x="788" y="104">Contexto</text>
+
+  <rect class="bx" x="306" y="128" width="558" height="296" rx="8"/>
+  <text class="it l-en" x="322" y="150">Model: the ladder (P0 anchors, P1 scorecard, P2 L1 and PLTR, P3 EBM, P4 monotone GBM, P5 TabPFN)</text>
+  <text class="it l-es" x="322" y="150">Modelo: la escalera (anclas P0, scorecard P1, L1 y PLTR P2, EBM P3, GBM monótono P4, TabPFN P5)</text>
+  <text class="sub l-en" x="322" y="168">with each rung's engine, licence, AUC and interval; the points table; EBM shapes; GBM partial dependence</text>
+  <text class="sub l-es" x="322" y="168">con el motor, la licencia, la AUC y su intervalo de cada peldaño; la tabla de puntos; formas EBM; dependencia parcial GBM</text>
+  <text class="it l-en" x="322" y="198">Validation: the battery, test by rung; calibration by grade; discrimination; stability; by group</text>
+  <text class="it l-es" x="322" y="198">Validación: la batería, prueba por peldaño; calibración por grado; discriminación; estabilidad; por grupo</text>
+  <text class="it l-en" x="322" y="228">Impact: champion and challenger at the same approval rate; the swap sets at 80%</text>
+  <text class="it l-es" x="322" y="228">Impacto: campeón y retador con la misma tasa de aprobación; los conjuntos de intercambio al 80%</text>
+  <text class="it l-en" x="322" y="258">Findings: S1 to S4, each with its evidence: a test, a contract rule or a stated limit</text>
+  <text class="it l-es" x="322" y="258">Hallazgos: S1 a S4, cada uno con su evidencia: una prueba, una regla del contrato o un límite declarado</text>
+  <text class="it l-en" x="322" y="288">Variants: the regimes side by side (drift, prior shift, label noise, small sample, the German twin)</text>
+  <text class="it l-es" x="322" y="288">Variantes: los regímenes lado a lado (deriva, cambio de prior, ruido de etiqueta, muestra pequeña, el gemelo alemán)</text>
+  <text class="it l-en" x="322" y="318">Context: the question, the sources and their licences, the split, the write-up</text>
+  <text class="it l-es" x="322" y="318">Contexto: la pregunta, las fuentes y sus licencias, la partición, el desarrollo</text>
+  <path class="ln" d="M322 352 h520"/>
+  <text class="sub l-en" x="322" y="376">Every view carries its lane (live or replay) and its data (real or synthetic),</text>
+  <text class="sub l-es" x="322" y="376">Cada vista lleva su carril (en vivo o reproducción) y sus datos (reales o sintéticos),</text>
+  <text class="sub l-en" x="322" y="392">and the key of the selection it shows: a view behind the rail says so.</text>
+  <text class="sub l-es" x="322" y="392">y la clave de la selección que muestra: una vista atrasada respecto del panel lo indica.</text>
+</svg>
