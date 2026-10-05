@@ -27,7 +27,7 @@ calibrated by construction, and a current sample from a riskier population whose
 
 ```bash
 .venv-pipeline/bin/python data-pipeline/validate.py data/examples/scored_sample_current.csv \
-    --reference data/examples/scored_sample_development.csv --model-id my-model --output E:/_Temp/contraste/own
+    --reference data/examples/scored_sample_development.csv --model-id my-model --output <a folder outside the repository>
 ```
 
 The tool prints one line per test and writes `my-model-validation.json` (schema `contraste.own-validation/v1`) into
@@ -56,7 +56,7 @@ from pipeline.own_sample import validate_own, write_report   # with data-pipelin
 
 report = validate_own("scored.csv", reference="development.csv", model_id="retail-pd-v3")
 print(report["lights"])
-write_report(report, "E:/_Temp/contraste/own")
+write_report(report, "/path/outside/the/repository")
 ```
 
 The web's own upload, which runs the same battery in the browser under Pyodide, arrives with the engine's PyPI
