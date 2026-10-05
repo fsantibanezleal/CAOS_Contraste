@@ -1,6 +1,18 @@
-# PRECOMPUTE lane, the heavy, research-chosen SOTA engines, in the .venv-pipeline (local-only, never deployed).
-# THIS is where the deep research becomes binding: every engine pinned here is documented in docs/frameworks/<tool>/
-# and actually used by data-pipeline/pipeline/stages/. The EXAMPLE engine (SIR) is numpy-only on purpose so the
-# template installs instantly with no native build; a real product adds e.g. yade / pychrono / ortools / mintpy /
-# torch here, each PINNED to the version it installs+verifies.
+# The offline lane's engines, in .venv-pipeline (local only, never deployed, never in CI). Every engine pinned here
+# is used by data-pipeline/pipeline/ and documented in docs/frameworks/; its licence is verified in
+# data-pipeline/config/licences.json (scripts/check_licences.py). The TabPFN challenger is the optional extra
+# requirements-tabpfn.txt.
 numpy==2.4.6
+scipy==1.18.1
+pandas==3.0.6
+xlrd==2.0.2
+scikit-learn==1.9.1
+statsmodels==0.15.0
+optbinning==1.0.0
+interpret-core[required,ebm]==0.7.8
+lightgbm==4.7.0
+xgboost==3.4.1
+shap==0.52.0
+# the engine: the validation tests and the regulatory calculators, pinned to its release tag until its first PyPI
+# release (the repository is private until then)
+riskvalidation @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation@v0.01.000

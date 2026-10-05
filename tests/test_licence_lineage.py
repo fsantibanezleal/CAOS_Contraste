@@ -21,6 +21,7 @@ def _test_row(test_id="pd.jeffreys", light="green"):
 
 
 MODEL = [{"id": "scorecard", "family": "pd-scoring", "rung": 1, "title": {"en": "Scorecard", "es": "Scorecard"},
+          "short_title": {"en": "P1 Scorecard", "es": "P1 Scorecard"},
           "engine": "optbinning", "engine_version": "0.21.0", "licence": "Apache-2.0", "checkpoint_sha256": "c" * 64,
           "calibration": None, "parameters": {"pdo": {"value": 20, "unit": "points"}}}]
 IMPACT = {"rwa": {"value": 1.5e6, "unit": "NTD", "label": {"en": "RWA", "es": "APR"}}}
@@ -61,6 +62,25 @@ def test_export_writes_provenance():
         _lineage(["uci-taiwan"], truth="real")
 
 
+def test_findings_cite_tests_by_model_and_segment_or_a_stated_limit():
+    row = _test_row() | {"model_id": "P1", "segment": "holdout"}
+    finding = FINDING[0] | {"evidence": ["pd.jeffreys@P1", "pd.jeffreys@P1@holdout", "design:single-snapshot",
+                                         "contract:C01-PAY-CODE"]}
+    art = m.build_artifact(case_id="C01", variant_id="holdout", model=MODEL, outputs={}, tests=[row], impact=IMPACT,
+                           findings=[finding], lineage=_lineage(["uci-taiwan"]), lane=LANE)
+    assert art["findings"][0]["evidence"][0] == "pd.jeffreys@P1"
+
+
+def test_models_artifact_carries_its_fit_and_provenance():
+    doc = m.build_models_artifact(case_id="C01", fit_id="taiwan", model=MODEL, fit={"n_train": 16800},
+                                  lineage=_lineage(["uci-taiwan"]), lane=LANE)
+    assert doc["schema"] == m.MODELS_SCHEMA and doc["fit"] == {"n_train": 16800}
+    assert doc["provenance"]["licence_classes"] == {"uci-taiwan": "mirror-allowed"}
+    with pytest.raises(s.LicenceError):
+        m.build_models_artifact(case_id="C01", fit_id="x", model=MODEL, fit={},
+                                lineage=_lineage(["fannie-mae-sflp"]), lane=LANE)
+
+
 def test_generated_inputs_need_no_source():
     gen = lin.build("C22", sources=(), truth_status="synthetic-known-truth", seed=1, code_version="test-build",
                     generators=("vasicek-portfolio",), manifest=MAN)
@@ -75,6 +95,7 @@ def test_generated_inputs_need_no_source():
     ({"tests": [_test_row(light="blue")]}, "light 'blue'"),
     ({"findings": [FINDING[0] | {"severity": "S5"}]}, "S1 to S4"),
     ({"findings": [FINDING[0] | {"evidence": ["pd.binomial"]}]}, "cites tests not in this artifact"),
+    ({"findings": [FINDING[0] | {"evidence": ["pd.jeffreys@P9"]}]}, "cites tests not in this artifact"),
     ({"model": []}, "at least one model"),
     ({"impact": {"rwa": {"value": float("nan"), "unit": "x", "label": {"en": "a", "es": "b"}}}}, "not finite"),
     ({"lane": {"lane": "replay"}}, "lane 'replay'"),

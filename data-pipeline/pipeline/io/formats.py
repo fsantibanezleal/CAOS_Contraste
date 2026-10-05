@@ -1,5 +1,5 @@
-"""Standard-format readers/writers. EXAMPLE: CSV in (params), JSON out (compact committed artifact). A real product
-adds the formats its domain demands here (parquet/npz/.vtk/.vtu/.h5/GeoTIFF), never a bespoke ad-hoc format."""
+"""Standard-format readers and writers: CSV in, compact JSON out (the committed artifacts). A format a case
+demands is added here, never a bespoke ad-hoc one."""
 from __future__ import annotations
 
 import csv
@@ -9,7 +9,8 @@ from typing import Any
 
 
 def read_csv_rows(path: str | Path) -> list[dict[str, str]]:
-    with open(path, newline="", encoding="utf-8") as f:
+    """Rows as text, keyed by the header; a byte-order mark (a spreadsheet's UTF-8 export) is dropped."""
+    with open(path, newline="", encoding="utf-8-sig") as f:
         return list(csv.DictReader(f))
 
 

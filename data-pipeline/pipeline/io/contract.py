@@ -230,10 +230,41 @@ class ContractReport:
         return {"input": self.n_input, "accepted": len(self.accepted), "rejected": len(self.rejected),
                 "flagged": len(self.flagged), "excluded": len(self.excluded)}
 
-    def summary(self, limit: int = 20) -> dict[str, Any]:
-        """The compact, JSON-safe form written into a manifest: the counts and the first violations of each kind."""
-        return {"family": self.family, "counts": self.counts(), "ignored_columns": list(self.ignored_columns),
-                "rejected": self.rejected[:limit], "flagged": self.flagged[:limit], "excluded": self.excluded[:limit]}
+    def by_rule(self) -> dict[str, dict[str, int]]:
+        """How many entries each rule (or field, for a field violation) produced, per kind."""
+        out: dict[str, dict[str, int]] = {"rejected": {}, "flagged": {}, "excluded": {}}
+        for kind, entries in (("flagged", self.flagged), ("excluded", self.excluded)):
+            for e in entries:
+                key = e.get("rule") or e["field"]
+                out[kind][key] = out[kind].get(key, 0) + 1
+        for r in self.rejected:
+            for v in r["violations"]:
+                key = v.get("rule") or v["field"]
+                out["rejected"][key] = out["rejected"].get(key, 0) + 1
+        return {k: dict(sorted(v.items())) for k, v in out.items()}
+
+    def examples(self, limit: int = 5) -> list[dict[str, Any]]:
+        """The first entries of each kind, one shape for all: kind, row, key, field, value (as text), expected,
+        policy, reason, rule (None for a field violation)."""
+        out: list[dict[str, Any]] = []
+
+        def one(kind: str, row: int, key: str, e: dict[str, Any]) -> dict[str, Any]:
+            v = e.get("value")
+            return {"kind": kind, "row": int(row), "key": str(key), "field": e["field"],
+                    "value": None if v is None else str(v), "expected": e["expected"], "policy": e["policy"],
+                    "reason": e["reason"], "rule": e.get("rule")}
+
+        for r in self.rejected[:limit]:
+            out.append(one("rejected", r["row"], r["key"], r["violations"][0]))
+        for kind, entries in (("flagged", self.flagged), ("excluded", self.excluded)):
+            out.extend(one(kind, e["row"], e["key"], e) for e in entries[:limit])
+        return out
+
+    def summary(self, limit: int = 5) -> dict[str, Any]:
+        """The compact, JSON-safe form written into a manifest: the counts, the counts per rule, the ignored
+        columns and the first entries of each kind."""
+        return {"family": self.family, "counts": self.counts(), "by_rule": self.by_rule(),
+                "ignored_columns": list(self.ignored_columns), "examples": self.examples(limit)}
 
 
 # --- parsing -----------------------------------------------------------------------------------------------------
@@ -361,18 +392,23 @@ def validate(
     *,
     params: Mapping[str, Any] | None = None,
     extra_fields: Sequence[Field] = (),
+    extra_rules: Sequence[Rule] = (),
 ) -> ContractReport:
     """Apply a family contract to raw records (pure, deterministic, no I/O).
 
     ``params`` are the dataset parameters the family declares; ``extra_fields`` are the fields a case adds to an
-    open family (the features of a scored sample). Columns that are neither declared nor added are ignored and
-    listed in the report, never used.
+    open family (the features of a scored sample), and ``extra_rules`` the rules the case declares on them (a code
+    outside the documented scale, say). Columns that are neither declared nor added are ignored and listed in the
+    report, never used.
     """
     fam = FAMILIES[family] if isinstance(family, str) else family
     if isinstance(family, str) and family not in FAMILIES:
         raise ContractError(f"unknown family {family!r}; known: {sorted(FAMILIES)}")
-    if extra_fields and not fam.open_fields:
+    if (extra_fields or extra_rules) and not fam.open_fields:
         raise ContractError(f"{fam.name}: this family declares all its fields; a case cannot add any")
+    rules = (*fam.rules, *extra_rules)
+    if len({r.id for r in rules}) != len(rules):
+        raise ContractError(f"{fam.name}: a rule id is declared twice")
     params = dict(params or {})
     _check_params(fam, params)
     fields = (*fam.fields, *extra_fields)
@@ -405,7 +441,7 @@ def validate(
                 continue
             rec[f.name] = value
         if not violations:
-            for rule in fam.rules:
+            for rule in rules:
                 if rule.scope != "record":
                     continue
                 reason = rule.check(rec, params)
@@ -431,7 +467,7 @@ def validate(
     for i, rec in parsed:
         if "__exclude__" in rec:
             exclude.setdefault(i, []).extend(rec.pop("__exclude__"))
-    for rule in fam.rules:
+    for rule in rules:
         if rule.scope != "group":
             continue
         groups: dict[tuple, list[tuple[int, dict[str, Any]]]] = {}

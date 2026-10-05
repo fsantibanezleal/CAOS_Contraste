@@ -1,0 +1,5 @@
+# OPTIONAL extra, not part of the default install: the TabPFN challenger (P5) of the small cases.
+# torch CPU from https://download.pytorch.org/whl/cpu; the v2 weights (Prior Labs License v1.1) download into
+# <CONTRASTE_MODELS>/tabpfn on first use. Licences verified in data-pipeline/config/licences.json.
+torch==2.14.1
+tabpfn==9.1.0

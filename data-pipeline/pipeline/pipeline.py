@@ -59,14 +59,15 @@ def precompute(case_id: str, seed: int = 42, *, output_root: str | Path | None =
 def run_all(seed: int = 42, *, output_root: str | Path | None = None,
             data_root: str | Path | None = None) -> list[dict[str, Any]]:
     paths = PipelinePaths.from_output(output_root)
-    export_contract_files(paths)
+    contract_files = [f"contract/{name}" for name in export_contract_files(paths)]
     entries = []
     for case in registry.list_cases():
         precompute(case.id, seed=seed, output_root=paths.root, data_root=data_root)
         entries.append({"case_id": case.id, "title": case.title, "category": registry.category(case.category_id),
-                        "category_id": case.category_id, "manifest_path": f"manifests/{case.id}.json"})
+                        "category_id": case.category_id, "kind": case.kind,
+                        "manifest_path": f"manifests/{case.id}.json"})
     if entries:
-        write_json(paths.manifests / "index.json", build_index(entries, registry.default_case()))
+        write_json(paths.manifests / "index.json", build_index(entries, registry.default_case(), contract_files))
     return entries
 
 

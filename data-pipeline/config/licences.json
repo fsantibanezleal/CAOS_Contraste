@@ -1,9 +1,22 @@
 {
   "schema": "contraste.licences/v1",
-  "note": "The verified licence of every package a requirements file of the default install names (SDD section 8, CT-005). A package is added here, with the licence read from its own metadata or repository, in the commit that adds it to a requirements file. scripts/check_licences.py fails on a requirement missing from this table and on any AGPL, GPL or BSL licence; with --installed it reads the metadata of every distribution installed in the running interpreter.",
+  "note": "The verified licence of every package a requirements file of the default install names (SDD section 8, CT-005), plus the optional TabPFN extra. A package is added here, with the licence read from its own metadata or repository, in the commit that adds it to a requirements file. scripts/check_licences.py fails on a requirement missing from this table and on any AGPL, GPL or BSL (Business Source License) licence; with --installed it reads the metadata of every distribution installed in the running interpreter, direct or transitive.",
   "forbidden": ["AGPL", "GPL", "BSL (Business Source License)"],
   "python": {
     "numpy": {"licence": "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0", "source": "package metadata (License-Expression), numpy 2.4.6", "verified": "2026-10-05"},
+    "scipy": {"licence": "BSD-3-Clause", "source": "package metadata (License classifier: BSD License), scipy 1.18.1", "verified": "2026-10-05"},
+    "pandas": {"licence": "BSD-3-Clause", "source": "package metadata (License: BSD 3-Clause License), pandas 3.0.6", "verified": "2026-10-05"},
+    "xlrd": {"licence": "BSD", "source": "package metadata (License: BSD), xlrd 2.0.2", "verified": "2026-10-05"},
+    "scikit-learn": {"licence": "BSD-3-Clause", "source": "package metadata (License-Expression), scikit-learn 1.9.1", "verified": "2026-10-05"},
+    "statsmodels": {"licence": "BSD-3-Clause", "source": "package metadata (License-Expression), statsmodels 0.15.0", "verified": "2026-10-05"},
+    "optbinning": {"licence": "Apache-2.0", "source": "package metadata (License-Expression), optbinning 1.0.0; depends on ortools (Apache 2.0) and ropwr (Apache 2.0)", "verified": "2026-10-05"},
+    "interpret-core": {"licence": "MIT", "source": "repository interpretml/interpret LICENSE (MIT), dossier 04 section K; the wheel's metadata carries no licence field", "verified": "2026-10-04"},
+    "lightgbm": {"licence": "MIT", "source": "package metadata (License-Expression), lightgbm 4.7.0", "verified": "2026-10-05"},
+    "xgboost": {"licence": "Apache-2.0", "source": "package metadata (License-Expression), xgboost 3.4.1", "verified": "2026-10-05"},
+    "shap": {"licence": "MIT", "source": "package metadata (License: MIT License), shap 0.52.0", "verified": "2026-10-05"},
+    "riskvalidation": {"licence": "MIT", "source": "package metadata (License-Expression), riskvalidation 0.1.0 (CAOS_RiskValidation v0.01.000)", "verified": "2026-10-05"},
+    "torch": {"licence": "Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND MIT", "source": "package metadata (License-Expression), torch 2.14.1+cpu; BSL-1.0 is the Boost Software License; optional extra", "verified": "2026-10-05"},
+    "tabpfn": {"licence": "Apache-2.0", "source": "package metadata (License-Expression), tabpfn 9.1.0; the v2 weights are under the Prior Labs License v1.1 (Apache 2.0 plus attribution); optional extra", "verified": "2026-10-05"},
     "pytest": {"licence": "MIT", "source": "package metadata (License-Expression), pytest 9.1.1", "verified": "2026-10-05"},
     "ruff": {"licence": "MIT", "source": "package metadata (License-Expression), ruff 0.15.18", "verified": "2026-10-05"}
   }

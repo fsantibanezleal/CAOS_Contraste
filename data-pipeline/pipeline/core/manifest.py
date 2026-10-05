@@ -26,6 +26,10 @@ from .lineage import Lineage, assert_publishable
 INDEX_SCHEMA = "contraste.index/v1"
 MANIFEST_SCHEMA = "contraste.manifest/v1"
 ARTIFACT_SCHEMA = "contraste.case/v1"
+MODELS_SCHEMA = "contraste.models/v1"
+ROLES = ("models", "variant")
+#: a finding's evidence is a test in the artifact, a contract-1 rule of the case's inputs, or a stated design limit
+EVIDENCE_PREFIXES = ("contract:", "design:")
 
 #: the keys of ``riskvalidation.TestResult.to_dict()`` (riskvalidation 0.1.0), in its order
 TEST_RESULT_KEYS = (
@@ -35,8 +39,8 @@ TEST_RESULT_KEYS = (
 LIGHTS = ("green", "amber", "red", "not_evaluated", "error")
 SEVERITIES = ("S1", "S2", "S3", "S4")
 FINDING_STATUSES = ("open", "accepted", "closed")
-MODEL_KEYS = ("id", "family", "rung", "title", "engine", "engine_version", "licence", "checkpoint_sha256",
-              "calibration", "parameters")
+MODEL_KEYS = ("id", "family", "rung", "title", "short_title", "engine", "engine_version", "licence",
+              "checkpoint_sha256", "calibration", "parameters")
 LANES = ("live", "precompute")
 
 
@@ -61,8 +65,12 @@ def _check_tests(tests: Sequence[Mapping[str, Any]], where: str) -> set[str]:
             raise ContractViolation(f"{where}: test row {k} light {row['light']!r} is not one of {list(LIGHTS)}")
         if not row["reference"] or not row["h0"] or not row["policy_version"]:
             raise ContractViolation(f"{where}: test row {k} ({row['test_id']}) lacks its reference, H0 or policy")
-        ids.add(row["test_id"] if row.get("segment") is None else f"{row['test_id']}@{row['segment']}")
-        ids.add(row["test_id"])
+        tid, model = row["test_id"], row.get("model_id")
+        ids.add(tid)
+        if model is not None:
+            ids.add(f"{tid}@{model}")
+            if row.get("segment") is not None:
+                ids.add(f"{tid}@{model}@{row['segment']}")
     return ids
 
 
@@ -80,7 +88,7 @@ def _check_findings(findings: Sequence[Mapping[str, Any]], test_ids: set[str], w
         evidence = f.get("evidence") or []
         if not evidence:
             raise ContractViolation(f"{where}: finding {f['id']} names the tests that evidence it")
-        unknown = [e for e in evidence if e not in test_ids]
+        unknown = [e for e in evidence if e not in test_ids and not e.startswith(EVIDENCE_PREFIXES)]
         if unknown:
             raise ContractViolation(f"{where}: finding {f['id']} cites tests not in this artifact: {unknown}")
 
@@ -94,8 +102,11 @@ def _check_models(models: Sequence[Mapping[str, Any]], where: str) -> None:
             raise ContractViolation(f"{where}: model {m.get('id')} lacks {missing}")
         _text(m["title"], f"{where}: model {m['id']} title")
         for name, p in (m["parameters"] or {}).items():
-            if not isinstance(p, Mapping) or "value" not in p or "unit" not in p:
+            if not isinstance(p, Mapping) or set(p) != {"value", "unit"}:
                 raise ContractViolation(f"{where}: model {m['id']} parameter {name} is {{'value', 'unit'}}")
+            v = p["value"]
+            if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v):
+                raise ContractViolation(f"{where}: model {m['id']} parameter {name} is a finite number with its unit")
 
 
 def _check_impact(impact: Mapping[str, Any], where: str) -> None:
@@ -144,6 +155,28 @@ def build_artifact(
     }
 
 
+def build_models_artifact(
+    *,
+    case_id: str,
+    fit_id: str,
+    model: Sequence[Mapping[str, Any]],
+    fit: Mapping[str, Any],
+    lineage: Lineage,
+    lane: Mapping[str, Any],
+) -> dict[str, Any]:
+    """The models of one fit (one training sample): every rung's record and internals (points tables, shape
+    functions, partial-dependence grids, stability), and how the fit was made (split, sizes, seeds)."""
+    assert_publishable(lineage)
+    where = f"{case_id}/models-{fit_id}"
+    if lineage.case_id != case_id:
+        raise ContractViolation(f"{where}: the lineage belongs to {lineage.case_id}")
+    _check_models(model, where)
+    if lane.get("lane") not in LANES:
+        raise ContractViolation(f"{where}: lane {lane.get('lane')!r} is not one of {list(LANES)}")
+    return {"schema": MODELS_SCHEMA, "case_id": case_id, "fit_id": fit_id, "model": [dict(m) for m in model],
+            "fit": dict(fit), "provenance": lineage.provenance(), "lane": dict(lane)}
+
+
 def build_case_manifest(
     *,
     case_id: str,
@@ -157,24 +190,37 @@ def build_case_manifest(
     contract: Mapping[str, Any],
     expect: Mapping[str, Sequence[float]],
     riskvalidation_version: str | None,
+    source_details: Mapping[str, Mapping[str, str]] | None = None,
 ) -> dict[str, Any]:
-    """The case manifest. ``variants`` are ``{variant_id, title, regime, truth_status, path, bytes, lane, gate}``."""
+    """The case manifest. ``variants`` are the artifact entries: ``{role, variant_id, title, short_title, regime,
+    truth_status, path, bytes, lane, gate}``, with ``models_ref`` (the path of a models entry) on every variant entry.
+    ``short_title`` is the label a chip shows; ``title`` the full name."""
     for name, v in (("title", title), ("category", category), ("question", question)):
         _text(v, f"{case_id} {name}")
-    if not variants:
+    if any(v.get("role") not in ROLES for v in variants):
+        raise ContractViolation(f"{case_id}: every artifact entry has a role in {list(ROLES)}")
+    var = [v for v in variants if v["role"] == "variant"]
+    if not var:
         raise ContractViolation(f"{case_id}: a case has at least one variant")
     ids = [v["variant_id"] for v in variants]
     if len(set(ids)) != len(ids):
         raise ContractViolation(f"{case_id}: variant ids repeat")
-    if default_variant not in ids:
-        raise ContractViolation(f"{case_id}: the default variant {default_variant!r} is not among {ids}")
+    if default_variant not in [v["variant_id"] for v in var]:
+        raise ContractViolation(f"{case_id}: the default variant {default_variant!r} is not among the variants")
+    model_paths = {v["path"] for v in variants if v["role"] == "models"}
     for v in variants:
         _text(v["title"], f"{case_id}/{v['variant_id']} title")
+        _text(v.get("short_title"), f"{case_id}/{v['variant_id']} short_title")
         _text(v["regime"], f"{case_id}/{v['variant_id']} regime")
         if v.get("lane") not in LANES or (v.get("gate") or {}).get("lane") != v.get("lane"):
             raise ContractViolation(f"{case_id}/{v['variant_id']}: the lane and the gate verdict disagree")
+        if v["role"] == "variant" and v.get("models_ref") not in model_paths:
+            raise ContractViolation(f"{case_id}/{v['variant_id']}: models_ref names no models artifact of this case")
     if not expect:
         raise ContractViolation(f"{case_id}: no expected range declared (every case states what a reader should see)")
+    missing = [s for s in sources if s not in (source_details or {})]
+    if missing:
+        raise ContractViolation(f"{case_id}: no registry details for the sources {missing}")
     return {
         "schema": MANIFEST_SCHEMA,
         "case_id": case_id,
@@ -182,6 +228,7 @@ def build_case_manifest(
         "category": dict(category),
         "question": dict(question),
         "sources": list(sources),
+        "source_details": {k: dict(v) for k, v in (source_details or {}).items()},
         "seed": seed,
         "engine": {"pipeline": __version__, "riskvalidation": riskvalidation_version},
         "default_variant": default_variant,
@@ -191,8 +238,9 @@ def build_case_manifest(
     }
 
 
-def build_index(entries: Sequence[Mapping[str, Any]], default_case: str) -> dict[str, Any]:
-    """entries: ``[{case_id, title, category, manifest_path}]``: the flat inventory, with the case the App opens on."""
+def build_index(entries: Sequence[Mapping[str, Any]], default_case: str, files: Sequence[str] = ()) -> dict[str, Any]:
+    """entries: ``[{case_id, title, category, category_id, manifest_path}]``: the flat inventory, with the case the
+    App opens on. ``files`` are the further files the site serves (the contract-1 declarations)."""
     if default_case not in {e["case_id"] for e in entries}:
         raise ContractViolation(f"default case {default_case!r} is not among the baked cases")
     return {
@@ -201,4 +249,5 @@ def build_index(entries: Sequence[Mapping[str, Any]], default_case: str) -> dict
         "n_cases": len(entries),
         "default_case": default_case,
         "cases": sorted((dict(e) for e in entries), key=lambda e: e["case_id"]),
+        "files": list(files),
     }
