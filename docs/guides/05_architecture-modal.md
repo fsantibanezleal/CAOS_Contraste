@@ -1,16 +1,17 @@
 # Guide: the architecture modal (ADR-0058)
 
-Every product carries the "How it works" modal: at least five tabs, each a hand-authored diagram and a short body,
-in both languages. The configuration is `frontend/src/architecture/index.ts`, passed to the shell as
+Contraste carries the shell's "How it works" modal: five tabs, each a hand-authored diagram and a short body, in both
+languages. The configuration is `frontend/src/architecture/index.ts`, passed to the shell as
 `architecture` in `frontend/src/App.tsx`.
 
 ## The five tabs
 
-1. The app: what the reader chooses and what the app shows.
-2. The lanes: what runs offline, what is replayed, what runs live.
+1. The app: what the reader chooses (case, variant, challenger, policy, applicant) and what the six groups show.
+2. The lanes: what runs offline (the ladder and the battery), what is replayed, what runs live (the scorers and the
+   policy lights).
 3. The web flow: from the index to a view, and the gate before a deploy.
-4. The science: the product's model, its key relations, and how it is computed.
-5. The data contracts: what enters the pipeline and what it commits for the web.
+4. The validation: the ladder, the battery of tests, the severity policy and the findings.
+5. The data contracts: what enters the pipeline (contract 1) and what it commits for the web (contract 2).
 
 A product may add tabs; it never drops below five.
 

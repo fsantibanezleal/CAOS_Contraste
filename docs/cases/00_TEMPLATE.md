@@ -1,7 +1,7 @@
 # Case `<CASE_ID>`, `<short human name>`
 
-> Copy this file to `docs/cases/<category>/<case-id>.md`, one per case. Keep it short and concrete.
-> ChargeCascade's per-case pages are the reference for depth. Delete this quote block on use.
+> Copy this file to `docs/cases/<case-id>.md`, one per case, in the unit that builds the case.
+> [C01.md](C01.md) is the reference for depth. Delete this quote block on use.
 
 - **Category:** `<category>` (the domain problem-type it represents)
 - **Source:** synthetic (with sim knobs) | real sample (which datum) | uploaded

@@ -1,19 +1,20 @@
 # The lane gate
 
-`data-pipeline/pipeline/core/gate.py :: classify_lane()` decides, per case and by measurement, whether the case is
-light enough to be re-run live in the browser:
+`data-pipeline/pipeline/core/gate.py :: classify_lane()` decides, per artifact and by measurement, whether a
+computation is light enough to be rerun live in the browser:
 
-- the engine is light (pure Python, with its wheels within a small allowed set: a proxy for an engine small enough to
-  port or to run client side), and
+- its engine is pure Python with its wheels in the live set (`numpy`, `scipy`, `statsmodels` and the pure
+  `riskvalidation` wheel, all of which Pyodide ships or loads), and
 - one run finishes within `RUN_MS_GATE` (1500 ms), and
-- the committed trace is within `TRACE_BYTES_GATE` (256 KiB).
+- the artifact is within `TRACE_BYTES_GATE` (256 KiB).
 
-Otherwise the case is `precompute`: the pipeline bakes it and the web only replays it. Either way a committed
-artifact exists, so the site shows every case on first load.
+Otherwise the artifact is `precompute`: the pipeline bakes it and the web replays it. Every C01 artifact is
+`precompute`: its rungs need LightGBM, XGBoost, InterpretML and optbinning, and a fit takes seconds to minutes. The
+verdict and its reasons are written into the artifact's `lane` block and into its manifest entry (`gate`), and
+`scripts/check_artifacts.py` fails when the two disagree.
 
-The verdict and the measured numbers are written into the manifest (`gate`), and `scripts/check_artifacts.py`
-fails when a manifest's `lane` disagrees with its gate, so a heavy case cannot be labelled live. The Benchmark page
-measures the live engine again in the reader's browser against the same run budget.
+What the web recomputes live is not an engine run: it is arithmetic on committed records (adding a points table,
+adding the EBM's term scores, comparing p-values with the reader's thresholds, interpolating a cut-off curve), held
+to the pipeline by parity tests ([04](04_live-lane.md)).
 
-This is the pipeline's gate. The web has its own, measured on the built site: `npm run gate` (`caos-shell-gate`,
-see [07, deploy](07_deploy.md)).
+The web has its own gate, measured on the built site: `npm run gate` (`caos-shell-gate`, see [07, deploy](07_deploy.md)).

@@ -1,6 +1,6 @@
 # Requirements: U0, the contracts, the sources and their licences
 
-Status: planned
+Status: live
 
 EARS (Mavin et al., RE'09, doi:10.1109/RE.2009.9). Every requirement names the gate that fails when it is violated.
 Design: [`design.md`](design.md). Tasks: [`tasks.md`](tasks.md).
@@ -18,3 +18,6 @@ Design: [`design.md`](design.md). Tasks: [`tasks.md`](tasks.md).
 | CT-009 | THE source registry SHALL give every source one of the four licence classes and a verbatim licence fragment, and SHALL refuse to load a case that reads a link-only or unusable source. | `tests/test_sources.py::test_registry_classes_valid` |
 | CT-010 | THE fetcher SHALL write raw files under the device data root and SHALL refuse a data root inside the repository. | `tests/test_sources.py::test_data_root_outside_repository` |
 | CT-011 | IF a fetched file's hash differs from the hash the manifest pins, THEN THE fetcher SHALL fail and name the file, unless the refresh is explicit. | `tests/test_sources.py::test_hash_drift_fails` |
+| CT-012 | THE examples of the bring-your-own-model guide SHALL be a pure function of their seed, so regenerating them writes identical bytes. | `tests/test_own_sample.py::test_examples_regenerate_identically` |
+| CT-013 | WHEN a reader's scored sample is validated, THE battery SHALL find the known truth of the committed examples: the calibrated sample green on every level test, the shifted and under-estimated sample red on the PSI and on every level test and green on the AUC against the initial validation. | `tests/test_own_sample.py::test_calibrated_sample_passes_the_level_tests`, `tests/test_own_sample.py::test_shifted_underestimated_sample_is_found` |
+| CT-014 | WHEN a reader's scored sample is validated, THE tool SHALL pass every record through contract 1 before the battery and SHALL write its report only outside the repository. | `tests/test_own_sample.py::test_contract_rejects_before_the_battery`, `tests/test_own_sample.py::test_report_never_written_inside_the_repository` |

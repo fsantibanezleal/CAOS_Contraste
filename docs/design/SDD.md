@@ -314,7 +314,9 @@ Exactly six routes on the shared shell (`@fasl-work/caos-app-shell`), in English
 the architecture modal:
 
 - **App**: the case workbench (the shell's `CaseWorkbench`). The rail holds the case selector (grouped by category),
-  the variant bar and the case's live controls (policy thresholds, segment, window, scenario weights). The
+  the variant bar and the case's live controls in sections shown one at a time (for C01: the decision, the policy
+  thresholds with their light counts, the applicant with its live scores); chips carry the short labels the artifacts
+  declare, and no section scrolls at 1280x800. The
   instrument has one tab row of at most six groups, named for the validator's question: **Model** (what the model
   says: scores, grades, term structures, curves), **Validation** (the battery: every `TestResult` with its light,
   statistic, H0, reference and policy), **Impact** (capital, provisions, liquidity, IRRBB, decisions), **Findings**
@@ -343,7 +345,7 @@ gated in the engine repository.
 
 | Unit | Feature folder | Requirements |
 |---|---|---|
-| U0 | `docs/design/features/contracts/` | CT-001 to CT-011: ingestion contracts, licence lineage, provenance, the TypeScript mirror, licences of the default install, data classes, content standards, the source registry, the licence manifest, the data root, hash pinning |
+| U0 | `docs/design/features/contracts/` | CT-001 to CT-014: ingestion contracts, licence lineage, provenance, the TypeScript mirror, licences of the default install, data classes, content standards, the source registry, the licence manifest, the data root, hash pinning, the bring-your-own-model door (contract 1 then the battery on a reader's scored sample) |
 | U1 | `docs/design/features/c01-retail-pd/` | CT-101 to CT-105 and CT-108 to CT-111: leakage-safe split, disjoint calibration slice, invariance to information outside the training set, threshold labels, live parity, the points table, the battery per rung, GBM monotonicity, expected ranges |
 | U1 | `docs/design/features/web/` | CT-106, CT-107 and CT-112 to CT-114: the App route fits the viewport with one row of navigation; every route passes the measured gate; the six instrument groups; the lane on every view; sources and licences in Context |
 | engine | `CAOS_RiskValidation` `docs/design/` | RV-001 to RV-007 (the `TestResult` record, the policy, the suite runner) and RV-101 to RV-114 (PD and stability tests), converged in `riskvalidation` 0.01.000; RV-901 (regulatory parameters with paragraph and in-force date) lands in U9 |
