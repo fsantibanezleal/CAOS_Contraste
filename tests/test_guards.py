@@ -102,6 +102,20 @@ def test_residue_marker_flags_the_placeholder_name_and_not_the_plugin_name():
     assert not marker.search('"name": "contraste-frontend"')
 
 
+def test_residue_marker_flags_the_example_variants_and_not_a_hyphenated_id():
+    sys.path.insert(0, str(SCRIPTS))
+    import check_template_residue as r
+
+    marker = dict(r.MARKERS)["the example immunisation variants"]
+    assert marker.search("export const COVERAGE = [")
+    assert marker.search("import { COVERAGE, type Selection } from './model';")
+    assert marker.search("return COVERAGE.map((v) => ({ v }));")
+    assert marker.search("the herd threshold is 1 - 1/R0")
+    assert not marker.search('{"id": "F-SCALED-COVERAGE", "severity": "S3"}')
+    assert not marker.search("COVERAGE-LEVELS")
+    assert not marker.search("UNCONDITIONAL_COVERAGE = 0.99")
+
+
 def test_residue_guard_scans_the_helper_scripts_and_skips_its_own_tests(tmp_path):
     tree = _git_tree(tmp_path)
     _put(tree, "scripts/precompute.ps1", "# E.g.:  ./scripts/precompute.ps1 EX02_epidemic --seed 7\n")

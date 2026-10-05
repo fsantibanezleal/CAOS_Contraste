@@ -3,6 +3,45 @@
 All notable changes to this product. Versions are X.XX.XXX (VERSION is the single source); every release is
 tagged.
 
+## [0.02.000], 2026-10-05
+
+Unit U2, its first case: C05 end to end.
+
+### Added
+
+- Case C05, low-default portfolios and PD calibration. Tasche (2013) and Pluto and Tasche (2005) are read from their
+  arXiv PDFs (derived-only); each reader checks its tables against their own print and refuses the bake otherwise,
+  and every printed cell is recomputed with `riskvalidation` 0.2.0 with its gap recorded (CT-201 to CT-203). The 2009
+  S&P curve is carried to 2010 and 2011 by every approach of the paper's section 4 and tested by its Monte Carlo
+  default-profile chi-square; the most prudent bounds (independent, correlated, scaled, over five years) run on the
+  paper's example; a seeded Vasicek generator (20,000 years) measures coverage, size and power (CT-204, CT-205). The
+  IRB capital of every curve and estimate states its regime, LGD, maturity and floor (CT-206); expected ranges are
+  checked at bake time and no S&P grade count is published (CT-207, CT-208). Six variants.
+- The C05 instrument: live TypeScript ports of the IRB risk weight, the most prudent bounds, quasi moment matching and
+  the four case 1 approaches, held to the engine within 1e-9 on exported parity points (CT-209); rail sections with
+  live read-outs and the six groups (CT-210), among them what the confidence level costs in capital and a comparison
+  of the variants of each kind; C05's sections of Experiments and Benchmark; the case page and the guide to
+  calibrating a PD curve and estimating low-default PDs.
+
+### Changed
+
+- `riskvalidation` 0.2.0 (tag `v0.02.000`). C01's artifacts changed only the engine and code versions in their
+  lineage.
+- The web on `@fasl-work/caos-app-shell` 0.7.2 (0.7.1 and 0.7.2 on npm since 2026-10-05): tiny p-values in scientific
+  notation, the workbench rows that no longer shrink, a key under every chart of several series, integer axes that
+  tick only at integers (C01's AUC across the variants repeated its labels). C05's own chart key, the bridge for the
+  missing one, is gone.
+
+### Fixed
+
+- Two guides named a local machine path, which failed the guards job on develop.
+
+### Base
+
+- The residue guard and its tests are those of CAOS_PRODUCT_TEMPLATE 0.02.004 (template PR #14, not yet tagged):
+  its immunisation marker matched the hyphenated finding id `F-SCALED-COVERAGE`. `.template-version` names 0.02.003
+  until the tag exists.
+
 ## [0.01.000], 2026-10-05
 
 The first release: units U0 (the contracts, the sources and their licences) and U1 (case C01 end to end, the web).

@@ -18,10 +18,12 @@ under Pyodide (the live lane, [04_live-lane.md](../../architecture/04_live-lane.
 Pinned to its release tag until the first PyPI release, in `data-pipeline/requirements.txt`:
 
 ```text
-riskvalidation @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation@v0.01.000
+riskvalidation @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation@v0.02.000
 ```
 
-Version 0.1.0 (tag `v0.01.000`), Python 3.11 or newer; verified 2026-10-05.
+Version 0.2.0 (tag `v0.02.000`), Python 3.11 or newer; verified 2026-10-05. 0.2.0 adds the regulatory calculators
+(`regulatory.irb`, the IRB functions under Basel III final, CRR3, Basel II and CMF RAN 21-6) and three reference
+engines (`engines.vasicek`, `engines.low_default`, `engines.pd_curve`), each reproducing its primary source's tables.
 
 ## Usage
 
@@ -52,8 +54,21 @@ print(disc.disc_auc(pd_eval, y_eval, policy=policy, model_id="P1", segment="port
 Each `TestResult.to_dict()` is written unchanged into the variant artifact (`tests`); contract 2 checks its keys
 against `TEST_RESULT_KEYS`. The engine's version is recorded in every artifact's lineage.
 
+`data-pipeline/pipeline/cases/c05_ldp_calibration.py` runs C05 on the 0.2.0 engines:
+
+| Module | Used for |
+|---|---|
+| `engines.pd_curve` | the 2009 S&P model (`model_from_counts`), its quasi moment matching (`qmm`), every calibration approach of Tasche (2013) for 2010 and 2011, the profile chi-square of case 3 |
+| `engines.low_default` | the most prudent bounds (independent and correlated), scaled (section 5) and over five years (section 6), for the paper's example and the generated years |
+| `regulatory.irb` | the risk weight of every curve and estimate (the Impact group), and the live calculator's parity points |
+| `validation.calibration` | `pd_default_profile` (the paper's Monte Carlo chi-square), `pd_chi2_grades`, `pd_jeffreys_grades`, `pd_binomial`, `pd_binomial_vasicek` |
+
+The browser recomputes the IRB risk weight, the most prudent bounds and the four case 1 calibrations with TypeScript
+ports (`frontend/src/engine/credit.ts`) held to the engine within 1e-9 on points the pipeline exports
+(`frontend/src/engine/credit.test.ts`).
+
 ## Caveats and licence
 
 MIT. The repository stays private until its first PyPI release (backlog BL-039); until then the Pyodide lane is not
-wired and the live views re-light committed results instead of recomputing them. Migration-matrix tests and the
+wired: the live views re-light committed results (C01) or run the TypeScript ports of the calculators (C05). Migration-matrix tests and the
 multi-period tests are in the engine but not run on C01, whose data are one snapshot and one period.

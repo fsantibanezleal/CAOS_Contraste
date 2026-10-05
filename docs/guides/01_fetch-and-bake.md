@@ -37,7 +37,7 @@ hash and size of each file (CT-008). A second fetch that finds different bytes f
 ## 3. Bake
 
 ```bash
-.venv-pipeline/bin/python data-pipeline/run.py C01 --output E:/_Temp/contraste/bake   # a sandbox bake
+.venv-pipeline/bin/python data-pipeline/run.py C01 --output <a temp folder>   # a sandbox bake, outside the repository
 .venv-pipeline/bin/python data-pipeline/run.py                                       # the canonical release bake
 ```
 

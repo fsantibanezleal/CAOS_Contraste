@@ -24,7 +24,8 @@ const index = read<CaseIndex>('manifests/index.json');
 
 function selections(): Array<{ label: string; sel: Selection }> {
   const out: Array<{ label: string; sel: Selection }> = [];
-  for (const entry of index.cases) {
+  // C01's views; C05's instrument has its own test (c05.test.tsx)
+  for (const entry of index.cases.filter((c) => c.case_id === 'C01')) {
     const manifest = read<CaseManifest>(entry.manifest_path);
     for (const a of manifest.artifacts.filter((x) => x.role === 'variant')) {
       const variant = read<VariantArtifact>(a.path);
