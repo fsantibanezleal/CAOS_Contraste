@@ -96,7 +96,8 @@ export type Kind =
   | 'text'
   | { array: Kind }
   | { object: Record<string, Kind> }
-  | { map: Kind };
+  | { map: Kind }
+  | { nullable: Kind };
 
 export const TRACE_SUMMARY = { peak_I: 'number', t_peak: 'number', attack_rate: 'number' } satisfies Record<keyof TraceSummary, Kind>;
 
@@ -153,6 +154,7 @@ export function conform(value: unknown, kind: Kind, path = '$'): string[] {
   if (kind === 'integer') return Number.isInteger(value) ? [] : [`${path}: expected an integer`];
   if (kind === 'boolean') return typeof value === 'boolean' ? [] : [`${path}: expected a boolean`];
   if (kind === 'text') return conform(value, { object: { en: 'string', es: 'string' } }, path);
+  if ('nullable' in kind) return value === null ? [] : conform(value, kind.nullable, path);
   if ('array' in kind) {
     if (!Array.isArray(value)) return [`${path}: expected an array`];
     return value.flatMap((v, i) => conform(v, kind.array, `${path}[${i}]`));
@@ -168,3 +170,113 @@ export function conform(value: unknown, kind: Kind, path = '$'): string[] {
   for (const k of want) if (k in obj) out.push(...conform(obj[k], kind.object[k], `${path}.${k}`));
   return out;
 }
+
+// CONTRACT 1 mirror (the web side of data-pipeline/pipeline/io/contract.py, exported to data/derived/contract/).
+// The bring-your-own-data upload validates a visitor's file in the browser against these declarations.
+
+export interface ContractField {
+  name: string;
+  kind: 'str' | 'int' | 'float' | 'flag' | 'date' | 'enum';
+  meaning: Text;
+  unit: string;
+  lo: number | null;
+  hi: number | null;
+  lo_open: boolean;
+  hi_open: boolean;
+  values: string[];
+  values_param: string | null;
+  required: boolean;
+  on_missing: 'reject' | 'flag';
+  /** The expected range in words, as a rejection states it. */
+  expected: string;
+}
+
+export interface ContractRule {
+  id: string;
+  scope: 'record' | 'group';
+  policy: 'reject' | 'flag' | 'exclude';
+  field: string;
+  statement: Text;
+  group_by: string[];
+  order_by: string | null;
+}
+
+export interface ContractParam {
+  name: string;
+  kind: string;
+  meaning: Text;
+  required: boolean;
+  values: string[];
+}
+
+export interface FamilyContract {
+  schema: string; // "contraste.contract/v1"
+  family: string;
+  title: Text;
+  used_by: Text;
+  fields: ContractField[];
+  rules: ContractRule[];
+  params: ContractParam[];
+  open_fields: boolean;
+  notes: Text[];
+  param_checks: Text[];
+}
+
+export interface ContractIndex {
+  schema: string;
+  families: Array<{ family: string; title: Text; path: string }>;
+}
+
+export const CONTRACT_SCHEMA = 'contraste.contract/v1';
+
+export const CONTRACT_FIELD = {
+  name: 'string',
+  kind: 'string',
+  meaning: 'text',
+  unit: 'string',
+  lo: { nullable: 'number' },
+  hi: { nullable: 'number' },
+  lo_open: 'boolean',
+  hi_open: 'boolean',
+  values: { array: 'string' },
+  values_param: { nullable: 'string' },
+  required: 'boolean',
+  on_missing: 'string',
+  expected: 'string',
+} satisfies Record<keyof ContractField, Kind>;
+
+export const CONTRACT_RULE = {
+  id: 'string',
+  scope: 'string',
+  policy: 'string',
+  field: 'string',
+  statement: 'text',
+  group_by: { array: 'string' },
+  order_by: { nullable: 'string' },
+} satisfies Record<keyof ContractRule, Kind>;
+
+export const CONTRACT_PARAM = {
+  name: 'string',
+  kind: 'string',
+  meaning: 'text',
+  required: 'boolean',
+  values: { array: 'string' },
+} satisfies Record<keyof ContractParam, Kind>;
+
+export const FAMILY_CONTRACT = {
+  schema: 'string',
+  family: 'string',
+  title: 'text',
+  used_by: 'text',
+  fields: { array: { object: CONTRACT_FIELD } },
+  rules: { array: { object: CONTRACT_RULE } },
+  params: { array: { object: CONTRACT_PARAM } },
+  open_fields: 'boolean',
+  notes: { array: 'text' },
+  param_checks: { array: 'text' },
+} satisfies Record<keyof FamilyContract, Kind>;
+
+export const CONTRACT_INDEX = {
+  schema: 'string',
+  families: { array: { object: { family: 'string', title: 'text', path: 'string' } } },
+} satisfies Record<keyof ContractIndex, Kind>;

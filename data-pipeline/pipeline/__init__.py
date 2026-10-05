@@ -1,8 +1,6 @@
-"""pipeline, the offline+live engine for the CAOS product-repo template (ADR-0057).
-
-Rename this package to `pipeline` per product and replace the EXAMPLE engine (model/ + the stage bodies) with the
-deep-research-chosen SOTA engine. Everything else (the two data contracts, the staged pipeline, the lane gate, the
-manifest/trace, the cases-by-category registry) is the FROZEN base, instantiate it, do not redesign it.
+"""Contraste's offline pipeline (ADR-0057): the scripts that turn public data and known-truth generators into the
+committed artifacts the web replays. Invoked by path (`python data-pipeline/run.py`), never installed; the
+validation tests and regulatory calculators come from the engine package `riskvalidation`.
 """
 
 from pathlib import Path

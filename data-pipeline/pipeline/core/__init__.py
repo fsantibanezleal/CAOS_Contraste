@@ -1,2 +1,3 @@
-"""Core primitives shared across stages: seeded determinism (rng), the compact trace (trace), the artifact manifest
-= Contract 2 (manifest), and the measured live-vs-precompute lane gate (gate)."""
+"""Core primitives shared across stages: seeded determinism (rng), contract 2 (manifest), licence lineage and
+provenance (lineage), the expected ranges every result is checked against (expect), and the measured
+live-vs-precompute lane gate (gate)."""

@@ -53,9 +53,14 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
 @pytest.fixture(autouse=True)
 def _sandboxed_pipeline(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> pathlib.Path:
     from pipeline import pipeline
+    from pipeline.io import fetch
 
     root = tmp_path / "sandbox-derived"
     monkeypatch.setattr(pipeline, "DERIVED", root)
     monkeypatch.setattr(pipeline, "MANIFESTS", root / "manifests")
     monkeypatch.setattr(pipeline, "MODELS", tmp_path / "sandbox-models")
+    # the licence manifest is committed evidence too: a fetch that forgets manifest_path writes the sandbox
+    monkeypatch.setattr(fetch, "MANIFEST", tmp_path / "sandbox-sources" / "manifest.json")
+    # and no test reads or writes the device data root by accident
+    monkeypatch.delenv(fetch.ENV_VAR, raising=False)
     return root

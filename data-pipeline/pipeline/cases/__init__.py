@@ -1,2 +1,6 @@
-"""Documented cases, each carrying a CATEGORY (the domain problem-type taxonomy). The registry groups them by
-category; the App shows ONE selected case, while Experiments/Benchmark show cross-case summaries by category."""
+"""The cases (SDD section 5). Each case module exposes ``CASE``, an object with ``id``, ``slug``, ``title``,
+``category_id``, ``question``, ``sources`` and ``bake(seed, paths, data_root) -> manifest``; the registry lists
+them in ``CASES``. A case is added by the unit that builds it, end to end, never as a placeholder."""
+from __future__ import annotations
+
+CASES: list = []

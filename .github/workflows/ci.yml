@@ -35,6 +35,12 @@ jobs:
           python -c "import sys, yaml, pathlib; [yaml.safe_load(p.read_text()) for p in pathlib.Path('.github/workflows').glob('*.yml')]; print('workflows: OK')"
       - name: CONTRACT 2, manifests and artifacts consistent
         run: python scripts/check_artifacts.py
+      - name: Every artifact carries true provenance (CT-003)
+        run: python scripts/check_provenance.py
+      - name: No raw rows of a non-mirror source (CT-006)
+        run: python scripts/check_data_classes.py
+      - name: No AGPL, GPL or BSL in the default install (CT-005)
+        run: python scripts/check_licences.py
       - name: VERSION is the single source (T4)
         run: python scripts/check_version_coherence.py
       - name: The SDD, every requirement with a real gate (ADR-0075)

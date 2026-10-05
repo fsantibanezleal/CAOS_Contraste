@@ -4,7 +4,9 @@ fast AND its trace is small; otherwise it is PRECOMPUTE and the web replays the 
 the measured numbers go into the manifest, and scripts/check_artifacts.py fails on a mislabelled lane."""
 from __future__ import annotations
 
-LIVE_WHEELS: set[str] = {"numpy"}   # the wheels a light, live-eligible engine may depend on
+# The wheels a live-eligible computation may depend on: the pure riskvalidation wheel and what it needs, all of
+# which Pyodide ships (SDD section 3). The browser then measures the cold start; this is the offline proxy.
+LIVE_WHEELS: set[str] = {"numpy", "scipy", "statsmodels", "riskvalidation"}
 RUN_MS_GATE = 1500.0                 # a live run must complete well within an interaction budget
 TRACE_BYTES_GATE = 256 * 1024        # a live/replay artifact must stay small
 

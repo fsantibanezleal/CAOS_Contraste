@@ -1,0 +1,10 @@
+{
+  "schema": "contraste.licences/v1",
+  "note": "The verified licence of every package a requirements file of the default install names (SDD section 8, CT-005). A package is added here, with the licence read from its own metadata or repository, in the commit that adds it to a requirements file. scripts/check_licences.py fails on a requirement missing from this table and on any AGPL, GPL or BSL licence; with --installed it reads the metadata of every distribution installed in the running interpreter.",
+  "forbidden": ["AGPL", "GPL", "BSL (Business Source License)"],
+  "python": {
+    "numpy": {"licence": "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0", "source": "package metadata (License-Expression), numpy 2.4.6", "verified": "2026-10-05"},
+    "pytest": {"licence": "MIT", "source": "package metadata (License-Expression), pytest 9.1.1", "verified": "2026-10-05"},
+    "ruff": {"licence": "MIT", "source": "package metadata (License-Expression), ruff 0.15.18", "verified": "2026-10-05"}
+  }
+}
