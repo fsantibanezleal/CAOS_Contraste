@@ -28,7 +28,7 @@ const BATTERY: Array<{ id: string; label: BiText }> = [
 ];
 
 /** A test's value (its p-value when it has one) and its light under the rail's policy, as a word: never colour alone. */
-function LightCell({ row, alphas, className }: { row: TestRow | undefined; alphas: PolicyAlphas; className?: string }) {
+export function LightCell({ row, alphas, className }: { row: TestRow | undefined; alphas: PolicyAlphas; className?: string }) {
   const lang = useShellLang();
   if (!row) return <td className={className}>-</td>;
   const light: Light = relight(row, alphas);

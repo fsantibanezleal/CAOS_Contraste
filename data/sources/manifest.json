@@ -1,6 +1,42 @@
 {
   "schema": "contraste.licence-manifest/v1",
   "sources": {
+    "pluto-tasche-2005": {
+      "name": "Estimating probabilities of default for low default portfolios (arXiv cond-mat/0411699v3), Tables 1 to 14",
+      "publisher": "K. Pluto and D. Tasche, arXiv; in Engelmann and Rauhmeier (eds.), The Basel II Risk Parameters, Springer (2006)",
+      "landing": "https://arxiv.org/abs/cond-mat/0411699v3",
+      "class": "derived-only",
+      "licence": "arXiv assumed license, 1991-2003 (http://arxiv.org/licenses/assumed-1991-2003/): distribution by arXiv; the tables are the paper's own computations on a hypothetical portfolio",
+      "attribution": "Pluto, K. and Tasche, D. (2005). Estimating probabilities of default for low default portfolios. arXiv:cond-mat/0411699v3. https://doi.org/10.48550/arXiv.cond-mat/0411699",
+      "access": "http",
+      "files": [
+        {
+          "name": "pluto-tasche-arxiv-cond-mat-0411699v3.pdf",
+          "url": "https://arxiv.org/pdf/cond-mat/0411699v3",
+          "sha256": "949dbc3873852a930d3532183efcab4199ac9478b1f70b32101c9e9f37084459",
+          "bytes": 242425,
+          "retrieved": "2026-10-05"
+        }
+      ]
+    },
+    "tasche-2013": {
+      "name": "The art of probability-of-default curve calibration (arXiv 1212.3716v6), Tables 2 to 9",
+      "publisher": "D. Tasche, arXiv; Journal of Credit Risk 9(4):63-103 (2013)",
+      "landing": "https://arxiv.org/abs/1212.3716v6",
+      "class": "derived-only",
+      "licence": "arXiv.org perpetual, non-exclusive license to distribute (http://arxiv.org/licenses/nonexclusive-distrib/1.0/); Table 2 quotes the S&P annual global corporate default studies for 2009 to 2011 (S&P 2010, 2011, 2012)",
+      "attribution": "Tasche, D. (2013). The art of probability-of-default curve calibration. Journal of Credit Risk 9(4):63-103. https://doi.org/10.21314/jcr.2013.169. Table 2 data: S&P annual global corporate default studies 2009 to 2011.",
+      "access": "http",
+      "files": [
+        {
+          "name": "tasche-2013-arxiv-1212.3716v6.pdf",
+          "url": "https://arxiv.org/pdf/1212.3716v6",
+          "sha256": "9a2c2116169617c41f1328069c7b941022606dab20acb39ef4e7d401fdcafdee",
+          "bytes": 503630,
+          "retrieved": "2026-10-05"
+        }
+      ]
+    },
     "uci-australian": {
       "name": "Statlog (Australian Credit Approval)",
       "publisher": "UCI Machine Learning Repository / R. Quinlan",

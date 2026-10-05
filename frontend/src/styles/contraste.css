@@ -70,6 +70,14 @@
 .ct-stack { display: flex; flex-direction: column; gap: 0.5rem; height: 100%; min-height: 0; }
 .ct-stack > .ct-scroll { flex: 1 1 0; height: auto; }
 
+/* cards side by side at their own height (tables over a filling chart, as the C01 Variants view stacks one); below
+   900 px they stack */
+.ct-row { display: flex; gap: 0.75rem; min-width: 0; align-items: stretch; }
+.ct-row > * { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+.ct-row > .ct-share-2 { flex-grow: 2; }
+.ct-row > .ct-share-3 { flex-grow: 3; }
+@media (max-width: 900px) { .ct-row { flex-direction: column; } }
+
 /* Below 900 px the shell stacks the row and the document scrolls: a wrapper is as tall as its cards (the row's
    zero basis would collapse it, since the document gives the row no height) */
 @media (max-width: 900px) { .ct-col { flex: none; } }
@@ -84,3 +92,7 @@
 /* a text column that may be narrow (a bin label wraps at its space on a phone): left-aligned, wrapping, without the
    shell's 16ch minimum of a text column */
 th.ct-text, td.ct-text { text-align: left; white-space: normal; }
+
+/* headers that may wrap, for a table whose column names are longer than its numbers (C05's variants: the Spanish
+   approach names pushed two columns past the card at 1280 px) */
+table.ct-wrap-head th { white-space: normal; }

@@ -1,4 +1,5 @@
-// The App route (ADR-0016 s9 as amended, ADR-0071, SDD section 10): one CaseWorkbench. The rail holds the case picker,
+// The App route (ADR-0016 s9 as amended, ADR-0071, SDD section 10): one CaseWorkbench for every case. C01's instrument
+// is built here; C05's by workbench/c05/instrument.tsx (CT-210), chosen by the selected case. The rail holds the case picker,
 // the variants, and the live inputs, in sections: the decision (the challenger, the approval rate, the LGD, whose
 // numbers the Impact group draws), the policy (the thresholds that turn p-values into lights, with their counts) and
 // the live scorer (one applicant of the holdout sample, with its scores). Chips carry the short labels the artifacts
@@ -27,6 +28,7 @@ import { atApproval, CHAMPION, challengers, defaultChallenger, provenanceOf, run
 import { ModelGroup } from './ModelViews';
 import { ValidationGroup } from './ValidationViews';
 import { VariantsView } from './VariantsView';
+import { useC05Instrument } from './c05/instrument';
 
 const LGD_FLOOR = 0.5; // CRE32.58: the Basel III LGD input floor for QRRE, the default assumption
 
@@ -140,9 +142,11 @@ export function Workbench() {
   }, [data, chosen, challenger]);
 
   const sel: Selection | null = useMemo(
-    () => (data && chosen ? { data, challenger: chosen, alphas, approval, lgd, applicant } : null),
+    () => (data && chosen && data.manifest.case_id === 'C01' ? { data, challenger: chosen, alphas, approval, lgd, applicant } : null),
     [data, chosen, alphas, approval, lgd, applicant],
   );
+  // every case's instrument hook runs on every render (hooks keep their order); the selected case picks which is shown
+  const c05 = useC05Instrument(data, setVariantId);
 
   const cases: CaseDef[] = index.state === 'ready' ? index.data.cases.map((c) => ({ id: c.case_id, name: c.title[lang], category: c.category[lang], kind: c.kind })) : [];
   const variants = data
@@ -276,17 +280,21 @@ export function Workbench() {
         layout: 'select',
         deepLink: true,
       }}
-      controls={{ challenger: chosen, amber: alphas.amber, red: alphas.red, approval, lgd, applicant }}
+      controls={c05 ? c05.controls : { challenger: chosen, amber: alphas.amber, red: alphas.red, approval, lgd, applicant }}
       variants={{ variants, activeId: activeVariant, onSelect: setVariantId, title: { en: 'Variant', es: 'Variante' }, lane: 'replay' }}
-      rail={rail}
-      groups={[
-        { id: 'model', label: { en: 'Model', es: 'Modelo' }, lane: 'replay', provenance: prov, content: <ModelGroup sel={sel} /> },
-        { id: 'validation', label: { en: 'Validation', es: 'Validación' }, lane: 'replay', provenance: prov, content: <ValidationGroup sel={sel} /> },
-        { id: 'impact', label: { en: 'Impact', es: 'Impacto' }, lane: 'live', provenance: prov, content: <ImpactView sel={sel} /> },
-        { id: 'findings', label: { en: 'Findings', es: 'Hallazgos' }, lane: 'replay', provenance: prov, content: <FindingsView sel={sel} /> },
-      ]}
-      compare={{ label: { en: 'Variants', es: 'Variantes' }, lane: 'replay', provenance: prov, content: <VariantsView sel={sel} onPick={setVariantId} /> }}
-      context={{ content: <ContextView sel={sel} /> }}
+      rail={c05 ? c05.rail : rail}
+      groups={
+        c05
+          ? c05.groups
+          : [
+              { id: 'model', label: { en: 'Model', es: 'Modelo' }, lane: 'replay', provenance: prov, content: <ModelGroup sel={sel} /> },
+              { id: 'validation', label: { en: 'Validation', es: 'Validación' }, lane: 'replay', provenance: prov, content: <ValidationGroup sel={sel} /> },
+              { id: 'impact', label: { en: 'Impact', es: 'Impacto' }, lane: 'live', provenance: prov, content: <ImpactView sel={sel} /> },
+              { id: 'findings', label: { en: 'Findings', es: 'Hallazgos' }, lane: 'replay', provenance: prov, content: <FindingsView sel={sel} /> },
+            ]
+      }
+      compare={c05 ? c05.compare : { label: { en: 'Variants', es: 'Variantes' }, lane: 'replay', provenance: prov, content: <VariantsView sel={sel} onPick={setVariantId} /> }}
+      context={c05 ? c05.context : { content: <ContextView sel={sel} /> }}
     />
   );
 }
