@@ -176,7 +176,7 @@ function Calibration() {
       </DocSection>
       <DocSection title={{ en: 'Brier score, its decomposition, and ECE', es: 'Puntaje de Brier, su descomposición y ECE' }} refs={['brier1950', 'murphy1973', 'naeini2015']}>
         <Equation
-          tex="\mathrm{BS} = \frac1N\sum_j (f_j - d_j)^2 = \underbrace{\frac1N\sum_k n_k(\bar f_k - \bar d_k)^2}_{\text{reliability}} - \underbrace{\frac1N\sum_k n_k(\bar d_k - \bar d)^2}_{\text{resolution}} + \underbrace{\bar d(1-\bar d)}_{\text{uncertainty}}, \qquad \mathrm{ECE} = \sum_{m}\frac{|B_m|}{n}\left|\bar y(B_m) - \bar p(B_m)\right|"
+          tex={String.raw`\mathrm{BS} = \frac1N\sum_j (f_j - d_j)^2 = \underbrace{\frac1N\sum_k n_k(\bar f_k - \bar d_k)^2}_{\text{${t('reliability', 'fiabilidad')}}} - \underbrace{\frac1N\sum_k n_k(\bar d_k - \bar d)^2}_{\text{${t('resolution', 'resolución')}}} + \underbrace{\bar d(1-\bar d)}_{\text{${t('uncertainty', 'incertidumbre')}}}, \qquad \mathrm{ECE} = \sum_{m}\frac{|B_m|}{n}\left|\bar y(B_m) - \bar p(B_m)\right|`}
           caption={t('Brier (1950) and Murphy\'s partition (1973), exact when the forecast is constant within each grade k; d_j: the outcome; ECE over M bins B_m of the predicted PD (Pakdaman Naeini et al. 2015). Both are descriptive.', 'Brier (1950) y la partición de Murphy (1973), exacta cuando el pronóstico es constante dentro de cada grado k; d_j: el resultado; ECE sobre M tramos B_m de la PD predicha (Pakdaman Naeini et al. 2015). Ambas son descriptivas.')}
         />
       </DocSection>
@@ -194,7 +194,7 @@ function Stability() {
           es={<>El índice de estabilidad poblacional compara la distribución de un puntaje (o, como CSI, de una entrada) entre una muestra de desarrollo y una actual, sobre tramos fijados de antemano. Las bandas 0,10 y 0,25 son una convención sin control del error de tipo I; Yurdakul y Naranjo muestran que, escalado por los tamaños de muestra, el PSI es aproximadamente chi-cuadrado, lo que da un umbral con una tasa de error conocida <Cite id="yurdakul2020" />. Su Tabla 2 da 0,338, 0,169, 0,085 y 0,034 para diez tramos al 5% con 100, 200, 400 y 1.000 registros en cada muestra.</>}
         />
         <Equation
-          tex="\mathrm{PSI} = \sum_{i=1}^{B}(a_i - e_i)\ln\frac{a_i}{e_i}, \qquad \text{reject when}\;\; \mathrm{PSI} > \left(\frac1n + \frac1m\right)\chi^2_{1-\alpha,\,B-1}"
+          tex={String.raw`\mathrm{PSI} = \sum_{i=1}^{B}(a_i - e_i)\ln\frac{a_i}{e_i}, \qquad \text{${t('reject when', 'rechazar cuando')}}\;\; \mathrm{PSI} > \left(\frac1n + \frac1m\right)\chi^2_{1-\alpha,\,B-1}`}
           caption={t('e_i and a_i: the development and current shares of bin i; n and m: the two sample sizes; B: the number of bins (Yurdakul and Naranjo 2020, Theorem 3.3).', 'e_i y a_i: las fracciones de desarrollo y actual del tramo i; n y m: los dos tamaños de muestra; B: el número de tramos (Yurdakul y Naranjo 2020, Teorema 3.3).')}
         />
       </DocSection>
@@ -232,7 +232,7 @@ function SizeAndPower() {
           es={<>Las pruebas binomial, binomial corregida de Vasicek y de Jeffreys ven una cartera solo a través de su conteo de incumplimientos, y sus valores p bajan a medida que crece, así que cada una rechaza exactamente desde un conteo crítico k*. Su tamaño y su potencia son entonces exactos para cualquier PD verdadera y correlación de activos: WP14 calculó de este modo que una prueba binomial con 99,9% de confianza tiene una confianza verdadera mucho menor cuando los incumplimientos están correlacionados <Cite id="wp14" />. Cada tasa simulada de estas pruebas concuerda con el valor exacto dentro de 3,29 errores estándar, lo que verifica a la vez los generadores, el arnés y las pruebas.</>}
         />
         <Equation
-          tex="P(\text{reject}) = \int \Pr\big[\mathrm{Bin}(n, p(x)) \ge k^*\big]\,\varphi(x)\,dx, \qquad p(x) = \Phi\!\left(\frac{\Phi^{-1}(\pi) - \sqrt{\rho}\,x}{\sqrt{1-\rho}}\right)"
+          tex={String.raw`P(\text{${t('reject', 'rechazo')}}) = \int \Pr\big[\mathrm{Bin}(n, p(x)) \ge k^*\big]\,\varphi(x)\,dx, \qquad p(x) = \Phi\!\left(\frac{\Phi^{-1}(\pi) - \sqrt{\rho}\,x}{\sqrt{1-\rho}}\right)`}
           caption={t('The one-factor mixture: π the true PD, ρ the true asset correlation, φ the standard normal density; integrated on a 256-node Gauss-Hermite rule, which the App also uses to compute it live for a reader\'s portfolio.', 'La mezcla de un factor: π la PD verdadera, ρ la correlación de activos verdadera, φ la densidad normal estándar; integrada con una regla de Gauss-Hermite de 256 nodos, que la App también usa para calcularla en vivo para la cartera del lector.')}
         />
       </DocSection>
