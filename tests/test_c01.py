@@ -126,7 +126,58 @@ def test_expected_ranges_hold(manifest):
                 values[f"jeffreys_p_{key}"] = t["p_value"]
         if a["variant_id"] == "holdout":
             values["holdout_default_rate"] = v["outputs"]["defaults"] / v["outputs"]["n"]
+            cut = v["outputs"]["rungs"]["P1-scorecard"]["cutoff"]
+            rev, trn = cut["capital_per_lgd"]["basel3"][-1], cut["capital_per_lgd_transactors"]["basel3"][-1]
+            values["capital_share_P1-scorecard_holdout"] = 0.5 * rev / cut["ead"][-1]
+            values["transactor_effect_P1-scorecard_holdout"] = (rev - trn) / rev
     assert manifest["expect"], "the case declares its expected ranges"
     for name, (lo, hi) in manifest["expect"].items():
         assert name in values, name
         assert lo <= values[name] <= hi, (name, values[name], lo, hi)
+
+
+def test_irb_capital_states_its_assumptions(manifest):
+    """CT-212: every rung of every variant carries the capital at unit LGD along its cut-offs under the three regimes,
+    and the variant states the class, the floors, the scaling, the EAD convention and the references it used."""
+    for a, v, _ in _variants(manifest):
+        irb = v["outputs"]["irb"]
+        cards = a["variant_id"] != "german-twin"
+        assert irb["asset_class"] == ("qrre" if cards else "other_retail")
+        assert irb["regimes"] == ["basel3", "crr3", "basel2"]
+        for regime in irb["regimes"]:
+            facts = irb["by_regime"][regime]
+            assert facts["name"] and facts["references"]["pd_floor"] and facts["references"]["scaling"]
+            assert facts["scaling"] == (1.06 if regime == "basel2" else 1.0)
+            assert facts["pd_floor"] == (0.0003 if regime == "basel2" else 0.0005)
+            if cards:
+                assert facts["pd_floor_revolver"] == (0.0003 if regime == "basel2" else 0.001)
+        assert irb["lgd_floor_basel3"] == (0.5 if cards else 0.3) and "d424" in irb["lgd_floor_source"]
+        assert irb["ead"]["en"] and irb["ead"]["es"]
+        for rid, rung in v["outputs"]["rungs"].items():
+            cut = rung["cutoff"]
+            for regime in irb["regimes"]:
+                curve = cut["capital_per_lgd"][regime]
+                assert len(curve) == len(cut["approval_rate"]), (a["variant_id"], rid, regime)
+                assert all(y >= x for x, y in zip(curve, curve[1:])), "approving more never lowers the capital"
+                assert 0.0 < curve[-1] <= cut["ead"][-1], "capital at unit LGD is a fraction of the EAD"
+        for key in ("capital_champion", "capital_challenger"):
+            assert v["impact"][key]["value"] > 0 and "Basel III" in v["impact"][key]["label"]["en"]
+
+
+def test_transactor_sensitivity_reported(manifest):
+    """CT-214: the cards are all revolvers, the six-month full payers are counted, and their capital as transactors
+    is reported, never above the revolvers' (the transactor's PD floor is the lower one)."""
+    for a, v, _ in _variants(manifest):
+        irb = v["outputs"]["irb"]
+        if a["variant_id"] == "german-twin":
+            assert irb["six_month_full_payers"] is None and not irb["revolvers_only"]
+            assert all(r["cutoff"]["capital_per_lgd_transactors"] is None for r in v["outputs"]["rungs"].values())
+            continue
+        assert irb["revolvers_only"] is True
+        assert 0 < irb["six_month_full_payers"] < v["outputs"]["n"]
+        assert "d424" in irb["transactor_source"] and "152" in irb["transactor_source"]
+        for rung in v["outputs"]["rungs"].values():
+            cut = rung["cutoff"]
+            for regime in irb["regimes"]:
+                for rev, trn in zip(cut["capital_per_lgd"][regime], cut["capital_per_lgd_transactors"][regime], strict=True):
+                    assert trn <= rev * (1 + 1e-12)

@@ -41,6 +41,17 @@ describe('the IRB risk weight equals regulatory.irb on the exported points', () 
   });
 });
 
+describe('the retail risk weight equals regulatory.irb on the points C01 exports (CT-215)', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pts: any[] = read('C01/holdout.json').outputs.irb.parity;
+  it(`${pts.length} points: QRRE revolvers and transactors, other retail, three regimes`, () => {
+    expect(pts.length).toBeGreaterThan(100);
+    for (const cls of ['qrre', 'other_retail']) expect(pts.some((p) => p.asset_class === cls)).toBe(true);
+    expect(pts.some((p) => p.asset_class === 'qrre' && p.revolver) && pts.some((p) => p.asset_class === 'qrre' && !p.revolver)).toBe(true);
+    for (const p of pts) close(irbCapital(p.asset_class, p.pd, p.lgd, { regime: p.regime as Regime, revolver: p.revolver }).riskWeight, p.risk_weight);
+  });
+});
+
 describe('the most prudent bounds equal engines.low_default on the exported points', () => {
   const par = variants['ldp-published'].outputs.parity.bounds;
   it(`${par.points.length} observations, levels and correlations`, () => {

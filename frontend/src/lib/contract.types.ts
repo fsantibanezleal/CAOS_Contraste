@@ -221,8 +221,51 @@ export interface RungOutputs {
   roc: { fpr: number[]; tpr: number[] };
   cap: { population: number[]; defaults: number[]; default_rate: number };
   distribution: { log10_pd_edges: number[]; defaulters: number[]; non_defaulters: number[] };
-  cutoff: { cutoff: number[]; approval_rate: number[]; bad_rate: number[]; pd_ead: number[]; ead: number[] };
+  cutoff: {
+    cutoff: number[];
+    approval_rate: number[];
+    bad_rate: number[];
+    pd_ead: number[];
+    ead: number[];
+    /** The IRB capital (8% of the RWA) of the approved at unit LGD, by regime: retail capital is linear in the LGD. */
+    capital_per_lgd: Record<string, number[]>;
+    /** The same with the six-month full payers as transactors (the cards only; null for the loans). */
+    capital_per_lgd_transactors: Record<string, number[]> | null;
+  };
   reliability_raw: ReliabilityBin[] | null;
+}
+
+/** One point of the retail risk weight, from riskvalidation, for the live port (CT-215). */
+export interface RetailParityPoint {
+  regime: string;
+  asset_class: string;
+  revolver: boolean;
+  pd: number;
+  lgd: number;
+  risk_weight: number;
+}
+
+export interface RegimeFacts {
+  name: string;
+  /** The QRRE revolvers' PD floor (null for other retail). */
+  pd_floor_revolver: number | null;
+  pd_floor: number;
+  scaling: number;
+  references: Record<string, string>;
+}
+
+/** What C01's capital view states (CT-212, CT-214). */
+export interface C01Irb {
+  asset_class: string;
+  regimes: string[];
+  by_regime: Record<string, RegimeFacts>;
+  revolvers_only: boolean;
+  six_month_full_payers: number | null;
+  lgd_floor_basel3: number;
+  lgd_floor_source: string;
+  transactor_source: string;
+  ead: Text;
+  parity: RetailParityPoint[] | null;
 }
 
 export interface ScoredSample {
@@ -250,6 +293,7 @@ export interface VariantOutputs {
   defaults: number;
   groups: Record<string, GroupStat>;
   sample: ScoredSample | null;
+  irb: C01Irb;
 }
 
 export interface TestRow {
@@ -480,9 +524,48 @@ export const RUNG_OUTPUTS = {
   roc: { object: { fpr: nums, tpr: nums } },
   cap: { object: { population: nums, defaults: nums, default_rate: num } },
   distribution: { object: { log10_pd_edges: nums, defaulters: { array: 'integer' }, non_defaulters: { array: 'integer' } } },
-  cutoff: { object: { cutoff: nums, approval_rate: nums, bad_rate: nums, pd_ead: nums, ead: nums } },
+  cutoff: {
+    object: {
+      cutoff: nums,
+      approval_rate: nums,
+      bad_rate: nums,
+      pd_ead: nums,
+      ead: nums,
+      capital_per_lgd: { map: nums },
+      capital_per_lgd_transactors: { nullable: { map: nums } },
+    } satisfies Record<keyof RungOutputs['cutoff'], Kind>,
+  },
   reliability_raw: { nullable: RELIABILITY },
 } satisfies Record<keyof RungOutputs, Kind>;
+
+export const C01_IRB = {
+  asset_class: 'string',
+  regimes: { array: 'string' },
+  by_regime: {
+    map: {
+      object: { name: 'string', pd_floor_revolver: nNum, pd_floor: num, scaling: num, references: { map: 'string' } } satisfies Record<
+        keyof RegimeFacts,
+        Kind
+      >,
+    },
+  },
+  revolvers_only: 'boolean',
+  six_month_full_payers: nInt,
+  lgd_floor_basel3: num,
+  lgd_floor_source: 'string',
+  transactor_source: 'string',
+  ead: 'text',
+  parity: {
+    nullable: {
+      array: {
+        object: { regime: 'string', asset_class: 'string', revolver: 'boolean', pd: num, lgd: num, risk_weight: num } satisfies Record<
+          keyof RetailParityPoint,
+          Kind
+        >,
+      },
+    },
+  },
+} satisfies Record<keyof C01Irb, Kind>;
 
 export const SAMPLE = {
   ids: { array: 'string' },
@@ -502,6 +585,7 @@ export const VARIANT_OUTPUTS = {
     map: { object: { n: 'integer', default_rate: num, auc: { map: num }, roc: { map: { object: { fpr: nums, tpr: nums } } } } satisfies Record<keyof GroupStat, Kind> },
   },
   sample: { nullable: { object: SAMPLE } },
+  irb: { object: C01_IRB },
 } satisfies Record<keyof VariantOutputs, Kind>;
 
 export const TEST_ROW = {
