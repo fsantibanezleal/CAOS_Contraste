@@ -25,6 +25,7 @@ from ..model.ebm import score_logit
 from ..stages import evaluate, split
 from ..stages.export import write_artifact
 from ..stages.ingest import ingest
+from . import c01_capital as cap
 from . import c01_features as feat
 from .c01_ladder import Rung, _t, _v, fit_ladder
 
@@ -82,6 +83,12 @@ EXPECT: dict[str, tuple[float, float]] = {
     "psi_P1-scorecard_drift-severe": (0.05, 3.0),   # the severe shift must show in the score distribution
     "jeffreys_p_P1-scorecard_prior-shift": (0.0, 0.01),  # 1.5 times the defaults: the PD is underestimated
     "auc_P1-scorecard_german-twin": (0.65, 0.85),
+    # IRB capital of the champion's whole evaluated book (Basel III, LGD 50%) per unit of EAD: the QRRE function at
+    # LGD 50% gives 1.5% at a PD of 1% and peaks near 11.9% (PDs of 30% to 50%)
+    "capital_share_P1-scorecard_holdout": (0.015, 0.12),
+    # the six-month full payers as transactors (floor 0.05% instead of 0.1%), on the same book: their default rate
+    # (14%) puts their PDs far above both floors, so the capital moves by less than 1%
+    "transactor_effect_P1-scorecard_holdout": (0.0, 0.01),
 }
 
 
@@ -214,6 +221,14 @@ def _impact(fit: Fit, pds: dict[str, np.ndarray], raws: dict[str, np.ndarray], y
         "swap_in_bad_rate": {"value": float(y[b & ~a].mean()) if (b & ~a).any() else None, "unit": "fraction", "label": lab("Bad rate of the challenger-only approvals", "Tasa de malos de los aprobados solo por el retador")},
         "swap_out_bad_rate": {"value": float(y[a & ~b].mean()) if (a & ~b).any() else None, "unit": "fraction", "label": lab("Bad rate of the champion-only approvals", "Tasa de malos de los aprobados solo por el campeón")},
     }
+    # the IRB capital (8% of the RWA) of each approved book under Basel III at the same LGD (CT-212)
+    cls = cap.CLASS[fit.source]
+    rev = np.full(len(champ), cls == "qrre")
+    for key, p, m, es in (("champion", champ, a, "campeón"), ("challenger", chall, b, "retador")):
+        unit = cap.account_capital(cls, p, ead, rev)["basel3"]
+        out[f"capital_{key}"] = {"value": float(LGD * unit[m].sum()), "unit": cur, "label": lab(
+            f"IRB capital of the approved, {key} (Basel III, LGD 50%)",
+            f"Capital IRB de los aprobados, {es} (Basilea III, LGD 50%)")}
     if fit.source == "uci-german":
         def cost(p: np.ndarray) -> tuple[float, float]:
             best = (np.inf, 0.0)
@@ -358,11 +373,25 @@ class C01:
             pds = {rid: r.pd(X) for rid, r in fit.rungs.items()}
             rows: list[dict] = []
             outputs: dict[str, Any] = {"rungs": {}}
+            # the IRB capital at unit LGD along each rung's cut-offs (CT-212, CT-213); every card is a revolver, and
+            # the six-month full payers as transactors are the sensitivity (CT-214)
+            cls = cap.CLASS[fit.source]
+            revolver = np.full(len(pos), cls == "qrre")
+            full = cap.six_month_full_payers(X) if cls == "qrre" else None
             for rid, r in fit.rungs.items():
                 rows += evaluate.battery(rid, pds[rid], y, pd_train=r.pd(Xtr), pd_cal=r.pd(Xcal), y_cal=ycal,
                                          champion_pd=None if rid == CHAMPION else pds[CHAMPION])
+                sums = {"capital_per_lgd": cap.account_capital(cls, pds[rid], fit.ead[pos], revolver)}
+                if full is not None:
+                    sums["capital_per_lgd_transactors"] = cap.account_capital(cls, pds[rid], fit.ead[pos], ~full)
                 outputs["rungs"][rid] = evaluate.outputs(pds[rid], y, ead=fit.ead[pos],
-                                                         pd_raw=r.raw_pd(X) if r.calibration is not None else None)
+                                                         pd_raw=r.raw_pd(X) if r.calibration is not None else None,
+                                                         sums=sums)
+                # contract 2 has no optional keys: the loans have no transactor sensitivity
+                outputs["rungs"][rid]["cutoff"].setdefault("capital_per_lgd_transactors", None)
+            outputs["irb"] = _irb_facts(cls, full)
+            # the parity points of the retail functions, once, for the live port (CT-215)
+            outputs["irb"]["parity"] = cap.parity_points() if v["id"] == "holdout" else None
             rows += evaluate.csi_rows(Xtr, X, list(fit.features), fit.categorical)
             outputs["n"] = int(len(y))
             outputs["defaults"] = int(y.sum())
@@ -377,7 +406,10 @@ class C01:
                                  lane={"lane": "precompute", "reasons": []})
             rel = f"{CASE_ID}/{v['id']}.json"
             # the scored sample is written exactly: it is what the live parity test compares against
-            entry = write_artifact(paths.root, rel, art, exact=frozenset({"sample"}), engines=ENGINES, run_ms=RUN_MS)
+            # the parity points are written exactly (the live port is held to them at 1e-9); the capital sums carry
+            # nine significant digits like every other number
+            entry = write_artifact(paths.root, rel, art, exact=frozenset({"sample", "parity"}), engines=ENGINES,
+                                   run_ms=RUN_MS)
             _log(f"variant {v['id']}: {len(rows)} test results, {entry['bytes']:,} bytes")
             entries.append({"role": "variant", "variant_id": v["id"], "title": v["title"], "short_title": v["short"],
                             "regime": v["regime"],
@@ -394,6 +426,11 @@ class C01:
                     values[f"jeffreys_p_{rid}_{v['id']}"] = pj
             if v["id"] == "holdout":
                 values["holdout_default_rate"] = float(y.mean())
+                # the champion's whole evaluated book: the cut-off curve's last point
+                cut = outputs["rungs"][CHAMPION]["cutoff"]
+                rev, trn = cut["capital_per_lgd"]["basel3"][-1], cut["capital_per_lgd_transactors"]["basel3"][-1]
+                values["capital_share_P1-scorecard_holdout"] = LGD * rev / cut["ead"][-1]
+                values["transactor_effect_P1-scorecard_holdout"] = (rev - trn) / rev
         ranges = expectations.check(CASE_ID, EXPECT, values)
         manifest = build_case_manifest(
             case_id=CASE_ID, title=self.title, category={"en": "Credit scoring", "es": "Scoring de crédito"},
@@ -402,6 +439,25 @@ class C01:
             riskvalidation_version=rv, source_details=_source_details(SOURCES))
         write_json(paths.manifests / f"{CASE_ID}.json", manifest)
         return manifest
+
+
+def _irb_facts(cls: str, full: np.ndarray | None) -> dict[str, Any]:
+    """What the capital view states (CT-212, CT-214): the class, the regimes' floors, scaling and references, the
+    EAD convention, the Basel III LGD input floor, and for the cards the six-month full payers."""
+    cards = cls == "qrre"
+    return {
+        "asset_class": cls,
+        "regimes": list(cap.REGIMES),
+        "by_regime": cap.regime_facts(cls),
+        "revolvers_only": cards,
+        "six_month_full_payers": int(full.sum()) if full is not None else None,
+        "lgd_floor_basel3": cap.LGD_FLOOR_BASEL3[cls],
+        "lgd_floor_source": "BCBS d424, IRB paragraph 121 and its table (CRE32.58 to CRE32.59)",
+        "transactor_source": "BCBS d424, standardised paragraph 56 and IRB paragraph 25; CRR3 Article 4(1)(152)",
+        "ead": _t("the current bill (BILL_AMT1, floored at 0), the drawn balance only",
+                  "la cuenta actual (BILL_AMT1, con piso 0), solo el saldo utilizado") if cards else
+               _t("the credit amount", "el monto del crédito"),
+    }
 
 
 def _source_details(ids) -> dict[str, dict[str, str]]:

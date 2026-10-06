@@ -169,14 +169,19 @@ def distribution(pd_eval: np.ndarray, y_eval: np.ndarray, bins: int = 30) -> dic
             "non_defaulters": np.histogram(lp[y == 0], edges)[0].tolist()}
 
 
-def cutoff_curve(pd_eval: np.ndarray, y_eval: np.ndarray, ead: np.ndarray, points: int = 51) -> dict[str, Any]:
+def cutoff_curve(pd_eval: np.ndarray, y_eval: np.ndarray, ead: np.ndarray, points: int = 51,
+                 sums: dict[str, dict[str, np.ndarray]] | None = None) -> dict[str, Any]:
     """Approve every applicant at or below a PD cut-off: per cut-off on the PD quantiles, the approval rate, the bad
-    rate among the approved, and the sums of PD x EAD and EAD among the approved (EL = LGD x the first)."""
+    rate among the approved, and the sums of PD x EAD and EAD among the approved (EL = LGD x the first). ``sums``
+    adds further per-account amounts summed the same way, unrounded (C01's capital at unit LGD, by regime)."""
     p = np.asarray(pd_eval, dtype=float)
     y = np.asarray(y_eval, dtype=int)
     e = np.asarray(ead, dtype=float)
     cuts = np.unique(np.quantile(p, np.linspace(0.02, 1.0, points)))
-    out = {"cutoff": [], "approval_rate": [], "bad_rate": [], "pd_ead": [], "ead": []}
+    out: dict[str, Any] = {"cutoff": [], "approval_rate": [], "bad_rate": [], "pd_ead": [], "ead": []}
+    extra = {key: {name: np.asarray(a, dtype=float) for name, a in by.items()} for key, by in (sums or {}).items()}
+    for key, by in extra.items():
+        out[key] = {name: [] for name in by}
     for c in cuts:
         m = p <= c
         out["cutoff"].append(round(float(c), 6))
@@ -184,13 +189,17 @@ def cutoff_curve(pd_eval: np.ndarray, y_eval: np.ndarray, ead: np.ndarray, point
         out["bad_rate"].append(round(float(y[m].mean()) if m.any() else 0.0, 6))
         out["pd_ead"].append(round(float((p[m] * e[m]).sum()), 2))
         out["ead"].append(round(float(e[m].sum()), 2))
+        for key, by in extra.items():
+            for name, a in by.items():
+                out[key][name].append(float(a[m].sum()))
     return out
 
 
-def outputs(pd_eval: np.ndarray, y_eval: np.ndarray, *, ead: np.ndarray, pd_raw: np.ndarray | None = None) -> dict:
+def outputs(pd_eval: np.ndarray, y_eval: np.ndarray, *, ead: np.ndarray, pd_raw: np.ndarray | None = None,
+            sums: dict[str, dict[str, np.ndarray]] | None = None) -> dict:
     out = {"grades": grade_table(pd_eval, y_eval), "reliability": reliability(pd_eval, y_eval),
            **curves(pd_eval, y_eval), "distribution": distribution(pd_eval, y_eval),
-           "cutoff": cutoff_curve(pd_eval, y_eval, ead)}
+           "cutoff": cutoff_curve(pd_eval, y_eval, ead, sums=sums)}
     # the reliability of the raw score, before the calibration map; None for a rung without one
     out["reliability_raw"] = reliability(pd_raw, y_eval) if pd_raw is not None else None
     return out

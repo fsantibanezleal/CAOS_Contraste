@@ -23,7 +23,7 @@ import { COMMITTED, LIGHT_TEXT, LIGHT_TONE, relight, type PolicyAlphas } from '.
 import { ebmLogit, scoreScorecard, sigmoid } from '../engine/scorer';
 import { ContextView } from './ContextView';
 import { FindingsView } from './FindingsView';
-import { ImpactView } from './ImpactView';
+import { ImpactGroup } from './ImpactView';
 import { atApproval, CHAMPION, challengers, defaultChallenger, provenanceOf, rung, shortName, test, type Selection } from './model';
 import { ModelGroup } from './ModelViews';
 import { ValidationGroup } from './ValidationViews';
@@ -289,7 +289,7 @@ export function Workbench() {
           : [
               { id: 'model', label: { en: 'Model', es: 'Modelo' }, lane: 'replay', provenance: prov, content: <ModelGroup sel={sel} /> },
               { id: 'validation', label: { en: 'Validation', es: 'Validación' }, lane: 'replay', provenance: prov, content: <ValidationGroup sel={sel} /> },
-              { id: 'impact', label: { en: 'Impact', es: 'Impacto' }, lane: 'live', provenance: prov, content: <ImpactView sel={sel} /> },
+              { id: 'impact', label: { en: 'Impact', es: 'Impacto' }, lane: 'live', provenance: prov, content: <ImpactGroup sel={sel} /> },
               { id: 'findings', label: { en: 'Findings', es: 'Hallazgos' }, lane: 'replay', provenance: prov, content: <FindingsView sel={sel} /> },
             ]
       }

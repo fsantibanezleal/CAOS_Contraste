@@ -93,8 +93,9 @@ with the Yurdakul and Naranjo chi-square benchmark beside the conventional bands
 
 Decision impact at a cut-off chosen in the rail: approval rate, bad rate among the approved, the expected loss
 EL = PD x LGD x EAD with EAD the current bill (`BILL_AMT1`, floored at 0) and a stated LGD assumption; the cost of
-the German cost matrix for the twin. Capital under the IRB formula for qualifying revolving retail exposures joins
-when the engine's regulatory calculators land (U2).
+the German cost matrix for the twin. The IRB capital of each approved book (qualifying revolving retail for the cards,
+other retail for the German loans, under Basel III final, CRR3 and Basel II) is U2's second part:
+[`../c01-irb-capital/design.md`](../c01-irb-capital/design.md).
 
 ## The artifacts
 

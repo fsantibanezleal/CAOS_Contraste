@@ -3,6 +3,28 @@
 All notable changes to this product. Versions are X.XX.XXX (VERSION is the single source); every release is
 tagged.
 
+## [0.03.000], 2026-10-05
+
+U2's second part: C01's IRB capital.
+
+### Added
+
+- C01's Impact group has two views, Decision and Capital. Capital gives the IRB capital (8% of the RWA) of the
+  champion's and the challenger's approved books at the rail's approval rate and LGD under Basel III final, EU CRR3
+  and Basel II, in money and as a share of the EAD, and the capital against the approval rate (CT-212). The Taiwan
+  cards are qualifying revolving retail, every card a revolver: Basel III defines a transactor by twelve months of
+  repayment history (BCBS d424, standardised paragraph 56, IRB paragraph 25) and the data hold six; counting the
+  six-month full payers as transactors is reported as a sensitivity (CT-214). The German loans are other retail.
+- The pipeline sums riskvalidation's capital requirement at unit LGD over each rung's cut-off curve (CT-213); the web
+  multiplies by the rail's LGD, exact for the retail functions, and the TypeScript retail functions are held to the
+  engine on exported parity points within 1e-9 (CT-215). A rail LGD below the Basel III input floor (50% for QRRE,
+  30% for unsecured other retail) is flagged (CT-216).
+
+### Changed
+
+- At 80% approved, LGD 50% and Basel III, the monotone GBM's book needs 4.2% less capital than the scorecard's on the
+  holdout; Basel II asks 6% more than Basel III and CRR3 the same. C05's artifacts changed only their code version.
+
 ## [0.02.000], 2026-10-05
 
 Unit U2, its first case: C05 end to end.
