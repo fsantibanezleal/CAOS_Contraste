@@ -66,6 +66,36 @@
   .ct-grid6-fill { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); }
 }
 
+/* every panel of a C22 family in one filling card: one small multiple each, at most three across; two across below
+   900 px */
+.ct-panels-fill { display: grid; height: 100%; gap: 0.6rem; min-width: 0; min-height: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); }
+.ct-panels-fill[data-views="1"] { grid-template-columns: minmax(0, 1fr); }
+.ct-panels-fill[data-views="3"], .ct-panels-fill[data-views="5"], .ct-panels-fill[data-views="6"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ct-panels-fill > .ct-small-multiple { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+.ct-sm-title { margin: 0 0 0.15rem; font-size: 0.8rem; font-weight: 600; color: var(--color-fg-subtle); }
+@media (max-width: 900px) {
+  .ct-panels-fill, .ct-panels-fill[data-views="3"], .ct-panels-fill[data-views="5"], .ct-panels-fill[data-views="6"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* a findings table beside the drawing of its evidence: two thirds for the table; on a very wide screen the drawing
+   takes two thirds, since a short table cannot fill a tall stage */
+.ct-findings-table { flex-grow: 2; }
+@media (min-width: 2000px) { .ct-findings-table { flex-grow: 1; } .ct-findings-chart { flex-grow: 2; } }
+
+/* the C22 detection matrix: a cell's shade is its rejection rate (0 below 5%, 4 from 80%); the loaded family's column
+   is marked */
+.ct-heat-table td.ct-heat { text-align: right; }
+.ct-heat[data-heat="1"] { background: color-mix(in oklab, var(--color-accent) 10%, transparent); }
+.ct-heat[data-heat="2"] { background: color-mix(in oklab, var(--color-accent) 22%, transparent); }
+.ct-heat[data-heat="3"] { background: color-mix(in oklab, var(--color-accent) 36%, transparent); }
+.ct-heat[data-heat="4"] { background: color-mix(in oklab, var(--color-accent) 52%, transparent); }
+.ct-heat[data-kind="size"][data-heat="1"] { background: color-mix(in oklab, var(--color-warn) 12%, transparent); }
+.ct-heat[data-kind="size"][data-heat="2"] { background: color-mix(in oklab, var(--color-warn) 26%, transparent); }
+.ct-heat[data-kind="size"][data-heat="3"] { background: color-mix(in oklab, var(--color-warn) 40%, transparent); }
+.ct-heat[data-kind="size"][data-heat="4"] { background: color-mix(in oklab, var(--color-warn) 56%, transparent); }
+.ct-heat-current { box-shadow: inset 0 -2px 0 var(--color-accent); }
+
 /* a verdict, a short table and their notes at their own height (a card that does not fill: C01's capital numbers) */
 .ct-stack-natural { display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
 

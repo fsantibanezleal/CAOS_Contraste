@@ -245,3 +245,20 @@ def test_derived_only_counts_not_published(variants):
             if t["segment"] not in (None, "portfolio"):
                 assert t["n"] is None and t["n_events"] is None, (vid, t["test_id"], t["segment"])
         assert v["provenance"]["licence_classes"] == {"tasche-2013": "derived-only"}
+
+
+def test_generator_is_the_engines():
+    """CT-311: C05's generator is riskvalidation's DefaultCounts, consuming its stream exactly as the inline generator
+    it replaced did (factors first, then the binomial counts), so the bake is unchanged."""
+    import inspect
+
+    from scipy.special import ndtr, ndtri
+
+    from pipeline.cases import c05_ldp_calibration as c05
+
+    assert "DefaultCounts" in inspect.getsource(c05._generator)
+    g = c05._generator(7)
+    rng = np.random.default_rng(7)
+    z = rng.standard_normal(c05.N_YEARS)
+    cond = ndtr((ndtri(np.array(c05.TRUE_PD))[None, :] - np.sqrt(c05.RHO) * z[:, None]) / np.sqrt(1.0 - c05.RHO))
+    assert np.array_equal(g["z"], z) and np.array_equal(g["defaults"], rng.binomial(np.array(c05.LDP_N)[None, :], cond))

@@ -30,6 +30,8 @@ MODELS_SCHEMA = "contraste.models/v1"
 ROLES = ("models", "variant")
 #: a finding's evidence is a test in the artifact, a contract-1 rule of the case's inputs, or a stated design limit
 EVIDENCE_PREFIXES = ("contract:", "design:")
+#: or a measured rate of the artifact: ``rate:<key>`` names a row of ``outputs.simulations`` (C22, CT-305)
+RATE_PREFIX = "rate:"
 
 #: the keys of ``riskvalidation.TestResult.to_dict()`` (riskvalidation 0.1.0), in its order
 TEST_RESULT_KEYS = (
@@ -74,7 +76,13 @@ def _check_tests(tests: Sequence[Mapping[str, Any]], where: str) -> set[str]:
     return ids
 
 
-def _check_findings(findings: Sequence[Mapping[str, Any]], test_ids: set[str], where: str) -> None:
+def _rate_keys(outputs: Mapping[str, Any]) -> set[str]:
+    sims = outputs.get("simulations") or []
+    return {f"{RATE_PREFIX}{s['key']}" for s in sims if isinstance(s, Mapping) and isinstance(s.get("key"), str)}
+
+
+def _check_findings(findings: Sequence[Mapping[str, Any]], test_ids: set[str], where: str,
+                    rate_keys: frozenset[str] | set[str] = frozenset()) -> None:
     seen: set[str] = set()
     for f in findings:
         if f.get("id") in seen or not f.get("id"):
@@ -88,9 +96,10 @@ def _check_findings(findings: Sequence[Mapping[str, Any]], test_ids: set[str], w
         evidence = f.get("evidence") or []
         if not evidence:
             raise ContractViolation(f"{where}: finding {f['id']} names the tests that evidence it")
-        unknown = [e for e in evidence if e not in test_ids and not e.startswith(EVIDENCE_PREFIXES)]
+        unknown = [e for e in evidence if e not in test_ids and e not in rate_keys and not e.startswith(EVIDENCE_PREFIXES)]
         if unknown:
-            raise ContractViolation(f"{where}: finding {f['id']} cites tests not in this artifact: {unknown}")
+            kind = "rates" if all(e.startswith(RATE_PREFIX) for e in unknown) else "tests"
+            raise ContractViolation(f"{where}: finding {f['id']} cites {kind} not in this artifact: {unknown}")
 
 
 def _check_models(models: Sequence[Mapping[str, Any]], where: str) -> None:
@@ -137,7 +146,7 @@ def build_artifact(
         raise ContractViolation(f"{where}: the lineage belongs to {lineage.case_id}")
     _check_models(model, where)
     test_ids = _check_tests(tests, where)
-    _check_findings(findings, test_ids, where)
+    _check_findings(findings, test_ids, where, _rate_keys(outputs))
     _check_impact(impact, where)
     if lane.get("lane") not in LANES:
         raise ContractViolation(f"{where}: lane {lane.get('lane')!r} is not one of {list(LANES)}")

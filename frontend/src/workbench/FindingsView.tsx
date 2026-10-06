@@ -2,7 +2,8 @@
 // follows the case's stated policy (the level of the PD weighs more than its fit across the range); a finding cites
 // the tests that evidence it, a contract-1 rule of the inputs, or a design limit.
 import { PlotCard, Verdict, formatNumber, pick, useShellLang, useWorkbenchState } from '@fasl-work/caos-app-shell';
-import type { Finding } from '../lib/contract.types';
+import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
+import type { Finding, TestRow } from '../lib/contract.types';
 import { LIGHT_TEXT, relight } from '../lib/policy';
 import { REPLAY, provenanceOf, type Selection } from './model';
 import { Pending } from './Pending';
@@ -20,7 +21,7 @@ const STATUS_TEXT = {
   closed: { en: 'closed', es: 'cerrado' },
 } as const;
 
-function Evidence({ f, sel }: { f: Finding; sel: Selection }) {
+function Evidence({ f, sel, number }: { f: Finding; sel: Selection; number: Map<string, number> }) {
   const lang = useShellLang();
   return (
     <ul className="ct-evidence">
@@ -37,15 +38,24 @@ function Evidence({ f, sel }: { f: Finding; sel: Selection }) {
           );
         }
         const [testId, model] = e.split('@');
-        const row = sel.data.variant.tests.find((t) => t.test_id === testId && t.model_id === model && t.segment === 'portfolio');
+        const row = cited(sel, e);
+        const k = number.get(`${f.id}|${e}`);
         return (
           <li key={e}>
+            {k ? `[${k}] ` : ''}
             {testId} ({model}): {row ? `p ${formatNumber(row.p_value, lang, { digits: 2 })}, ${pick(LIGHT_TEXT[relight(row, sel.alphas)], lang)}` : ''}
           </li>
         );
       })}
     </ul>
   );
+}
+
+/** The portfolio row of the test a finding cites as `test@model`, or undefined for any other kind of evidence. */
+function cited(sel: Selection, e: string): TestRow | undefined {
+  if (e.startsWith('design:') || e.startsWith('contract:')) return undefined;
+  const [testId, model] = e.split('@');
+  return sel.data.variant.tests.find((t) => t.test_id === testId && t.model_id === model && t.segment === 'portfolio');
 }
 
 export function FindingsView({ sel }: { sel: Selection | null }) {
@@ -56,7 +66,14 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
   const order = ['S1', 'S2', 'S3', 'S4'];
   const findings = [...v.findings].sort((a, b) => order.indexOf(a.severity) - order.indexOf(b.severity));
   const worst = findings.find((f) => f.status === 'open')?.severity ?? null;
-  return (
+  // every cited test with a p-value, numbered in reading order: the table's [k] and the chart's x
+  const points = findings.flatMap((f) => f.evidence.map((e) => ({ key: `${f.id}|${e}`, row: cited(sel, e) }))).filter((x) => x.row && x.row.p_value !== null);
+  const number = new Map(points.map((x, i) => [x.key, i + 1]));
+  const floorP = 1e-16;
+  // half a step of room on each side, so the first and last points are not cut by the plot's edges
+  const xs = [0.5, ...points.map((_, i) => i + 1), points.length + 0.5];
+  const pad = <T,>(v: T[]): Array<T | null> => [null, ...v, null];
+  const table = (
     <PlotCard
       fill
       title={{ en: 'Findings of the validation of this variant', es: 'Hallazgos de la validación de esta variante' }}
@@ -93,7 +110,7 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
                   <td className="ct-wide-only">{pick(STATUS_TEXT[f.status], lang)}</td>
                   <td className="caos-col-text">
                     {pick(f.title, lang)}
-                    <Evidence f={f} sel={sel} />
+                    <Evidence f={f} sel={sel} number={number} />
                   </td>
                 </tr>
               ))}
@@ -102,5 +119,35 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
         </div>
       </div>
     </PlotCard>
+  );
+  if (points.length === 0) return table;
+  return (
+    <div className="caos-views-row" data-views="2">
+      <div className="ct-col ct-findings-table">{table}</div>
+      <div className="ct-col ct-findings-chart">
+        <PlotCard
+          fill
+          title={{ en: 'The evidence against the policy', es: 'La evidencia contra la política' }}
+          lane={REPLAY}
+          provenance={provenanceOf(v.provenance.truth_status)}
+          dataKey={stateKey}
+          note={{
+            en: `The p-value of each cited test, numbered as in the table, on a log scale against the rail's amber (${formatNumber(sel.alphas.amber, 'en', { digits: 2 })}) and red (${formatNumber(sel.alphas.red, 'en', { digits: 2 })}) thresholds: how far past the line each finding's evidence lies. A p-value below 1e-16 is drawn at 1e-16.`,
+            es: `El valor p de cada prueba citada, numerada como en la tabla, en escala logarítmica contra los umbrales ámbar (${formatNumber(sel.alphas.amber, 'es', { digits: 2 })}) y rojo (${formatNumber(sel.alphas.red, 'es', { digits: 2 })}) del panel: cuán lejos de la línea está la evidencia de cada hallazgo. Un valor p bajo 1e-16 se dibuja en 1e-16.`,
+          }}
+        >
+          <UPlotChart
+            height="fill"
+            x={{ values: xs, label: { en: 'Cited test (the number in the table)', es: 'Prueba citada (el número de la tabla)' }, format: { decimals: 0 } }}
+            y={{ label: { en: 'p-value', es: 'Valor p' }, log: true, format: { digits: 2 } }}
+            series={[
+              { label: { en: 'p-value', es: 'Valor p' }, values: pad(points.map((x) => Math.max(floorP, x.row?.p_value ?? 1))), color: '--color-accent', mode: 'points' },
+              { label: { en: 'Amber threshold', es: 'Umbral ámbar' }, values: xs.map(() => sel.alphas.amber), color: '--color-warn', width: 1.2, dash: [6, 4] },
+              { label: { en: 'Red threshold', es: 'Umbral rojo' }, values: xs.map(() => sel.alphas.red), color: '--color-bad', width: 1.2, dash: [2, 4] },
+            ]}
+          />
+        </PlotCard>
+      </div>
+    </div>
   );
 }
