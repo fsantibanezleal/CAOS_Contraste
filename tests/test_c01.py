@@ -181,3 +181,27 @@ def test_transactor_sensitivity_reported(manifest):
             for regime in irb["regimes"]:
                 for rev, trn in zip(cut["capital_per_lgd"][regime], cut["capital_per_lgd_transactors"][regime], strict=True):
                     assert trn <= rev * (1 + 1e-12)
+
+
+def test_hosmer_lemeshow_uses_g_on_the_holdout(manifest):
+    """CT-312: the PDs were fitted on other data, so Hosmer-Lemeshow uses as many degrees of freedom as groups."""
+    n = 0
+    for _, v, _ in _variants(manifest):
+        for t in v["tests"]:
+            if t["test_id"] == "pd.hosmer_lemeshow":
+                assert t["extras"]["dof"] == t["extras"]["groups"] and t["extras"]["fitted"] is False, t["model_id"]
+                n += 1
+    assert n > 0
+
+
+def test_auc_vs_initial_carries_the_development_variance(manifest):
+    """CT-313: the calibration slice's AUC is an estimate on rows disjoint from the evaluation set: its variance is
+    added to the ECB statistic, and the result says so."""
+    n = 0
+    for _, v, _ in _variants(manifest):
+        for t in v["tests"]:
+            if t["test_id"] == "disc.auc_vs_initial" and t["p_value"] is not None:
+                assert t["extras"]["auc_initial_variance"] > 0 and "extension" in t["notes"], t["model_id"]
+                assert t["extras"]["s2_total"] == pytest.approx(t["extras"]["s2"] + t["extras"]["auc_initial_variance"])
+                n += 1
+    assert n > 0

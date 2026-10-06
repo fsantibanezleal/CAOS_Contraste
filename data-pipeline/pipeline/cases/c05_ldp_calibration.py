@@ -18,6 +18,7 @@ from scipy import stats
 from scipy.special import ndtr, ndtri
 
 from riskvalidation.engines import low_default as ldp
+from riskvalidation.generators import DefaultCounts
 from riskvalidation.engines import pd_curve as pc
 from riskvalidation.regulatory import capital_requirement
 from riskvalidation.validation.calibration import (
@@ -419,13 +420,13 @@ def _bounds_table(n: tuple[int, ...], d: tuple[int, ...]) -> dict[str, Any]:
 
 
 def _generator(seed: int) -> dict[str, Any]:
-    """The Vasicek generator: N_YEARS independent years, one systematic factor each, the true PDs and correlation."""
-    rng = np.random.default_rng(seed)
-    z = rng.standard_normal(N_YEARS)
-    n = np.array(LDP_N)
-    cond = ndtr((ndtri(np.array(TRUE_PD))[None, :] - np.sqrt(RHO) * z[:, None]) / np.sqrt(1.0 - RHO))
-    defaults = rng.binomial(n[None, :], cond)
-    return {"z": z, "defaults": defaults}
+    """The Vasicek generator: N_YEARS independent years, one systematic factor each, the true PDs and correlation.
+
+    riskvalidation's ``DefaultCounts`` (WP14's one-factor model) with the years as rows: one standard normal factor per
+    year, then the binomial counts, the stream consumed exactly as before (CT-311)."""
+    gen = DefaultCounts(obligors=np.tile(LDP_N, (N_YEARS, 1)), pd_true=np.tile(TRUE_PD, (N_YEARS, 1)), rho=RHO)
+    draw = gen.draw(np.random.default_rng(seed))
+    return {"z": draw["factor"], "defaults": draw["d"]}
 
 
 def _variance_of_total(rho: float) -> float:

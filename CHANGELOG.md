@@ -3,6 +3,49 @@
 All notable changes to this product. Versions are X.XX.XXX (VERSION is the single source); every release is
 tagged.
 
+## [0.04.000], 2026-10-06
+
+Unit U3: case C22, validating the validator.
+
+### Added
+
+- Case C22 measures the size and power of every test with a p-value that Contraste has built, on riskvalidation's
+  known-truth generators (synthetic known truth; the engine is pinned to 0.03.002, whose Wilson interval is exact at
+  zero rejections, a defect this case found). The null family gives each of the 17 tests its rejection rate
+  at 5% and 1% from 4,000 repetitions on data where its null holds at its boundary, with the Monte Carlo SE, the Wilson
+  interval, the p-value histogram and the size bound (CT-301); seven defect families (miscalibration, default
+  clustering, drift, discrimination decay, leakage, broken monotonicity, concentration) give the power of the tests
+  each targets at severities 0 to 5 (CT-302). Where a rejection probability is exact (the count tests, the traffic
+  lights) it is committed beside the simulated rate, and every rate agrees with it within 3.29 SE (CT-303).
+- Three published simulation studies are rerun from the tables read out of their PDFs (derived-only): BCBS WP14
+  Tables 7 and 8 (143 of 144 cells), Yurdakul and Naranjo Table 4 (50 of 54 with this case's seed, the harness sitting
+  slightly above the paper on average, the offset stated), and Demler, Pencina and D'Agostino's nested design (2
+  rejections in 1,000 at 5%, their 0.001) (CT-304). Findings cite measured rates as their evidence (`rate:`), and the
+  contract refuses one that names no simulation of its artifact (CT-305).
+- The live calculator: the exact size and power of the binomial, Vasicek-corrected binomial and Jeffreys tests for a
+  reader's portfolio, in the browser, held to the engine within 1e-9 on parity points that span the rail's knobs to
+  their corners (CT-308); a full set of curves costs about 10 ms at any portfolio size; the C22
+  instrument with its rail, groups and views (CT-309).
+- The web's Methodology gains a Size and power part, and its seven parts are grouped by the reader's question (the
+  models and their risk; the validation tests), the shell's limit being six peers; Experiments shows C22's families
+  and the size of every test, Benchmark which test sees which defect and the reproductions.
+- The Findings group of every case draws its evidence beside the table: C01's cited p-values on a log scale against
+  the policy's thresholds, C22's cited rates with their Wilson intervals against the level, numbered as in the table.
+
+### Changed
+
+- C01's Hosmer-Lemeshow test on the holdout uses as many degrees of freedom as groups, the PDs being fitted on other
+  data (CT-312): with G - 2 the test rejects right PDs about one time in nine at 5% on such samples. The champion's p
+  on the holdout moves from 0.005 (red) to 0.015 (amber).
+- C01's test of the AUC against the initial AUC adds the variance of the calibration slice's AUC, an extension of the
+  ECB formula the result states (CT-313): with the slice's AUC taken as known the test rejects about one time in six
+  at 5% when nothing changed. The holdout's LightGBM finding on discrimination is gone (p 0.026 to 0.132); German
+  twin's LightGBM moves from red to amber.
+- C05's generator is riskvalidation's `DefaultCounts`; every C05 number is unchanged (CT-311).
+- The Methodology's Discrimination, Calibration and Stability parts state what the measurements changed: the AUC
+  test's development variance, the degrees of freedom of Hosmer-Lemeshow on validation data, and the bounded ECB
+  concentration statistic.
+
 ## [0.03.000], 2026-10-05
 
 U2's second part: C01's IRB capital.
