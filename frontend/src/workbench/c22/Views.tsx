@@ -751,7 +751,7 @@ const heat = (r: number | null) => (r === null ? 'none' : r < 0.05 ? '0' : r < 0
 
 /** A test's cell in one family: its power at the highest severity where the family plants a defect the test should
  * see, else its false-alarm rate there where the model is right (a size panel). */
-function familyCell(f: C22Variant, testId: string, r: string): { rate: number | null; kind: 'power' | 'size' } | null {
+export function familyCell(f: C22Variant, testId: string, r: string): { rate: number | null; kind: 'power' | 'size' } | null {
   const kinds: Array<'power' | 'size'> = ['power', 'size'];
   for (const kind of kinds) {
     const panels = new Set(f.outputs.panels.filter((p) => p.measures === kind).map((p) => p.id));

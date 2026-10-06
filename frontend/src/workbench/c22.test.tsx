@@ -24,6 +24,7 @@ import {
   RatesTableView,
   SizeView,
   SpecimenView,
+  familyCell,
 } from './c22/Views';
 
 const derived = new URL('../../../data/derived/', import.meta.url);
@@ -140,6 +141,22 @@ describe('the C22 instrument', () => {
     expect(at(s0)).not.toBe(at(portfolio({ rhoTrue: 0.1 })));
     expect(at(s0)).not.toBe(at(portfolio({ rhoAssumed: 0.24 })));
     expect(at(s0)).not.toBe(at({ ...s0, level: 0.01 }));
+  });
+
+  it('the detection matrix tells power from false alarms', () => {
+    const fam = (id: string) => variantOf(cases.find((c) => c.id === id)!.data);
+    // the PDs are right under clustering: a rejection is a false alarm
+    expect(familyCell(fam('clustering'), 'pd.binomial', 'p<0.05')?.kind).toBe('size');
+    expect(familyCell(fam('miscalibration'), 'pd.binomial', 'p<0.05')?.kind).toBe('power');
+    // the swap of two grades is a defect on the panel's own axis
+    expect(familyCell(fam('broken-monotonicity'), 'pd.default_profile', 'p<0.05')?.kind).toBe('power');
+    // decay's AUC test is read on the ECB panel, not on the development panel where nothing changed
+    const decay = familyCell(fam('discrimination-decay'), 'disc.auc_vs_initial', 'p<0.05');
+    expect(decay?.kind).toBe('power');
+    expect(decay?.rate).toBeGreaterThan(0.9);
+    // drift moves the population, not the calibration of a right model
+    expect(familyCell(fam('drift'), 'pd.hosmer_lemeshow', 'p<0.05')?.kind).toBe('size');
+    expect(familyCell(fam('drift'), 'stability.psi', 'p<0.05')?.kind).toBe('power');
   });
 
   it('the size read-out says size at a ratio of one and power above it', () => {
