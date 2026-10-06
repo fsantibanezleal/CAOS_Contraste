@@ -43,7 +43,11 @@ numbers of runs for the reproductions. Seeds: one per (variant, test, severity),
 
 - `family`, `ladder` (`values`, `label`), `levels` (0.05, 0.01), `panels` (`id`, `label`, `axis`: the x axis of a
   panel whose simulations do not run along the family's ladder, the swap of two grades' PDs and the current sample
-  over the development sample, null otherwise), `size_bounds` (per rule).
+  over the development sample, null otherwise; `measures`: `power` where the family plants a defect the panel's
+  tests should see, or `size` where the tested model stays right and only an assumption fails, so a rejection is a
+  false alarm: every panel of the null and clustering families, drift's calibration panel, the development AUC
+  estimated with nothing changed, the DeLong designs of equal AUCs),
+  `size_bounds` (per rule).
 - `simulations`: one row per (test, scenario, severity): `key`, `test_id`, `label`, `scenario`, `panel`, `severity`,
   `x` (the setting on the panel's axis), `rates` (per rule: rejections, n, undefined, rate, se, wilson_low,
   wilson_high), `exact` and `agrees` (per level, or null), `p_histogram` (null variant), `seed`, `n_rep`, `generator`
@@ -92,8 +96,10 @@ section. The committed policy is not a control here: every rate is a rejection r
   correlation, for the reader's portfolio), and the family's decision numbers.
 - **Findings**: each finding with its cited rates, numbered, beside a chart of those rates with their Wilson intervals
   against the level.
-- **Variants**: the families side by side, which test sees which defect: a row per test, the null column its size,
-  each defect column its rate at the family's highest severity, shaded by the rate; a column header loads the family.
+- **Variants**: the families side by side, which test sees which defect: a row per test, each cell its rate at the
+  family's highest severity, blue where it is power, amber where it is a false alarm (the null column's sizes, the
+  size panels), darker for a higher rate; a column header loads the family. A family whose panels are all size panels
+  names its Validation tab Size and says the model is right.
 - **Context**: the sources with their licence classes, the generators' row, the truth status and the case write-up.
 
 ## Docs

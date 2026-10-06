@@ -10,7 +10,7 @@ import type { C22Simulation, Finding, VariantArtifact } from '../../lib/contract
 import { LightCell } from '../ValidationViews';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
-import { COUNT_TESTS, TEST_COLOR, curves, isC22, rateOf, rule, useLiveCurves, useLivePortfolio, type C22Sel, type C22Variant } from './selection';
+import { COUNT_TESTS, curves, isC22, rateOf, rule, seriesStyle, useLiveCurves, useLivePortfolio, type C22Sel, type C22Variant } from './selection';
 
 const LIVE = 'live' as const;
 const pct = (lang: 'en' | 'es', v: number | null | undefined, decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
@@ -111,7 +111,7 @@ export function GeneratorsView({ sel }: { sel: C22Sel | null }) {
                   <th className="ct-text">{pick({ en: 'Generator', es: 'Generador' }, lang)}</th>
                   <th className="ct-text">{pick({ en: 'Class', es: 'Clase' }, lang)}</th>
                   <th className="ct-text">{pick({ en: 'Configuration', es: 'Configuración' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Exact truth', es: 'Verdad exacta' }, lang)}</th>
+                  <th className="ct-text ct-wide-only">{pick({ en: 'Exact truth', es: 'Verdad exacta' }, lang)}</th>
                   <th className="ct-text ct-wide-only">{pick({ en: 'Tests measured on it', es: 'Pruebas medidas en él' }, lang)}</th>
                 </tr>
               </thead>
@@ -121,7 +121,7 @@ export function GeneratorsView({ sel }: { sel: C22Sel | null }) {
                     <td className="ct-text">{ref}</td>
                     <td className="ct-text">{g.name}</td>
                     <td className="ct-text">{config(g.config)}</td>
-                    <td className="ct-text">{truth(g)}</td>
+                    <td className="ct-text ct-wide-only">{truth(g)}</td>
                     <td className="ct-text ct-wide-only">{users(ref)}</td>
                   </tr>
                 ))}
@@ -195,10 +195,10 @@ export function PowerView({ sel }: { sel: C22Sel | null }) {
           const s = rows.find((row) => row.x === xi);
           return s ? pickValue(s) : null;
         });
-      const series: ChartSeries[] = groups.flatMap((g) => {
+      const series: ChartSeries[] = groups.flatMap((g, i) => {
         const first = g.rows[0];
-        const color = TEST_COLOR[first.test_id] ?? '--color-accent';
-        const out: ChartSeries[] = [{ label: first.label, values: at(g.rows, (s) => rateOf(s, r).rate), color, width: 2 }];
+        const { color, dash } = seriesStyle(i);
+        const out: ChartSeries[] = [{ label: first.label, values: at(g.rows, (s) => rateOf(s, r).rate), color, width: 2, dash }];
         if (g.rows.some((s) => s.exact)) out.push({ label: { en: `${first.label.en}, exact`, es: `${first.label.es}, exacta` }, values: at(g.rows, (s) => rateOf(s, r).exact), color, width: 1.2, dash: [6, 4] });
         return out;
       });
@@ -208,10 +208,16 @@ export function PowerView({ sel }: { sel: C22Sel | null }) {
   }, [sel, v]);
   if (!sel || !v || !panels || !v.outputs.ladder) return <Pending />;
   const ladder = v.outputs.ladder;
+  const allSize = v.outputs.panels.every((p) => p.measures === 'size');
+  const mixed = !allSize && v.outputs.panels.some((p) => p.measures === 'size');
   return (
     <PlotCard
       fill
-      title={{ en: `Rejection rate at ${pct('en', sel.level, 0)}, every panel of the family`, es: `Tasa de rechazo al ${pct('es', sel.level, 0)}, cada panel de la familia` }}
+      title={
+        allSize
+          ? { en: `False alarms at ${pct('en', sel.level, 0)}: the model is right in every panel`, es: `Falsas alarmas al ${pct('es', sel.level, 0)}: el modelo es correcto en cada panel` }
+          : { en: `Rejection rate at ${pct('en', sel.level, 0)}, every panel of the family`, es: `Tasa de rechazo al ${pct('es', sel.level, 0)}, cada panel de la familia` }
+      }
       lane={REPLAY}
       provenance={provenanceOf(v.provenance.truth_status)}
       dataKey={stateKey}
@@ -223,7 +229,10 @@ export function PowerView({ sel }: { sel: C22Sel | null }) {
       <div className="ct-panels-fill" data-views={String(panels.length)}>
         {panels.map((pp) => (
           <div key={pp.panel.id} className="ct-small-multiple" data-panel={pp.panel.id}>
-            <p className="ct-sm-title">{pick(pp.panel.label, lang)}</p>
+            <p className="ct-sm-title">
+              {pick(pp.panel.label, lang)}
+              {mixed && pp.panel.measures === 'size' ? pick({ en: ' (sizes: the model is right)', es: ' (tamaños: el modelo es correcto)' }, lang) : ''}
+            </p>
             {pp.x.length >= 2 ? (
               <UPlotChart
                 height="fill"
@@ -371,10 +380,10 @@ export function PValuesView({ sel }: { sel: C22Sel | null }) {
         const rows = v.outputs.simulations.filter((s) => s.panel === p.id && s.p_histogram);
         const bins = rows[0]?.p_histogram?.length ?? 20;
         const x = Array.from({ length: bins }, (_, i) => (i + 0.5) / bins);
-        const series: ChartSeries[] = rows.map((s) => {
+        const series: ChartSeries[] = rows.map((s, i) => {
           const total = (s.p_histogram ?? []).reduce((a, b) => a + b, 0) || 1;
           const label = s.key.endsWith('@null') ? s.label : { en: `${s.label.en} (${s.key.split('@')[1]})`, es: `${s.label.es} (${s.key.split('@')[1]})` };
-          return { label, values: (s.p_histogram ?? []).map((c) => (c / total) * bins), color: TEST_COLOR[s.test_id] ?? '--color-accent', width: 1.6 };
+          return { label, values: (s.p_histogram ?? []).map((c) => (c / total) * bins), width: 1.6, ...seriesStyle(i) };
         });
         series.push({ label: { en: 'Uniform', es: 'Uniforme' }, values: x.map(() => 1), color: '--color-fg-subtle', width: 1, dash: [2, 4] });
         return { panel: p, x, series, n: rows.length };
@@ -671,7 +680,7 @@ export function C22FindingsView({ sel }: { sel: C22Sel | null }) {
   const prov = provenanceOf(v.provenance.truth_status);
   return (
     <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-2">
+      <div className="ct-col ct-findings-table">
         <PlotCard
           fill
           title={{ en: 'What the measurements found', es: 'Lo que encontraron las mediciones' }}
@@ -711,7 +720,7 @@ export function C22FindingsView({ sel }: { sel: C22Sel | null }) {
           </div>
         </PlotCard>
       </div>
-      <div className="ct-col">
+      <div className="ct-col ct-findings-chart">
         <PlotCard
           fill
           title={{ en: 'The cited rates', es: 'Las tasas citadas' }}
@@ -740,6 +749,21 @@ export function C22FindingsView({ sel }: { sel: C22Sel | null }) {
 /** The shade of a rate: 0 below 5%, then 5% to 20%, 20% to 50%, 50% to 80%, 80% and above. */
 const heat = (r: number | null) => (r === null ? 'none' : r < 0.05 ? '0' : r < 0.2 ? '1' : r < 0.5 ? '2' : r < 0.8 ? '3' : '4');
 
+/** A test's cell in one family: its power at the highest severity where the family plants a defect the test should
+ * see, else its false-alarm rate there where the model is right (a size panel). */
+function familyCell(f: C22Variant, testId: string, r: string): { rate: number | null; kind: 'power' | 'size' } | null {
+  const kinds: Array<'power' | 'size'> = ['power', 'size'];
+  for (const kind of kinds) {
+    const panels = new Set(f.outputs.panels.filter((p) => p.measures === kind).map((p) => p.id));
+    const rows = f.outputs.simulations.filter((x) => x.test_id === testId && panels.has(x.panel) && x.key.split('@').length === 2);
+    if (rows.length === 0) continue;
+    const top = Math.max(...rows.map((x) => x.severity));
+    if (top === 0) continue;
+    return { rate: Math.max(...rows.filter((x) => x.severity === top).map((x) => rateOf(x, r).rate ?? 0)), kind };
+  }
+  return null;
+}
+
 /** The families side by side: which test sees which defect. A row per test with a p-value; the null column is its
  * size, each defect column its rate at the family's highest severity on the family's ladder; a column header loads the
  * family. */
@@ -757,16 +781,9 @@ export function C22VariantsView({ sel, onPick }: { sel: C22Sel | null; onPick: (
     const cells = (f: C22Variant, testId: string) => {
       if (f.outputs.ladder === null) {
         const s = f.outputs.simulations.find((x) => x.key === `${testId}@null`);
-        return s ? { rate: rateOf(s, r).exact ?? rateOf(s, r).rate, top: null as number | null } : null;
+        return s ? { rate: rateOf(s, r).exact ?? rateOf(s, r).rate, kind: 'size' as const } : null;
       }
-      // the test's curves on the family's own ladder (a panel with its own axis measures something else)
-      const onLadder = new Set(f.outputs.panels.filter((p) => !p.axis).map((p) => p.id));
-      const rows = f.outputs.simulations.filter((x) => x.test_id === testId && onLadder.has(x.panel) && x.key.split('@').length === 2);
-      if (rows.length === 0) return null;
-      const top = Math.max(...rows.map((x) => x.severity));
-      if (top === 0) return null;
-      const best = Math.max(...rows.filter((x) => x.severity === top).map((x) => rateOf(x, r).rate ?? 0));
-      return { rate: best, top: rows.find((x) => x.severity === top)?.x ?? null };
+      return familyCell(f, testId, r);
     };
     return { tests, rows: tests.map((s) => ({ s, cells: fams.map((f) => cells(f, s.test_id)) })) };
   }, [sel, fams]);
@@ -785,8 +802,8 @@ export function C22VariantsView({ sel, onPick }: { sel: C22Sel | null; onPick: (
           provenance={prov}
           dataKey={stateKey}
           note={{
-            en: "The null column is each test's size (exact where it exists); each defect column is the test's rejection rate at that family's highest severity, on the family's ladder; a blank cell is a test the family does not measure. Darker: a higher rate. A column header loads the family.",
-            es: 'La columna nula es el tamaño de cada prueba (exacto donde existe); cada columna de defecto es la tasa de rechazo de la prueba en la mayor severidad de esa familia, en la escala de la familia; una celda vacía es una prueba que la familia no mide. Más oscuro: una tasa mayor. El encabezado de una columna carga la familia.',
+            en: "Each cell is the test's rejection rate at the family's highest severity. Blue: its power, where the family plants a defect the test should see. Amber: a false alarm, where the model is right and an assumption fails (correlated defaults, a covariate shift, an estimated development AUC), and in the null column the test's size (exact where it exists). Darker: a higher rate; blank: a test the family does not measure. A column header loads the family.",
+            es: 'Cada celda es la tasa de rechazo de la prueba en la mayor severidad de la familia. Azul: su potencia, donde la familia planta un defecto que la prueba debería ver. Ámbar: una falsa alarma, donde el modelo es correcto y falla un supuesto (incumplimientos correlacionados, un desplazamiento de covariables, un AUC de desarrollo estimado), y en la columna nula el tamaño de la prueba (exacto donde existe). Más oscuro: una tasa mayor; vacía: una prueba que la familia no mide. El encabezado de una columna carga la familia.',
           }}
         >
           <div className="ct-scroll">
@@ -808,7 +825,7 @@ export function C22VariantsView({ sel, onPick }: { sel: C22Sel | null; onPick: (
                   <tr key={s.test_id} data-test={s.test_id}>
                     <td className="ct-text">{pick(s.label, lang)}</td>
                     {cells.map((c, k) => (
-                      <td key={fams[k].variant_id} className="ct-heat" data-heat={heat(c?.rate ?? null)}>
+                      <td key={fams[k].variant_id} className="ct-heat" data-heat={heat(c?.rate ?? null)} data-kind={c?.kind}>
                         {c ? pct(lang, c.rate, 1) : ''}
                       </td>
                     ))}

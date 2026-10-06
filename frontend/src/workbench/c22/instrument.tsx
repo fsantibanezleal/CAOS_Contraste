@@ -101,7 +101,9 @@ export function useC22Instrument(data: CaseData | null, onPick: (id: string) => 
       )
     : tabs(
         [
-          { id: 'power', label: { en: 'Power', es: 'Potencia' }, content: <PowerView sel={sel} /> },
+          c22.outputs.panels.every((p) => p.measures === 'size')
+            ? { id: 'power', label: { en: 'Size', es: 'Tamaño' }, content: <PowerView sel={sel} /> }
+            : { id: 'power', label: { en: 'Power', es: 'Potencia' }, content: <PowerView sel={sel} /> },
           { id: 'rates', label: { en: 'Rates', es: 'Tasas' }, content: <RatesTableView sel={sel} /> },
           ...(c22.outputs.golden.length ? [{ id: 'paper', label: { en: 'Papers', es: 'Artículos' }, content: <PaperView sel={sel} /> }] : []),
           { id: 'report', label: { en: 'One report', es: 'Un reporte' }, content: <SpecimenView sel={sel} /> },

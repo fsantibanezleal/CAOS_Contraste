@@ -121,8 +121,8 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
   if (points.length === 0) return table;
   return (
     <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-2">{table}</div>
-      <div className="ct-col">
+      <div className="ct-col ct-findings-table">{table}</div>
+      <div className="ct-col ct-findings-chart">
         <PlotCard
           fill
           title={{ en: 'The evidence against the policy', es: 'La evidencia contra la política' }}
