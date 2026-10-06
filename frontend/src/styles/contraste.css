@@ -66,6 +66,9 @@
   .ct-grid6-fill { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); }
 }
 
+/* a verdict, a short table and their notes at their own height (a card that does not fill: C01's capital numbers) */
+.ct-stack-natural { display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
+
 /* a verdict over a scrolling table, inside one filling card */
 .ct-stack { display: flex; flex-direction: column; gap: 0.5rem; height: 100%; min-height: 0; }
 .ct-stack > .ct-scroll { flex: 1 1 0; height: auto; }

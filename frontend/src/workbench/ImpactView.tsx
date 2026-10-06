@@ -2,11 +2,22 @@
 // applicants (the rail's approval rate); the bad rate and the expected loss of each follow from the committed cut-off
 // curves, recomputed live; the swap sets at 80%, which need the applicants themselves, are the pipeline's. The money
 // is in the case's own currency, named by the artifact (NT dollars for Taiwan, Deutsche Mark for the German twin).
-import { PlotCard, Verdict, formatNumber, pick, useShellLang, useWorkbenchState } from '@fasl-work/caos-app-shell';
+import { PlotCard, SubTabs, Verdict, formatNumber, pick, useShellLang, useWorkbenchState } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
+import { CapitalView } from './CapitalView';
 import { CHAMPION, REPLAY, atApproval, grid, interp, provenanceOf, rung, shortName, type Selection } from './model';
 import { Pending } from './Pending';
+
+/** The Impact group: the decision (bad rate and expected loss) and the capital (CT-212 to CT-216). */
+export function ImpactGroup({ sel }: { sel: Selection | null }) {
+  const lang = useShellLang();
+  const tabs = [
+    { id: 'decision', label: pick({ en: 'Decision', es: 'Decisión' }, lang), content: <ImpactView sel={sel} /> },
+    { id: 'capital', label: pick({ en: 'Capital', es: 'Capital' }, lang), content: <CapitalView sel={sel} /> },
+  ];
+  return <SubTabs ariaLabel={pick({ en: 'Views of the impact', es: 'Vistas del impacto' }, lang)} tabs={tabs} />;
+}
 
 /** Money in millions, so a sum of exposures reads at a glance. */
 const MILLION = 1e6;
