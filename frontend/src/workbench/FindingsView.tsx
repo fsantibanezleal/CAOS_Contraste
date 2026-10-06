@@ -70,7 +70,9 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
   const points = findings.flatMap((f) => f.evidence.map((e) => ({ key: `${f.id}|${e}`, row: cited(sel, e) }))).filter((x) => x.row && x.row.p_value !== null);
   const number = new Map(points.map((x, i) => [x.key, i + 1]));
   const floorP = 1e-16;
-  const xs = points.map((_, i) => i + 1);
+  // half a step of room on each side, so the first and last points are not cut by the plot's edges
+  const xs = [0.5, ...points.map((_, i) => i + 1), points.length + 0.5];
+  const pad = <T,>(v: T[]): Array<T | null> => [null, ...v, null];
   const table = (
     <PlotCard
       fill
@@ -139,7 +141,7 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
             x={{ values: xs, label: { en: 'Cited test (the number in the table)', es: 'Prueba citada (el número de la tabla)' }, format: { decimals: 0 } }}
             y={{ label: { en: 'p-value', es: 'Valor p' }, log: true, format: { digits: 2 } }}
             series={[
-              { label: { en: 'p-value', es: 'Valor p' }, values: points.map((x) => Math.max(floorP, x.row?.p_value ?? 1)), color: '--color-accent', mode: 'points' },
+              { label: { en: 'p-value', es: 'Valor p' }, values: pad(points.map((x) => Math.max(floorP, x.row?.p_value ?? 1))), color: '--color-accent', mode: 'points' },
               { label: { en: 'Amber threshold', es: 'Umbral ámbar' }, values: xs.map(() => sel.alphas.amber), color: '--color-warn', width: 1.2, dash: [6, 4] },
               { label: { en: 'Red threshold', es: 'Umbral rojo' }, values: xs.map(() => sel.alphas.red), color: '--color-bad', width: 1.2, dash: [2, 4] },
             ]}

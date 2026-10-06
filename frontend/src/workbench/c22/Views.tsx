@@ -676,7 +676,9 @@ export function C22FindingsView({ sel }: { sel: C22Sel | null }) {
   // every cited rate, numbered in reading order: the table's [k] and the chart's x
   const points = findings.flatMap((f) => f.evidence.map((e) => ({ key: `${f.id}|${e}`, s: sim(e) }))).filter((x) => x.s);
   const number = new Map(points.map((x, i) => [x.key, i + 1]));
-  const xs = points.map((_, i) => i + 1);
+  // half a step of room on each side, so the first and last points are not cut by the plot's edges
+  const xs = [0.5, ...points.map((_, i) => i + 1), points.length + 0.5];
+  const pad = (vals: Array<number | null>): Array<number | null> => [null, ...vals, null];
   const prov = provenanceOf(v.provenance.truth_status);
   return (
     <div className="caos-views-row" data-views="2">
@@ -734,9 +736,9 @@ export function C22FindingsView({ sel }: { sel: C22Sel | null }) {
             x={{ values: xs, label: { en: 'Cited rate (the number in the table)', es: 'Tasa citada (el número de la tabla)' }, format: { decimals: 0 } }}
             y={{ label: { en: 'Rejection rate', es: 'Tasa de rechazo' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
             series={[
-              { label: { en: 'Rate', es: 'Tasa' }, values: points.map((x) => (x.s ? rateOf(x.s, r).rate : null)), color: '--color-accent', mode: 'points' },
-              { label: { en: 'Wilson 95%, low', es: 'Wilson 95%, inferior' }, values: points.map((x) => (x.s ? rateOf(x.s, r).lo : null)), color: '--color-fg-subtle', mode: 'points' },
-              { label: { en: 'Wilson 95%, high', es: 'Wilson 95%, superior' }, values: points.map((x) => (x.s ? rateOf(x.s, r).hi : null)), color: '--color-fg-subtle', mode: 'points' },
+              { label: { en: 'Rate', es: 'Tasa' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).rate : null))), color: '--color-accent', mode: 'points' },
+              { label: { en: 'Wilson 95%, low', es: 'Wilson 95%, inferior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).lo : null))), color: '--color-fg-subtle', mode: 'points' },
+              { label: { en: 'Wilson 95%, high', es: 'Wilson 95%, superior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).hi : null))), color: '--color-fg-subtle', mode: 'points' },
               { label: { en: 'Nominal level', es: 'Nivel nominal' }, values: xs.map(() => sel.level), color: '--color-warn', width: 1.2, dash: [6, 4] },
             ]}
           />
