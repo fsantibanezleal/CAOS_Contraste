@@ -23,22 +23,38 @@ behind a model opinion, and for students of credit risk. The tests come from the
 | Case | Question | Data | Status |
 |---|---|---|---|
 | [C01](docs/cases/C01.md) | Does a monotone WoE scorecard match the challengers the literature says beat it, once calibration is required, and what do the tests say when the population shifts? | UCI Taiwan credit cards (30,000), UCI Statlog German Credit (1,000), both CC BY 4.0 | built |
+| [C05](docs/cases/C05.md) | How should a PD curve be carried to a new year, and what can be said about PDs with almost no defaults? | Tasche (2013) and Pluto and Tasche (2005), their tables (derived-only); a Vasicek generator | built |
+| [C22](docs/cases/C22.md) | How often does each validation test reject a right model, and which defects does it catch? | riskvalidation's generators with planted defects; BCBS WP14 and Yurdakul-Naranjo tables as published answers (derived-only) | built |
 
 C01's ladder: the constant PD and the strongest single variable (P0), the WoE scorecard (P1), L1 logistic
 regression and penalised logistic tree regression (P2), the explainable boosting machine (P3), monotone LightGBM
 with XGBoost as cross-check (P4), and TabPFN v2 on the German twin (P5). Seven variants: the holdout, moderate and
-severe covariate drift, a prior shift, label noise, a small training sample and the German twin. The other 21 cases
-(IFRS 9 and the Chilean provisions, LGD and EAD, portfolio capital, market risk and FRTB, IRRBB and liquidity,
-operational risk, ICAAP and IAPE stress, machine-learning and fairness validation, the size and power of the tests
-themselves) are planned in [the coverage matrix](docs/cases/README.md).
+severe covariate drift, a prior shift, label noise, a small training sample and the German twin; the IRB capital of
+each approved book under Basel III, CRR3 and Basel II.
+
+C05 recomputes Tasche (2013) and Pluto and Tasche (2005) cell by cell from their PDFs, carries the 2009 S&P curve to
+2010 and 2011 by every approach of the paper, bounds low-default PDs four ways, and measures coverage, size and power
+on 20,000 generated years, each choice priced in IRB capital.
+
+C22 measures the size and power of every test with a p-value on known-truth generators: eight families (the null and
+seven planted defects), every rate with its Monte Carlo error, exact rejection probabilities where they exist, and
+three published simulation studies rerun (BCBS WP14 Tables 7 and 8, Yurdakul and Naranjo's Table 4, Demler et al.).
+Its measurements changed C01: Hosmer-Lemeshow uses as many degrees of freedom as groups on the holdout, and the test
+of the AUC against the initial AUC adds the initial estimate's variance.
+
+The other 19 cases (IFRS 9 and the Chilean provisions, LGD and EAD, portfolio capital, market risk and FRTB, IRRBB
+and liquidity, operational risk, ICAAP and IAPE stress, machine-learning and fairness validation) are planned in
+[the coverage matrix](docs/cases/README.md).
 
 ## The web
 
 Six routes on the shared CAOS shell, in English and Spanish, light and dark: the App (a workbench with six groups:
 Model, Validation, Impact, Findings, Variants, Context), Introduction, Methodology, Implementation, Experiments and
 Benchmark. The App replays the committed artifacts and computes live what a reader changes: the scorecard and EBM
-scores of an applicant, the lights under the reader's own policy thresholds, the decision at the reader's approval
-rate and LGD.
+scores of an applicant, the lights under the reader's own policy thresholds, the decision and the IRB capital at the
+reader's approval rate and LGD (C01); the PD curve of every calibration approach, the low-default bounds and their
+capital (C05); the exact size and power of the binomial, Vasicek-corrected and Jeffreys tests for the reader's own
+portfolio (C22). Every live computation is a TypeScript port held to the engine on exported parity points.
 
 ## Run it
 
