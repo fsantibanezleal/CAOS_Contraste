@@ -45,6 +45,6 @@ see, checked at bake time. The App shows one case at a time; Experiments and Ben
 | C19 supervisory stress model replication (known answer) | capital-stress | Fed hypothetical portfolios and published loss rates | published answers | U13 | planned |
 | C20 ML model validation: drift, robustness, explanation stability | ml-ai-risk | UCI, SantanderAI SGCD, Fed portfolios as shift probes | real outcomes, known shifts | U14 | planned |
 | C21 fair-lending disparity testing | ml-ai-risk | HMDA (mirror-allowed) | real decisions | U14 | planned |
-| C22 validating the validator: size and power of every test | validator | generators with planted defects | known truth | U3 | planned |
+| [C22](C22.md) validating the validator: size and power of every test | validator | riskvalidation's generators with planted defects; WP14 and Yurdakul-Naranjo tables (derived-only) as published answers | known truth | U3 | built |
 
 A case page is written in the unit that builds the case, from [00_TEMPLATE.md](00_TEMPLATE.md).
