@@ -140,7 +140,8 @@ function detections(families: C22Variant[], titles: Record<string, Text>): Detec
   const out: Detection[] = [];
   for (const v of families) {
     if (!v.outputs.ladder) continue;
-    for (const p of v.outputs.panels) {
+    // the power curves only: a size panel (the development AUC estimated, nothing changed) is not a defect
+    for (const p of v.outputs.panels.filter((x) => x.measures === 'power')) {
       for (const g of curves(v, p.id)) {
         const xs = [...new Set(g.rows.map((s) => s.x))];
         if (xs.length < 2) continue;
@@ -164,6 +165,47 @@ function detections(families: C22Variant[], titles: Record<string, Text>): Detec
   return out;
 }
 
+interface FalseAlarm {
+  family: string;
+  familyTitle: Text;
+  panel: Text;
+  test: Text;
+  axis: Text;
+  base: number | null;
+  top: number | null;
+  topX: number;
+  bound: number;
+}
+
+/** The size panels of the defect families: the model is right and an assumption fails, so every rejection is a false
+ * alarm; the rate where the assumption holds, and at the highest severity against the size bound. */
+function falseAlarms(families: C22Variant[], titles: Record<string, Text>): FalseAlarm[] {
+  const out: FalseAlarm[] = [];
+  for (const v of families) {
+    if (!v.outputs.ladder) continue;
+    for (const p of v.outputs.panels.filter((x) => x.measures === 'size')) {
+      for (const g of curves(v, p.id)) {
+        const rows = [...g.rows].sort((a, b) => a.x - b.x);
+        if (new Set(rows.map((s) => s.x)).size < 2) continue;
+        const top = rows[rows.length - 1];
+        out.push({
+          family: v.variant_id,
+          familyTitle: titles[v.variant_id] ?? { en: v.variant_id, es: v.variant_id },
+          panel: p.label,
+          test: rows[0].label,
+          axis: p.axis ?? v.outputs.ladder.label,
+          base: rateOf(rows[0], AT5).rate,
+          top: rateOf(top, AT5).rate,
+          topX: top.x,
+          // the level plus 3.09 Monte Carlo SEs at this row's repetitions (the engine's size_bound)
+          bound: 0.05 + 3.090232306167813 * Math.sqrt((0.05 * 0.95) / top.n_rep),
+        });
+      }
+    }
+  }
+  return out;
+}
+
 export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
   const lang = useShellLang();
   const t = useT();
@@ -174,6 +216,8 @@ export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
   const reach = rows.filter((r) => r.first80 !== null);
   const blind = rows.filter((r) => (r.top ?? 0) < 0.2);
   const golden = families.flatMap((v) => v.outputs.golden);
+  const alarms = falseAlarms(families, titles);
+  const exceeds = alarms.filter((a) => (a.top ?? 0) > a.bound);
   const list = (rs: Detection[], l: 'en' | 'es') => rs.map((r) => `${pick(r.test, l)} (${pick(r.familyTitle, l)}, ${pct(l, r.top)})`).join('; ');
   return (
     <div data-state="ready">
@@ -183,8 +227,8 @@ export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
           title={{ en: 'What the power curves support', es: 'Lo que respaldan las curvas de potencia' }}
           tone="accent"
           verdict={{
-            en: `Of ${rows.length} curves of a test against a planted defect, ${reach.length} reach ${pct('en', POWER, 0)} power at 5% within the family's ladder. ${blind.length} stay below 20% at the highest severity: ${list(blind, 'en')}. The ladders are Contraste's design choices; power on them is not the probability of finding a real bank's problem.`,
-            es: `De ${rows.length} curvas de una prueba contra un defecto plantado, ${reach.length} alcanzan ${pct('es', POWER, 0)} de potencia al 5% dentro de la escala de la familia. ${blind.length} quedan bajo 20% en la mayor severidad: ${list(blind, 'es')}. Las escalas son elecciones de diseño de Contraste; la potencia en ellas no es la probabilidad de encontrar el problema de un banco real.`,
+            en: `Of ${rows.length} curves of a test against a planted defect it should see, ${reach.length} reach ${pct('en', POWER, 0)} power at 5% within the family's ladder. ${blind.length} stay below 20% at the highest severity: ${list(blind, 'en')}. The ladders are Contraste's design choices; power on them is not the probability of finding a real bank's problem.`,
+            es: `De ${rows.length} curvas de una prueba contra un defecto plantado que debería ver, ${reach.length} alcanzan ${pct('es', POWER, 0)} de potencia al 5% dentro de la escala de la familia. ${blind.length} quedan bajo 20% en la mayor severidad: ${list(blind, 'es')}. Las escalas son elecciones de diseño de Contraste; la potencia en ellas no es la probabilidad de encontrar el problema de un banco real.`,
           }}
         />
         <div className="ct-scroll">
@@ -208,6 +252,43 @@ export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
                   <td>{pct(lang, r.null0)}</td>
                   <td>{r.first80 === null ? t('not within the ladder', 'no dentro de la escala') : formatNumber(r.first80, lang, { digits: 3 })}</td>
                   <td>{`${pct(lang, r.top)} (${formatNumber(r.topX, lang, { digits: 3 })})`}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+      <PlotCard title={{ en: 'C22, false alarms when an assumption fails', es: 'C22, falsas alarmas cuando falla un supuesto' }} lane="replay" provenance="synthetic">
+        <Verdict
+          compact
+          title={{ en: 'What the size curves support', es: 'Lo que respaldan las curvas de tamaño' }}
+          tone={exceeds.length ? 'warn' : 'accent'}
+          verdict={{
+            en: `The model is right in every row below; only an assumption fails. ${exceeds.length} of ${alarms.length} curves exceed the size bound (the level plus 3.09 Monte Carlo SEs) at the highest severity: ${exceeds.map((a) => `${pick(a.test, 'en')} (${pick(a.familyTitle, 'en')}, ${pct('en', a.top)})`).join('; ')}.`,
+            es: `El modelo es correcto en cada fila de abajo; solo falla un supuesto. ${exceeds.length} de ${alarms.length} curvas exceden la cota de tamaño (el nivel más 3,09 EE de Monte Carlo) en la mayor severidad: ${exceeds.map((a) => `${pick(a.test, 'es')} (${pick(a.familyTitle, 'es')}, ${pct('es', a.top)})`).join('; ')}.`,
+          }}
+        />
+        <div className="ct-scroll">
+          <table className="caos-table ct-wrap-head" data-table="false-alarms">
+            <thead>
+              <tr>
+                <th className="caos-col-text">{t('Assumption that fails', 'Supuesto que falla')}</th>
+                <th className="caos-col-text">{t('Test', 'Prueba')}</th>
+                <th className="caos-col-text">{t('Setting', 'Ajuste')}</th>
+                <th>{t('Rate where it holds', 'Tasa donde se cumple')}</th>
+                <th>{t('Rate at the highest severity', 'Tasa en la mayor severidad')}</th>
+                <th>{t('Size', 'Tamaño')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {alarms.map((a) => (
+                <tr key={`${a.family}|${a.panel.en}|${a.test.en}`} data-family={a.family} data-holds={(a.top ?? 0) > a.bound ? 'no' : 'yes'}>
+                  <td className="caos-col-text">{pick(a.familyTitle, lang)}</td>
+                  <td className="caos-col-text">{pick(a.test, lang)}</td>
+                  <td className="caos-col-text">{`${pick(a.panel, lang)}; ${pick(a.axis, lang)}`}</td>
+                  <td>{pct(lang, a.base)}</td>
+                  <td>{`${pct(lang, a.top)} (${formatNumber(a.topX, lang, { digits: 3 })})`}</td>
+                  <td>{(a.top ?? 0) > a.bound ? t('exceeds', 'excede') : t('holds', 'se mantiene')}</td>
                 </tr>
               ))}
             </tbody>

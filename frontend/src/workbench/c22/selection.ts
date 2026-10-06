@@ -41,25 +41,12 @@ export const COUNT_TESTS: Array<{ id: CountTest; label: Text; color: ShellToken 
 ];
 
 /** One colour per test, the same in every view. */
-export const TEST_COLOR: Record<string, ShellToken> = {
-  'pd.binomial': '--color-accent',
-  'pd.jeffreys': '--color-magenta',
-  'pd.binomial_vasicek': '--color-good',
-  'pd.chi2_grades': '--color-warn',
-  'pd.default_profile': '--color-accent-2',
-  'pd.hosmer_lemeshow': '--color-bad',
-  'pd.spiegelhalter': '--color-accent-2',
-  'pd.normal_multiperiod': '--color-warn',
-  'pd.traffic_lights': '--color-accent',
-  'disc.auc_vs_initial': '--color-accent',
-  'disc.delong': '--color-magenta',
-  'stability.psi': '--color-accent',
-  'stability.csi': '--color-accent-2',
-  'stability.chi2': '--color-good',
-  'stability.ks': '--color-magenta',
-  'rating.migration_ztests': '--color-accent',
-  'rating.hhi': '--color-bad',
-};
+/** The series colours of a chart, by position: seven hues, then the same hues dashed, so every curve of a panel can be
+ * told apart (keyed by test, several tests shared the accent). */
+const PALETTE: ShellToken[] = ['--color-accent', '--color-magenta', '--color-good', '--color-warn', '--color-bad', '--color-accent-2', '--color-fg'];
+export function seriesStyle(i: number): { color: ShellToken; dash?: number[] } {
+  return { color: PALETTE[i % PALETTE.length], dash: i >= PALETTE.length ? [8, 3] : undefined };
+}
 
 export const rule = (level: number) => `p<${level}`;
 

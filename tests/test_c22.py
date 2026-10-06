@@ -43,6 +43,7 @@ def test_size_of_every_test_reported(variants):
     from riskvalidation.core.registry import catalogue
 
     null = variants["null"]["outputs"]
+    assert {p["measures"] for p in null["panels"]} == {"size"}
     measured = {s["test_id"] for s in null["simulations"] if s["key"].endswith("@null")}
     registered = {s.test_id for s in catalogue() if s.decision == "p_value" and s.family != "selftest"}
     assert measured == registered, measured ^ registered
@@ -65,6 +66,8 @@ def test_power_curves_complete(variants):
         for panel in o["panels"]:
             rows = [s for s in o["simulations"] if s["panel"] == panel["id"]]
             assert rows, (fam, panel)
+            # a panel says whether its rates are power against the planted defect or sizes where the model is right
+            assert panel["measures"] == ("size" if panel["id"] in c22.SIZE_PANELS.get(fam, ()) else "power"), (fam, panel["id"])
             if fam != "discrimination-decay" or panel["id"] != "development":
                 tests = {s["test_id"] for s in rows if s["key"].count("@") == 1}
                 for t in tests:

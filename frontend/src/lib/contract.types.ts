@@ -1234,8 +1234,9 @@ export interface C22Outputs {
   family: string;
   ladder: { values: number[]; label: Text } | null;
   levels: number[];
-  /** axis: the x axis of a panel whose simulations do not run along the family's ladder */
-  panels: Array<{ id: string; label: Text; axis: Text | null }>;
+  /** axis: the x axis of a panel whose simulations do not run along the family's ladder; measures: whether its rates are
+   * the power against a planted defect or the size where the null holds */
+  panels: Array<{ id: string; label: Text; axis: Text | null; measures: 'power' | 'size' }>;
   simulations: C22Simulation[];
   generators: Record<string, C22Generator>;
   golden: C22Golden[];
@@ -1275,7 +1276,7 @@ export const C22_OUTPUTS = {
   family: 'string',
   ladder: { nullable: { object: { values: nums, label: 'text' } } },
   levels: nums,
-  panels: { array: { object: { id: 'string', label: 'text', axis: { nullable: 'text' } } } },
+  panels: { array: { object: { id: 'string', label: 'text', axis: { nullable: 'text' }, measures: 'string' } } },
   simulations: {
     array: {
       object: {

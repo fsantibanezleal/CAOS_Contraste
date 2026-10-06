@@ -890,10 +890,18 @@ PANEL_LABEL: dict[str, dict[str, str]] = {
 
 #: the x axis of a panel whose simulations do not run along the family's ladder
 PANEL_AXIS: dict[str, dict[str, str]] = {
-    "development": _t("current sample over the development sample (0: the development AUC known)",
-                      "muestra actual sobre la de desarrollo (0: AUC de desarrollo conocida)"),
-    "curve": _t("how far the true PDs of grades 3 and 4 moved past each other (1: swapped)",
-                "cuánto se movieron una sobre otra las PD verdaderas de los grados 3 y 4 (1: intercambiadas)"),
+    "development": _t("current / development sample (0: AUC known)", "muestra actual / de desarrollo (0: AUC conocida)"),
+    "curve": _t("grades 3 and 4 moved past each other (1: swapped)", "grados 3 y 4 cruzados (1: intercambiados)"),
+}
+#: the panels of a defect family whose every simulation leaves the tested model right, so a rejection is a false alarm
+#: (a size, not power): the clustering family (the PDs are right, the defaults correlated), drift's calibration panel
+#: (the model stays right under the covariate shift), the development AUC estimated with nothing changed, and the
+#: DeLong designs of equal AUCs; every panel of the null family is a size panel too
+SIZE_PANELS: dict[str, frozenset[str]] = {
+    "clustering": frozenset({"portfolio", "grades", "obligors", "years"}),
+    "drift": frozenset({"calibration"}),
+    "discrimination-decay": frozenset({"development"}),
+    "leakage": frozenset({"delong"}),
 }
 
 #: what a reader should see, declared before the bake from the pilot runs (CT-307); the bases are in dossier 12
@@ -1026,7 +1034,9 @@ class C22:
             ladder = None if v["ladder"] is None else {"values": list(v["ladder"][0]), "label": v["ladder"][1]}
             outputs = {
                 "kind": "validator", "family": v["id"], "ladder": ladder, "levels": list(LEVELS),
-                "panels": [{"id": p, "label": PANEL_LABEL[p], "axis": PANEL_AXIS.get(p)} for p in v["panels"]],
+                "panels": [{"id": p, "label": PANEL_LABEL[p], "axis": PANEL_AXIS.get(p),
+                            "measures": "size" if v["ladder"] is None or p in SIZE_PANELS.get(v["id"], ()) else "power"}
+                           for p in v["panels"]],
                 "simulations": book.rows, "generators": book.generators, "golden": res["golden"],
                 "exact_curves": res["exact_curves"], "estimators": res["estimators"],
                 "specimen": {"severity": 0 if v["id"] == "null" else SPECIMEN_SEVERITY},
