@@ -27,7 +27,7 @@ export function C22WriteUp() {
         es={<>Una prueba mantiene su tamaño cuando su tasa bajo la nula es a lo más el nivel más 3,09 errores estándar, la cota que un tamaño verdadero igual al nivel cruza una vez en mil. Donde una probabilidad de rechazo es exacta, no se necesita simulación y ninguna vale más que ella: las tres pruebas de conteo (binomial, binomial corregida de Vasicek, Jeffreys) ven los datos solo a través de un conteo de incumplimientos, así que rechazan exactamente desde un conteo crítico k*, y</>}
       />
       <Equation
-        tex={String.raw`P(\text{reject}) = \int \Pr\big[\mathrm{Bin}(n, p(x)) \ge k^*\big]\,\varphi(x)\,dx, \qquad p(x) = \Phi\!\left(\frac{\Phi^{-1}(\pi) - \sqrt{\rho}\,x}{\sqrt{1-\rho}}\right)`}
+        tex={String.raw`P(\text{${t('reject', 'rechazo')}}) = \int \Pr\big[\mathrm{Bin}(n, p(x)) \ge k^*\big]\,\varphi(x)\,dx, \qquad p(x) = \Phi\!\left(\frac{\Phi^{-1}(\pi) - \sqrt{\rho}\,x}{\sqrt{1-\rho}}\right)`}
         caption={t(
           'The exact rejection probability of a count test when the true PD is π and the true asset correlation ρ, k* found by evaluating the test itself. Every simulated rate of these tests agrees with it within 3.29 standard errors; the Impact group recomputes it in your browser for your own portfolio.',
           'La probabilidad exacta de rechazo de una prueba de conteo cuando la PD verdadera es π y la correlación de activos verdadera ρ, con k* hallado evaluando la propia prueba. Cada tasa simulada de estas pruebas concuerda con ella dentro de 3,29 errores estándar; el grupo Impacto la recalcula en su navegador para su propia cartera.',
