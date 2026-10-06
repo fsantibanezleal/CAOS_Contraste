@@ -63,9 +63,15 @@ against `TEST_RESULT_KEYS`. The engine's version is recorded in every artifact's
 | `regulatory.irb` | the risk weight of every curve and estimate (the Impact group), and the live calculator's parity points |
 | `validation.calibration` | `pd_default_profile` (the paper's Monte Carlo chi-square), `pd_chi2_grades`, `pd_jeffreys_grades`, `pd_binomial`, `pd_binomial_vasicek` |
 
+`data-pipeline/pipeline/cases/c01_capital.py` gives C01 its IRB capital: `regulatory.irb.capital_requirement` at unit
+LGD for every account of every rung (qualifying revolving retail, every card a revolver, for the Taiwan cards; other
+retail for the German loans), under Basel III final, CRR3 and Basel II, summed along each rung's cut-off curve; the
+Capital view multiplies by the rail's LGD, since retail capital is linear in it.
+
 The browser recomputes the IRB risk weight, the most prudent bounds and the four case 1 calibrations with TypeScript
 ports (`frontend/src/engine/credit.ts`) held to the engine within 1e-9 on points the pipeline exports
-(`frontend/src/engine/credit.test.ts`).
+(`frontend/src/engine/credit.test.ts`): corporate points with C05, retail points (QRRE revolvers and transactors,
+other retail) with C01.
 
 ## Caveats and licence
 

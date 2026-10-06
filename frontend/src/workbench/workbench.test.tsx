@@ -10,6 +10,7 @@ import type { CaseIndex, CaseManifest, ModelsArtifact, VariantArtifact } from '.
 import { COMMITTED } from '../lib/policy';
 import { ContextView } from './ContextView';
 import { FindingsView } from './FindingsView';
+import { CapitalView } from './CapitalView';
 import { ImpactView } from './ImpactView';
 import { defaultChallenger, type Selection } from './model';
 import { EbmView, GbmView, LadderView, PenalisedView, ScorecardView, TabPfnView } from './ModelViews';
@@ -72,6 +73,7 @@ describe('the App instrument', () => {
     ['Stability', StabilityView],
     ['By group', GroupsView],
     ['Impact', ImpactView],
+    ['Capital', CapitalView],
     ['Findings', FindingsView],
     ['Context', ContextView],
   ];
@@ -102,4 +104,29 @@ describe('the App instrument', () => {
       for (const a of m.artifacts.filter((x) => x.role === 'variant')) expect(markup).toContain(`data-truth="${a.truth_status}"`);
     });
   }
+});
+
+describe('the capital view (CT-212 to CT-216)', () => {
+  const all = selections();
+  it('flags a rail LGD below the Basel III input floor, and only then', () => {
+    for (const { label, sel } of all.filter((s) => s.label.endsWith('/holdout') || s.label.endsWith('/german-twin'))) {
+      const floor = sel.data.variant.outputs.irb.lgd_floor_basel3;
+      const below = html(<CapitalView sel={{ ...sel, lgd: floor - 0.1 }} />);
+      expect(below, `${label}: no flag below the floor`).toContain('data-lgd-floor="below"');
+      expect(below).toContain('d424');
+      const at = html(<CapitalView sel={{ ...sel, lgd: floor }} />);
+      expect(at, `${label}: a flag at the floor`).not.toContain('data-lgd-floor="below"');
+    }
+  });
+
+  it('names the three regimes, and reports the transactors only for the cards', () => {
+    for (const { label, sel } of all.filter((s) => s.label.endsWith('/holdout') || s.label.endsWith('/german-twin'))) {
+      const half = html(<CapitalView sel={{ ...sel, lgd: 0.5 }} />);
+      const cards = sel.data.variant.outputs.irb.revolvers_only;
+      expect(half.includes('six-month full payers as transactors'), label).toBe(cards);
+      for (const regime of sel.data.variant.outputs.irb.regimes) {
+        expect(half, `${label}: ${regime} row`).toContain(regime === 'basel2' ? 'Basel II' : regime === 'crr3' ? 'EU CRR3' : 'Basel III final');
+      }
+    }
+  });
 });
