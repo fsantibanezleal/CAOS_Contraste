@@ -1,7 +1,7 @@
 // The methods behind the cases, transcribed from research dossiers 04 (credit-risk models: sections A, B, J) and 06
 // (model risk management and the validation test catalogue: sections A, C). Every display equation carries a
 // caption that defines its symbols; every section ends with its references.
-import { Cite, DocPage, DocSection, Equation, Figure, Tabs, useShellLang } from '@fasl-work/caos-app-shell';
+import { Cite, DocPage, DocSection, Equation, Figure, TabGroups, useShellLang } from '@fasl-work/caos-app-shell';
 import { ValidationFigure } from '../architecture/figures';
 import { L, P, useT } from '../content/bi';
 
@@ -128,14 +128,14 @@ function Discrimination() {
           caption={t('A: defaulters; B: non-defaulters; u_ab = 1 when a is ranked riskier than b, 1/2 on a tie, 0 otherwise; V_10 and V_01: the structural components, the mean of u over the other group (ECB 2019, Annex 3.1).', 'A: incumplidores; B: no incumplidores; u_ab = 1 cuando a queda como más riesgoso que b, 1/2 en un empate, 0 si no; V_10 y V_01: los componentes estructurales, la media de u sobre el otro grupo (BCE 2019, Anexo 3.1).')}
         />
       </DocSection>
-      <DocSection title={{ en: 'Has discrimination deteriorated, and is a challenger better?', es: '¿Se deterioró la discriminación, y es mejor un retador?' }} refs={['ecb2019', 'delong1988']}>
+      <DocSection title={{ en: 'Has discrimination deteriorated, and is a challenger better?', es: '¿Se deterioró la discriminación, y es mejor un retador?' }} refs={['ecb2019', 'delong1988', 'demler2012']}>
         <P
-          en={<>The ECB test compares the current AUC with the AUC at initial validation, taken as known; a small p-value says the ranking deteriorated <Cite id="ecb2019" />. In Contraste the initial AUC is the one on the calibration slice, the development's first out-of-sample measurement. A challenger and the champion scored on the same obligors are compared with the DeLong test, whose covariance accounts for the pairing <Cite id="delong1988" />.</>}
-          es={<>La prueba del BCE compara la AUC actual con la AUC de la validación inicial, tomada como conocida; un valor p pequeño dice que el orden se deterioró <Cite id="ecb2019" />. En Contraste la AUC inicial es la del tramo de calibración, la primera medición fuera de muestra del desarrollo. Un retador y el campeón puntuados sobre los mismos deudores se comparan con la prueba de DeLong, cuya covarianza considera el pareo <Cite id="delong1988" />.</>}
+          en={<>The ECB test compares the current AUC with the AUC at initial validation, taken as known; a small p-value says the ranking deteriorated <Cite id="ecb2019" />. In Contraste the initial AUC is the one on the calibration slice, the development's first out-of-sample measurement, and so an estimate: case C22 measured that the ECB form then rejects about one time in six at 5% when nothing changed (at C01's slice sizes), so Contraste adds the slice AUC's variance to the statistic's, an extension of the ECB formula every result states. A challenger and the champion scored on the same obligors are compared with the DeLong test, whose covariance accounts for the pairing <Cite id="delong1988" />; on nested models fitted and compared on the same data it almost never rejects, and is not the test to use there <Cite id="demler2012" />.</>}
+          es={<>La prueba del BCE compara la AUC actual con la AUC de la validación inicial, tomada como conocida; un valor p pequeño dice que el orden se deterioró <Cite id="ecb2019" />. En Contraste la AUC inicial es la del tramo de calibración, la primera medición fuera de muestra del desarrollo, y por tanto una estimación: el caso C22 midió que la forma del BCE rechaza entonces cerca de una vez en seis al 5% cuando nada cambió (con los tamaños de tramo de C01), así que Contraste suma la varianza de la AUC del tramo a la del estadístico, una extensión de la fórmula del BCE que cada resultado declara. Un retador y el campeón puntuados sobre los mismos deudores se comparan con la prueba de DeLong, cuya covarianza considera el pareo <Cite id="delong1988" />; en modelos anidados ajustados y comparados en los mismos datos casi nunca rechaza, y no es la prueba a usar ahí <Cite id="demler2012" />.</>}
         />
         <Equation
-          tex="S = \frac{\mathrm{AUC}_{init} - \mathrm{AUC}_{curr}}{s}, \quad p = 1 - \Phi(S); \qquad z = \frac{\widehat{\mathrm{AUC}}_1 - \widehat{\mathrm{AUC}}_2}{\sqrt{\mathbf{S}_{11} + \mathbf{S}_{22} - 2\,\mathbf{S}_{12}}}, \quad \mathbf{S} = \frac{S_{10}}{|A|} + \frac{S_{01}}{|B|}"
-          caption={t('Left: the ECB test against the initial AUC, H0: the development AUC is not above the current one. Right: DeLong, H0: equal AUCs; S_10 and S_01 are the covariance matrices of the two models\' structural components.', 'Izquierda: la prueba del BCE contra la AUC inicial, H0: la AUC de desarrollo no supera a la actual. Derecha: DeLong, H0: AUC iguales; S_10 y S_01 son las matrices de covarianza de los componentes estructurales de ambos modelos.')}
+          tex="S = \frac{\mathrm{AUC}_{init} - \mathrm{AUC}_{curr}}{\sqrt{s^2 + s^2_{init}}}, \quad p = 1 - \Phi(S); \qquad z = \frac{\widehat{\mathrm{AUC}}_1 - \widehat{\mathrm{AUC}}_2}{\sqrt{\mathbf{S}_{11} + \mathbf{S}_{22} - 2\,\mathbf{S}_{12}}}, \quad \mathbf{S} = \frac{S_{10}}{|A|} + \frac{S_{01}}{|B|}"
+          caption={t('Left: the ECB test against the initial AUC, H0: the development AUC is not above the current one; the ECB takes s²_init = 0, Contraste adds the variance of the initial AUC\'s estimate. Right: DeLong, H0: equal AUCs; S_10 and S_01 are the covariance matrices of the two models\' structural components.', 'Izquierda: la prueba del BCE contra la AUC inicial, H0: la AUC de desarrollo no supera a la actual; el BCE toma s²_init = 0, Contraste suma la varianza de la estimación de la AUC inicial. Derecha: DeLong, H0: AUC iguales; S_10 y S_01 son las matrices de covarianza de los componentes estructurales de ambos modelos.')}
         />
         <Equation
           tex="\mathrm{KS} = \sup_s \left| F_D(s) - F_{ND}(s) \right|"
@@ -160,10 +160,14 @@ function Calibration() {
           caption={t('Left: the Jeffreys p-value (ECB 2019, 2.5.3.1). Right: the large-portfolio critical default rate of the Vasicek-adjusted binomial test at confidence q and asset correlation ρ; WP14 gives 19, 35, 49, 63 and 77 defaults out of 1,000 at a PD of 1% and ρ = 0, 5, 10, 15 and 20%.', 'Izquierda: el valor p de Jeffreys (BCE 2019, 2.5.3.1). Derecha: la tasa crítica de incumplimiento de la prueba binomial ajustada de Vasicek para una cartera grande, con confianza q y correlación de activos ρ; WP14 da 19, 35, 49, 63 y 77 incumplimientos de 1.000 con PD de 1% y ρ = 0, 5, 10, 15 y 20%.')}
         />
       </DocSection>
-      <DocSection title={{ en: 'The fit: is the PD right across the range?', es: 'El ajuste: ¿es correcta la PD en todo el rango?' }} refs={['wp14', 'hosmer1980', 'spiegelhalter1986']}>
+      <DocSection title={{ en: 'The fit: is the PD right across the range?', es: 'El ajuste: ¿es correcta la PD en todo el rango?' }} refs={['wp14', 'hosmer1980', 'spiegelhalter1986', 'hosmer1997', 'paul2013']}>
         <P
           en={<>The chi-square over grades sums the standardised gaps of the K + 1 grades <Cite id="wp14" />; Hosmer-Lemeshow does the same over deciles of the predicted risk <Cite id="hosmer1980" />; Spiegelhalter's test works at obligor level, without bins, on the Brier score <Cite id="spiegelhalter1986" />. At thousands of obligors these tests reject deviations too small to matter, and WP14 warns that the chi-square under-states its type I error under default dependence. This is why Contraste's severity policy weighs a failed level test more than a failed fit test.</>}
           es={<>El chi-cuadrado sobre grados suma las brechas estandarizadas de los K + 1 grados <Cite id="wp14" />; Hosmer-Lemeshow hace lo mismo sobre deciles del riesgo predicho <Cite id="hosmer1980" />; la prueba de Spiegelhalter trabaja a nivel de deudor, sin tramos, sobre el puntaje de Brier <Cite id="spiegelhalter1986" />. Con miles de deudores estas pruebas rechazan desvíos demasiado pequeños para importar, y WP14 advierte que el chi-cuadrado subestima su error de tipo I con dependencia entre incumplimientos. Por eso la política de severidad de Contraste pesa más una prueba de nivel fallida que una de ajuste.</>}
+        />
+        <P
+          en={<>Hosmer-Lemeshow's G - 2 degrees of freedom belong to a model fitted on the same data <Cite id="hosmer1980" />. A validator tests PDs set before the outcomes, where each group adds one, as WP14 states for the chi-square over grades <Cite id="wp14" />; with G - 2 on such data the test rejects right PDs about one time in nine at 5% (case C22), so Contraste uses G. Which groups are formed can change the verdict <Cite id="hosmer1997" />, and the power grows with the sample until departures too small to matter are significant <Cite id="paul2013" />.</>}
+          es={<>Los G - 2 grados de libertad de Hosmer-Lemeshow corresponden a un modelo ajustado en los mismos datos <Cite id="hosmer1980" />. Un validador prueba PD fijadas antes de los resultados, donde cada grupo aporta uno, como dice WP14 para el chi-cuadrado sobre grados <Cite id="wp14" />; con G - 2 en tales datos la prueba rechaza PD correctas cerca de una vez en nueve al 5% (caso C22), así que Contraste usa G. Los grupos que se formen pueden cambiar el veredicto <Cite id="hosmer1997" />, y la potencia crece con la muestra hasta que desvíos demasiado pequeños para importar resultan significativos <Cite id="paul2013" />.</>}
         />
         <Equation
           tex="T_K = \sum_{i=0}^{K}\frac{(n_i p_i - \theta_i)^2}{n_i p_i (1-p_i)}, \qquad Z = \frac{O(\mathrm{Brier}) - \frac1N\sum_j f_j(1-f_j)}{\sqrt{\frac{1}{N^2}\sum_j f_j(1-f_j)(1-2f_j)^2}}"
@@ -196,12 +200,52 @@ function Stability() {
       </DocSection>
       <DocSection title={{ en: 'Concentration in the grades', es: 'Concentración en los grados' }} refs={['ecb2019']}>
         <P
-          en={<>The ECB measures concentration with a Herfindahl index of the grade frequencies and tests whether it rose since the development <Cite id="ecb2019" />; a rating system that piles obligors into few grades loses its ability to differentiate risk.</>}
-          es={<>El BCE mide la concentración con un índice de Herfindahl de las frecuencias de los grados y prueba si aumentó desde el desarrollo <Cite id="ecb2019" />; un sistema de calificación que amontona deudores en pocos grados pierde su capacidad de diferenciar el riesgo.</>}
+          en={<>The ECB measures concentration with a Herfindahl index of the grade frequencies and tests whether it rose since the development <Cite id="ecb2019" />; a rating system that piles obligors into few grades loses its ability to differentiate risk. Its variance term treats the K grade frequencies as the sample, so the number of obligors never enters and the statistic is bounded in the current CV: with ten grades and an initial CV of 0.6 it never reaches the 1.645 a rejection at 5% needs, whatever the concentration (case C22). A chi-square test of homogeneity on the grade counts sees a 5% shift into the modal grade almost always.</>}
+          es={<>El BCE mide la concentración con un índice de Herfindahl de las frecuencias de los grados y prueba si aumentó desde el desarrollo <Cite id="ecb2019" />; un sistema de calificación que amontona deudores en pocos grados pierde su capacidad de diferenciar el riesgo. Su término de varianza trata las K frecuencias por grado como la muestra, así que el número de deudores nunca entra y el estadístico es acotado en el CV actual: con diez grados y un CV inicial de 0,6 nunca alcanza el 1,645 que un rechazo al 5% necesita, sea cual sea la concentración (caso C22). Una prueba chi-cuadrado de homogeneidad en los conteos por grado detecta casi siempre un desplazamiento del 5% al grado modal.</>}
         />
         <Equation
           tex="CV = \sqrt{K\sum_{i=1}^{K}\Big(R_i - \frac1K\Big)^2}, \qquad HI = 1 + \frac{\ln\big((CV^2 + 1)/K\big)}{\ln K}, \qquad p = 1 - \Phi\!\left(\frac{\sqrt{K-1}\,(CV_{curr} - CV_{init})}{\sqrt{CV_{curr}^2\,(0.5 + CV_{curr}^2)}}\right)"
           caption={t('R_i: the relative frequency of grade i among K; H0: the current index is not above the index at development (ECB 2019, 2.5.5.3).', 'R_i: la frecuencia relativa del grado i entre K; H0: el índice actual no supera al de desarrollo (BCE 2019, 2.5.5.3).')}
+        />
+      </DocSection>
+    </>
+  );
+}
+
+function SizeAndPower() {
+  const t = useT();
+  return (
+    <>
+      <DocSection title={{ en: 'A test is measured on known truth', es: 'Una prueba se mide con verdad conocida' }} refs={['morris2019', 'brown2001']}>
+        <P
+          en={<>A p-value is evidence only as far as two numbers are known: how often the test rejects a model that is right (its size) and how often it catches a given defect (its power). Neither is measurable on real outcomes; on generated data whose truth is known both are, and the measurement is an experiment designed by aims, data-generating mechanisms, estimands, methods and performance measures, reported with its Monte Carlo error <Cite id="morris2019" />. Every rate is the share of repetitions that reject, each repetition drawn from its own random stream, with the Wilson interval <Cite id="brown2001" />.</>}
+          es={<>Un valor p es evidencia solo en la medida en que se conocen dos números: con qué frecuencia la prueba rechaza un modelo correcto (su tamaño) y con qué frecuencia detecta un defecto dado (su potencia). Ninguno se puede medir con resultados reales; en datos generados cuya verdad se conoce ambos se pueden medir, y la medición es un experimento diseñado por objetivos, mecanismos generadores de datos, estimandos, métodos y medidas de desempeño, reportado con su error de Monte Carlo <Cite id="morris2019" />. Cada tasa es la fracción de repeticiones que rechazan, cada repetición tomada de su propio flujo aleatorio, con el intervalo de Wilson <Cite id="brown2001" />.</>}
+        />
+        <Equation
+          tex="\hat r = \frac{1}{n_{sim}}\sum_{i=1}^{n_{sim}} \mathbb 1(p_i < \alpha), \qquad \widehat{\mathrm{SE}}(\hat r) = \sqrt{\frac{\hat r(1-\hat r)}{n_{sim}}}, \qquad \hat r \le \alpha + z_{0.999}\sqrt{\frac{\alpha(1-\alpha)}{n_{sim}}}"
+          caption={t('The rejection rate, its Monte Carlo standard error (Morris, White and Crowther 2019, Table 6) and the size bound: a test holds its size when its rate under the null at its boundary is at most the level plus 3.09 standard errors, 6.06% at 5% with 4,000 repetitions.', 'La tasa de rechazo, su error estándar de Monte Carlo (Morris, White y Crowther 2019, tabla 6) y la cota de tamaño: una prueba mantiene su tamaño cuando su tasa bajo la nula en su frontera es a lo más el nivel más 3,09 errores estándar, 6,06% al 5% con 4.000 repeticiones.')}
+        />
+      </DocSection>
+      <DocSection title={{ en: 'Where no simulation is needed', es: 'Donde no se necesita simulación' }} refs={['wp14']}>
+        <P
+          en={<>The binomial, the Vasicek-corrected binomial and the Jeffreys tests see a portfolio only through its default count, and their p-values fall as it grows, so each rejects exactly from a critical count k*. Their size and power are then exact for any true PD and asset correlation: WP14 computed in this way that a binomial test at 99.9% confidence has a true confidence far lower once defaults are correlated <Cite id="wp14" />. Every simulated rate of these tests agrees with the exact value within 3.29 standard errors, which checks the generators, the harness and the tests together.</>}
+          es={<>Las pruebas binomial, binomial corregida de Vasicek y de Jeffreys ven una cartera solo a través de su conteo de incumplimientos, y sus valores p bajan a medida que crece, así que cada una rechaza exactamente desde un conteo crítico k*. Su tamaño y su potencia son entonces exactos para cualquier PD verdadera y correlación de activos: WP14 calculó de este modo que una prueba binomial con 99,9% de confianza tiene una confianza verdadera mucho menor cuando los incumplimientos están correlacionados <Cite id="wp14" />. Cada tasa simulada de estas pruebas concuerda con el valor exacto dentro de 3,29 errores estándar, lo que verifica a la vez los generadores, el arnés y las pruebas.</>}
+        />
+        <Equation
+          tex="P(\text{reject}) = \int \Pr\big[\mathrm{Bin}(n, p(x)) \ge k^*\big]\,\varphi(x)\,dx, \qquad p(x) = \Phi\!\left(\frac{\Phi^{-1}(\pi) - \sqrt{\rho}\,x}{\sqrt{1-\rho}}\right)"
+          caption={t('The one-factor mixture: π the true PD, ρ the true asset correlation, φ the standard normal density; integrated on a 256-node Gauss-Hermite rule, which the App also uses to compute it live for a reader\'s portfolio.', 'La mezcla de un factor: π la PD verdadera, ρ la correlación de activos verdadera, φ la densidad normal estándar; integrada con una regla de Gauss-Hermite de 256 nodos, que la App también usa para calcularla en vivo para la cartera del lector.')}
+        />
+      </DocSection>
+      <DocSection title={{ en: 'The published simulations, rerun', es: 'Las simulaciones publicadas, repetidas' }} refs={['wp14', 'yurdakul2020', 'demler2012']}>
+        <P
+          en={<>Three published simulation studies are rerun from the tables read out of their PDFs. Of the 144 rates of WP14's Tables 7 and 8 (normal and traffic-lights tests over five years, 25,000 runs), 143 agree within the combined Monte Carlo error, and the traffic lights agree only when a year with exactly the expected count takes the worse colour, the opposite of the printed mapping <Cite id="wp14" />. Yurdakul and Naranjo's Table 4 (the PSI's rules of thumb against its chi-square benchmark) reproduces in every qualitative finding, with a small systematic offset that makes 50 to 53 of its 54 cells agree depending on the seed <Cite id="yurdakul2020" />. Demler et al.'s nested design gives two rejections of DeLong's test in 1,000 at 5% (one in the engine's suite), their 0.001 <Cite id="demler2012" />.</>}
+          es={<>Tres estudios de simulación publicados se repiten desde las tablas leídas de sus PDF. De las 144 tasas de las tablas 7 y 8 de WP14 (pruebas normal y de semáforo en cinco años, 25.000 corridas), 143 concuerdan dentro del error de Monte Carlo combinado, y el semáforo concuerda solo cuando un año con exactamente el conteo esperado toma el color peor, lo contrario de la asignación impresa <Cite id="wp14" />. La tabla 4 de Yurdakul y Naranjo (las reglas empíricas del PSI contra su referencia chi-cuadrado) se reproduce en cada hallazgo cualitativo, con un pequeño desfase sistemático que hace concordar 50 a 53 de sus 54 celdas según la semilla <Cite id="yurdakul2020" />. El diseño anidado de Demler et al. da dos rechazos de la prueba de DeLong en 1.000 al 5% (uno en la suite del motor), su 0,001 <Cite id="demler2012" />.</>}
+        />
+      </DocSection>
+      <DocSection title={{ en: 'What a measured size does not say', es: 'Lo que un tamaño medido no dice' }} noRefsReason={{ en: 'The limits of Contraste\'s own measurements.', es: 'Los límites de las mediciones de Contraste.' }}>
+        <P
+          en="A test that holds its size on a generator holds it for that generator's assumptions, not for every portfolio; each rate names its mechanism, its sample sizes and its number of repetitions. Power against a planted defect is not the probability of detecting a real bank's problem, since the severity ladders are design choices. No size or power figure is a regulatory threshold, and a test that holds its size does not make a model compliant."
+          es="Una prueba que mantiene su tamaño en un generador lo mantiene para los supuestos de ese generador, no para toda cartera; cada tasa nombra su mecanismo, sus tamaños de muestra y su número de repeticiones. La potencia contra un defecto plantado no es la probabilidad de detectar el problema de un banco real, ya que las escalas de severidad son elecciones de diseño. Ninguna cifra de tamaño o potencia es un umbral regulatorio, y una prueba que mantiene su tamaño no vuelve conforme a un modelo."
         />
       </DocSection>
     </>
@@ -217,15 +261,28 @@ export function Methodology() {
       title={{ en: 'Methodology', es: 'Metodología' }}
       lede={t('The model families and the validation tests behind the cases, with their equations, assumptions and sources.', 'Las familias de modelos y las pruebas de validación detrás de los casos, con sus ecuaciones, supuestos y fuentes.')}
     >
-      <Tabs
+      <TabGroups
         ariaLabel={lang === 'es' ? 'Partes de la metodología' : 'Parts of the methodology'}
-        tabs={[
-          { id: 'model-risk', label: t('Model risk', 'Riesgo de modelo'), content: <ModelRisk /> },
-          { id: 'scorecards', label: t('Scorecards', 'Scorecards'), content: <Scorecards /> },
-          { id: 'machine-learning', label: t('Machine learning', 'Aprendizaje automático'), content: <MachineLearning /> },
-          { id: 'discrimination', label: t('Discrimination', 'Discriminación'), content: <Discrimination /> },
-          { id: 'calibration', label: t('Calibration', 'Calibración'), content: <Calibration /> },
-          { id: 'stability', label: t('Stability', 'Estabilidad'), content: <Stability /> },
+        groups={[
+          {
+            id: 'models',
+            label: t('The models and their risk', 'Los modelos y su riesgo'),
+            tabs: [
+              { id: 'model-risk', label: t('Model risk', 'Riesgo de modelo'), content: <ModelRisk /> },
+              { id: 'scorecards', label: t('Scorecards', 'Scorecards'), content: <Scorecards /> },
+              { id: 'machine-learning', label: t('Machine learning', 'Aprendizaje automático'), content: <MachineLearning /> },
+            ],
+          },
+          {
+            id: 'tests',
+            label: t('The validation tests', 'Las pruebas de validación'),
+            tabs: [
+              { id: 'discrimination', label: t('Discrimination', 'Discriminación'), content: <Discrimination /> },
+              { id: 'calibration', label: t('Calibration', 'Calibración'), content: <Calibration /> },
+              { id: 'stability', label: t('Stability', 'Estabilidad'), content: <Stability /> },
+              { id: 'size-and-power', label: t('Size and power', 'Tamaño y potencia'), content: <SizeAndPower /> },
+            ],
+          },
         ]}
       />
     </DocPage>

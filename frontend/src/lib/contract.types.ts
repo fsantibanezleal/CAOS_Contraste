@@ -1161,15 +1161,221 @@ export const MODELS_C05_LDP = {
   fit: { object: { obligors: { array: 'integer' }, expert_pd: nums } satisfies Record<keyof C05LdpFit, Kind> },
 } satisfies Record<keyof ModelsArtifact, Kind>;
 
-/** The variant descriptor an artifact is read against: by its outputs' kind (C05) or C01's. */
-export function variantKind(doc: { outputs?: { kind?: string } }): typeof VARIANT | typeof VARIANT_C05_SP | typeof VARIANT_C05_LDP {
+// --- C22, validating the validator (data-pipeline/pipeline/cases/c22_validator.py) -----------------------------------
+
+/** One rejection rate of the harness: rejections of n repetitions, its Monte Carlo SE and Wilson interval. */
+export interface C22Rate {
+  rejections: number;
+  n: number;
+  undefined: number;
+  rate: number;
+  se: number;
+  wilson_low: number;
+  wilson_high: number;
+}
+
+/** One simulation: a registered test on one generator at one severity, its rates per rule ("p<0.05", "p<0.01", and
+ * rules such as "metric>0.1"), the exact probability where one exists and whether the rate agrees with it. */
+export interface C22Simulation {
+  key: string;
+  test_id: string;
+  label: Text;
+  scenario: Text;
+  panel: string;
+  severity: number;
+  x: number;
+  rates: Record<string, C22Rate>;
+  exact: Record<string, number> | null;
+  agrees: Record<string, boolean> | null;
+  p_histogram: number[] | null;
+  seed: number;
+  n_rep: number;
+  generator: string;
+}
+
+export interface C22Generator {
+  name: string;
+  config: unknown;
+  truth: unknown;
+}
+
+export interface C22GoldenCell {
+  table: string;
+  row: string;
+  column: string;
+  published: number;
+  measured: number;
+  z: number | null;
+  agrees: boolean;
+}
+
+export interface C22Golden {
+  study: string;
+  title: Text;
+  runs_published: number;
+  runs: number;
+  cells: C22GoldenCell[];
+  agree: number;
+  total: number;
+  note: Text;
+}
+
+export interface C22Curve {
+  id: string;
+  label: Text;
+  x_label: Text;
+  y_label: Text;
+  x: number[];
+  series: Array<{ id: string; label: Text; y: Array<number | null> }>;
+}
+
+export interface C22Outputs {
+  kind: 'validator';
+  family: string;
+  ladder: { values: number[]; label: Text } | null;
+  levels: number[];
+  /** axis: the x axis of a panel whose simulations do not run along the family's ladder */
+  panels: Array<{ id: string; label: Text; axis: Text | null }>;
+  simulations: C22Simulation[];
+  generators: Record<string, C22Generator>;
+  golden: C22Golden[];
+  exact_curves: C22Curve[];
+  estimators: { auc: Record<string, number>; ece_when_right: Record<string, number> } | null;
+  specimen: { severity: number };
+  size_bounds: Record<string, number>;
+}
+
+/** A point of the count tests' exact rejection probability, for the live calculator's parity (CT-308). */
+export interface C22Parity {
+  test_id: string;
+  n: number;
+  pd: number;
+  ratio: number;
+  rho_true: number;
+  rho_assumed: number | null;
+  alpha: number;
+  critical_count: number | null;
+  probability: number;
+}
+
+export interface C22Fit {
+  parity: C22Parity[];
+  levels: number[];
+}
+
+const C22_RATE = {
+  object: { rejections: 'integer', n: 'integer', undefined: 'integer', rate: num, se: num, wilson_low: num, wilson_high: num } satisfies Record<
+    keyof C22Rate,
+    Kind
+  >,
+} as const;
+
+export const C22_OUTPUTS = {
+  kind: 'string',
+  family: 'string',
+  ladder: { nullable: { object: { values: nums, label: 'text' } } },
+  levels: nums,
+  panels: { array: { object: { id: 'string', label: 'text', axis: { nullable: 'text' } } } },
+  simulations: {
+    array: {
+      object: {
+        key: 'string',
+        test_id: 'string',
+        label: 'text',
+        scenario: 'text',
+        panel: 'string',
+        severity: 'integer',
+        x: num,
+        rates: { map: C22_RATE },
+        exact: { nullable: { map: num } },
+        agrees: { nullable: { map: 'boolean' } },
+        p_histogram: { nullable: { array: 'integer' } },
+        seed: 'integer',
+        n_rep: 'integer',
+        generator: 'string',
+      } satisfies Record<keyof C22Simulation, Kind>,
+    },
+  },
+  generators: { map: { object: { name: 'string', config: 'json', truth: 'json' } satisfies Record<keyof C22Generator, Kind> } },
+  golden: {
+    array: {
+      object: {
+        study: 'string',
+        title: 'text',
+        runs_published: 'integer',
+        runs: 'integer',
+        cells: {
+          array: {
+            object: { table: 'string', row: 'string', column: 'string', published: num, measured: num, z: nNum, agrees: 'boolean' } satisfies Record<
+              keyof C22GoldenCell,
+              Kind
+            >,
+          },
+        },
+        agree: 'integer',
+        total: 'integer',
+        note: 'text',
+      } satisfies Record<keyof C22Golden, Kind>,
+    },
+  },
+  exact_curves: {
+    array: {
+      object: {
+        id: 'string',
+        label: 'text',
+        x_label: 'text',
+        y_label: 'text',
+        x: nums,
+        series: { array: { object: { id: 'string', label: 'text', y: { array: { nullable: 'number' } } } } },
+      } satisfies Record<keyof C22Curve, Kind>,
+    },
+  },
+  estimators: { nullable: { object: { auc: { map: num }, ece_when_right: { map: num } } } },
+  specimen: { object: { severity: 'integer' } },
+  size_bounds: { map: num },
+} satisfies Record<keyof C22Outputs, Kind>;
+
+export const VARIANT_C22 = { ...VARIANT, outputs: { object: C22_OUTPUTS } } satisfies Record<keyof VariantArtifact, Kind>;
+
+export const MODELS_C22 = {
+  ...MODELS,
+  fit: {
+    object: {
+      parity: {
+        array: {
+          object: {
+            test_id: 'string',
+            n: 'integer',
+            pd: num,
+            ratio: num,
+            rho_true: num,
+            rho_assumed: nNum,
+            alpha: num,
+            critical_count: nInt,
+            probability: num,
+          } satisfies Record<keyof C22Parity, Kind>,
+        },
+      },
+      levels: nums,
+    } satisfies Record<keyof C22Fit, Kind>,
+  },
+} satisfies Record<keyof ModelsArtifact, Kind>;
+
+/** The variant descriptor an artifact is read against: by its outputs' kind (C05, C22) or C01's. */
+export function variantKind(doc: {
+  outputs?: { kind?: string };
+}): typeof VARIANT | typeof VARIANT_C05_SP | typeof VARIANT_C05_LDP | typeof VARIANT_C22 {
   const kind = doc.outputs?.kind;
-  return kind === 'sp-calibration' ? VARIANT_C05_SP : kind === 'ldp' ? VARIANT_C05_LDP : VARIANT;
+  return kind === 'sp-calibration' ? VARIANT_C05_SP : kind === 'ldp' ? VARIANT_C05_LDP : kind === 'validator' ? VARIANT_C22 : VARIANT;
 }
 
 /** The models descriptor an artifact is read against, by its fit. */
-export function modelsKind(doc: { case_id?: string; fit_id?: string }): typeof MODELS | typeof MODELS_C05_SP | typeof MODELS_C05_LDP {
+export function modelsKind(doc: {
+  case_id?: string;
+  fit_id?: string;
+}): typeof MODELS | typeof MODELS_C05_SP | typeof MODELS_C05_LDP | typeof MODELS_C22 {
   if (doc.case_id === 'C05') return doc.fit_id === 'ldp' ? MODELS_C05_LDP : MODELS_C05_SP;
+  if (doc.case_id === 'C22') return MODELS_C22;
   return MODELS;
 }
 
