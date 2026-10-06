@@ -1,6 +1,24 @@
 {
   "schema": "contraste.licence-manifest/v1",
   "sources": {
+    "bcbs-wp14": {
+      "name": "Studies on the Validation of Internal Rating Systems (revised), Working Paper 14, Tables 5 to 8 (the simulation of the normal and traffic-lights tests)",
+      "publisher": "Basel Committee on Banking Supervision, Bank for International Settlements (May 2005)",
+      "landing": "https://www.bis.org/publ/bcbs_wp14.htm",
+      "class": "derived-only",
+      "licence": "© Bank for International Settlements 2005. All rights reserved. Brief excerpts may be reproduced or translated provided the source is stated.",
+      "attribution": "Basel Committee on Banking Supervision (2005). Studies on the Validation of Internal Rating Systems (revised). BCBS Working Paper No. 14. Bank for International Settlements.",
+      "access": "http",
+      "files": [
+        {
+          "name": "bcbs-wp14-2005.pdf",
+          "url": "https://www.bis.org/publications/studies-validation-internal-rating-systems-revised.pdf",
+          "sha256": "49cfd1cea68f7e7491f34d97b9660dfb4d4a0b23041868012c835728d9358188",
+          "bytes": 503262,
+          "retrieved": "2026-10-06"
+        }
+      ]
+    },
     "pluto-tasche-2005": {
       "name": "Estimating probabilities of default for low default portfolios (arXiv cond-mat/0411699v3), Tables 1 to 14",
       "publisher": "K. Pluto and D. Tasche, arXiv; in Engelmann and Rauhmeier (eds.), The Basel II Risk Parameters, Springer (2006)",
@@ -106,6 +124,24 @@
           "sha256": "56c885f84457f6680f8438f02bfcdac9579323d8a94465ee5f26e32baa727602",
           "bytes": 5539494,
           "retrieved": "2026-10-05"
+        }
+      ]
+    },
+    "yurdakul-naranjo-2020": {
+      "name": "Statistical properties of the population stability index, Table 4 (the rejection rates of the PSI rules and the chi-square benchmark)",
+      "publisher": "B. Yurdakul and J. Naranjo, Journal of Risk Model Validation 14(4):89-100 (2020); the PDF hosted by Western Michigan University",
+      "landing": "https://files.wmich.edu/s3fs-public/attachments/u730/2022/PSIfinal.pdf",
+      "class": "derived-only",
+      "licence": "Copyright Infopro Digital Limited 2021. All rights reserved. You may share using our article tools. This article may be printed for the sole use of the Authorised User (named subscriber), as outlined in our terms and conditions.",
+      "attribution": "Yurdakul, B. and Naranjo, J. (2020). Statistical properties of the population stability index. Journal of Risk Model Validation 14(4):89-100. https://doi.org/10.21314/JRMV.2020.227",
+      "access": "http",
+      "files": [
+        {
+          "name": "yurdakul-naranjo-2020-psi.pdf",
+          "url": "https://files.wmich.edu/s3fs-public/attachments/u730/2022/PSIfinal.pdf",
+          "sha256": "b101c2d0e10f4c20d879cc36e38c492398cc5a8ffd4a8de2be9800f8c725d76a",
+          "bytes": 309902,
+          "retrieved": "2026-10-06"
         }
       ]
     }

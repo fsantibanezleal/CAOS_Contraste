@@ -71,6 +71,20 @@ def test_findings_cite_tests_by_model_and_segment_or_a_stated_limit():
     assert art["findings"][0]["evidence"][0] == "pd.jeffreys@P1"
 
 
+def test_rate_evidence_names_a_simulation():
+    """CT-305: a finding may cite a measured rate of the artifact (rate:<key> of outputs.simulations), never one that
+    is not there."""
+    outputs = {"simulations": [{"key": "pd.hosmer_lemeshow@fitted", "rates": {}}]}
+    kw = dict(case_id="C01", variant_id="holdout", model=MODEL, outputs=outputs, tests=[_test_row()], impact=IMPACT,
+              lineage=_lineage(["uci-taiwan"]), lane=LANE)
+    art = m.build_artifact(findings=[FINDING[0] | {"evidence": ["rate:pd.hosmer_lemeshow@fitted"]}], **kw)
+    assert art["findings"][0]["evidence"] == ["rate:pd.hosmer_lemeshow@fitted"]
+    with pytest.raises(m.ContractViolation, match="cites rates not in this artifact"):
+        m.build_artifact(findings=[FINDING[0] | {"evidence": ["rate:pd.spiegelhalter@null"]}], **kw)
+    with pytest.raises(m.ContractViolation, match="cites rates not in this artifact"):
+        m.build_artifact(**(kw | {"outputs": {}}), findings=[FINDING[0] | {"evidence": ["rate:pd.hosmer_lemeshow@fitted"]}])
+
+
 def test_models_artifact_carries_its_fit_and_provenance():
     doc = m.build_models_artifact(case_id="C01", fit_id="taiwan", model=MODEL, fit={"n_train": 16800},
                                   lineage=_lineage(["uci-taiwan"]), lane=LANE)
