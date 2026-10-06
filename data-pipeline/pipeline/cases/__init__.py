@@ -5,5 +5,6 @@ from __future__ import annotations
 
 from .c01_retail_pd import CASE as C01
 from .c05_ldp_calibration import CASE as C05
+from .c22_validator import CASE as C22
 
-CASES: list = [C01, C05]
+CASES: list = [C01, C05, C22]

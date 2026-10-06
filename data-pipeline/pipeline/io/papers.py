@@ -189,3 +189,110 @@ def read_tasche_results(pdf: Path, table2: dict[str, Any]) -> dict[str, Any]:
         "table8": t8,
         "table9": {y: [t9[g][k] for g in SP_GRADES] for k, y in enumerate(SP_YEARS)},
     }
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# C22: the published simulation studies the harness reproduces (CT-304)
+
+#: WP14 Tables 5 to 8: the scenario names, the nominal levels and the five years of each scenario
+WP14_SCENARIOS = ("I_SC", "I_LC", "DC_SC", "DC_LC", "I_SV", "I_LV", "DV_SV", "DV_LV")
+WP14_TYPE_II = ("I_SV", "I_LV", "DV_SV", "DV_LV")
+WP14_LEVELS = (0.1, 0.05, 0.025, 0.01, 0.005, 0.001)
+
+
+def _join_broken_decimals(text: str) -> str:
+    """The extraction splits some decimals ("0. 081", "0 .3", "3. 0"): join them back."""
+    text = re.sub(r"(\d)\.\s+(\d)", r"\1.\2", text)
+    return re.sub(r"(\d)\s+\.(\d)", r"\1.\2", text)
+
+
+def _section(text: str, start: str, end: str | None, pdf: Path) -> str:
+    if start not in text:
+        raise PaperTableError(f"{pdf.name}: {start!r} not found")
+    body = text[text.index(start) + len(start):]
+    if end is not None:
+        if end not in body:
+            raise PaperTableError(f"{pdf.name}: {end!r} not found after {start!r}")
+        body = body[:body.index(end)]
+    return body
+
+
+def read_wp14_simulation(pdf: Path) -> dict[str, Any]:
+    """BCBS WP14 Tables 5 to 8: the scenario parameters (factor correlation, asset correlations, forecast and true PDs
+    for five years) and the type I and type II errors of the normal and traffic-lights tests at six nominal levels.
+    Refused unless every scenario has its 16 parameters, Table 6's forecasts equal Table 5's, every rate lies in
+    [0, 1], and the type I and type II tables name exactly the scenarios WP14 lists."""
+    text = _join_broken_decimals("\n".join(_pages(pdf)))
+    nominal = "Nominal level 0.1 0.05 0.025 0.01 0.005 0.001"
+    if text.count(nominal) < 2:
+        raise PaperTableError(f"{pdf.name}: the nominal levels of Tables 7 and 8 not found")
+
+    def params(block: str, names: tuple[str, ...], table: int) -> dict[str, dict[str, Any]]:
+        out: dict[str, dict[str, Any]] = {}
+        starts = [(m.start(), m.group(1)) for m in re.finditer(r"\b(I_SC|I_LC|DC_SC|DC_LC|I_SV|I_LV|DV_SV|DV_LV)\b", block)]
+        for k, (pos, name) in enumerate(starts):
+            seg = block[pos + len(name): starts[k + 1][0] if k + 1 < len(starts) else len(block)]
+            vals = [float(v) for v in re.findall(r"\d+(?:\.\d+)?", seg)]
+            if len(vals) < 16:
+                raise PaperTableError(f"{pdf.name}: Table {table} {name} has {len(vals)} numbers, not 16")
+            theta, rho, fore, true = vals[0], vals[1:6], vals[6:11], vals[11:16]
+            out[name] = {"theta": theta, "rho": rho, "forecast_pct": fore, "true_pct": true}
+        if tuple(out) != names:
+            raise PaperTableError(f"{pdf.name}: Table {table} lists {list(out)}, not {list(names)}")
+        return out
+
+    t5_title = "Parameter settings for type I error simulations"
+    t6_title = "Parameter settings for type II error simulations"
+    t7_title = "Type I errors (normal = with normal test, traffic = with traffic lights test)"
+    t8_title = "Type II errors (normal = with normal test, traffic = with traffic lights test)"
+    t5 = params(_section(text, t5_title, "Table 6", pdf).split("(in %)")[-1], WP14_SCENARIOS, 5)
+    t6 = params(_section(text, t6_title, "Table 7", pdf).split("(in %)")[-1], WP14_TYPE_II, 6)
+    for name in WP14_TYPE_II:
+        if t6[name]["forecast_pct"] != t5[name]["forecast_pct"] or t6[name]["rho"] != t5[name]["rho"]:
+            raise PaperTableError(f"{pdf.name}: Table 6 {name} forecasts or correlations differ from Table 5")
+    for name, sc in t5.items():
+        if sc["true_pct"] != sc["forecast_pct"]:
+            raise PaperTableError(f"{pdf.name}: Table 5 {name}: a type I scenario's true PDs equal its forecasts")
+
+    def rates(block: str, names: tuple[str, ...], table: int) -> dict[str, dict[str, list[float]]]:
+        out: dict[str, dict[str, list[float]]] = {}
+        for m in re.finditer(r"\b(I_SC|I_LC|DC_SC|DC_LC|I_SV|I_LV|DV_SV|DV_LV), (normal|traffic)\s+((?:\d\.\d+\s*){6})",
+                             block):
+            vals = [float(v) for v in m.group(3).split()]
+            if any(not 0.0 <= v <= 1.0 for v in vals):
+                raise PaperTableError(f"{pdf.name}: Table {table} {m.group(1)} {m.group(2)}: a rate outside [0, 1]")
+            out.setdefault(m.group(1), {})[m.group(2)] = vals
+        if tuple(out) != names or any(set(v) != {"normal", "traffic"} for v in out.values()):
+            raise PaperTableError(f"{pdf.name}: Table {table} rows are {list(out)}, not {list(names)} by both tests")
+        return out
+
+    t7 = rates(_section(text, t7_title, "Table 8", pdf), WP14_SCENARIOS, 7)
+    t8 = rates(_section(text, t8_title, "Loss given default validation", pdf), WP14_TYPE_II, 8)
+    if "Every scenario was investigated with 25,000 simulation runs" not in text.replace("\n", " "):
+        raise PaperTableError(f"{pdf.name}: the number of runs (footnote 24) not found")
+    return {"levels": list(WP14_LEVELS), "runs": 25_000, "years": 5, "obligors": 1000,
+            "scenarios_type_i": t5, "scenarios_type_ii": t6, "table_7_type_i": t7, "table_8_type_ii": t8}
+
+
+def read_yurdakul_naranjo_table4(pdf: Path) -> dict[str, Any]:
+    """Yurdakul and Naranjo (2020) Table 4: the rejection rates of PSI > 0.10, PSI > 0.25 and the chi-square benchmark
+    for six pairs of sample sizes and shifts of 0, 1/4 and 1/2 standard deviation (10,000 runs). Refused unless the six
+    rows of (m, n) are those the paper lists, every rate lies in [0, 1] and the benchmark's rate without a shift is
+    close to its level (the paper: "close to alpha = 0.05")."""
+    text = "\n".join(_pages(pdf))
+    body = _section(text, "TABLE 4 Power comparison", "TABLE 5", pdf)
+    rows = []
+    for m in re.finditer(r"^\s*(100|200|400)\s+(100|200|400)\s+((?:[01]\.\d{3}\s+){8}[01]\.\d{3})\s*$", body, re.M):
+        rows.append({"m": int(m.group(1)), "n": int(m.group(2)), "rates": [float(v) for v in m.group(3).split()]})
+    pairs = [(r["m"], r["n"]) for r in rows]
+    if pairs != [(100, 100), (100, 200), (100, 400), (200, 200), (200, 400), (400, 400)]:
+        raise PaperTableError(f"{pdf.name}: Table 4 rows are {pairs}")
+    for r in rows:
+        if not 0.04 <= r["rates"][2] <= 0.09:
+            raise PaperTableError(f"{pdf.name}: Table 4 ({r['m']}, {r['n']}): the benchmark without a shift is {r['rates'][2]}")
+    if "out of 10 000 runs" not in text.replace("\n", " "):
+        raise PaperTableError(f"{pdf.name}: the number of runs not found")
+    return {"rows": rows, "runs": 10_000, "bins": 10, "sd": 8.0, "shifts_sd": [0.0, 0.25, 0.5],
+            "columns": ["shift 0: PSI > 0.10", "shift 0: PSI > 0.25", "shift 0: chi2", "shift 1/4: PSI > 0.10",
+                        "shift 1/4: PSI > 0.25", "shift 1/4: chi2", "shift 1/2: PSI > 0.10", "shift 1/2: PSI > 0.25",
+                        "shift 1/2: chi2"]}

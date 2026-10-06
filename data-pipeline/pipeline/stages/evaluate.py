@@ -65,8 +65,12 @@ def battery(
     has_initial = pd_cal is not None and y_cal is not None
     if not constant:
         if has_initial:
-            auc_initial, *_ = disc.auc_with_variance(pd_cal, np.asarray(y_cal, dtype=int))
-            rows += _rows(disc.disc_auc_vs_initial(float(auc_initial), pd_eval, y_eval, **kw))
+            # the initial AUC is an estimate on the calibration slice, disjoint from every evaluation set: its variance
+            # enters the statistic (riskvalidation 0.3.0, an extension of the ECB formula; the ECB form, which treats
+            # it as known, rejects about 17% of the time at 5% at C01's slice sizes when nothing changed; C22, CT-313)
+            auc_initial, s2_initial, *_ = disc.auc_with_variance(pd_cal, np.asarray(y_cal, dtype=int))
+            rows += _rows(disc.disc_auc_vs_initial(float(auc_initial), pd_eval, y_eval,
+                                                   auc_initial_variance=float(s2_initial), **kw))
         if champion_pd is not None:
             rows += _rows(disc.disc_delong(pd_eval, champion_pd, y_eval, **kw))
         rows += _rows(disc.disc_ks(pd_eval, y_eval, **kw))
@@ -82,7 +86,9 @@ def battery(
     if len(table) > 1:
         rows += _rows(cal.pd_chi2_grades(n, d, p, **kw))
     if not constant:
-        rows += _rows(cal.pd_hosmer_lemeshow(y_eval, pd_eval, **kw))
+        # the PDs were fitted on the training slice and mapped on the calibration slice, not on the evaluation set:
+        # as many degrees of freedom as groups (CT-312; G - 2 rejects 11.7% of the time at 5% on such samples)
+        rows += _rows(cal.pd_hosmer_lemeshow(y_eval, pd_eval, fitted=False, **kw))
     rows += _rows(cal.pd_spiegelhalter(y_eval, pd_eval, **kw))
     grades_eval = [GRADES[k] for k in grade_of(pd_eval)]
     rows += _rows(cal.pd_brier(y_eval, pd_eval, groups=grades_eval, **kw))
