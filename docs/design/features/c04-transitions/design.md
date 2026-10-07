@@ -41,6 +41,12 @@ What the pages count (CEREP help file, sections 4.2 to 4.4):
   Therefore, the definitions might differ for various CRAs, and users are strongly suggested to refer to the
   Qualitative information provided by each CRA."
 
+The default-rate page and the transition page do not always count the same cohort: S&P's tab 2 rates imply more
+ratings than tab 4's rows hold in B and CCC to C from 2001 to 2004 (up to 8.4%) and in BB in 2008 (1,127 against
+980, 15%), every other grade and year equal within the printed rounding; ESMA states no reason (a plausible one, the
+transition pages leaving out ratings whose scale changed within the period, is UNVERIFIED). D2 is therefore taken
+over tab 2's own cohort, and every gap is recorded and shown.
+
 Measured on 2026-10-06 (2010 cohort): S&P's CCC row has 33 default events on tab 3 and 6 ratings ending in D on tab 4
 (the rest withdrawn after defaulting or re-rated after a distressed exchange); Moody's transition page has no default
 category at all (labels Aaa to C and WR), so its PDs come from tabs 2 and 3 only; Moody's withdrawals are large (169 of

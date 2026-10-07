@@ -145,6 +145,7 @@ def test_reader_maps_every_agency(tmp_path):
     assert c.size.tolist() == [60, 0, 0, 0, 0, 0, 112] and c.has_default_column and c.label == "2010"
     assert c.counts[6].tolist() == [0, 0, 0, 0, 0, 0, 80, 10] and c.withdrawn.tolist() == [5, 0, 0, 0, 0, 0, 22]
     assert c.defaulted[6] == 31 and c.events[6] == 34
+    assert c.defaulted_cohort.tolist() == c.size.tolist() and c.tab2_gap == 0.0  # tab 2's rates are over tab 4's rows
     # Moody's: no default category on the transition page; WR is a withdrawal
     m = [[0] * 11 for _ in range(10)]
     m[2][2], m[2][3], m[2][10], m[2][9] = 80, 10, 8, 2
@@ -157,15 +158,21 @@ def test_reader_maps_every_agency(tmp_path):
     b, e = _write_cohort(folder, "FITGB", FIT_LABELS, fi)
     c = cerep.read_cohort(folder, "FITGB", b, e)
     assert c.counts[5, 7] == 3 and c.withdrawn[5] == 7 and c.defaulted is None
-    # an unknown label, a tab 2 rate that is not its count over the cohort, and an empty period
+    # an unknown label; a tab 2 rate over a cohort larger than tab 4's row (as in S&P's 2001 to 2004 and 2008
+    # cohorts: kept, the cohort taken from the printed rate, the gap recorded); a misread page; an empty period
     bad = [list(z) for _ in range(13)]
     with pytest.raises(cerep.CerepError, match="not on the agency's scale"):
         b, e = _write_cohort(folder, "STPGB", SP_LABELS[:-2] + ["XX", "Withdrawals"], bad, year=2011)
         cerep.read_cohort(folder, "STPGB", b, e)
+    t2_other = dict(t2)
+    t2_other["CCC"] = {**_cell(30, 100), "percentageOfRatings": 25.0}  # 30 defaults over 120 ratings, tab 4 has 100
+    b, e = _write_cohort(folder, "STPGB", SP_LABELS, sp, t2_other, year=2012)
+    c = cerep.read_cohort(folder, "STPGB", b, e)
+    assert c.defaulted_cohort[6] == 120 + 12 and c.tab2_gap == pytest.approx(0.2) and c.size[6] == 112
     t2_bad = dict(t2)
-    t2_bad["CCC"] = {**_cell(30, 100), "percentageOfRatings": 25.0}
-    b, e = _write_cohort(folder, "STPGB", SP_LABELS, sp, t2_bad, year=2012)
-    with pytest.raises(cerep.CerepError, match="tab 2 gives 25.0%"):
+    t2_bad["CCC"] = {**_cell(30, 100), "percentageOfRatings": 5.0}  # a cohort six times tab 4's: a shifted label
+    b, e = _write_cohort(folder, "STPGB", SP_LABELS, sp, t2_bad, year=2014)
+    with pytest.raises(cerep.CerepError, match="a misread page"):
         cerep.read_cohort(folder, "STPGB", b, e)
     b, e = _write_cohort(folder, "STPGB", SP_LABELS, [list(z) for _ in range(13)], year=2013)
     assert cerep.read_cohort(folder, "STPGB", b, e) is None
