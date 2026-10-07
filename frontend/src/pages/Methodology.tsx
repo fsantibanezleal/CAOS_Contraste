@@ -4,6 +4,7 @@
 import { Cite, DocPage, DocSection, Equation, Figure, TabGroups, useShellLang } from '@fasl-work/caos-app-shell';
 import { ValidationFigure } from '../architecture/figures';
 import { L, P, useT } from '../content/bi';
+import { Migrations, TransitionTests } from './MethodologyTransitions';
 
 function ModelRisk() {
   const t = useT();
@@ -271,6 +272,7 @@ export function Methodology() {
               { id: 'model-risk', label: t('Model risk', 'Riesgo de modelo'), content: <ModelRisk /> },
               { id: 'scorecards', label: t('Scorecards', 'Scorecards'), content: <Scorecards /> },
               { id: 'machine-learning', label: t('Machine learning', 'Aprendizaje automático'), content: <MachineLearning /> },
+              { id: 'migrations', label: t('Migration matrices', 'Matrices de migración'), content: <Migrations /> },
             ],
           },
           {
@@ -280,6 +282,7 @@ export function Methodology() {
               { id: 'discrimination', label: t('Discrimination', 'Discriminación'), content: <Discrimination /> },
               { id: 'calibration', label: t('Calibration', 'Calibración'), content: <Calibration /> },
               { id: 'stability', label: t('Stability', 'Estabilidad'), content: <Stability /> },
+              { id: 'transitions', label: t('Transitions', 'Transiciones'), content: <TransitionTests /> },
               { id: 'size-and-power', label: t('Size and power', 'Tamaño y potencia'), content: <SizeAndPower /> },
             ],
           },
