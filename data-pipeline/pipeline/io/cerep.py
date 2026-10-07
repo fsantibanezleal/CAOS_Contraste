@@ -33,7 +33,7 @@ import shutil
 import time
 import urllib.error
 import urllib.request
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -89,9 +89,15 @@ def query_name(tab: int, cra: str, begin: dt.date, end: dt.date) -> str:
     return f"t{tab}_{cra}_{begin:%Y%m%d}_{end:%Y%m%d}.json"
 
 
+#: the tabs a multi-year window is read on: the cumulative default rate (2) and the transitions over the window (4)
+WINDOW_TABS = (2, 4)
+
+
 def plan_queries(plan: dict[str, Any]) -> list[Query]:
-    """Every calendar-year cohort in ``years`` for every tab in ``tabs``, and every semester in ``semester_years`` for
-    tab 4, for every agency in ``cras``."""
+    """Every calendar-year cohort in ``years`` for every tab in ``tabs``, every semester in ``semester_years`` for
+    tab 4, and every multi-year window in ``windows`` (optional, ``[first, last]`` years) for tabs 2 and 4, for every
+    agency in ``cras``. A window's cohort is fixed at its first day and followed to its last, so its tab 4 holds the
+    observed multi-year outcome that chaining one-year matrices predicts."""
     out: list[Query] = []
     y0, y1 = plan["years"]
     s0, s1 = plan["semester_years"]
@@ -103,6 +109,10 @@ def plan_queries(plan: dict[str, Any]) -> list[Query]:
         for y in range(s0, s1 + 1):
             for b, e in ((dt.date(y, 1, 1), dt.date(y, 6, 30)), (dt.date(y, 7, 1), dt.date(y, 12, 31))):
                 out.append(Query(query_name(4, cra, b, e), 4, cra, b, e))
+        for w0, w1 in plan.get("windows") or ():
+            b, e = dt.date(w0, 1, 1), dt.date(w1, 12, 31)
+            for tab in WINDOW_TABS:
+                out.append(Query(query_name(tab, cra, b, e), tab, cra, b, e))
     return out
 
 
@@ -119,6 +129,9 @@ def check_plan(plan: Any) -> list[str]:
             out.append(f"the plan's {key} is [first, last]")
     if not plan.get("tabs") or not set(plan["tabs"]) <= set(TABS):
         out.append(f"the plan's tabs are among {list(TABS)}")
+    for w in plan.get("windows") or ():
+        if not (isinstance(w, list) and len(w) == 2 and all(isinstance(x, int) for x in w) and w[0] < w[1]):
+            out.append("a window is [first, last] years, first before last")
     if plan.get("rating_type") != "C" or plan.get("horizon") != "L":
         out.append("the plan reads corporate (C) long-term (L) ratings")
     if not isinstance(plan.get("pace_seconds"), (int, float)) or plan["pace_seconds"] < MIN_PACE:
@@ -282,6 +295,8 @@ class Cohort:
 
     @property
     def label(self) -> str:
+        if self.end.year > self.begin.year:
+            return f"{self.begin.year}-{self.end.year}"
         if self.begin.month == 1 and self.end.month == 12:
             return f"{self.begin.year}"
         return f"{self.begin.year}H{1 if self.begin.month == 1 else 2}"
@@ -405,8 +420,8 @@ def _default_rate_cohort(cra: str, t2: dict[str, Any], label_sizes: dict[str, fl
 
 
 def read_agency(root: Path, cra: str, years: range, semester_years: range,
-                source_id: str = "esma-cerep") -> dict[str, list[Cohort]]:
-    """Every annual and semester cohort of an agency with data."""
+                source_id: str = "esma-cerep", windows: Sequence[tuple[int, int]] = ()) -> dict[str, list[Cohort]]:
+    """Every annual, semester and multi-year-window cohort of an agency with data."""
     folder = Path(root) / "raw" / source_id
     annual = [c for y in years if (c := read_cohort(folder, cra, dt.date(y, 1, 1), dt.date(y, 12, 31))) is not None]
     semesters = []
@@ -415,4 +430,5 @@ def read_agency(root: Path, cra: str, years: range, semester_years: range,
             c = read_cohort(folder, cra, b, e)
             if c is not None:
                 semesters.append(c)
-    return {"annual": annual, "semesters": semesters}
+    multi = [c for w0, w1 in windows if (c := read_cohort(folder, cra, dt.date(w0, 1, 1), dt.date(w1, 12, 31))) is not None]
+    return {"annual": annual, "semesters": semesters, "windows": multi}

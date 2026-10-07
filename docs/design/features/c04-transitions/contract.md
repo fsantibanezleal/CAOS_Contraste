@@ -70,7 +70,13 @@ re-implements an engine formula. All arrays are plain lists (JSON); probabilitie
                   "semesters": {...} | null,
                   "reference": [{"label", "statistic", "p_value", "dof", "impossible_moves"}]},  # each cohort vs pooled
   "semesters_vs_year": [{"year", "l1", "pd_product": [7], "pd_annual": [7]}],  # P_H1 P_H2 against P_year
-  "definition_gap": {"d4_over_d2": [7] | null, "d3_over_d2": [7] | null}       # pooled ratios (null where undefined)
+  "definition_gap": {"d4_over_d2": [7] | null, "d3_over_d2": [7] | null},      # pooled ratios (null where undefined)
+  "lifetime": [{"label": "2010-2014", "first": 2010, "last": 2014, "size": [7],  # CT-415, one row per window with data
+                "observed": {"default_end": [7], "withdrawn_end": [7],       # tab 4 over the window's fixed cohort
+                             "cumulative_d2": [7] | null},                   # tab 2: rated defaulters / tab 2's cohort
+                "projected": {"chain_state": [7], "chain_state_withdrawn": [7],   # the window's annual matrices, the
+                              "chain_exclude": [7],                          # withdrawals a state or removed
+                              "pooled_power": [7], "em": [7] | null}}]       # pooled matrix ^ years; exp(years Q_EM)
 }
 ```
 

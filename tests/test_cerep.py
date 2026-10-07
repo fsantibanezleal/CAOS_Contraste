@@ -180,3 +180,22 @@ def test_reader_maps_every_agency(tmp_path):
     got = cerep.read_agency(tmp_path, "MDYGB", range(2009, 2012), range(2010, 2011))
     assert [x.label for x in got["annual"]] == ["2010"] and got["semesters"] == []
     assert np.array_equal(got["annual"][0].size, [0, 0, 100, 0, 0, 0, 0])
+
+
+def test_windows_planned_and_read(tmp_path):
+    """CT-415: a multi-year window is fetched on tabs 2 and 4 and read as one cohort fixed at its first day."""
+    plan = {**PLAN, "windows": [[2010, 2014]]}
+    names = [q.name for q in cerep.plan_queries(plan)]
+    assert "t2_STPGB_20100101_20141231.json" in names and "t4_STPGB_20100101_20141231.json" in names
+    assert "t3_STPGB_20100101_20141231.json" not in names
+    with pytest.raises(s.RegistryError, match="first before last"):
+        _registry(tmp_path, {**PLAN, "windows": [[2014, 2010]]})
+    folder = tmp_path / "raw" / "esma-cerep"
+    folder.mkdir(parents=True)
+    rows = [[0] * 14 for _ in range(13)]
+    rows[3][3], rows[3][11], rows[3][13] = 80, 4, 16  # BBB over five years: 80 still BBB, 4 in D, 16 withdrawn
+    b, e = dt.date(2010, 1, 1), dt.date(2014, 12, 31)
+    (folder / cerep.query_name(4, "STPGB", b, e)).write_text(json.dumps(_t4(SP_LABELS, rows)), encoding="utf-8")
+    got = cerep.read_agency(tmp_path, "STPGB", range(0), range(0), windows=[(2010, 2014)])
+    w = got["windows"][0]
+    assert w.label == "2010-2014" and w.size[3] == 100 and w.counts[3, 7] == 4 and w.withdrawn[3] == 16
