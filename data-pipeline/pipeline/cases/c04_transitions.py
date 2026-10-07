@@ -169,6 +169,15 @@ def _agency_models(out: dict[str, Any], rv: str) -> list[dict[str, Any]]:
             for mid, fam, rung, title, short, engine, params in rows]
 
 
+def _with_details(records: list[dict[str, Any]], out: dict[str, Any]) -> list[dict[str, Any]]:
+    """The models artifact's records carry the model itself in ``details``: the pooled matrix of the cohort estimator,
+    each generator's rates (S&P's, the agency the families and the live parity are built on)."""
+    gen = out["generators"]
+    details = {"cohort": {"matrix": out["pooled"]["matrix"]}}
+    details.update({k: {"generator": gen[k]["generator"]} for k in ("em", "diagonal", "weighted", "jlt") if gen.get(k)})
+    return [{**r, "details": details[r["rung"]]} for r in records]
+
+
 def _family_models(out: dict[str, Any], rv: str) -> list[dict[str, Any]]:
     return [{"id": "G1-rating-paths", "family": "generator", "rung": out["family"],
              "title": _t("Rating paths with a known generator", "Trayectorias de calificación con un generador conocido"),
@@ -230,7 +239,7 @@ class C04:
         lineage_models = lin.build(CASE_ID, sources=[CEREP_SOURCE], truth_status="real-outcomes", seed=seed,
                                    code_version=__version__, riskvalidation_version=rv)
         models_doc = build_models_artifact(
-            case_id=CASE_ID, fit_id="transitions", model=_agency_models(agencies["sp"][0], rv),
+            case_id=CASE_ID, fit_id="transitions", model=_with_details(_agency_models(agencies["sp"][0], rv), agencies["sp"][0]),
             fit={"parity": parity, "generator": {"q": q.tolist(), "obligors": obligors,
                                                  "source": "EM on S&P's pooled annual counts (CEREP)"}},
             lineage=lineage_models, lane={"lane": "precompute", "reasons": []})
