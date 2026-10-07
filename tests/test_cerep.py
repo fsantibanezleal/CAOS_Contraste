@@ -158,6 +158,13 @@ def test_reader_maps_every_agency(tmp_path):
     b, e = _write_cohort(folder, "FITGB", FIT_LABELS, fi)
     c = cerep.read_cohort(folder, "FITGB", b, e)
     assert c.counts[5, 7] == 3 and c.withdrawn[5] == 7 and c.defaulted is None
+    # Fitch before its 2006 scale change (2001 to 2005 on CEREP): DDD, DD and D are all default
+    old_fit = ["AAA", "AA", "A", "BBB", "BB", "B", "CCC", "CC", "C", "DDD", "DD", "D", "Withdrawals"]
+    fo = [[0] * 13 for _ in range(12)]
+    fo[5][5], fo[5][9], fo[5][10], fo[5][11], fo[5][12] = 90, 1, 2, 3, 4
+    b, e = _write_cohort(folder, "FITGB", old_fit, fo, year=2003)
+    c = cerep.read_cohort(folder, "FITGB", b, e)
+    assert c.has_default_column and c.counts[5, 7] == 6 and c.withdrawn[5] == 4 and c.size[5] == 100
     # an unknown label; a tab 2 rate over a cohort larger than tab 4's row (as in S&P's 2001 to 2004 and 2008
     # cohorts: kept, the cohort taken from the printed rate, the gap recorded); an empty period
     bad = [list(z) for _ in range(13)]

@@ -60,8 +60,11 @@ DEFAULT = "D"
 SCALE = {
     "STPGB": {"AAA": 0, "AA": 1, "A": 2, "BBB": 3, "BB": 4, "B": 5, "CCC": 6, "CC": 6, "C": 6,
               "R": "D", "SD": "D", "D": "D", "NR": "W", "Withdrawals": "W"},
+    # Fitch's scale before its 2006 change (its EU entity's 2001 to 2005 cohorts on CEREP) has three default labels:
+    # "DDD, DD, D: Default. The ratings of obligations in this category are based on their prospects for achieving
+    # partial or full recovery" (Fitch's definitions as reproduced in PIMCO Funds' SEC 497(e) supplement, 2007-03-23)
     "FITGB": {"AAA": 0, "AA": 1, "A": 2, "BBB": 3, "BB": 4, "B": 5, "CCC": 6, "CC": 6, "C": 6,
-              "RD": "D", "D": "D", "WD": "W", "NR": "W", "Withdrawals": "W"},
+              "RD": "D", "D": "D", "DDD": "D", "DD": "D", "WD": "W", "NR": "W", "Withdrawals": "W"},
     "MDYGB": {"Aaa": 0, "Aa": 1, "A": 2, "Baa": 3, "Ba": 4, "B": 5, "Caa": 6, "Ca": 6, "C": 6,
               "WR": "W", "Withdrawals": "W"},
 }
