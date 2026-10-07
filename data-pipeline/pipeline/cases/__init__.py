@@ -4,7 +4,8 @@ them in ``CASES``. A case is added by the unit that builds it, end to end, never
 from __future__ import annotations
 
 from .c01_retail_pd import CASE as C01
+from .c04_transitions import CASE as C04
 from .c05_ldp_calibration import CASE as C05
 from .c22_validator import CASE as C22
 
-CASES: list = [C01, C05, C22]
+CASES: list = [C01, C04, C05, C22]
