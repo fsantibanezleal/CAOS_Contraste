@@ -19,6 +19,42 @@
         }
       ]
     },
+    "engelmann-2024": {
+      "name": "Spurious default probability projections in credit risk stress testing models (arXiv 2401.08892v1), section 4",
+      "publisher": "B. Engelmann, arXiv",
+      "landing": "https://arxiv.org/abs/2401.08892v1",
+      "class": "derived-only",
+      "licence": "arXiv.org perpetual, non-exclusive license to distribute (http://arxiv.org/licenses/nonexclusive-distrib/1.0/); the matrix (11) is reprinted from Trueck and Rachev (2009)",
+      "attribution": "Engelmann, B. (2024). Spurious default probability projections in credit risk stress testing models. arXiv:2401.08892v1. https://doi.org/10.48550/arXiv.2401.08892",
+      "access": "http",
+      "files": [
+        {
+          "name": "engelmann-2024-arxiv-2401.08892v1.pdf",
+          "url": "https://arxiv.org/pdf/2401.08892v1",
+          "sha256": "4f7b2585296866e2d1223885a13e8d42176206e0af883eb949ec96a468d4d969",
+          "bytes": 358288,
+          "retrieved": "2026-10-06"
+        }
+      ]
+    },
+    "israel-rosenthal-wei-2001": {
+      "name": "Finding generators for Markov chains via empirical transition matrices, with applications to credit ratings (authors' version), section 4",
+      "publisher": "R. B. Israel, J. S. Rosenthal and J. Z. Wei; Mathematical Finance 11(2):245-265 (2001)",
+      "landing": "https://doi.org/10.1111/1467-9965.00114",
+      "class": "derived-only",
+      "licence": "authors' version on J. S. Rosenthal's website, no licence statement found (UNVERIFIED); its three one-year matrices are S&P's and Moody's data reprinted in the paper",
+      "attribution": "Israel, R. B., Rosenthal, J. S. and Wei, J. Z. (2001). Finding generators for Markov chains via empirical transition matrices, with applications to credit ratings. Mathematical Finance 11(2):245-265. https://doi.org/10.1111/1467-9965.00114",
+      "access": "http",
+      "files": [
+        {
+          "name": "israel-rosenthal-wei-2001-wei.pdf",
+          "url": "https://www.probability.ca/jeff/ftpdir/wei.pdf",
+          "sha256": "71d79aa0807450837ad01434d45ca0908cbb8b0a0a6ca1ee61f503f8ec5ff26e",
+          "bytes": 188160,
+          "retrieved": "2026-10-06"
+        }
+      ]
+    },
     "pluto-tasche-2005": {
       "name": "Estimating probabilities of default for low default portfolios (arXiv cond-mat/0411699v3), Tables 1 to 14",
       "publisher": "K. Pluto and D. Tasche, arXiv; in Engelmann and Rauhmeier (eds.), The Basel II Risk Parameters, Springer (2006)",
@@ -34,6 +70,24 @@
           "sha256": "949dbc3873852a930d3532183efcab4199ac9478b1f70b32101c9e9f37084459",
           "bytes": 242425,
           "retrieved": "2026-10-05"
+        }
+      ]
+    },
+    "schuermann-hanson-2004": {
+      "name": "Estimating probabilities of default (FRBNY Staff Report 190), Table 5",
+      "publisher": "T. Schuermann and S. Hanson, Federal Reserve Bank of New York; Journal of Banking and Finance 30(8):2281-2301 (2006)",
+      "landing": "https://www.newyorkfed.org/research/staff_reports/sr190.html",
+      "class": "derived-only",
+      "licence": "Federal Reserve Bank of New York staff report, reuse terms not read (UNVERIFIED); Table 5 holds the paper's own interval computations, no data",
+      "attribution": "Schuermann, T. and Hanson, S. (2004). Estimating probabilities of default. Federal Reserve Bank of New York Staff Report 190.",
+      "access": "http",
+      "files": [
+        {
+          "name": "schuermann-hanson-2004-sr190.pdf",
+          "url": "https://www.newyorkfed.org/medialibrary/media/research/staff_reports/sr190.pdf",
+          "sha256": "38c61513ab465a33d05f8ca1a6db1b56f3eba76bdf25d92a0b3746596e948b76",
+          "bytes": 382062,
+          "retrieved": "2026-10-06"
         }
       ]
     },

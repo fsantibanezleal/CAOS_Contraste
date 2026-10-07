@@ -209,7 +209,9 @@ def fetch_plan(src: Any, *, root: Path, pinned: dict[str, dict[str, Any]], refre
         if dest.exists() and not refresh:
             data = dest.read_bytes()
         else:
+            t0 = time.monotonic()
             data = paced(path, body)
+            log(f"  {name}: {len(data):,} bytes in {time.monotonic() - t0:.1f} s (pace included)")
             if not data:
                 raise CerepError(f"{name}: the service answered no bytes")
             json.loads(data)  # an answer that is not JSON is an error page, never pinned
@@ -258,8 +260,13 @@ def _offered_dates(filters: dict[str, Any]) -> dict[str, set[dt.date]] | None:
 class Cohort:
     """One cohort of one agency on the common scale: ``counts`` (7 x 8, the performing grades at the beginning by the
     grades and default at the end), ``withdrawn`` (7), ``defaulted`` (7, tab 2's distinct defaulted ratings),
-    ``events`` (7, tab 3's default events), ``size`` (7, the cohort by grade); ``has_default_column`` is False where
-    the transition page has no default category (Moody's)."""
+    ``events`` (7, tab 3's default events), ``size`` (7, the cohort by grade on the transition page);
+    ``has_default_column`` is False where the transition page has no default category (Moody's).
+
+    ``defaulted_cohort`` (7) is the cohort tab 2's rates are taken over, which is not always tab 4's: in S&P's 2001
+    to 2004 cohorts tab 2's printed rates imply up to 8.7% more ratings than tab 4's rows hold (ESMA states no reason).
+    Each label's cohort is tab 4's row where that row reproduces the printed rate within its two-decimal rounding, and
+    the count over the printed rate otherwise; ``tab2_gap`` is the largest relative difference to tab 4's rows."""
 
     cra: str
     begin: dt.date
@@ -270,6 +277,8 @@ class Cohort:
     events: np.ndarray | None
     size: np.ndarray
     has_default_column: bool
+    defaulted_cohort: np.ndarray | None = None
+    tab2_gap: float | None = None
 
     @property
     def label(self) -> str:
@@ -358,15 +367,41 @@ def read_cohort(folder: Path, cra: str, begin: dt.date, end: dt.date) -> Cohort 
     t2, t3 = load(2), load(3)
     defaulted = _default_rate_page(cra, t2) if t2 else None
     events = _defaults_page(cra, t3) if t3 else None
-    for label, cell in ((t2 or {}).get("defaultRates") or {}).get("defMap", {}).items():
-        n = label_sizes.get(label, 0.0)
-        if n > 0 and isinstance(_map(cra, label), int):
-            # tab 2's percentage is its count over the label's cohort on tab 4, printed to two decimals
-            implied = 100.0 * float(cell["numberOfRatings"]) / n
-            if abs(implied - float(cell["percentageOfRatings"])) > 0.0051:
-                raise CerepError(f"{cra} {begin}: tab 2 gives {cell['percentageOfRatings']}% for {label}, its count "
-                                 f"over tab 4's cohort {implied:.4f}%")
-    return Cohort(cra, begin, end, counts, withdrawn, defaulted, events, size, has_d)
+    defaulted_cohort, gap = _default_rate_cohort(cra, t2, label_sizes, begin) if t2 else (None, None)
+    return Cohort(cra, begin, end, counts, withdrawn, defaulted, events, size, has_d, defaulted_cohort, gap)
+
+
+#: a gap between tab 2's implied cohort and tab 4's row beyond this is a misread page (a shifted label), not a
+#: difference of cohorts: S&P's 2008 BB cohort is 15% larger on tab 2 than on tab 4, every other grade equal
+MAX_TAB2_GAP = 0.5
+
+
+def _default_rate_cohort(cra: str, t2: dict[str, Any], label_sizes: dict[str, float],
+                         begin: dt.date) -> tuple[np.ndarray, float]:
+    """Tab 2's cohort by grade (see ``Cohort``) and the largest relative gap to tab 4's rows, signed."""
+    out = np.zeros(7)
+    worst = 0.0
+    for label, cell in ((t2.get("defaultRates") or {}).get("defMap") or {}).items():
+        g = _map(cra, label)
+        if not isinstance(g, int):
+            continue
+        n, pct, row = float(cell["numberOfRatings"]), float(cell["percentageOfRatings"] or 0.0), label_sizes.get(label, 0.0)
+        if n == 0 or pct == 0:
+            out[g] += row  # no default: the rate is 0 over any cohort, and tab 4's row is the only count there is
+            continue
+        lo = n / ((pct + 0.005) / 100.0)
+        hi = n / ((pct - 0.005) / 100.0) if pct > 0.005 else float("inf")
+        if lo <= row <= hi:
+            out[g] += row
+            continue
+        cohort = float(round(n / (pct / 100.0)))
+        rel = (cohort - row) / row if row > 0 else float("inf")
+        if abs(rel) > MAX_TAB2_GAP:
+            raise CerepError(f"{cra} {begin}: tab 2 gives {pct}% for {label} ({n:g} defaults), a cohort of about "
+                             f"{cohort:g} against tab 4's {row:g}: beyond {MAX_TAB2_GAP:.0%}, a misread page")
+        out[g] += cohort
+        worst = rel if abs(rel) > abs(worst) else worst
+    return out, worst
 
 
 def read_agency(root: Path, cra: str, years: range, semester_years: range,
