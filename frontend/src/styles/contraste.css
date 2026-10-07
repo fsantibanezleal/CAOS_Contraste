@@ -129,3 +129,8 @@ th.ct-text, td.ct-text { text-align: left; white-space: normal; }
 /* headers that may wrap, for a table whose column names are longer than its numbers (C05's variants: the Spanish
    approach names pushed two columns past the card at 1280 px) */
 table.ct-wrap-head th { white-space: normal; }
+
+/* C04's matrix map: the stage takes the card's height less the readout line under it */
+.ct-map { height: 100%; display: flex; flex-direction: column; min-height: 0; }
+.ct-map > .ct-map-stage { flex: 1 1 0; min-height: 160px; }
+.ct-map svg text[role='button']:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
