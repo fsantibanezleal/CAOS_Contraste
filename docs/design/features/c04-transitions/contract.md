@@ -118,15 +118,25 @@ against the print and refusing otherwise). No agency matrix enters the outputs (
  "irw": {"rows": [{"matrix": "S&P 1981-1991" | "Moody's 1980-1998" | "S&P 1999", "method": "jlt" | "diagonal" |
                    "weighted", "printed": float, "recomputed": float, "agrees": bool}],   # 9 rows, six digits
          "jlt_from_printed_generator": float,      # the first matrix's distance from the printed Q_JLT (0.116900)
-         "theorem3_c": [bool, bool, bool], "series_terms": int},
+         "theorem3_c": [bool, bool, bool],
+         "series_terms": int},                     # summed to the paper's stated 1e-8: 16, as printed
  "sr190": {"defaults": 15, "n": 531, "rows": [{"rho", "interval": "wald" | "agresti_coull", "printed": [lo, hi, len],
-                                               "recomputed": [lo, hi, len], "agrees": bool}], "n_dagger": [3]},
- "engelmann": {"w_ttc": {"printed": [8], "recomputed": [8]}, "ttc_pd": {"printed", "recomputed"},
-               "portfolios": [{"name", "w0": [8], "pd0": {"printed", "recomputed"},
-                               "extreme": {"kind": "min" | "max", "printed", "recomputed"} | null,
+                                               "recomputed": [lo, hi, len], "agrees": bool}],
+           "n_dagger": {"printed": [3], "recomputed": [3], "decimals": [3]}},   # (3.4), Table 5's 531, 84.3, 45.8
+ "engelmann": {"w_ttc": {"printed": [8], "recomputed": [8], "decimals": [8]},
+               "ttc_pd": {"printed", "recomputed", "decimals"},
+               "portfolios": [{"name", "w0": [8],
+                               "pd0": {"printed", "recomputed", "decimals",
+                                       "check": "printed digits" | "entry rounding", "note": str | null},
+                               "extreme": {"kind": "min" | "max", "printed", "recomputed", "decimals"} | null,
                                "pd_path": [50]}],             # the projected PD by year (a result, not the matrix)
                "row_sum_deviation": float}}
 ```
+
+Every Engelmann value and every N dagger printed here agrees with its recomputation: the bake stops otherwise. Its
+`decimals` is the print's precision in the stored unit (a PD of 1.198% is stored as 0.01198, five decimals); `check`
+says how a starting portfolio's PD was judged: at its printed digits, or (W hat, whose PD the paper prints from
+entries more precise than the printed ones) within the rounding of its printed entries, with the reason in `note`.
 
 ## 4. Live parity, module `pipeline/cases/c04_parity.py`, ports `frontend/src/engine/transitions.ts`
 
