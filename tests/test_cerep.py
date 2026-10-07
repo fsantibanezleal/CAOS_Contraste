@@ -159,7 +159,7 @@ def test_reader_maps_every_agency(tmp_path):
     c = cerep.read_cohort(folder, "FITGB", b, e)
     assert c.counts[5, 7] == 3 and c.withdrawn[5] == 7 and c.defaulted is None
     # an unknown label; a tab 2 rate over a cohort larger than tab 4's row (as in S&P's 2001 to 2004 and 2008
-    # cohorts: kept, the cohort taken from the printed rate, the gap recorded); a misread page; an empty period
+    # cohorts: kept, the cohort taken from the printed rate, the gap recorded); an empty period
     bad = [list(z) for _ in range(13)]
     with pytest.raises(cerep.CerepError, match="not on the agency's scale"):
         b, e = _write_cohort(folder, "STPGB", SP_LABELS[:-2] + ["XX", "Withdrawals"], bad, year=2011)
@@ -169,12 +169,19 @@ def test_reader_maps_every_agency(tmp_path):
     b, e = _write_cohort(folder, "STPGB", SP_LABELS, sp, t2_other, year=2012)
     c = cerep.read_cohort(folder, "STPGB", b, e)
     assert c.defaulted_cohort[6] == 120 + 12 and c.tab2_gap == pytest.approx(0.2) and c.size[6] == 112
-    t2_bad = dict(t2)
-    t2_bad["CCC"] = {**_cell(30, 100), "percentageOfRatings": 5.0}  # a cohort six times tab 4's: a shifted label
-    b, e = _write_cohort(folder, "STPGB", SP_LABELS, sp, t2_bad, year=2014)
-    with pytest.raises(cerep.CerepError, match="a misread page"):
-        cerep.read_cohort(folder, "STPGB", b, e)
-    b, e = _write_cohort(folder, "STPGB", SP_LABELS, [list(z) for _ in range(13)], year=2013)
+    # one label's large gap is a difference of cohorts (Fitch's C in 2020 to 2024: 9 against 5), kept
+    t2_one = dict(t2)
+    t2_one["CCC"] = {**_cell(30, 100), "percentageOfRatings": 5.0}
+    b, e = _write_cohort(folder, "STPGB", SP_LABELS, sp, t2_one, year=2013)
+    assert cerep.read_cohort(folder, "STPGB", b, e).defaulted_cohort[6] == 600 + 12
+    # several labels disagreeing at once is still a difference of cohorts (S&P's B and CCC in 2018): kept, measured
+    t2_many = dict(t2)
+    t2_many["AAA"] = {**_cell(5, 10), "percentageOfRatings": 50.0}  # implies 10 ratings, tab 4 has 60
+    t2_many["CCC"] = {**_cell(30, 100), "percentageOfRatings": 5.0}  # implies 600, tab 4 has 100
+    b, e = _write_cohort(folder, "STPGB", SP_LABELS, sp, t2_many, year=2014)
+    c = cerep.read_cohort(folder, "STPGB", b, e)
+    assert c.defaulted_cohort[0] == 10 and c.defaulted_cohort[6] == 612 and c.tab2_gap == pytest.approx(5.0)
+    b, e = _write_cohort(folder, "STPGB", SP_LABELS, [list(z) for _ in range(13)], year=2015)
     assert cerep.read_cohort(folder, "STPGB", b, e) is None
     # an agency's cohorts: only the periods with data
     got = cerep.read_agency(tmp_path, "MDYGB", range(2009, 2012), range(2010, 2011))
@@ -199,3 +206,15 @@ def test_windows_planned_and_read(tmp_path):
     got = cerep.read_agency(tmp_path, "STPGB", range(0), range(0), windows=[(2010, 2014)])
     w = got["windows"][0]
     assert w.label == "2010-2014" and w.size[3] == 100 and w.counts[3, 7] == 4 and w.withdrawn[3] == 16
+
+
+def test_an_empty_period_is_no_cohort(tmp_path):
+    """A period without ratings answers an empty matrix with the lone label "Withdrawals" (Fitch's EU entity, 2000 to
+    2004, as fetched): no cohort, not an error."""
+    folder = tmp_path / "raw" / "esma-cerep"
+    folder.mkdir(parents=True)
+    b, e = dt.date(2000, 1, 1), dt.date(2004, 12, 31)
+    empty = {"ratingActivity": None, "defaultRates": None, "transitionMatricesNumberOfTransitions": [],
+             "transitionMatricesHeaderColumnLabels": ["Withdrawals"], "emptyCatLabels": True}
+    (folder / cerep.query_name(4, "FITGB", b, e)).write_text(json.dumps(empty), encoding="utf-8")
+    assert cerep.read_cohort(folder, "FITGB", b, e) is None
