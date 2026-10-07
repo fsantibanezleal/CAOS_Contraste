@@ -276,10 +276,11 @@ class Cohort:
     ``events`` (7, tab 3's default events), ``size`` (7, the cohort by grade on the transition page);
     ``has_default_column`` is False where the transition page has no default category (Moody's).
 
-    ``defaulted_cohort`` (7) is the cohort tab 2's rates are taken over, which is not always tab 4's: in S&P's 2001
-    to 2004 cohorts tab 2's printed rates imply up to 8.7% more ratings than tab 4's rows hold (ESMA states no reason).
-    Each label's cohort is tab 4's row where that row reproduces the printed rate within its two-decimal rounding, and
-    the count over the printed rate otherwise; ``tab2_gap`` is the largest relative difference to tab 4's rows."""
+    ``defaulted_cohort`` (7) is the cohort tab 2's rates are taken over, which is not always tab 4's: in 19 of S&P's
+    26 annual cohorts tab 2's printed rates imply more ratings than tab 4's rows hold in some grade, up to 19% more
+    (ESMA states no reason). Each label's cohort is tab 4's row where that row reproduces the printed rate within its
+    two-decimal rounding, and the count over the printed rate otherwise; ``tab2_gap`` is the signed relative difference
+    to tab 4's row of the label whose cohort differs most in ratings."""
 
     cra: str
     begin: dt.date
@@ -312,8 +313,8 @@ def _map(cra: str, label: str) -> int | str:
 def _transition_page(cra: str, data: dict[str, Any]) -> tuple[np.ndarray, np.ndarray, bool, dict[str, float]] | None:
     m = data.get("transitionMatricesNumberOfTransitions")
     labels = data.get("transitionMatricesHeaderColumnLabels")
-    if m is None or labels is None:
-        return None
+    if m is None or labels is None or not m or data.get("emptyCatLabels"):
+        return None  # a period without ratings: an empty matrix, the lone label "Withdrawals", emptyCatLabels true
     a = np.asarray(m, dtype=float)
     if a.shape != (len(labels) - 1, len(labels)) or labels[-1] != "Withdrawals":
         raise CerepError(f"{cra}: a transition page of shape {a.shape} with {len(labels)} labels")
@@ -386,16 +387,18 @@ def read_cohort(folder: Path, cra: str, begin: dt.date, end: dt.date) -> Cohort 
     return Cohort(cra, begin, end, counts, withdrawn, defaulted, events, size, has_d, defaulted_cohort, gap)
 
 
-#: a gap between tab 2's implied cohort and tab 4's row beyond this is a misread page (a shifted label), not a
-#: difference of cohorts: S&P's 2008 BB cohort is 15% larger on tab 2 than on tab 4, every other grade equal
-MAX_TAB2_GAP = 0.5
-
-
 def _default_rate_cohort(cra: str, t2: dict[str, Any], label_sizes: dict[str, float],
                          begin: dt.date) -> tuple[np.ndarray, float]:
-    """Tab 2's cohort by grade (see ``Cohort``) and the largest relative gap to tab 4's rows, signed."""
+    """Tab 2's cohort by grade (see ``Cohort``) and the relative gap, signed, of the label whose cohort differs most
+    from tab 4's row in ratings.
+
+    The two pages count different cohorts in some labels and periods, mostly the labels with many defaults: S&P's
+    annual cohorts differ in 19 of the 26 years 2000 to 2025, tab 2's always the larger, by up to 19% (BB in 2020,
+    1,340 against 1,129; B in 2023, 2,029 against 1,711); Fitch's C in the window 2020 to 2024, 9 against 5. ESMA
+    states no reason. Tab 2 is a map keyed by label, so a cell cannot shift onto another label's row, and every label
+    is checked against the agency's scale. The gap is measured and kept, never refused."""
     out = np.zeros(7)
-    worst = 0.0
+    worst, worst_abs = 0.0, 0.0
     for label, cell in ((t2.get("defaultRates") or {}).get("defMap") or {}).items():
         g = _map(cra, label)
         if not isinstance(g, int):
@@ -410,12 +413,9 @@ def _default_rate_cohort(cra: str, t2: dict[str, Any], label_sizes: dict[str, fl
             out[g] += row
             continue
         cohort = float(round(n / (pct / 100.0)))
-        rel = (cohort - row) / row if row > 0 else float("inf")
-        if abs(rel) > MAX_TAB2_GAP:
-            raise CerepError(f"{cra} {begin}: tab 2 gives {pct}% for {label} ({n:g} defaults), a cohort of about "
-                             f"{cohort:g} against tab 4's {row:g}: beyond {MAX_TAB2_GAP:.0%}, a misread page")
         out[g] += cohort
-        worst = rel if abs(rel) > abs(worst) else worst
+        if abs(cohort - row) > worst_abs:
+            worst_abs, worst = abs(cohort - row), (cohort - row) / row if row > 0 else 1.0
     return out, worst
 
 
