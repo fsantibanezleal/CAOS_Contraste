@@ -84,15 +84,16 @@ from the pooled counts (Wald (2.2), Agresti-Coull (3.3), Jeffreys), with the dep
 | Variant | Truth status | Content |
 |---|---|---|
 | `sp`, `moodys`, `fitch` | real outcomes | the cohorts with data; PD by grade under D2, D3, D4 and their gaps by year; the long-run average with intervals; the pooled matrix; the embedding diagnostics, DA, WA, JLT and EM generators with distances and PDs; M_SVD and the trace index by cohort against the speculative-grade D2 rate; time homogeneity across cohorts and semesters; every cohort against the pooled matrix; two semesters against the year |
-| `markov` | synthetic known truth | 200 repetitions of five annual snapshots of S&P-like cohorts from the EM generator: bias and RMSE of the cohort, duration, EM, DA and WA PDs by grade; zero shares; size of the four tests; coverage of Wald, Agresti-Coull, Jeffreys and the bootstrap |
-| `momentum` | synthetic known truth | dos Reis et al.'s momentum, alpha 0, 0.25, 0.5, 1, 2 (beta 1): the three path tests' rejection rates; the bias of the one-year cohort PDs; the five-year PD of the momentum chain against the Markov projection exp(5 Q^) |
-| `cycle` | synthetic known truth | a recession regime multiplying the downgrade rates by 1, 1.25, 1.5, 2, 3 in the third year: time homogeneity's and the reference test's rejection rates; the cohort PDs of the stressed year against the long-run average |
-| `withdrawals` | synthetic known truth | informative withdrawal (rate 3%, raised by 0, 1, 3, 9 within a year of default): the bias of D4 (withdrawals removed) against the truth, and of the definition that keeps them |
+| `markov` | synthetic known truth | 200 repetitions of five annual snapshots of S&P-like cohorts from the EM generator: bias and RMSE of the cohort, duration, EM, DA, WA and JLT PDs by grade; zero shares; size of the four tests; coverage of Wald, Agresti-Coull, Jeffreys and the bootstrap; the order test's two forms over 2,000 repetitions |
+| `momentum` | synthetic known truth | dos Reis et al.'s momentum, alpha 0, 0.025, 0.05, 0.125, 0.25 (beta 1; 0.125 gives the hazard coefficient they estimate on Moody's data, dossier 13 section 16): the three path tests' rejection rates and the fitted coefficient; the bias of the one-year cohort PDs; the five-year PD of the momentum chain against the Markov projections |
+| `cycle` | synthetic known truth | a recession regime multiplying the downgrade rates by 1, 1.25, 1.5, 2, 3 in the third year: time homogeneity's and the reference test's rejection rates; the cohort PDs of the stressed year and the five-year long-run average (EBA paragraph 84) against the truth |
+| `withdrawals` | synthetic known truth | informative withdrawal (rate 6% a year, raised by 1 + k, k = 0, 1, 3, 9, within a year of default): the bias of the PD with withdrawals removed (D4), kept, followed (EBA paragraph 76) and latent against the truth; time homogeneity and the last year's reference test |
 | `thin` | synthetic known truth | 50, 100, 200, 500, 1,000 obligors per grade: interval coverage by grade, and how often adjacent grades' Jeffreys intervals overlap |
 | `published` | published answer | Israel et al.'s nine distances, Schuermann and Hanson's twelve Table 5 cells, Engelmann's TTC portfolio and projection extremes, each beside its print |
 
-Repetitions: 200 per ladder rung (Monte Carlo SE at most 3.5 points on a rate), 1,000 bootstrap replicates inside
-the Markov variant's first 50 repetitions; seeds derived from the case seed, recorded.
+Repetitions: 200 per ladder rung (Monte Carlo SE at most 3.5 points on a rate), 500 bootstrap replicates inside the
+Markov variant's first 100 repetitions; seeds derived from the case seed per rung, shared by a rung's estimators and
+tests, recorded.
 
 ## Views
 

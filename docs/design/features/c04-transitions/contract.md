@@ -18,9 +18,9 @@ re-implements an engine formula. All arrays are plain lists (JSON); probabilitie
   code) and `segment` set: the cohort label for a test of one cohort (`rating.matrix_reference@STPGB@2010`), `"annual"`
   or `"semesters"` for a test across the annual or semester cohorts (`rating.time_homogeneity@STPGB@annual`). The
   generator families record their rates as simulations, not test rows.
-- Every rate from repeated simulation carries `n`, `rate` and its Monte Carlo SE `se` (`harness.Rate.to_dict()`), and a
-  simulation's seed is `_seed(case_seed, key)` exactly as C22 derives it (`numpy.random.SeedSequence([case_seed,
-  crc32(key)])`).
+- Every rate from repeated simulation carries `n`, `rate` and its Monte Carlo SE `se` (`harness.Rate.to_dict()`); seeds
+  are derived from the case seed with C22's helper (`numpy.random.SeedSequence([case_seed, crc32(key)])`), per rung
+  (section 2).
 
 ## 1. Agency variants (`kind: "agency"`), module `pipeline/cases/c04_agency.py`
 
@@ -89,23 +89,28 @@ them (only periods with data; the windows feed the lifetime check):
 
 ## 2. Generator families (`kind: "generator"`), module `pipeline/cases/c04_families.py`
 
-`family_outputs(family: str, q: np.ndarray, obligors: list[int], case_seed: int, reps: int) -> dict` with `q` the
-8 x 8 generator (EM on S&P's pooled annual counts, computed by the case) and `obligors` the cohort size by grade.
-Families and ladders (fixed in the module, printed in the outputs):
+`family_outputs(family: str, q: np.ndarray, obligors: list[int], case_seed: int, reps: int = 200, *, source: str)
+-> dict` with `q` the 8 x 8 generator (EM on S&P's pooled annual counts, computed by the case) and `obligors` the
+cohort size by grade. Refused: an unknown family, a `q` that is not 8 x 8 or not finite (riskvalidation 0.04.003 also
+refuses it), a grade with no route to default (every true PD must be above 0: a degenerate truth makes every interval
+cover and every error zero), cohort sizes that are not seven positive whole numbers, fewer than two repetitions (the
+thin family is exact). Families and ladders (fixed in the module, printed in the outputs):
 
 | family | ladder | per rung |
 |---|---|---|
-| `markov` | none | estimators (cohort pooled over five years, duration, EM, diagonal, weighted, JLT): bias, RMSE, zero share of the one-year PD by grade, with MC SEs; the size of the four transition tests at 5% and 1% (harness `simulate`); coverage of Wald, Agresti-Coull, Jeffreys (on the pooled cohort counts) and of the duration PD's resampling bootstrap (B 500, the first 100 repetitions) |
-| `momentum` | alpha 0, 0.25, 0.5, 1, 2 (beta 1, investment grades 4) | rejection rates of time homogeneity, order and momentum; per grade: the one-year cohort PD (mean), the five-year default frequency of the initial cohort (the momentum chain's truth), the Markov projections from one-year data (pooled cohort matrix to the fifth power; exp(5 Q) of the duration generator) and their errors |
-| `cycle` | downgrade rates times 1, 1.25, 1.5, 2, 3 during the third year (regimes at 2 and 3) | rejection rates of time homogeneity and of the reference test of the stressed year's counts against the pooled matrix; per grade: the stressed year's cohort PD, the five-year average, the truth exp(Q) |
-| `withdrawals` | withdrawal rate 6% a year, informative 0, 1, 3, 9 (window one year) | per grade: the pooled one-year PD with withdrawals removed (CEREP tab 4), kept in the denominator unfollowed, and followed (EBA paragraph 76: the latent path, the same seed without withdrawal), against the truth |
-| `thin` | obligors per grade 50, 100, 200, 500, 1,000 | exact by enumeration (no simulation): coverage of Wald, Agresti-Coull and Jeffreys by grade at the true one-year PD; the probability that adjacent grades' Jeffreys intervals overlap |
+| `markov` | none | estimators (cohort pooled over five years, duration, EM, diagonal, weighted, JLT): the performance block of the one-year PD by grade (bias, empirical SE, RMSE, each with its MC SE) and the zero share; EM's convergence; the size of the four transition tests at 5% and 1% (harness `simulate`, the rung's repetitions); coverage of Wald, Agresti-Coull, Jeffreys (on the pooled cohort counts) and of the duration PD's resampling bootstrap (B 500, the first 100 repetitions); and the order test's two forms (chi-square and likelihood ratio) over ten times the repetitions on a seed of their own (`rating.markov_order@form-chi2`, `@form-lr`) |
+| `momentum` | alpha 0, 0.025, 0.05, 0.125, 0.25 (beta 1, investment grades 4); 0.125 gives the hazard coefficient dos Reis et al. estimate on Moody's data | rejection rates of time homogeneity, order and momentum; the fitted hazard coefficient c (a scalar performance block against 0); per grade: the one-year cohort PD, the five-year default frequency of the initial cohort, the Markov projections from one-year data (the pooled cohort matrix to the fifth power; exp(5 Q) of the duration generator), measured against the plain chain's five-year PD, and their errors against the frequency, paired by repetition |
+| `cycle` | downgrade rates times 1, 1.25, 1.5, 2, 3 during the third year | rejection rates of time homogeneity and of the stressed year's counts against the pooled matrix; per grade: the stressed year's cohort PD against exp(Q), the long-run average (EBA paragraph 84: the mean of the five yearly cohort PDs, `pd_lra`) against the true average over the five years, Anderson and Goodman's pooled estimate (2.8, `pd_pooled`) against exp(Q) |
+| `withdrawals` | withdrawal rate 6% a year, informative 0, 1, 3, 9 (window one year) | rejection rates of time homogeneity and of the last year's counts against exp(Q) (the last: every path starts with no withdrawal history); per grade: the one-year PD with withdrawals removed (CEREP tab 4), kept in the denominator, followed (EBA paragraphs 73 and 76 at one year: each year's observed cohort, its end read on the latent path) and latent (the latent chain's own pooled PD), against the truth; the withdrawn share with its MC SE |
+| `thin` | obligors per grade 50, 100, 200, 500, 1,000 | exact by enumeration (no simulation; riskvalidation's `exact_coverage` and `overlap_probability`): coverage and expected length of Wald, Agresti-Coull and Jeffreys by grade at the true one-year PD; the probability that adjacent grades' Jeffreys intervals overlap; its design block says one year, snapshots 0 and 1, 0 repetitions |
 
 Shape: `{"kind": "generator", "family", "generator": {"q": [[8 x 8]], "pd_1y": [7], "pd_5y": [7], "obligors": [7],
-"source": str}, "design": {"years": 5, "snapshots": [...], "reps": int, "seed_key": str}, "ladder": {"name",
-"unit", "values": [...]} | null, "rungs": [ {per rung, the quantities above, each array by grade} ], "simulations":
-[C22-style rows {"key", "test_id", "rung", "rates": {"p<0.05": Rate, "p<0.01": Rate}, "seed", "n_rep"}]}`. The
-`simulations` rows make the findings' `rate:` evidence (`rate:<key>`).
+"source": str}, "design": {"years": 5, "snapshots": [...], "reps": int, "seed_key": str | null}, "ladder": {"name":
+{en, es}, "unit": str, "values": [...]} | null, "rungs": [ {per rung, the quantities above, each array by grade} ],
+"simulations": [C22-style rows {"key", "test_id", "rung", "rates": {"p<0.05": Rate, "p<0.01": Rate}, "seed",
+"n_rep"}]}`. The `simulations` rows make the findings' `rate:` evidence (`rate:<key>`). Seeds: one per rung,
+`_seed(case_seed, "<family>:<rung>")` (C22's helper), shared by the rung's estimators and its test rows, so a test
+reads the datasets the estimators read (C22 derives one seed per row instead); the order test's forms have their own.
 
 ## 3. Published answers (`kind: "published"`), module `pipeline/cases/c04_published.py`
 
