@@ -13,17 +13,20 @@ re-implements an engine formula. All arrays are plain lists (JSON); probabilitie
   withdrawals included), `has_default_column` (False on Moody's).
 - The engine's square input is 8 x 8: `np.vstack([cohort.counts, np.zeros(8)])` (the default row empty; the engine
   makes it absorbing).
-- A cohort's label is `"2010"` (annual) or `"2010H1"` / `"2010H2"` (semester).
+- A cohort's label is `"2010"` (annual), `"2010H1"` / `"2010H2"` (semester) or `"2010-2014"` (a five-year window).
 - Test results are `TestResult.to_dict()` and go in the artifact's `tests` list, each with `model_id` set (the agency
-  code or the family) and `segment` set (the cohort label, the rung, or `"pooled"`).
+  code) and `segment` set: the cohort label for a test of one cohort (`rating.matrix_reference@STPGB@2010`), `"annual"`
+  or `"semesters"` for a test across the annual or semester cohorts (`rating.time_homogeneity@STPGB@annual`). The
+  generator families record their rates as simulations, not test rows.
 - Every rate from repeated simulation carries `n`, `rate` and its Monte Carlo SE `se` (`harness.Rate.to_dict()`), and a
   simulation's seed is `_seed(case_seed, key)` exactly as C22 derives it (`numpy.random.SeedSequence([case_seed,
   crc32(key)])`).
 
 ## 1. Agency variants (`kind: "agency"`), module `pipeline/cases/c04_agency.py`
 
-`agency_outputs(code: str, annual: list[Cohort], semesters: list[Cohort]) -> dict`, the cohorts as
-`pipeline.io.cerep.read_agency` returns them (only periods with data):
+`agency_outputs(code: str, annual: list[Cohort], semesters: list[Cohort], windows: list[Cohort] | None = None)
+-> tuple[dict, list[dict]]`, the outputs and the test rows, the cohorts as `pipeline.io.cerep.read_agency` returns
+them (only periods with data; the windows feed the lifetime check):
 
 ```text
 {
@@ -71,6 +74,10 @@ re-implements an engine formula. All arrays are plain lists (JSON); probabilitie
                   "reference": [{"label", "statistic", "p_value", "dof", "impossible_moves"}]},  # each cohort vs pooled
   "semesters_vs_year": [{"year", "l1", "pd_product": [7], "pd_annual": [7]}],  # P_H1 P_H2 against P_year
   "definition_gap": {"d4_over_d2": [7] | null, "d3_over_d2": [7] | null},      # pooled ratios (null where undefined)
+  "origination": [8],     # added by the case: the agency's cohort mix pooled over the years (default 0), the
+                          # origination the live projection replenishes with
+  "irb": {"regime", "asset_class", "lgd", "maturity", "pd_floor", "references"},   # added by the case: C05's IRB
+                          # convention, the one the impact and the live capital use (the engine floors a zero PD)
   "lifetime": [{"label": "2010-2014", "first": 2010, "last": 2014, "size": [7],  # CT-415, one row per window with data
                 "observed": {"default_end": [7], "withdrawn_end": [7],       # tab 4 over the window's fixed cohort
                              "cumulative_d2": [7] | null},                   # tab 2: rated defaulters / tab 2's cohort
