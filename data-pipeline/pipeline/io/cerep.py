@@ -279,7 +279,7 @@ class Cohort:
     ``events`` (7, tab 3's default events), ``size`` (7, the cohort by grade on the transition page);
     ``has_default_column`` is False where the transition page has no default category (Moody's).
 
-    ``defaulted_cohort`` (7) is the cohort tab 2's rates are taken over, which is not always tab 4's: in 19 of S&P's
+    ``defaulted_cohort`` (7) is the cohort tab 2's rates are taken over, which is not always tab 4's: in 18 of S&P's
     26 annual cohorts tab 2's printed rates imply more ratings than tab 4's rows hold in some grade, up to 19% more
     (ESMA states no reason). Each label's cohort is tab 4's row where that row reproduces the printed rate within its
     two-decimal rounding, and the count over the printed rate otherwise; ``tab2_gap`` is the signed relative difference
@@ -396,7 +396,7 @@ def _default_rate_cohort(cra: str, t2: dict[str, Any], label_sizes: dict[str, fl
     from tab 4's row in ratings.
 
     The two pages count different cohorts in some labels and periods, mostly the labels with many defaults: S&P's
-    annual cohorts differ in 19 of the 26 years 2000 to 2025, tab 2's always the larger, by up to 19% (BB in 2020,
+    annual cohorts differ in 18 of the 26 years 2000 to 2025, tab 2's always the larger, by up to 19% (BB in 2020,
     1,340 against 1,129; B in 2023, 2,029 against 1,711); Fitch's C in the window 2020 to 2024, 9 against 5. ESMA
     states no reason. Tab 2 is a map keyed by label, so a cell cannot shift onto another label's row, and every label
     is checked against the agency's scale. The gap is measured and kept, never refused."""
