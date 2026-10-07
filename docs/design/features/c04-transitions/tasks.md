@@ -8,6 +8,7 @@
 | 4 | The known-truth families on the EM generator of S&P's counts: Markov, momentum, cycle, withdrawals, thin | CT-405 | todo |
 | 5 | The published variant: Israel et al., Schuermann and Hanson, Engelmann | CT-406 | todo |
 | 6 | Findings, expected ranges, lineage, determinism; the bake and a second bake | CT-408, CT-409 | todo |
+| 6b | The lifetime check: five-year windows of CEREP against the chained one-year matrices | CT-415 | todo |
 | 7 | The live ports (projection, intervals, capital) with parity tests | CT-410, CT-411 | todo |
 | 8 | The C04 instrument and its views; the content page; the methodology and coverage entries | CT-412, CT-414 | todo |
 | 9 | The case page in docs; the measured gate; screenshots read; version 0.05.000, changelog, PR | CT-413, CT-414 | todo |
