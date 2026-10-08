@@ -494,11 +494,11 @@ def _by_group(fit: Fit, pos: np.ndarray, y: np.ndarray, pds: dict[str, np.ndarra
 
 
 def _tabpfn_available() -> bool:
-    try:
-        import tabpfn  # noqa: F401
-    except Exception:  # noqa: BLE001 (an optional extra)
-        return False
-    return True
+    """Whether the optional extra is installed, without importing it: TabPFN fixes its weights' cache directory when it
+    is imported, and the rung sets it to the device models root first (model/tabpfn_rung.py)."""
+    import importlib.util
+
+    return importlib.util.find_spec("tabpfn") is not None
 
 
 CASE = C01()

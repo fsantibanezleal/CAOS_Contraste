@@ -1,7 +1,7 @@
 {
   "name": "contraste-frontend",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.5.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -14,7 +14,7 @@
     "gate": "node scripts/gate.mjs"
   },
   "dependencies": {
-    "@fasl-work/caos-app-shell": "^0.7.2",
+    "@fasl-work/caos-app-shell": "0.9.3",
     "katex": "^0.16.47",
     "lucide-react": "^1.52.0",
     "react": "^19.3.0",

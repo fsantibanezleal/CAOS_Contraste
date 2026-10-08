@@ -4,7 +4,7 @@
 import { PlotCard, Verdict, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import { loadAllVariants, useArtifact } from '../api/artifacts';
 import type { C22Simulation, CaseManifest, Text, VariantArtifact } from '../lib/contract.types';
-import { useT } from '../content/bi';
+import { WithQuotes, useT } from '../content/bi';
 import { curves, isC22, rateOf, type C22Variant } from '../workbench/c22/selection';
 
 const pct = (lang: 'en' | 'es', v: number | null | undefined, decimals = 1) => formatNumber(v, lang, { percent: true, decimals });
@@ -312,10 +312,18 @@ export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
                 <td>{formatNumber(g.total, lang)}</td>
                 <td>{formatNumber(g.agree, lang)}</td>
                 <td className="caos-col-text">
-                  {g.cells
-                    .filter((c) => !c.agrees)
-                    .map((c) => `${c.table}, ${c.row}, ${c.column}: ${formatNumber(c.published, lang, { digits: 3 })} / ${formatNumber(c.measured, lang, { digits: 3 })}`)
-                    .join('; ') || '-'}
+                  {/* each cell as its paper names it (table, row, column: the paper's own labels), then published / measured */}
+                  {g.cells.filter((c) => !c.agrees).length
+                    ? g.cells
+                        .filter((c) => !c.agrees)
+                        .map((c, k) => (
+                          <span key={`${c.table}-${c.row}-${c.column}`}>
+                            {k > 0 ? '; ' : ''}
+                            <span translate="no" lang="en">{`${c.table}, ${c.row}, ${c.column}`}</span>
+                            {`: ${formatNumber(c.published, lang, { digits: 3 })} / ${formatNumber(c.measured, lang, { digits: 3 })}`}
+                          </span>
+                        ))
+                    : '-'}
                 </td>
               </tr>
             ))}
@@ -323,7 +331,7 @@ export function C22BenchmarkSection({ manifest }: { manifest: CaseManifest }) {
         </table>
         {golden.map((g) => (
           <p key={g.study} className="ct-note">
-            {pick(g.note, lang)}
+            <WithQuotes text={pick(g.note, lang)} />
           </p>
         ))}
       </PlotCard>

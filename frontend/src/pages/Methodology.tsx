@@ -3,7 +3,8 @@
 // caption that defines its symbols; every section ends with its references.
 import { Cite, DocPage, DocSection, Equation, Figure, TabGroups, useShellLang } from '@fasl-work/caos-app-shell';
 import { ValidationFigure } from '../architecture/figures';
-import { L, P, useT } from '../content/bi';
+import { L, P, Ref, T, useT } from '../content/bi';
+import { Migrations, TransitionTests } from './MethodologyTransitions';
 
 function ModelRisk() {
   const t = useT();
@@ -43,7 +44,7 @@ function Scorecards() {
         />
         <Equation
           tex="\mathrm{WoE}_i = \ln\frac{r_i^{NE}/r_T^{NE}}{r_i^{E}/r_T^{E}} = \ln\frac{r_T^{E}}{r_T^{NE}} - \mathrm{logit}(D_i), \qquad \mathrm{IV} = \sum_{i=1}^{n}\left(p_i - q_i\right)\ln\frac{p_i}{q_i}"
-          caption={t('r_i^NE and r_i^E: non-events and events in bin i; r_T: their totals; D_i: the bin default rate; p_i and q_i: the bin shares of non-events and events (Navas-Palencia 2020, section 2.1).', 'r_i^NE y r_i^E: no eventos y eventos del tramo i; r_T: sus totales; D_i: la tasa de incumplimiento del tramo; p_i y q_i: las fracciones de no eventos y de eventos del tramo (Navas-Palencia 2020, sección 2.1).')}
+          caption={<T en={<>r_i^NE and r_i^E: non-events and events in bin i; r_T: their totals; D_i: the bin default rate; p_i and q_i: the bin shares of non-events and events (Navas-Palencia 2020, section <Ref>2.1</Ref>).</>} es={<>r_i^NE y r_i^E: no eventos y eventos del tramo i; r_T: sus totales; D_i: la tasa de incumplimiento del tramo; p_i y q_i: las fracciones de no eventos y de eventos del tramo (Navas-Palencia 2020, sección <Ref>2.1</Ref>).</>} />}
         />
         <P
           en="Optimal binning is a mathematical programme: pre-bins from a tree are merged into bins that maximise the information value under constraints on the number of bins, their minimum size and a monotone trend of the default rate (ascending, descending, peak or valley). Contraste declares the direction of every variable before fitting, from its meaning (more delinquency raises risk; a larger limit and larger payments lower it), and lets the solver choose where no direction is declared. The IV screen keeps variables with an information value of at least 0.02, the rule of thumb attributed to Siddiqi, whose exact source page is not verified."
@@ -106,8 +107,8 @@ function MachineLearning() {
       </DocSection>
       <DocSection title={{ en: 'The tabular foundation model', es: 'El modelo fundacional tabular' }} refs={['hollmann2025']}>
         <P
-          en={<>TabPFN learns in context, with no per-dataset training, and is strongest on small data <Cite id="hollmann2025" />. The package's default weights carry a non-commercial licence; Contraste uses the v2 weights, under the Prior Labs License v1.1 (Apache 2.0 with an attribution clause), only on the small German case; its own view shows the licence of the weights and the attribution, and the Context group lists it with every engine.</>}
-          es={<>TabPFN aprende en contexto, sin entrenamiento por conjunto de datos, y es más fuerte con pocos datos <Cite id="hollmann2025" />. Los pesos por defecto del paquete tienen una licencia no comercial; Contraste usa los pesos v2, bajo la Prior Labs License v1.1 (Apache 2.0 con una cláusula de atribución), solo en el caso alemán pequeño; su propia vista muestra la licencia de los pesos y la atribución, y el grupo Contexto la lista junto a cada motor.</>}
+          en={<>TabPFN learns in context, with no per-dataset training, and is strongest on small data <Cite id="hollmann2025" />. The package's default weights carry a non-commercial licence; Contraste uses the v2 weights, under the Prior Labs License v1.1 (<Ref>Apache 2.0</Ref> with an attribution clause), only on the small German case; its own view shows the licence of the weights and the attribution, and the Context group lists it with every engine.</>}
+          es={<>TabPFN aprende en contexto, sin entrenamiento por conjunto de datos, y es más fuerte con pocos datos <Cite id="hollmann2025" />. Los pesos por defecto del paquete tienen una licencia no comercial; Contraste usa los pesos v2, bajo la Prior Labs License v1.1 (<Ref>Apache 2.0</Ref> con una cláusula de atribución), solo en el caso alemán pequeño; su propia vista muestra la licencia de los pesos y la atribución, y el grupo Contexto la lista junto a cada motor.</>}
         />
       </DocSection>
     </>
@@ -125,7 +126,7 @@ function Discrimination() {
         />
         <Equation
           tex="\mathrm{AUC} = \frac{1}{|A|\,|B|}\sum_{a\in A}\sum_{b\in B} u_{a,b}, \qquad s^2 = \frac{\widehat{\mathrm{var}}(V_{10})}{|A|} + \frac{\widehat{\mathrm{var}}(V_{01})}{|B|}"
-          caption={t('A: defaulters; B: non-defaulters; u_ab = 1 when a is ranked riskier than b, 1/2 on a tie, 0 otherwise; V_10 and V_01: the structural components, the mean of u over the other group (ECB 2019, Annex 3.1).', 'A: incumplidores; B: no incumplidores; u_ab = 1 cuando a queda como más riesgoso que b, 1/2 en un empate, 0 si no; V_10 y V_01: los componentes estructurales, la media de u sobre el otro grupo (BCE 2019, Anexo 3.1).')}
+          caption={<T en={<>A: defaulters; B: non-defaulters; u_ab = 1 when a is ranked riskier than b, 1/2 on a tie, 0 otherwise; V_10 and V_01: the structural components, the mean of u over the other group (ECB 2019, Annex <Ref>3.1</Ref>).</>} es={<>A: incumplidores; B: no incumplidores; u_ab = 1 cuando a queda como más riesgoso que b, 1/2 en un empate, 0 si no; V_10 y V_01: los componentes estructurales, la media de u sobre el otro grupo (BCE 2019, Anexo <Ref>3.1</Ref>).</>} />}
         />
       </DocSection>
       <DocSection title={{ en: 'Has discrimination deteriorated, and is a challenger better?', es: '¿Se deterioró la discriminación, y es mejor un retador?' }} refs={['ecb2019', 'delong1988', 'demler2012']}>
@@ -195,7 +196,7 @@ function Stability() {
         />
         <Equation
           tex={String.raw`\mathrm{PSI} = \sum_{i=1}^{B}(a_i - e_i)\ln\frac{a_i}{e_i}, \qquad \text{${t('reject when', 'rechazar cuando')}}\;\; \mathrm{PSI} > \left(\frac1n + \frac1m\right)\chi^2_{1-\alpha,\,B-1}`}
-          caption={t('e_i and a_i: the development and current shares of bin i; n and m: the two sample sizes; B: the number of bins (Yurdakul and Naranjo 2020, Theorem 3.3).', 'e_i y a_i: las fracciones de desarrollo y actual del tramo i; n y m: los dos tamaños de muestra; B: el número de tramos (Yurdakul y Naranjo 2020, Teorema 3.3).')}
+          caption={<T en={<>e_i and a_i: the development and current shares of bin i; n and m: the two sample sizes; B: the number of bins (Yurdakul and Naranjo 2020, Theorem <Ref>3.3</Ref>).</>} es={<>e_i y a_i: las fracciones de desarrollo y actual del tramo i; n y m: los dos tamaños de muestra; B: el número de tramos (Yurdakul y Naranjo 2020, Teorema <Ref>3.3</Ref>).</>} />}
         />
       </DocSection>
       <DocSection title={{ en: 'Concentration in the grades', es: 'Concentración en los grados' }} refs={['ecb2019']}>
@@ -271,6 +272,7 @@ export function Methodology() {
               { id: 'model-risk', label: t('Model risk', 'Riesgo de modelo'), content: <ModelRisk /> },
               { id: 'scorecards', label: t('Scorecards', 'Scorecards'), content: <Scorecards /> },
               { id: 'machine-learning', label: t('Machine learning', 'Aprendizaje automático'), content: <MachineLearning /> },
+              { id: 'migrations', label: t('Migration matrices', 'Matrices de migración'), content: <Migrations /> },
             ],
           },
           {
@@ -280,6 +282,7 @@ export function Methodology() {
               { id: 'discrimination', label: t('Discrimination', 'Discriminación'), content: <Discrimination /> },
               { id: 'calibration', label: t('Calibration', 'Calibración'), content: <Calibration /> },
               { id: 'stability', label: t('Stability', 'Estabilidad'), content: <Stability /> },
+              { id: 'transitions', label: t('Transitions', 'Transiciones'), content: <TransitionTests /> },
               { id: 'size-and-power', label: t('Size and power', 'Tamaño y potencia'), content: <SizeAndPower /> },
             ],
           },

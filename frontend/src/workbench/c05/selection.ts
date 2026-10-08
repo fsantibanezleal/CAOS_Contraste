@@ -1,6 +1,6 @@
 // The C05 instrument's selection and its live computations (CT-209, CT-210). Every live number comes from the ports
 // in engine/credit.ts on committed inputs; the replayed ones are read from the artifact as the pipeline wrote them.
-import type { ShellToken } from '@fasl-work/caos-app-shell';
+import type { ShellColorToken } from '@fasl-work/caos-app-shell';
 import { useMemo } from 'react';
 import type { CaseData } from '../../api/artifacts';
 import type { C05LdpOutputs, C05SpOutputs, ModelsArtifact, QuadratureDetails, Text, VariantArtifact } from '../../lib/contract.types';
@@ -31,7 +31,7 @@ export const isLdp = (v: VariantArtifact<unknown>): v is LdpVariant => (v.output
 export const CASE1: Case1[] = ['A1-idp', 'A2-iar', 'A3-spd', 'A4-slr'];
 
 /** One colour per approach, and per grade of the low-default portfolio, the same in every view and its key. */
-export const APPROACH_COLOR: Record<string, ShellToken> = {
+export const APPROACH_COLOR: Record<string, ShellColorToken> = {
   'A1-idp': '--color-accent',
   'A2-iar': '--color-accent-2',
   'A3-spd': '--color-warn',
@@ -42,7 +42,7 @@ export const APPROACH_COLOR: Record<string, ShellToken> = {
   'C3-chi2': '--color-bad',
   'C4-ilr': '--color-magenta',
 };
-export const GRADE_COLOR: ShellToken[] = ['--color-accent', '--color-accent-2', '--color-warn'];
+export const GRADE_COLOR: ShellColorToken[] = ['--color-accent', '--color-accent-2', '--color-warn'];
 
 export const approachShort = (v: SpVariant, id: string): Text => v.model.find((m) => m.id === id)?.short_title ?? { en: id, es: id };
 

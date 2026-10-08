@@ -8,7 +8,10 @@ it is not part of the default install. Categorical inputs enter as integer codes
 (an unseen category is -1) and are declared to the model as categorical.
 
 The weights are downloaded once into the device models root: ``TABPFN_MODEL_CACHE_DIR``, or
-``<CONTRASTE_MODELS>/tabpfn``; with neither set the rung refuses to run rather than write to a user cache.
+``<CONTRASTE_MODELS>/tabpfn``; with neither set the rung refuses to run rather than write to a user cache. TabPFN reads
+its cache directory into settings when the package is first imported, so the rung also sets that setting itself
+(an import made earlier would otherwise have fixed it to the user cache) and refuses a fit whose weights did not come
+from the models root.
 """
 from __future__ import annotations
 
@@ -67,6 +70,9 @@ def fit_tabpfn(X: pd.DataFrame, y: np.ndarray, *, features, categorical, seed: i
     cache = _cache_dir()
     from tabpfn import TabPFNClassifier
     from tabpfn.constants import ModelVersion
+    from tabpfn.settings import settings as tabpfn_settings
+
+    tabpfn_settings.tabpfn.model_cache_dir = cache
 
     codes = {f: {c: k for k, c in enumerate(sorted({str(v) for v in X[f]}))} for f in categorical}
     rung = TabPFNRung(None, list(features), tuple(categorical), codes, n_estimators)
@@ -75,6 +81,9 @@ def fit_tabpfn(X: pd.DataFrame, y: np.ndarray, *, features, categorical, seed: i
         ModelVersion.V2, n_estimators=n_estimators, random_state=seed, device="cpu",
         categorical_features_indices=cat_idx or None)
     clf.fit(rung.matrix(X), np.asarray(y, dtype=int))
+    weights = sorted(cache.glob("*.ckpt"))
+    if not weights:
+        raise RuntimeError(f"TabPFN did not load its weights from the device models root {cache}")
     rung.model = clf
     rung.meta = {"cache": cache.name, "model_path": Path(str(clf.model_path)).name}
     return rung

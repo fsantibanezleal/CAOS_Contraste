@@ -52,8 +52,9 @@ class Source:
     cases: tuple[str, ...]
     unverified: tuple[str, ...]
     attribution: str = ""
-    fetch_kind: str | None = None  # "http" or "manual"
+    fetch_kind: str | None = None  # "http", "manual" or "cerep" (pipeline.io.cerep: a paced JSON interface)
     files: tuple[FetchFile, ...] = ()
+    plan: dict[str, Any] | None = None  # a cerep fetch's query plan
 
     @property
     def readable(self) -> bool:
@@ -87,9 +88,17 @@ def _check_entry(e: dict[str, Any]) -> list[str]:
     if "UNVERIFIED" in e["licence"] and not e["unverified"] and e["class"] in READABLE:
         out.append(f"{sid}: the licence is marked UNVERIFIED; name the open question in 'unverified'")
     fetch = e.get("fetch")
-    if fetch is not None:
+    if fetch is not None and fetch.get("kind") == "cerep":
+        from . import cerep
+
+        if e["class"] not in READABLE:
+            out.append(f"{sid}: a {e['class']} source has no fetch specification")
+        if not str(fetch.get("plan", {}).get("endpoint", cerep.ENDPOINT)).startswith("https://"):
+            out.append(f"{sid}: a cerep fetch names an https endpoint")
+        out.extend(f"{sid}: {p}" for p in cerep.check_plan(fetch.get("plan")))
+    elif fetch is not None:
         if fetch.get("kind") not in ("http", "manual"):
-            out.append(f"{sid}: fetch kind is http or manual")
+            out.append(f"{sid}: fetch kind is http, manual or cerep")
         if e["class"] not in READABLE:
             out.append(f"{sid}: a {e['class']} source has no fetch specification")
         files = fetch.get("files") or []
@@ -121,11 +130,18 @@ def load(path: Path | None = None) -> dict[str, Source]:
     out: dict[str, Source] = {}
     for e in entries:
         fetch = e.get("fetch") or {}
+        files = tuple(FetchFile(f["name"], f.get("url", "")) for f in fetch.get("files") or ())
+        if fetch.get("kind") == "cerep":
+            from . import cerep
+
+            base = fetch["plan"].get("endpoint", cerep.ENDPOINT)
+            files = (FetchFile(cerep.FILTERS_FILE, base + "filters"),) + tuple(
+                FetchFile(q.name, base + f"searchStatistics/{q.tab}") for q in cerep.plan_queries(fetch["plan"]))
         out[e["id"]] = Source(
             id=e["id"], name=e["name"], publisher=e["publisher"], landing=e["landing"], licence=e["licence"],
             klass=e["class"], access=e["access"], cases=tuple(e["cases"]), unverified=tuple(e["unverified"]),
-            attribution=e.get("attribution", ""), fetch_kind=fetch.get("kind"),
-            files=tuple(FetchFile(f["name"], f.get("url", "")) for f in fetch.get("files") or ()),
+            attribution=e.get("attribution", ""), fetch_kind=fetch.get("kind"), files=files,
+            plan=fetch.get("plan") if fetch.get("kind") == "cerep" else None,
         )
     return out
 

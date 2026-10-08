@@ -3,6 +3,88 @@
 All notable changes to this product. Versions are X.XX.XXX (VERSION is the single source); every release is
 tagged.
 
+## [0.05.000], 2026-10-08
+
+Unit U4: case C04, rating transitions and TTC PD by grade.
+
+### Added
+
+- Case C04 reads ESMA's CEREP for the EU entities of S&P, Moody's and Fitch (corporate long-term ratings, annual
+  cohorts 2000 to 2025, semesters from 2010): 361 answers fetched through CEREP's own interface, paced, cached in the
+  data root and pinned by hash, every table carrying "Source: ESMA CEREP; tables transformed by Contraste" and the
+  agency's entity (CT-401, CT-407). The reader puts each agency's labels on one scale of seven grades and keeps CEREP's
+  default counts apart: the default page's distinct defaulted ratings (D2), the defaults page's events (D3), the
+  transition page's default column (D4) and that column with withdrawals kept in the denominator (CT-402). ESMA sets
+  no common definition of a default event for CEREP, and every PD shown names its definition.
+- Three agency variants (CT-403, CT-404, CT-415): the long-run average PD by grade under each definition (EBA/GL/2017/16
+  paragraph 84) with the Wald, Agresti-Coull and Jeffreys intervals of the pooled rate; the pooled one-year matrix; the
+  EM, diagonal, weighted and JLT generators with Israel, Rosenthal and Wei's embedding diagnostics; time homogeneity
+  across years and semesters, every cohort against the pooled matrix, the ECB migration statistics; mobility; two
+  semesters against the year; and the lifetime check of every five-year window. Measured: the transition matrix's
+  default column gives 29% of the default page's CCC to C PD for S&P and 19% for Fitch (Fitch's default columns hold no
+  rating in the years 2006 to 2014, while its default page counts 189 rated defaulters there; every view built on that
+  column says so); Moody's page has no default category; S&P's CCC to C cohort of 2020 lived 61.4% defaults in five
+  years where its chained annual matrices give 9.1%.
+- Five generator families on riskvalidation's `RatingPaths`, from the EM generator of S&P's counts (synthetic known
+  truth, CT-405): the Markov null (the estimators' bias and RMSE by grade with their Monte Carlo errors, the zero
+  PDs, the four transition tests' size, the intervals' coverage), momentum calibrated to dos Reis et al.'s estimate
+  (alpha 0.125 fits c 0.34; theirs is 0.33), a recession year, informative withdrawals and thin cohorts. A bias and a
+  projection error are differences of probabilities and read in percentage points.
+- Published answers recomputed by the engine from the papers in the data root, derived-only (CT-406): Israel,
+  Rosenthal and Wei's distances (8 of 9 to the printed digits, the ninth only from the printed generator),
+  Schuermann and Hanson's Table 5 (all twelve bounds with 15 defaults of 531) and Engelmann's section 4 (the TTC
+  portfolio and its PD, 1.198%; W hat within the rounding of its printed entries, the reason stated in both languages).
+- The live tools (CT-410, CT-411): a portfolio's projection under the one-year matrix towards its TTC portfolio
+  (Engelmann 2024), the three intervals at a reader's default correlation and level, and the IRB risk weight of the
+  cohort mix under each definition (Keep's from the mean of its yearly rates) and generator; the TypeScript port
+  equals riskvalidation on the models artifact's parity points within 1e-9, and the tests check what each live and
+  published chart draws against the ports and the artifacts.
+- The C04 instrument (CT-412): the agency, family and papers views, the rail's Grade, Projection and Interval sections
+  with their live read-outs; the findings with their cited p-values, rates or design blocks drawn and the years the
+  findings name marked; the Methodology's Transitions part; C04's sections of Experiments and Benchmark; the case page
+  with its results.
+- Case C22's null family adds the four rating-transition tests on riskvalidation's size-study chain: 19 of its 21 tests
+  hold their size at 5% and 1% (finding F-TRANSITION-SIZE), the order test measured again over 20,000 repetitions.
+- Guide 07: PDs by grade from rating transitions on your own history, and what to check before using them.
+
+### Changed
+
+- The engine is pinned to riskvalidation 0.04.003. Building C04 found what the base lacked, and each piece was fixed
+  and released upstream first: 0.04.001 floors a PD of exactly zero where the regime has a floor (it refused one, so
+  every caller applied the floor itself, a second copy of the regime's value; an agency's AAA that never defaulted is
+  the case the floor exists for); 0.04.002 adds the MSE and RMSE with their Monte Carlo errors and the exact coverage
+  and overlap of the PD intervals, which C04 had computed itself; 0.04.003 refuses a non-finite rate in `RatingPaths`
+  (a NaN rate made a draw run without end) and records that the order test's size depends on the chain. C01 and C05
+  change only in their engine and policy versions.
+- C01 reads TabPFN's weights from the models root, never the user's home directory: the cache setting is applied
+  before TabPFN is imported, and the rung refuses to fit without a checkpoint there.
+- The web is on the shared shell 0.9.3, pinned exactly (ADR-0078 section 5): the views row, the marks, the number
+  formats, the rail's knobs and the gate's checks G1 to G14. Building C04 found four shell defects, each fixed in the
+  shell first: a calendar year was written 2,021 on an axis or in a readout (known shell defect 30, the `grouping`
+  option, in 0.9.0); a log axis reaching below about 1e-22 was never drawn (defect 31, shell 0.9.2: uPlot threw on
+  C04's p-values of 1e-124); a value on the scientific boundary read 1E-4 % as a percent of 1e-6, and turned a whole
+  log axis of PDs scientific (defect 32); and the active chip under the pointer wrote the text colour on the accent,
+  3.04:1 (defect 33, found by the 0.9.3 gate on every rail section it clicks). Defects 32 and 33 are in the shell
+  0.9.4, tagged and not yet on npm: on 0.9.3 the gate fails G13 wherever it hovers an active chip, and on the 0.9.4
+  build it passes, so the release to main waits for 0.9.4 on npm. C04's year axes are calendar years; every p-value
+  below 1e-16 is drawn at 1e-16 with its exact value in the table, a reading choice (C01 draws the same floor).
+- Stale pages brought up to date: the live lane's architecture page and the Implementation page list every case's
+  live computations, the Introduction describes each case's rail, the cases index lists C04 and C22.
+
+### Fixed
+
+What the shell 0.9.3 gate found across the site, on its first run here:
+
+- A Spanish page wrote decimal points (G11): C01's scorecard bins now read in the page's number format (a Spanish
+  interval separates its bounds with a semicolon) with the special bins named, the rules are code, and why a feature
+  left the scorecard reads in the page's language; the equation, section and theorem numbers that the Methodology and
+  the case pages cite are marked as references (`Ref`), the notes cite papers by their authors (a note is a string the
+  shell cannot mark, CAOS_APP_SHELL#87), and licence identifiers, the sources' verbatim attributions, C22's paper cells
+  and quoted passages are kept as written.
+- C04's rail scrolled at 1280 x 800 (ADR-0071 rule 6) and its colour bar's lowest tick was cut (G10).
+- CT-407 held unevenly: every card drawn from CEREP now closes with one line (the EU entity, its code, the scope, the
+  period and ESMA's attribution), and every card that shows a PD carries ESMA's statement.
+
 ## [0.04.000], 2026-10-06
 
 Unit U3: case C22, validating the validator.

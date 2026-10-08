@@ -18,6 +18,7 @@ from typing import Any
 
 import numpy as np
 from scipy import special
+from scipy.linalg import expm
 
 from riskvalidation.generators import (
     BinormalScores,
@@ -36,6 +37,7 @@ from riskvalidation.generators import (
     jsonable,
 )
 from riskvalidation.generators._base import GH_NODES, GH_WEIGHTS
+from riskvalidation.generators.paths import RatingPaths
 from riskvalidation.harness import (
     Rate,
     agrees,
@@ -89,6 +91,16 @@ GR_PD = (0.002, 0.005, 0.01, 0.02, 0.04, 0.08, 0.16)
 THIN_N = (300, 800, 1500, 1500, 800, 400, 150)            # the best grade expects 0.6 defaults
 P10 = (0.02, 0.05, 0.10, 0.15, 0.20, 0.18, 0.13, 0.09, 0.05, 0.03)  # ten grades, CV 0.60
 AUC_DEV = 0.80
+#: a Markov chain with five grades and default, the transition tests' null (riskvalidation's size study, U4): 1,000
+#: obligors per grade, five annual snapshots in CEREP's stock model, the paths kept
+Q6 = (
+    (-0.12, 0.10, 0.015, 0.004, 0.00099, 0.00001),
+    (0.02, -0.15, 0.11, 0.015, 0.004, 0.001),
+    (0.002, 0.04, -0.17, 0.11, 0.015, 0.003),
+    (0.0, 0.004, 0.06, -0.22, 0.14, 0.016),
+    (0.0, 0.0, 0.005, 0.08, -0.30, 0.215),
+    (0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+)
 DELTA_DEV = math.sqrt(2.0) * float(special.ndtri(AUC_DEV))  # binormal separation of an AUC of 0.80
 
 TEST_LABEL: dict[str, dict[str, str]] = {
@@ -109,6 +121,10 @@ TEST_LABEL: dict[str, dict[str, str]] = {
     "stability.ks": _t("Kolmogorov-Smirnov", "Kolmogórov-Smirnov"),
     "rating.migration_ztests": _t("Migration z-tests", "Pruebas z de migración"),
     "rating.hhi": _t("ECB concentration (HHI)", "Concentración BCE (HHI)"),
+    "rating.time_homogeneity": _t("Time homogeneity (chi-square)", "Homogeneidad temporal (chi-cuadrado)"),
+    "rating.markov_order": _t("Markov order (grouped by direction)", "Orden de Markov (agrupado por dirección)"),
+    "rating.matrix_reference": _t("Matrix against a reference", "Matriz contra una referencia"),
+    "rating.momentum": _t("Downward momentum (hazard)", "Momentum a la baja (riesgo)"),
 }
 
 _T0 = time.perf_counter()
@@ -227,6 +243,10 @@ def _null(book: Book) -> dict[str, Any]:
     mig = Migrations([500] * 7, break_monotonicity(decaying_matrix(7), 3, 1, 1.0))
     freq = GradeFrequencies(5000, P10)
     dev1 = BinormalScores(150, 4850, separation=1.2, development_size=1.0)
+    chain = RatingPaths(Q6, (1000,) * 5, horizon=5.0, snapshots=(0.0, 1.0, 2.0, 3.0, 4.0, 5.0))
+    reference = expm(np.asarray(Q6))
+    chain_scen = _t("five grades and default, 1,000 obligors each, five annual snapshots of one Markov chain",
+                    "cinco grados e incumplimiento, 1.000 deudores cada uno, cinco instantáneas anuales de una cadena de Markov")
 
     def ext(d):
         return {"auc_initial": d["auc_initial"], "risk": d["risk"], "defaults": d["defaults"],
@@ -273,6 +293,18 @@ def _null(book: Book) -> dict[str, Any]:
          _t("seven grades, 500 obligors each, one cell at the boundary", "siete grados, 500 deudores cada uno, una celda en la frontera"), None),
         ("rating.hhi@null", "rating.hhi", freq, "grades-10-5000", None, {}, "rating",
          _t("ten grades, 5,000 obligors, the initial distribution unchanged", "diez grados, 5.000 deudores, la distribución inicial sin cambio"), None),
+        # the four tests of riskvalidation 0.4 (Anderson and Goodman 1957; dos Reis, Pfeuffer and Smith 2020), in their
+        # default forms, on the chain of the engine's size study
+        ("rating.time_homogeneity@null", "rating.time_homogeneity", chain, "paths-5x1000-5y",
+         lambda d: {"counts_by_period": [s["counts"] for s in d["steps"]]}, {}, "transitions", chain_scen, None),
+        ("rating.markov_order@null", "rating.markov_order", chain, "paths-5x1000-5y",
+         lambda d: {"triplets": d["triplets"]}, {}, "transitions", chain_scen, None),
+        ("rating.matrix_reference@null", "rating.matrix_reference", chain, "paths-5x1000-5y",
+         lambda d: {"counts": d["steps"][0]["counts"], "reference": reference}, {}, "transitions",
+         _t("the first year's counts against the chain's own one-year matrix", "los conteos del primer año contra la matriz anual de la propia cadena"), None),
+        ("rating.momentum@null", "rating.momentum", chain, "paths-5x1000-5y",
+         lambda d: {"paths": d["segments"]}, {}, "transitions",
+         _t("the same paths: no momentum (c = 0)", "las mismas trayectorias: sin momentum (c = 0)"), None),
         # the settings the harness found to matter
         ("pd.hosmer_lemeshow@fitted", "pd.hosmer_lemeshow", logit, "logistic-5000", None, {"fitted": True}, "settings",
          _t("the same, with G - 2 degrees of freedom (fitted=True)", "lo mismo, con G - 2 grados de libertad (fitted=True)"), None),
@@ -290,6 +322,12 @@ def _null(book: Book) -> dict[str, Any]:
         book.run(key, tid, g, ref, panel=panel, severity=0, x=0.0, scenario=scen, n_rep=N_NULL, feed=feed,
                  test_kwargs=kw, exact=exact, histogram=True)
         _log(f"null {key}: {book.rate(key):.4f}")
+    # the grouped order test at 4,000 repetitions sits near its size bound on this chain (6.05% at 5%, a bound of
+    # 6.06%; riskvalidation's size study measured 4.80% with another seed): 20,000 more give its size to 0.15 points
+    book.run("rating.markov_order@null-20000", "rating.markov_order", chain, "paths-5x1000-5y", panel="settings",
+             severity=0, x=0.0, feed=lambda d: {"triplets": d["triplets"]}, n_rep=5 * N_NULL, histogram=True,
+             scenario=_t("the same chain, 20,000 repetitions: the order test's size measured to 0.15 points",
+                         "la misma cadena, 20.000 repeticiones: el tamaño de la prueba de orden medido a 0,15 puntos"))
     small = TwoSample(100, 100)
     book.run("stability.psi@n100", "stability.psi", small, "two-sample-100", panel="settings", severity=0, x=0.0,
              scenario=_t("two samples of 100: the 0.10 and 0.25 rules of thumb", "dos muestras de 100: las reglas 0,10 y 0,25"),
@@ -314,8 +352,8 @@ def _null(book: Book) -> dict[str, Any]:
     holds = {row["key"]: _holds(row, book.sims[row["key"]]) for row in book.rows if row["key"].endswith("@null")}
     within = sum(holds.values())
     impact = {
-        "tests_within_bound": _impact(within, "tests", "Tests of the battery that hold their size at 5% and 1% (of 17)",
-                                      "Pruebas de la batería que mantienen su tamaño al 5% y 1% (de 17)"),
+        "tests_within_bound": _impact(within, "tests", f"Tests of the battery that hold their size at 5% and 1% (of {len(holds)})",
+                                      f"Pruebas de la batería que mantienen su tamaño al 5% y 1% (de {len(holds)})"),
         "size_hl_fitted": _impact(book.rate("pd.hosmer_lemeshow@fitted"), "probability",
                                   "Hosmer-Lemeshow with G - 2 on a validation sample: size at 5%",
                                   "Hosmer-Lemeshow con G - 2 en una muestra de validación: tamaño al 5%"),
@@ -348,13 +386,30 @@ def _null(book: Book) -> dict[str, Any]:
                  "The PSI 0.10 rule of thumb raises false alarms in most samples of 100; the chi-square benchmark controls the error",
                  "La regla empírica PSI 0,10 da falsas alarmas en la mayoría de las muestras de 100; la referencia chi-cuadrado controla el error"),
     ]
+    trans = ("rating.time_homogeneity@null", "rating.markov_order@null", "rating.matrix_reference@null",
+             "rating.momentum@null")
+    kept = [k for k in trans if holds[k]]
+    sizes = ", ".join(f"{TEST_LABEL[k.split('@')[0]]['en']} {_pct(book.rate(k), 2)['en']}" for k in trans)
+    sizes_es = ", ".join(f"{TEST_LABEL[k.split('@')[0]]['es']} {_pct(book.rate(k), 2)['es']}" for k in trans)
+    big = book.rate("rating.markov_order@null-20000")
+    big_es = _pct(big, 2)["es"]
+    findings.append(_finding(
+        "F-TRANSITION-SIZE", "S4" if len(kept) == len(trans) else "S2", "closed" if len(kept) == len(trans) else "open",
+        [*trans, "rating.markov_order@null-20000"],
+        f"The four transition tests in their default forms on a Markov chain of 5,000 obligors over five years: {len(kept)} of 4 hold their size at both levels (at 5%: {sizes}); the order test, near its bound in 4,000 repetitions, rejects {_pct(big, 2)['en']} at 5% over 20,000; the printed forms of three fail on sparse rating tables, which is why riskvalidation defaults to these",
+        f"Las cuatro pruebas de transición en sus formas por defecto sobre una cadena de Markov de 5.000 deudores en cinco años: {len(kept)} de 4 mantienen su tamaño en ambos niveles (al 5%: {sizes_es}); la prueba de orden, cerca de su cota en 4.000 repeticiones, rechaza {big_es} al 5% en 20.000; las formas impresas de tres fallan en tablas de calificación ralas, por eso riskvalidation usa estas por defecto"))
     values = {"size_hl_given": book.rate("pd.hosmer_lemeshow@null"), "size_hl_fitted": book.rate("pd.hosmer_lemeshow@fitted"),
               "size_normal": book.rate("pd.normal_multiperiod@null"),
               "auc_init_ecb_dev1": book.rate("disc.auc_vs_initial@dev1"),
               "auc_init_ext_dev1": book.rate("disc.auc_vs_initial@dev1-extended"),
               "psi010_false_alarm_n100": book.rate("stability.psi@n100", "metric>0.1"),
               "auc_ecb_se_relative_error_pct": auc_perf["model_se_relative_error_pct"],
-              "tests_within_bound": float(within)}
+              "tests_within_bound": float(within),
+              "size_time_homogeneity": book.rate("rating.time_homogeneity@null"),
+              "size_markov_order": book.rate("rating.markov_order@null"),
+              "size_matrix_reference": book.rate("rating.matrix_reference@null"),
+              "size_momentum": book.rate("rating.momentum@null"),
+              "size_markov_order_20000": big}
     specimen = _specimen(book, [
         ("logistic-5000", logit, lambda d: [cal.pd_hosmer_lemeshow(d["defaults"], d["pd"]), cal.pd_spiegelhalter(d["defaults"], d["pd"])], {}),
         ("port-1000-1pct", port, lambda d: [cal.pd_binomial(**feed_cell()(d)), cal.pd_jeffreys(**feed_cell()(d))], {}),
@@ -833,7 +888,8 @@ def _concentration(book: Book) -> dict[str, Any]:
 
 
 VARIANTS: tuple[dict[str, Any], ...] = (
-    {"id": "null", "run": _null, "ladder": None, "panels": ("calibration", "discrimination", "stability", "rating", "settings"),
+    {"id": "null", "run": _null, "ladder": None,
+     "panels": ("calibration", "discrimination", "stability", "rating", "transitions", "settings"),
      "title": _t("The null: the model is right", "La nula: el modelo es correcto"),
      "short": _t("Null", "Nula"),
      "regime": _t("Every p-value test on data where its null hypothesis holds at the boundary: its size, at 5% and 1%.",
@@ -878,6 +934,7 @@ VARIANTS: tuple[dict[str, Any], ...] = (
 PANEL_LABEL: dict[str, dict[str, str]] = {
     "calibration": _t("Calibration", "Calibración"), "discrimination": _t("Discrimination", "Discriminación"),
     "stability": _t("Stability", "Estabilidad"), "rating": _t("Rating system", "Sistema de calificación"),
+    "transitions": _t("Rating transitions", "Transiciones de calificación"),
     "settings": _t("Settings that matter", "Ajustes que importan"), "portfolio": _t("Portfolio count tests", "Pruebas de conteo de cartera"),
     "grades": _t("Grade tests", "Pruebas por grado"), "obligors": _t("Obligor-level tests", "Pruebas por deudor"),
     "years": _t("Multi-year tests", "Pruebas multianuales"), "ecb": _t("ECB test", "Prueba del BCE"),
@@ -913,7 +970,17 @@ EXPECT: dict[str, tuple[float, float]] = {
     "auc_init_ext_dev1": (0.035, 0.066),
     "psi010_false_alarm_n100": (0.80, 0.90),        # Yurdakul and Naranjo Table 4: 0.849
     "auc_ecb_se_relative_error_pct": (-6.0, 6.0),
-    "tests_within_bound": (15.0, 15.0),             # all but the normal test over five years and Jeffreys at 1% (exact 1.38%)
+    # all but the normal test over five years and Jeffreys at 1% (exact 1.38%); the four transition tests hold theirs in
+    # riskvalidation's size study (4,000 repetitions, other seeds), the grouped order test at 1% the closest, 1.25%
+    # against a bound of 1.49%, so one of them may land above by chance: 18 or 19
+    "tests_within_bound": (18.0, 19.0),
+    # the transition tests' size at 5% (riskvalidation's size study: 4.85%, 4.80%, 4.05% and 4.80%; the bound 6.06%)
+    "size_time_homogeneity": (0.035, 0.066),
+    "size_markov_order": (0.035, 0.066),
+    "size_matrix_reference": (0.030, 0.066),
+    "size_momentum": (0.035, 0.066),
+    # 20,000 repetitions: the standard error 0.15 points (an independent run of riskvalidation's harness gave 5.01%)
+    "size_markov_order_20000": (0.045, 0.056),
     # exact (bisection on the exact power): 1.2587; the range declared before the first bake, (1.10, 1.25), was a
     # guess and was wrong, corrected after it (docs/design/features/c22-validator/tasks.md)
     "jeffreys_k80": (1.255, 1.262),
