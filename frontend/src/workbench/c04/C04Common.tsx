@@ -1090,7 +1090,7 @@ const PP: BiText = { en: 'pp', es: 'pp' };
 /** A difference of two probabilities in percentage points. */
 const pp = (x: number | null | undefined): number | null => (finite(x) ? x * 100 : null);
 const ppItem = (label: BiText, value: number | null, hint?: BiText): ReadoutItem => ({ label, value, unit: PP, format: { digits: 3 }, hint });
-const ppText = (x: number | null | undefined) => both((l) => `${formatNumber(pp(x), l, { digits: 3 })} pp`);
+const ppText = (x: number | null | undefined) => both((l) => `${formatNumber(pp(x), l, { digits: 3 })}\u00a0pp`);
 
 /** The definition as the rail's chip names it. */
 const DEFINITION_SHORT: Record<Definition, Bi> = {

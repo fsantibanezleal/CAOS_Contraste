@@ -132,7 +132,8 @@ const and = (lang: Lang) => (lang === 'en' ? 'and' : 'y');
 const list = (items: string[], lang: Lang) => (items.length <= 1 ? items.join('') : `${items.slice(0, -1).join(', ')} ${and(lang)} ${items[items.length - 1]}`);
 /** The column of a state in `pooled.matrix_state` (the seven grades, D, W). */
 const stateIndex = (col: string) => (col === 'W' ? 8 : col === 'D' ? 7 : GRADES.indexOf(col as (typeof GRADES)[number]));
-const FORBIDDEN = /[–—←-⇿⟵-⟿]/;
+/** An en-dash, an em-dash or an arrow (U+2190 to U+21FF, U+27F5 to U+27FF), written as escapes. */
+const FORBIDDEN = /[\u2013\u2014\u2190-\u21ff\u27f5-\u27ff]/;
 const EMPTY_MARK: Record<Lang, string> = { en: ' (empty default column)', es: ' (columna de incumplimiento vacía)' };
 
 /** The two sentences under the row table, parsed: the cohort's size, withdrawals and their share, the rated at the end;

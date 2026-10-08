@@ -167,7 +167,7 @@ export function agencyFacts(v: AgencyVariant): AgencyFacts {
 export function impactValue(it: ImpactItem, lang: Lang): string {
   if (it.unit === 'probability' || it.unit === 'share of EAD') return pctText(lang, it.value);
   if (it.unit === 'probability difference') {
-    return it.value === null ? formatNumber(null, lang) : `${it.value > 0 ? '+' : ''}${formatNumber(it.value * 100, lang, { digits: 3 })} pp`;
+    return it.value === null ? formatNumber(null, lang) : `${it.value > 0 ? '+' : ''}${formatNumber(it.value * 100, lang, { digits: 3 })}\u00a0pp`;
   }
   if (it.unit === 'count') return formatNumber(it.value, lang, { decimals: 0 });
   return formatNumber(it.value, lang, { digits: 4 });
