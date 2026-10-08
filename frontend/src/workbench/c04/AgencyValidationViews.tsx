@@ -528,8 +528,8 @@ export function PdByGradeView({ sel }: { sel: C04Sel | null }) {
     return (
       t(
         l,
-        `${pick(DEFINITION_HINT[d], l)} In percent of the cohort: the long-run average (${cohorts}), the pooled counts and the Jeffreys 95% interval of the pooled rate (Schuermann and Hanson 2004); where the card has room, the pooled rate, Wald (2.2), Agresti-Coull (3.3), the cohorts and the last five cohorts' mean as further columns, and on a tall screen the three intervals are drawn under the table. A grade's name picks it.`,
-        `${pick(DEFINITION_HINT[d], l)} En porcentaje de la cohorte: el promedio de largo plazo (${cohorts}), los conteos agrupados y el intervalo de Jeffreys al 95% de la tasa agrupada (Schuermann y Hanson 2004); donde la tarjeta tiene espacio, la tasa agrupada, Wald (2.2), Agresti-Coull (3.3), las cohortes y la media de las últimas cinco cohortes como columnas adicionales, y en una pantalla alta los tres intervalos se dibujan bajo la tabla. El nombre de un grado lo elige.`,
+        `${pick(DEFINITION_HINT[d], l)} In percent of the cohort: the long-run average (${cohorts}), the pooled counts and the Jeffreys 95% interval of the pooled rate (Schuermann and Hanson 2004); where the card has room, the pooled rate, Wald, Agresti-Coull, the cohorts and the last five cohorts' mean as further columns, and on a tall screen the three intervals are drawn under the table. A grade's name picks it.`,
+        `${pick(DEFINITION_HINT[d], l)} En porcentaje de la cohorte: el promedio de largo plazo (${cohorts}), los conteos agrupados y el intervalo de Jeffreys al 95% de la tasa agrupada (Schuermann y Hanson 2004); donde la tarjeta tiene espacio, la tasa agrupada, Wald, Agresti-Coull, las cohortes y la media de las últimas cinco cohortes como columnas adicionales, y en una pantalla alta los tres intervalos se dibujan bajo la tabla. El nombre de un grado lo elige.`,
       ) +
       outsideText(l) +
       fallback +
@@ -548,8 +548,8 @@ export function PdByGradeView({ sel }: { sel: C04Sel | null }) {
     return (
       t(
         l,
-        `${pick(DEFINITION_LABEL[d], l)} by grade, in shares of the pooled cohort on a log scale: the pooled rate (points, defaults over n) inside its three 95% intervals (Schuermann and Hanson 2004), Wald (2.2), Agresti-Coull (3.3) and Jeffreys, upper bound solid and lower dashed; the line is the long-run average of the yearly rates, which the intervals do not bound. Marked: the rail's grade.`,
-        `${pick(DEFINITION_LABEL[d], l)} por grado, en fracciones de la cohorte agrupada en escala logarítmica: la tasa agrupada (puntos, incumplimientos sobre n) dentro de sus tres intervalos al 95% (Schuermann y Hanson 2004), Wald (2.2), Agresti-Coull (3.3) y Jeffreys, cota superior continua e inferior segmentada; la línea es el promedio de largo plazo de las tasas anuales, que los intervalos no acotan. Marcado: el grado del panel.`,
+        `${pick(DEFINITION_LABEL[d], l)} by grade, in shares of the pooled cohort on a log scale: the pooled rate (points, defaults over n) inside its three 95% intervals (Schuermann and Hanson 2004), Wald, Agresti-Coull and Jeffreys, upper bound solid and lower dashed; the line is the long-run average of the yearly rates, which the intervals do not bound. Marked: the rail's grade.`,
+        `${pick(DEFINITION_LABEL[d], l)} por grado, en fracciones de la cohorte agrupada en escala logarítmica: la tasa agrupada (puntos, incumplimientos sobre n) dentro de sus tres intervalos al 95% (Schuermann y Hanson 2004), Wald, Agresti-Coull y Jeffreys, cota superior continua e inferior segmentada; la línea es el promedio de largo plazo de las tasas anuales, que los intervalos no acotan. Marcado: el grado del panel.`,
       ) +
       zeroText +
       outsideText(l) +
@@ -1041,8 +1041,8 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
     (l) =>
       t(
         l,
-        `CEREP's help file (ESMA65-8-10634), sections 4.2 to 4.4. At ${grade}: each definition's pooled rate, in percent, and its ratio to D2's (the chart's).${hasKeep ? " Keep's pooled rate, which the artifact does not bake, is D4's pooled defaults over the whole cohorts, computed in your browser; the artifact gives it no ratio." : ''}`,
-        `El archivo de ayuda de CEREP (ESMA65-8-10634), secciones 4.2 a 4.4. En ${grade}: la tasa agrupada de cada definición, en porcentaje, y su razón a la de D2 (la del gráfico).${hasKeep ? ' La tasa agrupada de Con retiros, que el artefacto no trae, son los incumplimientos agrupados de D4 sobre las cohortes completas, calculada en su navegador; el artefacto no le da razón.' : ''}`,
+        `CEREP's help file (ESMA65-8-10634), the sections that define the default counts. At ${grade}: each definition's pooled rate, in percent, and its ratio to D2's (the chart's).${hasKeep ? " Keep's pooled rate, which the artifact does not bake, is D4's pooled defaults over the whole cohorts, computed in your browser; the artifact gives it no ratio." : ''}`,
+        `El archivo de ayuda de CEREP (ESMA65-8-10634), las secciones que definen los conteos de incumplimiento. En ${grade}: la tasa agrupada de cada definición, en porcentaje, y su razón a la de D2 (la del gráfico).${hasKeep ? ' La tasa agrupada de Con retiros, que el artefacto no trae, son los incumplimientos agrupados de D4 sobre las cohortes completas, calculada en su navegador; el artefacto no le da razón.' : ''}`,
       ) + pdSource(o, l),
   );
   return (

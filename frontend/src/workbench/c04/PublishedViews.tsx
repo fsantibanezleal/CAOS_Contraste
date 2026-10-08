@@ -76,10 +76,10 @@ const IRW_METHOD: Record<string, Both> = {
   weighted: { en: "Log series (1), weighted adjustment (2')", es: "Serie logarítmica (1), ajuste ponderado (2')" },
 };
 const INTERVAL_NAME: Record<string, Both> = {
-  wald: { en: 'Wald (2.2)', es: 'Wald (2.2)' },
-  agresti_coull: { en: 'Agresti-Coull (3.3)', es: 'Agresti-Coull (3.3)' },
+  wald: { en: 'Wald', es: 'Wald' },
+  agresti_coull: { en: 'Agresti-Coull', es: 'Agresti-Coull' },
 };
-const N_DAGGER: Both = { en: 'N dagger (3.4)', es: 'N daga (3.4)' };
+const N_DAGGER: Both = { en: 'N dagger', es: 'N daga' };
 
 /** Table 5's correlations, in the order of its rows and of its N dagger. */
 const table5Rhos = (o: C04PublishedOutputs) => [...new Set(o.sr190.rows.map((r) => r.rho))];
@@ -394,8 +394,8 @@ export function PublishedModelView({ sel }: { sel: C04Sel | null }) {
       source: 'schuermann-hanson-2004',
       title: { en: 'Schuermann and Hanson (2004), Table 5', es: 'Schuermann y Hanson (2004), Tabla 5' },
       computes: {
-        en: `The Wald (2.2) and Agresti-Coull (3.2) to (3.3) intervals at ${pct0('en', TABLE5_LEVEL)} for the PD of one grade (BB in 2002, ${o.sr190.n} obligors, the cohort method), with independent defaults and at default correlations of ${rhoList('en')} through the effective number of obligors N dagger (3.4).`,
-        es: `Los intervalos de Wald (2.2) y de Agresti-Coull (3.2) a (3.3) al ${pct0('es', TABLE5_LEVEL)} para la PD de un grado (BB en 2002, ${o.sr190.n} deudores, el método de cohortes), con incumplimientos independientes y con correlaciones de incumplimiento de ${rhoList('es')} mediante el número efectivo de deudores N daga (3.4).`,
+        en: `Schuermann and Hanson's Wald and Agresti-Coull intervals at ${pct0('en', TABLE5_LEVEL)} for the PD of one grade (BB in 2002, ${o.sr190.n} obligors, the cohort method), with independent defaults and at default correlations of ${rhoList('en')} through the effective number of obligors N dagger.`,
+        es: `Los intervalos de Wald y de Agresti-Coull de Schuermann y Hanson al ${pct0('es', TABLE5_LEVEL)} para la PD de un grado (BB en 2002, ${o.sr190.n} deudores, el método de cohortes), con incumplimientos independientes y con correlaciones de incumplimiento de ${rhoList('es')} mediante el número efectivo de deudores N daga.`,
       },
       here: {
         en: `The ${o.sr190.rows.length * 2} bounds and ${o.sr190.rows.length} lengths at ${o.sr190.defaults} defaults of ${o.sr190.n}, the count the print implies, and the ${o.sr190.n_dagger.printed.length} values of N dagger; the Impact group recomputes them live.`,
@@ -565,8 +565,8 @@ export function PublishedImpactView({ sel }: { sel: C04Sel | null }) {
   const t5 = (l: Lang) => pct0(l, TABLE5_LEVEL);
   const rhoText = (l: Lang) => formatNumber(sel.rho, l, { percent: true, decimals: 1 });
   const atRail = [
-    { key: 'wald', label: { en: 'Wald (2.2)', es: 'Wald (2.2)' }, i: pdWald(defaults, n, { level: sel.level, rho: sel.rho }) },
-    { key: 'agresti_coull', label: { en: 'Agresti-Coull (3.3)', es: 'Agresti-Coull (3.3)' }, i: pdAgrestiCoull(defaults, n, { level: sel.level, rho: sel.rho }) },
+    { key: 'wald', label: { en: 'Wald', es: 'Wald' }, i: pdWald(defaults, n, { level: sel.level, rho: sel.rho }) },
+    { key: 'agresti_coull', label: { en: 'Agresti-Coull', es: 'Agresti-Coull' }, i: pdAgrestiCoull(defaults, n, { level: sel.level, rho: sel.rho }) },
     { key: 'jeffreys', label: { en: 'Jeffreys (no correlation)', es: 'Jeffreys (sin correlación)' }, i: pdJeffreys(defaults, n, { level: sel.level }) },
   ];
   const offLevel = Math.abs(level - TABLE5_LEVEL) > 1e-12;
@@ -581,8 +581,8 @@ export function PublishedImpactView({ sel }: { sel: C04Sel | null }) {
           provenance={prov}
           dataKey={stateKey}
           note={{
-            en: `Schuermann and Hanson (2004), Table 5's inputs, ${defaults} defaults of ${n} obligors, recomputed live from ${span('en')} of default correlation at the rail's level: the Wald (2.2) and Agresti-Coull (3.3) bounds through N dagger (3.4); dots, the printed bounds at ${rhos.map((r) => pct0('en', r)).join(', ')}, which are at ${t5('en')}${offLevel ? `, so at ${lv('en')} the lines leave them by design` : ''}. A correlation of ${pct0('en', firstRho)} already cuts N dagger from ${n} to ${formatNumber(effectiveN(n, firstRho), 'en', { digits: 3 })}. Marked: the rail's correlation. ${attributionOf(sel, 'schuermann-hanson-2004')}.`,
-            es: `Los insumos de la Tabla 5 de Schuermann y Hanson (2004), ${defaults} incumplimientos de ${n} deudores, recalculados en vivo de ${span('es')} de correlación de incumplimiento al nivel del panel: las cotas de Wald (2.2) y de Agresti-Coull (3.3) mediante N daga (3.4); puntos, las cotas impresas en ${rhos.map((r) => pct0('es', r)).join(', ')}, que están al ${t5('es')}${offLevel ? `, así que al ${lv('es')} las líneas se apartan de ellas por diseño` : ''}. Una correlación de ${pct0('es', firstRho)} ya reduce N daga de ${n} a ${formatNumber(effectiveN(n, firstRho), 'es', { digits: 3 })}. Marcada: la correlación del panel. ${attributionOf(sel, 'schuermann-hanson-2004')}.`,
+            en: `Schuermann and Hanson (2004), Table 5's inputs, ${defaults} defaults of ${n} obligors, recomputed live from ${span('en')} of default correlation at the rail's level: the Wald and Agresti-Coull bounds through N dagger; dots, the printed bounds at ${rhos.map((r) => pct0('en', r)).join(', ')}, which are at ${t5('en')}${offLevel ? `, so at ${lv('en')} the lines leave them by design` : ''}. A correlation of ${pct0('en', firstRho)} already cuts N dagger from ${n} to ${formatNumber(effectiveN(n, firstRho), 'en', { digits: 3 })}. Marked: the rail's correlation. ${attributionOf(sel, 'schuermann-hanson-2004')}.`,
+            es: `Los insumos de la Tabla 5 de Schuermann y Hanson (2004), ${defaults} incumplimientos de ${n} deudores, recalculados en vivo de ${span('es')} de correlación de incumplimiento al nivel del panel: las cotas de Wald y de Agresti-Coull mediante N daga; puntos, las cotas impresas en ${rhos.map((r) => pct0('es', r)).join(', ')}, que están al ${t5('es')}${offLevel ? `, así que al ${lv('es')} las líneas se apartan de ellas por diseño` : ''}. Una correlación de ${pct0('es', firstRho)} ya reduce N daga de ${n} a ${formatNumber(effectiveN(n, firstRho), 'es', { digits: 3 })}. Marcada: la correlación del panel. ${attributionOf(sel, 'schuermann-hanson-2004')}.`,
           }}
         >
           <UPlotChart

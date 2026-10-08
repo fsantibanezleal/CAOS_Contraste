@@ -343,8 +343,8 @@ export function MatrixView({ sel }: { sel: C04Sel | null }) {
       };
   const rowsText: Text = pooled
     ? {
-        en: `each row the shares of its cohort in percent, pooled over the ${nText.en} annual cohorts (Anderson and Goodman (2.8), withdrawals a state)`,
-        es: `cada fila las fracciones de su cohorte en porcentaje, agrupadas sobre las ${nText.es} cohortes anuales (Anderson y Goodman (2.8), los retiros un estado)`,
+        en: `each row the shares of its cohort in percent, pooled over the ${nText.en} annual cohorts (Anderson and Goodman's pooled estimator, withdrawals a state)`,
+        es: `cada fila las fracciones de su cohorte en porcentaje, agrupadas sobre las ${nText.es} cohortes anuales (el estimador agrupado de Anderson y Goodman, los retiros un estado)`,
       }
     : {
         en: `each row the shares of the ${m.label} cohort in percent: its counts over its size`,

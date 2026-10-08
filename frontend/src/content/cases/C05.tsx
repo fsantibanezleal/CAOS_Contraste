@@ -2,7 +2,7 @@
 // research dossier 10 (the golden values, read at the primary sources on 2026-10-05) and riskvalidation's
 // docs/engines/02_low-default.md and 03_pd-curve-calibration.md. The Context view shows it under the sources.
 import { Cite, Equation } from '@fasl-work/caos-app-shell';
-import { L, P, useT } from '../bi';
+import { L, P, Ref, T, useT } from '../bi';
 
 export function C05WriteUp() {
   const t = useT();
@@ -15,15 +15,12 @@ export function C05WriteUp() {
       />
       <h3>{t('The rating model and its three descriptions', 'El modelo de calificación y sus tres descripciones')}</h3>
       <P
-        en="A grade X at the start of the year and a state at its end (default D or survival N) have a joint distribution, fixed equally by the profile and the PD curve, by the PD and the two conditional profiles, or by the PD and the likelihood ratio (Tasche 2013, Proposition 3.1):"
-        es="Un grado X al inicio del año y un estado al final (incumplimiento D o supervivencia N) tienen una distribución conjunta, fijada igualmente por el perfil y la curva de PD, por la PD y los dos perfiles condicionales, o por la PD y la razón de verosimilitud (Tasche 2013, proposición 3.1):"
+        en={<>A grade X at the start of the year and a state at its end (default D or survival N) have a joint distribution, fixed equally by the profile and the PD curve, by the PD and the two conditional profiles, or by the PD and the likelihood ratio (Tasche 2013, Proposition <Ref>3.1</Ref>):</>}
+        es={<>Un grado X al inicio del año y un estado al final (incumplimiento D o supervivencia N) tienen una distribución conjunta, fijada igualmente por el perfil y la curva de PD, por la PD y los dos perfiles condicionales, o por la PD y la razón de verosimilitud (Tasche 2013, proposición <Ref>3.1</Ref>):</>}
       />
       <Equation
         tex={String.raw`\Pr[D \mid X = x] = \frac{p}{p + (1 - p)\,\lambda(x)}, \qquad \lambda(x) = \frac{\Pr[X = x \mid N]}{\Pr[X = x \mid D]}`}
-        caption={t(
-          'The PD curve from the unconditional PD p and the likelihood ratio λ of the survival profile over the default profile (Tasche 2013, equations 3.8 and 3.9a); fixing the shape of λ while p moves is the scaled likelihood ratio approach.',
-          'La curva de PD desde la PD incondicional p y la razón de verosimilitud λ del perfil de supervivencia sobre el de incumplimiento (Tasche 2013, ecuaciones 3.8 y 3.9a); fijar la forma de λ mientras p se mueve es el enfoque de razón de verosimilitud escalada.',
-        )}
+        caption={<T en={<>The PD curve from the unconditional PD p and the likelihood ratio λ of the survival profile over the default profile (Tasche 2013, equations <Ref>3.8</Ref> and <Ref>3.9a</Ref>); fixing the shape of λ while p moves is the scaled likelihood ratio approach.</>} es={<>La curva de PD desde la PD incondicional p y la razón de verosimilitud λ del perfil de supervivencia sobre el de incumplimiento (Tasche 2013, ecuaciones <Ref>3.8</Ref> y <Ref>3.9a</Ref>); fijar la forma de λ mientras p se mueve es el enfoque de razón de verosimilitud escalada.</>} />}
       />
       <P
         en={<>The 2009 curve is smoothed by quasi moment matching: a robust logistic curve on the grades, its two parameters set so that its unconditional PD and its accuracy ratio equal the observed 3.99% and 82.7% <Cite id="tasche2009" />. Recomputed from the S&P counts it reproduces the paper's Table 5 to one unit of the third decimal.</>}
@@ -49,10 +46,7 @@ export function C05WriteUp() {
       />
       <Equation
         tex={String.raw`1 - \gamma = \int \varphi(y) \sum_{i=0}^{D} \binom{N}{i}\, p(y)^i \big(1 - p(y)\big)^{N - i} dy, \qquad p(y) = \Phi\!\left(\frac{\Phi^{-1}(p) - \sqrt{\rho}\,y}{\sqrt{1 - \rho}}\right)`}
-        caption={t(
-          'The most prudent bound p at confidence γ for N pooled obligors with D defaults, with asset correlation ρ through the systematic factor y (Pluto and Tasche 2005, equations 4.1 and 4.3a); at ρ = 0 the integral drops and the bound is the Clopper-Pearson one.',
-          'La cota más prudente p a confianza γ para N deudores agrupados con D incumplimientos, con correlación de activos ρ a través del factor sistémico y (Pluto y Tasche 2005, ecuaciones 4.1 y 4.3a); con ρ = 0 la integral desaparece y la cota es la de Clopper-Pearson.',
-        )}
+        caption={<T en={<>The most prudent bound p at confidence γ for N pooled obligors with D defaults, with asset correlation ρ through the systematic factor y (Pluto and Tasche 2005, equations <Ref>4.1</Ref> and <Ref>4.3a</Ref>); at ρ = 0 the integral drops and the bound is the Clopper-Pearson one.</>} es={<>La cota más prudente p a confianza γ para N deudores agrupados con D incumplimientos, con correlación de activos ρ a través del factor sistémico y (Pluto y Tasche 2005, ecuaciones <Ref>4.1</Ref> y <Ref>4.3a</Ref>); con ρ = 0 la integral desaparece y la cota es la de Clopper-Pearson.</>} />}
       />
       <L
         items={[
