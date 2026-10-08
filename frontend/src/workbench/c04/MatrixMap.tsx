@@ -131,6 +131,7 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
   const ch = Math.max(1, (height - top - BOTTOM) / n);
   const printValues = ch >= 15;
   const font = Math.max(9, Math.min(12, ch * 0.42));
+  const labelFontSize = Math.min(12, font + 1);
   const pickRow = (i: number) => p.onPickRow?.(i);
   const onKey = (i: number) => (e: KeyboardEvent<SVGTextElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -160,11 +161,15 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
       <text x={LEFT - 8} y={top - 8} textAnchor="end" fontSize={11} fill="var(--color-fg-subtle)">
         {pick({ en: 'Start', es: 'Inicio' }, lang)}
       </text>
-      {p.cols.map((c, j) => (
-        <text key={c} x={LEFT + (j + 0.5) * cw} y={top - 8 - (stagger && j % 2 === 0 ? STAGGER : 0)} textAnchor="middle" fontSize={Math.min(12, font + 1)} fill="var(--color-fg)" clipPath={`url(#${gradient}-col-${j})`}>
-          {c}
-        </text>
-      ))}
+      {p.cols.map((c, j) => {
+        const lw = textWidth(c, labelFontSize, family);
+        const tl = lw > cw - 2 ? cw - 2 : undefined;
+        return (
+          <text key={c} x={LEFT + (j + 0.5) * cw} y={top - 8 - (stagger && j % 2 === 0 ? STAGGER : 0)} textAnchor="middle" fontSize={labelFontSize} fill="var(--color-fg)" clipPath={`url(#${gradient}-col-${j})`} textLength={tl} lengthAdjust={tl !== undefined ? 'spacingAndGlyphs' : undefined}>
+            {c}
+          </text>
+        );
+      })}
       {p.rows.map((r, i) => {
         const selected = p.selectedRow === i;
         const empty = p.values[i].every((v) => v === null);
