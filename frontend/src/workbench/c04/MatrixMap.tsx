@@ -94,6 +94,28 @@ const RIGHT = BAR_GAP + BAR + BAR_LABELS;
  * measured "0 %" cut by 4 px when the bar ran to the drawing's edge). */
 const BOTTOM = 8;
 
+/** The second line of the column labels when they alternate (see MatrixDrawing). */
+const STAGGER = 12;
+
+/** The page's font family as the browser resolves it (the gate's wide font included); empty on the server. */
+function pageFont(): string {
+  return typeof document === 'undefined' ? '' : getComputedStyle(document.body).fontFamily;
+}
+
+let measurer: CanvasRenderingContext2D | null | undefined;
+/** A label's width in pixels at a size in the page's font, measured on a canvas; on the server (no canvas), an estimate
+ * of 0.62 em a character. */
+export function textWidth(text: string, px: number, family: string): number {
+  if (family && typeof document !== 'undefined') {
+    if (measurer === undefined) measurer = document.createElement('canvas').getContext('2d');
+    if (measurer) {
+      measurer.font = `${px}px ${family}`;
+      return measurer.measureText(text).width;
+    }
+  }
+  return text.length * px * 0.62;
+}
+
 /** The drawing at a measured size (exported for the server-rendered tests, where a stage never gets a size). */
 export function MatrixDrawing({ p, width, height, hover, setHover }: { p: MatrixMapProps; width: number; height: number; hover: [number, number] | null; setHover: (h: [number, number] | null) => void }) {
   const lang = useShellLang();
@@ -102,8 +124,12 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
   const n = p.rows.length;
   const m = p.cols.length;
   const cw = Math.max(1, (width - LEFT - RIGHT) / m);
-  const ch = Math.max(1, (height - TOP - BOTTOM) / n);
-  const printValues = cw >= 40 && ch >= 15;
+  const family = pageFont();
+  // column labels too wide for their column alternate between two lines, the grid moving down a line
+  const stagger = p.cols.some((c) => textWidth(c, 12, family) > cw - 3);
+  const top = stagger ? TOP + STAGGER : TOP;
+  const ch = Math.max(1, (height - top - BOTTOM) / n);
+  const printValues = ch >= 15;
   const font = Math.max(9, Math.min(12, ch * 0.42));
   const pickRow = (i: number) => p.onPickRow?.(i);
   const onKey = (i: number) => (e: KeyboardEvent<SVGTextElement>) => {
@@ -126,11 +152,11 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
       <text x={LEFT + (m * cw) / 2} y={11} textAnchor="middle" fontSize={11} fill="var(--color-fg-subtle)">
         {pick({ en: 'At the end of the period', es: 'Al final del período' }, lang)}
       </text>
-      <text x={LEFT - 8} y={TOP - 8} textAnchor="end" fontSize={11} fill="var(--color-fg-subtle)">
+      <text x={LEFT - 8} y={top - 8} textAnchor="end" fontSize={11} fill="var(--color-fg-subtle)">
         {pick({ en: 'Start', es: 'Inicio' }, lang)}
       </text>
       {p.cols.map((c, j) => (
-        <text key={c} x={LEFT + (j + 0.5) * cw} y={TOP - 8} textAnchor="middle" fontSize={Math.min(12, font + 1)} fill="var(--color-fg)">
+        <text key={c} x={LEFT + (j + 0.5) * cw} y={top - 8 - (stagger && j % 2 === 0 ? STAGGER : 0)} textAnchor="middle" fontSize={Math.min(12, font + 1)} fill="var(--color-fg)">
           {c}
         </text>
       ))}
@@ -139,10 +165,10 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
         const empty = p.values[i].every((v) => v === null);
         return (
           <g key={r} data-row={r} data-selected={selected ? '1' : undefined}>
-            {selected && <rect x={2} y={TOP + i * ch + 2} width={3} height={ch - 4} fill="var(--color-accent)" />}
+            {selected && <rect x={2} y={top + i * ch + 2} width={3} height={ch - 4} fill="var(--color-accent)" />}
             <text
               x={LEFT - 8}
-              y={TOP + (i + 0.5) * ch}
+              y={top + (i + 0.5) * ch}
               dominantBaseline="middle"
               textAnchor="end"
               fontSize={Math.min(12, font + 1)}
@@ -159,19 +185,21 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
             </text>
             {p.values[i].map((v, j) => {
               const x = LEFT + j * cw;
-              const y = TOP + i * ch;
+              const y = top + i * ch;
               const diag = p.diagonal[i] === j || (p.outside ?? []).includes(j);
               const outOfRange = diag && p.scale === 'migrations';
               const t = v === null ? 0 : position(v, range);
               const fill = v === null ? 'none' : outOfRange ? 'var(--color-surface-2)' : viridis(t);
               const ink = v === null || outOfRange ? 'var(--color-fg)' : inkOn(t);
               const on = hover !== null && hover[0] === i && hover[1] === j;
+              // a value prints where it fits its cell in the page's font; the read-out gives every cell
+              const label = v === null ? '-' : cellText(v, lang);
               return (
                 <g key={j} onMouseEnter={() => setHover([i, j])} onClick={() => { setHover([i, j]); pickRow(i); }} style={p.onPickRow ? { cursor: 'pointer' } : undefined}>
                   <rect x={x + 0.5} y={y + 0.5} width={cw - 1} height={ch - 1} fill={fill} stroke={on ? 'var(--color-fg)' : outOfRange || v === null ? 'var(--color-border)' : 'none'} strokeWidth={on ? 2 : 1} strokeDasharray={v === null ? '3 3' : undefined} />
-                  {printValues && (
+                  {printValues && textWidth(label, font, family) <= cw - 4 && (
                     <text x={x + cw / 2} y={y + ch / 2} dominantBaseline="middle" textAnchor="middle" fontSize={font} fill={ink} style={{ pointerEvents: 'none', fontVariantNumeric: 'tabular-nums' }}>
-                      {v === null ? '-' : cellText(v, lang)}
+                      {label}
                     </text>
                   )}
                 </g>
@@ -180,9 +208,9 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
           </g>
         );
       })}
-      <rect x={LEFT + m * cw + BAR_GAP} y={TOP} width={BAR} height={barH} fill={`url(#${gradient})`} />
+      <rect x={LEFT + m * cw + BAR_GAP} y={top} width={BAR} height={barH} fill={`url(#${gradient})`} />
       {ticks.map((v) => {
-        const y = TOP + barH * (1 - position(v, range));
+        const y = top + barH * (1 - position(v, range));
         return (
           <g key={v}>
             <line x1={LEFT + m * cw + BAR_GAP + BAR} x2={LEFT + m * cw + BAR_GAP + BAR + 4} y1={y} y2={y} stroke="var(--color-fg-subtle)" />

@@ -374,7 +374,8 @@ describe('C04 rail read-outs', () => {
     expect(m0).toContain(pct3('en', v.outputs.lra.d2.rate[6]));
     // the interval is the artifact's, on the pooled counts: the read-out shows the pooled rate it is centred on
     expect(m0).toContain(pct3('en', v.outputs.lra.d2.pooled_rate[6]));
-    expect(m0).toContain(`${pct3('en', v.outputs.lra.d2.jeffreys.lower[6])} to ${pct3('en', v.outputs.lra.d2.jeffreys.upper[6])}`);
+    // one percent sign for the pair: the lower bound as a number, the upper as a percentage
+    expect(m0).toContain(`${formatNumber((v.outputs.lra.d2.jeffreys.lower[6] as number) * 100, 'en', { digits: 3 })} to ${pct3('en', v.outputs.lra.d2.jeffreys.upper[6])}`);
     expect(readout(m0)?.lane).toBe('replay');
     expect(at(<GradeReadout sel={{ ...s0, grade: 4 }} />)).not.toBe(m0);
     const d4 = at(<GradeReadout sel={{ ...s0, definition: 'd4' }} />);

@@ -108,6 +108,9 @@ function ApplicantReadout({ sel }: { sel: Selection | null }) {
   );
 }
 
+/** The cases whose rail leaves the variant's title out to fit 1280 x 800 (see the variant list below). */
+const DENSE_RAIL = new Set(['C04', 'C05']);
+
 /** The live scores of the chosen applicant, from the committed points table and EBM export alone. */
 export function liveScores(sel: Selection | null) {
   const sample = sel?.data.variant.outputs.sample;
@@ -158,9 +161,11 @@ export function Workbench() {
   const variants = data
     ? data.manifest.artifacts
         .filter((a) => a.role === 'variant')
-        // the selected variant's title under the chips; C04's rail holds nine variants and three sections, and its two-line
-        // titles made it scroll at 1280 x 800 (ADR-0071 rule 6): there the title heads the cards and the Variants group
-        .map((a) => ({ id: a.variant_id, label: a.short_title, note: data.manifest.case_id === 'C04' ? undefined : a.title, lane: 'replay' as const }))
+        // the selected variant's title under the chips, a one-line note by the shell's design; the rails of C04 (nine
+        // variants, three sections) and C05 (three sections with chip groups) scrolled at 1280 x 800 with titles of two
+        // lines, C04's in every font and C05's in the gate's wide font (ADR-0071 rule 6): there the title is in the
+        // Variants and Context groups
+        .map((a) => ({ id: a.variant_id, label: a.short_title, note: DENSE_RAIL.has(data.manifest.case_id) ? undefined : a.title, lane: 'replay' as const }))
     : [];
   const activeVariant = data?.variant.variant_id ?? '';
   const moved = alphas.amber !== COMMITTED.amber || alphas.red !== COMMITTED.red;
