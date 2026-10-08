@@ -2,7 +2,7 @@
 // are read from the artifacts as the pipeline wrote them; the live ones are engine/transitions.ts on committed inputs
 // (an agency's pooled one-year matrix and its cohort mix, a generator family's true one-year matrix and its cohort
 // sizes), held to riskvalidation by the parity points of C04's models artifact.
-import type { BiText, ShellColorToken } from '@fasl-work/caos-app-shell';
+import { formatNumber, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import { useMemo } from 'react';
 import type { CaseData } from '../../api/artifacts';
 import type { AssetClass, Regime } from '../../engine/credit';
@@ -247,6 +247,35 @@ export function gradeCounts(v: VariantArtifact<unknown>, definition: Definition,
   return null;
 }
 
+/** What gradeCounts' N is on a family, in words: the thin family's smallest cohort in every grade, the others'
+ * obligor-years (obligors by grade times the years observed). Kept beside gradeCounts so the two cannot drift. */
+export function familyCountsText(f: FamilyVariant): { en: string; es: string } {
+  const o = f.outputs;
+  if (o.family === 'thin' && o.ladder) {
+    const n = o.ladder.values[0];
+    return {
+      en: `N ${formatNumber(n, 'en', { decimals: 0 })} obligors in every grade, the thin family's smallest cohort (its ladder's first rung)`,
+      es: `N ${formatNumber(n, 'es', { decimals: 0 })} deudores en cada grado, la cohorte más pequeña de la familia delgada (el primer peldaño de su escala)`,
+    };
+  }
+  return {
+    en: `N the obligors by grade times the ${formatNumber(o.design.years, 'en', { decimals: 0 })} years observed (obligor-years)`,
+    es: `N los deudores por grado por los ${formatNumber(o.design.years, 'es', { decimals: 0 })} años observados (deudor-años)`,
+  };
+}
+
+/** Keep's long-run average by grade, which the bake leaves out: the mean of its yearly rates over the cohorts where
+ * the grade has one (EBA/GL/2017/16 paragraph 84), the arithmetic of AgencyValidationViews.averageOfYears and of
+ * c04_agency._lra. Null where the agency's pages have no Keep (Moody's). */
+export function keepLongRun(o: C04AgencyOutputs): (number | null)[] | null {
+  const grid = o.pd.keep;
+  if (!grid) return null;
+  return GRADES.map((_, g) => {
+    const xs = grid.map((row) => row[g]).filter((x): x is number => x !== null && x !== undefined && Number.isFinite(x));
+    return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
+  });
+}
+
 export interface GradeIntervals {
   grade: number;
   defaults: number;
@@ -304,8 +333,14 @@ export function useCapital(sel: C04Sel | null): CapitalRow[] {
       Object.assign(irb, { assetClass: o.irb.asset_class as AssetClass, maturity: o.irb.maturity, regime: o.irb.regime as Regime });
       exposure = o.origination.slice(0, N_GRADES);
       for (const d of definitionsOf(o)) {
-        const lra = o.lra[d === 'keep' ? 'd4' : d];
-        if (d !== 'keep' && lra) rows.push({ key: d, label: DEFINITION_LABEL[d], pds: lra.rate });
+        if (d === 'keep') {
+          // Keep has no baked long-run average: the mean of its yearly rates, computed here
+          const keep = keepLongRun(o);
+          if (keep) rows.push({ key: d, label: DEFINITION_LABEL[d], pds: keep });
+          continue;
+        }
+        const lra = o.lra[d];
+        if (lra) rows.push({ key: d, label: DEFINITION_LABEL[d], pds: lra.rate });
       }
       for (const k of GENERATOR_KEYS) {
         const gen = o.generators[k];
