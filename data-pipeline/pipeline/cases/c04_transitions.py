@@ -6,7 +6,7 @@ information on this site (REGISTERS information) is authorised except as otherwi
 acknowledged"), read from the device data root by ``pipeline.io.cerep``; the papers of Israel, Rosenthal and Wei
 (2001), Engelmann (2024) and Schuermann and Hanson (2004), derived-only, read by ``pipeline.io.papers``; and
 riskvalidation's ``RatingPaths`` driven by the EM generator of S&P's pooled annual counts for the known-truth families.
-Every computation is riskvalidation 0.4.0; this module wires the variants, the models artifact, the findings and the
+Every computation is riskvalidation 0.4; this module wires the variants, the models artifact, the findings and the
 expected ranges.
 """
 from __future__ import annotations
@@ -317,7 +317,7 @@ GRADES = cerep.GRADES
 SPECULATIVE = (4, 5, 6)  # BB, B, CCC to C
 #: the IRB convention of the impact is C05's, one source for both cases and the live parity (Basel III final,
 #: corporate, F-IRB LGD 45%, maturity 2.5 years): a grade with no default in any cohort has a long-run average of 0,
-#: which the engine floors at the regime's floor (CRE32.4; riskvalidation 0.04.001)
+#: which the engine floors at the regime's floor (CRE32.4; riskvalidation 0.4.1)
 IRB = IRB_ASSUMPTIONS
 #: the momentum strength whose fitted hazard coefficient is dos Reis et al.'s on Moody's data (c = 0.33; dossier 13
 #: section 16: alpha 0.125 gives c = 0.336 on the EM generator of S&P's counts)
@@ -592,13 +592,13 @@ def family_impact(out: dict[str, Any]) -> dict[str, Any]:
     if fid == "momentum":
         r = _rung(out, EMPIRICAL_ALPHA)
         err = r["error_cohort_power"]["mean"][3]
-        return {"projection_error_bbb": {"value": err, "unit": "probability", "label": _t("Markov projection error of the five-year BBB PD at the empirical momentum (alpha 0.125)", "Error de la proyección de Markov de la PD a cinco años de BBB con el momentum empírico (alfa 0,125)")},
+        return {"projection_error_bbb": {"value": err, "unit": "probability difference", "label": _t("Markov projection error of the five-year BBB PD at the empirical momentum (alpha 0.125)", "Error de la proyección de Markov de la PD a cinco años de BBB con el momentum empírico (alfa 0,125)")},
                 "momentum_power_weak": {"value": _sim(out, "rating.momentum@alpha0.025"), "unit": "probability", "label": _t("The momentum test's rejection rate at a fifth of the empirical strength (alpha 0.025)", "Tasa de rechazo de la prueba de momentum a un quinto de la fuerza empírica (alfa 0,025)")}}
     if fid == "cycle":
         return {"th_power_k_1_5": {"value": _sim(out, "rating.time_homogeneity@k1.5"), "unit": "probability", "label": _t("Time homogeneity's rejection rate with downgrades times 1.5 for a year", "Tasa de rechazo de homogeneidad temporal con rebajas por 1,5 durante un año")}}
     if fid == "withdrawals":
         r = _rung(out, 9.0)
-        return {"removed_bias_b": {"value": r["pd_removed"]["bias"][5], "unit": "probability", "label": _t("Bias of the B PD with withdrawals removed, informative k 9", "Sesgo de la PD de B con retiros eliminados, informativo k 9")}}
+        return {"removed_bias_b": {"value": r["pd_removed"]["bias"][5], "unit": "probability difference", "label": _t("Bias of the B PD with withdrawals removed, informative k 9", "Sesgo de la PD de B con retiros eliminados, informativo k 9")}}
     r = _rung(out, 50)
     return {"wald_coverage_aaa_50": {"value": r["coverage"]["wald"][0], "unit": "probability", "label": _t("Exact coverage of the 95% Wald interval for AAA with 50 obligors", "Cobertura exacta del intervalo de Wald al 95% para AAA con 50 deudores")}}
 

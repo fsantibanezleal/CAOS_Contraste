@@ -313,6 +313,9 @@ def _check_contract(out: dict) -> None:
         assert set(p) == KEYS["portfolio"] and set(p["pd0"]) == KEYS["pd0"] and len(p["w0"]) == 8
         assert p["pd0"]["check"] in ("printed digits", "entry rounding")
         assert (p["pd0"]["note"] is None) == (p["pd0"]["check"] == "printed digits")
+        # the note is shown in both languages: English and Spanish text, never one language for both
+        note = p["pd0"]["note"]
+        assert note is None or (set(note) == {"en", "es"} and all(note[k].strip() for k in note) and note["en"] != note["es"])
         # the projected PD by year over Engelmann's 50 years, as fractions, starting at the portfolio's own PD
         assert len(p["pd_path"]) == 50 and p["pd_path"][0] == p["pd0"]["recomputed"]
         assert all(0.0 <= x <= 1.0 for x in p["pd_path"])
