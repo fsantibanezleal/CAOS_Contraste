@@ -544,9 +544,11 @@ export function pdSeries(o: C04AgencyOutputs): ChartSeries[] {
 export function pdRange(series: ChartSeries[]): [number, number] | null {
   const values = series.flatMap((s) => s.values.filter((x): x is number => x !== null && x > 0));
   if (!values.length) return null;
-  const lo = 10 ** Math.floor(Math.log10(Math.min(...values)));
+  // parseFloat("1e" + n) gives the canonical IEEE 754 double for each decade (the same as the literal
+  // 1e-5, 1e-6 etc.), which `10 ** n` does not guarantee across platforms (glibc vs musl vs macOS)
+  const lo = parseFloat(`1e${Math.floor(Math.log10(Math.min(...values)))}`);
   const top = Math.max(...values);
-  return [lo, top > 0.01 ? 1 : 10 ** (Math.ceil(Math.log10(top)) + 1)];
+  return [lo, top > 0.01 ? 1 : parseFloat(`1e${Math.ceil(Math.log10(top)) + 1}`)];
 }
 
 /** The PD chart as the view draws it: the grades 1 to 7 and the room after them (every series a gap there), the
