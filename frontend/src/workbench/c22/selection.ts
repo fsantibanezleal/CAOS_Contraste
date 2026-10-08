@@ -1,7 +1,7 @@
 // The C22 instrument's selection and its live computation (CT-308, CT-309). The replayed numbers are the harness's
 // rejection rates as the pipeline wrote them; the live ones are the exact size and power of the three count tests,
 // from the ports in engine/sizepower.ts on the quadrature committed in C22's models artifact.
-import type { ShellToken } from '@fasl-work/caos-app-shell';
+import type { ShellColorToken } from '@fasl-work/caos-app-shell';
 import { useMemo } from 'react';
 import type { CaseData } from '../../api/artifacts';
 import type { C22Outputs, C22Simulation, Text, VariantArtifact } from '../../lib/contract.types';
@@ -34,7 +34,7 @@ export interface C22Sel {
 
 export const isC22 = (v: VariantArtifact<unknown>): v is C22Variant => (v.outputs as { kind?: string }).kind === 'validator';
 
-export const COUNT_TESTS: Array<{ id: CountTest; label: Text; color: ShellToken }> = [
+export const COUNT_TESTS: Array<{ id: CountTest; label: Text; color: ShellColorToken }> = [
   { id: 'pd.binomial', label: { en: 'Binomial', es: 'Binomial' }, color: '--color-accent' },
   { id: 'pd.jeffreys', label: { en: 'Jeffreys', es: 'Jeffreys' }, color: '--color-magenta' },
   { id: 'pd.binomial_vasicek', label: { en: 'Vasicek-corrected', es: 'Corregida de Vasicek' }, color: '--color-good' },
@@ -43,8 +43,8 @@ export const COUNT_TESTS: Array<{ id: CountTest; label: Text; color: ShellToken 
 /** One colour per test, the same in every view. */
 /** The series colours of a chart, by position: seven hues, then the same hues dashed, so every curve of a panel can be
  * told apart (keyed by test, several tests shared the accent). */
-const PALETTE: ShellToken[] = ['--color-accent', '--color-magenta', '--color-good', '--color-warn', '--color-bad', '--color-accent-2', '--color-fg'];
-export function seriesStyle(i: number): { color: ShellToken; dash?: number[] } {
+const PALETTE: ShellColorToken[] = ['--color-accent', '--color-magenta', '--color-good', '--color-warn', '--color-bad', '--color-accent-2', '--color-fg'];
+export function seriesStyle(i: number): { color: ShellColorToken; dash?: number[] } {
   return { color: PALETTE[i % PALETTE.length], dash: i >= PALETTE.length ? [8, 3] : undefined };
 }
 
