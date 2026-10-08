@@ -56,9 +56,12 @@ export function ContextView({ sel }: { sel: Selection | null }) {
                     ({s?.publisher})
                   </td>
                   <td className="caos-col-text">
-                    {s?.licence} <em>{s ? pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang) : ''}</em>
+                    <span translate="no">{s?.licence}</span> <em>{s ? pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang) : ''}</em>
                   </td>
-                  <td className="caos-col-text">{s?.attribution}</td>
+                  {/* the source's required wording, verbatim in its own language */}
+                  <td className="caos-col-text" translate="no" lang="en">
+                    {s?.attribution}
+                  </td>
                 </tr>
               );
             })}
@@ -84,7 +87,9 @@ export function ContextView({ sel }: { sel: Selection | null }) {
                   {r.engine}
                   {r.engine_version !== 'n/a' ? `, ${r.engine_version}` : ''}
                 </td>
-                <td className="caos-col-text">{r.licence}</td>
+                <td className="caos-col-text" translate="no">
+                  {r.licence}
+                </td>
               </tr>
             ))}
           </tbody>

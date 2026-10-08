@@ -3,7 +3,7 @@
 // pages (estimators, embedding and EM, Markov tests, intervals and mobility, the TTC portfolio). The Context view shows
 // it under the sources; the measured results are C04Results, written from the bake.
 import { Cite, Equation } from '@fasl-work/caos-app-shell';
-import { L, P, useT } from '../bi';
+import { L, P, Ref, T, useT } from '../bi';
 
 export function C04WriteUp() {
   const t = useT();
@@ -37,10 +37,7 @@ export function C04WriteUp() {
       />
       <Equation
         tex={String.raw`\hat p_{ij} = \frac{\sum_t n_{ij}(t)}{\sum_t \sum_k n_{ik}(t)}`}
-        caption={t(
-          'Anderson and Goodman (1957), equation (2.8): the moves from grade i to j summed over the cohorts, over the ratings that started in i. A cell never observed is zero, even where the chain reaches it through other grades.',
-          'Anderson y Goodman (1957), ecuación (2.8): los movimientos del grado i al j sumados sobre las cohortes, sobre las calificaciones que partieron en i. Una celda nunca observada es cero, aunque la cadena la alcance a través de otros grados.',
-        )}
+        caption={<T en={<>Anderson and Goodman (1957), equation (<Ref>2.8</Ref>): the moves from grade i to j summed over the cohorts, over the ratings that started in i. A cell never observed is zero, even where the chain reaches it through other grades.</>} es={<>Anderson y Goodman (1957), ecuación (<Ref>2.8</Ref>): los movimientos del grado i al j sumados sobre las cohortes, sobre las calificaciones que partieron en i. Una celda nunca observada es cero, aunque la cadena la alcance a través de otros grados.</>} />}
       />
       <P
         en={<>With the transition times known, the generator Q of a continuous-time chain is estimated by its jumps over its holding times, the duration estimator <Cite id="landoskodeberg2002" />, and every horizon follows as P(t) = exp(tQ). CEREP's snapshots hold no times; for them the expectation-maximisation algorithm reaches the maximum likelihood generator of the counts, with a closed-form expectation step <Cite id="smithdosreis2018" />:</>}
@@ -48,10 +45,7 @@ export function C04WriteUp() {
       />
       <Equation
         tex={String.raw`\hat q_{ij} = \frac{K_{ij}}{S_i}, \qquad q'_{ij} = \frac{\mathbb{E}_Q\left[K_{ij}(t) \mid y\right]}{\mathbb{E}_Q\left[S_i(t) \mid y\right]}`}
-        caption={t(
-          'The duration estimator (K the jumps from i to j, S the time spent in i) and the EM update for snapshots y (Smith and dos Reis 2018, equation 2.3, after Bladt and Sørensen 2005): the expected jumps and holding times given the snapshots replace the unobserved ones.',
-          'El estimador de duración (K los saltos de i a j, S el tiempo en i) y la actualización EM para instantáneas y (Smith y dos Reis 2018, ecuación 2.3, según Bladt y Sørensen 2005): los saltos y tiempos de permanencia esperados dadas las instantáneas reemplazan a los no observados.',
-        )}
+        caption={<T en={<>The duration estimator (K the jumps from i to j, S the time spent in i) and the EM update for snapshots y (Smith and dos Reis 2018, equation <Ref>2.3</Ref>, after Bladt and Sørensen 2005): the expected jumps and holding times given the snapshots replace the unobserved ones.</>} es={<>El estimador de duración (K los saltos de i a j, S el tiempo en i) y la actualización EM para instantáneas y (Smith y dos Reis 2018, ecuación <Ref>2.3</Ref>, según Bladt y Sørensen 2005): los saltos y tiempos de permanencia esperados dadas las instantáneas reemplazan a los no observados.</>} />}
       />
       <h3>{t('The embedding problem', 'El problema de inclusión')}</h3>
       <P
@@ -72,10 +66,7 @@ export function C04WriteUp() {
       />
       <Equation
         tex={String.raw`\chi^2 = \sum_{t} \sum_{i,j} n_i(t - 1) \frac{\left[\hat p_{ij}(t) - \hat p_{ij}\right]^2}{\hat p_{ij}} \sim \chi^2_{(T - 1)\, m (m - 1)}, \qquad \lambda_{in}(t) = q_i(t)\, e^{c Z_n(t)}`}
-        caption={t(
-          'Time homogeneity, the chi-square form (Anderson and Goodman 3.6 and 3.8), which keeps its size where the likelihood ratio over-rejects on these sizes (measured in riskvalidation); and the momentum hazard (dos Reis, Pfeuffer and Smith, section 4.1), Z the indicator of a downgrade into the current grade, with H0: c = 0.',
-          'Homogeneidad temporal, la forma chi-cuadrado (Anderson y Goodman 3.6 y 3.8), que mantiene su tamaño donde la razón de verosimilitud rechaza de más en estos tamaños (medido en riskvalidation); y el riesgo de momentum (dos Reis, Pfeuffer y Smith, sección 4.1), Z el indicador de una rebaja al grado actual, con H0: c = 0.',
-        )}
+        caption={<T en={<>Time homogeneity, the chi-square form (Anderson and Goodman <Ref>3.6</Ref> and <Ref>3.8</Ref>), which keeps its size where the likelihood ratio over-rejects on these sizes (measured in riskvalidation); and the momentum hazard (dos Reis, Pfeuffer and Smith, section <Ref>4.1</Ref>), Z the indicator of a downgrade into the current grade, with H0: c = 0.</>} es={<>Homogeneidad temporal, la forma chi-cuadrado (Anderson y Goodman <Ref>3.6</Ref> y <Ref>3.8</Ref>), que mantiene su tamaño donde la razón de verosimilitud rechaza de más en estos tamaños (medido en riskvalidation); y el riesgo de momentum (dos Reis, Pfeuffer y Smith, sección <Ref>4.1</Ref>), Z el indicador de una rebaja al grado actual, con H0: c = 0.</>} />}
       />
       <h3>{t('Intervals for a PD by grade', 'Intervalos para una PD por grado')}</h3>
       <P
@@ -84,10 +75,7 @@ export function C04WriteUp() {
       />
       <Equation
         tex={String.raw`\widehat{PD}_R \pm \kappa \sqrt{\frac{\widehat{PD}_R \left(1 - \widehat{PD}_R\right)}{N^*_R}}, \qquad N^\dagger_R = \left[\frac{1}{N_R} + \frac{2}{N_R^2} \sum_{i < j} \sqrt{N_{i,R} N_{j,R}}\, \rho_{ij}\right]^{-1}`}
-        caption={t(
-          'The Wald interval (Schuermann and Hanson 2.2) and the effective number of observations under default correlation (3.4, after Miao and Gastwirth 2004): with one trial per obligor and one ρ, N† = N / (1 + (N − 1)ρ), so 531 obligors at ρ = 1% count as 84.',
-          'El intervalo de Wald (Schuermann y Hanson 2.2) y el número efectivo de observaciones con correlación de incumplimientos (3.4, según Miao y Gastwirth 2004): con un ensayo por deudor y un solo ρ, N† = N / (1 + (N − 1)ρ), así que 531 deudores con ρ = 1% cuentan como 84.',
-        )}
+        caption={<T en={<>The Wald interval (Schuermann and Hanson <Ref>2.2</Ref>) and the effective number of observations under default correlation (<Ref>3.4</Ref>, after Miao and Gastwirth 2004): with one trial per obligor and one ρ, N† = N / (1 + (N − 1)ρ), so 531 obligors at ρ = 1% count as 84.</>} es={<>El intervalo de Wald (Schuermann y Hanson <Ref>2.2</Ref>) y el número efectivo de observaciones con correlación de incumplimientos (<Ref>3.4</Ref>, según Miao y Gastwirth 2004): con un ensayo por deudor y un solo ρ, N† = N / (1 + (N − 1)ρ), así que 531 deudores con ρ = 1% cuentan como 84.</>} />}
       />
       <h3>{t('What a projection inherits from its matrix', 'Lo que una proyección hereda de su matriz')}</h3>
       <P

@@ -22,6 +22,20 @@ function record(sel: Selection, id: string): ModelRecord | undefined {
 }
 
 /** Every rung on this variant: AUC with its 95% interval, the paired DeLong test, Brier, ECE; the ROC curves beside. */
+
+/** A scorecard bin as the page's language writes it: optbinning's interval, its bounds in the page's number format
+ * (no thousands group; a Spanish interval separates its bounds with a semicolon, the comma being its decimal sign) and
+ * infinity as a sign, and the two special bins named. */
+export function binText(bin: string, lang: 'en' | 'es'): string {
+  if (bin === 'Missing') return lang === 'es' ? 'Sin dato' : 'Missing';
+  if (bin === 'Special') return lang === 'es' ? 'Especial' : 'Special';
+  const m = /^([[(])\s*(-?inf|-?\d+(?:\.\d+)?)\s*,\s*(-?inf|-?\d+(?:\.\d+)?)\s*([\])])$/.exec(bin);
+  if (!m) return bin;
+  const bound = (s: string) =>
+    s === '-inf' ? '-\u221e' : s === 'inf' ? '\u221e' : formatNumber(Number(s), lang, { decimals: (s.split('.')[1] ?? '').length, grouping: false });
+  return `${m[1]}${bound(m[2])}${lang === 'es' ? '; ' : ', '}${bound(m[3])}${m[4]}`;
+}
+
 export function LadderView({ sel }: { sel: Selection | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
@@ -214,7 +228,7 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
                     return (
                       <tr key={`${r.feature}-${r.row}`} data-current={here ? 'true' : undefined} className={here ? 'ct-current' : undefined}>
                         <td>{r.feature}</td>
-                        <td className="ct-text">{r.bin}</td>
+                        <td className="ct-text">{binText(r.bin, lang)}</td>
                         <td className="ct-wide-only">{formatNumber(r.count, lang)}</td>
                         <td>{formatNumber(r.event_rate, lang, { percent: true, decimals: 1 })}</td>
                         <td className="ct-wide-only">{f(r.woe)}</td>
@@ -571,7 +585,9 @@ export function PenalisedView({ sel }: { sel: Selection | null }) {
               <tbody>
                 {rules.map((r) => (
                   <tr key={r.rule}>
-                    <td className="caos-col-text">{r.rule}</td>
+                    <td className="caos-col-text">
+                      <code>{r.rule}</code>
+                    </td>
                     <td>{formatNumber(r.coefficient, lang, { decimals: 3 })}</td>
                   </tr>
                 ))}

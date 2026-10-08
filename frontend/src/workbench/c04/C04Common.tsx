@@ -1551,8 +1551,8 @@ export function IntervalReadout({ sel }: { sel: C04Sel | null }) {
   const cell: Bi = pub ? { en: "Schuermann and Hanson's Table 5 cell, no grade: ", es: 'La celda de la Tabla 5 de Schuermann y Hanson, sin grado: ' } : { en: '', es: '' };
   const counts: BiText = r
     ? {
-        en: `${cell.en}${formatNumber(r.defaults, 'en')} defaults among ${formatNumber(r.n, 'en')} ${unit.en}${def ? ` (${def.en})` : ''} at a correlation of ${rho.en}: N† = N / (1 + (N - 1) rho), Schuermann and Hanson (3.4).`,
-        es: `${cell.es}${formatNumber(r.defaults, 'es')} incumplimientos entre ${formatNumber(r.n, 'es')} ${unit.es}${def ? ` (${def.es})` : ''} con una correlación de ${rho.es}: N† = N / (1 + (N - 1) rho), Schuermann y Hanson (3.4).`,
+        en: `${cell.en}${formatNumber(r.defaults, 'en')} defaults among ${formatNumber(r.n, 'en')} ${unit.en}${def ? ` (${def.en})` : ''} at a correlation of ${rho.en}: N† = N / (1 + (N - 1) rho), Schuermann and Hanson's effective number of obligors.`,
+        es: `${cell.es}${formatNumber(r.defaults, 'es')} incumplimientos entre ${formatNumber(r.n, 'es')} ${unit.es}${def ? ` (${def.es})` : ''} con una correlación de ${rho.es}: N† = N / (1 + (N - 1) rho), el número efectivo de deudores de Schuermann y Hanson.`,
       }
     : { en: 'The definition gives this grade no counts.', es: 'La definición no da conteos a este grado.' };
   const width = (x: number | undefined) => (finite(x) ? x * 100 : null);

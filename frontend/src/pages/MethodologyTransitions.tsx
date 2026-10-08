@@ -2,7 +2,7 @@
 // and 16, read at the primary sources on 2026-10-06 and 2026-10-07) and riskvalidation 0.4's docs/transitions
 // pages. Every display equation carries a caption that defines its symbols; every section ends with its references.
 import { Cite, DocSection, Equation } from '@fasl-work/caos-app-shell';
-import { L, P, useT } from '../content/bi';
+import { L, P, Ref, T, useT } from '../content/bi';
 
 /** The models part: the chain, its estimators, the embedding problem, mobility and the TTC portfolio. */
 export function Migrations() {
@@ -16,10 +16,7 @@ export function Migrations() {
         />
         <Equation
           tex={String.raw`\hat p_{ij} = \frac{\sum_{t=1}^{T} n_{ij}(t)}{\sum_{t=1}^{T} \sum_{k} n_{ik}(t)} \quad (2.8), \qquad \hat p_{ij}(t) = \frac{n_{ij}(t)}{n_i(t - 1)} \quad (2.9)`}
-          caption={t(
-            'Anderson and Goodman (1957): the stationary estimate pools the T periods (2.8); the period estimate (2.9) divides by n_i(t − 1), the ratings in i at the start of period t. A move never observed has an estimate of exactly zero.',
-            'Anderson y Goodman (1957): el estimador estacionario agrupa los T períodos (2.8); el del período (2.9) divide por n_i(t − 1), las calificaciones en i al inicio del período t. Un movimiento nunca observado tiene un estimador exactamente cero.',
-          )}
+          caption={<T en={<>Anderson and Goodman (1957): the stationary estimate pools the T periods (<Ref>2.8</Ref>); the period estimate (<Ref>2.9</Ref>) divides by n_i(t − 1), the ratings in i at the start of period t. A move never observed has an estimate of exactly zero.</>} es={<>Anderson y Goodman (1957): el estimador estacionario agrupa los T períodos (<Ref>2.8</Ref>); el del período (<Ref>2.9</Ref>) divide por n_i(t − 1), las calificaciones en i al inicio del período t. Un movimiento nunca observado tiene un estimador exactamente cero.</>} />}
         />
       </DocSection>
       <DocSection title={{ en: 'Withdrawals and the default definition', es: 'Los retiros y la definición de incumplimiento' }} refs={['schuermannhanson2004', 'ebagl201716', 'cerephelp']}>
@@ -48,10 +45,7 @@ export function Migrations() {
         />
         <Equation
           tex={String.raw`q'_{ij} = \frac{\mathbb{E}_Q[K_{ij} \mid y]}{\mathbb{E}_Q[S_i \mid y]}, \qquad \mathbb{E}_Q[K_{ij} \mid y] = \sum_s \frac{\big(e^{C^{(ij)}_{\gamma} \Delta_s}\big)_{y_s,\, h + y_{s+1}}}{\big(e^{Q \Delta_s}\big)_{y_s,\, y_{s+1}}}, \qquad C^{(ij)}_{\gamma} = \begin{pmatrix} Q & q_{ij}\, e_i e_j^{\top} \\ 0 & Q \end{pmatrix}`}
-          caption={t(
-            'The EM update (2.3) and its E-step (Proposition 2.4, after Van Loan 1978): y_s the state at snapshot s, Δ_s the time to the next one, h the number of states; E[S_i | y] is the same with the block e_i e_i^T. For aggregated counts n_ab the sums are weighted by n_ab.',
-            'La actualización EM (2.3) y su paso E (proposición 2.4, según Van Loan 1978): y_s el estado en la instantánea s, Δ_s el tiempo hasta la siguiente, h el número de estados; E[S_i | y] es igual con el bloque e_i e_i^T. Para conteos agregados n_ab las sumas se ponderan por n_ab.',
-          )}
+          caption={<T en={<>The EM update (<Ref>2.3</Ref>) and its E-step (Proposition <Ref>2.4</Ref>, after Van Loan 1978): y_s the state at snapshot s, Δ_s the time to the next one, h the number of states; E[S_i | y] is the same with the block e_i e_i^T. For aggregated counts n_ab the sums are weighted by n_ab.</>} es={<>La actualización EM (<Ref>2.3</Ref>) y su paso E (proposición <Ref>2.4</Ref>, según Van Loan 1978): y_s el estado en la instantánea s, Δ_s el tiempo hasta la siguiente, h el número de estados; E[S_i | y] es igual con el bloque e_i e_i^T. Para conteos agregados n_ab las sumas se ponderan por n_ab.</>} />}
         />
       </DocSection>
       <DocSection title={{ en: 'The embedding problem', es: 'El problema de inclusión' }} refs={['israel2001']}>
@@ -113,10 +107,7 @@ export function TransitionTests() {
         />
         <Equation
           tex={String.raw`-2 \log \lambda = 2 \sum_t \sum_{i,j} n_{ij}(t) \log \frac{\hat p_{ij}(t)}{\hat p_{ij}} \quad (3.5), \qquad \chi^2 = \sum_i \sum_{t,j} n_i(t - 1) \frac{\big[\hat p_{ij}(t) - \hat p_{ij}\big]^2}{\hat p_{ij}} \quad (3.8)`}
-          caption={t(
-            'Anderson and Goodman (1957): p̂_ij pooled (2.8), p̂_ij(t) of period t (2.9), n_i(t − 1) the ratings in i at the start of t; under the hypothesis both are chi-square with (T − 1) m (m − 1) degrees of freedom. The absorbing default row carries no information.',
-            'Anderson y Goodman (1957): p̂_ij agrupado (2.8), p̂_ij(t) del período t (2.9), n_i(t − 1) las calificaciones en i al inicio de t; bajo la hipótesis ambas son chi-cuadrado con (T − 1) m (m − 1) grados de libertad. La fila absorbente de incumplimiento no aporta información.',
-          )}
+          caption={<T en={<>Anderson and Goodman (1957): p̂_ij pooled (<Ref>2.8</Ref>), p̂_ij(t) of period t (<Ref>2.9</Ref>), n_i(t − 1) the ratings in i at the start of t; under the hypothesis both are chi-square with (T − 1) m (m − 1) degrees of freedom. The absorbing default row carries no information.</>} es={<>Anderson y Goodman (1957): p̂_ij agrupado (<Ref>2.8</Ref>), p̂_ij(t) del período t (<Ref>2.9</Ref>), n_i(t − 1) las calificaciones en i al inicio de t; bajo la hipótesis ambas son chi-cuadrado con (T − 1) m (m − 1) grados de libertad. La fila absorbente de incumplimiento no aporta información.</>} />}
         />
       </DocSection>
       <DocSection title={{ en: 'Order, a reference matrix, and momentum', es: 'Orden, una matriz de referencia y momentum' }} refs={['andersongoodman1957', 'dosreis2020', 'landoskodeberg2002']}>
@@ -126,10 +117,7 @@ export function TransitionTests() {
         />
         <Equation
           tex={String.raw`\lambda = \prod_{i,j,k} \Big(\frac{\hat p_{jk}}{\hat p_{ijk}}\Big)^{n_{ijk}} \quad (3.12), \qquad \lambda_{in}(t) = q_i(t)\, e^{c\, Z_n(t)}, \quad H_0: c = 0`}
-          caption={t(
-            'The order test (Anderson and Goodman 3.12; n_ijk the obligors in i, then j, then k) and the momentum hazard (dos Reis, Pfeuffer and Smith 2020, section 4.1): Z_n(t) is 1 if obligor n was downgraded into its current grade, the baseline q_i(t) is left free, and c is fitted by partial likelihood.',
-            'La prueba de orden (Anderson y Goodman 3.12; n_ijk los deudores en i, luego j, luego k) y el riesgo de momentum (dos Reis, Pfeuffer y Smith 2020, sección 4.1): Z_n(t) es 1 si el deudor n fue rebajado a su grado actual, la base q_i(t) queda libre, y c se ajusta por verosimilitud parcial.',
-          )}
+          caption={<T en={<>The order test (Anderson and Goodman <Ref>3.12</Ref>; n_ijk the obligors in i, then j, then k) and the momentum hazard (dos Reis, Pfeuffer and Smith 2020, section <Ref>4.1</Ref>): Z_n(t) is 1 if obligor n was downgraded into its current grade, the baseline q_i(t) is left free, and c is fitted by partial likelihood.</>} es={<>La prueba de orden (Anderson y Goodman <Ref>3.12</Ref>; n_ijk los deudores en i, luego j, luego k) y el riesgo de momentum (dos Reis, Pfeuffer y Smith 2020, sección <Ref>4.1</Ref>): Z_n(t) es 1 si el deudor n fue rebajado a su grado actual, la base q_i(t) queda libre, y c se ajusta por verosimilitud parcial.</>} />}
         />
         <P
           en="Measured on the EM generator of S&P's counts (dossier 13 section 16), the momentum strength alpha 0.125 of dos Reis et al.'s self-exciting model gives a fitted c of 0.336: C04's momentum family plants it, a fifth of it and twice it, and measures what each test sees and what a Markov projection misses."
@@ -156,10 +144,7 @@ export function TransitionTests() {
         />
         <Equation
           tex={String.raw`\tilde{PD}_R = \frac{N_{R,D} + \kappa^2/2}{N_R + \kappa^2}, \quad \tilde{PD}_R \pm \kappa \sqrt{\frac{\tilde{PD}_R (1 - \tilde{PD}_R)}{N_R + \kappa^2}} \quad (3.2, 3.3), \qquad N^\dagger = \frac{N}{1 + (N - 1)\rho}`}
-          caption={t(
-            'Agresti-Coull (Schuermann and Hanson 3.2 and 3.3): N_R,D the defaults among N_R obligors in grade R, κ the normal quantile; and the effective number under one default correlation ρ and one trial per obligor (the special case of their 3.4): 531 obligors at ρ = 1% count as 84, and Table 5\'s Wald interval for BB more than doubles.',
-            'Agresti-Coull (Schuermann y Hanson 3.2 y 3.3): N_R,D los incumplimientos entre N_R deudores del grado R, κ el cuantil normal; y el número efectivo con una sola correlación de incumplimientos ρ y un ensayo por deudor (el caso particular de su 3.4): 531 deudores con ρ = 1% cuentan como 84, y el intervalo de Wald de BB de la Tabla 5 más que se duplica.',
-          )}
+          caption={<T en={<>Agresti-Coull (Schuermann and Hanson <Ref>3.2</Ref> and <Ref>3.3</Ref>): N_R,D the defaults among N_R obligors in grade R, κ the normal quantile; and the effective number under one default correlation ρ and one trial per obligor (the special case of their <Ref>3.4</Ref>): 531 obligors at ρ = 1% count as 84, and Table 5's Wald interval for BB more than doubles.</>} es={<>Agresti-Coull (Schuermann y Hanson <Ref>3.2</Ref> y <Ref>3.3</Ref>): N_R,D los incumplimientos entre N_R deudores del grado R, κ el cuantil normal; y el número efectivo con una sola correlación de incumplimientos ρ y un ensayo por deudor (el caso particular de su <Ref>3.4</Ref>): 531 deudores con ρ = 1% cuentan como 84, y el intervalo de Wald de BB de la Tabla 5 más que se duplica.</>} />}
         />
         <L
           items={[

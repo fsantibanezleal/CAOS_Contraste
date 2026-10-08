@@ -195,8 +195,8 @@ export function useC04Instrument(data: CaseData | null, onPick: (id: string) => 
           id="c04-rho"
           label={{ en: 'Default correlation', es: 'Correlación de incumplimiento' }}
           hint={{
-            en: 'The correlation between two obligors\' default indicators; the Wald and Agresti-Coull intervals widen by the effective number of obligors (Schuermann and Hanson 2004, equation 3.4). Jeffreys has no correction.',
-            es: 'La correlación entre los indicadores de incumplimiento de dos deudores; los intervalos de Wald y Agresti-Coull se ensanchan por el número efectivo de deudores (Schuermann y Hanson 2004, ecuación 3.4). Jeffreys no tiene corrección.',
+            en: 'The correlation between two obligors\' default indicators; the Wald and Agresti-Coull intervals widen by the effective number of obligors (Schuermann and Hanson 2004). Jeffreys has no correction.',
+            es: 'La correlación entre los indicadores de incumplimiento de dos deudores; los intervalos de Wald y Agresti-Coull se ensanchan por el número efectivo de deudores (Schuermann y Hanson 2004). Jeffreys no tiene corrección.',
           }}
           value={rho}
           min={0}

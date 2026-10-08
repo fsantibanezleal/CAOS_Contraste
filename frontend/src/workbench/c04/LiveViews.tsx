@@ -18,6 +18,7 @@ import { effectiveN, pdAgrestiCoull, pdJeffreys, pdWald, project, type Projectio
 import type { VariantArtifact } from '../../lib/contract.types';
 import { provenanceOf } from '../model';
 import { Pending } from '../Pending';
+import { Ref } from '../../content/bi';
 import { yearRanges } from '../../content/cases/C04Results';
 import { emptyDefaultYears } from './AgencyValidationViews';
 import { PublishedImpactView, RHO_GRID } from './PublishedViews';
@@ -586,8 +587,8 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
           provenance={prov}
           dataKey={stateKey}
           note={{
-            en: `Schuermann and Hanson (2004) on ${basis.en}: Wald (2.2) and Agresti-Coull (3.3) with the effective number of obligors N† (3.4) at the rail's correlation; Jeffreys has no correlation correction. Log scale, a bound of 0 is a gap. Marked: the chosen grade.${empty.en} ${src.en}`,
-            es: `Schuermann y Hanson (2004) sobre ${basis.es}: Wald (2.2) y Agresti-Coull (3.3) con el número efectivo de deudores N† (3.4) a la correlación del panel; Jeffreys no tiene corrección por correlación. Escala logarítmica, una cota de 0 queda en blanco. Marcado: el grado elegido.${empty.es} ${src.es}`,
+            en: `Schuermann and Hanson (2004) on ${basis.en}: Wald and Agresti-Coull with the effective number of obligors N† at the rail's correlation; Jeffreys has no correlation correction. Log scale, a bound of 0 is a gap. Marked: the chosen grade.${empty.en} ${src.en}`,
+            es: `Schuermann y Hanson (2004) sobre ${basis.es}: Wald y Agresti-Coull con el número efectivo de deudores N† a la correlación del panel; Jeffreys no tiene corrección por correlación. Escala logarítmica, una cota de 0 queda en blanco. Marcado: el grado elegido.${empty.es} ${src.es}`,
           }}
         >
           <UPlotChart
@@ -607,8 +608,8 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
           provenance={prov}
           dataKey={stateKey}
           note={{
-            en: `${countsText.en} N† = N / (1 + (N - 1) rho) at a correlation of ${rho.en} between every pair (3.4); the widths are the upper less the lower bound at ${level.en}, in percentage points. Jeffreys, the equal-tailed Beta(D + 1/2, N - D + 1/2) interval, is the posterior of independent trials: it ignores the correlation.${thumb('en')}${droppedText('en')} ${src.en}`,
-            es: `${countsText.es} N† = N / (1 + (N - 1) rho) con una correlación de ${rho.es} entre cada par (3.4); los anchos son la cota superior menos la inferior al ${level.es}, en puntos porcentuales. Jeffreys, el intervalo de colas iguales Beta(D + 1/2, N - D + 1/2), es la posterior de ensayos independientes: ignora la correlación.${thumb('es')}${droppedText('es')} ${src.es}`,
+            en: `${countsText.en} N† = N / (1 + (N - 1) rho) at a correlation of ${rho.en} between every pair; the widths are the upper less the lower bound at ${level.en}, in percentage points. Jeffreys, the equal-tailed Beta(D + 1/2, N - D + 1/2) interval, is the posterior of independent trials: it ignores the correlation.${thumb('en')}${droppedText('en')} ${src.en}`,
+            es: `${countsText.es} N† = N / (1 + (N - 1) rho) con una correlación de ${rho.es} entre cada par; los anchos son la cota superior menos la inferior al ${level.es}, en puntos porcentuales. Jeffreys, el intervalo de colas iguales Beta(D + 1/2, N - D + 1/2), es la posterior de ensayos independientes: ignora la correlación.${thumb('es')}${droppedText('es')} ${src.es}`,
           }}
         >
           <div className="ct-scroll">
@@ -618,7 +619,9 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
                   <th>{pick({ en: 'Grade', es: 'Grado' }, lang)}</th>
                   <th>D</th>
                   <th>N</th>
-                  <th>N† (3.4)</th>
+                  <th>
+                    N† <Ref>(3.4)</Ref>
+                  </th>
                   <th>{pick({ en: 'Wald width', es: 'Ancho Wald' }, lang)}</th>
                   <th>{pick({ en: 'Agresti-Coull width', es: 'Ancho Agresti-Coull' }, lang)}</th>
                   <th>{pick({ en: 'Jeffreys width', es: 'Ancho Jeffreys' }, lang)}</th>

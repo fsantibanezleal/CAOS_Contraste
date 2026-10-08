@@ -90,6 +90,9 @@ const BAR = 12;
 const BAR_GAP = 12;
 const BAR_LABELS = 50;
 const RIGHT = BAR_GAP + BAR + BAR_LABELS;
+/** Room under the grid for half of the colour bar's lowest tick label, which is centred on its tick (the gate's G10
+ * measured "0 %" cut by 4 px when the bar ran to the drawing's edge). */
+const BOTTOM = 8;
 
 /** The drawing at a measured size (exported for the server-rendered tests, where a stage never gets a size). */
 export function MatrixDrawing({ p, width, height, hover, setHover }: { p: MatrixMapProps; width: number; height: number; hover: [number, number] | null; setHover: (h: [number, number] | null) => void }) {
@@ -99,7 +102,7 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
   const n = p.rows.length;
   const m = p.cols.length;
   const cw = Math.max(1, (width - LEFT - RIGHT) / m);
-  const ch = Math.max(1, (height - TOP - 2) / n);
+  const ch = Math.max(1, (height - TOP - BOTTOM) / n);
   const printValues = cw >= 40 && ch >= 15;
   const font = Math.max(9, Math.min(12, ch * 0.42));
   const pickRow = (i: number) => p.onPickRow?.(i);
