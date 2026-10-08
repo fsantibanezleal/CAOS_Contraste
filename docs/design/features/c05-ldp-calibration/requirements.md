@@ -16,4 +16,4 @@ EARS (Mavin et al., RE'09, doi:10.1109/RE.2009.9). Every requirement names the g
 | CT-208 | THE C05 artifacts SHALL carry no grade counts of the derived-only S&P table, only rates, results and test statistics derived from it. | `tests/test_c05.py::test_derived_only_counts_not_published` |
 | CT-209 | WHERE the web recomputes a C05 quantity live (the IRB risk weight by regime, the most prudent bounds, quasi moment matching and the calibration approaches), THE TypeScript result SHALL equal the committed riskvalidation result on the exported parity points within 1e-9 relative. | `frontend/src/engine/credit.test.ts` |
 | CT-210 | THE C05 instrument SHALL keep the six groups in order and show the lane on every view, and each rail section SHALL hold a live read-out that changes with its controls. | `frontend/src/workbench/c05.test.tsx` |
-| CT-211 | WHEN the measured gate walks C05 at five sizes, both themes and both languages, THE site SHALL pass every check. | `frontend/scripts/gate.mjs` (G1 to G9) |
+| CT-211 | WHEN the measured gate walks C05 at five sizes, both themes and both languages, THE site SHALL pass every check. | `frontend/scripts/gate.mjs` (G1 to G14) |

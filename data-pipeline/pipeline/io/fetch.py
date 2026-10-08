@@ -10,6 +10,9 @@ change shows in the diff.
 
     python data-pipeline/fetch.py uci-taiwan uci-german [--data-root <dir>] [--refresh]
     python data-pipeline/fetch.py --all          # every source with a fetch specification
+
+A ``cerep`` source (ESMA's statistics interface, ``pipeline.io.cerep``) is a plan of paced JSON queries instead of a
+list of files: a query whose answer is already in the data root is not asked again unless ``refresh``.
 """
 from __future__ import annotations
 
@@ -126,8 +129,11 @@ def fetch(
     manifest_path: Path | None = None,
     today: dt.date | None = None,
     reg: dict[str, registry.Source] | None = None,
+    post: Any = None,
+    sleep: Callable[[float], None] = time.sleep,
 ) -> dict[str, Any]:
-    """Fetch (or, for a manual source, hash in place) every file of a source; return its manifest row."""
+    """Fetch (or, for a manual source, hash in place) every file of a source; return its manifest row. ``post`` and
+    ``sleep`` reach a cerep source's session (tests pass their own)."""
     sources = reg if reg is not None else registry.load()
     if source_id not in sources:
         raise FetchError(f"unknown source {source_id!r}")
@@ -142,7 +148,16 @@ def fetch(
     files_out: list[dict[str, Any]] = []
     changed = False
     folder = root / "raw" / source_id
-    for f in src.files:
+    if src.fetch_kind == "cerep":
+        from . import cerep
+
+        try:
+            files_out = cerep.fetch_plan(src, root=root, pinned=pinned, refresh=refresh, stamp=stamp, post=post,
+                                         sleep=sleep)
+        except cerep.CerepError as exc:
+            raise FetchError(str(exc)) from exc
+        changed = any(pinned.get(f["name"], {}).get("sha256") != f["sha256"] for f in files_out)
+    for f in (() if src.fetch_kind == "cerep" else src.files):
         dest = folder / f.name
         if src.fetch_kind == "manual":
             if not dest.exists():

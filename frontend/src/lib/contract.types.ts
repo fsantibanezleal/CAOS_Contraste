@@ -1362,11 +1362,655 @@ export const MODELS_C22 = {
   },
 } satisfies Record<keyof ModelsArtifact, Kind>;
 
-/** The variant descriptor an artifact is read against: by its outputs' kind (C05, C22) or C01's. */
+// --- C04, rating transitions and TTC PD by grade (data-pipeline/pipeline/cases/c04_transitions.py; contract in ------
+// docs/design/features/c04-transitions/contract.md, sections 1 to 4) -------------------------------------------------
+
+const nNums = { array: nNum } as const;
+const numss = { array: nums } as const;
+const ints = { array: 'integer' } as const;
+
+/** One CEREP cohort on the common scale: tab 4's counts (seven grades by seven grades and default), withdrawals and
+ * sizes; tab 2's defaulted ratings over its own cohort; tab 3's events. Semester cohorts have no tab 2 or tab 3. */
+export interface C04Cohort {
+  label: string;
+  begin: string;
+  end: string;
+  size: number[];
+  counts: number[][];
+  withdrawn: number[];
+  defaulted: number[] | null;
+  events: number[] | null;
+  defaulted_cohort: number[] | null;
+  tab2_gap: number | null;
+}
+const C04_COHORT = {
+  object: {
+    label: 'string',
+    begin: 'string',
+    end: 'string',
+    size: ints,
+    counts: { array: ints },
+    withdrawn: ints,
+    defaulted: { nullable: ints },
+    events: { nullable: ints },
+    defaulted_cohort: { nullable: ints },
+    tab2_gap: nNum,
+  } satisfies Record<keyof C04Cohort, Kind>,
+} as const;
+
+/** None for a grade without ratings, and for tab 3's events where they outnumber the cohort. */
+export interface C04Bounds {
+  lower: (number | null)[];
+  upper: (number | null)[];
+}
+const C04_BOUNDS = { object: { lower: nNums, upper: nNums } satisfies Record<keyof C04Bounds, Kind> } as const;
+
+/** The long-run average default rate by grade (EBA/GL/2017/16 paragraph 84) under one definition. */
+export interface C04Lra {
+  /** null for a grade without a defined rate in any cohort */
+  rate: (number | null)[];
+  cohorts: number[];
+  defaults: number[];
+  n: number[];
+  pooled_rate: (number | null)[];
+  wald: C04Bounds;
+  agresti_coull: C04Bounds;
+  jeffreys: C04Bounds;
+  last5: (number | null)[];
+}
+const C04_LRA = {
+  object: {
+    rate: nNums,
+    cohorts: ints,
+    defaults: ints,
+    n: ints,
+    pooled_rate: nNums,
+    wald: C04_BOUNDS,
+    agresti_coull: C04_BOUNDS,
+    jeffreys: C04_BOUNDS,
+    last5: nNums,
+  } satisfies Record<keyof C04Lra, Kind>,
+} as const;
+
+/** A generator of the pooled matrix: its rates, its L1 distance to the matrix, its PDs at one and five years (null by
+ * grade where the scale has no default category, Moody's). */
+export interface C04Generator {
+  generator: number[][];
+  valid: boolean;
+  l1: number | null;
+  pd_1y: (number | null)[];
+  pd_5y: (number | null)[];
+}
+export interface C04EmGenerator extends C04Generator {
+  iterations: number;
+  converged: boolean;
+  loglik: number | null;
+}
+const C04_GENERATOR_BASE = { generator: numss, valid: 'boolean', l1: nNum, pd_1y: nNums, pd_5y: nNums } satisfies Record<keyof C04Generator, Kind>;
+const C04_GENERATOR = { nullable: { object: C04_GENERATOR_BASE } } as const;
+const C04_EM_GENERATOR = {
+  object: { ...C04_GENERATOR_BASE, iterations: 'integer', converged: 'boolean', loglik: nNum } satisfies Record<keyof C04EmGenerator, Kind>,
+} as const;
+
+export interface C04Embedding {
+  S: number | null;
+  series_converges: boolean;
+  det: number | null;
+  prod_diagonal: number | null;
+  theorem3: { a: boolean; b: boolean; c: number[][] };
+  exact_generator_excluded: boolean;
+  stochastically_monotone: boolean;
+  monotonicity_violations: Array<{ row: number; next_row: number; column: number; tail: number | null; next_tail: number | null }>;
+}
+
+export interface C04Homogeneity {
+  statistic: number | null;
+  p_value: number | null;
+  dof: number;
+  periods: number;
+}
+const C04_HOMOGENEITY = { object: { statistic: nNum, p_value: nNum, dof: 'integer', periods: 'integer' } satisfies Record<keyof C04Homogeneity, Kind> } as const;
+
+export interface C04ReferenceTest {
+  label: string;
+  statistic: number | null;
+  p_value: number | null;
+  dof: number;
+  impossible_moves: number[][];
+}
+
+/** One five-year window of the lifetime check (CT-415): the fixed cohort observed at the window's end against the
+ * chained one-year projections; a value is null where the chain or the definition does not exist. */
+export interface C04Lifetime {
+  label: string;
+  first: number;
+  last: number;
+  size: number[];
+  observed: { default_end: (number | null)[]; withdrawn_end: (number | null)[]; cumulative_d2: (number | null)[] | null };
+  projected: {
+    chain_state: (number | null)[];
+    chain_state_withdrawn: (number | null)[];
+    chain_exclude: (number | null)[];
+    pooled_power: (number | null)[];
+    em: (number | null)[];
+  };
+}
+
+export interface C04Irb {
+  regime: string;
+  asset_class: string;
+  lgd: number;
+  maturity: number;
+  pd_floor: number;
+  references: Record<string, string>;
+}
+
+export type C04Definition = 'd2' | 'd3' | 'd4' | 'keep';
+
+export interface C04AgencyOutputs {
+  kind: 'agency';
+  agency: { code: string; name: string; scope: string };
+  attribution: string;
+  grades: string[];
+  states: string[];
+  cohorts: C04Cohort[];
+  semesters: C04Cohort[];
+  pd: Record<C04Definition, (number | null)[][] | null>;
+  lra: { d2: C04Lra; d3: C04Lra; d4: C04Lra | null };
+  pooled: { matrix: number[][]; matrix_state: number[][]; counts: number[][]; withdrawn: number[]; row_sizes: number[]; cohorts: number };
+  embedding: C04Embedding;
+  generators: {
+    diagonal: C04Generator | null;
+    weighted: C04Generator | null;
+    jlt: C04Generator | null;
+    em: C04EmGenerator;
+    cohort_power: { pd_5y: (number | null)[] };
+  };
+  mobility: { labels: string[]; svd: (number | null)[]; trace: (number | null)[]; spec_default_rate: (number | null)[] };
+  ecb: Array<{ label: string; mwb_upper: number | null; mwb_lower: number | null; ztests_p: number | null }>;
+  homogeneity: { annual: C04Homogeneity; semesters: C04Homogeneity | null; reference: C04ReferenceTest[] };
+  semesters_vs_year: Array<{ year: number; l1: number | null; pd_product: (number | null)[]; pd_annual: (number | null)[] }>;
+  definition_gap: { d4_over_d2: (number | null)[] | null; d3_over_d2: (number | null)[] | null };
+  lifetime: C04Lifetime[];
+  origination: number[];
+  irb: C04Irb;
+}
+
+const nNumGrid = { nullable: { array: nNums } } as const;
+export const C04_AGENCY_OUTPUTS = {
+  kind: 'string',
+  agency: { object: { code: 'string', name: 'string', scope: 'string' } },
+  attribution: 'string',
+  grades: { array: 'string' },
+  states: { array: 'string' },
+  cohorts: { array: C04_COHORT },
+  semesters: { array: C04_COHORT },
+  pd: { object: { d2: nNumGrid, d3: nNumGrid, d4: nNumGrid, keep: nNumGrid } satisfies Record<C04Definition, Kind> },
+  lra: { object: { d2: C04_LRA, d3: C04_LRA, d4: { nullable: C04_LRA } } },
+  pooled: {
+    object: { matrix: numss, matrix_state: numss, counts: { array: ints }, withdrawn: ints, row_sizes: ints, cohorts: 'integer' },
+  },
+  embedding: {
+    object: {
+      S: nNum,
+      series_converges: 'boolean',
+      det: nNum,
+      prod_diagonal: nNum,
+      theorem3: { object: { a: 'boolean', b: 'boolean', c: { array: ints } } },
+      exact_generator_excluded: 'boolean',
+      stochastically_monotone: 'boolean',
+      monotonicity_violations: { array: { object: { row: 'integer', next_row: 'integer', column: 'integer', tail: nNum, next_tail: nNum } } },
+    } satisfies Record<keyof C04Embedding, Kind>,
+  },
+  generators: {
+    object: { diagonal: C04_GENERATOR, weighted: C04_GENERATOR, jlt: C04_GENERATOR, em: C04_EM_GENERATOR, cohort_power: { object: { pd_5y: nNums } } },
+  },
+  mobility: { object: { labels: { array: 'string' }, svd: nNums, trace: nNums, spec_default_rate: nNums } },
+  ecb: { array: { object: { label: 'string', mwb_upper: nNum, mwb_lower: nNum, ztests_p: nNum } } },
+  homogeneity: {
+    object: {
+      annual: C04_HOMOGENEITY,
+      semesters: { nullable: C04_HOMOGENEITY },
+      reference: {
+        array: {
+          object: { label: 'string', statistic: nNum, p_value: nNum, dof: 'integer', impossible_moves: { array: ints } } satisfies Record<keyof C04ReferenceTest, Kind>,
+        },
+      },
+    },
+  },
+  semesters_vs_year: { array: { object: { year: 'integer', l1: nNum, pd_product: nNums, pd_annual: nNums } } },
+  definition_gap: { object: { d4_over_d2: { nullable: nNums }, d3_over_d2: { nullable: nNums } } },
+  lifetime: {
+    array: {
+      object: {
+        label: 'string',
+        first: 'integer',
+        last: 'integer',
+        size: ints,
+        observed: { object: { default_end: nNums, withdrawn_end: nNums, cumulative_d2: { nullable: nNums } } },
+        projected: { object: { chain_state: nNums, chain_state_withdrawn: nNums, chain_exclude: nNums, pooled_power: nNums, em: nNums } },
+      } satisfies Record<keyof C04Lifetime, Kind>,
+    },
+  },
+  origination: nums,
+  irb: {
+    object: { regime: 'string', asset_class: 'string', lgd: num, maturity: num, pd_floor: num, references: { map: 'string' } } satisfies Record<keyof C04Irb, Kind>,
+  },
+} satisfies Record<keyof C04AgencyOutputs, Kind>;
+
+/** A harness rate: rejections (or hits) over n repetitions with its Monte Carlo SE and Wilson interval. */
+export interface C04Rate {
+  rejections: number;
+  n: number;
+  undefined: number;
+  rate: number;
+  se: number;
+  wilson_low: number;
+  wilson_high: number;
+}
+const C04_RATE = {
+  object: { rejections: 'integer', n: 'integer', undefined: 'integer', rate: num, se: num, wilson_low: num, wilson_high: num } satisfies Record<keyof C04Rate, Kind>,
+} as const;
+
+/** riskvalidation's estimator performance of a quantity by grade (Morris et al. 2019, Table 6): null by grade where
+ * fewer than two repetitions are defined. */
+export interface C04Performance {
+  n: number[];
+  truth: number[];
+  mean: (number | null)[];
+  bias: (number | null)[];
+  bias_mcse: (number | null)[];
+  empirical_se: (number | null)[];
+  empirical_se_mcse: (number | null)[];
+  rmse: (number | null)[];
+  rmse_mcse: (number | null)[];
+}
+const C04_PERFORMANCE_BASE = {
+  n: ints,
+  truth: nums,
+  mean: nNums,
+  bias: nNums,
+  bias_mcse: nNums,
+  empirical_se: nNums,
+  empirical_se_mcse: nNums,
+  rmse: nNums,
+  rmse_mcse: nNums,
+} satisfies Record<keyof C04Performance, Kind>;
+const C04_PERFORMANCE = { object: C04_PERFORMANCE_BASE } as const;
+
+/** The same for one quantity per repetition (the momentum hazard's fitted coefficient). */
+export interface C04ScalarPerformance {
+  n: number;
+  truth: number;
+  mean: number;
+  bias: number;
+  bias_mcse: number;
+  empirical_se: number;
+  empirical_se_mcse: number;
+  mse: number;
+  mse_mcse: number;
+  rmse: number;
+  rmse_mcse: number;
+}
+
+export interface C04MarkovRung {
+  value: null;
+  seed_key: string;
+  seed: number;
+  level: number;
+  obligor_years: number[];
+  estimators: Record<'cohort' | 'duration' | 'em' | 'diagonal' | 'weighted' | 'jlt', C04Performance & { zero: C04Rate[] }>;
+  em: { converged: C04Rate; iterations_mean: number; iterations_max: number };
+  coverage: Record<'wald' | 'agresti_coull' | 'jeffreys' | 'bootstrap', C04Rate[]>;
+  bootstrap: { method: string; estimate: string; horizon: number; n_boot: number; repetitions: number };
+}
+export interface C04MomentumRung {
+  value: number;
+  seed_key: string;
+  seed: number;
+  momentum: number[][] | null;
+  investment_grades: number;
+  coefficient: C04ScalarPerformance | null;
+  pd_1y_cohort: C04Performance;
+  pd_5y_frequency: C04Performance;
+  pd_5y_cohort_power: C04Performance;
+  pd_5y_duration: C04Performance;
+  error_cohort_power: C04Performance;
+  error_duration: C04Performance;
+}
+export interface C04CycleRung {
+  value: number;
+  seed_key: string;
+  seed: number;
+  stressed_period: number[] | null;
+  pd_true_base: number[];
+  pd_true_stressed: number[];
+  pd_true_average: number[];
+  pd_stressed_year: C04Performance;
+  pd_lra: C04Performance;
+  pd_pooled: C04Performance;
+}
+export interface C04WithdrawalsRung {
+  value: number;
+  seed_key: string;
+  seed: number;
+  withdrawal_rate: number;
+  window: number;
+  truncation_verified: number;
+  withdrawn_obligors_mean: number;
+  withdrawn_share: { n: number[]; mean: (number | null)[]; mean_mcse: (number | null)[] };
+  pd_removed: C04Performance;
+  pd_kept: C04Performance;
+  pd_followed: C04Performance;
+  pd_latent: C04Performance;
+}
+export interface C04ThinRung {
+  value: number;
+  level: number;
+  expected_defaults: number[];
+  coverage: Record<'wald' | 'agresti_coull' | 'jeffreys', number[]>;
+  length: Record<'wald' | 'agresti_coull' | 'jeffreys', number[]>;
+  overlap_jeffreys: number[];
+}
+export type C04Rung = C04MarkovRung | C04MomentumRung | C04CycleRung | C04WithdrawalsRung | C04ThinRung;
+
+export interface C04Simulation {
+  key: string;
+  test_id: string;
+  rung: number | null;
+  rates: Record<string, C04Rate>;
+  seed: number;
+  n_rep: number;
+}
+
+export type C04Family = 'markov' | 'momentum' | 'cycle' | 'withdrawals' | 'thin';
+
+export interface C04FamilyOutputs {
+  kind: 'generator';
+  family: C04Family;
+  generator: { q: number[][]; pd_1y: number[]; pd_5y: number[]; obligors: number[]; source: string; one_year_matrix: number[][] };
+  design: { years: number; snapshots: number[]; reps: number; seed_key: string | null };
+  ladder: { name: Text; unit: string; values: number[] } | null;
+  rungs: C04Rung[];
+  simulations: C04Simulation[];
+}
+
+const C04_RATES = { array: C04_RATE } as const;
+const C04_THREE = (k: Kind) => ({ object: { wald: k, agresti_coull: k, jeffreys: k } }) as const;
+const C04_MARKOV_RUNG = {
+  object: {
+    value: { nullable: num },
+    seed_key: 'string',
+    seed: 'integer',
+    level: num,
+    obligor_years: nums,
+    estimators: { map: { object: { ...C04_PERFORMANCE_BASE, zero: C04_RATES } } },
+    em: { object: { converged: C04_RATE, iterations_mean: num, iterations_max: 'integer' } },
+    coverage: { object: { wald: C04_RATES, agresti_coull: C04_RATES, jeffreys: C04_RATES, bootstrap: C04_RATES } },
+    bootstrap: { object: { method: 'string', estimate: 'string', horizon: num, n_boot: 'integer', repetitions: 'integer' } },
+  } satisfies Record<keyof C04MarkovRung, Kind>,
+} as const;
+const C04_MOMENTUM_RUNG = {
+  object: {
+    value: num,
+    seed_key: 'string',
+    seed: 'integer',
+    momentum: { nullable: numss },
+    investment_grades: 'integer',
+    coefficient: {
+      nullable: {
+        object: {
+          n: 'integer',
+          truth: num,
+          mean: num,
+          bias: num,
+          bias_mcse: num,
+          empirical_se: num,
+          empirical_se_mcse: num,
+          mse: num,
+          mse_mcse: num,
+          rmse: num,
+          rmse_mcse: num,
+        } satisfies Record<keyof C04ScalarPerformance, Kind>,
+      },
+    },
+    pd_1y_cohort: C04_PERFORMANCE,
+    pd_5y_frequency: C04_PERFORMANCE,
+    pd_5y_cohort_power: C04_PERFORMANCE,
+    pd_5y_duration: C04_PERFORMANCE,
+    error_cohort_power: C04_PERFORMANCE,
+    error_duration: C04_PERFORMANCE,
+  } satisfies Record<keyof C04MomentumRung, Kind>,
+} as const;
+const C04_CYCLE_RUNG = {
+  object: {
+    value: num,
+    seed_key: 'string',
+    seed: 'integer',
+    stressed_period: { nullable: nums },
+    pd_true_base: nums,
+    pd_true_stressed: nums,
+    pd_true_average: nums,
+    pd_stressed_year: C04_PERFORMANCE,
+    pd_lra: C04_PERFORMANCE,
+    pd_pooled: C04_PERFORMANCE,
+  } satisfies Record<keyof C04CycleRung, Kind>,
+} as const;
+const C04_WITHDRAWALS_RUNG = {
+  object: {
+    value: num,
+    seed_key: 'string',
+    seed: 'integer',
+    withdrawal_rate: num,
+    window: num,
+    truncation_verified: 'integer',
+    withdrawn_obligors_mean: num,
+    withdrawn_share: { object: { n: ints, mean: nNums, mean_mcse: nNums } },
+    pd_removed: C04_PERFORMANCE,
+    pd_kept: C04_PERFORMANCE,
+    pd_followed: C04_PERFORMANCE,
+    pd_latent: C04_PERFORMANCE,
+  } satisfies Record<keyof C04WithdrawalsRung, Kind>,
+} as const;
+const C04_THIN_RUNG = {
+  object: {
+    value: 'integer',
+    level: num,
+    expected_defaults: nums,
+    coverage: C04_THREE(nums),
+    length: C04_THREE(nums),
+    overlap_jeffreys: nums,
+  } satisfies Record<keyof C04ThinRung, Kind>,
+} as const;
+
+export const C04_FAMILY_OUTPUTS = {
+  kind: 'string',
+  family: 'string',
+  generator: { object: { q: numss, pd_1y: nums, pd_5y: nums, obligors: ints, source: 'string', one_year_matrix: numss } },
+  design: { object: { years: 'integer', snapshots: nums, reps: 'integer', seed_key: nStr } },
+  ladder: { nullable: { object: { name: 'text', unit: 'string', values: nums } } },
+  rungs: { array: { anyOf: [C04_MARKOV_RUNG, C04_MOMENTUM_RUNG, C04_CYCLE_RUNG, C04_WITHDRAWALS_RUNG, C04_THIN_RUNG] } },
+  simulations: {
+    array: {
+      object: { key: 'string', test_id: 'string', rung: nNum, rates: { map: C04_RATE }, seed: 'integer', n_rep: 'integer' } satisfies Record<keyof C04Simulation, Kind>,
+    },
+  },
+} satisfies Record<keyof C04FamilyOutputs, Kind>;
+
+/** A printed value beside its recomputation; the bake stops unless they agree (contract section 3). */
+export interface C04Print {
+  printed: number;
+  recomputed: number;
+  decimals: number;
+}
+const C04_PRINT = { object: { printed: num, recomputed: num, decimals: 'integer' } satisfies Record<keyof C04Print, Kind> } as const;
+const C04_PRINTS = { object: { printed: nums, recomputed: nums, decimals: ints } } as const;
+
+export interface C04PublishedOutputs {
+  kind: 'published';
+  irw: {
+    rows: Array<{ matrix: string; method: string; printed: number; recomputed: number; agrees: boolean }>;
+    jlt_from_printed_generator: number;
+    theorem3_c: boolean[];
+    series_terms: number;
+  };
+  sr190: {
+    defaults: number;
+    n: number;
+    rows: Array<{ rho: number; interval: string; printed: number[]; recomputed: number[]; agrees: boolean }>;
+    n_dagger: { printed: number[]; recomputed: number[]; decimals: number[] };
+  };
+  engelmann: {
+    w_ttc: { printed: number[]; recomputed: number[]; decimals: number[] };
+    ttc_pd: C04Print;
+    portfolios: Array<{
+      name: string;
+      w0: number[];
+      pd0: C04Print & { check: 'printed digits' | 'entry rounding'; note: Text | null };
+      extreme: (C04Print & { kind: 'min' | 'max' }) | null;
+      pd_path: number[];
+    }>;
+    row_sum_deviation: number;
+  };
+}
+export const C04_PUBLISHED_OUTPUTS = {
+  kind: 'string',
+  irw: {
+    object: {
+      rows: { array: { object: { matrix: 'string', method: 'string', printed: num, recomputed: num, agrees: 'boolean' } } },
+      jlt_from_printed_generator: num,
+      theorem3_c: { array: 'boolean' },
+      series_terms: 'integer',
+    },
+  },
+  sr190: {
+    object: {
+      defaults: 'integer',
+      n: 'integer',
+      rows: { array: { object: { rho: num, interval: 'string', printed: nums, recomputed: nums, agrees: 'boolean' } } },
+      n_dagger: C04_PRINTS,
+    },
+  },
+  engelmann: {
+    object: {
+      w_ttc: C04_PRINTS,
+      ttc_pd: C04_PRINT,
+      portfolios: {
+        array: {
+          object: {
+            name: 'string',
+            w0: nums,
+            pd0: { object: { printed: num, recomputed: num, decimals: 'integer', check: 'string', note: { nullable: 'text' } } },
+            extreme: { nullable: { object: { kind: 'string', printed: num, recomputed: num, decimals: 'integer' } } },
+            pd_path: nums,
+          },
+        },
+      },
+      row_sum_deviation: num,
+    },
+  },
+} satisfies Record<keyof C04PublishedOutputs, Kind>;
+
+export const VARIANT_C04_AGENCY = { ...VARIANT, outputs: { object: C04_AGENCY_OUTPUTS } } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C04_FAMILY = { ...VARIANT, outputs: { object: C04_FAMILY_OUTPUTS } } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C04_PUBLISHED = { ...VARIANT, outputs: { object: C04_PUBLISHED_OUTPUTS } } satisfies Record<keyof VariantArtifact, Kind>;
+
+/** The live parity of C04's models artifact (contract section 4), and the families' generator. */
+export interface C04ProjectionPoint {
+  agency: string;
+  matrix: number[][];
+  origination: number[];
+  w0: number[];
+  years: number;
+  default_rate: number[];
+  portfolio_last: number[];
+  ttc: number[];
+  ttc_default_rate: number;
+}
+export interface C04IntervalPoint {
+  defaults: number;
+  n: number;
+  rho: number;
+  level: number;
+  wald: number[];
+  agresti_coull: number[];
+  jeffreys: number[];
+  n_effective: number;
+}
+export interface C04CapitalPoint {
+  pd: number;
+  lgd: number;
+  maturity: number;
+  regime: string;
+  asset_class: string;
+  risk_weight: number;
+}
+export interface C04Fit {
+  parity: { projection: C04ProjectionPoint[]; intervals: C04IntervalPoint[]; capital: C04CapitalPoint[] };
+  generator: { q: number[][]; obligors: number[]; source: string };
+}
+export const MODELS_C04 = {
+  ...MODELS,
+  fit: {
+    object: {
+      parity: {
+        object: {
+          projection: {
+            array: {
+              object: {
+                agency: 'string',
+                matrix: numss,
+                origination: nums,
+                w0: nums,
+                years: 'integer',
+                default_rate: nums,
+                portfolio_last: nums,
+                ttc: nums,
+                ttc_default_rate: num,
+              } satisfies Record<keyof C04ProjectionPoint, Kind>,
+            },
+          },
+          intervals: {
+            array: {
+              object: {
+                defaults: 'integer',
+                n: 'integer',
+                rho: num,
+                level: num,
+                wald: nums,
+                agresti_coull: nums,
+                jeffreys: nums,
+                n_effective: num,
+              } satisfies Record<keyof C04IntervalPoint, Kind>,
+            },
+          },
+          capital: {
+            array: {
+              object: { pd: num, lgd: num, maturity: num, regime: 'string', asset_class: 'string', risk_weight: num } satisfies Record<keyof C04CapitalPoint, Kind>,
+            },
+          },
+        },
+      },
+      generator: { object: { q: numss, obligors: ints, source: 'string' } },
+    } satisfies Record<keyof C04Fit, Kind>,
+  },
+} satisfies Record<keyof ModelsArtifact, Kind>;
+
+/** The variant descriptor an artifact is read against: by its outputs' kind (C04, C05, C22) or C01's. */
 export function variantKind(doc: {
   outputs?: { kind?: string };
-}): typeof VARIANT | typeof VARIANT_C05_SP | typeof VARIANT_C05_LDP | typeof VARIANT_C22 {
+}):
+  | typeof VARIANT
+  | typeof VARIANT_C04_AGENCY
+  | typeof VARIANT_C04_FAMILY
+  | typeof VARIANT_C04_PUBLISHED
+  | typeof VARIANT_C05_SP
+  | typeof VARIANT_C05_LDP
+  | typeof VARIANT_C22 {
   const kind = doc.outputs?.kind;
+  if (kind === 'agency') return VARIANT_C04_AGENCY;
+  if (kind === 'generator') return VARIANT_C04_FAMILY;
+  if (kind === 'published') return VARIANT_C04_PUBLISHED;
   return kind === 'sp-calibration' ? VARIANT_C05_SP : kind === 'ldp' ? VARIANT_C05_LDP : kind === 'validator' ? VARIANT_C22 : VARIANT;
 }
 
@@ -1374,7 +2018,8 @@ export function variantKind(doc: {
 export function modelsKind(doc: {
   case_id?: string;
   fit_id?: string;
-}): typeof MODELS | typeof MODELS_C05_SP | typeof MODELS_C05_LDP | typeof MODELS_C22 {
+}): typeof MODELS | typeof MODELS_C04 | typeof MODELS_C05_SP | typeof MODELS_C05_LDP | typeof MODELS_C22 {
+  if (doc.case_id === 'C04') return MODELS_C04;
   if (doc.case_id === 'C05') return doc.fit_id === 'ldp' ? MODELS_C05_LDP : MODELS_C05_SP;
   if (doc.case_id === 'C22') return MODELS_C22;
   return MODELS;

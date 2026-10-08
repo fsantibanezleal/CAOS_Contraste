@@ -19,6 +19,2580 @@
         }
       ]
     },
+    "engelmann-2024": {
+      "name": "Spurious default probability projections in credit risk stress testing models (arXiv 2401.08892v1), section 4",
+      "publisher": "B. Engelmann, arXiv",
+      "landing": "https://arxiv.org/abs/2401.08892v1",
+      "class": "derived-only",
+      "licence": "arXiv.org perpetual, non-exclusive license to distribute (http://arxiv.org/licenses/nonexclusive-distrib/1.0/); the matrix (11) is reprinted from Trueck and Rachev (2009)",
+      "attribution": "Engelmann, B. (2024). Spurious default probability projections in credit risk stress testing models. arXiv:2401.08892v1. https://doi.org/10.48550/arXiv.2401.08892",
+      "access": "http",
+      "files": [
+        {
+          "name": "engelmann-2024-arxiv-2401.08892v1.pdf",
+          "url": "https://arxiv.org/pdf/2401.08892v1",
+          "sha256": "4f7b2585296866e2d1223885a13e8d42176206e0af883eb949ec96a468d4d969",
+          "bytes": 358288,
+          "retrieved": "2026-10-07"
+        }
+      ]
+    },
+    "esma-cerep": {
+      "name": "ESMA CEREP",
+      "publisher": "European Securities and Markets Authority",
+      "landing": "https://registers.esma.europa.eu/cerep-publication/",
+      "class": "mirror-allowed",
+      "licence": "Reproduction of all information on this site (REGISTERS information) is authorised except as otherwise stated, provided the source is acknowledged",
+      "attribution": "Source: ESMA CEREP; tables transformed by Contraste",
+      "access": "cerep",
+      "files": [
+        {
+          "name": "filters.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/filters",
+          "sha256": "38ad80a26c210214121d078eb2126c5d661c1b0a8550ae768ab273904e8f5504",
+          "bytes": 22669,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20000101_20001231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "1432e658888432e916cca3b1e709ea8765b899ef1965d7016d24e88308048992",
+          "bytes": 1811,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20000101_20001231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "da7434c9752be593e88f08ac0a44974636f0581d954dbef3b06a85c153a2bb5a",
+          "bytes": 1153,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20000101_20001231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "d6b91762964f36280991fa373689ef76f5c8e37a62310eb94a694a7f61d2264e",
+          "bytes": 1256,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20010101_20011231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "471500c0d90571f4c27853a5a43bf5401c2476a8f2227f3f6b9f7ddf42ec1282",
+          "bytes": 1813,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20010101_20011231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "c6eaaf4ba40069d074d3b7e03fffd3fb63fb051cded7346f062efdc4ba8feab6",
+          "bytes": 1154,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20010101_20011231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "cedca7ccf56167b89a938addf9a412bde9cc4bd023666b2b2132885fbd111695",
+          "bytes": 1261,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20020101_20021231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "79109ce3058d0333af3b66a5c36fa3672e2cab6f7f411c9882a8ad0925884857",
+          "bytes": 1814,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20020101_20021231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "a1fda7a81c80e551934666f311e110e1895e805d05c54e4d023e29608b1c23a0",
+          "bytes": 1158,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20020101_20021231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "e316d5611e993b90829d4db5e10768abfa1c9741d77e57dddf116cca4654527d",
+          "bytes": 1266,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20030101_20031231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "4d999fdb4a345dbbbfbaddb9345fb3cce5d74ba086f2c268d677efa19ca55720",
+          "bytes": 1814,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20030101_20031231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "87bbc509513c201c65be0c56110a87ba38e42d8d450a804adf07f9292d11ff5c",
+          "bytes": 1152,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20030101_20031231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "119b9b6436d3d3e68d4df54db744b971439257cf973c22492e04dfd1cca4a1a4",
+          "bytes": 1261,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20040101_20041231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "12243a96dbb1ff69c94b986024a4af5c0bca2b9bdfd8dfcb85bfb484523d1ae7",
+          "bytes": 1808,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20040101_20041231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "b0454f9dc39b23d9b6effd45c832e6ea587c3252fc0be59a644eb8466cc83e83",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20040101_20041231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "67fbea670e6e896b8cb868ef2ec8e0a0059544192c96e6efbe534fc086af93c6",
+          "bytes": 1249,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20050101_20051231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "e355b3d66ed6210cd83bb146f623ff44130bd4a633de76ebe2c2c56beeab0058",
+          "bytes": 1805,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20050101_20051231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "f8a278715a69a478eb40e3cb29f565f2b9446f8ea3e9f956cd1626b053762ee3",
+          "bytes": 1149,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20050101_20051231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "0528d3025a51059f798e2e84bb07416edd467a3abed5349bb33a0cb67539992c",
+          "bytes": 1251,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20060101_20061231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "496d7067eb833ea59ec4cbad5cdda1650b5e17778f46e17c78cc33389ef40771",
+          "bytes": 1806,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20060101_20061231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "ddc0209c78352259b893a03c3c35b19caa9d80ba046825d6540af53e665e27ae",
+          "bytes": 1149,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20060101_20061231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "c7d979ac575cb5802b713b4746b298bb9dd9603c86362767456f7eda979e07c0",
+          "bytes": 1251,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20070101_20071231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "87ae42af98b28f4e328dee247a2f5da0c5802c154f6000c81acd1e83f5aea565",
+          "bytes": 1805,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20070101_20071231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "76d40d9f882ec7c14765f4b2707138e21dfb7a52c57ad1e913f9df5e5478daf8",
+          "bytes": 1149,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20070101_20071231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "9a4df2ce6a0b20f5371d0165ef00358a3cd89d85a41b53bbd18f4ab95e636caa",
+          "bytes": 1252,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20080101_20081231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "09518a2f87bf4bf45194373e38889c6ba7749c1fc0df34b396af6648a0c772b0",
+          "bytes": 1811,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20080101_20081231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "c7bc81bd22ebc71b58fc0ea443f20f7062a4d7becb65e513f65d4cc028a0f58f",
+          "bytes": 1152,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20080101_20081231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "bf1283b5b7f2dfd7280cd1ff53b55d75aa17a329df78b73118403de57e227be8",
+          "bytes": 1254,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20090101_20091231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "3a3062f44d86e9f82ea690c7d3a437fc27a0a0d9a8926fb2fbf2c5cd250296ca",
+          "bytes": 1812,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20090101_20091231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "e0bfb6e8e63fa3ceb816efa13f1ae4b2e2eb0fec079f431e2fbc820371e0f255",
+          "bytes": 1155,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20090101_20091231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "24ce70b7b735bb2f16e4b9efa2c5fc42f75da39a0c313904683f0ecb889a7f79",
+          "bytes": 1259,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20100101_20101231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "4a7de0432088e2d8e117c84aa6c00e9384324f1bd75a39e835ff19ce6bd724ec",
+          "bytes": 1809,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20100101_20101231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "e40a49c6d923e00190724f96a0b6329abba7e39d38f371c4fc4612977b9ad7dd",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20100101_20101231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "c4b6e22b7cf2e0b409e1399ab5efe0e8b61d2c7771cb02ac6e6148dcf1431de3",
+          "bytes": 1250,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20110101_20111231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "b97bbec29bf10de26c0e21287867034e20f97fb206393b16c27c1b3af7c29a65",
+          "bytes": 1808,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20110101_20111231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "042b56d460483538a262ca8c11ca493cf29c586466c2836bc06493758690bbe3",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20110101_20111231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "bb2659bac820cf20c8d5ba39add62422d56c9ebab3e820c11e25bf9736e93b0c",
+          "bytes": 1252,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20120101_20121231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "29d72ff4b13cf815dcddcf11d7654f285a82b8c24c51158efceb44d1288891e3",
+          "bytes": 1807,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20120101_20121231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "8f7700a22b34eb3520b7834826591bf32702c7e94fa6382a76501cc8339588b4",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20120101_20121231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "7b55bfe90f93f5e387a2f90b7b0196b5eb6d03f9db4931abe9999e6b41466b20",
+          "bytes": 1249,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20130101_20131231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "3087ffe28ea126b8a27eca8e0e4a361f32c807d4e940393178394431244c5c41",
+          "bytes": 1806,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20130101_20131231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "e4da4556033cc6b9d56a93aa12ff1af76325934bbcfcc848dd8d28d843671bd3",
+          "bytes": 1152,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20130101_20131231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "1119a9ef04db02c03cf48805af5679d7defe3ae754fbb5480d9ca66e7e907da6",
+          "bytes": 1247,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20140101_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "e0deaf2a32e550639d7df47f76f75d8424f962691ae8a4fbb71c990d49df1466",
+          "bytes": 1808,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20140101_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "0bec52e2081c4629cf8728002be41cac1f72d6f9262b98a284b939cbfac99f37",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20140101_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "f07f363834af4dbb888dff8f8507ccc59fc6401a1a29cd968df98fa0abe6690e",
+          "bytes": 1248,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20150101_20151231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "ea986956f7e3164a7d466541e60022009bb40c97d7f17b9b63fb82e5213da24d",
+          "bytes": 1808,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20150101_20151231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "4958cddd2ca081d12823952ae4490df0bb5a4b78ffdf34c2afd66aef5c3cb28d",
+          "bytes": 1154,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20150101_20151231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "61f48934fcc2778da4bd96cedc633b765d864d5a68193278723947831d56471b",
+          "bytes": 1247,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20160101_20161231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "a361fb08ec90cd78e5af1c91d1678c05a58cb52d37a19a8f37b13efa4966f650",
+          "bytes": 1811,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20160101_20161231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "608f66f6c1fe6b252fe4f3a449258bd7dd4b17591b7516254a7dcd307f5e6011",
+          "bytes": 1153,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20160101_20161231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "5e4830f3e0cacadd46ae1453df5eff99be34229bcb8996103eefae14998e9dec",
+          "bytes": 1257,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20170101_20171231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "eb58f43cc52d1686d1b1ad6db57db3f8006fae4da0af7e003f14208c8beb93f9",
+          "bytes": 1809,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20170101_20171231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "d0ce350c523cdbb7ea7bb2d5ed512f0388dd1da20b03499fe5a6a315728df651",
+          "bytes": 1153,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20170101_20171231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "5a54395747f45eb6fa569925854f0b95ac64b49d8d199dae87e6efb45e2769ba",
+          "bytes": 1253,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20180101_20181231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "2acc3df8a3f97cd870d56d98be0fef469cb8d0f39080426689aebf67f4c1fa7b",
+          "bytes": 1808,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20180101_20181231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "8928e29987addae374562509f1546c017f1e5eb163d0796674cd110646bec698",
+          "bytes": 1152,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20180101_20181231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "ec62234172d81bd24c0623c724d300ff73672e3551ef22eb129c592ece4b82cc",
+          "bytes": 1251,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20190101_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "d1bcd1db5bc939a6bf1db3e71856b2db5bc3be42f3185378bd003cae1ac9bc62",
+          "bytes": 1809,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20190101_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "659f783c29fb8d15920f0ba77d15832f45ac8d84a1caff6c48cb4bccc47e77b9",
+          "bytes": 1153,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20190101_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "1ae1a4ddaf64843f2d25a183ca03b46114626dc6b2384a528449bab2660c94a1",
+          "bytes": 1252,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20200101_20201231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "af301b914600c57b4280d00ca780d3c9638a76f935d05031de804bd39dc60f0f",
+          "bytes": 1810,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20200101_20201231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "5a9920d15f6f6ff04142ef1a0dc5fe0f4d37d0c8d0d68035e8934bbbf08d996a",
+          "bytes": 1153,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20200101_20201231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "6c3c465cd47da2261b752087ac5572fd0d6f5b0e73f892e84d100dc5c5e92177",
+          "bytes": 1251,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20210101_20211231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "e6b5d5e3fd7421360c77d69a8c330a712221b77a04cfb05a23380884375e1b79",
+          "bytes": 1806,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20210101_20211231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "dabf79a216d80e7cd4d65cd356de8e3556da711f2a72a929a0e08a0fdae6d009",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20210101_20211231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "3944fad89c99c80494e7a1ad960bb4e168116685724c9aef5b307823ddbe0320",
+          "bytes": 1250,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20220101_20221231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "4d13825ef5caf6b372a2bb8d8fc21a6e13ed24cc139343fa007b12624cef1e0b",
+          "bytes": 1808,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20220101_20221231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "09b00112748556111b01275929ced58653eb09f16e6efd800f74ff6e009028bd",
+          "bytes": 1152,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20220101_20221231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "a2133211c26e66ad79c6db9ac1f45233164501efd60c4a1c8e3a49483c1d8c6a",
+          "bytes": 1250,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20230101_20231231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "9633602f241371c7a4bd0fbbbad40ec8587dfbe199b147001de20216505e00be",
+          "bytes": 1808,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20230101_20231231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "658703e137db4f9e8e6b4131a8371007a02ab1deae7e5fbeb51aaa0a08cd8f91",
+          "bytes": 1153,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20230101_20231231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "2253089f33eb083f1d67f379f1435f745a95764a7d43179d7f30143bb693f6f0",
+          "bytes": 1245,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20240101_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "af7ba9fab21f02d6a7d5e2926cd71784e1c24feae6268a263a4460b1fba07435",
+          "bytes": 1809,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20240101_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "c8a8282c9dcaee78e7d25e70e24d937ee1ea1cb488ffede762f9849157d7936b",
+          "bytes": 1153,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20240101_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "830bccbdfe3de7b836d36e57b1de4fca07590d189715251174cdbe613e1163ff",
+          "bytes": 1249,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20250101_20251231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "1776b52fc1fb59b172fb7a29e91076755c47bd483633cffa5dc0fb62f4e27da5",
+          "bytes": 1812,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_STPGB_20250101_20251231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "28896b630726f4ca92e66e74e71dac0af55a7e147b75570fa24a7524b3a74670",
+          "bytes": 1153,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20250101_20251231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "52bf80058804ac48942c338b89ebd1a77d98f4fadb5c88e76f5205cc2ba76df2",
+          "bytes": 1247,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20100101_20100630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "d1e4a3b44c87280c2c481b576dfc9d80dfeec27f74057af75408ea0dc13e43c8",
+          "bytes": 1249,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20100701_20101231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "e17aa7772a9f3f6020edc6fe5807922ab5ac23929c170f9d8619da4dd47af106",
+          "bytes": 1249,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20110101_20110630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "332f73e0f2498caf3cb71e01d6feaa7905e9a6c625b779d4d8128e312d3ba4c7",
+          "bytes": 1244,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20110701_20111231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "1ff1b1e5dbc9e71bbefca5c7228f7661711c5992a961ad476a566564046fca69",
+          "bytes": 1247,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20120101_20120630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "e5d84ca49fc2dc64b517a13d4f8bbba7834c84792c8fbfbf6cbbbd7f398a3365",
+          "bytes": 1247,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20120701_20121231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "3cf3f51a62686a7db4a5608e4f8ae69222849b9343542bfa0729aa2b91bdd29a",
+          "bytes": 1247,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20130101_20130630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "9acda9e57059c22b026547ae713c8ab93ffaa336321da858e0e3684aaceffc36",
+          "bytes": 1244,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20130701_20131231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "42934e0338abce43fa161dd365fd50cc54d709606bffaa19b2911dfbd922bfa3",
+          "bytes": 1245,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20140101_20140630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "a4779fc45992c588e343547f5f8803119baf1bc766cd72bb847c741c9aa70773",
+          "bytes": 1246,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20140701_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "3a58fc0d08cc9ec84cf3bd3e15ea431e7471441e3e1ef3f635e1cbbbc0cb53d6",
+          "bytes": 1245,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20150101_20150630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "ce77a0133289e73ca1704ac2cae2aafe5418e8ce2e4c9870a674f6c6e4c86d81",
+          "bytes": 1245,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20150701_20151231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "1b105107c0a44571fca64d5ee0ccc68e61b5391915cdf7c28d4e8029f2be8ce5",
+          "bytes": 1245,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20160101_20160630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "540abc27c74f530897cefeeb189f1d4998d4509f36592ebf9025c9ffb6a4964f",
+          "bytes": 1253,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20160701_20161231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "7f43d8a5586626e150d5b17375482cd3d535680417a76fd5b53c7cea22ff1b1d",
+          "bytes": 1254,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20170101_20170630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "6434c99a6cf51afefb503db4faa532c576867e25fecfa6548f98ffb40b4b4781",
+          "bytes": 1255,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20170701_20171231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "128b19b6260b4a0fd122490119df4861130d1eb70e7c7690941d358e4e190940",
+          "bytes": 1250,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20180101_20180630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "b77b8e042d902823071c7e656078617fb752684c18daaa9c590b7e39c34b03a8",
+          "bytes": 1250,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20180701_20181231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "5239e689ae38793a9b2f8f795ea166150655b86cef419a1b956e294a5a463906",
+          "bytes": 1250,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20190101_20190630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "4d4785c9ad747ade70c919d79138073f8e0c8d47f49e06c706ced2fe0f455095",
+          "bytes": 1248,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20190701_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "337ab8ce8014c12a7a2ab44b923e23176173d7fa0ca08508eefb8ccca313da9d",
+          "bytes": 1250,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20200101_20200630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "b1edf548754162c30a9e7eff550401b9d1b2cd7387a4c9bb2520abb54d1956bd",
+          "bytes": 1251,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20200701_20201231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "3a784fdbd62f836ae1384ba60dce66c9f908e2d565e991de9fc5dbc23cf48200",
+          "bytes": 1246,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20210101_20210630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "7419cddad1a728b2e16b41f3b4c95c2aeb23bcc1614cd5e2b738d632b6af9f70",
+          "bytes": 1249,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20210701_20211231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "813cf7fa2325a74565339f8b803c513c1a0a3218ec287141b0ee16e615655600",
+          "bytes": 1245,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20220101_20220630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "7caaef4bfe4a3fbca7cd759d0dad96f95238839b6ee748df2ef9af768a3f8b86",
+          "bytes": 1243,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20220701_20221231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "f4dcfcda63688ee98999acfd8e825354c768869ff4ff4da4a68047cff986614e",
+          "bytes": 1245,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20230101_20230630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "94c6a72f15539a173c608f6bb15881bc180000001bed86d834df5b1227532909",
+          "bytes": 1243,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20230701_20231231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "4434623223a6da7c6123fb9050267b16b07d3af0b38dc19cd92cdb4e6582962b",
+          "bytes": 1244,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20240101_20240630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "23a0de4fe4f71d2366d939d5f63c42626d336864bb46641bd9262b0bfda4edf3",
+          "bytes": 1244,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20240701_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "620706941008b84f29fcd0d2d1220dbddfd5e6fe27b4f6d0c397a8d8c8065b16",
+          "bytes": 1244,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20250101_20250630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "e0aca80ff7dbc7bb4d1cbe968d29c18362989b79c565a0469e7b596a6e64e1ef",
+          "bytes": 1243,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_STPGB_20250701_20251231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "e294bb71a561a0bc2c26e86c9431ae592b0181d9a1486098dd74f95d572f9ed9",
+          "bytes": 1241,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_STPGB_20000101_20041231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "6513296fb376f6113e77e0dbf0531fe1d416076bbefc469b5bd721d79bfb5a15",
+          "bytes": 1817,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t4_STPGB_20000101_20041231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "26eb7dccc80a4c3a8e99a290245f4cfac196e7ad40f48bd05476dcd337548f7b",
+          "bytes": 1272,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t2_STPGB_20050101_20091231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "453ad9d33000aa3efd7547323706f30f167533b409dbee99e40aa2711c311003",
+          "bytes": 1815,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t4_STPGB_20050101_20091231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "b59e560229ebe56b9291aa1c04a360e522bce81ea95a69f59127f9264641d89d",
+          "bytes": 1268,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t2_STPGB_20100101_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "ce838d9a181565501f4ab6aa7184bc2dfa6171827f87fde605143b0085c336fd",
+          "bytes": 1816,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t4_STPGB_20100101_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "da9ec319f1e5159f2729222c66065a38cdf5fe73fc1d45b189893773b8dc0296",
+          "bytes": 1264,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t2_STPGB_20150101_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "b96aad60476b771bcdc916e8dbdfb5929b3fd52f4228f4a6bd6779e799f0b1b2",
+          "bytes": 1812,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t4_STPGB_20150101_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "0bf9a8271d4b0cd81297a625d06913e77b3a08fe99973153438aad1c62e2e9c8",
+          "bytes": 1260,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t2_STPGB_20200101_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "49626b45c719e1509ff2e06eb217bf40b37841c5d6d8698d563d49b5980d2b3a",
+          "bytes": 1815,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t4_STPGB_20200101_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "be059f95624b7062ebe768e3d245a3fdf62b6e3285dbdc0ffe4f5a1b063fea83",
+          "bytes": 1260,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t2_MDYGB_20000101_20001231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "beed61131119af149cab73caf484ae59c3634cb4d420e6d9cdccb34f937dfb78",
+          "bytes": 1487,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20000101_20001231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "a3a692477075c24c638925b09982153b4bdf5ef3d2cb6fcff12b6896873c76be",
+          "bytes": 859,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20000101_20001231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "cd2918b62d7beb1eb1b5684703a874457e053512dddde58beb6e2d420a151c40",
+          "bytes": 944,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20010101_20011231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "7001a86d2f23e51be5e7006fea89e46a63dbe2fec344cec43e4942632e091669",
+          "bytes": 1489,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20010101_20011231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "319fa6f810ffea13f469d95f67e4a0b4599fdd59e95cfaf97d9b5bf7bff4d06c",
+          "bytes": 860,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20010101_20011231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "05da4afd89a514aa8e473e323faa572203cc22a0498badbb2764b812838369ee",
+          "bytes": 944,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20020101_20021231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "26b0fa33774dad670d7073a7bbb9b1b22a25761963a711a1166db726c60a944b",
+          "bytes": 1492,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20020101_20021231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "c2f6b7fe5c70a7512db01efc79bcc360ca217fff88f2e4929b17f45d9e9c7ad7",
+          "bytes": 858,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20020101_20021231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "403aae19644ec3f2157e03a6b68d353d1f30051fd06d0aee8bdae9b4b7dcc53b",
+          "bytes": 946,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20030101_20031231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "c004ba07a3ff4cd5350d37128c219c8351b78399347260263004b07cf8f3656b",
+          "bytes": 1488,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20030101_20031231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "87fedf832b3cebad4d0cfd412853bbf05674ea086de257c03e88d4ae05f119d6",
+          "bytes": 858,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20030101_20031231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "9bec9e976743962a38f395dc1afd4f32a633ecbec595679b5fd641e59d1060b6",
+          "bytes": 942,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20040101_20041231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "e8ae0bd5a2be6706c3f1fb4fadaba9a653b160bbaf52563c86c497f8103d078f",
+          "bytes": 1483,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20040101_20041231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "7b3084ddd06daa361498a1fa9a86e8f8ed6fc7a3accdbea34481ad597a4ac9e0",
+          "bytes": 855,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20040101_20041231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "fabe3a9946db0fd0682730cbc5b07ffb1a5bd81dcba85bffbd20f7c7d9f3677f",
+          "bytes": 940,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20050101_20051231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "2975c94298a0a6398c83fe856f24ca5551cb5b3258672c3e4bbdc475d3eeed22",
+          "bytes": 1483,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20050101_20051231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "8cff5e14a9245bb5dc1c18196e752c701b63c353062dc1561811b6197fdbae3a",
+          "bytes": 855,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20050101_20051231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "7c41b94cb30984f9ae0f106111f63aac34e5c87f619ba4b8d44ed791e7d43b1e",
+          "bytes": 940,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20060101_20061231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "f23275225b20e2b83c866633d47fec4c10d7bde7b24eb2efd0b5d9c9b851f8a4",
+          "bytes": 1481,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20060101_20061231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "83757d0823ad702a44968ab3c81e3303691cd060629d4b47c2a2dc2b0a5065cc",
+          "bytes": 854,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20060101_20061231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "38f8b931b01b31bb90acd16ce7501d8ac6573aba52056b05c26c3d955270ba6b",
+          "bytes": 936,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20070101_20071231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "10902b663d25581b004b605c4b3fabe7b6b663ab2a2d3b187ed33cecf88a9ad8",
+          "bytes": 1481,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20070101_20071231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "1c022451344f192027bb53292a2f78f431b76f8b08d4d6b1d5b404eaf60b2349",
+          "bytes": 854,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20070101_20071231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "2933de32f9d187f1b269bc3ca50394d85df6ccad4fb5862bb714ed50e65efe9f",
+          "bytes": 937,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20080101_20081231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "40e979a15d20de15a60606c72230314f4a6f3f1b40bd5b90a0230dda0a3e1e0b",
+          "bytes": 1490,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20080101_20081231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "be88545115a5c3f96278252acf18ed6192cc506f05cf6a4ef4e695568423c5a5",
+          "bytes": 855,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20080101_20081231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "94c6e6a624525e3e0cdb93627973ff79f8eff11d190c9dfbb3f5cf84054858da",
+          "bytes": 939,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20090101_20091231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "46646e10cbf8bf5c625989a0ec8d8fa3ab6bcfb3072a809a0f562bb0994d3951",
+          "bytes": 1490,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20090101_20091231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "b279dd41629105f9ad098f04c1a4139dde615162a1f787aaae862b585f66aab0",
+          "bytes": 859,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20090101_20091231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "fd4f513a7ef5945c3c8af2865363179a946ca2996e018ee4dc109273ed26f157",
+          "bytes": 940,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20100101_20101231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "2a8d88fac43951942591b54a111c74c8a1e62c67943f98ccf552556438c9ae09",
+          "bytes": 1485,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20100101_20101231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "633e218ae31d304b6b1893834d5ecc3de57bf504539f86419f750a41816a6b5d",
+          "bytes": 854,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20100101_20101231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "ceafcba167c251d6d4cdb1fe4682ff1a61ca00db8023034410447adeb9d89f82",
+          "bytes": 942,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20110101_20111231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "62f09187e3b389e4075adade6928e818154cbde3550dfdf6c7177c27020216a2",
+          "bytes": 1483,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20110101_20111231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "2b80f892ea43df0b7ec660f4c409dc601cf7af7f8ace733aa054a2ae1ff56df3",
+          "bytes": 854,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20110101_20111231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "6517d3b3fae163c8dcd90cc54f9c400c81c49aaa9309080caa53d850b0088932",
+          "bytes": 937,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20120101_20121231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "136e4dfab401ccd758fe46e37981877a30530a76ccaa3855871bac396faa3c60",
+          "bytes": 1485,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20120101_20121231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "ee8ba1c6b38c4710ab57764df9073fb0363f1d56789b11a4556c8a822a1b4283",
+          "bytes": 854,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20120101_20121231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "aae05a4ccc6a75e29e0b0e9c9c2b9a7a42667fdb82aa20a7fcad1fecb0c156a9",
+          "bytes": 934,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20130101_20131231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "eea4f82e9f13ced9212518c60fe271bf225d08f2f4883d0fee7c1830d64697bc",
+          "bytes": 1484,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20130101_20131231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "d13e6eee23c61999f76183846e78e3e4e723d8a2fd47d8e08ffdac5b92bb34f7",
+          "bytes": 854,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20130101_20131231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "39205d5a9faa8ab83a35a7f334327bb2c61abfa2991f3e25a01ac2b5cfe896fe",
+          "bytes": 934,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20140101_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "9d191177297d0491d65fb42948bc379a7f79b59878622d20b9d7f989839c181e",
+          "bytes": 1483,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20140101_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "923e6c45141fcbfb0627529235388e0165da9843abbdfec3e616597f1fc5c219",
+          "bytes": 855,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20140101_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "601cdb900affb1ffdda788973d879849024e6a283448605decbdb8287a6e91f3",
+          "bytes": 935,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20150101_20151231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "b7a327129a1e846a86a44cab62da3a2f696226f93aa6a6faf1abb3b9b5fa58a4",
+          "bytes": 1484,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20150101_20151231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "de0e94cbfced69dbb16eab8b5369ae92f822d4816a4fef36fb1423985b760086",
+          "bytes": 854,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20150101_20151231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "4af33b946e3bee1897b322e83941da2e1f81be0da1566ecec8ec70ef53fdd1ce",
+          "bytes": 934,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20160101_20161231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "5b8cb578f9ea71407c86b873393383b016e96b3d48687b56534c6148a2629256",
+          "bytes": 1488,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20160101_20161231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "e7b27325e84cb27e33a106c71009610076c5423afd823e9ea84853be1f652003",
+          "bytes": 858,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20160101_20161231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "356a59f45d1b2240c9da06f059683de6ff84be6bff9484d43c3e51611fbbb8a8",
+          "bytes": 941,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20170101_20171231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "d5c5e444c42caf79e25b9391dd0f7eb3bbbf2799e08f29bebfe18836e4d7a236",
+          "bytes": 1484,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20170101_20171231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "d98f32dea6e6593805aeb6fcad9109ca9694a559082cce3e0f032dfc1a17ab15",
+          "bytes": 856,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20170101_20171231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "aa9412844dddc9ff86839108ff7123a730064f1775c3e8c95faec48e4f07fd13",
+          "bytes": 941,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20180101_20181231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "f2cae9e66f278e9174eede05a4207bd62a645931a6d753011a6fb85d1e23a310",
+          "bytes": 1484,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20180101_20181231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "c1ab2bebda2b8cba37f1ca1e35ff9d55e3742240fb08ddb11aee14aebab8ee94",
+          "bytes": 855,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20180101_20181231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "7f8fa3c9e2fc3c58ea09f07c429e0ce69b073320546631e829b3ca021b46a8f0",
+          "bytes": 940,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20190101_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "436b2788ce2ca7ee71eb1056db7fb7d6ec718d8bf044d5478413bec270595343",
+          "bytes": 1488,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20190101_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "3e1d958f60da943823a02169f9558420c4cb580957907dc850a32bb5000fd53c",
+          "bytes": 854,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20190101_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "36b961e7cd0df12030ca1eae9cfabf441721988b6855e38cddb7591d7f464f1c",
+          "bytes": 940,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20200101_20201231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "b221138352d9ef126b84d8592f7d4591f6cb6517a99e7e3e7874bb2dae2651c3",
+          "bytes": 1487,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20200101_20201231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "43c4df57d0fc4458bc4d63c60feb05c5d8786193a35ce2bcf7d827af1d74b0a4",
+          "bytes": 859,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20200101_20201231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "2f57b8424897c6e7b396261cb6cedb3bbf583809fa9811b1d5d7f71c2ec0f044",
+          "bytes": 940,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20210101_20211231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "98f444d17c4b8ea1311064276fb16e417df94717e0451c37d9703ef12164ee59",
+          "bytes": 1484,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20210101_20211231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "8b0e2ad3f26bc021fcc0f787374280d609390f0412329e23aa98b6c1e12726da",
+          "bytes": 855,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20210101_20211231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "6adf2803f984242f6f833cf2faf2a8a03b8be7ed6cade7079d2d7a0a718e584b",
+          "bytes": 940,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20220101_20221231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "62e6a10a7ae8baf99edbc314ba8c9d085379045087d7b2c1872c36a48cada945",
+          "bytes": 1487,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20220101_20221231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "44eb098f9644dbd28249f93d1adaf6c7068c940511224a6fdc9e6555473d5fd2",
+          "bytes": 856,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20220101_20221231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "168323c925b3626d50d41b36365bce07d59c52162919d315d5362cf5654cccff",
+          "bytes": 939,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20230101_20231231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "8740c0786c4001645e72f5931eb8f15933cd9082244bc56b7d28a12b9cf10e63",
+          "bytes": 1484,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20230101_20231231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "9c88c5dbdc999f5d1359b49153ba13def8f8cce43ee10df5e3d263b261a8b0c8",
+          "bytes": 856,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20230101_20231231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "5de58a8ea6de9f0ea55f66a03dcfdb9d91e6438243cde6e5c35cd70661f4f167",
+          "bytes": 940,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20240101_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "0c37fbdfb54049761a907612146ba505cd7bf39e6094fc8d6cc14ccf327261da",
+          "bytes": 1483,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20240101_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "6cafd561baa6c81a61515da6f374bc7c8d6432da802e31fdd2099e50f68a0773",
+          "bytes": 855,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20240101_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "b0f274a74938dd5d89958e2426d9c730b3134174d33f6780d5b2d9ee1b2740b4",
+          "bytes": 943,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20250101_20251231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "9ccbecea24dc967587879d855a326c0ddf62d830a18f955a1f2197cc8fd2cfe5",
+          "bytes": 1482,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_MDYGB_20250101_20251231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "ca1db02f9f94ab802c619f0f9d973a15dc4c93acfbc84990c2fd70109fd411e2",
+          "bytes": 855,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20250101_20251231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "c477838eb902bfc174080b8a031410f6d01ea5c4a14d5f4060ea09f626d8422e",
+          "bytes": 940,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20100101_20100630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "8dc7c493557af04ca8d53c57dbb6dc6e9d95649bc4a75370c278ff73960b17a2",
+          "bytes": 932,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20100701_20101231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "a85475a308825112dc3607f6371c3b3d638bc363c06daa886b96314c231ea61d",
+          "bytes": 936,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20110101_20110630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "11c862bf4a45263a346bd75e3b576a53c8cf307a08119fa59dfb292eac05567f",
+          "bytes": 932,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20110701_20111231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "213f28d6964ec50b9e20fc0a56c73ea7a71b1fb5c72af111bfe1ce4185ce8cb7",
+          "bytes": 933,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20120101_20120630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "01ffad7403cd6991687526f0f30a4deda69dfb7b25ad8e1b4886d00342665372",
+          "bytes": 932,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20120701_20121231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "e8b5c5b346df87aa9120a44757a458d16e38a00711076ef25819e2959ac2a88d",
+          "bytes": 931,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20130101_20130630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "4f7eb85390d1fd588586d71fac27da47fc28cf7d57809aa2b39ebe21d0481a89",
+          "bytes": 930,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20130701_20131231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "b8980f9d49be6b4c39575c86777b3490f336e9664f1a426da9511bd392f59b7a",
+          "bytes": 930,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20140101_20140630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "11ae01a83e98fea8531de24bdd654425bd1b06564f067641cf8975843c19905a",
+          "bytes": 928,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20140701_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "2ea602a491dbada6fdf10093b2168909981cbcd42fb6899e1220c79cc82808cf",
+          "bytes": 930,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20150101_20150630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "ff117314ac0ba806951e49f4b052c7969046910a94ae479bd6dd4661fbd4fbdc",
+          "bytes": 931,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20150701_20151231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "3f4d206d48ddfc6139733bec24c2d2677a2be2f74bdbd4d59557182ab9eaec21",
+          "bytes": 928,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20160101_20160630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "821ed7a3481348aff1387294f3884280beee8da50605b941dd57d8946865bd8c",
+          "bytes": 941,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20160701_20161231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "49cbee32fb039257ae8491a38ecbf9a1182954bc82e6804a34cc8ede00135a7d",
+          "bytes": 936,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20170101_20170630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "25173c498b5a02394b655a2e389a385259fc4fe7e4af3ceb5f59598f94698729",
+          "bytes": 938,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20170701_20171231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "56ef6e461710146de1777d98b070275136c7b7c77e1456436ec28c4a91b8c13b",
+          "bytes": 935,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20180101_20180630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "1ce5034213ab3a4aadb8e93932b6962df8510e3b0d9cd0906f38068dc850fe26",
+          "bytes": 939,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20180701_20181231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "dc6ee9164d84bbbcfff4238c90220179c8c261db8121842cf2cb7f24e97749dc",
+          "bytes": 935,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20190101_20190630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "7257b959ed517a3fc48e8af1736b5a984d457400e09774d40919af68649c2ce1",
+          "bytes": 937,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20190701_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "5e2fd49da0c361eca51b6b055389982bfa62c1d3460f240ccdcdd02bc7ffeac7",
+          "bytes": 933,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20200101_20200630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "ff5733909821c8f16b5ca1bcce64dfd7b6d416b31b23edb833fd218ca60f7a2a",
+          "bytes": 938,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20200701_20201231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "00285f70d0bef1e372ec8e05bf43cd93ded64ed7a3c6c6c37db73998b39d620c",
+          "bytes": 938,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20210101_20210630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "b6e63bde5ff4af66166676e4b37e0ec28c61935b493098c3e959812d1ec31960",
+          "bytes": 935,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20210701_20211231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "29d4f70e39ee70f92067b00f96fe196292d40b6c97c5d31b8162d1c1a1f17863",
+          "bytes": 934,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20220101_20220630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "4cf2d2ef99dd10b71f7bee89b63da8a26f163ef3cb8f4c6c32103568573cfa93",
+          "bytes": 936,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20220701_20221231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "1f2695bed54e86c2432b111f836ffbb732b60e6752972600372fe812c82e7c91",
+          "bytes": 938,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20230101_20230630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "6a9dadd9cebbc0610876d172ed0c7f9c80c151e5f25fc6c0632351975bfebabc",
+          "bytes": 936,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20230701_20231231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "f949e0d4575e3eb5a47d7c3638538e2f140d9983d1e836d90c8fbfdca3d193c4",
+          "bytes": 937,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20240101_20240630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "2794e68397e8f4f09238647c353c5f7008a52cc7302b807c49a244691c4a46e4",
+          "bytes": 937,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20240701_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "1e3196e95d0f0c45394a500be9afb8e4dd5fe2bd5371b7debe165c3e27a53e6a",
+          "bytes": 935,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20250101_20250630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "dc231a1c6b43f45012f2fddd2cf2079fa2a51a9b8e4d3d8f0918df71ef7ecd6d",
+          "bytes": 934,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_MDYGB_20250701_20251231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "85086a3fe9b5ee8ce8af0eb08678fd011ac3d2ffca5762d48254e6562e1b3fb9",
+          "bytes": 933,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_MDYGB_20000101_20041231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "61dee442d2257c3c6cd895742871db2a3b5d92497948727250885eb358375c78",
+          "bytes": 1493,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t4_MDYGB_20000101_20041231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "8b6fae9216ee6b6cc997396d3828ffcd3a7fd6b4cfca29f0e81ddff000e0fb2b",
+          "bytes": 951,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t2_MDYGB_20050101_20091231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "2edd5fe141737fa3f5d53aa557fb418bd71294fc351c6662925df60208d3a611",
+          "bytes": 1491,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t4_MDYGB_20050101_20091231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "a392c43df80e892d9d7c7b463d055cb6e5eff6ea9c1b258a65759a621a9b6390",
+          "bytes": 952,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t2_MDYGB_20100101_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "237fcc2858c194b639b01296830576637dde839bf8db22c5cf7d87805d5a470a",
+          "bytes": 1491,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t4_MDYGB_20100101_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "bd9c803a61a26e960dbbed8dba1ef4a7921a8626f65d4df4d8a8141cc9f7d8f2",
+          "bytes": 944,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t2_MDYGB_20150101_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "fde7163456f046b939199be00379ceb08fc596a36a20cff519e6f46f56d243ff",
+          "bytes": 1489,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t4_MDYGB_20150101_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "4e2058df022e6e3fa8edd5d5383b7a1c19aa5a3fd70f6311598b4f20e1333d1b",
+          "bytes": 936,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t2_MDYGB_20200101_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "c8801fb2ff067a00303e990d3e019d09c08644815acaacd307e80b4d5faecc74",
+          "bytes": 1489,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t4_MDYGB_20200101_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "407043c9f4fd82fde99aeec03b972023b99be07132597138365a39c4d712100c",
+          "bytes": 946,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t2_FITGB_20000101_20001231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "6eab9d196bf60aeca187a7a3d95e51605afe97bc9ff0f5cb2eca7b516ddd8757",
+          "bytes": 398,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20000101_20001231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "f721d61df0ebfe444d3675b57d6c2f848bba7195eb50f234f341c2c3bd379c5c",
+          "bytes": 385,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20000101_20001231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "36033164a307bec72b683f9c89a458d0c2c5b505f384d062b03c9ccfa8929a83",
+          "bytes": 398,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20010101_20011231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "3572c444abee7bf06ca6d717843b4749aa2314849790b698a00f98369a356290",
+          "bytes": 1694,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20010101_20011231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "ee2326a02c638922121b06b6c343b8edde28cb640e59493ea2e8ffb15f25b8d8",
+          "bytes": 1044,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20010101_20011231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "d30c0c2a9fbec25114b008047467268e34880a396e19159d2b6ec3c78ea3d657",
+          "bytes": 1106,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20020101_20021231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "a1b7f279b7e0f8a5682f92a1c9081fc8c51686fb64ad3aa63eb1bb09436280be",
+          "bytes": 1699,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20020101_20021231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "58490436d17db9b3c116647afe341c9a43ca207981b2fe98807602705b612358",
+          "bytes": 1044,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20020101_20021231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "c4cdceb2a39d8ffaa22cf043a78150fd6a27290a48067981411d94b5715aeb28",
+          "bytes": 1121,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20030101_20031231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "fa41b117d3150c516af36297b30f87597b37051808de090f1b0a2b02b112326e",
+          "bytes": 1698,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20030101_20031231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "eae8d3a45ebf78312576711fdfbf2b5b066f95c7c4feff7a3ea73e02ec119f10",
+          "bytes": 1044,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20030101_20031231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "174b3b7da509fcec0c38ccbae18652d31c2722e76b2331c8144cbe328f514c50",
+          "bytes": 1121,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20040101_20041231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "f4faca62c39ff6b18031f7f7a8d5b3a058b4a7b31fe839e10385d28e7edb0091",
+          "bytes": 1696,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20040101_20041231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "66da6943ecdb7102968488e3aa485c090b4998f8d28ee3bd7e2f11aca3b9f6f1",
+          "bytes": 1044,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20040101_20041231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "548cece41aeb398aa110ba89cc9efbed061bd74b9f91ae6347480881ccb909f4",
+          "bytes": 1124,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20050101_20051231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "f115cfe03beaacb2b9800e036f5fc30ab2f7b1f9c5071cf6d551ad6709a6ec5e",
+          "bytes": 1697,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20050101_20051231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "1e66bb33639c1d31713aea9e9558155ea89b01296d498de855128e2259c7e071",
+          "bytes": 1044,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20050101_20051231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "b3eea18689d087255f16c04f2d21dfa46fee5ae14c7e78c3c8e3711f4a473c22",
+          "bytes": 1126,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20060101_20061231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "07e8601180314e9017af23c0e06e8460f4f0745b8e97891a0b7d4b3ba4bf5d17",
+          "bytes": 1804,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20060101_20061231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "30df7d6aa31cfd6cac2e215261d8556027993cd04f50d05922dc5b7584245e88",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20060101_20061231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "22af1ba700bb93d9a760559aa0d5c8f1e37f76b752c660e9d79dd56fc6c5e3e6",
+          "bytes": 1242,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20070101_20071231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "98e27930d2d5cc3221a12edab9dc369f368827dd05df1bc493de0f532cc7ec6c",
+          "bytes": 1802,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20070101_20071231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "3a162b247da62e44715abb62695b04e1fd121bf89f3f3f82a5883feab95a2e23",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20070101_20071231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "135507080b33e0b0c63776b2f8b0de02fe9523be21c9a64ba1ca1c228f3adee6",
+          "bytes": 1242,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20080101_20081231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "cbdb010f7de817ff65d9a9b23a8ca375dcde43859458ee67a4fc71baabae83ba",
+          "bytes": 1809,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20080101_20081231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "8a6fd347ac582e49fcb0f06f73f93a75b69e608a1293f33a9d75fa342f731be4",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20080101_20081231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "98dad59c7db286726cc7fb935dae1149eb4befbcf032e650e8ddc9f00038119f",
+          "bytes": 1247,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20090101_20091231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "0841d3c16a87b086a8ee27e0585c5560f050a6191e5fdae5dffa3552f89031e8",
+          "bytes": 1809,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20090101_20091231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "473609cb792e95855193634e3bae7b90239b9a44103f8d7086f7e4bdf0e20515",
+          "bytes": 1153,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20090101_20091231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "ed09e98cb24b8163d5f7e4a4d5b3ccc06dbba4957eb41a5b46c497c9b7f0e797",
+          "bytes": 1244,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20100101_20101231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "66144d5cf86f6b6d5f6efd2b89be9bbf8d029a6d3ed34a35bd933f265d1a6ec9",
+          "bytes": 1806,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20100101_20101231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "860efc75082c943192c2e4ba54fbf503eb5a9dda22a4d81f67ba60e22d05370d",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20100101_20101231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "bf8d44e22290076e231a4ceb41262c636939d8c7a8a9bdda8975d51cbc202c7b",
+          "bytes": 1244,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20110101_20111231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "0fd2a44b284691836b60dc0f0618cfa80db635cf6411dd4c325c6ccdbd988df1",
+          "bytes": 1804,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20110101_20111231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "fc591def29372fbbfc11b5926acdbd0340fa073eb8208ebdfa0fe01b6170498f",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20110101_20111231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "c549fb11b8cac67507d53dbe64edb590964ff54caa78098cb4172d21797bfb8b",
+          "bytes": 1241,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20120101_20121231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "75d1cee29b90aca636181e941e20f5fd1d324c2ed80f1035cf28eb362c5a6230",
+          "bytes": 1806,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20120101_20121231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "146b70be078d44fae33fb92d3a982a6e1fe178c0ba4c032455e2e002c08f33fb",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20120101_20121231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "fd3439f117fea1c5589e589fd497835beec7911b4183b6f9abaf27af36a433a9",
+          "bytes": 1241,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20130101_20131231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "59b75f4323a64dca4753b654eebf1e6ab8a70e911859d9e725fc86fc8befba97",
+          "bytes": 1803,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20130101_20131231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "90bf20875614b4438dd7b3cf9ff5c6ef158030e12514f8850dca61d76cfced03",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20130101_20131231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "a2a37a9f4a394be5f9fe886422db018debc00834386d1050e467b1f7bdb2ad9f",
+          "bytes": 1238,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20140101_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "d6e4330961debd405dcce65f74feedeb903b222fc60eba75610447fd704052cb",
+          "bytes": 1804,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20140101_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "72f8f2bad80428aa2a162bec5818a32c8575c4a0989ba610957ef7ece6b7fa2e",
+          "bytes": 1151,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20140101_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "1c43bdd0f209a97a8f41fa76f2aef3ae7bc5d4e4300a7e4c06a4579576c4cd67",
+          "bytes": 1240,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20150101_20151231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "a28e34a205f19980ce53d45b522253006244380adf19c9de906e4ce4edab005f",
+          "bytes": 1806,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20150101_20151231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "be842466211ff8887f43eb685afa60a5d76f508ef85c2e90f1e8371ecbd3a5e4",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20150101_20151231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "620584c2a8f3666ca241d273214eafb7f98d150dcb92e2b2f2a907fcbdf557f9",
+          "bytes": 1238,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20160101_20161231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "a6a735cebe7f9db7ed94de579f109bb4af90bcec4e9a8480ef469c1e2256aac9",
+          "bytes": 1810,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20160101_20161231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "ecbf533c536902e4e0c565319693f075207df34cf9a0cfdbbbef627823bcea1c",
+          "bytes": 1151,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20160101_20161231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "b55321c91efc9683197790d9a5a792ec05e3271b9742c8cdfc4c44bf04e3ea56",
+          "bytes": 1241,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20170101_20171231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "a687116594c07e8443e1e149c0f0f1fd3fad2b242b776613a5944221fb6cc415",
+          "bytes": 1809,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20170101_20171231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "fc90dae78e11485966101591879d4cb818aa065b8fac7232d902cc8d590a45d5",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20170101_20171231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "8bb2d4af57c90ea8062134062c5b7746ab3f3f5f969d7b6f7d5070abc6bde203",
+          "bytes": 1240,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20180101_20181231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "4c97762d2b3b9d37a2203bd9072fe2c321b44bdd56e952379bf4053d3431bebf",
+          "bytes": 1809,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20180101_20181231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "321ea3c284dd5b4e5a360e4f06cfd2113730fb72720dfa219fda30bddbfd72ad",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20180101_20181231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "ccf639f0be695bbde9ede2732647bb22ee08c5cd986037f72bf0ec91d2e35997",
+          "bytes": 1240,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20190101_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "ea05249019e9dd300bcdd81c4045e9d56427b1d9cefbc72dbcced228a83dea21",
+          "bytes": 1808,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20190101_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "570d560cfd7ccf5d90829eb51175eba796e91095e0134640725ebc8c8581ad42",
+          "bytes": 1150,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20190101_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "3396b975cd57e764a876386f318a23c4d4235d251f57d1b5f5916c17c7082824",
+          "bytes": 1241,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20200101_20201231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "016ff97e80ffa7456eff55e60d49e24f631c883212c7727610f3a1e7e4ed122d",
+          "bytes": 1811,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20200101_20201231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "0cfed72c7b88076ba43c620e4a75fc929e472b9254b5c8bc56ef5a571579fa95",
+          "bytes": 1154,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20200101_20201231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "7b594968df621abde5ecdb5dcbfb297a18a383f4757572fd485801f0e86aad2a",
+          "bytes": 1243,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20210101_20211231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "05a0e0e23a79c054daebbdc4454e4cd112eeded95fdb281447814d266adf2a1e",
+          "bytes": 1811,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20210101_20211231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "cde4d2fa6c41cf38e21448520cad186562b0adcd98bf5845b0c43bab2d218056",
+          "bytes": 1151,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20210101_20211231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "3278823122485ac3e9d9cc0d6203feb7d86e9e7c1b76d2b5cbb5ce3b5989886f",
+          "bytes": 1241,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20220101_20221231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "561a546de85f70216bea34fc46112753017e89fe8f6cbfcc11e53da4ddc9a308",
+          "bytes": 1811,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20220101_20221231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "2b7b491b5fd533ef4132ed53600f8ea9df84d29468ff0ea0120bd753a3adfb54",
+          "bytes": 1151,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20220101_20221231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "93166d8f1be245370ae6a345a55cd1f6a9a6da8e5b6a0850a850e4e66170e337",
+          "bytes": 1243,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20230101_20231231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "af643dd639d86d9fb1862daefebde64b76955e872f2d0a00ae7a121e11399f04",
+          "bytes": 1811,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20230101_20231231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "861b8c0ca52dc00755542725723b5389c55f1fa2785a6cded326ce7df502a9a0",
+          "bytes": 1151,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20230101_20231231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "fcab458968e3d1ccae90d2551c5a7362b7a9a04b2ce0aa7712d5fbc962d81d06",
+          "bytes": 1242,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20240101_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "efc9da308a6cb145a4ea093e46754ace90ce32a1390238eafbe9928d1f1e7418",
+          "bytes": 1813,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20240101_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "49275ed5f8febd6ab8fc1d5a43a70285230620483728c6e0c0faa10dced49b23",
+          "bytes": 1151,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20240101_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "df4670164c84848a8785f6901ab62509c2c4c5ae4b16279d6196ed15419477c5",
+          "bytes": 1241,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20250101_20251231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "0bcf37cbc0f5bca12b44343f27b24e0d973e9a4bea096dfb64a6fe7907276e58",
+          "bytes": 1812,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t3_FITGB_20250101_20251231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/3",
+          "sha256": "810d905f549dcefe66f294d77dffca2b8f59fe44323b30dd403254d473b63c46",
+          "bytes": 1152,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20250101_20251231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "0184b55a556a8d88fbba32980cba73a06cf4d9e5ab9554e2b5b1698ecdf05536",
+          "bytes": 1242,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20100101_20100630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "6a65809a0547220f0e4e70d5cb6468aeb2c68b5f6011a99c9775d64be444dfce",
+          "bytes": 1237,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20100701_20101231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "c78a794a5f3047440a6444670cba0f0a1eb505191cdf4cafd8fbf0c2946b3902",
+          "bytes": 1235,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20110101_20110630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "c6bec4a256b353b13be7c4a67893e3046a8b26ad700e04b25e3f3552f137ec26",
+          "bytes": 1238,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20110701_20111231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "0c3c2df4d3f09584799e6fabf0f654e9cd147813d94dce83664c7a3dcedbda42",
+          "bytes": 1238,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20120101_20120630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "35fda0691e0674c6b8c61e77858c25b7e69048e5d9a6d1603d88ddb360d3c2a8",
+          "bytes": 1238,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20120701_20121231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "7f7b2c95f21b73c504984e6e739468c75c6ca31dae96f5afbb38a00e35d10029",
+          "bytes": 1236,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20130101_20130630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "db2bbc2cc6a6bfe7fad08419287590f89a4e4344e24b5b99780c91ddeff3fe88",
+          "bytes": 1234,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20130701_20131231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "e7ec94c8a11e6709062576060410d72e26811bd628c2f3c0b22e8784e8381a98",
+          "bytes": 1233,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20140101_20140630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "370f51e6c5740672537480be632e8e61a959916ddb74d76c302a21586c16e568",
+          "bytes": 1236,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20140701_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "1dcf04b3918e21ced80b0becae8f7356de222afa6e2f019d02a2bdd11c16a755",
+          "bytes": 1235,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20150101_20150630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "fe0fa8be3223cf6cda1f469f32d9f0c733995cdfaf89d2b5d75eb82188886e82",
+          "bytes": 1237,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20150701_20151231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "002413e1fdad374a0e36a58cebd33f1a09977d44759f2223bc3c5702e4b5ccfd",
+          "bytes": 1236,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20160101_20160630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "15d5cb2d8d637e29fea06bd8c9d336f35f7dffe111b98b8bc3c519ea46ea18d6",
+          "bytes": 1238,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20160701_20161231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "1db9c0d9f1ee670657e1d0431ff6c88e04449feec0fe57ba308d143021d9eeff",
+          "bytes": 1241,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20170101_20170630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "22473211da2b5723894296c09adc0bd9808dc772bf866010b17c0f00c6433646",
+          "bytes": 1238,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20170701_20171231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "7d2c093d013cb4930d922c070c14f1189cd13b02c4e673902d7e7aaf54a513d4",
+          "bytes": 1239,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20180101_20180630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "9c09c21906c7dd17665d6f3216106859262cf0e26c0cc4ff6ccd2c19c0e6dca2",
+          "bytes": 1237,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20180701_20181231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "ef1db37e75b069ac49b537081197182727cf28c7e8e8e20be97c447b4f366771",
+          "bytes": 1239,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20190101_20190630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "388f2478193bf0585b50c6727c4428c62c7db1f2f73e09c3b876fcede2df4608",
+          "bytes": 1239,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20190701_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "7b45608128f13075d230255bd185c26f090bd6aeb5124027966e75f2415667f9",
+          "bytes": 1239,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20200101_20200630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "f7958a8ef67c2f2399017c690ba90aa2eed357a1a8356b7fde3cd204ffa41f92",
+          "bytes": 1241,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20200701_20201231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "45c6bf36daddc48023359f77d3e43e25aefc4c37852791b379560eaad2eee2ac",
+          "bytes": 1238,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20210101_20210630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "1b203c176112c70321e168a49cc3ca36b232e09006d913b8e6e613197c1f1791",
+          "bytes": 1240,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20210701_20211231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "efd7f51f00d2fddc0fb4300c5f6080bcfc0cb5e34abf920ce469d7ce0a7bc2b6",
+          "bytes": 1237,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20220101_20220630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "2b48f532839f40d1069e5d3070a4e35b3d92d176a21f951980a4708c5b6e801c",
+          "bytes": 1238,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20220701_20221231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "33d223c813dea54cac3b5e7a4335228ea2ba31358b3a84b144c2de6f159af768",
+          "bytes": 1238,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20230101_20230630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "36da82795f9093f070f41ce74f7901d8dda8a3b8e2de795259d338867780b8eb",
+          "bytes": 1236,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20230701_20231231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "13b3579bf29f4138057c22da6c6d4459c9d76e7617aca9fa189471f662f11814",
+          "bytes": 1239,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20240101_20240630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "b41baf95b145403aa1e3ae94473119b9dc752e0c8c9dcfd220b8a4facc2e66e1",
+          "bytes": 1240,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20240701_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "450f37b9f07c0c65bfadf180862653ca83254f75416b489a57a056017a8eb7e1",
+          "bytes": 1238,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20250101_20250630.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "260f94eb69aee47319a87b1bfa667659a8b6fbe3464e3f1ca2ca0af43f721bfe",
+          "bytes": 1240,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t4_FITGB_20250701_20251231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "ee3ab853a65d1bb46a163813ed673490e494eb4f81d1402c6786c927e30439c0",
+          "bytes": 1239,
+          "retrieved": "2026-10-06"
+        },
+        {
+          "name": "t2_FITGB_20000101_20041231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "6eab9d196bf60aeca187a7a3d95e51605afe97bc9ff0f5cb2eca7b516ddd8757",
+          "bytes": 398,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t4_FITGB_20000101_20041231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "36033164a307bec72b683f9c89a458d0c2c5b505f384d062b03c9ccfa8929a83",
+          "bytes": 398,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t2_FITGB_20050101_20091231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "6eab9d196bf60aeca187a7a3d95e51605afe97bc9ff0f5cb2eca7b516ddd8757",
+          "bytes": 398,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t4_FITGB_20050101_20091231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "36033164a307bec72b683f9c89a458d0c2c5b505f384d062b03c9ccfa8929a83",
+          "bytes": 398,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t2_FITGB_20100101_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "e843b21255e9bf982bef4e58d5e5e9e91693da0ccc2c021d1c1b354ab56cbc66",
+          "bytes": 1811,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t4_FITGB_20100101_20141231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "9de3ecbc7d27ac0796a174b2bd7b8638abbe79cef840e76e3b3e070e007970c1",
+          "bytes": 1250,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t2_FITGB_20150101_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "71b8fd9fcff615440afca83ac8b84a1c4f02053e352b56b5193c11e5bc0015d7",
+          "bytes": 1810,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t4_FITGB_20150101_20191231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "c733105692e22a5591d48b4987b24be74494b8828d28e664cfeb73dce7eca78d",
+          "bytes": 1244,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t2_FITGB_20200101_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/2",
+          "sha256": "4def21b1ae05a0be15d8e137d75f98daa8b08bbb303f25867e8b3ef8deaf11f4",
+          "bytes": 1815,
+          "retrieved": "2026-10-07"
+        },
+        {
+          "name": "t4_FITGB_20200101_20241231.json",
+          "url": "https://registers.esma.europa.eu/cerep-publication/searchStatistics/4",
+          "sha256": "4f321067bf6ec0da507016f4e4b5dacb11c0e197d17eae7622a36d3282cbccd1",
+          "bytes": 1252,
+          "retrieved": "2026-10-07"
+        }
+      ]
+    },
+    "israel-rosenthal-wei-2001": {
+      "name": "Finding generators for Markov chains via empirical transition matrices, with applications to credit ratings (authors' version), section 4",
+      "publisher": "R. B. Israel, J. S. Rosenthal and J. Z. Wei; Mathematical Finance 11(2):245-265 (2001)",
+      "landing": "https://doi.org/10.1111/1467-9965.00114",
+      "class": "derived-only",
+      "licence": "authors' version on J. S. Rosenthal's website, no licence statement found (UNVERIFIED); its three one-year matrices are S&P's and Moody's data reprinted in the paper",
+      "attribution": "Israel, R. B., Rosenthal, J. S. and Wei, J. Z. (2001). Finding generators for Markov chains via empirical transition matrices, with applications to credit ratings. Mathematical Finance 11(2):245-265. https://doi.org/10.1111/1467-9965.00114",
+      "access": "http",
+      "files": [
+        {
+          "name": "israel-rosenthal-wei-2001-wei.pdf",
+          "url": "https://www.probability.ca/jeff/ftpdir/wei.pdf",
+          "sha256": "71d79aa0807450837ad01434d45ca0908cbb8b0a0a6ca1ee61f503f8ec5ff26e",
+          "bytes": 188160,
+          "retrieved": "2026-10-07"
+        }
+      ]
+    },
     "pluto-tasche-2005": {
       "name": "Estimating probabilities of default for low default portfolios (arXiv cond-mat/0411699v3), Tables 1 to 14",
       "publisher": "K. Pluto and D. Tasche, arXiv; in Engelmann and Rauhmeier (eds.), The Basel II Risk Parameters, Springer (2006)",
@@ -34,6 +2608,24 @@
           "sha256": "949dbc3873852a930d3532183efcab4199ac9478b1f70b32101c9e9f37084459",
           "bytes": 242425,
           "retrieved": "2026-10-05"
+        }
+      ]
+    },
+    "schuermann-hanson-2004": {
+      "name": "Estimating probabilities of default (FRBNY Staff Report 190), Table 5",
+      "publisher": "T. Schuermann and S. Hanson, Federal Reserve Bank of New York; Journal of Banking and Finance 30(8):2281-2301 (2006)",
+      "landing": "https://www.newyorkfed.org/research/staff_reports/sr190.html",
+      "class": "derived-only",
+      "licence": "Federal Reserve Bank of New York staff report, reuse terms not read (UNVERIFIED); Table 5 holds the paper's own interval computations, no data",
+      "attribution": "Schuermann, T. and Hanson, S. (2004). Estimating probabilities of default. Federal Reserve Bank of New York Staff Report 190.",
+      "access": "http",
+      "files": [
+        {
+          "name": "schuermann-hanson-2004-sr190.pdf",
+          "url": "https://www.newyorkfed.org/medialibrary/media/research/staff_reports/sr190.pdf",
+          "sha256": "38c61513ab465a33d05f8ca1a6db1b56f3eba76bdf25d92a0b3746596e948b76",
+          "bytes": 382062,
+          "retrieved": "2026-10-07"
         }
       ]
     },

@@ -2,6 +2,7 @@
 // (Validation), the live exact size and power of the count tests (Impact), the findings evidenced by measured rates,
 // the families side by side (Variants) and the case (Context). Every replayed rate carries its Monte Carlo error.
 import { PlotCard, Readout, formatNumber, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
+import { WithQuotes } from '../../content/bi';
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
@@ -450,7 +451,7 @@ export function PaperView({ sel }: { sel: C22Sel | null }) {
           {g.map((s) => (
             <li key={s.study} data-study={s.study}>
               <strong>{pick(s.title, lang)}</strong>: {pick({ en: `${s.agree} of ${s.total} cells agree within 3.29 combined SEs (${s.runs.toLocaleString('en')} runs, as published). `, es: `${s.agree} de ${s.total} celdas concuerdan dentro de 3,29 EE combinados (${s.runs.toLocaleString('es')} corridas, como se publicó). ` }, lang)}
-              {pick(s.note, lang)}
+              <WithQuotes text={pick(s.note, lang)} />
             </li>
           ))}
         </ul>

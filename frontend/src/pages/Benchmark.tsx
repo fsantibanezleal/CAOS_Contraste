@@ -8,6 +8,7 @@ import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { COMMITTED, relight } from '../lib/policy';
 import { P, useT } from '../content/bi';
 import { CHAMPION, extra, test, value } from '../workbench/model';
+import { C04Benchmark } from './C04Sections';
 import { C05BenchmarkSection } from './C05Sections';
 import { C22BenchmarkSection } from './C22Sections';
 
@@ -111,7 +112,7 @@ export function Benchmark() {
       {all.state === 'ready' &&
         all.data.manifests.map((m) => (
           <DocSection key={m.case_id} title={{ en: `${m.case_id}: ${m.title.en}`, es: `${m.case_id}: ${m.title.es}` }} noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos comprometidos.' }}>
-            {m.case_id === 'C05' ? <C05BenchmarkSection manifest={m} /> : m.case_id === 'C22' ? <C22BenchmarkSection manifest={m} /> : <CaseBenchmark manifest={m} />}
+            {m.case_id === 'C04' ? <C04Benchmark manifest={m} /> : m.case_id === 'C05' ? <C05BenchmarkSection manifest={m} /> : m.case_id === 'C22' ? <C22BenchmarkSection manifest={m} /> : <CaseBenchmark manifest={m} />}
           </DocSection>
         ))}
     </DocPage>
