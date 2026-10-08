@@ -40,6 +40,9 @@ export interface MatrixMapProps {
   scale: MapScale;
   /** the column of each row's own grade (the diagonal); -1 where the row has none */
   diagonal: number[];
+  /** columns kept out of the migrations scale's range, drawn like the diagonal: the withdrawals (up to 28% of a row
+   * in CEREP's speculative grades), which are not migrations and would otherwise set the top of the range */
+  outside?: number[];
   selectedRow?: number | null;
   onPickRow?: (row: number) => void;
 }
@@ -50,8 +53,8 @@ interface Range {
   log: boolean;
 }
 
-function rangeOf(values: (number | null)[][], diagonal: number[], scale: MapScale): Range {
-  const cells = values.flatMap((r, i) => r.map((v, j) => ({ v, diag: diagonal[i] === j })));
+function rangeOf(values: (number | null)[][], diagonal: number[], scale: MapScale, outside: readonly number[] = []): Range {
+  const cells = values.flatMap((r, i) => r.map((v, j) => ({ v, diag: diagonal[i] === j || outside.includes(j) })));
   const usable = cells.filter((c) => c.v !== null && Number.isFinite(c.v) && !(scale === 'migrations' && c.diag)).map((c) => c.v as number);
   const hi = usable.length ? Math.max(...usable) : 1;
   if (scale !== 'log') return { lo: 0, hi: hi > 0 ? hi : 1, log: false };
@@ -92,7 +95,7 @@ const RIGHT = BAR_GAP + BAR + BAR_LABELS;
 export function MatrixDrawing({ p, width, height, hover, setHover }: { p: MatrixMapProps; width: number; height: number; hover: [number, number] | null; setHover: (h: [number, number] | null) => void }) {
   const lang = useShellLang();
   const gradient = useId().replace(/:/g, '');
-  const range = useMemo(() => rangeOf(p.values, p.diagonal, p.scale), [p.values, p.diagonal, p.scale]);
+  const range = useMemo(() => rangeOf(p.values, p.diagonal, p.scale, p.outside), [p.values, p.diagonal, p.scale, p.outside]);
   const n = p.rows.length;
   const m = p.cols.length;
   const cw = Math.max(1, (width - LEFT - RIGHT) / m);
@@ -154,7 +157,7 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
             {p.values[i].map((v, j) => {
               const x = LEFT + j * cw;
               const y = TOP + i * ch;
-              const diag = p.diagonal[i] === j;
+              const diag = p.diagonal[i] === j || (p.outside ?? []).includes(j);
               const outOfRange = diag && p.scale === 'migrations';
               const t = v === null ? 0 : position(v, range);
               const fill = v === null ? 'none' : outOfRange ? 'var(--color-surface-2)' : viridis(t);
@@ -212,13 +215,16 @@ export function matrixReadout(p: MatrixMapProps, hover: [number, number] | null,
 export function MatrixMap(props: MatrixMapProps) {
   const lang = useShellLang();
   const [hover, setHover] = useState<[number, number] | null>(null);
+  const readout = matrixReadout(props, hover, lang);
   return (
     <div className="ct-map">
       <Stage label={props.label} className="ct-map-stage">
         {({ width, height }) => <MatrixDrawing p={props} width={width} height={height} hover={hover} setHover={setHover} />}
       </Stage>
-      <p className="caos-chart-readout" data-readout="matrix">
-        {matrixReadout(props, hover, lang)}
+      {/* the line is cut with an ellipsis where the card is narrow, so it carries its text as a title (the gate's G5),
+          as the shell's chart readout does */}
+      <p className="caos-chart-readout" data-readout="matrix" title={readout}>
+        {readout}
       </p>
     </div>
   );
