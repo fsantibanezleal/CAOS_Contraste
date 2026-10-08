@@ -439,7 +439,7 @@ def test_withdrawals_values_against_the_truth(informative):
 
 
 def test_rmse_against_a_direct_computation():
-    """The RMSE by grade and its MCSE, from riskvalidation's ``estimator_performance`` (0.04.002: Morris et al. Table 6
+    """The RMSE by grade and its MCSE, from riskvalidation's ``estimator_performance`` (0.4.2: Morris et al. Table 6
     for the MSE, the delta method to the root), against a direct computation; undefined estimates left out; a grade
     with fewer than two defined is None."""
     rng = np.random.default_rng(7)
