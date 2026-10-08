@@ -18,6 +18,8 @@ import { effectiveN, pdAgrestiCoull, pdJeffreys, pdWald, project, type Projectio
 import type { VariantArtifact } from '../../lib/contract.types';
 import { provenanceOf } from '../model';
 import { Pending } from '../Pending';
+import { yearRanges } from '../../content/cases/C04Results';
+import { emptyDefaultYears } from './AgencyValidationViews';
 import { PublishedImpactView, RHO_GRID } from './PublishedViews';
 import {
   DEFINITION_COLOR,
@@ -29,6 +31,7 @@ import {
   GRADES,
   START_LABEL,
   definitionsOf,
+  familyCountsText,
   isAgency,
   isFamily,
   isPublished,
@@ -96,6 +99,24 @@ export function sourceNote(sel: C04Sel): Both {
   return {
     en: `Known truth: the EM generator of S&P's pooled CEREP counts${att ? ` (${att})` : ''}.`,
     es: `Verdad conocida: el generador EM de los conteos agrupados de S&P en CEREP${att ? ` (atribución: "${att}")` : ''}.`,
+  };
+}
+
+/** An agency whose transition page holds no rating in default in some years while its default page counts rated
+ * defaulters there (Fitch, 2006 to 2014; they sit in withdrawals on the transition page): every live view built on the
+ * pooled default column (the drift, D4's and Keep's intervals, the D4 and generator risk weights) leaves them out, and
+ * says so. Empty on the other variants. */
+export function emptyColumnNote(sel: C04Sel): Both {
+  const v = sel.data.variant as VariantArtifact<unknown>;
+  if (!isAgency(v)) return { en: '', es: '' };
+  const years = emptyDefaultYears(v.outputs);
+  if (!years.length) return { en: '', es: '' };
+  const n = years.reduce((a, y) => a + y.defaulted, 0);
+  const labels = years.map((y) => String(y.year));
+  const name = shortName(sel);
+  return {
+    en: ` ${possessive(name.en)} transition page has an empty default column in the years ${yearRanges(labels, 'en')}, while its default page counts ${formatNumber(n, 'en', { decimals: 0 })} rated defaulters in those years (on the transition page they sit in withdrawals): the pooled default column, and what is built on it here, leaves them out.`,
+    es: ` La página de transiciones de ${name.es} tiene la columna de incumplimiento vacía en los años ${yearRanges(labels, 'es')}, mientras su página de incumplimientos cuenta ${formatNumber(n, 'es', { decimals: 0 })} calificaciones incumplidas en esos años (en la página de transiciones quedan en los retiros): la columna de incumplimiento agrupada, y lo que aquí se construye sobre ella, las deja fuera.`,
   };
 }
 
@@ -249,8 +270,8 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
               es: `La página de transiciones de ${name.es} no tiene categoría de incumplimiento, así que su matriz agrupada no tiene columna de incumplimiento: la cartera nunca incumple, y la proyección (9) de Engelmann (2024) no tiene tasa de incumplimiento que dar, pues su cartera TTC (10) necesita una columna de incumplimiento para castigar y reoriginar. Se dibuja: la cartera inicial (${start.es}: ${built.es}) movida solo por la matriz (${cohorts} cohortes anuales, sin retiros), la fracción del saldo en cada grado por año, el grado elegido más grueso. ${src.es}`,
             }
           : {
-              en: `Each grade's share of the balance at the start of each year, the chosen grade thicker; default holds nothing once the defaulted balance is re-originated.`,
-              es: `La fracción del saldo en cada grado al inicio de cada año, el grado elegido más grueso; el incumplimiento no retiene nada una vez reoriginado el saldo incumplido.`,
+              en: `Each grade's share of the balance at the start of each year, the chosen grade thicker; default holds nothing once the defaulted balance is re-originated. ${src.en}`,
+              es: `La fracción del saldo en cada grado al inicio de cada año, el grado elegido más grueso; el incumplimiento no retiene nada una vez reoriginado el saldo incumplido. ${src.es}`,
             }
       }
     />
@@ -288,6 +309,11 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
   const ttc = p.ttc.defaultRate;
   const gap = largestGap(p.defaultRate, ttc);
   const d4 = twice(DEFINITION_LABEL.d4);
+  const empty = emptyColumnNote(sel);
+  const marked: Both =
+    gap.year === 1
+      ? { en: 'the point: year 1, also the largest gap', es: 'el punto: el año 1, también la mayor diferencia' }
+      : { en: `points: year 1, the largest gap (year ${gap.year})`, es: `puntos: el año 1, la mayor diferencia (año ${gap.year})` };
   const rateSeries: ChartSeries[] = [
     { label: { en: 'Projected', es: 'Proyectada' }, values: p.defaultRate, color: '--color-accent', width: 2.4 },
     { label: { en: `TTC rate ${pctd('en', ttc)}`, es: `Tasa TTC ${pctd('es', ttc)}` }, values: years.map(() => ttc), color: '--color-fg-subtle', width: 1.4, dash: [6, 4] },
@@ -313,8 +339,8 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
             provenance={prov}
             dataKey={stateKey}
             note={{
-              en: `Engelmann (2024), (9): the start projected under ${chain.en}. Dashed: the TTC rate (10); points: year 1, the largest gap (year ${gap.year}). ${src.en}`,
-              es: `Engelmann (2024), (9): el inicio proyectado con ${chain.es}. Segmentada: la tasa TTC (10); puntos: el año 1, la mayor diferencia (año ${gap.year}). ${src.es}`,
+              en: `Engelmann (2024), (9): the start projected under ${chain.en}. Dashed: the TTC rate (10); ${marked.en}.${empty.en} ${src.en}`,
+              es: `Engelmann (2024), (9): el inicio proyectado con ${chain.es}. Segmentada: la tasa TTC (10); ${marked.es}.${empty.es} ${src.es}`,
             }}
           >
             <UPlotChart
@@ -523,8 +549,8 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
   const thumb = (l: Lang) =>
     thin.length
       ? l === 'en'
-        ? ` Their rule of thumb for Wald, D = PD N of at least 10, fails in ${thin.join(', ')}; at D = 0 the Wald interval collapses to a point.`
-        : ` Su regla práctica para Wald, D = PD N de al menos 10, falla en ${thin.join(', ')}; con D = 0 el intervalo de Wald se reduce a un punto.`
+        ? ` Schuermann and Hanson's rule of thumb for Wald, D = PD N of at least 10, fails in ${thin.join(', ')}; at D = 0 the Wald interval collapses to a point.`
+        : ` La regla práctica de Schuermann y Hanson para Wald, D = PD N de al menos 10, falla en ${thin.join(', ')}; con D = 0 el intervalo de Wald se reduce a un punto.`
       : '';
   const first = agency?.outputs.cohorts[0]?.label ?? '';
   const last = agency?.outputs.cohorts[agency.outputs.cohorts.length - 1]?.label ?? '';
@@ -537,12 +563,15 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
         en: "each grade's design counts, beside the truth (dotted)",
         es: 'los conteos del diseño de cada grado, junto a la verdad (punteada)',
       };
+  const famN = family ? familyCountsText(family) : { en: '', es: '' };
   const countsText: Both = agency
-    ? { en: 'D defaults among N ratings, pooled over the cohorts.', es: 'D incumplimientos entre N calificaciones, agrupados en las cohortes.' }
+    ? { en: `D defaults among N ratings under "${def.en}", pooled over the cohorts.`, es: `D incumplimientos entre N calificaciones con "${def.es}", agrupados en las cohortes.` }
     : {
-        en: `N the obligors by grade times the ${family?.outputs.design.years ?? ''} years observed (obligor-years), D the defaults expected at the true one-year PD, rounded: an interval that misses the truth misses the PD it was built for.`,
-        es: `N los deudores por grado por los ${family?.outputs.design.years ?? ''} años observados (deudor-años), D los incumplimientos esperados a la PD anual verdadera, redondeados: un intervalo que no contiene la verdad no contiene la PD para la que se construyó.`,
+        en: `${famN.en}, D the defaults expected at the true one-year PD, rounded: an interval that misses the truth misses the PD it was built for.`,
+        es: `${famN.es}, D los incumplimientos esperados a la PD anual verdadera, redondeados: un intervalo que no contiene la verdad no contiene la PD para la que se construyó.`,
       };
+  // D4 and Keep count the transition page's default column, which is empty in some of an agency's years (Fitch)
+  const empty = sel.definition === 'd4' || sel.definition === 'keep' ? emptyColumnNote(sel) : { en: '', es: '' };
   const chosenRow = rows.find((r) => r.grade === sel.grade);
   const widths = chosenRow ? widthSeries(chosenRow.defaults, chosenRow.n, sel.level) : [];
   const G = GRADES[sel.grade];
@@ -557,8 +586,8 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
           provenance={prov}
           dataKey={stateKey}
           note={{
-            en: `Schuermann and Hanson (2004) on ${basis.en}: Wald (2.2) and Agresti-Coull (3.3) with the effective number of obligors N† (3.4) at the rail's correlation; Jeffreys has no correlation correction. Log scale, a bound of 0 is a gap. Marked: the chosen grade. ${src.en}`,
-            es: `Schuermann y Hanson (2004) sobre ${basis.es}: Wald (2.2) y Agresti-Coull (3.3) con el número efectivo de deudores N† (3.4) a la correlación del panel; Jeffreys no tiene corrección por correlación. Escala logarítmica, una cota de 0 queda en blanco. Marcado: el grado elegido. ${src.es}`,
+            en: `Schuermann and Hanson (2004) on ${basis.en}: Wald (2.2) and Agresti-Coull (3.3) with the effective number of obligors N† (3.4) at the rail's correlation; Jeffreys has no correlation correction. Log scale, a bound of 0 is a gap. Marked: the chosen grade.${empty.en} ${src.en}`,
+            es: `Schuermann y Hanson (2004) sobre ${basis.es}: Wald (2.2) y Agresti-Coull (3.3) con el número efectivo de deudores N† (3.4) a la correlación del panel; Jeffreys no tiene corrección por correlación. Escala logarítmica, una cota de 0 queda en blanco. Marcado: el grado elegido.${empty.es} ${src.es}`,
           }}
         >
           <UPlotChart
@@ -578,8 +607,8 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
           provenance={prov}
           dataKey={stateKey}
           note={{
-            en: `${countsText.en} N† = N / (1 + (N - 1) rho) at a correlation of ${rho.en} between every pair (3.4); the widths are the upper less the lower bound at ${level.en}, in percentage points. Jeffreys, the equal-tailed Beta(D + 1/2, N - D + 1/2) interval, is the posterior of independent trials: it ignores the correlation.${thumb('en')}${droppedText('en')}`,
-            es: `${countsText.es} N† = N / (1 + (N - 1) rho) con una correlación de ${rho.es} entre cada par (3.4); los anchos son la cota superior menos la inferior al ${level.es}, en puntos porcentuales. Jeffreys, el intervalo de colas iguales Beta(D + 1/2, N - D + 1/2), es la posterior de ensayos independientes: ignora la correlación.${thumb('es')}${droppedText('es')}`,
+            en: `${countsText.en} N† = N / (1 + (N - 1) rho) at a correlation of ${rho.en} between every pair (3.4); the widths are the upper less the lower bound at ${level.en}, in percentage points. Jeffreys, the equal-tailed Beta(D + 1/2, N - D + 1/2) interval, is the posterior of independent trials: it ignores the correlation.${thumb('en')}${droppedText('en')} ${src.en}`,
+            es: `${countsText.es} N† = N / (1 + (N - 1) rho) con una correlación de ${rho.es} entre cada par (3.4); los anchos son la cota superior menos la inferior al ${level.es}, en puntos porcentuales. Jeffreys, el intervalo de colas iguales Beta(D + 1/2, N - D + 1/2), es la posterior de ensayos independientes: ignora la correlación.${thumb('es')}${droppedText('es')} ${src.es}`,
           }}
         >
           <div className="ct-scroll">
@@ -623,8 +652,8 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
             note={
               chosenRow
                 ? {
-                    en: `${G}: ${formatNumber(chosenRow.defaults, 'en', { decimals: 0 })} defaults of ${formatNumber(chosenRow.n, 'en', { decimals: 0 })}; N† falls from ${formatNumber(chosenRow.n, 'en', { decimals: 0 })} with independent defaults to ${formatNumber(effectiveN(chosenRow.n, top), 'en', { digits: 3 })} at a correlation of ${formatNumber(top, 'en', { percent: true, decimals: 0 })}. Widths at ${level.en}, log scale; Jeffreys' does not move. Marked: the rail's correlation.`,
-                    es: `${G}: ${formatNumber(chosenRow.defaults, 'es', { decimals: 0 })} incumplimientos de ${formatNumber(chosenRow.n, 'es', { decimals: 0 })}; N† cae de ${formatNumber(chosenRow.n, 'es', { decimals: 0 })} con incumplimientos independientes a ${formatNumber(effectiveN(chosenRow.n, top), 'es', { digits: 3 })} con una correlación de ${formatNumber(top, 'es', { percent: true, decimals: 0 })}. Anchos al ${level.es}, escala logarítmica; el de Jeffreys no se mueve. Marcada: la correlación del panel.`,
+                    en: `${G}: ${formatNumber(chosenRow.defaults, 'en', { decimals: 0 })} defaults of ${formatNumber(chosenRow.n, 'en', { decimals: 0 })}; N† falls from ${formatNumber(chosenRow.n, 'en', { decimals: 0 })} with independent defaults to ${formatNumber(effectiveN(chosenRow.n, top), 'en', { digits: 3 })} at a correlation of ${formatNumber(top, 'en', { percent: true, decimals: 0 })}. Widths at ${level.en}, log scale; Jeffreys' does not move. Marked: the rail's correlation. ${src.en}`,
+                    es: `${G}: ${formatNumber(chosenRow.defaults, 'es', { decimals: 0 })} incumplimientos de ${formatNumber(chosenRow.n, 'es', { decimals: 0 })}; N† cae de ${formatNumber(chosenRow.n, 'es', { decimals: 0 })} con incumplimientos independientes a ${formatNumber(effectiveN(chosenRow.n, top), 'es', { digits: 3 })} con una correlación de ${formatNumber(top, 'es', { percent: true, decimals: 0 })}. Anchos al ${level.es}, escala logarítmica; el de Jeffreys no se mueve. Marcada: la correlación del panel. ${src.es}`,
                   }
                 : { en: `${G} has no counts under this definition, so it has no interval to widen.`, es: `${G} no tiene conteos con esta definición, así que no tiene intervalo que ensanchar.` }
             }
@@ -661,6 +690,7 @@ const AXIS_NAME: Record<string, Both> = {
   d2: { en: 'D2', es: 'D2' },
   d3: { en: 'D3', es: 'D3' },
   d4: { en: 'D4', es: 'D4' },
+  keep: { en: 'Keep', es: 'Con retiros' },
   em: { en: 'EM', es: 'EM' },
   diagonal: { en: 'diagonal', es: 'diagonal' },
   weighted: { en: 'weighted', es: 'ponderado' },
@@ -677,12 +707,13 @@ function rowColor(key: string): ShellColorToken {
   return '--color-good';
 }
 
-/** The PD floor, in a note's words. */
-const floorText = (floor: number, ref: string) =>
+/** The PD floor, in a note's words; a PD of 0 (a grade that never defaulted) is named among those it lifts only where
+ * one is drawn (a family's true PDs are all above 0). */
+const floorText = (floor: number, ref: string, zero: boolean) =>
   both((l) =>
     l === 'en'
-      ? `every PD below the ${formatNumber(floor, 'en', { percent: true, decimals: 2 })} floor (${ref}) takes the floor, a PD of 0 (a grade that never defaulted) among them`
-      : `toda PD bajo el piso de ${formatNumber(floor, 'es', { percent: true, decimals: 2 })} (${ref}) toma el piso, una PD de 0 (un grado que nunca incumplió) entre ellas`,
+      ? `every PD below the ${formatNumber(floor, 'en', { percent: true, decimals: 2 })} floor (${ref}) takes the floor${zero ? ', a PD of 0 (a grade that never defaulted) among them' : ''}`
+      : `toda PD bajo el piso de ${formatNumber(floor, 'es', { percent: true, decimals: 2 })} (${ref}) toma el piso${zero ? ', una PD de 0 (un grado que nunca incumplió) entre ellas' : ''}`,
   );
 const peakText = both((l) =>
   l === 'en'
@@ -697,8 +728,8 @@ function LgdKnob({ sel }: { sel: C04Sel }) {
       id="c04-lgd"
       label={{ en: 'LGD', es: 'LGD' }}
       hint={{
-        en: 'Loss given default of every exposure; 45% is the F-IRB senior unsecured LGD for financial institutions (CRE32.6).',
-        es: 'Pérdida dado el incumplimiento de toda exposición; 45% es la LGD F-IRB senior no garantizada de instituciones financieras (CRE32.6).',
+        en: `Loss given default of every exposure; ${formatNumber(0.45, 'en', { percent: true, decimals: 0 })} is the F-IRB senior unsecured LGD for financial institutions (CRE32.6).`,
+        es: `Pérdida dado el incumplimiento de toda exposición; ${formatNumber(0.45, 'es', { percent: true, decimals: 0 })} es la LGD F-IRB senior no garantizada de instituciones financieras (CRE32.6).`,
       }}
       value={sel.lgd}
       min={0.1}
@@ -724,7 +755,8 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
   const name = shortName(sel);
   const irb = agency?.outputs.irb;
   const code = (ref: string | undefined) => (ref ?? '').split(' ')[0];
-  const floor = irb ? floorText(irb.pd_floor, code(irb.references.pd_floor)) : { en: '', es: '' };
+  const zero = rows.some((r) => r.pds.some((x) => x === 0));
+  const floor = irb ? floorText(irb.pd_floor, code(irb.references.pd_floor), zero) : { en: '', es: '' };
   const convention: Both = irb
     ? {
         en: `${(REGIME_TEXT[irb.regime] ?? { en: irb.regime }).en}, ${(CLASS_TEXT[irb.asset_class] ?? { en: irb.asset_class }).en}, ${code(irb.references.risk_weight)}; maturity ${formatNumber(irb.maturity, 'en', { decimals: 1 })} years, ${code(irb.references.maturity)}`,
@@ -737,11 +769,10 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
   const missing = rows.filter((r) => r.result && r.result.average === null);
   const failed = rows.filter((r) => !r.result);
   const axisName = (r: CapitalRow, l: Lang) => (AXIS_NAME[r.key] ?? twice(r.label))[l];
-  const order = (l: Lang) => drawnRows.map((r, i) => `${i + 1} ${axisName(r, l)}`).join(', ');
   const x = padded(drawnRows.length);
   // one point per drawn row at its position, numbered as on the axis (two pairs of rows share a colour)
   const series: ChartSeries[] = drawnRows.map((r, i) => ({
-    label: { en: `${i + 1} ${pick(r.label, 'en')}`, es: `${i + 1} ${pick(r.label, 'es')}` },
+    label: { en: `${i + 1} ${axisName(r, 'en')}: ${pick(r.label, 'en')}`, es: `${i + 1} ${axisName(r, 'es')}: ${pick(r.label, 'es')}` },
     values: drawnRows.map((_, j) => (j === i ? r.result?.average ?? null : null)),
     color: rowColor(r.key),
     mode: 'points',
@@ -764,8 +795,9 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
   const spread = atGrade.length
     ? { lo: atGrade.reduce((a, b) => (b.value < a.value ? b : a)), hi: atGrade.reduce((a, b) => (b.value > a.value ? b : a)) }
     : null;
-  const keepMissing = agency !== null && agency.outputs.pd.keep !== null;
+  const hasKeep = rows.some((r) => r.key === 'keep');
   const keep = twice(DEFINITION_LABEL.keep);
+  const empty = emptyColumnNote(sel);
   const missingText = (l: Lang) => {
     const parts: string[] = [];
     if (missing.length) {
@@ -783,7 +815,7 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
           : `Rechazadas por el puerto: ${failed.map((r) => `${pick(r.label, 'es')} (mensaje del puerto: ${r.error ?? ''})`).join('; ')}.`,
       );
     }
-    if (keepMissing) parts.push(l === 'en' ? `"${keep.en}" has no long-run average in the artifact, so no row.` : `"${keep.es}" no tiene promedio de largo plazo en el artefacto, así que no tiene fila.`);
+    if (hasKeep) parts.push(l === 'en' ? `"${keep.en}" has no long-run average in the artifact: its row is the mean of its yearly rates, computed here.` : `"${keep.es}" no tiene promedio de largo plazo en el artefacto: su fila es la media de sus tasas anuales, calculada aquí.`);
     return parts.length ? ` ${parts.join(' ')}` : '';
   };
   return (
@@ -797,14 +829,14 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
           dataKey={stateKey}
           actions={<LgdKnob sel={sel} />}
           note={{
-            en: `The IRB risk weight (${convention.en}) per unit of EAD at the knob's LGD, of ${possessive(name.en)} cohort mix pooled over the years: one point per PD definition (its long-run average) and generator (exp(Q)'s one-year default column), and the chosen grade's own; log scale.${missing.length || failed.length ? ' A row without a PD has no point (the table says why).' : ''} ${pick(ESMA_DEFINITIONS, 'en')} ${src.en}`,
-            es: `El ponderador IRB (${convention.es}) por unidad de EAD a la LGD de la perilla, de la composición de cohortes de ${name.es} agrupada en los años: un punto por definición de PD (su promedio de largo plazo) y por generador (la columna de incumplimiento a un año de exp(Q)), y el propio del grado elegido; escala logarítmica.${missing.length || failed.length ? ' Una fila sin PD no tiene punto (la tabla dice por qué).' : ''} ${pick(ESMA_DEFINITIONS, 'es')} ${src.es}`,
+            en: `The IRB risk weight (${convention.en}) per unit of EAD at the knob's LGD, of ${possessive(name.en)} cohort mix pooled over the years: one point per PD definition (its long-run average) and generator (exp(Q)'s one-year default column), and the chosen grade's own; log scale.${missing.length || failed.length ? ' A row without a PD has no point (the table says why).' : ''}${empty.en} ${pick(ESMA_DEFINITIONS, 'en')} ${src.en}`,
+            es: `El ponderador IRB (${convention.es}) por unidad de EAD a la LGD de la perilla, de la composición de cohortes de ${name.es} agrupada en los años: un punto por definición de PD (su promedio de largo plazo) y por generador (la columna de incumplimiento a un año de exp(Q)), y el propio del grado elegido; escala logarítmica.${missing.length || failed.length ? ' Una fila sin PD no tiene punto (la tabla dice por qué).' : ''}${empty.es} ${pick(ESMA_DEFINITIONS, 'es')} ${src.es}`,
           }}
         >
           {chartSeries.length ? (
             <UPlotChart
               height="fill"
-              x={{ values: x, label: { en: `PD definition or generator: ${order('en')}`, es: `Definición de PD o generador: ${order('es')}` }, format: { decimals: 0 } }}
+              x={{ values: x, label: { en: 'PD definition or generator, numbered as in the key', es: 'Definición de PD o generador, numerada como en la leyenda' }, format: { decimals: 0 } }}
               y={{ label: { en: 'Risk weight, share of EAD (log scale)', es: 'Ponderador, fracción de la EAD (escala log.)' }, log: true, format: { percent: true, digits: 3 } }}
               series={chartSeries}
             />
@@ -821,8 +853,8 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
           provenance={prov}
           dataKey={stateKey}
           note={{
-            en: `Share of EAD at LGD ${lgd.en}: the chosen grade's PD and risk weight under each definition (its long-run average, EBA/GL/2017/16 paragraph 84) and generator, beside the portfolio's average; ${floor.en}.${missingText('en')} ${peakText.en}`,
-            es: `Fracción de la EAD con LGD ${lgd.es}: la PD y el ponderador del grado elegido con cada definición (su promedio de largo plazo, párrafo 84 de EBA/GL/2017/16) y generador, junto al promedio de la cartera; ${floor.es}.${missingText('es')} ${peakText.es}`,
+            en: `Share of EAD at LGD ${lgd.en}: the chosen grade's PD and risk weight under each definition (its long-run average, EBA/GL/2017/16 paragraph 84) and generator, beside the portfolio's average; ${floor.en}.${missingText('en')} ${peakText.en} ${src.en}`,
+            es: `Fracción de la EAD con LGD ${lgd.es}: la PD y el ponderador del grado elegido con cada definición (su promedio de largo plazo, párrafo 84 de EBA/GL/2017/16) y generador, junto al promedio de la cartera; ${floor.es}.${missingText('es')} ${peakText.es} ${src.es}`,
           }}
         >
           <div className="ct-scroll">
@@ -837,8 +869,8 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
             provenance={prov}
             dataKey={stateKey}
             note={{
-              en: `Each definition's and generator's (dashed) risk weight grade by grade at LGD ${lgd.en}, log scale: where the lines part, the definition decides the capital.${spread ? ` ${GRADES[g]} runs from ${pctd('en', spread.lo.value)} (${pick(spread.lo.label, 'en')}) to ${pctd('en', spread.hi.value)} (${pick(spread.hi.label, 'en')}).` : ''} Marked: the chosen grade.`,
-              es: `El ponderador de cada definición y generador (segmentados) grado a grado con LGD ${lgd.es}, escala logarítmica: donde las líneas se separan, la definición decide el capital.${spread ? ` ${GRADES[g]} va de ${pctd('es', spread.lo.value)} (${pick(spread.lo.label, 'es')}) a ${pctd('es', spread.hi.value)} (${pick(spread.hi.label, 'es')}).` : ''} Marcado: el grado elegido.`,
+              en: `Each definition's and generator's (dashed) risk weight grade by grade at LGD ${lgd.en}, log scale: where the lines part, the definition decides the capital.${spread ? ` ${GRADES[g]} runs from ${pctd('en', spread.lo.value)} (${pick(spread.lo.label, 'en')}) to ${pctd('en', spread.hi.value)} (${pick(spread.hi.label, 'en')}).` : ''} Marked: the chosen grade. ${src.en}`,
+              es: `El ponderador de cada definición y generador (segmentados) grado a grado con LGD ${lgd.es}, escala logarítmica: donde las líneas se separan, la definición decide el capital.${spread ? ` ${GRADES[g]} va de ${pctd('es', spread.lo.value)} (${pick(spread.lo.label, 'es')}) a ${pctd('es', spread.hi.value)} (${pick(spread.hi.label, 'es')}).` : ''} Marcado: el grado elegido. ${src.es}`,
             }}
           >
             {byGrade.length ? (
@@ -901,7 +933,7 @@ function FamilyCapital({ sel, rows, lgd, src }: { sel: C04Sel; rows: CapitalRow[
   const total = obligors.reduce((a, b) => a + b, 0);
   const rw = truth?.result?.riskWeights ?? [];
   const avg = truth?.result?.average ?? null;
-  const floor = floorText(0.0005, 'CRE32.4');
+  const floor = floorText(0.0005, 'CRE32.4', (truth?.pds ?? []).some((x) => x === 0));
   const series = drawable([
     { label: { en: 'Risk weight at the true one-year PD', es: 'Ponderador a la PD anual verdadera' }, values: GRADES.map((_, k) => onLog(rw[k])), color: '--color-good', width: 2.2 },
     {
@@ -964,8 +996,8 @@ function FamilyCapital({ sel, rows, lgd, src }: { sel: C04Sel; rows: CapitalRow[
           provenance={prov}
           dataKey={stateKey}
           note={{
-            en: `Share of EAD at LGD ${lgd.en}; the design's obligors (${counts('en', obligors)}, AAA to CCC-C) weigh the average; ${floor.en}. ${peakText.en}`,
-            es: `Fracción de la EAD con LGD ${lgd.es}; los deudores del diseño (${counts('es', obligors)}, de AAA a CCC-C) ponderan el promedio; ${floor.es}. ${peakText.es}`,
+            en: `Share of EAD at LGD ${lgd.en}; the design's obligors (${counts('en', obligors)}, AAA to CCC-C) weigh the average; ${floor.en}. ${peakText.en} ${src.en}`,
+            es: `Fracción de la EAD con LGD ${lgd.es}; los deudores del diseño (${counts('es', obligors)}, de AAA a CCC-C) ponderan el promedio; ${floor.es}. ${peakText.es} ${src.es}`,
           }}
         >
           <div className="ct-scroll">
@@ -1005,8 +1037,8 @@ function FamilyCapital({ sel, rows, lgd, src }: { sel: C04Sel; rows: CapitalRow[
             provenance={prov}
             dataKey={stateKey}
             note={{
-              en: `Each grade's share of the obligors (one unit of EAD each) and of the risk-weighted exposure at the true PD: the speculative grades BB, B and CCC-C hold ${pctd('en', sits.obligors)} of the obligors and ${pctd('en', sits.capital)} of the capital. Marked: the chosen grade.`,
-              es: `La fracción de los deudores de cada grado (una unidad de EAD cada uno) y de la exposición ponderada por riesgo a la PD verdadera: los grados especulativos BB, B y CCC-C tienen ${pctd('es', sits.obligors)} de los deudores y ${pctd('es', sits.capital)} del capital. Marcado: el grado elegido.`,
+              en: `Each grade's share of the obligors (one unit of EAD each) and of the risk-weighted exposure at the true PD: the speculative grades BB, B and CCC-C hold ${pctd('en', sits.obligors)} of the obligors and ${pctd('en', sits.capital)} of the capital. Marked: the chosen grade. ${src.en}`,
+              es: `La fracción de los deudores de cada grado (una unidad de EAD cada uno) y de la exposición ponderada por riesgo a la PD verdadera: los grados especulativos BB, B y CCC-C tienen ${pctd('es', sits.obligors)} de los deudores y ${pctd('es', sits.capital)} del capital. Marcado: el grado elegido. ${src.es}`,
             }}
           >
             <UPlotChart

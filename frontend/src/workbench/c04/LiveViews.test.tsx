@@ -18,6 +18,7 @@ import {
   DEFINITION_LABEL,
   ESMA_DEFINITIONS,
   GRADES,
+  familyCountsText,
   gradeCounts,
   isAgency,
   isFamily,
@@ -31,6 +32,15 @@ import {
 } from './selection';
 
 type Lang = 'en' | 'es';
+
+/** Keep's long-run average, computed here from its yearly rates (the mean over the cohorts where the grade has one),
+ * independently of the view's helper. */
+function keepAverage(o: AgencyVariant['outputs']): (number | null)[] {
+  return GRADES.map((_, g) => {
+    const xs = (o.pd.keep ?? []).map((row) => row[g]).filter((x): x is number => x !== null);
+    return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
+  });
+}
 const LANGS: Lang[] = ['en', 'es'];
 
 const derived = new URL('../../../../data/derived/', import.meta.url);
@@ -341,8 +351,18 @@ describe('the C04 Impact group (live)', () => {
         const [chart] = charts(markup);
         expect(chart.series).toBe(drawn.length);
         expect(chart.keys).toContain('True one-year PD');
-        // the design's counts are explained beside the table
-        expect(cards(markup)[1].note).toContain('obligor-years');
+        // the design's counts are explained beside the table, by the rule gradeCounts uses
+        const f = familyOf(data);
+        expect(cards(markup)[1].note).toContain(familyCountsText(f).en);
+        const ns = table(markup, 'intervals').map((r) => r[2]);
+        if (id === 'thin') {
+          // every grade at the thin family's smallest cohort, and the note says that N
+          expect(cards(markup)[1].note).toContain(`N ${formatNumber(f.outputs.ladder!.values[0], 'en', { decimals: 0 })} obligors in every grade`);
+          expect(new Set(ns)).toEqual(new Set([formatNumber(f.outputs.ladder!.values[0], 'en', { decimals: 0 })]));
+        } else {
+          expect(cards(markup)[1].note).toContain('obligor-years');
+          GRADES.forEach((_, g) => expect(ns[g]).toBe(formatNumber(gradeCounts(f, 'd2', g)!.n, 'en', { decimals: 0 })));
+        }
       }
     });
 
@@ -423,6 +443,7 @@ describe('the C04 Impact group (live)', () => {
           o.lra.d2.rate,
           o.lra.d3.rate,
           o.lra.d4?.rate ?? [],
+          keepAverage(o),
           o.generators.em.pd_1y,
           o.generators.diagonal?.pd_1y ?? [],
           o.generators.weighted?.pd_1y ?? [],
@@ -442,8 +463,11 @@ describe('the C04 Impact group (live)', () => {
           expect(markup).toContain('data-control="c04-lgd"');
           expect(markup).toContain(formatNumber(lgd, lang, { percent: true, decimals: 0 }));
           expect(cards(markup)[0].note).toContain(pick(ESMA_DEFINITIONS, lang));
-          // why Keep has no row, beside the table of the rows
-          expect(cards(markup)[1].note).toContain(lang === 'en' ? '"Keep withdrawals" has no long-run average' : '"Con retiros" no tiene promedio de largo plazo');
+          // Keep's row is the mean of its yearly rates, which the artifact does not hold; the note says so
+          expect(rows[3][0]).toBe(pick(DEFINITION_LABEL.keep, lang));
+          expect(cards(markup)[1].note).toContain(
+            lang === 'en' ? '"Keep withdrawals" has no long-run average in the artifact: its row is the mean of its yearly rates, computed here.' : '"Con retiros" no tiene promedio de largo plazo en el artefacto: su fila es la media de sus tasas anuales, calculada aquí.',
+          );
         }
       }
     });
@@ -456,7 +480,9 @@ describe('the C04 Impact group (live)', () => {
       for (const r of rows.slice(2)) expect(r.slice(1, 4)).toEqual(['-', '-', '-']);
       const [chart] = charts(markup);
       expect(chart.series).toBe(3);
-      expect(chart.axes[0]).toBe('PD definition or generator: 1 D2, 2 D3');
+      // the axis title is short; the key numbers the points, with each row's short name
+      expect(chart.axes[0]).toBe('PD definition or generator, numbered as in the key');
+      expect(chart.keys.slice(0, 2)).toEqual(['1 D2: D2 rated defaulters', '2 D3: D3 default events']);
       expect(cards(markup)[0].note).toContain("Moody's cohort mix");
       expect(cards(markup)[0].note).toContain('A row without a PD has no point (the table says why).');
       expect(cards(markup)[1].note).toContain("No PD, so no risk weight: EM, Diagonal, Weighted, JLT (Moody's transition page has no default category");
@@ -486,6 +512,7 @@ describe('the C04 Impact group (live)', () => {
           ['D2 rated defaulters', o.lra.d2.rate],
           ['D3 default events', o.lra.d3.rate],
           ['D4 matrix column', o.lra.d4?.rate ?? []],
+          ['Keep withdrawals', keepAverage(o)],
           ['EM', o.generators.em.pd_1y],
           ['Diagonal', o.generators.diagonal?.pd_1y ?? []],
           ['Weighted', o.generators.weighted?.pd_1y ?? []],
@@ -496,7 +523,7 @@ describe('the C04 Impact group (live)', () => {
       const hi = ccc.reduce((a, b) => (b.rw > a.rw ? b : a));
       const markup = html(<CapitalView sel={makeSel(sp)} />);
       expect(markup).toContain('<div class="ct-tall-only">');
-      expect(charts(markup)[1].series).toBe(7);
+      expect(charts(markup)[1].series).toBe(8);
       // the chosen grade's spread across the definitions and generators, from the lowest to the highest
       expect(cards(markup)[2].note).toContain(`CCC-C runs from ${pctd('en', lo.rw)} (${lo.label}) to ${pctd('en', hi.rw)} (${hi.label})`);
       expect(charts(html(<CapitalView sel={makeSel(byId('moodys'))} />))[1].series).toBe(2);
@@ -512,6 +539,37 @@ describe('the C04 Impact group (live)', () => {
         const fm = html(<CapitalView sel={makeSel(fam)} />, lang);
         expect(charts(fm)[1].series).toBe(2);
         expect(cards(fm)[2].note).toContain(lang === 'en' ? `hold ${pctd('en', obligors)} of the obligors and ${pctd('en', capital)} of the capital` : `tienen ${pctd('es', obligors)} de los deudores y ${pctd('es', capital)} del capital`);
+      }
+    });
+
+    it("Fitch's empty default columns of 2006 to 2014 are said wherever the pooled default column is used", () => {
+      const fitch = byId('fitch');
+      const o = agencyOf(fitch).outputs;
+      const n = o.cohorts.filter((c) => c.counts.every((row) => row[7] === 0) && c.defaulted!.reduce((a, b) => a + b, 0) > 0).reduce((a, c) => a + c.defaulted!.reduce((x, y) => x + y, 0), 0);
+      expect(n).toBe(189);
+      const said = { en: 'empty default column in the years 2006 to 2014, while its default page counts 189 rated defaulters', es: 'tiene la columna de incumplimiento vacía en los años 2006 a 2014, mientras su página de incumplimientos cuenta 189 calificaciones incumplidas' };
+      for (const lang of LANGS) {
+        expect(cards(html(<DriftView sel={makeSel(fitch)} />, lang))[0].note).toContain(said[lang]);
+        expect(cards(html(<IntervalsView sel={makeSel(fitch, { definition: 'd4' })} />, lang))[0].note).toContain(said[lang]);
+        expect(cards(html(<IntervalsView sel={makeSel(fitch, { definition: 'keep' })} />, lang))[0].note).toContain(said[lang]);
+        expect(cards(html(<CapitalView sel={makeSel(fitch)} />, lang))[0].note).toContain(said[lang]);
+        // D2 counts the default page, which holds them: no such sentence; nor on S&P, whose columns are full
+        expect(cards(html(<IntervalsView sel={makeSel(fitch, { definition: 'd2' })} />, lang))[0].note).not.toContain(said[lang]);
+        expect(html(<CapitalView sel={makeSel(byId('sp'))} />, lang)).not.toContain(lang === 'en' ? 'empty default column' : 'columna de incumplimiento vacía');
+      }
+    });
+
+    it("every card of every view closes with CEREP's attribution, and an agency's with its entity", () => {
+      for (const id of ['sp', 'moodys', 'fitch', 'markov', 'thin']) {
+        const data = byId(id);
+        const v = data.variant as VariantArtifact<unknown>;
+        for (const view of [DriftView, IntervalsView, CapitalView]) {
+          const View = view;
+          for (const card of cards(html(<View sel={makeSel(data)} />))) {
+            expect(card.note, `${id} ${card.title}`).toContain('Source: ESMA CEREP; tables transformed by Contraste');
+            if (isAgency(v)) expect(card.note, `${id} ${card.title}`).toContain(`Entity: ${v.outputs.agency.name}`);
+          }
+        }
       }
     });
 
