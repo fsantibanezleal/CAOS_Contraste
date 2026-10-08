@@ -46,6 +46,9 @@ describe('MatrixMap', () => {
     expect(new Set(colY).size, 'two lines of column labels').toBe(2);
     // neighbours on different lines, so no two adjacent labels share one
     for (let j = 1; j < grades.length; j++) expect(colY[j]).not.toBe(colY[j - 1]);
+    // each column label is clipped to its own column's extent (gate G10 at phone widths with wide fonts)
+    expect(narrow).toContain('clip-path="url(#');
+    for (let j = 0; j < grades.length; j++) expect(narrow).toContain(`-col-${j}"`);
     // no value printed wider than its cell (the server's estimate: 0.62 em a character)
     expect(narrow).not.toContain('>79 %<');
     const wide = draw(base);

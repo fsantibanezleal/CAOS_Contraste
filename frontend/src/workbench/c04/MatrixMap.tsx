@@ -148,6 +148,11 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
             <stop key={c} offset={k / (VIRIDIS.length - 1)} stopColor={c} />
           ))}
         </linearGradient>
+        {p.cols.map((_, j) => (
+          <clipPath key={j} id={`${gradient}-col-${j}`}>
+            <rect x={LEFT + j * cw + 1} y={0} width={cw - 2} height={top - 2} />
+          </clipPath>
+        ))}
       </defs>
       <text x={LEFT + (m * cw) / 2} y={11} textAnchor="middle" fontSize={11} fill="var(--color-fg-subtle)">
         {pick({ en: 'At the end of the period', es: 'Al final del período' }, lang)}
@@ -156,7 +161,7 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
         {pick({ en: 'Start', es: 'Inicio' }, lang)}
       </text>
       {p.cols.map((c, j) => (
-        <text key={c} x={LEFT + (j + 0.5) * cw} y={top - 8 - (stagger && j % 2 === 0 ? STAGGER : 0)} textAnchor="middle" fontSize={Math.min(12, font + 1)} fill="var(--color-fg)">
+        <text key={c} x={LEFT + (j + 0.5) * cw} y={top - 8 - (stagger && j % 2 === 0 ? STAGGER : 0)} textAnchor="middle" fontSize={Math.min(12, font + 1)} fill="var(--color-fg)" clipPath={`url(#${gradient}-col-${j})`}>
           {c}
         </text>
       ))}
