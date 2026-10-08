@@ -4,7 +4,7 @@
 import { formatNumber } from '@fasl-work/caos-app-shell';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { MatrixDrawing, matrixReadout, viridis, type MatrixMapProps } from './MatrixMap';
+import { MatrixDrawing, MatrixMap, matrixReadout, viridis, type MatrixMapProps } from './MatrixMap';
 
 const base: MatrixMapProps = {
   label: { en: 'A test matrix', es: 'Una matriz de prueba' },
@@ -47,6 +47,27 @@ describe('MatrixMap', () => {
     expect(f.slice(3, 6)).toEqual([viridis(0.5), 'var(--color-surface-2)', viridis(0.5)]);
   });
 
+  it('keeps the outside columns (the withdrawals) out of the migrations range, and only that scale', () => {
+    // a withdrawals column holding the largest off-diagonal share would otherwise set the top of the range
+    const w: MatrixMapProps = {
+      ...base,
+      cols: ['AAA', 'AA', 'D', 'W'],
+      values: [
+        [0.8, 0.05, 0, 0.15],
+        [0.05, 0.8, 0.1, 0.05],
+      ],
+      counts: null,
+      outside: [3],
+    };
+    const f = fills(draw(w)).filter((x) => x !== 'var(--color-accent)');
+    // the range is the migrations without W: 0 to 0.1 (AA to D)
+    expect(f.slice(0, 4)).toEqual(['var(--color-surface-2)', viridis(0.5), viridis(0), 'var(--color-surface-2)']);
+    expect(f.slice(4, 8)).toEqual([viridis(0.5), 'var(--color-surface-2)', viridis(1), 'var(--color-surface-2)']);
+    // on the linear scale every cell is in range again, W included
+    const lin = fills(draw({ ...w, scale: 'linear' })).filter((x) => x.startsWith('rgb'));
+    expect(lin).toHaveLength(8);
+  });
+
   it('puts every cell on the linear and log scales, zeros at the bottom of the log scale', () => {
     const lin = fills(draw({ ...base, scale: 'linear' })).filter((x) => x.startsWith('rgb'));
     expect(lin[0]).toBe(viridis(1));
@@ -54,6 +75,14 @@ describe('MatrixMap', () => {
     const log = fills(draw({ ...base, scale: 'log' })).filter((x) => x.startsWith('rgb'));
     expect(log[2]).toBe(viridis(0));
     expect(log[0]).toBe(viridis(1));
+  });
+
+  it('gives the readout line its text as a title, since a narrow card cuts it with an ellipsis (gate G5)', () => {
+    const markup = renderToStaticMarkup(<MatrixMap {...base} />);
+    const m = markup.match(/<p class="caos-chart-readout" data-readout="matrix" title="([^"]*)">([^<]*)<\/p>/);
+    expect(m, markup).not.toBeNull();
+    expect(m![1]).toBe(m![2]);
+    expect(m![1].length).toBeGreaterThan(0);
   });
 
   it('reads out the move, its value and its count of the row', () => {

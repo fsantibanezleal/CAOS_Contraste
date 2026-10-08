@@ -1,5 +1,5 @@
 // The Methodology's two rating-transition parts (case C04), transcribed from research dossier 13 (sections 1 to 9, 14
-// and 16, read at the primary sources on 2026-10-06 and 2026-10-07) and riskvalidation 0.04.000's docs/transitions
+// and 16, read at the primary sources on 2026-10-06 and 2026-10-07) and riskvalidation 0.4's docs/transitions
 // pages. Every display equation carries a caption that defines its symbols; every section ends with its references.
 import { Cite, DocSection, Equation } from '@fasl-work/caos-app-shell';
 import { L, P, useT } from '../content/bi';

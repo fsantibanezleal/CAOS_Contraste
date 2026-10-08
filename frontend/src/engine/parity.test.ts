@@ -43,11 +43,17 @@ describe('the live scorers reproduce the pipeline on every committed sample', ()
 describe('the live policy reproduces every committed light under the committed alphas', () => {
   for (const entry of index.cases) {
     const manifest = read<CaseManifest>(entry.manifest_path);
-    for (const a of manifest.artifacts.filter((x) => x.role === 'variant')) {
+    const variants = manifest.artifacts.filter((x) => x.role === 'variant');
+    it(`${manifest.case_id}: some variant carries a committed light`, () => {
+      expect(variants.some((a) => read<VariantArtifact>(a.path).tests.some((t) => t.alpha_amber !== null))).toBe(true);
+    });
+    for (const a of variants) {
       it(`${manifest.case_id}/${a.variant_id}`, () => {
         const variant = read<VariantArtifact>(a.path);
+        // a variant whose results are measured rates (C04's known-truth families, its papers) carries no test rows;
+        // one that carries them must have lights evaluated under the policy
         const evaluated = variant.tests.filter((t) => t.alpha_amber !== null);
-        expect(evaluated.length).toBeGreaterThan(0);
+        if (variant.tests.length) expect(evaluated.length).toBeGreaterThan(0);
         for (const t of variant.tests) {
           if (t.alpha_amber !== null) {
             expect(t.alpha_amber).toBe(COMMITTED.amber);

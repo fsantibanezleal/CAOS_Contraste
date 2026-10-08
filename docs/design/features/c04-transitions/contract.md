@@ -132,7 +132,7 @@ against the print and refusing otherwise). No agency matrix enters the outputs (
                "ttc_pd": {"printed", "recomputed", "decimals"},
                "portfolios": [{"name", "w0": [8],
                                "pd0": {"printed", "recomputed", "decimals",
-                                       "check": "printed digits" | "entry rounding", "note": str | null},
+                                       "check": "printed digits" | "entry rounding", "note": text | null},
                                "extreme": {"kind": "min" | "max", "printed", "recomputed", "decimals"} | null,
                                "pd_path": [50]}],             # the projected PD by year (a result, not the matrix)
                "row_sum_deviation": float}}
@@ -141,7 +141,7 @@ against the print and refusing otherwise). No agency matrix enters the outputs (
 Every Engelmann value and every N dagger printed here agrees with its recomputation: the bake stops otherwise. Its
 `decimals` is the print's precision in the stored unit (a PD of 1.198% is stored as 0.01198, five decimals); `check`
 says how a starting portfolio's PD was judged: at its printed digits, or (W hat, whose PD the paper prints from
-entries more precise than the printed ones) within the rounding of its printed entries, with the reason in `note`.
+entries more precise than the printed ones) within the rounding of its printed entries, with the reason in `note` (in both languages).
 
 ## 4. Live parity, module `pipeline/cases/c04_parity.py`, ports `frontend/src/engine/transitions.ts`
 

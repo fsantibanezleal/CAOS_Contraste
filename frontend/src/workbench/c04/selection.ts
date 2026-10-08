@@ -2,7 +2,7 @@
 // are read from the artifacts as the pipeline wrote them; the live ones are engine/transitions.ts on committed inputs
 // (an agency's pooled one-year matrix and its cohort mix, a generator family's true one-year matrix and its cohort
 // sizes), held to riskvalidation by the parity points of C04's models artifact.
-import type { BiText, ShellToken } from '@fasl-work/caos-app-shell';
+import type { BiText, ShellColorToken } from '@fasl-work/caos-app-shell';
 import { useMemo } from 'react';
 import type { CaseData } from '../../api/artifacts';
 import type { AssetClass, Regime } from '../../engine/credit';
@@ -34,6 +34,11 @@ export const GRADES = ['AAA', 'AA', 'A', 'BBB', 'BB', 'B', 'CCC-C'] as const;
 export const N_GRADES = GRADES.length;
 /** The x axis of a chart by grade: grades counted from the best, the axis title naming them. */
 export const GRADE_AXIS: BiText = { en: 'Grade (1 AAA, 2 AA, 3 A, 4 BBB, 5 BB, 6 B, 7 CCC-C)', es: 'Grado (1 AAA, 2 AA, 3 A, 4 BBB, 5 BB, 6 B, 7 CCC-C)' };
+
+/** The floor under which a p-value is drawn on a log axis, labelled as below it: the shell 0.9.0 never draws a log axis
+ * below about 1e-22 (known shell defect 31, fixed in 0.9.2), and 1e-124 and 1e-20 lead to the same decision; the tables
+ * print the exact value. C01's findings chart uses the same floor. */
+export const P_FLOOR = 1e-16;
 
 /** CEREP's default definitions (docs/cases/C04.md, "What CEREP counts"). */
 export type Definition = 'd2' | 'd3' | 'd4' | 'keep';
@@ -95,17 +100,20 @@ export const START_LABEL: Record<StartPortfolio, BiText> = {
 };
 export const LEVELS = [0.9, 0.95, 0.99] as const;
 
-/** One colour per definition, estimator, generator and grade, the same in every view and its key. */
-export const DEFINITION_COLOR: Record<Definition, ShellToken> = { d2: '--color-accent', d3: '--color-accent-2', d4: '--color-warn', keep: '--color-magenta' };
-export const ESTIMATOR_COLOR: Record<Estimator, ShellToken> = {
-  cohort: '--color-fg',
-  duration: '--color-magenta',
-  em: '--color-accent',
-  diagonal: '--color-accent-2',
-  weighted: '--color-good',
+/** One colour per definition, estimator, generator and grade, the same in every view and its key. The definitions and
+ * the four generators meet in one chart (the generators' PDs, the capital by PD source), so no generator shares a
+ * definition's colour; Keep (magenta) never meets a generator, and the cohort and duration estimators appear only in
+ * the families' charts, which draw no definition. */
+export const DEFINITION_COLOR: Record<Definition, ShellColorToken> = { d2: '--color-accent', d3: '--color-accent-2', d4: '--color-warn', keep: '--color-magenta' };
+export const ESTIMATOR_COLOR: Record<Estimator, ShellColorToken> = {
+  cohort: '--color-fg-subtle',
+  duration: '--color-accent',
+  em: '--color-magenta',
+  diagonal: '--color-good',
+  weighted: '--color-fg',
   jlt: '--color-bad',
 };
-export const GRADE_COLOR: ShellToken[] = ['--color-accent', '--color-accent-2', '--color-good', '--color-warn', '--color-magenta', '--color-bad', '--color-fg-subtle'];
+export const GRADE_COLOR: ShellColorToken[] = ['--color-accent', '--color-accent-2', '--color-good', '--color-warn', '--color-magenta', '--color-bad', '--color-fg-subtle'];
 
 export interface C04Actions {
   setGrade: (g: number) => void;
@@ -211,8 +219,9 @@ export function useProjection(sel: C04Sel | null): { projection: Projection; w0:
 }
 
 /** A grade's pooled counts for the live intervals: an agency's under the chosen definition (its long-run average's
- * defaults and n), a family's design (the obligor-years of its cohorts and the expected defaults at the true PD,
- * rounded), the published variant's Table 5 cell (15 defaults of 531). Null where the definition gives none. */
+ * defaults and n), a family's design (the obligor-years of its cohorts, or the thin family's smallest cohort, and the
+ * expected defaults at the true PD, rounded), the published variant's Table 5 cell (15 defaults of 531). Null where
+ * the definition gives none. */
 export function gradeCounts(v: VariantArtifact<unknown>, definition: Definition, g: number): { defaults: number; n: number } | null {
   if (isAgency(v)) {
     const o = v.outputs;
@@ -229,7 +238,8 @@ export function gradeCounts(v: VariantArtifact<unknown>, definition: Definition,
   }
   if (isFamily(v)) {
     const o = v.outputs;
-    const n = Math.round(o.generator.obligors[g] * o.design.years);
+    // the thin family's cohorts are its ladder's sizes, the smallest first (the rung the grade read-out describes)
+    const n = o.family === 'thin' && o.ladder ? o.ladder.values[0] : Math.round(o.generator.obligors[g] * o.design.years);
     return n > 0 ? { defaults: Math.round(n * o.generator.pd_1y[g]), n } : null;
   }
   if (isPublished(v)) return { defaults: v.outputs.sr190.defaults, n: v.outputs.sr190.n };

@@ -6,25 +6,35 @@ follows C22's and C05's pattern (`frontend/src/workbench/c22/instrument.tsx`, `c
 into `workbench/Workbench.tsx` beside C05's and C22's. Every view states its lane (replay or live) and its provenance;
 every chart is a `PlotCard` holding a `UPlotChart` (the shell's interactive chart: series toggles, hover read-outs),
 with its axes' units, a caption saying what is drawn and from which definition, and bilingual text (`pick`, EN and
-ES). Views that cannot draw (a definition missing for an agency, a cohort without a grade) say so in a `Pending`
-note instead of drawing an empty chart.
+ES). A view that cannot draw (a definition missing for an agency, a grade whose rate is zero on a log axis) says why in
+its card's note and draws what exists, a table where no series remains; it never draws an empty chart. `Pending` is
+only for data still loading (it declares `data-state="loading"`, which the measured gate waits on).
 
 ## Files
 
 | File | Holds |
 |---|---|
 | `frontend/src/lib/contract.types.ts` | the C04 output types and their descriptors (checked against the baked artifacts by `lib/contract.test.ts`) |
-| `frontend/src/workbench/c04/selection.ts` | `C04Sel` (the case data, the grade, the definition, the live inputs), `isC04`, kind guards (`isAgency`, `isFamily`, `isPublished`), shared series styles |
+| `frontend/src/workbench/c04/selection.ts` | `C04Sel` (the case data, the grade, the definition, the live inputs, and `act`, the setters the views' own controls call), kind guards (`isAgency`, `isFamily`, `isPublished`), shared labels and colours, the live hooks (`useProjection`, `useIntervals`, `useCapital`) |
 | `frontend/src/workbench/c04/instrument.tsx` | the rail and the group layout per kind |
-| `frontend/src/workbench/c04/AgencyViews.tsx` | the agency variants' Model and Validation views |
+| `frontend/src/workbench/c04/MatrixMap.tsx` | the heat map every matrix is drawn with |
+| `frontend/src/workbench/c04/AgencyModelViews.tsx` | the agency variants' Matrix and Generators views |
+| `frontend/src/workbench/c04/AgencyValidationViews.tsx` | the agency variants' PD by grade, By year, Definitions and Lifetime views |
+| `frontend/src/workbench/c04/AgencyTestsViews.tsx` | the agency variants' Markov tests, Mobility and Semesters views |
 | `frontend/src/workbench/c04/FamilyViews.tsx` | the generator families' Model and Validation views |
-| `frontend/src/workbench/c04/PublishedViews.tsx` | the papers' view |
+| `frontend/src/workbench/c04/PublishedViews.tsx` | the papers' views |
 | `frontend/src/workbench/c04/LiveViews.tsx` | Impact: the drift, the intervals and the capital, computed live by `engine/transitions.ts` and `engine/credit.ts` |
-| `frontend/src/workbench/c04/C04Common.tsx` | Findings, Variants and Context; the shared read-outs |
-| `frontend/src/content/cases/C04.tsx` | the case write-up the Context shows (sources, definitions, methods, caveats) |
-| `frontend/src/workbench/c04.test.tsx` | CT-412 |
+| `frontend/src/workbench/c04/C04Common.tsx` | Findings, Variants and Context; the rail's read-outs |
+| `frontend/src/content/cases/C04.tsx`, `C04Results.tsx` | the case write-up the Context shows (sources, definitions, methods, caveats) and the measured results, read from the artifacts |
+| `frontend/src/pages/C04Sections.tsx` | C04's sections of the Experiments and Benchmark pages |
+| `frontend/src/workbench/c04.test.tsx` | CT-412 (each module also has its own test file beside it) |
 
-## The rail (three sections, each with a live read-out, fitting 1280 x 800 without scrolling)
+## The rail (up to three sections, each with a live read-out, fitting 1280 x 800 without scrolling)
+
+A section appears only where its controls change something: the published variant has only the Interval section (its
+papers' matrices are derived-only, so there is no chain to project). An agency whose transition page has no default
+category (Moody's) keeps the Projection section: its portfolio has no route to default, but it still migrates, and
+the Drift view draws its composition over the horizon.
 
 1. **Grade and definition.** A grade chip group (AAA to CCC-C) and, on agency variants, a definition chip group (D2
    default ratings, D3 default events, D4 the transition matrix's default column, Keep: withdrawals kept in the
@@ -44,16 +54,18 @@ note instead of drawing an empty chart.
 **Agency variants** (`sp`, `moodys`, `fitch`):
 
 - Model: *Matrix* (the pooled one-year matrix as a heat map, eight states and the withdrawals share of each row, the
-  cell values on hover; a cohort chip to show one year's own matrix instead) and *Generators* (the one-year PD by grade
+  cell values on hover; a cohort knob to show one year's own matrix instead), *Generators* (the one-year PD by grade
   from the pooled matrix, EM, diagonal, weighted and JLT on a log axis; the L1 distances; Theorem 3's verdict naming
-  the moves never observed though reachable; stochastic monotonicity).
-- Validation: *PD by grade* (the long-run average under each definition on a log axis with the Jeffreys interval as
-  whiskers and the last five years' mean as a marker), *By year* (the chosen grade's yearly PD under every definition
-  over the cohorts, with the cohort size), *Definitions* (the pooled ratios D4/D2 and D3/D2 by grade, the explanation
-  from CEREP's help file), *Tests* (time homogeneity across years and semesters; every cohort against the pooled matrix
-  as p-values over the years with the policy's thresholds; the ECB migration statistics by year), *Mobility* (M_SVD
-  and the trace index by cohort against the speculative-grade default rate), *Semesters* (two semesters' product
-  against the year, L1 by year and the default columns).
+  the moves never observed though reachable; stochastic monotonicity) and *Mobility* (M_SVD and the trace index by
+  cohort against the speculative-grade default rate: how the matrices move over the cycle).
+- Validation (six sub-tabs, the shell's limit for peers, ADR-0071 rule 5): *PD by grade* (the long-run average under
+  each definition on a log axis with the Jeffreys interval as whiskers and the last five years' mean as a marker), *By
+  year* (the chosen grade's yearly PD under every definition over the cohorts, with the cohort size), *Definitions*
+  (the pooled ratios D4/D2 and D3/D2 by grade, the explanation from CEREP's help file), *Lifetime* (CT-415: each
+  five-year window's observed defaults against the chained and pooled projections), *Markov tests* (time homogeneity
+  across years and semesters; every cohort against the pooled matrix as p-values over the years with the policy's
+  thresholds; the ECB migration statistics by year), *Semesters* (two semesters' product against the year, L1 by year
+  and the default columns).
 - Impact (live): *Drift* (the projected default rate by year for the chosen portfolio under the agency's pooled
   matrix, the TTC rate as a line, the portfolio's composition by grade over the horizon), *Intervals* (the three
   intervals for every grade at the reader's correlation and level, live), *Capital* (the IRB risk weight of the
@@ -61,8 +73,9 @@ note instead of drawing an empty chart.
 
 **Generator families**:
 
-- Model: *Generator* (the true generator and its one-year matrix as heat maps, the true PD by grade at one and five
-  years, the design: obligors, years, repetitions, the ladder and its unit).
+- Model: *Generator* (the true one-year matrix exp(Q) as a heat map; the generator's exit rates per year in the design
+  table, since the heat map reads cells as probabilities and Q's diagonal is negative; the true PD by grade at one and
+  five years; the design: obligors, years, repetitions, the ladder and its unit).
 - Validation, by family: `markov` *Estimators* (bias and RMSE of each estimator by grade with MC errors), *Zeros*
   (the share of exactly zero PDs by grade and estimator), *Size* (the four tests at 5% and 1%), *Coverage* (Wald,
   Agresti-Coull, Jeffreys and bootstrap by grade); `momentum` *Power* (the three tests along the ladder) and

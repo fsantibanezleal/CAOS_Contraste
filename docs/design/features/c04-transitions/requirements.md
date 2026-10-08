@@ -1,7 +1,5 @@
 # Requirements: U4, case C04 (rating transitions and TTC PD by grade)
 
-Status: planned
-
 EARS (Mavin et al., RE'09, doi:10.1109/RE.2009.9). Every requirement names the gate that fails when it is violated.
 
 | ID | Requirement | Gate |
@@ -18,6 +16,6 @@ EARS (Mavin et al., RE'09, doi:10.1109/RE.2009.9). Every requirement names the g
 | CT-410 | THE web SHALL project live a reader's portfolio by grade under an agency's pooled matrix and an origination mix (Engelmann's propagation (9)), with the TTC portfolio and the default rate by year, and the TypeScript results SHALL equal riskvalidation's on the exported parity points within 1e-9 relative. | `frontend/src/engine/transitions.test.ts` |
 | CT-411 | THE web SHALL compute live the Wald and Agresti-Coull intervals with the dependence correction (3.4) at a reader's default correlation, and the IRB capital of a portfolio by grade under each PD definition, equal to riskvalidation's on the parity points within 1e-9 relative. | `frontend/src/engine/transitions.test.ts` |
 | CT-412 | THE C04 instrument SHALL keep the six groups in order, show the lane and the provenance on every view, hold a live read-out in each rail section that changes with its controls, and show views that fit the variant (agency, generator family or papers). | `frontend/src/workbench/c04.test.tsx` |
-| CT-413 | WHEN the measured gate walks C04 at five sizes, both themes and both languages, THE site SHALL pass every check. | `frontend/scripts/gate.mjs` (G1 to G9) |
+| CT-413 | WHEN the measured gate walks C04 at five sizes, both themes and both languages, THE site SHALL pass every check. | `frontend/scripts/gate.mjs` (G1 to G14) |
 | CT-415 | FOR each agency and five-year window (2000 to 2004 through 2020 to 2024), THE C04 variant SHALL report the observed five-year outcome of the window's fixed cohort by grade (the shares in default and withdrawn at the end, tab 4; the cumulative default rate, tab 2) beside the projections chained from one-year matrices (the window's own annual matrices with withdrawals kept as a state and removed; the pooled matrix to the fifth power; the EM generator at five years), the lifetime PD a matrix gives against the one the window's cohort lived. | `tests/test_c04.py::test_lifetime_check` |
 | CT-414 | THE docs SHALL hold the case page with its data, definitions, methods, results and caveats, linked from the case index, and the case content in the web SHALL cite every source it uses. | `tests/test_c04.py::test_case_page`, `scripts/check_doc_paths.py` |

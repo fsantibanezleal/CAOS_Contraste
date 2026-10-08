@@ -9,6 +9,7 @@ import { COMMITTED, LIGHT_TEXT, relight } from '../lib/policy';
 import { CASES, CATEGORY_TITLES } from '../content/coverage';
 import { P, useT } from '../content/bi';
 import { CHAMPION, test, value } from '../workbench/model';
+import { C04Experiments } from './C04Sections';
 import { C05ExperimentsSection } from './C05Sections';
 import { C22ExperimentsSection } from './C22Sections';
 
@@ -120,7 +121,7 @@ export function Experiments() {
         all.data.manifests.map((m) => (
           <DocSection key={m.case_id} title={{ en: `${m.case_id}: ${m.title.en}`, es: `${m.case_id}: ${m.title.es}` }} noRefsReason={{ en: 'Read from the committed artifacts; the methods are cited in Methodology.', es: 'Leído desde los artefactos comprometidos; los métodos se citan en Metodología.' }}>
             <P en={m.question.en} es={m.question.es} />
-            {m.case_id === 'C05' ? <C05ExperimentsSection manifest={m} /> : m.case_id === 'C22' ? <C22ExperimentsSection manifest={m} /> : <CaseVariants manifest={m} />}
+            {m.case_id === 'C04' ? <C04Experiments manifest={m} /> : m.case_id === 'C05' ? <C05ExperimentsSection manifest={m} /> : m.case_id === 'C22' ? <C22ExperimentsSection manifest={m} /> : <CaseVariants manifest={m} />}
           </DocSection>
         ))}
     </DocPage>
