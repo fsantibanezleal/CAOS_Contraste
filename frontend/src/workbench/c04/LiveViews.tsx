@@ -31,6 +31,8 @@ import {
   GRADE_COLOR,
   GRADES,
   START_LABEL,
+  cerepPdSource,
+  cerepSource,
   definitionsOf,
   familyCountsText,
   isAgency,
@@ -87,14 +89,14 @@ function shortName(sel: C04Sel): Both {
 /** An English possessive that does not double a name's own: S&P's, Fitch's, and Moody's as it is. */
 const possessive = (name: string) => (/'s$/.test(name) ? name : `${name}'s`);
 
-/** Who the numbers are about and where they come from, closing a card's note: CEREP's attribution, verbatim, and the
- * agency's EU entity on an agency variant; on a generator family, the CEREP counts its known truth was fitted to. */
-export function sourceNote(sel: C04Sel): Both {
+/** Who the numbers are about and where they come from, closing a card's note: on an agency variant the shared CEREP
+ * line (the EU entity, its scope and period, ESMA's attribution verbatim; CT-407), with `pd` ESMA's statement first for
+ * a card that shows a PD; on a generator family, the CEREP counts its known truth was fitted to. */
+export function sourceNote(sel: C04Sel, pd = false): Both {
   const v = sel.data.variant as VariantArtifact<unknown>;
   if (isAgency(v)) {
-    const a = v.outputs.agency;
-    const att = v.outputs.attribution;
-    return { en: `${att}. Entity: ${a.name} (${a.code}).`, es: `Atribución: "${att}". Entidad: ${a.name} (${a.code}).` };
+    const close = pd ? cerepPdSource : cerepSource;
+    return { en: close(v.outputs, 'en'), es: close(v.outputs, 'es') };
   }
   const att = sel.data.manifest.source_details?.['esma-cerep']?.attribution;
   return {
@@ -235,7 +237,7 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
   const v = variantOf(sel);
   if (!sel || !v || !drift) return <Pending />;
   const prov = provenanceOf(v.provenance.truth_status);
-  const src = sourceNote(sel);
+  const src = sourceNote(sel, true);
   const agency = isAgency(v) ? v : null;
   const family = isFamily(v) ? v : null;
   const start = twice(START_LABEL[sel.start]);
@@ -490,7 +492,7 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
   const v = variantOf(sel);
   if (!sel || !v) return <Pending />;
   const prov = provenanceOf(v.provenance.truth_status);
-  const src = sourceNote(sel);
+  const src = sourceNote(sel, true);
   const agency = isAgency(v) ? v : null;
   const family = isFamily(v) ? v : null;
   const name = shortName(sel);

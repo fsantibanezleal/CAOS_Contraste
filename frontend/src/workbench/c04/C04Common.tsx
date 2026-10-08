@@ -58,6 +58,7 @@ import {
   GRADE_AXIS,
   GRADES,
   START_LABEL,
+  cerepSource,
   gradeCounts,
   isAgency,
   isFamily,
@@ -101,17 +102,11 @@ const pad = (vals: ReadonlyArray<number | null>): Array<number | null> => [null,
 const gradeAxis = (): UPlotChartProps['x'] => ({ values: numbered(GRADES.length), label: GRADE_AXIS, format: { decimals: 0 } });
 const gradeMark = (g: number) => [{ x: g + 1, label: { en: GRADES[g], es: GRADES[g] } }];
 
-const SCOPE_ES: Record<string, string> = { 'corporate, long-term, categories': 'corporativas, largo plazo, categorías' };
 
 /** "Source: ESMA CEREP; ..." and the EU entity, for a card whose numbers come from an agency's CEREP pages (the
  * attribution is the source's own wording, kept verbatim in both languages). */
 function cerepLine(v: AgencyVariant): Bi {
-  const o = v.outputs;
-  const att = o.attribution || ATTRIBUTION_FALLBACK;
-  return {
-    en: `${o.agency.name} (${o.agency.code}), ratings ${o.agency.scope}. ${att}.`,
-    es: `${o.agency.name} (${o.agency.code}), calificaciones ${SCOPE_ES[o.agency.scope] ?? o.agency.scope}. ${att}.`,
-  };
+  return { en: cerepSource(v.outputs, 'en'), es: cerepSource(v.outputs, 'es') };
 }
 
 /** "S&P's", "Moody's" (a name that already ends in 's). */

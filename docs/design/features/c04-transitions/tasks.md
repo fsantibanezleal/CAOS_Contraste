@@ -10,7 +10,7 @@
 | 6 | Findings, expected ranges, lineage, determinism; the bake and a second bake | CT-408, CT-409 | done |
 | 6b | The lifetime check: five-year windows of CEREP against the chained one-year matrices | CT-415 | done |
 | 7 | The live ports (projection, intervals, capital) with parity tests | CT-410, CT-411 | done |
-| 8 | The C04 instrument and its views; the content page; the methodology and coverage entries | CT-412, CT-414 | todo |
+| 8 | The C04 instrument and its views; the content page; the methodology and coverage entries | CT-412, CT-414 | done |
 | 9 | The case page in docs; the measured gate; screenshots read; version 0.05.000, changelog, PR | CT-413, CT-414 | todo |
 
 Found on the way and fixed where it lives, before C04 used it: riskvalidation 0.4.1 (a PD of 0 refused although the

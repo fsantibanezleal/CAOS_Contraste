@@ -32,6 +32,8 @@ import {
   type AgencyVariant,
   type C04Sel,
   type Definition,
+  cerepPdSource,
+  cerepSource,
 } from './selection';
 
 type Lang = 'en' | 'es';
@@ -90,7 +92,6 @@ export function inYears(l: Lang, years: number[]): string {
 
 /** The short code a key or a sentence names a definition by. */
 const CODE: Record<Definition, BiText> = { d2: 'D2', d3: 'D3', d4: 'D4', keep: { en: 'Keep', es: 'Con retiros' } };
-const SCOPE_ES: Record<string, string> = { 'corporate, long-term, categories': 'corporativas, de largo plazo, por categoría' };
 
 function agencyOf(sel: C04Sel | null): AgencyVariant | null {
   const v = sel?.data.variant as VariantArtifact<unknown> | undefined;
@@ -104,21 +105,10 @@ function agencyName(sel: C04Sel, v: AgencyVariant): BiText {
 
 const yearOf = (c: C04Cohort): number => Number(c.begin.slice(0, 4));
 
-/** The agency's EU entity, its scope and period, and CEREP's attribution: every card these views draw from CEREP ends
- * with it (CT-407). The attribution is the variant's own string, kept as declared in both languages. */
-export function sourceText(o: C04AgencyOutputs, l: Lang): string {
-  const first = o.cohorts[0]?.label ?? '-';
-  const last = o.cohorts[o.cohorts.length - 1]?.label ?? '-';
-  const scope = l === 'en' ? o.agency.scope : (SCOPE_ES[o.agency.scope] ?? o.agency.scope);
-  return t(
-    l,
-    `${o.agency.name} (${o.agency.code}; ${scope}), annual cohorts ${first} to ${last}. ${o.attribution}.`,
-    `${o.agency.name} (${o.agency.code}; ${scope}), cohortes anuales ${first} a ${last}. ${o.attribution}.`,
-  );
-}
-/** The end of the note of a card that shows a PD or sets definitions side by side: ESMA's statement that CEREP sets no
- * common definition of a default event, then the source (CT-407: every PD shown names its definition with it). */
-const pdSource = (o: C04AgencyOutputs, l: Lang): string => ` ${pick(ESMA_DEFINITIONS, l)} ${sourceText(o, l)}`;
+/** The agency's EU entity, its scope and period, and CEREP's attribution (selection.cerepSource, CT-407). */
+export const sourceText = (o: C04AgencyOutputs, l: Lang): string => cerepSource(o, l);
+/** ESMA's statement, then the source: the close of a card that shows a PD or sets definitions side by side. */
+const pdSource = (o: C04AgencyOutputs, l: Lang): string => ` ${cerepPdSource(o, l)}`;
 
 /** One definition's yearly rates, cohorts (oldest first) by grades, as the artifact holds them; null where undefined. */
 function yearly(o: C04AgencyOutputs, d: Definition): Grid | null {
@@ -528,8 +518,8 @@ export function PdByGradeView({ sel }: { sel: C04Sel | null }) {
     return (
       t(
         l,
-        `${pick(DEFINITION_HINT[d], l)} In percent of the cohort: the long-run average (${cohorts}), the pooled counts and the Jeffreys 95% interval of the pooled rate (Schuermann and Hanson 2004); where the card has room, the pooled rate, Wald, Agresti-Coull, the cohorts and the last five cohorts' mean as further columns, and on a tall screen the three intervals are drawn under the table. A grade's name picks it.`,
-        `${pick(DEFINITION_HINT[d], l)} En porcentaje de la cohorte: el promedio de largo plazo (${cohorts}), los conteos agrupados y el intervalo de Jeffreys al 95% de la tasa agrupada (Schuermann y Hanson 2004); donde la tarjeta tiene espacio, la tasa agrupada, Wald, Agresti-Coull, las cohortes y la media de las últimas cinco cohortes como columnas adicionales, y en una pantalla alta los tres intervalos se dibujan bajo la tabla. El nombre de un grado lo elige.`,
+        `In percent of the cohort (${cohorts}): the long-run average, the pooled defaults over n and the Jeffreys 95% interval of the pooled rate (Schuermann and Hanson 2004); more columns where the card has room. A grade's name picks it; the Definitions view says what each definition counts.`,
+        `En porcentaje de la cohorte (${cohorts}): el promedio de largo plazo, los incumplimientos agrupados sobre n y el intervalo de Jeffreys al 95% de la tasa agrupada (Schuermann y Hanson 2004); más columnas donde la tarjeta tiene espacio. El nombre de un grado lo elige; la vista Definiciones dice qué cuenta cada definición.`,
       ) +
       outsideText(l) +
       fallback +
@@ -1043,7 +1033,8 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
         l,
         `CEREP's help file (ESMA65-8-10634), the sections that define the default counts. At ${grade}: each definition's pooled rate, in percent, and its ratio to D2's (the chart's).${hasKeep ? " Keep's pooled rate, which the artifact does not bake, is D4's pooled defaults over the whole cohorts, computed in your browser; the artifact gives it no ratio." : ''}`,
         `El archivo de ayuda de CEREP (ESMA65-8-10634), las secciones que definen los conteos de incumplimiento. En ${grade}: la tasa agrupada de cada definición, en porcentaje, y su razón a la de D2 (la del gráfico).${hasKeep ? ' La tasa agrupada de Con retiros, que el artefacto no trae, son los incumplimientos agrupados de D4 sobre las cohortes completas, calculada en su navegador; el artefacto no le da razón.' : ''}`,
-      ) + pdSource(o, l),
+        // ESMA's statement heads this card (data-esma): the note closes with the entity and the source alone
+      ) + ` ${sourceText(o, l)}`,
   );
   return (
     <div className="caos-views-row" data-views="2">
