@@ -12,6 +12,7 @@ import { C04Results, C04VariantsProvider, paperAgreements, yearRanges } from '..
 import { CITATIONS } from '../../content/citations';
 import type { CaseManifest, ModelsArtifact, VariantArtifact } from '../../lib/contract.types';
 import { C04Benchmark, C04Experiments, coverageChart, estimatorsChart } from '../../pages/C04Sections';
+import { effectiveN, pdAgrestiCoull, pdJeffreys, pdWald, project } from '../../engine/transitions';
 import { provenanceOf } from '../model';
 import {
   C04ContextView,
@@ -418,6 +419,49 @@ describe('C04 rail read-outs', () => {
     expect(at(<IntervalReadout sel={{ ...s0, definition: 'd4' }} />)).not.toBe(m0);
     const pub = at(<IntervalReadout sel={makeSel(dataOf('published'))} />);
     expect(pub).toContain('15 defaults among 531 obligors');
+  });
+
+  it("the read-outs' numbers are the engine's, computed here from the artifact (not from the views' helpers)", () => {
+    const sp = dataOf('sp');
+    const v = variantOf('sp');
+    if (!isAgency(v)) throw new Error('sp is an agency');
+    const o = v.outputs;
+    // the projection: Engelmann's propagation of the start under the pooled matrix, year 1 and the horizon's year
+    for (const [start, horizon] of [
+      ['best', 35],
+      ['speculative', 10],
+    ] as const) {
+      const w0 = start === 'best' ? [1, 0, 0, 0, 0, 0, 0, 0] : [0, 0, 0, 0, 1 / 3, 1 / 3, 1 / 3, 0];
+      const p = project(o.pooled.matrix, w0, o.origination, horizon);
+      const m = at(<ProjectionReadout sel={makeSel(sp, { start, horizon })} />);
+      expect(m, `${start} ttc`).toContain(`>${pct3('en', p.ttc.defaultRate)}<`);
+      expect(m, `${start} year 1`).toContain(`>${pct3('en', p.defaultRate[0])}<`);
+      expect(m, `${start} year ${horizon}`).toContain(`>${pct3('en', p.defaultRate[horizon - 1])}<`);
+    }
+    // the intervals: N dagger and the three widths at the rail's correlation and level, on the definition's counts
+    for (const [rho, level, grade] of [
+      [0.02, 0.99, 6],
+      [0.005, 0.9, 3],
+    ] as const) {
+      const l = o.lra.d2;
+      const d = l.defaults[grade];
+      const n = l.n[grade];
+      const m = at(<IntervalReadout sel={makeSel(sp, { rho, level, grade })} />);
+      const width = (x: number) => formatNumber(x * 100, 'en', { digits: 3 });
+      expect(m, 'N dagger').toContain(`>${formatNumber(effectiveN(n, rho), 'en', { digits: 4 })}<`);
+      expect(m, 'Wald').toContain(`>${width(pdWald(d, n, { level, rho }).length)}<`);
+      expect(m, 'Agresti-Coull').toContain(`>${width(pdAgrestiCoull(d, n, { level, rho }).length)}<`);
+      expect(m, 'Jeffreys').toContain(`>${width(pdJeffreys(d, n, { level }).length)}<`);
+    }
+    // a family's grade: the truth and the chosen estimator's bias, in percentage points
+    const mk = variantOf('markov');
+    if (!isFamily(mk)) throw new Error('markov is a family');
+    for (const estimator of ['em', 'cohort'] as const) {
+      const est = (mk.outputs.rungs as Array<{ estimators: Record<string, { bias: (number | null)[] }> }>)[0].estimators[estimator];
+      const m = at(<GradeReadout sel={makeSel(dataOf('markov'), { estimator, grade: 6 })} />);
+      expect(m, estimator).toContain(`>${pct3('en', mk.outputs.generator.pd_1y[6])}<`);
+      expect(m, estimator).toContain(`>${formatNumber((est.bias[6] as number) * 100, 'en', { digits: 3 })}<`);
+    }
   });
 
   it('every grade has a reading under every definition an agency gives', () => {
