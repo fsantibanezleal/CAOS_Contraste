@@ -29,6 +29,7 @@ import {
 import type { C04MarkovRung, C04Simulation, C04ThinRung, CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { provenanceOf } from '../workbench/model';
 import { agencyLraChart, nonEmpty, rungText } from '../workbench/c04/C04Common';
+import { SP_ENTITY } from '../workbench/c04/FamilyViews';
 import {
   ESMA_DEFINITIONS,
   ESTIMATOR_COLOR,
@@ -60,6 +61,8 @@ const CHART_HEIGHT = 300;
 const finite = (x: number | null | undefined): x is number => x !== null && x !== undefined && Number.isFinite(x);
 const ratioText = (lang: Lang, x: number | null | undefined) => formatNumber(x, lang, { digits: 3 });
 const share = (lang: Lang, x: number | null | undefined) => formatNumber(x, lang, { percent: true, decimals: 1 });
+/** An exact probability (by enumeration, no Monte Carlo error) at the findings' two decimals: 0.33%, not 0.3%. */
+const exactShare = (lang: Lang, x: number | null | undefined) => formatNumber(x, lang, { percent: true, decimals: 2 });
 const range = (lang: Lang, xs: number[], f: (l: Lang, x: number) => string) =>
   xs.length ? (Math.min(...xs) === Math.max(...xs) ? f(lang, xs[0]) : `${f(lang, Math.min(...xs))} ${lang === 'es' ? 'a' : 'to'} ${f(lang, Math.max(...xs))}`) : '-';
 
@@ -68,6 +71,13 @@ const sizeBound = (level: number, n: number) => level + SIZE_Z * Math.sqrt((leve
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Experiments
+
+/** The families draw their paths from a generator fitted to S&P's CEREP counts: a card of theirs names the entity and
+ * carries ESMA's attribution (verbatim, the source's own wording), as the family views do. */
+const FAMILY_SOURCE = {
+  en: ` CEREP counts of ${SP_ENTITY.name}. ${ATTRIBUTION_FALLBACK}.`,
+  es: ` Conteos de CEREP de ${SP_ENTITY.name}. ${ATTRIBUTION_FALLBACK}.`,
+} as const;
 
 function agencyData(v: AgencyVariant, lang: Lang): string {
   const a = agencyFacts(v);
@@ -87,8 +97,8 @@ function agencyShows(v: AgencyVariant, lang: Lang): string {
       : `${GRADES[CCC]}: D2 ${pctText('en', o.lra.d2.rate[CCC])}${d4 ? `, D4 ${d4} (pooled D4/D2 ${ratioText('en', gap)})` : ', no D4'}`;
   const homog =
     lang === 'es'
-      ? `homogeneidad temporal chi-cuadrado ${formatNumber(a.homogeneity.statistic, 'es', { digits: 5 })} con ${formatNumber(a.homogeneity.dof, 'es')} grados de libertad, ${pText('es', a.homogeneity.p_value)}; ${a.reference.red} de ${a.reference.total} cohortes se apartan de la matriz agrupada al ${formatNumber(a.reference.alpha, 'es', { percent: true, decimals: 0 })}`
-      : `time homogeneity chi-square ${formatNumber(a.homogeneity.statistic, 'en', { digits: 5 })} on ${formatNumber(a.homogeneity.dof, 'en')} degrees of freedom, ${pText('en', a.homogeneity.p_value)}; ${a.reference.red} of ${a.reference.total} cohorts depart from the pooled matrix at ${formatNumber(a.reference.alpha, 'en', { percent: true, decimals: 0 })}`;
+      ? `homogeneidad temporal chi-cuadrado ${formatNumber(a.homogeneity.statistic, 'es', { decimals: 0 })} con ${formatNumber(a.homogeneity.dof, 'es')} grados de libertad, ${pText('es', a.homogeneity.p_value)}; ${a.reference.red} de ${a.reference.total} cohortes se apartan de la matriz agrupada al ${formatNumber(a.reference.alpha, 'es', { percent: true, decimals: 0 })}`
+      : `time homogeneity chi-square ${formatNumber(a.homogeneity.statistic, 'en', { decimals: 0 })} on ${formatNumber(a.homogeneity.dof, 'en')} degrees of freedom, ${pText('en', a.homogeneity.p_value)}; ${a.reference.red} of ${a.reference.total} cohorts depart from the pooled matrix at ${formatNumber(a.reference.alpha, 'en', { percent: true, decimals: 0 })}`;
   const ttc = a.ttc === null ? '' : lang === 'es' ? `; tasa TTC de incumplimiento ${pctText('es', a.ttc)}` : `; TTC default rate ${pctText('en', a.ttc)}`;
   return `${head}; ${homog}${ttc}.`;
 }
@@ -259,7 +269,20 @@ function GeneratorsCard({ agencies, manifest, provenance }: { agencies: AgencyVa
     .filter(finite);
   const excluded = agencies.filter((a) => a.outputs.embedding.exact_generator_excluded);
   const monotone = agencies.filter((a) => a.outputs.embedding.stochastically_monotone).length;
-  const moves = (l: Lang) => excluded.map((a) => `${pick(shortOf(manifest, a.variant_id), l)} ${a.outputs.embedding.theorem3.c.length}`).join(', ');
+  // each condition of Theorem 3 with the agencies that meet it: (c) counts the moves reachable but never observed
+  const byC = agencies.filter((a) => a.outputs.embedding.theorem3.c.length > 0);
+  const byA = agencies.filter((a) => a.outputs.embedding.theorem3.a);
+  const byB = agencies.filter((a) => a.outputs.embedding.theorem3.b);
+  const names = (list: typeof agencies, l: Lang) => list.map((a) => pick(shortOf(manifest, a.variant_id), l)).join(', ');
+  const moves = (l: Lang) => byC.map((a) => `${pick(shortOf(manifest, a.variant_id), l)} ${a.outputs.embedding.theorem3.c.length}`).join(', ');
+  const conditions = (l: Lang) =>
+    [
+      byC.length ? (l === 'es' ? `por (c) para ${byC.length} (movimientos alcanzables pero nunca observados: ${moves(l)})` : `by (c) for ${byC.length} (moves reachable but never observed: ${moves(l)})`) : null,
+      byA.length ? (l === 'es' ? `por (a), det P no positivo, para ${names(byA, l)}` : `by (a), det P not positive, for ${names(byA, l)}`) : null,
+      byB.length ? (l === 'es' ? `por (b), det P sobre el producto de la diagonal, para ${names(byB, l)}` : `by (b), det P above the product of the diagonal, for ${names(byB, l)}`) : null,
+    ]
+      .filter(Boolean)
+      .join('; ');
   const l1 = (l: Lang, x: number) => formatNumber(x, l, { digits: 3 });
   const times = (l: Lang, x: number) => formatNumber(x, l, { digits: 2 });
   return (
@@ -268,8 +291,8 @@ function GeneratorsCard({ agencies, manifest, provenance }: { agencies: AgencyVa
       lane={REPLAY}
       provenance={provenance}
       note={{
-        en: `The L1 distance of exp(Q) to each agency's pooled one-year matrix for the EM generator of the annual counts (Smith and dos Reis 2018), the diagonal and weighted adjustments and the JLT approximation (Israel, Rosenthal and Wei 2001); Theorem 3(c)'s moves are reachable through other grades but never observed. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
-        es: `La distancia L1 de exp(Q) a la matriz anual agrupada de cada agencia para el generador EM de los conteos anuales (Smith y dos Reis 2018), los ajustes diagonal y ponderado y la aproximación JLT (Israel, Rosenthal y Wei 2001); los movimientos del Teorema 3(c) son alcanzables a través de otros grados pero nunca observados. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
+        en: `The L1 distance of exp(Q) to each agency's pooled one-year matrix for the EM generator of the annual counts (Smith and dos Reis 2018), the diagonal and weighted adjustments and the JLT approximation (Israel, Rosenthal and Wei 2001); Theorem 3(c)'s moves are reachable through other grades but never observed. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
+        es: `La distancia L1 de exp(Q) a la matriz anual agrupada de cada agencia para el generador EM de los conteos anuales (Smith y dos Reis 2018), los ajustes diagonal y ponderado y la aproximación JLT (Israel, Rosenthal y Wei 2001); los movimientos del Teorema 3(c) son alcanzables a través de otros grados pero nunca observados. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
       }}
     >
       <Verdict
@@ -277,8 +300,8 @@ function GeneratorsCard({ agencies, manifest, provenance }: { agencies: AgencyVa
         title={{ en: 'What the generators support', es: 'Lo que respaldan los generadores' }}
         tone="accent"
         verdict={{
-          en: `EM and the diagonal and weighted adjustments reproduce the pooled matrices within ${range('en', close, l1)} in L1; JLT lies ${range('en', jlt, l1)} from them, ${range('en', ratios, times)} times the diagonal adjustment's distance. Theorem 3(c) excludes an exact generator for ${excluded.length} of ${agencies.length} agencies (moves reachable but never observed: ${moves('en') || '-'}); ${monotone} of ${agencies.length} pooled matrices are stochastically monotone.`,
-          es: `EM y los ajustes diagonal y ponderado reproducen las matrices agrupadas dentro de ${range('es', close, l1)} en L1; JLT queda a ${range('es', jlt, l1)} de ellas, ${range('es', ratios, times)} veces la distancia del ajuste diagonal. El Teorema 3(c) excluye un generador exacto para ${excluded.length} de ${agencies.length} agencias (movimientos alcanzables pero nunca observados: ${moves('es') || '-'}); ${monotone} de ${agencies.length} matrices agrupadas son estocásticamente monótonas.`,
+          en: `EM and the diagonal and weighted adjustments reproduce the pooled matrices within ${range('en', close, l1)} in L1; JLT lies ${range('en', jlt, l1)} from them, ${range('en', ratios, times)} times the diagonal adjustment's distance. Theorem 3 excludes an exact generator for ${excluded.length} of ${agencies.length} agencies${excluded.length ? ` (${conditions('en')})` : ''}; ${monotone} of ${agencies.length} pooled matrices are stochastically monotone.`,
+          es: `EM y los ajustes diagonal y ponderado reproducen las matrices agrupadas dentro de ${range('es', close, l1)} en L1; JLT queda a ${range('es', jlt, l1)} de ellas, ${range('es', ratios, times)} veces la distancia del ajuste diagonal. El teorema 3 excluye un generador exacto para ${excluded.length} de ${agencies.length} agencias${excluded.length ? ` (${conditions('es')})` : ''}; ${monotone} de ${agencies.length} matrices agrupadas son estocásticamente monótonas.`,
         }}
       />
       <div className="ct-scroll">
@@ -350,8 +373,8 @@ function LifetimeCard({ agencies, manifest, provenance }: { agencies: AgencyVari
       lane={REPLAY}
       provenance={provenance}
       note={{
-        en: `The latest five-year window of each agency: the share of its starting cohort that defaulted within the window on the default-rate page (D2, cumulative), the share in a default category at the window's end (D4), and the projections of the same cohort by the window's annual matrices chained (withdrawals a state), the pooled matrix to the fifth power and exp(5Q) of the EM generator. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
-        es: `La última ventana de cinco años de cada agencia: la fracción de su cohorte inicial que incumplió dentro de la ventana en la página de tasas de incumplimiento (D2, acumulada), la fracción en una categoría de incumplimiento al final de la ventana (D4), y las proyecciones de la misma cohorte por las matrices anuales de la ventana encadenadas (los retiros como estado), la matriz agrupada a la quinta y exp(5Q) del generador EM. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
+        en: `The latest five-year window of each agency: the share of its starting cohort that defaulted within the window on the default-rate page (D2, cumulative), the share in a default category at the window's end (D4), and the projections of the same cohort by the window's annual matrices chained (withdrawals a state), the pooled matrix to the fifth power and exp(5Q) of the EM generator. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
+        es: `La última ventana de cinco años de cada agencia: la fracción de su cohorte inicial que incumplió dentro de la ventana en la página de tasas de incumplimiento (D2, acumulada), la fracción en una categoría de incumplimiento al final de la ventana (D4), y las proyecciones de la misma cohorte por las matrices anuales de la ventana encadenadas (los retiros como estado), la matriz agrupada a la quinta y exp(5Q) del generador EM. ${agencies.map((a) => a.outputs.agency.name).join('; ')}. ${agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK}.`,
       }}
     >
       <Verdict
@@ -441,8 +464,8 @@ function EstimatorsCard({ markov, manifest, provenance }: { markov: FamilyVarian
       lane={REPLAY}
       provenance={provenance}
       note={{
-        en: `The ${pick(shortOf(manifest, markov.variant_id), 'en')} family (${pick(titleOf(manifest, markov.variant_id), 'en')}): ${familyDesign(markov, 'en')}; paths drawn from ${GENERATOR_TEXT.en}. RMSE of each estimator's one-year PD by grade, percent a year on a log scale, against the true PD (dashed).`,
-        es: `La familia ${pick(shortOf(manifest, markov.variant_id), 'es')} (${pick(titleOf(manifest, markov.variant_id), 'es')}): ${familyDesign(markov, 'es')}; trayectorias generadas desde ${GENERATOR_TEXT.es}. RMSE de la PD anual de cada estimador por grado, porcentaje al año en escala logarítmica, contra la PD verdadera (segmentada).`,
+        en: `The ${pick(shortOf(manifest, markov.variant_id), 'en')} family (${pick(titleOf(manifest, markov.variant_id), 'en')}): ${familyDesign(markov, 'en')}; paths drawn from ${GENERATOR_TEXT.en}. RMSE of each estimator's one-year PD by grade, percent a year on a log scale, against the true PD (dashed).${FAMILY_SOURCE.en}`,
+        es: `La familia ${pick(shortOf(manifest, markov.variant_id), 'es')} (${pick(titleOf(manifest, markov.variant_id), 'es')}): ${familyDesign(markov, 'es')}; trayectorias generadas desde ${GENERATOR_TEXT.es}. RMSE de la PD anual de cada estimador por grado, porcentaje al año en escala logarítmica, contra la PD verdadera (segmentada).${FAMILY_SOURCE.es}`,
       }}
     >
       <Verdict
@@ -542,8 +565,8 @@ function TestsCard({ families, manifest, provenance }: { families: FamilyVariant
       lane={REPLAY}
       provenance={provenance}
       note={{
-        en: `Each rate is the share of repetitions in which the test rejects, with its Monte Carlo SE; the setting is the family's ladder (the Markov family has none: its rates are sizes). Paths drawn from ${GENERATOR_TEXT.en}.`,
-        es: `Cada tasa es la fracción de repeticiones en que la prueba rechaza, con su EE de Monte Carlo; el ajuste es la escala de la familia (la familia de Markov no tiene: sus tasas son tamaños). Trayectorias generadas desde ${GENERATOR_TEXT.es}.`,
+        en: `Each rate is the share of repetitions in which the test rejects, with its Monte Carlo SE; the setting is the family's ladder (the Markov family has none: its rates are sizes). Paths drawn from ${GENERATOR_TEXT.en}.${FAMILY_SOURCE.en}`,
+        es: `Cada tasa es la fracción de repeticiones en que la prueba rechaza, con su EE de Monte Carlo; el ajuste es la escala de la familia (la familia de Markov no tiene: sus tasas son tamaños). Trayectorias generadas desde ${GENERATOR_TEXT.es}.${FAMILY_SOURCE.es}`,
       }}
     >
       <Verdict compact title={{ en: 'What the simulations support', es: 'Lo que respaldan las simulaciones' }} tone={failing.length ? 'warn' : 'accent'} verdict={{ en: verdict('en'), es: verdict('es') }} />
@@ -630,8 +653,8 @@ function CoverageCard({ markov, thin, provenance }: { markov: FamilyVariant | nu
   const exact = (l: Lang) =>
     first && last
       ? l === 'es'
-        ? ` Exacta (familia delgada): con ${formatNumber(first.value, 'es')} deudores por grado, Wald cubre ${GRADES[0]} con probabilidad ${share('es', first.coverage.wald[0])} y Jeffreys ${share('es', first.coverage.jeffreys[0])}; con ${formatNumber(last.value, 'es')}, ${share('es', last.coverage.wald[0])} y ${share('es', last.coverage.jeffreys[0])}.`
-        : ` Exact (thin family): with ${formatNumber(first.value, 'en')} obligors a grade, Wald covers ${GRADES[0]} with probability ${share('en', first.coverage.wald[0])} and Jeffreys ${share('en', first.coverage.jeffreys[0])}; with ${formatNumber(last.value, 'en')}, ${share('en', last.coverage.wald[0])} and ${share('en', last.coverage.jeffreys[0])}.`
+        ? ` Exacta (familia delgada): con ${formatNumber(first.value, 'es')} deudores por grado, Wald cubre ${GRADES[0]} con probabilidad ${exactShare('es', first.coverage.wald[0])} y Jeffreys ${exactShare('es', first.coverage.jeffreys[0])}; con ${formatNumber(last.value, 'es')}, ${exactShare('es', last.coverage.wald[0])} y ${exactShare('es', last.coverage.jeffreys[0])}.`
+        : ` Exact (thin family): with ${formatNumber(first.value, 'en')} obligors a grade, Wald covers ${GRADES[0]} with probability ${exactShare('en', first.coverage.wald[0])} and Jeffreys ${exactShare('en', first.coverage.jeffreys[0])}; with ${formatNumber(last.value, 'en')}, ${exactShare('en', last.coverage.wald[0])} and ${exactShare('en', last.coverage.jeffreys[0])}.`
       : '';
   return (
     <PlotCard
@@ -639,8 +662,8 @@ function CoverageCard({ markov, thin, provenance }: { markov: FamilyVariant | nu
       lane={REPLAY}
       provenance={provenance}
       note={{
-        en: `The share of repetitions in which each 95% interval covers the true one-year PD, by grade (Markov family, the chart), and the exact coverage by enumeration for cohorts of each size (thin family, the table). Paths drawn from ${GENERATOR_TEXT.en}.`,
-        es: `La fracción de repeticiones en que cada intervalo al 95% cubre la PD anual verdadera, por grado (familia de Markov, el gráfico), y la cobertura exacta por enumeración para cohortes de cada tamaño (familia delgada, la tabla). Trayectorias generadas desde ${GENERATOR_TEXT.es}.`,
+        en: `The share of repetitions in which each 95% interval covers the true one-year PD, by grade (Markov family, the chart), and the exact coverage by enumeration for cohorts of each size (thin family, the table). Paths drawn from ${GENERATOR_TEXT.en}.${FAMILY_SOURCE.en}`,
+        es: `La fracción de repeticiones en que cada intervalo al 95% cubre la PD anual verdadera, por grado (familia de Markov, el gráfico), y la cobertura exacta por enumeración para cohortes de cada tamaño (familia delgada, la tabla). Trayectorias generadas desde ${GENERATOR_TEXT.es}.${FAMILY_SOURCE.es}`,
       }}
     >
       <Verdict compact title={{ en: 'What the coverage supports', es: 'Lo que respalda la cobertura' }} tone="accent" verdict={{ en: `${mc('en')}${exact('en')}`, es: `${mc('es')}${exact('es')}` }} />
@@ -691,7 +714,8 @@ function PapersCard({ published }: { published: PublishedVariant }) {
   const agreements = paperAgreements(published);
   const yes = (b: boolean) => (b ? t('agrees', 'concuerda') : t('differs', 'difiere'));
   const STATES = [...GRADES, 'D'];
-  const f6 = (x: number) => formatNumber(x, lang, { digits: 6 });
+  // Israel et al. print six decimals (0.116900): the printed and the recomputed values at the same six decimals
+  const f6 = (x: number) => formatNumber(x, lang, { decimals: 6 });
   return (
     <PlotCard
       title={{ en: 'C04, the published answers recomputed', es: 'C04, las respuestas publicadas recalculadas' }}
@@ -719,7 +743,7 @@ function PapersCard({ published }: { published: PublishedVariant }) {
               <th className="caos-col-text">{t('Generator', 'Generador')}</th>
               <th>{t('Printed L1', 'L1 impresa')}</th>
               <th>{t('Recomputed', 'Recalculada')}</th>
-              <th>{t('Six digits', 'Seis dígitos')}</th>
+              <th>{t('At six decimals', 'A seis decimales')}</th>
             </tr>
           </thead>
           <tbody>

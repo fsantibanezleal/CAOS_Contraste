@@ -28,6 +28,7 @@ import {
   pValueChart,
   pickRow,
   rateChart,
+  rungText,
 } from './C04Common';
 import { GRADES, isAgency, isFamily, isPublished, makeSel, P_FLOOR, type C04Sel } from './selection';
 
@@ -135,6 +136,31 @@ describe('C04 Findings', () => {
     }
   }
 
+  it('marks the years the reference finding names, and the empirical momentum rung on the rate chart', () => {
+    for (const id of ['sp', 'moodys', 'fitch']) {
+      const v = variantOf(id);
+      const ev = findingsEvidence(v);
+      const p = pValueChart(ev.points)!;
+      const title = v.findings.find((f) => f.id === 'F-YEARS')!.title.en;
+      const named = /most in ([0-9, ]+) \(/.exec(title)![1].split(', ').sort();
+      // the three years the finding's sentence names, and where they sit on the numbered axis
+      const at = p.marks.map((m) => ev.points[m.x - 1].cited);
+      const years = at.map((c) => (c.kind === 'test' ? String(c.row.segment) : '')).sort();
+      expect(years, id).toEqual(named);
+      // a run of consecutive numbers prints one label, so the labels name the runs
+      const labels = p.marks.map((m) => pick(m.label, 'en')).filter(Boolean);
+      expect(labels.join(' ').split(/[ -]/).sort(), id).toEqual(named);
+      const markup = html(<C04FindingsView sel={makeSel(dataOf(id))} />);
+      expect(markup).toContain('Marked: the years the finding names');
+    }
+    const m = variantOf('momentum');
+    const r = rateChart(findingsEvidence(m).points)!;
+    const cited = findingsEvidence(m).points.map((x) => (x.cited.kind === 'rate' ? x.cited.sim.key : ''));
+    expect(r.marks!.map((k) => cited[k.x - 1])).toEqual(cited.filter((k) => k.endsWith('@alpha0.125')));
+    expect(r.marks!.length).toBe(2);
+    expect(rateChart(findingsEvidence(variantOf('markov')).points)!.marks).toEqual([]);
+  });
+
   it('draws the cited p-values for an agency, the cited rates or design blocks where they are drawable, and only the table otherwise', () => {
     for (const c of cases) {
       const v = variantOf(c.id);
@@ -178,6 +204,18 @@ describe('C04 Findings', () => {
     expect(['markov', 'momentum', 'cycle'].every((id) => rateChart(findingsEvidence(variantOf(id)).points) !== null)).toBe(true);
     // the variants whose findings cite design blocks that can be drawn
     expect(['withdrawals', 'thin', 'published'].every((id) => findingsDrawing(variantOf(id), findingsEvidence(variantOf(id)), 0) !== null)).toBe(true);
+  });
+
+  it('names a rung by its ladder symbol and value, never the value straight after a long name', () => {
+    const rung = (id: string, key: string, lang: 'en' | 'es') => {
+      const v = variantOf(id);
+      if (!isFamily(v)) throw new Error(`${id} is a family`);
+      return rungText(v, v.outputs.simulations.find((s) => s.key === key)!, lang);
+    };
+    expect(rung('withdrawals', 'rating.time_homogeneity@k9', 'en')).toBe('k = 9');
+    expect(rung('cycle', 'rating.time_homogeneity@k1.5', 'es')).toBe('k = 1,5');
+    expect(rung('momentum', 'rating.momentum@alpha0.125', 'en')).toBe('alpha = 0.125 (the empirical strength)');
+    expect(rung('momentum', 'rating.momentum@alpha0.125', 'es')).toBe('alfa = 0,125 (la fuerza empírica)');
   });
 
   it("prints a cited rate with its SE and Wilson interval, as the artifact holds them", () => {
@@ -420,13 +458,31 @@ describe('C04 cross-case sections', () => {
       }
       expect((markup.match(/data-verdict=/g) ?? []).length).toBe(7);
       const p = variants.map((x) => x as VariantArtifact<unknown>).find(isPublished)!;
-      for (const r of p.outputs.irw.rows) expect(markup).toContain(`<td>${formatNumber(r.printed, lang, { digits: 6 })}</td>`);
+      for (const r of p.outputs.irw.rows) expect(markup).toContain(`<td>${formatNumber(r.printed, lang, { decimals: 6 })}</td>`);
+      expect(markup).toContain(lang === 'en' ? '<td>0.116900</td>' : '<td>0,116900</td>');
       const markov = variants.map((x) => x as VariantArtifact<unknown>).filter(isFamily).find((f) => f.outputs.family === 'markov')!;
       const est = estimatorsChart(markov);
       const cov = coverageChart(markov);
       expect(est && finiteSeries(est.series)).toBe(true);
       expect(cov && finiteSeries(cov.series)).toBe(true);
       expect(seriesCounts(markup)).toEqual([est!.series.length, cov!.series.length]);
+      // Theorem 3's verdict credits each condition with the agencies that meet it (all three by (c) here, none by (a) or (b))
+      const ags = variants.map((x) => x as VariantArtifact<unknown>).filter(isAgency);
+      const byC = ags.filter((a) => a.outputs.embedding.theorem3.c.length > 0).length;
+      expect(ags.every((a) => !a.outputs.embedding.theorem3.a && !a.outputs.embedding.theorem3.b)).toBe(true);
+      expect(markup).toContain(
+        lang === 'en'
+          ? `Theorem 3 excludes an exact generator for ${byC} of ${ags.length} agencies (by (c) for ${byC} (moves reachable but never observed: `
+          : `El teorema 3 excluye un generador exacto para ${byC} de ${ags.length} agencias (por (c) para ${byC} (movimientos alcanzables pero nunca observados: `,
+      );
+      expect(markup).not.toContain('by (a)');
+      expect(markup).not.toContain('by (b)');
+      // the families' cards (estimators, tests, coverage) name S&P's entity and carry ESMA's attribution; the agencies'
+      // cards name the three entities
+      const source = lang === 'en' ? 'CEREP counts of ' : 'Conteos de CEREP de ';
+      expect(markup.split(esc(`${source}Standard & Poor's Credit Market Services Europe Limited. Source: ESMA CEREP; tables transformed by Contraste.`)).length - 1).toBe(3);
+      const entities = esc(ags.map((a) => a.outputs.agency.name).join('; '));
+      expect(markup.split(entities).length - 1).toBeGreaterThanOrEqual(3);
     });
   }
 
