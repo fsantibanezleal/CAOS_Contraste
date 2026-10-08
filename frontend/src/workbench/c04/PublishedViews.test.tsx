@@ -156,11 +156,10 @@ describe('the published variant: three papers recomputed', () => {
       const rows = table(html(<PapersView sel={sel()} />, lang), 'sr190');
       expect(rows).toHaveLength(o.sr190.rows.length + o.sr190.n_dagger.printed.length);
       o.sr190.rows.forEach((r, k) => {
+        // each bound pair with its length, at every width (no column hidden on a narrow card)
         expect(rows[k].slice(2)).toEqual([
-          formatBpRange(lang, r.printed[0], r.printed[1], 2),
-          formatBpRange(lang, r.recomputed[0], r.recomputed[1], 3),
-          formatNumber(r.printed[2] * 1e4, lang, { decimals: 2 }),
-          formatNumber(r.recomputed[2] * 1e4, lang, { decimals: 3 }),
+          `${formatBpRange(lang, r.printed[0], r.printed[1], 2)} (${formatNumber(r.printed[2] * 1e4, lang, { decimals: 2 })})`,
+          `${formatBpRange(lang, r.recomputed[0], r.recomputed[1], 3)} (${formatNumber(r.recomputed[2] * 1e4, lang, { decimals: 3 })})`,
           lang === 'en' ? 'agrees' : 'concuerda',
         ]);
       });
@@ -169,8 +168,6 @@ describe('the published variant: three papers recomputed', () => {
         expect(row.slice(2)).toEqual([
           formatNumber(p, lang, { decimals: o.sr190.n_dagger.decimals[k] }),
           formatNumber(o.sr190.n_dagger.recomputed[k], lang, { decimals: o.sr190.n_dagger.decimals[k] + 2 }),
-          '',
-          '',
           lang === 'en' ? 'agrees' : 'concuerda',
         ]);
       });
@@ -199,6 +196,10 @@ describe('the published variant: three papers recomputed', () => {
       const ttc = cells[rows.findIndex((r) => r.key === 'ttc-pd')];
       expect(ttc.slice(1, 3)).toEqual([formatNumber(o.engelmann.ttc_pd.printed, lang, { percent: true, decimals: 3 }), formatNumber(o.engelmann.ttc_pd.recomputed, lang, { percent: true, decimals: 5 })]);
       expect(cells[rows.indexOf(hat as NonNullable<typeof hat>)][3]).toContain(lang === 'en' ? 'within the rounding of its printed entries' : 'dentro del redondeo de sus entradas impresas');
+      // the bake's own reason, in the page's language, with the tolerance it checked
+      const reason = o.engelmann.portfolios.find((q) => q.name === 'W hat')!.pd0.note!;
+      expect(cells[rows.indexOf(hat as NonNullable<typeof hat>)][3]).toContain(reason[lang]);
+      expect(reason[lang]).toContain(lang === 'en' ? 'within the 0.0021' : 'dentro de los 0,0021');
     }
   });
 

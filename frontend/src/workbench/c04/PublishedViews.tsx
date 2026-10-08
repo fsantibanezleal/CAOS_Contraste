@@ -9,7 +9,7 @@ import { PlotCard, formatNumber, pick, useShellLang, useWorkbenchState, type She
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import { effectiveN, pdAgrestiCoull, pdJeffreys, pdWald } from '../../engine/transitions';
-import type { C04PublishedOutputs, VariantArtifact } from '../../lib/contract.types';
+import type { C04PublishedOutputs, Text, VariantArtifact } from '../../lib/contract.types';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { isPublished, type C04Sel, type PublishedVariant } from './selection';
@@ -31,7 +31,7 @@ const SR190_DECIMALS = 2;
 /** Whether a recomputed value prints as its print: within half a unit of the print's last digit, both ends inclusive,
  * with room for the binary representation; the pipeline's rule (c04_published.prints_as), here in the stored unit. */
 export function printsAs(value: number, printed: number, decimals: number): boolean {
-  return Math.abs(value - printed) <= 0.5 * 10 ** -decimals + 1e-12;
+  return Math.abs(value - printed) <= 0.5 * 10 ** -decimals + 1e-9;
 }
 
 const both = (f: (lang: Lang) => string): Both => ({ en: f('en'), es: f('es') });
@@ -108,6 +108,8 @@ export interface EngelmannRow {
   percent: boolean;
   /** how the agreement is judged: at the printed digits, or within the rounding of the printed entries (W hat) */
   check: 'printed digits' | 'entry rounding';
+  /** the bake's reason for an entry-rounding check, in both languages (pd0.note) */
+  note?: Text | null;
 }
 
 /** Every printed Engelmann value: W_ttc's entries, its PD, each starting portfolio's PD and printed extreme. */
@@ -133,6 +135,7 @@ export function engelmannRows(o: C04PublishedOutputs): EngelmannRow[] {
       decimals: p.pd0.decimals,
       percent: true,
       check: p.pd0.check,
+      note: p.pd0.note,
     });
     if (p.extreme) {
       rows.push({
@@ -153,6 +156,8 @@ export function engelmannRows(o: C04PublishedOutputs): EngelmannRow[] {
  * under a correlation it does not state) within the rounding of its printed entries, as the bake checked it. */
 export function engelmannAgreement(r: EngelmannRow, lang: Lang): string {
   if (r.check === 'entry rounding') {
+    // the bake's own reason, with the tolerance it checked; a row without one says what the bake judged
+    if (r.note) return `${lang === 'en' ? 'agrees within the rounding of its printed entries' : 'concuerda dentro del redondeo de sus entradas impresas'}: ${r.note[lang]}`;
     const gap = formatNumber(Math.abs(r.recomputed - r.printed) * 100, lang, { digits: 2 });
     return lang === 'en'
       ? `agrees within the rounding of its printed entries, ${gap} percentage points apart: the paper builds this portfolio under a correlation it does not state and prints the PD of its unrounded entries`
@@ -268,10 +273,8 @@ export function PapersView({ sel }: { sel: C04Sel | null }) {
                 <tr>
                   <th className="ct-text">{pick({ en: 'Interval', es: 'Intervalo' }, lang)}</th>
                   <th>{pick({ en: 'Correlation', es: 'Correlación' }, lang)}</th>
-                  <th>{pick({ en: 'Printed', es: 'Impreso' }, lang)}</th>
-                  <th>{pick({ en: 'Recomputed', es: 'Recalculado' }, lang)}</th>
-                  <th className="ct-room-only">{pick({ en: 'Length, printed', es: 'Largo, impreso' }, lang)}</th>
-                  <th className="ct-room-only">{pick({ en: 'Length, recomputed', es: 'Largo, recalculado' }, lang)}</th>
+                  <th>{pick({ en: 'Printed (length)', es: 'Impreso (largo)' }, lang)}</th>
+                  <th>{pick({ en: 'Recomputed (length)', es: 'Recalculado (largo)' }, lang)}</th>
                   <th className="ct-text">{pick({ en: 'Agreement', es: 'Concordancia' }, lang)}</th>
                 </tr>
               </thead>
@@ -280,10 +283,8 @@ export function PapersView({ sel }: { sel: C04Sel | null }) {
                   <tr key={`${r.interval}-${r.rho}`} data-row={`${r.interval}|${r.rho}`} data-agrees={r.agrees ? 'yes' : 'no'}>
                     <td className="ct-text">{pick(INTERVAL_NAME[r.interval] ?? { en: r.interval, es: r.interval }, lang)}</td>
                     <td>{pct0(lang, r.rho)}</td>
-                    <td>{bpRange(lang, r.printed[0], r.printed[1], SR190_DECIMALS)}</td>
-                    <td>{bpRange(lang, r.recomputed[0], r.recomputed[1], SR190_DECIMALS + 1)}</td>
-                    <td className="ct-room-only">{bp(lang, r.printed[2], SR190_DECIMALS)}</td>
-                    <td className="ct-room-only">{bp(lang, r.recomputed[2], SR190_DECIMALS + 1)}</td>
+                    <td>{`${bpRange(lang, r.printed[0], r.printed[1], SR190_DECIMALS)} (${bp(lang, r.printed[2], SR190_DECIMALS)})`}</td>
+                    <td>{`${bpRange(lang, r.recomputed[0], r.recomputed[1], SR190_DECIMALS + 1)} (${bp(lang, r.recomputed[2], SR190_DECIMALS + 1)})`}</td>
                     <td className="ct-text">{(r.agrees ? AGREES : DIFFERS)[lang]}</td>
                   </tr>
                 ))}
@@ -298,8 +299,6 @@ export function PapersView({ sel }: { sel: C04Sel | null }) {
                       <td>{rho === undefined ? '-' : pct0(lang, rho)}</td>
                       <td>{formatNumber(p, lang, { decimals: dec })}</td>
                       <td>{formatNumber(rec, lang, { decimals: dec + 2 })}</td>
-                      <td className="ct-room-only" />
-                      <td className="ct-room-only" />
                       <td className="ct-text">{(ok ? AGREES : DIFFERS)[lang]}</td>
                     </tr>
                   );
@@ -603,8 +602,8 @@ export function PublishedImpactView({ sel }: { sel: C04Sel | null }) {
           provenance={prov}
           dataKey={stateKey}
           note={{
-            en: `In basis points, lower to upper bound. Table 5 at its own level (${t5('en')}): ${agree} of ${live.length} intervals recomputed in your browser agree with the print to its two decimals (bounds and lengths). Last rows: the three intervals at the rail's correlation (${rhoText('en')}) and level (${lv('en')}); Jeffreys has no correlation correction.`,
-            es: `En puntos básicos, de la cota inferior a la superior. La Tabla 5 a su propio nivel (${t5('es')}): ${agree} de ${live.length} intervalos recalculados en su navegador concuerdan con lo impreso a sus dos decimales (cotas y largos). Últimas filas: los tres intervalos a la correlación (${rhoText('es')}) y el nivel (${lv('es')}) del panel; Jeffreys no tiene corrección por correlación.`,
+            en: `Bounds in basis points, lower to upper; the N† rows are effective numbers of obligors, and the rail's rows give their N† in the last column. Table 5 at its own level (${t5('en')}): ${agree} of ${live.length} intervals recomputed in your browser agree with the print to its two decimals (bounds and lengths). Last rows: the three intervals at the rail's correlation (${rhoText('en')}) and level (${lv('en')}); Jeffreys has no correlation correction.`,
+            es: `Cotas en puntos básicos, de la inferior a la superior; las filas N† son números efectivos de deudores, y las filas del panel dan su N† en la última columna. La Tabla 5 a su propio nivel (${t5('es')}): ${agree} de ${live.length} intervalos recalculados en su navegador concuerdan con lo impreso a sus dos decimales (cotas y largos). Últimas filas: los tres intervalos a la correlación (${rhoText('es')}) y el nivel (${lv('es')}) del panel; Jeffreys no tiene corrección por correlación.`,
           }}
         >
           <div className="ct-scroll">
