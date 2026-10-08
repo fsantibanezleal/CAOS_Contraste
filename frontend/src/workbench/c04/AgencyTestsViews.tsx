@@ -76,7 +76,7 @@ export function evidence(p: number | null | undefined): number | null {
 // years on an axis
 
 /** What the year axes subtract from a year: nothing, x is the calendar year. The axes write it with `grouping: false`
- * (shell 0.9.0, known shell defect 30), so 2021 ticks as 2021 and never as 2,021. */
+ * (shell 0.8.2 and later, known shell defect 30), so 2021 ticks as 2021 and never as 2,021. */
 export const YEAR0 = 0;
 /** The format of a year axis: whole years without a group separator. */
 export const YEAR_FORMAT = { decimals: 0, grouping: false } as const;

@@ -182,9 +182,9 @@ export const COMPACT_ROWS = 6;
 export const isCompact = (findings: readonly Finding[]) => findings.length + sum(findings.map((f) => f.evidence.length)) <= COMPACT_ROWS;
 
 /** The lowest p-value the log axis draws (selection.P_FLOOR, the one floor of every C04 p-value chart and C01's): the
- * agencies' reference tests reach 1.9e-124 and their time homogeneity underflows to 0, and the shell 0.9.0 never draws a
- * log axis below about 1e-22 (known shell defect 31). Every p-value under the floor is drawn at it, in a series of its
- * own that says so; the table prints each one. */
+ * agencies' reference tests reach 1.9e-124 and their time homogeneity underflows to 0, and below 1e-16 the decision
+ * is the same. Every p-value under the floor is drawn at it, in a series of its own that says so; the table prints
+ * each one. */
 export { P_FLOOR };
 
 export interface PValueChart extends C04Chart {

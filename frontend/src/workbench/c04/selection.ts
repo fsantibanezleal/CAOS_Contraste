@@ -35,9 +35,10 @@ export const N_GRADES = GRADES.length;
 /** The x axis of a chart by grade: grades counted from the best, the axis title naming them. */
 export const GRADE_AXIS: BiText = { en: 'Grade (1 AAA, 2 AA, 3 A, 4 BBB, 5 BB, 6 B, 7 CCC-C)', es: 'Grado (1 AAA, 2 AA, 3 A, 4 BBB, 5 BB, 6 B, 7 CCC-C)' };
 
-/** The floor under which a p-value is drawn on a log axis, labelled as below it: the shell 0.9.0 never draws a log axis
- * below about 1e-22 (known shell defect 31, fixed in 0.9.2), and 1e-124 and 1e-20 lead to the same decision; the tables
- * print the exact value. C01's findings chart uses the same floor. */
+/** The floor under which a p-value is drawn on a log axis, labelled as below it: a reading choice, since 1e-124 and
+ * 1e-20 lead to the same decision and an axis of a hundred decades leaves the readable p-values a sliver (the shell
+ * draws such an axis since 0.9.2, known shell defect 31; before it the chart was never drawn). The tables print the
+ * exact value. C01's findings chart uses the same floor. */
 export const P_FLOOR = 1e-16;
 
 /** CEREP's default definitions (docs/cases/C04.md, "What CEREP counts"). */
