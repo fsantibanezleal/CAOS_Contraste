@@ -445,7 +445,7 @@ export function LdpImpactView({ sel }: { sel: C05Sel | null }) {
     const m = o.irb.maturity;
     const avg = (pds: number[]) => averageRiskWeight(pds, o.obligors, sel.regime, sel.lgd, m);
     // a non-breaking space before the sign, so a wrapped label never strands "%" (known shell defect 22)
-    const rhoText = { en: pct('en', sel.rho, 0).replace(' %', ' %'), es: pct('es', sel.rho, 0).replace(' %', ' %') };
+    const rhoText = { en: pct('en', sel.rho, 0), es: pct('es', sel.rho, 0) };
     const rows: Array<{ id: string; label: BiText; pds: number[] }> = [
       { id: 'expert', label: { en: 'Expert PDs', es: 'PD expertas' }, pds: o.expert_pd },
       ...(o.true_pd ? [{ id: 'truth', label: { en: 'True PDs', es: 'PD verdaderas' }, pds: o.true_pd }] : []),

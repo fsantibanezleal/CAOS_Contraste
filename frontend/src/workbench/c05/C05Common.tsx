@@ -1,6 +1,6 @@
 // C05's Findings, Variants and Context groups, and the live read-outs of its rail (ADR-0017 rule 3: every section
 // shows a value that moves with its controls).
-import { PlotCard, Readout, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type ShellToken } from '@fasl-work/caos-app-shell';
+import { PlotCard, Readout, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import { UPlotChart, type UPlotChartProps } from '@fasl-work/caos-app-shell/chart';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import { C05WriteUp } from '../../content/cases/C05';
@@ -198,14 +198,14 @@ function spCompare(sp: SpVariant[], sel: C05Sel, dp: (v: SpVariant, id: string) 
     x: { values: x, label: { en: 'Approach (numbered in the note)', es: 'Enfoque (numerado en la nota)' }, format: { decimals: 0 } },
     y: { label: { en: 'p-value (log scale)', es: 'Valor p (escala log.)' }, log: true, format: { digits: 2 } },
     series: [
-      ...sp.map((v, i) => ({ label: { en: String(v.outputs.year), es: String(v.outputs.year) }, values: ALL_APPROACHES.map((id) => dp(v, id)?.p_value ?? null), color: (i === 0 ? '--color-accent' : '--color-magenta') as ShellToken, mode: 'points' as const })),
+      ...sp.map((v, i) => ({ label: { en: String(v.outputs.year), es: String(v.outputs.year) }, values: ALL_APPROACHES.map((id) => dp(v, id)?.p_value ?? null), color: (i === 0 ? '--color-accent' : '--color-magenta') as ShellColorToken, mode: 'points' as const })),
       { label: { en: `Amber below ${level(sel.alphas.amber, 'en')}`, es: `Ámbar bajo ${level(sel.alphas.amber, 'es')}` }, values: x.map(() => sel.alphas.amber), color: '--color-warn', width: 1.2, dash: [4, 4] },
       { label: { en: `Red below ${level(sel.alphas.red, 'en')}`, es: `Rojo bajo ${level(sel.alphas.red, 'es')}` }, values: x.map(() => sel.alphas.red), color: '--color-bad', width: 1.2, dash: [4, 4] },
     ],
   };
 }
 
-const LDP_COLOR: ShellToken[] = ['--color-accent', '--color-accent-2', '--color-magenta', '--color-fg'];
+const LDP_COLOR: ShellColorToken[] = ['--color-accent', '--color-accent-2', '--color-magenta', '--color-fg'];
 
 /** The low-default observations side by side: the independent bounds at 75% each one implies, against the expert PDs
  * under test and, for the generated years, the truth. */
@@ -221,8 +221,8 @@ function ldpCompare(ldp: LdpVariant[], short: (id: string) => BiText): Compare {
     y: { label: { en: 'Bound at 75% (log scale)', es: 'Cota al 75% (escala log.)' }, log: true, format: { percent: true, digits: 2 } },
     series: [
       ...ldp.map((v, i) => ({ label: short(v.variant_id), values: v.outputs.bounds.independent[v.outputs.gammas.indexOf(0.75)], color: LDP_COLOR[i % LDP_COLOR.length], width: 2 })),
-      ...(ldp[0] ? [{ label: { en: 'Expert PDs', es: 'PD expertas' }, values: ldp[0].outputs.expert_pd, color: '--color-warn' as ShellToken, width: 1.2, dash: [2, 4] }] : []),
-      ...(truth ? [{ label: { en: 'True PDs', es: 'PD verdaderas' }, values: truth, color: '--color-fg-subtle' as ShellToken, width: 1.2, dash: [8, 4] }] : []),
+      ...(ldp[0] ? [{ label: { en: 'Expert PDs', es: 'PD expertas' }, values: ldp[0].outputs.expert_pd, color: '--color-warn' as ShellColorToken, width: 1.2, dash: [2, 4] }] : []),
+      ...(truth ? [{ label: { en: 'True PDs', es: 'PD verdaderas' }, values: truth, color: '--color-fg-subtle' as ShellColorToken, width: 1.2, dash: [8, 4] }] : []),
     ],
   };
 }
