@@ -27,6 +27,7 @@ import {
   type AgencyVariant,
   type C04Sel,
   type GeneratorKey,
+  cerepSource,
 } from './selection';
 
 /** The default state's index (after the seven grades) and the withdrawals' in the nine states of `matrix_state`. */
@@ -65,18 +66,11 @@ function shortOf(sel: C04Sel, v: AgencyVariant): Text {
 /** An English possessive: S&P's, Fitch's, and Moody's as it is. */
 export const possessive = (name: string) => (/'s$/.test(name) ? name : /s$/.test(name) ? `${name}'` : `${name}'s`);
 
-const SCOPE_TEXT: Record<string, Text> = {
-  'corporate, long-term, categories': { en: 'corporate long-term ratings by category', es: 'calificaciones corporativas de largo plazo por categoría' },
-};
 
-/** The attribution CEREP's reuse terms ask for, and the entity whose statistics these are: ESMA's tables of the agency's
- * EU entity, not the agency's own studies (design.md, "What not to claim"). */
+/** The attribution CEREP's reuse terms ask for and the entity whose statistics these are, with its scope and period:
+ * ESMA's tables of the agency's EU entity, not the agency's own studies (design.md, "What not to claim"; CT-407). */
 export function sourceText(o: C04AgencyOutputs): Text {
-  const scope = SCOPE_TEXT[o.agency.scope] ?? { en: o.agency.scope, es: o.agency.scope };
-  return {
-    en: `${o.attribution}. Entity: ${o.agency.name} (${o.agency.code}), ${scope.en}.`,
-    es: `${o.attribution}. Entidad: ${o.agency.name} (${o.agency.code}), ${scope.es}.`,
-  };
+  return { en: cerepSource(o, 'en'), es: cerepSource(o, 'es') };
 }
 
 /** Whether the agency's transition page has a default category (Moody's has none: no D4, no Keep). */
@@ -815,6 +809,7 @@ export function GeneratorsView({ sel }: { sel: C04Sel | null }) {
   const prov = provenanceOf(v.provenance.truth_status);
   const short = shortOf(sel, v);
   const src = sourceText(o);
+  const esma = bi(ESMA_DEFINITIONS);
   const n = o.cohorts.length;
   const d4Label = bi(DEFINITION_LABEL.d4);
   const em = emLine(o);
@@ -860,8 +855,8 @@ export function GeneratorsView({ sel }: { sel: C04Sel | null }) {
             provenance={prov}
             dataKey={stateKey}
             note={{
-              en: `${possessive(short.en)} transition page has no default category: neither the pooled matrix nor any of its generators gives a PD, and no PD series is drawn. The table gives each generator's distance to the pooled matrix: ${methods.en}. ${l1Note.en} Then Israel, Rosenthal and Wei's diagnostics of P, each with its theorem. ${src.en}`,
-              es: `La página de transiciones de ${short.es} no tiene categoría de incumplimiento: ni la matriz agrupada ni sus generadores dan una PD, y no se dibuja ninguna serie de PD. La tabla da la distancia de cada generador a la matriz agrupada: ${methods.es}. ${l1Note.es} Luego los diagnósticos de P de Israel, Rosenthal y Wei, cada uno con su teorema. ${src.es}`,
+              en: `${possessive(short.en)} transition page has no default category: neither the pooled matrix nor any of its generators gives a PD, and no PD series is drawn. The table gives each generator's distance to the pooled matrix: ${methods.en}. ${l1Note.en} Then Israel, Rosenthal and Wei's diagnostics of P, each with its theorem. ${esma.en} ${src.en}`,
+              es: `La página de transiciones de ${short.es} no tiene categoría de incumplimiento: ni la matriz agrupada ni sus generadores dan una PD, y no se dibuja ninguna serie de PD. La tabla da la distancia de cada generador a la matriz agrupada: ${methods.es}. ${l1Note.es} Luego los diagnósticos de P de Israel, Rosenthal y Wei, cada uno con su teorema. ${esma.es} ${src.es}`,
             }}
           >
             <div className="ct-scroll">
@@ -886,8 +881,8 @@ export function GeneratorsView({ sel }: { sel: C04Sel | null }) {
           provenance={prov}
           dataKey={stateKey}
           note={{
-            en: `One-year PD by grade under "${d4Label.en}", in percent on a log axis: the pooled matrix's default column (points) and that of exp(Q) for each generator of the matrix: ${methods.en}.${zero.en ? ` ${zero.en}` : ''}${missingText.en}${empty.en ? ` ${empty.en}` : ''} The marked grade is the rail's. ${src.en}`,
-            es: `PD a un año por grado con "${d4Label.es}", en porcentaje sobre un eje logarítmico: la columna de incumplimiento de la matriz agrupada (puntos) y la de exp(Q) de cada generador de la matriz: ${methods.es}.${zero.es ? ` ${zero.es}` : ''}${missingText.es}${empty.es ? ` ${empty.es}` : ''} El grado marcado es el del panel. ${src.es}`,
+            en: `One-year PD by grade under "${d4Label.en}", in percent on a log axis: the pooled matrix's default column (points) and that of exp(Q) for each generator of the matrix: ${methods.en}.${zero.en ? ` ${zero.en}` : ''}${missingText.en}${empty.en ? ` ${empty.en}` : ''} The marked grade is the rail's. ${esma.en} ${src.en}`,
+            es: `PD a un año por grado con "${d4Label.es}", en porcentaje sobre un eje logarítmico: la columna de incumplimiento de la matriz agrupada (puntos) y la de exp(Q) de cada generador de la matriz: ${methods.es}.${zero.es ? ` ${zero.es}` : ''}${missingText.es}${empty.es ? ` ${empty.es}` : ''} El grado marcado es el del panel. ${esma.es} ${src.es}`,
           }}
         >
           <UPlotChart
@@ -907,8 +902,8 @@ export function GeneratorsView({ sel }: { sel: C04Sel | null }) {
           provenance={prov}
           dataKey={stateKey}
           note={{
-            en: `Israel, Rosenthal and Wei's (2001) diagnostics of the pooled one-year matrix P (withdrawals removed), each with its theorem; each generator's L1 distance to P (the sum of the absolute entries of P - exp(Q)) and its PD under "${d4Label.en}", in percent. ${src.en}`,
-            es: `Los diagnósticos de Israel, Rosenthal y Wei (2001) de la matriz anual agrupada P (sin los retiros), cada uno con su teorema; la distancia L1 de cada generador a P (la suma de los valores absolutos de las entradas de P - exp(Q)) y su PD con "${d4Label.es}", en porcentaje. ${src.es}`,
+            en: `Israel, Rosenthal and Wei's (2001) diagnostics of the pooled one-year matrix P (withdrawals removed), each with its theorem; each generator's L1 distance to P (the sum of the absolute entries of P - exp(Q)) and its PD under "${d4Label.en}", in percent. ${esma.en} ${src.en}`,
+            es: `Los diagnósticos de Israel, Rosenthal y Wei (2001) de la matriz anual agrupada P (sin los retiros), cada uno con su teorema; la distancia L1 de cada generador a P (la suma de los valores absolutos de las entradas de P - exp(Q)) y su PD con "${d4Label.es}", en porcentaje. ${esma.es} ${src.es}`,
           }}
         >
           {/* the verdict and the diagnostics behind it first, the distances after them: at 1280 x 800 the distances

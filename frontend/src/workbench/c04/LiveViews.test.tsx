@@ -172,12 +172,22 @@ describe('the C04 Impact group (live)', () => {
         ] as const) {
           const markup = html(<View sel={sel} />, lang);
           const found = checkView(markup, v, `${c.id} ${name} ${lang}`);
-          // a CEREP-derived card names its source: the attribution verbatim, and the entity on an agency
+          // a CEREP-derived card names its source: on an agency the entity, its code, scope and period and the
+          // attribution verbatim (CT-407); on a family the attribution of the counts its truth was fitted to
           const note = found[0].note;
           const att = 'Source: ESMA CEREP; tables transformed by Contraste';
-          const cited = { en: isAgency(v) ? `${att}.` : `(${att})`, es: isAgency(v) ? `Atribución: "${att}".` : `(atribución: "${att}")` };
-          expect(note).toContain(cited[lang]);
-          if (isAgency(v)) expect(note).toContain(`${lang === 'en' ? 'Entity' : 'Entidad'}: ${v.outputs.agency.name} (${v.outputs.agency.code}).`);
+          if (isAgency(v)) {
+            const o = v.outputs;
+            const first = o.cohorts[0].label;
+            const last = o.cohorts[o.cohorts.length - 1].label;
+            const scope = lang === 'en' ? o.agency.scope : 'corporativas, de largo plazo, por categoría';
+            const period = lang === 'en' ? `annual cohorts ${first} to ${last}` : `cohortes anuales ${first} a ${last}`;
+            expect(note).toContain(`${o.agency.name} (${o.agency.code}; ${scope}), ${period}. ${att}.`);
+            // the drift's default rate, the intervals' bounds and the capital's PDs: ESMA's statement comes with them
+            expect(note).toContain(pick(ESMA_DEFINITIONS, lang));
+          } else {
+            expect(note).toContain(lang === 'en' ? `(${att})` : `(atribución: "${att}")`);
+          }
         }
       });
     }
@@ -567,7 +577,7 @@ describe('the C04 Impact group (live)', () => {
           const View = view;
           for (const card of cards(html(<View sel={makeSel(data)} />))) {
             expect(card.note, `${id} ${card.title}`).toContain('Source: ESMA CEREP; tables transformed by Contraste');
-            if (isAgency(v)) expect(card.note, `${id} ${card.title}`).toContain(`Entity: ${v.outputs.agency.name}`);
+            if (isAgency(v)) expect(card.note, `${id} ${card.title}`).toContain(`${v.outputs.agency.name} (${v.outputs.agency.code}; ${v.outputs.agency.scope}), annual cohorts`);
           }
         }
       }

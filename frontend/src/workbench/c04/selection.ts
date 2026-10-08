@@ -2,7 +2,7 @@
 // are read from the artifacts as the pipeline wrote them; the live ones are engine/transitions.ts on committed inputs
 // (an agency's pooled one-year matrix and its cohort mix, a generator family's true one-year matrix and its cohort
 // sizes), held to riskvalidation by the parity points of C04's models artifact.
-import { formatNumber, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
+import { formatNumber, pick, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import { useMemo } from 'react';
 import type { CaseData } from '../../api/artifacts';
 import type { AssetClass, Regime } from '../../engine/credit';
@@ -170,6 +170,26 @@ export function makeSel(data: CaseData, over: Partial<C04Sel> = {}): C04Sel {
 
 /** The definitions an agency's pages give: Moody's transition page has no default category, so D4 and Keep do not
  * exist for it. */
+const SCOPE_ES: Record<string, string> = { 'corporate, long-term, categories': 'corporativas, de largo plazo, por categoría' };
+
+/** The close of every card whose numbers come from an agency's CEREP pages (CT-407): the agency's EU entity, its code,
+ * the scope of the ratings, the period of the annual cohorts and ESMA's attribution (the variant's own string, kept as
+ * declared in both languages). */
+export function cerepSource(o: C04AgencyOutputs, l: 'en' | 'es'): string {
+  const first = o.cohorts[0]?.label ?? '-';
+  const last = o.cohorts[o.cohorts.length - 1]?.label ?? '-';
+  const scope = l === 'en' ? o.agency.scope : (SCOPE_ES[o.agency.scope] ?? o.agency.scope);
+  return l === 'en'
+    ? `${o.agency.name} (${o.agency.code}; ${scope}), annual cohorts ${first} to ${last}. ${o.attribution}.`
+    : `${o.agency.name} (${o.agency.code}; ${scope}), cohortes anuales ${first} a ${last}. ${o.attribution}.`;
+}
+
+/** The close of a card that shows a PD (CT-407: every PD shown names its definition, with ESMA's statement that CEREP
+ * sets no common definition of a default event), then the source. */
+export function cerepPdSource(o: C04AgencyOutputs, l: 'en' | 'es'): string {
+  return `${pick(ESMA_DEFINITIONS, l)} ${cerepSource(o, l)}`;
+}
+
 export function definitionsOf(o: C04AgencyOutputs): Definition[] {
   return DEFINITIONS.filter((d) => o.pd[d] !== null);
 }

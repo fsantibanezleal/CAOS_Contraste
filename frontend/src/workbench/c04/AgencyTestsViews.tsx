@@ -18,7 +18,7 @@ import { COMMITTED, LIGHT_TEXT, LIGHT_TONE, relight } from '../../lib/policy';
 import { LightCell } from '../ValidationViews';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
-import { DEFINITION_LABEL, GRADES, N_GRADES, isAgency, type AgencyVariant, type C04Sel, type Definition } from './selection';
+import { DEFINITION_LABEL, GRADES, N_GRADES, cerepPdSource, cerepSource, isAgency, type AgencyVariant, type C04Sel, type Definition } from './selection';
 
 type Lang = 'en' | 'es';
 
@@ -179,16 +179,12 @@ const statName = (f: Form | null): Text => (f ? STAT_NAME[f] : { en: 'statistic'
 const statThe = (f: Form | null): Text => (f ? STAT_THE[f] : { en: 'the statistic', es: 'el estadístico' });
 const statShort = (f: Form | null): Text => (f ? STAT_SHORT[f] : { en: 'Statistic', es: 'Estadístico' });
 
-const SCOPE_ES: Record<string, string> = { 'corporate, long-term, categories': 'corporativas, largo plazo, categorías' };
 
-/** The agency's EU entity and the attribution CEREP's licence asks for (verbatim); a table's note adds the scope of
- * the ratings, a chart's leaves it out for the drawing's height. */
-function credit(o: C04AgencyOutputs, scope = false): Text {
-  if (!scope) return { en: `${o.agency.name}. ${o.attribution}.`, es: `${o.agency.name}. ${o.attribution}.` };
-  return {
-    en: `${o.agency.name} (${o.agency.scope}). ${o.attribution}.`,
-    es: `${o.agency.name} (${SCOPE_ES[o.agency.scope] ?? o.agency.scope}). ${o.attribution}.`,
-  };
+/** The close of a card drawn from the agency's CEREP pages (selection.cerepSource, CT-407); with `pd`, ESMA's statement
+ * first, for a card that shows a PD. */
+function credit(o: C04AgencyOutputs, pd = false): Text {
+  const close = pd ? cerepPdSource : cerepSource;
+  return { en: close(o, 'en'), es: close(o, 'es') };
 }
 
 const PICK_YEAR: Text = { en: "Show this year's own matrix in the Matrix view", es: 'Mostrar la matriz propia de este año en la vista Matriz' };
@@ -648,7 +644,7 @@ export function MobilityView({ sel }: { sel: C04Sel | null }) {
                     es: `La matriz propia de cada cohorte anual, sin retiros: la M_SVD de Jafry y Schuermann (el valor singular medio de P - I) y el índice de traza (n - tr P)/(n - 1), ambos 0 si nadie se mueve; junto a ellos la tasa de incumplimiento de grado especulativo (BB, B y CCC-C agrupados, ${pick(label, 'es')}) como fracción de la cohorte en el mismo eje (0,10 es 10%).`,
                   },
                   stress('en') ? { en: `Dashed: the stress years ${stress('en')}.`, es: `Segmentadas: los años de tensión ${stress('es')}.` } : NONE,
-                  credit(o),
+                  credit(o, true),
                 )
               : join({ en: 'No cohort has an index or a default rate to draw: the table gives what the artifact holds.', es: 'Ninguna cohorte tiene un índice ni una tasa de incumplimiento que dibujar: la tabla da lo que contiene el artefacto.' }, credit(o))
           }
@@ -964,7 +960,7 @@ export function SemestersView({ sel }: { sel: C04Sel | null }) {
       zeros,
       tiny,
       empty,
-      credit(o),
+      credit(o, true),
     );
     pdBody = (
       <UPlotChart

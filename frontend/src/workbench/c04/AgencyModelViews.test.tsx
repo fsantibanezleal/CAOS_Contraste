@@ -671,8 +671,9 @@ describe('the agency Model group of C04', () => {
 
   it("names the entity whose tables these are and CEREP's attribution, in both languages", () => {
     const o = outputsOf(agencies[0].data);
-    expect(sourceText(o).en).toBe("Source: ESMA CEREP; tables transformed by Contraste. Entity: Standard & Poor's Credit Market Services Europe Limited (STPGB), corporate long-term ratings by category.");
-    expect(sourceText(o).es).toBe("Source: ESMA CEREP; tables transformed by Contraste. Entidad: Standard & Poor's Credit Market Services Europe Limited (STPGB), calificaciones corporativas de largo plazo por categoría.");
+    // the entity, its code, the scope and the period of the annual cohorts, then ESMA's attribution verbatim (CT-407)
+    expect(sourceText(o).en).toBe("Standard & Poor's Credit Market Services Europe Limited (STPGB; corporate, long-term, categories), annual cohorts 2000 to 2025. Source: ESMA CEREP; tables transformed by Contraste.");
+    expect(sourceText(o).es).toBe("Standard & Poor's Credit Market Services Europe Limited (STPGB; corporativas, de largo plazo, por categoría), cohortes anuales 2000 a 2025. Source: ESMA CEREP; tables transformed by Contraste.");
     expect(['S&P', "Moody's", 'Fitch'].map(possessive)).toEqual(["S&P's", "Moody's", "Fitch's"]);
   });
 
