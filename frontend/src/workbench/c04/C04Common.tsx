@@ -58,6 +58,7 @@ import {
   GRADE_AXIS,
   GRADES,
   START_LABEL,
+  cerepEntities,
   cerepSource,
   gradeCounts,
   isAgency,
@@ -813,7 +814,7 @@ export function agenciesNote(agencies: AgencyVariant[], short: (id: string) => B
     const e = d4EmptyYears(a);
     return e && e.years.length ? [{ a, e }] : [];
   });
-  const entities = agencies.map((a) => a.outputs.agency.name).join('; ');
+  const entities = (l: Lang) => cerepEntities(agencies.map((a) => a.outputs), l);
   const attribution = agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK;
   const grade = GRADES[g];
   return {
@@ -821,12 +822,12 @@ export function agenciesNote(agencies: AgencyVariant[], short: (id: string) => B
       .map((a) => ` ${possessive(name(a, 'en'))} transition page has no default category: no D4 and no TTC rate.`)
       .join('')}${empty
       .map(({ a, e }) => ` ${possessive(name(a, 'en'))} default column is empty in the years ${yearRanges(e.years, 'en')}, while its default page counts ${formatNumber(e.defaulted, 'en')} rated defaulters in those years.`)
-      .join('')} ${entities}. ${attribution}. Pick a row to load the agency.`,
+      .join('')} ${pick(ESMA_DEFINITIONS, 'en')} ${entities('en')}. ${attribution}. Pick a row to load the agency.`,
     es: `${grade}: la PD promedio de largo plazo con D2 (la página de tasas de incumplimiento) y D4 (la columna de incumplimiento de la página de transiciones), su razón agrupada, y la tasa TTC de incumplimiento de la matriz agrupada de cada agencia (Engelmann 2024). D3/D2 agrupada en ${grade}: ${d3('es')} (una razón sobre ningún incumplimiento D2 no está definida).${noCategory
       .map((a) => ` La página de transiciones de ${name(a, 'es')} no tiene categoría de incumplimiento: no hay D4 ni tasa TTC.`)
       .join('')}${empty
       .map(({ a, e }) => ` La columna de incumplimiento de ${name(a, 'es')} está vacía en los años ${yearRanges(e.years, 'es')}, mientras su página de incumplimientos cuenta ${formatNumber(e.defaulted, 'es')} calificaciones incumplidas en esos años.`)
-      .join('')} ${entities}. ${attribution}. Elija una fila para cargar la agencia.`,
+      .join('')} ${pick(ESMA_DEFINITIONS, 'es')} ${entities('es')}. ${attribution}. Elija una fila para cargar la agencia.`,
   };
 }
 
@@ -848,7 +849,7 @@ function VariantsBody({ sel, variants, onPick }: { sel: C04Sel; variants: Varian
   );
   const ratio = (x: number | null | undefined) => (finite(x) ? formatNumber(x, lang, { digits: 3 }) : pick(NONE, lang));
   const attribution = agencies[0]?.outputs.attribution || ATTRIBUTION_FALLBACK;
-  const entities = agencies.map((a) => a.outputs.agency.name).join('; ');
+  const entities = (l: Lang) => cerepEntities(agencies.map((a) => a.outputs), l);
   const agencyProv: Provenance = provenanceOf(agencies[0]?.provenance.truth_status ?? 'real-outcomes');
   const familyProv: Provenance = provenanceOf(families[0]?.provenance.truth_status ?? 'synthetic-known-truth');
   const dashes = (l: Lang) => agencies.map((a, i) => `${pick(short(a.variant_id), l)} ${DASH_TEXT[i % DASH_TEXT.length][l]}`).join(', ');
@@ -958,14 +959,16 @@ function VariantsBody({ sel, variants, onPick }: { sel: C04Sel; variants: Varian
       provenance={agencyProv}
       dataKey={stateKey}
       note={{
-        en: `The mean of the yearly one-year PDs over the cohorts where the grade has ratings (EBA/GL/2017/16 paragraph 84), percent a year on a log scale; colour the definition, dash the agency (${dashes('en')}); a zero average has no point. Grey: each agency's TTC default rate. Marked: the rail's grade. ${pick(ESMA_DEFINITIONS, 'en')} ${entities}. ${attribution}.`,
-        es: `La media de las PD anuales sobre las cohortes donde el grado tiene calificaciones (párrafo 84 de EBA/GL/2017/16), porcentaje al año en escala logarítmica; color la definición, trazo la agencia (${dashes('es')}); un promedio cero no tiene punto. Gris: la tasa TTC de incumplimiento de cada agencia. Marcado: el grado del panel. ${pick(ESMA_DEFINITIONS, 'es')} ${entities}. ${attribution}.`,
+        en: `The mean of the yearly one-year PDs over the cohorts where the grade has ratings (EBA/GL/2017/16 paragraph 84), percent a year on a log scale; colour the definition, dash the agency (${dashes('en')}); a zero average has no point. Grey: each agency's TTC default rate. Marked: the rail's grade. ${pick(ESMA_DEFINITIONS, 'en')} ${entities('en')}. ${attribution}.`,
+        es: `La media de las PD anuales sobre las cohortes donde el grado tiene calificaciones (párrafo 84 de EBA/GL/2017/16), porcentaje al año en escala logarítmica; color la definición, trazo la agencia (${dashes('es')}); un promedio cero no tiene punto. Gris: la tasa TTC de incumplimiento de cada agencia. Marcado: el grado del panel. ${pick(ESMA_DEFINITIONS, 'es')} ${entities('es')}. ${attribution}.`,
       }}
     >
       <UPlotChart height="fill" x={chart.x} y={chart.y} series={chart.series} marks={chart.marks} />
     </PlotCard>
   ) : null;
-  // the two short tables side by side at their own height; under them, the chart and the families' table fill the rest
+  // the two short tables side by side at their own height; under them the families' table fills the rest, and on a tall
+  // screen the agencies' chart beside it (at 1280 x 800 its legend and its notes left the plot a few pixels: the
+  // comparison is the tables', and the chart is also the Benchmark's)
   return (
     <>
       <div className="ct-row" data-row="variants-tables">
@@ -973,7 +976,7 @@ function VariantsBody({ sel, variants, onPick }: { sel: C04Sel; variants: Varian
         {publishedCard && <div className="ct-share-2">{publishedCard}</div>}
       </div>
       <div className="caos-views-row" data-views={chartCard ? '2' : '1'}>
-        {chartCard && <div className="ct-col ct-share-3">{chartCard}</div>}
+        {chartCard && <div className="ct-col ct-share-3 ct-tall-only">{chartCard}</div>}
         <div className="ct-col ct-share-2">{familiesCard}</div>
       </div>
     </>

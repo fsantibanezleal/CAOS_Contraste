@@ -184,6 +184,19 @@ export function cerepSource(o: C04AgencyOutputs, l: 'en' | 'es'): string {
     : `${o.agency.name} (${o.agency.code}; ${scope}), cohortes anuales ${first} a ${last}. ${o.attribution}.`;
 }
 
+/** The entities of several agencies on one card (CT-407): each with its code, then the scope and the period of the
+ * annual cohorts they share (from the earliest first cohort to the latest last). */
+export function cerepEntities(os: readonly C04AgencyOutputs[], l: 'en' | 'es'): string {
+  if (!os.length) return '';
+  const names = os.map((o) => `${o.agency.name} (${o.agency.code})`).join('; ');
+  const firsts = os.map((o) => o.cohorts[0]?.label ?? '').filter(Boolean).sort();
+  const lasts = os.map((o) => o.cohorts[o.cohorts.length - 1]?.label ?? '').filter(Boolean).sort();
+  const scope = l === 'en' ? os[0].agency.scope : (SCOPE_ES[os[0].agency.scope] ?? os[0].agency.scope);
+  return l === 'en'
+    ? `${names}; ${scope}, annual cohorts ${firsts[0]} to ${lasts[lasts.length - 1]}`
+    : `${names}; ${scope}, cohortes anuales ${firsts[0]} a ${lasts[lasts.length - 1]}`;
+}
+
 /** The close of a card that shows a PD (CT-407: every PD shown names its definition, with ESMA's statement that CEREP
  * sets no common definition of a default event), then the source. */
 export function cerepPdSource(o: C04AgencyOutputs, l: 'en' | 'es'): string {
