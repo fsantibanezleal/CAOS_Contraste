@@ -23,6 +23,7 @@ behind a model opinion, and for students of credit risk. The tests come from the
 | Case | Question | Data | Status |
 |---|---|---|---|
 | [C01](docs/cases/C01.md) | Does a monotone WoE scorecard match the challengers the literature says beat it, once calibration is required, and what do the tests say when the population shifts? | UCI Taiwan credit cards (30,000), UCI Statlog German Credit (1,000), both CC BY 4.0 | built |
+| [C04](docs/cases/C04.md) | What PD does each grade carry over the cycle, under which of CEREP's default definitions, and does a Markov chain of one-year matrices describe it? | ESMA CEREP: S&P's, Moody's and Fitch's EU entities, corporate long-term, 2000 to 2025 (tables transformed by Contraste); riskvalidation's rating paths; Israel et al., Schuermann and Hanson, Engelmann (derived-only) | built |
 | [C05](docs/cases/C05.md) | How should a PD curve be carried to a new year, and what can be said about PDs with almost no defaults? | Tasche (2013) and Pluto and Tasche (2005), their tables (derived-only); a Vasicek generator | built |
 | [C22](docs/cases/C22.md) | How often does each validation test reject a right model, and which defects does it catch? | riskvalidation's generators with planted defects; BCBS WP14 and Yurdakul-Naranjo tables as published answers (derived-only) | built |
 
@@ -31,6 +32,14 @@ regression and penalised logistic tree regression (P2), the explainable boosting
 with XGBoost as cross-check (P4), and TabPFN v2 on the German twin (P5). Seven variants: the holdout, moderate and
 severe covariate drift, a prior shift, label noise, a small training sample and the German twin; the IRB capital of
 each approved book under Basel III, CRR3 and Basel II.
+
+C04 reads CEREP's default, defaults and transition pages for three agencies and keeps their default counts apart:
+the transition matrix's default column gives 29% of the default page's long-run CCC to C PD for S&P and 19% for
+Fitch, and Moody's page has none. It fits the EM, diagonal, weighted and JLT generators, tests time homogeneity, the
+Markov order and momentum, checks every five-year window's lived defaults against the chained matrices (S&P's CCC to C
+cohort of 2020: 61.4% lived, 9.1% chained), measures five estimators and three intervals on rating paths of known
+truth (momentum, a recession year, informative withdrawals, thin cohorts) and recomputes three papers to their
+printed digits.
 
 C05 recomputes Tasche (2013) and Pluto and Tasche (2005) cell by cell from their PDFs, carries the 2009 S&P curve to
 2010 and 2011 by every approach of the paper, bounds low-default PDs four ways, and measures coverage, size and power
@@ -42,7 +51,7 @@ three published simulation studies rerun (BCBS WP14 Tables 7 and 8, Yurdakul and
 Its measurements changed C01: Hosmer-Lemeshow uses as many degrees of freedom as groups on the holdout, and the test
 of the AUC against the initial AUC adds the initial estimate's variance.
 
-The other 19 cases (IFRS 9 and the Chilean provisions, LGD and EAD, portfolio capital, market risk and FRTB, IRRBB
+The other 18 cases (IFRS 9 and the Chilean provisions, LGD and EAD, portfolio capital, market risk and FRTB, IRRBB
 and liquidity, operational risk, ICAAP and IAPE stress, machine-learning and fairness validation) are planned in
 [the coverage matrix](docs/cases/README.md).
 
@@ -52,7 +61,9 @@ Six routes on the shared CAOS shell, in English and Spanish, light and dark: the
 Model, Validation, Impact, Findings, Variants, Context), Introduction, Methodology, Implementation, Experiments and
 Benchmark. The App replays the committed artifacts and computes live what a reader changes: the scorecard and EBM
 scores of an applicant, the lights under the reader's own policy thresholds, the decision and the IRB capital at the
-reader's approval rate and LGD (C01); the PD curve of every calibration approach, the low-default bounds and their
+reader's approval rate and LGD (C01); a portfolio's drift under an agency's one-year matrix towards its TTC
+portfolio, the PD intervals at the reader's default correlation and the IRB risk weight under each default definition
+(C04); the PD curve of every calibration approach, the low-default bounds and their
 capital (C05); the exact size and power of the binomial, Vasicek-corrected and Jeffreys tests for the reader's own
 portfolio (C22). Every live computation is a TypeScript port held to the engine on exported parity points.
 
@@ -95,6 +106,10 @@ Every source is declared with its licence class (mirror-allowed, derived-only, l
 verbatim fragment of its terms (`data-pipeline/config/sources.json`); raw rows are committed only from mirror-allowed
 sources, and the export refuses an artifact whose lineage includes a link-only or unusable source. C01 reads the UCI
 datasets under CC BY 4.0 (Yeh 2009, DOI 10.24432/C55S3H; Hofmann 1994, DOI 10.24432/C5NC77). TabPFN's v2 weights
-are under the Prior Labs License v1.1: built with PriorLabs-TabPFN.
+are under the Prior Labs License v1.1: built with PriorLabs-TabPFN. C04 reads ESMA's CEREP, whose reproduction is
+authorised provided the source is acknowledged: every C04 table says "Source: ESMA CEREP; tables transformed by
+Contraste" and names the agency's entity. The three papers C04 recomputes (Israel, Rosenthal and Wei 2001; Schuermann
+and Hanson 2004; Engelmann 2024) are read from the data root, and only the numbers recomputed from them are committed,
+never the agency matrices they reprint.
 
 Licensed under the MIT License (see [LICENSE](LICENSE)).
