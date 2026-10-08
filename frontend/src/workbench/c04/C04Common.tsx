@@ -1193,7 +1193,8 @@ export function agencyReading(sel: C04Sel, v: AgencyVariant): Reading {
   const pooledText = both((l) => formatNumber(pooled, l, pctFormat));
   const interval: BiText | undefined =
     finite(lo) && finite(hi)
-      ? { en: `${formatNumber(lo, 'en', pctFormat)} to ${formatNumber(hi, 'en', pctFormat)}`, es: `${formatNumber(lo, 'es', pctFormat)} a ${formatNumber(hi, 'es', pctFormat)}` }
+      ? // one percent sign for the pair, so the read-out's row holds it on one line in a wide font
+        { en: `${formatNumber(lo * 100, 'en', { digits: 3 })} to ${formatNumber(hi, 'en', pctFormat)}`, es: `${formatNumber(lo * 100, 'es', { digits: 3 })} a ${formatNumber(hi, 'es', pctFormat)}` }
       : undefined;
   return {
     title: { en: `${GRADES[g]}, ${d.en}${n ? `, ${n.en}` : ''}`, es: `${GRADES[g]}, ${d.es}${n ? `, ${n.es}` : ''}` },

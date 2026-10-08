@@ -4,7 +4,7 @@
 import { formatNumber } from '@fasl-work/caos-app-shell';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { MatrixDrawing, MatrixMap, matrixReadout, viridis, type MatrixMapProps } from './MatrixMap';
+import { MatrixDrawing, MatrixMap, matrixReadout, textWidth, viridis, type MatrixMapProps } from './MatrixMap';
 
 const base: MatrixMapProps = {
   label: { en: 'A test matrix', es: 'Una matriz de prueba' },
@@ -29,6 +29,31 @@ const draw = (p: MatrixMapProps, hover: [number, number] | null = null) =>
 const fills = (markup: string) => [...markup.matchAll(/<rect x="[\d.]+" y="[\d.]+" width="[\d.]+" height="[\d.]+" fill="([^"]+)"/g)].map((m) => m[1]);
 
 describe('MatrixMap', () => {
+  it('prints a value only where it fits its cell, and staggers column labels that do not fit their column (gate G10)', () => {
+    // nine states as in an agency's matrix, on a phone's card: each column narrower than "CCC-C"
+    const grades = ['AAA', 'AA', 'A', 'BBB', 'BB', 'B', 'CCC-C', 'D', 'W'];
+    const nine: MatrixMapProps = {
+      ...base,
+      rows: ['AAA'],
+      cols: grades,
+      values: [[0.79, 0.161, 0.0082, 0, 0, 0.0026, 0.001, 0, 0.0282]],
+      counts: [[1, 1, 1, 0, 0, 1, 1, 0, 1]],
+      diagonal: [0],
+      selectedRow: 0,
+    };
+    const narrow = renderToStaticMarkup(<MatrixDrawing p={nine} width={300} height={200} hover={null} setHover={() => undefined} />);
+    const colY = grades.map((g) => Number(new RegExp(`<text x="[\\d.]+" y="([\\d.]+)"[^>]*>${g}</text>`).exec(narrow)?.[1]));
+    expect(new Set(colY).size, 'two lines of column labels').toBe(2);
+    // neighbours on different lines, so no two adjacent labels share one
+    for (let j = 1; j < grades.length; j++) expect(colY[j]).not.toBe(colY[j - 1]);
+    // no value printed wider than its cell (the server's estimate: 0.62 em a character)
+    expect(narrow).not.toContain('>79 %<');
+    const wide = draw(base);
+    // a cell wide enough prints its value (three significant digits, as the map writes it)
+    expect(wide).toContain('>90.0\u00a0%<');
+    expect(textWidth('CCC-C', 12, '')).toBeCloseTo(5 * 12 * 0.62, 9);
+  });
+
   it('is viridis at its ends and clamps outside [0, 1]', () => {
     expect(viridis(0)).toBe('rgb(68, 1, 84)');
     expect(viridis(1)).toBe('rgb(253, 231, 37)');
