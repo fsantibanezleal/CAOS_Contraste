@@ -504,8 +504,8 @@ export function PdByGradeView({ sel }: { sel: C04Sel | null }) {
     outside.length
       ? t(
           l,
-          ` The intervals bound the pooled rate (defaults over n), not the average of the yearly rates: ${list(l, outside.map((r) => `${GRADES[r.grade]}'s average, ${pcs(l, r.rate)}, lies outside ${span(l, r.jeffreys.lower, r.jeffreys.upper)} %`))}.`,
-          ` Los intervalos acotan la tasa agrupada (incumplimientos sobre n), no el promedio de las tasas anuales: ${list(l, outside.map((r) => `el promedio de ${GRADES[r.grade]}, ${pcs(l, r.rate)}, queda fuera de ${span(l, r.jeffreys.lower, r.jeffreys.upper)} %`))}.`,
+          ` The intervals bound the pooled rate (defaults over n), not the average of the yearly rates: ${list(l, outside.map((r) => `${GRADES[r.grade]}'s average, ${pcs(l, r.rate)}, lies outside ${span(l, r.jeffreys.lower, r.jeffreys.upper)}\u00a0%`))}.`,
+          ` Los intervalos acotan la tasa agrupada (incumplimientos sobre n), no el promedio de las tasas anuales: ${list(l, outside.map((r) => `el promedio de ${GRADES[r.grade]}, ${pcs(l, r.rate)}, queda fuera de ${span(l, r.jeffreys.lower, r.jeffreys.upper)}\u00a0%`))}.`,
         )
       : t(l, ' Every average lies inside the Jeffreys interval of its pooled rate.', ' Cada promedio queda dentro del intervalo de Jeffreys de su tasa agrupada.');
   const keepText = (l: Lang): string =>

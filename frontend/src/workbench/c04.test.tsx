@@ -192,12 +192,12 @@ describe('the C04 instrument', () => {
       expect(it.unit).toBe('probability difference');
       for (const lang of ['en', 'es'] as const) {
         const text = impactValue(it, lang);
-        expect(text).toBe(`${it.value! > 0 ? '+' : ''}${formatNumber(it.value! * 100, lang, { digits: 3 })} pp`);
+        expect(text).toBe(`${it.value! > 0 ? '+' : ''}${formatNumber(it.value! * 100, lang, { digits: 3 })}\u00a0pp`);
         expect(text).not.toContain('%');
       }
     }
     // the withdrawals bias is the B PD's with withdrawals removed: under a percentage point, below the truth
-    expect(impactValue(items[0], 'en')).toBe(`${formatNumber(-0.397424314, 'en', { digits: 3 })} pp`);
+    expect(impactValue(items[0], 'en')).toBe(`${formatNumber(-0.397424314, 'en', { digits: 3 })}\u00a0pp`);
   });
 
   it('every rail read-out changes when its controls move', () => {

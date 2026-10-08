@@ -604,7 +604,7 @@ export function mobilityChart(v: AgencyVariant): { years: MobilityYear[]; defini
       ys,
       [
         { label: { en: 'M_SVD (Jafry and Schuermann)', es: 'M_SVD (Jafry y Schuermann)' }, values: pts.map((r) => r.svd), color: '--color-accent', width: 2 },
-        { label: { en: 'Trace index', es: 'Índice de traza' }, values: pts.map((r) => r.trace), color: '--color-magenta', width: 2, dash: [6, 3] },
+        { label: { en: 'Mobility index (n - tr P)/(n - 1)', es: 'Índice de movilidad (n - tr P)/(n - 1)' }, values: pts.map((r) => r.trace), color: '--color-magenta', width: 2, dash: [6, 3] },
         {
           label: { en: `Speculative-grade default rate, ${pick(DEFINITION_LABEL[d], 'en')}`, es: `Tasa de incumplimiento de grado especulativo, ${pick(DEFINITION_LABEL[d], 'es')}` },
           values: pts.map((r) => r.rate),
