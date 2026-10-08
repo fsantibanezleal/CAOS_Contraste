@@ -26,6 +26,27 @@ function record(sel: Selection, id: string): ModelRecord | undefined {
 /** A scorecard bin as the page's language writes it: optbinning's interval, its bounds in the page's number format
  * (no thousands group; a Spanish interval separates its bounds with a semicolon, the comma being its decimal sign) and
  * infinity as a sign, and the two special bins named. */
+
+/** Why the scorecard left a feature out, in the page's language and number format: the two reasons the pipeline writes
+ * (pipeline/model/scorecard.py, an information value under the threshold and a WoE coefficient of the wrong sign); any
+ * other reason as written. */
+export function droppedReason(why: string, lang: 'en' | 'es'): string {
+  const iv = /^information value (\S+) below (\S+)$/.exec(why);
+  if (iv) {
+    const value = formatNumber(Number(iv[1]), lang, { decimals: 4 });
+    const floor = formatNumber(Number(iv[2]), lang, { digits: 2 });
+    return lang === 'es' ? `valor de información ${value} bajo ${floor}` : `information value ${value} below ${floor}`;
+  }
+  const sign = /^wrong sign on WoE \(coefficient (\S+), p = (\S+)\)$/.exec(why);
+  if (sign) {
+    const c = Number(sign[1]);
+    const coef = `${c > 0 ? '+' : ''}${formatNumber(c, lang, { decimals: 4 })}`;
+    const pv = formatNumber(Number(sign[2]), lang, { digits: 3 });
+    return lang === 'es' ? `signo equivocado en el WoE (coeficiente ${coef}, p = ${pv})` : `wrong sign on WoE (coefficient ${coef}, p = ${pv})`;
+  }
+  return why;
+}
+
 export function binText(bin: string, lang: 'en' | 'es'): string {
   if (bin === 'Missing') return lang === 'es' ? 'Sin dato' : 'Missing';
   if (bin === 'Special') return lang === 'es' ? 'Especial' : 'Special';
@@ -190,9 +211,10 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
   if (!sel || !sc || !dist) return <Pending />;
   const prov = provenanceOf(sel.data.variant.provenance.truth_status);
   const f = (v: number | null, d = 3) => formatNumber(v, lang, { decimals: d });
-  const dropped = Object.entries(sc.dropped)
-    .map(([k, why]) => `${k} (${why})`)
-    .join('; ');
+  const dropped = (l: 'en' | 'es') =>
+    Object.entries(sc.dropped)
+      .map(([k, why]) => `${k} (${droppedReason(why, l)})`)
+      .join('; ');
   return (
     <div className="caos-views-row" data-views="2">
       <div className="ct-col ct-share-3">
@@ -203,8 +225,8 @@ export function ScorecardView({ sel }: { sel: Selection | null }) {
           provenance={prov}
           dataKey={stateKey}
           note={{
-            en: `${formatNumber(sc.scaling.score_ref, 'en', { decimals: 0 })} points at odds ${formatNumber(sc.scaling.odds_ref, 'en', { decimals: 0 })} to 1, ${formatNumber(sc.scaling.pdo, 'en', { decimals: 0 })} points to double the odds; bins fitted on the training slice only. Highlighted: the applicant's bins.${dropped ? ` Not in the scorecard: ${dropped}.` : ''}`,
-            es: `${formatNumber(sc.scaling.score_ref, 'es', { decimals: 0 })} puntos con odds ${formatNumber(sc.scaling.odds_ref, 'es', { decimals: 0 })} a 1, ${formatNumber(sc.scaling.pdo, 'es', { decimals: 0 })} puntos para duplicar las odds; tramos ajustados solo con el tramo de entrenamiento. Destacados: los tramos del solicitante.${dropped ? ` Fuera de la scorecard: ${dropped}.` : ''}`,
+            en: `${formatNumber(sc.scaling.score_ref, 'en', { decimals: 0 })} points at odds ${formatNumber(sc.scaling.odds_ref, 'en', { decimals: 0 })} to 1, ${formatNumber(sc.scaling.pdo, 'en', { decimals: 0 })} points to double the odds; bins fitted on the training slice only. Highlighted: the applicant's bins.${dropped('en') ? ` Not in the scorecard: ${dropped('en')}.` : ''}`,
+            es: `${formatNumber(sc.scaling.score_ref, 'es', { decimals: 0 })} puntos con odds ${formatNumber(sc.scaling.odds_ref, 'es', { decimals: 0 })} a 1, ${formatNumber(sc.scaling.pdo, 'es', { decimals: 0 })} puntos para duplicar las odds; tramos ajustados solo con el tramo de entrenamiento. Destacados: los tramos del solicitante.${dropped('es') ? ` Fuera de la scorecard: ${dropped('es')}.` : ''}`,
           }}
         >
           <div className="ct-scroll">

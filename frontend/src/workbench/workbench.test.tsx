@@ -13,7 +13,7 @@ import { FindingsView } from './FindingsView';
 import { CapitalView } from './CapitalView';
 import { ImpactView } from './ImpactView';
 import { defaultChallenger, type Selection } from './model';
-import { EbmView, GbmView, LadderView, PenalisedView, ScorecardView, TabPfnView, binText } from './ModelViews';
+import { EbmView, GbmView, LadderView, PenalisedView, ScorecardView, TabPfnView, binText, droppedReason } from './ModelViews';
 import { BatteryView, CalibrationView, DiscriminationView, GroupsView, StabilityView } from './ValidationViews';
 import { Workbench } from './Workbench';
 
@@ -141,5 +141,14 @@ describe("the scorecard's bins in the page's language (gate G11)", () => {
     expect(binText('Special', 'es')).toBe('Especial');
     // no decimal point survives on a Spanish page
     for (const b of ['(-inf, 45000.00)', '[1313.50, 2000.50)', '[0.50, inf)']) expect(binText(b, 'es')).not.toMatch(/\d\.\d/);
+  });
+});
+
+describe("why a feature left the scorecard, in the page's language (gate G11)", () => {
+  it('writes the two reasons of the pipeline with the numbers of the page', () => {
+    expect(droppedReason('information value 0.0189 below 0.02', 'en')).toBe('information value 0.0189 below 0.02');
+    expect(droppedReason('information value 0.0189 below 0.02', 'es')).toBe('valor de información 0,0189 bajo 0,02');
+    expect(droppedReason('wrong sign on WoE (coefficient +0.1234, p = 0.0421)', 'es')).toBe('signo equivocado en el WoE (coeficiente +0,1234, p = 0,0421)');
+    expect(droppedReason('something else', 'es')).toBe('something else');
   });
 });
