@@ -188,6 +188,8 @@ export const isCompact = (findings: readonly Finding[]) => findings.length + sum
 export { P_FLOOR };
 
 export interface PValueChart extends C04Chart {
+  /** the cited years the finding names, at their numbers */
+  marks: Array<{ x: number; label: BiText }>;
   floor: number;
   /** the p-values under the floor, the underflowed zeros among them */
   below: number;
@@ -197,8 +199,38 @@ export interface PValueChart extends C04Chart {
   policy: string;
 }
 
+/** Marks at 1-based numbers, labelled; a run of consecutive numbers shares one label ("2020-2021"), its other lines
+ * bare, so neighbouring labels never print over each other. */
+function runMarks(items: ReadonlyArray<{ i: number; label: string }>): Array<{ x: number; label: BiText }> {
+  const sorted = [...items].sort((a, b) => a.i - b.i);
+  const out: Array<{ x: number; label: BiText }> = [];
+  for (let k = 0; k < sorted.length; k++) {
+    if (k > 0 && sorted[k].i === sorted[k - 1].i + 1) {
+      out.push({ x: sorted[k].i + 1, label: '' });
+      continue;
+    }
+    let end = k;
+    while (end + 1 < sorted.length && sorted[end + 1].i === sorted[end].i + 1) end++;
+    const label = end > k ? `${sorted[k].label}-${sorted[end].label}` : sorted[k].label;
+    out.push({ x: sorted[k].i + 1, label });
+  }
+  return out;
+}
+
+/** The years a reference finding names: the three cited reference tests (a year's matrix against the pooled one) with
+ * the largest likelihood ratio per degree of freedom, as the bake ranks them (ties in citation order). */
+export function namedYears(rows: ReadonlyArray<TestRow | null>): Array<{ i: number; label: string }> {
+  const perDof = (r: TestRow) => (r.statistic as number) / Math.max(typeof r.extras.dof === 'number' ? r.extras.dof : 1, 1);
+  return rows
+    .flatMap((r, i) => (r && r.test_id === 'rating.matrix_reference' && finite(r.statistic) ? [{ i, r }] : []))
+    .sort((a, b) => perDof(b.r) - perDof(a.r) || a.i - b.i)
+    .slice(0, 3)
+    .map(({ i, r }) => ({ i, label: String(r.segment) }));
+}
+
 /** The cited tests' p-values on a log axis against the policy's thresholds, coloured by the light they earn; those
- * under P_FLOOR are drawn at it (see P_FLOOR). Null when no cited test has a p-value. */
+ * under P_FLOOR are drawn at it (see P_FLOOR). The years the finding names are marked. Null when no cited test has a
+ * p-value. */
 export function pValueChart(points: EvidencePoint[]): PValueChart | null {
   const rows = points.map((p) => (p.cited.kind === 'test' ? p.cited.row : null));
   const ps = rows.map((r) => r?.p_value ?? null);
@@ -226,6 +258,7 @@ export function pValueChart(points: EvidencePoint[]): PValueChart | null {
       { label: { en: `Amber threshold ${a.en}`, es: `Umbral ámbar ${a.es}` }, values: xs.map(() => amber), color: '--color-warn', width: 1.2, dash: [6, 4] },
       { label: { en: `Red threshold ${r.en}`, es: `Umbral rojo ${r.es}` }, values: xs.map(() => red), color: '--color-bad', width: 1.2, dash: [2, 4] },
     ],
+    marks: runMarks(namedYears(rows)),
     floor: P_FLOOR,
     below: ps.filter((p) => p !== null && p < P_FLOOR).length,
     zeros: ps.filter((p) => p === 0).length,
@@ -238,8 +271,8 @@ export function pValueChart(points: EvidencePoint[]): PValueChart | null {
 const AT5 = 'p<0.05';
 const AT1 = 'p<0.01';
 
-/** The cited measured rates at 5% with the Wilson interval of each and at 1%, against the nominal levels. Null when
- * the findings cite no rate. */
+/** The cited measured rates at 5% with the Wilson interval of each and at 1%, against the nominal levels; the rates at
+ * the empirical momentum (alpha 0.125) are marked. Null when the findings cite no rate. */
 export function rateChart(points: EvidencePoint[]): C04Chart | null {
   const sims = points.map((p) => (p.cited.kind === 'rate' ? p.cited.sim : null));
   if (!sims.some(Boolean)) return null;
@@ -260,6 +293,11 @@ export function rateChart(points: EvidencePoint[]): C04Chart | null {
       { label: { en: 'Nominal 5%', es: 'Nominal 5%' }, values: xs.map(() => 0.05), color: '--color-warn', width: 1.2, dash: [6, 4] },
       { label: { en: 'Nominal 1%', es: 'Nominal 1%' }, values: xs.map(() => 0.01), color: '--color-bad', width: 1.2, dash: [2, 4] },
     ],
+    marks: sims.flatMap((s, i) =>
+      s && s.key.includes('@alpha') && s.rung !== null && Math.abs(s.rung - EMPIRICAL_ALPHA) < 1e-12
+        ? [{ x: i + 1, label: { en: `alpha ${formatNumber(EMPIRICAL_ALPHA, 'en', { digits: 3 })}, empirical`, es: `alfa ${formatNumber(EMPIRICAL_ALPHA, 'es', { digits: 3 })}, empírico` } }]
+        : [],
+    ),
   };
 }
 
@@ -486,6 +524,13 @@ function segmentText(segment: string | null, lang: Lang): string {
   return lang === 'es' ? `, cohorte ${segment}` : `, cohort ${segment}`;
 }
 
+/** The symbol of each family's ladder, as its name defines it (the thin family's ladder is a count, named in full). */
+const RUNG_SYMBOL: Partial<Record<string, Bi>> = {
+  momentum: { en: 'alpha', es: 'alfa' },
+  cycle: { en: 'k', es: 'k' },
+  withdrawals: { en: 'k', es: 'k' },
+};
+
 /** Where a measured rate sits on its family's ladder, in words. */
 export function rungText(f: FamilyVariant, s: C04Simulation, lang: Lang): string {
   const tail = s.key.split('@')[1] ?? '';
@@ -494,7 +539,11 @@ export function rungText(f: FamilyVariant, s: C04Simulation, lang: Lang): string
   const ladder = f.outputs.ladder;
   if (s.rung === null || !ladder) return lang === 'es' ? 'cadena de Markov, su tamaño' : 'Markov chain, its size';
   const empirical = f.outputs.family === 'momentum' && Math.abs(s.rung - EMPIRICAL_ALPHA) < 1e-12;
-  return `${pick(ladder.name, lang)} ${formatNumber(s.rung, lang, { digits: 4 })}${empirical ? (lang === 'es' ? ' (la fuerza empírica)' : ' (the empirical strength)') : ''}`;
+  // the ladder's symbol and value ("k = 9"); a ladder without one, "<its name>: <value>": a long name never reads as if
+  // the value were part of it (the names, with what each symbol means, are in the family's design)
+  const symbol = RUNG_SYMBOL[f.outputs.family];
+  const head = symbol ? `${pick(symbol, lang)} = ` : `${pick(ladder.name, lang)}: `;
+  return `${head}${formatNumber(s.rung, lang, { digits: 4 })}${empirical ? (lang === 'es' ? ' (la fuerza empírica)' : ' (the empirical strength)') : ''}`;
 }
 
 function evidenceText(c: Cited, ref: string, k: number | undefined, lang: Lang): string {
@@ -543,16 +592,16 @@ export function findingsDrawing(v: VariantArtifact<unknown>, ev: ReturnType<type
     const below = both((l) =>
       pc.below
         ? l === 'es'
-          ? ` ${pc.below} valores p quedan bajo ${formatNumber(pc.floor, 'es', { digits: 2 })} (${pc.zeros} de ellos son 0 en doble precisión, bajo cerca de 1e-300): el eje termina en ${formatNumber(pc.floor, 'es', { digits: 2 })}, donde se dibujan; la tabla da cada uno.`
-          : ` ${pc.below} p-values lie below ${formatNumber(pc.floor, 'en', { digits: 2 })} (${pc.zeros} of them 0 in double precision, under about 1e-300): the axis stops at ${formatNumber(pc.floor, 'en', { digits: 2 })}, where they are drawn; the table gives each one.`
+          ? ` ${pc.below === 1 ? 'Un valor p queda' : `${pc.below} valores p quedan`} por debajo de ${formatNumber(pc.floor, 'es', { digits: 2 })} (${pc.zeros === 1 && pc.below === 1 ? 'es 0' : `${pc.zeros} de ellos son 0`} en doble precisión, por debajo de aproximadamente 1e-300): el eje termina en ${formatNumber(pc.floor, 'es', { digits: 2 })}, donde se dibujan; la tabla da cada uno.`
+          : ` ${pc.below === 1 ? 'One p-value lies' : `${pc.below} p-values lie`} below ${formatNumber(pc.floor, 'en', { digits: 2 })} (${pc.zeros === 1 && pc.below === 1 ? 'it is 0' : `${pc.zeros} of them 0`} in double precision, under about 1e-300): the axis stops at ${formatNumber(pc.floor, 'en', { digits: 2 })}, where they are drawn; the table gives each one.`
         : '',
     );
     return {
       title: { en: 'The cited tests against the policy', es: 'Las pruebas citadas contra la política' },
       chart: pc,
       note: {
-        en: `The p-value of each cited test, numbered as in the table, on a log scale against the committed policy's thresholds (${pc.policy}: amber below ${formatNumber(pc.amber, 'en', { digits: 2 })}, red below ${formatNumber(pc.red, 'en', { digits: 2 })}; a policy, not a regulation). Red points are the cohorts and periods the test rejects.${below.en} ${src.en}`,
-        es: `El valor p de cada prueba citada, numerada como en la tabla, en escala logarítmica contra los umbrales de la política comprometida (${pc.policy}: ámbar bajo ${formatNumber(pc.amber, 'es', { digits: 2 })}, rojo bajo ${formatNumber(pc.red, 'es', { digits: 2 })}; una política, no una regulación). Los puntos rojos son las cohortes y períodos que la prueba rechaza.${below.es} ${src.es}`,
+        en: `The p-value of each cited test, numbered as in the table, on a log scale against the committed policy's thresholds (${pc.policy}: amber below ${formatNumber(pc.amber, 'en', { digits: 2 })}, red below ${formatNumber(pc.red, 'en', { digits: 2 })}; a policy, not a regulation). Red points are the cohorts and periods the test rejects.${pc.marks.length ? ' Marked: the years the finding names, where the year\'s migrations depart most from the pooled matrix (the likelihood ratio per degree of freedom).' : ''}${below.en} ${src.en}`,
+        es: `El valor p de cada prueba citada, numerada como en la tabla, en escala logarítmica contra los umbrales de la política comprometida (${pc.policy}: ámbar bajo ${formatNumber(pc.amber, 'es', { digits: 2 })}, rojo bajo ${formatNumber(pc.red, 'es', { digits: 2 })}; una política, no una regulación). Los puntos rojos son las cohortes y períodos que la prueba rechaza.${pc.marks.length ? ' Marcados: los años que nombra el hallazgo, donde las migraciones del año se apartan más de la matriz agrupada (la razón de verosimilitud por grado de libertad).' : ''}${below.es} ${src.es}`,
       },
     };
   }
@@ -563,8 +612,8 @@ export function findingsDrawing(v: VariantArtifact<unknown>, ev: ReturnType<type
       title: { en: 'The cited rates against the nominal levels', es: 'Las tasas citadas contra los niveles nominales' },
       chart: rc,
       note: {
-        en: `Each cited rate, numbered as in the table: the share of repetitions in which the test rejects at 5% with its 95% Wilson interval, and at 1%, against the nominal levels (dashed 5%, dotted 1%). Under a true null the rate is the test's size; under the family's defect, its power. ${src.en}`,
-        es: `Cada tasa citada, numerada como en la tabla: la fracción de repeticiones en que la prueba rechaza al 5% con su intervalo de Wilson al 95%, y al 1%, contra los niveles nominales (segmentada 5%, punteada 1%). Con una nula verdadera la tasa es el tamaño de la prueba; con el defecto de la familia, su potencia. ${src.es}`,
+        en: `Each cited rate, numbered as in the table: the share of repetitions in which the test rejects at 5% with its 95% Wilson interval, and at 1%, against the nominal levels (dashed 5%, dotted 1%). Under a true null the rate is the test's size; under the family's defect, its power.${rc.marks?.length ? ' Marked: the rates at the empirical momentum strength (alpha 0.125).' : ''} ${src.en}`,
+        es: `Cada tasa citada, numerada como en la tabla: la fracción de repeticiones en que la prueba rechaza al 5% con su intervalo de Wilson al 95%, y al 1%, contra los niveles nominales (segmentada 5%, punteada 1%). Con una nula verdadera la tasa es el tamaño de la prueba; con el defecto de la familia, su potencia.${rc.marks?.length ? ' Marcadas: las tasas con la fuerza empírica del momentum (alfa 0,125).' : ''} ${src.es}`,
       },
     };
   }

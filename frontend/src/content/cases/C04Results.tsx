@@ -328,7 +328,7 @@ function AgencyItem({ v, manifest }: { v: AgencyVariant; manifest: CaseManifest 
     sameDefaults
       ? `D3 counts the same defaults as D2 in every grade; its rate differs by its cohort only (${GRADES[ccc]}: ${pctText('en', o.lra.d3.rate[ccc])}).`
       : `D3 counts ${o.lra.d3.defaults[ccc]} defaults in ${GRADES[ccc]} against D2's ${o.lra.d2.defaults[ccc]}.`,
-    `Time homogeneity across the annual cohorts: chi-square ${f(a.homogeneity.statistic, 5)} on ${formatNumber(a.homogeneity.dof, 'en')} degrees of freedom, ${pText('en', a.homogeneity.p_value)}; ${a.reference.red} of ${a.reference.total} cohorts depart from the pooled matrix at ${formatNumber(a.reference.alpha, 'en', { percent: true, decimals: 0 })}.`,
+    `Time homogeneity across the annual cohorts: chi-square ${formatNumber(a.homogeneity.statistic, 'en', { decimals: 0 })} on ${formatNumber(a.homogeneity.dof, 'en')} degrees of freedom, ${pText('en', a.homogeneity.p_value)}; ${a.reference.red} of ${a.reference.total} cohorts depart from the pooled matrix at ${formatNumber(a.reference.alpha, 'en', { percent: true, decimals: 0 })}.`,
     `L1 distance of each generator's one-year matrix to the pooled matrix: ${l1.map((k) => `${pick(L1_NAME[k], 'en')} ${f(a.l1[k], 3)}`).join(', ')}.`,
     a.d4Empty && a.d4Empty.years.length
       ? `The transition page's default column is empty in the years ${yearRanges(a.d4Empty.years, 'en')} while the default page counts ${formatNumber(a.d4Empty.defaulted, 'en')} rated defaulters in those years.`
@@ -344,7 +344,7 @@ function AgencyItem({ v, manifest }: { v: AgencyVariant; manifest: CaseManifest 
     sameDefaults
       ? `D3 cuenta los mismos incumplimientos que D2 en cada grado; su tasa difiere solo por su cohorte (${GRADES[ccc]}: ${pctText('es', o.lra.d3.rate[ccc])}).`
       : `D3 cuenta ${o.lra.d3.defaults[ccc]} incumplimientos en ${GRADES[ccc]} contra ${o.lra.d2.defaults[ccc]} de D2.`,
-    `Homogeneidad temporal entre las cohortes anuales: chi-cuadrado ${f(a.homogeneity.statistic, 5)} con ${formatNumber(a.homogeneity.dof, 'es')} grados de libertad, ${pText('es', a.homogeneity.p_value)}; ${a.reference.red} de ${a.reference.total} cohortes se apartan de la matriz agrupada al ${formatNumber(a.reference.alpha, 'es', { percent: true, decimals: 0 })}.`,
+    `Homogeneidad temporal entre las cohortes anuales: chi-cuadrado ${formatNumber(a.homogeneity.statistic, 'es', { decimals: 0 })} con ${formatNumber(a.homogeneity.dof, 'es')} grados de libertad, ${pText('es', a.homogeneity.p_value)}; ${a.reference.red} de ${a.reference.total} cohortes se apartan de la matriz agrupada al ${formatNumber(a.reference.alpha, 'es', { percent: true, decimals: 0 })}.`,
     `Distancia L1 de la matriz anual de cada generador a la matriz agrupada: ${l1.map((k) => `${pick(L1_NAME[k], 'es')} ${f(a.l1[k], 3)}`).join(', ')}.`,
     a.d4Empty && a.d4Empty.years.length
       ? `La columna de incumplimiento de la página de transiciones está vacía en los años ${yearRanges(a.d4Empty.years, 'es')} mientras la página de incumplimientos cuenta ${formatNumber(a.d4Empty.defaulted, 'es')} calificaciones incumplidas en esos años.`
