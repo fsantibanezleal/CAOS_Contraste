@@ -516,7 +516,7 @@ def _withdrawals(q: np.ndarray, obligors: list[int], case_seed: int, reps: int) 
 
 def _thin(q: np.ndarray, obligors: list[int]) -> Family:
     """Exact coverage, expected length and adjacent overlap of the intervals at n obligors per grade, by enumerating
-    the binomial count: riskvalidation's ``exact_coverage`` and ``overlap_probability`` (0.04.002)."""
+    the binomial count: riskvalidation's ``exact_coverage`` and ``overlap_probability`` (0.4.2)."""
     pd1 = _pd(_paths(q, obligors))
     rungs = []
     for n in THIN_N:

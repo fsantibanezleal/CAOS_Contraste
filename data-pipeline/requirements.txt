@@ -16,4 +16,4 @@ shap==0.52.0
 pypdf==6.19.0
 # the engine: the validation tests, the regulatory calculators and the reference engines, pinned to its release tag
 # until its first PyPI release (the repository is private until then)
-riskvalidation @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation@v0.04.000
+riskvalidation @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation@v0.04.003

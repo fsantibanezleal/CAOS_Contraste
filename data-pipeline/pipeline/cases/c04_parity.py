@@ -24,7 +24,7 @@ on the points computed here, which the bake writes to the models artifact ``C04/
   dict the agency artifacts carry as ``irb``) and ``_irb_rw``, the function the case's impact calls, so the parity,
   the impact and the live capital share one definition and a PD by grade reads in C04 exactly as in C05. Rows at a PD
   of 0 (a grade with no default in any cohort, as S&P's AAA, which the engine takes at the floor from riskvalidation
-  0.04.001; 0.04.000 refuses it), below, at and above the floor, to the speculative grades' PDs.
+  0.4.1; 0.4.0 refuses it), below, at and above the floor, to the speculative grades' PDs.
 
 Inputs and results are kept at full precision: the bake writes ``parity`` exactly, never rounded to nine significant
 digits (as C05 writes its own parity), or the 1e-9 comparison would measure the rounding instead of the port.
@@ -154,7 +154,7 @@ def _capital() -> list[dict[str, Any]]:
     for pd in CAPITAL_PD:
         try:
             rw = float(_irb_rw(pd))
-        except ValueError as exc:  # a PD of 0 under riskvalidation 0.04.000, which does not floor it
+        except ValueError as exc:  # a PD the engine refuses (0 before riskvalidation 0.4.1, which floors it)
             raise ValueError(f"the capital row at PD {pd}: {exc}") from exc
         rows.append({"pd": pd, "lgd": irb["lgd"], "maturity": irb["maturity"], "regime": irb["regime"],
                      "asset_class": irb["asset_class"], "risk_weight": rw})
