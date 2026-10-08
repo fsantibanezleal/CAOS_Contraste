@@ -18,7 +18,7 @@ written to the outputs.
   2401.08892v1, section 4: the TTC portfolio of the matrix (11) under the origination O (Theorem 1, equation (10)), and
   four starting portfolios projected by (9) over 50 years under the unstressed matrix.
 
-Every number is riskvalidation 0.4.0 (``transitions.embedding``, ``transitions.intervals``, ``transitions.ttc``). A
+Every number is riskvalidation 0.4 (``transitions.embedding``, ``transitions.intervals``, ``transitions.ttc``). A
 recomputed value agrees with its print when it lies within half a unit of the print's last digit, both ends inclusive
 (2.7245 and 2.7255 both agree with 2.725: a print does not say how it was rounded), with 1e-9 for the binary
 representation (100 * 0.027245 lands 1.7e-16 beyond the half-way point). Where the contract carries the agreement
@@ -67,9 +67,14 @@ IRW_NOT_FROM_P = (FIRST_MATRIX, "jlt")
 #: starting portfolios whose printed PD is that of entries more precise than the printed ones, checked within the
 #: rounding of the printed entries instead of at the printed digits, and why
 ENTRY_ROUNDING = {
-    "W hat": "built by stressing the matrix with z = 1 and propagating W_ttc one year, under a correlation the paper "
-             "does not state; its printed four-digit entries give 1.0945% against the printed 1.093%, 0.0015 "
-             "percentage points apart, within the 0.0021 that their rounding and the PD's allow",
+    "W hat": {
+        "en": "built by stressing the matrix with z = 1 and propagating W_ttc one year, under a correlation the paper "
+              "does not state; its printed four-digit entries give 1.0945% against the printed 1.093%, 0.0015 "
+              "percentage points apart, within the 0.0021 that their rounding and the PD's allow",
+        "es": "construido estresando la matriz con z = 1 y propagando W_ttc un año, con una correlación que el "
+              "artículo no declara; sus entradas impresas de cuatro dígitos dan 1,0945% frente al 1,093% impreso, a "
+              "0,0015 puntos porcentuales, dentro de los 0,0021 que permiten su redondeo y el de la PD",
+    },
 }
 
 
