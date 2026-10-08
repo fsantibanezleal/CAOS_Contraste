@@ -620,8 +620,9 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
                   <th>N</th>
                   <th>N† (3.4)</th>
                   <th>{pick({ en: 'Wald width', es: 'Ancho Wald' }, lang)}</th>
-                  <th className="ct-room-only">{pick({ en: 'Agresti-Coull width', es: 'Ancho Agresti-Coull' }, lang)}</th>
+                  <th>{pick({ en: 'Agresti-Coull width', es: 'Ancho Agresti-Coull' }, lang)}</th>
                   <th>{pick({ en: 'Jeffreys width', es: 'Ancho Jeffreys' }, lang)}</th>
+                  {/* the observed rate is drawn as points in the chart beside; the table gives it where the card has room */}
                   <th className="ct-room-only">{pick({ en: 'Observed D / N', es: 'Observada D / N' }, lang)}</th>
                 </tr>
               </thead>
@@ -633,7 +634,7 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
                     <td>{formatNumber(r.n, lang, { decimals: 0 })}</td>
                     <td>{formatNumber(r.nEffective, lang, { digits: 4 })}</td>
                     <td>{formatNumber(r.wald.length * 100, lang, { digits: 3 })}</td>
-                    <td className="ct-room-only">{formatNumber(r.agrestiCoull.length * 100, lang, { digits: 3 })}</td>
+                    <td>{formatNumber(r.agrestiCoull.length * 100, lang, { digits: 3 })}</td>
                     <td>{formatNumber(r.jeffreys.length * 100, lang, { digits: 3 })}</td>
                     <td className="ct-room-only">{pctd(lang, r.defaults / r.n)}</td>
                   </tr>
