@@ -166,3 +166,84 @@ def test_instantiate_renames_the_lockfile_and_drops_the_template_guide(tmp_path)
     assert not (copy / "docs" / "guides" / "00_instantiate.md").exists()
     assert "00_instantiate" not in (copy / "docs" / "guides.md").read_text(encoding="utf-8")
     assert not (copy / ".template-source").exists()
+
+
+def _version_tree(tmp: Path) -> Path:
+    root = tmp / "repo"
+    _put(root, "VERSION", "0.03.000\n")
+    _put(root, "frontend/package.json", {"name": "p", "version": "0.3.0"})
+    _put(root, "CHANGELOG.md", "# Changelog\n\n## [0.03.000] - 2026-10-07\n")
+    return root
+
+
+def test_version_guard_reads_code_not_history(tmp_path):
+    """CAOS_PRODUCT_TEMPLATE#19: a version in a comment or a docstring is history and passes; one in code fails."""
+    root = _version_tree(tmp_path)
+    _put(root, "data-pipeline/pipeline/a.py", '"""Until 0.02.004 the guard read comments."""\n'
+         "# measured at 0.01.000\nX = 1  # since 0.02.000\n")
+    _put(root, "frontend/src/a.ts", "// until 0.02.003\n/* history: 0.01.000\n and 0.02.000 */\nexport const u = 'https://x.org/a'; // 0.02.001\n")
+    # the documentation pages are prose: a release they cite is history
+    _put(root, "frontend/src/pages/Implementation.tsx", "export const p = 'Measured at 0.02.000 between Windows and Linux.';\n")
+    ok = _run("check_version_coherence.py", str(root))
+    assert ok.returncode == 0, ok.stdout
+    _put(root, "data-pipeline/pipeline/b.py", '__version__ = "0.02.004"\n')
+    _put(root, "frontend/src/b.tsx", "export const v = '0.02.004';\n")
+    bad = _run("check_version_coherence.py", str(root))
+    assert bad.returncode == 1
+    assert "data-pipeline/pipeline/b.py:1: a version literal in code" in bad.stdout
+    assert "frontend/src/b.tsx:1: a version literal in code" in bad.stdout
+    assert "a.py" not in bad.stdout and "a.ts" not in bad.stdout
+
+
+def _web_tree(tmp: Path, pin: str, app_css: str) -> Path:
+    root = tmp / "repo"
+    shell = "frontend/node_modules/@fasl-work/caos-app-shell"
+    _put(root, f"{shell}/styles.css", ":root { --color-fg: #000; }\n.chip { color: red; }\n.chip.on { color: blue; }\n.tablist { display: flex; }\n")
+    _put(root, f"{shell}/chart.css", ".caos-chart { width: 100%; }\n")
+    _put(root, f"{shell}/reserved-classes.json", {"components": ["caos-chart", "chip", "tablist"], "modifiers": ["on"], "classes": ["caos-chart", "chip", "on", "tablist"]})
+    _put(root, f"{shell}/package.json", {"name": "@fasl-work/caos-app-shell", "version": "0.8.0"})
+    _put(root, "frontend/package.json", {"name": "p", "version": "0.3.0", "dependencies": {"@fasl-work/caos-app-shell": pin}})
+    _put(root, "frontend/src/app.css", app_css)
+    _put(root, "frontend/src/main.tsx", "export const x = 1;\n")
+    return root
+
+
+def test_web_baseline_judges_the_subject_of_each_rule(tmp_path):
+    """Shell 0.8.0: a modifier joined to the app's own class passes; a shell component or a lone modifier fails."""
+    good = _web_tree(tmp_path / "a", "0.8.0", ".my-row.on { color: var(--color-fg); }\n.chip-host .my-label { color: red; }\n@media (max-width: 760px) { .my-row { display: none; } }\n")
+    ok = _run("check_web_baseline.py", str(good))
+    assert ok.returncode == 0, ok.stdout
+    bad = _web_tree(tmp_path / "b", "0.8.0", ".my-panel .chip { color: red; }\n.on { color: blue; }\n@media (max-width: 760px) { .tablist { flex-wrap: wrap; } }\n")
+    res = _run("check_web_baseline.py", str(bad))
+    assert res.returncode == 1
+    assert "restyles the shell component .chip" in res.stdout
+    assert "styles the shell modifier .on on its own" in res.stdout
+    assert "restyles the shell component .tablist" in res.stdout
+
+
+def test_web_baseline_requires_an_exact_shell_pin(tmp_path):
+    """CAOS_PRODUCT_TEMPLATE#19: a range lets an instantiated product float to a shell it never gated."""
+    caret = _run("check_web_baseline.py", str(_web_tree(tmp_path / "a", "^0.8.0", ".my-row { color: red; }\n")))
+    assert caret.returncode == 1 and "pin it exactly" in caret.stdout
+    stale = _run("check_web_baseline.py", str(_web_tree(tmp_path / "b", "0.7.2", ".my-row { color: red; }\n")))
+    assert stale.returncode == 1 and "the installed shell is 0.8.0, the pin is 0.7.2" in stale.stdout
+
+
+def test_web_baseline_requires_the_stylesheet_of_every_shell_entry_it_imports(tmp_path):
+    """CAOS_PRODUCT_TEMPLATE#22: a product drew the shell's chart without chart.css, and the chart had no height."""
+    shell = "@fasl-work/caos-app-shell"
+    bare = _web_tree(tmp_path / "a", "0.8.0", ".my-row { color: red; }\n")
+    _put(bare, "frontend/src/main.tsx", f"import {{ AppShell }} from '{shell}';\nimport {{ UPlotChart }} from '{shell}/chart';\n")
+    res = _run("check_web_baseline.py", str(bare))
+    assert res.returncode == 1
+    assert f"imports {shell} and never '{shell}/styles.css'" in res.stdout
+    assert f"imports {shell}/chart and never '{shell}/chart.css'" in res.stdout
+    styled = _web_tree(tmp_path / "b", "0.8.0", f"@import '{shell}/chart.css';\n.my-row {{ color: red; }}\n")
+    _put(styled, "frontend/src/main.tsx", f"import {{ AppShell }} from '{shell}';\nimport '{shell}/styles.css';\n")
+    _put(styled, "frontend/src/views.tsx", f"import {{ UPlotChart }} from '{shell}/chart';\n")
+    ok = _run("check_web_baseline.py", str(styled))
+    assert ok.returncode == 0, ok.stdout
+    # the shell alone, with no chart entry, needs no chart stylesheet
+    plain = _web_tree(tmp_path / "c", "0.8.0", ".my-row { color: red; }\n")
+    _put(plain, "frontend/src/main.tsx", f"import {{ AppShell }} from '{shell}';\nimport '{shell}/styles.css';\n")
+    assert _run("check_web_baseline.py", str(plain)).returncode == 0
