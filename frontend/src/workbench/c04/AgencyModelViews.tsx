@@ -6,7 +6,7 @@
 // counts over its size, the shares the engine's cohort estimator gives with the withdrawals a state. Where a cohort's
 // transition page holds no rating in default while its default page counts rated defaulters (Fitch's 2006 to 2014,
 // finding F-D4-EMPTY), every PD read from the matrix is 0 by the page, and the views say so beside the number.
-import { ChipGroup, Knob, PlotCard, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type Lang } from '@fasl-work/caos-app-shell';
+import { ChipGroup, Knob, PlotCard, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type Lang } from '@fasl-work/caos-app-shell';
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import type { C04AgencyOutputs, Text, VariantArtifact } from '../../lib/contract.types';
@@ -400,89 +400,85 @@ export function MatrixView({ sel }: { sel: C04Sel | null }) {
     es: `La fila ${grade} de la ${pooled ? 'matriz agrupada' : `matriz de la cohorte ${m.label}`}: la fracción de la cohorte al inicio del año en cada estado (porcentaje) y su conteo de calificaciones; ${m.hasDefault ? 'D una categoría de incumplimiento de la página de transiciones, ' : ''}W retirada antes del fin del año.${m.hasDefault ? ` ${esma.es}` : ''} ${src.es}`,
   };
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-3">
-        <PlotCard fill title={title} lane={REPLAY} provenance={prov} dataKey={stateKey} note={note}>
-          <div className="ct-stack">
-            {controls}
-            <MatrixMap {...mapProps(sel, m, mapLabel)} />
-          </div>
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-2">
-        <PlotCard
-          fill
-          title={{ en: `Where ${grade} ended the year`, es: `Dónde quedó ${grade} al final del año` }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={rowNote}
-        >
-          {/* the row first, what the card is for; the sentences that read it after it (at 1280 x 800 the sentences
-              above it pushed B, CCC-C, D and W below the card's fold, measured 2026-10-07) */}
-          <div className="ct-scroll">
-            <table className="caos-table ct-wrap-head" data-table="c04-matrix-row" data-grade={grade} data-cohort={m.label ?? 'pooled'}>
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'At the end', es: 'Al final' }, lang)}</th>
-                  <th>{pick({ en: 'Share', es: 'Fracción' }, lang)}</th>
-                  <th>{pick({ en: 'Count', es: 'Conteo' }, lang)}</th>
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard fill title={title} lane={REPLAY} provenance={prov} dataKey={stateKey} note={note}>
+        <div className="ct-stack">
+          {controls}
+          <MatrixMap {...mapProps(sel, m, mapLabel)} />
+        </div>
+      </PlotCard>
+      <PlotCard
+        fill
+        title={{ en: `Where ${grade} ended the year`, es: `Dónde quedó ${grade} al final del año` }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={rowNote}
+      >
+        {/* the row first, what the card is for; the sentences that read it after it (at 1280 x 800 the sentences
+            above it pushed B, CCC-C, D and W below the card's fold, measured 2026-10-07) */}
+        <div className="ct-scroll">
+          <table className="caos-table ct-wrap-head" data-table="c04-matrix-row" data-grade={grade} data-cohort={m.label ?? 'pooled'}>
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'At the end', es: 'Al final' }, lang)}</th>
+                <th>{pick({ en: 'Share', es: 'Fracción' }, lang)}</th>
+                <th>{pick({ en: 'Count', es: 'Conteo' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {m.cols.map((col, j) => (
+                <tr key={col} data-state={col} className={j === g ? 'ct-current' : undefined}>
+                  <td className="ct-text" title={col === 'D' || col === 'W' ? pick(STATE_TEXT[col], lang) : undefined}>
+                    {col}
+                  </td>
+                  <td>{pct(lang, m.values[g][j])}</td>
+                  <td>{ratings(lang, m.counts[g][j])}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {m.cols.map((col, j) => (
-                  <tr key={col} data-state={col} className={j === g ? 'ct-current' : undefined}>
-                    <td className="ct-text" title={col === 'D' || col === 'W' ? pick(STATE_TEXT[col], lang) : undefined}>
-                      {col}
-                    </td>
-                    <td>{pct(lang, m.values[g][j])}</td>
-                    <td>{ratings(lang, m.counts[g][j])}</td>
-                  </tr>
-                ))}
-                <tr data-state="all">
-                  <td className="ct-text">{pick({ en: 'The cohort', es: 'La cohorte' }, lang)}</td>
-                  <td>{size > 0 ? pct(lang, 1) : '-'}</td>
-                  <td>{ratings(lang, size)}</td>
-                </tr>
-              </tbody>
-            </table>
-            <p className="ct-note" data-summary="cohort">
-              {size > 0
-                ? pick(
-                    {
-                      en: `${ratings('en', size)} ratings in ${grade} at the start ${where.en}; ${ratings('en', wd)} withdrawn by the end of the year (${pct('en', wd / size)}), ${ratings('en', rated)} rated at the end.`,
-                      es: `${ratings('es', size)} calificaciones en ${grade} al inicio ${where.es}; ${ratings('es', wd)} retiradas antes del fin del año (${pct('es', wd / size)}), ${ratings('es', rated)} calificadas al final.`,
-                    },
-                    lang,
-                  )
-                : pick({ en: `No rating in ${grade} at the start ${where.en}: the row is empty.`, es: `Ninguna calificación en ${grade} al inicio ${where.es}: la fila está vacía.` }, lang)}
+              ))}
+              <tr data-state="all">
+                <td className="ct-text">{pick({ en: 'The cohort', es: 'La cohorte' }, lang)}</td>
+                <td>{size > 0 ? pct(lang, 1) : '-'}</td>
+                <td>{ratings(lang, size)}</td>
+              </tr>
+            </tbody>
+          </table>
+          <p className="ct-note" data-summary="cohort">
+            {size > 0
+              ? pick(
+                  {
+                    en: `${ratings('en', size)} ratings in ${grade} at the start ${where.en}; ${ratings('en', wd)} withdrawn by the end of the year (${pct('en', wd / size)}), ${ratings('en', rated)} rated at the end.`,
+                    es: `${ratings('es', size)} calificaciones en ${grade} al inicio ${where.es}; ${ratings('es', wd)} retiradas antes del fin del año (${pct('es', wd / size)}), ${ratings('es', rated)} calificadas al final.`,
+                  },
+                  lang,
+                )
+              : pick({ en: `No rating in ${grade} at the start ${where.en}: the row is empty.`, es: `Ninguna calificación en ${grade} al inicio ${where.es}: la fila está vacía.` }, lang)}
+          </p>
+          <p className="ct-note" data-summary="pd">
+            {m.hasDefault
+              ? pick(
+                  {
+                    en: `One-year PD of ${grade}: ${pdOf('en', keep)} under "${keepLabel.en}" (over the whole cohort), ${pdOf('en', d4)} under "${d4Label.en}" (over the ${ratings('en', rated)} rated at the end).`,
+                    es: `PD a un año de ${grade}: ${pdOf('es', keep)} con "${keepLabel.es}" (sobre toda la cohorte), ${pdOf('es', d4)} con "${d4Label.es}" (sobre las ${ratings('es', rated)} calificadas al final).`,
+                  },
+                  lang,
+                )
+              : pick(
+                  {
+                    en: `${possessive(short.en)} transition page has no default category: its PDs by grade come from the default pages (D2 and D3), in the Validation group.`,
+                    es: `La página de transiciones de ${short.es} no tiene categoría de incumplimiento: sus PD por grado vienen de las páginas de incumplimientos (D2 y D3), en el grupo Validación.`,
+                  },
+                  lang,
+                )}
+          </p>
+          {rowEmpty.en && (
+            <p className="ct-note" data-summary="empty">
+              {pick(rowEmpty, lang)}
             </p>
-            <p className="ct-note" data-summary="pd">
-              {m.hasDefault
-                ? pick(
-                    {
-                      en: `One-year PD of ${grade}: ${pdOf('en', keep)} under "${keepLabel.en}" (over the whole cohort), ${pdOf('en', d4)} under "${d4Label.en}" (over the ${ratings('en', rated)} rated at the end).`,
-                      es: `PD a un año de ${grade}: ${pdOf('es', keep)} con "${keepLabel.es}" (sobre toda la cohorte), ${pdOf('es', d4)} con "${d4Label.es}" (sobre las ${ratings('es', rated)} calificadas al final).`,
-                    },
-                    lang,
-                  )
-                : pick(
-                    {
-                      en: `${possessive(short.en)} transition page has no default category: its PDs by grade come from the default pages (D2 and D3), in the Validation group.`,
-                      es: `La página de transiciones de ${short.es} no tiene categoría de incumplimiento: sus PD por grado vienen de las páginas de incumplimientos (D2 y D3), en el grupo Validación.`,
-                    },
-                    lang,
-                  )}
-            </p>
-            {rowEmpty.en && (
-              <p className="ct-note" data-summary="empty">
-                {pick(rowEmpty, lang)}
-              </p>
-            )}
-          </div>
-        </PlotCard>
-      </div>
-    </div>
+          )}
+        </div>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -848,84 +844,78 @@ export function GeneratorsView({ sel }: { sel: C04Sel | null }) {
     // default column), then EM's fit and the diagnostics. Two cards left the wide one mostly empty and cut the narrow
     // one's diagnostics mid-line at 1280 x 800 (measured, 2026-10-07)
     return (
-      <div className="caos-views-row" data-views="1">
-        <div className="ct-col">
-          <PlotCard
-            fill
-            title={{ en: `${short.en}: the generators of the pooled matrix, their distances and diagnostics`, es: `${short.es}: los generadores de la matriz agrupada, sus distancias y diagnósticos` }}
-            lane={REPLAY}
-            provenance={prov}
-            dataKey={stateKey}
-            note={{
-              en: `${possessive(short.en)} transition page has no default category: neither the pooled matrix nor any of its generators gives a PD, and no PD series is drawn. The table gives each generator's distance to the pooled matrix: ${methods.en}. ${l1Note.en} Then Israel, Rosenthal and Wei's diagnostics of P, each with its theorem. ${esma.en} ${src.en}`,
-              es: `La página de transiciones de ${short.es} no tiene categoría de incumplimiento: ni la matriz agrupada ni sus generadores dan una PD, y no se dibuja ninguna serie de PD. La tabla da la distancia de cada generador a la matriz agrupada: ${methods.es}. ${l1Note.es} Luego los diagnósticos de P de Israel, Rosenthal y Wei, cada uno con su teorema. ${esma.es} ${src.es}`,
-            }}
-          >
-            <div className="ct-scroll">
-              {verdictLine}
-              <DistanceTable v={v} grade={g} />
-              {emText}
-              <EmbeddingList o={o} />
-            </div>
-          </PlotCard>
-        </div>
-      </div>
+      <ViewsRow>
+        <PlotCard
+          fill
+          title={{ en: `${short.en}: the generators of the pooled matrix, their distances and diagnostics`, es: `${short.es}: los generadores de la matriz agrupada, sus distancias y diagnósticos` }}
+          lane={REPLAY}
+          provenance={prov}
+          dataKey={stateKey}
+          note={{
+            en: `${possessive(short.en)} transition page has no default category: neither the pooled matrix nor any of its generators gives a PD, and no PD series is drawn. The table gives each generator's distance to the pooled matrix: ${methods.en}. ${l1Note.en} Then Israel, Rosenthal and Wei's diagnostics of P, each with its theorem. ${esma.en} ${src.en}`,
+            es: `La página de transiciones de ${short.es} no tiene categoría de incumplimiento: ni la matriz agrupada ni sus generadores dan una PD, y no se dibuja ninguna serie de PD. La tabla da la distancia de cada generador a la matriz agrupada: ${methods.es}. ${l1Note.es} Luego los diagnósticos de P de Israel, Rosenthal y Wei, cada uno con su teorema. ${esma.es} ${src.es}`,
+          }}
+        >
+          <div className="ct-scroll">
+            {verdictLine}
+            <DistanceTable v={v} grade={g} />
+            {emText}
+            <EmbeddingList o={o} />
+          </div>
+        </PlotCard>
+      </ViewsRow>
     );
   }
 
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={{ en: `${short.en}: one-year PD by grade, the pooled matrix and its generators`, es: `${short.es}: PD a un año por grado, la matriz agrupada y sus generadores` }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{
-            en: `One-year PD by grade under "${d4Label.en}", in percent on a log axis: the pooled matrix's default column (points) and that of exp(Q) for each generator of the matrix: ${methods.en}.${zero.en ? ` ${zero.en}` : ''}${missingText.en}${empty.en ? ` ${empty.en}` : ''} The marked grade is the rail's. ${esma.en} ${src.en}`,
-            es: `PD a un año por grado con "${d4Label.es}", en porcentaje sobre un eje logarítmico: la columna de incumplimiento de la matriz agrupada (puntos) y la de exp(Q) de cada generador de la matriz: ${methods.es}.${zero.es ? ` ${zero.es}` : ''}${missingText.es}${empty.es ? ` ${empty.es}` : ''} El grado marcado es el del panel. ${esma.es} ${src.es}`,
-          }}
-        >
-          <UPlotChart
-            height="fill"
-            x={{ values: chart.x, label: GRADE_AXIS, format: { decimals: 0 } }}
-            y={{ label: { en: 'PD, D4 (%, log scale)', es: 'PD, D4 (%, escala log.)' }, log: true, format: { percent: true, digits: 3 }, ...(chart.range ? { range: chart.range } : {}) }}
-            series={chart.series}
-            marks={chart.marks}
-          />
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-2">
-        <PlotCard
-          fill
-          title={{ en: 'Diagnostics and distances', es: 'Diagnósticos y distancias' }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{
-            en: `Israel, Rosenthal and Wei's (2001) diagnostics of the pooled one-year matrix P (withdrawals removed), each with its theorem; each generator's L1 distance to P (the sum of the absolute entries of P - exp(Q)) and its PD under "${d4Label.en}", in percent. ${esma.en} ${src.en}`,
-            es: `Los diagnósticos de Israel, Rosenthal y Wei (2001) de la matriz anual agrupada P (sin los retiros), cada uno con su teorema; la distancia L1 de cada generador a P (la suma de los valores absolutos de las entradas de P - exp(Q)) y su PD con "${d4Label.es}", en porcentaje. ${esma.es} ${src.es}`,
-          }}
-        >
-          {/* the verdict and the diagnostics behind it first, the distances after them: at 1280 x 800 the distances
-              and EM's fit above pushed all four diagnostics below the card's fold (measured, 2026-10-07); the verdict
-              names the closest and the farthest generator, so the distances' headline stays in view. Fitch's empty
-              default columns are said under the distances, whose PDs they lower */}
-          <div className="ct-scroll">
-            {verdictLine}
-            <EmbeddingList o={o} />
-            <DistanceTable v={v} grade={g} />
-            {emText}
-            {empty.en && (
-              <p className="ct-note" data-empty="">
-                {pick(empty, lang)}
-              </p>
-            )}
-          </div>
-        </PlotCard>
-      </div>
-    </div>
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard
+        fill
+        title={{ en: `${short.en}: one-year PD by grade, the pooled matrix and its generators`, es: `${short.es}: PD a un año por grado, la matriz agrupada y sus generadores` }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: `One-year PD by grade under "${d4Label.en}", in percent on a log axis: the pooled matrix's default column (points) and that of exp(Q) for each generator of the matrix: ${methods.en}.${zero.en ? ` ${zero.en}` : ''}${missingText.en}${empty.en ? ` ${empty.en}` : ''} The marked grade is the rail's. ${esma.en} ${src.en}`,
+          es: `PD a un año por grado con "${d4Label.es}", en porcentaje sobre un eje logarítmico: la columna de incumplimiento de la matriz agrupada (puntos) y la de exp(Q) de cada generador de la matriz: ${methods.es}.${zero.es ? ` ${zero.es}` : ''}${missingText.es}${empty.es ? ` ${empty.es}` : ''} El grado marcado es el del panel. ${esma.es} ${src.es}`,
+        }}
+      >
+        <UPlotChart
+          height="fill"
+          x={{ values: chart.x, label: GRADE_AXIS, format: { decimals: 0 } }}
+          y={{ label: { en: 'PD, D4 (%, log scale)', es: 'PD, D4 (%, escala log.)' }, log: true, format: { percent: true, digits: 3 }, ...(chart.range ? { range: chart.range } : {}) }}
+          series={chart.series}
+          marks={chart.marks}
+        />
+      </PlotCard>
+      <PlotCard
+        fill
+        title={{ en: 'Diagnostics and distances', es: 'Diagnósticos y distancias' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: `Israel, Rosenthal and Wei's (2001) diagnostics of the pooled one-year matrix P (withdrawals removed), each with its theorem; each generator's L1 distance to P (the sum of the absolute entries of P - exp(Q)) and its PD under "${d4Label.en}", in percent. ${esma.en} ${src.en}`,
+          es: `Los diagnósticos de Israel, Rosenthal y Wei (2001) de la matriz anual agrupada P (sin los retiros), cada uno con su teorema; la distancia L1 de cada generador a P (la suma de los valores absolutos de las entradas de P - exp(Q)) y su PD con "${d4Label.es}", en porcentaje. ${esma.es} ${src.es}`,
+        }}
+      >
+        {/* the verdict and the diagnostics behind it first, the distances after them: at 1280 x 800 the distances
+            and EM's fit above pushed all four diagnostics below the card's fold (measured, 2026-10-07); the verdict
+            names the closest and the farthest generator, so the distances' headline stays in view. Fitch's empty
+            default columns are said under the distances, whose PDs they lower */}
+        <div className="ct-scroll">
+          {verdictLine}
+          <EmbeddingList o={o} />
+          <DistanceTable v={v} grade={g} />
+          {emText}
+          {empty.en && (
+            <p className="ct-note" data-empty="">
+              {pick(empty, lang)}
+            </p>
+          )}
+        </div>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -936,21 +926,19 @@ function NotAgency({ sel }: { sel: C04Sel }) {
   const stateKey = useWorkbenchState()?.stateKey;
   const v = sel.data.variant as VariantArtifact<unknown>;
   return (
-    <div className="caos-views-row" data-views="1">
-      <div className="ct-col">
-        <PlotCard
-          title={{ en: 'An agency view', es: 'Una vista de agencia' }}
-          lane={REPLAY}
-          provenance={provenanceOf(v.provenance.truth_status)}
-          dataKey={stateKey}
-          note={{
-            en: "This view draws an agency variant's CEREP tables (S&P, Moody's or Fitch); the variant open is a generator family or the papers, which have none.",
-            es: "Esta vista dibuja las tablas de CEREP de una variante de agencia (S&P, Moody's o Fitch); la variante abierta es una familia de generadores o los artículos, que no las tienen.",
-          }}
-        >
-          <p className="ct-note">{pick({ en: "Pick S&P, Moody's or Fitch among the variants.", es: "Elija S&P, Moody's o Fitch entre las variantes." }, lang)}</p>
-        </PlotCard>
-      </div>
-    </div>
+    <ViewsRow>
+      <PlotCard
+        title={{ en: 'An agency view', es: 'Una vista de agencia' }}
+        lane={REPLAY}
+        provenance={provenanceOf(v.provenance.truth_status)}
+        dataKey={stateKey}
+        note={{
+          en: "This view draws an agency variant's CEREP tables (S&P, Moody's or Fitch); the variant open is a generator family or the papers, which have none.",
+          es: "Esta vista dibuja las tablas de CEREP de una variante de agencia (S&P, Moody's o Fitch); la variante abierta es una familia de generadores o los artículos, que no las tienen.",
+        }}
+      >
+        <p className="ct-note">{pick({ en: "Pick S&P, Moody's or Fitch among the variants.", es: "Elija S&P, Moody's o Fitch entre las variantes." }, lang)}</p>
+      </PlotCard>
+    </ViewsRow>
   );
 }

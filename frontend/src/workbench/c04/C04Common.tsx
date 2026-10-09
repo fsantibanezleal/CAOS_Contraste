@@ -2,7 +2,7 @@
 // shows a value that moves with its controls). Replayed numbers are read from the committed artifacts; live ones come
 // from engine/transitions.ts through selection.ts's hooks. Every PD names its definition, every CEREP-derived card
 // names the agency's EU entity and carries ESMA's attribution, and no chart is drawn without a value to draw.
-import { PlotCard, Readout, Verdict, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type Lane, type Provenance, type ReadoutItem, type ShellColorToken, type Tone } from '@fasl-work/caos-app-shell';
+import { PlotCard, Readout, Verdict, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type Lane, type Provenance, type ReadoutItem, type ShellColorToken, type Tone } from '@fasl-work/caos-app-shell';
 import { UPlotChart, type ChartSeries, type UPlotChartProps } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import { C04WriteUp } from '../../content/cases/C04';
@@ -46,6 +46,7 @@ import type {
   VariantArtifact,
 } from '../../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT } from '../../lib/policy';
+import { useFindingsShares, useMedia } from '../../lib/useMedia';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import {
@@ -625,6 +626,7 @@ export function findingsDrawing(v: VariantArtifact<unknown>, ev: ReturnType<type
 export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
+  const shares = useFindingsShares();
   const v = sel?.data.variant as VariantArtifact<unknown> | undefined;
   const ev = useMemo(() => (v ? findingsEvidence(v) : null), [v]);
   const grade = sel?.grade ?? 0;
@@ -711,9 +713,9 @@ export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
   );
   if (!drawing) {
     return (
-      <div className="caos-views-row" data-views="1">
-        <div className="ct-col">{table}</div>
-      </div>
+      <ViewsRow>
+        {table}
+      </ViewsRow>
     );
   }
   const chartCard = (
@@ -723,19 +725,19 @@ export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
   );
   if (compact) {
     return (
-      <div className="caos-views-row" data-views="1" data-layout="stacked">
-        <div className="ct-col">
+      <ViewsRow>
+        <>
           {table}
           {chartCard}
-        </div>
-      </div>
+        </>
+      </ViewsRow>
     );
   }
   return (
-    <div className="caos-views-row" data-views="2" data-layout="beside">
-      <div className="ct-col ct-findings-table">{table}</div>
-      <div className="ct-col ct-findings-chart">{chartCard}</div>
-    </div>
+    <ViewsRow shares={shares}>
+      {table}
+      {chartCard}
+    </ViewsRow>
   );
 }
 
@@ -834,6 +836,7 @@ export function agenciesNote(agencies: AgencyVariant[], short: (id: string) => B
 function VariantsBody({ sel, variants, onPick }: { sel: C04Sel; variants: VariantArtifact<unknown>[]; onPick: (id: string) => void }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
+  const tall = useMedia('(min-height: 1100px)', true);
   const m = sel.data.manifest;
   const { agencies, families, published } = kindsOf(variants);
   const current = (sel.data.variant as VariantArtifact<unknown>).variant_id;
@@ -975,10 +978,10 @@ function VariantsBody({ sel, variants, onPick }: { sel: C04Sel; variants: Varian
         <div className="ct-share-3">{agenciesCard}</div>
         {publishedCard && <div className="ct-share-2">{publishedCard}</div>}
       </div>
-      <div className="caos-views-row" data-views={chartCard ? '2' : '1'}>
-        {chartCard && <div className="ct-col ct-share-3 ct-tall-only">{chartCard}</div>}
-        <div className="ct-col ct-share-2">{familiesCard}</div>
-      </div>
+      <ViewsRow shares={chartCard && tall ? [3, 2] : undefined}>
+        {tall && chartCard}
+        {familiesCard}
+      </ViewsRow>
     </>
   );
 }

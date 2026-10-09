@@ -1,7 +1,7 @@
 // C05's calibration variants (sp-2010, sp-2011): the S&P rating system of Tasche (2013), its 2009 curve carried to the
 // forecast year by every approach of the paper. Replayed numbers are riskvalidation's, from the artifact; the live
 // curve and capital are the ports in engine/credit.ts at the rail's approach, forecast PD, regime and LGD.
-import { PlotCard, formatNumber, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
+import { PlotCard, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import { irbCapital } from '../../engine/credit';
@@ -47,61 +47,57 @@ export function CurvesView({ sel }: { sel: C05Sel | null }) {
     : [];
   const prov = provenanceOf(v.provenance.truth_status);
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={{ en: `PD curves for ${o.year}, from the 2009 rating system`, es: `Curvas de PD para ${o.year}, desde el sistema de 2009` }}
-          lane={LIVE}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{
-            en: `Log scale. The ${o.year} default rates (dots; ${o.default_rate1.filter((d) => d === 0).length} grades without a default cannot be drawn), the four case 1 approaches at the observed PD, and the live curve at the rail's forecast PD.`,
-            es: `Escala logarítmica. Las tasas de ${o.year} (puntos; ${o.default_rate1.filter((d) => d === 0).length} grados sin incumplimientos no se pueden dibujar), los cuatro enfoques del caso 1 a la PD observada, y la curva en vivo a la PD pronosticada del panel.`,
-          }}
-        >
-          <UPlotChart
-            height="fill"
-            x={{ values: chart.x, label: GRADE_AXIS, format: { decimals: 0 } }}
-            y={{ label: { en: 'PD (log scale)', es: 'PD (escala log.)' }, log: true, format: { percent: true, digits: 2 } }}
-            series={[...chart.series, ...liveSeries]}
-          />
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-2">
-        <PlotCard
-          fill
-          title={{ en: 'Grade by grade', es: 'Grado a grado' }}
-          lane={LIVE}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{ en: 'The live column follows the rail; the 2009 curve is replayed. The chart beside draws every case 1 approach grade by grade.', es: 'La columna en vivo sigue al panel; la curva 2009 se reproduce. El gráfico al lado dibuja cada enfoque del caso 1 grado a grado.' }}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table" data-table="curves">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Grade', es: 'Grado' }, lang)}</th>
-                  <th>{pick({ en: `Observed ${o.year}`, es: `Observado ${o.year}` }, lang)}</th>
-                  <th>{pick({ en: 'Live', es: 'En vivo' }, lang)}</th>
-                  <th className="ct-wide-only">{pick({ en: '2009 curve', es: 'Curva 2009' }, lang)}</th>
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard
+        fill
+        title={{ en: `PD curves for ${o.year}, from the 2009 rating system`, es: `Curvas de PD para ${o.year}, desde el sistema de 2009` }}
+        lane={LIVE}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: `Log scale. The ${o.year} default rates (dots; ${o.default_rate1.filter((d) => d === 0).length} grades without a default cannot be drawn), the four case 1 approaches at the observed PD, and the live curve at the rail's forecast PD.`,
+          es: `Escala logarítmica. Las tasas de ${o.year} (puntos; ${o.default_rate1.filter((d) => d === 0).length} grados sin incumplimientos no se pueden dibujar), los cuatro enfoques del caso 1 a la PD observada, y la curva en vivo a la PD pronosticada del panel.`,
+        }}
+      >
+        <UPlotChart
+          height="fill"
+          x={{ values: chart.x, label: GRADE_AXIS, format: { decimals: 0 } }}
+          y={{ label: { en: 'PD (log scale)', es: 'PD (escala log.)' }, log: true, format: { percent: true, digits: 2 } }}
+          series={[...chart.series, ...liveSeries]}
+        />
+      </PlotCard>
+      <PlotCard
+        fill
+        title={{ en: 'Grade by grade', es: 'Grado a grado' }}
+        lane={LIVE}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{ en: 'The live column follows the rail; the 2009 curve is replayed. The chart beside draws every case 1 approach grade by grade.', es: 'La columna en vivo sigue al panel; la curva 2009 se reproduce. El gráfico al lado dibuja cada enfoque del caso 1 grado a grado.' }}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table" data-table="curves">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Grade', es: 'Grado' }, lang)}</th>
+                <th>{pick({ en: `Observed ${o.year}`, es: `Observado ${o.year}` }, lang)}</th>
+                <th>{pick({ en: 'Live', es: 'En vivo' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: '2009 curve', es: 'Curva 2009' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {o.grades.map((g, i) => (
+                <tr key={g}>
+                  <td className="ct-text">{g}</td>
+                  <td>{pct(lang, o.default_rate1[i], 2)}</td>
+                  <td>{live.curve.length ? pct(lang, live.curve[i]) : '-'}</td>
+                  <td className="ct-wide-only">{pct(lang, o.qmm0.curve[i])}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {o.grades.map((g, i) => (
-                  <tr key={g}>
-                    <td className="ct-text">{g}</td>
-                    <td>{pct(lang, o.default_rate1[i], 2)}</td>
-                    <td>{live.curve.length ? pct(lang, live.curve[i]) : '-'}</td>
-                    <td className="ct-wide-only">{pct(lang, o.qmm0.curve[i])}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-    </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -115,66 +111,62 @@ export function ProfilesView({ sel }: { sel: C05Sel | null }) {
   const x = o.grades.map((_, i) => i + 1);
   const prov = provenanceOf(v.provenance.truth_status);
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={{ en: `Rating profiles, 2009 and ${o.year}`, es: `Perfiles de calificación, 2009 y ${o.year}` }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{ en: 'The share of obligors in each grade at the start of each year. A calibration needs to know which of these moves.', es: 'La fracción de deudores en cada grado al inicio de cada año. Una calibración necesita saber cuál de estos se mueve.' }}
-        >
-          <UPlotChart
-            height="fill"
-            x={{ values: x, label: GRADE_AXIS, format: { decimals: 0 } }}
-            y={{ label: { en: 'Share of obligors', es: 'Fracción de deudores' }, format: { percent: true, decimals: 0 } }}
-            series={[
-              { label: { en: '2009 profile', es: 'Perfil 2009' }, values: o.profile0, color: '--color-fg-subtle', width: 1.6, dash: [4, 4] },
-              { label: { en: `${o.year} profile`, es: `Perfil ${o.year}` }, values: o.profile1, color: '--color-accent', width: 2.2 },
-            ]}
-          />
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-2">
-        <PlotCard fill title={{ en: 'The profiles and the PD', es: 'Los perfiles y la PD' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-          <div className="ct-scroll">
-            <table className="caos-table" data-table="profiles">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Grade', es: 'Grado' }, lang)}</th>
-                  <th>2009</th>
-                  <th>{o.year}</th>
-                  <th className="ct-wide-only">{pick({ en: 'Change', es: 'Cambio' }, lang)}</th>
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard
+        fill
+        title={{ en: `Rating profiles, 2009 and ${o.year}`, es: `Perfiles de calificación, 2009 y ${o.year}` }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{ en: 'The share of obligors in each grade at the start of each year. A calibration needs to know which of these moves.', es: 'La fracción de deudores en cada grado al inicio de cada año. Una calibración necesita saber cuál de estos se mueve.' }}
+      >
+        <UPlotChart
+          height="fill"
+          x={{ values: x, label: GRADE_AXIS, format: { decimals: 0 } }}
+          y={{ label: { en: 'Share of obligors', es: 'Fracción de deudores' }, format: { percent: true, decimals: 0 } }}
+          series={[
+            { label: { en: '2009 profile', es: 'Perfil 2009' }, values: o.profile0, color: '--color-fg-subtle', width: 1.6, dash: [4, 4] },
+            { label: { en: `${o.year} profile`, es: `Perfil ${o.year}` }, values: o.profile1, color: '--color-accent', width: 2.2 },
+          ]}
+        />
+      </PlotCard>
+      <PlotCard fill title={{ en: 'The profiles and the PD', es: 'Los perfiles y la PD' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
+        <div className="ct-scroll">
+          <table className="caos-table" data-table="profiles">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Grade', es: 'Grado' }, lang)}</th>
+                <th>2009</th>
+                <th>{o.year}</th>
+                <th className="ct-wide-only">{pick({ en: 'Change', es: 'Cambio' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {o.grades.map((g, i) => (
+                <tr key={g}>
+                  <td className="ct-text">{g}</td>
+                  <td>{pct(lang, o.profile0[i], 2)}</td>
+                  <td>{pct(lang, o.profile1[i], 2)}</td>
+                  <td className="ct-wide-only">{formatNumber((o.profile1[i] - o.profile0[i]) * 100, lang, { decimals: 2 })}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {o.grades.map((g, i) => (
-                  <tr key={g}>
-                    <td className="ct-text">{g}</td>
-                    <td>{pct(lang, o.profile0[i], 2)}</td>
-                    <td>{pct(lang, o.profile1[i], 2)}</td>
-                    <td className="ct-wide-only">{formatNumber((o.profile1[i] - o.profile0[i]) * 100, lang, { decimals: 2 })}</td>
-                  </tr>
-                ))}
-                <tr className="ct-current">
-                  <td className="ct-text">{pick({ en: 'Unconditional PD', es: 'PD incondicional' }, lang)}</td>
-                  <td>{pct(lang, o.pd0, 3)}</td>
-                  <td>{pct(lang, o.pd1, 3)}</td>
-                  <td className="ct-wide-only" />
-                </tr>
-                <tr>
-                  <td className="ct-text">{pick({ en: 'Accuracy ratio', es: 'Razón de precisión' }, lang)}</td>
-                  <td>{pct(lang, o.ar0, 1)}</td>
-                  <td>{pct(lang, o.ar1, 1)}</td>
-                  <td className="ct-wide-only" />
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-    </div>
+              ))}
+              <tr className="ct-current">
+                <td className="ct-text">{pick({ en: 'Unconditional PD', es: 'PD incondicional' }, lang)}</td>
+                <td>{pct(lang, o.pd0, 3)}</td>
+                <td>{pct(lang, o.pd1, 3)}</td>
+                <td className="ct-wide-only" />
+              </tr>
+              <tr>
+                <td className="ct-text">{pick({ en: 'Accuracy ratio', es: 'Razón de precisión' }, lang)}</td>
+                <td>{pct(lang, o.ar0, 1)}</td>
+                <td>{pct(lang, o.ar1, 1)}</td>
+                <td className="ct-wide-only" />
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -199,50 +191,48 @@ export function ApproachesView({ sel }: { sel: C05Sel | null }) {
     return '';
   };
   return (
-    <div className="caos-views-row" data-views="1">
-      <div className="ct-col">
-        <PlotCard
-          fill
-          title={{ en: `Every calibration approach of Tasche (2013) for ${o.year}`, es: `Cada enfoque de calibración de Tasche (2013) para ${o.year}` }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{
-            en: `Case 1 knows the ${o.year} profile and PD (${pct(lang, o.pd1, 2)}, the observed one, as the paper does); case 2 only the PD; case 3 only the profile, so it forecasts the PD. The default-profile test is the paper's chi-square of the implied default profile, Monte Carlo p-value.`,
-            es: `El caso 1 conoce el perfil y la PD de ${o.year} (${pct(lang, o.pd1, 2)}, la observada, como el artículo); el caso 2 solo la PD; el caso 3 solo el perfil, así que pronostica la PD. La prueba del perfil es el chi-cuadrado del perfil de incumplimiento implícito del artículo, con valor p de Monte Carlo.`,
-          }}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table" data-table="approaches">
-              <thead>
-                <tr>
-                  <th>{pick({ en: 'Case', es: 'Caso' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Approach', es: 'Enfoque' }, lang)}</th>
-                  <th>{pick({ en: 'Forecast PD', es: 'PD pronosticada' }, lang)}</th>
-                  <th className="ct-wide-only">{pick({ en: 'Accuracy ratio', es: 'Razón de precisión' }, lang)}</th>
-                  <th className="ct-wide-only ct-text">{pick({ en: 'Constants', es: 'Constantes' }, lang)}</th>
-                  <th>{pick({ en: 'Default profile, p', es: 'Perfil de incumpl., p' }, lang)}</th>
-                  <th className="ct-room-only">{pick({ en: 'Average risk weight', es: 'Ponderador medio' }, lang)}</th>
+    <ViewsRow>
+      <PlotCard
+        fill
+        title={{ en: `Every calibration approach of Tasche (2013) for ${o.year}`, es: `Cada enfoque de calibración de Tasche (2013) para ${o.year}` }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: `Case 1 knows the ${o.year} profile and PD (${pct(lang, o.pd1, 2)}, the observed one, as the paper does); case 2 only the PD; case 3 only the profile, so it forecasts the PD. The default-profile test is the paper's chi-square of the implied default profile, Monte Carlo p-value.`,
+          es: `El caso 1 conoce el perfil y la PD de ${o.year} (${pct(lang, o.pd1, 2)}, la observada, como el artículo); el caso 2 solo la PD; el caso 3 solo el perfil, así que pronostica la PD. La prueba del perfil es el chi-cuadrado del perfil de incumplimiento implícito del artículo, con valor p de Monte Carlo.`,
+        }}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table" data-table="approaches">
+            <thead>
+              <tr>
+                <th>{pick({ en: 'Case', es: 'Caso' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Approach', es: 'Enfoque' }, lang)}</th>
+                <th>{pick({ en: 'Forecast PD', es: 'PD pronosticada' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Accuracy ratio', es: 'Razón de precisión' }, lang)}</th>
+                <th className="ct-wide-only ct-text">{pick({ en: 'Constants', es: 'Constantes' }, lang)}</th>
+                <th>{pick({ en: 'Default profile, p', es: 'Perfil de incumpl., p' }, lang)}</th>
+                <th className="ct-room-only">{pick({ en: 'Average risk weight', es: 'Ponderador medio' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {v.model.map((m) => (
+                <tr key={m.id} data-approach={m.id} className={m.id === sel.approach ? 'ct-current' : undefined} title={pick(m.title, lang)}>
+                  <td>{m.rung.replace('case-', '')}</td>
+                  <td className="ct-text">{pick(m.title, lang)}</td>
+                  <td>{pct(lang, o.approaches[m.id].pd, 2)}</td>
+                  <td className="ct-wide-only">{pct(lang, o.approaches[m.id].accuracy_ratio, 1)}</td>
+                  <td className="ct-wide-only ct-text">{constant(m.id)}</td>
+                  <LightCell row={defaultProfileRow(v, m.id)} alphas={sel.alphas} />
+                  <td className="ct-room-only">{pct(lang, v.impact[`rw_${m.id}`]?.value, 1)}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {v.model.map((m) => (
-                  <tr key={m.id} data-approach={m.id} className={m.id === sel.approach ? 'ct-current' : undefined} title={pick(m.title, lang)}>
-                    <td>{m.rung.replace('case-', '')}</td>
-                    <td className="ct-text">{pick(m.title, lang)}</td>
-                    <td>{pct(lang, o.approaches[m.id].pd, 2)}</td>
-                    <td className="ct-wide-only">{pct(lang, o.approaches[m.id].accuracy_ratio, 1)}</td>
-                    <td className="ct-wide-only ct-text">{constant(m.id)}</td>
-                    <LightCell row={defaultProfileRow(v, m.id)} alphas={sel.alphas} />
-                    <td className="ct-room-only">{pct(lang, v.impact[`rw_${m.id}`]?.value, 1)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-    </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -264,66 +254,62 @@ export function DefaultProfileView({ sel }: { sel: C05Sel | null }) {
   const prov = provenanceOf(v.provenance.truth_status);
   const rows = v.model.map((m) => ({ m, row: defaultProfileRow(v, m.id) }));
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={{ en: 'Default-profile test, every approach', es: 'Prueba del perfil de incumplimiento, cada enfoque' }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{
-            en: 'Pearson statistic of the implied default profile against the defaults by grade, given their number; the p-value is a Monte Carlo one (100,000 multinomial samples, seed 2013), the chi-square approximation beside it for reference. The light follows the rail\'s policy.',
-            es: 'Estadístico de Pearson del perfil de incumplimiento implícito contra los incumplimientos por grado, dado su número; el valor p es de Monte Carlo (100.000 muestras multinomiales, semilla 2013), con la aproximación chi-cuadrado al lado como referencia. La luz sigue la política del panel.',
-          }}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table" data-table="default-profile">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Approach', es: 'Enfoque' }, lang)}</th>
-                  <th>T</th>
-                  <th>{pick({ en: 'p (Monte Carlo)', es: 'p (Monte Carlo)' }, lang)}</th>
-                  <th className="ct-wide-only">{pick({ en: 'Standard error', es: 'Error estándar' }, lang)}</th>
-                  <th className="ct-room-only">{pick({ en: 'p (chi-square)', es: 'p (chi-cuadrado)' }, lang)}</th>
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard
+        fill
+        title={{ en: 'Default-profile test, every approach', es: 'Prueba del perfil de incumplimiento, cada enfoque' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: 'Pearson statistic of the implied default profile against the defaults by grade, given their number; the p-value is a Monte Carlo one (100,000 multinomial samples, seed 2013), the chi-square approximation beside it for reference. The light follows the rail\'s policy.',
+          es: 'Estadístico de Pearson del perfil de incumplimiento implícito contra los incumplimientos por grado, dado su número; el valor p es de Monte Carlo (100.000 muestras multinomiales, semilla 2013), con la aproximación chi-cuadrado al lado como referencia. La luz sigue la política del panel.',
+        }}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table" data-table="default-profile">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Approach', es: 'Enfoque' }, lang)}</th>
+                <th>T</th>
+                <th>{pick({ en: 'p (Monte Carlo)', es: 'p (Monte Carlo)' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Standard error', es: 'Error estándar' }, lang)}</th>
+                <th className="ct-room-only">{pick({ en: 'p (chi-square)', es: 'p (chi-cuadrado)' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(({ m, row }) => (
+                <tr key={m.id} className={m.id === sel.approach ? 'ct-current' : undefined}>
+                  <td className="ct-text">{pick(m.short_title, lang)}</td>
+                  <td>{formatNumber(row?.statistic, lang, { decimals: 2 })}</td>
+                  <LightCell row={row} alphas={sel.alphas} />
+                  <td className="ct-wide-only">{formatNumber(row?.extras?.mc_standard_error as number, lang, { digits: 2 })}</td>
+                  <td className="ct-room-only">{formatNumber(row?.extras?.p_value_asymptotic as number, lang, { digits: 2 })}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {rows.map(({ m, row }) => (
-                  <tr key={m.id} className={m.id === sel.approach ? 'ct-current' : undefined}>
-                    <td className="ct-text">{pick(m.short_title, lang)}</td>
-                    <td>{formatNumber(row?.statistic, lang, { decimals: 2 })}</td>
-                    <LightCell row={row} alphas={sel.alphas} />
-                    <td className="ct-wide-only">{formatNumber(row?.extras?.mc_standard_error as number, lang, { digits: 2 })}</td>
-                    <td className="ct-room-only">{formatNumber(row?.extras?.p_value_asymptotic as number, lang, { digits: 2 })}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-2">
-        <PlotCard
-          fill
-          title={{ en: 'Where the defaults fell, and where the curve put them', es: 'Dónde cayeron los incumplimientos y dónde los puso la curva' }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{ en: `The default profile of ${v.outputs.year} against the one the rail's approach implies.`, es: `El perfil de incumplimiento de ${v.outputs.year} contra el que implica el enfoque del panel.` }}
-        >
-          <UPlotChart
-            height="fill"
-            x={{ values: chart.x, label: GRADE_AXIS, format: { decimals: 0 } }}
-            y={{ label: { en: 'Share of the defaults', es: 'Fracción de los incumplimientos' }, format: { percent: true, decimals: 0 } }}
-            series={[
-              { label: { en: 'Observed', es: 'Observado' }, values: chart.observed, color: '--color-fg', mode: 'points' },
-              { label: approachShort(v, sel.approach), values: chart.implied, color: APPROACH_COLOR[sel.approach], width: 2 },
-            ]}
-          />
-        </PlotCard>
-      </div>
-    </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+      <PlotCard
+        fill
+        title={{ en: 'Where the defaults fell, and where the curve put them', es: 'Dónde cayeron los incumplimientos y dónde los puso la curva' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{ en: `The default profile of ${v.outputs.year} against the one the rail's approach implies.`, es: `El perfil de incumplimiento de ${v.outputs.year} contra el que implica el enfoque del panel.` }}
+      >
+        <UPlotChart
+          height="fill"
+          x={{ values: chart.x, label: GRADE_AXIS, format: { decimals: 0 } }}
+          y={{ label: { en: 'Share of the defaults', es: 'Fracción de los incumplimientos' }, format: { percent: true, decimals: 0 } }}
+          series={[
+            { label: { en: 'Observed', es: 'Observado' }, values: chart.observed, color: '--color-fg', mode: 'points' },
+            { label: approachShort(v, sel.approach), values: chart.implied, color: APPROACH_COLOR[sel.approach], width: 2 },
+          ]}
+        />
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -336,46 +322,44 @@ export function GradeTestsView({ sel }: { sel: C05Sel | null }) {
   const o = v.outputs;
   const row = (id: string, g: string) => v.tests.find((t) => t.test_id === 'pd.jeffreys' && t.model_id === id && t.segment === g);
   return (
-    <div className="caos-views-row" data-views="1">
-      <div className="ct-col">
-        <PlotCard
-          fill
-          title={{ en: 'Jeffreys test by grade, every case 1 curve', es: 'Prueba de Jeffreys por grado, cada curva del caso 1' }}
-          lane={REPLAY}
-          provenance={provenanceOf(v.provenance.truth_status)}
-          dataKey={stateKey}
-          note={{
-            en: 'One-sided: a low p-value means more defaults than the curve allows (the PD is underestimated). Grade counts of the derived-only S&P table are not published, only rates and results.',
-            es: 'Unilateral: un valor p bajo significa más incumplimientos de los que permite la curva (la PD está subestimada). Los conteos por grado de la tabla S&P, solo derivados, no se publican; solo tasas y resultados.',
-          }}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table ct-battery" data-table="jeffreys-by-grade">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Grade', es: 'Grado' }, lang)}</th>
-                  <th>{pick({ en: `Observed ${o.year}`, es: `Observado ${o.year}` }, lang)}</th>
+    <ViewsRow>
+      <PlotCard
+        fill
+        title={{ en: 'Jeffreys test by grade, every case 1 curve', es: 'Prueba de Jeffreys por grado, cada curva del caso 1' }}
+        lane={REPLAY}
+        provenance={provenanceOf(v.provenance.truth_status)}
+        dataKey={stateKey}
+        note={{
+          en: 'One-sided: a low p-value means more defaults than the curve allows (the PD is underestimated). Grade counts of the derived-only S&P table are not published, only rates and results.',
+          es: 'Unilateral: un valor p bajo significa más incumplimientos de los que permite la curva (la PD está subestimada). Los conteos por grado de la tabla S&P, solo derivados, no se publican; solo tasas y resultados.',
+        }}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table ct-battery" data-table="jeffreys-by-grade">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Grade', es: 'Grado' }, lang)}</th>
+                <th>{pick({ en: `Observed ${o.year}`, es: `Observado ${o.year}` }, lang)}</th>
+                {CASE1.map((id) => (
+                  <th key={id}>{pick(approachShort(v, id), lang)}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[...o.grades, 'portfolio'].map((g, i) => (
+                <tr key={g}>
+                  <td className="ct-text">{g === 'portfolio' ? pick({ en: 'Portfolio', es: 'Cartera' }, lang) : g}</td>
+                  <td>{pct(lang, g === 'portfolio' ? o.pd1 : o.default_rate1[i], 2)}</td>
                   {CASE1.map((id) => (
-                    <th key={id}>{pick(approachShort(v, id), lang)}</th>
+                    <LightCell key={id} row={row(id, g)} alphas={sel.alphas} />
                   ))}
                 </tr>
-              </thead>
-              <tbody>
-                {[...o.grades, 'portfolio'].map((g, i) => (
-                  <tr key={g}>
-                    <td className="ct-text">{g === 'portfolio' ? pick({ en: 'Portfolio', es: 'Cartera' }, lang) : g}</td>
-                    <td>{pct(lang, g === 'portfolio' ? o.pd1 : o.default_rate1[i], 2)}</td>
-                    {CASE1.map((id) => (
-                      <LightCell key={id} row={row(id, g)} alphas={sel.alphas} />
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-    </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -390,90 +374,86 @@ export function GoldenSpView({ sel }: { sel: C05Sel | null }) {
   const prov = provenanceOf(v.provenance.truth_status);
   const f4 = (x: number) => formatNumber(x, lang, { decimals: 4 });
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={{ en: 'The paper\'s tables, recomputed from its counts', es: 'Las tablas del artículo, recalculadas desde sus conteos' }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{
-            en: `Table 5 (the 2009 QMM curve, three decimals) and Table 7 (${pick(approachShort(v, sel.approach), lang)}, ${v.outputs.year}, four decimals), in percent. Gaps of one unit come from the paper's own solver, measured on its Table 9.`,
-            es: `Tabla 5 (la curva QMM 2009, tres decimales) y Tabla 7 (${pick(approachShort(v, sel.approach), lang)}, ${v.outputs.year}, cuatro decimales), en porcentaje. Las diferencias de una unidad vienen del propio solucionador del artículo, medido en su Tabla 9.`,
-          }}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table" data-table="golden-sp">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Grade', es: 'Grado' }, lang)}</th>
-                  <th>{pick({ en: 'Table 5', es: 'Tabla 5' }, lang)}</th>
-                  <th>{pick({ en: 'Recomputed', es: 'Recalculado' }, lang)}</th>
-                  <th>{pick({ en: 'Table 7', es: 'Tabla 7' }, lang)}</th>
-                  <th>{pick({ en: 'Recomputed', es: 'Recalculado' }, lang)}</th>
-                  <th className="ct-wide-only">{pick({ en: 'Gap', es: 'Diferencia' }, lang)}</th>
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard
+        fill
+        title={{ en: 'The paper\'s tables, recomputed from its counts', es: 'Las tablas del artículo, recalculadas desde sus conteos' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: `Table 5 (the 2009 QMM curve, three decimals) and Table 7 (${pick(approachShort(v, sel.approach), lang)}, ${v.outputs.year}, four decimals), in percent. Gaps of one unit come from the paper's own solver, measured on its Table 9.`,
+          es: `Tabla 5 (la curva QMM 2009, tres decimales) y Tabla 7 (${pick(approachShort(v, sel.approach), lang)}, ${v.outputs.year}, cuatro decimales), en porcentaje. Las diferencias de una unidad vienen del propio solucionador del artículo, medido en su Tabla 9.`,
+        }}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table" data-table="golden-sp">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Grade', es: 'Grado' }, lang)}</th>
+                <th>{pick({ en: 'Table 5', es: 'Tabla 5' }, lang)}</th>
+                <th>{pick({ en: 'Recomputed', es: 'Recalculado' }, lang)}</th>
+                <th>{pick({ en: 'Table 7', es: 'Tabla 7' }, lang)}</th>
+                <th>{pick({ en: 'Recomputed', es: 'Recalculado' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Gap', es: 'Diferencia' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {g.table5.map((c, i) => (
+                <tr key={c.grade}>
+                  <td className="ct-text">{c.grade}</td>
+                  <td>{formatNumber(c.printed, lang, { decimals: 3 })}</td>
+                  <td>{formatNumber(c.ours, lang, { decimals: 3 })}</td>
+                  <td>{f4(t7[i].printed)}</td>
+                  <td>{f4(t7[i].ours)}</td>
+                  <td className="ct-wide-only">{f4(t7[i].gap)}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {g.table5.map((c, i) => (
-                  <tr key={c.grade}>
-                    <td className="ct-text">{c.grade}</td>
-                    <td>{formatNumber(c.printed, lang, { decimals: 3 })}</td>
-                    <td>{formatNumber(c.ours, lang, { decimals: 3 })}</td>
-                    <td>{f4(t7[i].printed)}</td>
-                    <td>{f4(t7[i].ours)}</td>
-                    <td className="ct-wide-only">{f4(t7[i].gap)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-2">
-        <PlotCard fill title={{ en: 'p-values and the case 3 forecasts', es: 'Valores p y los pronósticos del caso 3' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-          <div className="ct-scroll">
-            <table className="caos-table" data-table="golden-p">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Table 7 p-value', es: 'Valor p, Tabla 7' }, lang)}</th>
-                  <th>{pick({ en: 'Printed', es: 'Impreso' }, lang)}</th>
-                  <th>{pick({ en: 'Here', es: 'Aquí' }, lang)}</th>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+      <PlotCard fill title={{ en: 'p-values and the case 3 forecasts', es: 'Valores p y los pronósticos del caso 3' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
+        <div className="ct-scroll">
+          <table className="caos-table" data-table="golden-p">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Table 7 p-value', es: 'Valor p, Tabla 7' }, lang)}</th>
+                <th>{pick({ en: 'Printed', es: 'Impreso' }, lang)}</th>
+                <th>{pick({ en: 'Here', es: 'Aquí' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {g.table7_p_values.map((r) => (
+                <tr key={r.approach}>
+                  <td className="ct-text">{pick(approachShort(v, r.approach), lang)}</td>
+                  <td>{formatNumber(r.printed_pct, lang, { decimals: 1 })}%</td>
+                  <td>{formatNumber(r.ours_pct, lang, { decimals: 2 })}%</td>
                 </tr>
-              </thead>
-              <tbody>
-                {g.table7_p_values.map((r) => (
-                  <tr key={r.approach}>
-                    <td className="ct-text">{pick(approachShort(v, r.approach), lang)}</td>
-                    <td>{formatNumber(r.printed_pct, lang, { decimals: 1 })}%</td>
-                    <td>{formatNumber(r.ours_pct, lang, { decimals: 2 })}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <table className="caos-table" data-table="golden-case3">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Table 8 forecast PD', es: 'PD pronosticada, Tabla 8' }, lang)}</th>
-                  <th>{pick({ en: 'Printed', es: 'Impreso' }, lang)}</th>
-                  <th>{pick({ en: 'Here', es: 'Aquí' }, lang)}</th>
+              ))}
+            </tbody>
+          </table>
+          <table className="caos-table" data-table="golden-case3">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Table 8 forecast PD', es: 'PD pronosticada, Tabla 8' }, lang)}</th>
+                <th>{pick({ en: 'Printed', es: 'Impreso' }, lang)}</th>
+                <th>{pick({ en: 'Here', es: 'Aquí' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {g.table8.map((r) => (
+                <tr key={r.approach}>
+                  <td className="ct-text">{pick(approachShort(v, r.approach), lang)}</td>
+                  <td>{formatNumber(r.printed_pct, lang, { decimals: 2 })}%</td>
+                  <td>{formatNumber(r.ours_pct, lang, { decimals: 3 })}%</td>
                 </tr>
-              </thead>
-              <tbody>
-                {g.table8.map((r) => (
-                  <tr key={r.approach}>
-                    <td className="ct-text">{pick(approachShort(v, r.approach), lang)}</td>
-                    <td>{formatNumber(r.printed_pct, lang, { decimals: 2 })}%</td>
-                    <td>{formatNumber(r.ours_pct, lang, { decimals: 3 })}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-    </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -495,65 +475,61 @@ export function SpImpactView({ sel }: { sel: C05Sel | null }) {
   const prov = provenanceOf(v.provenance.truth_status);
   const ref = data.rw['A4-slr'];
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-2">
-        <PlotCard
-          fill
-          title={{ en: 'Average risk weight of the forecast portfolio', es: 'Ponderador medio de la cartera pronosticada' }}
-          lane={LIVE}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{
-            en: `IRB corporate function, maturity ${formatNumber(v.outputs.irb.maturity, 'en', { decimals: 1 })} years, one unit of EAD per obligor, the PD floored at the regime's floor; regime and LGD from the rail. Relative to the scaled likelihood ratio, the approach the paper's backtest favours.`,
-            es: `Función IRB corporativa, vencimiento ${formatNumber(v.outputs.irb.maturity, 'es', { decimals: 1 })} años, una unidad de EAD por deudor, la PD con el piso del régimen; régimen y LGD del panel. Relativo a la razón de verosimilitud escalada, el enfoque que favorece el backtest del artículo.`,
-          }}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table" data-table="capital">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Approach', es: 'Enfoque' }, lang)}</th>
-                  <th>{pick({ en: 'Risk weight', es: 'Ponderador' }, lang)}</th>
-                  <th>{pick({ en: 'Against scaled LR', es: 'Contra RV escalada' }, lang)}</th>
+    <ViewsRow shares={[2, 3]}>
+      <PlotCard
+        fill
+        title={{ en: 'Average risk weight of the forecast portfolio', es: 'Ponderador medio de la cartera pronosticada' }}
+        lane={LIVE}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: `IRB corporate function, maturity ${formatNumber(v.outputs.irb.maturity, 'en', { decimals: 1 })} years, one unit of EAD per obligor, the PD floored at the regime's floor; regime and LGD from the rail. Relative to the scaled likelihood ratio, the approach the paper's backtest favours.`,
+          es: `Función IRB corporativa, vencimiento ${formatNumber(v.outputs.irb.maturity, 'es', { decimals: 1 })} años, una unidad de EAD por deudor, la PD con el piso del régimen; régimen y LGD del panel. Relativo a la razón de verosimilitud escalada, el enfoque que favorece el backtest del artículo.`,
+        }}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table" data-table="capital">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Approach', es: 'Enfoque' }, lang)}</th>
+                <th>{pick({ en: 'Risk weight', es: 'Ponderador' }, lang)}</th>
+                <th>{pick({ en: 'Against scaled LR', es: 'Contra RV escalada' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {v.model.map((m) => (
+                <tr key={m.id} className={m.id === sel.approach ? 'ct-current' : undefined}>
+                  <td className="ct-text">{pick(m.short_title, lang)}</td>
+                  <td>{pct(lang, data.rw[m.id], 1)}</td>
+                  <td>{formatNumber((data.rw[m.id] / ref - 1) * 100, lang, { decimals: 1 })}%</td>
                 </tr>
-              </thead>
-              <tbody>
-                {v.model.map((m) => (
-                  <tr key={m.id} className={m.id === sel.approach ? 'ct-current' : undefined}>
-                    <td className="ct-text">{pick(m.short_title, lang)}</td>
-                    <td>{pct(lang, data.rw[m.id], 1)}</td>
-                    <td>{formatNumber((data.rw[m.id] / ref - 1) * 100, lang, { decimals: 1 })}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={{ en: 'Risk weight by grade', es: 'Ponderador por grado' }}
-          lane={LIVE}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{
-            en: `The live curve, the scaled likelihood ratio and the 2009 curve unchanged, at the rail's regime and LGD. The risk weight peaks at a PD near 30% (maturity 2.5 years) and falls beyond it, where the expected loss the function deducts grows faster: the 2009 curve puts CCC-C at ${pct('en', v.outputs.qmm0.curve[v.outputs.qmm0.curve.length - 1], 1)}.`,
-            es: `La curva en vivo, la razón de verosimilitud escalada y la curva 2009 sin cambios, al régimen y la LGD del panel. El ponderador alcanza su máximo con una PD cercana al 30% (vencimiento 2,5 años) y cae más allá, donde la pérdida esperada que la función descuenta crece más rápido: la curva 2009 pone CCC-C en ${pct('es', v.outputs.qmm0.curve[v.outputs.qmm0.curve.length - 1], 1)}.`,
-          }}
-        >
-          <UPlotChart
-            height="fill"
-            x={{ values: data.x, label: GRADE_AXIS, format: { decimals: 0 } }}
-            y={{ label: { en: 'Risk weight (share of EAD)', es: 'Ponderador (fracción de la EAD)' }, format: { percent: true, decimals: 0 } }}
-            series={[
-              { label: { en: '2009 curve, unchanged', es: 'Curva 2009, sin cambios' }, values: data.stale, color: '--color-fg-faint', dash: [4, 4], width: 1.2 },
-              { label: approachShort(v, 'A4-slr'), values: data.slr, color: APPROACH_COLOR['A4-slr'], width: 1.6 },
-              ...(data.cur ? [{ label: { en: `Live: ${approachShort(v, sel.approach).en}`, es: `En vivo: ${approachShort(v, sel.approach).es}` }, values: data.cur, color: APPROACH_COLOR[sel.approach], width: 3, dash: [7, 3] }] : []),
-            ]}
-          />
-        </PlotCard>
-      </div>
-    </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+      <PlotCard
+        fill
+        title={{ en: 'Risk weight by grade', es: 'Ponderador por grado' }}
+        lane={LIVE}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: `The live curve, the scaled likelihood ratio and the 2009 curve unchanged, at the rail's regime and LGD. The risk weight peaks at a PD near 30% (maturity 2.5 years) and falls beyond it, where the expected loss the function deducts grows faster: the 2009 curve puts CCC-C at ${pct('en', v.outputs.qmm0.curve[v.outputs.qmm0.curve.length - 1], 1)}.`,
+          es: `La curva en vivo, la razón de verosimilitud escalada y la curva 2009 sin cambios, al régimen y la LGD del panel. El ponderador alcanza su máximo con una PD cercana al 30% (vencimiento 2,5 años) y cae más allá, donde la pérdida esperada que la función descuenta crece más rápido: la curva 2009 pone CCC-C en ${pct('es', v.outputs.qmm0.curve[v.outputs.qmm0.curve.length - 1], 1)}.`,
+        }}
+      >
+        <UPlotChart
+          height="fill"
+          x={{ values: data.x, label: GRADE_AXIS, format: { decimals: 0 } }}
+          y={{ label: { en: 'Risk weight (share of EAD)', es: 'Ponderador (fracción de la EAD)' }, format: { percent: true, decimals: 0 } }}
+          series={[
+            { label: { en: '2009 curve, unchanged', es: 'Curva 2009, sin cambios' }, values: data.stale, color: '--color-fg-faint', dash: [4, 4], width: 1.2 },
+            { label: approachShort(v, 'A4-slr'), values: data.slr, color: APPROACH_COLOR['A4-slr'], width: 1.6 },
+            ...(data.cur ? [{ label: { en: `Live: ${approachShort(v, sel.approach).en}`, es: `En vivo: ${approachShort(v, sel.approach).es}` }, values: data.cur, color: APPROACH_COLOR[sel.approach], width: 3, dash: [7, 3] }] : []),
+          ]}
+        />
+      </PlotCard>
+    </ViewsRow>
   );
 }

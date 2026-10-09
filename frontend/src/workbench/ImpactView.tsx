@@ -2,7 +2,7 @@
 // applicants (the rail's approval rate); the bad rate and the expected loss of each follow from the committed cut-off
 // curves, recomputed live; the swap sets at 80%, which need the applicants themselves, are the pipeline's. The money
 // is in the case's own currency, named by the artifact (NT dollars for Taiwan, Deutsche Mark for the German twin).
-import { PlotCard, SubTabs, Verdict, formatNumber, pick, useShellLang, useWorkbenchState } from '@fasl-work/caos-app-shell';
+import { PlotCard, SubTabs, Verdict, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import { CapitalView } from './CapitalView';
@@ -108,29 +108,27 @@ export function ImpactView({ sel }: { sel: Selection | null }) {
           </tbody>
         </table>
       </PlotCard>
-      <div className="caos-views-row" data-views="2">
-        <div className="ct-col ct-share-3">
-          <PlotCard
-            fill
-            title={{ en: 'Bad rate against approval rate', es: 'Tasa de malos contra tasa de aprobación' }}
-            lane="live"
-            provenance={prov}
-            dataKey={stateKey}
-            note={{ en: 'Approve the lowest PDs first; a lower curve is the better book at the same volume.', es: 'Aprobar primero las PD más bajas; una curva más baja es la mejor cartera al mismo volumen.' }}
-          >
-            <UPlotChart
-              height="fill"
-              x={{ values: curves.x, label: { en: 'Approval rate', es: 'Tasa de aprobación' }, format: { percent: true, decimals: 0 } }}
-              y={{ label: { en: 'Bad rate among the approved', es: 'Tasa de malos entre aprobados' }, format: { percent: true, decimals: 0 } }}
-              series={[
-                { label: names[0], values: curves.champion, color: '--color-accent', width: 2 },
-                { label: names[1], values: curves.challenger, color: '--color-magenta', width: 2 },
-              ]}
-              marks={[{ x: sel.approval, label: { en: 'rail', es: 'panel' } }]}
-            />
-          </PlotCard>
-        </div>
-        <div className="ct-col ct-share-2">
+      <ViewsRow shares={[3, 2]}>
+        <PlotCard
+          fill
+          title={{ en: 'Bad rate against approval rate', es: 'Tasa de malos contra tasa de aprobación' }}
+          lane="live"
+          provenance={prov}
+          dataKey={stateKey}
+          note={{ en: 'Approve the lowest PDs first; a lower curve is the better book at the same volume.', es: 'Aprobar primero las PD más bajas; una curva más baja es la mejor cartera al mismo volumen.' }}
+        >
+          <UPlotChart
+            height="fill"
+            x={{ values: curves.x, label: { en: 'Approval rate', es: 'Tasa de aprobación' }, format: { percent: true, decimals: 0 } }}
+            y={{ label: { en: 'Bad rate among the approved', es: 'Tasa de malos entre aprobados' }, format: { percent: true, decimals: 0 } }}
+            series={[
+              { label: names[0], values: curves.champion, color: '--color-accent', width: 2 },
+              { label: names[1], values: curves.challenger, color: '--color-magenta', width: 2 },
+            ]}
+            marks={[{ x: sel.approval, label: { en: 'rail', es: 'panel' } }]}
+          />
+        </PlotCard>
+        <>
           <PlotCard
             fill
             title={{ en: 'At 80% approval, applicant by applicant (pipeline)', es: 'Con 80% de aprobación, solicitante por solicitante (pipeline)' }}
@@ -181,8 +179,8 @@ export function ImpactView({ sel }: { sel: Selection | null }) {
               />
             </PlotCard>
           </div>
-        </div>
-      </div>
+        </>
+      </ViewsRow>
     </>
   );
 }

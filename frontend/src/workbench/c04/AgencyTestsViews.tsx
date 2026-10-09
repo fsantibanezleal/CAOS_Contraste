@@ -10,7 +10,7 @@
 // Layout (measured on the built site at 1280 x 800, 2026-10-07): each column holds one filling drawing and each note
 // is short, the method being in the case's Context. Two charts stacked in one column under long notes left each chart
 // 0 to 45 px of plot, and the per-year table under a second card showed no row at all.
-import { PlotCard, formatNumber, pick, useShellLang, useWorkbenchState, type FormatOptions, type ShellColorToken } from '@fasl-work/caos-app-shell';
+import { PlotCard, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type FormatOptions, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import type { C04AgencyOutputs, C04Cohort, C04Homogeneity, Light, TestRow, Text, VariantArtifact } from '../../lib/contract.types';
@@ -209,21 +209,19 @@ function NotAgency({ sel }: { sel: C04Sel }) {
   const stateKey = useWorkbenchState()?.stateKey;
   const v = sel.data.variant as VariantArtifact<unknown>;
   return (
-    <div className="caos-views-row" data-views="1">
-      <div className="ct-col">
-        <PlotCard title={{ en: 'An agency check', es: 'Una verificación de agencia' }} lane={REPLAY} provenance={provenanceOf(v.provenance.truth_status)} dataKey={stateKey}>
-          <p className="ct-note" data-not-agency={v.variant_id}>
-            {pick(
-              {
-                en: `These checks read an agency's published cohorts (CEREP); the variant ${v.variant_id} holds none.`,
-                es: `Estas verificaciones leen las cohortes publicadas de una agencia (CEREP); la variante ${v.variant_id} no tiene ninguna.`,
-              },
-              lang,
-            )}
-          </p>
-        </PlotCard>
-      </div>
-    </div>
+    <ViewsRow>
+      <PlotCard title={{ en: 'An agency check', es: 'Una verificación de agencia' }} lane={REPLAY} provenance={provenanceOf(v.provenance.truth_status)} dataKey={stateKey}>
+        <p className="ct-note" data-not-agency={v.variant_id}>
+          {pick(
+            {
+              en: `These checks read an agency's published cohorts (CEREP); the variant ${v.variant_id} holds none.`,
+              es: `Estas verificaciones leen las cohortes publicadas de una agencia (CEREP); la variante ${v.variant_id} no tiene ninguna.`,
+            },
+            lang,
+          )}
+        </p>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -467,83 +465,79 @@ export function TestsView({ sel }: { sel: C04Sel | null }) {
   );
 
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col">
-        <PlotCard fill title={{ en: 'Each year against the pooled matrix', es: 'Cada año contra la matriz agrupada' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={refNote}>
-          {ref.drawn ? (
-            <UPlotChart
-              height="fill"
-              x={{ values: ref.x, label: ref.axis, format: YEAR_FORMAT }}
-              y={{ label: { en: '-log10 p (2 is p = 0.01)', es: '-log10 p (2 es p = 0,01)' }, format: FMT.evidence, range: ref.range }}
-              series={ref.series}
-              marks={ref.marks}
-            />
-          ) : (
-            <SeriesTable x={ref.x} columns={[{ label: { en: 'p-value', es: 'Valor p' }, values: years.filter((r) => r.year !== null).map((r) => r.ref.p) }]} show={pText} name="reference-p" />
-          )}
-        </PlotCard>
-      </div>
-      <div className="ct-col">
-        <PlotCard fill title={{ en: "Every year's tests", es: 'Las pruebas de cada año' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={tableNote}>
-          <div className="ct-stack">
-            <table className="caos-table ct-wrap-head" data-table="time-homogeneity">
+    <ViewsRow>
+      <PlotCard fill title={{ en: 'Each year against the pooled matrix', es: 'Cada año contra la matriz agrupada' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={refNote}>
+        {ref.drawn ? (
+          <UPlotChart
+            height="fill"
+            x={{ values: ref.x, label: ref.axis, format: YEAR_FORMAT }}
+            y={{ label: { en: '-log10 p (2 is p = 0.01)', es: '-log10 p (2 es p = 0,01)' }, format: FMT.evidence, range: ref.range }}
+            series={ref.series}
+            marks={ref.marks}
+          />
+        ) : (
+          <SeriesTable x={ref.x} columns={[{ label: { en: 'p-value', es: 'Valor p' }, values: years.filter((r) => r.year !== null).map((r) => r.ref.p) }]} show={pText} name="reference-p" />
+        )}
+      </PlotCard>
+      <PlotCard fill title={{ en: "Every year's tests", es: 'Las pruebas de cada año' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={tableNote}>
+        <div className="ct-stack">
+          <table className="caos-table ct-wrap-head" data-table="time-homogeneity">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'The same matrix for every period?', es: '¿Una sola matriz para todos los períodos?' }, lang)}</th>
+                <th>{pick({ en: `${pick(statShort(homForm), 'en')} / dof`, es: `${pick(statShort(homForm), 'es')} / gl` }, lang)}</th>
+                <th>{pick({ en: 'p and light', es: 'p y luz' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Per dof', es: 'Por gl' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Row furthest', es: 'Fila más alejada' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {homog.map((h) => {
+                const stat = fin(h.h?.statistic);
+                const dof = fin(h.h?.dof);
+                return (
+                  <tr key={h.key} data-segment={h.key}>
+                    <td className="ct-text" title={pick(h.span, lang)}>
+                      {pick(h.label, lang)}
+                    </td>
+                    <td>{stat !== null && dof !== null ? `${homForm || !h.form ? '' : `${pick(STAT_NAME[h.form], lang)} `}${formatNumber(stat, lang, FMT.statistic)} / ${formatNumber(dof, lang, FMT.dof)}` : '-'}</td>
+                    <LightCell row={h.row} alphas={POLICY} />
+                    <td className="ct-wide-only">{stat !== null && dof ? formatNumber(stat / dof, lang, FMT.perDof) : '-'}</td>
+                    <td className="ct-wide-only">{h.worst ? `${h.worst.grade} (${formatNumber(h.worst.ratio, lang, FMT.perDof)})` : '-'}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <div className="ct-scroll">
+            <table className="caos-table ct-wrap-head" data-table="tests-by-year">
               <thead>
                 <tr>
-                  <th className="ct-text">{pick({ en: 'The same matrix for every period?', es: '¿Una sola matriz para todos los períodos?' }, lang)}</th>
-                  <th>{pick({ en: `${pick(statShort(homForm), 'en')} / dof`, es: `${pick(statShort(homForm), 'es')} / gl` }, lang)}</th>
-                  <th>{pick({ en: 'p and light', es: 'p y luz' }, lang)}</th>
-                  <th className="ct-wide-only">{pick({ en: 'Per dof', es: 'Por gl' }, lang)}</th>
-                  <th className="ct-wide-only">{pick({ en: 'Row furthest', es: 'Fila más alejada' }, lang)}</th>
+                  <th>{pick({ en: 'Year', es: 'Año' }, lang)}</th>
+                  <th className="ct-wide-only">{pick({ en: `${pick(statShort(refForm), 'en')} / dof`, es: `${pick(statShort(refForm), 'es')} / gl` }, lang)}</th>
+                  <th>{pick({ en: 'Pooled: p', es: 'Agrupada: p' }, lang)}</th>
+                  <th>{pick({ en: 'z-tests: p', es: 'Pruebas z: p' }, lang)}</th>
+                  <th className="ct-wide-only">{pick({ en: 'MWB above', es: 'MWB sobre' }, lang)}</th>
+                  <th className="ct-wide-only">{pick({ en: 'MWB below', es: 'MWB bajo' }, lang)}</th>
                 </tr>
               </thead>
               <tbody>
-                {homog.map((h) => {
-                  const stat = fin(h.h?.statistic);
-                  const dof = fin(h.h?.dof);
-                  return (
-                    <tr key={h.key} data-segment={h.key}>
-                      <td className="ct-text" title={pick(h.span, lang)}>
-                        {pick(h.label, lang)}
-                      </td>
-                      <td>{stat !== null && dof !== null ? `${homForm || !h.form ? '' : `${pick(STAT_NAME[h.form], lang)} `}${formatNumber(stat, lang, FMT.statistic)} / ${formatNumber(dof, lang, FMT.dof)}` : '-'}</td>
-                      <LightCell row={h.row} alphas={POLICY} />
-                      <td className="ct-wide-only">{stat !== null && dof ? formatNumber(stat / dof, lang, FMT.perDof) : '-'}</td>
-                      <td className="ct-wide-only">{h.worst ? `${h.worst.grade} (${formatNumber(h.worst.ratio, lang, FMT.perDof)})` : '-'}</td>
-                    </tr>
-                  );
-                })}
+                {years.map((r) => (
+                  <tr key={r.label} data-year={r.label} className={sel.cohort !== null && r.cohort === sel.cohort ? 'ct-current' : undefined}>
+                    <YearCell sel={sel} label={r.label} cohort={r.cohort} />
+                    <td className="ct-wide-only">{formatNumber(r.ref.perDof, lang, FMT.perDof)}</td>
+                    <LightCell row={r.ref.row} alphas={POLICY} />
+                    <LightCell row={r.z.row} alphas={POLICY} />
+                    <td className="ct-wide-only">{formatNumber(r.mwbUpper, lang, FMT.index)}</td>
+                    <td className="ct-wide-only">{formatNumber(r.mwbLower, lang, FMT.index)}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-            <div className="ct-scroll">
-              <table className="caos-table ct-wrap-head" data-table="tests-by-year">
-                <thead>
-                  <tr>
-                    <th>{pick({ en: 'Year', es: 'Año' }, lang)}</th>
-                    <th className="ct-wide-only">{pick({ en: `${pick(statShort(refForm), 'en')} / dof`, es: `${pick(statShort(refForm), 'es')} / gl` }, lang)}</th>
-                    <th>{pick({ en: 'Pooled: p', es: 'Agrupada: p' }, lang)}</th>
-                    <th>{pick({ en: 'z-tests: p', es: 'Pruebas z: p' }, lang)}</th>
-                    <th className="ct-wide-only">{pick({ en: 'MWB above', es: 'MWB sobre' }, lang)}</th>
-                    <th className="ct-wide-only">{pick({ en: 'MWB below', es: 'MWB bajo' }, lang)}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {years.map((r) => (
-                    <tr key={r.label} data-year={r.label} className={sel.cohort !== null && r.cohort === sel.cohort ? 'ct-current' : undefined}>
-                      <YearCell sel={sel} label={r.label} cohort={r.cohort} />
-                      <td className="ct-wide-only">{formatNumber(r.ref.perDof, lang, FMT.perDof)}</td>
-                      <LightCell row={r.ref.row} alphas={POLICY} />
-                      <LightCell row={r.z.row} alphas={POLICY} />
-                      <td className="ct-wide-only">{formatNumber(r.mwbUpper, lang, FMT.index)}</td>
-                      <td className="ct-wide-only">{formatNumber(r.mwbLower, lang, FMT.index)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
           </div>
-        </PlotCard>
-      </div>
-    </div>
+        </div>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -628,82 +622,78 @@ export function MobilityView({ sel }: { sel: C04Sel | null }) {
   const stress = (l: Lang) => yearList(STRESS.filter((y) => years.some((r) => r.year === y)), l);
   const counts = SPEC_COUNTS[d] ?? NONE;
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={{ en: "Mobility of each year's matrix and the default rate", es: 'Movilidad de la matriz de cada año y la tasa de incumplimiento' }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={
-            chart.drawn
-              ? join(
-                  {
-                    en: `Each annual cohort's own matrix, withdrawals removed: Jafry and Schuermann's M_SVD (the mean singular value of P - I) and the trace index (n - tr P)/(n - 1), both 0 when nobody moves; beside them the speculative-grade default rate (BB, B and CCC-C pooled, ${pick(label, 'en')}) as a share of the cohort on the same axis (0.10 is 10%).`,
-                    es: `La matriz propia de cada cohorte anual, sin retiros: la M_SVD de Jafry y Schuermann (el valor singular medio de P - I) y el índice de traza (n - tr P)/(n - 1), ambos 0 si nadie se mueve; junto a ellos la tasa de incumplimiento de grado especulativo (BB, B y CCC-C agrupados, ${pick(label, 'es')}) como fracción de la cohorte en el mismo eje (0,10 es 10%).`,
-                  },
-                  stress('en') ? { en: `Dashed: the stress years ${stress('en')}.`, es: `Segmentadas: los años de tensión ${stress('es')}.` } : NONE,
-                  credit(o, true),
-                )
-              : join({ en: 'No cohort has an index or a default rate to draw: the table gives what the artifact holds.', es: 'Ninguna cohorte tiene un índice ni una tasa de incumplimiento que dibujar: la tabla da lo que contiene el artefacto.' }, credit(o))
-          }
-        >
-          {chart.drawn ? (
-            <UPlotChart
-              height="fill"
-              x={{ values: chart.x, label: chart.axis, format: YEAR_FORMAT }}
-              y={{ label: { en: 'Index, or default rate as a share', es: 'Índice, o tasa de incumplimiento como fracción' }, format: { decimals: 2 } }}
-              series={chart.series}
-              marks={chart.marks}
-            />
-          ) : (
-            <SeriesTable x={chart.x} columns={chart.all} show={shows(FMT.index)} name="mobility-index" />
-          )}
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-2">
-        <PlotCard
-          fill
-          title={{ en: 'Mobility and defaults by year', es: 'Movilidad e incumplimientos por año' }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={join(
-            {
-              en: `The chart's numbers and each cohort's ratings at the start, withdrawals included. The default rate is ${pick(label, 'en')}: ${counts.en}. ${PICK_NOTE.en}`,
-              es: `Los números del gráfico y las calificaciones de cada cohorte al inicio, con los retiros. La tasa de incumplimiento es ${pick(label, 'es')}: ${counts.es}. ${PICK_NOTE.es}`,
-            },
-            credit(o, true),
-          )}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table ct-wrap-head" data-table="mobility">
-              <thead>
-                <tr>
-                  <th>{pick({ en: 'Year', es: 'Año' }, lang)}</th>
-                  <th>M_SVD</th>
-                  <th>{pick({ en: 'Trace', es: 'Traza' }, lang)}</th>
-                  <th>{pick({ en: `Default rate (${d.toUpperCase()})`, es: `Tasa de incumpl. (${d.toUpperCase()})` }, lang)}</th>
-                  <th className="ct-wide-only">{pick({ en: 'Ratings', es: 'Calif.' }, lang)}</th>
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard
+        fill
+        title={{ en: "Mobility of each year's matrix and the default rate", es: 'Movilidad de la matriz de cada año y la tasa de incumplimiento' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={
+          chart.drawn
+            ? join(
+                {
+                  en: `Each annual cohort's own matrix, withdrawals removed: Jafry and Schuermann's M_SVD (the mean singular value of P - I) and the trace index (n - tr P)/(n - 1), both 0 when nobody moves; beside them the speculative-grade default rate (BB, B and CCC-C pooled, ${pick(label, 'en')}) as a share of the cohort on the same axis (0.10 is 10%).`,
+                  es: `La matriz propia de cada cohorte anual, sin retiros: la M_SVD de Jafry y Schuermann (el valor singular medio de P - I) y el índice de traza (n - tr P)/(n - 1), ambos 0 si nadie se mueve; junto a ellos la tasa de incumplimiento de grado especulativo (BB, B y CCC-C agrupados, ${pick(label, 'es')}) como fracción de la cohorte en el mismo eje (0,10 es 10%).`,
+                },
+                stress('en') ? { en: `Dashed: the stress years ${stress('en')}.`, es: `Segmentadas: los años de tensión ${stress('es')}.` } : NONE,
+                credit(o, true),
+              )
+            : join({ en: 'No cohort has an index or a default rate to draw: the table gives what the artifact holds.', es: 'Ninguna cohorte tiene un índice ni una tasa de incumplimiento que dibujar: la tabla da lo que contiene el artefacto.' }, credit(o))
+        }
+      >
+        {chart.drawn ? (
+          <UPlotChart
+            height="fill"
+            x={{ values: chart.x, label: chart.axis, format: YEAR_FORMAT }}
+            y={{ label: { en: 'Index, or default rate as a share', es: 'Índice, o tasa de incumplimiento como fracción' }, format: { decimals: 2 } }}
+            series={chart.series}
+            marks={chart.marks}
+          />
+        ) : (
+          <SeriesTable x={chart.x} columns={chart.all} show={shows(FMT.index)} name="mobility-index" />
+        )}
+      </PlotCard>
+      <PlotCard
+        fill
+        title={{ en: 'Mobility and defaults by year', es: 'Movilidad e incumplimientos por año' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={join(
+          {
+            en: `The chart's numbers and each cohort's ratings at the start, withdrawals included. The default rate is ${pick(label, 'en')}: ${counts.en}. ${PICK_NOTE.en}`,
+            es: `Los números del gráfico y las calificaciones de cada cohorte al inicio, con los retiros. La tasa de incumplimiento es ${pick(label, 'es')}: ${counts.es}. ${PICK_NOTE.es}`,
+          },
+          credit(o, true),
+        )}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table ct-wrap-head" data-table="mobility">
+            <thead>
+              <tr>
+                <th>{pick({ en: 'Year', es: 'Año' }, lang)}</th>
+                <th>M_SVD</th>
+                <th>{pick({ en: 'Trace', es: 'Traza' }, lang)}</th>
+                <th>{pick({ en: `Default rate (${d.toUpperCase()})`, es: `Tasa de incumpl. (${d.toUpperCase()})` }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Ratings', es: 'Calif.' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {years.map((r) => (
+                <tr key={r.label} data-year={r.label} className={sel.cohort !== null && r.cohort === sel.cohort ? 'ct-current' : undefined}>
+                  <YearCell sel={sel} label={r.label} cohort={r.cohort} />
+                  <td>{formatNumber(r.svd, lang, FMT.index)}</td>
+                  <td>{formatNumber(r.trace, lang, FMT.index)}</td>
+                  <td>{formatNumber(r.rate, lang, FMT.rate)}</td>
+                  <td className="ct-wide-only">{formatNumber(r.ratings, lang, FMT.count)}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {years.map((r) => (
-                  <tr key={r.label} data-year={r.label} className={sel.cohort !== null && r.cohort === sel.cohort ? 'ct-current' : undefined}>
-                    <YearCell sel={sel} label={r.label} cohort={r.cohort} />
-                    <td>{formatNumber(r.svd, lang, FMT.index)}</td>
-                    <td>{formatNumber(r.trace, lang, FMT.index)}</td>
-                    <td>{formatNumber(r.rate, lang, FMT.rate)}</td>
-                    <td className="ct-wide-only">{formatNumber(r.ratings, lang, FMT.count)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-    </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -972,34 +962,30 @@ export function SemestersView({ sel }: { sel: C04Sel | null }) {
     );
   }
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col">
-        <PlotCard
-          fill
-          title={{ en: 'Two semesters against their year', es: 'Dos semestres contra su año' }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={built.l1.drawn ? l1Note : join({ en: 'No year has a distance to draw: the table gives what the artifact holds.', es: 'Ningún año tiene una distancia que dibujar: la tabla da lo que contiene el artefacto.' }, credit(o))}
-        >
-          {built.l1.drawn ? (
-            <UPlotChart
-              height="fill"
-              x={{ values: built.l1.x, label: built.l1.axis, format: YEAR_FORMAT }}
-              y={{ label: { en: 'L1 distance (sum over the cells)', es: 'Distancia L1 (suma sobre las celdas)' }, format: { decimals: 2 } }}
-              series={built.l1.series}
-              marks={built.l1.marks}
-            />
-          ) : (
-            <SeriesTable x={built.l1.x} columns={built.l1.all} show={shows(FMT.l1)} name="semesters-l1" />
-          )}
-        </PlotCard>
-      </div>
-      <div className="ct-col">
-        <PlotCard fill title={pdTitle} lane={REPLAY} provenance={prov} dataKey={stateKey} note={pdNote}>
-          {pdBody}
-        </PlotCard>
-      </div>
-    </div>
+    <ViewsRow>
+      <PlotCard
+        fill
+        title={{ en: 'Two semesters against their year', es: 'Dos semestres contra su año' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={built.l1.drawn ? l1Note : join({ en: 'No year has a distance to draw: the table gives what the artifact holds.', es: 'Ningún año tiene una distancia que dibujar: la tabla da lo que contiene el artefacto.' }, credit(o))}
+      >
+        {built.l1.drawn ? (
+          <UPlotChart
+            height="fill"
+            x={{ values: built.l1.x, label: built.l1.axis, format: YEAR_FORMAT }}
+            y={{ label: { en: 'L1 distance (sum over the cells)', es: 'Distancia L1 (suma sobre las celdas)' }, format: { decimals: 2 } }}
+            series={built.l1.series}
+            marks={built.l1.marks}
+          />
+        ) : (
+          <SeriesTable x={built.l1.x} columns={built.l1.all} show={shows(FMT.l1)} name="semesters-l1" />
+        )}
+      </PlotCard>
+      <PlotCard fill title={pdTitle} lane={REPLAY} provenance={prov} dataKey={stateKey} note={pdNote}>
+        {pdBody}
+      </PlotCard>
+    </ViewsRow>
   );
 }

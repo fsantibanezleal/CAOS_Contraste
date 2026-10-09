@@ -5,7 +5,7 @@
 // shown (derived-only: the agency matrices two of them reprint are read from the data root, used, and never written to
 // an artifact). Impact: the intervals of Table 5 recomputed live in the browser at its inputs, 15 defaults of 531,
 // against the printed bounds, and along the default correlation at the rail's level.
-import { PlotCard, formatNumber, pick, useShellLang, useWorkbenchState, type ShellColorToken } from '@fasl-work/caos-app-shell';
+import { PlotCard, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import { effectiveN, pdAgrestiCoull, pdJeffreys, pdWald } from '../../engine/transitions';
@@ -215,144 +215,140 @@ export function PapersView({ sel }: { sel: C04Sel | null }) {
   const t3 = o.irw.theorem3_c.filter(Boolean).length;
   const rhos = table5Rhos(o);
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={{ en: 'Three papers: each print beside its recomputation', es: 'Tres artículos: cada valor impreso junto a su recálculo' }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{
-            en: `Recomputed by riskvalidation ${v.provenance.riskvalidation_version ?? ''} from the papers in the data root; a value agrees within half a unit of the print's last digit. Israel et al.: ${irwAgree} of ${o.irw.rows.length} agree; Theorem 3(c) holds for ${t3} of ${o.irw.theorem3_c.length} matrices (a move reachable but never observed: no exact generator); the log series (1) takes ${o.irw.series_terms} terms to the stated 1e-8, as printed. Schuermann and Hanson: ${srAgree} of ${o.sr190.rows.length} agree at ${o.sr190.defaults} defaults of ${o.sr190.n}, the one count whose Wald lower bound prints as the table's. Engelmann: his matrix (11) as printed (rows sum to 1 within ${formatNumber(o.engelmann.row_sum_deviation, 'en', { digits: 2 })}), at unit balance. The Model group cites each paper.`,
-            es: `Recalculados por riskvalidation ${v.provenance.riskvalidation_version ?? ''} desde los artículos en la raíz de datos; un valor concuerda dentro de media unidad del último dígito impreso. Israel et al.: concuerdan ${irwAgree} de ${o.irw.rows.length}; el Teorema 3(c) se cumple en ${t3} de ${o.irw.theorem3_c.length} matrices (un movimiento alcanzable pero nunca observado: no hay generador exacto); la serie logarítmica (1) toma ${o.irw.series_terms} términos hasta el 1e-8 declarado, como está impreso. Schuermann y Hanson: concuerdan ${srAgree} de ${o.sr190.rows.length} con ${o.sr190.defaults} incumplimientos de ${o.sr190.n}, el único conteo cuya cota inferior de Wald se imprime como la de la tabla. Engelmann: su matriz (11) tal como está impresa (filas que suman 1 dentro de ${formatNumber(o.engelmann.row_sum_deviation, 'es', { digits: 2 })}), a saldo unitario. El grupo Modelo cita cada artículo.`,
-          }}
-        >
-          <div className="ct-scroll">
-            <p className="ct-sm-title">
-              {pick({ en: 'Israel, Rosenthal and Wei (2001), section 4: the L1 distance of exp(Q) to P', es: 'Israel, Rosenthal y Wei (2001), sección 4: la distancia L1 de exp(Q) a P' }, lang)}
-            </p>
-            <table className="caos-table ct-wrap-head" data-table="irw">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Matrix', es: 'Matriz' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Generator', es: 'Generador' }, lang)}</th>
-                  <th>{pick({ en: 'Printed', es: 'Impreso' }, lang)}</th>
-                  <th>{pick({ en: 'Recomputed', es: 'Recalculado' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Agreement', es: 'Concordancia' }, lang)}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {o.irw.rows.map((r) => {
-                  const why = irwReason(o, r);
-                  return (
-                    <tr key={`${r.matrix}-${r.method}`} data-row={`${r.matrix}|${r.method}`} data-agrees={r.agrees ? 'yes' : 'no'} className={r.agrees ? undefined : 'ct-current'}>
-                      <td className="ct-text">{r.matrix}</td>
-                      <td className="ct-text">{pick(IRW_METHOD[r.method] ?? { en: r.method, es: r.method }, lang)}</td>
-                      <td>{formatNumber(r.printed, lang, { decimals: IRW_DECIMALS })}</td>
-                      <td>{formatNumber(r.recomputed, lang, { decimals: IRW_DECIMALS + 2 })}</td>
-                      <td className="ct-text">
-                        {r.agrees ? AGREES[lang] : `${DIFFERS[lang]}: ${why ? why[lang] : pick({ en: 'the outputs state no reason', es: 'los resultados no declaran una razón' }, lang)}`}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            <p className="ct-sm-title">
-              {pick(
-                {
-                  en: `Schuermann and Hanson (2004), Table 5: ${o.sr190.defaults} defaults of ${o.sr190.n}, ${pct0('en', TABLE5_LEVEL)}, in basis points (lower to upper bound; the lengths on a wide screen)`,
-                  es: `Schuermann y Hanson (2004), Tabla 5: ${o.sr190.defaults} incumplimientos de ${o.sr190.n}, ${pct0('es', TABLE5_LEVEL)}, en puntos básicos (de la cota inferior a la superior; los largos, en una pantalla ancha)`,
-                },
-                lang,
-              )}
-            </p>
-            <table className="caos-table ct-wrap-head" data-table="sr190">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Interval', es: 'Intervalo' }, lang)}</th>
-                  <th>{pick({ en: 'Correlation', es: 'Correlación' }, lang)}</th>
-                  <th>{pick({ en: 'Printed (length)', es: 'Impreso (largo)' }, lang)}</th>
-                  <th>{pick({ en: 'Recomputed (length)', es: 'Recalculado (largo)' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Agreement', es: 'Concordancia' }, lang)}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {o.sr190.rows.map((r) => (
-                  <tr key={`${r.interval}-${r.rho}`} data-row={`${r.interval}|${r.rho}`} data-agrees={r.agrees ? 'yes' : 'no'}>
-                    <td className="ct-text">{pick(INTERVAL_NAME[r.interval] ?? { en: r.interval, es: r.interval }, lang)}</td>
-                    <td>{pct0(lang, r.rho)}</td>
-                    <td>{`${bpRange(lang, r.printed[0], r.printed[1], SR190_DECIMALS)} (${bp(lang, r.printed[2], SR190_DECIMALS)})`}</td>
-                    <td>{`${bpRange(lang, r.recomputed[0], r.recomputed[1], SR190_DECIMALS + 1)} (${bp(lang, r.recomputed[2], SR190_DECIMALS + 1)})`}</td>
-                    <td className="ct-text">{(r.agrees ? AGREES : DIFFERS)[lang]}</td>
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard
+        fill
+        title={{ en: 'Three papers: each print beside its recomputation', es: 'Tres artículos: cada valor impreso junto a su recálculo' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: `Recomputed by riskvalidation ${v.provenance.riskvalidation_version ?? ''} from the papers in the data root; a value agrees within half a unit of the print's last digit. Israel et al.: ${irwAgree} of ${o.irw.rows.length} agree; Theorem 3(c) holds for ${t3} of ${o.irw.theorem3_c.length} matrices (a move reachable but never observed: no exact generator); the log series (1) takes ${o.irw.series_terms} terms to the stated 1e-8, as printed. Schuermann and Hanson: ${srAgree} of ${o.sr190.rows.length} agree at ${o.sr190.defaults} defaults of ${o.sr190.n}, the one count whose Wald lower bound prints as the table's. Engelmann: his matrix (11) as printed (rows sum to 1 within ${formatNumber(o.engelmann.row_sum_deviation, 'en', { digits: 2 })}), at unit balance. The Model group cites each paper.`,
+          es: `Recalculados por riskvalidation ${v.provenance.riskvalidation_version ?? ''} desde los artículos en la raíz de datos; un valor concuerda dentro de media unidad del último dígito impreso. Israel et al.: concuerdan ${irwAgree} de ${o.irw.rows.length}; el Teorema 3(c) se cumple en ${t3} de ${o.irw.theorem3_c.length} matrices (un movimiento alcanzable pero nunca observado: no hay generador exacto); la serie logarítmica (1) toma ${o.irw.series_terms} términos hasta el 1e-8 declarado, como está impreso. Schuermann y Hanson: concuerdan ${srAgree} de ${o.sr190.rows.length} con ${o.sr190.defaults} incumplimientos de ${o.sr190.n}, el único conteo cuya cota inferior de Wald se imprime como la de la tabla. Engelmann: su matriz (11) tal como está impresa (filas que suman 1 dentro de ${formatNumber(o.engelmann.row_sum_deviation, 'es', { digits: 2 })}), a saldo unitario. El grupo Modelo cita cada artículo.`,
+        }}
+      >
+        <div className="ct-scroll">
+          <p className="ct-sm-title">
+            {pick({ en: 'Israel, Rosenthal and Wei (2001), section 4: the L1 distance of exp(Q) to P', es: 'Israel, Rosenthal y Wei (2001), sección 4: la distancia L1 de exp(Q) a P' }, lang)}
+          </p>
+          <table className="caos-table ct-wrap-head" data-table="irw">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Matrix', es: 'Matriz' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Generator', es: 'Generador' }, lang)}</th>
+                <th>{pick({ en: 'Printed', es: 'Impreso' }, lang)}</th>
+                <th>{pick({ en: 'Recomputed', es: 'Recalculado' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Agreement', es: 'Concordancia' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {o.irw.rows.map((r) => {
+                const why = irwReason(o, r);
+                return (
+                  <tr key={`${r.matrix}-${r.method}`} data-row={`${r.matrix}|${r.method}`} data-agrees={r.agrees ? 'yes' : 'no'} className={r.agrees ? undefined : 'ct-current'}>
+                    <td className="ct-text">{r.matrix}</td>
+                    <td className="ct-text">{pick(IRW_METHOD[r.method] ?? { en: r.method, es: r.method }, lang)}</td>
+                    <td>{formatNumber(r.printed, lang, { decimals: IRW_DECIMALS })}</td>
+                    <td>{formatNumber(r.recomputed, lang, { decimals: IRW_DECIMALS + 2 })}</td>
+                    <td className="ct-text">
+                      {r.agrees ? AGREES[lang] : `${DIFFERS[lang]}: ${why ? why[lang] : pick({ en: 'the outputs state no reason', es: 'los resultados no declaran una razón' }, lang)}`}
+                    </td>
                   </tr>
-                ))}
-                {o.sr190.n_dagger.printed.map((p, k) => {
-                  const rho = rhos[k];
-                  const dec = o.sr190.n_dagger.decimals[k];
-                  const rec = o.sr190.n_dagger.recomputed[k];
-                  const ok = printsAs(rec, p, dec);
-                  return (
-                    <tr key={`n-dagger-${k}`} data-row={`n_dagger|${k}`} data-agrees={ok ? 'yes' : 'no'}>
-                      <td className="ct-text">{pick(N_DAGGER, lang)}</td>
-                      <td>{rho === undefined ? '-' : pct0(lang, rho)}</td>
-                      <td>{formatNumber(p, lang, { decimals: dec })}</td>
-                      <td>{formatNumber(rec, lang, { decimals: dec + 2 })}</td>
-                      <td className="ct-text">{(ok ? AGREES : DIFFERS)[lang]}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            <p className="ct-sm-title">
-              {pick({ en: "Engelmann (2024), section 4: the TTC portfolio (10) and the starting portfolios' PDs", es: 'Engelmann (2024), sección 4: la cartera TTC (10) y las PD de las carteras iniciales' }, lang)}
-            </p>
-            <table className="caos-table ct-wrap-head" data-table="engelmann">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Quantity', es: 'Cantidad' }, lang)}</th>
-                  <th>{pick({ en: 'Printed', es: 'Impreso' }, lang)}</th>
-                  <th>{pick({ en: 'Recomputed', es: 'Recalculado' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Agreement', es: 'Concordancia' }, lang)}</th>
+                );
+              })}
+            </tbody>
+          </table>
+          <p className="ct-sm-title">
+            {pick(
+              {
+                en: `Schuermann and Hanson (2004), Table 5: ${o.sr190.defaults} defaults of ${o.sr190.n}, ${pct0('en', TABLE5_LEVEL)}, in basis points (lower to upper bound; the lengths on a wide screen)`,
+                es: `Schuermann y Hanson (2004), Tabla 5: ${o.sr190.defaults} incumplimientos de ${o.sr190.n}, ${pct0('es', TABLE5_LEVEL)}, en puntos básicos (de la cota inferior a la superior; los largos, en una pantalla ancha)`,
+              },
+              lang,
+            )}
+          </p>
+          <table className="caos-table ct-wrap-head" data-table="sr190">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Interval', es: 'Intervalo' }, lang)}</th>
+                <th>{pick({ en: 'Correlation', es: 'Correlación' }, lang)}</th>
+                <th>{pick({ en: 'Printed (length)', es: 'Impreso (largo)' }, lang)}</th>
+                <th>{pick({ en: 'Recomputed (length)', es: 'Recalculado (largo)' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Agreement', es: 'Concordancia' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {o.sr190.rows.map((r) => (
+                <tr key={`${r.interval}-${r.rho}`} data-row={`${r.interval}|${r.rho}`} data-agrees={r.agrees ? 'yes' : 'no'}>
+                  <td className="ct-text">{pick(INTERVAL_NAME[r.interval] ?? { en: r.interval, es: r.interval }, lang)}</td>
+                  <td>{pct0(lang, r.rho)}</td>
+                  <td>{`${bpRange(lang, r.printed[0], r.printed[1], SR190_DECIMALS)} (${bp(lang, r.printed[2], SR190_DECIMALS)})`}</td>
+                  <td>{`${bpRange(lang, r.recomputed[0], r.recomputed[1], SR190_DECIMALS + 1)} (${bp(lang, r.recomputed[2], SR190_DECIMALS + 1)})`}</td>
+                  <td className="ct-text">{(r.agrees ? AGREES : DIFFERS)[lang]}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {eRows.map((r) => (
-                  <tr key={r.key} data-row={r.key} data-check={r.check}>
-                    <td className="ct-text">{r.label[lang]}</td>
-                    <td>{engelmannValue(r, r.printed, 0, lang)}</td>
-                    <td>{engelmannValue(r, r.recomputed, 2, lang)}</td>
-                    <td className="ct-text">{engelmannAgreement(r, lang)}</td>
+              ))}
+              {o.sr190.n_dagger.printed.map((p, k) => {
+                const rho = rhos[k];
+                const dec = o.sr190.n_dagger.decimals[k];
+                const rec = o.sr190.n_dagger.recomputed[k];
+                const ok = printsAs(rec, p, dec);
+                return (
+                  <tr key={`n-dagger-${k}`} data-row={`n_dagger|${k}`} data-agrees={ok ? 'yes' : 'no'}>
+                    <td className="ct-text">{pick(N_DAGGER, lang)}</td>
+                    <td>{rho === undefined ? '-' : pct0(lang, rho)}</td>
+                    <td>{formatNumber(p, lang, { decimals: dec })}</td>
+                    <td>{formatNumber(rec, lang, { decimals: dec + 2 })}</td>
+                    <td className="ct-text">{(ok ? AGREES : DIFFERS)[lang]}</td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-2">
-        <PlotCard
-          fill
-          title={{ en: `Engelmann's projected PD paths, ${paths.years.length} years`, es: `Las trayectorias de PD proyectadas de Engelmann, ${paths.years.length} años` }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{
-            en: `Engelmann (2024), section 4: each starting portfolio projected by (9) under his unstressed matrix (11) as printed, at unit balance, recomputed; the PD of each year. Dashed: the PD of his TTC portfolio (10), to which every path drifts. Marked: the extremes the paper prints, at the year the path reaches them (their values in the table). The matrix itself is derived-only and not shown.`,
-            es: `Engelmann (2024), sección 4: cada cartera inicial proyectada por (9) con su matriz sin estrés (11) tal como está impresa, a saldo unitario, recalculada; la PD de cada año. Segmentada: la PD de su cartera TTC (10), hacia la que deriva toda trayectoria. Marcados: los extremos que imprime el artículo, en el año en que la trayectoria los alcanza (sus valores en la tabla). La matriz misma es solo de derivados y no se muestra.`,
-          }}
-        >
-          <UPlotChart
-            height="fill"
-            x={{ values: paths.years, label: { en: 'Year of the projection', es: 'Año de la proyección' }, unit: { en: 'years', es: 'años' }, format: { decimals: 0 } }}
-            y={{ label: { en: 'PD of the year', es: 'PD del año' }, format: { percent: true, digits: 3 } }}
-            series={paths.series}
-            marks={paths.marks}
-          />
-        </PlotCard>
-      </div>
-    </div>
+                );
+              })}
+            </tbody>
+          </table>
+          <p className="ct-sm-title">
+            {pick({ en: "Engelmann (2024), section 4: the TTC portfolio (10) and the starting portfolios' PDs", es: 'Engelmann (2024), sección 4: la cartera TTC (10) y las PD de las carteras iniciales' }, lang)}
+          </p>
+          <table className="caos-table ct-wrap-head" data-table="engelmann">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Quantity', es: 'Cantidad' }, lang)}</th>
+                <th>{pick({ en: 'Printed', es: 'Impreso' }, lang)}</th>
+                <th>{pick({ en: 'Recomputed', es: 'Recalculado' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Agreement', es: 'Concordancia' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {eRows.map((r) => (
+                <tr key={r.key} data-row={r.key} data-check={r.check}>
+                  <td className="ct-text">{r.label[lang]}</td>
+                  <td>{engelmannValue(r, r.printed, 0, lang)}</td>
+                  <td>{engelmannValue(r, r.recomputed, 2, lang)}</td>
+                  <td className="ct-text">{engelmannAgreement(r, lang)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+      <PlotCard
+        fill
+        title={{ en: `Engelmann's projected PD paths, ${paths.years.length} years`, es: `Las trayectorias de PD proyectadas de Engelmann, ${paths.years.length} años` }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: `Engelmann (2024), section 4: each starting portfolio projected by (9) under his unstressed matrix (11) as printed, at unit balance, recomputed; the PD of each year. Dashed: the PD of his TTC portfolio (10), to which every path drifts. Marked: the extremes the paper prints, at the year the path reaches them (their values in the table). The matrix itself is derived-only and not shown.`,
+          es: `Engelmann (2024), sección 4: cada cartera inicial proyectada por (9) con su matriz sin estrés (11) tal como está impresa, a saldo unitario, recalculada; la PD de cada año. Segmentada: la PD de su cartera TTC (10), hacia la que deriva toda trayectoria. Marcados: los extremos que imprime el artículo, en el año en que la trayectoria los alcanza (sus valores en la tabla). La matriz misma es solo de derivados y no se muestra.`,
+        }}
+      >
+        <UPlotChart
+          height="fill"
+          x={{ values: paths.years, label: { en: 'Year of the projection', es: 'Año de la proyección' }, unit: { en: 'years', es: 'años' }, format: { decimals: 0 } }}
+          y={{ label: { en: 'PD of the year', es: 'PD del año' }, format: { percent: true, digits: 3 } }}
+          series={paths.series}
+          marks={paths.marks}
+        />
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -434,78 +430,74 @@ export function PublishedModelView({ sel }: { sel: C04Sel | null }) {
   const x = [0.5, ...Array.from({ length: k }, (_, i) => i + 1), k + 0.5];
   const padded = (vals: number[]) => [null, ...vals.slice(0, k), null];
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={{ en: 'What each paper computes, and why its matrices are not shown', es: 'Qué calcula cada artículo, y por qué no se muestran sus matrices' }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{
-            en: "Each paper is derived-only: its PDF stays in the data root and only the results recomputed from it are published, so a matrix a paper reprints is never drawn here; the agencies' own matrices are in the S&P, Moody's and Fitch variants, from CEREP.",
-            es: "Cada artículo es solo de derivados: su PDF queda en la raíz de datos y solo se publican los resultados recalculados desde él, así que una matriz que un artículo reimprime nunca se dibuja aquí; las matrices propias de las agencias están en las variantes S&P, Moody's y Fitch, desde CEREP.",
-          }}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table ct-wrap-head" data-table="papers">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Paper', es: 'Artículo' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'What it computes', es: 'Qué calcula' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'What is published here, and its matrices', es: 'Qué se publica aquí, y sus matrices' }, lang)}</th>
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard
+        fill
+        title={{ en: 'What each paper computes, and why its matrices are not shown', es: 'Qué calcula cada artículo, y por qué no se muestran sus matrices' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: "Each paper is derived-only: its PDF stays in the data root and only the results recomputed from it are published, so a matrix a paper reprints is never drawn here; the agencies' own matrices are in the S&P, Moody's and Fitch variants, from CEREP.",
+          es: "Cada artículo es solo de derivados: su PDF queda en la raíz de datos y solo se publican los resultados recalculados desde él, así que una matriz que un artículo reimprime nunca se dibuja aquí; las matrices propias de las agencias están en las variantes S&P, Moody's y Fitch, desde CEREP.",
+        }}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table ct-wrap-head" data-table="papers">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Paper', es: 'Artículo' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'What it computes', es: 'Qué calcula' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'What is published here, and its matrices', es: 'Qué se publica aquí, y sus matrices' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {papers.map((p) => (
+                <tr key={p.source} data-source={p.source} data-licence-class={cls(p.source)}>
+                  <td className="ct-text">
+                    {p.title[lang]}
+                    <ul className="ct-evidence">
+                      <li>
+                        {citation(p.source).text}{' '}
+                        {citation(p.source).link && (
+                          <a href={citation(p.source).link} target="_blank" rel="noreferrer">
+                            {pick({ en: 'source', es: 'fuente' }, lang)}
+                          </a>
+                        )}
+                      </li>
+                      <li>{`${pick({ en: 'Licence class', es: 'Clase de licencia' }, lang)}: ${pick(CLASS_TEXT[cls(p.source)] ?? cls(p.source), lang)}`}</li>
+                    </ul>
+                  </td>
+                  <td className="ct-text">{p.computes[lang]}</td>
+                  <td className="ct-text">{`${p.here[lang]} ${p.matrices[lang]}`}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {papers.map((p) => (
-                  <tr key={p.source} data-source={p.source} data-licence-class={cls(p.source)}>
-                    <td className="ct-text">
-                      {p.title[lang]}
-                      <ul className="ct-evidence">
-                        <li>
-                          {citation(p.source).text}{' '}
-                          {citation(p.source).link && (
-                            <a href={citation(p.source).link} target="_blank" rel="noreferrer">
-                              {pick({ en: 'source', es: 'fuente' }, lang)}
-                            </a>
-                          )}
-                        </li>
-                        <li>{`${pick({ en: 'Licence class', es: 'Clase de licencia' }, lang)}: ${pick(CLASS_TEXT[cls(p.source)] ?? cls(p.source), lang)}`}</li>
-                      </ul>
-                    </td>
-                    <td className="ct-text">{p.computes[lang]}</td>
-                    <td className="ct-text">{`${p.here[lang]} ${p.matrices[lang]}`}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-2">
-        <PlotCard
-          fill
-          title={{ en: "Engelmann's TTC portfolio (10), printed and recomputed", es: 'La cartera TTC (10) de Engelmann, impresa y recalculada' }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{
-            en: `What Theorem 1 computes from the matrix (11) and the origination mix: each grade's share of the balance in the TTC portfolio, printed to ${w.decimals[0] ?? 4} decimals (dots) and recomputed (line); default holds none. A result, not the matrix.`,
-            es: `Lo que calcula el Teorema 1 desde la matriz (11) y la mezcla de originación: la fracción del saldo de cada grado en la cartera TTC, impresa con ${w.decimals[0] ?? 4} decimales (puntos) y recalculada (línea); el incumplimiento no tiene nada. Un resultado, no la matriz.`,
-          }}
-        >
-          <UPlotChart
-            height="fill"
-            x={{ values: x, label: { en: 'Grade of the matrix (11), 1 the best', es: 'Grado de la matriz (11), 1 el mejor' }, format: { decimals: 0 } }}
-            y={{ label: { en: 'Share of the TTC portfolio', es: 'Fracción de la cartera TTC' }, format: { percent: true, decimals: 0 } }}
-            series={[
-              { label: { en: 'Printed', es: 'Impresa' }, values: padded(w.printed), color: '--color-fg', mode: 'points' },
-              { label: { en: 'Recomputed', es: 'Recalculada' }, values: padded(w.recomputed), color: '--color-accent', width: 2 },
-            ]}
-          />
-        </PlotCard>
-      </div>
-    </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+      <PlotCard
+        fill
+        title={{ en: "Engelmann's TTC portfolio (10), printed and recomputed", es: 'La cartera TTC (10) de Engelmann, impresa y recalculada' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: `What Theorem 1 computes from the matrix (11) and the origination mix: each grade's share of the balance in the TTC portfolio, printed to ${w.decimals[0] ?? 4} decimals (dots) and recomputed (line); default holds none. A result, not the matrix.`,
+          es: `Lo que calcula el Teorema 1 desde la matriz (11) y la mezcla de originación: la fracción del saldo de cada grado en la cartera TTC, impresa con ${w.decimals[0] ?? 4} decimales (puntos) y recalculada (línea); el incumplimiento no tiene nada. Un resultado, no la matriz.`,
+        }}
+      >
+        <UPlotChart
+          height="fill"
+          x={{ values: x, label: { en: 'Grade of the matrix (11), 1 the best', es: 'Grado de la matriz (11), 1 el mejor' }, format: { decimals: 0 } }}
+          y={{ label: { en: 'Share of the TTC portfolio', es: 'Fracción de la cartera TTC' }, format: { percent: true, decimals: 0 } }}
+          series={[
+            { label: { en: 'Printed', es: 'Impresa' }, values: padded(w.printed), color: '--color-fg', mode: 'points' },
+            { label: { en: 'Recomputed', es: 'Recalculada' }, values: padded(w.recomputed), color: '--color-accent', width: 2 },
+          ]}
+        />
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -572,87 +564,83 @@ export function PublishedImpactView({ sel }: { sel: C04Sel | null }) {
   const offLevel = Math.abs(level - TABLE5_LEVEL) > 1e-12;
   const span = (l: Lang) => `${pct0(l, RHO_GRID[0])} ${l === 'en' ? 'to' : 'a'} ${pct0(l, RHO_GRID[RHO_GRID.length - 1])}`;
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-2">
-        <PlotCard
-          fill
-          title={{ en: `Table 5's intervals along the default correlation, at ${lv('en')}`, es: `Los intervalos de la Tabla 5 según la correlación de incumplimiento, al ${lv('es')}` }}
-          lane={LIVE}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{
-            en: `Schuermann and Hanson (2004), Table 5's inputs, ${defaults} defaults of ${n} obligors, recomputed live from ${span('en')} of default correlation at the rail's level: the Wald and Agresti-Coull bounds through N dagger; dots, the printed bounds at ${rhos.map((r) => pct0('en', r)).join(', ')}, which are at ${t5('en')}${offLevel ? `, so at ${lv('en')} the lines leave them by design` : ''}. A correlation of ${pct0('en', firstRho)} already cuts N dagger from ${n} to ${formatNumber(effectiveN(n, firstRho), 'en', { digits: 3 })}. Marked: the rail's correlation. ${attributionOf(sel, 'schuermann-hanson-2004')}.`,
-            es: `Los insumos de la Tabla 5 de Schuermann y Hanson (2004), ${defaults} incumplimientos de ${n} deudores, recalculados en vivo de ${span('es')} de correlación de incumplimiento al nivel del panel: las cotas de Wald y de Agresti-Coull mediante N daga; puntos, las cotas impresas en ${rhos.map((r) => pct0('es', r)).join(', ')}, que están al ${t5('es')}${offLevel ? `, así que al ${lv('es')} las líneas se apartan de ellas por diseño` : ''}. Una correlación de ${pct0('es', firstRho)} ya reduce N daga de ${n} a ${formatNumber(effectiveN(n, firstRho), 'es', { digits: 3 })}. Marcada: la correlación del panel. ${attributionOf(sel, 'schuermann-hanson-2004')}.`,
-          }}
-        >
-          <UPlotChart
-            height="fill"
-            x={{ values: RHO_GRID, label: { en: 'Default correlation between every pair', es: 'Correlación de incumplimiento entre cada par' }, format: { percent: true, decimals: 2 } }}
-            y={{ label: { en: 'PD bound', es: 'Cota de la PD' }, format: { percent: true, decimals: 1 } }}
-            series={series}
-            marks={[{ x: sel.rho, label: { en: 'rail', es: 'panel' } }]}
-          />
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={{ en: 'Live against the print', es: 'En vivo contra lo impreso' }}
-          lane={LIVE}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{
-            en: `Bounds in basis points, lower to upper; the N† rows are effective numbers of obligors, and the rail's rows give their N† in the last column. Table 5 at its own level (${t5('en')}): ${agree} of ${live.length} intervals recomputed in your browser agree with the print to its two decimals (bounds and lengths). Last rows: the three intervals at the rail's correlation (${rhoText('en')}) and level (${lv('en')}); Jeffreys has no correlation correction.`,
-            es: `Cotas en puntos básicos, de la inferior a la superior; las filas N† son números efectivos de deudores, y las filas del panel dan su N† en la última columna. La Tabla 5 a su propio nivel (${t5('es')}): ${agree} de ${live.length} intervalos recalculados en su navegador concuerdan con lo impreso a sus dos decimales (cotas y largos). Últimas filas: los tres intervalos a la correlación (${rhoText('es')}) y el nivel (${lv('es')}) del panel; Jeffreys no tiene corrección por correlación.`,
-          }}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table ct-wrap-head" data-table="table5-live">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Interval and correlation', es: 'Intervalo y correlación' }, lang)}</th>
-                  <th>{pick({ en: 'Printed', es: 'Impreso' }, lang)}</th>
-                  <th>{pick({ en: 'Live', es: 'En vivo' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Agreement', es: 'Concordancia' }, lang)}</th>
+    <ViewsRow shares={[2, 3]}>
+      <PlotCard
+        fill
+        title={{ en: `Table 5's intervals along the default correlation, at ${lv('en')}`, es: `Los intervalos de la Tabla 5 según la correlación de incumplimiento, al ${lv('es')}` }}
+        lane={LIVE}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: `Schuermann and Hanson (2004), Table 5's inputs, ${defaults} defaults of ${n} obligors, recomputed live from ${span('en')} of default correlation at the rail's level: the Wald and Agresti-Coull bounds through N dagger; dots, the printed bounds at ${rhos.map((r) => pct0('en', r)).join(', ')}, which are at ${t5('en')}${offLevel ? `, so at ${lv('en')} the lines leave them by design` : ''}. A correlation of ${pct0('en', firstRho)} already cuts N dagger from ${n} to ${formatNumber(effectiveN(n, firstRho), 'en', { digits: 3 })}. Marked: the rail's correlation. ${attributionOf(sel, 'schuermann-hanson-2004')}.`,
+          es: `Los insumos de la Tabla 5 de Schuermann y Hanson (2004), ${defaults} incumplimientos de ${n} deudores, recalculados en vivo de ${span('es')} de correlación de incumplimiento al nivel del panel: las cotas de Wald y de Agresti-Coull mediante N daga; puntos, las cotas impresas en ${rhos.map((r) => pct0('es', r)).join(', ')}, que están al ${t5('es')}${offLevel ? `, así que al ${lv('es')} las líneas se apartan de ellas por diseño` : ''}. Una correlación de ${pct0('es', firstRho)} ya reduce N daga de ${n} a ${formatNumber(effectiveN(n, firstRho), 'es', { digits: 3 })}. Marcada: la correlación del panel. ${attributionOf(sel, 'schuermann-hanson-2004')}.`,
+        }}
+      >
+        <UPlotChart
+          height="fill"
+          x={{ values: RHO_GRID, label: { en: 'Default correlation between every pair', es: 'Correlación de incumplimiento entre cada par' }, format: { percent: true, decimals: 2 } }}
+          y={{ label: { en: 'PD bound', es: 'Cota de la PD' }, format: { percent: true, decimals: 1 } }}
+          series={series}
+          marks={[{ x: sel.rho, label: { en: 'rail', es: 'panel' } }]}
+        />
+      </PlotCard>
+      <PlotCard
+        fill
+        title={{ en: 'Live against the print', es: 'En vivo contra lo impreso' }}
+        lane={LIVE}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: `Bounds in basis points, lower to upper; the N† rows are effective numbers of obligors, and the rail's rows give their N† in the last column. Table 5 at its own level (${t5('en')}): ${agree} of ${live.length} intervals recomputed in your browser agree with the print to its two decimals (bounds and lengths). Last rows: the three intervals at the rail's correlation (${rhoText('en')}) and level (${lv('en')}); Jeffreys has no correlation correction.`,
+          es: `Cotas en puntos básicos, de la inferior a la superior; las filas N† son números efectivos de deudores, y las filas del panel dan su N† en la última columna. La Tabla 5 a su propio nivel (${t5('es')}): ${agree} de ${live.length} intervalos recalculados en su navegador concuerdan con lo impreso a sus dos decimales (cotas y largos). Últimas filas: los tres intervalos a la correlación (${rhoText('es')}) y el nivel (${lv('es')}) del panel; Jeffreys no tiene corrección por correlación.`,
+        }}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table ct-wrap-head" data-table="table5-live">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Interval and correlation', es: 'Intervalo y correlación' }, lang)}</th>
+                <th>{pick({ en: 'Printed', es: 'Impreso' }, lang)}</th>
+                <th>{pick({ en: 'Live', es: 'En vivo' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Agreement', es: 'Concordancia' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {live.map(({ row, live: x, agrees }) => (
+                <tr key={`${row.interval}-${row.rho}`} data-row={`${row.interval}|${row.rho}`} data-agrees={agrees ? 'yes' : 'no'}>
+                  <td className="ct-text">{`${pick(INTERVAL_NAME[row.interval] ?? { en: row.interval, es: row.interval }, lang)}, ${pct0(lang, row.rho)}`}</td>
+                  <td>{bpRange(lang, row.printed[0], row.printed[1], SR190_DECIMALS)}</td>
+                  <td>{bpRange(lang, x[0], x[1], SR190_DECIMALS + 1)}</td>
+                  <td className="ct-text">{(agrees ? AGREES : DIFFERS)[lang]}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {live.map(({ row, live: x, agrees }) => (
-                  <tr key={`${row.interval}-${row.rho}`} data-row={`${row.interval}|${row.rho}`} data-agrees={agrees ? 'yes' : 'no'}>
-                    <td className="ct-text">{`${pick(INTERVAL_NAME[row.interval] ?? { en: row.interval, es: row.interval }, lang)}, ${pct0(lang, row.rho)}`}</td>
-                    <td>{bpRange(lang, row.printed[0], row.printed[1], SR190_DECIMALS)}</td>
-                    <td>{bpRange(lang, x[0], x[1], SR190_DECIMALS + 1)}</td>
-                    <td className="ct-text">{(agrees ? AGREES : DIFFERS)[lang]}</td>
+              ))}
+              {o.sr190.n_dagger.printed.map((p, k) => {
+                const rho = rhos[k];
+                const dec = o.sr190.n_dagger.decimals[k];
+                const ne = rho === undefined ? null : effectiveN(n, rho);
+                const ok = ne !== null && printsAs(ne, p, dec);
+                return (
+                  <tr key={`n-dagger-${k}`} data-row={`n_dagger|${k}`} data-agrees={ok ? 'yes' : 'no'}>
+                    <td className="ct-text">{`${pick(N_DAGGER, lang)}, ${rho === undefined ? '-' : pct0(lang, rho)}`}</td>
+                    <td>{formatNumber(p, lang, { decimals: dec })}</td>
+                    <td>{ne === null ? '-' : formatNumber(ne, lang, { decimals: dec + 2 })}</td>
+                    <td className="ct-text">{(ok ? AGREES : DIFFERS)[lang]}</td>
                   </tr>
-                ))}
-                {o.sr190.n_dagger.printed.map((p, k) => {
-                  const rho = rhos[k];
-                  const dec = o.sr190.n_dagger.decimals[k];
-                  const ne = rho === undefined ? null : effectiveN(n, rho);
-                  const ok = ne !== null && printsAs(ne, p, dec);
-                  return (
-                    <tr key={`n-dagger-${k}`} data-row={`n_dagger|${k}`} data-agrees={ok ? 'yes' : 'no'}>
-                      <td className="ct-text">{`${pick(N_DAGGER, lang)}, ${rho === undefined ? '-' : pct0(lang, rho)}`}</td>
-                      <td>{formatNumber(p, lang, { decimals: dec })}</td>
-                      <td>{ne === null ? '-' : formatNumber(ne, lang, { decimals: dec + 2 })}</td>
-                      <td className="ct-text">{(ok ? AGREES : DIFFERS)[lang]}</td>
-                    </tr>
-                  );
-                })}
-                {atRail.map((r) => (
-                  <tr key={`rail-${r.key}`} data-row={`rail|${r.key}`} className="ct-current">
-                    <td className="ct-text">{`${pick(r.label, lang)}, ${pick({ en: 'rail', es: 'panel' }, lang)} ${rhoText(lang)}, ${lv(lang)}`}</td>
-                    <td>-</td>
-                    <td>{bpRange(lang, r.i.lower, r.i.upper, SR190_DECIMALS + 1)}</td>
-                    <td className="ct-text">{`N† ${formatNumber(r.i.nEffective, lang, { digits: 4 })}`}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-    </div>
+                );
+              })}
+              {atRail.map((r) => (
+                <tr key={`rail-${r.key}`} data-row={`rail|${r.key}`} className="ct-current">
+                  <td className="ct-text">{`${pick(r.label, lang)}, ${pick({ en: 'rail', es: 'panel' }, lang)} ${rhoText(lang)}, ${lv(lang)}`}</td>
+                  <td>-</td>
+                  <td>{bpRange(lang, r.i.lower, r.i.upper, SR190_DECIMALS + 1)}</td>
+                  <td className="ct-text">{`N† ${formatNumber(r.i.nEffective, lang, { digits: 4 })}`}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
