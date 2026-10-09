@@ -1,10 +1,11 @@
 // The Findings group: what the validation found, with its severity, its status and the evidence behind it. Severity
 // follows the case's stated policy (the level of the PD weighs more than its fit across the range); a finding cites
 // the tests that evidence it, a contract-1 rule of the inputs, or a design limit.
-import { PlotCard, Verdict, formatNumber, pick, useShellLang, useWorkbenchState } from '@fasl-work/caos-app-shell';
+import { PlotCard, Verdict, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import type { Finding, TestRow } from '../lib/contract.types';
 import { LIGHT_TEXT, relight } from '../lib/policy';
+import { useFindingsShares } from '../lib/useMedia';
 import { REPLAY, provenanceOf, type Selection } from './model';
 import { Pending } from './Pending';
 
@@ -61,6 +62,7 @@ function cited(sel: Selection, e: string): TestRow | undefined {
 export function FindingsView({ sel }: { sel: Selection | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
+  const shares = useFindingsShares();
   if (!sel) return <Pending />;
   const v = sel.data.variant;
   const order = ['S1', 'S2', 'S3', 'S4'];
@@ -122,32 +124,30 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
   );
   if (points.length === 0) return table;
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-findings-table">{table}</div>
-      <div className="ct-col ct-findings-chart">
-        <PlotCard
-          fill
-          title={{ en: 'The evidence against the policy', es: 'La evidencia contra la política' }}
-          lane={REPLAY}
-          provenance={provenanceOf(v.provenance.truth_status)}
-          dataKey={stateKey}
-          note={{
-            en: `The p-value of each cited test, numbered as in the table, on a log scale against the rail's amber (${formatNumber(sel.alphas.amber, 'en', { digits: 2 })}) and red (${formatNumber(sel.alphas.red, 'en', { digits: 2 })}) thresholds: how far past the line each finding's evidence lies. A p-value below 1e-16 is drawn at 1e-16.`,
-            es: `El valor p de cada prueba citada, numerada como en la tabla, en escala logarítmica contra los umbrales ámbar (${formatNumber(sel.alphas.amber, 'es', { digits: 2 })}) y rojo (${formatNumber(sel.alphas.red, 'es', { digits: 2 })}) del panel: cuán lejos de la línea está la evidencia de cada hallazgo. Un valor p bajo 1e-16 se dibuja en 1e-16.`,
-          }}
-        >
-          <UPlotChart
-            height="fill"
-            x={{ values: xs, label: { en: 'Cited test (the number in the table)', es: 'Prueba citada (el número de la tabla)' }, format: { decimals: 0 } }}
-            y={{ label: { en: 'p-value', es: 'Valor p' }, log: true, format: { digits: 2 } }}
-            series={[
-              { label: { en: 'p-value', es: 'Valor p' }, values: pad(points.map((x) => Math.max(floorP, x.row?.p_value ?? 1))), color: '--color-accent', mode: 'points' },
-              { label: { en: 'Amber threshold', es: 'Umbral ámbar' }, values: xs.map(() => sel.alphas.amber), color: '--color-warn', width: 1.2, dash: [6, 4] },
-              { label: { en: 'Red threshold', es: 'Umbral rojo' }, values: xs.map(() => sel.alphas.red), color: '--color-bad', width: 1.2, dash: [2, 4] },
-            ]}
-          />
-        </PlotCard>
-      </div>
-    </div>
+    <ViewsRow shares={shares}>
+      {table}
+      <PlotCard
+        fill
+        title={{ en: 'The evidence against the policy', es: 'La evidencia contra la política' }}
+        lane={REPLAY}
+        provenance={provenanceOf(v.provenance.truth_status)}
+        dataKey={stateKey}
+        note={{
+          en: `The p-value of each cited test, numbered as in the table, on a log scale against the rail's amber (${formatNumber(sel.alphas.amber, 'en', { digits: 2 })}) and red (${formatNumber(sel.alphas.red, 'en', { digits: 2 })}) thresholds: how far past the line each finding's evidence lies. A p-value below 1e-16 is drawn at 1e-16.`,
+          es: `El valor p de cada prueba citada, numerada como en la tabla, en escala logarítmica contra los umbrales ámbar (${formatNumber(sel.alphas.amber, 'es', { digits: 2 })}) y rojo (${formatNumber(sel.alphas.red, 'es', { digits: 2 })}) del panel: cuán lejos de la línea está la evidencia de cada hallazgo. Un valor p bajo 1e-16 se dibuja en 1e-16.`,
+        }}
+      >
+        <UPlotChart
+          height="fill"
+          x={{ values: xs, label: { en: 'Cited test (the number in the table)', es: 'Prueba citada (el número de la tabla)' }, format: { decimals: 0 } }}
+          y={{ label: { en: 'p-value', es: 'Valor p' }, log: true, format: { digits: 2 } }}
+          series={[
+            { label: { en: 'p-value', es: 'Valor p' }, values: pad(points.map((x) => Math.max(floorP, x.row?.p_value ?? 1))), color: '--color-accent', mode: 'points' },
+            { label: { en: 'Amber threshold', es: 'Umbral ámbar' }, values: xs.map(() => sel.alphas.amber), color: '--color-warn', width: 1.2, dash: [6, 4] },
+            { label: { en: 'Red threshold', es: 'Umbral rojo' }, values: xs.map(() => sel.alphas.red), color: '--color-bad', width: 1.2, dash: [2, 4] },
+          ]}
+        />
+      </PlotCard>
+    </ViewsRow>
   );
 }
