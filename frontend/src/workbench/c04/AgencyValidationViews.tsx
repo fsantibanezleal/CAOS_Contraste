@@ -15,6 +15,7 @@ import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { pdAgrestiCoull, pdJeffreys, pdWald } from '../../engine/transitions';
 import type { C04AgencyOutputs, C04Bounds, C04Cohort, C04Lifetime, C04Lra, VariantArtifact } from '../../lib/contract.types';
+import { useMedia } from '../../lib/useMedia';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import {
@@ -930,6 +931,10 @@ export function ratioAt(o: C04AgencyOutputs, x: Definition, g: number): number |
 export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
+  // the cohorts where tab 2 differs from tab 4 sit under the definitions only where the screen has the height for both:
+  // at 1280 x 800 the two filling cards left the definitions' table one row (the By year view gives each cohort's two
+  // counts on every screen)
+  const tall = useMedia('(min-height: 1100px)', true);
   const v = agencyOf(sel);
   const series = useMemo(() => (v ? gapSeries(v.outputs) : []), [v]);
   const gaps = useMemo(() => (v ? cohortGaps(v.outputs) : []), [v]);
@@ -956,8 +961,8 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
     const d3Text = sameEvents
       ? t(
           l,
-          " Tab 3's default events equal tab 2's rated defaulters in every cohort, so D3 over D2 is tab 2's pooled cohort over tab 4's: above 1 where the default-rate page counts more ratings (the cohorts beside).",
-          ' Los eventos de incumplimiento de la pestaña 3 igualan a las calificaciones incumplidas de la pestaña 2 en cada cohorte, así que D3 sobre D2 es la cohorte agrupada de la pestaña 2 sobre la de la pestaña 4: mayor que 1 donde la página de tasas de incumplimiento cuenta más calificaciones (las cohortes al lado).',
+          ` Tab 3's default events equal tab 2's rated defaulters in every cohort, so D3 over D2 is tab 2's pooled cohort over tab 4's: above 1 where the default-rate page counts more ratings (${tall ? 'the cohorts beside' : "the By year view gives each cohort's two counts"}).`,
+          ` Los eventos de incumplimiento de la pestaña 3 igualan a las calificaciones incumplidas de la pestaña 2 en cada cohorte, así que D3 sobre D2 es la cohorte agrupada de la pestaña 2 sobre la de la pestaña 4: mayor que 1 donde la página de tasas de incumplimiento cuenta más calificaciones (${tall ? 'las cohortes al lado' : 'la vista Por año da los dos conteos de cada cohorte'}).`,
         )
       : t(l, ' D3 counts every default event, which can exceed the rated defaulters.', ' D3 cuenta cada evento de incumplimiento, que puede superar a las calificaciones incumplidas.');
     const d4Text = !d4
@@ -1092,50 +1097,52 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
             </table>
           </div>
         </PlotCard>
-        <PlotCard
-          fill
-          title={{ en: "Where tab 2's cohort differs from tab 4's", es: 'Dónde la cohorte de la pestaña 2 difiere de la pestaña 4' }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={gapNote}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table ct-wrap-head" data-table="tab2-cohorts">
-              <thead>
-                <tr>
-                  <th>{pick({ en: 'Year', es: 'Año' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Grades: tab 2 against tab 4', es: 'Grados: pestaña 2 contra pestaña 4' }, lang)}</th>
-                  <th className="ct-wide-only">{pick({ en: 'Extra ratings', es: 'Calif. de más' }, lang)}</th>
-                  <th>{pick({ en: 'Largest label gap, %', es: 'Mayor brecha de etiqueta, %' }, lang)}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {gaps.length ? (
-                  gaps.map((x) => (
-                    <tr key={x.label} data-year={x.label} className={x.cells.some((c) => c.grade === g) ? 'ct-current' : undefined}>
-                      <td>{x.label}</td>
-                      <td className="ct-text" data-col="cells">
-                        {x.cells.map((c) => `${GRADES[c.grade]} ${count(lang, c.tab2)} ${pick({ en: 'against', es: 'contra' }, lang)} ${count(lang, c.tab4)}`).join('; ')}
-                      </td>
-                      <td className="ct-wide-only" data-col="extra">
-                        {count(lang, x.extra)}
-                      </td>
-                      <td data-col="gap">{x.gap === null ? '-' : `${x.gap > 0 ? '+' : ''}${pc(lang, x.gap)}`}</td>
-                    </tr>
-                  ))
-                ) : (
+        {tall && (
+          <PlotCard
+            fill
+            title={{ en: "Where tab 2's cohort differs from tab 4's", es: 'Dónde la cohorte de la pestaña 2 difiere de la pestaña 4' }}
+            lane={REPLAY}
+            provenance={prov}
+            dataKey={stateKey}
+            note={gapNote}
+          >
+            <div className="ct-scroll">
+              <table className="caos-table ct-wrap-head" data-table="tab2-cohorts">
+                <thead>
                   <tr>
-                    <td>-</td>
-                    <td className="ct-text">{pick({ en: 'none', es: 'ninguna' }, lang)}</td>
-                    <td className="ct-wide-only">-</td>
-                    <td>-</td>
+                    <th>{pick({ en: 'Year', es: 'Año' }, lang)}</th>
+                    <th className="ct-text">{pick({ en: 'Grades: tab 2 against tab 4', es: 'Grados: pestaña 2 contra pestaña 4' }, lang)}</th>
+                    <th className="ct-wide-only">{pick({ en: 'Extra ratings', es: 'Calif. de más' }, lang)}</th>
+                    <th>{pick({ en: 'Largest label gap, %', es: 'Mayor brecha de etiqueta, %' }, lang)}</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
+                </thead>
+                <tbody>
+                  {gaps.length ? (
+                    gaps.map((x) => (
+                      <tr key={x.label} data-year={x.label} className={x.cells.some((c) => c.grade === g) ? 'ct-current' : undefined}>
+                        <td>{x.label}</td>
+                        <td className="ct-text" data-col="cells">
+                          {x.cells.map((c) => `${GRADES[c.grade]} ${count(lang, c.tab2)} ${pick({ en: 'against', es: 'contra' }, lang)} ${count(lang, c.tab4)}`).join('; ')}
+                        </td>
+                        <td className="ct-wide-only" data-col="extra">
+                          {count(lang, x.extra)}
+                        </td>
+                        <td data-col="gap">{x.gap === null ? '-' : `${x.gap > 0 ? '+' : ''}${pc(lang, x.gap)}`}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td>-</td>
+                      <td className="ct-text">{pick({ en: 'none', es: 'ninguna' }, lang)}</td>
+                      <td className="ct-wide-only">-</td>
+                      <td>-</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </PlotCard>
+        )}
       </>
     </ViewsRow>
   );

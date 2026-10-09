@@ -68,6 +68,22 @@ describe('MatrixMap', () => {
     expect(column(wide, 2).text).toBe('D');
   });
 
+  it('prints every cell without its unit, the header carrying it, when a value does not fit with it', () => {
+    // eight states at 480 px: "<0.01 %" is wider than its cell, "<0.01" is not (the server's estimate, 0.62 em)
+    const cols = ['AAA', 'AA', 'A', 'BBB', 'BB', 'B', 'CCC-C', 'D'];
+    const eight: MatrixMapProps = { ...base, rows: ['AAA'], cols, values: [[0.79, 0.161, 0.0082, 0, 0.00004, 0.0026, 0.001, 0]], counts: null, diagonal: [0], selectedRow: 0 };
+    const m = draw(eight);
+    expect(m).toContain('At the end of the period (%)');
+    expect(m).toContain('>&lt;0.01<');
+    expect(m).toContain('>0.82<');
+    // no cell keeps its unit (the colour bar's ticks do)
+    expect(m).not.toMatch(/pointer-events:none[^>]*>[^<]*\u00a0%</);
+    // with room for every value and its unit, the units stay in the cells and the header has none
+    const wide = draw(base);
+    expect(wide).not.toContain('(%)');
+    expect(wide).toContain('>90.0\u00a0%<');
+  });
+
   it('is viridis at its ends and clamps outside [0, 1]', () => {
     expect(viridis(0)).toBe('rgb(68, 1, 84)');
     expect(viridis(1)).toBe('rgb(253, 231, 37)');

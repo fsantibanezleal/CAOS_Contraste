@@ -627,6 +627,9 @@ export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
   const shares = useFindingsShares();
+  // a short table stacks over its drawing only where the screen has the height for both: at 1280 x 800 the papers'
+  // three findings left the drawing under them no plot at all
+  const tall = useMedia('(min-height: 1100px)', true);
   const v = sel?.data.variant as VariantArtifact<unknown> | undefined;
   const ev = useMemo(() => (v ? findingsEvidence(v) : null), [v]);
   const grade = sel?.grade ?? 0;
@@ -638,8 +641,9 @@ export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
   const worst = open[0]?.severity ?? null;
   const tone: Tone = worst === 'S1' || worst === 'S2' ? 'bad' : worst === 'S3' ? 'warn' : 'good';
   const src = sourceOf(v);
-  // a short table at its own height over the drawing; a long one scrolls in a card beside it; no drawing, the table alone
-  const compact = Boolean(drawing) && isCompact(ev.findings);
+  // a short table at its own height over the drawing on a tall screen; otherwise the table scrolls in a card beside it;
+  // no drawing, the table alone
+  const compact = Boolean(drawing) && isCompact(ev.findings) && tall;
   const fill = !compact;
   const where: Bi = !drawing
     ? {

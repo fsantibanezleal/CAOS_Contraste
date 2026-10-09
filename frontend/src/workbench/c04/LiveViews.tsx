@@ -18,6 +18,7 @@ import { effectiveN, pdAgrestiCoull, pdJeffreys, pdWald, project, type Projectio
 import type { VariantArtifact } from '../../lib/contract.types';
 import { provenanceOf } from '../model';
 import { Pending } from '../Pending';
+import { useMedia } from '../../lib/useMedia';
 import { Ref } from '../../content/bi';
 import { yearRanges } from '../../content/cases/C04Results';
 import { emptyDefaultYears } from './AgencyValidationViews';
@@ -234,10 +235,15 @@ function startText(start: StartPortfolio, agency: boolean): Both {
 export function DriftView({ sel }: { sel: C04Sel | null }) {
   const stateKey = useWorkbenchState()?.stateKey;
   const drift = useDrift(sel);
+  // the mix by grade beside the projection only where the screen has the height for both: at 1280 x 800 an agency's
+  // projection and mix, each with its notes, were left a plot of 10 to 30 px over the table
+  const tall = useMedia('(min-height: 1100px)', true);
   const v = variantOf(sel);
   if (!sel || !v || !drift) return <Pending />;
   const prov = provenanceOf(v.provenance.truth_status);
   const src = sourceNote(sel, true);
+  // the mix and the table show shares of the balance, not a PD: CEREP's line without ESMA's statement on definitions
+  const srcLine = sourceNote(sel);
   const agency = isAgency(v) ? v : null;
   const family = isFamily(v) ? v : null;
   const start = twice(START_LABEL[sel.start]);
@@ -271,8 +277,8 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
               es: `La página de transiciones de ${name.es} no tiene categoría de incumplimiento, así que su matriz agrupada no tiene columna de incumplimiento: la cartera nunca incumple, y la proyección (9) de Engelmann (2024) no tiene tasa de incumplimiento que dar, pues su cartera TTC (10) necesita una columna de incumplimiento para castigar y reoriginar. Se dibuja: la cartera inicial (${start.es}: ${built.es}) movida solo por la matriz (${cohorts} cohortes anuales, sin retiros), la fracción del saldo en cada grado por año, el grado elegido más grueso. ${src.es}`,
             }
           : {
-              en: `Each grade's share of the balance at the start of each year, the chosen grade thicker; default holds nothing once the defaulted balance is re-originated. ${src.en}`,
-              es: `La fracción del saldo en cada grado al inicio de cada año, el grado elegido más grueso; el incumplimiento no retiene nada una vez reoriginado el saldo incumplido. ${src.es}`,
+              en: `Each grade's share of the balance at the start of each year, the chosen grade thicker; default holds nothing once the defaulted balance is re-originated. ${srcLine.en}`,
+              es: `La fracción del saldo en cada grado al inicio de cada año, el grado elegido más grueso; el incumplimiento no retiene nada una vez reoriginado el saldo incumplido. ${srcLine.es}`,
             }
       }
     />
@@ -286,12 +292,12 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
       note={
         longRun
           ? {
-              en: `Shares of the balance, with the L1 distance to the matrix's own long-run mix, to which the portfolio drifts with nothing leaving it; * the chosen grade. ${src.en}`,
-              es: `Fracciones del saldo, con la distancia L1 a la mezcla de largo plazo de la propia matriz, hacia la que deriva la cartera sin que nada salga de ella; * el grado elegido. ${src.es}`,
+              en: `Shares of the balance, with the L1 distance to the matrix's own long-run mix, to which the portfolio drifts with nothing leaving it; * the chosen grade. ${srcLine.en}`,
+              es: `Fracciones del saldo, con la distancia L1 a la mezcla de largo plazo de la propia matriz, hacia la que deriva la cartera sin que nada salga de ella; * el grado elegido. ${srcLine.es}`,
             }
           : {
-              en: `Shares of the balance: the start (${built.en}${family ? `, ${counts('en', family.outputs.generator.obligors)} obligors` : ''}), the mix after ${H} years and the TTC portfolio (10), with the L1 distance to it; * the chosen grade. ${src.en}`,
-              es: `Fracciones del saldo: el inicio (${built.es}${family ? `, ${counts('es', family.outputs.generator.obligors)} deudores` : ''}), la mezcla tras ${H} años y la cartera TTC (10), con la distancia L1 a ella; * el grado elegido. ${src.es}`,
+              en: `Shares of the balance: the start (${built.en}${family ? `, ${counts('en', family.outputs.generator.obligors)} obligors` : ''}), the mix after ${H} years and the TTC portfolio (10), with the L1 distance to it; * the chosen grade. ${srcLine.en}`,
+              es: `Fracciones del saldo: el inicio (${built.es}${family ? `, ${counts('es', family.outputs.generator.obligors)} deudores` : ''}), la mezcla tras ${H} años y la cartera TTC (10), con la distancia L1 a ella; * el grado elegido. ${srcLine.es}`,
             }
       }
     />
@@ -331,7 +337,7 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
       };
   return (
     <>
-      <ViewsRow shares={[3, 2]}>
+      <ViewsRow shares={tall ? [3, 2] : undefined}>
         <PlotCard
           fill
           title={{ en: `Projected default rate, start: ${start.en}`, es: `Tasa proyectada, inicio: ${start.es}` }}
@@ -350,7 +356,7 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
             series={rateSeries.map(pad)}
           />
         </PlotCard>
-        {composition}
+        {tall && composition}
       </ViewsRow>
       {table}
     </>
