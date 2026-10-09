@@ -64,6 +64,12 @@ describe('C04 on a short screen', () => {
     expect(titles(m)).toHaveLength(2);
     expect(notes(m)[0]).toContain("the By year view gives each cohort's two counts");
     expect(notes(m)[0]).not.toContain('the cohorts beside');
+    // the chart and the definitions share the row equally; the chart's ratios close with CEREP's line, and ESMA's
+    // statement heads the definitions beside them
+    expect(m).toMatch(/<div class="caos-views-row" data-views="2"><div class="caos-views-col" data-share="1"/);
+    expect(notes(m)[0]).not.toContain(pick(ESMA_DEFINITIONS, 'en'));
+    expect(notes(m)[0]).toContain('Source: ESMA CEREP; tables transformed by Contraste');
+    expect(unesc(m)).toContain(pick(ESMA_DEFINITIONS, 'en'));
     const es = html(<DefinitionsView sel={makeSel(dataOf('sp'))} />, 'es');
     expect(notes(es)[0]).toContain('la vista Por año da los dos conteos de cada cohorte');
   });

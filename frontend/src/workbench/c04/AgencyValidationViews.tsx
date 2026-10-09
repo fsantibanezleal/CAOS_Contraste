@@ -984,7 +984,8 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
       ) +
       d3Text +
       d4Text +
-      pdSource(o, l)
+      // a ratio of definitions, not a PD: CEREP's line alone; ESMA's statement heads the definitions beside it
+      ` ${sourceText(o, l)}`
     );
   });
   const gapNote = bi((l) => {
@@ -1036,7 +1037,7 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
       ) + ` ${sourceText(o, l)}`,
   );
   return (
-    <ViewsRow shares={[2, 3]}>
+    <ViewsRow shares={tall ? [2, 3] : [1, 1]}>
       <PlotCard
         fill
         title={bi((l) => t(l, `${pick(name, l)}: each definition's pooled rate over D2's`, `${pick(name, l)}: la tasa agrupada de cada definición sobre la de D2`))}
