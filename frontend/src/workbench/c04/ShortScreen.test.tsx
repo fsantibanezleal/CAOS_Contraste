@@ -2,7 +2,7 @@
 // screen, a short one gives the first card the room (at 1280 x 800 the second card left the first a plot of 10 to 30 px
 // or a table of one row). The server-rendered tests elsewhere render the tall layout, the hook's server default.
 import { readFileSync } from 'node:fs';
-import { useLangStore } from '@fasl-work/caos-app-shell';
+import { pick, useLangStore } from '@fasl-work/caos-app-shell';
 import type { ReactElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router';
@@ -48,14 +48,14 @@ describe('C04 on a short screen', () => {
       expect(t, lang).toHaveLength(2);
       expect(t[0]).toMatch(lang === 'en' ? /^Projected default rate/ : /^Tasa proyectada/);
       const n = notes(m);
-      expect(n[0]).toContain(ESMA_DEFINITIONS[lang]);
-      expect(n[1]).not.toContain(ESMA_DEFINITIONS[lang]);
+      expect(n[0]).toContain(pick(ESMA_DEFINITIONS, lang));
+      expect(n[1]).not.toContain(pick(ESMA_DEFINITIONS, lang));
       expect(n[1]).toContain('Source: ESMA CEREP; tables transformed by Contraste');
     }
     // Moody's has no default column: the mix is its view, and it keeps the statement
     const moodys = html(<DriftView sel={makeSel(dataOf('moodys'))} />);
     expect(titles(moodys)[0]).toBe("The portfolio's mix by grade");
-    expect(notes(moodys)[0]).toContain(ESMA_DEFINITIONS.en);
+    expect(notes(moodys)[0]).toContain(pick(ESMA_DEFINITIONS, 'en'));
   });
 
   it('Definitions: the definitions alone beside the chart, and the chart points to By year for the cohorts', () => {
