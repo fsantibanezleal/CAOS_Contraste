@@ -1,10 +1,10 @@
 // CT-411: the transition-matrix heat map. The colour scale is viridis at its ends, the three scales place the cells
 // as declared (the migrations scale keeps the diagonal out of the range, the log scale puts zeros at the bottom), the
 // drawing has one cell per entry with the selected row marked, and the readout gives the move, its value and its count.
-import { formatNumber } from '@fasl-work/caos-app-shell';
+import { formatNumber, textWidth } from '@fasl-work/caos-app-shell';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { MatrixDrawing, MatrixMap, matrixReadout, textWidth, viridis, type MatrixMapProps } from './MatrixMap';
+import { MatrixDrawing, MatrixMap, matrixReadout, viridis, type MatrixMapProps } from './MatrixMap';
 
 const base: MatrixMapProps = {
   label: { en: 'A test matrix', es: 'Una matriz de prueba' },
@@ -41,21 +41,31 @@ describe('MatrixMap', () => {
       diagonal: [0],
       selectedRow: 0,
     };
+    const column = (markup: string, j: number) => {
+      const m = new RegExp(`<text data-col="${j}" x="[\\d.]+" y="([\\d.]+)"[^>]*>(?:<title>([^<]*)</title>)?([^<]*)</text>`).exec(markup);
+      expect(m, `column ${j}`).not.toBeNull();
+      return { y: Number(m![1]), title: m![2], text: m![3] };
+    };
     const narrow = renderToStaticMarkup(<MatrixDrawing p={nine} width={300} height={200} hover={null} setHover={() => undefined} />);
-    const colY = grades.map((g) => Number(new RegExp(`<text x="[\\d.]+" y="([\\d.]+)"[^>]*>${g}</text>`).exec(narrow)?.[1]));
-    expect(new Set(colY).size, 'two lines of column labels').toBe(2);
+    const cols = grades.map((_, j) => column(narrow, j));
+    const ys = [...new Set(cols.map((c) => c.y))].sort((a, b) => a - b);
+    expect(ys, 'two lines of column labels').toHaveLength(2);
+    // the lines a label's box apart, so a label on one never reaches into the other
+    expect(ys[1] - ys[0]).toBeGreaterThanOrEqual(16);
     // neighbours on different lines, so no two adjacent labels share one
-    for (let j = 1; j < grades.length; j++) expect(colY[j]).not.toBe(colY[j - 1]);
-    // each column label carries clip-path and, where too wide, textLength to constrain the bounding box (gate G10)
-    expect(narrow).toContain('clip-path="url(#');
-    for (let j = 0; j < grades.length; j++) expect(narrow).toContain(`-col-${j}"`);
-    expect(narrow, 'CCC-C is compressed to fit its cell').toContain('textLength=');
+    for (let j = 1; j < grades.length; j++) expect(cols[j].y).not.toBe(cols[j - 1].y);
+    // a label gets two columns of room on its line; "CCC-C" needs more here and is shortened, its whole name the title
+    const cw = (300 - 62 - 74) / 9;
+    for (const c of cols) expect(textWidth(c.text, 12)).toBeLessThanOrEqual(2 * cw - 4);
+    expect(cols[6].title).toBe('CCC-C');
+    expect(cols[6].text.endsWith('\u2026')).toBe(true);
+    expect(cols[0]).toEqual({ y: cols[0].y, title: undefined, text: 'AAA' });
     // no value printed wider than its cell (the server's estimate: 0.62 em a character)
     expect(narrow).not.toContain('>79 %<');
     const wide = draw(base);
-    // a cell wide enough prints its value (three significant digits, as the map writes it)
+    // a cell wide enough prints its value (three significant digits, as the map writes it), and its labels whole
     expect(wide).toContain('>90.0\u00a0%<');
-    expect(textWidth('CCC-C', 12, '')).toBeCloseTo(5 * 12 * 0.62, 9);
+    expect(column(wide, 2).text).toBe('D');
   });
 
   it('is viridis at its ends and clamps outside [0, 1]', () => {
