@@ -107,6 +107,8 @@ describe('the C04 instrument', () => {
 
   it('the groups are the six questions, in order, and the rail holds the sections that act on the variant', () => {
     const rail: Record<string, string> = {
+      // the Markov family's estimators have a section of their own (ADR-0071 rule 6 in Spanish)
+      markov: 'grade,estimator,projection,interval',
       published: 'interval',
     };
     for (const c of cases) {

@@ -471,7 +471,9 @@ export function papersChart(p: PublishedVariant, points: EvidencePoint[]): Desig
   return {
     title: { en: "The papers' printed values against their recomputation", es: 'Los valores impresos de los artículos contra su recálculo' },
     x: { values: xs, label: { en: 'Printed value, numbered by paper', es: 'Valor impreso, numerado por artículo' }, format: { decimals: 0 } },
-    y: { label: { en: 'Recomputed over printed, minus one', es: 'Recalculado sobre impreso, menos uno' }, unit: { en: '%', es: '%' }, format: { percent: true, decimals: 2 } },
+    // the axis says what the note defines (the recomputation over the print, minus one): at 1280 x 800 the beside
+    // layout's plot is shorter than the longer title, which the axis cut
+    y: { label: { en: 'Gap to the print', es: 'Brecha con lo impreso' }, unit: { en: '%', es: '%' }, format: { percent: true, decimals: 2 } },
     series: [...drawn, { label: { en: 'Recomputed equals printed', es: 'Recalculado igual a impreso' }, values: xs.map(() => 0), color: '--color-fg-subtle', width: 1, dash: [2, 4] }],
     note: {
       en: `Every printed value of the three papers (each paper's own inputs recomputed by riskvalidation), as the recomputation over the print, minus one, in percent: 0 is exact. ${agree} of ${checks.length} agree at the printed digits; red, the ${differ} that do not; amber, Engelmann's W hat, judged within the rounding of its printed entries.${zeros.length ? ` ${zeros.length} printed zeros${exact ? ' are recomputed as exactly 0 and' : ''} have no ratio to draw.` : ''}`,
