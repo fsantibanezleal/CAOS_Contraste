@@ -121,6 +121,10 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
   // where a value does not fit its cell with its unit, every cell prints the number alone and the header carries the
   // unit (a value too wide was left blank, which read as no data: "<0.01 %" in an eight-state matrix at 1280 px)
   const unitless = printValues && labels.some((r) => r.some((s) => !fits(s)));
+  const bare = (s: string) => s.replace(/\s?%$/, '');
+  // every value or none: where even the numbers alone do not all fit (a phone's card), a few printed cells (the zeros)
+  // read as if the others were missing; the read-out gives every cell
+  const printAll = printValues && labels.every((r) => r.every((s) => fits(unitless ? bare(s) : s)));
   const pickRow = (i: number) => p.onPickRow?.(i);
   const onKey = (i: number) => (e: KeyboardEvent<SVGTextElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -141,7 +145,7 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
       </defs>
       <text x={LEFT + (m * cw) / 2} y={11} textAnchor="middle" fontSize={11} fill="var(--color-fg-subtle)">
         {pick({ en: 'At the end of the period', es: 'Al final del período' }, lang)}
-        {unitless ? ' (%)' : ''}
+        {printAll && unitless ? ' (%)' : ''}
       </text>
       <text x={LEFT - 8} y={top - 8} textAnchor="end" fontSize={11} fill="var(--color-fg-subtle)">
         {pick({ en: 'Start', es: 'Inicio' }, lang)}
@@ -188,11 +192,11 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
               const ink = v === null || outOfRange ? 'var(--color-fg)' : inkOn(t);
               const on = hover !== null && hover[0] === i && hover[1] === j;
               // a value prints where it fits its cell in the page's font; the read-out gives every cell
-              const label = unitless ? labels[i][j].replace(/\s?%$/, '') : labels[i][j];
+              const label = unitless ? bare(labels[i][j]) : labels[i][j];
               return (
                 <g key={j} onMouseEnter={() => setHover([i, j])} onClick={() => { setHover([i, j]); pickRow(i); }} style={p.onPickRow ? { cursor: 'pointer' } : undefined}>
                   <rect x={x + 0.5} y={y + 0.5} width={cw - 1} height={ch - 1} fill={fill} stroke={on ? 'var(--color-fg)' : outOfRange || v === null ? 'var(--color-border)' : 'none'} strokeWidth={on ? 2 : 1} strokeDasharray={v === null ? '3 3' : undefined} />
-                  {printValues && fits(label) && (
+                  {printAll && (
                     <text x={x + cw / 2} y={y + ch / 2} dominantBaseline="middle" textAnchor="middle" fontSize={font} fill={ink} style={{ pointerEvents: 'none', fontVariantNumeric: 'tabular-nums' }}>
                       {label}
                     </text>

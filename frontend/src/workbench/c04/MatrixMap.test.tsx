@@ -62,6 +62,9 @@ describe('MatrixMap', () => {
     expect(cols[0]).toEqual({ y: cols[0].y, title: undefined, text: 'AAA' });
     // no value printed wider than its cell (the server's estimate: 0.62 em a character)
     expect(narrow).not.toContain('>79 %<');
+    // every value or none: here not every number fits, so no cell prints, not even its zeros
+    expect(narrow).not.toContain('pointer-events:none');
+    expect(narrow).not.toContain('(%)');
     const wide = draw(base);
     // a cell wide enough prints its value (three significant digits, as the map writes it), and its labels whole
     expect(wide).toContain('>90.0\u00a0%<');
