@@ -78,6 +78,11 @@
 @media (max-width: 900px) {
   .ct-panels-fill, .ct-panels-fill[data-views="3"], .ct-panels-fill[data-views="5"], .ct-panels-fill[data-views="6"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+/* a phone: one panel a row, so a key of ten series has the width to wrap two to a line (two across left the
+   calibration panel a plot of a few pixels under its key) */
+@media (max-width: 640px) {
+  .ct-panels-fill, .ct-panels-fill[data-views="3"], .ct-panels-fill[data-views="5"], .ct-panels-fill[data-views="6"] { grid-template-columns: minmax(0, 1fr); }
+}
 
 /* the C22 detection matrix: a cell's shade is its rejection rate (0 below 5%, 4 from 80%); the loaded family's column
    is marked */
