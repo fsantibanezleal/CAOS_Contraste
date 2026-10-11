@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" class="arch-svg" role="img" aria-label="The sources, the licence manifest and the two data contracts">
+  <!-- Hand-authored. Every colour is a shell token; every label is written twice (l-en, l-es) (ADR-0058). -->
+  <style>
+    .arch-svg text { font-family: var(--font-sans); }
+    .arch-svg .mono { font-family: var(--font-mono); font-size: 10.5px; fill: var(--color-fg); }
+    .arch-svg .pn { fill: var(--color-surface); stroke: var(--color-border); stroke-width: 1.2; }
+    .arch-svg .bx { fill: var(--color-surface-2); stroke: var(--color-border); stroke-width: 1; }
+    .arch-svg .on { fill: var(--color-accent-soft); stroke: var(--color-accent); stroke-width: 1.2; }
+    .arch-svg .ttl { fill: var(--color-fg); font-size: 15px; font-weight: 700; }
+    .arch-svg .h { fill: var(--color-fg); font-size: 12px; font-weight: 700; }
+    .arch-svg .it { fill: var(--color-fg); font-size: 11px; }
+    .arch-svg .sub { fill: var(--color-fg-subtle); font-size: 10.5px; }
+    .arch-svg .bad { fill: var(--color-bad); font-size: 10.5px; font-weight: 600; }
+    .arch-svg .ar { stroke: var(--color-accent); stroke-width: 1.8; fill: none; marker-end: url(#a5); }
+    .arch-svg .tip { fill: var(--color-accent); }
+  </style>
+  <defs><marker id="a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="tip" d="M0 0 L10 5 L0 10 z"/></marker></defs>
+
+  <text class="ttl l-en" x="20" y="30">Data in, artifacts out: every byte with its licence</text>
+  <text class="ttl l-es" x="20" y="30">Datos de entrada, artefactos de salida: cada byte con su licencia</text>
+
+  <rect class="bx" x="20" y="52" width="270" height="106" rx="8"/>
+  <text class="mono" x="32" y="74">data-pipeline/config/sources.json</text>
+  <text class="sub l-en" x="32" y="94">49 sources, each with the verbatim fragment</text>
+  <text class="sub l-es" x="32" y="94">49 fuentes, cada una con el fragmento literal</text>
+  <text class="sub l-en" x="32" y="110">of its licence, its class and its cases;</text>
+  <text class="sub l-es" x="32" y="110">de su licencia, su clase y sus casos;</text>
+  <text class="bad l-en" x="32" y="130">a link-only or unusable source is never read</text>
+  <text class="bad l-es" x="32" y="130">una fuente solo enlace o inutilizable nunca se lee</text>
+  <path class="ar" d="M292 104 H328"/>
+  <rect class="bx" x="332" y="52" width="250" height="106" rx="8"/>
+  <text class="mono" x="344" y="74">data-pipeline/fetch.py</text>
+  <text class="sub l-en" x="344" y="94">downloads into the device data root,</text>
+  <text class="sub l-es" x="344" y="94">descarga a la raíz de datos del equipo,</text>
+  <text class="sub l-en" x="344" y="110">never into the repository; hashes each</text>
+  <text class="sub l-es" x="344" y="110">nunca al repositorio; calcula el hash de</text>
+  <text class="sub l-en" x="344" y="126">file; a changed hash fails unless refreshed</text>
+  <text class="sub l-es" x="344" y="126">cada archivo; un hash cambiado falla</text>
+  <path class="ar" d="M584 104 H620"/>
+  <rect class="on" x="624" y="52" width="256" height="106" rx="8"/>
+  <text class="mono" x="636" y="74">data/sources/manifest.json</text>
+  <text class="sub l-en" x="636" y="94">the licence manifest: URL, date,</text>
+  <text class="sub l-es" x="636" y="94">el manifiesto de licencias: URL, fecha,</text>
+  <text class="sub l-en" x="636" y="110">class, licence text, SHA-256 and</text>
+  <text class="sub l-es" x="636" y="110">clase, texto de licencia, SHA-256 y</text>
+  <text class="sub l-en" x="636" y="126">bytes of every file (committed)</text>
+  <text class="sub l-es" x="636" y="126">bytes de cada archivo (comprometido)</text>
+
+  <rect class="pn" x="20" y="176" width="420" height="264" rx="10"/>
+  <text class="h l-en" x="36" y="200">Contract 1: what may enter</text>
+  <text class="h l-es" x="36" y="200">Contrato 1: lo que puede entrar</text>
+  <text class="sub l-en" x="36" y="222">eight families, one per kind of source data:</text>
+  <text class="sub l-es" x="36" y="222">ocho familias, una por tipo de dato fuente:</text>
+  <text class="it" x="36" y="242">scored_sample, loan_panel, rating_history,</text>
+  <text class="it" x="36" y="258">market_series, curve, balance_sheet,</text>
+  <text class="it" x="36" y="274">loss_events, macro_path</text>
+  <text class="sub l-en" x="36" y="300">each field with its kind, unit and range; rules across</text>
+  <text class="sub l-es" x="36" y="300">cada campo con su tipo, unidad y rango; reglas entre</text>
+  <text class="sub l-en" x="36" y="316">fields and records; parsed strictly, never coerced</text>
+  <text class="sub l-es" x="36" y="316">campos y registros; leído estrictamente, nunca forzado</text>
+  <text class="sub l-en" x="36" y="340">reject: refused, with the field, value, range, policy</text>
+  <text class="sub l-es" x="36" y="340">rechazo: rehusado, con campo, valor, rango, política</text>
+  <text class="sub l-en" x="36" y="356">flag: accepted and counted (codes off the codebook)</text>
+  <text class="sub l-es" x="36" y="356">marca: aceptado y contado (códigos fuera del libro)</text>
+  <text class="sub l-en" x="36" y="372">exclude: valid, outside the use, counted</text>
+  <text class="sub l-es" x="36" y="372">exclusión: válido, fuera del uso, contado</text>
+  <text class="mono" x="36" y="400">data/derived/contract/*.json</text>
+  <text class="sub l-en" x="36" y="418">exported for the web, mirrored in TypeScript</text>
+  <text class="sub l-es" x="36" y="418">exportado para la web, reflejado en TypeScript</text>
+
+  <path class="ar" d="M442 308 H478"/>
+
+  <rect class="pn" x="482" y="176" width="398" height="264" rx="10"/>
+  <text class="h l-en" x="498" y="200">Contract 2: what the pipeline commits</text>
+  <text class="h l-es" x="498" y="200">Contrato 2: lo que el pipeline compromete</text>
+  <text class="mono" x="498" y="224">manifests/index.json, manifests/C01.json</text>
+  <text class="mono" x="498" y="242">C01/models-*.json, C01/&lt;variant&gt;.json</text>
+  <text class="sub l-en" x="498" y="266">model records, outputs, TestResult rows, impact,</text>
+  <text class="sub l-es" x="498" y="266">registros de modelos, salidas, filas TestResult, impacto,</text>
+  <text class="sub l-en" x="498" y="282">findings, provenance (truth status, licence class</text>
+  <text class="sub l-es" x="498" y="282">hallazgos, procedencia (estado de verdad, clase de</text>
+  <text class="sub l-en" x="498" y="298">and file hashes of every input), lane</text>
+  <text class="sub l-es" x="498" y="298">licencia y hashes de cada entrada), carril</text>
+  <text class="bad l-en" x="498" y="324">the export refuses a non-publishable lineage</text>
+  <text class="bad l-es" x="498" y="324">la exportación rechaza un linaje no publicable</text>
+  <text class="sub l-en" x="498" y="350">held by: the two-way contract test of the web, the</text>
+  <text class="sub l-es" x="498" y="350">sujeto por: la prueba de contrato en dos sentidos, la</text>
+  <text class="sub l-en" x="498" y="366">provenance, data-class and licence guards in CI,</text>
+  <text class="sub l-es" x="498" y="366">guardas de procedencia, clases de datos y licencias en CI,</text>
+  <text class="sub l-en" x="498" y="382">and each case's expected ranges at bake time</text>
+  <text class="sub l-es" x="498" y="382">y los rangos esperados de cada caso al precalcular</text>
+</svg>
