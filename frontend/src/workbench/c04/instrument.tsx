@@ -145,15 +145,24 @@ export function useC04Instrument(data: CaseData | null, onPick: (id: string) => 
             onChange={(id) => setDefinition(id as Definition)}
           />
         )}
-        {family?.outputs.family === 'markov' && (
-          <ChipGroup
-            id="c04-estimator"
-            label={{ en: 'Estimator', es: 'Estimador' }}
-            options={ESTIMATORS.map((e) => ({ id: e, label: ESTIMATOR_LABEL[e] }))}
-            value={estimator}
-            onChange={(id) => setEstimator(id as Estimator)}
-          />
-        )}
+        <GradeReadout sel={sel} />
+      </>
+    ),
+  };
+  // the Markov family's estimators in a section of their own: under the grades the six chips (three rows in Spanish)
+  // pushed the read-outs past the rail at 1280 x 800 (ADR-0071 rule 6)
+  const estimatorSection: RailSection = {
+    id: 'estimator',
+    label: { en: 'Estimator', es: 'Estimador' },
+    content: (
+      <>
+        <ChipGroup
+          id="c04-estimator"
+          label={{ en: 'Estimator', es: 'Estimador' }}
+          options={ESTIMATORS.map((e) => ({ id: e, label: ESTIMATOR_LABEL[e] }))}
+          value={estimator}
+          onChange={(id) => setEstimator(id as Estimator)}
+        />
         <GradeReadout sel={sel} />
       </>
     ),
@@ -253,7 +262,7 @@ export function useC04Instrument(data: CaseData | null, onPick: (id: string) => 
     model = <GeneratorView sel={sel} />;
     validation = <FamilyValidationView key={`validation-${family.outputs.family}`} sel={sel} />;
     impact = <ImpactView sel={sel} />;
-    rail = [gradeSection, projectionSection, intervalSection];
+    rail = family.outputs.family === 'markov' ? [gradeSection, estimatorSection, projectionSection, intervalSection] : [gradeSection, projectionSection, intervalSection];
   } else {
     model = <PublishedModelView sel={sel} />;
     validation = <PapersView sel={sel} />;

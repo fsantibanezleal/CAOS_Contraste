@@ -39,7 +39,9 @@ export default defineConfig({
     {
       name: 'caos-build-json',
       apply: 'build',
-      closeBundle() {
+      // writeBundle, not closeBundle: closeBundle also runs when the build fails, and writing into a dist that was never
+      // created replaced the build's own error with an ENOENT on build.json
+      writeBundle() {
         writeFileSync(new URL('frontend/dist/build.json', root), `${JSON.stringify({ version: VERSION, sha: SHA, built: new Date().toISOString() }, null, 2)}\n`);
       },
     },

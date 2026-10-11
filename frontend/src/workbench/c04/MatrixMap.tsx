@@ -6,7 +6,7 @@
 // grade, which would turn every migration the same dark colour), every cell linear, and every cell on a log scale
 // (zeros at the bottom of the scale, printed 0). The shell has no matrix chart; this one is drawn as SVG at the size
 // its stage measures, so the gate judges the drawing, not the host.
-import { Stage, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
+import { Stage, fitLabel, formatNumber, pick, textWidth, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { useId, useMemo, useState, type KeyboardEvent } from 'react';
 
 export type MapScale = 'migrations' | 'linear' | 'log';
@@ -94,27 +94,10 @@ const RIGHT = BAR_GAP + BAR + BAR_LABELS;
  * measured "0 %" cut by 4 px when the bar ran to the drawing's edge). */
 const BOTTOM = 8;
 
-/** The second line of the column labels when they alternate (see MatrixDrawing). */
-const STAGGER = 12;
-
-/** The page's font family as the browser resolves it (the gate's wide font included); empty on the server. */
-function pageFont(): string {
-  return typeof document === 'undefined' ? '' : getComputedStyle(document.body).fontFamily;
-}
-
-let measurer: CanvasRenderingContext2D | null | undefined;
-/** A label's width in pixels at a size in the page's font, measured on a canvas; on the server (no canvas), an estimate
- * of 0.62 em a character. */
-export function textWidth(text: string, px: number, family: string): number {
-  if (family && typeof document !== 'undefined') {
-    if (measurer === undefined) measurer = document.createElement('canvas').getContext('2d');
-    if (measurer) {
-      measurer.font = `${px}px ${family}`;
-      return measurer.measureText(text).width;
-    }
-  }
-  return text.length * px * 0.62;
-}
+/** The distance between the two lines of column labels when they alternate: a 12 px label's box (its ascent and descent,
+ * about 1.2 em in the gate's wide font), so a label on one line never reaches into the other (the gate's G10 measured
+ * "CCC-C" and its neighbours overlapping by 3 px with the lines 12 px apart). */
+const STAGGER = 16;
 
 /** The drawing at a measured size (exported for the server-rendered tests, where a stage never gets a size). */
 export function MatrixDrawing({ p, width, height, hover, setHover }: { p: MatrixMapProps; width: number; height: number; hover: [number, number] | null; setHover: (h: [number, number] | null) => void }) {
@@ -124,14 +107,24 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
   const n = p.rows.length;
   const m = p.cols.length;
   const cw = Math.max(1, (width - LEFT - RIGHT) / m);
-  const family = pageFont();
-  // column labels too wide for their column alternate between two lines, the grid moving down a line
-  const stagger = p.cols.some((c) => textWidth(c, 12, family) > cw - 3);
+  // column labels too wide for their column alternate between two lines, the grid moving down a line; a label then has
+  // two columns of room (its neighbours on its line are two columns away), and one still wider is shortened
+  const stagger = p.cols.some((c) => textWidth(c, 12) > cw - 3);
+  const labelRoom = stagger ? 2 * cw - 4 : cw - 3;
   const top = stagger ? TOP + STAGGER : TOP;
   const ch = Math.max(1, (height - top - BOTTOM) / n);
   const printValues = ch >= 15;
   const font = Math.max(9, Math.min(12, ch * 0.42));
   const labelFontSize = Math.min(12, font + 1);
+  const fits = (s: string) => textWidth(s, font) <= cw - 4;
+  const labels = p.values.map((r) => r.map((v) => (v === null ? '-' : cellText(v, lang))));
+  // where a value does not fit its cell with its unit, every cell prints the number alone and the header carries the
+  // unit (a value too wide was left blank, which read as no data: "<0.01 %" in an eight-state matrix at 1280 px)
+  const unitless = printValues && labels.some((r) => r.some((s) => !fits(s)));
+  const bare = (s: string) => s.replace(/\s?%$/, '');
+  // every value or none: where even the numbers alone do not all fit (a phone's card), a few printed cells (the zeros)
+  // read as if the others were missing; the read-out gives every cell
+  const printAll = printValues && labels.every((r) => r.every((s) => fits(unitless ? bare(s) : s)));
   const pickRow = (i: number) => p.onPickRow?.(i);
   const onKey = (i: number) => (e: KeyboardEvent<SVGTextElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -149,24 +142,20 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
             <stop key={c} offset={k / (VIRIDIS.length - 1)} stopColor={c} />
           ))}
         </linearGradient>
-        {p.cols.map((_, j) => (
-          <clipPath key={j} id={`${gradient}-col-${j}`}>
-            <rect x={LEFT + j * cw + 1} y={0} width={cw - 2} height={top - 2} />
-          </clipPath>
-        ))}
       </defs>
       <text x={LEFT + (m * cw) / 2} y={11} textAnchor="middle" fontSize={11} fill="var(--color-fg-subtle)">
         {pick({ en: 'At the end of the period', es: 'Al final del período' }, lang)}
+        {printAll && unitless ? ' (%)' : ''}
       </text>
       <text x={LEFT - 8} y={top - 8} textAnchor="end" fontSize={11} fill="var(--color-fg-subtle)">
         {pick({ en: 'Start', es: 'Inicio' }, lang)}
       </text>
       {p.cols.map((c, j) => {
-        const lw = textWidth(c, labelFontSize, family);
-        const tl = lw > cw - 2 ? cw - 2 : undefined;
+        const fitted = fitLabel(c, labelRoom, labelFontSize, 1);
         return (
-          <text key={c} x={LEFT + (j + 0.5) * cw} y={top - 8 - (stagger && j % 2 === 0 ? STAGGER : 0)} textAnchor="middle" fontSize={labelFontSize} fill="var(--color-fg)" clipPath={`url(#${gradient}-col-${j})`} textLength={tl} lengthAdjust={tl !== undefined ? 'spacingAndGlyphs' : undefined}>
-            {c}
+          <text key={c} data-col={j} x={LEFT + (j + 0.5) * cw} y={top - 8 - (stagger && j % 2 === 0 ? STAGGER : 0)} textAnchor="middle" fontSize={labelFontSize} fill="var(--color-fg)">
+            {fitted.shortened && <title>{c}</title>}
+            {fitted.lines[0]}
           </text>
         );
       })}
@@ -203,11 +192,11 @@ export function MatrixDrawing({ p, width, height, hover, setHover }: { p: Matrix
               const ink = v === null || outOfRange ? 'var(--color-fg)' : inkOn(t);
               const on = hover !== null && hover[0] === i && hover[1] === j;
               // a value prints where it fits its cell in the page's font; the read-out gives every cell
-              const label = v === null ? '-' : cellText(v, lang);
+              const label = unitless ? bare(labels[i][j]) : labels[i][j];
               return (
                 <g key={j} onMouseEnter={() => setHover([i, j])} onClick={() => { setHover([i, j]); pickRow(i); }} style={p.onPickRow ? { cursor: 'pointer' } : undefined}>
                   <rect x={x + 0.5} y={y + 0.5} width={cw - 1} height={ch - 1} fill={fill} stroke={on ? 'var(--color-fg)' : outOfRange || v === null ? 'var(--color-border)' : 'none'} strokeWidth={on ? 2 : 1} strokeDasharray={v === null ? '3 3' : undefined} />
-                  {printValues && textWidth(label, font, family) <= cw - 4 && (
+                  {printAll && (
                     <text x={x + cw / 2} y={y + ch / 2} dominantBaseline="middle" textAnchor="middle" fontSize={font} fill={ink} style={{ pointerEvents: 'none', fontVariantNumeric: 'tabular-nums' }}>
                       {label}
                     </text>

@@ -11,13 +11,14 @@
 // left the text alignment, so a mark at the edge of the plot is cut (year 1 is marked by a point instead, and a mark's
 // label is kept short); and a filling card's note takes height from its drawing, so the notes say what is drawn and
 // the tables' notes carry the rest.
-import { Knob, PlotCard, SubTabs, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
+import { Knob, PlotCard, SubTabs, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import { effectiveN, pdAgrestiCoull, pdJeffreys, pdWald, project, type Projection } from '../../engine/transitions';
 import type { VariantArtifact } from '../../lib/contract.types';
 import { provenanceOf } from '../model';
 import { Pending } from '../Pending';
+import { useMedia } from '../../lib/useMedia';
 import { Ref } from '../../content/bi';
 import { yearRanges } from '../../content/cases/C04Results';
 import { emptyDefaultYears } from './AgencyValidationViews';
@@ -234,10 +235,15 @@ function startText(start: StartPortfolio, agency: boolean): Both {
 export function DriftView({ sel }: { sel: C04Sel | null }) {
   const stateKey = useWorkbenchState()?.stateKey;
   const drift = useDrift(sel);
+  // the mix by grade beside the projection only where the screen has the height for both: at 1280 x 800 an agency's
+  // projection and mix, each with its notes, were left a plot of 10 to 30 px over the table
+  const tall = useMedia('(min-height: 1100px)', true);
   const v = variantOf(sel);
   if (!sel || !v || !drift) return <Pending />;
   const prov = provenanceOf(v.provenance.truth_status);
   const src = sourceNote(sel, true);
+  // the mix and the table show shares of the balance, not a PD: CEREP's line without ESMA's statement on definitions
+  const srcLine = sourceNote(sel);
   const agency = isAgency(v) ? v : null;
   const family = isFamily(v) ? v : null;
   const start = twice(START_LABEL[sel.start]);
@@ -248,13 +254,11 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
         ? { en: `The projection refused this chain; the port's message: ${drift.message}`, es: `La proyección rechazó esta cadena; el mensaje del puerto: ${drift.message}` }
         : { en: 'This variant holds no one-year matrix, so there is nothing to project.', es: 'Esta variante no contiene una matriz anual, así que no hay nada que proyectar.' };
     return (
-      <div className="caos-views-row" data-views="1">
-        <div className="ct-col">
-          <PlotCard fill title={{ en: 'Projected default rate', es: 'Tasa de incumplimiento proyectada' }} lane={LIVE} provenance={prov} dataKey={stateKey} note={reason}>
-            <ReasonTable reason={reason} />
-          </PlotCard>
-        </div>
-      </div>
+      <ViewsRow>
+        <PlotCard fill title={{ en: 'Projected default rate', es: 'Tasa de incumplimiento proyectada' }} lane={LIVE} provenance={prov} dataKey={stateKey} note={reason}>
+          <ReasonTable reason={reason} />
+        </PlotCard>
+      </ViewsRow>
     );
   }
   const p = drift.projection;
@@ -273,8 +277,8 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
               es: `La página de transiciones de ${name.es} no tiene categoría de incumplimiento, así que su matriz agrupada no tiene columna de incumplimiento: la cartera nunca incumple, y la proyección (9) de Engelmann (2024) no tiene tasa de incumplimiento que dar, pues su cartera TTC (10) necesita una columna de incumplimiento para castigar y reoriginar. Se dibuja: la cartera inicial (${start.es}: ${built.es}) movida solo por la matriz (${cohorts} cohortes anuales, sin retiros), la fracción del saldo en cada grado por año, el grado elegido más grueso. ${src.es}`,
             }
           : {
-              en: `Each grade's share of the balance at the start of each year, the chosen grade thicker; default holds nothing once the defaulted balance is re-originated. ${src.en}`,
-              es: `La fracción del saldo en cada grado al inicio de cada año, el grado elegido más grueso; el incumplimiento no retiene nada una vez reoriginado el saldo incumplido. ${src.es}`,
+              en: `Each grade's share of the balance at the start of each year, the chosen grade thicker; default holds nothing once the defaulted balance is re-originated. ${srcLine.en}`,
+              es: `La fracción del saldo en cada grado al inicio de cada año, el grado elegido más grueso; el incumplimiento no retiene nada una vez reoriginado el saldo incumplido. ${srcLine.es}`,
             }
       }
     />
@@ -288,12 +292,12 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
       note={
         longRun
           ? {
-              en: `Shares of the balance, with the L1 distance to the matrix's own long-run mix, to which the portfolio drifts with nothing leaving it; * the chosen grade. ${src.en}`,
-              es: `Fracciones del saldo, con la distancia L1 a la mezcla de largo plazo de la propia matriz, hacia la que deriva la cartera sin que nada salga de ella; * el grado elegido. ${src.es}`,
+              en: `Shares of the balance, with the L1 distance to the matrix's own long-run mix, to which the portfolio drifts with nothing leaving it; * the chosen grade. ${srcLine.en}`,
+              es: `Fracciones del saldo, con la distancia L1 a la mezcla de largo plazo de la propia matriz, hacia la que deriva la cartera sin que nada salga de ella; * el grado elegido. ${srcLine.es}`,
             }
           : {
-              en: `Shares of the balance: the start (${built.en}${family ? `, ${counts('en', family.outputs.generator.obligors)} obligors` : ''}), the mix after ${H} years and the TTC portfolio (10), with the L1 distance to it; * the chosen grade. ${src.en}`,
-              es: `Fracciones del saldo: el inicio (${built.es}${family ? `, ${counts('es', family.outputs.generator.obligors)} deudores` : ''}), la mezcla tras ${H} años y la cartera TTC (10), con la distancia L1 a ella; * el grado elegido. ${src.es}`,
+              en: `Shares of the balance: the start (${built.en}${family ? `, ${counts('en', family.outputs.generator.obligors)} obligors` : ''}), the mix after ${H} years and the TTC portfolio (10), with the L1 distance to it; * the chosen grade. ${srcLine.en}`,
+              es: `Fracciones del saldo: el inicio (${built.es}${family ? `, ${counts('es', family.outputs.generator.obligors)} deudores` : ''}), la mezcla tras ${H} años y la cartera TTC (10), con la distancia L1 a ella; * el grado elegido. ${srcLine.es}`,
             }
       }
     />
@@ -301,9 +305,9 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
   if (longRun) {
     return (
       <>
-        <div className="caos-views-row" data-views="1">
-          <div className="ct-col">{composition}</div>
-        </div>
+        <ViewsRow>
+          {composition}
+        </ViewsRow>
         {table}
       </>
     );
@@ -333,29 +337,27 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
       };
   return (
     <>
-      <div className="caos-views-row" data-views="2">
-        <div className="ct-col ct-share-3">
-          <PlotCard
-            fill
-            title={{ en: `Projected default rate, start: ${start.en}`, es: `Tasa proyectada, inicio: ${start.es}` }}
-            lane={LIVE}
-            provenance={prov}
-            dataKey={stateKey}
-            note={{
-              en: `Engelmann (2024), (9): the start projected under ${chain.en}. Dashed: the TTC rate (10); ${marked.en}.${empty.en} ${src.en}`,
-              es: `Engelmann (2024), (9): el inicio proyectado con ${chain.es}. Segmentada: la tasa TTC (10); ${marked.es}.${empty.es} ${src.es}`,
-            }}
-          >
-            <UPlotChart
-              height="fill"
-              x={{ values: [0.5, ...years, H + 0.5], label: { en: 'Year of the projection', es: 'Año de la proyección' }, unit: { en: 'years', es: 'años' }, format: { decimals: 0 } }}
-              y={{ label: { en: 'Default rate', es: 'Tasa de incumpl.' }, format: { percent: true, digits: 3 } }}
-              series={rateSeries.map(pad)}
-            />
-          </PlotCard>
-        </div>
-        <div className="ct-col ct-share-2">{composition}</div>
-      </div>
+      <ViewsRow shares={tall ? [3, 2] : undefined}>
+        <PlotCard
+          fill
+          title={{ en: `Projected default rate, start: ${start.en}`, es: `Tasa proyectada, inicio: ${start.es}` }}
+          lane={LIVE}
+          provenance={prov}
+          dataKey={stateKey}
+          note={{
+            en: `Engelmann (2024), (9): the start projected under ${chain.en}. Dashed: the TTC rate (10); ${marked.en}.${empty.en} ${src.en}`,
+            es: `Engelmann (2024), (9): el inicio proyectado con ${chain.es}. Segmentada: la tasa TTC (10); ${marked.es}.${empty.es} ${src.es}`,
+          }}
+        >
+          <UPlotChart
+            height="fill"
+            x={{ values: [0.5, ...years, H + 0.5], label: { en: 'Year of the projection', es: 'Año de la proyección' }, unit: { en: 'years', es: 'años' }, format: { decimals: 0 } }}
+            y={{ label: { en: 'Default rate', es: 'Tasa de incumpl.' }, format: { percent: true, digits: 3 } }}
+            series={rateSeries.map(pad)}
+          />
+        </PlotCard>
+        {tall && composition}
+      </ViewsRow>
       {table}
     </>
   );
@@ -508,39 +510,37 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
       es: `${agency ? `Las páginas de ${name.es} no dan "${def.es}": su página de transiciones no tiene categoría de incumplimiento, así que no hay conteos que acotar. Los conteos agrupados que sí da, D incumplimientos de N calificaciones por definición, están en la tabla; elija una de esas definiciones en el panel.` : 'Esta variante no da conteos por grado.'} ${src.es}`,
     };
     return (
-      <div className="caos-views-row" data-views="1">
-        <div className="ct-col">
-          <PlotCard fill title={title} lane={LIVE} provenance={prov} dataKey={stateKey} note={note}>
-            {agency && defs.length ? (
-              <div className="ct-scroll">
-                <table className="caos-table" data-table="counts-by-definition">
-                  <thead>
-                    <tr>
-                      <th>{pick({ en: 'Grade', es: 'Grado' }, lang)}</th>
-                      {defs.map((d) => (
-                        <th key={d}>{`${pick(DEFINITION_LABEL[d], lang)}, D / N`}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {GRADES.map((g, k) => (
-                      <tr key={g} className={k === sel.grade ? 'ct-current' : undefined}>
-                        <td>{g}</td>
-                        {defs.map((d) => {
-                          const l = agency.outputs.lra[d as 'd2' | 'd3' | 'd4'];
-                          return <td key={d}>{l ? `${formatNumber(l.defaults[k], lang, { decimals: 0 })} / ${formatNumber(l.n[k], lang, { decimals: 0 })}` : '-'}</td>;
-                        })}
-                      </tr>
+      <ViewsRow>
+        <PlotCard fill title={title} lane={LIVE} provenance={prov} dataKey={stateKey} note={note}>
+          {agency && defs.length ? (
+            <div className="ct-scroll">
+              <table className="caos-table" data-table="counts-by-definition">
+                <thead>
+                  <tr>
+                    <th>{pick({ en: 'Grade', es: 'Grado' }, lang)}</th>
+                    {defs.map((d) => (
+                      <th key={d}>{`${pick(DEFINITION_LABEL[d], lang)}, D / N`}</th>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <ReasonTable reason={note} />
-            )}
-          </PlotCard>
-        </div>
-      </div>
+                  </tr>
+                </thead>
+                <tbody>
+                  {GRADES.map((g, k) => (
+                    <tr key={g} className={k === sel.grade ? 'ct-current' : undefined}>
+                      <td>{g}</td>
+                      {defs.map((d) => {
+                        const l = agency.outputs.lra[d as 'd2' | 'd3' | 'd4'];
+                        return <td key={d}>{l ? `${formatNumber(l.defaults[k], lang, { decimals: 0 })} / ${formatNumber(l.n[k], lang, { decimals: 0 })}` : '-'}</td>;
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <ReasonTable reason={note} />
+          )}
+        </PlotCard>
+      </ViewsRow>
     );
   }
   const truth = family ? family.outputs.generator.pd_1y : null;
@@ -580,29 +580,27 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
   const G = GRADES[sel.grade];
   const top = RHO_GRID[RHO_GRID.length - 1];
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col">
-        <PlotCard
-          fill
-          title={title}
-          lane={LIVE}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{
-            en: `Schuermann and Hanson (2004) on ${basis.en}: Wald and Agresti-Coull with the effective number of obligors N† at the rail's correlation; Jeffreys has no correlation correction. Log scale, a bound of 0 is a gap. Marked: the chosen grade.${empty.en} ${src.en}`,
-            es: `Schuermann y Hanson (2004) sobre ${basis.es}: Wald y Agresti-Coull con el número efectivo de deudores N† a la correlación del panel; Jeffreys no tiene corrección por correlación. Escala logarítmica, una cota de 0 queda en blanco. Marcado: el grado elegido.${empty.es} ${src.es}`,
-          }}
-        >
-          <UPlotChart
-            height="fill"
-            x={{ values: padded(GRADES.length), label: GRADE_AXIS, format: { decimals: 0 } }}
-            y={{ label: { en: 'PD bound (log scale)', es: 'Cota de la PD (escala log.)' }, log: true, format: { percent: true, digits: 2 } }}
-            series={drawn.map(pad)}
-            marks={[{ x: sel.grade + 1, label: G }]}
-          />
-        </PlotCard>
-      </div>
-      <div className="ct-col">
+    <ViewsRow>
+      <PlotCard
+        fill
+        title={title}
+        lane={LIVE}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: `Schuermann and Hanson (2004) on ${basis.en}: Wald and Agresti-Coull with the effective number of obligors N† at the rail's correlation; Jeffreys has no correlation correction. Log scale, a bound of 0 is a gap. Marked: the chosen grade.${empty.en} ${src.en}`,
+          es: `Schuermann y Hanson (2004) sobre ${basis.es}: Wald y Agresti-Coull con el número efectivo de deudores N† a la correlación del panel; Jeffreys no tiene corrección por correlación. Escala logarítmica, una cota de 0 queda en blanco. Marcado: el grado elegido.${empty.es} ${src.es}`,
+        }}
+      >
+        <UPlotChart
+          height="fill"
+          x={{ values: padded(GRADES.length), label: GRADE_AXIS, format: { decimals: 0 } }}
+          y={{ label: { en: 'PD bound (log scale)', es: 'Cota de la PD (escala log.)' }, log: true, format: { percent: true, digits: 2 } }}
+          series={drawn.map(pad)}
+          marks={[{ x: sel.grade + 1, label: G }]}
+        />
+      </PlotCard>
+      <>
         <PlotCard
           fill
           title={{ en: 'Counts, effective obligors and widths', es: 'Conteos, deudores efectivos y anchos' }}
@@ -677,8 +675,8 @@ export function IntervalsView({ sel }: { sel: C04Sel | null }) {
             )}
           </PlotCard>
         </div>
-      </div>
-    </div>
+      </>
+    </ViewsRow>
   );
 }
 
@@ -825,33 +823,31 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
     return parts.length ? ` ${parts.join(' ')}` : '';
   };
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={{ en: `Risk weight of ${possessive(name.en)} cohort mix by PD definition, LGD ${lgd.en}`, es: `Ponderador de la composición de cohortes de ${name.es} por definición de PD, LGD ${lgd.es}` }}
-          lane={LIVE}
-          provenance={prov}
-          dataKey={stateKey}
-          actions={<LgdKnob sel={sel} />}
-          note={{
-            en: `The IRB risk weight (${convention.en}) per unit of EAD at the knob's LGD, of ${possessive(name.en)} cohort mix pooled over the years: one point per PD definition (its long-run average) and generator (exp(Q)'s one-year default column), and the chosen grade's own; log scale.${missing.length || failed.length ? ' A row without a PD has no point (the table says why).' : ''}${empty.en} ${pick(ESMA_DEFINITIONS, 'en')} ${src.en}`,
-            es: `El ponderador IRB (${convention.es}) por unidad de EAD a la LGD de la perilla, de la composición de cohortes de ${name.es} agrupada en los años: un punto por definición de PD (su promedio de largo plazo) y por generador (la columna de incumplimiento a un año de exp(Q)), y el propio del grado elegido; escala logarítmica.${missing.length || failed.length ? ' Una fila sin PD no tiene punto (la tabla dice por qué).' : ''}${empty.es} ${pick(ESMA_DEFINITIONS, 'es')} ${src.es}`,
-          }}
-        >
-          {chartSeries.length ? (
-            <UPlotChart
-              height="fill"
-              x={{ values: x, label: { en: 'PD definition or generator, numbered as in the key', es: 'Definición de PD o generador, numerada como en la leyenda' }, format: { decimals: 0 } }}
-              y={{ label: { en: 'Risk weight, share of EAD (log scale)', es: 'Ponderador, fracción de la EAD (escala log.)' }, log: true, format: { percent: true, digits: 3 } }}
-              series={chartSeries}
-            />
-          ) : (
-            <ReasonTable reason={{ en: 'No definition gives a PD for every grade with exposure.', es: 'Ninguna definición da una PD para cada grado con exposición.' }} />
-          )}
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-2">
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard
+        fill
+        title={{ en: `Risk weight of ${possessive(name.en)} cohort mix by PD definition, LGD ${lgd.en}`, es: `Ponderador de la composición de cohortes de ${name.es} por definición de PD, LGD ${lgd.es}` }}
+        lane={LIVE}
+        provenance={prov}
+        dataKey={stateKey}
+        actions={<LgdKnob sel={sel} />}
+        note={{
+          en: `The IRB risk weight (${convention.en}) per unit of EAD at the knob's LGD, of ${possessive(name.en)} cohort mix pooled over the years: one point per PD definition (its long-run average) and generator (exp(Q)'s one-year default column), and the chosen grade's own; log scale.${missing.length || failed.length ? ' A row without a PD has no point (the table says why).' : ''}${empty.en} ${pick(ESMA_DEFINITIONS, 'en')} ${src.en}`,
+          es: `El ponderador IRB (${convention.es}) por unidad de EAD a la LGD de la perilla, de la composición de cohortes de ${name.es} agrupada en los años: un punto por definición de PD (su promedio de largo plazo) y por generador (la columna de incumplimiento a un año de exp(Q)), y el propio del grado elegido; escala logarítmica.${missing.length || failed.length ? ' Una fila sin PD no tiene punto (la tabla dice por qué).' : ''}${empty.es} ${pick(ESMA_DEFINITIONS, 'es')} ${src.es}`,
+        }}
+      >
+        {chartSeries.length ? (
+          <UPlotChart
+            height="fill"
+            x={{ values: x, label: { en: 'PD definition or generator, numbered as in the key', es: 'Definición de PD o generador, numerada como en la leyenda' }, format: { decimals: 0 } }}
+            y={{ label: { en: 'Risk weight, share of EAD (log scale)', es: 'Ponderador, fracción de la EAD (escala log.)' }, log: true, format: { percent: true, digits: 3 } }}
+            series={chartSeries}
+          />
+        ) : (
+          <ReasonTable reason={{ en: 'No definition gives a PD for every grade with exposure.', es: 'Ninguna definición da una PD para cada grado con exposición.' }} />
+        )}
+      </PlotCard>
+      <>
         <PlotCard
           fill
           title={{ en: 'Risk weights by definition', es: 'Ponderadores por definición' }}
@@ -892,8 +888,8 @@ export function CapitalView({ sel }: { sel: C04Sel | null }) {
             )}
           </PlotCard>
         </div>
-      </div>
-    </div>
+      </>
+    </ViewsRow>
   );
 }
 
@@ -967,34 +963,32 @@ function FamilyCapital({ sel, rows, lgd, src }: { sel: C04Sel; rows: CapitalRow[
     { label: { en: 'Share of the risk-weighted exposure', es: 'Fracción de la exposición ponderada por riesgo' }, values: weighted, color: '--color-good', width: 2.2 },
   ]).map(pad);
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={{ en: `Risk weight by grade at the true PD, LGD ${lgd.en}`, es: `Ponderador por grado a la PD verdadera, LGD ${lgd.es}` }}
-          lane={LIVE}
-          provenance={prov}
-          dataKey={stateKey}
-          actions={<LgdKnob sel={sel} />}
-          note={{
-            en: `The IRB risk weight (Basel III final, corporate, CRE31.5; maturity 2.5 years, CRE32.44) per unit of EAD at the knob's LGD, of each grade at the generator's true one-year PD, the only PD a known truth has; dashed, the average over the design's obligors. Log scale; marked: the chosen grade. ${src.en}`,
-            es: `El ponderador IRB (Basilea III final, corporativa, CRE31.5; vencimiento 2,5 años, CRE32.44) por unidad de EAD a la LGD de la perilla, de cada grado a la PD anual verdadera del generador, la única PD que tiene una verdad conocida; segmentada, el promedio sobre los deudores del diseño. Escala logarítmica; marcado: el grado elegido. ${src.es}`,
-          }}
-        >
-          {series.length ? (
-            <UPlotChart
-              height="fill"
-              x={{ values: padded(GRADES.length), label: GRADE_AXIS, format: { decimals: 0 } }}
-              y={{ label: { en: 'Risk weight, share of EAD (log scale)', es: 'Ponderador, fracción de la EAD (escala log.)' }, log: true, format: { percent: true, digits: 3 } }}
-              series={series}
-              marks={[{ x: g + 1, label: GRADES[g] }]}
-            />
-          ) : (
-            <ReasonTable reason={{ en: `The risk weight could not be computed; the port's message: ${truth?.error ?? ''}`, es: `El ponderador no se pudo calcular; el mensaje del puerto: ${truth?.error ?? ''}` }} />
-          )}
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-2">
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard
+        fill
+        title={{ en: `Risk weight by grade at the true PD, LGD ${lgd.en}`, es: `Ponderador por grado a la PD verdadera, LGD ${lgd.es}` }}
+        lane={LIVE}
+        provenance={prov}
+        dataKey={stateKey}
+        actions={<LgdKnob sel={sel} />}
+        note={{
+          en: `The IRB risk weight (Basel III final, corporate, CRE31.5; maturity 2.5 years, CRE32.44) per unit of EAD at the knob's LGD, of each grade at the generator's true one-year PD, the only PD a known truth has; dashed, the average over the design's obligors. Log scale; marked: the chosen grade. ${src.en}`,
+          es: `El ponderador IRB (Basilea III final, corporativa, CRE31.5; vencimiento 2,5 años, CRE32.44) por unidad de EAD a la LGD de la perilla, de cada grado a la PD anual verdadera del generador, la única PD que tiene una verdad conocida; segmentada, el promedio sobre los deudores del diseño. Escala logarítmica; marcado: el grado elegido. ${src.es}`,
+        }}
+      >
+        {series.length ? (
+          <UPlotChart
+            height="fill"
+            x={{ values: padded(GRADES.length), label: GRADE_AXIS, format: { decimals: 0 } }}
+            y={{ label: { en: 'Risk weight, share of EAD (log scale)', es: 'Ponderador, fracción de la EAD (escala log.)' }, log: true, format: { percent: true, digits: 3 } }}
+            series={series}
+            marks={[{ x: g + 1, label: GRADES[g] }]}
+          />
+        ) : (
+          <ReasonTable reason={{ en: `The risk weight could not be computed; the port's message: ${truth?.error ?? ''}`, es: `El ponderador no se pudo calcular; el mensaje del puerto: ${truth?.error ?? ''}` }} />
+        )}
+      </PlotCard>
+      <>
         <PlotCard
           fill
           title={{ en: 'Risk weight by grade', es: 'Ponderador por grado' }}
@@ -1056,7 +1050,7 @@ function FamilyCapital({ sel, rows, lgd, src }: { sel: C04Sel; rows: CapitalRow[
             />
           </PlotCard>
         </div>
-      </div>
-    </div>
+      </>
+    </ViewsRow>
   );
 }

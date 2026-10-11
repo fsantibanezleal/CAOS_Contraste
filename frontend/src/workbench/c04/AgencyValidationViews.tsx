@@ -10,11 +10,12 @@
 // arithmetic the pipeline applies to the others (the tests reproduce the baked averages with it), and its intervals are
 // the live ports of engine/transitions.ts, held to riskvalidation by the parity points. A card that shows only Keep's
 // numbers declares the live lane; a card that shows them beside the artifact's says which are computed in the browser.
-import { PlotCard, formatNumber, pick, useShellLang, useStageSize, useWorkbenchState, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
+import { PlotCard, ViewsRow, formatNumber, pick, useShellLang, useStageSize, useWorkbenchState, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { pdAgrestiCoull, pdJeffreys, pdWald } from '../../engine/transitions';
 import type { C04AgencyOutputs, C04Bounds, C04Cohort, C04Lifetime, C04Lra, VariantArtifact } from '../../lib/contract.types';
+import { useMedia } from '../../lib/useMedia';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import {
@@ -548,30 +549,28 @@ export function PdByGradeView({ sel }: { sel: C04Sel | null }) {
     );
   });
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={bi((l) => t(l, `${pick(name, l)}: long-run average PD by grade, every definition`, `${pick(name, l)}: PD promedio de largo plazo por grado, cada definición`))}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={chartNote}
-        >
-          {chart.series.length ? (
-            <UPlotChart
-              height="fill"
-              x={{ values: gradeAxis.x, label: GRADE_AXIS, format: { decimals: 0 } }}
-              y={{ label: { en: 'One-year PD (log scale)', es: 'PD anual (escala log.)' }, log: true, format: { percent: true, digits: 2 } }}
-              series={chart.series.map((s) => ({ ...s, values: gradeAxis.pad(s.values) }))}
-              marks={[{ x: sel.grade + 1, label: GRADES[sel.grade] }]}
-            />
-          ) : (
-            <p className="ct-note">{pick({ en: 'Every long-run average is 0 or undefined: nothing can sit on a log axis; the table beside prints them.', es: 'Todo promedio de largo plazo es 0 o indefinido: nada cabe en un eje logarítmico; la tabla al lado los imprime.' }, lang)}</p>
-          )}
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-2">
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard
+        fill
+        title={bi((l) => t(l, `${pick(name, l)}: long-run average PD by grade, every definition`, `${pick(name, l)}: PD promedio de largo plazo por grado, cada definición`))}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={chartNote}
+      >
+        {chart.series.length ? (
+          <UPlotChart
+            height="fill"
+            x={{ values: gradeAxis.x, label: GRADE_AXIS, format: { decimals: 0 } }}
+            y={{ label: { en: 'One-year PD (log scale)', es: 'PD anual (escala log.)' }, log: true, format: { percent: true, digits: 2 } }}
+            series={chart.series.map((s) => ({ ...s, values: gradeAxis.pad(s.values) }))}
+            marks={[{ x: sel.grade + 1, label: GRADES[sel.grade] }]}
+          />
+        ) : (
+          <p className="ct-note">{pick({ en: 'Every long-run average is 0 or undefined: nothing can sit on a log axis; the table beside prints them.', es: 'Todo promedio de largo plazo es 0 o indefinido: nada cabe en un eje logarítmico; la tabla al lado los imprime.' }, lang)}</p>
+        )}
+      </PlotCard>
+      <>
         <PlotCard
           fill
           title={bi((l) => t(l, `${pick(DEFINITION_LABEL[d], l)}, by grade`, `${pick(DEFINITION_LABEL[d], l)}, por grado`))}
@@ -611,8 +610,8 @@ export function PdByGradeView({ sel }: { sel: C04Sel | null }) {
             )}
           </PlotCard>
         </div>
-      </div>
-    </div>
+      </>
+    </ViewsRow>
   );
 }
 
@@ -827,42 +826,38 @@ export function ByYearView({ sel }: { sel: C04Sel | null }) {
     </div>
   );
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={bi((l) => t(l, `${pick(name, l)} ${grade}: one-year PD by cohort, every definition`, `${pick(name, l)} ${grade}: PD anual por cohorte, cada definición`))}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={chartNote}
-        >
-          {data.series.length ? (
-            <UPlotChart
-              height="fill"
-              x={{ values: axis.x, label: xLabel, format: { decimals: 0, grouping: false } }}
-              y={{ label: { en: 'One-year default rate', es: 'Tasa de incumplimiento anual' }, format: { percent: true, digits: 2 }, range: [0, data.top > 0 ? data.top * 1.08 : 0.01] }}
-              series={data.series.map((s) => ({ ...s, values: axis.pad(s.values) }))}
-              marks={data.marks}
-            />
-          ) : (
-            <p className="ct-note">{pick({ en: `No definition has a rate for ${grade} in any cohort: the table beside lists the cohorts.`, es: `Ninguna definición tiene tasa para ${grade} en ninguna cohorte: la tabla al lado lista las cohortes.` }, lang)}</p>
-          )}
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-2">
-        <PlotCard
-          fill
-          title={bi((l) => t(l, `${grade}, cohort by cohort`, `${grade}, cohorte por cohorte`))}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={tableNote}
-        >
-          {yearTable}
-        </PlotCard>
-      </div>
-    </div>
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard
+        fill
+        title={bi((l) => t(l, `${pick(name, l)} ${grade}: one-year PD by cohort, every definition`, `${pick(name, l)} ${grade}: PD anual por cohorte, cada definición`))}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={chartNote}
+      >
+        {data.series.length ? (
+          <UPlotChart
+            height="fill"
+            x={{ values: axis.x, label: xLabel, format: { decimals: 0, grouping: false } }}
+            y={{ label: { en: 'One-year default rate', es: 'Tasa de incumplimiento anual' }, format: { percent: true, digits: 2 }, range: [0, data.top > 0 ? data.top * 1.08 : 0.01] }}
+            series={data.series.map((s) => ({ ...s, values: axis.pad(s.values) }))}
+            marks={data.marks}
+          />
+        ) : (
+          <p className="ct-note">{pick({ en: `No definition has a rate for ${grade} in any cohort: the table beside lists the cohorts.`, es: `Ninguna definición tiene tasa para ${grade} en ninguna cohorte: la tabla al lado lista las cohortes.` }, lang)}</p>
+        )}
+      </PlotCard>
+      <PlotCard
+        fill
+        title={bi((l) => t(l, `${grade}, cohort by cohort`, `${grade}, cohorte por cohorte`))}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={tableNote}
+      >
+        {yearTable}
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -936,6 +931,10 @@ export function ratioAt(o: C04AgencyOutputs, x: Definition, g: number): number |
 export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
+  // the cohorts where tab 2 differs from tab 4 sit under the definitions only where the screen has the height for both:
+  // at 1280 x 800 the two filling cards left the definitions' table one row (the By year view gives each cohort's two
+  // counts on every screen)
+  const tall = useMedia('(min-height: 1100px)', true);
   const v = agencyOf(sel);
   const series = useMemo(() => (v ? gapSeries(v.outputs) : []), [v]);
   const gaps = useMemo(() => (v ? cohortGaps(v.outputs) : []), [v]);
@@ -962,8 +961,8 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
     const d3Text = sameEvents
       ? t(
           l,
-          " Tab 3's default events equal tab 2's rated defaulters in every cohort, so D3 over D2 is tab 2's pooled cohort over tab 4's: above 1 where the default-rate page counts more ratings (the cohorts beside).",
-          ' Los eventos de incumplimiento de la pestaña 3 igualan a las calificaciones incumplidas de la pestaña 2 en cada cohorte, así que D3 sobre D2 es la cohorte agrupada de la pestaña 2 sobre la de la pestaña 4: mayor que 1 donde la página de tasas de incumplimiento cuenta más calificaciones (las cohortes al lado).',
+          ` Tab 3's default events equal tab 2's rated defaulters in every cohort, so D3 over D2 is tab 2's pooled cohort over tab 4's: above 1 where the default-rate page counts more ratings (${tall ? 'the cohorts beside' : "the By year view gives each cohort's two counts"}).`,
+          ` Los eventos de incumplimiento de la pestaña 3 igualan a las calificaciones incumplidas de la pestaña 2 en cada cohorte, así que D3 sobre D2 es la cohorte agrupada de la pestaña 2 sobre la de la pestaña 4: mayor que 1 donde la página de tasas de incumplimiento cuenta más calificaciones (${tall ? 'las cohortes al lado' : 'la vista Por año da los dos conteos de cada cohorte'}).`,
         )
       : t(l, ' D3 counts every default event, which can exceed the rated defaulters.', ' D3 cuenta cada evento de incumplimiento, que puede superar a las calificaciones incumplidas.');
     const d4Text = !d4
@@ -985,7 +984,8 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
       ) +
       d3Text +
       d4Text +
-      pdSource(o, l)
+      // a ratio of definitions, not a PD: CEREP's line alone; ESMA's statement heads the definitions beside it
+      ` ${sourceText(o, l)}`
     );
   });
   const gapNote = bi((l) => {
@@ -1037,33 +1037,31 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
       ) + ` ${sourceText(o, l)}`,
   );
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-2">
-        <PlotCard
-          fill
-          title={bi((l) => t(l, `${pick(name, l)}: each definition's pooled rate over D2's`, `${pick(name, l)}: la tasa agrupada de cada definición sobre la de D2`))}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={chartNote}
-        >
-          {series.length ? (
-            <UPlotChart
-              height="fill"
-              x={{ values: axis.x, label: GRADE_AXIS, format: { decimals: 0 } }}
-              y={{ label: { en: 'Ratio to D2', es: 'Razón a D2' }, format: { decimals: 2 }, range: [0, top] }}
-              series={[
-                ...series.map((s) => ({ ...s, values: axis.pad(s.values) })),
-                { label: { en: 'Same share as D2 (1)', es: 'Misma fracción que D2 (1)' }, values: axis.pad(GRADE_POSITIONS.map(() => 1)), color: '--color-fg-subtle' as ShellColorToken, width: 1, dash: [2, 4] },
-              ]}
-              marks={[{ x: g + 1, label: grade }]}
-            />
-          ) : (
-            <p className="ct-note">{pick({ en: 'No pooled ratio to D2 is defined for this agency: the table beside lists what each definition counts.', es: 'Ninguna razón agrupada respecto de D2 está definida para esta agencia: la tabla al lado lista qué cuenta cada definición.' }, lang)}</p>
-          )}
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-3">
+    <ViewsRow shares={tall ? [2, 3] : [1, 1]}>
+      <PlotCard
+        fill
+        title={bi((l) => t(l, `${pick(name, l)}: each definition's pooled rate over D2's`, `${pick(name, l)}: la tasa agrupada de cada definición sobre la de D2`))}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={chartNote}
+      >
+        {series.length ? (
+          <UPlotChart
+            height="fill"
+            x={{ values: axis.x, label: GRADE_AXIS, format: { decimals: 0 } }}
+            y={{ label: { en: 'Ratio to D2', es: 'Razón a D2' }, format: { decimals: 2 }, range: [0, top] }}
+            series={[
+              ...series.map((s) => ({ ...s, values: axis.pad(s.values) })),
+              { label: { en: 'Same share as D2 (1)', es: 'Misma fracción que D2 (1)' }, values: axis.pad(GRADE_POSITIONS.map(() => 1)), color: '--color-fg-subtle' as ShellColorToken, width: 1, dash: [2, 4] },
+            ]}
+            marks={[{ x: g + 1, label: grade }]}
+          />
+        ) : (
+          <p className="ct-note">{pick({ en: 'No pooled ratio to D2 is defined for this agency: the table beside lists what each definition counts.', es: 'Ninguna razón agrupada respecto de D2 está definida para esta agencia: la tabla al lado lista qué cuenta cada definición.' }, lang)}</p>
+        )}
+      </PlotCard>
+      <>
         <PlotCard fill title={{ en: 'What each definition counts', es: 'Qué cuenta cada definición' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={definitionsNote}>
           <div className="ct-scroll">
             <p className="ct-note" data-esma="definitions">{pick(ESMA_DEFINITIONS, lang)}</p>
@@ -1100,52 +1098,54 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
             </table>
           </div>
         </PlotCard>
-        <PlotCard
-          fill
-          title={{ en: "Where tab 2's cohort differs from tab 4's", es: 'Dónde la cohorte de la pestaña 2 difiere de la pestaña 4' }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={gapNote}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table ct-wrap-head" data-table="tab2-cohorts">
-              <thead>
-                <tr>
-                  <th>{pick({ en: 'Year', es: 'Año' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Grades: tab 2 against tab 4', es: 'Grados: pestaña 2 contra pestaña 4' }, lang)}</th>
-                  <th className="ct-wide-only">{pick({ en: 'Extra ratings', es: 'Calif. de más' }, lang)}</th>
-                  <th>{pick({ en: 'Largest label gap, %', es: 'Mayor brecha de etiqueta, %' }, lang)}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {gaps.length ? (
-                  gaps.map((x) => (
-                    <tr key={x.label} data-year={x.label} className={x.cells.some((c) => c.grade === g) ? 'ct-current' : undefined}>
-                      <td>{x.label}</td>
-                      <td className="ct-text" data-col="cells">
-                        {x.cells.map((c) => `${GRADES[c.grade]} ${count(lang, c.tab2)} ${pick({ en: 'against', es: 'contra' }, lang)} ${count(lang, c.tab4)}`).join('; ')}
-                      </td>
-                      <td className="ct-wide-only" data-col="extra">
-                        {count(lang, x.extra)}
-                      </td>
-                      <td data-col="gap">{x.gap === null ? '-' : `${x.gap > 0 ? '+' : ''}${pc(lang, x.gap)}`}</td>
-                    </tr>
-                  ))
-                ) : (
+        {tall && (
+          <PlotCard
+            fill
+            title={{ en: "Where tab 2's cohort differs from tab 4's", es: 'Dónde la cohorte de la pestaña 2 difiere de la pestaña 4' }}
+            lane={REPLAY}
+            provenance={prov}
+            dataKey={stateKey}
+            note={gapNote}
+          >
+            <div className="ct-scroll">
+              <table className="caos-table ct-wrap-head" data-table="tab2-cohorts">
+                <thead>
                   <tr>
-                    <td>-</td>
-                    <td className="ct-text">{pick({ en: 'none', es: 'ninguna' }, lang)}</td>
-                    <td className="ct-wide-only">-</td>
-                    <td>-</td>
+                    <th>{pick({ en: 'Year', es: 'Año' }, lang)}</th>
+                    <th className="ct-text">{pick({ en: 'Grades: tab 2 against tab 4', es: 'Grados: pestaña 2 contra pestaña 4' }, lang)}</th>
+                    <th className="ct-wide-only">{pick({ en: 'Extra ratings', es: 'Calif. de más' }, lang)}</th>
+                    <th>{pick({ en: 'Largest label gap, %', es: 'Mayor brecha de etiqueta, %' }, lang)}</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-    </div>
+                </thead>
+                <tbody>
+                  {gaps.length ? (
+                    gaps.map((x) => (
+                      <tr key={x.label} data-year={x.label} className={x.cells.some((c) => c.grade === g) ? 'ct-current' : undefined}>
+                        <td>{x.label}</td>
+                        <td className="ct-text" data-col="cells">
+                          {x.cells.map((c) => `${GRADES[c.grade]} ${count(lang, c.tab2)} ${pick({ en: 'against', es: 'contra' }, lang)} ${count(lang, c.tab4)}`).join('; ')}
+                        </td>
+                        <td className="ct-wide-only" data-col="extra">
+                          {count(lang, x.extra)}
+                        </td>
+                        <td data-col="gap">{x.gap === null ? '-' : `${x.gap > 0 ? '+' : ''}${pc(lang, x.gap)}`}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td>-</td>
+                      <td className="ct-text">{pick({ en: 'none', es: 'ninguna' }, lang)}</td>
+                      <td className="ct-wide-only">-</td>
+                      <td>-</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </PlotCard>
+        )}
+      </>
+    </ViewsRow>
   );
 }
 
@@ -1286,13 +1286,11 @@ export function LifetimeView({ sel }: { sel: C04Sel | null }) {
   const grade = GRADES[g];
   if (data.windows.length === 0) {
     return (
-      <div className="caos-views-row" data-views="1">
-        <div className="ct-col">
-          <PlotCard fill title={bi((l) => t(l, `${pick(name, l)}: the lifetime check`, `${pick(name, l)}: la verificación de vida`))} lane={REPLAY} provenance={prov} dataKey={stateKey} note={bi((l) => sourceText(o, l))}>
-            <p className="ct-note">{pick({ en: 'No five-year window has data for this agency: CEREP gives no fixed five-year cohort to follow.', es: 'Ninguna ventana de cinco años tiene datos para esta agencia: CEREP no da una cohorte fija de cinco años que seguir.' }, lang)}</p>
-          </PlotCard>
-        </div>
-      </div>
+      <ViewsRow>
+        <PlotCard fill title={bi((l) => t(l, `${pick(name, l)}: the lifetime check`, `${pick(name, l)}: la verificación de vida`))} lane={REPLAY} provenance={prov} dataKey={stateKey} note={bi((l) => sourceText(o, l))}>
+          <p className="ct-note">{pick({ en: 'No five-year window has data for this agency: CEREP gives no fixed five-year cohort to follow.', es: 'Ninguna ventana de cinco años tiene datos para esta agencia: CEREP no da una cohorte fija de cinco años que seguir.' }, lang)}</p>
+        </PlotCard>
+      </ViewsRow>
     );
   }
   const projected = PROJECTIONS.some((k) => data.values[k].some((x) => x !== null));
@@ -1390,30 +1388,28 @@ export function LifetimeView({ sel }: { sel: C04Sel | null }) {
     );
   });
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={title}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={chartNote}
-        >
-          {data.series.length ? (
-            <UPlotChart
-              height="fill"
-              x={{ values: data.x, label: xLabel, format: { decimals: 0 } }}
-              y={{ label: { en: 'Share of the cohort', es: 'Fracción de la cohorte' }, format: { percent: true, digits: 2 }, range: [0, data.top > 0 ? data.top * 1.08 : 0.01] }}
-              series={data.series}
-              marks={gapMark(data.marked)}
-            />
-          ) : (
-            <p className="ct-note">{pick({ en: `No share of the ${grade} cohort is given in any window: the table beside lists the windows.`, es: `Ninguna fracción de la cohorte ${grade} está dada en ninguna ventana: la tabla al lado lista las ventanas.` }, lang)}</p>
-          )}
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-2">
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard
+        fill
+        title={title}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={chartNote}
+      >
+        {data.series.length ? (
+          <UPlotChart
+            height="fill"
+            x={{ values: data.x, label: xLabel, format: { decimals: 0 } }}
+            y={{ label: { en: 'Share of the cohort', es: 'Fracción de la cohorte' }, format: { percent: true, digits: 2 }, range: [0, data.top > 0 ? data.top * 1.08 : 0.01] }}
+            series={data.series}
+            marks={gapMark(data.marked)}
+          />
+        ) : (
+          <p className="ct-note">{pick({ en: `No share of the ${grade} cohort is given in any window: the table beside lists the windows.`, es: `Ninguna fracción de la cohorte ${grade} está dada en ninguna ventana: la tabla al lado lista las ventanas.` }, lang)}</p>
+        )}
+      </PlotCard>
+      <>
         <PlotCard fill title={bi((l) => t(l, `${grade}, window by window`, `${grade}, ventana por ventana`))} lane={REPLAY} provenance={prov} dataKey={stateKey} note={tableNote}>
           <div className="ct-scroll">
             <table className="caos-table ct-wrap-head" data-table="lifetime" data-grade={grade}>
@@ -1462,8 +1458,8 @@ export function LifetimeView({ sel }: { sel: C04Sel | null }) {
             )}
           </PlotCard>
         </div>
-      </div>
-    </div>
+      </>
+    </ViewsRow>
   );
 }
 
@@ -1476,21 +1472,19 @@ function NotAgency({ sel }: { sel: C04Sel }) {
   const stateKey = useWorkbenchState()?.stateKey;
   const v = sel.data.variant as VariantArtifact<unknown>;
   return (
-    <div className="caos-views-row" data-views="1">
-      <div className="ct-col">
-        <PlotCard
-          fill
-          title={{ en: "An agency's CEREP view", es: 'Una vista de CEREP de una agencia' }}
-          lane={REPLAY}
-          provenance={provenanceOf(v.provenance.truth_status)}
-          dataKey={stateKey}
-          note={{ en: "This view reads the CEREP cohorts of an agency variant (S&P, Moody's or Fitch).", es: "Esta vista lee las cohortes de CEREP de una variante de agencia (S&P, Moody's o Fitch)." }}
-        >
-          <p className="ct-note">
-            {pick({ en: `The variant ${v.variant_id} carries no CEREP cohorts: pick an agency.`, es: `La variante ${v.variant_id} no trae cohortes de CEREP: elija una agencia.` }, lang)}
-          </p>
-        </PlotCard>
-      </div>
-    </div>
+    <ViewsRow>
+      <PlotCard
+        fill
+        title={{ en: "An agency's CEREP view", es: 'Una vista de CEREP de una agencia' }}
+        lane={REPLAY}
+        provenance={provenanceOf(v.provenance.truth_status)}
+        dataKey={stateKey}
+        note={{ en: "This view reads the CEREP cohorts of an agency variant (S&P, Moody's or Fitch).", es: "Esta vista lee las cohortes de CEREP de una variante de agencia (S&P, Moody's o Fitch)." }}
+      >
+        <p className="ct-note">
+          {pick({ en: `The variant ${v.variant_id} carries no CEREP cohorts: pick an agency.`, es: `La variante ${v.variant_id} no trae cohortes de CEREP: elija una agencia.` }, lang)}
+        </p>
+      </PlotCard>
+    </ViewsRow>
   );
 }
