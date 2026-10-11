@@ -190,8 +190,8 @@ describe('C04 Findings', () => {
         const d = findingsDrawing(v, ev, 0)!;
         expect(finiteSeries(d.chart.series), `${c.id}: a design series of gaps`).toBe(true);
         expect(markup).toContain(esc(pick(d.title, 'en')));
-        // a short table stacks over its drawing, a long one sits beside it
-        expect(markup).toMatch(/data-views="1" data-layout="stacked"|data-views="2" data-layout="beside"/);
+        // a short table stacks over its drawing in one column, a long one sits beside it in a column of its own
+        expect(markup).toMatch(/<div class="caos-views-row" data-views="[12]"><div class="caos-views-col"/);
         expect(markup).toContain('data-series=');
         expect(markup, c.id).not.toContain('there is no p-value or rate to draw here');
       } else {

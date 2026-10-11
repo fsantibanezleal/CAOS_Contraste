@@ -1,6 +1,6 @@
 // C05's Findings, Variants and Context groups, and the live read-outs of its rail (ADR-0017 rule 3: every section
 // shows a value that moves with its controls).
-import { PlotCard, Readout, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
+import { PlotCard, Readout, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import { UPlotChart, type UPlotChartProps } from '@fasl-work/caos-app-shell/chart';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import { C05WriteUp } from '../../content/cases/C05';
@@ -38,52 +38,50 @@ export function C05FindingsView({ sel }: { sel: C05Sel | null }) {
   const order = ['S1', 'S2', 'S3', 'S4'];
   const findings: Finding[] = [...v.findings].sort((a, b) => order.indexOf(a.severity) - order.indexOf(b.severity));
   return (
-    <div className="caos-views-row" data-views="1">
-      <div className="ct-col">
-        <PlotCard
-          fill
-          title={{ en: 'What the validation found', es: 'Lo que encontró la validación' }}
-          lane={REPLAY}
-          provenance={provenanceOf(v.provenance.truth_status)}
-          dataKey={stateKey}
-          note={{ en: 'Each finding cites the tests behind it (their light under the rail\'s policy) or a stated design limit.', es: 'Cada hallazgo cita las pruebas que lo respaldan (su luz con la política del panel) o un límite de diseño declarado.' }}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table" data-table="findings">
-              <thead>
-                <tr>
-                  <th>{pick({ en: 'Severity', es: 'Severidad' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Finding', es: 'Hallazgo' }, lang)}</th>
-                  <th className="ct-wide-only">{pick({ en: 'Status', es: 'Estado' }, lang)}</th>
+    <ViewsRow>
+      <PlotCard
+        fill
+        title={{ en: 'What the validation found', es: 'Lo que encontró la validación' }}
+        lane={REPLAY}
+        provenance={provenanceOf(v.provenance.truth_status)}
+        dataKey={stateKey}
+        note={{ en: 'Each finding cites the tests behind it (their light under the rail\'s policy) or a stated design limit.', es: 'Cada hallazgo cita las pruebas que lo respaldan (su luz con la política del panel) o un límite de diseño declarado.' }}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table" data-table="findings">
+            <thead>
+              <tr>
+                <th>{pick({ en: 'Severity', es: 'Severidad' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Finding', es: 'Hallazgo' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Status', es: 'Estado' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {findings.map((f) => (
+                <tr key={f.id} data-finding={f.id}>
+                  <td>{pick(SEVERITY_TEXT[f.severity], lang)}</td>
+                  <td className="ct-text">
+                    {pick(f.title, lang)}
+                    <ul className="ct-evidence">
+                      {f.evidence.map((e) => {
+                        if (e.startsWith('design:')) return <li key={e}>{pick({ en: 'Design limit: ', es: 'Límite de diseño: ' }, lang)}{e.slice(7)}</li>;
+                        const row = findRow(v, e);
+                        return (
+                          <li key={e}>
+                            {e}: {row ? `p ${formatNumber(row.p_value, lang, { digits: 2 })}, ${pick(LIGHT_TEXT[relight(row, sel.alphas)], lang)}` : ''}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </td>
+                  <td className="ct-wide-only">{pick(STATUS_TEXT[f.status], lang)}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {findings.map((f) => (
-                  <tr key={f.id} data-finding={f.id}>
-                    <td>{pick(SEVERITY_TEXT[f.severity], lang)}</td>
-                    <td className="ct-text">
-                      {pick(f.title, lang)}
-                      <ul className="ct-evidence">
-                        {f.evidence.map((e) => {
-                          if (e.startsWith('design:')) return <li key={e}>{pick({ en: 'Design limit: ', es: 'Límite de diseño: ' }, lang)}{e.slice(7)}</li>;
-                          const row = findRow(v, e);
-                          return (
-                            <li key={e}>
-                              {e}: {row ? `p ${formatNumber(row.p_value, lang, { digits: 2 })}, ${pick(LIGHT_TEXT[relight(row, sel.alphas)], lang)}` : ''}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </td>
-                    <td className="ct-wide-only">{pick(STATUS_TEXT[f.status], lang)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-    </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 

@@ -2,7 +2,7 @@
 // shows a value that moves with its controls). Replayed numbers are read from the committed artifacts; live ones come
 // from engine/transitions.ts through selection.ts's hooks. Every PD names its definition, every CEREP-derived card
 // names the agency's EU entity and carries ESMA's attribution, and no chart is drawn without a value to draw.
-import { PlotCard, Readout, Verdict, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type Lane, type Provenance, type ReadoutItem, type ShellColorToken, type Tone } from '@fasl-work/caos-app-shell';
+import { PlotCard, Readout, Verdict, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type Lane, type Provenance, type ReadoutItem, type ShellColorToken, type Tone } from '@fasl-work/caos-app-shell';
 import { UPlotChart, type ChartSeries, type UPlotChartProps } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import { C04WriteUp } from '../../content/cases/C04';
@@ -46,6 +46,7 @@ import type {
   VariantArtifact,
 } from '../../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT } from '../../lib/policy';
+import { useFindingsShares, useMedia } from '../../lib/useMedia';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import {
@@ -470,7 +471,9 @@ export function papersChart(p: PublishedVariant, points: EvidencePoint[]): Desig
   return {
     title: { en: "The papers' printed values against their recomputation", es: 'Los valores impresos de los artículos contra su recálculo' },
     x: { values: xs, label: { en: 'Printed value, numbered by paper', es: 'Valor impreso, numerado por artículo' }, format: { decimals: 0 } },
-    y: { label: { en: 'Recomputed over printed, minus one', es: 'Recalculado sobre impreso, menos uno' }, unit: { en: '%', es: '%' }, format: { percent: true, decimals: 2 } },
+    // the axis says what the note defines (the recomputation over the print, minus one): at 1280 x 800 the beside
+    // layout's plot is shorter than the longer title, which the axis cut
+    y: { label: { en: 'Gap to the print', es: 'Brecha con lo impreso' }, unit: { en: '%', es: '%' }, format: { percent: true, decimals: 2 } },
     series: [...drawn, { label: { en: 'Recomputed equals printed', es: 'Recalculado igual a impreso' }, values: xs.map(() => 0), color: '--color-fg-subtle', width: 1, dash: [2, 4] }],
     note: {
       en: `Every printed value of the three papers (each paper's own inputs recomputed by riskvalidation), as the recomputation over the print, minus one, in percent: 0 is exact. ${agree} of ${checks.length} agree at the printed digits; red, the ${differ} that do not; amber, Engelmann's W hat, judged within the rounding of its printed entries.${zeros.length ? ` ${zeros.length} printed zeros${exact ? ' are recomputed as exactly 0 and' : ''} have no ratio to draw.` : ''}`,
@@ -625,6 +628,10 @@ export function findingsDrawing(v: VariantArtifact<unknown>, ev: ReturnType<type
 export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
+  const shares = useFindingsShares();
+  // a short table stacks over its drawing only where the screen has the height for both: at 1280 x 800 the papers'
+  // three findings left the drawing under them no plot at all
+  const tall = useMedia('(min-height: 1100px)', true);
   const v = sel?.data.variant as VariantArtifact<unknown> | undefined;
   const ev = useMemo(() => (v ? findingsEvidence(v) : null), [v]);
   const grade = sel?.grade ?? 0;
@@ -636,8 +643,9 @@ export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
   const worst = open[0]?.severity ?? null;
   const tone: Tone = worst === 'S1' || worst === 'S2' ? 'bad' : worst === 'S3' ? 'warn' : 'good';
   const src = sourceOf(v);
-  // a short table at its own height over the drawing; a long one scrolls in a card beside it; no drawing, the table alone
-  const compact = Boolean(drawing) && isCompact(ev.findings);
+  // a short table at its own height over the drawing on a tall screen; otherwise the table scrolls in a card beside it;
+  // no drawing, the table alone
+  const compact = Boolean(drawing) && isCompact(ev.findings) && tall;
   const fill = !compact;
   const where: Bi = !drawing
     ? {
@@ -711,9 +719,9 @@ export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
   );
   if (!drawing) {
     return (
-      <div className="caos-views-row" data-views="1">
-        <div className="ct-col">{table}</div>
-      </div>
+      <ViewsRow>
+        {table}
+      </ViewsRow>
     );
   }
   const chartCard = (
@@ -723,19 +731,19 @@ export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
   );
   if (compact) {
     return (
-      <div className="caos-views-row" data-views="1" data-layout="stacked">
-        <div className="ct-col">
+      <ViewsRow>
+        <>
           {table}
           {chartCard}
-        </div>
-      </div>
+        </>
+      </ViewsRow>
     );
   }
   return (
-    <div className="caos-views-row" data-views="2" data-layout="beside">
-      <div className="ct-col ct-findings-table">{table}</div>
-      <div className="ct-col ct-findings-chart">{chartCard}</div>
-    </div>
+    <ViewsRow shares={shares}>
+      {table}
+      {chartCard}
+    </ViewsRow>
   );
 }
 
@@ -834,6 +842,7 @@ export function agenciesNote(agencies: AgencyVariant[], short: (id: string) => B
 function VariantsBody({ sel, variants, onPick }: { sel: C04Sel; variants: VariantArtifact<unknown>[]; onPick: (id: string) => void }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
+  const tall = useMedia('(min-height: 1100px)', true);
   const m = sel.data.manifest;
   const { agencies, families, published } = kindsOf(variants);
   const current = (sel.data.variant as VariantArtifact<unknown>).variant_id;
@@ -975,10 +984,10 @@ function VariantsBody({ sel, variants, onPick }: { sel: C04Sel; variants: Varian
         <div className="ct-share-3">{agenciesCard}</div>
         {publishedCard && <div className="ct-share-2">{publishedCard}</div>}
       </div>
-      <div className="caos-views-row" data-views={chartCard ? '2' : '1'}>
-        {chartCard && <div className="ct-col ct-share-3 ct-tall-only">{chartCard}</div>}
-        <div className="ct-col ct-share-2">{familiesCard}</div>
-      </div>
+      <ViewsRow shares={chartCard && tall ? [3, 2] : undefined}>
+        {tall && chartCard}
+        {familiesCard}
+      </ViewsRow>
     </>
   );
 }

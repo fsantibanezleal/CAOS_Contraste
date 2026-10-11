@@ -42,12 +42,11 @@
 /* an inline figure (an SVG string), sized by the shell's .fig-svg rules */
 .ct-fig svg { width: 100%; height: auto; display: block; }
 
-/* Layout inside the instrument (ADR-0071 rule 8): a view is a row of cards that fills the panel. A wrapper gives a
-   card its share of the row (the shell's row gives every child an equal share) and passes the height down, so a
-   filling card inside it gets a real size. Below 900 px the shell stacks the row and the document scrolls. */
-.ct-col { display: flex; flex-direction: column; gap: 0.6rem; min-width: 0; min-height: 0; }
-.ct-share-2 { flex-grow: 2; }
-.ct-share-3 { flex-grow: 3; }
+/* Layout inside the instrument (ADR-0071 rule 8): a view is the shell's ViewsRow, whose columns take their shares and
+   pass the height down. Inside one column, two cards may split its height: a part gives each its share. */
+.ct-part { display: flex; flex-direction: column; gap: 0.6rem; min-width: 0; min-height: 0; }
+.ct-part-2 { flex-grow: 2; }
+.ct-part-3 { flex-grow: 3; }
 
 /* a long table scrolls inside its filling card, its header kept in view by the shell's sticky header */
 .ct-scroll { height: 100%; overflow: auto; min-height: 0; }
@@ -67,9 +66,11 @@
 }
 
 /* every panel of a C22 family in one filling card: one small multiple each, at most three across; two across below
-   900 px */
-.ct-panels-fill { display: grid; height: 100%; gap: 0.6rem; min-width: 0; min-height: 0;
-  grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); }
+   900 px. A row is never shorter than a panel with its key needs (320 px: at 1280 x 800 the rows shared 500 px and
+   a panel with eight series kept a plot of 30 px under its key), and the grid scrolls inside its card when the rows do
+   not fit */
+.ct-panels-fill { display: grid; height: 100%; gap: 0.6rem; min-width: 0; min-height: 0; overflow-y: auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(320px, 1fr); }
 .ct-panels-fill[data-views="1"] { grid-template-columns: minmax(0, 1fr); }
 .ct-panels-fill[data-views="3"], .ct-panels-fill[data-views="5"], .ct-panels-fill[data-views="6"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .ct-panels-fill > .ct-small-multiple { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
@@ -77,11 +78,11 @@
 @media (max-width: 900px) {
   .ct-panels-fill, .ct-panels-fill[data-views="3"], .ct-panels-fill[data-views="5"], .ct-panels-fill[data-views="6"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-
-/* a findings table beside the drawing of its evidence: two thirds for the table; on a very wide screen the drawing
-   takes two thirds, since a short table cannot fill a tall stage */
-.ct-findings-table { flex-grow: 2; }
-@media (min-width: 2000px) { .ct-findings-table { flex-grow: 1; } .ct-findings-chart { flex-grow: 2; } }
+/* a phone: one panel a row, so a key of ten series has the width to wrap two to a line (two across left the
+   calibration panel a plot of a few pixels under its key) */
+@media (max-width: 640px) {
+  .ct-panels-fill, .ct-panels-fill[data-views="3"], .ct-panels-fill[data-views="5"], .ct-panels-fill[data-views="6"] { grid-template-columns: minmax(0, 1fr); }
+}
 
 /* the C22 detection matrix: a cell's shade is its rejection rate (0 below 5%, 4 from 80%); the loaded family's column
    is marked */
@@ -111,9 +112,9 @@
 .ct-row > .ct-share-3 { flex-grow: 3; }
 @media (max-width: 900px) { .ct-row { flex-direction: column; } }
 
-/* Below 900 px the shell stacks the row and the document scrolls: a wrapper is as tall as its cards (the row's
-   zero basis would collapse it, since the document gives the row no height) */
-@media (max-width: 900px) { .ct-col { flex: none; } }
+/* Below 900 px the shell stacks the row and the document scrolls: a part is as tall as its card (a zero basis would
+   collapse it, since the document gives the column no height) */
+@media (max-width: 900px) { .ct-part { flex: none; } }
 
 /* a view a tall screen has room for (a second drawing under a table); a short screen keeps the one it needs */
 .ct-tall-only { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
@@ -137,5 +138,6 @@ table.ct-wrap-head th { white-space: normal; }
 
 /* The shell's knob keeps the user agent's 2 px side margins on its range input at width 100%, so in a card body that
    clips it reached 2 px past the edge at phone widths and the gate could not bring it into view (G5; known shell
-   defect 34, CAOS_APP_SHELL#91): no side margin in this product's control blocks until the shell carries the fix. */
+   defect 35, CAOS_APP_SHELL#91, open in 0.10.0): no side margin in this product's control blocks until the shell
+   carries the fix. */
 [data-controls] input[type='range'] { margin-inline: 0; }

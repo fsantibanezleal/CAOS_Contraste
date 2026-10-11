@@ -145,8 +145,8 @@ function expectFilled(markup: string, where: string) {
   }
   if ((right.match(/<figure /g) ?? []).length === 2) {
     const [top, bottom] = divChildren(right);
-    expect(top.startsWith('<div class="ct-col ct-share-3">') && /data-series="\d+"/.test(top), `${where}: no chart over the table`).toBe(true);
-    expect(bottom.startsWith('<div class="ct-col ct-share-2">') && bottom.includes('<table'), `${where}: no table under the chart`).toBe(true);
+    expect(top.startsWith('<div class="ct-part ct-part-3">') && /data-series="\d+"/.test(top), `${where}: no chart over the table`).toBe(true);
+    expect(bottom.startsWith('<div class="ct-part ct-part-2">') && bottom.includes('<table'), `${where}: no table under the chart`).toBe(true);
   }
 }
 

@@ -5,18 +5,7 @@
 // generator of the pooled annual CEREP counts of S&P's EU entity, so the views name that entity and carry ESMA's
 // attribution. Each chart is built by a pure function (exported for the tests through FAMILY_VIEWS and
 // generatorCharts), and a series with no drawable value is left out before it reaches the chart.
-import {
-  ChipGroup,
-  PlotCard,
-  SubTabs,
-  formatNumber,
-  pick,
-  useShellLang,
-  useWorkbenchState,
-  type BiText,
-  type FormatOptions,
-  type ShellColorToken,
-} from '@fasl-work/caos-app-shell';
+import { ChipGroup, PlotCard, SubTabs, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText, type FormatOptions, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import { UPlotChart, type ChartSeries, type UPlotChartProps } from '@fasl-work/caos-app-shell/chart';
 import { useMemo, type ReactElement, type ReactNode } from 'react';
 import type {
@@ -294,19 +283,19 @@ function TableCard({ v, title, note, children }: { v: FamilyVariant; title: BiTe
  * cells print their values from 40 px wide: 41 px at 1280 x 800. */
 function ViewRow({ left, top, bottom }: { left: ReactNode; top?: ReactNode; bottom: ReactNode }) {
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col">{left}</div>
-      <div className="ct-col">
+    <ViewsRow>
+      {left}
+      <>
         {top ? (
           <>
-            <div className="ct-col ct-share-3">{top}</div>
-            <div className="ct-col ct-share-2">{bottom}</div>
+            <div className="ct-part ct-part-3">{top}</div>
+            <div className="ct-part ct-part-2">{bottom}</div>
           </>
         ) : (
           bottom
         )}
-      </div>
-    </div>
+      </>
+    </ViewsRow>
   );
 }
 

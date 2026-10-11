@@ -1,13 +1,14 @@
 // C22's views (CT-309): the generators (Model), the measured size and power with the published reproductions
 // (Validation), the live exact size and power of the count tests (Impact), the findings evidenced by measured rates,
 // the families side by side (Variants) and the case (Context). Every replayed rate carries its Monte Carlo error.
-import { PlotCard, Readout, formatNumber, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
+import { PlotCard, Readout, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
 import { WithQuotes } from '../../content/bi';
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import { C22WriteUp } from '../../content/cases/C22';
 import type { C22Simulation, Finding, VariantArtifact } from '../../lib/contract.types';
+import { useFindingsShares } from '../../lib/useMedia';
 import { LightCell } from '../ValidationViews';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
@@ -92,46 +93,44 @@ export function GeneratorsView({ sel }: { sel: C22Sel | null }) {
   };
   const users = (ref: string) => [...new Set(o.simulations.filter((s) => s.generator === ref).map((s) => pick(s.label, lang)))].join(', ');
   return (
-    <div className="caos-views-row" data-views="1">
-      <div className="ct-col">
-        <PlotCard
-          fill
-          title={{ en: 'The data-generating mechanisms of this family', es: 'Los mecanismos generadores de esta familia' }}
-          lane={REPLAY}
-          provenance={provenanceOf(v.provenance.truth_status)}
-          dataKey={stateKey}
-          note={{
-            en: `${Object.keys(o.generators).length} generators from riskvalidation ${v.provenance.riskvalidation_version ?? ''}, each with its configuration and its exact truth committed; ${o.ladder ? `severity ladder: ${o.ladder.values.join(', ')} (${o.ladder.label.en})` : 'every test at the boundary of its null'}.`,
-            es: `${Object.keys(o.generators).length} generadores de riskvalidation ${v.provenance.riskvalidation_version ?? ''}, cada uno con su configuración y su verdad exacta comprometidas; ${o.ladder ? `escala de severidad: ${o.ladder.values.map((x) => String(x).replace('.', ',')).join('; ')} (${o.ladder.label.es})` : 'cada prueba en la frontera de su nula'}.`,
-          }}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table ct-wrap-head" data-table="generators">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Generator', es: 'Generador' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Class', es: 'Clase' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Configuration', es: 'Configuración' }, lang)}</th>
-                  <th className="ct-text ct-wide-only">{pick({ en: 'Exact truth', es: 'Verdad exacta' }, lang)}</th>
-                  <th className="ct-text ct-wide-only">{pick({ en: 'Tests measured on it', es: 'Pruebas medidas en él' }, lang)}</th>
+    <ViewsRow>
+      <PlotCard
+        fill
+        title={{ en: 'The data-generating mechanisms of this family', es: 'Los mecanismos generadores de esta familia' }}
+        lane={REPLAY}
+        provenance={provenanceOf(v.provenance.truth_status)}
+        dataKey={stateKey}
+        note={{
+          en: `${Object.keys(o.generators).length} generators from riskvalidation ${v.provenance.riskvalidation_version ?? ''}, each with its configuration and its exact truth committed; ${o.ladder ? `severity ladder: ${o.ladder.values.join(', ')} (${o.ladder.label.en})` : 'every test at the boundary of its null'}.`,
+          es: `${Object.keys(o.generators).length} generadores de riskvalidation ${v.provenance.riskvalidation_version ?? ''}, cada uno con su configuración y su verdad exacta comprometidas; ${o.ladder ? `escala de severidad: ${o.ladder.values.map((x) => String(x).replace('.', ',')).join('; ')} (${o.ladder.label.es})` : 'cada prueba en la frontera de su nula'}.`,
+        }}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table ct-wrap-head" data-table="generators">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Generator', es: 'Generador' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Class', es: 'Clase' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Configuration', es: 'Configuración' }, lang)}</th>
+                <th className="ct-text ct-wide-only">{pick({ en: 'Exact truth', es: 'Verdad exacta' }, lang)}</th>
+                <th className="ct-text ct-wide-only">{pick({ en: 'Tests measured on it', es: 'Pruebas medidas en él' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(o.generators).map(([ref, g]) => (
+                <tr key={ref} data-generator={ref}>
+                  <td className="ct-text">{ref}</td>
+                  <td className="ct-text">{g.name}</td>
+                  <td className="ct-text">{config(g.config)}</td>
+                  <td className="ct-text ct-wide-only">{truth(g)}</td>
+                  <td className="ct-text ct-wide-only">{users(ref)}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {Object.entries(o.generators).map(([ref, g]) => (
-                  <tr key={ref} data-generator={ref}>
-                    <td className="ct-text">{ref}</td>
-                    <td className="ct-text">{g.name}</td>
-                    <td className="ct-text">{config(g.config)}</td>
-                    <td className="ct-text ct-wide-only">{truth(g)}</td>
-                    <td className="ct-text ct-wide-only">{users(ref)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-    </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -260,52 +259,50 @@ export function RatesTableView({ sel }: { sel: C22Sel | null }) {
   const r = rule(sel.level);
   const label = Object.fromEntries(v.outputs.panels.map((p) => [p.id, p.label]));
   return (
-    <div className="caos-views-row" data-views="1">
-      <div className="ct-col">
-        <PlotCard
-          fill
-          title={{ en: `Every rate of the family at ${pct('en', sel.level, 0)}`, es: `Cada tasa de la familia al ${pct('es', sel.level, 0)}` }}
-          lane={REPLAY}
-          provenance={provenanceOf(v.provenance.truth_status)}
-          dataKey={stateKey}
-          note={{ en: 'Rate (Monte Carlo SE), 95% Wilson interval, and the exact probability where one exists, with whether the rate agrees with it within 3.29 SE. The setting is on the panel\'s axis; the scenario states it in words.', es: 'Tasa (EE de Monte Carlo), intervalo de Wilson al 95%, y la probabilidad exacta donde existe, con si la tasa concuerda con ella dentro de 3,29 EE. El ajuste está en el eje del panel; el escenario lo dice en palabras.' }}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table ct-wrap-head" data-table="rates">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Panel', es: 'Panel' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
-                  <th>{pick({ en: 'Setting', es: 'Ajuste' }, lang)}</th>
-                  <th className="ct-text ct-wide-only">{pick({ en: 'Scenario', es: 'Escenario' }, lang)}</th>
-                  <th>{pick({ en: 'Rate (SE)', es: 'Tasa (EE)' }, lang)}</th>
-                  <th className="ct-wide-only">{pick({ en: 'Wilson 95%', es: 'Wilson 95%' }, lang)}</th>
-                  <th>{pick({ en: 'Exact', es: 'Exacta' }, lang)}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {v.outputs.simulations.map((s) => {
-                  const x = rateOf(s, r);
-                  return (
-                    <tr key={s.key} data-sim={s.key}>
-                      <td className="ct-text">{pick(label[s.panel] ?? { en: s.panel, es: s.panel }, lang)}</td>
-                      <td className="ct-text">{pick(s.label, lang)}</td>
-                      <td>{formatNumber(s.x, lang, { digits: 3 })}</td>
-                      <td className="ct-text ct-wide-only">{pick(s.scenario, lang)}</td>
-                      <td>{rateText(s, r, lang)}</td>
-                      <td className="ct-wide-only">{`${pct(lang, x.lo, 1)} - ${pct(lang, x.hi, 1)}`}</td>
-                      <td data-agrees={s.agrees?.[r] ? 'yes' : 'no'}>
-                        {x.exact === null ? '-' : `${pct(lang, x.exact)}, ${pick(s.agrees?.[r] ? { en: 'agrees', es: 'concuerda' } : { en: 'differs', es: 'difiere' }, lang)}`}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-    </div>
+    <ViewsRow>
+      <PlotCard
+        fill
+        title={{ en: `Every rate of the family at ${pct('en', sel.level, 0)}`, es: `Cada tasa de la familia al ${pct('es', sel.level, 0)}` }}
+        lane={REPLAY}
+        provenance={provenanceOf(v.provenance.truth_status)}
+        dataKey={stateKey}
+        note={{ en: 'Rate (Monte Carlo SE), 95% Wilson interval, and the exact probability where one exists, with whether the rate agrees with it within 3.29 SE. The setting is on the panel\'s axis; the scenario states it in words.', es: 'Tasa (EE de Monte Carlo), intervalo de Wilson al 95%, y la probabilidad exacta donde existe, con si la tasa concuerda con ella dentro de 3,29 EE. El ajuste está en el eje del panel; el escenario lo dice en palabras.' }}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table ct-wrap-head" data-table="rates">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Panel', es: 'Panel' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
+                <th>{pick({ en: 'Setting', es: 'Ajuste' }, lang)}</th>
+                <th className="ct-text ct-wide-only">{pick({ en: 'Scenario', es: 'Escenario' }, lang)}</th>
+                <th>{pick({ en: 'Rate (SE)', es: 'Tasa (EE)' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Wilson 95%', es: 'Wilson 95%' }, lang)}</th>
+                <th>{pick({ en: 'Exact', es: 'Exacta' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {v.outputs.simulations.map((s) => {
+                const x = rateOf(s, r);
+                return (
+                  <tr key={s.key} data-sim={s.key}>
+                    <td className="ct-text">{pick(label[s.panel] ?? { en: s.panel, es: s.panel }, lang)}</td>
+                    <td className="ct-text">{pick(s.label, lang)}</td>
+                    <td>{formatNumber(s.x, lang, { digits: 3 })}</td>
+                    <td className="ct-text ct-wide-only">{pick(s.scenario, lang)}</td>
+                    <td>{rateText(s, r, lang)}</td>
+                    <td className="ct-wide-only">{`${pct(lang, x.lo, 1)} - ${pct(lang, x.hi, 1)}`}</td>
+                    <td data-agrees={s.agrees?.[r] ? 'yes' : 'no'}>
+                      {x.exact === null ? '-' : `${pct(lang, x.exact)}, ${pick(s.agrees?.[r] ? { en: 'agrees', es: 'concuerda' } : { en: 'differs', es: 'difiere' }, lang)}`}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -322,50 +319,48 @@ export function SizeView({ sel }: { sel: C22Sel | null }) {
     return x.exact !== null ? x.exact <= sel.level + 1e-12 : (x.rate ?? 1) <= bound;
   };
   return (
-    <div className="caos-views-row" data-views="1">
-      <div className="ct-col">
-        <PlotCard
-          fill
-          title={{ en: `Size of every test at ${pct('en', sel.level, 0)}`, es: `Tamaño de cada prueba al ${pct('es', sel.level, 0)}` }}
-          lane={REPLAY}
-          provenance={provenanceOf(v.provenance.truth_status)}
-          dataKey={stateKey}
-          note={{
-            en: `The rejection rate when the test's null holds at its boundary (${v.outputs.simulations[0]?.n_rep.toLocaleString('en')} repetitions). A test holds its size when its exact probability is at most the level, or, without one, when the rate is at most ${pct('en', bound)} (the level plus 3.09 Monte Carlo SEs).`,
-            es: `La tasa de rechazo cuando la nula de la prueba se cumple en su frontera (${v.outputs.simulations[0]?.n_rep.toLocaleString('es')} repeticiones). Una prueba mantiene su tamaño cuando su probabilidad exacta es a lo más el nivel, o, sin ella, cuando la tasa es a lo más ${pct('es', bound)} (el nivel más 3,09 EE de Monte Carlo).`,
-          }}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table ct-wrap-head" data-table="size">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
-                  <th className="ct-text ct-wide-only">{pick({ en: 'Where its null holds', es: 'Dónde se cumple su nula' }, lang)}</th>
-                  <th>{pick({ en: 'Rate (SE)', es: 'Tasa (EE)' }, lang)}</th>
-                  <th>{pick({ en: 'Exact', es: 'Exacta' }, lang)}</th>
-                  <th>{pick({ en: 'Size', es: 'Tamaño' }, lang)}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {v.outputs.simulations.map((s) => {
-                  const x = rateOf(s, r);
-                  const ok = holds(s);
-                  return (
-                    <tr key={s.key} data-sim={s.key} className={ok ? undefined : 'ct-current'}>
-                      <td className="ct-text">{pick(s.label, lang)}</td>
-                      <td className="ct-text ct-wide-only">{pick(s.scenario, lang)}</td>
-                      <td>{rateText(s, r, lang)}</td>
-                      <td>{x.exact === null ? '-' : pct(lang, x.exact)}</td>
-                      <td data-holds={ok ? 'yes' : 'no'}>{pick(ok ? { en: 'holds', es: 'se mantiene' } : { en: 'exceeds', es: 'excede' }, lang)}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-    </div>
+    <ViewsRow>
+      <PlotCard
+        fill
+        title={{ en: `Size of every test at ${pct('en', sel.level, 0)}`, es: `Tamaño de cada prueba al ${pct('es', sel.level, 0)}` }}
+        lane={REPLAY}
+        provenance={provenanceOf(v.provenance.truth_status)}
+        dataKey={stateKey}
+        note={{
+          en: `The rejection rate when the test's null holds at its boundary (${v.outputs.simulations[0]?.n_rep.toLocaleString('en')} repetitions). A test holds its size when its exact probability is at most the level, or, without one, when the rate is at most ${pct('en', bound)} (the level plus 3.09 Monte Carlo SEs).`,
+          es: `La tasa de rechazo cuando la nula de la prueba se cumple en su frontera (${v.outputs.simulations[0]?.n_rep.toLocaleString('es')} repeticiones). Una prueba mantiene su tamaño cuando su probabilidad exacta es a lo más el nivel, o, sin ella, cuando la tasa es a lo más ${pct('es', bound)} (el nivel más 3,09 EE de Monte Carlo).`,
+        }}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table ct-wrap-head" data-table="size">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
+                <th className="ct-text ct-wide-only">{pick({ en: 'Where its null holds', es: 'Dónde se cumple su nula' }, lang)}</th>
+                <th>{pick({ en: 'Rate (SE)', es: 'Tasa (EE)' }, lang)}</th>
+                <th>{pick({ en: 'Exact', es: 'Exacta' }, lang)}</th>
+                <th>{pick({ en: 'Size', es: 'Tamaño' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {v.outputs.simulations.map((s) => {
+                const x = rateOf(s, r);
+                const ok = holds(s);
+                return (
+                  <tr key={s.key} data-sim={s.key} className={ok ? undefined : 'ct-current'}>
+                    <td className="ct-text">{pick(s.label, lang)}</td>
+                    <td className="ct-text ct-wide-only">{pick(s.scenario, lang)}</td>
+                    <td>{rateText(s, r, lang)}</td>
+                    <td>{x.exact === null ? '-' : pct(lang, x.exact)}</td>
+                    <td data-holds={ok ? 'yes' : 'no'}>{pick(ok ? { en: 'holds', es: 'se mantiene' } : { en: 'exceeds', es: 'excede' }, lang)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -481,44 +476,42 @@ export function SpecimenView({ sel }: { sel: C22Sel | null }) {
   const v = c22Of(sel);
   if (!sel || !v) return <Pending />;
   return (
-    <div className="caos-views-row" data-views="1">
-      <div className="ct-col">
-        <PlotCard
-          fill
-          title={{ en: 'One sample, one report', es: 'Una muestra, un reporte' }}
-          lane={REPLAY}
-          provenance={provenanceOf(v.provenance.truth_status)}
-          dataKey={stateKey}
-          note={{
-            en: `The tests on one dataset drawn at severity ${v.outputs.specimen.severity}: what a validator would read in a single report. The rates of the other views say how often such a report is right.`,
-            es: `Las pruebas sobre un conjunto generado con severidad ${v.outputs.specimen.severity}: lo que un validador leería en un solo reporte. Las tasas de las otras vistas dicen con qué frecuencia ese reporte acierta.`,
-          }}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table" data-table="specimen">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Generator', es: 'Generador' }, lang)}</th>
-                  <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
-                  <th>{pick({ en: 'p-value', es: 'Valor p' }, lang)}</th>
+    <ViewsRow>
+      <PlotCard
+        fill
+        title={{ en: 'One sample, one report', es: 'Una muestra, un reporte' }}
+        lane={REPLAY}
+        provenance={provenanceOf(v.provenance.truth_status)}
+        dataKey={stateKey}
+        note={{
+          en: `The tests on one dataset drawn at severity ${v.outputs.specimen.severity}: what a validator would read in a single report. The rates of the other views say how often such a report is right.`,
+          es: `Las pruebas sobre un conjunto generado con severidad ${v.outputs.specimen.severity}: lo que un validador leería en un solo reporte. Las tasas de las otras vistas dicen con qué frecuencia ese reporte acierta.`,
+        }}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table" data-table="specimen">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Generator', es: 'Generador' }, lang)}</th>
+                <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
+                <th>{pick({ en: 'p-value', es: 'Valor p' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {v.tests.map((t, i) => (
+                <tr key={`${t.test_id}-${i}`}>
+                  <td className="ct-text">{t.test_id}</td>
+                  <td className="ct-text">{t.model_id}</td>
+                  <td>{formatNumber(t.statistic ?? t.metric, lang, { digits: 4 })}</td>
+                  <LightCell row={t} alphas={sel.alphas} />
                 </tr>
-              </thead>
-              <tbody>
-                {v.tests.map((t, i) => (
-                  <tr key={`${t.test_id}-${i}`}>
-                    <td className="ct-text">{t.test_id}</td>
-                    <td className="ct-text">{t.model_id}</td>
-                    <td>{formatNumber(t.statistic ?? t.metric, lang, { digits: 4 })}</td>
-                    <LightCell row={t} alphas={sel.alphas} />
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-    </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -532,36 +525,34 @@ export function EstimatorsView({ sel }: { sel: C22Sel | null }) {
   const e = v.outputs.estimators.ece_when_right;
   const num = (x: number | undefined, d = 5) => formatNumber(x ?? null, lang, { decimals: d });
   return (
-    <div className="caos-views-row" data-views="1">
-      <div className="ct-col">
-        <PlotCard
-          fill
-          title={{ en: 'Estimators against their truth', es: 'Estimadores contra su verdad' }}
-          lane={REPLAY}
-          provenance={provenanceOf(v.provenance.truth_status)}
-          dataKey={stateKey}
-          note={{ en: 'The performance measures of Morris, White and Crowther (2019), each with its Monte Carlo SE: the AUC of binormal scores (150 defaulters, 4,850 survivors, true AUC 0.80) and the expected calibration error of right PDs (5,000 obligors).', es: 'Las medidas de desempeño de Morris, White y Crowther (2019), cada una con su EE de Monte Carlo: el AUC de puntajes binormales (150 incumplidos, 4.850 sobrevivientes, AUC verdadera 0,80) y el error de calibración esperado de PD correctas (5.000 deudores).' }}
-        >
-          <table className="caos-table" data-table="estimators">
-            <thead>
-              <tr>
-                <th className="ct-text">{pick({ en: 'Measure', es: 'Medida' }, lang)}</th>
-                <th>{pick({ en: 'Value', es: 'Valor' }, lang)}</th>
-                <th>{pick({ en: 'Monte Carlo SE', es: 'EE de Monte Carlo' }, lang)}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td className="ct-text">{pick({ en: 'AUC: bias', es: 'AUC: sesgo' }, lang)}</td><td>{num(a.bias)}</td><td>{num(a.bias_mcse)}</td></tr>
-              <tr><td className="ct-text">{pick({ en: 'AUC: empirical SE', es: 'AUC: EE empírico' }, lang)}</td><td>{num(a.empirical_se)}</td><td>{num(a.empirical_se_mcse)}</td></tr>
-              <tr><td className="ct-text">{pick({ en: 'AUC: exact SE (Hanley and McNeil)', es: 'AUC: EE exacto (Hanley y McNeil)' }, lang)}</td><td>{num(a.exact_se)}</td><td>-</td></tr>
-              <tr><td className="ct-text">{pick({ en: 'AUC: ECB SE (average)', es: 'AUC: EE del BCE (promedio)' }, lang)}</td><td>{num(a.model_se)}</td><td>-</td></tr>
-              <tr><td className="ct-text">{pick({ en: 'AUC: coverage of the 95% interval', es: 'AUC: cobertura del intervalo al 95%' }, lang)}</td><td>{pct(lang, a.coverage)}</td><td>{pct(lang, a.coverage_mcse)}</td></tr>
-              <tr><td className="ct-text">{pick({ en: 'ECE when the PDs are right (its bias)', es: 'ECE cuando las PD son correctas (su sesgo)' }, lang)}</td><td>{num(e.mean)}</td><td>{num(e.bias_mcse)}</td></tr>
-            </tbody>
-          </table>
-        </PlotCard>
-      </div>
-    </div>
+    <ViewsRow>
+      <PlotCard
+        fill
+        title={{ en: 'Estimators against their truth', es: 'Estimadores contra su verdad' }}
+        lane={REPLAY}
+        provenance={provenanceOf(v.provenance.truth_status)}
+        dataKey={stateKey}
+        note={{ en: 'The performance measures of Morris, White and Crowther (2019), each with its Monte Carlo SE: the AUC of binormal scores (150 defaulters, 4,850 survivors, true AUC 0.80) and the expected calibration error of right PDs (5,000 obligors).', es: 'Las medidas de desempeño de Morris, White y Crowther (2019), cada una con su EE de Monte Carlo: el AUC de puntajes binormales (150 incumplidos, 4.850 sobrevivientes, AUC verdadera 0,80) y el error de calibración esperado de PD correctas (5.000 deudores).' }}
+      >
+        <table className="caos-table" data-table="estimators">
+          <thead>
+            <tr>
+              <th className="ct-text">{pick({ en: 'Measure', es: 'Medida' }, lang)}</th>
+              <th>{pick({ en: 'Value', es: 'Valor' }, lang)}</th>
+              <th>{pick({ en: 'Monte Carlo SE', es: 'EE de Monte Carlo' }, lang)}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td className="ct-text">{pick({ en: 'AUC: bias', es: 'AUC: sesgo' }, lang)}</td><td>{num(a.bias)}</td><td>{num(a.bias_mcse)}</td></tr>
+            <tr><td className="ct-text">{pick({ en: 'AUC: empirical SE', es: 'AUC: EE empírico' }, lang)}</td><td>{num(a.empirical_se)}</td><td>{num(a.empirical_se_mcse)}</td></tr>
+            <tr><td className="ct-text">{pick({ en: 'AUC: exact SE (Hanley and McNeil)', es: 'AUC: EE exacto (Hanley y McNeil)' }, lang)}</td><td>{num(a.exact_se)}</td><td>-</td></tr>
+            <tr><td className="ct-text">{pick({ en: 'AUC: ECB SE (average)', es: 'AUC: EE del BCE (promedio)' }, lang)}</td><td>{num(a.model_se)}</td><td>-</td></tr>
+            <tr><td className="ct-text">{pick({ en: 'AUC: coverage of the 95% interval', es: 'AUC: cobertura del intervalo al 95%' }, lang)}</td><td>{pct(lang, a.coverage)}</td><td>{pct(lang, a.coverage_mcse)}</td></tr>
+            <tr><td className="ct-text">{pick({ en: 'ECE when the PDs are right (its bias)', es: 'ECE cuando las PD son correctas (su sesgo)' }, lang)}</td><td>{num(e.mean)}</td><td>{num(e.bias_mcse)}</td></tr>
+          </tbody>
+        </table>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -598,8 +589,7 @@ export function LiveCalculatorView({ sel }: { sel: C22Sel | null }) {
           </tbody>
         </table>
       </PlotCard>
-      <div className="caos-views-row" data-views="2">
-        <div className="ct-col">
+      <ViewsRow>
         <PlotCard
           fill
           title={{ en: `Power against the true-to-applied PD, at ${level}`, es: `Potencia según PD verdadera sobre aplicada, al ${level}` }}
@@ -616,8 +606,6 @@ export function LiveCalculatorView({ sel }: { sel: C22Sel | null }) {
             marks={[{ x: p.ratio, label: { en: 'rail', es: 'panel' } }]}
           />
         </PlotCard>
-        </div>
-        <div className="ct-col">
         <PlotCard
           fill
           title={{ en: `Rejection against the true correlation, at ${level}`, es: `Rechazo según la correlación verdadera, al ${level}` }}
@@ -634,8 +622,7 @@ export function LiveCalculatorView({ sel }: { sel: C22Sel | null }) {
             marks={[{ x: p.rhoTrue, label: { en: 'rail', es: 'panel' } }]}
           />
         </PlotCard>
-        </div>
-      </div>
+      </ViewsRow>
     </>
   );
 }
@@ -668,6 +655,7 @@ export function PortfolioReadout({ sel }: { sel: C22Sel | null }) {
 export function C22FindingsView({ sel }: { sel: C22Sel | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
+  const shares = useFindingsShares();
   const v = c22Of(sel);
   if (!sel || !v) return <Pending />;
   const order = ['S1', 'S2', 'S3', 'S4'];
@@ -682,70 +670,66 @@ export function C22FindingsView({ sel }: { sel: C22Sel | null }) {
   const pad = (vals: Array<number | null>): Array<number | null> => [null, ...vals, null];
   const prov = provenanceOf(v.provenance.truth_status);
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-findings-table">
-        <PlotCard
-          fill
-          title={{ en: 'What the measurements found', es: 'Lo que encontraron las mediciones' }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{ en: "Each finding cites the measured rates behind it, at the rail's level, with their Monte Carlo SE; the numbers are the chart's.", es: 'Cada hallazgo cita las tasas medidas que lo respaldan, al nivel del panel, con su EE de Monte Carlo; los números son los del gráfico.' }}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table" data-table="findings">
-              <thead>
-                <tr>
-                  <th>{pick({ en: 'Severity', es: 'Severidad' }, lang)}</th>
-                  <th className="ct-text">{pick({ en: 'Finding', es: 'Hallazgo' }, lang)}</th>
-                  <th className="ct-wide-only">{pick({ en: 'Status', es: 'Estado' }, lang)}</th>
+    <ViewsRow shares={shares}>
+      <PlotCard
+        fill
+        title={{ en: 'What the measurements found', es: 'Lo que encontraron las mediciones' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{ en: "Each finding cites the measured rates behind it, at the rail's level, with their Monte Carlo SE; the numbers are the chart's.", es: 'Cada hallazgo cita las tasas medidas que lo respaldan, al nivel del panel, con su EE de Monte Carlo; los números son los del gráfico.' }}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table" data-table="findings">
+            <thead>
+              <tr>
+                <th>{pick({ en: 'Severity', es: 'Severidad' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Finding', es: 'Hallazgo' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Status', es: 'Estado' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {findings.map((f) => (
+                <tr key={f.id} data-finding={f.id}>
+                  <td>{pick(SEVERITY_TEXT[f.severity], lang)}</td>
+                  <td className="ct-text">
+                    {pick(f.title, lang)}
+                    <ul className="ct-evidence">
+                      {f.evidence.map((e) => {
+                        const s = sim(e);
+                        const k = number.get(`${f.id}|${e}`);
+                        return <li key={e}>{s ? `[${k}] ${pick(s.label, lang)}, ${pick(s.scenario, lang)}: ${rateText(s, r, lang)}` : e}</li>;
+                      })}
+                    </ul>
+                  </td>
+                  <td className="ct-wide-only">{pick(STATUS_TEXT[f.status], lang)}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {findings.map((f) => (
-                  <tr key={f.id} data-finding={f.id}>
-                    <td>{pick(SEVERITY_TEXT[f.severity], lang)}</td>
-                    <td className="ct-text">
-                      {pick(f.title, lang)}
-                      <ul className="ct-evidence">
-                        {f.evidence.map((e) => {
-                          const s = sim(e);
-                          const k = number.get(`${f.id}|${e}`);
-                          return <li key={e}>{s ? `[${k}] ${pick(s.label, lang)}, ${pick(s.scenario, lang)}: ${rateText(s, r, lang)}` : e}</li>;
-                        })}
-                      </ul>
-                    </td>
-                    <td className="ct-wide-only">{pick(STATUS_TEXT[f.status], lang)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-findings-chart">
-        <PlotCard
-          fill
-          title={{ en: 'The cited rates', es: 'Las tasas citadas' }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{ en: `Each cited rate at ${pct('en', sel.level, 0)}, numbered as in the table, with its 95% Wilson interval, against the nominal level.`, es: `Cada tasa citada al ${pct('es', sel.level, 0)}, numerada como en la tabla, con su intervalo de Wilson al 95%, contra el nivel nominal.` }}
-        >
-          <UPlotChart
-            height="fill"
-            x={{ values: xs, label: { en: 'Cited rate (the number in the table)', es: 'Tasa citada (el número de la tabla)' }, format: { decimals: 0 } }}
-            y={{ label: { en: 'Rejection rate', es: 'Tasa de rechazo' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
-            series={[
-              { label: { en: 'Rate', es: 'Tasa' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).rate : null))), color: '--color-accent', mode: 'points' },
-              { label: { en: 'Wilson 95%, low', es: 'Wilson 95%, inferior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).lo : null))), color: '--color-fg-subtle', mode: 'points' },
-              { label: { en: 'Wilson 95%, high', es: 'Wilson 95%, superior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).hi : null))), color: '--color-fg-subtle', mode: 'points' },
-              { label: { en: 'Nominal level', es: 'Nivel nominal' }, values: xs.map(() => sel.level), color: '--color-warn', width: 1.2, dash: [6, 4] },
-            ]}
-          />
-        </PlotCard>
-      </div>
-    </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+      <PlotCard
+        fill
+        title={{ en: 'The cited rates', es: 'Las tasas citadas' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{ en: `Each cited rate at ${pct('en', sel.level, 0)}, numbered as in the table, with its 95% Wilson interval, against the nominal level.`, es: `Cada tasa citada al ${pct('es', sel.level, 0)}, numerada como en la tabla, con su intervalo de Wilson al 95%, contra el nivel nominal.` }}
+      >
+        <UPlotChart
+          height="fill"
+          x={{ values: xs, label: { en: 'Cited rate (the number in the table)', es: 'Tasa citada (el número de la tabla)' }, format: { decimals: 0 } }}
+          y={{ label: { en: 'Rejection rate', es: 'Tasa de rechazo' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
+          series={[
+            { label: { en: 'Rate', es: 'Tasa' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).rate : null))), color: '--color-accent', mode: 'points' },
+            { label: { en: 'Wilson 95%, low', es: 'Wilson 95%, inferior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).lo : null))), color: '--color-fg-subtle', mode: 'points' },
+            { label: { en: 'Wilson 95%, high', es: 'Wilson 95%, superior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).hi : null))), color: '--color-fg-subtle', mode: 'points' },
+            { label: { en: 'Nominal level', es: 'Nivel nominal' }, values: xs.map(() => sel.level), color: '--color-warn', width: 1.2, dash: [6, 4] },
+          ]}
+        />
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -796,50 +780,48 @@ export function C22VariantsView({ sel, onPick }: { sel: C22Sel | null; onPick: (
   const prov = provenanceOf((sel.data.variant as VariantArtifact<unknown>).provenance.truth_status);
   const current = (sel.data.variant as VariantArtifact<unknown>).variant_id;
   return (
-    <div className="caos-views-row" data-views="1">
-      <div className="ct-col">
-        <PlotCard
-          fill
-          title={{ en: `Which test sees which defect, at ${pct('en', sel.level, 0)}`, es: `Qué prueba ve qué defecto, al ${pct('es', sel.level, 0)}` }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{
-            en: "Each cell is the test's rejection rate at the family's highest severity. Blue: its power, where the family plants a defect the test should see. Amber: a false alarm, where the model is right and an assumption fails (correlated defaults, a covariate shift, an estimated development AUC), and in the null column the test's size (exact where it exists). Darker: a higher rate; blank: a test the family does not measure. A column header loads the family.",
-            es: 'Cada celda es la tasa de rechazo de la prueba en la mayor severidad de la familia. Azul: su potencia, donde la familia planta un defecto que la prueba debería ver. Ámbar: una falsa alarma, donde el modelo es correcto y falla un supuesto (incumplimientos correlacionados, un desplazamiento de covariables, un AUC de desarrollo estimado), y en la columna nula el tamaño de la prueba (exacto donde existe). Más oscuro: una tasa mayor; vacía: una prueba que la familia no mide. El encabezado de una columna carga la familia.',
-          }}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table ct-wrap-head ct-heat-table" data-table="detections">
-              <thead>
-                <tr>
-                  <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
-                  {fams.map((f) => (
-                    <th key={f.variant_id} data-variant={f.variant_id} className={f.variant_id === current ? 'ct-heat-current' : undefined}>
-                      <button type="button" className="ct-linkbutton" onClick={() => onPick(f.variant_id)}>
-                        {pick(short(f.variant_id), lang)}
-                      </button>
-                    </th>
+    <ViewsRow>
+      <PlotCard
+        fill
+        title={{ en: `Which test sees which defect, at ${pct('en', sel.level, 0)}`, es: `Qué prueba ve qué defecto, al ${pct('es', sel.level, 0)}` }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{
+          en: "Each cell is the test's rejection rate at the family's highest severity. Blue: its power, where the family plants a defect the test should see. Amber: a false alarm, where the model is right and an assumption fails (correlated defaults, a covariate shift, an estimated development AUC), and in the null column the test's size (exact where it exists). Darker: a higher rate; blank: a test the family does not measure. A column header loads the family.",
+          es: 'Cada celda es la tasa de rechazo de la prueba en la mayor severidad de la familia. Azul: su potencia, donde la familia planta un defecto que la prueba debería ver. Ámbar: una falsa alarma, donde el modelo es correcto y falla un supuesto (incumplimientos correlacionados, un desplazamiento de covariables, un AUC de desarrollo estimado), y en la columna nula el tamaño de la prueba (exacto donde existe). Más oscuro: una tasa mayor; vacía: una prueba que la familia no mide. El encabezado de una columna carga la familia.',
+        }}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table ct-wrap-head ct-heat-table" data-table="detections">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
+                {fams.map((f) => (
+                  <th key={f.variant_id} data-variant={f.variant_id} className={f.variant_id === current ? 'ct-heat-current' : undefined}>
+                    <button type="button" className="ct-linkbutton" onClick={() => onPick(f.variant_id)}>
+                      {pick(short(f.variant_id), lang)}
+                    </button>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {matrix.rows.map(({ s, cells }) => (
+                <tr key={s.test_id} data-test={s.test_id}>
+                  <td className="ct-text">{pick(s.label, lang)}</td>
+                  {cells.map((c, k) => (
+                    <td key={fams[k].variant_id} className="ct-heat" data-heat={heat(c?.rate ?? null)} data-kind={c?.kind}>
+                      {c ? pct(lang, c.rate, 1) : ''}
+                    </td>
                   ))}
                 </tr>
-              </thead>
-              <tbody>
-                {matrix.rows.map(({ s, cells }) => (
-                  <tr key={s.test_id} data-test={s.test_id}>
-                    <td className="ct-text">{pick(s.label, lang)}</td>
-                    {cells.map((c, k) => (
-                      <td key={fams[k].variant_id} className="ct-heat" data-heat={heat(c?.rate ?? null)} data-kind={c?.kind}>
-                        {c ? pct(lang, c.rate, 1) : ''}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-    </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 

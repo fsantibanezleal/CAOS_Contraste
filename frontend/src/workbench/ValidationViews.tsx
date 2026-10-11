@@ -1,7 +1,7 @@
 // The Validation group: what a validator and a supervisor would run on this model, read from riskvalidation's rows
 // and re-lit live under the rail's policy (CT-104: thresholds are labelled as policy, never as regulation). Every view
 // fills the panel: a table beside or above the drawing of the same numbers (ADR-0071 rule 8).
-import { PlotCard, SubTabs, Verdict, formatNumber, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
+import { PlotCard, SubTabs, Verdict, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import type { Light, TestRow } from '../lib/contract.types';
@@ -115,67 +115,63 @@ export function CalibrationView({ sel }: { sel: Selection | null }) {
   const prov = provenanceOf(v.provenance.truth_status);
   const names = data.map((d) => shortName(rung(v, d.id), d.id));
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={{ en: 'Calibration by grade: Jeffreys test per grade', es: 'Calibración por grado: prueba de Jeffreys por grado' }}
-          lane="live"
-          provenance={prov}
-          dataKey={stateKey}
-          note={{ en: 'H0: the PD applied to the grade is not below the true one (ECB 2019, 2.5.3.1). The interval is the Beta(D + 1/2, N - D + 1/2) posterior.', es: 'H0: la PD aplicada al grado no es menor que la verdadera (BCE 2019, 2.5.3.1). El intervalo es la posterior Beta(D + 1/2, N - D + 1/2).' }}
-        >
-          <div className="ct-scroll">
-            <table className="caos-table">
-              <thead>
-                <tr>
-                  <th>{pick({ en: 'Rung', es: 'Peldaño' }, lang)}</th>
-                  <th>{pick({ en: 'Grade', es: 'Grado' }, lang)}</th>
-                  <th className="ct-wide-only">N</th>
-                  <th className="ct-room-only">D</th>
-                  <th className="ct-wide-only">{pick({ en: 'PD applied', es: 'PD aplicada' }, lang)}</th>
-                  <th>{pick({ en: 'Default rate', es: 'Tasa observada' }, lang)}</th>
-                  <th className="ct-room-only">{pick({ en: '95% posterior', es: 'Posterior 95%' }, lang)}</th>
-                  <th>Jeffreys</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.flatMap((d, k) =>
-                  d.rows.map(({ g, t }) => (
-                    <tr key={`${d.id}-${g.grade}`}>
-                      <td>{pick(names[k], lang)}</td>
-                      <td>{g.grade}</td>
-                      <td className="ct-wide-only">{formatNumber(g.n, lang)}</td>
-                      <td className="ct-room-only">{formatNumber(g.d, lang)}</td>
-                      <td className="ct-wide-only">{formatNumber(g.pd, lang, { percent: true, decimals: 2 })}</td>
-                      <td>{formatNumber(g.dr, lang, { percent: true, decimals: 2 })}</td>
-                      <td className="ct-room-only">
-                        {formatNumber(extra(t, 'posterior_q025'), lang, { percent: true, decimals: 2 })} - {formatNumber(extra(t, 'posterior_q975'), lang, { percent: true, decimals: 2 })}
-                      </td>
-                      <LightCell row={t} alphas={sel.alphas} />
-                    </tr>
-                  )),
-                )}
-              </tbody>
-            </table>
-          </div>
-        </PlotCard>
-      </div>
-      <div className="ct-col ct-share-2">
-        <PlotCard fill title={{ en: 'Observed against applied PD, by grade', es: 'Observada contra PD aplicada, por grado' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'On the line: calibrated. Above it: the PD under-estimates the default rate.', es: 'Sobre la línea: calibrado. Encima: la PD subestima la tasa de incumplimiento.' }}>
-          <UPlotChart
-            height="fill"
-            x={{ values: chart.x, label: { en: 'PD applied (grade mean)', es: 'PD aplicada (media del grado)' }, format: { percent: true, decimals: 0 } }}
-            y={{ label: { en: 'Observed default rate', es: 'Tasa de incumplimiento observada' }, format: { percent: true, decimals: 0 } }}
-            series={[
-              { label: { en: 'Perfect calibration', es: 'Calibración perfecta' }, values: chart.x, color: '--color-fg-faint', dash: [4, 4], width: 1 },
-              { label: names[0], values: chart.champion, color: '--color-accent', mode: 'points' },
-              { label: names[1], values: chart.challenger, color: '--color-magenta', mode: 'points' },
-            ]}
-          />
-        </PlotCard>
-      </div>
-    </div>
+    <ViewsRow shares={[3, 2]}>
+      <PlotCard
+        fill
+        title={{ en: 'Calibration by grade: Jeffreys test per grade', es: 'Calibración por grado: prueba de Jeffreys por grado' }}
+        lane="live"
+        provenance={prov}
+        dataKey={stateKey}
+        note={{ en: 'H0: the PD applied to the grade is not below the true one (ECB 2019, 2.5.3.1). The interval is the Beta(D + 1/2, N - D + 1/2) posterior.', es: 'H0: la PD aplicada al grado no es menor que la verdadera (BCE 2019, 2.5.3.1). El intervalo es la posterior Beta(D + 1/2, N - D + 1/2).' }}
+      >
+        <div className="ct-scroll">
+          <table className="caos-table">
+            <thead>
+              <tr>
+                <th>{pick({ en: 'Rung', es: 'Peldaño' }, lang)}</th>
+                <th>{pick({ en: 'Grade', es: 'Grado' }, lang)}</th>
+                <th className="ct-wide-only">N</th>
+                <th className="ct-room-only">D</th>
+                <th className="ct-wide-only">{pick({ en: 'PD applied', es: 'PD aplicada' }, lang)}</th>
+                <th>{pick({ en: 'Default rate', es: 'Tasa observada' }, lang)}</th>
+                <th className="ct-room-only">{pick({ en: '95% posterior', es: 'Posterior 95%' }, lang)}</th>
+                <th>Jeffreys</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.flatMap((d, k) =>
+                d.rows.map(({ g, t }) => (
+                  <tr key={`${d.id}-${g.grade}`}>
+                    <td>{pick(names[k], lang)}</td>
+                    <td>{g.grade}</td>
+                    <td className="ct-wide-only">{formatNumber(g.n, lang)}</td>
+                    <td className="ct-room-only">{formatNumber(g.d, lang)}</td>
+                    <td className="ct-wide-only">{formatNumber(g.pd, lang, { percent: true, decimals: 2 })}</td>
+                    <td>{formatNumber(g.dr, lang, { percent: true, decimals: 2 })}</td>
+                    <td className="ct-room-only">
+                      {formatNumber(extra(t, 'posterior_q025'), lang, { percent: true, decimals: 2 })} - {formatNumber(extra(t, 'posterior_q975'), lang, { percent: true, decimals: 2 })}
+                    </td>
+                    <LightCell row={t} alphas={sel.alphas} />
+                  </tr>
+                )),
+              )}
+            </tbody>
+          </table>
+        </div>
+      </PlotCard>
+      <PlotCard fill title={{ en: 'Observed against applied PD, by grade', es: 'Observada contra PD aplicada, por grado' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'On the line: calibrated. Above it: the PD under-estimates the default rate.', es: 'Sobre la línea: calibrado. Encima: la PD subestima la tasa de incumplimiento.' }}>
+        <UPlotChart
+          height="fill"
+          x={{ values: chart.x, label: { en: 'PD applied (grade mean)', es: 'PD aplicada (media del grado)' }, format: { percent: true, decimals: 0 } }}
+          y={{ label: { en: 'Observed default rate', es: 'Tasa de incumplimiento observada' }, format: { percent: true, decimals: 0 } }}
+          series={[
+            { label: { en: 'Perfect calibration', es: 'Calibración perfecta' }, values: chart.x, color: '--color-fg-faint', dash: [4, 4], width: 1 },
+            { label: names[0], values: chart.champion, color: '--color-accent', mode: 'points' },
+            { label: names[1], values: chart.challenger, color: '--color-magenta', mode: 'points' },
+          ]}
+        />
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -252,7 +248,7 @@ export function DiscriminationView({ sel }: { sel: Selection | null }) {
           </tbody>
         </table>
       </PlotCard>
-      <div className="caos-views-row" data-views="2">
+      <ViewsRow>
         <PlotCard fill title={{ en: 'ROC: champion and challenger', es: 'ROC: campeón y retador' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
           <UPlotChart
             height="fill"
@@ -276,7 +272,7 @@ export function DiscriminationView({ sel }: { sel: Selection | null }) {
             ]}
           />
         </PlotCard>
-      </div>
+      </ViewsRow>
     </>
   );
 }
@@ -299,8 +295,8 @@ export function StabilityView({ sel }: { sel: Selection | null }) {
   const chall = contributions(sel.challenger);
   const x = champ.map((_, i) => i + 1);
   return (
-    <div className="caos-views-row" data-views="2">
-      <div className="ct-col ct-share-2">
+    <ViewsRow shares={[2, 3]}>
+      <>
         <PlotCard
           title={{ en: 'Population stability of the PD', es: 'Estabilidad poblacional de la PD' }}
           lane="live"
@@ -353,28 +349,26 @@ export function StabilityView({ sel }: { sel: Selection | null }) {
             </table>
           </div>
         </PlotCard>
-      </div>
-      <div className="ct-col ct-share-3">
-        <PlotCard
-          fill
-          title={{ en: 'Where the PD distribution moved', es: 'Dónde se movió la distribución de la PD' }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{ en: "Each decile's contribution to the PSI, on the training slice's PD deciles; the PSI is their sum.", es: 'La contribución de cada decil al PSI, sobre los deciles de PD del tramo de entrenamiento; el PSI es su suma.' }}
-        >
-          <UPlotChart
-            height="fill"
-            x={{ values: x, label: { en: 'Training decile of the PD (1 = lowest)', es: 'Decil de PD de entrenamiento (1 = el más bajo)' }, format: { decimals: 0 } }}
-            y={{ label: { en: 'PSI contribution', es: 'Contribución al PSI' }, format: { decimals: 5 } }}
-            series={[
-              { label: shortName(rung(v, CHAMPION), CHAMPION), values: champ, color: '--color-accent', width: 2 },
-              { label: shortName(rung(v, sel.challenger), sel.challenger), values: chall, color: '--color-magenta', width: 2 },
-            ]}
-          />
-        </PlotCard>
-      </div>
-    </div>
+      </>
+      <PlotCard
+        fill
+        title={{ en: 'Where the PD distribution moved', es: 'Dónde se movió la distribución de la PD' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{ en: "Each decile's contribution to the PSI, on the training slice's PD deciles; the PSI is their sum.", es: 'La contribución de cada decil al PSI, sobre los deciles de PD del tramo de entrenamiento; el PSI es su suma.' }}
+      >
+        <UPlotChart
+          height="fill"
+          x={{ values: x, label: { en: 'Training decile of the PD (1 = lowest)', es: 'Decil de PD de entrenamiento (1 = el más bajo)' }, format: { decimals: 0 } }}
+          y={{ label: { en: 'PSI contribution', es: 'Contribución al PSI' }, format: { decimals: 5 } }}
+          series={[
+            { label: shortName(rung(v, CHAMPION), CHAMPION), values: champ, color: '--color-accent', width: 2 },
+            { label: shortName(rung(v, sel.challenger), sel.challenger), values: chall, color: '--color-magenta', width: 2 },
+          ]}
+        />
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
