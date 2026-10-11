@@ -3,6 +3,81 @@
 All notable changes to this product. Versions are X.XX.XXX (VERSION is the single source); every release is
 tagged.
 
+## [0.06.000], 2026-10-09
+
+The base moves to the shell 0.10.0 and the template 0.03.001 (CAOS_MANAGE `plans/app-shell/rollout-0-10.md`, #12).
+
+### Changed
+
+- The web runs on `@fasl-work/caos-app-shell` 0.10.0, pinned exactly (from 0.9.3). It carries known shell defects 32
+  and 33, which the 0.9.3 gate failed on this product: a 1e-6 tick on a log axis of PDs read `1E-4 %`, and the active
+  chip under the pointer wrote its label at 3.04:1.
+- The template's guards are 0.03.001's, verbatim (they were 0.02.004's, unchanged): the web-baseline guard requires
+  an exact pin equal to the installed package, judges each rule of the product's CSS by its subject against the
+  shell's reserved classes, and fails a shell entry imported without its stylesheet; the version guard reads code, not
+  history. The build writes `build.json` in `writeBundle`, so a failed build reports its own error.
+- Every view row is the shell's `ViewsRow` (60 rows in C01, C04, C05 and C22). The product's own column wrapper
+  (`.ct-col`, `.ct-share-2`, `.ct-share-3`, `.ct-findings-*`) is gone; the shell's column has the same box and the
+  same stacking below 900 px, and takes the shares as a prop. A split that depends on the screen is read in the
+  script, since a product's media query cannot reach the shell's column: the findings views give the drawing two
+  thirds from 2000 px wide, and C04's Variants view draws the agencies' chart on a screen at least 1100 px tall.
+  Two cards that split one column's height (C04's families) are `.ct-part`, a layout the shell does not have.
+- C04's matrix map measures and fits its labels with the shell's text kit (`textWidth`, `fitLabel`) instead of a
+  canvas of its own: the two lines of column labels are a label's box apart (16 px; 12 px left the boxes overlapping
+  by 3 px in the wide font), a label has two columns of room on its line, and one still wider is shortened with an
+  ellipsis and carries its name as a title. The clip paths and the `textLength` squeeze of 0.05.000 are gone.
+
+### Kept, and why
+
+- The knob's range without side margins in the product's control blocks: CAOS_APP_SHELL#91 is open in 0.10.0 (known
+  shell defect 35).
+- Card notes cite papers by their authors: a note is a string the shell cannot mark (CAOS_APP_SHELL#87, open).
+- Reference levels drawn as dashed constant series (a test's nominal size, the policy's amber and red thresholds, no
+  bias, one default): 0.10.0's `yMarks` draws every line dotted in the warning colour and leaves out a line beyond
+  the data's range, so the red threshold would read as amber and a nominal level as an alarm (CAOS_APP_SHELL#94).
+
+### Fixed
+
+The gate measured every state without a failure, but its captures show each route's first view only. Every view of
+the App was captured and read (130 views: light in English and dark in Spanish at 1280 x 800, light in English at
+390 x 844, page by page), and showed what a reader could not use, all of it before this release:
+
+- C04's Drift for an agency kept a plot of 10 to 30 px for the projection and for the mix by grade over the table.
+  The mix sits beside the projection on a screen at least 1100 px tall; the mix and the table, which show shares of
+  the balance and not a PD, close with CEREP's line without ESMA's statement on definitions.
+- C04's Definitions left the definitions' table one row under the cohorts where tab 2 differs from tab 4. That card
+  shows on a tall screen; elsewhere the chart's note points to the By year view, the chart and the definitions share
+  the row equally, and the chart (ratios of definitions, not PDs) closes with CEREP's line, ESMA's statement heading
+  the definitions beside it.
+- C04's Findings for the papers stacked a short table over its drawing and left the drawing no plot. It stacks only
+  on a tall screen, and the chart's axis title fits its height ("Gap to the print").
+- The Markov family's rail scrolled at 1280 x 800 in Spanish: six estimator chips take three rows there and pushed
+  the read-outs past the rail. The estimators have a rail section of their own.
+- C22's small multiples kept a plot of 30 px under a key of eight series: a row of panels is at least 320 px and the
+  grid scrolls inside its card; on a phone they are one to a row.
+- C04's matrix map left a cell blank where its value with its unit did not fit, which read as no data, and on a
+  phone printed its zeros only. It prints every value or none, without units when only that fits (the header then
+  carries the unit).
+
+### Known
+
+- In Spanish at 1280 x 800, C04's agency charts keep plots of 50 to 90 px under their notes (PD by grade, Lifetime,
+  Findings): a filling card gives its note all the height it asks for. The notes carry what CT-407 requires; the
+  fix belongs to the shell, a floor for the stage (CAOS_APP_SHELL#95). Every chart keeps its read-out and its table.
+
+### Verified
+
+- `npm test`: 468 tests in 22 files (three new for the short-screen layouts, one for the matrix map's units); `tsc`;
+  `npm run build`.
+- `pytest`: 175 passed with `CONTRASTE_DATA` set (the CEREP and paper tests read the data root), 1 skipped (a
+  template-only guard); `ruff check`.
+- Every CI guard, the template 0.03.001 guards among them: web baseline, version coherence, artifacts, provenance,
+  data classes, licences, SDD, deploy place, template residue, document paths, content standards, CI budget.
+- `caos-shell-gate` on the release build: OK, 910 measured states (C01, C04, C05 and C22; five sizes, both themes,
+  both languages, the wide-font pass), 0 failures.
+- The 130 captures above, read; the rails of every C04 variant measured in both languages and both fonts at
+  1280 x 800 (none scrolls).
+
 ## [0.05.000], 2026-10-08
 
 Unit U4: case C04, rating transitions and TTC PD by grade.
@@ -84,6 +159,18 @@ What the shell 0.9.3 gate found across the site, on its first run here:
 - C04's rail scrolled at 1280 x 800 (ADR-0071 rule 6) and its colour bar's lowest tick was cut (G10).
 - CT-407 held unevenly: every card drawn from CEREP now closes with one line (the EU entity, its code, the scope, the
   period and ESMA's attribution), and every card that shows a PD carries ESMA's statement.
+
+What the gate found on the shell 0.9.4 build, after the release commit and before the merge into develop:
+
+- G5 at 390 and 768 px: the knob's range input keeps the user agent's 2 px side margins at width 100%, so in a card
+  body that clips it reached past the edge (CAOS_APP_SHELL#91); the product's control blocks set no side margin.
+- G10 in the wide font: C04's matrix map printed column labels and cell values wider than their cells. It measures
+  them in the page's font: a value prints only where it fits, and column labels too wide for their column alternate
+  between two lines.
+- ADR-0071 rule 6 in the wide font: C04's and C05's rails scrolled at 1280 x 800; their variant lists leave out the
+  variants' titles and C04's interval read-out writes one percent sign for its two bounds.
+- The develop CI (Node 22) drew C04's PD axis from 9.999999999999999e-6 where Node 24 gives 1e-5, since `10 ** -5`
+  differs between them; the axis decades are read as `1e-5` and so on.
 
 ## [0.04.000], 2026-10-06
 

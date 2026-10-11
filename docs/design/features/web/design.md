@@ -16,8 +16,9 @@ instrument holds the six groups in order (CT-112): Model, Validation, Impact, Fi
 
 ## Layout
 
-Every view fills the panel at 1280x800 and wider (ADR-0071 rule 8): a row of cards (`.caos-views-row`), a table beside
-or above the drawing of the same numbers, wrappers (`.ct-col`, `.ct-share-*`) giving each card its share; a long table
+Every view fills the panel at 1280x800 and wider (ADR-0071 rule 8): a row of cards, the shell's `ViewsRow`, whose
+columns take each card's share (`shares`, read in the script where the split depends on the screen); a table beside
+or above the drawing of the same numbers; two cards splitting one column's height are `.ct-part`; a long table
 scrolls inside its filling card (`.ct-scroll`). Below 900 px the shell stacks the row and the document scrolls; phone
 columns that do not fit are hidden (`.ct-wide-only`), and columns that need a wide instrument appear from 1500 px
 (`.ct-room-only`). Tall screens (1100 px and more) add a second drawing where a table would leave a card mostly empty

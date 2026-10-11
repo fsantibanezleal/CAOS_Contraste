@@ -540,8 +540,8 @@ export function pdSeries(o: C04AgencyOutputs): ChartSeries[] {
 export function pdRange(series: ChartSeries[]): [number, number] | null {
   const values = series.flatMap((s) => s.values.filter((x): x is number => x !== null && x > 0));
   if (!values.length) return null;
-  // parseFloat("1e" + n) gives the canonical IEEE 754 double for each decade (the same as the literal
-  // 1e-5, 1e-6 etc.), which `10 ** n` does not guarantee across platforms (glibc vs musl vs macOS)
+  // parseFloat("1e" + n) is the double of the literal 1e-5, 1e-6 and so on; `10 ** -5` was 9.999999999999999e-6 under
+  // the CI's Node 22 and 1e-5 under Node 24, so an axis bound computed with it depended on the runtime
   const lo = parseFloat(`1e${Math.floor(Math.log10(Math.min(...values)))}`);
   const top = Math.max(...values);
   return [lo, top > 0.01 ? 1 : parseFloat(`1e${Math.ceil(Math.log10(top)) + 1}`)];
