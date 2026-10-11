@@ -1,0 +1,143 @@
+/* Contraste's own classes (prefix ct-), on the shell's tokens only; nothing here restyles a shell class. */
+
+/* a note under a view: secondary text, the reading width of a caption */
+.ct-note { color: var(--color-fg-subtle); font-size: 0.86rem; margin: 0.5rem 0 0; }
+
+/* a test's light: the word and a coloured mark, never colour alone */
+.ct-light { white-space: nowrap; }
+.ct-light-word { font-size: 0.78rem; font-weight: 600; margin-left: 0.25rem; }
+.ct-light-green .ct-light-word { color: var(--color-good); }
+.ct-light-amber .ct-light-word { color: var(--color-warn); }
+.ct-light-red .ct-light-word { color: var(--color-bad); }
+.ct-light-not_evaluated .ct-light-word { color: var(--color-fg-faint); font-weight: 400; }
+.ct-light-error .ct-light-word { color: var(--color-bad); text-decoration: underline; }
+.ct-light-red { box-shadow: inset 3px 0 0 var(--color-bad); }
+.ct-light-amber { box-shadow: inset 3px 0 0 var(--color-warn); }
+
+/* the battery: one column per rung, readable on a phone by horizontal scroll of the table itself */
+.ct-battery td, .ct-battery th { font-variant-numeric: tabular-nums; }
+
+/* the row of the current selection (the applicant's bin, the open variant) */
+.ct-current td { background: var(--color-accent-soft); }
+
+/* a finding's evidence, under its title */
+.ct-evidence { margin: 0.35rem 0 0; padding-left: 1.1rem; color: var(--color-fg-subtle); font-size: 0.86rem; }
+
+/* a variant name that loads it: a link in look, a button in behaviour */
+.ct-linkbutton {
+  background: none; border: 0; padding: 0; color: var(--color-accent); cursor: pointer; font: inherit;
+  text-align: left; text-decoration: underline; text-underline-offset: 2px;
+}
+.ct-linkbutton:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+/* the context write-up: prose inside a card */
+.ct-prose { max-width: 72ch; }
+.ct-prose h3 { font-size: 1rem; margin: 1rem 0 0.35rem; color: var(--color-fg); }
+.ct-context { display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; }
+
+/* small multiples: up to six charts in a responsive grid */
+.ct-small-multiple { min-width: 0; }
+.ct-grid6 { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.75rem; min-width: 0; }
+
+/* an inline figure (an SVG string), sized by the shell's .fig-svg rules */
+.ct-fig svg { width: 100%; height: auto; display: block; }
+
+/* Layout inside the instrument (ADR-0071 rule 8): a view is the shell's ViewsRow, whose columns take their shares and
+   pass the height down. Inside one column, two cards may split its height: a part gives each its share. */
+.ct-part { display: flex; flex-direction: column; gap: 0.6rem; min-width: 0; min-height: 0; }
+.ct-part-2 { flex-grow: 2; }
+.ct-part-3 { flex-grow: 3; }
+
+/* a long table scrolls inside its filling card, its header kept in view by the shell's sticky header */
+.ct-scroll { height: 100%; overflow: auto; min-height: 0; }
+
+/* columns a phone has no room for */
+@media (max-width: 640px) { .ct-wide-only { display: none; } }
+/* columns that need a wide instrument (every rung of the battery, the posterior interval); below 1500 px the
+   champion and the challenger, and the essential columns */
+@media (max-width: 1499px) { .ct-room-only { display: none; } }
+
+/* six small multiples that fill their card: three columns of two rows, two of three on a narrow screen */
+.ct-grid6-fill { display: grid; height: 100%; gap: 0.6rem; min-width: 0; min-height: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+.ct-grid6-fill > .ct-small-multiple { display: flex; flex-direction: column; min-height: 0; }
+@media (max-width: 900px) {
+  .ct-grid6-fill { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); }
+}
+
+/* every panel of a C22 family in one filling card: one small multiple each, at most three across; two across below
+   900 px. A row is never shorter than a panel with its key needs (320 px: at 1280 x 800 the rows shared 500 px and
+   a panel with eight series kept a plot of 30 px under its key), and the grid scrolls inside its card when the rows do
+   not fit */
+.ct-panels-fill { display: grid; height: 100%; gap: 0.6rem; min-width: 0; min-height: 0; overflow-y: auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(320px, 1fr); }
+.ct-panels-fill[data-views="1"] { grid-template-columns: minmax(0, 1fr); }
+.ct-panels-fill[data-views="3"], .ct-panels-fill[data-views="5"], .ct-panels-fill[data-views="6"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ct-panels-fill > .ct-small-multiple { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+.ct-sm-title { margin: 0 0 0.15rem; font-size: 0.8rem; font-weight: 600; color: var(--color-fg-subtle); }
+@media (max-width: 900px) {
+  .ct-panels-fill, .ct-panels-fill[data-views="3"], .ct-panels-fill[data-views="5"], .ct-panels-fill[data-views="6"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* a phone: one panel a row, so a key of ten series has the width to wrap two to a line (two across left the
+   calibration panel a plot of a few pixels under its key) */
+@media (max-width: 640px) {
+  .ct-panels-fill, .ct-panels-fill[data-views="3"], .ct-panels-fill[data-views="5"], .ct-panels-fill[data-views="6"] { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* the C22 detection matrix: a cell's shade is its rejection rate (0 below 5%, 4 from 80%); the loaded family's column
+   is marked */
+.ct-heat-table td.ct-heat { text-align: right; }
+.ct-heat[data-heat="1"] { background: color-mix(in oklab, var(--color-accent) 10%, transparent); }
+.ct-heat[data-heat="2"] { background: color-mix(in oklab, var(--color-accent) 22%, transparent); }
+.ct-heat[data-heat="3"] { background: color-mix(in oklab, var(--color-accent) 36%, transparent); }
+.ct-heat[data-heat="4"] { background: color-mix(in oklab, var(--color-accent) 52%, transparent); }
+.ct-heat[data-kind="size"][data-heat="1"] { background: color-mix(in oklab, var(--color-warn) 12%, transparent); }
+.ct-heat[data-kind="size"][data-heat="2"] { background: color-mix(in oklab, var(--color-warn) 26%, transparent); }
+.ct-heat[data-kind="size"][data-heat="3"] { background: color-mix(in oklab, var(--color-warn) 40%, transparent); }
+.ct-heat[data-kind="size"][data-heat="4"] { background: color-mix(in oklab, var(--color-warn) 56%, transparent); }
+.ct-heat-current { box-shadow: inset 0 -2px 0 var(--color-accent); }
+
+/* a verdict, a short table and their notes at their own height (a card that does not fill: C01's capital numbers) */
+.ct-stack-natural { display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
+
+/* a verdict over a scrolling table, inside one filling card */
+.ct-stack { display: flex; flex-direction: column; gap: 0.5rem; height: 100%; min-height: 0; }
+.ct-stack > .ct-scroll { flex: 1 1 0; height: auto; }
+
+/* cards side by side at their own height (tables over a filling chart, as the C01 Variants view stacks one); below
+   900 px they stack */
+.ct-row { display: flex; gap: 0.75rem; min-width: 0; align-items: stretch; }
+.ct-row > * { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+.ct-row > .ct-share-2 { flex-grow: 2; }
+.ct-row > .ct-share-3 { flex-grow: 3; }
+@media (max-width: 900px) { .ct-row { flex-direction: column; } }
+
+/* Below 900 px the shell stacks the row and the document scrolls: a part is as tall as its card (a zero basis would
+   collapse it, since the document gives the column no height) */
+@media (max-width: 900px) { .ct-part { flex: none; } }
+
+/* a view a tall screen has room for (a second drawing under a table); a short screen keeps the one it needs */
+.ct-tall-only { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+@media (max-height: 1099px) { .ct-tall-only { display: none; } }
+
+/* two knobs side by side in the rail, each with a one-line label (the hint carries the full name) */
+.ct-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; min-width: 0; }
+
+/* a text column that may be narrow (a bin label wraps at its space on a phone): left-aligned, wrapping, without the
+   shell's 16ch minimum of a text column */
+th.ct-text, td.ct-text { text-align: left; white-space: normal; }
+
+/* headers that may wrap, for a table whose column names are longer than its numbers (C05's variants: the Spanish
+   approach names pushed two columns past the card at 1280 px) */
+table.ct-wrap-head th { white-space: normal; }
+
+/* C04's matrix map: the stage takes the card's height less the readout line under it */
+.ct-map { height: 100%; display: flex; flex-direction: column; min-height: 0; }
+.ct-map > .ct-map-stage { flex: 1 1 0; min-height: 160px; }
+.ct-map svg text[role='button']:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+/* The shell's knob keeps the user agent's 2 px side margins on its range input at width 100%, so in a card body that
+   clips it reached 2 px past the edge at phone widths and the gate could not bring it into view (G5; known shell
+   defect 35, CAOS_APP_SHELL#91, open in 0.10.0): no side margin in this product's control blocks until the shell
+   carries the fix. */
+[data-controls] input[type='range'] { margin-inline: 0; }

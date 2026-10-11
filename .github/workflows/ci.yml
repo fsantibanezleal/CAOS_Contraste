@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  workflow_dispatch:
+
+# ADR-0074: cheap checks on committed files. No pipeline test suite, no training stack, no bake: those run locally.
+# The web job builds the site and runs its unit tests (the contract and parity checks are milliseconds).
+# Every step runs under `bash -eo pipefail`, so a failing command inside a pipe fails the step (T9).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash -eo pipefail {0}
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the version check compares VERSION with the latest tag
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Lint
+        run: pip install ruff==0.15.18 && ruff check data-pipeline tests scripts app
+      - name: The workflows parse
+        run: |
+          pip install pyyaml==6.0.2
+          python -c "import sys, yaml, pathlib; [yaml.safe_load(p.read_text()) for p in pathlib.Path('.github/workflows').glob('*.yml')]; print('workflows: OK')"
+      - name: CONTRACT 2, manifests and artifacts consistent
+        run: python scripts/check_artifacts.py
+      - name: Every artifact carries true provenance (CT-003)
+        run: python scripts/check_provenance.py
+      - name: No raw rows of a non-mirror source (CT-006)
+        run: python scripts/check_data_classes.py
+      - name: No AGPL, GPL or BSL in the default install (CT-005)
+        run: python scripts/check_licences.py
+      - name: VERSION is the single source (T4)
+        run: python scripts/check_version_coherence.py
+      - name: The SDD, every requirement with a real gate (ADR-0075)
+        run: python scripts/check_sdd.py
+      - name: One deploy place
+        run: python scripts/check_deploy_place.py
+
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: cd frontend && npm ci
+      - name: Build (copy the declared artifacts, type-check, bundle, materialise the routes)
+        run: cd frontend && npm run build
+      - name: Unit tests (contract both ways, engine parity, artifact layer)
+        run: cd frontend && npm test
+      - name: Web baseline (tokens, classes, numbers, images, animation loops)
+        run: python scripts/check_web_baseline.py
+
+  guards:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Base-integrity guards (the regressions this archetype forbids)
+        run: |
+          fail=0
+          # a real .env must never be tracked (only .env.example)
+          if git ls-files | grep -qE '(^|/)\.env(\..+)?$' && ! git ls-files | grep -qx '.env.example'; then
+            echo "::error::a real .env is tracked (only .env.example may be)"; fail=1; fi
+          # venvs, native binaries and heavy model blobs must never be tracked
+          if git ls-files | grep -qiE '(^|/)\.?venv|\.(dll|so|dylib|pt|pth)$'; then
+            echo "::error::a venv or native/heavy binary is tracked"; fail=1; fi
+          # raw or heavy data must never be tracked; commit only compact derived artifacts under data/derived/
+          if git ls-files | grep -qiE '\.(parquet|h5|hdf5|nc|mat|npy)$'; then
+            echo "::error::raw or heavy data tracked; commit only compact derived artifacts (data/derived/)"; fail=1; fi
+          # no leaked local machine paths in tracked sources
+          if git grep -nE '[A-Z]:\\_(Repos|worktrees|Temp)|[A-Z]:/_(Repos|worktrees|Temp)' -- . ':!.github' >/dev/null 2>&1; then
+            echo "::error::a local machine path in a tracked file"; fail=1; fi
+          if [ "$fail" -eq 0 ]; then echo "guards: OK"; fi
+          exit $fail
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: No template residue (an instantiated product replaces the example)
+        run: python scripts/check_template_residue.py
+      - name: Every path a document names exists
+        run: python scripts/check_doc_paths.py
+      - name: No em-dash or emoji in product content (ADR-0067)
+        run: python scripts/check_content_standards.py
+      - name: CI budget, no training, trunk-only triggers (ADR-0074)
+        run: python scripts/check_ci_budget.py
