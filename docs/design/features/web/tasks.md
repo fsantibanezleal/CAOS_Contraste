@@ -21,3 +21,11 @@ same tree had failed 88 of 686 states, every C01 and documentation failure among
 carries. The screenshots on 0.7.1 then showed what no gate check read: every integer axis repeated its tick labels
 (C01's AUC across the variants read 1, 2, 2, 3, 3, ...), known shell defect 21, fixed upstream in 0.7.2 together with
 the gate check that now fails it (G6).
+
+2026-10-10: on shell 0.10.0 and the template 0.03.001 (0.06.000), the verdict holds on the build that ships:
+`caos-shell-gate: OK, 910 measured states`, every view row on the shell's `ViewsRow` and no product override left but
+those whose shell issue is open (CAOS_APP_SHELL#91, #87, #94). The gate captures each route's first view only, so every
+App view was captured and read (130 views, light English and dark Spanish at 1280 x 800, light English at 390 x 844):
+that reading found what no check measured (charts squeezed to a few pixels under their notes, a table cut to one row,
+the Markov rail scrolling in Spanish, a matrix printing only its zeros), fixed in 0.06.000, and one gap that belongs to
+the shell, a floor for a filling card's stage (CAOS_APP_SHELL#95).

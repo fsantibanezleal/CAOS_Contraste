@@ -11,7 +11,12 @@
 | 6b | The lifetime check: five-year windows of CEREP against the chained one-year matrices | CT-415 | done |
 | 7 | The live ports (projection, intervals, capital) with parity tests | CT-410, CT-411 | done |
 | 8 | The C04 instrument and its views; the content page; the methodology and coverage entries | CT-412, CT-414 | done |
-| 9 | The case page in docs; the measured gate; screenshots read; version 0.05.000, changelog, PR | CT-413, CT-414 | todo |
+| 9 | The case page in docs; the measured gate; screenshots read; version 0.05.000, changelog, PR | CT-413, CT-414 | done |
+
+Task 9 closed on 2026-10-10 with 0.06.000 (shell 0.10.0): the case page `docs/cases/C04.md`; `caos-shell-gate` OK on
+910 measured states; every App view captured and read (light English and dark Spanish at 1280 x 800, light English at
+390 x 844), which found and fixed the Drift, Definitions, Findings, Markov rail and matrix map defects listed in the
+CHANGELOG; 0.05.000 merged into develop (PR #11) and 0.06.000 released with it.
 
 Found on the way and fixed where it lives, before C04 used it: riskvalidation 0.4.1 (a PD of 0 refused although the
 function floors PDs; CAOS_RiskValidation#24), 0.4.2 (the MSE and RMSE with their Monte Carlo errors; the exact
