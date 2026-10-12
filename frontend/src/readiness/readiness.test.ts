@@ -85,6 +85,8 @@ describe('the six states', () => {
     const d = doc(entry('case-index', 'available'), entry('c04-agency', 'stale'), entry('c05-sp', 'available'), entry('test-result', 'available'));
     expect(rowsForCase(d, 'C04')).toEqual(['case-index', 'test-result', 'c04-agency']);
     expect(rowsForCase(null, 'C04')).toEqual([]);
+    // the partial case-manifest row is about the other cases: a built case does not carry its note
+    expect(rowsForCase(doc(entry('case-manifest', 'partial'), entry('c04-agency', 'available')), 'C04')).toEqual(['c04-agency']);
   });
 });
 
