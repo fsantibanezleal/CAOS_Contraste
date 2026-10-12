@@ -108,9 +108,9 @@ export function PowerFigure() {
   return (
     <Frame label={t('An illustrative power curve', 'Una curva de potencia ilustrativa')}>
       <Axes x={t('Size of the planted defect', 'Tamaño del defecto plantado')} y={t('Rejection rate', 'Tasa de rechazo')} />
-      <path className="dg-asymptote" d={path([[0, alpha], [1, alpha]])} />
+      <path className="dg-asymptote" fill="none" d={path([[0, alpha], [1, alpha]])} />
       <path className="dg-curve" d={path(curve)} />
-      <text className="dg-marker-label" x={px(0.62)} y={py(alpha) - 6}>{t('level α: the size, with no defect', 'nivel α: el tamaño, sin defecto')}</text>
+      <text className="dg-axis-label" x={X1} y={py(alpha) - 6} textAnchor="end">{t('level α: the size, with no defect', 'nivel α: el tamaño, sin defecto')}</text>
       <text className="dg-axis-label" x={px(0.5)} y={py(0.72)}>{t('power: the rate with a defect', 'potencia: la tasa con defecto')}</text>
       <Note>{t('Illustrative curve', 'Curva ilustrativa')}</Note>
     </Frame>
@@ -227,12 +227,12 @@ export function HomogeneityFigure() {
   return (
     <Frame label={t('Illustrative yearly estimates of one transition probability and the pooled estimate', 'Estimaciones anuales ilustrativas de una probabilidad de transición y la estimación agrupada')}>
       <Axes x={t('Year of the cohort', 'Año de la cohorte')} y={t('Estimate of one p_ij', 'Estimación de un p_ij')} />
-      <path className="dg-asymptote" d={path([[0, 0.43], [1, 0.43]])} />
+      <path className="dg-asymptote" fill="none" d={path([[0, 0.43], [1, 0.43]])} />
       <path className="dg-curve" d={path(years.map((u, i): [number, number] => [u, est[i]]))} />
       {years.map((u, i) => (
         <circle key={u} className="dg-node" cx={px(u)} cy={py(est[i])} r={4} />
       ))}
-      <text className="dg-marker-label" x={px(0.02)} y={py(0.43) - 6}>{t('pooled: the same matrix every year', 'agrupada: la misma matriz cada año')}</text>
+      <text className="dg-axis-label" x={px(0.02)} y={py(0.43) - 6}>{t('pooled: the same matrix every year', 'agrupada: la misma matriz cada año')}</text>
       <Note>{t('Illustrative estimates', 'Estimaciones ilustrativas')}</Note>
     </Frame>
   );
@@ -242,9 +242,9 @@ export function HomogeneityFigure() {
 export function ProtocolFigure() {
   const t = useT();
   const parts = [
-    { x: X0 - 40, w: 220, cls: 'dg-box accent', title: t('Training slice', 'Tajada de entrenamiento'), sub: t('binning, WoE, fits, cross-validation', 'tramado, WoE, ajustes, validación cruzada') },
-    { x: X0 + 188, w: 96, cls: 'dg-box', title: t('Calibration slice', 'Tajada de calibración'), sub: t('calibration map', 'mapa de calibración') },
-    { x: X0 + 312, w: 124, cls: 'dg-box good', title: t('Locked holdout', 'Muestra reservada'), sub: t('the tests, once', 'las pruebas, una vez') },
+    { x: 8, w: 236, cls: 'dg-box accent', title: t('Training slice', 'Tajada de entrenamiento'), sub: t('binning, fits, cross-validation', 'tramado, ajustes, validación cruzada') },
+    { x: 252, w: 104, cls: 'dg-box', title: t('Calibration', 'Calibración'), sub: t('calibration map', 'mapa de calib.') },
+    { x: 364, w: 108, cls: 'dg-box good', title: t('Locked holdout', 'Reservada'), sub: t('tests, once', 'pruebas, una vez') },
   ];
   return (
     <Frame label={t('The leakage-safe protocol: training, calibration and a locked holdout, and the forbidden path', 'El protocolo sin fugas: entrenamiento, calibración y una muestra reservada bloqueada, y el camino prohibido')}>
@@ -255,9 +255,9 @@ export function ProtocolFigure() {
           <text className="dg-box-sub" x={p.x + p.w / 2} y={106} textAnchor="middle">{p.sub}</text>
         </g>
       ))}
-      <path className="dg-asymptote" d={`M${X0 + 374} 130 C ${X0 + 374} 190, ${X0 + 80} 190, ${X0 + 70} 130`} />
-      <text className="dg-marker-label" x={X0 + 224} y={178} textAnchor="middle">{t('forbidden: choosing or fitting with the holdout', 'prohibido: elegir o ajustar con la muestra reservada')}</text>
-      <text className="dg-axis-label" x={X0 + 224} y={Y0 + 36} textAnchor="middle">{t('30% locked holdout; 20% of the rest for calibration', '30% de muestra reservada; 20% del resto para calibración')}</text>
+      <path className="dg-asymptote" fill="none" d={`M418 130 C 418 190, 126 190, 126 130`} />
+      <text className="dg-axis-label" x={W / 2} y={178} textAnchor="middle">{t('forbidden: choosing or fitting with the holdout', 'prohibido: elegir o ajustar con la muestra reservada')}</text>
+      <text className="dg-axis-label" x={W / 2} y={Y0 + 36} textAnchor="middle">{t('30% locked holdout; 20% of the rest for calibration', '30% de muestra reservada; 20% del resto para calibración')}</text>
     </Frame>
   );
 }

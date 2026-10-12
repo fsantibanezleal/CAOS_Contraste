@@ -6,7 +6,8 @@
 import { Callout, Cite, DocPage, DocSection, Equation, Figure, Glossary, Question, Stat, Tabs } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { OverviewFigure } from '../architecture/figures';
-import { L, P, T, useT } from '../content/bi';
+import { L, P, Ref, T, useT } from '../content/bi';
+import { NoTranslateRefs } from './NoTranslateRefs';
 
 /** One list item written in both languages. */
 const Li = ({ en, es }: { en: ReactNode; es: ReactNode }) => (
@@ -59,7 +60,7 @@ function Executive() {
           />
           <Li
             en={<>2027 changes four regimes at once: the EU output floor reaches <S en="60" unit={{ en: '% in 2027 (72.5% from 2030)', es: '% en 2027 (72,5% desde 2030)' }} source={SRC.crr} /> <Cite id="crr3floor" />; the UK's Basel 3.1 rules take effect on 2027-01-01 <Cite id="praps126" />; Canada's model risk guideline E-23 on 2027-05-01 <Cite id="osfie23" />; and credit scoring becomes a high-risk AI system in the EU on 2027-12-02 <Cite id="aiact" />. The EBA projects an average <S en="4.7" es="4,7" unit={{ en: '% increase in Tier 1 minimum required capital once the floor is fully in, with the banks bound by it rising from 2 to 33', es: '% de aumento del capital mínimo exigido de Nivel 1 una vez que el piso rija por completo, y los bancos sujetos a él suben de 2 a 33' }} source={SRC.eba} /> <Cite id="ebapr2026" />.</>}
-            es={<>2027 cambia cuatro regímenes a la vez: el piso de output de la UE llega a <S en="60" unit={{ en: '%', es: '% en 2027 (72,5% desde 2030)' }} source={SRC.crr} /> <Cite id="crr3floor" />; las reglas de Basilea 3.1 del Reino Unido entran en vigor el 2027-01-01 <Cite id="praps126" />; la directriz E-23 de riesgo de modelos de Canadá el 2027-05-01 <Cite id="osfie23" />; y el scoring de crédito pasa a ser un sistema de IA de alto riesgo en la UE el 2027-12-02 <Cite id="aiact" />. La EBA proyecta un <S en="4.7" es="4,7" unit={{ en: '%', es: '% de aumento promedio del capital mínimo exigido de Nivel 1 una vez que el piso rija por completo, y los bancos sujetos a él suben de 2 a 33' }} source={SRC.eba} /> <Cite id="ebapr2026" />.</>}
+            es={<>2027 cambia cuatro regímenes a la vez: el piso de output de la UE llega a <S en="60" unit={{ en: '%', es: '% en 2027 (72,5% desde 2030)' }} source={SRC.crr} /> <Cite id="crr3floor" />; las reglas de Basilea <Ref>3.1</Ref> del Reino Unido entran en vigor el 2027-01-01 <Cite id="praps126" />; la directriz E-23 de riesgo de modelos de Canadá el 2027-05-01 <Cite id="osfie23" />; y el scoring de crédito pasa a ser un sistema de IA de alto riesgo en la UE el 2027-12-02 <Cite id="aiact" />. La EBA proyecta un <S en="4.7" es="4,7" unit={{ en: '%', es: '% de aumento promedio del capital mínimo exigido de Nivel 1 una vez que el piso rija por completo, y los bancos sujetos a él suben de 2 a 33' }} source={SRC.eba} /> <Cite id="ebapr2026" />.</>}
           />
           <Li
             en={<>In Chile the Pillar 2 charge reaches <S en="100" unit={{ en: '% on 2027-12-01', es: '% el 2027-12-01' }} source={SRC.cmf} /> <Cite id="cmfcal" />, and the CMF consulted in August 2026 on opening internal models for provisions and credit risk-weighted assets, which no bank uses today <Cite id="cmfmi2026" />.</>}
@@ -311,6 +312,7 @@ export function Introduction() {
         'Construir modelos de riesgo financiero y validarlos como lo harían una función de riesgo de modelos y un supervisor: esta página abre con lo que está en juego para quien responde por los modelos de un banco, y luego pasa al problema, los principios, las matemáticas, el pipeline y los límites del trabajo.',
       )}
     >
+      <NoTranslateRefs />
       <Tabs
         ariaLabel={t('Views of the introduction', 'Vistas de la introducción')}
         initial="executive"

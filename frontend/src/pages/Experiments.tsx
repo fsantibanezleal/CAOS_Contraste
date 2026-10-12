@@ -13,6 +13,7 @@ import { CHAMPION, test, value } from '../workbench/model';
 import { C04Experiments } from './C04Sections';
 import { C05ExperimentsSection } from './C05Sections';
 import { C22ExperimentsSection } from './C22Sections';
+import { NoTranslateRefs } from './NoTranslateRefs';
 
 function CaseVariants({ manifest }: { manifest: CaseManifest }) {
   const lang = useShellLang();
@@ -107,6 +108,10 @@ function CaseTopic({ m }: { m: CaseManifest }) {
     >
       <P en={m.question.en} es={m.question.es} />
       <CaseFacts m={m} />
+      <P
+        en="Each variant of a case is the same question asked of different data, and the tables and charts below are read from its artifacts: the number of records, the default rate, the discrimination of the champion and of the best challenger, and the policy light of its calibration and stability tests under the committed thresholds. A variant that perturbs the data has a known effect, and a sound test must detect it or must not, as the case declares."
+        es="Cada variante de un caso es la misma pregunta hecha a datos distintos, y las tablas y gráficos de abajo se leen de sus artefactos: el número de registros, la tasa de incumplimiento, la discriminación del campeón y del mejor retador, y la luz de política de sus pruebas de calibración y estabilidad bajo los umbrales comprometidos. Una variante que perturba los datos tiene un efecto conocido, y una prueba sana debe detectarlo o no, según declara el caso."
+      />
       {m.case_id === 'C04' ? <C04Experiments manifest={m} /> : m.case_id === 'C05' ? <C05ExperimentsSection manifest={m} /> : m.case_id === 'C22' ? <C22ExperimentsSection manifest={m} /> : <CaseVariants manifest={m} />}
     </DocSection>
   );
@@ -220,6 +225,7 @@ export function Experiments() {
         'La cobertura de los 22 casos, el protocolo con muestra reservada que sigue todo experimento, las métricas que lee, y cada caso construido variante por variante, todo leído de los artefactos comprometidos: ningún número de esta página está escrito a mano, y un caso planificado lo dice.',
       )}
     >
+      <NoTranslateRefs />
       <TabGroups
         ariaLabel={lang === 'es' ? 'Partes de los experimentos' : 'Parts of the experiments'}
         groups={[

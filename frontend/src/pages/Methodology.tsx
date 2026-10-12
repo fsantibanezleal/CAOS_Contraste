@@ -7,6 +7,7 @@ import { L, P, Ref, T, useT } from '../content/bi';
 import { BoostingExtra, CalibrationExtra, DiscriminationExtra, GlassBoxExtra, ModelRiskExtra, ScorecardsExtra, SizeAndPowerExtra, StabilityExtra } from './MethodologyExtras';
 import { Migrations, TransitionTests } from './MethodologyTransitions';
 import { REGISTERED_SECTIONS, type MethodologyGroup } from './methodologyRegistry';
+import { NoTranslateRefs } from './NoTranslateRefs';
 
 /** The tabs the registry adds to a group (pages/methodology/*.tsx), after the page's own and in their `order`. */
 function registered(group: MethodologyGroup, lang: 'en' | 'es') {
@@ -312,6 +313,7 @@ export function Methodology() {
         'Las familias de modelos y las pruebas de validación detrás de los casos, cada método con su comportamiento y sus constantes exactos: las ecuaciones que corre, los supuestos que hace, la figura que muestra su idea, el límite que tiene y las fuentes que sigue.',
       )}
     >
+      <NoTranslateRefs />
       <TabGroups
         ariaLabel={lang === 'es' ? 'Partes de la metodología' : 'Parts of the methodology'}
         groups={[

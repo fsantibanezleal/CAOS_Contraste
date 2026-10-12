@@ -12,6 +12,7 @@ import { CHAMPION, extra, test, value } from '../workbench/model';
 import { C04Benchmark } from './C04Sections';
 import { C05BenchmarkSection } from './C05Sections';
 import { C22BenchmarkSection } from './C22Sections';
+import { NoTranslateRefs } from './NoTranslateRefs';
 
 function Comparison({ v, title }: { v: VariantArtifact; title: string }) {
   const lang = useShellLang();
@@ -198,19 +199,20 @@ export function Benchmark() {
       wide
       title={{ en: 'Benchmark', es: 'Benchmark' }}
       lede={t(
-        'Every rung against the champion on held-out data: discrimination with its interval and the paired test, calibration, the degradation under perturbed data, the provenance of every dataset, and only the claims those tests support.',
-        'Cada peldaño contra el campeón en datos reservados: discriminación con su intervalo y la prueba pareada, calibración, la degradación con datos perturbados, la procedencia de cada conjunto de datos, y solo las afirmaciones que esas pruebas respaldan.',
+        'Every rung against the champion on held-out data: discrimination with its interval and the paired test, calibration, the degradation under perturbed data, the provenance of every dataset, the comparison of a learned model with a classical one, and only the claims those tests support.',
+        'Cada peldaño contra el campeón en datos reservados: discriminación con su intervalo y la prueba pareada, calibración, la degradación con datos perturbados, la procedencia de cada conjunto de datos, la comparación de un modelo aprendido con uno clásico, y solo las afirmaciones que esas pruebas respaldan.',
       )}
       floorWaivers={[
         {
           floor: 'live',
           reason: {
-            en: 'The Benchmark replays committed artifacts; the live inference on held-out data is the App workbench, in its Impact group, where the reader moves the controls.',
-            es: 'El Benchmark reproduce artefactos comprometidos; la inferencia en vivo sobre datos reservados es el banco de trabajo de la App, en su grupo Impacto, donde el lector mueve los controles.',
+            en: 'The Benchmark replays committed artifacts. The live inference on held-out data is the App workbench, in its Impact group, where the reader moves the controls.',
+            es: 'El Benchmark reproduce artefactos comprometidos. La inferencia en vivo sobre datos reservados es el banco de trabajo de la App, en su grupo Impacto, donde el lector mueve los controles.',
           },
         },
       ]}
     >
+      <NoTranslateRefs />
       <DocSection title={{ en: 'How to read the comparisons', es: 'Cómo leer las comparaciones' }} refs={['delong1988', 'lessmann2015']}>
         <P
           en={<>A challenger beats the champion only when the paired DeLong test on the same obligors says so <Cite id="delong1988" />, and only by the difference it measures: the literature reports gains of a few AUC points for tree ensembles on retail data <Cite id="lessmann2015" />, and this page shows whether each case agrees, with the interval of every AUC and the calibration of every rung.</>}
