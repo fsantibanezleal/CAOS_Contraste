@@ -67,7 +67,7 @@ appropriate use in decisions (the impact view and the findings record).
 ## Executive brief
 
 The problem in its real context, written before any development and in business language, as
-[`docs/guides/06_executive-brief.md`](../guides/06_executive-brief.md) describes and `scripts/check_sdd.py` checks.
+[the template's executive-brief guide (06)](https://github.com/fsantibanezleal/CAOS_PRODUCT_TEMPLATE/blob/v0.05.000/docs/guides/06_executive-brief.md) describes and `scripts/check_sdd.py` checks.
 Transcribed on 2026-10-12 from the executive brief of the product plan, which was written from the problem-context
 dossier of 2026-10-12 under the problem-context-first convention; no claim was changed or added. The brief is written
 for the person accountable for a bank's model risk: the supervisory texts name functions, not job titles (the ECB Guide
