@@ -1,13 +1,14 @@
 // The coverage of the 22 cases and, case by case, every variant read from its committed artifacts. No number on this
 // page is typed in: whether a case is built comes from the index, every metric from the variant artifacts (T13).
-import { DocPage, DocSection, PlotCard, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
+import { DocPage, DocSection, Equation, Figure, PlotCard, TabGroups, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import { loadAllManifests, loadAllVariants, useArtifact } from '../api/artifacts';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT, relight } from '../lib/policy';
 import { CASES, CATEGORY_TITLES } from '../content/coverage';
-import { P, useT } from '../content/bi';
+import { P, T, useT } from '../content/bi';
+import { ProtocolFigure } from './DocFigures';
 import { CHAMPION, test, value } from '../workbench/model';
 import { C04Experiments } from './C04Sections';
 import { C05ExperimentsSection } from './C05Sections';
@@ -80,50 +81,160 @@ function CaseVariants({ manifest }: { manifest: CaseManifest }) {
   );
 }
 
+/** What a case declares and what its bake wrote, read from its manifest: the second paragraph of its question. */
+function CaseFacts({ m }: { m: CaseManifest }) {
+  const lang = useShellLang();
+  const variants = m.artifacts.filter((a) => a.role === 'variant');
+  const titles = variants.map((a) => pick(a.short_title, lang)).join(', ');
+  const expected = Object.keys(m.expect ?? {}).length;
+  const engine = Object.entries(m.engine ?? {})
+    .map(([k, v]) => `${k} ${v}`)
+    .join(', ');
+  return (
+    <P
+      en={`The case was baked with seed ${m.seed} by ${engine || 'the pipeline'} and holds ${variants.length} variants (${titles}). It reads ${m.sources.join(', ')}, and the ${expected} expected ranges it declared before the bake all held when it ran. Every number below is read from those committed artifacts when the page opens, and none is typed into this page.`}
+      es={`El caso se generó con la semilla ${m.seed} por ${engine || 'el pipeline'} y contiene ${variants.length} variantes (${titles}). Lee ${m.sources.join(', ')}, y los ${expected} rangos esperados que declaró antes de la generación se cumplieron todos cuando corrió. Cada número de abajo se lee de esos artefactos comprometidos cuando se abre la página, y ninguno está escrito en esta página.`}
+    />
+  );
+}
+
+function CaseTopic({ m }: { m: CaseManifest }) {
+  return (
+    <DocSection
+      area="question"
+      title={{ en: `${m.case_id}: ${m.title.en}`, es: `${m.case_id}: ${m.title.es}` }}
+      noRefsReason={{ en: 'Read from the committed artifacts; the methods are cited in Methodology.', es: 'Leído de los artefactos comprometidos; los métodos se citan en Metodología.' }}
+    >
+      <P en={m.question.en} es={m.question.es} />
+      <CaseFacts m={m} />
+      {m.case_id === 'C04' ? <C04Experiments manifest={m} /> : m.case_id === 'C05' ? <C05ExperimentsSection manifest={m} /> : m.case_id === 'C22' ? <C22ExperimentsSection manifest={m} /> : <CaseVariants manifest={m} />}
+    </DocSection>
+  );
+}
+
+function Coverage({ built }: { built: Set<string> | null }) {
+  const lang = useShellLang();
+  const t = useT();
+  return (
+    <DocSection area="datasets" title={{ en: 'Coverage and datasets', es: 'Cobertura y conjuntos de datos' }} noRefsReason={{ en: 'The plan of this product.', es: 'El plan de este producto.' }}>
+      <P
+        en="Twenty-two cases in eleven categories, each with its data and licence class, the status of its truth, and the unit of the plan that builds it. A case is marked built only when its manifest exists; every other one is the plan, stated as such, and the site shows it as not available yet in every group, with the reason, never as an empty chart."
+        es="Veintidós casos en once categorías, cada uno con sus datos y su clase de licencia, el estado de su verdad y la unidad del plan que lo construye. Un caso se marca construido solo cuando existe su manifiesto; cada uno de los demás es el plan, declarado como tal, y el sitio lo muestra como aún no disponible en cada grupo, con la razón, nunca como un gráfico vacío."
+      />
+      <table className="caos-table" data-state={built ? 'ready' : 'loading'}>
+        <thead>
+          <tr>
+            <th>{t('Case', 'Caso')}</th>
+            <th>{t('Category', 'Categoría')}</th>
+            <th className="caos-col-text">{t('Question', 'Pregunta')}</th>
+            <th className="caos-col-text">{t('Data', 'Datos')}</th>
+            <th>{t('Truth', 'Verdad')}</th>
+            <th>{t('Status', 'Estado')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {CASES.map((c) => (
+            <tr key={c.id} data-built={built?.has(c.id) ? 'true' : 'false'}>
+              <td>{c.id}</td>
+              <td>{pick(CATEGORY_TITLES[c.category], lang)}</td>
+              <td className="caos-col-text">{pick(c.title, lang)}</td>
+              <td className="caos-col-text">{pick(c.data, lang)}</td>
+              <td>{pick(c.truth, lang)}</td>
+              <td>{built?.has(c.id) ? t('built', 'construido') : `${t('planned', 'planificado')} (${c.unit})`}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </DocSection>
+  );
+}
+
+function Protocol() {
+  const t = useT();
+  return (
+    <DocSection area="protocol" title={{ en: 'The held-out protocol', es: 'El protocolo con muestra reservada' }} noRefsReason={{ en: 'Describes this product\'s own protocol.', es: 'Describe el protocolo propio de este producto.' }}>
+      <P
+        en="Every experiment follows one protocol. A stratified holdout of 30% is locked before anything is fitted; of the rest, 20% is kept as a calibration slice; the training slice is where every binning, weight of evidence, rule, hyperparameter and fit is learned, with repeated stratified five-fold cross-validation inside it for every choice a rung makes. The tests then run on the holdout, once, and their results are what the pages show."
+        es="Todo experimento sigue un protocolo. Una muestra reservada estratificada de 30% se bloquea antes de ajustar nada; del resto, 20% se guarda como tajada de calibración; la tajada de entrenamiento es donde se aprende cada tramado, peso de evidencia, regla, hiperparámetro y ajuste, con validación cruzada estratificada repetida de cinco pliegues dentro de ella para cada elección de un peldaño. Las pruebas corren luego sobre la muestra reservada, una vez, y sus resultados son lo que muestran las páginas."
+      />
+      <Figure caption={t('The leakage-safe protocol: what each part of the data may be used for, and the forbidden path that uses the locked holdout to choose or to fit.', 'El protocolo sin fugas: para qué puede usarse cada parte de los datos, y el camino prohibido que usa la muestra reservada bloqueada para elegir o ajustar.')}>
+        <ProtocolFigure />
+      </Figure>
+    </DocSection>
+  );
+}
+
+function Metrics() {
+  return (
+    <DocSection area="metrics" title={{ en: 'The metrics', es: 'Las métricas' }} refs={['ecb2019', 'yurdakul2020']}>
+      <P
+        en="The tables and charts of the case topics read three families of metrics from the artifacts: the discrimination of a score, the stability of its distribution, and the level of its PDs. Each is defined here by the exact equation the engine runs, and each result is shown with the policy light that the reader's thresholds give it."
+        es="Las tablas y gráficos de los temas de cada caso leen de los artefactos tres familias de métricas: la discriminación de un puntaje, la estabilidad de su distribución y el nivel de sus PD. Cada una se define aquí con la ecuación exacta que corre el motor, y cada resultado se muestra con la luz de política que le dan los umbrales del lector."
+      />
+      <Equation
+        tex="\mathrm{AUC} = \frac{1}{|A|\,|B|}\sum_{a\in A}\sum_{b\in B} u_{a,b}"
+        caption={<T en={<>The area under the ROC curve: A the defaulters, B the non-defaulters, u_ab = 1 when a is ranked riskier than b, 1/2 on a tie and 0 otherwise (ECB 2019).</>} es={<>El área bajo la curva ROC: A los incumplidores, B los no incumplidores, u_ab = 1 cuando a queda como más riesgoso que b, 1/2 en un empate y 0 en otro caso (BCE 2019).</>} />}
+      />
+      <Equation
+        tex="\mathrm{PSI} = \sum_{i=1}^{B}(a_i - e_i)\ln\frac{a_i}{e_i}"
+        caption={<T en={<>The population stability index of a score: B the number of bins, a_i the share of the current population in bin i and e_i the share expected from development (Yurdakul and Naranjo 2020).</>} es={<>El índice de estabilidad poblacional de un puntaje: B el número de tramos, a_i la fracción de la población actual en el tramo i y e_i la fracción esperada desde el desarrollo (Yurdakul y Naranjo 2020).</>} />}
+      />
+      <Equation
+        tex="p = F_{\mathrm{Beta}\left(D+\frac12,\; N-D+\frac12\right)}(\mathrm{PD})"
+        caption={<T en={<>The Jeffreys p-value of the level of a PD: D the defaults among N obligors, F the distribution function of the Beta posterior with the Jeffreys prior, evaluated at the PD applied (ECB 2019).</>} es={<>El valor p de Jeffreys del nivel de una PD: D los incumplimientos entre N deudores, F la función de distribución del posterior Beta con el prior de Jeffreys, evaluada en la PD aplicada (BCE 2019).</>} />}
+      />
+    </DocSection>
+  );
+}
+
 export function Experiments() {
   const lang = useShellLang();
   const t = useT();
   const all = useArtifact((s) => loadAllManifests(s), []);
   const built = all.state === 'ready' ? new Set(all.data.manifests.map((m) => m.case_id)) : null;
+  const caseTabs =
+    all.state === 'ready'
+      ? all.data.manifests.map((m) => ({ id: m.case_id.toLowerCase(), label: m.case_id, content: <CaseTopic m={m} /> }))
+      : [
+          {
+            id: 'cases',
+            label: t('Cases', 'Casos'),
+            content:
+              all.state === 'error' ? (
+                <p className="caos-pending" data-state="unavailable">
+                  {t(`The cases are not available yet: their manifests could not be read (${all.error}).`, `Los casos aún no están disponibles: no se pudieron leer sus manifiestos (${all.error}).`)}
+                </p>
+              ) : (
+                <p className="caos-pending" data-state="loading">
+                  {t('Loading the case manifests', 'Cargando los manifiestos de los casos')}
+                </p>
+              ),
+          },
+        ];
   return (
-    <DocPage wide title={{ en: 'Experiments', es: 'Experimentos' }} lede={t('The coverage of the 22 cases, and every built case variant by variant, read from the committed artifacts.', 'La cobertura de los 22 casos, y cada caso construido variante por variante, leído desde los artefactos comprometidos.')}>
-      <DocSection title={{ en: 'Coverage', es: 'Cobertura' }} noRefsReason={{ en: 'The plan of this product.', es: 'El plan de este producto.' }}>
-        <P
-          en="Twenty-two cases in eleven categories, each with its data and licence class, the status of its truth, and the unit of the plan that builds it. A case is marked built only when the committed index holds it; every other one is the plan, stated as such."
-          es="Veintidós casos en once categorías, cada uno con sus datos y su clase de licencia, el estado de su verdad y la unidad del plan que lo construye. Un caso se marca construido solo cuando el índice comprometido lo contiene; todos los demás son el plan, declarado como tal."
-        />
-        <table className="caos-table" data-state={built ? 'ready' : 'loading'}>
-          <thead>
-            <tr>
-              <th>{t('Case', 'Caso')}</th>
-              <th>{t('Category', 'Categoría')}</th>
-              <th className="caos-col-text">{t('Question', 'Pregunta')}</th>
-              <th className="caos-col-text">{t('Data', 'Datos')}</th>
-              <th>{t('Truth', 'Verdad')}</th>
-              <th>{t('Status', 'Estado')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {CASES.map((c) => (
-              <tr key={c.id} data-built={built?.has(c.id) ? 'true' : 'false'}>
-                <td>{c.id}</td>
-                <td>{pick(CATEGORY_TITLES[c.category], lang)}</td>
-                <td className="caos-col-text">{pick(c.title, lang)}</td>
-                <td className="caos-col-text">{pick(c.data, lang)}</td>
-                <td>{pick(c.truth, lang)}</td>
-                <td>{built?.has(c.id) ? t('built', 'construido') : `${t('planned', 'planificado')} (${c.unit})`}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </DocSection>
-      {all.state === 'ready' &&
-        all.data.manifests.map((m) => (
-          <DocSection key={m.case_id} title={{ en: `${m.case_id}: ${m.title.en}`, es: `${m.case_id}: ${m.title.es}` }} noRefsReason={{ en: 'Read from the committed artifacts; the methods are cited in Methodology.', es: 'Leído desde los artefactos comprometidos; los métodos se citan en Metodología.' }}>
-            <P en={m.question.en} es={m.question.es} />
-            {m.case_id === 'C04' ? <C04Experiments manifest={m} /> : m.case_id === 'C05' ? <C05ExperimentsSection manifest={m} /> : m.case_id === 'C22' ? <C22ExperimentsSection manifest={m} /> : <CaseVariants manifest={m} />}
-          </DocSection>
-        ))}
+    <DocPage
+      wide
+      title={{ en: 'Experiments', es: 'Experimentos' }}
+      lede={t(
+        'The coverage of the 22 cases, the held-out protocol every experiment follows, the metrics it reads, and every built case variant by variant, all read from the committed artifacts: no number on this page is typed in, and a case that is planned says so.',
+        'La cobertura de los 22 casos, el protocolo con muestra reservada que sigue todo experimento, las métricas que lee, y cada caso construido variante por variante, todo leído de los artefactos comprometidos: ningún número de esta página está escrito a mano, y un caso planificado lo dice.',
+      )}
+    >
+      <TabGroups
+        ariaLabel={lang === 'es' ? 'Partes de los experimentos' : 'Parts of the experiments'}
+        groups={[
+          {
+            id: 'design',
+            label: t('How are the experiments designed?', '¿Cómo se diseñan los experimentos?'),
+            tabs: [
+              { id: 'coverage', label: t('Coverage', 'Cobertura'), content: <Coverage built={built} /> },
+              { id: 'protocol', label: t('Protocol', 'Protocolo'), content: <Protocol /> },
+              { id: 'metrics', label: t('Metrics', 'Métricas'), content: <Metrics /> },
+            ],
+          },
+          { id: 'cases', label: t('What did each built case find?', '¿Qué encontró cada caso construido?'), tabs: caseTabs },
+        ]}
+      />
     </DocPage>
   );
 }

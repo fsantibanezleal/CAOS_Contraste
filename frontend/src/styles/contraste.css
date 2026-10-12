@@ -143,3 +143,10 @@ table.ct-wrap-head th { white-space: normal; }
 .ct-defs { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 0.25rem 1rem; margin: 0; }
 .ct-defs dt { color: var(--color-fg-subtle); }
 .ct-defs dd { margin: 0; overflow-wrap: anywhere; }
+
+/* The schematics of the documentation pages (pages/DocFigures.tsx): one column wide, never wider than its figure */
+.ct-docfig { display: block; width: 100%; max-width: 520px; height: auto; margin: 0 auto; }
+.ct-docfig text { overflow: visible; }
+
+/* the heading of a part inside one documentation section (a Methodology topic is one method section) */
+.ct-sub { margin: 1.25rem 0 0.25rem; font-size: 1.05rem; font-weight: 650; color: var(--color-fg); }
