@@ -72,5 +72,11 @@ Listed so nobody takes a pass for more than it is.
 - The leakage plants (CT-101 to CT-103) and the C01 plants run the real fitting path and take seconds to tens of seconds,
   not milliseconds.
 - The measured browser gate (`frontend/scripts/gate.mjs`) is planted in `tests/adversarial/test_adv_gate.py`, which needs
-  node, the installed frontend packages, a built site and a browser installed by Playwright; the rows that cite it say
-  `local-only`.
+  node, the installed frontend packages, a built site (`CONTRASTE_DIST` may name one elsewhere) and a browser installed by
+  Playwright; the rows that cite it say `local-only`. Its two plants take minutes, not seconds, and are not specific to a
+  case: one makes the workbench route (which carries every case) wider than the viewport, the other makes the site
+  another product. They show that the wrapper runs the shell's gate on the built site and that it fails on those
+  defects; the per-case rows (CT-211, CT-217, CT-310, CT-413) rest on that, not on a plant inside the case.
+- On this branch the site cannot be built from the committed index, which lists the 18 planned cases whose manifests do
+  not exist yet (the web reads no readiness before unit CF-C): the web plants prune the index in their copy first, and
+  the gate plants run on a build made that way.
