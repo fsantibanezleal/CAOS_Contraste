@@ -153,4 +153,4 @@ table.ct-wrap-head th { white-space: normal; }
 
 /* Shell 0.11.0 fails a drawing under 140 px at 1280 px and wider (G6): a filling card that shares a short column keeps a
    floor, and the panel scrolls instead of squeezing the drawing */
-@media (min-width: 1280px) { .caos-plot.fill { min-height: 20rem; } }
+@media (min-width: 1280px) { .caos-plot.fill { min-height: 23rem; } }
