@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/provenance.schema.json",
+  "title": "Provenance",
+  "description": "Where a variant or models artifact came from: inputs with hashes, licence classes, generators, seed and code versions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "truth_status",
+    "inputs",
+    "licence_classes",
+    "generators",
+    "seed",
+    "code_version",
+    "riskvalidation_version"
+  ],
+  "properties": {
+    "truth_status": {
+      "type": "string",
+      "enum": ["real-outcomes","synthetic-known-truth","synthetic-calibrated","published-answer"]
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source","class","files"],
+        "properties": {
+          "source": {"type": "string"},
+          "class": {"type": "string"},
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name","sha256"],
+              "properties": {
+                "name": {"type": "string"},
+                "sha256": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "licence_classes": {
+      "type": "object",
+      "additionalProperties": {"type": "string"}
+    },
+    "generators": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "seed": {"type": "integer"},
+    "code_version": {"type": "string"},
+    "riskvalidation_version": {"type": ["string","null"]}
+  }
+}

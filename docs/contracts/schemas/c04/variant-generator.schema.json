@@ -1,0 +1,560 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c04/variant-generator.schema.json",
+  "title": "C04 family variant",
+  "description": "Catalog row c04-family 1.0.0: one simulation family of the transition estimators (outputs.kind generator).",
+  "allOf": [
+    {"$ref": "../common/variant-envelope.schema.json"},
+    {
+      "properties": {
+        "case_id": {"const": "C04"},
+        "outputs": {
+          "$ref": "#/$defs/c04FamilyOutputs",
+          "properties": {
+            "kind": {"const": "generator"}
+          }
+        }
+      },
+      "required": ["case_id","outputs"]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c04CycleRung": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "seed_key",
+        "seed",
+        "stressed_period",
+        "pd_true_base",
+        "pd_true_stressed",
+        "pd_true_average",
+        "pd_stressed_year",
+        "pd_lra",
+        "pd_pooled"
+      ],
+      "properties": {
+        "value": {"type": "number"},
+        "seed_key": {"type": "string"},
+        "seed": {"type": "integer"},
+        "stressed_period": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            {"type": "null"}
+          ]
+        },
+        "pd_true_base": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "pd_true_stressed": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "pd_true_average": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "pd_stressed_year": {"$ref": "#/$defs/c04Performance"},
+        "pd_lra": {"$ref": "#/$defs/c04Performance"},
+        "pd_pooled": {"$ref": "#/$defs/c04Performance"}
+      }
+    },
+    "c04FamilyOutputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind","family","generator","design","ladder","rungs","simulations"],
+      "properties": {
+        "kind": {"const": "generator"},
+        "family": {"type": "string", "enum": ["markov","momentum","cycle","withdrawals","thin"]},
+        "generator": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["q","pd_1y","pd_5y","obligors","source","one_year_matrix"],
+          "properties": {
+            "q": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {"type": "number"}
+              }
+            },
+            "pd_1y": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "pd_5y": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "obligors": {
+              "type": "array",
+              "items": {"type": "integer"}
+            },
+            "source": {"type": "string"},
+            "one_year_matrix": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {"type": "number"}
+              }
+            }
+          }
+        },
+        "design": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["years","snapshots","reps","seed_key"],
+          "properties": {
+            "years": {"type": "integer"},
+            "snapshots": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "reps": {"type": "integer", "minimum": 0},
+            "seed_key": {"type": ["string","null"]}
+          }
+        },
+        "ladder": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name","unit","values"],
+              "properties": {
+                "name": {"$ref": "../common/text.schema.json"},
+                "unit": {"type": "string"},
+                "values": {
+                  "type": "array",
+                  "items": {"type": "number"}
+                }
+              }
+            },
+            {"type": "null"}
+          ]
+        },
+        "rungs": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {"$ref": "#/$defs/c04MarkovRung"},
+              {"$ref": "#/$defs/c04MomentumRung"},
+              {"$ref": "#/$defs/c04CycleRung"},
+              {"$ref": "#/$defs/c04WithdrawalsRung"},
+              {"$ref": "#/$defs/c04ThinRung"}
+            ]
+          }
+        },
+        "simulations": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c04Simulation"}
+        }
+      }
+    },
+    "c04MarkovRung": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "seed_key",
+        "seed",
+        "level",
+        "obligor_years",
+        "estimators",
+        "em",
+        "coverage",
+        "bootstrap"
+      ],
+      "properties": {
+        "value": {"type": ["number","null"]},
+        "seed_key": {"type": "string"},
+        "seed": {"type": "integer"},
+        "level": {"type": "number"},
+        "obligor_years": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "estimators": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "n",
+              "truth",
+              "mean",
+              "bias",
+              "bias_mcse",
+              "empirical_se",
+              "empirical_se_mcse",
+              "rmse",
+              "rmse_mcse",
+              "zero"
+            ],
+            "properties": {
+              "n": {
+                "type": "array",
+                "items": {"type": "integer", "minimum": 0}
+              },
+              "truth": {
+                "type": "array",
+                "items": {"type": "number"}
+              },
+              "mean": {
+                "type": "array",
+                "items": {"type": ["number","null"]}
+              },
+              "bias": {
+                "type": "array",
+                "items": {"type": ["number","null"]}
+              },
+              "bias_mcse": {
+                "type": "array",
+                "items": {"type": ["number","null"]}
+              },
+              "empirical_se": {
+                "type": "array",
+                "items": {"type": ["number","null"]}
+              },
+              "empirical_se_mcse": {
+                "type": "array",
+                "items": {"type": ["number","null"]}
+              },
+              "rmse": {
+                "type": "array",
+                "items": {"type": ["number","null"]}
+              },
+              "rmse_mcse": {
+                "type": "array",
+                "items": {"type": ["number","null"]}
+              },
+              "zero": {
+                "type": "array",
+                "items": {"$ref": "#/$defs/c04Rate"}
+              }
+            }
+          }
+        },
+        "em": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["converged","iterations_mean","iterations_max"],
+          "properties": {
+            "converged": {"$ref": "#/$defs/c04Rate"},
+            "iterations_mean": {"type": "number"},
+            "iterations_max": {"type": "integer"}
+          }
+        },
+        "coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["wald","agresti_coull","jeffreys","bootstrap"],
+          "properties": {
+            "wald": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/c04Rate"}
+            },
+            "agresti_coull": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/c04Rate"}
+            },
+            "jeffreys": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/c04Rate"}
+            },
+            "bootstrap": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/c04Rate"}
+            }
+          }
+        },
+        "bootstrap": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["method","estimate","horizon","n_boot","repetitions"],
+          "properties": {
+            "method": {"type": "string"},
+            "estimate": {"type": "string"},
+            "horizon": {"type": "number"},
+            "n_boot": {"type": "integer", "minimum": 0},
+            "repetitions": {"type": "integer", "minimum": 0}
+          }
+        }
+      }
+    },
+    "c04MomentumRung": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "seed_key",
+        "seed",
+        "momentum",
+        "investment_grades",
+        "coefficient",
+        "pd_1y_cohort",
+        "pd_5y_frequency",
+        "pd_5y_cohort_power",
+        "pd_5y_duration",
+        "error_cohort_power",
+        "error_duration"
+      ],
+      "properties": {
+        "value": {"type": "number"},
+        "seed_key": {"type": "string"},
+        "seed": {"type": "integer"},
+        "momentum": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {"type": "number"}
+              }
+            },
+            {"type": "null"}
+          ]
+        },
+        "investment_grades": {"type": "integer"},
+        "coefficient": {
+          "anyOf": [
+            {"$ref": "#/$defs/c04ScalarPerformance"},
+            {"type": "null"}
+          ]
+        },
+        "pd_1y_cohort": {"$ref": "#/$defs/c04Performance"},
+        "pd_5y_frequency": {"$ref": "#/$defs/c04Performance"},
+        "pd_5y_cohort_power": {"$ref": "#/$defs/c04Performance"},
+        "pd_5y_duration": {"$ref": "#/$defs/c04Performance"},
+        "error_cohort_power": {"$ref": "#/$defs/c04Performance"},
+        "error_duration": {"$ref": "#/$defs/c04Performance"}
+      }
+    },
+    "c04Performance": {
+      "description": "riskvalidation's estimator performance of a quantity by grade (Morris et al. 2019, Table 6): null by grade where fewer than two repetitions are defined.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "n",
+        "truth",
+        "mean",
+        "bias",
+        "bias_mcse",
+        "empirical_se",
+        "empirical_se_mcse",
+        "rmse",
+        "rmse_mcse"
+      ],
+      "properties": {
+        "n": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 0}
+        },
+        "truth": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "mean": {
+          "type": "array",
+          "items": {"type": ["number","null"]}
+        },
+        "bias": {
+          "type": "array",
+          "items": {"type": ["number","null"]}
+        },
+        "bias_mcse": {
+          "type": "array",
+          "items": {"type": ["number","null"]}
+        },
+        "empirical_se": {
+          "type": "array",
+          "items": {"type": ["number","null"]}
+        },
+        "empirical_se_mcse": {
+          "type": "array",
+          "items": {"type": ["number","null"]}
+        },
+        "rmse": {
+          "type": "array",
+          "items": {"type": ["number","null"]}
+        },
+        "rmse_mcse": {
+          "type": "array",
+          "items": {"type": ["number","null"]}
+        }
+      }
+    },
+    "c04Rate": {
+      "description": "A harness rate: rejections (or hits) over n repetitions with its Monte Carlo SE and Wilson interval.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rejections","n","undefined","rate","se","wilson_low","wilson_high"],
+      "properties": {
+        "rejections": {"type": "integer", "minimum": 0},
+        "n": {"type": "integer", "minimum": 0},
+        "undefined": {"type": "integer", "minimum": 0},
+        "rate": {"type": "number"},
+        "se": {"type": "number"},
+        "wilson_low": {"type": "number"},
+        "wilson_high": {"type": "number"}
+      }
+    },
+    "c04ScalarPerformance": {
+      "description": "The same for one quantity per repetition (the momentum hazard's fitted coefficient).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "n",
+        "truth",
+        "mean",
+        "bias",
+        "bias_mcse",
+        "empirical_se",
+        "empirical_se_mcse",
+        "mse",
+        "mse_mcse",
+        "rmse",
+        "rmse_mcse"
+      ],
+      "properties": {
+        "n": {"type": "integer", "minimum": 0},
+        "truth": {"type": "number"},
+        "mean": {"type": "number"},
+        "bias": {"type": "number"},
+        "bias_mcse": {"type": "number"},
+        "empirical_se": {"type": "number"},
+        "empirical_se_mcse": {"type": "number"},
+        "mse": {"type": "number"},
+        "mse_mcse": {"type": "number"},
+        "rmse": {"type": "number"},
+        "rmse_mcse": {"type": "number"}
+      }
+    },
+    "c04Simulation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key","test_id","rung","rates","seed","n_rep"],
+      "properties": {
+        "key": {"type": "string"},
+        "test_id": {"type": "string"},
+        "rung": {"type": ["number","null"]},
+        "rates": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/c04Rate"}
+        },
+        "seed": {"type": "integer"},
+        "n_rep": {"type": "integer", "minimum": 0}
+      }
+    },
+    "c04ThinRung": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value","level","expected_defaults","coverage","length","overlap_jeffreys"],
+      "properties": {
+        "value": {"type": "integer"},
+        "level": {"type": "number"},
+        "expected_defaults": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["wald","agresti_coull","jeffreys"],
+          "properties": {
+            "wald": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "agresti_coull": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "jeffreys": {
+              "type": "array",
+              "items": {"type": "number"}
+            }
+          }
+        },
+        "length": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["wald","agresti_coull","jeffreys"],
+          "properties": {
+            "wald": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "agresti_coull": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "jeffreys": {
+              "type": "array",
+              "items": {"type": "number"}
+            }
+          }
+        },
+        "overlap_jeffreys": {
+          "type": "array",
+          "items": {"type": "number"}
+        }
+      }
+    },
+    "c04WithdrawalsRung": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "seed_key",
+        "seed",
+        "withdrawal_rate",
+        "window",
+        "truncation_verified",
+        "withdrawn_obligors_mean",
+        "withdrawn_share",
+        "pd_removed",
+        "pd_kept",
+        "pd_followed",
+        "pd_latent"
+      ],
+      "properties": {
+        "value": {"type": "number"},
+        "seed_key": {"type": "string"},
+        "seed": {"type": "integer"},
+        "withdrawal_rate": {"type": "number"},
+        "window": {"type": "number"},
+        "truncation_verified": {"type": "integer"},
+        "withdrawn_obligors_mean": {"type": "number"},
+        "withdrawn_share": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["n","mean","mean_mcse"],
+          "properties": {
+            "n": {
+              "type": "array",
+              "items": {"type": "integer", "minimum": 0}
+            },
+            "mean": {
+              "type": "array",
+              "items": {"type": ["number","null"]}
+            },
+            "mean_mcse": {
+              "type": "array",
+              "items": {"type": ["number","null"]}
+            }
+          }
+        },
+        "pd_removed": {"$ref": "#/$defs/c04Performance"},
+        "pd_kept": {"$ref": "#/$defs/c04Performance"},
+        "pd_followed": {"$ref": "#/$defs/c04Performance"},
+        "pd_latent": {"$ref": "#/$defs/c04Performance"}
+      }
+    }
+  }
+}

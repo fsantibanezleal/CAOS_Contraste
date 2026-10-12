@@ -1,0 +1,287 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c22/variant.schema.json",
+  "title": "C22 validator variant",
+  "description": "Catalog row c22-variant 1.0.0: one validation harness run (outputs.kind validator).",
+  "allOf": [
+    {"$ref": "../common/variant-envelope.schema.json"},
+    {
+      "properties": {
+        "case_id": {"const": "C22"},
+        "outputs": {
+          "$ref": "#/$defs/c22Outputs",
+          "properties": {
+            "kind": {"const": "validator"}
+          }
+        }
+      },
+      "required": ["case_id","outputs"]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c22Curve": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id","label","x_label","y_label","x","series"],
+      "properties": {
+        "id": {"type": "string"},
+        "label": {"$ref": "../common/text.schema.json"},
+        "x_label": {"$ref": "../common/text.schema.json"},
+        "y_label": {"$ref": "../common/text.schema.json"},
+        "x": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "series": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id","label","y"],
+            "properties": {
+              "id": {"type": "string"},
+              "label": {"$ref": "../common/text.schema.json"},
+              "y": {
+                "type": "array",
+                "items": {"type": ["number","null"]}
+              }
+            }
+          }
+        }
+      }
+    },
+    "c22Generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name","config","truth"],
+      "properties": {
+        "name": {"type": "string"},
+        "config": {},
+        "truth": {}
+      }
+    },
+    "c22Golden": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["study","title","runs_published","runs","cells","agree","total","note"],
+      "properties": {
+        "study": {"type": "string"},
+        "title": {"$ref": "../common/text.schema.json"},
+        "runs_published": {"type": "integer"},
+        "runs": {"type": "integer"},
+        "cells": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c22GoldenCell"}
+        },
+        "agree": {"type": "integer"},
+        "total": {"type": "integer"},
+        "note": {"$ref": "../common/text.schema.json"}
+      }
+    },
+    "c22GoldenCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["table","row","column","published","measured","z","agrees"],
+      "properties": {
+        "table": {"type": "string"},
+        "row": {"type": "string"},
+        "column": {"type": "string"},
+        "published": {"type": "number"},
+        "measured": {"type": "number"},
+        "z": {"type": ["number","null"]},
+        "agrees": {"type": "boolean"}
+      }
+    },
+    "c22Outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "family",
+        "ladder",
+        "levels",
+        "panels",
+        "simulations",
+        "generators",
+        "golden",
+        "exact_curves",
+        "estimators",
+        "specimen",
+        "size_bounds"
+      ],
+      "properties": {
+        "kind": {"const": "validator"},
+        "family": {"type": "string"},
+        "ladder": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["values","label"],
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "items": {"type": "number"}
+                },
+                "label": {"$ref": "../common/text.schema.json"}
+              }
+            },
+            {"type": "null"}
+          ]
+        },
+        "levels": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "panels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id","label","axis","measures"],
+            "properties": {
+              "id": {"type": "string"},
+              "label": {"$ref": "../common/text.schema.json"},
+              "axis": {
+                "anyOf": [
+                  {"$ref": "../common/text.schema.json"},
+                  {"type": "null"}
+                ]
+              },
+              "measures": {"type": "string", "enum": ["power","size"]}
+            }
+          },
+          "description": "axis: the x axis of a panel whose simulations do not run along the family's ladder; measures: whether its rates are"
+        },
+        "simulations": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c22Simulation"}
+        },
+        "generators": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/c22Generator"}
+        },
+        "golden": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c22Golden"}
+        },
+        "exact_curves": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c22Curve"}
+        },
+        "estimators": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["auc","ece_when_right"],
+              "properties": {
+                "auc": {
+                  "type": "object",
+                  "additionalProperties": {"type": "number"}
+                },
+                "ece_when_right": {
+                  "type": "object",
+                  "additionalProperties": {"type": "number"}
+                }
+              }
+            },
+            {"type": "null"}
+          ]
+        },
+        "specimen": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["severity"],
+          "properties": {
+            "severity": {"type": "integer"}
+          }
+        },
+        "size_bounds": {
+          "type": "object",
+          "additionalProperties": {"type": "number"}
+        }
+      }
+    },
+    "c22Rate": {
+      "description": "One rejection rate of the harness: rejections of n repetitions, its Monte Carlo SE and Wilson interval.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rejections","n","undefined","rate","se","wilson_low","wilson_high"],
+      "properties": {
+        "rejections": {"type": "integer", "minimum": 0},
+        "n": {"type": "integer", "minimum": 0},
+        "undefined": {"type": "integer", "minimum": 0},
+        "rate": {"type": "number"},
+        "se": {"type": "number"},
+        "wilson_low": {"type": "number"},
+        "wilson_high": {"type": "number"}
+      }
+    },
+    "c22Simulation": {
+      "description": "One simulation: a registered test on one generator at one severity, its rates per rule (\"p<0.05\", \"p<0.01\", and rules such as \"metric>0.1\"), the exact probability where one exists and whether the rate agrees with it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "test_id",
+        "label",
+        "scenario",
+        "panel",
+        "severity",
+        "x",
+        "rates",
+        "exact",
+        "agrees",
+        "p_histogram",
+        "seed",
+        "n_rep",
+        "generator"
+      ],
+      "properties": {
+        "key": {"type": "string"},
+        "test_id": {"type": "string"},
+        "label": {"$ref": "../common/text.schema.json"},
+        "scenario": {"$ref": "../common/text.schema.json"},
+        "panel": {"type": "string"},
+        "severity": {"type": "integer"},
+        "x": {"type": "number"},
+        "rates": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/c22Rate"}
+        },
+        "exact": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": {"type": "number"}
+            },
+            {"type": "null"}
+          ]
+        },
+        "agrees": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": {"type": "boolean"}
+            },
+            {"type": "null"}
+          ]
+        },
+        "p_histogram": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {"type": "integer"}
+            },
+            {"type": "null"}
+          ]
+        },
+        "seed": {"type": "integer"},
+        "n_rep": {"type": "integer", "minimum": 0},
+        "generator": {"type": "string"}
+      }
+    }
+  }
+}

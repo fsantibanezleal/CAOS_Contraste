@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/licences.schema.json",
+  "title": "Licences",
+  "description": "Catalog row licences 1.0.0: the verified licence of every Python engine the pipeline uses and the licences it forbids (data-pipeline/config/licences.json).",
+  "x-location": "data-pipeline/config/licences.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "note", "forbidden", "python"],
+  "properties": {
+    "schema": {"const": "contraste.licences/v1"},
+    "note": {"type": "string"},
+    "forbidden": {"type": "array", "items": {"type": "string"}, "description": "Licence identifiers no dependency may carry."},
+    "python": {"type": "object", "additionalProperties": {"$ref": "#/$defs/engineLicence"}, "description": "Python package name to its verified licence."}
+  },
+  "$defs": {
+    "engineLicence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["licence", "source", "verified"],
+      "properties": {
+        "licence": {"type": "string", "description": "SPDX expression."},
+        "source": {"type": "string", "description": "Where the licence was read."},
+        "verified": {"type": "string", "description": "The date it was read."}
+      }
+    }
+  }
+}

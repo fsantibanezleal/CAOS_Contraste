@@ -77,8 +77,8 @@ describe('the App instrument', () => {
     ['Findings', FindingsView],
     ['Context', ContextView],
   ];
-  for (const { label, sel } of all) {
-    it(`every view carries its lane: ${label}`, () => {
+  it('every view carries its lane', () => {
+    for (const { label, sel } of all) {
       for (const [name, View] of views) {
         const found = cards(html(<View sel={sel} />));
         expect(found.length, `${label} ${name}: no view rendered`).toBeGreaterThan(0);
@@ -88,11 +88,11 @@ describe('the App instrument', () => {
         const tab = html(<TabPfnView sel={sel} />);
         expect(tab).toContain('Prior Labs License');
       }
-    });
-  }
+    }
+  });
 
-  for (const { label, sel } of all.filter((s) => s.label.endsWith('/holdout') || s.label.endsWith('/german-twin'))) {
-    it(`context names sources, licences and truth status: ${label}`, () => {
+  it('context names sources, licences and truth status', () => {
+    for (const { sel } of all.filter((s) => s.label.endsWith('/holdout') || s.label.endsWith('/german-twin'))) {
       const markup = html(<ContextView sel={sel} />);
       const m = sel.data.manifest;
       for (const id of m.sources) {
@@ -102,8 +102,8 @@ describe('the App instrument', () => {
         expect(markup).toContain(s.licence.replace(/&/g, '&amp;').replace(/"/g, '&quot;'));
       }
       for (const a of m.artifacts.filter((x) => x.role === 'variant')) expect(markup).toContain(`data-truth="${a.truth_status}"`);
-    });
-  }
+    }
+  });
 });
 
 describe('the capital view (CT-212 to CT-216)', () => {

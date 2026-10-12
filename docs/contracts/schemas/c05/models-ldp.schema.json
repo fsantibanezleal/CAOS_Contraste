@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c05/models-ldp.schema.json",
+  "title": "C05 low-default models",
+  "description": "Catalog row c05-models-ldp 1.0.0: the C05 models artifact of the low-default fit (fit_id ldp).",
+  "allOf": [
+    {"$ref": "../common/models-envelope.schema.json"},
+    {
+      "properties": {
+        "case_id": {"const": "C05"},
+        "fit": {"$ref": "#/$defs/c05LdpFit"},
+        "fit_id": {"const": "ldp"}
+      },
+      "required": ["case_id","fit_id","fit"]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c05LdpFit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["obligors","expert_pd"],
+      "properties": {
+        "obligors": {
+          "type": "array",
+          "items": {"type": "integer"}
+        },
+        "expert_pd": {
+          "type": "array",
+          "items": {"type": "number"}
+        }
+      }
+    }
+  }
+}

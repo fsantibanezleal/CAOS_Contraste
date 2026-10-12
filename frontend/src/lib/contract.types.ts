@@ -4,11 +4,10 @@
 // against the descriptors in both directions, types included, so the pipeline cannot ship a shape the web does not
 // read, and the web cannot read a key the pipeline does not write (T11, CT-004).
 
+import type { components } from './contract.gen';
+
 /** Every reader-facing string is bilingual at the source. */
-export interface Text {
-  en: string;
-  es: string;
-}
+export type Text = components['schemas']['common-text'];
 
 /** A run-time description of a value: a primitive, a bilingual text, an array, an object, a map, a kind that may
  * also be null, one of several kinds, or any JSON value (only where the engine's record is open by design: the
@@ -70,338 +69,79 @@ export const SCHEMAS = {
   models: 'contraste.models/v1',
 } as const;
 
-export type TruthStatus = 'real-outcomes' | 'synthetic-known-truth' | 'synthetic-calibrated' | 'published-answer';
-export type PipelineLane = 'live' | 'precompute';
-export type Light = 'green' | 'amber' | 'red' | 'not_evaluated' | 'error';
-export type Severity = 'S1' | 'S2' | 'S3' | 'S4';
+export type TruthStatus = components['schemas']['common-provenance']['truth_status'];
+export type PipelineLane = components['schemas']['common-gate-verdict']['lane'];
+export type Light = components['schemas']['common-test-result']['light'];
+export type Severity = components['schemas']['common-finding']['severity'];
 
-export interface CaseIndexEntry {
-  case_id: string;
-  title: Text;
-  category: Text;
-  category_id: string;
-  /** Where the case's data comes from, for the case picker: observed data, a generator, or a published answer. */
-  kind: 'real' | 'synthetic';
-  manifest_path: string;
-}
+export type CaseIndexEntry = components['schemas']['caseIndexEntry'];
 
-export interface CaseIndex {
-  schema: string;
-  engine_version: string;
-  n_cases: number;
-  default_case: string;
-  cases: CaseIndexEntry[];
-  /** Further files the site serves: the contract-1 declarations. */
-  files: string[];
-}
+export type CaseIndex = components['schemas']['common-case-index'];
 
-export interface GateVerdict {
-  lane: PipelineLane;
-  pure_python: boolean;
-  wheels: string[];
-  trace_bytes: number;
-  run_ms_budget: number;
-  trace_bytes_budget: number;
-  reasons: string[];
-}
+export type GateVerdict = components['schemas']['common-gate-verdict'];
 
-export interface ArtifactEntry {
-  role: 'models' | 'variant';
-  variant_id: string;
-  title: Text;
-  /** The label a chip shows; `title` is the full name. */
-  short_title: Text;
-  regime: Text;
-  truth_status: TruthStatus;
-  /** Only on a variant entry: the path of the models artifact its rungs come from. */
-  models_ref?: string;
-  path: string;
-  bytes: number;
-  lane: PipelineLane;
-  gate: GateVerdict;
-}
+export type ArtifactEntry = components['schemas']['common-artifact-entry'];
 
-export interface ContractExample {
-  kind: 'rejected' | 'flagged' | 'excluded';
-  row: number;
-  key: string;
-  field: string;
-  value: string | null;
-  expected: string;
-  policy: string;
-  reason: string;
-  rule: string | null;
-}
+export type ContractExample = components['schemas']['contractExample'];
 
-export interface ContractSummary {
-  family: string;
-  counts: { input: number; accepted: number; rejected: number; flagged: number; excluded: number };
-  by_rule: { rejected: Record<string, number>; flagged: Record<string, number>; excluded: Record<string, number> };
-  ignored_columns: string[];
-  examples: ContractExample[];
-}
+export type ContractSummary = components['schemas']['common-contract-summary'];
 
-export interface SourceDetails {
-  name: string;
-  publisher: string;
-  landing: string;
-  licence: string;
-  class: string;
-  attribution: string;
-}
+export type SourceDetails = components['schemas']['common-source-details'];
 
-export interface CaseManifest {
-  schema: string;
-  case_id: string;
-  title: Text;
-  category: Text;
-  question: Text;
-  sources: string[];
-  /** What the Context view shows of each source, from the source registry. */
-  source_details: Record<string, SourceDetails>;
-  seed: number;
-  engine: { pipeline: string; riskvalidation: string | null };
-  default_variant: string;
-  artifacts: ArtifactEntry[];
-  /** The contract-1 report of each source the case read, keyed by source id. */
-  contract: Record<string, ContractSummary>;
-  /** The checked expectation of the case: [low, high] per named result. */
-  expect: Record<string, [number, number]>;
-}
+export type CaseManifest = components['schemas']['common-case-manifest'];
 
-export interface Calibration {
-  kind: string;
-  fitted_on: string;
-  x: number[];
-  y: number[];
-}
+export type Calibration = components['schemas']['modelCalibration'];
 
-export interface ModelSummary {
-  id: string;
-  family: string;
-  rung: string;
-  title: Text;
-  /** The label a chip, a column header or a chart key shows ("P2b PLTR"); `title` is the full name. */
-  short_title: Text;
-  engine: string;
-  engine_version: string;
-  licence: string;
-  calibration: Calibration | null;
-  parameters: Record<string, { value: number; unit: string }>;
-  /** The weights' hash for a fitted model; null for a formula (C05's approaches and estimators). */
-  checkpoint_sha256: string | null;
-}
+export type ModelSummary = components['schemas']['common-model-summary'];
 
 /** A model record with its internals (points tables, shape functions, grids), in the models artifact. */
-export interface ModelRecord extends ModelSummary {
-  details: unknown;
-}
+export type ModelRecord = components['schemas']['common-model-record'];
 
-export interface GradeRow {
-  grade: string;
-  lo: number;
-  hi: number;
-  n: number;
-  d: number;
-  pd: number | null;
-  dr: number | null;
-}
+export type GradeRow = components['schemas']['c01GradeRow'];
 
-export interface ReliabilityBin {
-  n: number;
-  pd: number;
-  dr: number;
-  lo: number;
-  hi: number;
-}
+export type ReliabilityBin = components['schemas']['c01ReliabilityBin'];
 
-export interface RungOutputs {
-  grades: GradeRow[];
-  reliability: ReliabilityBin[];
-  roc: { fpr: number[]; tpr: number[] };
-  cap: { population: number[]; defaults: number[]; default_rate: number };
-  distribution: { log10_pd_edges: number[]; defaulters: number[]; non_defaulters: number[] };
-  cutoff: {
-    cutoff: number[];
-    approval_rate: number[];
-    bad_rate: number[];
-    pd_ead: number[];
-    ead: number[];
-    /** The IRB capital (8% of the RWA) of the approved at unit LGD, by regime: retail capital is linear in the LGD. */
-    capital_per_lgd: Record<string, number[]>;
-    /** The same with the six-month full payers as transactors (the cards only; null for the loans). */
-    capital_per_lgd_transactors: Record<string, number[]> | null;
-  };
-  reliability_raw: ReliabilityBin[] | null;
-}
+export type RungOutputs = components['schemas']['c01RungOutputs'];
 
 /** One point of the retail risk weight, from riskvalidation, for the live port (CT-215). */
-export interface RetailParityPoint {
-  regime: string;
-  asset_class: string;
-  revolver: boolean;
-  pd: number;
-  lgd: number;
-  risk_weight: number;
-}
+export type RetailParityPoint = components['schemas']['c01RetailParityPoint'];
 
-export interface RegimeFacts {
-  name: string;
-  /** The QRRE revolvers' PD floor (null for other retail). */
-  pd_floor_revolver: number | null;
-  pd_floor: number;
-  scaling: number;
-  references: Record<string, string>;
-}
+export type RegimeFacts = components['schemas']['c01RegimeFacts'];
 
 /** What C01's capital view states (CT-212, CT-214). */
-export interface C01Irb {
-  asset_class: string;
-  regimes: string[];
-  by_regime: Record<string, RegimeFacts>;
-  revolvers_only: boolean;
-  six_month_full_payers: number | null;
-  lgd_floor_basel3: number;
-  lgd_floor_source: string;
-  transactor_source: string;
-  ead: Text;
-  parity: RetailParityPoint[] | null;
-}
+export type C01Irb = components['schemas']['c01Irb'];
 
-export interface ScoredSample {
-  ids: string[];
-  /** The observed outcome of each sampled applicant (1 = default). */
-  targets: number[];
-  inputs: Record<string, Array<number | string>>;
-  scorecard_points: number[][];
-  scorecard_score: number[];
-  scorecard_pd: number[];
-  ebm_logit: number[];
-}
+export type ScoredSample = components['schemas']['c01ScoredSample'];
 
-export interface GroupStat {
-  n: number;
-  default_rate: number;
-  auc: Record<string, number>;
-  /** The ROC of the champion and of every challenger within the group (51 points). */
-  roc: Record<string, { fpr: number[]; tpr: number[] }>;
-}
+export type GroupStat = components['schemas']['c01GroupStat'];
 
-export interface VariantOutputs {
-  rungs: Record<string, RungOutputs>;
-  n: number;
-  defaults: number;
-  groups: Record<string, GroupStat>;
-  sample: ScoredSample | null;
-  irb: C01Irb;
-}
+export type VariantOutputs = components['schemas']['c01VariantOutputs'];
 
-export interface TestRow {
-  test_id: string;
-  model_id: string | null;
-  segment: string | null;
-  statistic: number | null;
-  p_value: number | null;
-  metric: number | null;
-  h0: string;
-  alternative: string;
-  policy_version: string;
-  alpha_amber: number | null;
-  alpha_red: number | null;
-  light: Light;
-  n: number | null;
-  n_events: number | null;
-  inputs_hash: string;
-  reference: string;
-  notes: string;
-  extras: Record<string, unknown>;
-}
+export type TestRow = components['schemas']['common-test-result'];
 
-export interface ImpactItem {
-  value: number | null;
-  unit: string;
-  label: Text;
-}
+export type ImpactItem = components['schemas']['common-impact-item'];
 
-export interface Finding {
-  id: string;
-  severity: Severity;
-  status: 'open' | 'accepted' | 'closed';
-  evidence: string[];
-  title: Text;
-}
+export type Finding = components['schemas']['common-finding'];
 
-export interface Provenance {
-  truth_status: TruthStatus;
-  inputs: Array<{ source: string; class: string; files: Array<{ name: string; sha256: string }> }>;
-  licence_classes: Record<string, string>;
-  generators: string[];
-  seed: number;
-  code_version: string;
-  riskvalidation_version: string | null;
-}
+export type Provenance = components['schemas']['common-provenance'];
 
-export interface LaneBlock {
-  lane: PipelineLane;
-  reasons: string[];
-}
+export type LaneBlock = components['schemas']['common-lane-block'];
 
-/** One variant's artifact; `O` is the case's outputs (C01's by default, C05's two kinds below). */
-export interface VariantArtifact<O = VariantOutputs> {
-  schema: string;
-  case_id: string;
-  variant_id: string;
-  model: ModelSummary[];
-  outputs: O;
-  tests: TestRow[];
-  impact: Record<string, ImpactItem>;
-  findings: Finding[];
-  provenance: Provenance;
-  lane: LaneBlock;
-}
 
-export interface FeatureMeta {
-  name: string;
-  meaning: Text;
-  unit: string;
-  categorical: boolean;
-  monotone: number;
-}
+export type FeatureMeta = components['schemas']['c01FeatureMeta'];
 
-export interface SplitPart {
-  n: number;
-  defaults: number;
-  default_rate: number;
-}
+export type SplitPart = components['schemas']['c01SplitPart'];
 
-export interface ReasonStability {
-  bootstraps: number;
-  rows: number;
-  top_k: number;
-  overlap_mean: number;
-  overlap_min: number;
-  overlap: number[];
-}
+export type ReasonStability = components['schemas']['c01ReasonStability'];
 
-export interface FitInfo {
-  source: string;
-  split: { train: SplitPart; calibration: SplitPart; holdout: SplitPart; folds: { k: number; repeats: number } };
-  train_rows: number;
-  features: FeatureMeta[];
-  seed: number;
-  master_scale: { grades: string[]; upper: number[] };
-  reason_stability: ReasonStability | null;
-}
+export type FitInfo = components['schemas']['c01FitInfo'];
 
-export interface ModelsArtifact<F = FitInfo> {
-  schema: string;
-  case_id: string;
-  fit_id: string;
-  model: ModelRecord[];
-  fit: F;
-  provenance: Provenance;
-  lane: LaneBlock;
-}
+
+/** One variant's artifact; `O` is the case's outputs (C01's by default, the other cases' below). */
+export type VariantArtifact<O = VariantOutputs> = Omit<components['schemas']['common-variant-envelope'], 'outputs'> & { outputs: O };
+
+/** One models artifact; `F` is the case's fit. */
+export type ModelsArtifact<F = FitInfo> = Omit<components['schemas']['common-models-envelope'], 'fit'> & { fit: F };
 
 export const GATE = {
   lane: 'string',
@@ -775,58 +515,15 @@ export interface GbmDetails {
 
 // --- CONTRACT 1: the ingestion families (data/derived/contract/) -------------------------------------------------
 
-export interface ContractField {
-  name: string;
-  kind: 'str' | 'int' | 'float' | 'flag' | 'date' | 'enum';
-  meaning: Text;
-  unit: string;
-  lo: number | null;
-  hi: number | null;
-  lo_open: boolean;
-  hi_open: boolean;
-  values: string[];
-  values_param: string | null;
-  required: boolean;
-  on_missing: 'reject' | 'flag';
-  /** The expected range in words, as a rejection states it. */
-  expected: string;
-}
+export type ContractField = components['schemas']['contractField'];
 
-export interface ContractRule {
-  id: string;
-  scope: 'record' | 'group';
-  policy: 'reject' | 'flag' | 'exclude';
-  field: string;
-  statement: Text;
-  group_by: string[];
-  order_by: string | null;
-}
+export type ContractRule = components['schemas']['contractRule'];
 
-export interface ContractParam {
-  name: string;
-  kind: string;
-  meaning: Text;
-  required: boolean;
-  values: string[];
-}
+export type ContractParam = components['schemas']['contractParam'];
 
-export interface FamilyContract {
-  schema: string; // "contraste.contract/v1"
-  family: string;
-  title: Text;
-  used_by: Text;
-  fields: ContractField[];
-  rules: ContractRule[];
-  params: ContractParam[];
-  open_fields: boolean;
-  notes: Text[];
-  param_checks: Text[];
-}
+export type FamilyContract = components['schemas']['common-contract-family'];
 
-export interface ContractIndex {
-  schema: string;
-  families: Array<{ family: string; title: Text; path: string }>;
-}
+export type ContractIndex = components['schemas']['common-contract-index'];
 
 export const CONTRACT_SCHEMA = 'contraste.contract/v1';
 
@@ -884,147 +581,33 @@ export const CONTRACT_INDEX = {
 
 // --- C05, low-default portfolios and PD calibration (data-pipeline/pipeline/cases/c05_ldp_calibration.py) --------
 
-export interface C05Irb {
-  regime: string;
-  asset_class: string;
-  lgd: number;
-  maturity: number;
-  pd_floor: number;
-  references: Record<string, string>;
-}
+export type C05Irb = components['schemas']['c05Irb'];
 
-export interface C05IrbPoint {
-  regime: string;
-  asset_class: string;
-  pd: number;
-  lgd: number;
-  maturity: number;
-  risk_weight: number;
-}
+export type C05IrbPoint = components['schemas']['c05IrbPoint'];
 
-export interface C05Approach {
-  curve: number[];
-  /** The approach's own forecast of the unconditional PD. */
-  pd: number;
-  /** The PD its curve implies under the observed forecast profile. */
-  pd_under_profile1: number;
-  accuracy_ratio: number;
-  constants: Record<string, number>;
-}
+export type C05Approach = components['schemas']['c05Approach'];
 
-export interface C05GoldenCell {
-  grade: string;
-  printed: number;
-  ours: number;
-  gap: number;
-}
+export type C05GoldenCell = components['schemas']['c05GoldenCell'];
 
-export interface C05SpGolden {
-  table5: C05GoldenCell[];
-  table6: C05GoldenCell[];
-  table7: Record<string, C05GoldenCell[]>;
-  table7_p_values: Array<{ approach: string; printed_pct: number; ours_pct: number; mc_se_pct: number }>;
-  table8: Array<{ approach: string; printed_pct: number; ours_pct: number; printed_p_value: string }>;
-  table9_2009: Array<{ grade: string; printed: number; ours: number }>;
-  max_gap_table7_pct_beyond_relative: number;
-  tolerances: Record<string, string>;
-}
+export type C05SpGolden = components['schemas']['c05SpGolden'];
 
-export interface C05SpOutputs {
-  kind: 'sp-calibration';
-  year: number;
-  grades: string[];
-  profile0: number[];
-  profile1: number[];
-  default_rate0: number[];
-  default_rate1: number[];
-  default_profile0: number[];
-  pd0: number;
-  pd1: number;
-  ar0: number;
-  ar1: number;
-  qmm0: { curve: number[]; alpha: number; beta: number; scores: number[]; start: number[]; pd: number };
-  approaches: Record<string, C05Approach>;
-  case3_profile_tests: Record<string, { statistic: number; dof: number; p_value: number }>;
-  golden: C05SpGolden;
-  parity: { calibration: { pd_grid: number[]; curves: Record<string, Record<string, number[]>> }; irb: C05IrbPoint[] };
-  irb: C05Irb;
-  n_obligors: number;
-  n_defaults: number;
-}
+export type C05SpOutputs = components['schemas']['c05SpOutputs'];
 
-export interface C05Scaled {
-  pd: number[];
-  k: number;
-  target: number;
-}
+export type C05Scaled = components['schemas']['c05Scaled'];
 
-export interface C05Bounds {
-  independent: number[][];
-  correlated: number[][];
-  scaled_upper_bound: C05Scaled[];
-  scaled_upper_bound_correlated: C05Scaled[];
-  scaled_central_tendency: C05Scaled[];
-}
+export type C05Bounds = components['schemas']['c05Bounds'];
 
-export interface C05CoverageRow {
-  gamma: number;
-  coverage: number;
-  se: number;
-  ratio_q25: number;
-  ratio_median: number;
-  ratio_q75: number;
-}
+export type C05CoverageRow = components['schemas']['c05CoverageRow'];
 
-export interface C05KnownTruth {
-  years: number;
-  coverage: Record<string, Record<string, C05CoverageRow[]>>;
-  tests: Record<string, Record<string, { reject_5: number; reject_1: number }>>;
-  patterns: number;
-  overdispersion: { variance_simulated: number; variance_model: number; variance_independent: number; rho_moment_estimate: number };
-  total_defaults_histogram: number[];
-  total_defaults_tail: number;
-  share_of_defaults_by_grade: number[];
-}
+export type C05KnownTruth = components['schemas']['c05KnownTruth'];
 
-export interface C05LdpGoldenCell {
-  table: number;
-  row: string;
-  gamma: number;
-  printed: number;
-  ours: number;
-  gap: number;
-}
+export type C05LdpGoldenCell = components['schemas']['c05LdpGoldenCell'];
 
-export interface C05LdpOutputs {
-  kind: 'ldp';
-  grades: string[];
-  obligors: number[];
-  defaults: number[];
-  gammas: number[];
-  expert_pd: number[];
-  true_pd: number[] | null;
-  rho: number;
-  bounds: C05Bounds;
-  irb: C05Irb;
-  parity: {
-    bounds: { obligors: number[]; points: Array<{ defaults: number[]; gamma: number; rho: number; pd: number[]; scaled_upper_bound: number[] }> };
-    irb: C05IrbPoint[];
-  };
-  known_truth: C05KnownTruth | null;
-  golden: { cells: C05LdpGoldenCell[]; notes: Record<string, string> } | null;
-  generated_year: { index: number; factor: number } | null;
-}
+export type C05LdpOutputs = components['schemas']['c05LdpOutputs'];
 
-export interface C05SpFit {
-  estimation_year: number;
-  targets: { pd: number; accuracy_ratio: number };
-}
+export type C05SpFit = components['schemas']['c05SpFit'];
 
-export interface C05LdpFit {
-  obligors: number[];
-  expert_pd: number[];
-}
+export type C05LdpFit = components['schemas']['c05LdpFit'];
 
 const C05_IRB = {
   regime: 'string',
@@ -1164,105 +747,26 @@ export const MODELS_C05_LDP = {
 // --- C22, validating the validator (data-pipeline/pipeline/cases/c22_validator.py) -----------------------------------
 
 /** One rejection rate of the harness: rejections of n repetitions, its Monte Carlo SE and Wilson interval. */
-export interface C22Rate {
-  rejections: number;
-  n: number;
-  undefined: number;
-  rate: number;
-  se: number;
-  wilson_low: number;
-  wilson_high: number;
-}
+export type C22Rate = components['schemas']['c22Rate'];
 
 /** One simulation: a registered test on one generator at one severity, its rates per rule ("p<0.05", "p<0.01", and
  * rules such as "metric>0.1"), the exact probability where one exists and whether the rate agrees with it. */
-export interface C22Simulation {
-  key: string;
-  test_id: string;
-  label: Text;
-  scenario: Text;
-  panel: string;
-  severity: number;
-  x: number;
-  rates: Record<string, C22Rate>;
-  exact: Record<string, number> | null;
-  agrees: Record<string, boolean> | null;
-  p_histogram: number[] | null;
-  seed: number;
-  n_rep: number;
-  generator: string;
-}
+export type C22Simulation = components['schemas']['c22Simulation'];
 
-export interface C22Generator {
-  name: string;
-  config: unknown;
-  truth: unknown;
-}
+export type C22Generator = components['schemas']['c22Generator'];
 
-export interface C22GoldenCell {
-  table: string;
-  row: string;
-  column: string;
-  published: number;
-  measured: number;
-  z: number | null;
-  agrees: boolean;
-}
+export type C22GoldenCell = components['schemas']['c22GoldenCell'];
 
-export interface C22Golden {
-  study: string;
-  title: Text;
-  runs_published: number;
-  runs: number;
-  cells: C22GoldenCell[];
-  agree: number;
-  total: number;
-  note: Text;
-}
+export type C22Golden = components['schemas']['c22Golden'];
 
-export interface C22Curve {
-  id: string;
-  label: Text;
-  x_label: Text;
-  y_label: Text;
-  x: number[];
-  series: Array<{ id: string; label: Text; y: Array<number | null> }>;
-}
+export type C22Curve = components['schemas']['c22Curve'];
 
-export interface C22Outputs {
-  kind: 'validator';
-  family: string;
-  ladder: { values: number[]; label: Text } | null;
-  levels: number[];
-  /** axis: the x axis of a panel whose simulations do not run along the family's ladder; measures: whether its rates are
-   * the power against a planted defect or the size where the null holds */
-  panels: Array<{ id: string; label: Text; axis: Text | null; measures: 'power' | 'size' }>;
-  simulations: C22Simulation[];
-  generators: Record<string, C22Generator>;
-  golden: C22Golden[];
-  exact_curves: C22Curve[];
-  estimators: { auc: Record<string, number>; ece_when_right: Record<string, number> } | null;
-  specimen: { severity: number };
-  size_bounds: Record<string, number>;
-}
+export type C22Outputs = components['schemas']['c22Outputs'];
 
 /** A point of the count tests' exact rejection probability, for the live calculator's parity (CT-308). */
-export interface C22Parity {
-  test_id: string;
-  n: number;
-  pd: number;
-  ratio: number;
-  rho_true: number;
-  rho_assumed: number | null;
-  alpha: number;
-  critical_count: number | null;
-  probability: number;
-}
+export type C22Parity = components['schemas']['c22Parity'];
 
-export interface C22Fit {
-  parity: C22Parity[];
-  levels: number[];
-}
+export type C22Fit = components['schemas']['c22Fit'];
 
 const C22_RATE = {
   object: { rejections: 'integer', n: 'integer', undefined: 'integer', rate: num, se: num, wilson_low: num, wilson_high: num } satisfies Record<
@@ -1371,18 +875,7 @@ const ints = { array: 'integer' } as const;
 
 /** One CEREP cohort on the common scale: tab 4's counts (seven grades by seven grades and default), withdrawals and
  * sizes; tab 2's defaulted ratings over its own cohort; tab 3's events. Semester cohorts have no tab 2 or tab 3. */
-export interface C04Cohort {
-  label: string;
-  begin: string;
-  end: string;
-  size: number[];
-  counts: number[][];
-  withdrawn: number[];
-  defaulted: number[] | null;
-  events: number[] | null;
-  defaulted_cohort: number[] | null;
-  tab2_gap: number | null;
-}
+export type C04Cohort = components['schemas']['c04Cohort'];
 const C04_COHORT = {
   object: {
     label: 'string',
@@ -1399,25 +892,11 @@ const C04_COHORT = {
 } as const;
 
 /** None for a grade without ratings, and for tab 3's events where they outnumber the cohort. */
-export interface C04Bounds {
-  lower: (number | null)[];
-  upper: (number | null)[];
-}
+export type C04Bounds = components['schemas']['c04Bounds'];
 const C04_BOUNDS = { object: { lower: nNums, upper: nNums } satisfies Record<keyof C04Bounds, Kind> } as const;
 
 /** The long-run average default rate by grade (EBA/GL/2017/16 paragraph 84) under one definition. */
-export interface C04Lra {
-  /** null for a grade without a defined rate in any cohort */
-  rate: (number | null)[];
-  cohorts: number[];
-  defaults: number[];
-  n: number[];
-  pooled_rate: (number | null)[];
-  wald: C04Bounds;
-  agresti_coull: C04Bounds;
-  jeffreys: C04Bounds;
-  last5: (number | null)[];
-}
+export type C04Lra = components['schemas']['c04Lra'];
 const C04_LRA = {
   object: {
     rate: nNums,
@@ -1434,107 +913,30 @@ const C04_LRA = {
 
 /** A generator of the pooled matrix: its rates, its L1 distance to the matrix, its PDs at one and five years (null by
  * grade where the scale has no default category, Moody's). */
-export interface C04Generator {
-  generator: number[][];
-  valid: boolean;
-  l1: number | null;
-  pd_1y: (number | null)[];
-  pd_5y: (number | null)[];
-}
-export interface C04EmGenerator extends C04Generator {
-  iterations: number;
-  converged: boolean;
-  loglik: number | null;
-}
+export type C04Generator = components['schemas']['c04Generator'];
+export type C04EmGenerator = components['schemas']['c04EmGenerator'];
 const C04_GENERATOR_BASE = { generator: numss, valid: 'boolean', l1: nNum, pd_1y: nNums, pd_5y: nNums } satisfies Record<keyof C04Generator, Kind>;
 const C04_GENERATOR = { nullable: { object: C04_GENERATOR_BASE } } as const;
 const C04_EM_GENERATOR = {
   object: { ...C04_GENERATOR_BASE, iterations: 'integer', converged: 'boolean', loglik: nNum } satisfies Record<keyof C04EmGenerator, Kind>,
 } as const;
 
-export interface C04Embedding {
-  S: number | null;
-  series_converges: boolean;
-  det: number | null;
-  prod_diagonal: number | null;
-  theorem3: { a: boolean; b: boolean; c: number[][] };
-  exact_generator_excluded: boolean;
-  stochastically_monotone: boolean;
-  monotonicity_violations: Array<{ row: number; next_row: number; column: number; tail: number | null; next_tail: number | null }>;
-}
+export type C04Embedding = components['schemas']['c04Embedding'];
 
-export interface C04Homogeneity {
-  statistic: number | null;
-  p_value: number | null;
-  dof: number;
-  periods: number;
-}
+export type C04Homogeneity = components['schemas']['c04Homogeneity'];
 const C04_HOMOGENEITY = { object: { statistic: nNum, p_value: nNum, dof: 'integer', periods: 'integer' } satisfies Record<keyof C04Homogeneity, Kind> } as const;
 
-export interface C04ReferenceTest {
-  label: string;
-  statistic: number | null;
-  p_value: number | null;
-  dof: number;
-  impossible_moves: number[][];
-}
+export type C04ReferenceTest = components['schemas']['c04ReferenceTest'];
 
 /** One five-year window of the lifetime check (CT-415): the fixed cohort observed at the window's end against the
  * chained one-year projections; a value is null where the chain or the definition does not exist. */
-export interface C04Lifetime {
-  label: string;
-  first: number;
-  last: number;
-  size: number[];
-  observed: { default_end: (number | null)[]; withdrawn_end: (number | null)[]; cumulative_d2: (number | null)[] | null };
-  projected: {
-    chain_state: (number | null)[];
-    chain_state_withdrawn: (number | null)[];
-    chain_exclude: (number | null)[];
-    pooled_power: (number | null)[];
-    em: (number | null)[];
-  };
-}
+export type C04Lifetime = components['schemas']['c04Lifetime'];
 
-export interface C04Irb {
-  regime: string;
-  asset_class: string;
-  lgd: number;
-  maturity: number;
-  pd_floor: number;
-  references: Record<string, string>;
-}
+export type C04Irb = components['schemas']['c04Irb'];
 
 export type C04Definition = 'd2' | 'd3' | 'd4' | 'keep';
 
-export interface C04AgencyOutputs {
-  kind: 'agency';
-  agency: { code: string; name: string; scope: string };
-  attribution: string;
-  grades: string[];
-  states: string[];
-  cohorts: C04Cohort[];
-  semesters: C04Cohort[];
-  pd: Record<C04Definition, (number | null)[][] | null>;
-  lra: { d2: C04Lra; d3: C04Lra; d4: C04Lra | null };
-  pooled: { matrix: number[][]; matrix_state: number[][]; counts: number[][]; withdrawn: number[]; row_sizes: number[]; cohorts: number };
-  embedding: C04Embedding;
-  generators: {
-    diagonal: C04Generator | null;
-    weighted: C04Generator | null;
-    jlt: C04Generator | null;
-    em: C04EmGenerator;
-    cohort_power: { pd_5y: (number | null)[] };
-  };
-  mobility: { labels: string[]; svd: (number | null)[]; trace: (number | null)[]; spec_default_rate: (number | null)[] };
-  ecb: Array<{ label: string; mwb_upper: number | null; mwb_lower: number | null; ztests_p: number | null }>;
-  homogeneity: { annual: C04Homogeneity; semesters: C04Homogeneity | null; reference: C04ReferenceTest[] };
-  semesters_vs_year: Array<{ year: number; l1: number | null; pd_product: (number | null)[]; pd_annual: (number | null)[] }>;
-  definition_gap: { d4_over_d2: (number | null)[] | null; d3_over_d2: (number | null)[] | null };
-  lifetime: C04Lifetime[];
-  origination: number[];
-  irb: C04Irb;
-}
+export type C04AgencyOutputs = components['schemas']['c04AgencyOutputs'];
 
 const nNumGrid = { nullable: { array: nNums } } as const;
 export const C04_AGENCY_OUTPUTS = {
@@ -1599,32 +1001,14 @@ export const C04_AGENCY_OUTPUTS = {
 } satisfies Record<keyof C04AgencyOutputs, Kind>;
 
 /** A harness rate: rejections (or hits) over n repetitions with its Monte Carlo SE and Wilson interval. */
-export interface C04Rate {
-  rejections: number;
-  n: number;
-  undefined: number;
-  rate: number;
-  se: number;
-  wilson_low: number;
-  wilson_high: number;
-}
+export type C04Rate = components['schemas']['c04Rate'];
 const C04_RATE = {
   object: { rejections: 'integer', n: 'integer', undefined: 'integer', rate: num, se: num, wilson_low: num, wilson_high: num } satisfies Record<keyof C04Rate, Kind>,
 } as const;
 
 /** riskvalidation's estimator performance of a quantity by grade (Morris et al. 2019, Table 6): null by grade where
  * fewer than two repetitions are defined. */
-export interface C04Performance {
-  n: number[];
-  truth: number[];
-  mean: (number | null)[];
-  bias: (number | null)[];
-  bias_mcse: (number | null)[];
-  empirical_se: (number | null)[];
-  empirical_se_mcse: (number | null)[];
-  rmse: (number | null)[];
-  rmse_mcse: (number | null)[];
-}
+export type C04Performance = components['schemas']['c04Performance'];
 const C04_PERFORMANCE_BASE = {
   n: ints,
   truth: nums,
@@ -1639,101 +1023,20 @@ const C04_PERFORMANCE_BASE = {
 const C04_PERFORMANCE = { object: C04_PERFORMANCE_BASE } as const;
 
 /** The same for one quantity per repetition (the momentum hazard's fitted coefficient). */
-export interface C04ScalarPerformance {
-  n: number;
-  truth: number;
-  mean: number;
-  bias: number;
-  bias_mcse: number;
-  empirical_se: number;
-  empirical_se_mcse: number;
-  mse: number;
-  mse_mcse: number;
-  rmse: number;
-  rmse_mcse: number;
-}
+export type C04ScalarPerformance = components['schemas']['c04ScalarPerformance'];
 
-export interface C04MarkovRung {
-  value: null;
-  seed_key: string;
-  seed: number;
-  level: number;
-  obligor_years: number[];
-  estimators: Record<'cohort' | 'duration' | 'em' | 'diagonal' | 'weighted' | 'jlt', C04Performance & { zero: C04Rate[] }>;
-  em: { converged: C04Rate; iterations_mean: number; iterations_max: number };
-  coverage: Record<'wald' | 'agresti_coull' | 'jeffreys' | 'bootstrap', C04Rate[]>;
-  bootstrap: { method: string; estimate: string; horizon: number; n_boot: number; repetitions: number };
-}
-export interface C04MomentumRung {
-  value: number;
-  seed_key: string;
-  seed: number;
-  momentum: number[][] | null;
-  investment_grades: number;
-  coefficient: C04ScalarPerformance | null;
-  pd_1y_cohort: C04Performance;
-  pd_5y_frequency: C04Performance;
-  pd_5y_cohort_power: C04Performance;
-  pd_5y_duration: C04Performance;
-  error_cohort_power: C04Performance;
-  error_duration: C04Performance;
-}
-export interface C04CycleRung {
-  value: number;
-  seed_key: string;
-  seed: number;
-  stressed_period: number[] | null;
-  pd_true_base: number[];
-  pd_true_stressed: number[];
-  pd_true_average: number[];
-  pd_stressed_year: C04Performance;
-  pd_lra: C04Performance;
-  pd_pooled: C04Performance;
-}
-export interface C04WithdrawalsRung {
-  value: number;
-  seed_key: string;
-  seed: number;
-  withdrawal_rate: number;
-  window: number;
-  truncation_verified: number;
-  withdrawn_obligors_mean: number;
-  withdrawn_share: { n: number[]; mean: (number | null)[]; mean_mcse: (number | null)[] };
-  pd_removed: C04Performance;
-  pd_kept: C04Performance;
-  pd_followed: C04Performance;
-  pd_latent: C04Performance;
-}
-export interface C04ThinRung {
-  value: number;
-  level: number;
-  expected_defaults: number[];
-  coverage: Record<'wald' | 'agresti_coull' | 'jeffreys', number[]>;
-  length: Record<'wald' | 'agresti_coull' | 'jeffreys', number[]>;
-  overlap_jeffreys: number[];
-}
+export type C04MarkovRung = components['schemas']['c04MarkovRung'];
+export type C04MomentumRung = components['schemas']['c04MomentumRung'];
+export type C04CycleRung = components['schemas']['c04CycleRung'];
+export type C04WithdrawalsRung = components['schemas']['c04WithdrawalsRung'];
+export type C04ThinRung = components['schemas']['c04ThinRung'];
 export type C04Rung = C04MarkovRung | C04MomentumRung | C04CycleRung | C04WithdrawalsRung | C04ThinRung;
 
-export interface C04Simulation {
-  key: string;
-  test_id: string;
-  rung: number | null;
-  rates: Record<string, C04Rate>;
-  seed: number;
-  n_rep: number;
-}
+export type C04Simulation = components['schemas']['c04Simulation'];
 
-export type C04Family = 'markov' | 'momentum' | 'cycle' | 'withdrawals' | 'thin';
+export type C04Family = components['schemas']['c04FamilyOutputs']['family'];
 
-export interface C04FamilyOutputs {
-  kind: 'generator';
-  family: C04Family;
-  generator: { q: number[][]; pd_1y: number[]; pd_5y: number[]; obligors: number[]; source: string; one_year_matrix: number[][] };
-  design: { years: number; snapshots: number[]; reps: number; seed_key: string | null };
-  ladder: { name: Text; unit: string; values: number[] } | null;
-  rungs: C04Rung[];
-  simulations: C04Simulation[];
-}
+export type C04FamilyOutputs = components['schemas']['c04FamilyOutputs'];
 
 const C04_RATES = { array: C04_RATE } as const;
 const C04_THREE = (k: Kind) => ({ object: { wald: k, agresti_coull: k, jeffreys: k } }) as const;
@@ -1838,41 +1141,11 @@ export const C04_FAMILY_OUTPUTS = {
 } satisfies Record<keyof C04FamilyOutputs, Kind>;
 
 /** A printed value beside its recomputation; the bake stops unless they agree (contract section 3). */
-export interface C04Print {
-  printed: number;
-  recomputed: number;
-  decimals: number;
-}
+export type C04Print = components['schemas']['c04Print'];
 const C04_PRINT = { object: { printed: num, recomputed: num, decimals: 'integer' } satisfies Record<keyof C04Print, Kind> } as const;
 const C04_PRINTS = { object: { printed: nums, recomputed: nums, decimals: ints } } as const;
 
-export interface C04PublishedOutputs {
-  kind: 'published';
-  irw: {
-    rows: Array<{ matrix: string; method: string; printed: number; recomputed: number; agrees: boolean }>;
-    jlt_from_printed_generator: number;
-    theorem3_c: boolean[];
-    series_terms: number;
-  };
-  sr190: {
-    defaults: number;
-    n: number;
-    rows: Array<{ rho: number; interval: string; printed: number[]; recomputed: number[]; agrees: boolean }>;
-    n_dagger: { printed: number[]; recomputed: number[]; decimals: number[] };
-  };
-  engelmann: {
-    w_ttc: { printed: number[]; recomputed: number[]; decimals: number[] };
-    ttc_pd: C04Print;
-    portfolios: Array<{
-      name: string;
-      w0: number[];
-      pd0: C04Print & { check: 'printed digits' | 'entry rounding'; note: Text | null };
-      extreme: (C04Print & { kind: 'min' | 'max' }) | null;
-      pd_path: number[];
-    }>;
-    row_sum_deviation: number;
-  };
-}
+export type C04PublishedOutputs = components['schemas']['c04PublishedOutputs'];
 export const C04_PUBLISHED_OUTPUTS = {
   kind: 'string',
   irw: {
@@ -1916,39 +1189,10 @@ export const VARIANT_C04_FAMILY = { ...VARIANT, outputs: { object: C04_FAMILY_OU
 export const VARIANT_C04_PUBLISHED = { ...VARIANT, outputs: { object: C04_PUBLISHED_OUTPUTS } } satisfies Record<keyof VariantArtifact, Kind>;
 
 /** The live parity of C04's models artifact (contract section 4), and the families' generator. */
-export interface C04ProjectionPoint {
-  agency: string;
-  matrix: number[][];
-  origination: number[];
-  w0: number[];
-  years: number;
-  default_rate: number[];
-  portfolio_last: number[];
-  ttc: number[];
-  ttc_default_rate: number;
-}
-export interface C04IntervalPoint {
-  defaults: number;
-  n: number;
-  rho: number;
-  level: number;
-  wald: number[];
-  agresti_coull: number[];
-  jeffreys: number[];
-  n_effective: number;
-}
-export interface C04CapitalPoint {
-  pd: number;
-  lgd: number;
-  maturity: number;
-  regime: string;
-  asset_class: string;
-  risk_weight: number;
-}
-export interface C04Fit {
-  parity: { projection: C04ProjectionPoint[]; intervals: C04IntervalPoint[]; capital: C04CapitalPoint[] };
-  generator: { q: number[][]; obligors: number[]; source: string };
-}
+export type C04ProjectionPoint = components['schemas']['c04ProjectionPoint'];
+export type C04IntervalPoint = components['schemas']['c04IntervalPoint'];
+export type C04CapitalPoint = components['schemas']['c04CapitalPoint'];
+export type C04Fit = components['schemas']['c04Fit'];
 export const MODELS_C04 = {
   ...MODELS,
   fit: {
