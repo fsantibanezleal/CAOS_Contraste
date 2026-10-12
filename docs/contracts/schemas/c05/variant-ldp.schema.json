@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contraste.fasl-work.com/contracts/c05/variant-ldp.schema.json",
   "title": "C05 low-default portfolio variant",
-  "description": "Catalog row c05-ldp 1.0.0: most prudent PD bounds of a low-default portfolio (outputs.kind ldp).",
+  "description": "Catalog row c05-ldp 2.0.0: most prudent PD bounds of a low-default portfolio (outputs.kind ldp).",
   "allOf": [
     {"$ref": "../common/variant-envelope.schema.json"},
     {
@@ -343,8 +343,8 @@
           "type": "array",
           "items": {
             "type": "number",
-            "minimum": 0,
-            "maximum": 1
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
           }
         },
         "k": {"type": "number"},

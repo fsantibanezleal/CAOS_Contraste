@@ -291,3 +291,23 @@ def test_the_schema_files_use_lf_and_two_space_json() -> None:
         assert b"\r" not in raw, f"{f}: CRLF"
         assert raw.endswith(b"\n"), f"{f}: no final newline"
         json.loads(raw)
+
+
+# --- the PD range: open (0, 1) at estimate sites, closed at the one engine-input grid ---------------------------------
+
+
+@pytest.mark.parametrize("bad", [0.0, 1.0])
+def test_a_pd_of_exactly_0_or_1_is_refused_at_an_estimate_site(bad: float) -> None:
+    path = cs.DERIVED / "C01" / "holdout.json"
+    doc = cs.load_json(path)
+    rung = next(iter(doc["outputs"]["rungs"].values()))
+    rung["reliability"][0]["pd"] = bad
+    assert cs.errors("c01/variant", doc), f"PD {bad} accepted at c01 reliability"
+
+
+def test_a_pd_of_0_is_accepted_at_the_c04_capital_parity_grid() -> None:
+    doc = cs.load_json(cs.DERIVED / "C04" / "models-transitions.json")
+    assert doc["fit"]["parity"]["capital"][0]["pd"] == 0.0
+    assert cs.errors("c04/models", doc) == []
+    doc["fit"]["parity"]["capital"][0]["pd"] = 1.5
+    assert cs.errors("c04/models", doc)
