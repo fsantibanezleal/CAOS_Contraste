@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """CT-003: every committed artifact carries its provenance, and that provenance is true (SDD sections 2.2 and 6).
 
-For every variant artifact the index reaches (index, then each case manifest's ``artifacts``):
+For every variant artifact the index reaches (index, then each case manifest's ``artifacts``; a case whose manifest the
+readiness declares absent, a planned case, has none to check, and any other absent manifest is a finding):
   1. the artifact has a ``provenance`` block with a truth status from the declared set, and that truth status is
      the one its manifest entry states;
   2. every input names its source and licence class; the class is the registry's, and it is publishable
@@ -30,6 +31,17 @@ def read(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _declared_absent() -> set[str]:
+    """Manifest paths the readiness document declares absent (the `missing` of a partial `case-manifest` row)."""
+    path = DERIVED / "readiness.json"
+    if not path.exists():
+        return set()
+    for row in read(path).get("contracts", []):
+        if row.get("id") == "case-manifest" and row.get("state") == "partial":
+            return set(row.get("missing") or [])
+    return set()
+
+
 def main() -> int:
     index_path = DERIVED / "manifests" / "index.json"
     if not index_path.exists():
@@ -39,8 +51,15 @@ def main() -> int:
     pinned = {sid: {f["name"]: f["sha256"] for f in row["files"]} for sid, row in read(LICENCE_MANIFEST)["sources"].items()}
     findings: list[str] = []
     n_art = 0
+    declared_absent = _declared_absent()
     for entry in read(index_path).get("cases", []):
-        man = read(DERIVED / entry["manifest_path"])
+        man_path = DERIVED / entry["manifest_path"]
+        if not man_path.exists():
+            if entry["manifest_path"] in declared_absent:
+                continue  # a planned case: the readiness declares its manifest absent, so there is no artifact to check
+            findings.append(f"{entry.get('case_id')}: {entry['manifest_path']} is absent and the readiness does not declare it")
+            continue
+        man = read(man_path)
         cid = man.get("case_id", entry.get("case_id"))
         arts = man.get("artifacts")
         if not isinstance(arts, list) or not arts:

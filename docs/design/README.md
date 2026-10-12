@@ -16,7 +16,7 @@ Research, then the executive brief, then sizing, contracts and the units.
 2. **Executive brief.** The problem in its real context, in business language: the Initiative (the owner, the
    initiative, the quantified reason to act now), the Outcomes, the Positioning and the Credibility, every number with
    its source. Section `Executive brief` of [`SDD.md`](SDD.md), right after `Problem and non-goals`. How to write it:
-   [`../guides/06_executive-brief.md`](../guides/06_executive-brief.md).
+   [`https://github.com/fsantibanezleal/CAOS_PRODUCT_TEMPLATE/blob/v0.05.000/docs/guides/06_executive-brief.md`](https://github.com/fsantibanezleal/CAOS_PRODUCT_TEMPLATE/blob/v0.05.000/docs/guides/06_executive-brief.md).
 3. **Sizing, summarised.** Sections `Sizing and contracts`, `Technology and versions` and `Resources` of
    [`SDD.md`](SDD.md): the components and boundaries (the sizing itself is kept with the coordination records), every
    pinned dependency with the version actually pinned (`scripts/check_tech_matrix.py`) and the measured resources of

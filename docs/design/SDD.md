@@ -67,7 +67,7 @@ appropriate use in decisions (the impact view and the findings record).
 ## Executive brief
 
 The problem in its real context, written before any development and in business language, as
-[`docs/guides/06_executive-brief.md`](../guides/06_executive-brief.md) describes and `scripts/check_sdd.py` checks.
+[the template's executive-brief guide (06)](https://github.com/fsantibanezleal/CAOS_PRODUCT_TEMPLATE/blob/v0.05.000/docs/guides/06_executive-brief.md) describes and `scripts/check_sdd.py` checks.
 Transcribed on 2026-10-12 from the executive brief of the product plan, which was written from the problem-context
 dossier of 2026-10-12 under the problem-context-first convention; no claim was changed or added. The brief is written
 for the person accountable for a bank's model risk: the supervisory texts name functions, not job titles (the ECB Guide
@@ -290,7 +290,7 @@ the ones the dossiers and `docs/frameworks/` record.
 | tests | pytest | 9.1.1 | the pipeline, contract, guard and adversarial tests | none recorded |
 | lint | ruff | 0.15.18 | lint of data-pipeline, tests, scripts and app | none recorded (0.17.0 is current and was not adopted) |
 | contracts | jsonschema | 4.26.0 | validates every document against its schema file | none recorded |
-| shell | @fasl-work/caos-app-shell | 0.11.0 | the shared app shell, pinned exactly (ADR-0078) | a hand-rolled shell, forbidden by ADR-0078 |
+| shell | @fasl-work/caos-app-shell | 0.11.2 | the shared app shell, pinned exactly (ADR-0078) | a hand-rolled shell, forbidden by ADR-0078 |
 | web | react | 19.3.0 | the UI | none: the shell requires it |
 | web | react-dom | 19.3.0 | the UI renderer | none: the shell requires it |
 | web | react-router | 8.4.0 | the six routes | none: the shell requires it |
