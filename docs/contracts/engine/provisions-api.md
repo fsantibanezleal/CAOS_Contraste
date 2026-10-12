@@ -31,7 +31,7 @@ sections cite; multipliers, floors, probation lengths and horizons are policy pa
 - Tolerance basis (one definition for every function and test): a money identity closes when its absolute difference is at most
   `1e-6 * max(1, G)`, where `G` is the total gross carrying amount of the document, the sum of the absolute closing amounts of the
   `reconciliation.gross_carrying_amount` rows (in the document currency). The same `G` serves the allowance, the gross carrying
-  amount, the waterfall and the stage-closing identities; a `RollForwardRow.residual` is always the exact difference, never rounded.
+  amount, the waterfall and the stage-closing identities; a `RollForwardRow.residual` is always the difference `closing - (opening + sum(movements))` itself, never a clipped or tolerance-adjusted value (a document may store it rounded to 1e-9).
   Probability identities close to `1e-12`, and a tighter tolerance is written where a function needs one. Every golden value states
   its own tolerance (`to 1e-8`) or is exact.
 - A validation function returns one `TestResult` of `riskvalidation`, serialised by `dataclasses.asdict` into a row that validates

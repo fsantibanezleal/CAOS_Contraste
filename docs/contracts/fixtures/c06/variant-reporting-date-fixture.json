@@ -39,6 +39,8 @@
       "low_credit_risk_exemption": false,
       "sicr": {
         "dpd_backstop": 30,
+        "default_dpd": 90,
+        "low_credit_risk_pd": null,
         "threefold_ratio": 3.0,
         "absolute_floor": 0.005,
         "multiplier_schedule": [
@@ -888,7 +890,7 @@
             "en": "Opening allowance",
             "es": "Cobertura inicial"
           },
-          "amount": 20673.13,
+          "amount": 11033.72,
           "stage": null,
           "overlay_id": null
         },
@@ -921,7 +923,7 @@
             "en": "Transfer 2 to 3",
             "es": "Traspaso 2 a 3"
           },
-          "amount": 2500.0,
+          "amount": 14000.0,
           "stage": null,
           "overlay_id": null
         },
@@ -943,7 +945,7 @@
             "en": "Parameter remeasurement",
             "es": "Remedicion de parametros"
           },
-          "amount": 450.0,
+          "amount": 2589.41,
           "stage": null,
           "overlay_id": null
         },
@@ -959,7 +961,7 @@
           "overlay_id": null
         },
         {
-          "id": "line-OVL-RATES",
+          "id": "overlay-OVL-RATES",
           "kind": "overlay",
           "label": {
             "en": "Overlay: rates shock (expert)",
@@ -976,7 +978,7 @@
             "en": "Write-offs",
             "es": "Castigos"
           },
-          "amount": -2000.0,
+          "amount": -6000.0,
           "stage": null,
           "overlay_id": null
         },
@@ -1015,6 +1017,7 @@
         "method": "expert",
         "target": "pd",
         "segment_id": "s1",
+        "stage": "stage1",
         "amount": 1500.0,
         "staging_effect": "none",
         "review_date": "2020-12-31"
@@ -1026,7 +1029,7 @@
       "allowance": [
         {
           "stage": "stage1",
-          "opening": -7.85,
+          "opening": 2033.72,
           "movements": [
             {
               "line_id": "originations",
@@ -1046,7 +1049,7 @@
             },
             {
               "line_id": "remeasurement",
-              "amount": 150.0
+              "amount": -1891.57
             },
             {
               "line_id": "macro-update",
@@ -1070,7 +1073,7 @@
         },
         {
           "stage": "stage2",
-          "opening": 858.76,
+          "opening": 3000.0,
           "movements": [
             {
               "line_id": "originations",
@@ -1082,7 +1085,7 @@
             },
             {
               "line_id": "transfer-2-3",
-              "amount": -1000.0
+              "amount": -4000.0
             },
             {
               "line_id": "transfer-2-1",
@@ -1090,7 +1093,7 @@
             },
             {
               "line_id": "remeasurement",
-              "amount": 100.0
+              "amount": 958.76
             },
             {
               "line_id": "macro-update",
@@ -1110,7 +1113,7 @@
         },
         {
           "stage": "stage3",
-          "opening": 19822.22,
+          "opening": 6000.0,
           "movements": [
             {
               "line_id": "originations",
@@ -1122,7 +1125,7 @@
             },
             {
               "line_id": "transfer-2-3",
-              "amount": 3500.0
+              "amount": 18000.0
             },
             {
               "line_id": "transfer-2-1",
@@ -1130,7 +1133,7 @@
             },
             {
               "line_id": "remeasurement",
-              "amount": 200.0
+              "amount": 3522.22
             },
             {
               "line_id": "macro-update",
@@ -1138,7 +1141,7 @@
             },
             {
               "line_id": "write-off",
-              "amount": -2000.0
+              "amount": -6000.0
             },
             {
               "line_id": "unwinding",
@@ -1159,11 +1162,11 @@
               "amount": 20000.0
             },
             {
-              "line_id": "transfers",
+              "line_id": "transfer-1-2",
               "amount": -80000.0
             },
             {
-              "line_id": "stage2-to-stage3",
+              "line_id": "transfer-2-3",
               "amount": 0.0
             },
             {
@@ -1187,11 +1190,11 @@
               "amount": 0.0
             },
             {
-              "line_id": "transfers",
+              "line_id": "transfer-1-2",
               "amount": 80000.0
             },
             {
-              "line_id": "stage2-to-stage3",
+              "line_id": "transfer-2-3",
               "amount": -50000.0
             },
             {
@@ -1215,11 +1218,11 @@
               "amount": 0.0
             },
             {
-              "line_id": "transfers",
+              "line_id": "transfer-1-2",
               "amount": 0.0
             },
             {
-              "line_id": "stage2-to-stage3",
+              "line_id": "transfer-2-3",
               "amount": 50000.0
             },
             {
@@ -1239,6 +1242,8 @@
     "lifetime_backtest": {
       "rows": [
         {
+          "origination_cohort": "all",
+          "estimator": "aalen-johansen",
           "months": 3,
           "predicted_cumulative_pd": 0.006845723,
           "observed_cumulative_pd": 0.004,
@@ -1247,6 +1252,8 @@
           "reason": null
         },
         {
+          "origination_cohort": "all",
+          "estimator": "aalen-johansen",
           "months": 6,
           "predicted_cumulative_pd": 0.013595411,
           "observed_cumulative_pd": 0.009,
@@ -1255,6 +1262,8 @@
           "reason": null
         },
         {
+          "origination_cohort": "all",
+          "estimator": "aalen-johansen",
           "months": 9,
           "predicted_cumulative_pd": 0.020250771,
           "observed_cumulative_pd": 0.013,
@@ -1263,6 +1272,8 @@
           "reason": null
         },
         {
+          "origination_cohort": "all",
+          "estimator": "aalen-johansen",
           "months": 12,
           "predicted_cumulative_pd": 0.026813479,
           "observed_cumulative_pd": 0.018,
@@ -1271,6 +1282,8 @@
           "reason": null
         },
         {
+          "origination_cohort": "all",
+          "estimator": "aalen-johansen",
           "months": 15,
           "predicted_cumulative_pd": 0.033285179,
           "observed_cumulative_pd": null,
@@ -1279,6 +1292,8 @@
           "reason": "fixture: horizon beyond the observation cutoff"
         },
         {
+          "origination_cohort": "all",
+          "estimator": "aalen-johansen",
           "months": 18,
           "predicted_cumulative_pd": 0.039667484,
           "observed_cumulative_pd": null,
@@ -1287,6 +1302,8 @@
           "reason": "fixture: horizon beyond the observation cutoff"
         },
         {
+          "origination_cohort": "all",
+          "estimator": "aalen-johansen",
           "months": 21,
           "predicted_cumulative_pd": 0.045961978,
           "observed_cumulative_pd": null,
@@ -1295,11 +1312,318 @@
           "reason": "fixture: horizon beyond the observation cutoff"
         },
         {
+          "origination_cohort": "all",
+          "estimator": "aalen-johansen",
           "months": 24,
           "predicted_cumulative_pd": 0.052170215,
           "observed_cumulative_pd": null,
           "gap": null,
           "brier": null,
+          "reason": "fixture: horizon beyond the observation cutoff"
+        }
+      ]
+    },
+    "decile_calibration": {
+      "rung_id": "L1-dth",
+      "rows": [
+        {
+          "origination_cohort": "all",
+          "months": 12,
+          "decile": 1,
+          "n": 100,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.010725392,
+          "observed_cumulative_pd": 0.00986736,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 12,
+          "decile": 2,
+          "n": 200,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.016088087,
+          "observed_cumulative_pd": 0.015122802,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 12,
+          "decile": 3,
+          "n": 300,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.021450783,
+          "observed_cumulative_pd": 0.020592752,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 12,
+          "decile": 4,
+          "n": 400,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.026813479,
+          "observed_cumulative_pd": 0.026277209,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 12,
+          "decile": 5,
+          "n": 500,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.032176175,
+          "observed_cumulative_pd": 0.032176175,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 12,
+          "decile": 6,
+          "n": 600,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.037538871,
+          "observed_cumulative_pd": 0.038289648,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 12,
+          "decile": 7,
+          "n": 700,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.042901566,
+          "observed_cumulative_pd": 0.044617629,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 12,
+          "decile": 8,
+          "n": 800,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.048264262,
+          "observed_cumulative_pd": 0.051160118,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 12,
+          "decile": 9,
+          "n": 900,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.053626958,
+          "observed_cumulative_pd": 0.057917115,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 12,
+          "decile": 10,
+          "n": 1000,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.058989654,
+          "observed_cumulative_pd": 0.064888619,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 24,
+          "decile": 1,
+          "n": 100,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.020868086,
+          "observed_cumulative_pd": 0.019198639,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 24,
+          "decile": 2,
+          "n": 200,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.031302129,
+          "observed_cumulative_pd": 0.029424001,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 24,
+          "decile": 3,
+          "n": 300,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.041736172,
+          "observed_cumulative_pd": 0.040066725,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 24,
+          "decile": 4,
+          "n": 400,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.052170215,
+          "observed_cumulative_pd": 0.051126811,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 24,
+          "decile": 5,
+          "n": 500,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.062604258,
+          "observed_cumulative_pd": 0.062604258,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 24,
+          "decile": 6,
+          "n": 600,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.073038301,
+          "observed_cumulative_pd": 0.074499067,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 24,
+          "decile": 7,
+          "n": 700,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.083472344,
+          "observed_cumulative_pd": 0.086811238,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 24,
+          "decile": 8,
+          "n": 800,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.093906387,
+          "observed_cumulative_pd": 0.09954077,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 24,
+          "decile": 9,
+          "n": 900,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.10434043,
+          "observed_cumulative_pd": 0.112687664,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 24,
+          "decile": 10,
+          "n": 1000,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.114774473,
+          "observed_cumulative_pd": 0.12625192,
+          "reason": null
+        },
+        {
+          "origination_cohort": "all",
+          "months": 36,
+          "decile": 1,
+          "n": 100,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.02921532,
+          "observed_cumulative_pd": null,
+          "reason": "fixture: horizon beyond the observation cutoff"
+        },
+        {
+          "origination_cohort": "all",
+          "months": 36,
+          "decile": 2,
+          "n": 200,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.043822981,
+          "observed_cumulative_pd": null,
+          "reason": "fixture: horizon beyond the observation cutoff"
+        },
+        {
+          "origination_cohort": "all",
+          "months": 36,
+          "decile": 3,
+          "n": 300,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.058430641,
+          "observed_cumulative_pd": null,
+          "reason": "fixture: horizon beyond the observation cutoff"
+        },
+        {
+          "origination_cohort": "all",
+          "months": 36,
+          "decile": 4,
+          "n": 400,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.073038301,
+          "observed_cumulative_pd": null,
+          "reason": "fixture: horizon beyond the observation cutoff"
+        },
+        {
+          "origination_cohort": "all",
+          "months": 36,
+          "decile": 5,
+          "n": 500,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.087645961,
+          "observed_cumulative_pd": null,
+          "reason": "fixture: horizon beyond the observation cutoff"
+        },
+        {
+          "origination_cohort": "all",
+          "months": 36,
+          "decile": 6,
+          "n": 600,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.102253621,
+          "observed_cumulative_pd": null,
+          "reason": "fixture: horizon beyond the observation cutoff"
+        },
+        {
+          "origination_cohort": "all",
+          "months": 36,
+          "decile": 7,
+          "n": 700,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.116861282,
+          "observed_cumulative_pd": null,
+          "reason": "fixture: horizon beyond the observation cutoff"
+        },
+        {
+          "origination_cohort": "all",
+          "months": 36,
+          "decile": 8,
+          "n": 800,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.131468942,
+          "observed_cumulative_pd": null,
+          "reason": "fixture: horizon beyond the observation cutoff"
+        },
+        {
+          "origination_cohort": "all",
+          "months": 36,
+          "decile": 9,
+          "n": 900,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.146076602,
+          "observed_cumulative_pd": null,
+          "reason": "fixture: horizon beyond the observation cutoff"
+        },
+        {
+          "origination_cohort": "all",
+          "months": 36,
+          "decile": 10,
+          "n": 1000,
+          "estimator": "aalen-johansen",
+          "predicted_cumulative_pd": 0.160684262,
+          "observed_cumulative_pd": null,
           "reason": "fixture: horizon beyond the observation cutoff"
         }
       ]

@@ -119,7 +119,8 @@
               "accounts",
               "gross_exposure",
               "b1_portfolio",
-              "bde_segment"
+              "bde_segment",
+              "bde_segment_label"
             ],
             "properties": {
               "id": {
@@ -145,7 +146,25 @@
                 ]
               },
               "bde_segment": {
-                "type": "string"
+                "type": "string",
+                "enum": [
+                  "A.1.1",
+                  "A.1.2",
+                  "A.1.3",
+                  "A.2.1",
+                  "A.2.2",
+                  "A.2.3",
+                  "B.1.1",
+                  "B.1.2",
+                  "B.1.3",
+                  "B.2",
+                  "B.2.1",
+                  "B.3"
+                ],
+                "description": "The Annex 9 segment code; the label is separate."
+              },
+              "bde_segment_label": {
+                "$ref": "../common/text.schema.json"
               }
             }
           }
@@ -196,7 +215,10 @@
           "required": [
             "pd_ladder_rung",
             "discount_convention",
-            "segments"
+            "segments",
+            "weighting_scenarios",
+            "eir_basis",
+            "staging_policy"
           ],
           "properties": {
             "pd_ladder_rung": {
@@ -241,6 +263,26 @@
                   }
                 }
               }
+            },
+            "weighting_scenarios": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "$ref": "#/$defs/c07WeightingScenario"
+              },
+              "description": "At least two outcomes with weights summing to 1 (5.5.17(a), B5.5.42); the IFRS 9 regime of every variant is the weighted ECL over them."
+            },
+            "eir_basis": {
+              "type": "string",
+              "enum": [
+                "original",
+                "current",
+                "credit-adjusted"
+              ],
+              "description": "EIR basis of the non-POCI accounts; POCI accounts use the credit-adjusted EIR."
+            },
+            "staging_policy": {
+              "$ref": "#/$defs/c07StagingPolicy"
             }
           }
         },
@@ -250,7 +292,8 @@
           "required": [
             "normal_coverage",
             "doubtful_bucket_labels",
-            "doubtful_coverage"
+            "doubtful_coverage",
+            "doubtful_bucket_upper_days"
           ],
           "properties": {
             "normal_coverage": {
@@ -265,7 +308,21 @@
                 ],
                 "properties": {
                   "segment": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                      "A.1.1",
+                      "A.1.2",
+                      "A.1.3",
+                      "A.2.1",
+                      "A.2.2",
+                      "A.2.3",
+                      "B.1.1",
+                      "B.1.2",
+                      "B.1.3",
+                      "B.2",
+                      "B.2.1",
+                      "B.3"
+                    ]
                   },
                   "normal": {
                     "type": "number",
@@ -286,6 +343,21 @@
                 "type": "string"
               }
             },
+            "doubtful_bucket_upper_days": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "description": "Inclusive upper bound in days of each doubtful bucket (months at 30.4375 days rounded); null for the last, open bucket."
+            },
             "doubtful_coverage": {
               "type": "array",
               "items": {
@@ -297,7 +369,21 @@
                 ],
                 "properties": {
                   "segment": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                      "A.1.1",
+                      "A.1.2",
+                      "A.1.3",
+                      "A.2.1",
+                      "A.2.2",
+                      "A.2.3",
+                      "B.1.1",
+                      "B.1.2",
+                      "B.1.3",
+                      "B.2",
+                      "B.2.1",
+                      "B.3"
+                    ]
                   },
                   "by_bucket": {
                     "type": "array",
@@ -320,7 +406,8 @@
             "required": [
               "id",
               "label",
-              "shocks"
+              "shocks",
+              "z_shift"
             ],
             "properties": {
               "id": {
@@ -359,6 +446,10 @@
                     }
                   }
                 }
+              },
+              "z_shift": {
+                "type": "number",
+                "description": "The variant's shift of current conditions in systematic-factor units, added to every weighting scenario; 0 for base."
               }
             }
           }
@@ -438,6 +529,108 @@
         }
       },
       "description": "A transcribed CMF CNCB B-1 table; PI, PDI and PE are decimals (0.010916 is 1.0916 per cent) and, where both are set, PE = PI x PDI to the table's rounding. Closed at 0 and 1 on purpose: the default column is PI = 1 and the tables are statutory parameters, not estimates."
+    },
+    "c07StagingPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dpd_backstop",
+        "default_dpd",
+        "threefold_ratio",
+        "absolute_floor",
+        "probation_months",
+        "low_credit_risk_pd",
+        "multiplier_schedule",
+        "source"
+      ],
+      "properties": {
+        "dpd_backstop": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "default_dpd": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "threefold_ratio": {
+          "type": "number",
+          "exclusiveMinimum": 1
+        },
+        "absolute_floor": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "probation_months": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "low_credit_risk_pd": {
+          "anyOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "multiplier_schedule": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pd_origination_upper",
+              "multiplier"
+            ],
+            "properties": {
+              "pd_origination_upper": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 1
+              },
+              "multiplier": {
+                "type": "number",
+                "minimum": 1
+              }
+            }
+          }
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "description": "The IFRS 9 staging policy of the C07 bake (same record as the C06 staging policy, engine StagingPolicy)."
+    },
+    "c07WeightingScenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "weight",
+        "z_offset"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "z_offset": {
+          "type": "number",
+          "description": "Systematic-factor offset of this outcome around current conditions; the variant adds its z_shift."
+        }
+      }
     }
   }
 }

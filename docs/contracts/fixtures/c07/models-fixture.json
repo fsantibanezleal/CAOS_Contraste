@@ -56,7 +56,11 @@
         "accounts": 300000,
         "gross_exposure": 60000000000.0,
         "b1_portfolio": "residential-mortgage",
-        "bde_segment": "B.1.1 Vivienda habitual, LTV <= 80%"
+        "bde_segment": "B.1.1",
+        "bde_segment_label": {
+          "en": "Vivienda habitual, LTV <= 80%",
+          "es": "Vivienda habitual, LTV <= 80%"
+        }
       },
       {
         "id": "consumer",
@@ -67,7 +71,11 @@
         "accounts": 900000,
         "gross_exposure": 20000000000.0,
         "b1_portfolio": "consumer",
-        "bde_segment": "B.2 Credito al consumo"
+        "bde_segment": "B.2",
+        "bde_segment_label": {
+          "en": "Credito al consumo",
+          "es": "Credito al consumo"
+        }
       },
       {
         "id": "commercial-group",
@@ -78,7 +86,11 @@
         "accounts": 40000,
         "gross_exposure": 10000000000.0,
         "b1_portfolio": "commercial-group",
-        "bde_segment": "A.2.2 Pymes"
+        "bde_segment": "A.2.2",
+        "bde_segment_label": {
+          "en": "Pymes",
+          "es": "Pymes"
+        }
       },
       {
         "id": "commercial-individual",
@@ -89,7 +101,11 @@
         "accounts": 1200,
         "gross_exposure": 30000000000.0,
         "b1_portfolio": "commercial-individual",
-        "bde_segment": "A.2.1 Grandes empresas"
+        "bde_segment": "A.2.1",
+        "bde_segment_label": {
+          "en": "Grandes empresas",
+          "es": "Grandes empresas"
+        }
       }
     ],
     "b1_tables": [
@@ -472,6 +488,59 @@
     "ifrs9": {
       "pd_ladder_rung": "L1-dth",
       "discount_convention": "mid-period",
+      "eir_basis": "original",
+      "weighting_scenarios": [
+        {
+          "id": "upside",
+          "label": {
+            "en": "Upside",
+            "es": "Favorable"
+          },
+          "weight": 0.25,
+          "z_offset": 1.0
+        },
+        {
+          "id": "central",
+          "label": {
+            "en": "Central",
+            "es": "Central"
+          },
+          "weight": 0.5,
+          "z_offset": 0.0
+        },
+        {
+          "id": "downside",
+          "label": {
+            "en": "Downside",
+            "es": "Adverso"
+          },
+          "weight": 0.25,
+          "z_offset": -2.0
+        }
+      ],
+      "staging_policy": {
+        "dpd_backstop": 30,
+        "default_dpd": 90,
+        "threefold_ratio": 3.0,
+        "absolute_floor": 0.005,
+        "probation_months": 6,
+        "low_credit_risk_pd": null,
+        "multiplier_schedule": [
+          {
+            "pd_origination_upper": 0.01,
+            "multiplier": 4.0
+          },
+          {
+            "pd_origination_upper": 0.05,
+            "multiplier": 2.5
+          },
+          {
+            "pd_origination_upper": 0.5,
+            "multiplier": 1.5
+          }
+        ],
+        "source": "fixture: Contraste policy parameters, not IFRS 9 requirements"
+      },
       "segments": [
         {
           "segment_id": "mortgage",
@@ -502,19 +571,24 @@
     "bde": {
       "normal_coverage": [
         {
-          "segment": "B.1.1 Vivienda habitual, LTV <= 80%",
+          "segment": "B.1.1",
           "normal": 0.007,
           "special_watch": 0.18
         },
         {
-          "segment": "B.2 Credito al consumo",
+          "segment": "B.2",
           "normal": 0.018,
           "special_watch": 0.202
         },
         {
-          "segment": "A.2.2 Pymes",
+          "segment": "A.2.2",
           "normal": 0.011,
           "special_watch": 0.178
+        },
+        {
+          "segment": "A.2.1",
+          "normal": 0.006,
+          "special_watch": 0.096
         }
       ],
       "doubtful_bucket_labels": [
@@ -526,9 +600,18 @@
         "18-21m",
         ">21m"
       ],
+      "doubtful_bucket_upper_days": [
+        183,
+        274,
+        365,
+        457,
+        548,
+        639,
+        null
+      ],
       "doubtful_coverage": [
         {
-          "segment": "B.1.1 Vivienda habitual, LTV <= 80%",
+          "segment": "B.1.1",
           "by_bucket": [
             0.45,
             0.5,
@@ -540,7 +623,7 @@
           ]
         },
         {
-          "segment": "B.2 Credito al consumo",
+          "segment": "B.2",
           "by_bucket": [
             0.55,
             0.65,
@@ -552,7 +635,7 @@
           ]
         },
         {
-          "segment": "A.2.2 Pymes",
+          "segment": "A.2.2",
           "by_bucket": [
             0.65,
             0.7,
@@ -560,6 +643,18 @@
             0.85,
             0.9,
             0.95,
+            1.0
+          ]
+        },
+        {
+          "segment": "A.2.1",
+          "by_bucket": [
+            0.55,
+            0.65,
+            0.75,
+            0.9,
+            0.95,
+            1.0,
             1.0
           ]
         }
@@ -572,6 +667,7 @@
           "en": "Base",
           "es": "Base"
         },
+        "z_shift": 0.0,
         "shocks": []
       },
       {
@@ -580,6 +676,7 @@
           "en": "Recession",
           "es": "Recesion"
         },
+        "z_shift": -1.5,
         "shocks": [
           {
             "driver": "gdp-growth",
@@ -599,6 +696,7 @@
           "en": "Consumer arrears shock",
           "es": "Shock de mora de consumo"
         },
+        "z_shift": -0.5,
         "shocks": [
           {
             "driver": "consumer-arrears",
@@ -613,6 +711,7 @@
           "en": "House price fall",
           "es": "Caida del precio de viviendas"
         },
+        "z_shift": -0.6,
         "shocks": [
           {
             "driver": "house-prices",
@@ -627,6 +726,7 @@
           "en": "UF inflation spike",
           "es": "Alza de inflacion UF"
         },
+        "z_shift": -0.4,
         "shocks": [
           {
             "driver": "uf-inflation",
@@ -641,6 +741,7 @@
           "en": "Combined severe",
           "es": "Severo combinado"
         },
+        "z_shift": -2.5,
         "shocks": [
           {
             "driver": "gdp-growth",

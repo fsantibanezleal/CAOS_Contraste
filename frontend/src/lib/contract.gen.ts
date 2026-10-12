@@ -1056,6 +1056,22 @@ export interface components {
             origination_cumulative_pd: number[];
             current_cumulative_pd: number[];
         };
+        c06AllowanceMovement: {
+            /** @description Equals the `id` of a `waterfall.lines[]` line (the model lines and `overlay-<overlay id>`), so the waterfall opens into the 35H table. */
+            line_id: string;
+            /** @description Signed; a positive amount raises the allowance. */
+            amount: number;
+        };
+        /** @description Only a POCI allowance may be negative (IFRS 9 5.5.14); stage1 to stage3 openings and closings are not. */
+        c06AllowanceRollForwardRow: {
+            /** @enum {string} */
+            stage: "stage1" | "stage2" | "stage3" | "poci";
+            opening: number;
+            movements: components["schemas"]["c06AllowanceMovement"][];
+            closing: number;
+            /** @description closing - (opening + sum of movements) itself (a document may store it rounded to 1e-9); closure is judged against the reconciliation tolerance basis. */
+            residual: number;
+        } & unknown;
         /** @description The data this document stands on. A variant without Freddie Mac data says so and why; nothing is invented. */
         c06DataStatus: {
             /** @enum {string} */
@@ -1064,12 +1080,28 @@ export interface components {
             freddie_mac_reason: string | null;
             notice: components["schemas"]["common-text"];
         };
+        /** @description Calibration at 12, 24 and 36 months per predicted-risk decile against the observed cumulative incidence (SDD row Lifetime PD rungs); an unobserved cell is null with its reason. */
+        c06DecileCalibration: {
+            rung_id: string;
+            rows: {
+                origination_cohort: string;
+                /** @enum {integer} */
+                months: 12 | 24 | 36;
+                decile: number;
+                n: number;
+                /** @enum {string} */
+                estimator: "kaplan-meier" | "aalen-johansen";
+                predicted_cumulative_pd: number;
+                observed_cumulative_pd: number | null;
+                reason: string | null;
+            }[];
+        };
         c06Ead: {
             amortising: boolean;
             ccf_revolving: number | null;
             reason: string | null;
         };
-        /** @description Per-scenario ECL by stage at 100 per cent weight, model ECL without overlays. */
+        /** @description Per-scenario ECL by stage at 100 per cent weight, model ECL without overlays. Staging is frozen: it is computed once at the weighted conditions and applied to every scenario row, so the weighted ECL equals the sum of weight times scenario ECL. */
         c06EclByScenario: {
             /** @description ISO 4217 code of the money fields of this block. */
             currency: string;
@@ -1092,6 +1124,21 @@ export interface components {
             ead: components["schemas"]["c06Ead"];
             staging_policy: components["schemas"]["c06StagingPolicy"];
         };
+        c06GcaMovement: {
+            /** @enum {string} */
+            line_id: "originations" | "transfer-1-2" | "transfer-2-3" | "transfer-2-1" | "transfer-3-2" | "repayments" | "write-off" | "derecognition" | "other";
+            /** @description Signed; a positive amount raises the gross carrying amount. */
+            amount: number;
+        };
+        c06GcaRollForwardRow: {
+            /** @enum {string} */
+            stage: "stage1" | "stage2" | "stage3" | "poci";
+            opening: number;
+            movements: components["schemas"]["c06GcaMovement"][];
+            closing: number;
+            /** @description closing - (opening + sum of movements) itself (a document may store it rounded to 1e-9); closure is judged against the reconciliation tolerance basis. */
+            residual: number;
+        };
         c06Horizon: {
             stage1_months: number;
             lifetime_cap_months: number;
@@ -1105,20 +1152,23 @@ export interface components {
                 basis: string;
             }[];
         };
-        /** @description Kaplan-Meier observed against predicted cumulative default by horizon; a horizon not yet observed is null with its reason. */
+        /** @description Observed against predicted cumulative default by origination cohort and horizon (Aalen-Johansen when prepayment competes, Kaplan-Meier otherwise); a horizon not yet observed is null with its reason. */
         c06LifetimeBacktest: {
             rows: {
+                /** @description The origination cohort of the row (for example `2018`), or `all` for the pooled originations. */
+                origination_cohort: string;
                 months: number;
+                /**
+                 * @description Aalen-Johansen cumulative incidence when prepayment competes, Kaplan-Meier otherwise.
+                 * @enum {string}
+                 */
+                estimator: "kaplan-meier" | "aalen-johansen";
                 predicted_cumulative_pd: number;
                 observed_cumulative_pd: number | null;
                 gap: number | null;
                 brier: number | null;
                 reason: string | null;
             }[];
-        };
-        c06Movement: {
-            line_id: string;
-            amount: number;
         };
         /** @description The non-linearity panel: PD_PIT(z), the weighted PD against the PD at the weighted-average factor, and NL = ECL_weighted / ECL(mean path) - 1. */
         c06NonLinearity: {
@@ -1145,7 +1195,7 @@ export interface components {
                 pd_pit: number;
             }[];
         };
-        /** @description C06 reporting-date outputs (outputs.kind reporting-date): one reporting date of the lifetime PD, staging and ECL run. Money in `currency`; PD open (0, 1); horizons in months. A value the bake may lack is nullable with its reason. */
+        /** @description C06 reporting-date outputs (outputs.kind reporting-date): one reporting date of the lifetime PD, staging and ECL run. Money in `currency`; PD open (0, 1); horizons in months. A value the bake may lack is nullable with its reason. Staging parameters have one source, `settings` (the C06 models `staging_policy` repeats it field by field). Money identities of the reconciliation close by one tolerance basis (see `reconciliation`). */
         c06Outputs: {
             /** @constant */
             kind: "reporting-date";
@@ -1156,6 +1206,7 @@ export interface components {
             horizon: components["schemas"]["c06Horizon"];
             settings: components["schemas"]["c06Settings"];
             data_status: components["schemas"]["c06DataStatus"];
+            /** @description At least two probability-weighted scenarios (IFRS 9 5.5.17(a), B5.5.42); weights sum to 1. */
             scenarios: components["schemas"]["c06ScenarioWeight"][];
             term_structures: components["schemas"]["c06TermStructure"][];
             account_curves: components["schemas"]["c06AccountCurve"][];
@@ -1170,6 +1221,7 @@ export interface components {
             reconciliation: components["schemas"]["c06Reconciliation"];
             lifetime_backtest: components["schemas"]["c06LifetimeBacktest"];
             rung_comparison: components["schemas"]["c06RungResult"][];
+            decile_calibration: components["schemas"]["c06DecileCalibration"];
         };
         c06Overlay: {
             id: string;
@@ -1181,6 +1233,8 @@ export interface components {
             /** @enum {string} */
             target: "pd" | "lgd" | "ead" | "staging-share";
             segment_id: string | null;
+            /** @description The stage whose allowance closing carries the overlay; null is portfolio level and is carried in the stage1 closing (a convention of the engine contract). */
+            stage: ("stage1" | "stage2" | "stage3" | "poci") | null;
             amount: number;
             /** @enum {string} */
             staging_effect: "none" | "transfers-to-stage2";
@@ -1202,22 +1256,17 @@ export interface components {
                 }[];
             };
         };
-        /** @description IFRS 7 35H (allowance) and 35I (gross carrying amount) roll-forwards by stage; opening plus movements equals closing and residual is within tolerance. */
+        /** @description IFRS 7 35H (allowance) and 35I (gross carrying amount) roll-forwards by stage; opening plus movements equals closing and residual is within the tolerance basis max(1, G) * tolerance (G the total gross carrying amount of the document). Each allowance `line_id` is a waterfall line id; each stage allowance closing equals the stage ECL plus the overlays carried in that stage. */
         c06Reconciliation: {
             /** @description ISO 4217 code of the money fields of this block. */
             currency: string;
-            /** @constant */
+            /**
+             * @description Relative: every identity closes when its absolute difference is at most tolerance * max(1, G), G being the total gross carrying amount of this document (the sum of the absolute closing amounts of `gross_carrying_amount`), in `currency`.
+             * @constant
+             */
             tolerance: 0.000001;
-            allowance: components["schemas"]["c06RollForwardRow"][];
-            gross_carrying_amount: components["schemas"]["c06RollForwardRow"][];
-        };
-        c06RollForwardRow: {
-            /** @enum {string} */
-            stage: "stage1" | "stage2" | "stage3" | "poci";
-            opening: number;
-            movements: components["schemas"]["c06Movement"][];
-            closing: number;
-            residual: number;
+            allowance: components["schemas"]["c06AllowanceRollForwardRow"][];
+            gross_carrying_amount: components["schemas"]["c06GcaRollForwardRow"][];
         };
         c06Rung: {
             rung_id: string;
@@ -1275,10 +1324,14 @@ export interface components {
         c06Settings: {
             /** @enum {string} */
             discount_convention: "mid-period" | "end-of-period";
-            /** @enum {string} */
+            /**
+             * @description The EIR basis of every non-POCI account; POCI accounts always use the credit-adjusted EIR (IFRS 9 5.5.13), whatever this value.
+             * @enum {string}
+             */
             eir_basis: "original" | "current" | "credit-adjusted";
             probation_months: number;
             low_credit_risk_exemption: boolean;
+            /** @description The staging policy record (engine StagingPolicy). Only the 30 dpd and 90 dpd presumptions are IFRS 9; the threefold ratio is an EBA supervisory expectation; the rest are Contraste policy parameters. */
             sicr: {
                 dpd_backstop: number;
                 threefold_ratio: number;
@@ -1287,6 +1340,10 @@ export interface components {
                     pd_origination_upper: number;
                     multiplier: number;
                 }[];
+                /** @description Days past due at which an account is Stage 3 (dpd >= default_dpd; the 90 dpd presumption of IFRS 9 B5.5.37). */
+                default_dpd: number;
+                /** @description Annualised PD at or below which the quantitative SICR tests are suppressed (5.5.10); null when no exemption is used (then `low_credit_risk_exemption` is false). It never suppresses the dpd backstop, forbearance, watch-list, collective or default triggers. */
+                low_credit_risk_pd: number | null;
             };
         };
         c06SicrPoint: {
@@ -1304,14 +1361,15 @@ export interface components {
             to_date: string;
             /** @description ISO 4217 code of the money fields of this block. */
             currency: string;
-            flows: {
+            /** @description A POCI account stays POCI for its life: a flow out of poci ends in derecognised or written-off. */
+            flows: ({
                 /** @enum {string} */
                 source: "stage1" | "stage2" | "stage3" | "poci" | "new" | "derecognised" | "written-off";
                 /** @enum {string} */
                 target: "stage1" | "stage2" | "stage3" | "poci" | "new" | "derecognised" | "written-off";
                 accounts: number;
                 gross_carrying_amount: number;
-            }[];
+            } & unknown)[];
         };
         c06StageSummary: {
             /** @description ISO 4217 code of the money fields of this block. */
@@ -1325,12 +1383,14 @@ export interface components {
                 coverage: number;
             }[];
         };
+        /** @description The staging policy of the fit. The variant `outputs.settings.sicr` (with `settings.probation_months`) is authoritative: this block equals it field by field, and `low_credit_risk_pd` is null exactly when `low_credit_risk_exemption` is false. */
         c06StagingPolicy: {
             dpd_backstop: number;
             default_dpd: number;
             threefold_ratio: number;
             absolute_floor: number;
             probation_months: number;
+            low_credit_risk_pd: number | null;
             multiplier_schedule: {
                 pd_origination_upper: number;
                 multiplier: number;
@@ -1346,7 +1406,7 @@ export interface components {
             marginal_pd: number[];
             cumulative_pd: number[];
         };
-        /** @description Opening to closing allowance; every overlay is its own line (kind overlay, overlay_id set), never merged into a model line. */
+        /** @description Opening to closing allowance. A positive amount raises the allowance and a negative amount lowers it; the opening line is the sum of the stage openings, every movement line is the sum over the stages of the reconciliation movements with the same `line_id`, and the closing line is the sum of the stage closings. Every overlay is its own line (kind overlay, overlay_id set, id `overlay-<overlay id>`), never merged into a model line. */
         c06Waterfall: {
             /** @description ISO 4217 code of the money fields of this block. */
             currency: string;
@@ -1394,6 +1454,7 @@ export interface components {
         c07B1Detail: {
             /** @description ISO 4217 code of the money fields of this block. */
             currency: string;
+            /** @description The 0.50 per cent minimum on the individually assessed normal portfolio (categories A1 to A6), loans plus contingent credits; top_up is carried in regimes[cmf-b1] as the line minimum-top-up. */
             minimum_check: {
                 /** @constant */
                 minimum_rate: 0.005;
@@ -1403,14 +1464,17 @@ export interface components {
                 binding: boolean;
                 top_up: number;
             };
-            group_max_rule: {
+            group_max_rule: ({
                 segment_id: string;
                 standard: number;
-                internal: number;
+                /** @description The internal-method provision; null when the bank has no internal method (then internal_reason is set and method is standard). */
+                internal: number | null;
                 applied: number;
                 /** @enum {string} */
                 method: "standard" | "internal" | "max";
-            }[];
+                internal_reason: string | null;
+            } & unknown)[];
+            /** @description Counter-cyclical general provisions (B-1 N 9): their own line, outside the comparable total and never per segment. */
             additional_provisions: {
                 amount: number;
                 rationale: components["schemas"]["common-text"];
@@ -1421,6 +1485,8 @@ export interface components {
                 normal_substandard_provision: number;
                 default_provision: number;
             };
+            /** @description What the bank books under B-1: the comparable total plus the additional provisions. */
+            booked_total: number;
         };
         /** @description A transcribed CMF CNCB B-1 table; PI, PDI and PE are decimals (0.010916 is 1.0916 per cent) and, where both are set, PE = PI x PDI to the table's rounding. Closed at 0 and 1 on purpose: the default column is PI = 1 and the tables are statutory parameters, not estimates. */
         c07B1Table: {
@@ -1445,6 +1511,7 @@ export interface components {
                 mapped_stage: "stage1" | "stage2" | "stage3" | "written-off";
                 exposure: number;
                 provision: number;
+                /** @description provision divided by the exposure of the category. */
                 coverage_rate: number;
             }[];
             /** @enum {string} */
@@ -1453,14 +1520,24 @@ export interface components {
         c07Comparison: {
             /** @description ISO 4217 code of the money fields of this block. */
             currency: string;
+            /** @description Segment provisions of the model only (by_segment); the unallocated lines are in `unallocated`. */
             rows: {
                 segment_id: string;
                 cmf_b1_provision: number;
+                /** @description Model ECL excluding overlays. */
                 ifrs9_provision: number;
                 bde_annex9_provision: number;
                 gap_ifrs9_minus_b1: number;
                 gap_bde_minus_b1: number;
             }[];
+            /** @description The sums of the unallocated lines of each regime; rows plus unallocated equal the regime totals. */
+            unallocated: {
+                cmf_b1_provision: number;
+                ifrs9_provision: number;
+                bde_annex9_provision: number;
+                gap_ifrs9_minus_b1: number;
+                gap_bde_minus_b1: number;
+            };
         };
         c07DeltaVsBase: {
             /** @description ISO 4217 code of the money fields of this block. */
@@ -1496,7 +1573,12 @@ export interface components {
                 gross_exposure: number;
                 /** @enum {string} */
                 b1_portfolio: "residential-mortgage" | "consumer" | "commercial-group" | "commercial-individual";
-                bde_segment: string;
+                /**
+                 * @description The Annex 9 segment code; the label is separate.
+                 * @enum {string}
+                 */
+                bde_segment: "A.1.1" | "A.1.2" | "A.1.3" | "A.2.1" | "A.2.2" | "A.2.3" | "B.1.1" | "B.1.2" | "B.1.3" | "B.2" | "B.2.1" | "B.3";
+                bde_segment_label: components["schemas"]["common-text"];
             }[];
             b1_tables: components["schemas"]["c07B1Table"][];
             b1_default_categories: {
@@ -1514,16 +1596,28 @@ export interface components {
                     rho: number;
                     lgd: number;
                 }[];
+                /** @description At least two outcomes with weights summing to 1 (5.5.17(a), B5.5.42); the IFRS 9 regime of every variant is the weighted ECL over them. */
+                weighting_scenarios: components["schemas"]["c07WeightingScenario"][];
+                /**
+                 * @description EIR basis of the non-POCI accounts; POCI accounts use the credit-adjusted EIR.
+                 * @enum {string}
+                 */
+                eir_basis: "original" | "current" | "credit-adjusted";
+                staging_policy: components["schemas"]["c07StagingPolicy"];
             };
             bde: {
                 normal_coverage: {
-                    segment: string;
+                    /** @enum {string} */
+                    segment: "A.1.1" | "A.1.2" | "A.1.3" | "A.2.1" | "A.2.2" | "A.2.3" | "B.1.1" | "B.1.2" | "B.1.3" | "B.2" | "B.2.1" | "B.3";
                     normal: number;
                     special_watch: number;
                 }[];
                 doubtful_bucket_labels: string[];
+                /** @description Inclusive upper bound in days of each doubtful bucket (months at 30.4375 days rounded); null for the last, open bucket. */
+                doubtful_bucket_upper_days: (number | null)[];
                 doubtful_coverage: {
-                    segment: string;
+                    /** @enum {string} */
+                    segment: "A.1.1" | "A.1.2" | "A.1.3" | "A.2.1" | "A.2.2" | "A.2.3" | "B.1.1" | "B.1.2" | "B.1.3" | "B.2" | "B.2.1" | "B.3";
                     by_bucket: number[];
                 }[];
             };
@@ -1536,9 +1630,11 @@ export interface components {
                     unit: string;
                     value: number;
                 }[];
+                /** @description The variant's shift of current conditions in systematic-factor units, added to every weighting scenario; 0 for base. */
+                z_shift: number;
             }[];
         };
-        /** @description The gap from the CMF B-1 total to the IFRS 9 total as exhaustive steps whose amounts sum to the gap exactly (an unexplained step is its own line). */
+        /** @description The gap from the CMF B-1 comparable total to the IFRS 9 total (both as defined on `total_provision`) as exhaustive steps whose amounts sum to the gap exactly (an unexplained step is its own line). B-1 additional provisions are outside both totals and are not a step; the B-1 minimum top-up and the IFRS 9 overlays are. */
         c07GapBridge: {
             /** @description ISO 4217 code of the money fields of this block. */
             currency: string;
@@ -1552,9 +1648,11 @@ export interface components {
                 amount: number;
             }[];
         };
+        /** @description The IFRS 9 regime of a scenario variant is a probability-weighted ECL over at least two scenarios, with the variant applied as a shift of current conditions (5.5.17(a), B5.5.42). A 100 per cent single-scenario ECL is never an IFRS 9 measure: it appears only as a weighted component or a sensitivity. The stage summary and the segment provisions carry the model ECL excluding overlays; overlays are their own lines. */
         c07Ifrs9Detail: {
             /** @description ISO 4217 code of the money fields of this block. */
             currency: string;
+            /** @description Model ECL excluding overlays, by stage. */
             stage_summary: {
                 /** @enum {string} */
                 stage: "stage1" | "stage2" | "stage3" | "poci";
@@ -1563,9 +1661,29 @@ export interface components {
                 ecl: number;
                 coverage: number;
             }[];
+            /** @description Sum of overlays[].amount; regimes[ifrs9].total_provision = model ECL + overlays_total. */
             overlays_total: number;
+            /** @constant */
+            measure: "probability-weighted-ecl";
+            /** @description At least two scenarios whose weights sum to 1; the model ECL is the sum of weight times single_scenario_ecl (5.5.17(a), B5.5.42). */
+            weighted_components: {
+                scenario_id: string;
+                weight: number;
+                /** @description The systematic factor of the component: its weighting-scenario offset plus the variant shift. */
+                z: number;
+                /** @description A component of the weighted measure at 100 per cent weight; a sensitivity, never the IFRS 9 measure. */
+                single_scenario_ecl: number;
+            }[];
+            /** @description Each overlay is its own line, also an unallocated line of regimes[ifrs9]; never merged into by_segment or stage_summary. */
+            overlays: {
+                id: string;
+                label: components["schemas"]["common-text"];
+                segment_id: string | null;
+                stage: ("stage1" | "stage2" | "stage3" | "poci") | null;
+                amount: number;
+            }[];
         };
-        /** @description C07 three-regime comparison (outputs.kind three-regime): the same synthetic portfolio of Banco Andino under CMF B-1, IFRS 9 and BdE Annex 9 for one scenario variant. Synthetic, never a statement about a bank. */
+        /** @description C07 three-regime comparison (outputs.kind three-regime): the same synthetic portfolio of Banco Andino under CMF B-1, IFRS 9 and BdE Annex 9 for one scenario variant. CMF B-1 is the statutory provision Chilean banks book on loans (IFRS 9 5.5 is carved out for loans in Chile); the IFRS 9 column is a comparison measure, not the Chilean statutory provision; BdE Annex 9 is the Spanish GAAP alternative solution, aligned with IFRS 9. Synthetic, never a statement about a bank. Every currency of the document is the same. */
         c07Outputs: {
             /** @constant */
             kind: "three-regime";
@@ -1575,6 +1693,7 @@ export interface components {
             currency: string;
             /** @constant */
             synthetic: true;
+            /** @description Must say that the data are synthetic and that the IFRS 9 column is a comparison measure, not the provision Chilean banks book on loans (CMF B-1). */
             notice: components["schemas"]["common-text"];
             scenario: {
                 description: components["schemas"]["common-text"];
@@ -1585,14 +1704,20 @@ export interface components {
                 }[];
             };
             portfolio: components["schemas"]["c07Portfolio"];
-            regimes: components["schemas"]["c07Regime"][];
+            /** @description Exactly the three regimes in this order. */
+            regimes: [
+                components["schemas"]["c07Regime"],
+                components["schemas"]["c07Regime"],
+                components["schemas"]["c07Regime"]
+            ];
             comparison: components["schemas"]["c07Comparison"];
             gap_bridge: components["schemas"]["c07GapBridge"];
             b1_detail: components["schemas"]["c07B1Detail"];
             ifrs9_detail: components["schemas"]["c07Ifrs9Detail"];
             bde_detail: components["schemas"]["c07BdeDetail"];
+            /** @description Null for the base scenario, the deltas against the base scenario for every other one. */
             delta_vs_base: components["schemas"]["c07DeltaVsBase"] | null;
-        };
+        } & unknown;
         c07Portfolio: {
             /** @description ISO 4217 code of the money fields of this block. */
             currency: string;
@@ -1609,19 +1734,58 @@ export interface components {
             label: components["schemas"]["common-text"];
             /** @description ISO 4217 code of the money fields of this block. */
             currency: string;
+            /** @description The comparable total: the sum of by_segment provisions plus the unallocated lines. cmf-b1: the statutory group-applied and individual provisions plus the minimum top-up (a line `minimum-top-up`); the additional provisions are outside this total (b1_detail.additional_provisions, booked_total). ifrs9: the probability-weighted model ECL plus the overlays (lines of kind overlay). bde-annex9: no unallocated line. */
             total_provision: number;
+            /** @description total_provision divided by the sum of portfolio.gross_exposure over all segments. */
             coverage_rate: number;
+            /** @description Segment provisions of the model only: for ifrs9 the model ECL excluding overlays; for cmf-b1 the group-applied and individual provisions excluding the minimum top-up. */
             by_segment: {
                 segment_id: string;
                 provision: number;
+                /** @description provision divided by portfolio.gross_exposure of the segment. */
                 coverage_rate: number;
             }[];
+            /** @description Model provisions by category, excluding the unallocated lines. */
             by_category: {
                 category_id: string;
                 label: components["schemas"]["common-text"];
                 exposure: number;
                 provision: number;
             }[];
+            /**
+             * @description cmf-b1: statutory for Chilean loans; ifrs9: comparison measure, not the Chilean statutory provision; bde-annex9: Spanish GAAP alternative solutions, IFRS 9 aligned.
+             * @enum {string}
+             */
+            status: "statutory-chile-loans" | "comparison-measure" | "spanish-gaap-alternative-solutions";
+            /** @description Provision components in the total that no segment carries: the B-1 minimum top-up and the IFRS 9 overlays, each its own line. */
+            unallocated_lines: {
+                id: string;
+                /** @enum {string} */
+                kind: "minimum-top-up" | "overlay";
+                label: components["schemas"]["common-text"];
+                amount: number;
+            }[];
+        };
+        /** @description The IFRS 9 staging policy of the C07 bake (same record as the C06 staging policy, engine StagingPolicy). */
+        c07StagingPolicy: {
+            dpd_backstop: number;
+            default_dpd: number;
+            threefold_ratio: number;
+            absolute_floor: number;
+            probation_months: number;
+            low_credit_risk_pd: number | null;
+            multiplier_schedule: {
+                pd_origination_upper: number;
+                multiplier: number;
+            }[];
+            source: string;
+        };
+        c07WeightingScenario: {
+            id: string;
+            label: components["schemas"]["common-text"];
+            weight: number;
+            /** @description Systematic-factor offset of this outcome around current conditions; the variant adds its z_shift. */
+            z_offset: number;
         };
         /**
          * C22 models

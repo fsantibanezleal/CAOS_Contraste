@@ -270,11 +270,13 @@ def test_c06_reconciliation_and_waterfall_close_with_overlays_as_separate_lines(
     assert {line["overlay_id"] for line in overlay_lines} == {o["id"] for o in out["overlays"]}
     rec = out["reconciliation"]
     assert rec["tolerance"] == 1e-6
+    # one tolerance basis: tolerance * max(1, G), G the total gross carrying amount of the document (provisions-api.md)
+    scale = rec["tolerance"] * max(1.0, sum(abs(s["closing"]) for s in rec["gross_carrying_amount"]))
     for st in rec["allowance"]:
-        assert math.isclose(st["opening"] + sum(m["amount"] for m in st["movements"]), st["closing"], abs_tol=1e-6)
-        assert abs(st["residual"]) <= 1e-6
+        assert math.isclose(st["opening"] + sum(m["amount"] for m in st["movements"]), st["closing"], abs_tol=scale)
+        assert abs(st["residual"]) <= scale
     for st in rec["gross_carrying_amount"]:
-        assert math.isclose(st["opening"] + sum(m["amount"] for m in st["movements"]), st["closing"], abs_tol=1e-6)
+        assert math.isclose(st["opening"] + sum(m["amount"] for m in st["movements"]), st["closing"], abs_tol=scale)
 
 
 def test_c06_non_linearity_golden_example() -> None:
@@ -289,7 +291,9 @@ def test_c07_has_the_three_regimes_and_the_gap_bridge_closes() -> None:
     assert [r["regime"] for r in out["regimes"]] == ["cmf-b1", "ifrs9", "bde-annex9"]
     assert out["synthetic"] is True
     for reg in out["regimes"]:
-        assert math.isclose(sum(s["provision"] for s in reg["by_segment"]), reg["total_provision"], abs_tol=1e-6)
+        unallocated = sum(x["amount"] for x in reg["unallocated_lines"])
+        assert math.isclose(sum(s["provision"] for s in reg["by_segment"]) + unallocated, reg["total_provision"],
+                            abs_tol=1e-6)
     tot = {r["regime"]: r["total_provision"] for r in out["regimes"]}
     bridge = out["gap_bridge"]
     assert math.isclose(sum(s["amount"] for s in bridge["steps"]), tot["ifrs9"] - tot["cmf-b1"], abs_tol=1e-6)
