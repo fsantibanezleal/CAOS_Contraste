@@ -124,7 +124,7 @@ export function ThreeRegimeView({ sel }: { sel: C07Sel | null }) {
     <ViewsRow shares={[1, 1]}>
       <PlotCard
         fill
-        title={{ en: `The three regimes, scenario ${o.scenario_id}`, es: `Los tres regímenes, escenario ${o.scenario_id}` }}
+        title={{ en: `The three regimes, scenario ${o.scenario_id} (${cur} millions)`, es: `Los tres regímenes, escenario ${o.scenario_id} (millones de ${cur})` }}
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
@@ -139,8 +139,8 @@ export function ThreeRegimeView({ sel }: { sel: C07Sel | null }) {
               title={{ en: 'Total provision by regime', es: 'Provisión total por régimen' }}
               height="fill"
               orientation="vertical"
-              data={o.regimes.map((r) => ({ id: r.regime, label: regimeName(r.regime, r.label), value: r.total_provision, tone: REGIME_TONE[r.regime], highlight: sel.regime === r.regime, hint: STATUS_TEXT[r.status] }))}
-              axis={{ label: { en: cur, es: cur }, format: { digits: 3 } }}
+              data={o.regimes.map((r) => ({ id: r.regime, label: regimeName(r.regime, r.label), value: r.total_provision / 1e6, tone: REGIME_TONE[r.regime], highlight: sel.regime === r.regime, hint: STATUS_TEXT[r.status] }))}
+              axis={{ label: { en: 'Millions', es: 'Millones' }, format: { digits: 4 } }}
             />
           }
         >
