@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/finding.schema.json",
+  "title": "Finding",
+  "description": "One finding of a variant, with its severity and evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id","severity","status","evidence","title"],
+  "properties": {
+    "id": {"type": "string"},
+    "severity": {"type": "string", "enum": ["S1","S2","S3","S4"]},
+    "status": {"type": "string", "enum": ["open","accepted","closed"]},
+    "evidence": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "title": {"$ref": "./text.schema.json"}
+  }
+}

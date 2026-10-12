@@ -4,6 +4,10 @@ matches its gate verdict. A manifest names one artifact (`artifact: {path, bytes
 manifest's top level) or several (`artifacts: [{path, bytes, lane, gate, ...}]`, one per variant baked apart, each
 with its own lane and gate). Stdlib only (runs in CI WITHOUT installing the package). Exit non-zero on any drift.
 
+An index entry whose manifest is absent (a case of the plan not built yet, or a partial bake) is accepted only when
+data/derived/readiness.json is current (recomputed here from the catalog and the repository, stdlib only) and lists
+that path in the ``missing`` of a ``partial`` row; any other absent file still fails.
+
 Used by scripts/smoke.* and by .github/workflows/ci.yml, the mechanical guard that a product can't regress to
 serving artifacts that don't match their manifests.
 Usage: python scripts/check_artifacts.py [repo_root]"""
@@ -14,6 +18,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "data-pipeline"))
 DERIVED = ROOT / "data" / "derived"
 MANIFESTS = DERIVED / "manifests"
 
@@ -27,6 +32,23 @@ def artifacts_of(m: dict) -> list[dict]:
     return []
 
 
+def declared_absent() -> tuple[set[str], str | None]:
+    """The paths the readiness declares absent in a partial row, and why it cannot be trusted (None when it can):
+    the committed document must exist and equal the one recomputed from the catalog and the repository."""
+    from pipeline.core import readiness
+
+    path = DERIVED / "readiness.json"
+    if not path.is_file():
+        return set(), f"{path} is absent, so no absent manifest is declared"
+    try:
+        fresh = readiness.compute(repo_root=ROOT, derived_root=DERIVED)
+    except (ValueError, OSError) as exc:
+        return set(), f"the readiness cannot be recomputed: {exc}"
+    if path.read_bytes() != readiness.to_bytes(fresh):
+        return set(), "data/derived/readiness.json is not current (python data-pipeline/run.py readiness)"
+    return {m for e in fresh["contracts"] if e["state"] == "partial" for m in e["missing"]}, None
+
+
 def main() -> int:
     idx_path = MANIFESTS / "index.json"
     if not idx_path.exists():
@@ -35,6 +57,8 @@ def main() -> int:
     index = json.loads(idx_path.read_text(encoding="utf-8"))
     errs: list[str] = []
     n_art = 0
+    n_declared = 0
+    absent: tuple[set[str], str | None] | None = None
     for rel in index.get("files", []) or []:
         f = DERIVED / rel
         if not f.is_file() or f.stat().st_size == 0:
@@ -42,7 +66,14 @@ def main() -> int:
     for entry in index.get("cases", []):
         mp = DERIVED / entry["manifest_path"]
         if not mp.exists():
-            errs.append(f"missing manifest: {mp}")
+            if absent is None:
+                absent = declared_absent()
+            if entry["manifest_path"] in absent[0]:
+                n_declared += 1
+            elif absent[1]:
+                errs.append(f"missing manifest: {mp} ({absent[1]})")
+            else:
+                errs.append(f"missing manifest: {mp} (the readiness does not declare it absent)")
             continue
         m = json.loads(mp.read_text(encoding="utf-8"))
         arts = artifacts_of(m)
@@ -66,7 +97,8 @@ def main() -> int:
         for e in errs:
             print("  -", e)
         return 1
-    print(f"CONTRACT 2 OK: {len(index.get('cases', []))} cases, {n_art} artifacts, manifests <-> artifacts consistent.")
+    note = f", {n_declared} declared absent by the readiness" if n_declared else ""
+    print(f"CONTRACT 2 OK: {len(index.get('cases', []))} cases{note}, {n_art} artifacts, manifests <-> artifacts consistent.")
     return 0
 
 

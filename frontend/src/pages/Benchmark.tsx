@@ -1,16 +1,18 @@
 // The held-out comparisons: every rung against the champion on each case's holdout, with the interval of its AUC and
 // the paired DeLong test, its calibration, and the decision it would make. Every number is read from the committed
 // artifacts at load time; none is typed in. The claim each table supports is only what its test shows.
-import { Cite, DocPage, DocSection, PlotCard, Verdict, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
+import { Callout, Cite, DocPage, DocSection, PlotCard, Verdict, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
+import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import { loadAllManifests, loadAllVariants, useArtifact } from '../api/artifacts';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { COMMITTED, relight } from '../lib/policy';
-import { P, useT } from '../content/bi';
+import { P, T, useT } from '../content/bi';
 import { CHAMPION, extra, test, value } from '../workbench/model';
 import { C04Benchmark } from './C04Sections';
 import { C05BenchmarkSection } from './C05Sections';
 import { C22BenchmarkSection } from './C22Sections';
+import { NoTranslateRefs } from './NoTranslateRefs';
 
 function Comparison({ v, title }: { v: VariantArtifact; title: string }) {
   const lang = useShellLang();
@@ -98,23 +100,156 @@ function CaseBenchmark({ manifest }: { manifest: CaseManifest }) {
   );
 }
 
+/** The legend of the truth status of an artifact, for the provenance table. */
+const TRUTH: Record<string, { en: string; es: string }> = {
+  'real-outcomes': { en: 'real outcomes', es: 'resultados reales' },
+  'synthetic-known-truth': { en: 'real rows perturbed by a known amount (known truth)', es: 'filas reales perturbadas en una cantidad conocida (verdad conocida)' },
+  'synthetic-calibrated': { en: 'synthetic, calibrated to public aggregates', es: 'sintéticos, calibrados a agregados públicos' },
+  'published-answer': { en: 'a published answer', es: 'una respuesta publicada' },
+};
+
+const CLASS_TEXT: Record<string, { en: string; es: string }> = {
+  'mirror-allowed': { en: 'mirror-allowed', es: 'espejo permitido' },
+  'derived-only': { en: 'derived-only', es: 'solo derivados' },
+  'link-only': { en: 'link-only', es: 'solo enlace' },
+  unusable: { en: 'unusable', es: 'inutilizable' },
+};
+
+/** Per case and source: the dataset, its licence class, and what its artifacts say about their truth. */
+function Provenance({ manifests }: { manifests: CaseManifest[] }) {
+  const lang = useShellLang();
+  const t = useT();
+  const rows = manifests.flatMap((m) => {
+    const truths = [...new Set(m.artifacts.filter((a) => a.role === 'variant').map((a) => a.truth_status))];
+    return m.sources.map((id) => ({ key: `${m.case_id}/${id}`, m, id, truths }));
+  });
+  return (
+    <table className="caos-table ct-wrap-head" data-state="ready" data-table="provenance">
+      <thead>
+        <tr>
+          <th>{t('Case', 'Caso')}</th>
+          <th className="caos-col-text">{t('Dataset', 'Conjunto de datos')}</th>
+          <th className="caos-col-text">{t('Redistribution class', 'Clase de redistribución')}</th>
+          <th className="caos-col-text">{t('Truth of the variants', 'Verdad de las variantes')}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map(({ key, m, id, truths }) => {
+          const d = m.source_details?.[id];
+          return (
+            <tr key={key}>
+              <td>{m.case_id}</td>
+              <td className="caos-col-text">{d ? d.name : id}</td>
+              <td className="caos-col-text">{d ? pick(CLASS_TEXT[d.class] ?? { en: d.class, es: d.class }, lang) : '-'}</td>
+              <td className="caos-col-text">{truths.map((x) => pick(TRUTH[x] ?? { en: x, es: x }, lang)).join('; ')}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+
+/** The AUC of the scorecard and of the best rung across the variants of a case that perturbs its data: a degradation curve. */
+function Robustness({ manifest }: { manifest: CaseManifest }) {
+  const lang = useShellLang();
+  const t = useT();
+  const all = useArtifact<VariantArtifact[]>((s) => loadAllVariants(manifest, s), [manifest.case_id]);
+  if (all.state !== 'ready') return <p className="caos-pending" data-state="loading">{t('Loading the variants', 'Cargando las variantes')}</p>;
+  const variants = all.data.filter((v) => v.model.some((m) => m.id === CHAMPION));
+  const rows = variants.map((v) => {
+    const best = v.model
+      .filter((m) => m.id !== 'P0-constant')
+      .map((m) => ({ id: m.id, auc: value(test(v, 'disc.auc', m.id)) ?? 0 }))
+      .sort((a, b) => b.auc - a.auc)[0];
+    return { v, best, auc: value(test(v, 'disc.auc', CHAMPION)) };
+  });
+  if (rows.length < 2) return null;
+  const titles = Object.fromEntries(manifest.artifacts.map((a) => [a.variant_id, a.short_title]));
+  const numbered = rows.map((r, i) => `${i + 1} ${pick(titles[r.v.variant_id] ?? r.v.variant_id, lang)}`).join(', ');
+  return (
+    <PlotCard
+      title={{ en: `${manifest.case_id}: AUC across the perturbed variants`, es: `${manifest.case_id}: AUC a lo largo de las variantes perturbadas` }}
+      lane="replay"
+      provenance="real"
+      note={{ en: `The AUC of the scorecard and of the best rung on each variant, numbered: ${numbered}. A variant that perturbs the data shows how much each ranking degrades.`, es: `El AUC de la scorecard y del mejor peldaño en cada variante, numeradas: ${numbered}. Una variante que perturba los datos muestra cuánto se degrada cada ordenamiento.` }}
+    >
+      <UPlotChart
+        height={260}
+        x={{ values: rows.map((_, i) => i + 1), label: { en: 'Variant (the number in the note)', es: 'Variante (el número de la nota)' }, format: { decimals: 0 } }}
+        y={{ label: { en: 'AUC', es: 'AUC' }, format: { decimals: 3 } }}
+        series={[
+          { label: { en: 'Scorecard (P1)', es: 'Scorecard (P1)' }, values: rows.map((r) => r.auc), color: '--color-accent', mode: 'points' },
+          { label: { en: 'Best rung', es: 'Mejor peldaño' }, values: rows.map((r) => r.best.auc), color: '--color-magenta', mode: 'points' },
+        ]}
+      />
+    </PlotCard>
+  );
+}
+
+const HAS_OWN_BENCHMARK = new Set(['C04', 'C05', 'C22']);
+
 export function Benchmark() {
   const t = useT();
   const all = useArtifact((s) => loadAllManifests(s), []);
+  const manifests = all.state === 'ready' ? all.data.manifests : [];
+  const comparable = manifests.filter((m) => !HAS_OWN_BENCHMARK.has(m.case_id));
   return (
-    <DocPage wide title={{ en: 'Benchmark', es: 'Benchmark' }} lede={t('Every rung against the champion on held-out data: discrimination with its interval and the paired test, calibration, and only the claims those tests support.', 'Cada peldaño contra el campeón en datos reservados: discriminación con su intervalo y la prueba pareada, calibración, y solo las afirmaciones que esas pruebas respaldan.')}>
+    <DocPage
+      wide
+      title={{ en: 'Benchmark', es: 'Benchmark' }}
+      lede={t(
+        'Every rung against the champion on held-out data: discrimination with its interval and the paired test, calibration, the degradation under perturbed data, the provenance of every dataset, the comparison of a learned model with a classical one, and only the claims those tests support.',
+        'Cada peldaño contra el campeón en datos reservados: discriminación con su intervalo y la prueba pareada, calibración, la degradación con datos perturbados, la procedencia de cada conjunto de datos, la comparación de un modelo aprendido con uno clásico, y solo las afirmaciones que esas pruebas respaldan.',
+      )}
+      floorWaivers={[
+        {
+          floor: 'live',
+          reason: {
+            en: 'The Benchmark replays committed artifacts. The live inference on held-out data is the App workbench, in its Impact group, where the reader moves the controls.',
+            es: 'El Benchmark reproduce artefactos comprometidos. La inferencia en vivo sobre datos reservados es el banco de trabajo de la App, en su grupo Impacto, donde el lector mueve los controles.',
+          },
+        },
+      ]}
+    >
+      <NoTranslateRefs />
       <DocSection title={{ en: 'How to read the comparisons', es: 'Cómo leer las comparaciones' }} refs={['delong1988', 'lessmann2015']}>
         <P
-          en={<>A challenger beats the champion only when the paired DeLong test on the same obligors says so <Cite id="delong1988" />, and only by the difference it measures: the literature reports gains of a few AUC points for tree ensembles on retail data <Cite id="lessmann2015" />, and this page shows whether each case agrees. A significant gain in ranking says nothing of calibration, which the Jeffreys column and the Validation group of the App report separately.</>}
-          es={<>Un retador supera al campeón solo cuando la prueba pareada de DeLong sobre los mismos deudores lo dice <Cite id="delong1988" />, y solo por la diferencia que mide: la literatura reporta ganancias de unos pocos puntos de AUC para los ensambles de árboles en datos minoristas <Cite id="lessmann2015" />, y esta página muestra si cada caso coincide. Una ganancia significativa en el orden no dice nada de la calibración, que la columna de Jeffreys y el grupo Validación de la App reportan por separado.</>}
+          en={<>A challenger beats the champion only when the paired DeLong test on the same obligors says so <Cite id="delong1988" />, and only by the difference it measures: the literature reports gains of a few AUC points for tree ensembles on retail data <Cite id="lessmann2015" />, and this page shows whether each case agrees, with the interval of every AUC and the calibration of every rung.</>}
+          es={<>Un retador supera al campeón solo cuando la prueba pareada de DeLong sobre los mismos deudores lo dice <Cite id="delong1988" />, y solo por la diferencia que mide: la literatura reporta ganancias de unos pocos puntos de AUC para los ensambles de árboles en datos minoristas <Cite id="lessmann2015" />, y esta página muestra si cada caso lo confirma, con el intervalo de cada AUC y la calibración de cada peldaño.</>}
         />
       </DocSection>
       {all.state === 'ready' &&
-        all.data.manifests.map((m) => (
-          <DocSection key={m.case_id} title={{ en: `${m.case_id}: ${m.title.en}`, es: `${m.case_id}: ${m.title.es}` }} noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos comprometidos.' }}>
+        manifests.map((m) => (
+          <DocSection
+            key={m.case_id}
+            area={HAS_OWN_BENCHMARK.has(m.case_id) ? 'results' : 'comparison'}
+            title={{ en: `${m.case_id}: ${m.title.en}`, es: `${m.case_id}: ${m.title.es}` }}
+            noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos comprometidos.' }}
+          >
             {m.case_id === 'C04' ? <C04Benchmark manifest={m} /> : m.case_id === 'C05' ? <C05BenchmarkSection manifest={m} /> : m.case_id === 'C22' ? <C22BenchmarkSection manifest={m} /> : <CaseBenchmark manifest={m} />}
           </DocSection>
         ))}
+      {all.state === 'ready' && comparable.length > 0 && (
+        <DocSection area="robustness" title={{ en: 'Robustness to perturbed data', es: 'Robustez ante datos perturbados' }} noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos comprometidos.' }}>
+          {comparable.map((m) => (
+            <Robustness key={m.case_id} manifest={m} />
+          ))}
+        </DocSection>
+      )}
+      {all.state === 'ready' && (
+        <DocSection area="provenance" title={{ en: 'Provenance of the data', es: 'Procedencia de los datos' }} noRefsReason={{ en: 'Read from the manifests and the source registry.', es: 'Leído de los manifiestos y del registro de fuentes.' }}>
+          <Provenance manifests={manifests} />
+        </DocSection>
+      )}
+      <DocSection area="caveat" title={{ en: 'The limits of the comparison', es: 'Los límites de la comparación' }} noRefsReason={{ en: 'States the limits of this page.', es: 'Declara los límites de esta página.' }}>
+        <Callout variant="honest" title={<T en="What these comparisons do not show" es="Lo que estas comparaciones no muestran" />}>
+          <T
+            en="Each comparison holds for its dataset and its split: a gain on one portfolio is not a gain on another, no out-of-time validation is possible on a single snapshot, and a significant difference in AUC is not a difference that matters for a decision until its capital or loss effect is read. Nothing here certifies a model."
+            es="Cada comparación vale para su conjunto de datos y su partición: una ganancia en una cartera no es una ganancia en otra, no es posible una validación fuera del tiempo sobre una sola foto, y una diferencia significativa de AUC no es una diferencia que importe para una decisión hasta que se lee su efecto en capital o en pérdida. Nada de esto certifica un modelo."
+          />
+        </Callout>
+      </DocSection>
     </DocPage>
   );
 }

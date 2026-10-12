@@ -1,0 +1,32 @@
+{
+  "id": "E0-expert",
+  "family": "pd-estimate",
+  "rung": "expert",
+  "title": {
+    "en": "Expert PDs (hypothetical)",
+    "es": "PD expertas (hipotéticas)"
+  },
+  "short_title": {
+    "en": "Expert",
+    "es": "Experta"
+  },
+  "engine": "none",
+  "engine_version": "none",
+  "licence": "MIT",
+  "checkpoint_sha256": null,
+  "calibration": null,
+  "parameters": {
+    "pd_A": {
+      "value": 0.0003,
+      "unit": "probability"
+    },
+    "pd_B": {
+      "value": 0.0005,
+      "unit": "probability"
+    },
+    "pd_C": {
+      "value": 0.001,
+      "unit": "probability"
+    }
+  }
+}

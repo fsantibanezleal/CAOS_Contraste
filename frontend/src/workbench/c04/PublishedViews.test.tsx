@@ -88,7 +88,7 @@ function table(markup: string, name: string): string[][] {
 
 const sel = (over: Partial<C04Sel> = {}) => makeSel(data, over);
 const VIEWS = [
-  ['Papers', PapersView, 'replay', 2, [5]],
+  ['Papers', PapersView, 'replay', 2, [4]],
   ['Model', PublishedModelView, 'replay', 2, [2]],
   ['Impact', PublishedImpactView, 'live', 2, [8]],
 ] as const;
@@ -214,7 +214,9 @@ describe('the published variant: three papers recomputed', () => {
   it("Engelmann's paths: four portfolios and the TTC PD, the printed extremes marked at their years", () => {
     const chart = pathChart(o);
     expect(chart.years).toEqual(Array.from({ length: 50 }, (_, i) => i + 1));
-    expect(chart.series).toHaveLength(o.engelmann.portfolios.length + 1);
+    expect(chart.series).toHaveLength(o.engelmann.portfolios.length);
+    // the TTC PD is a reference line of the plot
+    expect(chart.yMarks).toEqual([{ y: o.engelmann.ttc_pd.recomputed, label: expect.objectContaining({ en: expect.stringMatching(/^TTC PD /) }), tone: 'neutral' }]);
     for (const s of chart.series) expect(s.values.every((x) => x !== null && Number.isFinite(x))).toBe(true);
     const at = (name: string, kind: 'min' | 'max') => {
       const path = o.engelmann.portfolios.find((p) => p.name === name)?.pd_path ?? [];
@@ -228,7 +230,7 @@ describe('the published variant: three papers recomputed', () => {
     ]);
     expect(chart.marks.map((m) => m.x)).toEqual([21, 5]);
     const keys = charts(html(<PapersView sel={sel()} />))[0].keys;
-    expect(keys).toEqual([...o.engelmann.portfolios.map((p) => p.name), `TTC PD ${formatNumber(o.engelmann.ttc_pd.recomputed, 'en', { percent: true, digits: 4 })}`]);
+    expect(keys).toEqual(o.engelmann.portfolios.map((p) => p.name));
   });
 
   it('the Model view names each paper, its licence class and why its matrices are not shown', () => {

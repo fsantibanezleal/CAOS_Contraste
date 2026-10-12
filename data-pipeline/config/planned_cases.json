@@ -1,0 +1,254 @@
+[
+ {
+  "case_id": "C02",
+  "title": {
+   "en": "Corporate PD across 1 to 5 year horizons",
+   "es": "PD corporativa a horizontes de 1 a 5 años"
+  },
+  "category_id": "credit-scoring",
+  "kind": "real",
+  "unit": "U14",
+  "question": {
+   "en": "How well do PD models for firms hold across the one to five year horizons?",
+   "es": "¿Qué tan bien se sostienen los modelos de PD de empresas a horizontes de uno a cinco años?"
+  }
+ },
+ {
+  "case_id": "C03",
+  "title": {
+   "en": "SME PD by vintage through 2008",
+   "es": "PD de pymes por añada hasta 2008"
+  },
+  "category_id": "credit-scoring",
+  "kind": "real",
+  "unit": "U6",
+  "question": {
+   "en": "Does an SME PD model trained through the 2008 crisis hold up on later approval vintages?",
+   "es": "¿Resiste un modelo de PD de pymes entrenado durante la crisis de 2008 en añadas de aprobación posteriores?"
+  }
+ },
+ {
+  "case_id": "C06",
+  "title": {
+   "en": "Mortgage lifetime PD, IFRS 9 staging and ECL",
+   "es": "PD de por vida de hipotecas, etapas de IFRS 9 y pérdida esperada"
+  },
+  "category_id": "provisions",
+  "kind": "real",
+  "unit": "U5",
+  "question": {
+   "en": "How do lifetime PD, IFRS 9 staging and expected credit loss behave on mortgages across reporting dates?",
+   "es": "¿Cómo se comportan la PD de por vida, las etapas de IFRS 9 y la pérdida esperada en hipotecas a lo largo de las fechas de reporte?"
+  }
+ },
+ {
+  "case_id": "C07",
+  "title": {
+   "en": "Chile provisions trilogy: CMF B-1 vs IFRS 9 vs BdE Annex 9",
+   "es": "Trilogía de provisiones en Chile: CMF B-1 vs IFRS 9 vs Anexo 9 del BdE"
+  },
+  "category_id": "provisions",
+  "kind": "synthetic",
+  "unit": "U5",
+  "question": {
+   "en": "How far apart are the provisions of CMF B-1, IFRS 9 and BdE Annex 9 on the same portfolio under stress?",
+   "es": "¿Qué tan distintas son las provisiones de CMF B-1, IFRS 9 y el Anexo 9 del BdE sobre una misma cartera bajo tensión?"
+  }
+ },
+ {
+  "case_id": "C08",
+  "title": {
+   "en": "LGD and downturn LGD",
+   "es": "LGD y LGD de recesión"
+  },
+  "category_id": "lgd-ead",
+  "kind": "real",
+  "unit": "U6",
+  "question": {
+   "en": "How does loss given default move across default cohorts, and what does a downturn LGD add?",
+   "es": "¿Cómo se mueve la pérdida dado el incumplimiento entre cohortes de incumplimiento, y qué agrega una LGD de recesión?"
+  }
+ },
+ {
+  "case_id": "C09",
+  "title": {
+   "en": "EAD and CCF for revolving lines",
+   "es": "EAD y CCF de líneas rotativas"
+  },
+  "category_id": "lgd-ead",
+  "kind": "synthetic",
+  "unit": "U6",
+  "question": {
+   "en": "Can exposure at default and the credit conversion factor of revolving lines be recovered when utilisation accelerates?",
+   "es": "¿Se pueden recuperar la exposición al incumplimiento y el factor de conversión de crédito de líneas rotativas cuando se acelera la utilización?"
+  }
+ },
+ {
+  "case_id": "C10",
+  "title": {
+   "en": "Portfolio credit capital: ASRF, Vasicek fit, copula MC",
+   "es": "Capital de crédito de cartera: ASRF, ajuste de Vasicek, Monte Carlo con cópula"
+  },
+  "category_id": "portfolio-capital",
+  "kind": "real",
+  "unit": "U7",
+  "question": {
+   "en": "Do the ASRF formula, a fitted Vasicek model and a copula simulation agree on portfolio credit capital, including the 2007 to 2012 tail?",
+   "es": "¿Coinciden la fórmula ASRF, un modelo de Vasicek ajustado y una simulación con cópula en el capital de crédito de cartera, incluida la cola de 2007 a 2012?"
+  }
+ },
+ {
+  "case_id": "C11",
+  "title": {
+   "en": "Market VaR/ES backtesting across 2008, 2020, 2022, 2023",
+   "es": "Backtesting de VaR/ES de mercado en 2008, 2020, 2022 y 2023"
+  },
+  "category_id": "market-ccr",
+  "kind": "real",
+  "unit": "U8",
+  "question": {
+   "en": "Do VaR and expected shortfall models pass their backtests across the 2008, 2020, 2022 and 2023 episodes?",
+   "es": "¿Pasan los modelos de VaR y de pérdida esperada en cola sus backtests en los episodios de 2008, 2020, 2022 y 2023?"
+  }
+ },
+ {
+  "case_id": "C12",
+  "title": {
+   "en": "Swap exposure, CVA and SA-CCR",
+   "es": "Exposición de swaps, CVA y SA-CCR"
+  },
+  "category_id": "market-ccr",
+  "kind": "synthetic",
+  "unit": "U9",
+  "question": {
+   "en": "How do simulated swap exposure, CVA and SA-CCR compare under netting, margin and wrong-way risk?",
+   "es": "¿Cómo se comparan la exposición simulada de swaps, el CVA y SA-CCR bajo neteo, margen y riesgo de dirección errónea?"
+  }
+ },
+ {
+  "case_id": "C13",
+  "title": {
+   "en": "FRTB desk eligibility: PLA and desk backtesting",
+   "es": "Elegibilidad de mesas FRTB: PLA y backtesting de mesa"
+  },
+  "category_id": "market-ccr",
+  "kind": "synthetic",
+  "unit": "U8",
+  "question": {
+   "en": "Do the P&L attribution and desk backtesting tests of FRTB detect planted model deficiencies?",
+   "es": "¿Detectan las pruebas de atribución de P&L y de backtesting de mesa de FRTB deficiencias de modelo plantadas?"
+  }
+ },
+ {
+  "case_id": "C14",
+  "title": {
+   "en": "IRRBB six shocks on a USD balance sheet (SVB 2022)",
+   "es": "Seis shocks de IRRBB en un balance en USD (SVB 2022)"
+  },
+  "category_id": "balance-sheet",
+  "kind": "real",
+  "unit": "U10",
+  "question": {
+   "en": "What do the six IRRBB shocks do to the economic value and earnings of a USD balance sheet like SVB's in 2022?",
+   "es": "¿Qué hacen los seis shocks de IRRBB al valor económico y a los resultados de un balance en USD como el de SVB en 2022?"
+  }
+ },
+ {
+  "case_id": "C15",
+  "title": {
+   "en": "IRRBB on a CLP/UF balance sheet (RAN 21-13 Annex 1)",
+   "es": "IRRBB en un balance CLP/UF (RAN 21-13 Anexo 1)"
+  },
+  "category_id": "balance-sheet",
+  "kind": "real",
+  "unit": "U10",
+  "question": {
+   "en": "How does IRRBB under RAN 21-13 Annex 1 behave on a CLP and UF balance sheet under rate and inflation shocks?",
+   "es": "¿Cómo se comporta el IRRBB según el Anexo 1 de la RAN 21-13 en un balance en CLP y UF ante shocks de tasas e inflación?"
+  }
+ },
+ {
+  "case_id": "C16",
+  "title": {
+   "en": "Liquidity stress, LCR and the March 2023 run",
+   "es": "Estrés de liquidez, LCR y la corrida de marzo de 2023"
+  },
+  "category_id": "balance-sheet",
+  "kind": "real",
+  "unit": "U11",
+  "question": {
+   "en": "Would the LCR and liquidity stress models have flagged the March 2023 deposit run?",
+   "es": "¿Habrían alertado el LCR y los modelos de estrés de liquidez sobre la corrida de depósitos de marzo de 2023?"
+  }
+ },
+ {
+  "case_id": "C17",
+  "title": {
+   "en": "Operational risk: LDA vs SMA",
+   "es": "Riesgo operacional: LDA vs SMA"
+  },
+  "category_id": "operational",
+  "kind": "synthetic",
+  "unit": "U12",
+  "question": {
+   "en": "How do the loss distribution approach and the standardised measurement approach differ on heavy-tailed operational losses?",
+   "es": "¿En qué difieren el enfoque de distribución de pérdidas y el enfoque de medición estandarizado con pérdidas operacionales de cola pesada?"
+  }
+ },
+ {
+  "case_id": "C18",
+  "title": {
+   "en": "ICAAP and IAPE capital aggregation under macro scenarios",
+   "es": "Agregación de capital ICAAP e IAPE bajo escenarios macro"
+  },
+  "category_id": "capital-stress",
+  "kind": "real",
+  "unit": "U13",
+  "question": {
+   "en": "How does capital aggregate under ICAAP and IAPE across macro scenarios, and do the satellite models hold out of time?",
+   "es": "¿Cómo se agrega el capital bajo ICAAP e IAPE en escenarios macro, y resisten los modelos satélite fuera de tiempo?"
+  }
+ },
+ {
+  "case_id": "C19",
+  "title": {
+   "en": "Supervisory stress model replication (known answer)",
+   "es": "Réplica de modelos de estrés supervisor (respuesta conocida)"
+  },
+  "category_id": "capital-stress",
+  "kind": "real",
+  "unit": "U13",
+  "question": {
+   "en": "Can a replicated supervisory stress model reproduce the published loss rates of the hypothetical portfolios?",
+   "es": "¿Puede un modelo de estrés supervisor replicado reproducir las tasas de pérdida publicadas de las carteras hipotéticas?"
+  }
+ },
+ {
+  "case_id": "C20",
+  "title": {
+   "en": "ML model validation: drift, robustness, explanation stability",
+   "es": "Validación de modelos de ML: deriva, robustez y estabilidad de explicaciones"
+  },
+  "category_id": "ml-ai-risk",
+  "kind": "real",
+  "unit": "U14",
+  "question": {
+   "en": "Do drift, robustness and explanation stability tests catch the shifts planted in an ML credit model?",
+   "es": "¿Detectan las pruebas de deriva, robustez y estabilidad de explicaciones los cambios plantados en un modelo de crédito de ML?"
+  }
+ },
+ {
+  "case_id": "C21",
+  "title": {
+   "en": "Fair-lending disparity testing",
+   "es": "Pruebas de disparidad en crédito justo"
+  },
+  "category_id": "ml-ai-risk",
+  "kind": "real",
+  "unit": "U14",
+  "question": {
+   "en": "Do disparity tests find the same gaps in lending decisions from one year to the next?",
+   "es": "¿Encuentran las pruebas de disparidad las mismas brechas en las decisiones de crédito de un año al siguiente?"
+  }
+ }
+]

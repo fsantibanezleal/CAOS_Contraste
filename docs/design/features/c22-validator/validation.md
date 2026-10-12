@@ -1,0 +1,19 @@
+# Adversarial validation: 
+
+One row per requirement of [`requirements.md`](requirements.md): what is planted, and the test under `tests/adversarial/` that plants it in a throwaway copy of the committed files, runs the existing gate on the copy and asserts that the clean copy passes and the planted copy fails. See [`../../README.md`](../../README.md) for the method and its limits.
+
+| requirement | adversarial check | gate |
+|---|---|---|
+| CT-301 | A registered test without its size measurement, and a size run of 100 repetitions, are each found by the size test. | `tests/adversarial/test_adv_c05_c22.py::test_ct301_a_registered_test_without_its_size_measurement_is_found`, `tests/adversarial/test_adv_c05_c22.py::test_ct301_a_size_run_with_too_few_repetitions_is_found` |
+| CT-302 | A power curve missing the severity 3 point is found by the completeness test. | `tests/adversarial/test_adv_c05_c22.py::test_ct302_a_power_curve_missing_one_severity_is_found` |
+| CT-303 | A simulated rate that disagrees with its exact value is found by the agreement test. | `tests/adversarial/test_adv_c05_c22.py::test_ct303_a_simulated_rate_that_disagrees_with_its_exact_value_is_found` |
+| CT-304 | A published reproduction with 140 of 144 cells agreeing is found by the carried-reproductions test. | `tests/adversarial/test_adv_c05_c22.py::test_ct304_a_published_reproduction_with_one_more_disagreeing_cell_is_found` |
+| CT-305 | A finding citing a rate the artifact does not carry, and a contract that accepts one when its check is removed, are each found. | `tests/adversarial/test_adv_c05_c22.py::test_ct305_a_finding_that_cites_a_rate_the_artifact_does_not_carry_is_found`, `tests/adversarial/test_adv_c05_c22.py::test_ct305_the_contract_accepts_a_finding_citing_no_simulation_when_the_rate_check_is_removed` |
+| CT-306 | A variant with the real-outcomes truth status, and a seed that ignores its key, are found by the lineage and determinism test. | `tests/adversarial/test_adv_c05_c22.py::test_ct306_a_variant_with_a_real_outcomes_truth_status_is_found`, `tests/adversarial/test_adv_c05_c22.py::test_ct306_a_seed_that_ignores_its_label_is_found_by_the_determinism_check` |
+| CT-307 | A declared range that differs from the case's is found by the expected-ranges test. | `tests/adversarial/test_adv_c05_c22.py::test_ct307_a_declared_range_that_differs_from_the_cases_is_found` |
+| CT-308 | An exact rejection probability one part in a million off the live port is found by the web parity test (local-only: needs node and the installed frontend packages). | `tests/adversarial/test_adv_web.py::test_ct308_an_exact_rejection_probability_one_part_in_a_million_off_the_live_port_is_found` |
+| CT-309 | A renamed group of the C22 instrument breaks the six-question order test (local-only: needs node and the installed frontend packages). | `tests/adversarial/test_adv_web.py::test_ct309_a_renamed_group_of_the_c22_instrument_is_found_by_the_order_test` |
+| CT-310 | A site whose C22 route is forced wider than the viewport fails the measured gate (local-only: needs node, the installed frontend packages, a built site and a Playwright browser). | `tests/adversarial/test_adv_gate.py::test_ct106_ct211_ct217_ct310_ct413_a_workbench_wider_than_the_viewport_fails_the_measured_gate` |
+| CT-311 | A generator drawing from another stream than the engine's is found by the engine-generator test. | `tests/adversarial/test_adv_c05_c22.py::test_ct311_a_generator_that_draws_from_another_stream_than_the_engines_is_found` |
+| CT-312 | A Hosmer-Lemeshow result with two degrees of freedom too few is found by the degrees-of-freedom test. | `tests/adversarial/test_adv_c01.py::test_ct312_a_hosmer_lemeshow_with_two_degrees_of_freedom_too_few_is_found` |
+| CT-313 | An AUC test with a zero development variance is found by the development-variance test. | `tests/adversarial/test_adv_c01.py::test_ct313_an_auc_test_without_the_development_variance_is_found` |

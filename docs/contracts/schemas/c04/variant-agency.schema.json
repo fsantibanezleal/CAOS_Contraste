@@ -1,0 +1,679 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c04/variant-agency.schema.json",
+  "title": "C04 agency variant",
+  "description": "Catalog row c04-agency 1.0.0: one rating agency matrix with its TTC PD by grade (outputs.kind agency).",
+  "allOf": [
+    {"$ref": "../common/variant-envelope.schema.json"},
+    {
+      "properties": {
+        "case_id": {"const": "C04"},
+        "outputs": {
+          "$ref": "#/$defs/c04AgencyOutputs",
+          "properties": {
+            "kind": {"const": "agency"}
+          }
+        }
+      },
+      "required": ["case_id","outputs"]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c04AgencyOutputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "agency",
+        "attribution",
+        "grades",
+        "states",
+        "cohorts",
+        "semesters",
+        "pd",
+        "lra",
+        "pooled",
+        "embedding",
+        "generators",
+        "mobility",
+        "ecb",
+        "homogeneity",
+        "semesters_vs_year",
+        "definition_gap",
+        "lifetime",
+        "origination",
+        "irb"
+      ],
+      "properties": {
+        "kind": {"const": "agency"},
+        "agency": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code","name","scope"],
+          "properties": {
+            "code": {"type": "string"},
+            "name": {"type": "string"},
+            "scope": {"type": "string"}
+          }
+        },
+        "attribution": {"type": "string"},
+        "grades": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "states": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "cohorts": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c04Cohort"}
+        },
+        "semesters": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c04Cohort"}
+        },
+        "pd": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["d2","d3","d4","keep"],
+          "properties": {
+            "d2": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {"type": ["number","null"]}
+                  }
+                },
+                {"type": "null"}
+              ]
+            },
+            "d3": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {"type": ["number","null"]}
+                  }
+                },
+                {"type": "null"}
+              ]
+            },
+            "d4": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {"type": ["number","null"]}
+                  }
+                },
+                {"type": "null"}
+              ]
+            },
+            "keep": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {"type": ["number","null"]}
+                  }
+                },
+                {"type": "null"}
+              ]
+            }
+          }
+        },
+        "lra": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["d2","d3","d4"],
+          "properties": {
+            "d2": {"$ref": "#/$defs/c04Lra"},
+            "d3": {"$ref": "#/$defs/c04Lra"},
+            "d4": {
+              "anyOf": [
+                {"$ref": "#/$defs/c04Lra"},
+                {"type": "null"}
+              ]
+            }
+          }
+        },
+        "pooled": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["matrix","matrix_state","counts","withdrawn","row_sizes","cohorts"],
+          "properties": {
+            "matrix": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {"type": "number"}
+              }
+            },
+            "matrix_state": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {"type": "number"}
+              }
+            },
+            "counts": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {"type": "integer"}
+              }
+            },
+            "withdrawn": {
+              "type": "array",
+              "items": {"type": "integer"}
+            },
+            "row_sizes": {
+              "type": "array",
+              "items": {"type": "integer"}
+            },
+            "cohorts": {"type": "integer"}
+          }
+        },
+        "embedding": {"$ref": "#/$defs/c04Embedding"},
+        "generators": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["diagonal","weighted","jlt","em","cohort_power"],
+          "properties": {
+            "diagonal": {
+              "anyOf": [
+                {"$ref": "#/$defs/c04Generator"},
+                {"type": "null"}
+              ]
+            },
+            "weighted": {
+              "anyOf": [
+                {"$ref": "#/$defs/c04Generator"},
+                {"type": "null"}
+              ]
+            },
+            "jlt": {
+              "anyOf": [
+                {"$ref": "#/$defs/c04Generator"},
+                {"type": "null"}
+              ]
+            },
+            "em": {"$ref": "#/$defs/c04EmGenerator"},
+            "cohort_power": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["pd_5y"],
+              "properties": {
+                "pd_5y": {
+                  "type": "array",
+                  "items": {"type": ["number","null"]}
+                }
+              }
+            }
+          }
+        },
+        "mobility": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["labels","svd","trace","spec_default_rate"],
+          "properties": {
+            "labels": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "svd": {
+              "type": "array",
+              "items": {"type": ["number","null"]}
+            },
+            "trace": {
+              "type": "array",
+              "items": {"type": ["number","null"]}
+            },
+            "spec_default_rate": {
+              "type": "array",
+              "items": {"type": ["number","null"]}
+            }
+          }
+        },
+        "ecb": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["label","mwb_upper","mwb_lower","ztests_p"],
+            "properties": {
+              "label": {"type": "string"},
+              "mwb_upper": {"type": ["number","null"]},
+              "mwb_lower": {"type": ["number","null"]},
+              "ztests_p": {"type": ["number","null"]}
+            }
+          }
+        },
+        "homogeneity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["annual","semesters","reference"],
+          "properties": {
+            "annual": {"$ref": "#/$defs/c04Homogeneity"},
+            "semesters": {
+              "anyOf": [
+                {"$ref": "#/$defs/c04Homogeneity"},
+                {"type": "null"}
+              ]
+            },
+            "reference": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/c04ReferenceTest"}
+            }
+          }
+        },
+        "semesters_vs_year": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["year","l1","pd_product","pd_annual"],
+            "properties": {
+              "year": {"type": "integer"},
+              "l1": {"type": ["number","null"]},
+              "pd_product": {
+                "type": "array",
+                "items": {"type": ["number","null"]}
+              },
+              "pd_annual": {
+                "type": "array",
+                "items": {"type": ["number","null"]}
+              }
+            }
+          }
+        },
+        "definition_gap": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["d4_over_d2","d3_over_d2"],
+          "properties": {
+            "d4_over_d2": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {"type": ["number","null"]}
+                },
+                {"type": "null"}
+              ]
+            },
+            "d3_over_d2": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {"type": ["number","null"]}
+                },
+                {"type": "null"}
+              ]
+            }
+          }
+        },
+        "lifetime": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c04Lifetime"}
+        },
+        "origination": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "irb": {"$ref": "#/$defs/c04Irb"}
+      }
+    },
+    "c04Bounds": {
+      "description": "None for a grade without ratings, and for tab 3's events where they outnumber the cohort.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lower","upper"],
+      "properties": {
+        "lower": {
+          "type": "array",
+          "items": {"type": ["number","null"]}
+        },
+        "upper": {
+          "type": "array",
+          "items": {"type": ["number","null"]}
+        }
+      }
+    },
+    "c04Cohort": {
+      "description": "One CEREP cohort on the common scale: tab 4's counts (seven grades by seven grades and default), withdrawals and sizes; tab 2's defaulted ratings over its own cohort; tab 3's events. Semester cohorts have no tab 2 or tab 3.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "begin",
+        "end",
+        "size",
+        "counts",
+        "withdrawn",
+        "defaulted",
+        "events",
+        "defaulted_cohort",
+        "tab2_gap"
+      ],
+      "properties": {
+        "label": {"type": "string"},
+        "begin": {"type": "string"},
+        "end": {"type": "string"},
+        "size": {
+          "type": "array",
+          "items": {"type": "integer"}
+        },
+        "counts": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {"type": "integer"}
+          }
+        },
+        "withdrawn": {
+          "type": "array",
+          "items": {"type": "integer"}
+        },
+        "defaulted": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {"type": "integer"}
+            },
+            {"type": "null"}
+          ]
+        },
+        "events": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {"type": "integer", "minimum": 0}
+            },
+            {"type": "null"}
+          ]
+        },
+        "defaulted_cohort": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {"type": "integer"}
+            },
+            {"type": "null"}
+          ]
+        },
+        "tab2_gap": {"type": ["number","null"]}
+      }
+    },
+    "c04Embedding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "S",
+        "series_converges",
+        "det",
+        "prod_diagonal",
+        "theorem3",
+        "exact_generator_excluded",
+        "stochastically_monotone",
+        "monotonicity_violations"
+      ],
+      "properties": {
+        "S": {"type": ["number","null"]},
+        "series_converges": {"type": "boolean"},
+        "det": {"type": ["number","null"]},
+        "prod_diagonal": {"type": ["number","null"]},
+        "theorem3": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["a","b","c"],
+          "properties": {
+            "a": {"type": "boolean"},
+            "b": {"type": "boolean"},
+            "c": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {"type": "integer"}
+              }
+            }
+          }
+        },
+        "exact_generator_excluded": {"type": "boolean"},
+        "stochastically_monotone": {"type": "boolean"},
+        "monotonicity_violations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["row","next_row","column","tail","next_tail"],
+            "properties": {
+              "row": {"type": "integer"},
+              "next_row": {"type": "integer"},
+              "column": {"type": "integer"},
+              "tail": {"type": ["number","null"]},
+              "next_tail": {"type": ["number","null"]}
+            }
+          }
+        }
+      }
+    },
+    "c04EmGenerator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generator","valid","l1","pd_1y","pd_5y","iterations","converged","loglik"],
+      "properties": {
+        "generator": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {"type": "number"}
+          }
+        },
+        "valid": {"type": "boolean"},
+        "l1": {"type": ["number","null"]},
+        "pd_1y": {
+          "type": "array",
+          "items": {"type": ["number","null"]}
+        },
+        "pd_5y": {
+          "type": "array",
+          "items": {"type": ["number","null"]}
+        },
+        "iterations": {"type": "integer"},
+        "converged": {"type": "boolean"},
+        "loglik": {"type": ["number","null"]}
+      }
+    },
+    "c04Generator": {
+      "description": "A generator of the pooled matrix: its rates, its L1 distance to the matrix, its PDs at one and five years (null by grade where the scale has no default category, Moody's).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generator","valid","l1","pd_1y","pd_5y"],
+      "properties": {
+        "generator": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {"type": "number"}
+          }
+        },
+        "valid": {"type": "boolean"},
+        "l1": {"type": ["number","null"]},
+        "pd_1y": {
+          "type": "array",
+          "items": {"type": ["number","null"]}
+        },
+        "pd_5y": {
+          "type": "array",
+          "items": {"type": ["number","null"]}
+        }
+      }
+    },
+    "c04Homogeneity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statistic","p_value","dof","periods"],
+      "properties": {
+        "statistic": {"type": ["number","null"]},
+        "p_value": {
+          "type": ["number","null"],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "dof": {"type": "integer"},
+        "periods": {"type": "integer"}
+      }
+    },
+    "c04Irb": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["regime","asset_class","lgd","maturity","pd_floor","references"],
+      "properties": {
+        "regime": {"type": "string"},
+        "asset_class": {"type": "string"},
+        "lgd": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maturity": {"type": "number"},
+        "pd_floor": {"type": "number"},
+        "references": {
+          "type": "object",
+          "additionalProperties": {"type": "string"}
+        }
+      }
+    },
+    "c04Lifetime": {
+      "description": "One five-year window of the lifetime check (CT-415): the fixed cohort observed at the window's end against the chained one-year projections; a value is null where the chain or the definition does not exist.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label","first","last","size","observed","projected"],
+      "properties": {
+        "label": {"type": "string"},
+        "first": {"type": "integer"},
+        "last": {"type": "integer"},
+        "size": {
+          "type": "array",
+          "items": {"type": "integer"}
+        },
+        "observed": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["default_end","withdrawn_end","cumulative_d2"],
+          "properties": {
+            "default_end": {
+              "type": "array",
+              "items": {"type": ["number","null"]}
+            },
+            "withdrawn_end": {
+              "type": "array",
+              "items": {"type": ["number","null"]}
+            },
+            "cumulative_d2": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {"type": ["number","null"]}
+                },
+                {"type": "null"}
+              ]
+            }
+          }
+        },
+        "projected": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["chain_state","chain_state_withdrawn","chain_exclude","pooled_power","em"],
+          "properties": {
+            "chain_state": {
+              "type": "array",
+              "items": {"type": ["number","null"]}
+            },
+            "chain_state_withdrawn": {
+              "type": "array",
+              "items": {"type": ["number","null"]}
+            },
+            "chain_exclude": {
+              "type": "array",
+              "items": {"type": ["number","null"]}
+            },
+            "pooled_power": {
+              "type": "array",
+              "items": {"type": ["number","null"]}
+            },
+            "em": {
+              "type": "array",
+              "items": {"type": ["number","null"]}
+            }
+          }
+        }
+      }
+    },
+    "c04Lra": {
+      "description": "The long-run average default rate by grade (EBA/GL/2017/16 paragraph 84) under one definition.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rate","cohorts","defaults","n","pooled_rate","wald","agresti_coull","jeffreys","last5"],
+      "properties": {
+        "rate": {
+          "type": "array",
+          "items": {"type": ["number","null"]},
+          "description": "null for a grade without a defined rate in any cohort"
+        },
+        "cohorts": {
+          "type": "array",
+          "items": {"type": "integer"}
+        },
+        "defaults": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 0}
+        },
+        "n": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 0}
+        },
+        "pooled_rate": {
+          "type": "array",
+          "items": {"type": ["number","null"]}
+        },
+        "wald": {"$ref": "#/$defs/c04Bounds"},
+        "agresti_coull": {"$ref": "#/$defs/c04Bounds"},
+        "jeffreys": {"$ref": "#/$defs/c04Bounds"},
+        "last5": {
+          "type": "array",
+          "items": {"type": ["number","null"]}
+        }
+      }
+    },
+    "c04ReferenceTest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label","statistic","p_value","dof","impossible_moves"],
+      "properties": {
+        "label": {"type": "string"},
+        "statistic": {"type": ["number","null"]},
+        "p_value": {
+          "type": ["number","null"],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "dof": {"type": "integer"},
+        "impossible_moves": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {"type": "integer"}
+          }
+        }
+      }
+    }
+  }
+}

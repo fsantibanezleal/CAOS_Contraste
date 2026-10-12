@@ -32,6 +32,7 @@ import {
   rungText,
 } from './C04Common';
 import { GRADES, isAgency, isFamily, isPublished, makeSel, P_FLOOR, type C04Sel } from './selection';
+import { esDecimals } from './esDecimals';
 
 type Lang = 'en' | 'es';
 const LANGS: Lang[] = ['en', 'es'];
@@ -119,7 +120,7 @@ describe('C04 Findings', () => {
         const order = [...markup.matchAll(/data-severity="(S\d)"/g)].map((m) => m[1]);
         expect(order).toEqual([...order].sort());
         expect(order.length).toBe(v.findings.length);
-        for (const f of v.findings) expect(markup).toContain(esc(f.title[lang]));
+        for (const f of v.findings) expect(markup).toContain(esc(esDecimals(f.title[lang], lang)));
         for (const f of v.findings) {
           for (const ref of f.evidence) {
             const cited = citedOf(v, ref);
@@ -318,7 +319,7 @@ describe('C04 Results', () => {
       expect(markup).not.toMatch(/[\u2014\u2190-\u21ff]/);
       for (const v of variants) {
         expect(markup).toContain(`data-variant="${v.variant_id}"`);
-        for (const f of v.findings) expect(markup).toContain(esc(f.title[lang]));
+        for (const f of v.findings) expect(markup).toContain(esc(esDecimals(f.title[lang], lang)));
       }
       for (const v of variants.map((x) => x as VariantArtifact<unknown>).filter(isAgency)) {
         for (const d of ['d2', 'd3', 'd4'] as const) {

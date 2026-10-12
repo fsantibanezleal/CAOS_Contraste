@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/case-manifest.schema.json",
+  "title": "Case manifest",
+  "description": "Catalog row case-manifest 1.0.0: one case (data/derived/manifests/<case>.json): its question, sources, artifacts and the contract-1 reports.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "case_id",
+    "title",
+    "category",
+    "question",
+    "sources",
+    "source_details",
+    "seed",
+    "engine",
+    "default_variant",
+    "artifacts",
+    "contract",
+    "expect"
+  ],
+  "properties": {
+    "schema": {"const": "contraste.manifest/v1"},
+    "case_id": {"type": "string"},
+    "title": {"$ref": "./text.schema.json"},
+    "category": {"$ref": "./text.schema.json"},
+    "question": {"$ref": "./text.schema.json"},
+    "sources": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "source_details": {
+      "type": "object",
+      "additionalProperties": {"$ref": "./source-details.schema.json"},
+      "description": "What the Context view shows of each source, from the source registry."
+    },
+    "seed": {"type": "integer"},
+    "engine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pipeline","riskvalidation"],
+      "properties": {
+        "pipeline": {"type": "string"},
+        "riskvalidation": {"type": ["string","null"]}
+      }
+    },
+    "default_variant": {"type": "string"},
+    "artifacts": {
+      "type": "array",
+      "items": {"$ref": "./artifact-entry.schema.json"}
+    },
+    "contract": {
+      "type": "object",
+      "additionalProperties": {"$ref": "./contract-summary.schema.json"},
+      "description": "The contract-1 report of each source the case read, keyed by source id."
+    },
+    "expect": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "prefixItems": [
+          {"type": "number"},
+          {"type": "number"}
+        ],
+        "minItems": 2,
+        "maxItems": 2
+      },
+      "description": "The checked expectation of the case: [low, high] per named result."
+    }
+  },
+  "x-location": "data/derived/manifests/*.json"
+}

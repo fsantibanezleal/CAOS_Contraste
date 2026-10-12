@@ -1,9 +1,11 @@
 // How Contraste is built, in six groups of topics (ADR-0017 as amended: at least eight topics, at most six groups):
 // the pipeline, the contracts, the data and its licences, the engines and the lanes, the gates, and the deploy.
 // Transcribed from SDD sections 2, 3, 7 and 8 and from the feature designs in docs/design/features/.
-import { DocPage, DocSection, Figure, Tabs, useShellLang } from '@fasl-work/caos-app-shell';
+import { Callout, DocPage, DocSection, Equation, Figure, TabGroups, useShellLang } from '@fasl-work/caos-app-shell';
 import { ContractsFigure, FlowFigure, OverviewFigure } from '../architecture/figures';
-import { L, P, useT } from '../content/bi';
+import { L, P, T, useT } from '../content/bi';
+import { ReadinessTable } from '../readiness/ReadinessTable';
+import { NoTranslateRefs } from './NoTranslateRefs';
 
 const THIS_REPO = { en: 'Describes this repository.', es: 'Describe este repositorio.' };
 
@@ -11,7 +13,7 @@ function Pipeline() {
   const t = useT();
   return (
     <>
-      <DocSection title={{ en: 'The stages', es: 'Las etapas' }} noRefsReason={THIS_REPO}>
+      <DocSection area="architecture" title={{ en: 'The stages', es: 'Las etapas' }} noRefsReason={THIS_REPO}>
         <P
           en="The offline pipeline (data-pipeline/, invoked by path, never installed) runs each case through named stages: ingest (a fetched source through contract 1), split (the leakage-safe partition), the fit of every rung, evaluate (the battery and the outputs the views draw) and export (contract 2). It is the only lane that writes artifacts, it runs on a workstation, and never in CI or in the browser. Every generator is seeded, so a second bake of the same release writes the same bytes."
           es="El pipeline fuera de línea (data-pipeline/, invocado por ruta, nunca instalado) pasa cada caso por etapas con nombre: ingesta (una fuente descargada a través del contrato 1), partición (la partición sin fugas), el ajuste de cada peldaño, evaluación (la batería y las salidas que dibujan las vistas) y exportación (contrato 2). Es el único carril que escribe artefactos, corre en una estación de trabajo, y nunca en CI ni en el navegador. Todo generador tiene semilla, así un segundo precálculo de la misma versión escribe los mismos bytes."
@@ -20,7 +22,17 @@ function Pipeline() {
           <OverviewFigure />
         </Figure>
       </DocSection>
-      <DocSection title={{ en: 'The split and the expectations', es: 'La partición y las expectativas' }} noRefsReason={THIS_REPO}>
+      <DocSection area="reproducibility" title={{ en: 'The split and the expectations', es: 'La partición y las expectativas' }} noRefsReason={THIS_REPO}>
+        <P
+          en="A result is reproduced by baking its case again: every generator is seeded, so a second bake of the same release writes the same bytes; every file is hashed while it streams, so a source that changed is caught by its hash; the version is written in one place; and the expected range of each named result is declared before the bake and checked after it. A reader who doubts a number can recompute it from the committed artifacts or from the source."
+          es="Un resultado se reproduce generando de nuevo su caso: cada generador tiene semilla, así que una segunda generación de la misma versión escribe los mismos bytes; cada archivo se hashea mientras se descarga, así que una fuente que cambió se detecta por su hash; la versión se escribe en un solo lugar; y el rango esperado de cada resultado nombrado se declara antes de la generación y se verifica después. Quien dude de un número puede recalcularlo desde los artefactos comprometidos o desde la fuente."
+        />
+        <Callout variant="note" title={<T en="What a rerun does not promise" es="Lo que una repetición no promete" />}>
+          <T
+            en="Same bytes need the same release, the same seeds and the same source files; a rerun on a refreshed source is a new bake, and its differences are the finding."
+            es="Los mismos bytes exigen la misma versión, las mismas semillas y los mismos archivos fuente; una repetición sobre una fuente actualizada es una generación nueva, y sus diferencias son el hallazgo."
+          />
+        </Callout>
         <L
           items={[
             { en: 'A locked stratified holdout of 30%; a calibration slice of 20% of the rest, disjoint from it; the training slice, where every binning, WoE, rule, hyperparameter and fit is learned.', es: 'Una muestra reservada estratificada del 30%; un tramo de calibración del 20% del resto, disjunto de ella; el tramo de entrenamiento, donde se aprende todo tramado, WoE, regla, hiperparámetro y ajuste.' },
@@ -43,11 +55,35 @@ function Contracts() {
           es="Ocho familias, una por tipo de dato fuente: muestras puntuadas, paneles de préstamos, historias de calificación, series de mercado, curvas de tasas, balances, eventos de pérdida operacional y trayectorias macro. Cada campo tiene su tipo, unidad y rango; hay reglas entre campos (una originación posterior a su reporte se rechaza) y entre registros (días de mora que suben más de 31 por mes se marcan). Los valores se leen estrictamente según su tipo declarado y nunca se fuerzan. Un registro se acepta, se rechaza con el campo, el valor, el rango esperado y la política, se marca y se cuenta, o se excluye y se cuenta. Las declaraciones se exportan para la web y se reflejan en TypeScript."
         />
       </DocSection>
-      <DocSection title={{ en: 'Contract 2: what the pipeline commits', es: 'Contrato 2: lo que compromete el pipeline' }} noRefsReason={THIS_REPO}>
+      <DocSection area="contract" title={{ en: 'Contract 2: what the pipeline commits', es: 'Contrato 2: lo que compromete el pipeline' }} noRefsReason={THIS_REPO}>
         <P
           en="An index of the cases; one manifest per case (its question, sources and their licences, the contract-1 report of its inputs, its expected ranges, and one entry per artifact); one models artifact per fit (the record of every rung: engine, version, licence, parameters with units, calibration map, and internals such as the points table, the EBM shape functions and the GBM partial dependence); and one artifact per variant (the outputs the views draw, the TestResult rows of the battery, the impact, the findings and the provenance). The web declares the same contract and a test reads every committed artifact against it in both directions."
           es="Un índice de los casos; un manifiesto por caso (su pregunta, sus fuentes y sus licencias, el reporte del contrato 1 de sus entradas, sus rangos esperados y una entrada por artefacto); un artefacto de modelos por ajuste (el registro de cada peldaño: motor, versión, licencia, parámetros con unidades, mapa de calibración, e interiores como la tabla de puntos, las funciones de forma del EBM y la dependencia parcial del GBM); y un artefacto por variante (las salidas que dibujan las vistas, las filas TestResult de la batería, el impacto, los hallazgos y la procedencia). La web declara el mismo contrato y una prueba lee cada artefacto comprometido contra él en ambos sentidos."
         />
+        <table className="caos-table ct-wrap-head" data-state="ready">
+          <thead>
+            <tr>
+              <th className="caos-col-text">{t('Document', 'Documento')}</th>
+              <th className="caos-col-text">{t('Where it is committed', 'Dónde se compromete')}</th>
+              <th className="caos-col-text">{t('Schema', 'Esquema')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              [t('Case index', 'Índice de casos'), 'data/derived/manifests/index.json', 'common/case-index.schema.json'],
+              [t('Case manifest', 'Manifiesto del caso'), 'data/derived/manifests/<case>.json', 'common/case-manifest.schema.json'],
+              [t('Variant artifact', 'Artefacto de variante'), 'data/derived/<case>/<variant>.json', 'common/variant-envelope.schema.json'],
+              [t('Models artifact', 'Artefacto de modelos'), 'data/derived/<case>/models-<fit>.json', 'common/models-envelope.schema.json'],
+              [t('Readiness', 'Disponibilidad'), 'data/derived/readiness.json', 'common/readiness.schema.json'],
+            ].map(([what, where, schema]) => (
+              <tr key={where}>
+                <td className="caos-col-text">{what}</td>
+                <td className="caos-col-text" style={{ overflowWrap: 'anywhere' }}><code>{where}</code></td>
+                <td className="caos-col-text" style={{ overflowWrap: 'anywhere' }}><code>{schema}</code></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
         <Figure caption={t('Every source with its licence class, the licence manifest and the two contracts.', 'Cada fuente con su clase de licencia, el manifiesto de licencias y los dos contratos.')}>
           <ContractsFigure />
         </Figure>
@@ -78,26 +114,65 @@ function DataAndLicences() {
   );
 }
 
-function EnginesAndLanes() {
+function Engines() {
+  const t = useT();
   return (
-    <>
-      <DocSection title={{ en: 'The engines', es: 'Los motores' }} noRefsReason={THIS_REPO}>
-        <P
-          en="The validation tests and, as the cases grow, the regulatory calculators and the reference engines come from riskvalidation, a separate package (MIT, pure NumPy and SciPy) that a validator can audit on its own; this product declares no package. The model rungs are thin, pinned wrappers over the engines the research chose: optbinning and statsmodels for the scorecard, scikit-learn for the penalised rungs and the calibration maps, InterpretML for the EBM, LightGBM and XGBoost for the monotone boosting, SHAP for the reasons, and TabPFN as an optional extra. Each one's licence is verified, and a guard fails on any AGPL, GPL or Business Source licence in the default install."
-          es="Las pruebas de validación y, a medida que crecen los casos, las calculadoras regulatorias y los motores de referencia vienen de riskvalidation, un paquete aparte (MIT, NumPy y SciPy puros) que un validador puede auditar por sí solo; este producto no declara ningún paquete. Los peldaños del modelo son envoltorios delgados y fijados sobre los motores que eligió la investigación: optbinning y statsmodels para la scorecard, scikit-learn para los peldaños penalizados y los mapas de calibración, InterpretML para el EBM, LightGBM y XGBoost para el boosting monótono, SHAP para las razones, y TabPFN como extra opcional. La licencia de cada uno está verificada, y una guarda falla ante cualquier licencia AGPL, GPL o Business Source en la instalación por defecto."
+    <DocSection area="engine" title={{ en: 'The engines', es: 'Los motores' }} noRefsReason={THIS_REPO}>
+      <P
+        en="The validation tests and, as the cases grow, the regulatory calculators and the reference engines come from riskvalidation, a separate package (MIT, pure NumPy and SciPy) that a validator can audit on its own; this product only calls it. The web holds a port of what is light and exact, and a test compares the port with the pipeline's own numbers on every committed sample, so a live view can never drift from the artifact it replays."
+        es="Las pruebas de validación y, a medida que crecen los casos, las calculadoras regulatorias y los motores de referencia vienen de riskvalidation, un paquete aparte (MIT, NumPy y SciPy puros) que un validador puede auditar por sí solo; este producto solo lo invoca. La web contiene un port de lo que es liviano y exacto, y una prueba compara el port con los números propios del pipeline en cada muestra comprometida, de modo que una vista en vivo nunca se aparta del artefacto que reproduce."
+      />
+      <P
+        en="One computation shows the pattern: the exact size and power of the tests that see a portfolio only through its default count integrate a binomial tail over the systematic factor, on a Gauss-Hermite rule of 256 nodes, in the pipeline and in the browser alike, and the two agree to the digits the artifact keeps."
+        es="Un cálculo muestra el patrón: el tamaño y la potencia exactos de las pruebas que ven una cartera solo a través de su conteo de incumplimientos integran una cola binomial sobre el factor sistemático, con una regla de Gauss-Hermite de 256 nodos, en el pipeline y en el navegador por igual, y ambos concuerdan hasta los dígitos que conserva el artefacto."
+      />
+      <Equation
+        tex={String.raw`P(\text{${t('reject', 'rechazo')}}) = \int \Pr\big[\mathrm{Bin}(n, p(x)) \ge k^*\big]\,\varphi(x)\,dx, \qquad p(x) = \Phi\!\left(\frac{\Phi^{-1}(\pi) - \sqrt{\rho}\,x}{\sqrt{1-\rho}}\right)`}
+        caption={t('The one-factor mixture: n the number of obligors, k* the critical default count, π the true PD, ρ the true asset correlation, φ the standard normal density and Φ its distribution function.', 'La mezcla de un factor: n el número de deudores, k* el conteo crítico de incumplimientos, π la PD verdadera, ρ la correlación de activos verdadera, φ la densidad normal estándar y Φ su función de distribución.')}
+      />
+      <Callout variant="honest" title={<T en="What the engine does not do" es="Lo que el motor no hace" />}>
+        <T
+          en="The tree-ensemble scores (gradient boosting, TabPFN) are replayed, never recomputed in the browser, because ONNX Runtime Web has no tree-ensemble kernel; and a port that cannot be compared with the pipeline is not admitted."
+          es="Los puntajes de ensambles de árboles (gradient boosting, TabPFN) se reproducen, nunca se recalculan en el navegador, porque ONNX Runtime Web no tiene un kernel de ensambles de árboles; y un port que no se pueda comparar con el pipeline no se admite."
         />
-      </DocSection>
-      <DocSection title={{ en: 'The lanes', es: 'Los carriles' }} noRefsReason={THIS_REPO}>
-        <L
-          items={[
-            { en: 'Offline: the pipeline, canonical, the only lane that writes artifacts.', es: 'Fuera de línea: el pipeline, canónico, el único carril que escribe artefactos.' },
-            { en: 'Replay: the web reads the committed artifacts. Gradient-boosting and TabPFN scores are always replayed, since ONNX Runtime Web has no tree-ensemble kernel.', es: 'Reproducción: la web lee los artefactos comprometidos. Los puntajes de gradient boosting y de TabPFN siempre se reproducen, porque ONNX Runtime Web no tiene núcleo de ensambles de árboles.' },
-            { en: 'Live: the web recomputes what is light and exact from the committed artifacts: an applicant\'s scorecard and EBM scores, every light under the reader\'s policy, the decision and the IRB capital at any approval rate and LGD (C01); a portfolio\'s drift under a one-year rating matrix towards its TTC portfolio, the PD intervals at a reader\'s default correlation and the IRB risk weight under each default definition (C04); the PD curve of every calibration approach and the low-default bounds (C05); the exact size and power of the count tests for a reader\'s portfolio (C22). Parity tests hold each to the pipeline or to riskvalidation: points and scores exactly, every other number within 1e-9, every committed light under the committed policy.', es: 'En vivo: la web recalcula lo liviano y exacto desde los artefactos comprometidos: los puntajes scorecard y EBM de un solicitante, cada luz con la política del lector, la decisión y el capital IRB con cualquier tasa de aprobación y LGD (C01); la deriva de una cartera bajo una matriz anual de calificaciones hacia su cartera TTC, los intervalos de la PD con la correlación de incumplimiento del lector y el ponderador IRB con cada definición de incumplimiento (C04); la curva de PD de cada enfoque de calibración y las cotas de bajo incumplimiento (C05); el tamaño y la potencia exactos de las pruebas de conteo para la cartera del lector (C22). Pruebas de paridad sujetan cada uno al pipeline o a riskvalidation: puntos y puntajes exactos, todo otro número dentro de 1e-9, cada luz comprometida con la política comprometida.' },
-            { en: 'Next: riskvalidation in the browser, in Pyodide, to re-run any test with new segments and windows. It is admitted per feature, only when its cold start and run time are measured under the gate, once the engine is published on PyPI.', es: 'Siguiente: riskvalidation en el navegador, en Pyodide, para volver a correr cualquier prueba con segmentos y ventanas nuevos. Se admite por función, solo cuando su arranque en frío y su tiempo de ejecución se miden bajo la compuerta, una vez publicado el motor en PyPI.' },
-          ]}
-        />
-      </DocSection>
-    </>
+      </Callout>
+    </DocSection>
+  );
+}
+
+function Lanes() {
+  return (
+    <DocSection area="lanes" title={{ en: 'The lanes', es: 'Los carriles' }} noRefsReason={THIS_REPO}>
+      <P
+        en="Every view says where its number was computed. The offline lane is the pipeline: canonical, run on a workstation, and the only lane that writes artifacts. The replay lane is the web reading what the pipeline committed, with no computation of its own beyond formatting. The live lane is the web recomputing from those committed artifacts what is light and exact, so that a reader's choice moves a number immediately."
+        es="Cada vista dice dónde se calculó su número. El carril fuera de línea es el pipeline: canónico, se ejecuta en una estación de trabajo y es el único carril que escribe artefactos. El carril de reproducción es la web leyendo lo que el pipeline comprometió, sin más cómputo propio que el formato. El carril en vivo es la web recalculando desde esos artefactos comprometidos lo que es liviano y exacto, de modo que la elección del lector mueve un número al instante."
+      />
+      <P
+        en="A feature is admitted to the live lane only when its cold start and its run time are measured under the gate and its result is compared with the pipeline's; anything heavier, and everything that depends on a trained ensemble, stays in the replay lane. The next step is riskvalidation in the browser, in Pyodide, to re-run any test with new segments and windows, admitted per feature on the same terms."
+        es="Una funcionalidad se admite en el carril en vivo solo cuando su arranque en frío y su tiempo de ejecución se miden bajo la compuerta y su resultado se compara con el del pipeline; todo lo más pesado, y todo lo que depende de un ensamble entrenado, queda en el carril de reproducción. El paso siguiente es riskvalidation en el navegador, en Pyodide, para repetir cualquier prueba con segmentos y ventanas nuevos, admitido por funcionalidad en los mismos términos."
+      />
+      <L
+        items={[
+          { en: 'Offline: the pipeline, canonical, the only lane that writes artifacts.', es: 'Fuera de línea: el pipeline, canónico, el único carril que escribe artefactos.' },
+          { en: 'Replay: the web reads the committed artifacts. Gradient-boosting and TabPFN scores are always replayed, since ONNX Runtime Web has no tree-ensemble kernel.', es: 'Reproducción: la web lee los artefactos comprometidos. Los puntajes de gradient boosting y TabPFN siempre se reproducen, porque ONNX Runtime Web no tiene un kernel de ensambles de árboles.' },
+          { en: "Live: the web recomputes what is light and exact from the committed artifacts: an applicant's scorecard and EBM scores, every light under the reader's policy, the decision and the IRB capital at any approval rate.", es: 'En vivo: la web recalcula lo que es liviano y exacto desde los artefactos comprometidos: las puntuaciones de scorecard y EBM de un solicitante, cada luz bajo la política del lector, la decisión y el capital IRB a cualquier tasa de aprobación.' },
+        ]}
+      />
+    </DocSection>
+  );
+}
+
+function Readiness() {
+  const t = useT();
+  return (
+    <DocSection title={{ en: 'What is real in this build', es: 'Qué es real en esta versión' }} noRefsReason={THIS_REPO}>
+      <P
+        en="The pipeline writes a readiness document beside the data: for every row of the contract catalog it says whether the build is available, partial, stale, provided by a provider, training or missing, with the provenance and a reason in both languages. Every view reads its note from this document and never decides a state itself: a case that is planned and not built yet is listed as such and is shown as not available yet, never as an empty chart."
+        es="El pipeline escribe un documento de disponibilidad junto a los datos: para cada fila del catálogo de contratos dice si la versión está disponible, parcial, desactualizada, provista por un proveedor, en entrenamiento o faltante, con la procedencia y una razón en ambos idiomas. Cada vista lee su nota de este documento y nunca decide un estado por sí misma: un caso planificado y aún no construido figura como tal y se muestra como aún no disponible, nunca como un gráfico vacío."
+      />
+      <ReadinessTable />
+      <p className="ct-note">{t('Read from the readiness document served with the site.', 'Leído del documento de disponibilidad que sirve el sitio.')}</p>
+    </DocSection>
   );
 }
 
@@ -129,7 +204,7 @@ function Gates() {
 
 function Deploy() {
   return (
-    <DocSection title={{ en: 'Versions and the deploy', es: 'Versiones y despliegue' }} noRefsReason={THIS_REPO}>
+    <DocSection area="deployment" title={{ en: 'Versions and the deploy', es: 'Versiones y despliegue' }} noRefsReason={THIS_REPO}>
       <P
         en="VERSION is the only place the version is written; the pipeline, the web and the changelog read it, and a guard fails when any of them disagrees. Contraste has one deploy place, decided first: GitHub Pages with its own domain, since the repository is public and every capability is static replay or client-side compute. The deploy runs only after CI passes on main and ends by checking the live site: every route answers, a missing file answers 404, the artifact index answers JSON, and build.json names the commit that was pushed."
         es="VERSION es el único lugar donde se escribe la versión; el pipeline, la web y el registro de cambios la leen, y una guarda falla cuando alguno discrepa. Contraste tiene un único lugar de despliegue, decidido primero: GitHub Pages con su propio dominio, porque el repositorio es público y toda capacidad es reproducción estática o cálculo en el cliente. El despliegue corre solo después de que CI pasa en main y termina verificando el sitio en vivo: cada ruta responde, un archivo faltante responde 404, el índice de artefactos responde JSON, y build.json nombra el commit que se empujó."
@@ -145,17 +220,41 @@ export function Implementation() {
     <DocPage
       wide
       title={{ en: 'Implementation', es: 'Implementación' }}
-      lede={t('How Contraste is built: the pipeline, the contracts, the data and its licences, the engines and lanes, the gates and the deploy.', 'Cómo está construido Contraste: el pipeline, los contratos, los datos y sus licencias, los motores y carriles, las compuertas y el despliegue.')}
+      lede={t(
+        'How Contraste is built: the pipeline, the contracts, the data and its licences, the engines, the lanes, what is real in this build, the gates and the deploy, each in its own topic with the exact algorithm, the contract or the rule it follows.',
+        'Cómo está construido Contraste: el pipeline, los contratos, los datos y sus licencias, los motores, los carriles, qué es real en esta versión, las compuertas y el despliegue, cada uno en su propio tema con el algoritmo exacto, el contrato o la regla que sigue.',
+      )}
     >
-      <Tabs
+      <NoTranslateRefs />
+      <TabGroups
         ariaLabel={lang === 'es' ? 'Partes de la implementación' : 'Parts of the implementation'}
-        tabs={[
-          { id: 'pipeline', label: t('Pipeline', 'Pipeline'), content: <Pipeline /> },
-          { id: 'contracts', label: t('Contracts', 'Contratos'), content: <Contracts /> },
-          { id: 'data', label: t('Data and licences', 'Datos y licencias'), content: <DataAndLicences /> },
-          { id: 'engines', label: t('Engines and lanes', 'Motores y carriles'), content: <EnginesAndLanes /> },
-          { id: 'gates', label: t('Gates', 'Compuertas'), content: <Gates /> },
-          { id: 'deploy', label: t('Deploy', 'Despliegue'), content: <Deploy /> },
+        groups={[
+          {
+            id: 'build',
+            label: t('How is a case built?', '¿Cómo se construye un caso?'),
+            tabs: [
+              { id: 'pipeline', label: t('Pipeline', 'Pipeline'), content: <Pipeline /> },
+              { id: 'contracts', label: t('Contracts', 'Contratos'), content: <Contracts /> },
+              { id: 'data', label: t('Data and licences', 'Datos y licencias'), content: <DataAndLicences /> },
+            ],
+          },
+          {
+            id: 'run',
+            label: t('What runs where?', '¿Qué corre dónde?'),
+            tabs: [
+              { id: 'engines', label: t('Engines', 'Motores'), content: <Engines /> },
+              { id: 'lanes', label: t('Lanes', 'Carriles'), content: <Lanes /> },
+              { id: 'readiness', label: t('Readiness', 'Disponibilidad'), content: <Readiness /> },
+            ],
+          },
+          {
+            id: 'ship',
+            label: t('How is it checked and shipped?', '¿Cómo se verifica y se publica?'),
+            tabs: [
+              { id: 'gates', label: t('Gates', 'Compuertas'), content: <Gates /> },
+              { id: 'deploy', label: t('Deploy', 'Despliegue'), content: <Deploy /> },
+            ],
+          },
         ]}
       />
     </DocPage>

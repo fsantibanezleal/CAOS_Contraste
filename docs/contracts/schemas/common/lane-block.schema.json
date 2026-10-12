@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/lane-block.schema.json",
+  "title": "Lane block",
+  "description": "The lane an artifact runs in and the reasons.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["lane","reasons"],
+  "properties": {
+    "lane": {"type": "string", "enum": ["live","precompute"]},
+    "reasons": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  }
+}

@@ -8,6 +8,7 @@ import { createContext, useContext, type ReactNode } from 'react';
 import { loadAllVariants, useArtifact, type Loaded } from '../../api/artifacts';
 import type { C04Homogeneity, CaseManifest, Finding, ImpactItem, VariantArtifact } from '../../lib/contract.types';
 import { Pending } from '../../workbench/Pending';
+import { esDecimals } from '../../workbench/c04/esDecimals';
 import {
   DEFINITION_LABEL,
   ESMA_DEFINITIONS,
@@ -469,7 +470,7 @@ export function C04Results({ manifest }: { manifest: CaseManifest }) {
             <ul>
               {sortFindings(v.findings).map((f) => (
                 <li key={f.id} data-finding={f.id}>
-                  {pick(SEVERITY_TEXT[f.severity] ?? { en: f.severity, es: f.severity }, lang)}, {pick(STATUS_TEXT[f.status] ?? { en: f.status, es: f.status }, lang)}: {pick(f.title, lang)}
+                  {pick(SEVERITY_TEXT[f.severity] ?? { en: f.severity, es: f.severity }, lang)}, {pick(STATUS_TEXT[f.status] ?? { en: f.status, es: f.status }, lang)}: {esDecimals(pick(f.title, lang), lang)}
                 </li>
               ))}
             </ul>
