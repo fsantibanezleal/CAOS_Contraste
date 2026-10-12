@@ -14,8 +14,10 @@ Discovery (no list of files or cases anywhere; wave-2 cases add a folder and not
   ``schema`` (the document's ``schema`` string), ``case_id``, ``fit_id``, ``outputs.kind`` (each a ``const``),
   and optionally ``x-location`` (a glob of the repository-relative path of the file);
 * a candidate matches a document when every selector it declares equals the document's value; a candidate with
-  no ``outputs.kind`` const matches only a document whose ``outputs`` carry no ``kind`` (the default, and exactly
-  one candidate may be the default);
+  no ``outputs.kind`` const matches only a document whose ``outputs`` carry no ``kind`` (the default variant of its
+  case: exactly one candidate per ``case_id`` may be the default, so a case never blocks another);
+* every schema under ``schemas/<case>/`` declares a ``case_id`` const equal to its folder name upper-cased
+  (:func:`case_folder_violations`), so none becomes a catch-all for its kind;
 * among the matches the most specific wins (one point per const matched, one more for an ``x-location``);
   zero matches or a tie is a :class:`SelectionError` naming the path.
 """
@@ -119,6 +121,14 @@ class Candidate:
         self.location: str | None = doc.get("x-location")
         self.abstract = path.name.endswith("-envelope.schema.json")
 
+    @classmethod
+    def from_parts(cls, ref: str, consts: dict[str, Any], location: str | None = None) -> "Candidate":
+        """A candidate built in memory (plants in the tests); ``ref`` is its path under schemas/ without the suffix."""
+        c = object.__new__(cls)
+        c.path = SCHEMAS / f"{ref}.schema.json"
+        c.ref, c.consts, c.location, c.abstract = ref, dict(consts), location, False
+        return c
+
     @property
     def selectable(self) -> bool:
         return not self.abstract and bool(self.consts.get("schema") or self.location)
@@ -152,18 +162,43 @@ def candidates() -> tuple[Candidate, ...]:
     return tuple(c for c in (Candidate(p) for p in schema_files()) if c.selectable)
 
 
-def default_variants() -> list[str]:
-    """The variant schemas that omit the ``outputs.kind`` const (exactly one may)."""
-    return [c.ref for c in candidates() if c.consts.get("schema") == "contraste.case/v1" and "outputs.kind" not in c.consts]
+def default_variants(cands: tuple[Candidate, ...] | None = None) -> dict[str | None, list[str]]:
+    """The variant schemas that omit the ``outputs.kind`` const, by the ``case_id`` const they declare (exactly one
+    per case may; ``None`` collects those that declare no case)."""
+    out: dict[str | None, list[str]] = {}
+    for c in candidates() if cands is None else cands:
+        if c.consts.get("schema") == "contraste.case/v1" and "outputs.kind" not in c.consts:
+            out.setdefault(c.consts.get("case_id"), []).append(c.ref)
+    return out
 
 
-def schema_for_document(path: Path, doc: Any) -> str:
+def default_violations(cands: tuple[Candidate, ...] | None = None) -> list[str]:
+    """One message per case that has more than one default variant schema."""
+    return [f"case {case}: more than one variant schema omits the outputs.kind const: {sorted(refs)}"
+            for case, refs in default_variants(cands).items() if len(refs) > 1]
+
+
+def case_folder_violations(cands: tuple[Candidate, ...] | None = None) -> list[str]:
+    """Schemas under ``schemas/<case>/`` (any folder but ``common``) without a ``case_id`` const equal to the folder
+    name upper-cased."""
+    if cands is None:
+        cands = tuple(Candidate(p) for p in schema_files())
+    out = []
+    for c in cands:
+        folder = c.ref.split("/")[0]
+        if folder != "common" and c.consts.get("case_id") != folder.upper():
+            out.append(f"{c.ref}: case_id const is {c.consts.get('case_id')!r}, expected {folder.upper()!r}")
+    return out
+
+
+def schema_for_document(path: Path, doc: Any, cands: tuple[Candidate, ...] | None = None) -> str:
     """The schema ref (``common/case-index``) of the document at ``path`` (any path under the repository)."""
-    defaults = default_variants()
-    if len(defaults) > 1:
-        raise SelectionError(f"more than one variant schema omits the outputs.kind const: {defaults}")
+    cands = candidates() if cands is None else cands
+    bad = default_violations(cands)
+    if bad:
+        raise SelectionError("; ".join(bad))
     relpath = path.resolve().relative_to(ROOT).as_posix()
-    scored = [(c.score(relpath, doc), c.ref) for c in candidates()]
+    scored = [(c.score(relpath, doc), c.ref) for c in cands]
     scored = [(s, ref) for s, ref in scored if s is not None]
     if not scored:
         raise SelectionError(f"{relpath}: matches no schema")
@@ -174,9 +209,49 @@ def schema_for_document(path: Path, doc: Any) -> str:
     return top[0]
 
 
+# --- schemas that may have no committed document ---------------------------------------------------------------
+
+
+def catalog_rows() -> list[dict[str, str]]:
+    """The rows of the catalog's first table with a ``schema file`` and a ``status`` column."""
+    rows, header = [], None
+    for line in (CONTRACTS / "catalog.md").read_text(encoding="utf-8").splitlines():
+        if not line.lstrip().startswith("|"):
+            if header and rows:
+                break
+            header = None
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if header is None:
+            header = cells if "schema file" in cells and "status" in cells else None
+        elif not all(set(c) <= set(":- ") for c in cells):
+            rows.append(dict(zip(header, cells)))
+    return rows
+
+
+def exempt_from_documents(rows: list[dict[str, str]], fixtures: list[Path]) -> set[str]:
+    """Schemas allowed to have no committed document under data/ or the registries: those whose catalog row is
+    ``active`` (served by a provider) and those that a document under docs/contracts/fixtures/ covers."""
+    out = {r["schema file"].removeprefix("docs/contracts/schemas/").removesuffix(".schema.json")
+           for r in rows if r.get("status", "").lower() == "active" and r["schema file"].startswith("docs/contracts/schemas/")}
+    for f in fixtures:
+        out.add(schema_for_document(f, load_json(f)))
+    return out
+
+
+def fixture_documents() -> list[Path]:
+    return sorted((CONTRACTS / "fixtures").rglob("*.json"))
+
+
+def unused_schemas(chosen: set[str], selectable: set[str], exempt: set[str]) -> list[str]:
+    """Selectable schemas that no document selects and that nothing exempts."""
+    return sorted(selectable - chosen - exempt)
+
+
 def committed_documents() -> list[Path]:
-    """Every document the contracts cover: all of data/derived plus the three registries."""
-    docs = sorted(p for p in DERIVED.rglob("*.json"))
+    """Every document the contracts cover: all of data/derived, the fixtures under docs/contracts/fixtures and the
+    three registries."""
+    docs = sorted(p for p in DERIVED.rglob("*.json")) + fixture_documents()
     docs += [ROOT / "data-pipeline" / "config" / "sources.json", ROOT / "data-pipeline" / "config" / "licences.json",
              ROOT / "data" / "sources" / "manifest.json"]
     return docs

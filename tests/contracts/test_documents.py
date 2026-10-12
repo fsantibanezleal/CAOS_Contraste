@@ -55,20 +55,74 @@ def test_every_document_matches_exactly_one_schema_and_validates(path: Path) -> 
 def test_discovery_covers_every_schema_file_that_a_document_selects() -> None:
     chosen = {schema_of(p)[1] for p in DOCS}
     selectable = {c.ref for c in cs.candidates()}
-    unused = sorted(selectable - chosen)
-    # readiness is produced by CF-B; every other selectable schema must have a committed document
-    assert unused == ["common/readiness"], unused
+    exempt = cs.exempt_from_documents(cs.catalog_rows(), cs.fixture_documents())
+    assert cs.unused_schemas(chosen, selectable, exempt) == []
 
 
-def test_exactly_one_default_variant_schema() -> None:
-    assert cs.default_variants() == ["c01/variant"]
+def test_a_schema_without_a_document_and_without_an_exempting_row_is_reported() -> None:
+    rows = [{"schema file": "docs/contracts/schemas/c06/variant.schema.json", "status": "real"}]
+    assert cs.unused_schemas({"c01/variant"}, {"c01/variant", "c06/variant"}, cs.exempt_from_documents(rows, [])) == ["c06/variant"]
 
 
-def test_a_second_default_variant_schema_fails_the_selector(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(cs, "default_variants", lambda: ["c01/variant", "c99/variant"])
+def test_an_active_row_exempts_its_schema() -> None:
+    rows = [{"schema file": "docs/contracts/schemas/c06/variant.schema.json", "status": "active"}]
+    assert cs.unused_schemas(set(), {"c06/variant"}, cs.exempt_from_documents(rows, [])) == []
+
+
+def test_a_fixture_document_exempts_its_schema() -> None:
+    fixtures = cs.fixture_documents()
+    assert fixtures, "docs/contracts/fixtures holds no document"
+    assert "common/readiness" in cs.exempt_from_documents([], fixtures)
+
+
+def test_the_unused_test_names_no_schema_by_hand() -> None:
+    src = Path(__file__).read_text(encoding="utf-8")
+    start = src.index("def test_discovery_covers_every_schema_file")
+    assert "common/readiness" not in src[start:src.index("def test_a_schema_without_a_document")]
+
+
+def test_exactly_one_default_variant_schema_per_case() -> None:
+    assert all(len(v) == 1 for v in cs.default_variants().values())
+    assert cs.default_variants().get("C01") == ["c01/variant"]
+    assert cs.default_violations() == []
+
+
+def _real() -> tuple[cs.Candidate, ...]:
+    return cs.candidates()
+
+
+def _kindless(ref: str, case: str | None) -> cs.Candidate:
+    consts: dict[str, Any] = {"schema": "contraste.case/v1"}
+    if case:
+        consts["case_id"] = case
+    return cs.Candidate.from_parts(ref, consts)
+
+
+def test_a_second_default_variant_schema_for_one_case_fails_the_selector() -> None:
+    cands = (*_real(), _kindless("c01/variant-twin", "C01"))
     path = cs.DERIVED / "C01" / "holdout.json"
     with pytest.raises(cs.SelectionError, match="more than one variant schema omits"):
-        cs.schema_for_document(path, cs.load_json(path))
+        cs.schema_for_document(path, cs.load_json(path), cands)
+
+
+def test_a_default_variant_schema_for_another_case_is_accepted() -> None:
+    cands = (*_real(), _kindless("c06/variant", "C06"))
+    for path in DOCS:
+        doc = cs.load_json(path)
+        assert cs.schema_for_document(path, doc, cands) == cs.schema_for_document(path, doc), rel(path)
+    path = cs.DERIVED / "C06" / "base.json"
+    assert cs.schema_for_document(path, {"schema": "contraste.case/v1", "case_id": "C06", "outputs": {}}, cands) == "c06/variant"
+
+
+def test_every_case_schema_declares_the_case_id_of_its_folder() -> None:
+    assert cs.case_folder_violations() == []
+
+
+def test_a_case_schema_without_case_id_is_reported() -> None:
+    plant = cs.Candidate.from_parts("c06/variant-agency", {"schema": "contraste.case/v1", "outputs.kind": "agency"})
+    wrong = cs.Candidate.from_parts("c06/models", {"schema": "contraste.models/v1", "case_id": "C04"})
+    found = cs.case_folder_violations((*_real(), plant, wrong))
+    assert len(found) == 2 and found[0].startswith("c06/variant-agency") and found[1].startswith("c06/models")
 
 
 def test_a_document_matched_by_nothing_fails_the_selector() -> None:
