@@ -151,6 +151,3 @@ table.ct-wrap-head th { white-space: normal; }
 /* the heading of a part inside one documentation section (a Methodology topic is one method section) */
 .ct-sub { margin: 1.25rem 0 0.25rem; font-size: 1.05rem; font-weight: 650; color: var(--color-fg); }
 
-/* Shell 0.11.0 fails a drawing under 140 px at 1280 px and wider (G6): a filling card that shares a short column keeps a
-   floor, and the panel scrolls instead of squeezing the drawing */
-@media (min-width: 1280px) { .caos-plot.fill { min-height: 23rem; } }
