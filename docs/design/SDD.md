@@ -318,7 +318,19 @@ summed working set of the tree, time is the wall clock, disk is what the stage l
 outputs are in the CF-D report. Bakes were run with `--output` into a temporary root, so `data/derived/` is never
 touched; raw data are read from the device data root (`CONTRASTE_DATA`) and are not counted in the disk column.
 
-@@RESOURCES@@
+| stage | memory | disk | time | where it runs |
+|---|---|---|---|---|
+| fetch (`data-pipeline/fetch.py uci-german`, one source; all sources are bounded by CEREP's pacing of at least four seconds per request, CT-401) | 44 MB peak | 29,607 bytes in the device data root | 1.2 s | workstation with network, never CI |
+| bake C01 (`data-pipeline/run.py C01`, every rung trained, seven variants) | 634 MB peak | 2,064,356 bytes of artifacts | 183.7 s | workstation, never CI |
+| bake C04 (`run.py C04`, nine variants: three agencies, five families, the papers) | 157 MB peak | 856,267 bytes | 296.4 s | workstation, never CI |
+| bake C05 (`run.py C05`, six variants) | 212 MB peak | 561,195 bytes | 32.0 s | workstation, never CI |
+| bake C22 (`run.py C22`, the size and power runs of all eight variants, at least 4,000 repetitions per test) | 231 MB peak | 523,182 bytes | 1,096.8 s | workstation, never CI |
+| tests (`pytest tests`, 385 passed and 2 skipped: the pipeline, contract, guard and bake-artifact tests) | 435 MB peak (300 MB the largest process) | none outside the temporary directory | 125.6 s | workstation, never CI |
+| tests (`pytest tests/adversarial`, the plants of this document's validation files, including two browser-gate plants) | 677 MB peak (282 MB the largest process) | temporary copies of the repository's committed files, about 10 MB each | 1,344.9 s for 88 plants (the two gate plants take 424 s, the leakage plants 30 to 186 s each) | workstation; the Python plants alone also fit CI (ADR-0074) |
+| tests (`npm test` in `frontend/`, 22 files, 560 tests) | 1,872 MB peak summed over the vitest workers (294 MB the largest process) | none | 3.9 s | workstation and CI web job |
+| build (`npm run build`, the four built cases, measured in a copy whose index lists them: the branch's own index lists 22 and its build stops before the web reads the readiness) | 566 MB peak | 6,727,923 bytes in `frontend/dist`, 123 files | 16.0 s | workstation and CI web job |
+| gate (`npm run gate`, every route, tab, sub-tab and case at five sizes, both themes and both languages, on that build) | 910 MB peak | 14,285,565 bytes of captures in `gate-output` | 427.4 s, 868 measured states | workstation, never CI |
+| deploy payload (GitHub Pages) | none | at most 7.7 MB: the 6,727,923 bytes measured for the four built cases plus under 1 MB for the provider documents of the 18 planned cases (36 empty-envelope files; the one example in `docs/contracts/fixtures` is 368 bytes) | at most the 15-minute timeout of the CI web job; one Pages deploy after CI on main | CI after main |
 
 ## Lanes
 
