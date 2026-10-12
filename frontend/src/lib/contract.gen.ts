@@ -110,7 +110,7 @@ export interface components {
         };
         /**
          * C01 variant
-         * @description Catalog row c01-variant 1.0.0: one C01 (retail PD) variant artifact. The default variant schema: its outputs carry no kind.
+         * @description Catalog row c01-variant 2.0.0: one C01 (retail PD) variant artifact. The default variant schema: its outputs carry no kind.
          */
         "c01-variant": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -393,6 +393,7 @@ export interface components {
             upper: (number | null)[];
         };
         c04CapitalPoint: {
+            /** @description Closed at 0 on purpose: the capital parity grid includes PD 0 (a grade with no default in any cohort), an engine input that probes the 0.05% floor of CRE32.4 and is not an estimated PD (data-pipeline/pipeline/cases/c04_parity.py:67-69, 154-160). */
             pd: number;
             lgd: number;
             maturity: number;
@@ -789,7 +790,7 @@ export interface components {
         };
         /**
          * C05 S&P models
-         * @description Catalog row c05-models-sp 1.0.0: the C05 models artifact of the S&P fit (any fit_id but ldp).
+         * @description Catalog row c05-models-sp 2.0.0: the C05 models artifact of the S&P fit (any fit_id but ldp).
          */
         "c05-models-sp": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -798,7 +799,7 @@ export interface components {
         };
         /**
          * C05 low-default portfolio variant
-         * @description Catalog row c05-ldp 1.0.0: most prudent PD bounds of a low-default portfolio (outputs.kind ldp).
+         * @description Catalog row c05-ldp 2.0.0: most prudent PD bounds of a low-default portfolio (outputs.kind ldp).
          */
         "c05-variant-ldp": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -807,7 +808,7 @@ export interface components {
         };
         /**
          * C05 S&P calibration variant
-         * @description Catalog row c05-sp 1.0.0: the S&P calibration of one year (outputs.kind sp-calibration).
+         * @description Catalog row c05-sp 2.0.0: the S&P calibration of one year (outputs.kind sp-calibration).
          */
         "c05-variant-sp": components["schemas"]["common-variant-envelope"] & {
             /** @constant */

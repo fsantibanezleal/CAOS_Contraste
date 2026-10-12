@@ -11,7 +11,9 @@ A change to a contract bumps its row's version and updates both sides in one pul
 Contraste keeps two contracts of ADR-0057 and they are rows here, not a second system: contract 1 (the eight
 ingestion families, `contract-family`, `contract-index`) and contract 2 (`case-index`, `case-manifest` and the variant
 and models artifacts of each case). The run-time descriptors in `frontend/src/lib/contract.types.ts` stay and are tied
-to the generated types with `satisfies Record<keyof X, Kind>`, so a schema change the descriptors miss fails `tsc`.
+to the generated types with `satisfies Record<keyof X, Kind>`: `tsc` catches a change to the top-level keys of a tied
+descriptor only. The consumer test walks each schema and its descriptor in parallel at every nesting level (key sets and
+kinds), so a nested key or a type change the descriptors miss fails `npm test`.
 
 Checks: `python scripts/check_contracts.py docs/contracts/catalog.md --repo-root .` (every field, every path),
 `python scripts/check_skeleton.py docs/contracts/catalog.md` (exit 2 lists the rows still served by a provider; every
@@ -21,9 +23,25 @@ row below is `real`), `python -m pytest tests/contracts -q` (producer side) and,
 Discovery: a document is matched to its schema, never to a list. A schema selects by the `const` of `schema`,
 `case_id`, `fit_id` and `outputs.kind` it declares and, for the hand-kept files, by an `x-location` glob; the most
 specific match wins and zero or a tie fails the producer test with the path. The variant schema that declares no
-`outputs.kind` is the default (C01's); exactly one may. Files named `*-envelope` are abstract bases that case schemas
+`outputs.kind` is the default variant of its case: exactly one per `case_id` may (C01's and C22's today), in the Python
+selector and in the TypeScript selector alike, and two for one case fail with both schema names. Every schema under
+`schemas/<case>/` declares a `case_id` const equal to its folder name upper-cased (a test enforces it), so none becomes a
+catch-all for its kind; every wave 2 variant schema declares an `outputs.kind` const unless it is its case's one default. Files named `*-envelope` are abstract bases that case schemas
 compose (`allOf` plus `unevaluatedProperties: false`). A case added later adds a folder `schemas/<case>/` and its rows,
 and edits no file of another case.
+Three more conventions keep parallel units apart: the `$defs` names share one global component namespace in the generated
+types (`gen-contract-types.mjs` fails on a clash), so a case prefixes its own (`c04Print`, `c05SpFit`); a name two files of
+one case share must have one definition; and an `x-location` glob is single-level (`*` does not cross `/`; the Python
+selector's `fnmatch` would, the TypeScript one does not, and every glob in use agrees). A schema may have no committed
+document under `data/` only when its row's status is `active` (a provider serves it) or a document of it sits under
+`docs/contracts/fixtures/`; `tests/contracts/test_documents.py` and `contract.test.ts` derive that set, no schema is named.
+Rows of units that land after this catalog (the C01 model slot, readiness, live parity) are written as fragments in
+`docs/contracts/rows/` and merged into the table below by the integrator, never edited into it by a unit.
+
+PD ranges: PD is open (0, 1) at every estimate site and at the C05 parity points (SDD section Units gate). It stays
+closed [0, 1] at the engine-input parity grids that were not narrowed (`c04-models` capital parity, whose PD 0 probes the
+CRE32.4 floor and is not an estimate; the C01 irb parity; the C22 models parity), and each says so in its description or
+here. Narrowing the ranges is a breaking change: `c01-variant`, `c05-sp`, `c05-ldp` and `c05-models-sp` are at 2.0.0.
 
 ## Contracts
 

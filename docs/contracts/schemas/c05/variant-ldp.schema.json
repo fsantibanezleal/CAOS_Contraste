@@ -101,8 +101,8 @@
         "asset_class": {"type": "string"},
         "pd": {
           "type": "number",
-          "minimum": 0,
-          "maximum": 1
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
         },
         "lgd": {
           "type": "number",

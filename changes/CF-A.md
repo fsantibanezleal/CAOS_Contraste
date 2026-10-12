@@ -9,3 +9,12 @@
   them with satisfies, so a schema change the descriptors miss fails tsc.
 - New commands: npm run gen:contracts and npm run check:contracts (fails naming the stale generated file); vendored
   scripts/check_contracts.py and scripts/check_skeleton.py from the template at v0.04.000.
+- Review fixes of the contracts: one default (kind-less) variant schema per case in the Python and the TypeScript
+  selector (two for one case fail, one for another case is accepted); every schema under schemas/<case>/ declares a
+  case_id const equal to its folder upper-cased; the schemas that may have no committed document are derived (an active
+  catalog row or a document under docs/contracts/fixtures/), common/readiness is no longer named by hand.
+- The consumer test walks every schema and its run-time descriptor in parallel at every nesting level (key sets and
+  kinds) and validates in strict mode with the validator as an exact devDependency (@redocly/ajv 8.11.2).
+- Breaking: PD is open (0, 1) at the estimate sites and the C05 parity points (c01-variant, c05-sp, c05-ldp,
+  c05-models-sp, bumped to 2.0.0) and stays closed at the C04 capital parity grid (PD 0 is an engine input), the C01 irb
+  parity and the C22 models parity.
