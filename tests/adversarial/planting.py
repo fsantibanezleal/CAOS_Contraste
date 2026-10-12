@@ -123,9 +123,22 @@ def vitest_gate(repo: Path, *files: str) -> subprocess.CompletedProcess:
         unlink_node_modules(repo / "frontend")
 
 
-def refute_web(repo: Path, files: str | tuple[str, ...], plant: Callable[[Path], Any], *needles: str) -> str:
+def prune_planned_cases(repo: Path) -> None:
+    """The clean baseline of the copy: the index lists the cases the readiness declares absent (their manifests do not
+    exist yet), and three web gates read every listed manifest. The copy lists only the cases that exist, so that the
+    clean run passes and the plant is the only difference."""
+    def mutate(d: dict) -> None:
+        d["cases"] = [c for c in d["cases"] if (repo / "data" / "derived" / c["manifest_path"]).is_file()]
+        d["n_cases"] = len(d["cases"])
+
+    edit_json(repo, "data/derived/manifests/index.json", mutate)
+
+
+def refute_web(repo: Path, files: str | tuple[str, ...], plant: Callable[[Path], Any], *needles: str, prepare: Callable[[Path], Any] | None = None) -> str:
     """The web twin of ``refute``: the clean copy's vitest run passes, the planted one fails naming each needle."""
     fs = (files,) if isinstance(files, str) else tuple(files)
+    if prepare is not None:
+        prepare(repo)
     ok = vitest_gate(repo, *fs)
     assert ok.returncode == 0 and "passed" in ok.stdout + ok.stderr, f"clean copy: {(ok.stdout + ok.stderr)[-1500:]}"
     plant(repo)
