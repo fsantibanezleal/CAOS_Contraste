@@ -28,7 +28,12 @@ sections cite; multipliers, floors, probation lengths and horizons are policy pa
 - Every function is pure and deterministic (no hidden state, no randomness, no I/O, inputs never mutated) and returns new arrays.
 - Dataclasses are frozen. A function that cannot compute a value because data is missing raises or returns the `not_evaluated`
   light with its reason in `notes`; it never returns a placeholder number.
-- Identities hold to `1e-6` of the portfolio amount unless a tighter tolerance is written (probability identities to `1e-12`).
+- Tolerance basis (one definition for every function and test): a money identity closes when its absolute difference is at most
+  `1e-6 * max(1, G)`, where `G` is the total gross carrying amount of the document, the sum of the absolute closing amounts of the
+  `reconciliation.gross_carrying_amount` rows (in the document currency). The same `G` serves the allowance, the gross carrying
+  amount, the waterfall and the stage-closing identities; a `RollForwardRow.residual` is always the exact difference, never rounded.
+  Probability identities close to `1e-12`, and a tighter tolerance is written where a function needs one. Every golden value states
+  its own tolerance (`to 1e-8`) or is exact.
 - A validation function returns one `TestResult` of `riskvalidation`, serialised by `dataclasses.asdict` into a row that validates
   against `common/test-result` (the schema `docs/contracts/schemas/common/test-result.schema.json`): `test_id`, `model_id`,
   `segment`, `statistic`, `p_value`, `metric`, `h0`, `alternative`, `policy_version`, `alpha_amber`, `alpha_red`, `light`, `n`,
@@ -44,8 +49,14 @@ sections cite; multipliers, floors, probation lengths and horizons are policy pa
 | C06 `outputs.waterfall`, `overlays`, `reconciliation` | `overlays.*`, `reconciliation.*` |
 | C06 and C07 `tests` | `riskvalidation.validation.ifrs9.*` (rows of `common/test-result`) |
 | C07 `outputs.regimes[cmf-b1]`, `b1_detail` | `local_cl.*` |
-| C07 `outputs.regimes[ifrs9]`, `ifrs9_detail` | `staging.*`, `ecl.*`, `overlays.*` |
+| C07 `outputs.regimes[ifrs9]`, `ifrs9_detail` | `staging.*`, `ecl.*` (`probability_weighted_ecl` over at least two weighting scenarios, the variant a shift of current conditions), `overlays.*` |
 | C07 `outputs.regimes[bde-annex9]`, `bde_detail` | `local_es.*` |
+
+The C07 `ifrs9` regime of every scenario variant is a probability-weighted ECL (IFRS 9 5.5.17(a), B5.5.42): the bake runs
+`ecl_scenario` once per weighting scenario of `models.fit.ifrs9.weighting_scenarios` (factor `z_s + z_shift_v`, where `z_shift_v` is the
+variant's shift of current conditions), staging frozen at the weighted conditions, and combines them with `probability_weighted_ecl`.
+A 100 per cent single-scenario ECL is a component (`weighted_components[].single_scenario_ecl`) or a sensitivity, never the IFRS 9
+measure and never a column of the three-regime comparison.
 
 ## Module `riskvalidation/provisions/term_structure.py`
 
@@ -66,7 +77,8 @@ class TermStructure:
 ```
 
 - Units: PD decimals per period (not annualised); `months` integers.
-- Invariants: `q(t) = S(t-1) h(t)` and `F(t) = 1 - S(t)` to 1e-12; `F` strictly increasing; `F(t)` in (0, 1); all arrays share the
+- Invariants: `q(t) = S(t-1) h(t)` and `F(t) = 1 - S(t)` to 1e-12 for every instance without exception (a result of
+  `competing_risks` is a `CompetingRisks` record, never a `TermStructure`); `F` strictly increasing; `F(t)` in (0, 1); all arrays share the
   leading shape; the C06 `term_structures` document block is this structure (hazard, marginal_pd, cumulative_pd, months).
 
 ### `riskvalidation.provisions.term_structure.from_hazard`
@@ -103,13 +115,16 @@ def from_cumulative(cumulative: np.ndarray, months: np.ndarray) -> TermStructure
 ### `riskvalidation.provisions.term_structure.forward_pd`
 
 ```python
-def forward_pd(ts: TermStructure, start_month: int, end_month: int) -> np.ndarray: ...
+def forward_pd(ts: TermStructure | CompetingRisks, start_month: int, end_month: int) -> np.ndarray: ...
 ```
 
-- Units: months are 0 or members of `ts.months`; returns decimals, shape `ts.survival.shape[:-1]`.
-- Invariants: `PD(a, b) = (S(a) - S(b)) / S(a)` with `S(0) = 1` (dossier 02 B.2), so `forward_pd(ts, 0, b) = F(b)`; raises when
-  `end_month <= start_month`; result in (0, 1).
-- Golden: constant `h = 0.01` per 3-month period: `forward_pd(ts, 3, 9) = 1 - 0.99**2 = 0.0199`.
+- Units: months are 0 or members of `ts.months`; returns decimals, shape `ts.survival.shape[:-1]` (for `CompetingRisks`, `survival_all.shape[:-1]`).
+- Invariants: for a `TermStructure`, `PD(a, b) = (S(a) - S(b)) / S(a)` with `S(0) = 1` (dossier 02 B.2), so `forward_pd(ts, 0, b) = F(b)`; for a
+  `CompetingRisks` record the conditional default PD over `(a, b]` is `(F_D(b) - F_D(a)) / S_all(a)` with `F_D(0) = 0` and `S_all(0) = 1`
+  (default only, given survival of both exits to `a`), so `forward_pd(cr, 0, b) = F_D(b)`; raises when `end_month <= start_month`; result
+  in (0, 1).
+- Golden: constant `h = 0.01` per 3-month period: `forward_pd(ts, 3, 9) = 1 - 0.99**2 = 0.0199` to 1e-12. Competing risks (`h_D = 0.01`,
+  `h_P = 0.02`): `forward_pd(cr, 0, 6) = 0.0197` to 1e-12, never the default-or-prepayment probability `1 - S_all(6) = 0.0591`.
 
 ### `riskvalidation.provisions.term_structure.annualise_pd`
 
@@ -125,14 +140,25 @@ def annualise_pd(pd: np.ndarray, horizon_years: float) -> np.ndarray: ...
 ### `riskvalidation.provisions.term_structure.competing_risks`
 
 ```python
-def competing_risks(hazard_default: np.ndarray, hazard_prepay: np.ndarray, months: np.ndarray) -> TermStructure: ...
+@dataclass(frozen=True)
+class CompetingRisks:
+    months: np.ndarray            # (T,) int64, strictly increasing end months of the periods
+    hazard_default: np.ndarray    # (..., T) h_D(t), open (0, 1)
+    hazard_prepay: np.ndarray     # (..., T) h_P(t), open (0, 1)
+    survival_all: np.ndarray      # (..., T) S_all(t) = prod (1 - h_D - h_P), survival of both exits
+    marginal_default: np.ndarray  # (..., T) q_D(t) = S_all(t-1) h_D(t), default incidence
+    cumulative_default: np.ndarray  # (..., T) F_D(t) = cumsum(q_D), cumulative default incidence (not 1 - S_all)
+
+def competing_risks(hazard_default: np.ndarray, hazard_prepay: np.ndarray, months: np.ndarray) -> CompetingRisks: ...
 ```
 
-- Units: both hazards (..., T) decimals per period; `hazard_default + hazard_prepay < 1`.
-- Invariants: `S_all(t) = prod (1 - h_D - h_P)` is returned as `survival`; `marginal(t) = S_all(t-1) h_D(t)` is the default
-  incidence `q_D`; `cumulative = cumsum(marginal)` (the cumulative incidence, not `1 - S_all`); with `hazard_prepay = 0` the result
-  equals `from_hazard(hazard_default)`; prepayment never raises the cumulative default incidence.
-- Golden: `h_D = 0.01`, `h_P = 0.02` constant, two periods: `S_all = [0.97, 0.9409]`, `q_D = [0.01, 0.0097]`.
+- Units: both hazards (..., T) decimals per period; `hazard_default + hazard_prepay < 1`. `CompetingRisks` is not a `TermStructure` and is
+  exempt from `F = 1 - S` on purpose: `F_D` is the cumulative incidence of default, `1 - S_all` is the probability of default or
+  prepayment. A caller that needs a `TermStructure` of default alone calls `from_hazard(hazard_default)`.
+- Invariants: `F_D(t) < 1 - S_all(t)` whenever `h_P > 0`; with `hazard_prepay = 0` the arrays equal `from_hazard(hazard_default)` (`survival_all =
+  survival`, `F_D = cumulative`); prepayment never raises `F_D`; `forward_pd` on this record is `(F_D(b) - F_D(a)) / S_all(a)`.
+- Golden: `h_D = 0.01`, `h_P = 0.02` constant, two periods: `S_all = [0.97, 0.9409]`, `q_D = [0.01, 0.0097]`, `F_D = [0.01, 0.0197]` (against
+  `1 - S_all = [0.03, 0.0591]`) to 1e-12.
 
 ### `riskvalidation.provisions.term_structure.ttc_to_pit`
 
@@ -166,7 +192,8 @@ def weighted_pit_pd(pd_ttc: float, rho: float, z: np.ndarray, weights: np.ndarra
 - Invariants: weights validated per the conventions; by Jensen, `weighted_pit_pd(...) >= ttc_to_pit(pd_ttc, rho, sum(w z))` in the
   convex regime (a property test).
 - Golden (dossier 02 B.4): `z = (1, 0, -2)`, `w = (0.25, 0.5, 0.25)`: weighted PD 2.681% (0.026813479) against the PD at the weighted
-  mean factor `z = -0.25` of 1.800% (0.017997448), ratio 1.49; with LGD 40% the weighted 12-month loss rate is 1.07% against 0.72%.
+  mean factor `z = -0.25` of 1.800% (0.017997448), ratio 1.49 (1.48985), each to 1e-8; with LGD 40% the weighted 12-month loss rate is 1.07%
+  against 0.72%.
 
 ### `riskvalidation.provisions.term_structure.gauss_hermite_pit_pd`
 
@@ -196,11 +223,14 @@ class StagingPolicy:
     dpd_backstop: int = 30           # days past due, rebuttable presumption, trigger when dpd > dpd_backstop
     default_dpd: int = 90            # days past due, Stage 3 when dpd >= default_dpd
     probation_months: int = 0        # cure probation, >= 0
-    low_credit_risk_pd: float | None = None  # optional exemption: annualised PD at or below stays Stage 1
+    low_credit_risk_pd: float | None = None  # optional exemption: annualised PD at or below stays Stage 1 on the quantitative tests only
 ```
 
-- Units: PDs annualised decimals; days and months integers; the C06 `settings.sicr` and the models `staging_policy` document blocks
-  are this record.
+- Units: PDs annualised decimals; days and months integers; the C06 `outputs.settings.sicr` (with `settings.probation_months`) is this record
+  and is the one source: the C06 and C07 models `staging_policy` repeat it field by field (`low_credit_risk_exemption` is `low_credit_risk_pd
+  is not None`).
+- Low credit risk exemption: `low_credit_risk_pd` suppresses only `relative-absolute` and `threefold` (the rebuttable assumption of 5.5.10);
+  the 30 dpd backstop, forbearance, watch-list, collective and default triggers still apply (5.5.11, B5.5.37).
 - Invariants: `pd_origination_upper` strictly increasing with the last bound at least the largest PD; multipliers `>= 1` and
   non-increasing as the origination PD rises (the schedule is non-increasing in risk); raises `ValueError` otherwise.
 
@@ -214,7 +244,7 @@ def sicr_quantitative(pd_origination_annualised: np.ndarray, pd_current_annualis
 - Units: both (A,) annualised PDs, open (0, 1); returns `bool` (A,). `True` when `(rep/orig >= m(orig) and rep - orig >= floor)` or
   `rep/orig >= threefold_ratio` (dossier 02 B.5), with `m(orig)` read from the schedule.
 - Invariants: monotone in `pd_current_annualised` (a higher current PD never turns a flag off); with `rep == orig` the result is
-  `False`; elementwise (row `i` depends on row `i` only).
+  `False`; elementwise (row `i` depends on row `i` only); it never applies the low credit risk exemption (that is `allocate_stages`).
 - Golden: schedule `((0.01, 4.0), (0.05, 2.5), (0.5, 1.5))`, floor 0.005, threefold 3.0: `orig = 0.02`: `rep = 0.05` gives `True`
   (ratio 2.5, difference 0.03), `rep = 0.049` gives `False`; `orig = 0.001`, `rep = 0.003` gives `True` by the threefold backstop.
 
@@ -225,6 +255,7 @@ def sicr_quantitative(pd_origination_annualised: np.ndarray, pd_current_annualis
 class StageResult:
     stage: np.ndarray    # (A,) int8 in {1, 2, 3}
     trigger: np.ndarray  # (A,) str: none | relative-absolute | threefold | dpd-backstop | forbearance | watch-list | default | collective
+    lcr_exempt: np.ndarray  # (A,) bool: Stage 1 only because the low credit risk exemption suppressed a quantitative trigger
 
 def allocate_stages(pd_origination_annualised: np.ndarray, pd_current_annualised: np.ndarray, dpd: np.ndarray,
                     forborne: np.ndarray, watch_list: np.ndarray, defaulted: np.ndarray,
@@ -233,11 +264,16 @@ def allocate_stages(pd_origination_annualised: np.ndarray, pd_current_annualised
 
 - Units: `dpd` (A,) int64 days; `forborne`, `watch_list`, `defaulted`, `collective` (A,) bool; PDs as above. The `trigger` strings are
   the enum of the C06 `sicr_points.trigger` (plus `cure-probation`, set by `apply_cure_probation`).
-- Invariants: Stage 3 iff `defaulted` or `dpd >= policy.default_dpd`; else Stage 2 iff any trigger fires; else Stage 1; `trigger` is
+- Invariants: Stage 3 iff `defaulted` or `dpd >= policy.default_dpd`; else Stage 2 iff any trigger fires; else Stage 1; the low credit risk
+  exemption (`current PD <= policy.low_credit_risk_pd`) suppresses only `relative-absolute` and `threefold`, never `dpd-backstop`,
+  `forbearance`, `watch-list`, `collective` or `default` (5.5.11 still applies); `lcr_exempt[i]` is `True` iff the account is Stage 1 and
+  `sicr_quantitative` would have flagged it without the exemption (SICR effectiveness reports its count, dossier 02 I.2); `trigger` is
   `none` iff stage 1; precedence `default`, `dpd-backstop`, `forbearance`, `watch-list`, `collective`, `relative-absolute`,
   `threefold`; row `i` depends on row `i` only (the isolation property test of dossier 02 I.2: a change of an unrelated account
   changes no stage).
-- Golden: `dpd = 31` with unremarkable PDs gives stage 2 `dpd-backstop`; `dpd = 30` gives stage 1; `dpd = 90` gives stage 3 `default`.
+- Golden: `dpd = 31` with unremarkable PDs gives stage 2 `dpd-backstop`; `dpd = 30` gives stage 1; `dpd = 90` gives stage 3 `default`; with
+  `low_credit_risk_pd = 0.03`, `orig = 0.001`, `rep = 0.003`, `dpd = 0` gives stage 1, `trigger = none`, `lcr_exempt = True`, and the same
+  account at `dpd = 31` gives stage 2 `dpd-backstop`, `lcr_exempt = False`.
 
 ### `riskvalidation.provisions.staging.apply_cure_probation`
 
@@ -259,7 +295,12 @@ def collective_transfer(gross_carrying_amount: np.ndarray, segment: np.ndarray,
 ```
 
 - Units: `gross_carrying_amount` (A,) money; `segment` (A,) str; shares `pi_g` in [0, 1] (the top-down Stage 2 share of segment `g`,
-  dossier 02 B.5). Returns the money transferred to stage 2 per segment.
+  dossier 02 B.5). Returns the target money to be in stage 2 per segment. It reports only: the amount is never added to any allowance.
+- One path into the stages and the ECL: the caller (the bake) turns each target into accounts, taking the accounts of segment `g` in
+  descending current PD (ties by account id) until the cumulative gross carrying amount first reaches the target, and passes them as the
+  `collective` mask of `allocate_stages` (trigger `collective`, Stage 2, lifetime ECL through `portfolio_allowance`). The ECL of the
+  collective transfer therefore reaches the allowance only through the stage of those accounts; applying the transferred money again would
+  double count. The realised collective gross carrying amount exceeds the target by less than one account.
 - Invariants: `amount_g = pi_g * sum(gca in g)`; the sum of the transfers never exceeds the total; `pi_g = 0` gives 0; a segment
   absent from `share_by_segment` raises `KeyError`.
 - Golden: segment totals `{s1: 100000}`, `pi = 0.1` gives `{s1: 10000.0}`.
@@ -290,8 +331,9 @@ def ecl_scenario(marginal_pd: np.ndarray, lgd: np.ndarray, ead: np.ndarray, eir:
 
 - Units: `marginal_pd` (A, T) `q_D(t)`; `lgd` in [0, 1] and `ead` money, each scalar, (A,) or (A, T); `horizon_months` 12 for the
   12-month ECL, the expected life (capped per 5.5.19, 5.5.20) for the lifetime ECL; returns money (A,) for one scenario.
-- Invariants: sums the periods with `months <= horizon_months`; `>= 0`; nondecreasing in `horizon_months`; linear in `ead` and in
-  `lgd`; a horizon beyond `months[-1]` equals the lifetime ECL.
+- Invariants: `horizon_months` must be a member of `months` or at least `months[-1]` (else `ValueError`: no proration of a straddling
+  period); sums the periods with `months <= horizon_months`; `>= 0`; nondecreasing in `horizon_months`; linear in `ead` and in `lgd`; a
+  horizon beyond `months[-1]` equals the lifetime ECL.
 - Golden: `q = [0.01, 0.01]`, `months = [6, 12]`, `lgd = 0.4`, `ead = 100000`, `eir = 0`: `horizon_months = 12` gives 800.0,
   `horizon_months = 6` gives 400.0.
 
@@ -305,7 +347,7 @@ def probability_weighted_ecl(ecl_by_scenario: np.ndarray, weights: np.ndarray) -
 - Invariants: weights validated per the conventions; with a convex ECL in the macro path the result `>=` the ECL at the weighted
   mean path (property test, SDD acceptance row "IFRS 9 ECL engine"); permuting scenarios with their weights leaves it unchanged.
 - Golden (dossier 02 B.4): per unit of EAD with `LGD = 0.4`, `ecl_s = 0.4 * (0.005255059, 0.014287387, 0.073424082)` and
-  `w = (0.25, 0.5, 0.25)` gives 0.010725392 (1.07%); at the mean path 0.007198979 (0.72%).
+  `w = (0.25, 0.5, 0.25)` gives 0.010725392 (1.07%); at the mean path 0.007198979 (0.72%), each to 1e-8.
 
 ### `riskvalidation.provisions.ecl.stage3_ecl`
 
@@ -317,7 +359,7 @@ def stage3_ecl(gross_carrying_amount: np.ndarray, expected_recoveries: np.ndarra
 - Units: `gross_carrying_amount` (A,) money; `expected_recoveries` (A, K) money; `recovery_months` (A, K) months from the reporting
   date; `eir` (A,). Returns `GCA - sum_k CF_k (1 + eir) ** (-months_k / 12)` (B5.5.33), clipped at 0.
 - Invariants: `>= 0`; nonincreasing in each recovery; zero recoveries give the gross carrying amount; discounting at the EIR.
-- Golden: `GCA = 50000`, one recovery of 30000 at month 12, `eir = 0.08`: `50000 - 30000 / 1.08 = 22222.22`.
+- Golden: `GCA = 50000`, one recovery of 30000 at month 12, `eir = 0.08`: `50000 - 30000 / 1.08 = 22222.2222` (22222.22 to 5e-3), tested to 1e-6.
 
 ### `riskvalidation.provisions.ecl.poci_allowance`
 
@@ -336,9 +378,9 @@ def simplified_matrix_ecl(gross_carrying_amount_by_bucket: np.ndarray, loss_rate
                           forward_looking_multiplier: float = 1.0) -> float: ...
 ```
 
-- Units: money (B,) and loss rates in [0, 1] (B,) per past-due bucket; the multiplier `>= 0`; the result is capped at the exposure.
-  Provision matrix of the simplified approach (B5.5.35).
-- Invariants: result `= m * sum(gca * rate)`, in `[0, sum(gca)]`; linear in the exposure.
+- Units: money (B,) and loss rates in [0, 1] (B,) per past-due bucket; the multiplier `>= 0`. Provision matrix of the simplified approach
+  (B5.5.35).
+- Invariants: result `= min(sum(gca), m * sum(gca * rate))`, in `[0, sum(gca)]`; linear in the exposure below the cap.
 - Golden: buckets `[1000, 500, 200]`, rates `[0.01, 0.05, 0.20]`: `10 + 25 + 40 = 75.0`.
 
 ### `riskvalidation.provisions.ecl.commitment_ead`
@@ -360,7 +402,7 @@ def non_linearity_index(ecl_weighted: float, ecl_at_mean_path: float) -> float: 
 - Units: money inputs (or PDs for the PD-level index); returns `NL = ecl_weighted / ecl_at_mean_path - 1`; raises when the
   denominator is not positive. This is the C06 `non_linearity.index`.
 - Invariants: `NL >= 0` in the convex regime; `NL = 0` when the weighted and mean-path values coincide.
-- Golden (PD level, dossier 02 B.4): `non_linearity_index(0.026813479, 0.017997448) = 0.48985`, ratio 1.49.
+- Golden (PD level, dossier 02 B.4): `non_linearity_index(0.026813479, 0.017997448) = 0.4898489` (0.48985 rounded), ratio 1.49, to 1e-6.
 
 ### `riskvalidation.provisions.ecl.weight_sensitivity`
 
@@ -378,21 +420,26 @@ def weight_sensitivity(ecl_by_scenario: np.ndarray, reference_index: int) -> np.
 ```python
 @dataclass(frozen=True)
 class AllowanceBreakdown:
-    by_stage: dict[str, float]   # stage1, stage2, stage3, poci: model ECL only, money
+    by_stage: dict[str, float]   # always the four keys stage1, stage2, stage3, poci: model ECL only, money; poci is 0.0 with no POCI row
     model_total: float
     overlay_total: float
     total: float
 
 def portfolio_allowance(stage: np.ndarray, ecl_12m: np.ndarray, ecl_lifetime: np.ndarray, ecl_stage3: np.ndarray,
-                        poci_delta: np.ndarray | None = None, overlays: Sequence["Overlay"] = ()) -> AllowanceBreakdown: ...
+                        poci: np.ndarray | None = None, poci_delta: np.ndarray | None = None,
+                        overlays: Sequence["Overlay"] = ()) -> AllowanceBreakdown: ...
 ```
 
-- Units: `stage` (A,) int in {1, 2, 3}, a boolean POCI mask is implied by a non-null `poci_delta` (A,); the ECL arrays (A,) money;
-  returns `LA = sum_{S1} ECL_12m + sum_{S2} ECL_life + sum_{S3} ECL_D + sum_{POCI} delta + sum_k OVL_k` (dossier 02 B.5).
+- Units: `stage` (A,) int in {1, 2, 3} for non-POCI accounts; `poci` (A,) bool, the explicit POCI mask (`None` means no POCI account);
+  `poci_delta` (A,) money, read only where `poci` is true (any value, including NaN, elsewhere); the ECL arrays (A,) money; returns
+  `LA = sum_{S1} ECL_12m + sum_{S2} ECL_life + sum_{S3} ECL_D + sum_{POCI} delta + sum_k OVL_k` (dossier 02 B.5).
+- POCI rows are excluded from stages 1 to 3 whatever their `stage` value (a POCI account counts once, in `poci`); `poci` true with a
+  non-finite `poci_delta` raises `ValueError`; `by_stage` always has the four keys.
 - Invariants: `total = model_total + overlay_total` exactly; overlays never enter `by_stage`; the C06 `stage_summary.ecl` is
   `by_stage`.
 - Golden: `stage = [1, 2, 3]`, `ecl_12m = [10, 20, 30]`, `ecl_lifetime = [15, 40, 45]`, `ecl_stage3 = [0, 0, 25]`, one overlay of 5:
-  `by_stage = {stage1: 10, stage2: 40, stage3: 25}`, `model_total = 75`, `total = 80`.
+  `by_stage = {stage1: 10, stage2: 40, stage3: 25, poci: 0.0}`, `model_total = 75`, `total = 80`; with `poci = [False, False, True]`,
+  `poci_delta = [nan, nan, 7]` the third account leaves stage 3: `by_stage = {stage1: 10, stage2: 40, stage3: 0.0, poci: 7.0}`.
 
 ## Module `riskvalidation/provisions/overlays.py`
 
@@ -410,6 +457,7 @@ class Overlay:
     method: str            # simulation | scenario | expert
     target: str            # pd | lgd | ead | staging-share
     segment_id: str | None
+    stage: str | None      # stage1 | stage2 | stage3 | poci; None is portfolio level
     amount: float          # money, signed
     staging_effect: str    # none | transfers-to-stage2
     review_date: str       # ISO date
@@ -417,7 +465,10 @@ class Overlay:
 ```
 
 - Units: money in `currency`; the C06 `overlays[]` item is this record (`rationale` is `{en, es}`).
-- Invariants: `amount` finite; `method`, `target`, `staging_effect` in their enums; ids unique within a run (raises otherwise).
+- Stage rule: an overlay with a `stage` is carried in that stage's allowance closing; an overlay with `stage = None` (portfolio level)
+  is carried in the stage1 closing, because the roll-forward has no portfolio row (a convention of this contract, not an IFRS rule). The
+  waterfall line of an overlay has `stage = overlay.stage` (null stays null) and the id `overlay-<overlay id>`.
+- Invariants: `amount` finite; `method`, `target`, `staging_effect`, `stage` in their enums; ids unique within a run (raises otherwise).
 
 ### `riskvalidation.provisions.overlays.overlay_lines`
 
@@ -425,9 +476,11 @@ class Overlay:
 def overlay_lines(overlays: Sequence[Overlay]) -> list[dict]: ...
 ```
 
-- Units: returns the waterfall lines (`kind = "overlay"`, `overlay_id`, `amount`, `stage`), one per overlay, in id order.
+- Units: returns the waterfall lines (`id = "overlay-<overlay id>"`, `kind = "overlay"`, `overlay_id`, `amount`, `stage = overlay.stage`), one per
+  overlay, in id order; a positive amount raises the allowance.
 - Invariants: one line per overlay; `sum(line.amount) = sum(overlay.amount)` exactly; an overlay is never merged into another line.
-- Golden: one overlay `OVL-RATES` of 1500 gives one line with `overlay_id = "OVL-RATES"` and `amount = 1500.0`.
+- Golden: one overlay `OVL-RATES` of 1500 at `stage1` gives one line with `id = "overlay-OVL-RATES"`, `overlay_id = "OVL-RATES"`,
+  `stage = "stage1"` and `amount = 1500.0`.
 
 ### `riskvalidation.provisions.overlays.overlay_share`
 
@@ -461,16 +514,19 @@ The IFRS 7 35H (allowance) and 35I (gross carrying amount) roll-forwards and the
 class RollForwardRow:
     stage: str                       # stage1 | stage2 | stage3 | poci
     opening: float
-    movements: tuple[tuple[str, float], ...]   # (line_id, signed amount)
+    movements: tuple[tuple[str, float], ...]   # (line_id, signed amount); a positive amount raises the allowance
     closing: float
     residual: float                  # closing - (opening + sum(movements))
 
 def allowance_rollforward(stage: str, opening: float, movements: Mapping[str, float], closing: float) -> RollForwardRow: ...
 ```
 
-- Units: money in the portfolio currency; the row is the C06 `reconciliation.allowance[]` item.
-- Invariants: `residual = closing - (opening + sum(movements))`; the identity closes when `|residual| <= 1e-6 * max(1, |closing|)`;
-  movement order is preserved.
+- Units: money in the portfolio currency; the row is the C06 `reconciliation.allowance[]` item. Each `line_id` is the `id` of a C06
+  `waterfall.lines[]` line (the model lines `originations`, `transfer-1-2`, ..., and `overlay-<overlay id>` for an overlay), so the waterfall can
+  be opened into the 35H table.
+- Invariants: `residual = closing - (opening + sum(movements))` exactly; the identity closes when `|residual|` is within the tolerance basis
+  of the Conventions (`1e-6 * max(1, G)`), judged by `check_identities`, never by the row; movement order is preserved; the allowance of
+  stage1 to stage3 is not negative (only POCI may be, 5.5.14).
 - Golden: `opening = 1000`, movements `{originations: 200, write-off: -50}`, `closing = 1150` gives `residual = 0`.
 
 ### `riskvalidation.provisions.reconciliation.gca_rollforward`
@@ -479,7 +535,8 @@ def allowance_rollforward(stage: str, opening: float, movements: Mapping[str, fl
 def gca_rollforward(stage: str, opening: float, movements: Mapping[str, float], closing: float) -> RollForwardRow: ...
 ```
 
-- Units: gross carrying amount money; the C06 `reconciliation.gross_carrying_amount[]` item.
+- Units: gross carrying amount money; the C06 `reconciliation.gross_carrying_amount[]` item; `line_id` in the enum `originations`,
+  `transfer-1-2`, `transfer-2-3`, `transfer-2-1`, `transfer-3-2`, `repayments`, `write-off`, `derecognition`, `other`.
 - Invariants: as `allowance_rollforward`.
 - Golden: `opening = 100000`, movements `{repayments: -5000, originations: 20000}`, `closing = 115000` gives `residual = 0`.
 
@@ -487,36 +544,46 @@ def gca_rollforward(stage: str, opening: float, movements: Mapping[str, float], 
 
 ```python
 def check_identities(allowance: Sequence[RollForwardRow], gca: Sequence[RollForwardRow], waterfall_lines: Sequence[dict],
-                     stage_ecl: Mapping[str, float], tolerance: float = 1e-6) -> list[str]: ...
+                     stage_ecl: Mapping[str, float], overlays: Sequence[Overlay] = (), tolerance: float = 1e-6) -> list[str]: ...
 ```
 
 - Units: money; returns the names of the identities that fail (empty when all close): `allowance-rollforward:<stage>`,
-  `gca-rollforward:<stage>`, `waterfall-closes` (`opening + sum(moves) = closing`), `waterfall-equals-stage-closings`,
-  `stage-closing-equals-ecl` (allowance closing of a stage equals `stage_ecl` plus its overlays).
-- Invariants: all identities close within `tolerance * max(1, portfolio amount)` (the 1e-6 gate of dossier 02 I.2); the function
-  returns names and never raises on a mismatch.
-- Golden: the C06 fixture `docs/contracts/fixtures/c06/variant-reporting-date-fixture.json` returns `[]`; moving one movement
-  by 1.0 returns a non-empty list.
+  `gca-rollforward:<stage>`, `waterfall-closes` (`opening + sum(moves) = closing`), `waterfall-equals-stage-closings` (the sum of the stage
+  closings equals the waterfall closing), `waterfall-lines-equal-movements` (every movement `line_id` is a waterfall line id and the line
+  amount is the sum of the movements of that id over the stages), `stage-closing-equals-ecl:<stage>` (the allowance closing of a stage equals
+  `stage_ecl` plus the overlays carried in that stage, by the stage rule of `Overlay`).
+- Invariants: all identities close within `tolerance * max(1, G)` with `G` the total gross carrying amount of the `gca` rows (the 1e-6 gate
+  of dossier 02 I.2, one basis for every identity); the function returns names and never raises on a mismatch.
+- Golden: the C06 fixture `docs/contracts/fixtures/c06/variant-reporting-date-fixture.json` returns `[]` (its Stage 2 closing 1758.76 differs
+  from its ECL 1758.7575 by 0.0025, inside the tolerance 1e-6 * 230000 = 0.23); moving one movement by 1.0 returns a non-empty list.
 
 ## Module `riskvalidation/validation/ifrs9.py`
 
 The battery of dossier 02 I.2, each a `TestResult` row of `common/test-result` (`test_id` as named, `h0`, `alternative`,
 `policy_version`, `reference` always set; `light` in green, amber, red, not_evaluated, error). The acceptance gates are Contraste
-internal gates, stated as such, not regulatory thresholds. A test with no data returns `not_evaluated` with its reason in `notes`.
+internal gates, stated as such, not regulatory thresholds: each function states its light rule on a `- Light:` line, with its parameters
+named so that a view can explain a light; the parameters travel in `policy_version`, `alpha_amber` and `alpha_red`. A test with no data
+returns `not_evaluated` with its reason in `notes`.
 
 ### `riskvalidation.validation.ifrs9.lifetime_pd_backtest`
 
 ```python
 def lifetime_pd_backtest(months: np.ndarray, predicted_cumulative: np.ndarray, observed_cumulative: np.ndarray,
                          n_at_risk: np.ndarray, n_events: np.ndarray, rho: float | None = None,
+                         competing_prepayment: bool = False,
                          model_id: str | None = None, segment: str | None = None) -> TestResult: ...
 ```
 
-- Units: arrays (H,) by horizon in months; predicted open (0, 1); observed Kaplan-Meier cumulative default in [0, 1] (NaN where the
-  horizon is not yet observed); `rho` for the Vasicek acceptance band. `test_id = "ifrs9.lifetime_pd_backtest"` (EBA/Rep/2023/36
+- Units: arrays (H,) by horizon in months; predicted open (0, 1); observed cumulative default in [0, 1] (NaN where the horizon is not yet
+  observed), estimated by the Aalen-Johansen cumulative incidence when `competing_prepayment` is true (the prediction then comes from
+  `competing_risks`, and Kaplan-Meier would treat prepayment as censoring and estimate `1 - S_D`, not the incidence) and by Kaplan-Meier
+  otherwise; `rho` for the Vasicek acceptance band. The C06 `lifetime_backtest` and `decile_calibration` rows name the `estimator`. `test_id = "ifrs9.lifetime_pd_backtest"` (EBA/Rep/2023/36
   paras 114 to 118).
 - Invariants: `metric` is the largest absolute gap `|observed - predicted|` over observed horizons; `extras` carries `gap`, `brier` and
   (with `rho`) `band_low`, `band_high` per horizon; unobserved horizons are excluded, none observed gives `not_evaluated`.
+- Light: with `rho`, red if any observed horizon is outside the Vasicek band at `alpha_red` (0.01), amber if outside at `alpha_amber`
+  (0.05), else green; without `rho`, the relative gap `|observed - predicted| / predicted` per observed horizon: green below `gap_amber`
+  (0.25), amber below `gap_red` (0.50), red otherwise; the worst horizon decides.
 - Golden: `observed == predicted` gives `metric = 0.0` and `light = "green"`.
 
 ### `riskvalidation.validation.ifrs9.sicr_effectiveness`
@@ -532,7 +599,9 @@ def sicr_effectiveness(stage_at_origination_view: np.ndarray, defaulted_within_k
 - Invariants: `metric = DR_S2 / DR_S1`; `extras` carries `roc_auc`, `hit_rate`, `share_stage3_direct_from_stage1`,
   `mean_months_in_stage2`, `share_stage2_backstop_only`, each with an interval where defined; no Stage 1 defaults gives
   `not_evaluated`.
-- Golden: Stage 1: 1000 accounts, 10 defaults; Stage 2: 100 accounts, 30 defaults: `metric = 30.0`.
+- Light: green when `metric >= 2.0` (Stage 2 defaults at least twice as often as Stage 1), amber when `1.0 <= metric < 2.0`, red below 1.0;
+  amber at least when `share_stage3_direct_from_stage1 > 0.5`.
+- Golden: Stage 1: 1000 accounts, 10 defaults; Stage 2: 100 accounts, 30 defaults: `metric = 30.0`, green.
 
 ### `riskvalidation.validation.ifrs9.sicr_threshold_stability`
 
@@ -545,6 +614,7 @@ def sicr_threshold_stability(implied_multiplier: np.ndarray, condition_index: np
   "ifrs9.sicr_threshold_stability"` (EBA/Rep/2023/36 paras 29 to 33).
 - Invariants: `metric` counts periods where the multiplier rises (the threshold loosens) while the condition index rises; zero is
   green, any is not green.
+- Light: `metric = 0` green; `metric >= 1` amber; red when `metric` is at least half of the periods.
 - Golden: multipliers `[2.0, 2.5]`, condition index `[0.0, 1.0]`: `metric = 1.0`, `light != "green"`.
 
 ### `riskvalidation.validation.ifrs9.stage_migration_backtest`
@@ -557,6 +627,7 @@ def stage_migration_backtest(predicted_matrix: np.ndarray, observed_counts: np.n
 - Units: `predicted_matrix` (3, 3) row-stochastic (rows sum to 1 within 1e-9); `observed_counts` (3, 3) non-negative integers.
   `test_id = "ifrs9.stage_migration_backtest"`; chi-square on the transition counts (EBA/Rep/2023/36 para 97).
 - Invariants: `statistic >= 0`, `p_value` in [0, 1], rows with no observations are skipped and counted in `extras`.
+- Light: green when `p_value >= alpha_amber` (0.05), amber when `alpha_red <= p_value < alpha_amber` (0.01), red below `alpha_red`.
 - Golden: counts exactly proportional to the predicted matrix give `statistic = 0.0`, `p_value = 1.0`, green.
 
 ### `riskvalidation.validation.ifrs9.ecl_backtest`
@@ -569,7 +640,9 @@ def ecl_backtest(realised_pv_losses: np.ndarray, ecl_horizon: np.ndarray, horizo
 - Units: money (A,) of the same accounts: discounted realised losses within `horizon_months` and the model ECL for that horizon,
   overlays excluded. `test_id = "ifrs9.ecl_backtest"` (IFRS 9 B5.5.52; EBA/Rep/2023/36 paras 100 to 104).
 - Invariants: `metric = R_H = sum(realised) / sum(ecl)`; zero ECL gives `not_evaluated`.
-- Golden: realised total 90 against ECL total 100 gives `metric = 0.9`.
+- Light: green when `0.8 <= metric <= 1.25`, amber when `0.5 <= metric < 0.8` or `1.25 < metric <= 2.0`, red outside; the bounds are the
+  parameters `r_green` and `r_amber`.
+- Golden: realised total 90 against ECL total 100 gives `metric = 0.9`, green.
 
 ### `riskvalidation.validation.ifrs9.scenario_sensitivity`
 
@@ -581,8 +654,11 @@ def scenario_sensitivity(ecl_by_scenario: np.ndarray, weights: np.ndarray, ecl_a
 - Units: `ecl_by_scenario` (S,) money; weights (S,); `test_id = "ifrs9.scenario_sensitivity"` (d350 para 36(a); GPPC 2.8.1.2).
 - Invariants: `metric` is the non-linearity index `NL`; `extras` carries the 100 per cent single-scenario ECLs and
   `weight_sensitivity` against each reference scenario.
+- Light: informational, green when `0 <= NL <= 1.0` (parameter `nl_amber`), amber when `NL > 1.0` or `NL < 0` (a concave ECL is
+  unexpected), red when `NL > 3.0` (`nl_red`).
 - Golden: `ecl_by_scenario = [0.4 * 0.005255059, 0.4 * 0.014287387, 0.4 * 0.073424082]`, `w = (0.25, 0.5, 0.25)`, `ecl_at_mean_path
-  = 0.4 * 0.017997448`: `metric = 0.48985`.
+  = 0.4 * 0.017997448`: `metric = 0.4898489` to 1e-6 (0.48985 rounded), green. The 100 per cent single-scenario ECLs in `extras` are
+  sensitivities, never the IFRS 9 measure (5.5.17(a), B5.5.42).
 
 ### `riskvalidation.validation.ifrs9.nonlinearity_test`
 
@@ -593,8 +669,9 @@ def nonlinearity_test(pd_ttc: float, rho: float, z: np.ndarray, weights: np.ndar
 
 - Units: as `weighted_pit_pd`; `test_id = "ifrs9.nonlinearity"`; the PD-level index with the Gauss-Hermite cross check.
 - Invariants: `metric = weighted / at_mean_z - 1`; `extras` carries `pd_weighted`, `pd_at_mean_z`, `gauss_hermite_error` (below 1e-9).
+- Light: green when `gauss_hermite_error <= 1e-9` and `metric >= 0`; red otherwise (a numerical failure, not a model finding).
 - Golden: `pd_ttc = 0.02`, `rho = 0.12`, `z = (1, 0, -2)`, `w = (0.25, 0.5, 0.25)`: `pd_weighted = 0.026813479` (2.681%),
-  `pd_at_mean_z = 0.017997448` (1.800%), `metric = 0.48985`.
+  `pd_at_mean_z = 0.017997448` (1.800%) each to 1e-8, `metric = 0.4898489` to 1e-6, green.
 
 ### `riskvalidation.validation.ifrs9.overlay_diagnostics`
 
@@ -607,7 +684,9 @@ def overlay_diagnostics(overlays: Sequence[Overlay], allowance_by_stage: Mapping
   "ifrs9.overlay_diagnostics"` (ECB July 2024; d350 paras 50, 51).
 - Invariants: `metric` is the overlay share of the total allowance; `extras` carries the share by stage and by segment, the
   parameter-level versus total-level split and a `direction_consistent` flag (a positive overlay in an improving scenario is flagged).
-- Golden: overlays 5 against model ECL 75 gives `metric = 0.0625`.
+- Light: green when `metric <= 0.10` (parameter `share_amber`) and `direction_consistent`; amber when `metric <= 0.25` (`share_red`) or the
+  direction is inconsistent; red above 0.25.
+- Golden: overlays 5 against model ECL 75 gives `metric = 0.0625`, green.
 
 ### `riskvalidation.validation.ifrs9.reconciliation_identities`
 
@@ -618,8 +697,8 @@ def reconciliation_identities(allowance: Sequence[RollForwardRow], gca: Sequence
 ```
 
 - Units: as `check_identities`; `test_id = "ifrs9.reconciliation_identities"` (IFRS 7 35H, 35I).
-- Invariants: `metric` is the largest absolute residual; green when it is within 1e-6 of the portfolio amount, red otherwise;
-  `extras` carries the failing identity names.
+- Invariants: `metric` is the largest absolute residual; `extras` carries the failing identity names.
+- Light: green when `metric <= 1e-6 * max(1, G)` (the tolerance basis of the Conventions), red otherwise.
 - Golden: the C06 fixture reconciliation gives `metric = 0.0` and `light = "green"`.
 
 ## Module `riskvalidation/provisions/local_cl.py`
@@ -656,7 +735,8 @@ def b1_individual_provision(eap: float, ea: float, category: str, guarantor_cate
 def b1_default_provision(exposure: float, recoverable: float) -> tuple[float, str, float]: ...
 ```
 
-- Units: money; returns `(tpe, category, provision)` with `TPE = (E - R) / E` and `provision = E * PP` (B-1 N 2.2): C1 up to 3% pays
+- Units: money; returns `(tpe, category, provision)` with `TPE = (E - R) / E`, rounded to 1e-9 before any bucket comparison (so a float
+  `TPE` at a boundary lands in its inclusive bucket), and `provision = E * PP` (B-1 N 2.2): C1 up to 3% pays
   2%, C2 up to 20% pays 10%, C3 up to 30% pays 25%, C4 up to 50% pays 40%, C5 up to 80% pays 65%, C6 above 80% pays 90%; upper
   bounds inclusive.
 - Invariants: `provision` nondecreasing in `exposure - recoverable`; `0 <= R <= E` else `ValueError`.
@@ -744,7 +824,9 @@ class MinimumCheck:
 def b1_minimum_normal_check(normal_exposure: float, normal_provision: float) -> MinimumCheck: ...
 ```
 
-- Units: money; the 0.50% minimum on the normal portfolio loans and contingent credits (B-1 N 2.1.3), `minimum_rate = 0.005` constant.
+- Units: money; the 0.50% minimum on the individually assessed normal portfolio (categories A1 to A6), loans plus contingent credits
+  (B-1 N 2.1.3; dossier 03 D.3), `minimum_rate = 0.005` constant. `normal_exposure` and `normal_provision` are those of that portfolio
+  only, not the group-assessed book and not the whole performing book.
 - Invariants: `minimum_amount = 0.005 * normal_exposure`; `top_up = max(0, minimum_amount - normal_provision)`; `binding = top_up > 0`;
   the minimum is always enforced (the C07 `b1_detail.minimum_check` block).
 - Golden: exposure 25e9, provision 100e6 gives `minimum_amount = 125e6`, `binding = True`, `top_up = 25e6`; provision 150e6 gives
@@ -757,7 +839,8 @@ def b1_group_max_rule(standard: float, internal: float | None, internal_not_obje
 ```
 
 - Units: money; returns `(applied, method)` with `method` in `standard`, `internal`, `max` (B-1 N 3: the larger of the standard and
-  the internal method unless the internal method has the CMF "no objection").
+  the internal method unless the internal method has the CMF "no objection"). The C07 `group_max_rule[]` item carries `internal = null`
+  with `internal_reason` when the bank has no internal method.
 - Invariants: `applied >= standard` unless `internal_not_objected`; `internal = None` gives `(standard, "standard")`.
 - Golden: `(100, 90, False)` gives `(100, "max")`; `(100, 90, True)` gives `(90, "internal")`; `(100, None, False)` gives `(100, "standard")`.
 
@@ -803,13 +886,16 @@ def annex9_normal_coverage(segment: str, category: str) -> float: ...
 ### `riskvalidation.provisions.local_es.annex9_doubtful_coverage`
 
 ```python
-def annex9_doubtful_coverage(segment: str, months_past_due: float) -> float: ...
+def annex9_doubtful_coverage(segment: str, days_past_due: int) -> float: ...
 ```
 
-- Units: `months_past_due` the age of the past-due amount in months; buckets `(3, 6]`, `(6, 9]`, `(9, 12]`, `(12, 15]`, `(15, 18]`,
-  `(18, 21]`, above 21 (point 140); raises `ValueError` for `months_past_due <= 3`.
-- Invariants: nondecreasing in age; 1.0 above 21 months for every segment.
-- Golden: `("B.1.1", 5) = 0.45`; `("B.1.1", 22) = 1.0`; `("B.2", 8) = 0.65`; `("A.2.3", 4) = 0.35`.
+- Units: `days_past_due` the age of the oldest past-due amount in days. Point 140 counts months; this contract converts them once, at
+  30.4375 days per month rounded to the nearest day (Contraste's convention; a bank's own day count overrides it in the caller), giving the
+  buckets `(90, 183]`, `(183, 274]`, `(274, 365]`, `(365, 457]`, `(457, 548]`, `(548, 639]` and above 639 days, upper bounds inclusive (the
+  7 columns `>90d-6m` to `>21m`); raises `ValueError` for `days_past_due <= 90`. The C07 models carry the bounds as
+  `bde.doubtful_bucket_upper_days` (`null` for the last).
+- Invariants: nondecreasing in age; 1.0 above 639 days for every segment.
+- Golden: `("B.1.1", 150) = 0.45`; `("B.1.1", 91) = 0.45`; `("B.1.1", 670) = 1.0`; `("B.2", 243) = 0.65`; `("A.2.3", 122) = 0.35`; `("B.1.1", 90)` raises.
 
 ### `riskvalidation.provisions.local_es.annex9_category_to_stage`
 
@@ -826,11 +912,13 @@ def annex9_category_to_stage(category: str) -> str: ...
 
 ```python
 def annex9_coverage(segment: str, category: str, ead: float, adjusted_guarantee_values: Sequence[float],
-                    months_past_due: float | None = None) -> float: ...
+                    days_past_due: int | None = None) -> float: ...
 ```
 
-- Units: money; for `doubtful` the coverage comes from `annex9_doubtful_coverage` (`months_past_due` required), otherwise from
-  `annex9_normal_coverage`; returns `c * annex9_uncovered_amount(ead, adjusted_guarantee_values)`; `written-off` returns 0.
+- Units: money; for `doubtful` the coverage comes from `annex9_doubtful_coverage` (`days_past_due` required and above 90), otherwise from
+  `annex9_normal_coverage`; returns `c * annex9_uncovered_amount(ead, adjusted_guarantee_values)`; `written-off` returns 0. A doubtful account
+  for reasons other than arrears (riesgo dudoso por razones distintas de la morosidad) has no transcribed coverage (dossier 03 K.3): the
+  call with `days_past_due` missing or at most 90 raises `ValueError`, and the caller reports the account as not evaluated.
 - Invariants: `0 <= coverage <= EAD`; nondecreasing in `ead`; with full guarantee cover the result is 0.
 - Golden: `("B.1.1", "normal", 100000, [40000]) = 0.007 * 60000 = 420.0`.
 
@@ -840,7 +928,7 @@ def annex9_coverage(segment: str, category: str, ead: float, adjusted_guarantee_
 |---|---|---|
 | PD 0.526%, 1.429%, 7.342% at z = +1, 0, -2 (`pd_ttc` 2%, `rho` 0.12) | `ttc_to_pit` | dossier 02 B.4 |
 | weighted PD 2.681% against 1.800% at the mean factor, ratio 1.49; LGD 40% gives 1.07% against 0.72% | `weighted_pit_pd`, `probability_weighted_ecl`, `nonlinearity_test` | dossier 02 B.4 |
-| reconciliation identities within 1e-6 of the portfolio amount | `reconciliation_identities`, `check_identities` | dossier 02 I.2 |
+| reconciliation identities within 1e-6 * max(1, G), G the total gross carrying amount | `reconciliation_identities`, `check_identities` | dossier 02 I.2 |
 | B-1 consumer matrix, 16 cells; PE = PI x PDI for every transcribed cell; 0.50% minimum on the normal portfolio | `local_cl.*` | dossier 03 D.3, D.5 |
 | Annex 9 point 144 and point 140 tables as transcribed; the category to stage map | `local_es.*` | dossier 03 K.2, K.3 |
 
