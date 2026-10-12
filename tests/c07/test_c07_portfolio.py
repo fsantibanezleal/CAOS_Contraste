@@ -4,7 +4,7 @@ from __future__ import annotations
 import numpy as np
 from pipeline.cases.c07 import book as bk
 from pipeline.cases.c07 import generator, scenarios
-import invariants
+import c07_invariants as invariants
 
 
 def test_the_portfolio_is_the_same_across_variants(built, outs) -> None:

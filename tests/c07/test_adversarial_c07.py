@@ -13,8 +13,8 @@ from pipeline.cases.c07 import documents, generator, scenarios, sources
 from pipeline.cases.c07 import book as bk
 from riskvalidation.provisions import local_cl as cl
 from riskvalidation.provisions import reconciliation as rc
-import invariants
-import test_calibration as cal
+import c07_invariants as invariants
+import test_c07_calibration as cal
 
 ROOT = Path(__file__).resolve().parents[2]
 

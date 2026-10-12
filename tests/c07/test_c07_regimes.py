@@ -5,7 +5,7 @@ import numpy as np
 from pipeline.cases.c07 import b1
 from pipeline.cases.c07 import book as bk
 from riskvalidation.provisions import local_cl as cl
-import invariants
+import c07_invariants as invariants
 
 
 def test_the_minimum_applies_to_the_individual_normal_portfolio_only(built, outs) -> None:
