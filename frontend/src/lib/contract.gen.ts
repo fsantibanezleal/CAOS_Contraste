@@ -1029,6 +1029,601 @@ export interface components {
             n_defaults: number;
         };
         /**
+         * C06 models
+         * @description Catalog row c06-models 1.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.
+         */
+        "c06-models": components["schemas"]["common-models-envelope"] & {
+            /** @constant */
+            case_id: "C06";
+            fit: components["schemas"]["c06Fit"];
+        };
+        /**
+         * C06 reporting-date variant
+         * @description Catalog row c06-outputs 1.0.0: one reporting date of the mortgage lifetime PD, staging and ECL case (outputs.kind reporting-date).
+         */
+        "c06-variant-reporting-date": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C06";
+            outputs: components["schemas"]["c06Outputs"];
+        };
+        /** @description The SICR view's pair of curves for a sampled account: the origination forward curve against the current one over the same remaining window. */
+        c06AccountCurve: {
+            account_id: string;
+            segment_id: string;
+            /** @enum {string} */
+            stage: "stage1" | "stage2" | "stage3" | "poci";
+            months: number[];
+            origination_cumulative_pd: number[];
+            current_cumulative_pd: number[];
+        };
+        /** @description The data this document stands on. A variant without Freddie Mac data says so and why; nothing is invented. */
+        c06DataStatus: {
+            /** @enum {string} */
+            primary_source: "sba-7a" | "freddie-mac";
+            freddie_mac_available: boolean;
+            freddie_mac_reason: string | null;
+            notice: components["schemas"]["common-text"];
+        };
+        c06Ead: {
+            amortising: boolean;
+            ccf_revolving: number | null;
+            reason: string | null;
+        };
+        /** @description Per-scenario ECL by stage at 100 per cent weight, model ECL without overlays. */
+        c06EclByScenario: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            rows: {
+                scenario_id: string;
+                /** @enum {string} */
+                stage: "stage1" | "stage2" | "stage3" | "poci";
+                ecl: number;
+            }[];
+        };
+        /** @description C06 fit: segments, the Fed-style scenario definitions, the TTC to PIT conversion, the lifetime PD ladder, LGD, EAD and the staging policy that the bake used. */
+        c06Fit: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            segments: components["schemas"]["c06Segment"][];
+            scenario_definitions: components["schemas"]["c06ScenarioDefinition"][];
+            pit: components["schemas"]["c06Pit"];
+            ladder: components["schemas"]["c06Rung"][];
+            lgd: components["schemas"]["c06Lgd"];
+            ead: components["schemas"]["c06Ead"];
+            staging_policy: components["schemas"]["c06StagingPolicy"];
+        };
+        c06Horizon: {
+            stage1_months: number;
+            lifetime_cap_months: number;
+        };
+        c06Lgd: {
+            kind: string;
+            discounting: string;
+            segments: {
+                segment_id: string;
+                lgd: number;
+                basis: string;
+            }[];
+        };
+        /** @description Kaplan-Meier observed against predicted cumulative default by horizon; a horizon not yet observed is null with its reason. */
+        c06LifetimeBacktest: {
+            rows: {
+                months: number;
+                predicted_cumulative_pd: number;
+                observed_cumulative_pd: number | null;
+                gap: number | null;
+                brier: number | null;
+                reason: string | null;
+            }[];
+        };
+        c06Movement: {
+            line_id: string;
+            amount: number;
+        };
+        /** @description The non-linearity panel: PD_PIT(z), the weighted PD against the PD at the weighted-average factor, and NL = ECL_weighted / ECL(mean path) - 1. */
+        c06NonLinearity: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            parameters: {
+                pd_ttc: number;
+                rho: number;
+            };
+            mean_z: number;
+            pd_weighted: number;
+            pd_at_mean_z: number;
+            ecl_weighted: number;
+            ecl_at_mean_path: number;
+            index: number;
+            z_curve: {
+                z: number;
+                pd_pit: number;
+            }[];
+            scenario_points: {
+                scenario_id: string;
+                z: number;
+                weight: number;
+                pd_pit: number;
+            }[];
+        };
+        /** @description C06 reporting-date outputs (outputs.kind reporting-date): one reporting date of the lifetime PD, staging and ECL run. Money in `currency`; PD open (0, 1); horizons in months. A value the bake may lack is nullable with its reason. */
+        c06Outputs: {
+            /** @constant */
+            kind: "reporting-date";
+            reporting_date: string;
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            period_months: number;
+            horizon: components["schemas"]["c06Horizon"];
+            settings: components["schemas"]["c06Settings"];
+            data_status: components["schemas"]["c06DataStatus"];
+            scenarios: components["schemas"]["c06ScenarioWeight"][];
+            term_structures: components["schemas"]["c06TermStructure"][];
+            account_curves: components["schemas"]["c06AccountCurve"][];
+            sicr_points: components["schemas"]["c06SicrPoint"][];
+            stage_flows: components["schemas"]["c06StageFlows"];
+            stage_summary: components["schemas"]["c06StageSummary"];
+            ecl_by_scenario: components["schemas"]["c06EclByScenario"];
+            weight_grid: components["schemas"]["c06WeightGrid"];
+            non_linearity: components["schemas"]["c06NonLinearity"];
+            waterfall: components["schemas"]["c06Waterfall"];
+            overlays: components["schemas"]["c06Overlay"][];
+            reconciliation: components["schemas"]["c06Reconciliation"];
+            lifetime_backtest: components["schemas"]["c06LifetimeBacktest"];
+            rung_comparison: components["schemas"]["c06RungResult"][];
+        };
+        c06Overlay: {
+            id: string;
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            rationale: components["schemas"]["common-text"];
+            /** @enum {string} */
+            method: "simulation" | "scenario" | "expert";
+            /** @enum {string} */
+            target: "pd" | "lgd" | "ead" | "staging-share";
+            segment_id: string | null;
+            amount: number;
+            /** @enum {string} */
+            staging_effect: "none" | "transfers-to-stage2";
+            review_date: string;
+        };
+        c06Pit: {
+            rho: number;
+            method: string;
+            z_hat: {
+                period: string;
+                z: number;
+            }[];
+            satellite: {
+                intercept: number;
+                ar1: number;
+                coefficients: {
+                    name: string;
+                    value: number;
+                }[];
+            };
+        };
+        /** @description IFRS 7 35H (allowance) and 35I (gross carrying amount) roll-forwards by stage; opening plus movements equals closing and residual is within tolerance. */
+        c06Reconciliation: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            /** @constant */
+            tolerance: 0.000001;
+            allowance: components["schemas"]["c06RollForwardRow"][];
+            gross_carrying_amount: components["schemas"]["c06RollForwardRow"][];
+        };
+        c06RollForwardRow: {
+            /** @enum {string} */
+            stage: "stage1" | "stage2" | "stage3" | "poci";
+            opening: number;
+            movements: components["schemas"]["c06Movement"][];
+            closing: number;
+            residual: number;
+        };
+        c06Rung: {
+            rung_id: string;
+            /** @enum {string} */
+            kind: "kaplan-meier" | "discrete-time-hazard" | "cox";
+            covariates: string[];
+            macro_covariates: string[];
+            competing_prepayment: boolean;
+            training_cutoff: string;
+            coefficients: {
+                name: string;
+                estimate: number;
+                std_error: number | null;
+            }[];
+            baseline: {
+                months: number[];
+                cumulative_pd: number[];
+            };
+        };
+        c06RungResult: {
+            rung_id: string;
+            c_index: number | null;
+            integrated_brier: number | null;
+            calibration_gap_12m: number | null;
+            reason: string | null;
+        };
+        c06ScenarioDefinition: {
+            id: string;
+            label: components["schemas"]["common-text"];
+            weight: number;
+            source: string;
+            z_path: {
+                months: number;
+                z: number;
+            }[];
+            macro: {
+                variable: string;
+                unit: string;
+                months: number[];
+                values: number[];
+            }[];
+        };
+        c06ScenarioWeight: {
+            id: string;
+            label: components["schemas"]["common-text"];
+            weight: number;
+            z_mean: number;
+        };
+        c06Segment: {
+            id: string;
+            label: components["schemas"]["common-text"];
+            pd_ttc: number;
+            accounts: number;
+        };
+        c06Settings: {
+            /** @enum {string} */
+            discount_convention: "mid-period" | "end-of-period";
+            /** @enum {string} */
+            eir_basis: "original" | "current" | "credit-adjusted";
+            probation_months: number;
+            low_credit_risk_exemption: boolean;
+            sicr: {
+                dpd_backstop: number;
+                threefold_ratio: number;
+                absolute_floor: number;
+                multiplier_schedule: {
+                    pd_origination_upper: number;
+                    multiplier: number;
+                }[];
+            };
+        };
+        c06SicrPoint: {
+            account_id: string;
+            segment_id: string;
+            /** @enum {string} */
+            stage: "stage1" | "stage2" | "stage3" | "poci";
+            pd_origination_annualised: number;
+            pd_current_annualised: number;
+            /** @enum {string} */
+            trigger: "none" | "relative-absolute" | "threefold" | "dpd-backstop" | "forbearance" | "watch-list" | "default" | "collective" | "cure-probation";
+        };
+        c06StageFlows: {
+            from_date: string;
+            to_date: string;
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            flows: {
+                /** @enum {string} */
+                source: "stage1" | "stage2" | "stage3" | "poci" | "new" | "derecognised" | "written-off";
+                /** @enum {string} */
+                target: "stage1" | "stage2" | "stage3" | "poci" | "new" | "derecognised" | "written-off";
+                accounts: number;
+                gross_carrying_amount: number;
+            }[];
+        };
+        c06StageSummary: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            rows: {
+                /** @enum {string} */
+                stage: "stage1" | "stage2" | "stage3" | "poci";
+                accounts: number;
+                gross_carrying_amount: number;
+                ecl: number;
+                coverage: number;
+            }[];
+        };
+        c06StagingPolicy: {
+            dpd_backstop: number;
+            default_dpd: number;
+            threefold_ratio: number;
+            absolute_floor: number;
+            probation_months: number;
+            multiplier_schedule: {
+                pd_origination_upper: number;
+                multiplier: number;
+            }[];
+            source: string;
+        };
+        /** @description h(t), q(t) = S(t-1) h(t) and F(t) = sum q, per scenario ('weighted' for the probability-weighted curve) and segment; the arrays are aligned with months and F is strictly increasing. */
+        c06TermStructure: {
+            scenario_id: string;
+            segment_id: string;
+            months: number[];
+            hazard: number[];
+            marginal_pd: number[];
+            cumulative_pd: number[];
+        };
+        /** @description Opening to closing allowance; every overlay is its own line (kind overlay, overlay_id set), never merged into a model line. */
+        c06Waterfall: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            lines: {
+                id: string;
+                /** @enum {string} */
+                kind: "opening" | "originations" | "transfer-1-2" | "transfer-2-3" | "transfer-2-1" | "transfer-3-2" | "remeasurement" | "macro-update" | "overlay" | "write-off" | "derecognition" | "unwinding" | "closing";
+                label: components["schemas"]["common-text"];
+                amount: number;
+                stage: ("stage1" | "stage2" | "stage3" | "poci") | null;
+                overlay_id: string | null;
+            }[];
+        };
+        /** @description The scenario-weight simplex: ECL and the Stage 2 ratio with staging recomputed against staging frozen; each weights vector is aligned with scenario_ids and sums to 1. */
+        c06WeightGrid: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            scenario_ids: string[];
+            points: {
+                weights: number[];
+                ecl_recomputed: number;
+                ecl_frozen: number;
+                stage2_ratio_recomputed: number;
+                stage2_ratio_frozen: number;
+            }[];
+        };
+        /**
+         * C07 models
+         * @description Catalog row c07-models 1.0.0: the C07 models artifact with the synthetic bank calibration and the transcribed regime tables.
+         */
+        "c07-models": components["schemas"]["common-models-envelope"] & {
+            /** @constant */
+            case_id: "C07";
+            fit: components["schemas"]["c07Fit"];
+        };
+        /**
+         * C07 three-regime variant
+         * @description Catalog row c07-outputs 1.0.0: the Chile provisions trilogy for one scenario variant (outputs.kind three-regime).
+         */
+        "c07-variant-three-regime": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C07";
+            outputs: components["schemas"]["c07Outputs"];
+        };
+        c07B1Detail: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            minimum_check: {
+                /** @constant */
+                minimum_rate: 0.005;
+                normal_portfolio_exposure: number;
+                normal_portfolio_provision_before_minimum: number;
+                minimum_amount: number;
+                binding: boolean;
+                top_up: number;
+            };
+            group_max_rule: {
+                segment_id: string;
+                standard: number;
+                internal: number;
+                applied: number;
+                /** @enum {string} */
+                method: "standard" | "internal" | "max";
+            }[];
+            additional_provisions: {
+                amount: number;
+                rationale: components["schemas"]["common-text"];
+                policy_min: number;
+                policy_max: number;
+            };
+            individual: {
+                normal_substandard_provision: number;
+                default_provision: number;
+            };
+        };
+        /** @description A transcribed CMF CNCB B-1 table; PI, PDI and PE are decimals (0.010916 is 1.0916 per cent) and, where both are set, PE = PI x PDI to the table's rounding. Closed at 0 and 1 on purpose: the default column is PI = 1 and the tables are statutory parameters, not estimates. */
+        c07B1Table: {
+            table_id: string;
+            portfolio: string;
+            source: string;
+            cells: {
+                row: string;
+                column: string;
+                pi: number;
+                pdi: number | null;
+                pe: number | null;
+            }[];
+        };
+        c07BdeDetail: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            categories: {
+                /** @enum {string} */
+                category: "normal" | "normal-special-watch" | "doubtful" | "written-off";
+                /** @enum {string} */
+                mapped_stage: "stage1" | "stage2" | "stage3" | "written-off";
+                exposure: number;
+                provision: number;
+                coverage_rate: number;
+            }[];
+            /** @enum {string} */
+            method: "alternative-solutions" | "internal-methodology";
+        };
+        c07Comparison: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            rows: {
+                segment_id: string;
+                cmf_b1_provision: number;
+                ifrs9_provision: number;
+                bde_annex9_provision: number;
+                gap_ifrs9_minus_b1: number;
+                gap_bde_minus_b1: number;
+            }[];
+        };
+        c07DeltaVsBase: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            cmf_b1_delta: number;
+            ifrs9_delta: number;
+            bde_annex9_delta: number;
+        };
+        /** @description C07 fit: the synthetic Banco Andino calibration, the transcribed B-1 tables with their cells, the IFRS 9 parameters, the BdE Annex 9 coverage and the six scenario definitions. */
+        c07Fit: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            bank: {
+                name: string;
+                /** @constant */
+                synthetic: true;
+                notice: components["schemas"]["common-text"];
+                seed: number;
+                calibration_source: string;
+            };
+            calibration_targets: {
+                metric: string;
+                unit: string;
+                target: number;
+                achieved: number;
+                source: string;
+                as_of: string;
+            }[];
+            segments: {
+                id: string;
+                label: components["schemas"]["common-text"];
+                accounts: number;
+                gross_exposure: number;
+                /** @enum {string} */
+                b1_portfolio: "residential-mortgage" | "consumer" | "commercial-group" | "commercial-individual";
+                bde_segment: string;
+            }[];
+            b1_tables: components["schemas"]["c07B1Table"][];
+            b1_default_categories: {
+                category: string;
+                tpe_upper: number | null;
+                provision_rate: number;
+            }[];
+            ifrs9: {
+                pd_ladder_rung: string;
+                /** @enum {string} */
+                discount_convention: "mid-period" | "end-of-period";
+                segments: {
+                    segment_id: string;
+                    pd_ttc: number;
+                    rho: number;
+                    lgd: number;
+                }[];
+            };
+            bde: {
+                normal_coverage: {
+                    segment: string;
+                    normal: number;
+                    special_watch: number;
+                }[];
+                doubtful_bucket_labels: string[];
+                doubtful_coverage: {
+                    segment: string;
+                    by_bucket: number[];
+                }[];
+            };
+            scenarios: {
+                /** @enum {string} */
+                id: "base" | "recession" | "consumer-arrears-shock" | "house-price-fall" | "uf-inflation-spike" | "combined-severe";
+                label: components["schemas"]["common-text"];
+                shocks: {
+                    driver: string;
+                    unit: string;
+                    value: number;
+                }[];
+            }[];
+        };
+        /** @description The gap from the CMF B-1 total to the IFRS 9 total as exhaustive steps whose amounts sum to the gap exactly (an unexplained step is its own line). */
+        c07GapBridge: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            /** @constant */
+            from_regime: "cmf-b1";
+            /** @constant */
+            to_regime: "ifrs9";
+            steps: {
+                id: string;
+                label: components["schemas"]["common-text"];
+                amount: number;
+            }[];
+        };
+        c07Ifrs9Detail: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            stage_summary: {
+                /** @enum {string} */
+                stage: "stage1" | "stage2" | "stage3" | "poci";
+                accounts: number;
+                gross_carrying_amount: number;
+                ecl: number;
+                coverage: number;
+            }[];
+            overlays_total: number;
+        };
+        /** @description C07 three-regime comparison (outputs.kind three-regime): the same synthetic portfolio of Banco Andino under CMF B-1, IFRS 9 and BdE Annex 9 for one scenario variant. Synthetic, never a statement about a bank. */
+        c07Outputs: {
+            /** @constant */
+            kind: "three-regime";
+            /** @enum {string} */
+            scenario_id: "base" | "recession" | "consumer-arrears-shock" | "house-price-fall" | "uf-inflation-spike" | "combined-severe";
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            /** @constant */
+            synthetic: true;
+            notice: components["schemas"]["common-text"];
+            scenario: {
+                description: components["schemas"]["common-text"];
+                shocks: {
+                    driver: string;
+                    unit: string;
+                    value: number;
+                }[];
+            };
+            portfolio: components["schemas"]["c07Portfolio"];
+            regimes: components["schemas"]["c07Regime"][];
+            comparison: components["schemas"]["c07Comparison"];
+            gap_bridge: components["schemas"]["c07GapBridge"];
+            b1_detail: components["schemas"]["c07B1Detail"];
+            ifrs9_detail: components["schemas"]["c07Ifrs9Detail"];
+            bde_detail: components["schemas"]["c07BdeDetail"];
+            delta_vs_base: components["schemas"]["c07DeltaVsBase"] | null;
+        };
+        c07Portfolio: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            segments: {
+                segment_id: string;
+                label: components["schemas"]["common-text"];
+                accounts: number;
+                gross_exposure: number;
+            }[];
+        };
+        c07Regime: {
+            /** @enum {string} */
+            regime: "cmf-b1" | "ifrs9" | "bde-annex9";
+            label: components["schemas"]["common-text"];
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            total_provision: number;
+            coverage_rate: number;
+            by_segment: {
+                segment_id: string;
+                provision: number;
+                coverage_rate: number;
+            }[];
+            by_category: {
+                category_id: string;
+                label: components["schemas"]["common-text"];
+                exposure: number;
+                provision: number;
+            }[];
+        };
+        /**
          * C22 models
          * @description Catalog row c22-models 1.0.0: the C22 models artifact with the exact-probability parity points.
          */
@@ -1844,7 +2439,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
+                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
                 };
             };
             404: components["responses"]["NotFound"];

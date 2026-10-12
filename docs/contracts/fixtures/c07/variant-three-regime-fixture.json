@@ -1,0 +1,521 @@
+{
+  "schema": "contraste.case/v1",
+  "case_id": "C07",
+  "variant_id": "fixture-base",
+  "model": [
+    {
+      "id": "R3-trilogy",
+      "family": "lifetime-pd",
+      "rung": "three-regime",
+      "title": {
+        "en": "Fixture model R3-trilogy",
+        "es": "Modelo de ejemplo R3-trilogy"
+      },
+      "short_title": {
+        "en": "R3-trilogy",
+        "es": "R3-trilogy"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    }
+  ],
+  "outputs": {
+    "kind": "three-regime",
+    "scenario_id": "base",
+    "currency": "CLP",
+    "synthetic": true,
+    "notice": {
+      "en": "Fixture, not a result. Synthetic bank, round numbers; no statement about any bank.",
+      "es": "Ejemplo, no es un resultado. Banco sintetico, numeros redondos; sin afirmacion sobre ningun banco."
+    },
+    "scenario": {
+      "description": {
+        "en": "Base scenario: no shock.",
+        "es": "Escenario base: sin shock."
+      },
+      "shocks": []
+    },
+    "portfolio": {
+      "currency": "CLP",
+      "segments": [
+        {
+          "segment_id": "mortgage",
+          "label": {
+            "en": "Residential mortgages",
+            "es": "Hipotecario vivienda"
+          },
+          "accounts": 300000,
+          "gross_exposure": 60000000000.0
+        },
+        {
+          "segment_id": "consumer",
+          "label": {
+            "en": "Consumer",
+            "es": "Consumo"
+          },
+          "accounts": 900000,
+          "gross_exposure": 20000000000.0
+        },
+        {
+          "segment_id": "commercial-group",
+          "label": {
+            "en": "Commercial (group)",
+            "es": "Comercial grupal"
+          },
+          "accounts": 40000,
+          "gross_exposure": 10000000000.0
+        },
+        {
+          "segment_id": "commercial-individual",
+          "label": {
+            "en": "Commercial (individual)",
+            "es": "Comercial individual"
+          },
+          "accounts": 1200,
+          "gross_exposure": 30000000000.0
+        }
+      ]
+    },
+    "regimes": [
+      {
+        "regime": "cmf-b1",
+        "label": {
+          "en": "CMF CNCB B-1",
+          "es": "CMF CNCB B-1"
+        },
+        "currency": "CLP",
+        "total_provision": 2880000000.0,
+        "coverage_rate": 0.024,
+        "by_segment": [
+          {
+            "segment_id": "mortgage",
+            "provision": 480000000.0,
+            "coverage_rate": 0.008
+          },
+          {
+            "segment_id": "consumer",
+            "provision": 1400000000.0,
+            "coverage_rate": 0.07
+          },
+          {
+            "segment_id": "commercial-group",
+            "provision": 400000000.0,
+            "coverage_rate": 0.04
+          },
+          {
+            "segment_id": "commercial-individual",
+            "provision": 600000000.0,
+            "coverage_rate": 0.02
+          }
+        ],
+        "by_category": [
+          {
+            "category_id": "group",
+            "label": {
+              "en": "Group assessment",
+              "es": "Evaluacion grupal"
+            },
+            "exposure": 90000000000.0,
+            "provision": 2280000000.0
+          },
+          {
+            "category_id": "individual-normal-substandard",
+            "label": {
+              "en": "Individual, normal and substandard",
+              "es": "Individual, normal y subestandar"
+            },
+            "exposure": 29000000000.0,
+            "provision": 500000000.0
+          },
+          {
+            "category_id": "individual-default",
+            "label": {
+              "en": "Individual, default",
+              "es": "Individual, incumplimiento"
+            },
+            "exposure": 1000000000.0,
+            "provision": 100000000.0
+          }
+        ]
+      },
+      {
+        "regime": "ifrs9",
+        "label": {
+          "en": "IFRS 9",
+          "es": "IFRS 9"
+        },
+        "currency": "CLP",
+        "total_provision": 2940000000.0,
+        "coverage_rate": 0.0245,
+        "by_segment": [
+          {
+            "segment_id": "mortgage",
+            "provision": 540000000.0,
+            "coverage_rate": 0.009
+          },
+          {
+            "segment_id": "consumer",
+            "provision": 1200000000.0,
+            "coverage_rate": 0.06
+          },
+          {
+            "segment_id": "commercial-group",
+            "provision": 360000000.0,
+            "coverage_rate": 0.036
+          },
+          {
+            "segment_id": "commercial-individual",
+            "provision": 840000000.0,
+            "coverage_rate": 0.028
+          }
+        ],
+        "by_category": [
+          {
+            "category_id": "stage1",
+            "label": {
+              "en": "Stage 1",
+              "es": "Etapa 1"
+            },
+            "exposure": 105000000000.0,
+            "provision": 800000000.0
+          },
+          {
+            "category_id": "stage2",
+            "label": {
+              "en": "Stage 2",
+              "es": "Etapa 2"
+            },
+            "exposure": 12000000000.0,
+            "provision": 1200000000.0
+          },
+          {
+            "category_id": "stage3",
+            "label": {
+              "en": "Stage 3",
+              "es": "Etapa 3"
+            },
+            "exposure": 3000000000.0,
+            "provision": 940000000.0
+          }
+        ]
+      },
+      {
+        "regime": "bde-annex9",
+        "label": {
+          "en": "BdE Annex 9",
+          "es": "BdE Anexo 9"
+        },
+        "currency": "CLP",
+        "total_provision": 2970000000.0,
+        "coverage_rate": 0.02475,
+        "by_segment": [
+          {
+            "segment_id": "mortgage",
+            "provision": 420000000.0,
+            "coverage_rate": 0.007
+          },
+          {
+            "segment_id": "consumer",
+            "provision": 1500000000.0,
+            "coverage_rate": 0.075
+          },
+          {
+            "segment_id": "commercial-group",
+            "provision": 330000000.0,
+            "coverage_rate": 0.033
+          },
+          {
+            "segment_id": "commercial-individual",
+            "provision": 720000000.0,
+            "coverage_rate": 0.024
+          }
+        ],
+        "by_category": [
+          {
+            "category_id": "normal",
+            "label": {
+              "en": "Normal risk",
+              "es": "Riesgo normal"
+            },
+            "exposure": 108000000000.0,
+            "provision": 900000000.0
+          },
+          {
+            "category_id": "normal-special-watch",
+            "label": {
+              "en": "Normal, special watch",
+              "es": "Normal en vigilancia especial"
+            },
+            "exposure": 9000000000.0,
+            "provision": 1170000000.0
+          },
+          {
+            "category_id": "doubtful",
+            "label": {
+              "en": "Doubtful",
+              "es": "Dudoso"
+            },
+            "exposure": 3000000000.0,
+            "provision": 900000000.0
+          }
+        ]
+      }
+    ],
+    "comparison": {
+      "currency": "CLP",
+      "rows": [
+        {
+          "segment_id": "mortgage",
+          "cmf_b1_provision": 480000000.0,
+          "ifrs9_provision": 540000000.0,
+          "bde_annex9_provision": 420000000.0,
+          "gap_ifrs9_minus_b1": 60000000.0,
+          "gap_bde_minus_b1": -60000000.0
+        },
+        {
+          "segment_id": "consumer",
+          "cmf_b1_provision": 1400000000.0,
+          "ifrs9_provision": 1200000000.0,
+          "bde_annex9_provision": 1500000000.0,
+          "gap_ifrs9_minus_b1": -200000000.0,
+          "gap_bde_minus_b1": 100000000.0
+        },
+        {
+          "segment_id": "commercial-group",
+          "cmf_b1_provision": 400000000.0,
+          "ifrs9_provision": 360000000.0,
+          "bde_annex9_provision": 330000000.0,
+          "gap_ifrs9_minus_b1": -40000000.0,
+          "gap_bde_minus_b1": -70000000.0
+        },
+        {
+          "segment_id": "commercial-individual",
+          "cmf_b1_provision": 600000000.0,
+          "ifrs9_provision": 840000000.0,
+          "bde_annex9_provision": 720000000.0,
+          "gap_ifrs9_minus_b1": 240000000.0,
+          "gap_bde_minus_b1": 120000000.0
+        }
+      ]
+    },
+    "gap_bridge": {
+      "currency": "CLP",
+      "from_regime": "cmf-b1",
+      "to_regime": "ifrs9",
+      "steps": [
+        {
+          "id": "lifetime-horizon",
+          "label": {
+            "en": "Lifetime loss on Stage 2",
+            "es": "Perdida a vida sobre Etapa 2"
+          },
+          "amount": 90000000.0
+        },
+        {
+          "id": "forward-looking",
+          "label": {
+            "en": "Forward-looking scenarios",
+            "es": "Escenarios prospectivos"
+          },
+          "amount": 60000000.0
+        },
+        {
+          "id": "discounting",
+          "label": {
+            "en": "Discounting at the EIR",
+            "es": "Descuento a la TIE"
+          },
+          "amount": -30000000.0
+        },
+        {
+          "id": "b1-additional-provisions",
+          "label": {
+            "en": "B-1 additional provisions, not in IFRS 9",
+            "es": "Provisiones adicionales B-1, fuera de IFRS 9"
+          },
+          "amount": -60000000.0
+        }
+      ]
+    },
+    "b1_detail": {
+      "currency": "CLP",
+      "minimum_check": {
+        "minimum_rate": 0.005,
+        "normal_portfolio_exposure": 25000000000.0,
+        "normal_portfolio_provision_before_minimum": 100000000.0,
+        "minimum_amount": 125000000.0,
+        "binding": true,
+        "top_up": 25000000.0
+      },
+      "group_max_rule": [
+        {
+          "segment_id": "mortgage",
+          "standard": 480000000.0,
+          "internal": 432000000.0,
+          "applied": 480000000.0,
+          "method": "max"
+        },
+        {
+          "segment_id": "consumer",
+          "standard": 1400000000.0,
+          "internal": 1260000000.0,
+          "applied": 1400000000.0,
+          "method": "max"
+        },
+        {
+          "segment_id": "commercial-group",
+          "standard": 400000000.0,
+          "internal": 360000000.0,
+          "applied": 400000000.0,
+          "method": "max"
+        }
+      ],
+      "additional_provisions": {
+        "amount": 60000000.0,
+        "rationale": {
+          "en": "Counter-cyclical, board policy",
+          "es": "Contraciclica, politica del directorio"
+        },
+        "policy_min": 0.0,
+        "policy_max": 120000000.0
+      },
+      "individual": {
+        "normal_substandard_provision": 500000000.0,
+        "default_provision": 100000000.0
+      }
+    },
+    "ifrs9_detail": {
+      "currency": "CLP",
+      "stage_summary": [
+        {
+          "stage": "stage1",
+          "accounts": 1000000,
+          "gross_carrying_amount": 105000000000.0,
+          "ecl": 800000000.0,
+          "coverage": 0.00761905
+        },
+        {
+          "stage": "stage2",
+          "accounts": 300000,
+          "gross_carrying_amount": 12000000000.0,
+          "ecl": 1200000000.0,
+          "coverage": 0.1
+        },
+        {
+          "stage": "stage3",
+          "accounts": 141200,
+          "gross_carrying_amount": 3000000000.0,
+          "ecl": 940000000.0,
+          "coverage": 0.31333333
+        }
+      ],
+      "overlays_total": 0.0
+    },
+    "bde_detail": {
+      "currency": "CLP",
+      "categories": [
+        {
+          "category": "normal",
+          "mapped_stage": "stage1",
+          "exposure": 108000000000.0,
+          "provision": 900000000.0,
+          "coverage_rate": 0.00833333
+        },
+        {
+          "category": "normal-special-watch",
+          "mapped_stage": "stage2",
+          "exposure": 9000000000.0,
+          "provision": 1170000000.0,
+          "coverage_rate": 0.13
+        },
+        {
+          "category": "doubtful",
+          "mapped_stage": "stage3",
+          "exposure": 3000000000.0,
+          "provision": 900000000.0,
+          "coverage_rate": 0.3
+        }
+      ],
+      "method": "alternative-solutions"
+    },
+    "delta_vs_base": null
+  },
+  "tests": [
+    {
+      "test_id": "ifrs9.reconciliation_identities",
+      "model_id": "R3-trilogy",
+      "segment": null,
+      "statistic": 0.0,
+      "p_value": null,
+      "metric": 0.0,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture",
+      "extras": {}
+    }
+  ],
+  "impact": {
+    "provision_cmf_b1": {
+      "value": 2880000000.0,
+      "unit": "CLP",
+      "label": {
+        "en": "CMF B-1",
+        "es": "CMF B-1"
+      }
+    },
+    "provision_ifrs9": {
+      "value": 2940000000.0,
+      "unit": "CLP",
+      "label": {
+        "en": "IFRS 9",
+        "es": "IFRS 9"
+      }
+    },
+    "provision_bde": {
+      "value": 2970000000.0,
+      "unit": "CLP",
+      "label": {
+        "en": "BdE Annex 9",
+        "es": "BdE Anexo 9"
+      }
+    }
+  },
+  "findings": [],
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u5-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

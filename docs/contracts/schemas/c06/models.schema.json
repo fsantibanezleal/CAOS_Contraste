@@ -1,0 +1,505 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c06/models.schema.json",
+  "title": "C06 models",
+  "description": "Catalog row c06-models 1.0.0: the C06 models artifact with the lifetime PD ladder, the PIT conversion, LGD, EAD and the staging policy.",
+  "allOf": [
+    {
+      "$ref": "../common/models-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C06"
+        },
+        "fit": {
+          "$ref": "#/$defs/c06Fit"
+        }
+      },
+      "required": [
+        "case_id",
+        "fit"
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c06Fit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "segments",
+        "scenario_definitions",
+        "pit",
+        "ladder",
+        "lgd",
+        "ead",
+        "staging_policy"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c06Segment"
+          }
+        },
+        "scenario_definitions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c06ScenarioDefinition"
+          }
+        },
+        "pit": {
+          "$ref": "#/$defs/c06Pit"
+        },
+        "ladder": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c06Rung"
+          }
+        },
+        "lgd": {
+          "$ref": "#/$defs/c06Lgd"
+        },
+        "ead": {
+          "$ref": "#/$defs/c06Ead"
+        },
+        "staging_policy": {
+          "$ref": "#/$defs/c06StagingPolicy"
+        }
+      },
+      "description": "C06 fit: segments, the Fed-style scenario definitions, the TTC to PIT conversion, the lifetime PD ladder, LGD, EAD and the staging policy that the bake used."
+    },
+    "c06Segment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "pd_ttc",
+        "accounts"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "pd_ttc": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "accounts": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "c06ScenarioDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "weight",
+        "source",
+        "z_path",
+        "macro"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "source": {
+          "type": "string"
+        },
+        "z_path": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "months",
+              "z"
+            ],
+            "properties": {
+              "months": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "z": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "macro": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "variable",
+              "unit",
+              "months",
+              "values"
+            ],
+            "properties": {
+              "variable": {
+                "type": "string"
+              },
+              "unit": {
+                "type": "string"
+              },
+              "months": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "c06Pit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rho",
+        "method",
+        "z_hat",
+        "satellite"
+      ],
+      "properties": {
+        "rho": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "method": {
+          "type": "string"
+        },
+        "z_hat": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "period",
+              "z"
+            ],
+            "properties": {
+              "period": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "z": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "satellite": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "intercept",
+            "ar1",
+            "coefficients"
+          ],
+          "properties": {
+            "intercept": {
+              "type": "number"
+            },
+            "ar1": {
+              "type": "number"
+            },
+            "coefficients": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "value"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "c06Rung": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rung_id",
+        "kind",
+        "covariates",
+        "macro_covariates",
+        "competing_prepayment",
+        "training_cutoff",
+        "coefficients",
+        "baseline"
+      ],
+      "properties": {
+        "rung_id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "kaplan-meier",
+            "discrete-time-hazard",
+            "cox"
+          ]
+        },
+        "covariates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "macro_covariates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "competing_prepayment": {
+          "type": "boolean"
+        },
+        "training_cutoff": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "coefficients": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "estimate",
+              "std_error"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "estimate": {
+                "type": "number"
+              },
+              "std_error": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "baseline": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "months",
+            "cumulative_pd"
+          ],
+          "properties": {
+            "months": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "cumulative_pd": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "c06Lgd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "discounting",
+        "segments"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "discounting": {
+          "type": "string"
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "segment_id",
+              "lgd",
+              "basis"
+            ],
+            "properties": {
+              "segment_id": {
+                "type": "string"
+              },
+              "lgd": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "basis": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "c06Ead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "amortising",
+        "ccf_revolving",
+        "reason"
+      ],
+      "properties": {
+        "amortising": {
+          "type": "boolean"
+        },
+        "ccf_revolving": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "c06StagingPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dpd_backstop",
+        "default_dpd",
+        "threefold_ratio",
+        "absolute_floor",
+        "probation_months",
+        "multiplier_schedule",
+        "source"
+      ],
+      "properties": {
+        "dpd_backstop": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "default_dpd": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "threefold_ratio": {
+          "type": "number",
+          "exclusiveMinimum": 1
+        },
+        "absolute_floor": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "probation_months": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "multiplier_schedule": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pd_origination_upper",
+              "multiplier"
+            ],
+            "properties": {
+              "pd_origination_upper": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 1
+              },
+              "multiplier": {
+                "type": "number",
+                "minimum": 1
+              }
+            }
+          }
+        },
+        "source": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
