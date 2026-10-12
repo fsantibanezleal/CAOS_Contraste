@@ -217,7 +217,7 @@
       },
       "c01-variant": {
         "title": "C01 variant",
-        "description": "Catalog row c01-variant 1.0.0: one C01 (retail PD) variant artifact. The default variant schema: its outputs carry no kind.",
+        "description": "Catalog row c01-variant 2.0.0: one C01 (retail PD) variant artifact. The default variant schema: its outputs carry no kind.",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-variant-envelope"
@@ -402,8 +402,8 @@
               "number",
               "null"
             ],
-            "minimum": 0,
-            "maximum": 1
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
           },
           "dr": {
             "type": [
@@ -622,8 +622,8 @@
           },
           "pd": {
             "type": "number",
-            "minimum": 0,
-            "maximum": 1
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
           },
           "dr": {
             "type": "number"
@@ -1682,7 +1682,8 @@
           "pd": {
             "type": "number",
             "minimum": 0,
-            "maximum": 1
+            "maximum": 1,
+            "description": "Closed at 0 on purpose: the capital parity grid includes PD 0 (a grade with no default in any cohort), an engine input that probes the 0.05% floor of CRE32.4 and is not an estimated PD (data-pipeline/pipeline/cases/c04_parity.py:67-69, 154-160)."
           },
           "lgd": {
             "type": "number",
@@ -3804,7 +3805,7 @@
       },
       "c05-models-sp": {
         "title": "C05 S&P models",
-        "description": "Catalog row c05-models-sp 1.0.0: the C05 models artifact of the S&P fit (any fit_id but ldp).",
+        "description": "Catalog row c05-models-sp 2.0.0: the C05 models artifact of the S&P fit (any fit_id but ldp).",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-models-envelope"
@@ -3828,7 +3829,7 @@
       },
       "c05-variant-ldp": {
         "title": "C05 low-default portfolio variant",
-        "description": "Catalog row c05-ldp 1.0.0: most prudent PD bounds of a low-default portfolio (outputs.kind ldp).",
+        "description": "Catalog row c05-ldp 2.0.0: most prudent PD bounds of a low-default portfolio (outputs.kind ldp).",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-variant-envelope"
@@ -3857,7 +3858,7 @@
       },
       "c05-variant-sp": {
         "title": "C05 S&P calibration variant",
-        "description": "Catalog row c05-sp 1.0.0: the S&P calibration of one year (outputs.kind sp-calibration).",
+        "description": "Catalog row c05-sp 2.0.0: the S&P calibration of one year (outputs.kind sp-calibration).",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-variant-envelope"
@@ -3903,8 +3904,8 @@
           },
           "pd": {
             "type": "number",
-            "minimum": 0,
-            "maximum": 1,
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
             "description": "The approach's own forecast of the unconditional PD."
           },
           "pd_under_profile1": {
@@ -4084,8 +4085,8 @@
           },
           "pd": {
             "type": "number",
-            "minimum": 0,
-            "maximum": 1
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
           },
           "lgd": {
             "type": "number",
@@ -4477,8 +4478,8 @@
             "type": "array",
             "items": {
               "type": "number",
-              "minimum": 0,
-              "maximum": 1
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1
             }
           },
           "k": {
@@ -4510,8 +4511,8 @@
             "properties": {
               "pd": {
                 "type": "number",
-                "minimum": 0,
-                "maximum": 1
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 1
               },
               "accuracy_ratio": {
                 "type": "number"
@@ -4761,8 +4762,8 @@
               },
               "pd": {
                 "type": "number",
-                "minimum": 0,
-                "maximum": 1
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 1
               }
             }
           },
