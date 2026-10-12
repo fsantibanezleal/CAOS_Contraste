@@ -1,0 +1,636 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c07/models.schema.json",
+  "title": "C07 models",
+  "description": "Catalog row c07-models 1.0.0: the C07 models artifact with the synthetic bank calibration and the transcribed regime tables.",
+  "allOf": [
+    {
+      "$ref": "../common/models-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C07"
+        },
+        "fit": {
+          "$ref": "#/$defs/c07Fit"
+        }
+      },
+      "required": [
+        "case_id",
+        "fit"
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c07Fit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "bank",
+        "calibration_targets",
+        "segments",
+        "b1_tables",
+        "b1_default_categories",
+        "ifrs9",
+        "bde",
+        "scenarios"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "bank": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "synthetic",
+            "notice",
+            "seed",
+            "calibration_source"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            },
+            "notice": {
+              "$ref": "../common/text.schema.json"
+            },
+            "seed": {
+              "type": "integer"
+            },
+            "calibration_source": {
+              "type": "string"
+            }
+          }
+        },
+        "calibration_targets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "metric",
+              "unit",
+              "target",
+              "achieved",
+              "source",
+              "as_of"
+            ],
+            "properties": {
+              "metric": {
+                "type": "string"
+              },
+              "unit": {
+                "type": "string"
+              },
+              "target": {
+                "type": "number"
+              },
+              "achieved": {
+                "type": "number"
+              },
+              "source": {
+                "type": "string"
+              },
+              "as_of": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              }
+            }
+          }
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "accounts",
+              "gross_exposure",
+              "b1_portfolio",
+              "bde_segment",
+              "bde_segment_label"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "$ref": "../common/text.schema.json"
+              },
+              "accounts": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "gross_exposure": {
+                "type": "number"
+              },
+              "b1_portfolio": {
+                "type": "string",
+                "enum": [
+                  "residential-mortgage",
+                  "consumer",
+                  "commercial-group",
+                  "commercial-individual"
+                ]
+              },
+              "bde_segment": {
+                "type": "string",
+                "enum": [
+                  "A.1.1",
+                  "A.1.2",
+                  "A.1.3",
+                  "A.2.1",
+                  "A.2.2",
+                  "A.2.3",
+                  "B.1.1",
+                  "B.1.2",
+                  "B.1.3",
+                  "B.2",
+                  "B.2.1",
+                  "B.3"
+                ],
+                "description": "The Annex 9 segment code; the label is separate."
+              },
+              "bde_segment_label": {
+                "$ref": "../common/text.schema.json"
+              }
+            }
+          }
+        },
+        "b1_tables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c07B1Table"
+          }
+        },
+        "b1_default_categories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "category",
+              "tpe_upper",
+              "provision_rate"
+            ],
+            "properties": {
+              "category": {
+                "type": "string"
+              },
+              "tpe_upper": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "provision_rate": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        },
+        "ifrs9": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "pd_ladder_rung",
+            "discount_convention",
+            "segments",
+            "weighting_scenarios",
+            "eir_basis",
+            "staging_policy"
+          ],
+          "properties": {
+            "pd_ladder_rung": {
+              "type": "string"
+            },
+            "discount_convention": {
+              "type": "string",
+              "enum": [
+                "mid-period",
+                "end-of-period"
+              ]
+            },
+            "segments": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "segment_id",
+                  "pd_ttc",
+                  "rho",
+                  "lgd"
+                ],
+                "properties": {
+                  "segment_id": {
+                    "type": "string"
+                  },
+                  "pd_ttc": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "exclusiveMaximum": 1
+                  },
+                  "rho": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "exclusiveMaximum": 1
+                  },
+                  "lgd": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              }
+            },
+            "weighting_scenarios": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "$ref": "#/$defs/c07WeightingScenario"
+              },
+              "description": "At least two outcomes with weights summing to 1 (5.5.17(a), B5.5.42); the IFRS 9 regime of every variant is the weighted ECL over them."
+            },
+            "eir_basis": {
+              "type": "string",
+              "enum": [
+                "original",
+                "current",
+                "credit-adjusted"
+              ],
+              "description": "EIR basis of the non-POCI accounts; POCI accounts use the credit-adjusted EIR."
+            },
+            "staging_policy": {
+              "$ref": "#/$defs/c07StagingPolicy"
+            }
+          }
+        },
+        "bde": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "normal_coverage",
+            "doubtful_bucket_labels",
+            "doubtful_coverage",
+            "doubtful_bucket_upper_days"
+          ],
+          "properties": {
+            "normal_coverage": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "segment",
+                  "normal",
+                  "special_watch"
+                ],
+                "properties": {
+                  "segment": {
+                    "type": "string",
+                    "enum": [
+                      "A.1.1",
+                      "A.1.2",
+                      "A.1.3",
+                      "A.2.1",
+                      "A.2.2",
+                      "A.2.3",
+                      "B.1.1",
+                      "B.1.2",
+                      "B.1.3",
+                      "B.2",
+                      "B.2.1",
+                      "B.3"
+                    ]
+                  },
+                  "normal": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "special_watch": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              }
+            },
+            "doubtful_bucket_labels": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "doubtful_bucket_upper_days": {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "description": "Inclusive upper bound in days of each doubtful bucket (months at 30.4375 days rounded); null for the last, open bucket."
+            },
+            "doubtful_coverage": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "segment",
+                  "by_bucket"
+                ],
+                "properties": {
+                  "segment": {
+                    "type": "string",
+                    "enum": [
+                      "A.1.1",
+                      "A.1.2",
+                      "A.1.3",
+                      "A.2.1",
+                      "A.2.2",
+                      "A.2.3",
+                      "B.1.1",
+                      "B.1.2",
+                      "B.1.3",
+                      "B.2",
+                      "B.2.1",
+                      "B.3"
+                    ]
+                  },
+                  "by_bucket": {
+                    "type": "array",
+                    "items": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "scenarios": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "shocks",
+              "z_shift"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "enum": [
+                  "base",
+                  "recession",
+                  "consumer-arrears-shock",
+                  "house-price-fall",
+                  "uf-inflation-spike",
+                  "combined-severe"
+                ]
+              },
+              "label": {
+                "$ref": "../common/text.schema.json"
+              },
+              "shocks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "driver",
+                    "unit",
+                    "value"
+                  ],
+                  "properties": {
+                    "driver": {
+                      "type": "string"
+                    },
+                    "unit": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "number"
+                    }
+                  }
+                }
+              },
+              "z_shift": {
+                "type": "number",
+                "description": "The variant's shift of current conditions in systematic-factor units, added to every weighting scenario; 0 for base."
+              }
+            }
+          }
+        }
+      },
+      "description": "C07 fit: the synthetic Banco Andino calibration, the transcribed B-1 tables with their cells, the IFRS 9 parameters, the BdE Annex 9 coverage and the six scenario definitions."
+    },
+    "c07B1Table": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "table_id",
+        "portfolio",
+        "source",
+        "cells"
+      ],
+      "properties": {
+        "table_id": {
+          "type": "string"
+        },
+        "portfolio": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "cells": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "row",
+              "column",
+              "pi",
+              "pdi",
+              "pe"
+            ],
+            "properties": {
+              "row": {
+                "type": "string"
+              },
+              "column": {
+                "type": "string"
+              },
+              "pi": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "pdi": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "pe": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "description": "A transcribed CMF CNCB B-1 table; PI, PDI and PE are decimals (0.010916 is 1.0916 per cent) and, where both are set, PE = PI x PDI to the table's rounding. Closed at 0 and 1 on purpose: the default column is PI = 1 and the tables are statutory parameters, not estimates."
+    },
+    "c07StagingPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dpd_backstop",
+        "default_dpd",
+        "threefold_ratio",
+        "absolute_floor",
+        "probation_months",
+        "low_credit_risk_pd",
+        "multiplier_schedule",
+        "source"
+      ],
+      "properties": {
+        "dpd_backstop": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "default_dpd": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "threefold_ratio": {
+          "type": "number",
+          "exclusiveMinimum": 1
+        },
+        "absolute_floor": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "probation_months": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "low_credit_risk_pd": {
+          "anyOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "multiplier_schedule": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pd_origination_upper",
+              "multiplier"
+            ],
+            "properties": {
+              "pd_origination_upper": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 1
+              },
+              "multiplier": {
+                "type": "number",
+                "minimum": 1
+              }
+            }
+          }
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "description": "The IFRS 9 staging policy of the C07 bake (same record as the C06 staging policy, engine StagingPolicy)."
+    },
+    "c07WeightingScenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "weight",
+        "z_offset"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "z_offset": {
+          "type": "number",
+          "description": "Systematic-factor offset of this outcome around current conditions; the variant adds its z_shift."
+        }
+      }
+    }
+  }
+}
