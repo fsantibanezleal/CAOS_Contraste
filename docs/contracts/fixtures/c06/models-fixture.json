@@ -278,6 +278,7 @@
       "threefold_ratio": 3.0,
       "absolute_floor": 0.005,
       "probation_months": 6,
+      "low_credit_risk_pd": null,
       "multiplier_schedule": [
         {
           "pd_origination_upper": 0.01,

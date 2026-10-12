@@ -4976,6 +4976,91 @@
         },
         "description": "The SICR view's pair of curves for a sampled account: the origination forward curve against the current one over the same remaining window."
       },
+      "c06AllowanceMovement": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "line_id",
+          "amount"
+        ],
+        "properties": {
+          "line_id": {
+            "type": "string",
+            "description": "Equals the `id` of a `waterfall.lines[]` line (the model lines and `overlay-<overlay id>`), so the waterfall opens into the 35H table."
+          },
+          "amount": {
+            "type": "number",
+            "description": "Signed; a positive amount raises the allowance."
+          }
+        }
+      },
+      "c06AllowanceRollForwardRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stage",
+          "opening",
+          "movements",
+          "closing",
+          "residual"
+        ],
+        "properties": {
+          "stage": {
+            "type": "string",
+            "enum": [
+              "stage1",
+              "stage2",
+              "stage3",
+              "poci"
+            ]
+          },
+          "opening": {
+            "type": "number"
+          },
+          "movements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c06AllowanceMovement"
+            }
+          },
+          "closing": {
+            "type": "number"
+          },
+          "residual": {
+            "type": "number",
+            "description": "closing - (opening + sum of movements) itself (a document may store it rounded to 1e-9); closure is judged against the reconciliation tolerance basis."
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "stage": {
+                  "enum": [
+                    "stage1",
+                    "stage2",
+                    "stage3"
+                  ]
+                }
+              },
+              "required": [
+                "stage"
+              ]
+            },
+            "then": {
+              "properties": {
+                "opening": {
+                  "minimum": 0
+                },
+                "closing": {
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        ],
+        "description": "Only a POCI allowance may be negative (IFRS 9 5.5.14); stage1 to stage3 openings and closings are not."
+      },
       "c06DataStatus": {
         "type": "object",
         "additionalProperties": false,
@@ -5011,6 +5096,93 @@
           }
         },
         "description": "The data this document stands on. A variant without Freddie Mac data says so and why; nothing is invented."
+      },
+      "c06DecileCalibration": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rung_id",
+          "rows"
+        ],
+        "properties": {
+          "rung_id": {
+            "type": "string"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "origination_cohort",
+                "months",
+                "decile",
+                "n",
+                "estimator",
+                "predicted_cumulative_pd",
+                "observed_cumulative_pd",
+                "reason"
+              ],
+              "properties": {
+                "origination_cohort": {
+                  "type": "string"
+                },
+                "months": {
+                  "type": "integer",
+                  "enum": [
+                    12,
+                    24,
+                    36
+                  ]
+                },
+                "decile": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10
+                },
+                "n": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "estimator": {
+                  "type": "string",
+                  "enum": [
+                    "kaplan-meier",
+                    "aalen-johansen"
+                  ]
+                },
+                "predicted_cumulative_pd": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "exclusiveMaximum": 1
+                },
+                "observed_cumulative_pd": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "reason": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "description": "Calibration at 12, 24 and 36 months per predicted-risk decile against the observed cumulative incidence (SDD row Lifetime PD rungs); an unobserved cell is null with its reason."
       },
       "c06Ead": {
         "type": "object",
@@ -5091,7 +5263,7 @@
             }
           }
         },
-        "description": "Per-scenario ECL by stage at 100 per cent weight, model ECL without overlays."
+        "description": "Per-scenario ECL by stage at 100 per cent weight, model ECL without overlays. Staging is frozen: it is computed once at the weighted conditions and applied to every scenario row, so the weighted ECL equals the sum of weight times scenario ECL."
       },
       "c06Fit": {
         "type": "object",
@@ -5144,6 +5316,72 @@
           }
         },
         "description": "C06 fit: segments, the Fed-style scenario definitions, the TTC to PIT conversion, the lifetime PD ladder, LGD, EAD and the staging policy that the bake used."
+      },
+      "c06GcaMovement": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "line_id",
+          "amount"
+        ],
+        "properties": {
+          "line_id": {
+            "type": "string",
+            "enum": [
+              "originations",
+              "transfer-1-2",
+              "transfer-2-3",
+              "transfer-2-1",
+              "transfer-3-2",
+              "repayments",
+              "write-off",
+              "derecognition",
+              "other"
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "description": "Signed; a positive amount raises the gross carrying amount."
+          }
+        }
+      },
+      "c06GcaRollForwardRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stage",
+          "opening",
+          "movements",
+          "closing",
+          "residual"
+        ],
+        "properties": {
+          "stage": {
+            "type": "string",
+            "enum": [
+              "stage1",
+              "stage2",
+              "stage3",
+              "poci"
+            ]
+          },
+          "opening": {
+            "type": "number"
+          },
+          "movements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c06GcaMovement"
+            }
+          },
+          "closing": {
+            "type": "number"
+          },
+          "residual": {
+            "type": "number",
+            "description": "closing - (opening + sum of movements) itself (a document may store it rounded to 1e-9); closure is judged against the reconciliation tolerance basis."
+          }
+        }
       },
       "c06Horizon": {
         "type": "object",
@@ -5218,7 +5456,9 @@
               "type": "object",
               "additionalProperties": false,
               "required": [
+                "origination_cohort",
                 "months",
+                "estimator",
                 "predicted_cumulative_pd",
                 "observed_cumulative_pd",
                 "gap",
@@ -5226,9 +5466,21 @@
                 "reason"
               ],
               "properties": {
+                "origination_cohort": {
+                  "type": "string",
+                  "description": "The origination cohort of the row (for example `2018`), or `all` for the pooled originations."
+                },
                 "months": {
                   "type": "integer",
                   "minimum": 1
+                },
+                "estimator": {
+                  "type": "string",
+                  "enum": [
+                    "kaplan-meier",
+                    "aalen-johansen"
+                  ],
+                  "description": "Aalen-Johansen cumulative incidence when prepayment competes, Kaplan-Meier otherwise."
                 },
                 "predicted_cumulative_pd": {
                   "type": "number",
@@ -5283,23 +5535,7 @@
             }
           }
         },
-        "description": "Kaplan-Meier observed against predicted cumulative default by horizon; a horizon not yet observed is null with its reason."
-      },
-      "c06Movement": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "line_id",
-          "amount"
-        ],
-        "properties": {
-          "line_id": {
-            "type": "string"
-          },
-          "amount": {
-            "type": "number"
-          }
-        }
+        "description": "Observed against predicted cumulative default by origination cohort and horizon (Aalen-Johansen when prepayment competes, Kaplan-Meier otherwise); a horizon not yet observed is null with its reason."
       },
       "c06NonLinearity": {
         "type": "object",
@@ -5443,7 +5679,8 @@
           "overlays",
           "reconciliation",
           "lifetime_backtest",
-          "rung_comparison"
+          "rung_comparison",
+          "decile_calibration"
         ],
         "properties": {
           "kind": {
@@ -5475,7 +5712,9 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/c06ScenarioWeight"
-            }
+            },
+            "minItems": 2,
+            "description": "At least two probability-weighted scenarios (IFRS 9 5.5.17(a), B5.5.42); weights sum to 1."
           },
           "term_structures": {
             "type": "array",
@@ -5530,9 +5769,12 @@
             "items": {
               "$ref": "#/components/schemas/c06RungResult"
             }
+          },
+          "decile_calibration": {
+            "$ref": "#/components/schemas/c06DecileCalibration"
           }
         },
-        "description": "C06 reporting-date outputs (outputs.kind reporting-date): one reporting date of the lifetime PD, staging and ECL run. Money in `currency`; PD open (0, 1); horizons in months. A value the bake may lack is nullable with its reason."
+        "description": "C06 reporting-date outputs (outputs.kind reporting-date): one reporting date of the lifetime PD, staging and ECL run. Money in `currency`; PD open (0, 1); horizons in months. A value the bake may lack is nullable with its reason. Staging parameters have one source, `settings` (the C06 models `staging_policy` repeats it field by field). Money identities of the reconciliation close by one tolerance basis (see `reconciliation`)."
       },
       "c06Overlay": {
         "type": "object",
@@ -5544,6 +5786,7 @@
           "method",
           "target",
           "segment_id",
+          "stage",
           "amount",
           "staging_effect",
           "review_date"
@@ -5586,6 +5829,23 @@
                 "type": "null"
               }
             ]
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "stage1",
+                  "stage2",
+                  "stage3",
+                  "poci"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The stage whose allowance closing carries the overlay; null is portfolio level and is carried in the stage1 closing (a convention of the engine contract)."
           },
           "amount": {
             "type": "number"
@@ -5695,59 +5955,23 @@
             "description": "ISO 4217 code of the money fields of this block."
           },
           "tolerance": {
-            "const": 0.000001
+            "const": 0.000001,
+            "description": "Relative: every identity closes when its absolute difference is at most tolerance * max(1, G), G being the total gross carrying amount of this document (the sum of the absolute closing amounts of `gross_carrying_amount`), in `currency`."
           },
           "allowance": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/c06RollForwardRow"
+              "$ref": "#/components/schemas/c06AllowanceRollForwardRow"
             }
           },
           "gross_carrying_amount": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/c06RollForwardRow"
+              "$ref": "#/components/schemas/c06GcaRollForwardRow"
             }
           }
         },
-        "description": "IFRS 7 35H (allowance) and 35I (gross carrying amount) roll-forwards by stage; opening plus movements equals closing and residual is within tolerance."
-      },
-      "c06RollForwardRow": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "stage",
-          "opening",
-          "movements",
-          "closing",
-          "residual"
-        ],
-        "properties": {
-          "stage": {
-            "type": "string",
-            "enum": [
-              "stage1",
-              "stage2",
-              "stage3",
-              "poci"
-            ]
-          },
-          "opening": {
-            "type": "number"
-          },
-          "movements": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/c06Movement"
-            }
-          },
-          "closing": {
-            "type": "number"
-          },
-          "residual": {
-            "type": "number"
-          }
-        }
+        "description": "IFRS 7 35H (allowance) and 35I (gross carrying amount) roll-forwards by stage; opening plus movements equals closing and residual is within the tolerance basis max(1, G) * tolerance (G the total gross carrying amount of the document). Each allowance `line_id` is a waterfall line id; each stage allowance closing equals the stage ECL plus the overlays carried in that stage."
       },
       "c06Rung": {
         "type": "object",
@@ -6069,7 +6293,8 @@
               "original",
               "current",
               "credit-adjusted"
-            ]
+            ],
+            "description": "The EIR basis of every non-POCI account; POCI accounts always use the credit-adjusted EIR (IFRS 9 5.5.13), whatever this value."
           },
           "probation_months": {
             "type": "integer",
@@ -6085,7 +6310,9 @@
               "dpd_backstop",
               "threefold_ratio",
               "absolute_floor",
-              "multiplier_schedule"
+              "multiplier_schedule",
+              "default_dpd",
+              "low_credit_risk_pd"
             ],
             "properties": {
               "dpd_backstop": {
@@ -6122,8 +6349,27 @@
                     }
                   }
                 }
+              },
+              "default_dpd": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Days past due at which an account is Stage 3 (dpd >= default_dpd; the 90 dpd presumption of IFRS 9 B5.5.37)."
+              },
+              "low_credit_risk_pd": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "exclusiveMaximum": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Annualised PD at or below which the quantitative SICR tests are suppressed (5.5.10); null when no exemption is used (then `low_credit_risk_exemption` is false). It never suppresses the dpd backstop, forbearance, watch-list, collective or default triggers."
               }
-            }
+            },
+            "description": "The staging policy record (engine StagingPolicy). Only the 30 dpd and 90 dpd presumptions are IFRS 9; the threefold ratio is an EBA supervisory expectation; the rest are Contraste policy parameters."
           }
         }
       },
@@ -6246,8 +6492,34 @@
                 "gross_carrying_amount": {
                   "type": "number"
                 }
-              }
-            }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "source": {
+                        "const": "poci"
+                      }
+                    },
+                    "required": [
+                      "source"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "target": {
+                        "enum": [
+                          "poci",
+                          "derecognised",
+                          "written-off"
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "description": "A POCI account stays POCI for its life: a flow out of poci ends in derecognised or written-off."
           }
         }
       },
@@ -6315,6 +6587,7 @@
           "threefold_ratio",
           "absolute_floor",
           "probation_months",
+          "low_credit_risk_pd",
           "multiplier_schedule",
           "source"
         ],
@@ -6339,6 +6612,18 @@
           "probation_months": {
             "type": "integer",
             "minimum": 0
+          },
+          "low_credit_risk_pd": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "multiplier_schedule": {
             "type": "array",
@@ -6365,7 +6650,8 @@
           "source": {
             "type": "string"
           }
-        }
+        },
+        "description": "The staging policy of the fit. The variant `outputs.settings.sicr` (with `settings.probation_months`) is authoritative: this block equals it field by field, and `low_credit_risk_pd` is null exactly when `low_credit_risk_exemption` is false."
       },
       "c06TermStructure": {
         "type": "object",
@@ -6503,7 +6789,7 @@
             }
           }
         },
-        "description": "Opening to closing allowance; every overlay is its own line (kind overlay, overlay_id set), never merged into a model line."
+        "description": "Opening to closing allowance. A positive amount raises the allowance and a negative amount lowers it; the opening line is the sum of the stage openings, every movement line is the sum over the stages of the reconciliation movements with the same `line_id`, and the closing line is the sum of the stage closings. Every overlay is its own line (kind overlay, overlay_id set, id `overlay-<overlay id>`), never merged into a model line."
       },
       "c06WeightGrid": {
         "type": "object",
@@ -6629,7 +6915,8 @@
           "minimum_check",
           "group_max_rule",
           "additional_provisions",
-          "individual"
+          "individual",
+          "booked_total"
         ],
         "properties": {
           "currency": {
@@ -6667,7 +6954,8 @@
               "top_up": {
                 "type": "number"
               }
-            }
+            },
+            "description": "The 0.50 per cent minimum on the individually assessed normal portfolio (categories A1 to A6), loans plus contingent credits; top_up is carried in regimes[cmf-b1] as the line minimum-top-up."
           },
           "group_max_rule": {
             "type": "array",
@@ -6679,7 +6967,8 @@
                 "standard",
                 "internal",
                 "applied",
-                "method"
+                "method",
+                "internal_reason"
               ],
               "properties": {
                 "segment_id": {
@@ -6689,7 +6978,15 @@
                   "type": "number"
                 },
                 "internal": {
-                  "type": "number"
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The internal-method provision; null when the bank has no internal method (then internal_reason is set and method is standard)."
                 },
                 "applied": {
                   "type": "number"
@@ -6701,8 +6998,42 @@
                     "internal",
                     "max"
                   ]
+                },
+                "internal_reason": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 }
-              }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "internal": {
+                        "type": "null"
+                      }
+                    },
+                    "required": [
+                      "internal"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "internal_reason": {
+                        "type": "string"
+                      },
+                      "method": {
+                        "const": "standard"
+                      }
+                    }
+                  }
+                }
+              ]
             }
           },
           "additional_provisions": {
@@ -6727,7 +7058,8 @@
               "policy_max": {
                 "type": "number"
               }
-            }
+            },
+            "description": "Counter-cyclical general provisions (B-1 N 9): their own line, outside the comparable total and never per segment."
           },
           "individual": {
             "type": "object",
@@ -6744,6 +7076,10 @@
                 "type": "number"
               }
             }
+          },
+          "booked_total": {
+            "type": "number",
+            "description": "What the bank books under B-1: the comparable total plus the additional provisions."
           }
         }
       },
@@ -6874,7 +7210,8 @@
                 "coverage_rate": {
                   "type": "number",
                   "minimum": 0,
-                  "maximum": 1
+                  "maximum": 1,
+                  "description": "provision divided by the exposure of the category."
                 }
               }
             }
@@ -6893,7 +7230,8 @@
         "additionalProperties": false,
         "required": [
           "currency",
-          "rows"
+          "rows",
+          "unallocated"
         ],
         "properties": {
           "currency": {
@@ -6922,7 +7260,8 @@
                   "type": "number"
                 },
                 "ifrs9_provision": {
-                  "type": "number"
+                  "type": "number",
+                  "description": "Model ECL excluding overlays."
                 },
                 "bde_annex9_provision": {
                   "type": "number"
@@ -6934,7 +7273,37 @@
                   "type": "number"
                 }
               }
-            }
+            },
+            "description": "Segment provisions of the model only (by_segment); the unallocated lines are in `unallocated`."
+          },
+          "unallocated": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "cmf_b1_provision",
+              "ifrs9_provision",
+              "bde_annex9_provision",
+              "gap_ifrs9_minus_b1",
+              "gap_bde_minus_b1"
+            ],
+            "properties": {
+              "cmf_b1_provision": {
+                "type": "number"
+              },
+              "ifrs9_provision": {
+                "type": "number"
+              },
+              "bde_annex9_provision": {
+                "type": "number"
+              },
+              "gap_ifrs9_minus_b1": {
+                "type": "number"
+              },
+              "gap_bde_minus_b1": {
+                "type": "number"
+              }
+            },
+            "description": "The sums of the unallocated lines of each regime; rows plus unallocated equal the regime totals."
           }
         }
       },
@@ -7059,7 +7428,8 @@
                 "accounts",
                 "gross_exposure",
                 "b1_portfolio",
-                "bde_segment"
+                "bde_segment",
+                "bde_segment_label"
               ],
               "properties": {
                 "id": {
@@ -7085,7 +7455,25 @@
                   ]
                 },
                 "bde_segment": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "A.1.1",
+                    "A.1.2",
+                    "A.1.3",
+                    "A.2.1",
+                    "A.2.2",
+                    "A.2.3",
+                    "B.1.1",
+                    "B.1.2",
+                    "B.1.3",
+                    "B.2",
+                    "B.2.1",
+                    "B.3"
+                  ],
+                  "description": "The Annex 9 segment code; the label is separate."
+                },
+                "bde_segment_label": {
+                  "$ref": "#/components/schemas/common-text"
                 }
               }
             }
@@ -7136,7 +7524,10 @@
             "required": [
               "pd_ladder_rung",
               "discount_convention",
-              "segments"
+              "segments",
+              "weighting_scenarios",
+              "eir_basis",
+              "staging_policy"
             ],
             "properties": {
               "pd_ladder_rung": {
@@ -7181,6 +7572,26 @@
                     }
                   }
                 }
+              },
+              "weighting_scenarios": {
+                "type": "array",
+                "minItems": 2,
+                "items": {
+                  "$ref": "#/components/schemas/c07WeightingScenario"
+                },
+                "description": "At least two outcomes with weights summing to 1 (5.5.17(a), B5.5.42); the IFRS 9 regime of every variant is the weighted ECL over them."
+              },
+              "eir_basis": {
+                "type": "string",
+                "enum": [
+                  "original",
+                  "current",
+                  "credit-adjusted"
+                ],
+                "description": "EIR basis of the non-POCI accounts; POCI accounts use the credit-adjusted EIR."
+              },
+              "staging_policy": {
+                "$ref": "#/components/schemas/c07StagingPolicy"
               }
             }
           },
@@ -7190,7 +7601,8 @@
             "required": [
               "normal_coverage",
               "doubtful_bucket_labels",
-              "doubtful_coverage"
+              "doubtful_coverage",
+              "doubtful_bucket_upper_days"
             ],
             "properties": {
               "normal_coverage": {
@@ -7205,7 +7617,21 @@
                   ],
                   "properties": {
                     "segment": {
-                      "type": "string"
+                      "type": "string",
+                      "enum": [
+                        "A.1.1",
+                        "A.1.2",
+                        "A.1.3",
+                        "A.2.1",
+                        "A.2.2",
+                        "A.2.3",
+                        "B.1.1",
+                        "B.1.2",
+                        "B.1.3",
+                        "B.2",
+                        "B.2.1",
+                        "B.3"
+                      ]
                     },
                     "normal": {
                       "type": "number",
@@ -7226,6 +7652,21 @@
                   "type": "string"
                 }
               },
+              "doubtful_bucket_upper_days": {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "description": "Inclusive upper bound in days of each doubtful bucket (months at 30.4375 days rounded); null for the last, open bucket."
+              },
               "doubtful_coverage": {
                 "type": "array",
                 "items": {
@@ -7237,7 +7678,21 @@
                   ],
                   "properties": {
                     "segment": {
-                      "type": "string"
+                      "type": "string",
+                      "enum": [
+                        "A.1.1",
+                        "A.1.2",
+                        "A.1.3",
+                        "A.2.1",
+                        "A.2.2",
+                        "A.2.3",
+                        "B.1.1",
+                        "B.1.2",
+                        "B.1.3",
+                        "B.2",
+                        "B.2.1",
+                        "B.3"
+                      ]
                     },
                     "by_bucket": {
                       "type": "array",
@@ -7260,7 +7715,8 @@
               "required": [
                 "id",
                 "label",
-                "shocks"
+                "shocks",
+                "z_shift"
               ],
               "properties": {
                 "id": {
@@ -7299,6 +7755,10 @@
                       }
                     }
                   }
+                },
+                "z_shift": {
+                  "type": "number",
+                  "description": "The variant's shift of current conditions in systematic-factor units, added to every weighting scenario; 0 for base."
                 }
               }
             }
@@ -7351,7 +7811,7 @@
             }
           }
         },
-        "description": "The gap from the CMF B-1 total to the IFRS 9 total as exhaustive steps whose amounts sum to the gap exactly (an unexplained step is its own line)."
+        "description": "The gap from the CMF B-1 comparable total to the IFRS 9 total (both as defined on `total_provision`) as exhaustive steps whose amounts sum to the gap exactly (an unexplained step is its own line). B-1 additional provisions are outside both totals and are not a step; the B-1 minimum top-up and the IFRS 9 overlays are."
       },
       "c07Ifrs9Detail": {
         "type": "object",
@@ -7359,7 +7819,10 @@
         "required": [
           "currency",
           "stage_summary",
-          "overlays_total"
+          "overlays_total",
+          "measure",
+          "weighted_components",
+          "overlays"
         ],
         "properties": {
           "currency": {
@@ -7405,12 +7868,103 @@
                   "maximum": 1
                 }
               }
-            }
+            },
+            "description": "Model ECL excluding overlays, by stage."
           },
           "overlays_total": {
-            "type": "number"
+            "type": "number",
+            "description": "Sum of overlays[].amount; regimes[ifrs9].total_provision = model ECL + overlays_total."
+          },
+          "measure": {
+            "const": "probability-weighted-ecl"
+          },
+          "weighted_components": {
+            "type": "array",
+            "minItems": 2,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "scenario_id",
+                "weight",
+                "z",
+                "single_scenario_ecl"
+              ],
+              "properties": {
+                "scenario_id": {
+                  "type": "string"
+                },
+                "weight": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "z": {
+                  "type": "number",
+                  "description": "The systematic factor of the component: its weighting-scenario offset plus the variant shift."
+                },
+                "single_scenario_ecl": {
+                  "type": "number",
+                  "description": "A component of the weighted measure at 100 per cent weight; a sensitivity, never the IFRS 9 measure."
+                }
+              }
+            },
+            "description": "At least two scenarios whose weights sum to 1; the model ECL is the sum of weight times single_scenario_ecl (5.5.17(a), B5.5.42)."
+          },
+          "overlays": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "label",
+                "segment_id",
+                "stage",
+                "amount"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "$ref": "#/components/schemas/common-text"
+                },
+                "segment_id": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "stage": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "stage1",
+                        "stage2",
+                        "stage3",
+                        "poci"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "amount": {
+                  "type": "number"
+                }
+              }
+            },
+            "description": "Each overlay is its own line, also an unallocated line of regimes[ifrs9]; never merged into by_segment or stage_summary."
           }
-        }
+        },
+        "description": "The IFRS 9 regime of a scenario variant is a probability-weighted ECL over at least two scenarios, with the variant applied as a shift of current conditions (5.5.17(a), B5.5.42). A 100 per cent single-scenario ECL is never an IFRS 9 measure: it appears only as a weighted component or a sensitivity. The stage summary and the segment provisions carry the model ECL excluding overlays; overlays are their own lines."
       },
       "c07Outputs": {
         "type": "object",
@@ -7455,7 +8009,8 @@
             "const": true
           },
           "notice": {
-            "$ref": "#/components/schemas/common-text"
+            "$ref": "#/components/schemas/common-text",
+            "description": "Must say that the data are synthetic and that the IFRS 9 column is a comparison measure, not the provision Chilean banks book on loans (CMF B-1)."
           },
           "scenario": {
             "type": "object",
@@ -7498,9 +8053,45 @@
           },
           "regimes": {
             "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/c07Regime"
-            }
+            "minItems": 3,
+            "maxItems": 3,
+            "items": false,
+            "prefixItems": [
+              {
+                "$ref": "#/components/schemas/c07Regime",
+                "properties": {
+                  "regime": {
+                    "const": "cmf-b1"
+                  },
+                  "status": {
+                    "const": "statutory-chile-loans"
+                  }
+                }
+              },
+              {
+                "$ref": "#/components/schemas/c07Regime",
+                "properties": {
+                  "regime": {
+                    "const": "ifrs9"
+                  },
+                  "status": {
+                    "const": "comparison-measure"
+                  }
+                }
+              },
+              {
+                "$ref": "#/components/schemas/c07Regime",
+                "properties": {
+                  "regime": {
+                    "const": "bde-annex9"
+                  },
+                  "status": {
+                    "const": "spanish-gaap-alternative-solutions"
+                  }
+                }
+              }
+            ],
+            "description": "Exactly the three regimes in this order."
           },
           "comparison": {
             "$ref": "#/components/schemas/c07Comparison"
@@ -7525,10 +8116,39 @@
               {
                 "type": "null"
               }
-            ]
+            ],
+            "description": "Null for the base scenario, the deltas against the base scenario for every other one."
           }
         },
-        "description": "C07 three-regime comparison (outputs.kind three-regime): the same synthetic portfolio of Banco Andino under CMF B-1, IFRS 9 and BdE Annex 9 for one scenario variant. Synthetic, never a statement about a bank."
+        "description": "C07 three-regime comparison (outputs.kind three-regime): the same synthetic portfolio of Banco Andino under CMF B-1, IFRS 9 and BdE Annex 9 for one scenario variant. CMF B-1 is the statutory provision Chilean banks book on loans (IFRS 9 5.5 is carved out for loans in Chile); the IFRS 9 column is a comparison measure, not the Chilean statutory provision; BdE Annex 9 is the Spanish GAAP alternative solution, aligned with IFRS 9. Synthetic, never a statement about a bank. Every currency of the document is the same.",
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "scenario_id": {
+                  "const": "base"
+                }
+              },
+              "required": [
+                "scenario_id"
+              ]
+            },
+            "then": {
+              "properties": {
+                "delta_vs_base": {
+                  "type": "null"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "delta_vs_base": {
+                  "$ref": "#/components/schemas/c07DeltaVsBase"
+                }
+              }
+            }
+          }
+        ]
       },
       "c07Portfolio": {
         "type": "object",
@@ -7583,7 +8203,9 @@
           "total_provision",
           "coverage_rate",
           "by_segment",
-          "by_category"
+          "by_category",
+          "status",
+          "unallocated_lines"
         ],
         "properties": {
           "regime": {
@@ -7603,12 +8225,14 @@
             "description": "ISO 4217 code of the money fields of this block."
           },
           "total_provision": {
-            "type": "number"
+            "type": "number",
+            "description": "The comparable total: the sum of by_segment provisions plus the unallocated lines. cmf-b1: the statutory group-applied and individual provisions plus the minimum top-up (a line `minimum-top-up`); the additional provisions are outside this total (b1_detail.additional_provisions, booked_total). ifrs9: the probability-weighted model ECL plus the overlays (lines of kind overlay). bde-annex9: no unallocated line."
           },
           "coverage_rate": {
             "type": "number",
             "minimum": 0,
-            "maximum": 1
+            "maximum": 1,
+            "description": "total_provision divided by the sum of portfolio.gross_exposure over all segments."
           },
           "by_segment": {
             "type": "array",
@@ -7630,10 +8254,12 @@
                 "coverage_rate": {
                   "type": "number",
                   "minimum": 0,
-                  "maximum": 1
+                  "maximum": 1,
+                  "description": "provision divided by portfolio.gross_exposure of the segment."
                 }
               }
-            }
+            },
+            "description": "Segment provisions of the model only: for ifrs9 the model ECL excluding overlays; for cmf-b1 the group-applied and individual provisions excluding the minimum top-up."
           },
           "by_category": {
             "type": "array",
@@ -7660,7 +8286,151 @@
                   "type": "number"
                 }
               }
+            },
+            "description": "Model provisions by category, excluding the unallocated lines."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "statutory-chile-loans",
+              "comparison-measure",
+              "spanish-gaap-alternative-solutions"
+            ],
+            "description": "cmf-b1: statutory for Chilean loans; ifrs9: comparison measure, not the Chilean statutory provision; bde-annex9: Spanish GAAP alternative solutions, IFRS 9 aligned."
+          },
+          "unallocated_lines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "kind",
+                "label",
+                "amount"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "minimum-top-up",
+                    "overlay"
+                  ]
+                },
+                "label": {
+                  "$ref": "#/components/schemas/common-text"
+                },
+                "amount": {
+                  "type": "number"
+                }
+              }
+            },
+            "description": "Provision components in the total that no segment carries: the B-1 minimum top-up and the IFRS 9 overlays, each its own line."
+          }
+        }
+      },
+      "c07StagingPolicy": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "dpd_backstop",
+          "default_dpd",
+          "threefold_ratio",
+          "absolute_floor",
+          "probation_months",
+          "low_credit_risk_pd",
+          "multiplier_schedule",
+          "source"
+        ],
+        "properties": {
+          "dpd_backstop": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "default_dpd": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "threefold_ratio": {
+            "type": "number",
+            "exclusiveMinimum": 1
+          },
+          "absolute_floor": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "probation_months": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "low_credit_risk_pd": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "multiplier_schedule": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "pd_origination_upper",
+                "multiplier"
+              ],
+              "properties": {
+                "pd_origination_upper": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "exclusiveMaximum": 1
+                },
+                "multiplier": {
+                  "type": "number",
+                  "minimum": 1
+                }
+              }
             }
+          },
+          "source": {
+            "type": "string"
+          }
+        },
+        "description": "The IFRS 9 staging policy of the C07 bake (same record as the C06 staging policy, engine StagingPolicy)."
+      },
+      "c07WeightingScenario": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "weight",
+          "z_offset"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "z_offset": {
+            "type": "number",
+            "description": "Systematic-factor offset of this outcome around current conditions; the variant adds its z_shift."
           }
         }
       },

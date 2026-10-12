@@ -29,8 +29,8 @@
     "currency": "CLP",
     "synthetic": true,
     "notice": {
-      "en": "Fixture, not a result. Synthetic bank, round numbers; no statement about any bank.",
-      "es": "Ejemplo, no es un resultado. Banco sintetico, numeros redondos; sin afirmacion sobre ningun banco."
+      "en": "Fixture, not a result. Synthetic bank, round numbers; no statement about any bank. The IFRS 9 column is a comparison measure, not the provision Chilean banks book on loans (CMF B-1).",
+      "es": "Ejemplo, no es un resultado. Banco sintetico, numeros redondos; sin afirmacion sobre ningun banco. La columna IFRS 9 es una medida de comparacion, no la provision que los bancos chilenos constituyen sobre los creditos (CMF B-1)."
     },
     "scenario": {
       "description": {
@@ -87,9 +87,21 @@
           "en": "CMF CNCB B-1",
           "es": "CMF CNCB B-1"
         },
+        "status": "statutory-chile-loans",
         "currency": "CLP",
-        "total_provision": 2880000000.0,
-        "coverage_rate": 0.024,
+        "total_provision": 2905000000.0,
+        "unallocated_lines": [
+          {
+            "id": "minimum-top-up",
+            "kind": "minimum-top-up",
+            "label": {
+              "en": "Minimum 0.50% top-up on the individual normal portfolio",
+              "es": "Complemento del minimo 0,50% en la cartera normal individual"
+            },
+            "amount": 25000000.0
+          }
+        ],
+        "coverage_rate": 0.02420833,
         "by_segment": [
           {
             "segment_id": "mortgage",
@@ -148,9 +160,21 @@
           "en": "IFRS 9",
           "es": "IFRS 9"
         },
+        "status": "comparison-measure",
         "currency": "CLP",
-        "total_provision": 2940000000.0,
-        "coverage_rate": 0.0245,
+        "total_provision": 3020000000.0,
+        "unallocated_lines": [
+          {
+            "id": "overlay-OVL-HOUSING",
+            "kind": "overlay",
+            "label": {
+              "en": "Overlay: house price outlook (expert)",
+              "es": "Ajuste: perspectiva de precios de viviendas (experto)"
+            },
+            "amount": 20000000.0
+          }
+        ],
+        "coverage_rate": 0.02516667,
         "by_segment": [
           {
             "segment_id": "mortgage",
@@ -169,8 +193,8 @@
           },
           {
             "segment_id": "commercial-individual",
-            "provision": 840000000.0,
-            "coverage_rate": 0.028
+            "provision": 900000000.0,
+            "coverage_rate": 0.03
           }
         ],
         "by_category": [
@@ -199,7 +223,7 @@
               "es": "Etapa 3"
             },
             "exposure": 3000000000.0,
-            "provision": 940000000.0
+            "provision": 1000000000.0
           }
         ]
       },
@@ -209,8 +233,10 @@
           "en": "BdE Annex 9",
           "es": "BdE Anexo 9"
         },
+        "status": "spanish-gaap-alternative-solutions",
         "currency": "CLP",
         "total_provision": 2970000000.0,
+        "unallocated_lines": [],
         "coverage_rate": 0.02475,
         "by_segment": [
           {
@@ -295,12 +321,19 @@
         {
           "segment_id": "commercial-individual",
           "cmf_b1_provision": 600000000.0,
-          "ifrs9_provision": 840000000.0,
+          "ifrs9_provision": 900000000.0,
           "bde_annex9_provision": 720000000.0,
-          "gap_ifrs9_minus_b1": 240000000.0,
+          "gap_ifrs9_minus_b1": 300000000.0,
           "gap_bde_minus_b1": 120000000.0
         }
-      ]
+      ],
+      "unallocated": {
+        "cmf_b1_provision": 25000000.0,
+        "ifrs9_provision": 20000000.0,
+        "bde_annex9_provision": 0.0,
+        "gap_ifrs9_minus_b1": -5000000.0,
+        "gap_bde_minus_b1": -25000000.0
+      }
     },
     "gap_bridge": {
       "currency": "CLP",
@@ -332,12 +365,20 @@
           "amount": -30000000.0
         },
         {
-          "id": "b1-additional-provisions",
+          "id": "b1-minimum-top-up",
           "label": {
-            "en": "B-1 additional provisions, not in IFRS 9",
-            "es": "Provisiones adicionales B-1, fuera de IFRS 9"
+            "en": "B-1 minimum top-up, not in IFRS 9",
+            "es": "Complemento del minimo B-1, fuera de IFRS 9"
           },
-          "amount": -60000000.0
+          "amount": -25000000.0
+        },
+        {
+          "id": "ifrs9-overlays",
+          "label": {
+            "en": "IFRS 9 overlays",
+            "es": "Ajustes IFRS 9"
+          },
+          "amount": 20000000.0
         }
       ]
     },
@@ -356,6 +397,7 @@
           "segment_id": "mortgage",
           "standard": 480000000.0,
           "internal": 432000000.0,
+          "internal_reason": null,
           "applied": 480000000.0,
           "method": "max"
         },
@@ -363,6 +405,7 @@
           "segment_id": "consumer",
           "standard": 1400000000.0,
           "internal": 1260000000.0,
+          "internal_reason": null,
           "applied": 1400000000.0,
           "method": "max"
         },
@@ -370,10 +413,12 @@
           "segment_id": "commercial-group",
           "standard": 400000000.0,
           "internal": 360000000.0,
+          "internal_reason": null,
           "applied": 400000000.0,
           "method": "max"
         }
       ],
+      "booked_total": 2965000000.0,
       "additional_provisions": {
         "amount": 60000000.0,
         "rationale": {
@@ -390,6 +435,7 @@
     },
     "ifrs9_detail": {
       "currency": "CLP",
+      "measure": "probability-weighted-ecl",
       "stage_summary": [
         {
           "stage": "stage1",
@@ -400,20 +446,52 @@
         },
         {
           "stage": "stage2",
-          "accounts": 300000,
+          "accounts": 200000,
           "gross_carrying_amount": 12000000000.0,
           "ecl": 1200000000.0,
           "coverage": 0.1
         },
         {
           "stage": "stage3",
-          "accounts": 141200,
+          "accounts": 41200,
           "gross_carrying_amount": 3000000000.0,
-          "ecl": 940000000.0,
-          "coverage": 0.31333333
+          "ecl": 1000000000.0,
+          "coverage": 0.33333333
         }
       ],
-      "overlays_total": 0.0
+      "weighted_components": [
+        {
+          "scenario_id": "upside",
+          "weight": 0.25,
+          "z": 1.0,
+          "single_scenario_ecl": 2500000000.0
+        },
+        {
+          "scenario_id": "central",
+          "weight": 0.5,
+          "z": 0.0,
+          "single_scenario_ecl": 2850000000.0
+        },
+        {
+          "scenario_id": "downside",
+          "weight": 0.25,
+          "z": -2.0,
+          "single_scenario_ecl": 3800000000.0
+        }
+      ],
+      "overlays": [
+        {
+          "id": "OVL-HOUSING",
+          "label": {
+            "en": "Overlay: house price outlook (expert)",
+            "es": "Ajuste: perspectiva de precios de viviendas (experto)"
+          },
+          "segment_id": "mortgage",
+          "stage": "stage2",
+          "amount": 20000000.0
+        }
+      ],
+      "overlays_total": 20000000.0
     },
     "bde_detail": {
       "currency": "CLP",
@@ -468,7 +546,7 @@
   ],
   "impact": {
     "provision_cmf_b1": {
-      "value": 2880000000.0,
+      "value": 2905000000.0,
       "unit": "CLP",
       "label": {
         "en": "CMF B-1",
@@ -476,7 +554,7 @@
       }
     },
     "provision_ifrs9": {
-      "value": 2940000000.0,
+      "value": 3020000000.0,
       "unit": "CLP",
       "label": {
         "en": "IFRS 9",

@@ -95,6 +95,21 @@ def ecl(q: list[float], lgd: float, ead: float, eir: float, periods: int) -> flo
     return sum(q[t] * lgd * ead * (1 + eir) ** (-((t + 0.5) * PERIOD_M / 12)) for t in range(periods))
 
 
+def decile_rows(cur1: list[float]) -> list[dict]:
+    """Calibration per predicted-risk decile at 12, 24 and 36 months: 36 months is beyond the observation cutoff."""
+    rows = []
+    for months in (12, 24, 36):
+        for decile in range(1, 11):
+            base = cur1[3] if months == 12 else cur1[7]
+            pred = base * (0.4 + 0.2 * (decile - 1)) * (1.0 if months < 36 else 1.4)
+            observed = r(pred * (0.9 + 0.02 * decile)) if months < 36 else None
+            rows.append({"origination_cohort": "all", "months": months, "decile": decile, "n": 100 * decile,
+                         "estimator": "aalen-johansen", "predicted_cumulative_pd": r(pred),
+                         "observed_cumulative_pd": observed,
+                         "reason": None if observed is not None else "fixture: horizon beyond the observation cutoff"})
+    return rows
+
+
 def build_c06() -> tuple[dict, dict]:
     seg_curves: dict[tuple[str, str], list[float]] = {}
     for seg, ttc in PD_TTC.items():
@@ -137,32 +152,37 @@ def build_c06() -> tuple[dict, dict]:
     alloc = {
         "originations": [600.0, 200.0, 0.0],
         "transfer-1-2": [-400.0, 1600.0, 0.0],
-        "transfer-2-3": [0.0, -1000.0, 3500.0],
+        "transfer-2-3": [0.0, -4000.0, 18000.0],
         "transfer-2-1": [200.0, -300.0, 0.0],
-        "remeasurement": [150.0, 100.0, 200.0],
+        "remeasurement": [0.0, 0.0, 0.0],  # the plug of each stage, set below from its opening and closing
         "macro-update": [500.0, 300.0, 100.0],
-        "write-off": [0.0, 0.0, -2000.0],
+        "write-off": [0.0, 0.0, -6000.0],
         "unwinding": [0.0, 0.0, 600.0],
     }
     stages = ["stage1", "stage2", "stage3"]
     closing_by_stage = {s: round(weighted[s], 2) for s in stages}
     closing_by_stage["stage1"] = round(closing_by_stage["stage1"] + overlay_amount, 2)
+    # Non-negative openings with coverage below 100 per cent of the opening gross carrying amount (only POCI may be negative).
+    opening_by_stage = {"stage1": round(0.8 * closing_by_stage["stage1"], 2), "stage2": 3000.0, "stage3": 6000.0}
     rec_allow = []
     for i, s in enumerate(stages):
+        others = sum(v[i] for k, v in alloc.items() if k != "remeasurement") + (overlay_amount if s == "stage1" else 0.0)
+        alloc["remeasurement"][i] = round(closing_by_stage[s] - opening_by_stage[s] - others, 2)
         moves = [{"line_id": k, "amount": v[i]} for k, v in alloc.items()]
         if s == "stage1":
             moves.append({"line_id": "overlay-OVL-RATES", "amount": overlay_amount})
-        opening = round(closing_by_stage[s] - sum(m["amount"] for m in moves), 2)
+        opening = opening_by_stage[s]
         rec_allow.append({"stage": s, "opening": opening, "movements": moves, "closing": closing_by_stage[s],
-                          "residual": 0.0})
-    gca_alloc = {"originations": [20000.0, 0.0, 0.0], "transfers": [-80000.0, 80000.0, 0.0],
-                 "stage2-to-stage3": [0.0, -50000.0, 50000.0], "repayments": [-5000.0, -2000.0, 0.0],
+                          "residual": r(closing_by_stage[s] - (opening + sum(m["amount"] for m in moves)))})
+    gca_alloc = {"originations": [20000.0, 0.0, 0.0], "transfer-1-2": [-80000.0, 80000.0, 0.0],
+                 "transfer-2-3": [0.0, -50000.0, 50000.0], "repayments": [-5000.0, -2000.0, 0.0],
                  "write-off": [0.0, 0.0, -10000.0]}
     rec_gca = []
     for i, s in enumerate(stages):
         moves = [{"line_id": k, "amount": v[i]} for k, v in gca_alloc.items()]
         opening = gcas[s] - sum(m["amount"] for m in moves)
-        rec_gca.append({"stage": s, "opening": opening, "movements": moves, "closing": gcas[s], "residual": 0.0})
+        rec_gca.append({"stage": s, "opening": opening, "movements": moves, "closing": gcas[s],
+                        "residual": r(gcas[s] - (opening + sum(m["amount"] for m in moves)))})
     wf_lines = [{"id": "opening", "kind": "opening", "label": txt("Opening allowance", "Cobertura inicial"),
                  "amount": round(sum(x["opening"] for x in rec_allow), 2), "stage": None, "overlay_id": None}]
     labels = {
@@ -175,7 +195,7 @@ def build_c06() -> tuple[dict, dict]:
     for k, v in alloc.items():
         wf_lines.append({"id": k, "kind": k, "label": txt(*labels[k]), "amount": round(sum(v), 2), "stage": None,
                          "overlay_id": None})
-    wf_lines.insert(7, {"id": "line-OVL-RATES", "kind": "overlay",
+    wf_lines.insert(7, {"id": "overlay-OVL-RATES", "kind": "overlay",
                         "label": txt("Overlay: rates shock (expert)", "Ajuste: shock de tasas (experto)"),
                         "amount": overlay_amount, "stage": "stage1", "overlay_id": "OVL-RATES"})
     wf_lines.append({"id": "closing", "kind": "closing", "label": txt("Closing allowance", "Cobertura final"),
@@ -218,7 +238,8 @@ def build_c06() -> tuple[dict, dict]:
         "settings": {
             "discount_convention": "mid-period", "eir_basis": "original", "probation_months": 6,
             "low_credit_risk_exemption": False,
-            "sicr": {"dpd_backstop": 30, "threefold_ratio": 3.0, "absolute_floor": 0.005,
+            "sicr": {"dpd_backstop": 30, "default_dpd": 90, "low_credit_risk_pd": None, "threefold_ratio": 3.0,
+                     "absolute_floor": 0.005,
                      "multiplier_schedule": [{"pd_origination_upper": 0.01, "multiplier": 4.0},
                                              {"pd_origination_upper": 0.05, "multiplier": 2.5},
                                              {"pd_origination_upper": 0.5, "multiplier": 1.5}]},
@@ -266,16 +287,18 @@ def build_c06() -> tuple[dict, dict]:
         "overlays": [{"id": "OVL-RATES", "currency": "USD",
                       "rationale": txt("Interest-rate shock on floating-rate borrowers, not in the satellite",
                                        "Shock de tasas sobre deudores a tasa variable, fuera del satelite"),
-                      "method": "expert", "target": "pd", "segment_id": "s1", "amount": overlay_amount,
+                      "method": "expert", "target": "pd", "segment_id": "s1", "stage": "stage1", "amount": overlay_amount,
                       "staging_effect": "none", "review_date": "2020-12-31"}],
         "reconciliation": {"currency": "USD", "tolerance": 1e-6, "allowance": rec_allow,
                            "gross_carrying_amount": rec_gca},
         "lifetime_backtest": {"rows": [
-            {"months": m, "predicted_cumulative_pd": cur1[i],
+            {"origination_cohort": "all", "estimator": "aalen-johansen", "months": m,
+             "predicted_cumulative_pd": cur1[i],
              "observed_cumulative_pd": obs, "gap": None if obs is None else r(obs - cur1[i]),
              "brier": None if obs is None else 0.01,
              "reason": None if obs is not None else "fixture: horizon beyond the observation cutoff"}
             for i, (m, obs) in enumerate(zip(months, [0.004, 0.009, 0.013, 0.018] + [None] * 4))]},
+        "decile_calibration": {"rung_id": "L1-dth", "rows": decile_rows(cur1)},
         "rung_comparison": [
             {"rung_id": "L0-km", "c_index": None, "integrated_brier": 0.02, "calibration_gap_12m": 0.001,
              "reason": "fixture: Kaplan-Meier has no covariates, no c-index"},
@@ -330,7 +353,7 @@ def build_c06() -> tuple[dict, dict]:
             "ead": {"amortising": True, "ccf_revolving": None,
                     "reason": "fixture: term loans only, no revolving facility"},
             "staging_policy": {"dpd_backstop": 30, "default_dpd": 90, "threefold_ratio": 3.0, "absolute_floor": 0.005,
-                               "probation_months": 6,
+                               "probation_months": 6, "low_credit_risk_pd": None,
                                "multiplier_schedule": [{"pd_origination_upper": 0.01, "multiplier": 4.0},
                                                        {"pd_origination_upper": 0.05, "multiplier": 2.5},
                                                        {"pd_origination_upper": 0.5, "multiplier": 1.5}],
@@ -398,6 +421,12 @@ def b1_tables() -> list[dict]:
     ]
 
 
+STATUS = {"cmf-b1": "statutory-chile-loans", "ifrs9": "comparison-measure",
+          "bde-annex9": "spanish-gaap-alternative-solutions"}
+Z_SHIFT = {"base": 0.0, "recession": -1.5, "consumer-arrears-shock": -0.5, "house-price-fall": -0.6,
+           "uf-inflation-spike": -0.4, "combined-severe": -2.5}
+
+
 def build_c07() -> tuple[dict, dict]:
     cur = "CLP"
     seg = [("mortgage", "residential-mortgage", "Residential mortgages", "Hipotecario vivienda", 60e9, 300000,
@@ -408,14 +437,25 @@ def build_c07() -> tuple[dict, dict]:
            ("commercial-individual", "commercial-individual", "Commercial (individual)", "Comercial individual",
             30e9, 1200, "A.2.1 Grandes empresas")]
     cmf = [480e6, 1.4e9, 400e6, 600e6]
-    ifrs = [540e6, 1.2e9, 360e6, 840e6]
+    ifrs = [540e6, 1.2e9, 360e6, 900e6]   # model ECL by segment, excluding the overlay
     bde = [420e6, 1.5e9, 330e6, 720e6]
-    tot = {"cmf-b1": sum(cmf), "ifrs9": sum(ifrs), "bde-annex9": sum(bde)}
+    top_up, overlay_amt, additional = 25e6, 20e6, 60e6
+    tot = {"cmf-b1": sum(cmf) + top_up, "ifrs9": sum(ifrs) + overlay_amt, "bde-annex9": sum(bde)}
+    unalloc = {
+        "cmf-b1": [{"id": "minimum-top-up", "kind": "minimum-top-up",
+                    "label": txt("Minimum 0.50% top-up on the individual normal portfolio",
+                                 "Complemento del minimo 0,50% en la cartera normal individual"), "amount": top_up}],
+        "ifrs9": [{"id": "overlay-OVL-HOUSING", "kind": "overlay",
+                   "label": txt("Overlay: house price outlook (expert)", "Ajuste: perspectiva de precios de viviendas (experto)"),
+                   "amount": overlay_amt}],
+        "bde-annex9": []}
+    bde_codes = {"mortgage": "B.1.1", "consumer": "B.2", "commercial-group": "A.2.2", "commercial-individual": "A.2.1"}
     expo = [s[4] for s in seg]
     total_expo = sum(expo)
 
     def regime(key: str, label: tuple, vals: list[float], cats: list[tuple]) -> dict:
-        return {"regime": key, "label": txt(*label), "currency": cur, "total_provision": tot[key],
+        return {"regime": key, "label": txt(*label), "status": STATUS[key], "currency": cur,
+                "total_provision": tot[key], "unallocated_lines": unalloc[key],
                 "coverage_rate": r(tot[key] / total_expo, 8),
                 "by_segment": [{"segment_id": s[0], "provision": v, "coverage_rate": r(v / s[4], 8)}
                                for s, v in zip(seg, vals)],
@@ -430,7 +470,7 @@ def build_c07() -> tuple[dict, dict]:
             ("individual-default", ("Individual, default", "Individual, incumplimiento"), 1e9, 100e6)]),
         regime("ifrs9", ("IFRS 9", "IFRS 9"), ifrs, [
             ("stage1", ("Stage 1", "Etapa 1"), 105e9, 800e6), ("stage2", ("Stage 2", "Etapa 2"), 12e9, 1.2e9),
-            ("stage3", ("Stage 3", "Etapa 3"), 3e9, 940e6)]),
+            ("stage3", ("Stage 3", "Etapa 3"), 3e9, 1.0e9)]),
         regime("bde-annex9", ("BdE Annex 9", "BdE Anexo 9"), bde, [
             ("normal", ("Normal risk", "Riesgo normal"), 108e9, 900e6),
             ("normal-special-watch", ("Normal, special watch", "Normal en vigilancia especial"), 9e9, 1.17e9),
@@ -438,42 +478,56 @@ def build_c07() -> tuple[dict, dict]:
     ]
     out = {
         "kind": "three-regime", "scenario_id": "base", "currency": cur, "synthetic": True,
-        "notice": txt("Fixture, not a result. Synthetic bank, round numbers; no statement about any bank.",
-                      "Ejemplo, no es un resultado. Banco sintetico, numeros redondos; sin afirmacion sobre ningun banco."),
+        "notice": txt("Fixture, not a result. Synthetic bank, round numbers; no statement about any bank. The IFRS 9 column is a "
+                      "comparison measure, not the provision Chilean banks book on loans (CMF B-1).",
+                      "Ejemplo, no es un resultado. Banco sintetico, numeros redondos; sin afirmacion sobre ningun banco. La "
+                      "columna IFRS 9 es una medida de comparacion, no la provision que los bancos chilenos constituyen sobre "
+                      "los creditos (CMF B-1)."),
         "scenario": {"description": txt("Base scenario: no shock.", "Escenario base: sin shock."), "shocks": []},
         "portfolio": {"currency": cur, "segments": [
             {"segment_id": s[0], "label": txt(s[2], s[3]), "accounts": s[5], "gross_exposure": s[4]} for s in seg]},
         "regimes": regimes,
         "comparison": {"currency": cur, "rows": [
             {"segment_id": s[0], "cmf_b1_provision": a, "ifrs9_provision": b, "bde_annex9_provision": c,
-             "gap_ifrs9_minus_b1": b - a, "gap_bde_minus_b1": c - a} for s, a, b, c in zip(seg, cmf, ifrs, bde)]},
+             "gap_ifrs9_minus_b1": b - a, "gap_bde_minus_b1": c - a} for s, a, b, c in zip(seg, cmf, ifrs, bde)],
+            "unallocated": {"cmf_b1_provision": top_up, "ifrs9_provision": overlay_amt, "bde_annex9_provision": 0.0,
+                            "gap_ifrs9_minus_b1": overlay_amt - top_up, "gap_bde_minus_b1": -top_up}},
         "gap_bridge": {"currency": cur, "from_regime": "cmf-b1", "to_regime": "ifrs9", "steps": [
             {"id": "lifetime-horizon", "label": txt("Lifetime loss on Stage 2", "Perdida a vida sobre Etapa 2"),
              "amount": 90e6},
             {"id": "forward-looking", "label": txt("Forward-looking scenarios", "Escenarios prospectivos"),
              "amount": 60e6},
             {"id": "discounting", "label": txt("Discounting at the EIR", "Descuento a la TIE"), "amount": -30e6},
-            {"id": "b1-additional-provisions", "label": txt("B-1 additional provisions, not in IFRS 9",
-                                                           "Provisiones adicionales B-1, fuera de IFRS 9"),
-             "amount": -60e6}]},
+            {"id": "b1-minimum-top-up", "label": txt("B-1 minimum top-up, not in IFRS 9",
+                                                    "Complemento del minimo B-1, fuera de IFRS 9"),
+             "amount": -top_up},
+            {"id": "ifrs9-overlays", "label": txt("IFRS 9 overlays", "Ajustes IFRS 9"), "amount": overlay_amt}]},
         "b1_detail": {
             "currency": cur,
             "minimum_check": {"minimum_rate": 0.005, "normal_portfolio_exposure": 25e9,
                               "normal_portfolio_provision_before_minimum": 100e6, "minimum_amount": 125e6,
                               "binding": True, "top_up": 25e6},
-            "group_max_rule": [{"segment_id": s[0], "standard": a, "internal": a * 0.9, "applied": a,
-                                "method": "max"} for s, a in zip(seg[:3], cmf[:3])],
-            "additional_provisions": {"amount": 60e6, "rationale": txt("Counter-cyclical, board policy",
+            "group_max_rule": [{"segment_id": s[0], "standard": a, "internal": a * 0.9, "internal_reason": None,
+                                "applied": a, "method": "max"} for s, a in zip(seg[:3], cmf[:3])],
+            "booked_total": tot["cmf-b1"] + additional,
+            "additional_provisions": {"amount": additional, "rationale": txt("Counter-cyclical, board policy",
                                                                        "Contraciclica, politica del directorio"),
                                       "policy_min": 0.0, "policy_max": 120e6},
             "individual": {"normal_substandard_provision": 500e6, "default_provision": 100e6}},
-        "ifrs9_detail": {"currency": cur, "stage_summary": [
+        "ifrs9_detail": {"currency": cur, "measure": "probability-weighted-ecl", "stage_summary": [
             {"stage": "stage1", "accounts": 1000000, "gross_carrying_amount": 105e9, "ecl": 800e6,
              "coverage": r(800e6 / 105e9, 8)},
-            {"stage": "stage2", "accounts": 300000, "gross_carrying_amount": 12e9, "ecl": 1.2e9,
+            {"stage": "stage2", "accounts": 200000, "gross_carrying_amount": 12e9, "ecl": 1.2e9,
              "coverage": r(1.2e9 / 12e9, 8)},
-            {"stage": "stage3", "accounts": 141200, "gross_carrying_amount": 3e9, "ecl": 940e6,
-             "coverage": r(940e6 / 3e9, 8)}], "overlays_total": 0.0},
+            {"stage": "stage3", "accounts": 41200, "gross_carrying_amount": 3e9, "ecl": 1.0e9,
+             "coverage": r(1.0e9 / 3e9, 8)}],
+            "weighted_components": [
+                {"scenario_id": sid, "weight": w, "z": z, "single_scenario_ecl": e}
+                for sid, w, z, e in [("upside", 0.25, 1.0, 2.5e9), ("central", 0.5, 0.0, 2.85e9),
+                                     ("downside", 0.25, -2.0, 3.8e9)]],
+            "overlays": [{"id": "OVL-HOUSING", "label": unalloc["ifrs9"][0]["label"], "segment_id": "mortgage",
+                          "stage": "stage2", "amount": overlay_amt}],
+            "overlays_total": overlay_amt},
         "bde_detail": {"currency": cur, "categories": [
             {"category": "normal", "mapped_stage": "stage1", "exposure": 108e9, "provision": 900e6,
              "coverage_rate": r(900e6 / 108e9, 8)},
@@ -507,7 +561,8 @@ def build_c07() -> tuple[dict, dict]:
                 {"metric": "consumer share of loans", "unit": "share", "target": 0.17, "achieved": 0.167,
                  "source": "fixture value, not a CMF figure", "as_of": "2026-06-30"}],
             "segments": [{"id": s[0], "label": txt(s[2], s[3]), "accounts": s[5], "gross_exposure": s[4],
-                          "b1_portfolio": s[1], "bde_segment": s[6]} for s in seg],
+                          "b1_portfolio": s[1], "bde_segment": bde_codes[s[0]],
+                          "bde_segment_label": txt(s[6].split(" ", 1)[1], s[6].split(" ", 1)[1])} for s in seg],
             "b1_tables": b1_tables(),
             "b1_default_categories": [
                 {"category": "C1", "tpe_upper": 0.03, "provision_rate": 0.02},
@@ -516,18 +571,32 @@ def build_c07() -> tuple[dict, dict]:
                 {"category": "C4", "tpe_upper": 0.50, "provision_rate": 0.40},
                 {"category": "C5", "tpe_upper": 0.80, "provision_rate": 0.65},
                 {"category": "C6", "tpe_upper": None, "provision_rate": 0.90}],
-            "ifrs9": {"pd_ladder_rung": "L1-dth", "discount_convention": "mid-period",
+            "ifrs9": {"pd_ladder_rung": "L1-dth", "discount_convention": "mid-period", "eir_basis": "original",
+                      "weighting_scenarios": [
+                          {"id": "upside", "label": txt("Upside", "Favorable"), "weight": 0.25, "z_offset": 1.0},
+                          {"id": "central", "label": txt("Central", "Central"), "weight": 0.5, "z_offset": 0.0},
+                          {"id": "downside", "label": txt("Downside", "Adverso"), "weight": 0.25, "z_offset": -2.0}],
+                      "staging_policy": {
+                          "dpd_backstop": 30, "default_dpd": 90, "threefold_ratio": 3.0, "absolute_floor": 0.005,
+                          "probation_months": 6, "low_credit_risk_pd": None,
+                          "multiplier_schedule": [{"pd_origination_upper": 0.01, "multiplier": 4.0},
+                                                  {"pd_origination_upper": 0.05, "multiplier": 2.5},
+                                                  {"pd_origination_upper": 0.5, "multiplier": 1.5}],
+                          "source": "fixture: Contraste policy parameters, not IFRS 9 requirements"},
                       "segments": [{"segment_id": s[0], "pd_ttc": 0.02, "rho": 0.12, "lgd": 0.4} for s in seg]},
             "bde": {
-                "normal_coverage": [{"segment": "B.1.1 Vivienda habitual, LTV <= 80%", "normal": 0.007, "special_watch": 0.18},
-                                    {"segment": "B.2 Credito al consumo", "normal": 0.018, "special_watch": 0.202},
-                                    {"segment": "A.2.2 Pymes", "normal": 0.011, "special_watch": 0.178}],
+                "normal_coverage": [{"segment": "B.1.1", "normal": 0.007, "special_watch": 0.18},
+                                    {"segment": "B.2", "normal": 0.018, "special_watch": 0.202},
+                                    {"segment": "A.2.2", "normal": 0.011, "special_watch": 0.178},
+                                    {"segment": "A.2.1", "normal": 0.006, "special_watch": 0.096}],
                 "doubtful_bucket_labels": [">90d-6m", "6-9m", "9-12m", "12-15m", "15-18m", "18-21m", ">21m"],
+                "doubtful_bucket_upper_days": [183, 274, 365, 457, 548, 639, None],
                 "doubtful_coverage": [
-                    {"segment": "B.1.1 Vivienda habitual, LTV <= 80%", "by_bucket": [0.45, 0.50, 0.65, 0.70, 0.85, 0.95, 1.0]},
-                    {"segment": "B.2 Credito al consumo", "by_bucket": [0.55, 0.65, 0.80, 0.85, 0.95, 1.0, 1.0]},
-                    {"segment": "A.2.2 Pymes", "by_bucket": [0.65, 0.70, 0.75, 0.85, 0.90, 0.95, 1.0]}]},
-            "scenarios": [{"id": sid, "label": txt(en, es),
+                    {"segment": "B.1.1", "by_bucket": [0.45, 0.50, 0.65, 0.70, 0.85, 0.95, 1.0]},
+                    {"segment": "B.2", "by_bucket": [0.55, 0.65, 0.80, 0.85, 0.95, 1.0, 1.0]},
+                    {"segment": "A.2.2", "by_bucket": [0.65, 0.70, 0.75, 0.85, 0.90, 0.95, 1.0]},
+                    {"segment": "A.2.1", "by_bucket": [0.55, 0.65, 0.75, 0.90, 0.95, 1.0, 1.0]}]},
+            "scenarios": [{"id": sid, "label": txt(en, es), "z_shift": Z_SHIFT[sid],
                            "shocks": [{"driver": d, "unit": u, "value": v} for d, u, v in sh]}
                           for sid, en, es, sh in SCENARIOS],
         },

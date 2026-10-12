@@ -72,7 +72,8 @@
           "const": true
         },
         "notice": {
-          "$ref": "../common/text.schema.json"
+          "$ref": "../common/text.schema.json",
+          "description": "Must say that the data are synthetic and that the IFRS 9 column is a comparison measure, not the provision Chilean banks book on loans (CMF B-1)."
         },
         "scenario": {
           "type": "object",
@@ -115,9 +116,45 @@
         },
         "regimes": {
           "type": "array",
-          "items": {
-            "$ref": "#/$defs/c07Regime"
-          }
+          "minItems": 3,
+          "maxItems": 3,
+          "items": false,
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c07Regime",
+              "properties": {
+                "regime": {
+                  "const": "cmf-b1"
+                },
+                "status": {
+                  "const": "statutory-chile-loans"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c07Regime",
+              "properties": {
+                "regime": {
+                  "const": "ifrs9"
+                },
+                "status": {
+                  "const": "comparison-measure"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c07Regime",
+              "properties": {
+                "regime": {
+                  "const": "bde-annex9"
+                },
+                "status": {
+                  "const": "spanish-gaap-alternative-solutions"
+                }
+              }
+            }
+          ],
+          "description": "Exactly the three regimes in this order."
         },
         "comparison": {
           "$ref": "#/$defs/c07Comparison"
@@ -142,10 +179,39 @@
             {
               "type": "null"
             }
-          ]
+          ],
+          "description": "Null for the base scenario, the deltas against the base scenario for every other one."
         }
       },
-      "description": "C07 three-regime comparison (outputs.kind three-regime): the same synthetic portfolio of Banco Andino under CMF B-1, IFRS 9 and BdE Annex 9 for one scenario variant. Synthetic, never a statement about a bank."
+      "description": "C07 three-regime comparison (outputs.kind three-regime): the same synthetic portfolio of Banco Andino under CMF B-1, IFRS 9 and BdE Annex 9 for one scenario variant. CMF B-1 is the statutory provision Chilean banks book on loans (IFRS 9 5.5 is carved out for loans in Chile); the IFRS 9 column is a comparison measure, not the Chilean statutory provision; BdE Annex 9 is the Spanish GAAP alternative solution, aligned with IFRS 9. Synthetic, never a statement about a bank. Every currency of the document is the same.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "scenario_id": {
+                "const": "base"
+              }
+            },
+            "required": [
+              "scenario_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "delta_vs_base": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "delta_vs_base": {
+                "$ref": "#/$defs/c07DeltaVsBase"
+              }
+            }
+          }
+        }
+      ]
     },
     "c07Portfolio": {
       "type": "object",
@@ -200,7 +266,9 @@
         "total_provision",
         "coverage_rate",
         "by_segment",
-        "by_category"
+        "by_category",
+        "status",
+        "unallocated_lines"
       ],
       "properties": {
         "regime": {
@@ -220,12 +288,14 @@
           "description": "ISO 4217 code of the money fields of this block."
         },
         "total_provision": {
-          "type": "number"
+          "type": "number",
+          "description": "The comparable total: the sum of by_segment provisions plus the unallocated lines. cmf-b1: the statutory group-applied and individual provisions plus the minimum top-up (a line `minimum-top-up`); the additional provisions are outside this total (b1_detail.additional_provisions, booked_total). ifrs9: the probability-weighted model ECL plus the overlays (lines of kind overlay). bde-annex9: no unallocated line."
         },
         "coverage_rate": {
           "type": "number",
           "minimum": 0,
-          "maximum": 1
+          "maximum": 1,
+          "description": "total_provision divided by the sum of portfolio.gross_exposure over all segments."
         },
         "by_segment": {
           "type": "array",
@@ -247,10 +317,12 @@
               "coverage_rate": {
                 "type": "number",
                 "minimum": 0,
-                "maximum": 1
+                "maximum": 1,
+                "description": "provision divided by portfolio.gross_exposure of the segment."
               }
             }
-          }
+          },
+          "description": "Segment provisions of the model only: for ifrs9 the model ECL excluding overlays; for cmf-b1 the group-applied and individual provisions excluding the minimum top-up."
         },
         "by_category": {
           "type": "array",
@@ -277,7 +349,49 @@
                 "type": "number"
               }
             }
-          }
+          },
+          "description": "Model provisions by category, excluding the unallocated lines."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "statutory-chile-loans",
+            "comparison-measure",
+            "spanish-gaap-alternative-solutions"
+          ],
+          "description": "cmf-b1: statutory for Chilean loans; ifrs9: comparison measure, not the Chilean statutory provision; bde-annex9: Spanish GAAP alternative solutions, IFRS 9 aligned."
+        },
+        "unallocated_lines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "kind",
+              "label",
+              "amount"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "minimum-top-up",
+                  "overlay"
+                ]
+              },
+              "label": {
+                "$ref": "../common/text.schema.json"
+              },
+              "amount": {
+                "type": "number"
+              }
+            }
+          },
+          "description": "Provision components in the total that no segment carries: the B-1 minimum top-up and the IFRS 9 overlays, each its own line."
         }
       }
     },
@@ -286,7 +400,8 @@
       "additionalProperties": false,
       "required": [
         "currency",
-        "rows"
+        "rows",
+        "unallocated"
       ],
       "properties": {
         "currency": {
@@ -315,7 +430,8 @@
                 "type": "number"
               },
               "ifrs9_provision": {
-                "type": "number"
+                "type": "number",
+                "description": "Model ECL excluding overlays."
               },
               "bde_annex9_provision": {
                 "type": "number"
@@ -327,7 +443,37 @@
                 "type": "number"
               }
             }
-          }
+          },
+          "description": "Segment provisions of the model only (by_segment); the unallocated lines are in `unallocated`."
+        },
+        "unallocated": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "cmf_b1_provision",
+            "ifrs9_provision",
+            "bde_annex9_provision",
+            "gap_ifrs9_minus_b1",
+            "gap_bde_minus_b1"
+          ],
+          "properties": {
+            "cmf_b1_provision": {
+              "type": "number"
+            },
+            "ifrs9_provision": {
+              "type": "number"
+            },
+            "bde_annex9_provision": {
+              "type": "number"
+            },
+            "gap_ifrs9_minus_b1": {
+              "type": "number"
+            },
+            "gap_bde_minus_b1": {
+              "type": "number"
+            }
+          },
+          "description": "The sums of the unallocated lines of each regime; rows plus unallocated equal the regime totals."
         }
       }
     },
@@ -376,7 +522,7 @@
           }
         }
       },
-      "description": "The gap from the CMF B-1 total to the IFRS 9 total as exhaustive steps whose amounts sum to the gap exactly (an unexplained step is its own line)."
+      "description": "The gap from the CMF B-1 comparable total to the IFRS 9 total (both as defined on `total_provision`) as exhaustive steps whose amounts sum to the gap exactly (an unexplained step is its own line). B-1 additional provisions are outside both totals and are not a step; the B-1 minimum top-up and the IFRS 9 overlays are."
     },
     "c07B1Detail": {
       "type": "object",
@@ -386,7 +532,8 @@
         "minimum_check",
         "group_max_rule",
         "additional_provisions",
-        "individual"
+        "individual",
+        "booked_total"
       ],
       "properties": {
         "currency": {
@@ -424,7 +571,8 @@
             "top_up": {
               "type": "number"
             }
-          }
+          },
+          "description": "The 0.50 per cent minimum on the individually assessed normal portfolio (categories A1 to A6), loans plus contingent credits; top_up is carried in regimes[cmf-b1] as the line minimum-top-up."
         },
         "group_max_rule": {
           "type": "array",
@@ -436,7 +584,8 @@
               "standard",
               "internal",
               "applied",
-              "method"
+              "method",
+              "internal_reason"
             ],
             "properties": {
               "segment_id": {
@@ -446,7 +595,15 @@
                 "type": "number"
               },
               "internal": {
-                "type": "number"
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "The internal-method provision; null when the bank has no internal method (then internal_reason is set and method is standard)."
               },
               "applied": {
                 "type": "number"
@@ -458,8 +615,42 @@
                   "internal",
                   "max"
                 ]
+              },
+              "internal_reason": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               }
-            }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "internal": {
+                      "type": "null"
+                    }
+                  },
+                  "required": [
+                    "internal"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "internal_reason": {
+                      "type": "string"
+                    },
+                    "method": {
+                      "const": "standard"
+                    }
+                  }
+                }
+              }
+            ]
           }
         },
         "additional_provisions": {
@@ -484,7 +675,8 @@
             "policy_max": {
               "type": "number"
             }
-          }
+          },
+          "description": "Counter-cyclical general provisions (B-1 N 9): their own line, outside the comparable total and never per segment."
         },
         "individual": {
           "type": "object",
@@ -501,6 +693,10 @@
               "type": "number"
             }
           }
+        },
+        "booked_total": {
+          "type": "number",
+          "description": "What the bank books under B-1: the comparable total plus the additional provisions."
         }
       }
     },
@@ -510,7 +706,10 @@
       "required": [
         "currency",
         "stage_summary",
-        "overlays_total"
+        "overlays_total",
+        "measure",
+        "weighted_components",
+        "overlays"
       ],
       "properties": {
         "currency": {
@@ -556,12 +755,103 @@
                 "maximum": 1
               }
             }
-          }
+          },
+          "description": "Model ECL excluding overlays, by stage."
         },
         "overlays_total": {
-          "type": "number"
+          "type": "number",
+          "description": "Sum of overlays[].amount; regimes[ifrs9].total_provision = model ECL + overlays_total."
+        },
+        "measure": {
+          "const": "probability-weighted-ecl"
+        },
+        "weighted_components": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "scenario_id",
+              "weight",
+              "z",
+              "single_scenario_ecl"
+            ],
+            "properties": {
+              "scenario_id": {
+                "type": "string"
+              },
+              "weight": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "z": {
+                "type": "number",
+                "description": "The systematic factor of the component: its weighting-scenario offset plus the variant shift."
+              },
+              "single_scenario_ecl": {
+                "type": "number",
+                "description": "A component of the weighted measure at 100 per cent weight; a sensitivity, never the IFRS 9 measure."
+              }
+            }
+          },
+          "description": "At least two scenarios whose weights sum to 1; the model ECL is the sum of weight times single_scenario_ecl (5.5.17(a), B5.5.42)."
+        },
+        "overlays": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "segment_id",
+              "stage",
+              "amount"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "$ref": "../common/text.schema.json"
+              },
+              "segment_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "stage": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "stage1",
+                      "stage2",
+                      "stage3",
+                      "poci"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "amount": {
+                "type": "number"
+              }
+            }
+          },
+          "description": "Each overlay is its own line, also an unallocated line of regimes[ifrs9]; never merged into by_segment or stage_summary."
         }
-      }
+      },
+      "description": "The IFRS 9 regime of a scenario variant is a probability-weighted ECL over at least two scenarios, with the variant applied as a shift of current conditions (5.5.17(a), B5.5.42). A 100 per cent single-scenario ECL is never an IFRS 9 measure: it appears only as a weighted component or a sensitivity. The stage summary and the segment provisions carry the model ECL excluding overlays; overlays are their own lines."
     },
     "c07BdeDetail": {
       "type": "object",
@@ -617,7 +907,8 @@
               "coverage_rate": {
                 "type": "number",
                 "minimum": 0,
-                "maximum": 1
+                "maximum": 1,
+                "description": "provision divided by the exposure of the category."
               }
             }
           }

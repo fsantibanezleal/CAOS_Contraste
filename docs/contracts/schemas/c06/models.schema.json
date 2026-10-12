@@ -449,6 +449,7 @@
         "threefold_ratio",
         "absolute_floor",
         "probation_months",
+        "low_credit_risk_pd",
         "multiplier_schedule",
         "source"
       ],
@@ -473,6 +474,18 @@
         "probation_months": {
           "type": "integer",
           "minimum": 0
+        },
+        "low_credit_risk_pd": {
+          "anyOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "multiplier_schedule": {
           "type": "array",
@@ -499,7 +512,8 @@
         "source": {
           "type": "string"
         }
-      }
+      },
+      "description": "The staging policy of the fit. The variant `outputs.settings.sicr` (with `settings.probation_months`) is authoritative: this block equals it field by field, and `low_credit_risk_pd` is null exactly when `low_credit_risk_exemption` is false."
     }
   }
 }
