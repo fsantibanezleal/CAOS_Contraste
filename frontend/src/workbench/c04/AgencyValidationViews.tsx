@@ -1051,10 +1051,8 @@ export function DefinitionsView({ sel }: { sel: C04Sel | null }) {
             height="fill"
             x={{ values: axis.x, label: GRADE_AXIS, format: { decimals: 0 } }}
             y={{ label: { en: 'Ratio to D2', es: 'Razón a D2' }, format: { decimals: 2 }, range: [0, top] }}
-            series={[
-              ...series.map((s) => ({ ...s, values: axis.pad(s.values) })),
-              { label: { en: 'Same share as D2 (1)', es: 'Misma fracción que D2 (1)' }, values: axis.pad(GRADE_POSITIONS.map(() => 1)), color: '--color-fg-subtle' as ShellColorToken, width: 1, dash: [2, 4] },
-            ]}
+            series={series.map((s) => ({ ...s, values: axis.pad(s.values) }))}
+            yMarks={[{ y: 1, label: { en: 'Same share as D2 (1)', es: 'Misma fracción que D2 (1)' }, tone: 'neutral' }]}
             marks={[{ x: g + 1, label: grade }]}
           />
         ) : (
