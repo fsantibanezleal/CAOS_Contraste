@@ -112,3 +112,41 @@ committed document itself (`fixture:<path under data/derived>`), the file the co
 The provider tree for the planned cases, with a readiness document that labels each served row, is CF-B's
 (a fixtures folder under docs/contracts, created there). A provider is scaffolding: labelled on every surface by the readiness
 document, never counted as done for the unit that owes the real producer.
+
+## History
+
+One row per contract version (`scripts/check_contract_versions.py`): the first row of each contract is `initial`;
+a later version names its step. Schemas were written in 0.07.000 (CF-A); four rows narrowed the PD to an open interval
+at estimate sites after the review (a breaking change, 2.0.0).
+
+| contract | version | date | change | kind |
+|---|---|---|---|---|
+| case-index | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| case-manifest | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| variant-envelope | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| models-envelope | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| test-result | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| c01-variant | 1.0.0 | 2026-10-11 | first schema, transcribed from the hand-kept descriptors (CF-A) | initial |
+| c01-variant | 2.0.0 | 2026-10-12 | the PD is an open interval (0, 1) at estimate sites (CF-A review, fix 5) | major |
+| c01-models | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| c04-agency | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| c04-family | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| c04-published | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| c04-models | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| c05-sp | 1.0.0 | 2026-10-11 | first schema, transcribed from the hand-kept descriptors (CF-A) | initial |
+| c05-sp | 2.0.0 | 2026-10-12 | the PD is an open interval (0, 1) at estimate sites (CF-A review, fix 5) | major |
+| c05-ldp | 1.0.0 | 2026-10-11 | first schema, transcribed from the hand-kept descriptors (CF-A) | initial |
+| c05-ldp | 2.0.0 | 2026-10-12 | the PD is an open interval (0, 1) at estimate sites (CF-A review, fix 5) | major |
+| c05-models-sp | 1.0.0 | 2026-10-11 | first schema, transcribed from the hand-kept descriptors (CF-A) | initial |
+| c05-models-sp | 2.0.0 | 2026-10-12 | the PD is an open interval (0, 1) at estimate sites (CF-A review, fix 5) | major |
+| c05-models-ldp | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| c22-variant | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| c22-models | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| contract-family | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| contract-index | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| source-registry | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| licences | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| licence-manifest | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| api | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| readiness | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
+| c01-pd-rung | 1.0.0 | 2026-10-11 | first schema of the contract | initial |
