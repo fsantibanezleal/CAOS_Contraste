@@ -3,17 +3,35 @@
 Status: reviewed design (ADR-0075), written before development from eight primary-source research dossiers (the
 regulatory framework, IFRS 9, the Chilean and Spanish regimes, credit-model SOTA, market, counterparty, ALM,
 liquidity, operational risk and stress SOTA, model risk management and validation, the SantanderAI reference and bank
-open source, and the data and scenario sources with their licences) and the product plan. Felipe validated the plan
-on 2026-10-04.
+open source, and the data and scenario sources with their licences) and the product plan; Felipe validated the plan
+on 2026-10-04. Restructured on 2026-10-12 (unit CF-D, template 0.05.000) into the twelve sections the spec area
+requires, plus the executive brief; nothing of the 2026-10-04 text was dropped, and the table below says where each
+old section went.
 
-Where the requirements live: the product-level requirements whose gates land in U0 and U1 are listed in section 11
-and stated, with their gates, in `docs/design/features/<unit>/requirements.md`. Each later unit adds its own
-feature folder (`requirements.md`, opened `Status: planned`, with `design.md` and `tasks.md` beside it) on the day it
-starts. The engine, `riskvalidation` (repository `CAOS_RiskValidation`), carries its own `docs/design/SDD.md` with the
-engine-side requirements; sections 4 and 11 mark which side owns each (E for the engine, P for this product).
-`scripts/check_sdd.py` holds every requirement to a gate that exists.
+Where the requirements live: the product-level requirements are stated, with their gates, in
+`docs/design/features/<feature>/requirements.md`, and each live feature carries a `validation.md` that maps every
+requirement to an adversarial check (the plants are in `tests/adversarial/`). The map of the spec area is
+[`README.md`](README.md). The engine, `riskvalidation` (repository `CAOS_RiskValidation`), carries its own
+`docs/design/SDD.md` with the engine-side requirements; the Method ladder and the requirements map mark which side owns
+each (E for the engine, P for this product). `scripts/check_sdd.py` holds every requirement to a gate that exists and
+every validation row to an adversarial test that exists.
 
-## 1. Problem and non-goals
+| Section of the 2026-10-04 SDD | Where it is now |
+|---|---|
+| 1. Problem and non-goals | `Problem and non-goals` (unchanged) |
+| 2. Contracts (2.1 ingestion, 2.2 artifact) | `Sizing and contracts` (subsections `Ingestion contracts` and `Artifact contract`) |
+| 3. Lanes | `Lanes` |
+| 4. Method ladder and acceptance | `Method ladder` |
+| 5. Cases and coverage | `Cases` (subsection `Coverage and variants`) |
+| 6. Oracles | `Oracles` |
+| 7. Deploy driver | `Deploy driver` |
+| 8. Risks and kill criteria | `Risks and kill criteria` |
+| 9. ADR fit | `ADR fit` |
+| 10. Web companion | `Cases` (subsection `Web companion`) |
+| 11. Requirements | `Cases` (subsection `Requirements map`) |
+| new | `Executive brief`, `Research basis`, `Technology and versions`, `Resources` |
+
+## Problem and non-goals
 
 **Problem.** A bank's financial, risk and analytical models must be technically robust, compliant with the
 applicable regulation and used appropriately in decisions. The people who build them and the people who
@@ -46,9 +64,150 @@ appropriate use in decisions (the impact view and the findings record).
 9. Generative or agentic AI model validation beyond a documented practice note (the SR 26-2 scope).
 10. An affiliation with Santander or with any institution named in the sources.
 
-## 2. Contracts
+## Executive brief
 
-### 2.1 Ingestion contracts (contract 1, raw to pipeline), one per source family
+The problem in its real context, written before any development and in business language, as
+[`docs/guides/06_executive-brief.md`](../guides/06_executive-brief.md) describes and `scripts/check_sdd.py` checks.
+Transcribed on 2026-10-12 from the executive brief of the product plan, which was written from the problem-context
+dossier of 2026-10-12 under the problem-context-first convention; no claim was changed or added. The brief is written
+for the person accountable for a bank's model risk: the supervisory texts name functions, not job titles (the ECB Guide
+to internal models says the management body and senior management approve the rating and estimation processes; PRA
+SS1/23 gives an accountable senior function the model risk framework and independent validation; an independent
+validation function gives the opinion on each model), and in most banks that is the chief risk officer and the head of
+model validation, a mapping that is this brief's reading and not a quotation. The golden rule it is held to: would the
+person who answers to the supervisor for a bank's models give this thirty more minutes, or delegate it down?
+
+### Initiative
+
+The initiative: keep the bank's internal credit and provisioning models defensible to the supervisor through the regime
+changes of 2027, and know what each modelling choice costs in capital before the supervisor does. Why now, with the
+numbers:
+
+- The last time the euro-area supervisor reviewed internal models at scale it ran 200 on-site investigations at 65 banks and raised more than 5,800 findings, about 30% of them of high severity; the models reviewed ended with about 12% more risk-weighted assets (about EUR 275 billion) and a median effect of 51 basis points on the CET1 ratio (source: https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.trim_project_report~aa49bb624c.en.pdf)
+- It has not eased: in 2025 the ECB launched 77 internal model investigations with an average of 16 findings each, almost half of high severity (source: https://www.bankingsupervision.europa.eu/press/other-publications/annual-report/html/ssm.ar2025~6ee989dc7e.en.html)
+- The finding that sits closest to this product: banks "often did not ensure that all appropriate validation analyses and adequate quantitative thresholds were in place, in particular for the back-testing, discriminatory power and stability tests" (ECB, TRIM project report, internal validation, page 30) (source: https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.trim_project_report~aa49bb624c.en.pdf)
+- 2027 changes four regimes at once: the EU output floor reaches 60% (72.5% from 2030; Regulation (EU) 2024/1623, Article 465(1)), the UK's Basel 3.1 rules take effect on 2027-01-01 (PRA PS1/26), Canada's model risk guideline E-23 on 2027-05-01 (OSFI), and credit scoring becomes a high-risk AI system in the EU on 2027-12-02 (Regulation (EU) 2024/1689, Annex III 5(b), as moved by the Digital Omnibus); the EBA projects an average 4.7% increase in Tier 1 minimum required capital once the floor is fully in, and the banks bound by it rising from 2 to 33 (EBA press release, 2026-03-23) (source: https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32024R1623; https://www.bankofengland.co.uk/prudential-regulation/publication/2026/january/implementation-of-the-basel-3-1-final-rules-policy-statement; https://www.osfi-bsif.gc.ca/en/guidance/guidance-library/guideline-e-23-model-risk-management-2027; https://data.consilium.europa.eu/doc/document/PE-30-2026-INIT/en/pdf; https://www.eba.europa.eu/publications-and-media/press-releases/european-banking-sector-enters-period-geopolitical-uncertainty-position-strength)
+- In Chile the Pillar 2 charge reaches 100% on 2027-12-01 and the CMF consulted in August 2026 on opening internal models for provisions and credit risk-weighted assets, which no bank uses today (CMF calendar and informe normativo, as read in dossier 03 sections A.3 and C.3) (source: https://www.cmfchile.cl/portal/principal/623/articles-100285_doc_pdf.pdf; https://www.cmfchile.cl/institucional/legislacion_normativa/normativa_tramite_ver_archivo.php?id=2026080375&seq=1)
+
+### Outcomes
+
+The vision: a validation function that can say, with numbers, how far each of its tests can be trusted and what each
+modelling choice costs, before it signs an opinion.
+
+| capability | business outcome | proof point |
+|---|---|---|
+| It recomputes published supervisory and academic results cell by cell | A number that stands when a supervisor or an auditor re-runs it | 143 of 144 cells of the Basel Committee's Working Paper 14, Tables 7 and 8, reproduced (case page C22, line 173; dossier R1) (source: docs/cases/C22.md) |
+| It measures how often each validation test is wrong | No sound model rejected, and no weak one passed, because of the test | A standard calibration test (Hosmer-Lemeshow) rejects correct PDs 10.98% of the time at a 5% level; the supervisor's discrimination test raises a false alarm 17.0% of the time in the case's setting; both were found by measurement and corrected in the product (case page C22, lines 100 to 158; dossier R7, R8) (source: docs/cases/C22.md) |
+| It prices a modelling choice in capital | The board sees the capital effect of a calibration or a data definition before it is committed | Carrying last year's PD curve unchanged asks 64.8% more capital than recalibrating it; one default definition against another moves the speculative-grade PD from 26.64% to 8.61% and the portfolio's risk weight from 58.0% to 47.5% (case pages C05, lines 84 to 89, and C04, lines 98 to 115; dossier R16, R15) (source: docs/cases/C05.md; docs/cases/C04.md) |
+| It holds a challenger model to the same tests as the champion | Complexity is adopted only where it earns its keep | A monotone gradient-boosted model beats the scorecard by 0.018 AUC on 9,000 held-out records and saves 4.2% of capital, and beats nothing on 300 records (case page C01, lines 52 to 85; dossier R20, R13) (source: docs/cases/C01.md) |
+
+### Positioning
+
+Four value points, each tied to that person's problem (Felipe's four C's are not yet defined in the records; these four
+stand until he gives them).
+
+- **Reproducible**: the supervisor will re-run the number, so every result is recomputed from published inputs with its gap recorded and the opinion does not rest on a figure nobody can rebuild.
+- **Measured**: a test is evidence only as far as its error rates are known, so each test comes with its measured false alarm rate and its power, which is the threshold work the supervisor found missing.
+- **Priced**: a modelling choice is a capital decision, so each calibration, definition and model swap is shown with what it changes in risk-weighted assets and the choice is made knowingly.
+- **Open**: an opinion must be checkable by a third party, so the code, the data sources with their licences, the seeds and the expected ranges are public and the limits are stated on every case.
+
+### Credibility
+
+- Q: Does it reproduce what a supervisor would run?
+  A: For the tests it covers, yes, against published answers: 143 of 144 cells of Working Paper 14, 50 of 54 of a published stability study, and the published calibration and migration tables, each gap recorded (dossier R1 to R4). It covers credit scoring, rating calibration, rating migrations and the tests themselves today; provisions, market, liquidity and operational risk are planned and shown as not built yet.
+- Q: Can I trust its tests?
+  A: You can see how far. 19 of 21 tests hold their stated size; the two that do not are named, with how much they over-reject (dossier R6). Where a widely used test misleads, the product says so and shows the measurement.
+- Q: What does it change in my capital or provisions?
+  A: It shows what a choice changes on public and generated portfolios (the examples above). It does not compute your capital: it runs on no bank's portfolio.
+- Q: How does it fit my model inventory and governance?
+  A: It is a workbench, not an inventory or a workflow system. It records its own models and findings; it does not ingest a bank's inventory.
+- Q: What about machine-learning challengers and the AI rules?
+  A: It tests a monotone boosted model and an explainable additive model beside the scorecard, with paired tests, calibration and capital. It does not certify compliance with the AI Act or any regulation.
+
+Limits: every case runs on public data or on generated data with known truth; no result is a regulatory threshold; a passed test is evidence, not compliance; the product certifies no model, represents no real bank and has no affiliation with any institution or supervisor named here.
+
+## Research basis
+
+Done before the plan and kept here so a reader can re-check it (ADR-0075; rule 11 section 12). The research is
+persisted as dated dossiers in the coordination repository (CAOS_MANAGE, `wip/contraste/`): the eight primary-source
+dossiers of 2026-10-04 (01 Basel framework, 02 IFRS 9, 03 Chile and Spain, 04 credit-model SOTA, 05 market, CCR, ALM,
+liquidity, operational risk and stress, 06 model risk management and validation, 07 SantanderAI and bank open source,
+08 data and scenario sources), the unit dossiers (10 golden values, 11 C01 IRB capital, 12 size, power and generators,
+13 rating transitions) and the problem-context dossier of 2026-10-12 (14), summarised in `plans/contraste/findings.md`
+there. The table lists what was decided and from what; every source below appears in one of those dossiers with this DOI
+or address.
+
+| decision | what the research found | source |
+|---|---|---|
+| IRB capital follows Basel III final, with CRR3 and Basel II as comparison regimes | The 1.06 scaling factor is Basel II only; the PD floor is 0.05%; F-IRB unsecured corporate LGD is 40% | https://www.bis.org/committees/bcbs/basel-framework/standard/cre/32/inforce/2023-01-01/published/2020-03-27 |
+| Retail revolvers and transactors are treated apart, and the LGD input floor is flagged | The transactor definition needs twelve months of repayment history; the retail LGD input floors are in the IRB chapter (paragraph 121) | https://www.bis.org/bcbs/publ/d424.htm |
+| The validation battery is the ECB's reporting template for credit-risk models, not an invented list | No toolkit implements the ECB 2019 IRB validation-reporting tests as specified, so the product owns them | https://www.bankingsupervision.europa.eu/activities/internal_models/shared/pdf/instructions_validation_reporting_credit_risk.en.pdf |
+| The product answers the supervisor's findings on validation | 200 investigations at 65 banks, more than 5,800 findings, thresholds and back-testing missing | https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.trim_project_report~aa49bb624c.en.pdf |
+| Model-risk governance is shown as the supervisors state it | PRA SS1/23 (re-issued 2026-04); the US SR 11-7 is superseded by SR 26-2; OSFI E-23 applies from 2027-05-01 | https://www.bankofengland.co.uk/prudential-regulation/publication/2023/may/model-risk-management-principles-for-banks-ss |
+| A test is judged by its measured size and power on known truth, not on real outcomes alone | BCBS WP14: no really powerful PD calibration tests exist under default correlation; its Tables 7 and 8 are reproduced | https://www.bis.org/publications/studies-validation-internal-rating-systems-revised.pdf |
+| The PSI thresholds are a policy, never a regulatory limit | The scaled PSI is about chi-square with B-1 degrees of freedom; 0.10 and 0.25 are conventions | https://doi.org/10.21314/JRMV.2020.227 |
+| The AUC test against the development AUC adds the development variance | The DeLong test is misused on nested models and treating an estimated reference as known inflates the size | https://doi.org/10.1002/sim.5328 |
+| Hosmer-Lemeshow uses as many degrees of freedom as groups on PDs fitted elsewhere | The standard G-2 result is for in-sample fitted probabilities | https://doi.org/10.1080/03610928008827941 |
+| Low-default portfolios use the most prudent estimate, with the golden tables recomputed | Pluto and Tasche's confidence bounds and tables 1 to 14 | https://arxiv.org/abs/cond-mat/0411699 |
+| PD curve calibration uses the approaches of Tasche, with Table 1 as golden values | Scaled PD, scaled likelihood ratio and invariant approaches | https://doi.org/10.21314/jcr.2013.169 |
+| Rating migration is a Markov model with generators and embedding diagnostics, tested rather than assumed | Israel, Rosenthal and Wei: nine generator distances, the embedding conditions | https://doi.org/10.1111/1467-9965.00114 |
+| The Markov tests are Anderson and Goodman's, with their size measured | Time homogeneity and order tests; the printed forms do not all hold size on sparse tables | https://doi.org/10.1214/aoms/1177707039 |
+| Schuermann and Hanson's Table 5 and the New York Fed default bounds are recomputed beside their print | A published known answer for the one-year PD by grade | https://www.newyorkfed.org/medialibrary/media/research/staff_reports/sr190.pdf |
+| Rating data come from ESMA's CEREP, with its attribution and its definition caveat | ESMA sets no common definition of a default event for CEREP | https://registers.esma.europa.eu/cerep-publication/ |
+| The ladder pairs each learned method with its classical baseline and never claims that ML beats logistic regression | Tree ensembles beat logistic regression by modest, dataset-dependent margins | https://doi.org/10.1016/j.ejor.2015.05.030 |
+| Deep learning is not the state of the art on tabular credit data | Deep nets do not beat boosting on tabular credit | https://doi.org/10.1016/j.ejor.2021.03.006 |
+| Tree-based models stay state of the art on medium-sized tabular data | Three inductive-bias explanations for the gap | https://arxiv.org/abs/2207.08815 |
+| TabPFN is a research challenger on the small cases only, with its weights licence shown | Code Apache-2.0, default weights non-commercial; the v2 weights carry the Prior Labs License | https://doi.org/10.1038/s41586-024-08328-6 |
+| The explainable additive challenger is the EBM | Glass-box GA2M with monotone shape functions | https://arxiv.org/abs/1909.09223 |
+| The four UCI credit datasets are mirror-allowed (CC BY 4.0) and carry the credit-scoring cases | Taiwan cards with six months of history, German credit as the twin | https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients |
+| The executive brief rests on the supervisory record, not on surveys | 77 investigations in 2025, about 16 findings each; no primary source found for fines or inventory sizes | https://www.bankingsupervision.europa.eu/press/other-publications/annual-report/html/ssm.ar2025~6ee989dc7e.en.html |
+
+Choices with no source because they are engineering, measured in this document instead: the live lane runs TypeScript
+ports with parity tests (Pyodide is not used, and is admitted only by measurement, see `Lanes`), and the page and
+payload budgets of the deploy driver.
+
+UNVERIFIED: the dossiers flag as unconfirmed, and this document does not state as fact, the following. No primary
+source was found for a supervisory fine or capital add-on tied by name to weak model validation, nor for the size of
+banks' model inventories or validation backlogs (industry surveys only; the PwC survey answered HTTP 403). The job
+titles that own model risk are not named in the supervisory texts read (the brief's mapping to the chief risk officer
+and the head of model validation is a judgement). The OJ publication date of the AI Act omnibus, the entry into force of
+the Commission delegated act C(2026) 3647 and the UK output-floor schedule from 60% to 72.5% by 2030 rest on search
+summaries or reproductions. The Chilean Pillar 2 phase-in percentage for 2026 and the countercyclical buffer decisions
+rest on press reports (the central bank site blocks scripted access); no CMF standalone model-risk standard was found.
+The Fed's re-proposal of Basel III in the US has no effective date. Freddie Mac's terms for derived aggregates in a
+public site are unconfirmed, so the mortgage cases ship the SBA twin as the publishable path. The EBA dashboard
+figures other than those of Q4 2025 are not read at the EBA. The four C's of the positioning are not defined in the
+records. The details of each dossier's own unverified list (10 items in dossier 01, 15 in dossier 03) are kept there.
+
+## Sizing and contracts
+
+The design rests on two artifacts of contract-first parallel delivery (ADR-0080): the sizing and the contract catalog.
+
+- **The sizing** is kept with the coordination records outside the product, in CAOS_MANAGE
+  ([`plans/contraste/sizing.md`](https://github.com/fsantibanezleal/CAOS_MANAGE/blob/develop/plans/contraste/sizing.md)):
+  the four repositories, the components (offline pipeline, engine, static frontend, dormant API, contract set, guards),
+  the modules with their owner units, the fourteen boundaries B1 to B14, the technology versions verified on primary
+  sources, the machine limits and the parallel units with disjoint write scopes (wave 1 is CF-A to CF-D, wave 2 is U5 to
+  U14, wave 3 is U15 and U16). The units of a feature are the sizing's parallel units, built at once against the fixed
+  catalog rows.
+- **The catalog** is kept here, [`docs/contracts/catalog.md`](../contracts/catalog.md): one row per boundary and per
+  model slot, with its version, owner, schema file under `docs/contracts/schemas/`, example, producer and consumer tests,
+  missing-data behavior, provider, swap test and status. Its `History` records each version, and
+  [`docs/contracts/versions.lock.json`](../contracts/versions.lock.json) holds the digest of every schema, checked by
+  `scripts/check_contract_versions.py`. The two contracts of ADR-0057 stay as rows: contract 1 (the eight ingestion
+  families) and contract 2 (the case index, the case manifest and the variant and models artifacts); the readiness
+  document records, row by row, what is real and what a provider or a baseline serves.
+
+The boundaries of the sizing, in one line each: B1 the source registry to the fetcher; B2 the fetcher to the licence
+manifest; B3 the source readers to contract 1; B4 the contract-1 export to the Implementation page and the
+bring-your-own-data door; B5 the engine's test functions to the case bakes; B6 and B7 the pipeline export to the
+frontend and the API (case index, case manifest); B8 the case bakes to the views (variant envelope plus the case
+outputs); B9 the case model fits to the Model and Benchmark views; B10 the C01 rungs to the evaluate stage (model slots
+with the benchmark rung as baseline); B11 the readiness document; B12 the committed artifacts and the TypeScript ports
+(live parity); B13 the dormant API; B14 each wave 2 case bake to its views (a provider until the case lands).
+
+### Ingestion contracts (contract 1, raw to pipeline), one per source family
+
 
 Declared once in `data-pipeline/pipeline/io/contract.py`, exported to `data/derived/contract/<family>.json`, read
 by the pipeline, the live lane and the bring-your-own-data upload. Every record either validates or is rejected
@@ -80,7 +239,7 @@ Every fetch writes a row of the licence manifest, `data/sources/manifest.json`: 
 licence class, the licence fragment, SHA-256 and byte count of every file. Raw files are written to the device's
 data root (the environment variable `CONTRASTE_DATA` or the `--data-root` argument), never into the repository.
 
-### 2.2 Artifact contract (contract 2, pipeline to web)
+### Artifact contract (contract 2, pipeline to web)
 
 `data/derived/manifests/index.json` inventories the cases (bilingual titles, categories, the case the App opens
 on). One manifest per case, `data/derived/manifests/<case>.json`, and one artifact per variant,
@@ -101,7 +260,67 @@ on). One manifest per case, `data/derived/manifests/<case>.json`, and one artifa
 The TypeScript mirror `frontend/src/lib/contract.types.ts` is checked against every committed artifact in both
 directions by `frontend/src/lib/contract.test.ts`; a drift fails the build.
 
-## 3. Lanes
+## Technology and versions
+
+Every pinned dependency of the offline lane (`data-pipeline/requirements.txt` and the optional
+`data-pipeline/requirements-tabpfn.txt`), of `requirements-dev.txt` and of `frontend/package.json`, with the version
+actually pinned or locked; `scripts/check_tech_matrix.py` fails when a pin and this table disagree. A `package.json`
+range is recorded at the version `frontend/package-lock.json` resolves it to. The runtimes are Python 3.13.14 on the
+development workstation and 3.12 in CI, and Node 22 in CI (24.14.1 on the workstation). The full evaluation of every
+tool, with its primary source and verification date, is the technology matrix of the sizing; the alternatives below are
+the ones the dossiers and `docs/frameworks/` record.
+
+| component | package | version | use | alternative considered |
+|---|---|---|---|---|
+| engine | numpy | 2.4.6 | arrays, the generators and every estimator | none: the base of the stack (2.5.4 is current and was not adopted in 0.07.000) |
+| engine | scipy | 1.18.1 | distributions and special functions; the reference for every test statistic | none recorded |
+| data | pandas | 3.0.6 | tabular reading, the splits and the case frames | none recorded |
+| data | xlrd | 2.0.2 | reading the legacy Excel files of the UCI Taiwan dataset | none recorded |
+| models | scikit-learn | 1.9.1 | penalised logistic regression, splits, isotonic and Platt calibration | none recorded |
+| models | statsmodels | 0.15.0 | the maximum-likelihood logistic scorecard with inference | none recorded |
+| models | optbinning | 1.0.0 | monotone optimal binning and WoE for the scorecard | scorecardpy, toad and skorecard, rejected: unmaintained on PyPI or heuristic binning (docs/frameworks) |
+| models | interpret-core | 0.7.8 | the EBM (GA2M) challenger with monotone shape functions | none recorded |
+| models | lightgbm | 4.7.0 | the monotone gradient-boosted challenger | xgboost as the second boosting engine on the same constraints |
+| models | xgboost | 3.4.1 | the second gradient-boosting engine, to show the gain is a property of the data | none recorded |
+| models | shap | 0.52.0 | reason codes and explanation stability of the boosted rung | none recorded (0.53.0 is current and was not adopted) |
+| data | pypdf | 6.19.0 | reading the published tables of the papers (Tasche, Pluto and Tasche, BCBS WP14) | none recorded (6.20.0 is current and was not adopted) |
+| engine | riskvalidation | v0.04.003 | the validation tests, regulatory calculators and generators (git tag until its first PyPI release) | none: no toolkit implements the ECB tests as specified |
+| models (optional) | torch | 2.14.1 | CPU runtime of the TabPFN extra, outside the default install | none recorded |
+| models (optional) | tabpfn | 9.1.0 | the TabPFN challenger of the small cases, weights under the Prior Labs License | none recorded |
+| tests | pytest | 9.1.1 | the pipeline, contract, guard and adversarial tests | none recorded |
+| lint | ruff | 0.15.18 | lint of data-pipeline, tests, scripts and app | none recorded (0.17.0 is current and was not adopted) |
+| contracts | jsonschema | 4.26.0 | validates every document against its schema file | none recorded |
+| shell | @fasl-work/caos-app-shell | 0.10.0 | the shared app shell, pinned exactly (ADR-0078) | a hand-rolled shell, forbidden by ADR-0078 |
+| web | react | 19.3.0 | the UI | none: the shell requires it |
+| web | react-dom | 19.3.0 | the UI renderer | none: the shell requires it |
+| web | react-router | 8.4.0 | the six routes | none: the shell requires it |
+| web | zustand | 5.0.15 | the workbench selection store | none recorded |
+| web | katex | 0.16.47 | typeset equations on the Methodology pages | none recorded (0.19.0 is current and was not adopted) |
+| web | lucide-react | 1.52.0 | icons | none recorded |
+| web | uplot | 1.6.32 | the interactive curves | none recorded |
+| build | vite | 8.3.2 | bundler and dev server | none recorded |
+| build | @vitejs/plugin-react | 6.1.1 | the React transform for vite | none recorded |
+| build | typescript | 5.9.3 | type check of the web and the generated contract types | none recorded (7.0.2 is a major change and was not adopted) |
+| build | openapi-typescript | 7.13.0 | generates `contract.gen.ts` from the OpenAPI document built from the schema files | hand-written types, rejected: they drift (the generation step fails when they are not current) |
+| build | @redocly/ajv | 8.11.2 | the strict validator of the contract generator, pinned exactly | none recorded |
+| build | @types/node | 24.19.1 | types of the build scripts | none recorded |
+| build | @types/react | 19.3.0 | types of React | none recorded |
+| build | @types/react-dom | 19.3.0 | types of React DOM | none recorded |
+| tests | vitest | 5.0.3 | the web unit tests and the adversarial web plants | none recorded |
+| gate | playwright | 1.63.0 | the measured UI gate (`npm run gate`), local only | none recorded |
+
+## Resources
+
+What each stage needs on the development workstation (Windows 11, 2026-10-12; Python 3.13.14, Node 24.14.1; 16 GB of RAM
+free at the preflight of 2026-10-11; no GPU is used by any stage listed). Every value was measured by running the
+command in the `where it runs` column's first cell with the process tree polled every 20 ms: memory is the largest
+summed working set of the tree, time is the wall clock, disk is what the stage leaves behind. The commands and their
+outputs are in the CF-D report. Bakes were run with `--output` into a temporary root, so `data/derived/` is never
+touched; raw data are read from the device data root (`CONTRASTE_DATA`) and are not counted in the disk column.
+
+@@RESOURCES@@
+
+## Lanes
 
 - **Offline (canonical).** `.venv-pipeline` with the pinned engines (optbinning, scikit-learn, LightGBM, XGBoost,
   CatBoost, InterpretML, SHAP, lifelines, statsmodels, arch, QuantLib, pyvinecopulib, MAPIE, fairlearn; ORE in WSL;
@@ -120,7 +339,7 @@ directions by `frontend/src/lib/contract.test.ts`; a drift fails the build.
   parity tests.
 - **API.** Dormant (`app/`). No ADR-0002 trigger: no server state, no private data, no request-time compute.
 
-## 4. Method ladder and acceptance (owner: E = engine, P = product)
+## Method ladder
 
 A method is accepted only with its engine called for real, pinned dependency and licence, configuration with
 units, training or calibration where applicable, a checkpoint or parameter record, inference on every applicable
@@ -158,7 +377,9 @@ case variant, its validation tests, documentation transcribed from the dossier, 
 | Validation tests, all (E) | each reproduces a published worked example or an independent reference (scipy distributions) to a stated tolerance; every result carries `reference`, `h0` and a policy version. |
 | ML validation and fairness tests (E) | each test detects its planted defect on the generator with power reported at alpha 0.05 and holds its size under the null within Monte Carlo error. |
 
-## 5. Cases and coverage
+## Cases
+
+### Coverage and variants
 
 22 cases in 11 categories. Variants: at least six wherever a meaningful parametric or temporal family exists; a
 case without one ships as a single documented benchmark, never padded.
@@ -222,93 +443,7 @@ lgd-ead (the other two parameters), portfolio-capital (what Pillar 1 ignores and
 capital-stress (ICAAP, IAPE, supervisory models), ml-ai-risk (ML validation and fairness), validator (the size and
 power of the tests).
 
-## 6. Oracles
-
-1. **Golden values** from official worked examples and published tables: the strongest oracle; a test that cannot
-   reproduce its golden value is not shipped.
-2. **Known truth** from generators: the true PD, CCF, VaR, exposure or loss distribution is known, so estimator
-   error, test size and test power are measured, with their Monte Carlo error.
-3. **Real outcomes on held-out data** with leakage-safe splits: discrimination and calibration of real models,
-   backtests of VaR on real P&L. Trustworthy only as far as the split is; the leakage tests guard it.
-4. **Identities and invariants**: the IFRS 7 roll-forward, Euler sums, row sums of transition matrices, EVE
-   sum-of-parts, monotonicities.
-5. **Independent engine reconciliation**: own HW1F against ORE, own GARCH against `arch`, own estimators against
-   transitionMatrix and lifelines, scipy distributions for every test statistic.
-6. **Licence lineage**: an artifact derived from a link-only or unusable source is refused.
-
-No oracle here is a model judging another model.
-
-## 7. Deploy driver
-
-One place only, decided in the plan: **`github-pages` with a `CNAME` on `contraste.fasl-work.com`**
-(`deploy/TARGET` = `pages`, checked by `scripts/check_deploy_place.py`; the template's VPS files were removed at
-instantiation). Driver: the repository is public and every web capability is static replay or client-side compute;
-no ADR-0002 backend trigger exists (no server state, no private data, no request-time compute). Measured guard at
-every release: the published site under GitHub Pages' 1 GB limit and every committed file under 100 MB
-(`scripts/check_artifacts.py`); Pyodide is loaded from its CDN, not from the bundle. The Pyodide cold start with
-`riskvalidation` loaded (median of 5, cold cache) is measured to admit live features (section 3), not to choose the
-host. The deploy runs only after CI passes on `main` and ends with `scripts/check_live.py` against the published
-site.
-
-## 8. Risks and kill criteria
-
-| Risk | Kill or re-scope criterion |
-|---|---|
-| Freddie Mac terms do not allow derived aggregates in a public web | C06 and C08 publish the SBA twin; Freddie Mac results stay offline |
-| Pyodide cold start too slow | live features move to TypeScript ports with parity tests, or to replay only, per measurement |
-| ORE unusable in WSL | C12 uses QuantLib plus the analytic HW1F check only, stated |
-| A golden value cannot be reproduced | the method or test is not shipped until it is |
-| Scope (22 cases, 17 units) | units ship vertically; nothing is presented as done until the convergence verdict |
-| Licence contamination | `scripts/check_licences.py` fails on AGPL, GPL or BSL in the default install |
-| A committed file carries rows a licence forbids | `scripts/check_data_classes.py` fails the build |
-| The site looks right and is not (a blank chart, a dead control, a broken deep link) | the measured gate (`npm run gate`) fails before a deploy |
-
-## 9. ADR fit
-
-Every ADR and convention that binds Contraste was evaluated against what Contraste is (a workbench that builds and
-validates financial risk models, 22 cases, an engine package, a static web companion) before any code (2026-10-04).
-Where an ADR did not fit, the ADR was amended first and the base (the shared shell and the template) was fixed to
-carry the amended rule, with a gate (ADR-0078, "rules live in the base"); Contraste then instantiated the fixed
-template and makes no structural edits outside its core.
-
-Where the ADRs fit as written:
-
-| ADR / convention | Fit, and what carries it here |
-|---|---|
-| ADR-0057 product archetype (offline pipeline, two contracts, named stages, static replay, lane gate) | fits: Contraste is offline-heavy with a static companion; `data-pipeline/`, section 2 |
-| ADR-0069 full scientific repository | fits: every model rung and every validation test is a vertical with engine, tests, docs and lane (section 4) |
-| ADR-0075 SDD before development | fits: this document; `scripts/check_sdd.py` |
-| ADR-0058 architecture modal (at least five themed tabs) | fits: `frontend/src/architecture/`, validated by the shell on mount |
-| ADR-0056 `docs/` wiki | fits: engine and product wikis, authored per unit from the dossiers |
-| ADR-0011 and ADR-0012 i18n and theming | fits: the shell; every string is bilingual |
-| ADR-0061 and the no-internal-packages rule | fits: `riskvalidation` is the separate engine repository; this product declares no package |
-| ADR-0065 to ADR-0068 community files, English, no em-dash, versioning | fit: `scripts/check_content_standards.py`, `scripts/check_version_coherence.py` |
-| ADR-0074 CI budget | fits: the product CI runs no pipeline suite; the engine's unit tests are cheap and run in its own CI |
-| Product quality bar, section 0 (one selected case on App, real action capability, honesty) | fits strongly: thresholds, policy, segments, windows and scenario weights are real live inputs |
-| Units gate | applies from the second observable on: PD in (0, 1), LGD in [0, 1], CCF by stated convention, VaR and ES in the portfolio's units |
-| One deploy place | fits: GitHub Pages (section 7) |
-
-Where they did not fit, and the amendment now in force:
-
-| # | ADR text | Why it failed for Contraste | Amendment, and what carries it |
-|---|---|---|---|
-| 1 | ADR-0016 9.A: the App is a top-level `Tabs` strip, one tab per case | 22 cases would be 22 tabs; ADR-0071 caps peers near six and makes a categorised one-of-N a `select` with `optgroup` | cases are chosen with the shell's `CaseSelector`, grouped by category, a `select` with `optgroup` beyond the chip budget |
-| 2 | ADR-0016 9.A: four fixed sub-tabs Field, Live, Charts, Context | the instrument is itself several questions (the model, its validation, its impact, the findings); a separate Live tab assumes a live engine distinct from the replay | ONE tab row of at most six groups named for the user's question (section 10); the live lane is a property of each view (lane badge and live controls) |
-| 3 | ADR-0016 5 and ADR-0017 1: the App root capped at 1200 px | validation scorecards, matrices and curves need the screen | both defer to ADR-0071 2: App and railed routes take the full viewport; only a single prose column is capped |
-| 4 | ADR-0017 2: Implementation has at least 8 tabs | contradicts ADR-0071 5 | at least eight topics, organised in at most six top-level groups |
-| 5 | ADR-0017 2 and the quality bar: at least two learned tabs, "a CNN and an autoencoder" | a CNN on tabular credit data is not the state of the art (Gunnarsson et al. 2021; Grinsztajn et al. 2022) | at least two learned methods that are the state of the art for the domain (monotone GBM, EBM, TabPFN, deep survival, a neural quantile VaR challenger), each beside its classical baseline |
-| 6 | ADR-0017 2 Benchmark: "a confusion matrix with per-class recall" | PD models are judged by discrimination and calibration; VaR models by backtests and consistent scoring | the Benchmark uses the domain's held-out metrics; a confusion matrix only where the task is classification at a decision threshold |
-| 7 | ADR-0017 and ADR-0016 name exemplar apps as the binding reference | an exemplar app cannot be the reference for a domain it was not built for, and copying another product's code is not a solution | the reference implementation is the shared shell plus the template, executed and gated |
-| 8 | Quality bar: every app ports `.chip` and the workbench CSS from another product | copying another product's CSS | the shell (0.7.0) ships the workbench primitives and their CSS; apps compose them |
-| 9 | ADR-0016 9 and ADR-0017 6: "until then, copy RotorVitals" | the template shipped a stub frontend | the template (0.02.x) is a running six-page app on the shell; the interim clause is removed |
-| 10 | ADR-0075 6: the template ships `scripts/check_sdd.py` | it did not | the template ships it, wired in CI |
-| 11 | ADR-0057 described a "Python pkg `<slug>lab`"; the residue guard forbade the frozen path | Contraste could not keep the frozen path and pass the guard | the frozen path `data-pipeline/pipeline/` holds plain scripts invoked by path; the residue guard detects the example by content markers |
-| 12 | The template shipped both the Pages workflow and the VPS files | one place only | `deploy/TARGET`, `scripts/check_deploy_place.py`; instantiation removes the unchosen path |
-
-The base this product starts from is recorded in `.template-version` (the template release) and in
-`frontend/package.json` (the shell version). A later base is adopted deliberately, as its own commit.
-
-## 10. Web companion
+### Web companion
 
 Exactly six routes on the shared shell (`@fasl-work/caos-app-shell`), in English and Spanish, light and dark, with
 the architecture modal:
@@ -337,7 +472,7 @@ the architecture modal:
 Every route is measured by the shell's gate (`npm run gate`: every route, tab and case at five sizes, both themes,
 both languages) before any deploy.
 
-## 11. Requirements
+### Requirements map
 
 EARS (Mavin et al., RE'09, doi:10.1109/RE.2009.9). Product requirements (`CT-`) are stated with their gates in the
 feature folders; the hundreds digit is the unit (0 for U0, 1 for U1). Engine requirements (`RV-`) are stated and
@@ -352,3 +487,89 @@ gated in the engine repository.
 | U2 | `docs/design/features/c01-irb-capital/` | CT-212 to CT-217: C01's IRB capital along every cut-off under three regimes with its stated assumptions; each point the engine's sum; every card a revolver, the six-month full payers as the sensitivity; the live capital linear in the LGD and the retail functions at parity; the Basel III LGD floor flagged; the measured gate |
 | U3 | `docs/design/features/c22-validator/` | CT-301 to CT-313: the size of every test with a p-value on its null; power against seven planted defects at severities 0 to 5; exact rejection probabilities beside the simulated ones; WP14, Yurdakul-Naranjo and Demler et al. reproduced cell by cell; findings evidenced by measured rates; known truth and determinism; expected ranges; the live exact size and power at parity; the C22 instrument; the measured gate; C05 on the engine's generator; C01's Hosmer-Lemeshow with G degrees of freedom and its AUC test with the development variance |
 | engine | `CAOS_RiskValidation` `docs/design/` | RV-001 to RV-007 (the `TestResult` record, the policy, the suite runner) and RV-101 to RV-114 (PD and stability tests), converged in `riskvalidation` 0.01.000; RV-901 (regulatory parameters with paragraph and in-force date) lands in U9 |
+
+## Oracles
+
+1. **Golden values** from official worked examples and published tables: the strongest oracle; a test that cannot
+   reproduce its golden value is not shipped.
+2. **Known truth** from generators: the true PD, CCF, VaR, exposure or loss distribution is known, so estimator
+   error, test size and test power are measured, with their Monte Carlo error.
+3. **Real outcomes on held-out data** with leakage-safe splits: discrimination and calibration of real models,
+   backtests of VaR on real P&L. Trustworthy only as far as the split is; the leakage tests guard it.
+4. **Identities and invariants**: the IFRS 7 roll-forward, Euler sums, row sums of transition matrices, EVE
+   sum-of-parts, monotonicities.
+5. **Independent engine reconciliation**: own HW1F against ORE, own GARCH against `arch`, own estimators against
+   transitionMatrix and lifelines, scipy distributions for every test statistic.
+6. **Licence lineage**: an artifact derived from a link-only or unusable source is refused.
+
+No oracle here is a model judging another model.
+
+## Deploy driver
+
+One place only, decided in the plan: **`github-pages` with a `CNAME` on `contraste.fasl-work.com`**
+(`deploy/TARGET` = `pages`, checked by `scripts/check_deploy_place.py`; the template's VPS files were removed at
+instantiation). Driver: the repository is public and every web capability is static replay or client-side compute;
+no ADR-0002 backend trigger exists (no server state, no private data, no request-time compute). Measured guard at
+every release: the published site under GitHub Pages' 1 GB limit and every committed file under 100 MB
+(`scripts/check_artifacts.py`); Pyodide is loaded from its CDN, not from the bundle. The Pyodide cold start with
+`riskvalidation` loaded (median of 5, cold cache) is measured to admit live features (`Lanes`), not to choose the
+host. The deploy runs only after CI passes on `main` and ends with `scripts/check_live.py` against the published
+site.
+
+## Risks and kill criteria
+
+| Risk | Kill or re-scope criterion |
+|---|---|
+| Freddie Mac terms do not allow derived aggregates in a public web | C06 and C08 publish the SBA twin; Freddie Mac results stay offline |
+| Pyodide cold start too slow | live features move to TypeScript ports with parity tests, or to replay only, per measurement |
+| ORE unusable in WSL | C12 uses QuantLib plus the analytic HW1F check only, stated |
+| A golden value cannot be reproduced | the method or test is not shipped until it is |
+| Scope (22 cases, 17 units) | units ship vertically; nothing is presented as done until the convergence verdict |
+| Licence contamination | `scripts/check_licences.py` fails on AGPL, GPL or BSL in the default install |
+| A committed file carries rows a licence forbids | `scripts/check_data_classes.py` fails the build |
+| The site looks right and is not (a blank chart, a dead control, a broken deep link) | the measured gate (`npm run gate`) fails before a deploy |
+
+## ADR fit
+
+Every ADR and convention that binds Contraste was evaluated against what Contraste is (a workbench that builds and
+validates financial risk models, 22 cases, an engine package, a static web companion) before any code (2026-10-04).
+Where an ADR did not fit, the ADR was amended first and the base (the shared shell and the template) was fixed to
+carry the amended rule, with a gate (ADR-0078, "rules live in the base"); Contraste then instantiated the fixed
+template and makes no structural edits outside its core.
+
+Where the ADRs fit as written:
+
+| ADR / convention | Fit, and what carries it here |
+|---|---|
+| ADR-0057 product archetype (offline pipeline, two contracts, named stages, static replay, lane gate) | fits: Contraste is offline-heavy with a static companion; `data-pipeline/`, `Sizing and contracts` |
+| ADR-0069 full scientific repository | fits: every model rung and every validation test is a vertical with engine, tests, docs and lane (`Method ladder`) |
+| ADR-0075 SDD before development | fits: this document; `scripts/check_sdd.py` |
+| ADR-0058 architecture modal (at least five themed tabs) | fits: `frontend/src/architecture/`, validated by the shell on mount |
+| ADR-0056 `docs/` wiki | fits: engine and product wikis, authored per unit from the dossiers |
+| ADR-0011 and ADR-0012 i18n and theming | fits: the shell; every string is bilingual |
+| ADR-0061 and the no-internal-packages rule | fits: `riskvalidation` is the separate engine repository; this product declares no package |
+| ADR-0065 to ADR-0068 community files, English, no em-dash, versioning | fit: `scripts/check_content_standards.py`, `scripts/check_version_coherence.py` |
+| ADR-0074 CI budget | fits: the product CI runs no pipeline suite; the engine's unit tests are cheap and run in its own CI |
+| Product quality bar, section 0 (one selected case on App, real action capability, honesty) | fits strongly: thresholds, policy, segments, windows and scenario weights are real live inputs |
+| Units gate | applies from the second observable on: PD in (0, 1), LGD in [0, 1], CCF by stated convention, VaR and ES in the portfolio's units |
+| One deploy place | fits: GitHub Pages (`Deploy driver`) |
+
+Where they did not fit, and the amendment now in force:
+
+| # | ADR text | Why it failed for Contraste | Amendment, and what carries it |
+|---|---|---|---|
+| 1 | ADR-0016 9.A: the App is a top-level `Tabs` strip, one tab per case | 22 cases would be 22 tabs; ADR-0071 caps peers near six and makes a categorised one-of-N a `select` with `optgroup` | cases are chosen with the shell's `CaseSelector`, grouped by category, a `select` with `optgroup` beyond the chip budget |
+| 2 | ADR-0016 9.A: four fixed sub-tabs Field, Live, Charts, Context | the instrument is itself several questions (the model, its validation, its impact, the findings); a separate Live tab assumes a live engine distinct from the replay | ONE tab row of at most six groups named for the user's question (`Web companion` under `Cases`); the live lane is a property of each view (lane badge and live controls) |
+| 3 | ADR-0016 5 and ADR-0017 1: the App root capped at 1200 px | validation scorecards, matrices and curves need the screen | both defer to ADR-0071 2: App and railed routes take the full viewport; only a single prose column is capped |
+| 4 | ADR-0017 2: Implementation has at least 8 tabs | contradicts ADR-0071 5 | at least eight topics, organised in at most six top-level groups |
+| 5 | ADR-0017 2 and the quality bar: at least two learned tabs, "a CNN and an autoencoder" | a CNN on tabular credit data is not the state of the art (Gunnarsson et al. 2021; Grinsztajn et al. 2022) | at least two learned methods that are the state of the art for the domain (monotone GBM, EBM, TabPFN, deep survival, a neural quantile VaR challenger), each beside its classical baseline |
+| 6 | ADR-0017 2 Benchmark: "a confusion matrix with per-class recall" | PD models are judged by discrimination and calibration; VaR models by backtests and consistent scoring | the Benchmark uses the domain's held-out metrics; a confusion matrix only where the task is classification at a decision threshold |
+| 7 | ADR-0017 and ADR-0016 name exemplar apps as the binding reference | an exemplar app cannot be the reference for a domain it was not built for, and copying another product's code is not a solution | the reference implementation is the shared shell plus the template, executed and gated |
+| 8 | Quality bar: every app ports `.chip` and the workbench CSS from another product | copying another product's CSS | the shell (0.7.0) ships the workbench primitives and their CSS; apps compose them |
+| 9 | ADR-0016 9 and ADR-0017 6: "until then, copy RotorVitals" | the template shipped a stub frontend | the template (0.02.x) is a running six-page app on the shell; the interim clause is removed |
+| 10 | ADR-0075 6: the template ships `scripts/check_sdd.py` | it did not | the template ships it, wired in CI |
+| 11 | ADR-0057 described a "Python pkg `<slug>lab`"; the residue guard forbade the frozen path | Contraste could not keep the frozen path and pass the guard | the frozen path `data-pipeline/pipeline/` holds plain scripts invoked by path; the residue guard detects the example by content markers |
+| 12 | The template shipped both the Pages workflow and the VPS files | one place only | `deploy/TARGET`, `scripts/check_deploy_place.py`; instantiation removes the unchosen path |
+
+The base this product starts from is recorded in `.template-version` (the template release) and in
+`frontend/package.json` (the shell version). A later base is adopted deliberately, as its own commit.
