@@ -34,8 +34,7 @@ def test_ct102_a_calibration_slice_that_overlaps_the_holdout_is_found_by_the_dis
 def test_ct103_a_fit_that_depends_on_state_outside_its_training_information_changes_its_record(base_copy: Path, repo: Path) -> None:
     refute(base_copy, repo, f"{LEAK}::test_outside_information_perturbation_invariance",
            lambda r: edit(r, "data-pipeline/pipeline/cases/c01_ladder.py", "const = benchmark.fit_constant(y_tr)",
-                          "fit_ladder.calls = getattr(fit_ladder, 'calls', 0) + 1
-    const = benchmark.fit_constant(y_tr[: -fit_ladder.calls])"),
+                          "fit_ladder.calls = getattr(fit_ladder, 'calls', 0) + 1\n    const = benchmark.fit_constant(y_tr[: -fit_ladder.calls])"),
            "test_outside_information_perturbation_invariance")
 
 
