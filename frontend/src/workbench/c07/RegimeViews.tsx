@@ -11,7 +11,7 @@ import { FixtureNotice } from '../c06/C06Common';
 import { componentLabel, outputsOf, type C07Outputs, type C07Sel, type RegimeId } from './selection';
 
 const LIVE = 'live' as const;
-const REGIME_COLOR: Record<RegimeId, string> = { 'cmf-b1': '--color-accent', ifrs9: '--color-magenta', 'bde-annex9': '--color-good' };
+const REGIME_COLOR: Record<RegimeId, string> = { 'cmf-b1': '--color-accent', ifrs9: '--color-warn', 'bde-annex9': '--color-good' };
 const REGIME_TONE: Record<RegimeId, 'accent' | 'warn' | 'good'> = { 'cmf-b1': 'accent', ifrs9: 'warn', 'bde-annex9': 'good' };
 const STATUS_TEXT: Record<string, BiText> = {
   'statutory-chile-loans': { en: 'Statutory for loans in Chile', es: 'Estatutaria para créditos en Chile' },
@@ -27,6 +27,8 @@ function regimeName(id: RegimeId, label: BiText): BiText {
 }
 
 const colorOf = (token: string) => `var(${token})`;
+
+const segmentName = (o: C07Outputs, id: string): BiText => o.portfolio.segments.find((x) => x.segment_id === id)?.label ?? { en: id, es: id };
 
 const CATEGORY_TEXT: Record<string, BiText> = {
   normal: { en: 'Normal', es: 'Normal' },
@@ -104,7 +106,7 @@ function GroupedBars({ o, sel }: { o: C07Outputs; sel: C07Sel }) {
       <p className="ct-note" aria-live="polite">
         {chosen && cs
           ? `${label(cs.segment_id)}, ${pick(regimeName(chosen[1] as RegimeId, o.regimes.find((r) => r.regime === chosen[1])?.label ?? { en: chosen[1], es: chosen[1] }), lang)}: ${money(value(cs, chosen[1] as RegimeId), lang, cur)} ${cur}`
-          : pick({ en: 'Pick a bar to read it. Blue is B-1, magenta is IFRS 9 (probability-weighted), green is BdE Annex 9.', es: 'Elija una barra para leerla. Azul es B-1, magenta es IFRS 9 (ponderada por probabilidad), verde es Anexo 9 del BdE.' }, lang)}
+          : pick({ en: 'Pick a bar to read it. Blue is B-1, amber is IFRS 9 (probability-weighted), green is BdE Annex 9.', es: 'Elija una barra para leerla. Azul es B-1, ámbar es IFRS 9 (ponderada por probabilidad), verde es Anexo 9 del BdE.' }, lang)}
       </p>
     </div>
   );
@@ -119,67 +121,65 @@ export function ThreeRegimeView({ sel }: { sel: C07Sel | null }) {
   const prov = provenanceOf(sel.data.variant.provenance.truth_status);
   const cur = o.currency;
   return (
-    <>
-      <ViewsRow shares={[2, 3]}>
-        <PlotCard
-          fill
-          title={{ en: `The three regimes, scenario ${o.scenario_id}`, es: `Los tres regímenes, escenario ${o.scenario_id}` }}
-          lane={REPLAY}
-          provenance={prov}
-          dataKey={stateKey}
-          note={{ en: pick(o.notice, 'en'), es: pick(o.notice, 'es') }}
-        >
-          <BarChart
-            title={{ en: 'Total provision by regime', es: 'Provisión total por régimen' }}
-            height="fill"
-            orientation="vertical"
-            data={o.regimes.map((r) => ({ id: r.regime, label: regimeName(r.regime, r.label), value: r.total_provision, tone: REGIME_TONE[r.regime], highlight: sel.regime === r.regime, hint: STATUS_TEXT[r.status] }))}
-            axis={{ label: { en: `Provision (${cur})`, es: `Provisión (${cur})` }, format: { digits: 3 } }}
-          />
-        </PlotCard>
-        <PlotCard fill title={{ en: 'Provision by segment', es: 'Provisión por segmento' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-          <GroupedBars o={o} sel={sel} />
-        </PlotCard>
-      </ViewsRow>
+    <ViewsRow shares={[1, 1]}>
       <PlotCard
-        title={{ en: 'The regimes in numbers', es: 'Los regímenes en números' }}
+        fill
+        title={{ en: `The three regimes, scenario ${o.scenario_id}`, es: `Los tres regímenes, escenario ${o.scenario_id}` }}
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
-        note={{ en: 'The comparable total is the sum of the segment provisions plus the unallocated lines of each regime. The B-1 additional provisions are outside it. The IFRS 9 column is the probability-weighted measure, a comparison, not the provision Chilean banks book on loans.', es: 'El total comparable es la suma de las provisiones por segmento más las líneas no asignadas de cada régimen. Las provisiones adicionales de B-1 quedan fuera. La columna IFRS 9 es la medida ponderada por probabilidad, una comparación, no la provisión que los bancos chilenos constituyen sobre los créditos.' }}
+        note={{
+          en: 'The comparable total is the sum of the segment provisions plus the unallocated lines of each regime. The B-1 additional provisions are outside it. The IFRS 9 column is the probability-weighted measure, a comparison, not the provision Chilean banks book on loans.',
+          es: 'El total comparable es la suma de las provisiones por segmento más las líneas no asignadas de cada régimen. Las provisiones adicionales de B-1 quedan fuera. La columna IFRS 9 es la medida ponderada por probabilidad, una comparación, no la provisión que los bancos chilenos constituyen sobre los créditos.',
+        }}
       >
-        <FixtureNotice variant={sel.data.variant} />
-        <div className="ct-scroll">
-          <table className="caos-table ct-wrap-head" data-table="regimes">
-            <thead>
-              <tr>
-                <th className="ct-text">{pick({ en: 'Regime', es: 'Régimen' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Status', es: 'Estatus' }, lang)}</th>
-                <th>{`${pick({ en: 'Total provision', es: 'Provisión total' }, lang)} (${cur})`}</th>
-                <th>{pick({ en: 'Coverage', es: 'Cobertura' }, lang)}</th>
-                <th className="ct-text ct-wide-only">{pick({ en: 'Unallocated lines', es: 'Líneas no asignadas' }, lang)}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {o.regimes.map((r) => (
-                <tr key={r.regime} data-regime={r.regime} data-status={r.status} className={sel.regime === r.regime ? 'ct-current' : undefined}>
-                  <td className="ct-text">{pick(regimeName(r.regime, r.label), lang)}</td>
-                  <td className="ct-text">{pick(STATUS_TEXT[r.status], lang)}</td>
-                  <td>{money(r.total_provision, lang, cur)}</td>
-                  <td>{pct(r.coverage_rate, lang, 2)}</td>
-                  <td className="ct-text ct-wide-only">
-                    {r.unallocated_lines.length === 0
-                      ? pick({ en: 'none', es: 'ninguna' }, lang)
-                      : r.unallocated_lines.map((u) => `${pick(u.label, lang)}: ${money(u.amount, lang, cur)}`).join('; ')}
-                  </td>
+        <div className="ct-stack">
+          <FixtureNotice variant={sel.data.variant} />
+          <BarChart
+            title={{ en: 'Total provision by regime', es: 'Provisión total por régimen' }}
+            orientation="horizontal"
+            data={o.regimes.map((r) => ({ id: r.regime, label: regimeName(r.regime, r.label), value: r.total_provision, tone: REGIME_TONE[r.regime], highlight: sel.regime === r.regime, hint: STATUS_TEXT[r.status] }))}
+            axis={{ label: { en: `Provision (${cur})`, es: `Provisión (${cur})` }, format: { digits: 3 } }}
+          />
+          <div className="ct-scroll">
+            <table className="caos-table ct-wrap-head" data-table="regimes">
+              <thead>
+                <tr>
+                  <th className="ct-text">{pick({ en: 'Regime', es: 'Régimen' }, lang)}</th>
+                  <th className="ct-text">{pick({ en: 'Status', es: 'Estatus' }, lang)}</th>
+                  <th>{`${pick({ en: 'Total', es: 'Total' }, lang)} (${cur})`}</th>
+                  <th>{pick({ en: 'Coverage', es: 'Cobertura' }, lang)}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {o.regimes.map((r) => (
+                  <tr key={r.regime} data-regime={r.regime} data-status={r.status} className={sel.regime === r.regime ? 'ct-current' : undefined}>
+                    <td className="ct-text">{pick(regimeName(r.regime, r.label), lang)}</td>
+                    <td className="ct-text">{pick(STATUS_TEXT[r.status], lang)}</td>
+                    <td>{money(r.total_provision, lang, cur)}</td>
+                    <td>{pct(r.coverage_rate, lang, 2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <ul className="ct-evidence" data-table="unallocated-lines">
+              {o.regimes.flatMap((r) =>
+                r.unallocated_lines.map((u) => (
+                  <li key={`${r.regime}-${u.id}`} data-unallocated={u.id}>
+                    {`${pick(regimeName(r.regime, r.label), lang)}: ${pick(u.label, lang)}, ${money(u.amount, lang, cur)}`}
+                  </li>
+                )),
+              )}
+            </ul>
+            <p className="ct-note">{pick(o.notice, lang)}</p>
+            <p className="ct-note">{pick(BANK_NOTE, lang)}</p>
+          </div>
         </div>
-        <p className="ct-note">{pick(BANK_NOTE, lang)}</p>
       </PlotCard>
-    </>
+      <PlotCard fill title={{ en: 'Provision by segment', es: 'Provisión por segmento' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
+        <GroupedBars o={o} sel={sel} />
+      </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -258,13 +258,13 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
   const closes = Math.abs(from.total_provision + sum - to.total_provision) <= 1e-6 * Math.max(1, Math.abs(to.total_provision));
   let run = from.total_provision;
   const bars = [
-    { id: 'from', label: from.label, amount: from.total_provision, lo: 0, hi: from.total_provision, kind: 'total' },
+    { id: 'from', label: from.label, amount: from.total_provision, lo: from.total_provision, hi: from.total_provision, kind: 'total' },
     ...b.steps.map((s) => {
       const start = run;
       run += s.amount;
       return { id: s.id, label: s.label, amount: s.amount, lo: Math.min(start, run), hi: Math.max(start, run), kind: 'step' };
     }),
-    { id: 'to', label: IFRS9_NAME, amount: to.total_provision, lo: 0, hi: to.total_provision, kind: 'total' },
+    { id: 'to', label: IFRS9_NAME, amount: to.total_provision, lo: to.total_provision, hi: to.total_provision, kind: 'total' },
   ];
   const chosen = bars.find((x) => x.id === picked) ?? null;
   return (
@@ -286,11 +286,13 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
               const top = 6;
               const axis = 22;
               const rowH = (height - top - axis) / bars.length;
-              const lo = Math.min(0, ...bars.map((x) => x.lo));
-              const hi = Math.max(...bars.map((x) => x.hi), 1);
-              const ticks = niceTicks(lo, hi, plotW, 60, 6);
-              const dmin = Math.min(lo, ticks[0]);
-              const dmax = Math.max(hi, ticks[ticks.length - 1]);
+              // the totals are markers, so the axis spans the running total only (it does not start at zero)
+              const lo0 = Math.min(...bars.map((x) => x.lo));
+              const hi0 = Math.max(...bars.map((x) => x.hi));
+              const pad = Math.max((hi0 - lo0) * 0.12, 1);
+              const ticks = niceTicks(lo0 - pad, hi0 + pad, plotW, 60, 6);
+              const dmin = Math.min(lo0 - pad, ticks[0]);
+              const dmax = Math.max(hi0 + pad, ticks[ticks.length - 1]);
               const sx = (v: number) => x0 + ((v - dmin) / (dmax - dmin)) * plotW;
               return (
                 <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={pick({ en: 'Bridge from B-1 to IFRS 9', es: 'Puente de B-1 a IFRS 9' }, lang)}>
@@ -303,15 +305,16 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
                   {bars.map((x, i) => {
                     const y = top + i * rowH;
                     const h = Math.max(rowH * 0.62, 3);
-                    const fill = x.kind === 'total' ? (x.id === 'from' ? REGIME_COLOR['cmf-b1'] : REGIME_COLOR.ifrs9) : x.amount >= 0 ? '--color-warn' : '--color-good';
+                    const fill = x.kind === 'total' ? (x.id === 'from' ? REGIME_COLOR['cmf-b1'] : REGIME_COLOR.ifrs9) : x.amount >= 0 ? '--color-bad' : '--color-good';
                     return (
                       <g key={x.id} data-bar={x.id}>
                         <text className="dg-bar-label" x={labelW} y={y + rowH / 2 + 4} textAnchor="end">{fitLabel(pick(x.label, lang), labelW, 11, 1).lines[0]}</text>
                         <rect
-                          x={sx(x.lo)}
+                          x={x.kind === 'total' ? sx(x.lo) - h / 2 : sx(x.lo)}
                           y={y + (rowH - h) / 2}
-                          width={Math.max(sx(x.hi) - sx(x.lo), 1.5)}
+                          width={x.kind === 'total' ? h : Math.max(sx(x.hi) - sx(x.lo), 1.5)}
                           height={h}
+                          rx={x.kind === 'total' ? h / 2 : 0}
                           style={{ fill: colorOf(fill), stroke: picked === x.id ? 'var(--color-fg)' : 'none', strokeWidth: 2 }}
                           role="button"
                           tabIndex={0}
@@ -319,7 +322,7 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
                           onClick={() => setPicked(picked === x.id ? null : x.id)}
                           onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setPicked(picked === x.id ? null : x.id)}
                         />
-                        <text className="dg-tick" x={sx(x.hi) + 4} y={y + rowH / 2 + 4}>{formatNumber(x.amount / 1e6, lang, { digits: 4 })}</text>
+                        <text className="dg-tick" x={sx(x.hi) + (x.kind === 'total' ? h / 2 + 4 : 4)} y={y + rowH / 2 + 4}>{formatNumber(x.amount / 1e6, lang, { digits: 4 })}</text>
                       </g>
                     );
                   })}
@@ -328,7 +331,7 @@ export function BridgeView({ sel }: { sel: C07Sel | null }) {
             }}
           </Stage>
           <p className="ct-note" aria-live="polite">
-            {chosen ? `${pick(chosen.label, lang)}: ${money(chosen.amount, lang, cur)} ${cur}` : pick({ en: `Bars in ${cur} millions. Pick a bar to read it.`, es: `Barras en millones de ${cur}. Elija una barra para leerla.` }, lang)}
+            {chosen ? `${pick(chosen.label, lang)}: ${money(chosen.amount, lang, cur)} ${cur}` : pick({ en: `Millions of ${cur}; the axis does not start at zero, the two totals are the dots. Pick a bar to read it.`, es: `Millones de ${cur}; el eje no parte de cero, los dos totales son los puntos. Elija una barra para leerla.` }, lang)}
           </p>
         </div>
       </PlotCard>
@@ -405,7 +408,7 @@ export function B1View({ sel }: { sel: C07Sel | null }) {
             <tbody>
               {d.group_max_rule.map((g) => (
                 <tr key={g.segment_id} data-segment={g.segment_id} data-method={g.method}>
-                  <td className="ct-text">{g.segment_id}</td>
+                  <td className="ct-text">{pick(segmentName(o, g.segment_id), lang)}</td>
                   <td>{money(g.standard, lang, cur)}</td>
                   <td>
                     <MaybeNumber value={g.internal} reason={g.internal_reason} format={(v) => money(v, lang, cur)} />
@@ -538,7 +541,7 @@ export function Ifrs9View({ sel }: { sel: C07Sel | null }) {
             <tbody>
               {d.stage_summary.map((r) => (
                 <tr key={r.stage} data-stage={r.stage}>
-                  <td className="ct-text">{pick(STAGE_TEXT[r.stage], lang)}</td>
+                  <td className="ct-text" style={{ whiteSpace: 'nowrap' }}>{pick(STAGE_TEXT[r.stage], lang)}</td>
                   <td>{formatNumber(r.accounts, lang, { decimals: 0 })}</td>
                   <td>{money(r.gross_carrying_amount, lang, cur)}</td>
                   <td>{money(r.ecl, lang, cur)}</td>
@@ -566,7 +569,7 @@ export function Ifrs9View({ sel }: { sel: C07Sel | null }) {
                 {d.overlays.map((ov) => (
                   <tr key={ov.id} data-overlay={ov.id}>
                     <td className="ct-text">{pick(ov.label, lang)}</td>
-                    <td className="ct-text ct-wide-only">{`${ov.segment_id ?? pick({ en: 'portfolio', es: 'cartera' }, lang)}, ${ov.stage ? pick(STAGE_TEXT[ov.stage], lang) : pick({ en: 'no stage', es: 'sin etapa' }, lang)}`}</td>
+                    <td className="ct-text ct-wide-only">{`${ov.segment_id ? pick(segmentName(o, ov.segment_id), lang) : pick({ en: 'portfolio', es: 'cartera' }, lang)}, ${ov.stage ? pick(STAGE_TEXT[ov.stage], lang) : pick({ en: 'no stage', es: 'sin etapa' }, lang)}`}</td>
                     <td>{money(ov.amount, lang, cur)}</td>
                   </tr>
                 ))}

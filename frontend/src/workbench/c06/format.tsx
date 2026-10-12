@@ -42,7 +42,7 @@ export function MaybeNumber({ value, reason, format }: { value: number | null; r
   return (
     <span data-na="true">
       {formatNumber(null, lang)}
-      {reason ? <span className="ct-note"> ({reason})</span> : null}
+      {reason ? <span className="ct-note" style={{ display: 'block', whiteSpace: 'normal', maxWidth: '18rem', marginLeft: 'auto', textAlign: 'right' }}>({reason})</span> : null}
     </span>
   );
 }

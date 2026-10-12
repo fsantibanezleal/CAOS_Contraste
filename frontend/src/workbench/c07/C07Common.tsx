@@ -186,10 +186,10 @@ export function GapReadout({ sel }: { sel: C07Sel | null }) {
       dataKey={stateKey}
       items={[
         { label: { en: 'CMF B-1', es: 'CMF B-1' }, value: row?.cmf_b1_provision ?? null, unit, format },
-        { label: { en: 'IFRS 9, weighted', es: 'IFRS 9, ponderada' }, value: row?.ifrs9_provision ?? null, unit, format },
-        { label: { en: 'BdE Annex 9', es: 'BdE Anexo 9' }, value: row?.bde_annex9_provision ?? null, unit, format },
-        { label: { en: 'IFRS 9 minus B-1', es: 'IFRS 9 menos B-1' }, value: row?.gap_ifrs9_minus_b1 ?? null, unit, format },
-        { label: { en: 'BdE minus B-1', es: 'BdE menos B-1' }, value: row?.gap_bde_minus_b1 ?? null, unit, format },
+        { label: { en: 'IFRS 9', es: 'IFRS 9' }, hint: { en: 'The probability-weighted measure.', es: 'La medida ponderada por probabilidad.' }, value: row?.ifrs9_provision ?? null, unit, format },
+        { label: { en: 'BdE 9', es: 'BdE 9' }, value: row?.bde_annex9_provision ?? null, unit, format },
+        { label: { en: 'IFRS 9 - B-1', es: 'IFRS 9 - B-1' }, value: row?.gap_ifrs9_minus_b1 ?? null, unit, format },
+        { label: { en: 'BdE - B-1', es: 'BdE - B-1' }, value: row?.gap_bde_minus_b1 ?? null, unit, format },
       ]}
     />
   );

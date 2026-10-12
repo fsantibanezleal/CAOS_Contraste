@@ -1,7 +1,7 @@
 // The C07 instrument (U5-W): the Chile provisions trilogy of the synthetic Banco Andino under CMF B-1, IFRS 9 and BdE
 // Annex 9 for one scenario variant. The rail has three sections (Regimes: the regime and the segment; IFRS 9: the
 // weight of a weighted scenario; B-1: the additional provisions within the board's limits), each with a live
-// read-out; the groups are Comparison, Regimes, Validation, Impact and Findings, with the Variants and Context views.
+// read-out; the groups are Comparison (with the scenario change), Regimes, Validation and Findings (the shell allows six peers), with the Variants and Context views.
 import { ChipGroup, Knob, SubTabs, pick, useShellLang, type BiText, type RailSection } from '@fasl-work/caos-app-shell';
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import type { CaseData } from '../../api/artifacts';
@@ -25,6 +25,14 @@ const REGIMES: Array<{ id: RegimeId; label: BiText; hint: BiText }> = [
   { id: 'ifrs9', label: { en: 'IFRS 9', es: 'IFRS 9' }, hint: { en: 'The probability-weighted ECL: a comparison measure, not the Chilean statutory provision.', es: 'La PCE ponderada por probabilidad: una medida de comparación, no la provisión estatutaria chilena.' } },
   { id: 'bde-annex9', label: { en: 'BdE 9', es: 'BdE 9' }, hint: { en: 'Banco de España Circular 4/2017 Annex 9: the Spanish GAAP alternative solutions.', es: 'Banco de España Circular 4/2017 Anejo 9: las soluciones alternativas del PGC español.' } },
 ];
+
+/** Short names of the four B-1 portfolios for the rail's chips; the full label is each chip's hint. */
+const SHORT: Record<string, BiText> = {
+  mortgage: { en: 'Mortgage', es: 'Hipotecario' },
+  consumer: { en: 'Consumer', es: 'Consumo' },
+  'commercial-group': { en: 'Comm. group', es: 'Com. grupal' },
+  'commercial-individual': { en: 'Comm. indiv.', es: 'Com. indiv.' },
+};
 
 export function useInstrument(data: CaseData | null, onPick: (id: string) => void): C07Instrument | null {
   const lang = useShellLang();
@@ -72,7 +80,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <ChipGroup
           id="c07-segment"
           label={{ en: 'Segment', es: 'Segmento' }}
-          options={o.portfolio.segments.map((s) => ({ id: s.segment_id, label: s.label, hint: s.label }))}
+          options={o.portfolio.segments.map((s) => ({ id: s.segment_id, label: SHORT[s.segment_id] ?? s.label, hint: s.label }))}
           value={sel.segment}
           onChange={setSegment}
         />
@@ -151,6 +159,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       { id: 'three', label: { en: 'Three regimes', es: 'Tres regímenes' }, content: <ThreeRegimeView sel={sel} /> },
       { id: 'segments', label: { en: 'Segments', es: 'Segmentos' }, content: <SegmentsView sel={sel} /> },
       { id: 'bridge', label: { en: 'Bridge', es: 'Puente' }, content: <BridgeView sel={sel} /> },
+      { id: 'scenario', label: { en: 'Scenario change', es: 'Cambio de escenario' }, content: <DeltaView sel={sel} /> },
     ],
     { en: 'Views of the comparison', es: 'Vistas de la comparación' },
     'c07-comparison',
@@ -180,7 +189,6 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       { id: 'comparison', label: { en: 'Comparison', es: 'Comparación' }, lane: 'replay', provenance: prov, content: comparison },
       { id: 'regimes', label: { en: 'Regimes', es: 'Regímenes' }, lane: 'live', provenance: prov, content: regimesGroup },
       { id: 'validation', label: { en: 'Validation', es: 'Validación' }, lane: 'replay', provenance: prov, content: validation },
-      { id: 'impact', label: { en: 'Impact', es: 'Impacto' }, lane: 'replay', provenance: prov, content: <DeltaView sel={sel} /> },
       { id: 'findings', label: { en: 'Findings', es: 'Hallazgos' }, lane: 'replay', provenance: prov, content: <C07FindingsView sel={sel} /> },
     ],
     compare: { label: { en: 'Variants', es: 'Variantes' }, lane: 'replay', provenance: prov, content: <C07VariantsView sel={sel} onPick={onPick} /> },

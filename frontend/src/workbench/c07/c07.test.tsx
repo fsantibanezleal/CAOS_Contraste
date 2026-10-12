@@ -65,7 +65,13 @@ function Groups() {
 
 describe('the C07 instrument', () => {
   it('the groups are the validator questions, in order', () => {
-    expect(html(<Groups />)).toContain('Comparison|Regimes|Validation|Impact|Findings|Variants');
+    expect(html(<Groups />)).toContain('Comparison|Regimes|Validation|Findings|Variants');
+    // the shell throws on more than six peers (ADR-0071 rule 5): the groups, the variants view and the context
+    function Count() {
+      const inst = useC07Instrument(data, () => undefined);
+      return <p>{inst ? inst.groups.length + 2 : 0}</p>;
+    }
+    expect(html(<Count />)).toContain('<p>6</p>');
   });
 
   it('every view renders and carries its lane', () => {

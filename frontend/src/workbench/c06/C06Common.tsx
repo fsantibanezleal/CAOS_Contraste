@@ -272,10 +272,10 @@ export function WeightReadout({ sel }: { sel: C06Sel | null }) {
       dataKey={stateKey}
       items={[
         { label: { en: `Weight, ${label.en}`, es: `Peso, ${label.es}` }, value: sel.weight, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'The other scenarios keep their ratios.', es: 'Los otros escenarios conservan sus proporciones.' } },
-        { label: { en: 'Model ECL, staging frozen', es: 'PCE del modelo, etapas congeladas' }, value: liveEcl(sel), unit, format: { decimals: o.currency === 'CLP' ? 0 : 2 }, hint: { en: 'The sum of weight times the ECL of each scenario at the staging of the weighted conditions; overlays excluded.', es: 'La suma del peso por la PCE de cada escenario con las etapas de las condiciones ponderadas; sin ajustes.' } },
-        { label: { en: 'Nearest grid point, staging recomputed', es: 'Punto de la grilla más cercano, etapas recalculadas' }, value: near?.ecl_recomputed ?? null, unit, format: { decimals: o.currency === 'CLP' ? 0 : 2 } },
-        { label: { en: 'Nearest grid point, staging frozen', es: 'Punto de la grilla más cercano, etapas congeladas' }, value: near?.ecl_frozen ?? null, unit, format: { decimals: o.currency === 'CLP' ? 0 : 2 } },
-        { label: { en: 'Stage 2 share, recomputed', es: 'Fracción en Etapa 2, recalculada' }, value: near?.stage2_ratio_recomputed ?? null, unitless: true, format: { percent: true, decimals: 1 } },
+        { label: { en: 'Model ECL, frozen', es: 'PCE del modelo, cong.' }, value: liveEcl(sel), unit, format: { decimals: o.currency === 'CLP' ? 0 : 2 }, hint: { en: 'The sum of weight times the ECL of each scenario at the staging of the weighted conditions; overlays excluded.', es: 'La suma del peso por la PCE de cada escenario con las etapas de las condiciones ponderadas; sin ajustes.' } },
+        { label: { en: 'Grid ECL, recomputed', es: 'PCE de grilla, recalc.' }, value: near?.ecl_recomputed ?? null, unit, format: { decimals: o.currency === 'CLP' ? 0 : 2 }, hint: { en: 'At the precomputed simplex point nearest to these weights, staging recomputed.', es: 'En el punto del simplex precalculado más cercano a estos pesos, con etapas recalculadas.' } },
+        { label: { en: 'Grid ECL, frozen', es: 'PCE de grilla, cong.' }, value: near?.ecl_frozen ?? null, unit, format: { decimals: o.currency === 'CLP' ? 0 : 2 }, hint: { en: 'At the same grid point, staging frozen.', es: 'En el mismo punto de la grilla, con etapas congeladas.' } },
+        { label: { en: 'Stage 2 share', es: 'Fracción Etapa 2' }, value: near?.stage2_ratio_recomputed ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'At the same grid point, staging recomputed.', es: 'En el mismo punto de la grilla, con etapas recalculadas.' } },
       ]}
     />
   );
