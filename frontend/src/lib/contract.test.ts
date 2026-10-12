@@ -1,5 +1,10 @@
 // T11 and CT-004: the committed artifacts against the web's declared contract, in both directions, types included.
-import { readFileSync } from 'node:fs';
+// Then the same artifacts against the JSON Schema files of docs/contracts/schemas (catalog.md), the consumer side of
+// every document row: the same discovery rule as tests/contracts/contract_schemas.py picks the schema of a document.
+import Ajv2020 from '@redocly/ajv/dist/2020.js'; // already in node_modules (a dependency of openapi-typescript); no runtime dependency is added
+import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { join, relative, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
   conform,
@@ -109,3 +114,151 @@ describe('CONTRACT 1: the exported family contracts are exactly what the web dec
     expect(conform('0', { nullable: 'number' }).join('')).toMatch(/expected a finite number/);
   });
 });
+
+// --- the JSON Schema files: every committed document validates against exactly one, both ways ------------------------
+
+const repo = fileURLToPath(new URL('../../../', import.meta.url));
+const schemasDir = join(repo, 'docs', 'contracts', 'schemas');
+
+type Json = Record<string, unknown>;
+const loadJson = (path: string): Json => JSON.parse(readFileSync(path, 'utf8')) as Json;
+function walk(dir: string): string[] {
+  return readdirSync(dir).sort().flatMap((n) => {
+    const full = join(dir, n);
+    return statSync(full).isDirectory() ? walk(full) : [full];
+  });
+}
+const posix = (p: string) => p.split(sep).join('/');
+const schemaPaths = walk(schemasDir).filter((p) => p.endsWith('.schema.json'));
+const schemaDocs = new Map(schemaPaths.map((p) => [posix(relative(schemasDir, p)).replace(/\.schema\.json$/, ''), loadJson(p)]));
+
+const ajv = new Ajv2020({ strict: false, allErrors: false });
+/** A copy with every relative file `$ref` made absolute against the schema's `$id` (this Ajv build does not resolve `..`). */
+const absolute = (node: unknown, id: string): unknown => {
+  if (Array.isArray(node)) return node.map((x) => absolute(x, id));
+  if (node === null || typeof node !== 'object') return node;
+  return Object.fromEntries(
+    Object.entries(node as Json).map(([k, v]) => [k, k === '$ref' && typeof v === 'string' && !v.startsWith('#') ? new URL(v, id).href : absolute(v, id)]),
+  );
+};
+for (const doc of schemaDocs.values()) ajv.addSchema(absolute(doc, doc.$id as string) as Json);
+
+/** The selectors a schema declares (const of schema, case_id, fit_id, outputs.kind), through allOf and relative refs. */
+function selectors(doc: Json, from: string): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  const props = (doc.properties ?? {}) as Record<string, Json>;
+  for (const k of ['schema', 'case_id', 'fit_id']) if (props[k] && 'const' in props[k]) out[k] = props[k].const;
+  const kind = ((props.outputs?.properties ?? {}) as Record<string, Json>).kind;
+  if (kind && 'const' in kind) out['outputs.kind'] = kind.const;
+  for (const member of (doc.allOf ?? []) as Json[]) {
+    const ref = member.$ref as string | undefined;
+    if (ref && !ref.startsWith('#')) {
+      const target = posix(join(from.includes('/') ? from.slice(0, from.lastIndexOf('/')) : '', ref.replace(/\.schema\.json$/, '')));
+      const norm = target.split('/').reduce<string[]>((acc, p) => (p === '..' ? (acc.pop(), acc) : (acc.push(p), acc)), []).join('/');
+      const inner = schemaDocs.get(norm);
+      if (inner) Object.assign(out, selectors(inner, norm));
+    } else Object.assign(out, selectors(member, from));
+  }
+  return out;
+}
+const candidates = [...schemaDocs.entries()]
+  .filter(([name]) => !name.endsWith('-envelope'))
+  .map(([name, doc]) => ({ name, consts: selectors(doc, name), location: doc['x-location'] as string | undefined }))
+  .filter((c) => c.consts.schema !== undefined || c.location !== undefined);
+
+const globToRegExp = (g: string) => new RegExp(`^${g.replace(/[.+^${}()|\\]/g, '\\$&').replace(/\*/g, '[^/]*')}$`);
+
+/** The schema name of a document: the matching candidate with the most selectors; zero or a tie throws. */
+function schemaFor(relPath: string, doc: Json): string {
+  const outputs = (doc.outputs ?? null) as Json | null;
+  const docKind = outputs && typeof outputs === 'object' ? (outputs.kind as string | undefined) : undefined;
+  const scored: Array<[number, string]> = [];
+  for (const c of candidates) {
+    let points = 0;
+    if (c.location !== undefined) {
+      if (!globToRegExp(c.location).test(relPath)) continue;
+      points += 1 + (/[*?[]/.test(c.location) ? 0 : 1);
+    }
+    let ok = true;
+    for (const k of ['schema', 'case_id', 'fit_id']) {
+      if (k in c.consts) {
+        if (doc[k] !== c.consts[k]) ok = false;
+        else points += 1;
+      }
+    }
+    if ('outputs.kind' in c.consts) {
+      if (docKind !== c.consts['outputs.kind']) ok = false;
+      else points += 1;
+    } else if (c.consts.schema === 'contraste.case/v1' && docKind !== undefined) ok = false;
+    if (ok) scored.push([points, c.name]);
+  }
+  if (!scored.length) throw new Error(`${relPath}: matches no schema`);
+  const best = Math.max(...scored.map(([s]) => s));
+  const top = scored.filter(([s]) => s === best).map(([, n]) => n).sort();
+  if (top.length > 1) throw new Error(`${relPath}: matches ${top.length} schemas equally: ${top.join(', ')}`);
+  return top[0];
+}
+const validatorFor = (name: string) => {
+  const v = ajv.getSchema(schemaDocs.get(name)!.$id as string);
+  if (!v) throw new Error(`no validator for ${name}`);
+  return v;
+};
+const problems = (name: string, doc: unknown): string[] => {
+  const v = validatorFor(name);
+  return v(doc) ? [] : (v.errors ?? []).map((e) => `${e.instancePath || '$'}: ${e.message}`);
+};
+
+const committed = [
+  ...walk(join(repo, 'data', 'derived')).filter((p) => p.endsWith('.json')),
+  join(repo, 'data-pipeline', 'config', 'sources.json'),
+  join(repo, 'data-pipeline', 'config', 'licences.json'),
+  join(repo, 'data', 'sources', 'manifest.json'),
+];
+
+describe('JSON Schema files: every committed document validates against exactly one, strictly', () => {
+  it('there are schemas and documents to cover', () => {
+    expect(schemaDocs.size).toBeGreaterThanOrEqual(30);
+    expect(committed.length).toBeGreaterThanOrEqual(54);
+  });
+  for (const path of committed) {
+    const rel = posix(relative(repo, path));
+    it(`${rel} matches one schema and conforms to it`, () => {
+      const doc = loadJson(path);
+      const name = schemaFor(rel, doc);
+      expect(problems(name, doc), `${rel} against ${name}`).toEqual([]);
+    });
+  }
+  it('a removed key and an unknown key are both refused (plants on in-memory copies)', () => {
+    const rel = 'data/derived/manifests/C04.json';
+    const doc = loadJson(join(repo, rel));
+    const name = schemaFor(rel, doc);
+    const removed = structuredClone(doc);
+    delete (removed.engine as Json).pipeline;
+    expect(problems(name, removed).join('')).toMatch(/pipeline/);
+    const added = structuredClone(doc);
+    (added.engine as Json).planted = 1;
+    expect(problems(name, added).join('')).toMatch(/additional properties/);
+    const variantRel = 'data/derived/C05/ldp-published.json';
+    const variant = loadJson(join(repo, variantRel));
+    const vname = schemaFor(variantRel, variant);
+    const withUnknown = structuredClone(variant);
+    (withUnknown.outputs as Json).planted = 1;
+    expect(problems(vname, withUnknown)).not.toEqual([]);
+    const unknownTop = structuredClone(variant);
+    unknownTop.planted = 1;
+    expect(problems(vname, unknownTop)).not.toEqual([]);
+  });
+  it('a document of an unknown kind matches no schema', () => {
+    expect(() => schemaFor('data/derived/C99/x.json', { schema: 'contraste.case/v1', case_id: 'C99', outputs: { kind: 'nothing' } })).toThrow(/matches no schema/);
+  });
+  it('the generated OpenAPI document has one component per schema file', () => {
+    const openapi = loadJson(join(repo, 'docs', 'contracts', 'api.openapi.json')) as { components: { schemas: Record<string, unknown> } };
+    for (const name of schemaDocs.keys()) expect(Object.keys(openapi.components.schemas), name).toContain(name.replace(/\//g, '-'));
+  });
+});
+
+// The generated types and the descriptors are one contract: these lines fail `tsc` (npm run build) when a schema
+// change reaches contract.gen.ts and the descriptors of contract.types.ts do not follow (satisfies Record<keyof ..>).
+const _kind: CaseIndex['cases'][number]['kind'] = 'real';
+const _light: import('./contract.types').Light = 'amber';
+void [_kind, _light];
