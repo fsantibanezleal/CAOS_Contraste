@@ -120,7 +120,7 @@ describe('the C06 instrument', () => {
 
   it('the stage flow lists every flow of the fixture with its accounts and gross carrying amount', () => {
     const markup = html(<StageFlowView sel={sel} />);
-    for (const f of o.stage_flows.flows) expect(markup).toContain(`data-flow="${f.source}>${f.target}"`);
+    for (const f of o.stage_flows.flows) expect(markup).toContain(`data-flow="${f.source}:${f.target}"`);
     expect(markup).toContain(o.stage_flows.from_date);
     expect(markup).toContain(o.stage_flows.to_date);
   });
