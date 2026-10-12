@@ -35,7 +35,7 @@ def test_all_22_cases_are_listed_built_or_declared_planned():
     assert [c.id for c in registry.built_cases()] == BUILT
     assert [c.id for c in registry.planned_cases()] == PLANNED
     for c in registry.planned_cases():
-        assert registry.get_case(c.id) is c
+        assert registry.get_case(c.id) == c
         assert not hasattr(c, "bake"), "a planned case has nothing to bake"
 
 

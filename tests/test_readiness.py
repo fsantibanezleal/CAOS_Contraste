@@ -134,7 +134,7 @@ def test_a_built_case_with_its_manifest_removed_is_partial_with_its_path(repo):
     e = row(compute(repo), "case-manifest")
     assert e["state"] == "partial"
     assert e["missing"] == sorted(["manifests/C04.json"] + [f"manifests/{c}.json" for c in PLANNED])
-    assert e["reason"] == fill(template("manifests are absent"), n=19, total=22)
+    assert e["reason"] == fill(template("a manifest the index lists is absent"), n=19, total=22)
 
 
 def test_an_absent_artifact_is_partial_for_its_case_rows(repo):
@@ -219,3 +219,34 @@ def test_the_check_script_needs_no_numerical_engine():
             f"sys.argv = ['check_readiness.py']; runpy.run_path(r'{script}', run_name='__main__')")
     proc = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
     assert "readiness: current" in proc.stdout, proc.stdout + proc.stderr
+
+
+def _write_readiness(r: Path) -> None:
+    readiness.write(r / "data" / "derived", compute(r))
+
+
+def _check_artifacts(r: Path) -> subprocess.CompletedProcess:
+    return subprocess.run([sys.executable, str(ROOT / "scripts" / "check_artifacts.py"), str(r)],
+                          capture_output=True, text=True)
+
+
+def test_check_artifacts_accepts_an_absent_manifest_only_when_the_current_readiness_declares_it(repo):
+    _write_readiness(repo)
+    ok = _check_artifacts(repo)
+    assert ok.returncode == 0 and "18 declared absent" in ok.stdout, ok.stdout
+    (repo / "data" / "derived" / "manifests" / "C22.json").unlink()
+    stale = _check_artifacts(repo)  # the readiness was not recomputed: it does not list C22
+    assert stale.returncode == 1 and "manifests" in stale.stdout and "C22.json" in stale.stdout
+    _write_readiness(repo)
+    declared = _check_artifacts(repo)
+    assert declared.returncode == 0 and "19 declared absent" in declared.stdout, declared.stdout
+
+
+def test_check_artifacts_still_fails_on_any_other_absent_file(repo):
+    _write_readiness(repo)
+    (repo / "data" / "derived" / "C22" / "null.json").unlink()
+    _write_readiness(repo)  # even a current readiness (it says partial for the artifact) does not excuse an artifact
+    proc = _check_artifacts(repo)
+    assert proc.returncode == 1 and "missing artifact" in proc.stdout
+    (repo / "data" / "derived" / "readiness.json").unlink()
+    assert _check_artifacts(repo).returncode == 1
