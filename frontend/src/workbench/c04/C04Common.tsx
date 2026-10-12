@@ -75,6 +75,7 @@ import {
   type PublishedVariant,
   P_FLOOR,
 } from './selection';
+import { esDecimals } from './esDecimals';
 
 const LIVE = 'live' as const;
 /** Both languages of a string built here, readable field by field (a BiText may be a plain string). */
@@ -89,7 +90,7 @@ const finite = (x: number | null | undefined): x is number => x !== null && x !=
  * (design.md, the momentum variant). */
 export const EMPIRICAL_ALPHA = 0.125;
 
-export type C04Chart = Pick<UPlotChartProps, 'x' | 'y' | 'series' | 'marks'>;
+export type C04Chart = Pick<UPlotChartProps, 'x' | 'y' | 'series' | 'marks' | 'yMarks'>;
 
 /** The series that hold a value to draw; a series of nothing but gaps is left out (it would draw an empty chart). */
 export function nonEmpty(series: ChartSeries[]): ChartSeries[] {
@@ -252,8 +253,10 @@ export function pValueChart(points: EvidencePoint[]): PValueChart | null {
     y: { label: { en: 'p-value (log scale)', es: 'Valor p (escala log.)' }, log: true, format: { digits: 2 } },
     series: [
       ...drawn,
-      { label: { en: `Amber threshold ${a.en}`, es: `Umbral ámbar ${a.es}` }, values: xs.map(() => amber), color: '--color-warn', width: 1.2, dash: [6, 4] },
-      { label: { en: `Red threshold ${r.en}`, es: `Umbral rojo ${r.es}` }, values: xs.map(() => red), color: '--color-bad', width: 1.2, dash: [2, 4] },
+    ],
+    yMarks: [
+      { y: amber, label: { en: `Amber threshold ${a.en}`, es: `Umbral ámbar ${a.es}` }, tone: 'warn' },
+      { y: red, label: { en: `Red threshold ${r.en}`, es: `Umbral rojo ${r.es}` }, tone: 'bad' },
     ],
     marks: runMarks(namedYears(rows)),
     floor: P_FLOOR,
@@ -287,8 +290,10 @@ export function rateChart(points: EvidencePoint[]): C04Chart | null {
     y: { label: { en: 'Rejection rate', es: 'Tasa de rechazo' }, format: { percent: true, decimals: 0 }, range: [0, 1] },
     series: [
       ...drawn,
-      { label: { en: 'Nominal 5%', es: 'Nominal 5%' }, values: xs.map(() => 0.05), color: '--color-warn', width: 1.2, dash: [6, 4] },
-      { label: { en: 'Nominal 1%', es: 'Nominal 1%' }, values: xs.map(() => 0.01), color: '--color-bad', width: 1.2, dash: [2, 4] },
+    ],
+    yMarks: [
+      { y: 0.05, label: { en: 'Nominal 5%', es: 'Nominal 5%' }, tone: 'warn' },
+      { y: 0.01, label: { en: 'Nominal 1%', es: 'Nominal 1%' }, tone: 'bad' },
     ],
     marks: sims.flatMap((s, i) =>
       s && s.key.includes('@alpha') && s.rung !== null && Math.abs(s.rung - EMPIRICAL_ALPHA) < 1e-12
@@ -329,7 +334,6 @@ export function withdrawalsChart(f: FamilyVariant, points: EvidencePoint[], grad
   const k = (r: C04WithdrawalsRung) => both((l) => formatNumber(r.value, l, { digits: 3 }));
   const kTop = k(top);
   const kBase = k(base);
-  const xs = numbered(GRADES.length);
   const drawn = nonEmpty([
     {
       label: { en: `${tag('rungs.pd_removed')}Removed (${pick(DEFINITION_LABEL.d4, 'en')}), k ${kTop.en}`, es: `${tag('rungs.pd_removed')}Eliminados (${pick(DEFINITION_LABEL.d4, 'es')}), k ${kTop.es}` },
@@ -357,7 +361,8 @@ export function withdrawalsChart(f: FamilyVariant, points: EvidencePoint[], grad
     title: { en: 'The cited biases by grade: withdrawals removed and followed', es: 'Los sesgos citados por grado: retiros eliminados y seguidos' },
     x: gradeAxis(),
     y: { label: { en: 'Bias of the one-year PD over the truth', es: 'Sesgo de la PD anual sobre la verdad' }, unit: { en: '% of the truth', es: '% de la verdad' }, format: { percent: true, decimals: 0 } },
-    series: [...drawn, { label: { en: 'No bias', es: 'Sin sesgo' }, values: xs.map(() => 0), color: '--color-fg-subtle', width: 1, dash: [2, 4] }],
+    series: drawn,
+    yMarks: [{ y: 0, label: { en: 'No bias', es: 'Sin sesgo' }, tone: 'neutral' }],
     marks: gradeMark(grade),
     note: {
       en: `The mean one-year PD over ${reps.en} repetitions minus the true PD, as a share of it, by grade: withdrawals removed from the denominator (CEREP's transition page) and each withdrawn obligor followed to the year end (EBA/GL/2017/16 paragraphs 73 and 76), at the strongest informative withdrawal (k ${kTop.en}: the withdrawal rate times 1 + k in the year before a default) and, dashed, removed with withdrawals not informative (k ${kBase.en}). The top grades' few defaults make their shares noisy; their Monte Carlo errors are in the Validation group. Marked: the rail's grade.`,
@@ -380,7 +385,6 @@ export function thinChart(f: FamilyVariant, points: EvidencePoint[], grade: numb
   const ns = n(small);
   const nl = n(large);
   const level = both((l) => formatNumber(small.level, l, { percent: true, decimals: 0 }));
-  const xs = numbered(GRADES.length);
   const drawn = nonEmpty([
     { label: { en: `${cov}Wald coverage, ${ns.en} obligors`, es: `${cov}Cobertura de Wald, ${ns.es} deudores` }, values: pad(small.coverage.wald), color: '--color-bad', width: 2.2 },
     { label: { en: `${cov}Agresti-Coull coverage, ${ns.en} obligors`, es: `${cov}Cobertura de Agresti-Coull, ${ns.es} deudores` }, values: pad(small.coverage.agresti_coull), color: '--color-warn', width: 2.2 },
@@ -398,7 +402,8 @@ export function thinChart(f: FamilyVariant, points: EvidencePoint[], grade: numb
     title: { en: `Exact coverage with ${ns.en} obligors; adjacent grades' overlap with ${nl.en}`, es: `Cobertura exacta con ${ns.es} deudores; traslape de grados adyacentes con ${nl.es}` },
     x: gradeAxis(),
     y: { label: { en: 'Probability', es: 'Probabilidad' }, unit: { en: '%', es: '%' }, range: [0, 1], format: { percent: true, decimals: 0 } },
-    series: [...drawn, { label: { en: `Nominal ${level.en}`, es: `Nominal ${level.es}` }, values: xs.map(() => small.level), color: '--color-fg-subtle', width: 1, dash: [2, 4] }],
+    series: drawn,
+    yMarks: [{ y: small.level, label: { en: `Nominal ${level.en}`, es: `Nominal ${level.es}` }, tone: 'neutral' }],
     marks: gradeMark(grade),
     note: {
       en: `${cov}The probability that each ${level.en} interval holds the grade's true one-year PD with ${ns.en} obligors observed for a year, exact by enumerating the binomial counts (no Monte Carlo error); dotted, the nominal ${level.en}. ${ovl}The probability that the ${level.en} Jeffreys intervals of the grade and the next one overlap with ${nl.en} obligors a grade (CCC-C has no next grade). Marked: the rail's grade.`,
@@ -474,7 +479,8 @@ export function papersChart(p: PublishedVariant, points: EvidencePoint[]): Desig
     // the axis says what the note defines (the recomputation over the print, minus one): at 1280 x 800 the beside
     // layout's plot is shorter than the longer title, which the axis cut
     y: { label: { en: 'Gap to the print', es: 'Brecha con lo impreso' }, unit: { en: '%', es: '%' }, format: { percent: true, decimals: 2 } },
-    series: [...drawn, { label: { en: 'Recomputed equals printed', es: 'Recalculado igual a impreso' }, values: xs.map(() => 0), color: '--color-fg-subtle', width: 1, dash: [2, 4] }],
+    series: drawn,
+    yMarks: [{ y: 0, label: { en: 'Recomputed equals printed', es: 'Recalculado igual a impreso' }, tone: 'neutral' }],
     note: {
       en: `Every printed value of the three papers (each paper's own inputs recomputed by riskvalidation), as the recomputation over the print, minus one, in percent: 0 is exact. ${agree} of ${checks.length} agree at the printed digits; red, the ${differ} that do not; amber, Engelmann's W hat, judged within the rounding of its printed entries.${zeros.length ? ` ${zeros.length} printed zeros${exact ? ' are recomputed as exactly 0 and' : ''} have no ratio to draw.` : ''}`,
       es: `Cada valor impreso de los tres artículos (los insumos de cada artículo recalculados por riskvalidation), como el recálculo sobre lo impreso, menos uno, en porcentaje: 0 es exacto. ${agree} de ${checks.length} concuerdan a los dígitos impresos; en rojo, los ${differ} que no; en ámbar, el W hat de Engelmann, juzgado dentro del redondeo de sus entradas impresas.${zeros.length ? ` ${zeros.length} ceros impresos${exact ? ' se recalculan como exactamente 0 y' : ''} no tienen razón que dibujar.` : ''}`,
@@ -669,7 +675,7 @@ export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
           <tr key={f.id} data-finding={f.id} data-severity={f.severity}>
             <td>{pick(SEVERITY_TEXT[f.severity] ?? { en: f.severity, es: f.severity }, lang)}</td>
             <td className="ct-text">
-              {pick(f.title, lang)}
+              {esDecimals(pick(f.title, lang), lang)}
               <ul className="ct-evidence">
                 {f.evidence.map((ref) => {
                   const c = citedOf(v, ref);
@@ -726,7 +732,7 @@ export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
   }
   const chartCard = (
     <PlotCard fill title={drawing.title} lane={REPLAY} provenance={prov} dataKey={stateKey} note={drawing.note}>
-      <UPlotChart height="fill" x={drawing.chart.x} y={drawing.chart.y} series={drawing.chart.series} marks={drawing.chart.marks} />
+      <UPlotChart height="fill" x={drawing.chart.x} y={drawing.chart.y} series={drawing.chart.series} marks={drawing.chart.marks} yMarks={drawing.chart.yMarks} />
     </PlotCard>
   );
   if (compact) {
@@ -972,7 +978,7 @@ function VariantsBody({ sel, variants, onPick }: { sel: C04Sel; variants: Varian
         es: `La media de las PD anuales sobre las cohortes donde el grado tiene calificaciones (párrafo 84 de EBA/GL/2017/16), porcentaje al año en escala logarítmica; color la definición, trazo la agencia (${dashes('es')}); un promedio cero no tiene punto. Gris: la tasa TTC de incumplimiento de cada agencia. Marcado: el grado del panel. ${pick(ESMA_DEFINITIONS, 'es')} ${entities('es')}. ${attribution}.`,
       }}
     >
-      <UPlotChart height="fill" x={chart.x} y={chart.y} series={chart.series} marks={chart.marks} />
+      <UPlotChart height="fill" x={chart.x} y={chart.y} series={chart.series} marks={chart.marks} yMarks={chart.yMarks} />
     </PlotCard>
   ) : null;
   // the two short tables side by side at their own height; under them the families' table fills the rest, and on a tall
@@ -1072,7 +1078,9 @@ export function C04ContextView({ sel }: { sel: C04Sel | null }) {
                   <td className="caos-col-text">
                     {s.licence} <em>({pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})</em>
                   </td>
-                  <td className="caos-col-text">{s.attribution}</td>
+                  <td className="caos-col-text">
+                    <span translate="no">{s.attribution}</span>
+                  </td>
                 </tr>
               );
             })}

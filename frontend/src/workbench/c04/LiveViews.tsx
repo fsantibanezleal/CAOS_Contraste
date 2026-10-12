@@ -323,7 +323,6 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
       : { en: `points: year 1, the largest gap (year ${gap.year})`, es: `puntos: el año 1, la mayor diferencia (año ${gap.year})` };
   const rateSeries: ChartSeries[] = [
     { label: { en: 'Projected', es: 'Proyectada' }, values: p.defaultRate, color: '--color-accent', width: 2.4 },
-    { label: { en: `TTC rate ${pctd('en', ttc)}`, es: `Tasa TTC ${pctd('es', ttc)}` }, values: years.map(() => ttc), color: '--color-fg-subtle', width: 1.4, dash: [6, 4] },
     ...driftPoints(p.defaultRate, ttc),
   ];
   const chain: Both = agency
@@ -354,6 +353,7 @@ export function DriftView({ sel }: { sel: C04Sel | null }) {
             x={{ values: [0.5, ...years, H + 0.5], label: { en: 'Year of the projection', es: 'Año de la proyección' }, unit: { en: 'years', es: 'años' }, format: { decimals: 0 } }}
             y={{ label: { en: 'Default rate', es: 'Tasa de incumpl.' }, format: { percent: true, digits: 3 } }}
             series={rateSeries.map(pad)}
+            yMarks={[{ y: ttc, label: { en: `TTC rate ${pctd('en', ttc)}`, es: `Tasa TTC ${pctd('es', ttc)}` }, tone: 'neutral' }]}
           />
         </PlotCard>
         {tall && composition}

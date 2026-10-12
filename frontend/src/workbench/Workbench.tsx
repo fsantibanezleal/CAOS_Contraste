@@ -1,6 +1,8 @@
 // The App route (ADR-0016 s9 as amended, ADR-0071, SDD section 10): one CaseWorkbench for every case. C01's instrument
-// is built here; C04's by workbench/c04/instrument.tsx (CT-410), C05's by workbench/c05/instrument.tsx (CT-210) and
-// C22's by workbench/c22/instrument.tsx (CT-309), chosen by the selected case. The rail holds the case picker,
+// is built here; every other built case's by workbench/cNN/instrument.tsx, found by workbench/registry.ts (C04 CT-410,
+// C05 CT-210, C22 CT-309), chosen by the selected case; a planned case (its manifest listed as missing by the readiness
+// document) and a case whose artifacts cannot be read get the absent instrument (readiness/Planned.tsx): every group says
+// not available yet, with the reason, and draws nothing (ADR-0080 decision 3). The rail holds the case picker,
 // the variants, and the live inputs, in sections: the decision (the challenger, the approval rate, the LGD, whose
 // numbers the Impact group draws), the policy (the thresholds that turn p-values into lights, with their counts) and
 // the live scorer (one applicant of the holdout sample, with its scores). Chips carry the short labels the artifacts
@@ -17,7 +19,7 @@ import {
   type CaseDef,
   type RailSection,
 } from '@fasl-work/caos-app-shell';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { loadCase, loadIndex, useArtifact, type CaseData } from '../api/artifacts';
 import type { EbmExport, ScorecardDetails } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT, LIGHT_TONE, relight, type PolicyAlphas } from '../lib/policy';
@@ -29,9 +31,11 @@ import { atApproval, CHAMPION, challengers, defaultChallenger, provenanceOf, run
 import { ModelGroup } from './ModelViews';
 import { ValidationGroup } from './ValidationViews';
 import { VariantsView } from './VariantsView';
-import { useC04Instrument } from './c04/instrument';
-import { useC05Instrument } from './c05/instrument';
-import { useC22Instrument } from './c22/instrument';
+import { useRegisteredInstrument } from './registry';
+import { absentInstrument, plannedReason, unreadableReason } from '../readiness/Planned';
+import { ReadinessNote } from '../readiness/ReadinessNote';
+import { isPlanned, rowsForCase, entryFor } from '../readiness/readiness';
+import { useReadiness } from '../readiness/useReadiness';
 
 const LGD_FLOOR = 0.5; // CRE32.58: the Basel III LGD input floor for QRRE, the default assumption
 
@@ -127,11 +131,12 @@ export function liveScores(sel: Selection | null) {
 
 export function Workbench() {
   const lang = useShellLang();
-  const index = useArtifact((s) => loadIndex(s), []);
+  const index = useArtifact((s) => loadIndex(s), [], { unavailable: true });
+  const readiness = useReadiness();
   const [caseId, setCaseId] = useState<string | null>(null);
   const selected = caseId ?? (index.state === 'ready' ? index.data.default_case : null);
   const [variantId, setVariantId] = useState<string | null>(null);
-  const loaded = useArtifact((s) => (selected ? loadCase(selected, variantId, s) : new Promise<CaseData>(() => undefined)), [selected, variantId]);
+  const loaded = useArtifact((s) => (selected ? loadCase(selected, variantId, s) : new Promise<CaseData>(() => undefined)), [selected, variantId], { unavailable: true });
   const data = loaded.state === 'ready' && loaded.data.manifest.case_id === selected ? loaded.data : null;
 
   const [challenger, setChallenger] = useState<string | null>(null);
@@ -151,13 +156,31 @@ export function Workbench() {
     () => (data && chosen && data.manifest.case_id === 'C01' ? { data, challenger: chosen, alphas, approval, lgd, applicant } : null),
     [data, chosen, alphas, approval, lgd, applicant],
   );
-  // every case's instrument hook runs on every render (hooks keep their order); the selected case picks which is shown
-  const c04 = useC04Instrument(data, setVariantId);
-  const c05 = useC05Instrument(data, setVariantId);
-  const c22 = useC22Instrument(data, setVariantId);
-  const inst = c04 ?? c05 ?? c22;
+  // every registered case's instrument hook runs on every render (the set is fixed at build time, so hooks keep their
+  // order); the selected case picks which is shown
+  const registered = useRegisteredInstrument(data, setVariantId);
 
-  const cases: CaseDef[] = index.state === 'ready' ? index.data.cases.map((c) => ({ id: c.case_id, name: c.title[lang], category: c.category[lang], kind: c.kind })) : [];
+  const entries = index.state === 'ready' ? index.data.cases : [];
+  const entry = entries.find((c) => c.case_id === selected) ?? null;
+  // a case with no data to show says so, in every group, instead of waiting on data that is not coming
+  const absent =
+    index.state === 'unavailable'
+      ? absentInstrument(index.reason, null)
+      : index.state === 'error'
+        ? absentInstrument(unreadableReason(null, index.error), null)
+        : loaded.state === 'unavailable' && entry
+          ? absentInstrument(isPlanned(readiness ?? null, entry) ? plannedReason(entry.title, entryFor(readiness ?? null, 'case-manifest')?.reason ?? null) : loaded.reason, entry)
+          : loaded.state === 'error' && entry
+            ? absentInstrument(unreadableReason(entry.title, loaded.error), entry)
+            : null;
+  const inst = registered ?? absent;
+  const PLANNED_MARK = { en: ' (planned)', es: ' (planificado)' };
+  const cases: CaseDef[] = entries.map((c) => ({
+    id: c.case_id,
+    name: c.title[lang] + (isPlanned(readiness ?? null, c) ? PLANNED_MARK[lang] : ''),
+    category: c.category[lang],
+    kind: c.kind,
+  }));
   const variants = data
     ? data.manifest.artifacts
         .filter((a) => a.role === 'variant')
@@ -279,6 +302,28 @@ export function Workbench() {
   ];
 
   const prov = provenanceOf(data?.variant.provenance.truth_status);
+  // a built case's views carry the inline note of their readiness rows: nothing when available, else the state and the
+  // reason the document gives (one line inside the view, ADR-0071: no new row, no new card)
+  const noted = (content: ReactElement): ReactElement =>
+    absent || !selected || !data ? content : (
+      <>
+        <ReadinessNote ids={rowsForCase(readiness ?? null, selected)} />
+        {content}
+      </>
+    );
+  const own = inst ?? {
+    groups: [
+      { id: 'model', label: { en: 'Model', es: 'Modelo' }, lane: 'replay' as const, provenance: prov, content: <ModelGroup sel={sel} /> },
+      { id: 'validation', label: { en: 'Validation', es: 'Validación' }, lane: 'replay' as const, provenance: prov, content: <ValidationGroup sel={sel} /> },
+      { id: 'impact', label: { en: 'Impact', es: 'Impacto' }, lane: 'live' as const, provenance: prov, content: <ImpactGroup sel={sel} /> },
+      { id: 'findings', label: { en: 'Findings', es: 'Hallazgos' }, lane: 'replay' as const, provenance: prov, content: <FindingsView sel={sel} /> },
+    ],
+    compare: { label: { en: 'Variants', es: 'Variantes' }, lane: 'replay' as const, provenance: prov, content: <VariantsView sel={sel} onPick={setVariantId} /> },
+    context: { content: <ContextView sel={sel} /> },
+  };
+  const groups = own.groups.map((g) => ({ ...g, content: noted(g.content) }));
+  const compare = { ...own.compare, content: noted(own.compare.content) };
+  const context = { content: noted(own.context.content) };
   return (
     <CaseWorkbench
       caseId={selected ?? ''}
@@ -296,18 +341,9 @@ export function Workbench() {
       controls={inst ? inst.controls : { challenger: chosen, amber: alphas.amber, red: alphas.red, approval, lgd, applicant }}
       variants={{ variants, activeId: activeVariant, onSelect: setVariantId, title: { en: 'Variant', es: 'Variante' }, lane: 'replay' }}
       rail={inst ? inst.rail : rail}
-      groups={
-        inst
-          ? inst.groups
-          : [
-              { id: 'model', label: { en: 'Model', es: 'Modelo' }, lane: 'replay', provenance: prov, content: <ModelGroup sel={sel} /> },
-              { id: 'validation', label: { en: 'Validation', es: 'Validación' }, lane: 'replay', provenance: prov, content: <ValidationGroup sel={sel} /> },
-              { id: 'impact', label: { en: 'Impact', es: 'Impacto' }, lane: 'live', provenance: prov, content: <ImpactGroup sel={sel} /> },
-              { id: 'findings', label: { en: 'Findings', es: 'Hallazgos' }, lane: 'replay', provenance: prov, content: <FindingsView sel={sel} /> },
-            ]
-      }
-      compare={inst ? inst.compare : { label: { en: 'Variants', es: 'Variantes' }, lane: 'replay', provenance: prov, content: <VariantsView sel={sel} onPick={setVariantId} /> }}
-      context={inst ? inst.context : { content: <ContextView sel={sel} /> }}
+      groups={groups}
+      compare={compare}
+      context={context}
     />
   );
 }

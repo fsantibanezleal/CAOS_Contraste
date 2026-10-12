@@ -95,7 +95,7 @@ describe('what the C04 live views draw', () => {
           const [rate, mix] = drawn(<DriftView sel={makeSel(d, { start: kind, horizon })} />);
           const what = `${v.variant_id} ${kind} ${horizon}`;
           close(inner(series(rate, 'Projected')), p.defaultRate, `${what} projected`);
-          close(inner(series(rate, 'TTC rate')), p.defaultRate.map(() => p.ttc.defaultRate), `${what} TTC`);
+          expect(rate.yMarks?.map((m) => m.y), `${what} TTC`).toEqual([p.ttc.defaultRate]);
           // the composition: grade k's share of the balance at every date
           GRADES.forEach((g, k) => close(mix.series[k].values, p.portfolio.map((w) => w[k]), `${what} ${g}'s share`));
         }

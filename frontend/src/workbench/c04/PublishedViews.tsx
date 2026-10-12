@@ -182,19 +182,19 @@ function extremeAt(path: readonly number[], kind: 'min' | 'max'): number {
 
 /** Engelmann's projected PD paths by year, the TTC PD they drift to, and a mark at each extreme the paper prints (the
  * year the recomputed path reaches it; the printed value is in the table beside). */
-export function pathChart(o: C04PublishedOutputs): { years: number[]; series: ChartSeries[]; marks: Array<{ x: number; label: Both }> } {
+export function pathChart(o: C04PublishedOutputs): { years: number[]; series: ChartSeries[]; yMarks: Array<{ y: number; label: Both; tone: 'neutral' }>; marks: Array<{ x: number; label: Both }> } {
   const ps = o.engelmann.portfolios;
   const years = (ps[0]?.pd_path ?? []).map((_, i) => i + 1);
   const ttc = o.engelmann.ttc_pd.recomputed;
   const series: ChartSeries[] = ps.map((p, i) => ({ label: p.name, values: p.pd_path, color: PATH_COLOR[i % PATH_COLOR.length], width: 2 }));
-  series.push({ label: both((l) => `${l === 'en' ? 'TTC PD' : 'PD TTC'} ${pctd(l, ttc, 4)}`), values: years.map(() => ttc), color: '--color-fg-subtle', width: 1.4, dash: [6, 4] });
+  const yMarks = [{ y: ttc, label: both((l) => `${l === 'en' ? 'TTC PD' : 'PD TTC'} ${pctd(l, ttc, 4)}`), tone: 'neutral' as const }];
   const marks = ps.flatMap((p) => {
     const ext = p.extreme;
     if (!ext) return [];
     const word = (l: Lang) => (ext.kind === 'min' ? (l === 'en' ? 'min' : 'mín') : l === 'en' ? 'max' : 'máx');
     return [{ x: extremeAt(p.pd_path, ext.kind) + 1, label: both((l) => `${p.name}, ${word(l)}`) }];
   });
-  return { years, series: series.filter((s) => s.values.some((x) => x !== null)), marks };
+  return { years, series: series.filter((s) => s.values.some((x) => x !== null)), yMarks, marks };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -345,6 +345,7 @@ export function PapersView({ sel }: { sel: C04Sel | null }) {
           x={{ values: paths.years, label: { en: 'Year of the projection', es: 'Año de la proyección' }, unit: { en: 'years', es: 'años' }, format: { decimals: 0 } }}
           y={{ label: { en: 'PD of the year', es: 'PD del año' }, format: { percent: true, digits: 3 } }}
           series={paths.series}
+          yMarks={paths.yMarks}
           marks={paths.marks}
         />
       </PlotCard>

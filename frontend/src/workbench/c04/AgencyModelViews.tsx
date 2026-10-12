@@ -818,8 +818,8 @@ export function GeneratorsView({ sel }: { sel: C04Sel | null }) {
   // the notes are short: a card's note takes its height from the drawing or the table above it. The methods' long
   // names and sources are the distances' tooltips (the variant's model list) and the Context's write-up
   const irw: Text = {
-    en: 'Israel, Rosenthal and Wei (2001), Mathematical Finance 11(2), 245-265, doi:10.1111/1467-9965.00114',
-    es: 'Israel, Rosenthal y Wei (2001), Mathematical Finance 11(2), 245-265, doi:10.1111/1467-9965.00114',
+    en: 'Israel, Rosenthal and Wei (2001), Mathematical Finance 11(2), 245-265',
+    es: 'Israel, Rosenthal y Wei (2001), Mathematical Finance 11(2), 245-265',
   };
   const methods: Text = {
     en: `EM on the ${ratings('en', n)} annual count matrices (Bladt and Sørensen 2005), the diagonal and weighted repairs of the log series and JLT's approximation (${irw.en})`,
