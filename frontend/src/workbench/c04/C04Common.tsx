@@ -75,6 +75,7 @@ import {
   type PublishedVariant,
   P_FLOOR,
 } from './selection';
+import { esDecimals } from './esDecimals';
 
 const LIVE = 'live' as const;
 /** Both languages of a string built here, readable field by field (a BiText may be a plain string). */
@@ -674,7 +675,7 @@ export function C04FindingsView({ sel }: { sel: C04Sel | null }) {
           <tr key={f.id} data-finding={f.id} data-severity={f.severity}>
             <td>{pick(SEVERITY_TEXT[f.severity] ?? { en: f.severity, es: f.severity }, lang)}</td>
             <td className="ct-text">
-              {pick(f.title, lang)}
+              {esDecimals(pick(f.title, lang), lang)}
               <ul className="ct-evidence">
                 {f.evidence.map((ref) => {
                   const c = citedOf(v, ref);
@@ -1077,7 +1078,9 @@ export function C04ContextView({ sel }: { sel: C04Sel | null }) {
                   <td className="caos-col-text">
                     {s.licence} <em>({pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})</em>
                   </td>
-                  <td className="caos-col-text">{s.attribution}</td>
+                  <td className="caos-col-text">
+                    <span translate="no">{s.attribution}</span>
+                  </td>
                 </tr>
               );
             })}
