@@ -56,7 +56,7 @@ const GRADE_HINT: Partial<Record<string, BiText>> = {
   'CCC-C': { en: 'CCC to C: the categories below B, pooled as CEREP pools them.', es: 'CCC a C: las categorías bajo B, agrupadas como las agrupa CEREP.' },
 };
 
-export function useC04Instrument(data: CaseData | null, onPick: (id: string) => void): C04Instrument | null {
+export function useInstrument(data: CaseData | null, onPick: (id: string) => void): C04Instrument | null {
   const lang = useShellLang();
   const [grade, setGrade] = useState(6);
   const [definition, setDefinition] = useState<Definition>('d2');
@@ -290,3 +290,6 @@ const START_HINT: Record<StartPortfolio, BiText> = {
   uniform: { en: 'The same share in each of the seven grades.', es: 'La misma fracción en cada uno de los siete grados.' },
   speculative: { en: 'A third each in BB, B and CCC to C.', es: 'Un tercio en cada uno de BB, B y CCC a C.' },
 };
+
+/** The registry's name for this hook is `useInstrument`; the old name stays for the tests that import it. */
+export const useC04Instrument = useInstrument;

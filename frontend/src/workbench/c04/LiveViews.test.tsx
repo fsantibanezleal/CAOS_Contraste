@@ -231,10 +231,11 @@ describe('the C04 Impact group (live)', () => {
           const markup = html(<DriftView sel={sel} />, lang);
           const [rate, mix] = charts(markup);
           const gap = largestGap(p.defaultRate, p.ttc.defaultRate);
-          // the projection, the TTC rate, and year 1 and the largest gap as points (one point when they coincide)
-          expect(rate.series).toBe(gap.year === 1 ? 3 : 4);
-          expect(rate.keys[1]).toContain(pctd(lang, p.ttc.defaultRate));
-          expect(rate.keys[2]).toContain(pctd(lang, p.defaultRate[0]));
+          // the projection, and year 1 and the largest gap as points (one point when they coincide); the TTC rate is a
+          // reference line of the plot (its value is checked in LiveViews.values.test.tsx)
+          expect(rate.series).toBe(gap.year === 1 ? 2 : 3);
+          expect(markup).toContain('data-y-marks="1"');
+          expect(rate.keys[1]).toContain(pctd(lang, p.defaultRate[0]));
           expect(mix.series).toBe(7);
           // the start, the horizon and the TTC portfolio across the grades, each with its L1 distance to the TTC
           const rows = table(markup, 'ttc-portfolio');
@@ -256,7 +257,7 @@ describe('the C04 Impact group (live)', () => {
       const origination = [...g.obligors.map((n) => n / total), 0];
       const p = project(g.one_year_matrix, origination, origination, 20);
       const markup = html(<DriftView sel={makeSel(data)} />);
-      expect(charts(markup)[0].keys[1]).toContain(pctd('en', p.ttc.defaultRate));
+      expect(markup).toContain('data-y-marks="1"');
       expect(table(markup, 'ttc-portfolio')[2][7]).toBe(pctd('en', p.ttc.portfolio[6]));
       expect(cards(markup)[0].note).toContain("the generator's true one-year matrix exp(Q)");
     });

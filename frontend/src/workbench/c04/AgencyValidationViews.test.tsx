@@ -474,7 +474,9 @@ describe('Definitions', () => {
       const [p] = captured;
       const gap = o.definition_gap;
       const want = [...(gap.d4_over_d2 ? [gap.d4_over_d2] : []), ...(gap.d3_over_d2 ? [gap.d3_over_d2] : [])];
-      expect(p.series.map((s) => s.values), c.id).toEqual([...want, [1, 1, 1, 1, 1, 1, 1]]);
+      expect(p.series.map((s) => s.values), c.id).toEqual(want);
+      // the level 1 is a reference line of the plot, not a series
+      expect(p.yMarks, c.id).toEqual([expect.objectContaining({ y: 1, tone: 'neutral' })]);
       expect(p.x.values).toEqual([1, 2, 3, 4, 5, 6, 7]);
       expect(p.marks).toEqual([{ x: 6, label: 'B' }]);
     }
