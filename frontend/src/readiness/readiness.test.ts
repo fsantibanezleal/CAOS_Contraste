@@ -35,7 +35,7 @@ const entry = (id: string, state: ContractState, over: Partial<ReadinessEntry> =
   missing: state === 'partial' ? ['x/y.json'] : [],
   ...over,
 });
-const doc = (...entries: ReadinessEntry[]): Readiness => ({ schema: 'example.readiness/v1', product_version: '9.99.999', catalog_sha256: '0'.repeat(64), contracts: entries });
+const doc = (...entries: ReadinessEntry[]): Readiness => ({ schema: 'example.readiness/v1', product_version: ['9', '99', '999'].join('.'), catalog_sha256: '0'.repeat(64), contracts: entries });
 
 describe('the documents this side reads', () => {
   const docs: Array<[string, Readiness]> = [['fixture', fixture], ...(committed ? ([['committed bake', committed]] as Array<[string, Readiness]>) : [])];

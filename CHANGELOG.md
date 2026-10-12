@@ -3,6 +3,58 @@
 All notable changes to this product. Versions are X.XX.XXX (VERSION is the single source); every release is
 tagged.
 
+## [0.07.000], 2026-10-12
+
+Contraste now opens for the person accountable for a bank's models: the Introduction leads with an executive view (the
+initiative and why 2027 matters, the outcomes with their proof points, the positioning, the questions a chief risk
+officer would ask, with the product's limits), ahead of the technical view. Underneath, the product moved to
+contract-first delivery: every document has a JSON Schema and a catalog row, the build states what is real and what is
+not built yet, and all 22 planned cases are listed (4 built, 18 declared absent with their unit). The design document
+follows the template's spec area. On shell 0.11.0 and template 0.05.000.
+
+- Contracts as code: one JSON Schema 2020-12 file per document kind under docs/contracts/schemas/ (common, c01, c04,
+  c05, c22) with the enumerations and the ranges the design states, and a catalog docs/contracts/catalog.md with one
+  row per boundary (contract 1 and contract 2 of ADR-0057 are rows, not a second system).
+- Producer tests (tests/contracts) validate every committed document of data/derived and the three registries against
+  exactly one schema chosen by discovery (no file or case list) and refuse a removed key and an unknown key; the
+  consumer test frontend/src/lib/contract.test.ts does the same.
+- TypeScript types are generated from the schemas (frontend/src/lib/contract.gen.ts through
+  docs/contracts/api.openapi.json); contract.types.ts exports them as aliases and keeps the run-time descriptors tied to
+  them with satisfies, so a schema change the descriptors miss fails tsc.
+- New commands: npm run gen:contracts and npm run check:contracts (fails naming the stale generated file); vendored
+  scripts/check_contracts.py and scripts/check_skeleton.py from the template at v0.04.000.
+- Review fixes of the contracts: one default (kind-less) variant schema per case in the Python and the TypeScript
+  selector (two for one case fail, one for another case is accepted); every schema under schemas/<case>/ declares a
+  case_id const equal to its folder upper-cased; the schemas that may have no committed document are derived (an active
+  catalog row or a document under docs/contracts/fixtures/), common/readiness is no longer named by hand.
+- The consumer test walks every schema and its run-time descriptor in parallel at every nesting level (key sets and
+  kinds) and validates in strict mode with the validator as an exact devDependency (@redocly/ajv 8.11.2).
+- Breaking: PD is open (0, 1) at the estimate sites and the C05 parity points (c01-variant, c05-sp, c05-ldp,
+  c05-models-sp, bumped to 2.0.0) and stays closed at the C04 capital parity grid (PD 0 is an engine input), the C01 irb
+  parity and the C22 models parity.
+- The pipeline publishes all 22 planned cases: cases are discovered (modules `cases/c<NN>_*.py` and packages
+  `cases/c<NN>/` that expose `CASE`; two modules claiming one id fail with both paths), and the 18 cases not built yet
+  are declared once in `data-pipeline/config/planned_cases.json` (title, category, data kind, owner unit, question)
+  and listed in `data/derived/manifests/index.json` with no manifest and no data.
+- A readiness document (`data/derived/readiness.json`, `python data-pipeline/run.py readiness`) states what is real in
+  the build: the planned cases are a partial `case-manifest` with their manifest paths, a missing rung of the C01
+  ladder is `training` on the baseline. `scripts/check_readiness.py` recomputes it from committed files (stdlib only).
+- Export refuses a document that fails its schema before writing it: artifacts, the manifest of each case and the
+  index (`pipeline/core/schemas.py`); `python data-pipeline/run.py index` rebuilds the index without baking.
+- The C01 model slot `c01-pd-rung` has a baseline (P0, `model/benchmark.py`) that answers in place of any rung.
+- The dormant API serves `/api/readiness`, answers 503 with the declared state for a planned case and 404 for an
+  unknown one; `scripts/check_artifacts.py` accepts an absent manifest only when the current readiness declares it.
+- Frontend on the shared shell 0.11.0 (exact pin): the product's knob override is removed, horizontal reference levels (the amber and red thresholds, the nominal levels, the TTC rates, "no bias" lines) are toned `yMarks` instead of constant series, and the documentation pages follow the end-of-page references and full-width text.
+- Every view says the declared state of the documents it reads (available, partial, stale, provider, training, missing) from `readiness.json`: an inline note inside the existing card, "readiness unknown" when the document cannot be read, and the readiness table on the Implementation page.
+- The 18 planned cases are listed in the case selector with a planned mark, stay selectable, and show `data-state="unavailable"` with a bilingual reason in every group and the index entry in the Context group; no manifest the readiness lists as missing is fetched.
+- Discovery registries for wave 2: `workbench/cNN/instrument.tsx` exporting `useInstrument`, `pages/methodology/*.tsx` exporting `methodologySection`, `content/citations/*.ts` (a duplicate id fails) and `content/coverage/*.ts`; the existing instruments, citations and coverage keep working.
+- copy-data and declared apply the partial rule: an absent manifest is accepted only when the readiness lists it in the `missing` of a partial row.
+- The Introduction opens with the executive view (initiative, outcomes, positioning, credibility) transcribed from the executive brief, with every number a `Stat` with its unit and source; the technical view keeps the previous page under its areas (problem, principles, math with a glossary, pipeline, honesty). The other four documentation pages declare their ADR-0017 areas, one method section per Methodology topic with a figure, two equations and an honest callout; the Benchmark waives only its live panel, with the reason.
+- Design document restructured into the twelve sections of template 0.05.000 plus the executive brief: research basis with sources and an UNVERIFIED list, sizing and contracts pointing at the sizing and the catalog, a technology table of every pin, a measured resources table; nothing of the 2026-10-04 text was dropped.
+- New `docs/design/README.md`, the map of the spec area, and a `validation.md` for each of the seven live features mapping all 73 CT requirements to an adversarial check.
+- New `tests/adversarial/`: plants that copy the committed files to a temporary directory, plant one defect and run the existing gate on the copy.
+- `scripts/check_sdd.py`, `scripts/check_contract_versions.py`, `scripts/check_tech_matrix.py` and `docs/contracts/versions.lock.json` vendored from template v0.05.000.
+
 ## [0.06.000], 2026-10-09
 
 The base moves to the shell 0.10.0 and the template 0.03.001 (CAOS_MANAGE `plans/app-shell/rollout-0-10.md`, #12).

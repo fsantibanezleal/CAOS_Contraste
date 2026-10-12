@@ -1,4 +1,0 @@
-- Design document restructured into the twelve sections of template 0.05.000 plus the executive brief: research basis with sources and an UNVERIFIED list, sizing and contracts pointing at the sizing and the catalog, a technology table of every pin, a measured resources table; nothing of the 2026-10-04 text was dropped.
-- New `docs/design/README.md`, the map of the spec area, and a `validation.md` for each of the seven live features mapping all 73 CT requirements to an adversarial check.
-- New `tests/adversarial/`: plants that copy the committed files to a temporary directory, plant one defect and run the existing gate on the copy.
-- `scripts/check_sdd.py`, `scripts/check_contract_versions.py`, `scripts/check_tech_matrix.py` and `docs/contracts/versions.lock.json` vendored from template v0.05.000.
