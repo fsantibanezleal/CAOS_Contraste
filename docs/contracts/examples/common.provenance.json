@@ -1,0 +1,22 @@
+{
+  "truth_status": "published-answer",
+  "inputs": [
+    {
+      "source": "pluto-tasche-2005",
+      "class": "derived-only",
+      "files": [
+        {
+          "name": "pluto-tasche-arxiv-cond-mat-0411699v3.pdf",
+          "sha256": "949dbc3873852a930d3532183efcab4199ac9478b1f70b32101c9e9f37084459"
+        }
+      ]
+    }
+  ],
+  "licence_classes": {
+    "pluto-tasche-2005": "derived-only"
+  },
+  "generators": [],
+  "seed": 42,
+  "code_version": "0.04.000",
+  "riskvalidation_version": "0.4.3"
+}

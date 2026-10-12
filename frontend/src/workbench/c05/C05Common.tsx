@@ -168,7 +168,7 @@ export function C05VariantsView({ sel, onPick }: { sel: C05Sel | null; onPick: (
       </div>
       </div>
       <PlotCard fill title={chart.title} lane={REPLAY} provenance={prov} dataKey={stateKey} note={chart.note}>
-        <UPlotChart height="fill" x={chart.x} y={chart.y} series={chart.series} />
+        <UPlotChart height="fill" x={chart.x} y={chart.y} series={chart.series} yMarks={chart.yMarks} />
       </PlotCard>
     </>
   );
@@ -177,7 +177,7 @@ export function C05VariantsView({ sel, onPick }: { sel: C05Sel | null; onPick: (
 /** Every approach of Tasche (2013) with a default-profile test, in the paper's order (cases 1, 2, 3). */
 const ALL_APPROACHES = [...CASE1, 'B1-ilr', 'C1-ipc', 'C2-ls', 'C3-chi2', 'C4-ilr'] as const;
 
-type Compare = Pick<UPlotChartProps, 'x' | 'y' | 'series'> & { title: BiText; note: BiText };
+type Compare = Pick<UPlotChartProps, 'x' | 'y' | 'series' | 'yMarks'> & { title: BiText; note: BiText };
 
 /** The calibration years side by side: the default-profile p-value of every approach, against the rail's policy. */
 function spCompare(sp: SpVariant[], sel: C05Sel, dp: (v: SpVariant, id: string) => TestRow | undefined): Compare {
@@ -197,8 +197,10 @@ function spCompare(sp: SpVariant[], sel: C05Sel, dp: (v: SpVariant, id: string) 
     y: { label: { en: 'p-value (log scale)', es: 'Valor p (escala log.)' }, log: true, format: { digits: 2 } },
     series: [
       ...sp.map((v, i) => ({ label: { en: String(v.outputs.year), es: String(v.outputs.year) }, values: ALL_APPROACHES.map((id) => dp(v, id)?.p_value ?? null), color: (i === 0 ? '--color-accent' : '--color-magenta') as ShellColorToken, mode: 'points' as const })),
-      { label: { en: `Amber below ${level(sel.alphas.amber, 'en')}`, es: `Ámbar bajo ${level(sel.alphas.amber, 'es')}` }, values: x.map(() => sel.alphas.amber), color: '--color-warn', width: 1.2, dash: [4, 4] },
-      { label: { en: `Red below ${level(sel.alphas.red, 'en')}`, es: `Rojo bajo ${level(sel.alphas.red, 'es')}` }, values: x.map(() => sel.alphas.red), color: '--color-bad', width: 1.2, dash: [4, 4] },
+    ],
+    yMarks: [
+      { y: sel.alphas.amber, label: { en: `Amber below ${level(sel.alphas.amber, 'en')}`, es: `Ámbar bajo ${level(sel.alphas.amber, 'es')}` }, tone: 'warn' },
+      { y: sel.alphas.red, label: { en: `Red below ${level(sel.alphas.red, 'en')}`, es: `Rojo bajo ${level(sel.alphas.red, 'es')}` }, tone: 'bad' },
     ],
   };
 }

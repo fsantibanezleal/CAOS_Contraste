@@ -1,0 +1,355 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c05/variant-ldp.schema.json",
+  "title": "C05 low-default portfolio variant",
+  "description": "Catalog row c05-ldp 2.0.0: most prudent PD bounds of a low-default portfolio (outputs.kind ldp).",
+  "allOf": [
+    {"$ref": "../common/variant-envelope.schema.json"},
+    {
+      "properties": {
+        "case_id": {"const": "C05"},
+        "outputs": {
+          "$ref": "#/$defs/c05LdpOutputs",
+          "properties": {
+            "kind": {"const": "ldp"}
+          }
+        }
+      },
+      "required": ["case_id","outputs"]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c05Bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "independent",
+        "correlated",
+        "scaled_upper_bound",
+        "scaled_upper_bound_correlated",
+        "scaled_central_tendency"
+      ],
+      "properties": {
+        "independent": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {"type": "number"}
+          }
+        },
+        "correlated": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {"type": "number"}
+          }
+        },
+        "scaled_upper_bound": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c05Scaled"}
+        },
+        "scaled_upper_bound_correlated": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c05Scaled"}
+        },
+        "scaled_central_tendency": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c05Scaled"}
+        }
+      }
+    },
+    "c05CoverageRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gamma","coverage","se","ratio_q25","ratio_median","ratio_q75"],
+      "properties": {
+        "gamma": {"type": "number"},
+        "coverage": {"type": "number"},
+        "se": {"type": "number"},
+        "ratio_q25": {"type": "number"},
+        "ratio_median": {"type": "number"},
+        "ratio_q75": {"type": "number"}
+      }
+    },
+    "c05Irb": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["regime","asset_class","lgd","maturity","pd_floor","references"],
+      "properties": {
+        "regime": {"type": "string"},
+        "asset_class": {"type": "string"},
+        "lgd": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maturity": {"type": "number"},
+        "pd_floor": {"type": "number"},
+        "references": {
+          "type": "object",
+          "additionalProperties": {"type": "string"}
+        }
+      }
+    },
+    "c05IrbPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["regime","asset_class","pd","lgd","maturity","risk_weight"],
+      "properties": {
+        "regime": {"type": "string"},
+        "asset_class": {"type": "string"},
+        "pd": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "lgd": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maturity": {"type": "number"},
+        "risk_weight": {"type": "number"}
+      }
+    },
+    "c05KnownTruth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "years",
+        "coverage",
+        "tests",
+        "patterns",
+        "overdispersion",
+        "total_defaults_histogram",
+        "total_defaults_tail",
+        "share_of_defaults_by_grade"
+      ],
+      "properties": {
+        "years": {"type": "integer"},
+        "coverage": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/c05CoverageRow"}
+            }
+          }
+        },
+        "tests": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["reject_5","reject_1"],
+              "properties": {
+                "reject_5": {"type": "number"},
+                "reject_1": {"type": "number"}
+              }
+            }
+          }
+        },
+        "patterns": {"type": "integer"},
+        "overdispersion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["variance_simulated","variance_model","variance_independent","rho_moment_estimate"],
+          "properties": {
+            "variance_simulated": {"type": "number"},
+            "variance_model": {"type": "number"},
+            "variance_independent": {"type": "number"},
+            "rho_moment_estimate": {"type": "number"}
+          }
+        },
+        "total_defaults_histogram": {
+          "type": "array",
+          "items": {"type": "integer"}
+        },
+        "total_defaults_tail": {"type": "integer"},
+        "share_of_defaults_by_grade": {
+          "type": "array",
+          "items": {"type": "number"}
+        }
+      }
+    },
+    "c05LdpGoldenCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["table","row","gamma","printed","ours","gap"],
+      "properties": {
+        "table": {"type": "integer"},
+        "row": {"type": "string"},
+        "gamma": {"type": "number"},
+        "printed": {"type": "number"},
+        "ours": {"type": "number"},
+        "gap": {"type": "number"}
+      }
+    },
+    "c05LdpOutputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "grades",
+        "obligors",
+        "defaults",
+        "gammas",
+        "expert_pd",
+        "true_pd",
+        "rho",
+        "bounds",
+        "irb",
+        "parity",
+        "known_truth",
+        "golden",
+        "generated_year"
+      ],
+      "properties": {
+        "kind": {"const": "ldp"},
+        "grades": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "obligors": {
+          "type": "array",
+          "items": {"type": "integer"}
+        },
+        "defaults": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 0}
+        },
+        "gammas": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "expert_pd": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "true_pd": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            {"type": "null"}
+          ]
+        },
+        "rho": {"type": "number"},
+        "bounds": {"$ref": "#/$defs/c05Bounds"},
+        "irb": {"$ref": "#/$defs/c05Irb"},
+        "parity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["bounds","irb"],
+          "properties": {
+            "bounds": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["obligors","points"],
+              "properties": {
+                "obligors": {
+                  "type": "array",
+                  "items": {"type": "integer"}
+                },
+                "points": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["defaults","gamma","rho","pd","scaled_upper_bound"],
+                    "properties": {
+                      "defaults": {
+                        "type": "array",
+                        "items": {"type": "integer", "minimum": 0}
+                      },
+                      "gamma": {"type": "number"},
+                      "rho": {"type": "number"},
+                      "pd": {
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      },
+                      "scaled_upper_bound": {
+                        "type": "array",
+                        "items": {"type": "number"}
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "irb": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/c05IrbPoint"}
+            }
+          }
+        },
+        "known_truth": {
+          "anyOf": [
+            {"$ref": "#/$defs/c05KnownTruth"},
+            {"type": "null"}
+          ]
+        },
+        "golden": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["cells","notes"],
+              "properties": {
+                "cells": {
+                  "type": "array",
+                  "items": {"$ref": "#/$defs/c05LdpGoldenCell"}
+                },
+                "notes": {
+                  "type": "object",
+                  "additionalProperties": {"type": "string"}
+                }
+              }
+            },
+            {"type": "null"}
+          ]
+        },
+        "generated_year": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["index","factor"],
+              "properties": {
+                "index": {"type": "integer"},
+                "factor": {"type": "number"}
+              }
+            },
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "c05Scaled": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pd","k","target"],
+      "properties": {
+        "pd": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          }
+        },
+        "k": {"type": "number"},
+        "target": {"type": "number"}
+      }
+    }
+  }
+}

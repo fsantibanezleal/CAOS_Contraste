@@ -35,7 +35,7 @@ export interface C22Instrument {
 /** The portfolio the live calculator starts from: WP14's Example 3 (1,000 obligors, PD 1%). */
 export const START: Portfolio = { n: 1000, pd: 0.01, ratio: 1, rhoTrue: 0, rhoAssumed: 0.12 };
 
-export function useC22Instrument(data: CaseData | null, onPick: (id: string) => void): C22Instrument | null {
+export function useInstrument(data: CaseData | null, onPick: (id: string) => void): C22Instrument | null {
   const lang = useShellLang();
   const [level, setLevel] = useState(0.05);
   const [portfolio, setPortfolio] = useState<Portfolio>(START);
@@ -125,3 +125,6 @@ export function useC22Instrument(data: CaseData | null, onPick: (id: string) => 
     controls: { level, n: portfolio.n, pd: portfolio.pd, ratio: portfolio.ratio, rhoTrue: portfolio.rhoTrue, rhoAssumed: portfolio.rhoAssumed },
   };
 }
+
+/** The registry's name for this hook is `useInstrument`; the old name stays for the tests that import it. */
+export const useC22Instrument = useInstrument;

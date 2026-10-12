@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/models-envelope.schema.json",
+  "title": "Models envelope",
+  "description": "The keys every models artifact shares (abstract base: a case models schema composes it with its own fit). fit is open here and closed by the case.",
+  "type": "object",
+  "required": ["schema","case_id","fit_id","model","fit","provenance","lane"],
+  "properties": {
+    "schema": {"const": "contraste.models/v1"},
+    "case_id": {"type": "string"},
+    "fit_id": {"type": "string"},
+    "model": {
+      "type": "array",
+      "items": {"$ref": "./model-record.schema.json"}
+    },
+    "fit": {"type": "object"},
+    "provenance": {"$ref": "./provenance.schema.json"},
+    "lane": {"$ref": "./lane-block.schema.json"}
+  }
+}

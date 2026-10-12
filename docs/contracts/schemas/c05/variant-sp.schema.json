@@ -1,0 +1,317 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c05/variant-sp.schema.json",
+  "title": "C05 S&P calibration variant",
+  "description": "Catalog row c05-sp 2.0.0: the S&P calibration of one year (outputs.kind sp-calibration).",
+  "allOf": [
+    {"$ref": "../common/variant-envelope.schema.json"},
+    {
+      "properties": {
+        "case_id": {"const": "C05"},
+        "outputs": {
+          "$ref": "#/$defs/c05SpOutputs",
+          "properties": {
+            "kind": {"const": "sp-calibration"}
+          }
+        }
+      },
+      "required": ["case_id","outputs"]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c05Approach": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["curve","pd","pd_under_profile1","accuracy_ratio","constants"],
+      "properties": {
+        "curve": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "pd": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "description": "The approach's own forecast of the unconditional PD."
+        },
+        "pd_under_profile1": {"type": "number", "description": "The PD its curve implies under the observed forecast profile."},
+        "accuracy_ratio": {"type": "number"},
+        "constants": {
+          "type": "object",
+          "additionalProperties": {"type": "number"}
+        }
+      }
+    },
+    "c05GoldenCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grade","printed","ours","gap"],
+      "properties": {
+        "grade": {"type": "string"},
+        "printed": {"type": "number"},
+        "ours": {"type": "number"},
+        "gap": {"type": "number"}
+      }
+    },
+    "c05Irb": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["regime","asset_class","lgd","maturity","pd_floor","references"],
+      "properties": {
+        "regime": {"type": "string"},
+        "asset_class": {"type": "string"},
+        "lgd": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maturity": {"type": "number"},
+        "pd_floor": {"type": "number"},
+        "references": {
+          "type": "object",
+          "additionalProperties": {"type": "string"}
+        }
+      }
+    },
+    "c05IrbPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["regime","asset_class","pd","lgd","maturity","risk_weight"],
+      "properties": {
+        "regime": {"type": "string"},
+        "asset_class": {"type": "string"},
+        "pd": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "lgd": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maturity": {"type": "number"},
+        "risk_weight": {"type": "number"}
+      }
+    },
+    "c05SpGolden": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "table5",
+        "table6",
+        "table7",
+        "table7_p_values",
+        "table8",
+        "table9_2009",
+        "max_gap_table7_pct_beyond_relative",
+        "tolerances"
+      ],
+      "properties": {
+        "table5": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c05GoldenCell"}
+        },
+        "table6": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c05GoldenCell"}
+        },
+        "table7": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {"$ref": "#/$defs/c05GoldenCell"}
+          }
+        },
+        "table7_p_values": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["approach","printed_pct","ours_pct","mc_se_pct"],
+            "properties": {
+              "approach": {"type": "string"},
+              "printed_pct": {"type": "number"},
+              "ours_pct": {"type": "number"},
+              "mc_se_pct": {"type": "number"}
+            }
+          }
+        },
+        "table8": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["approach","printed_pct","ours_pct","printed_p_value"],
+            "properties": {
+              "approach": {"type": "string"},
+              "printed_pct": {"type": "number"},
+              "ours_pct": {"type": "number"},
+              "printed_p_value": {"type": "string"}
+            }
+          }
+        },
+        "table9_2009": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["grade","printed","ours"],
+            "properties": {
+              "grade": {"type": "string"},
+              "printed": {"type": "number"},
+              "ours": {"type": "number"}
+            }
+          }
+        },
+        "max_gap_table7_pct_beyond_relative": {"type": "number"},
+        "tolerances": {
+          "type": "object",
+          "additionalProperties": {"type": "string"}
+        }
+      }
+    },
+    "c05SpOutputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "year",
+        "grades",
+        "profile0",
+        "profile1",
+        "default_rate0",
+        "default_rate1",
+        "default_profile0",
+        "pd0",
+        "pd1",
+        "ar0",
+        "ar1",
+        "qmm0",
+        "approaches",
+        "case3_profile_tests",
+        "golden",
+        "parity",
+        "irb",
+        "n_obligors",
+        "n_defaults"
+      ],
+      "properties": {
+        "kind": {"const": "sp-calibration"},
+        "year": {"type": "integer"},
+        "grades": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "profile0": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "profile1": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "default_rate0": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "default_rate1": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "default_profile0": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "pd0": {"type": "number"},
+        "pd1": {"type": "number"},
+        "ar0": {"type": "number"},
+        "ar1": {"type": "number"},
+        "qmm0": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["curve","alpha","beta","scores","start","pd"],
+          "properties": {
+            "curve": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "alpha": {"type": "number"},
+            "beta": {"type": "number"},
+            "scores": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "start": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "pd": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1
+            }
+          }
+        },
+        "approaches": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/c05Approach"}
+        },
+        "case3_profile_tests": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["statistic","dof","p_value"],
+            "properties": {
+              "statistic": {"type": "number"},
+              "dof": {"type": "integer"},
+              "p_value": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        },
+        "golden": {"$ref": "#/$defs/c05SpGolden"},
+        "parity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["calibration","irb"],
+          "properties": {
+            "calibration": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["pd_grid","curves"],
+              "properties": {
+                "pd_grid": {
+                  "type": "array",
+                  "items": {"type": "number"}
+                },
+                "curves": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": {"type": "number"}
+                    }
+                  }
+                }
+              }
+            },
+            "irb": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/c05IrbPoint"}
+            }
+          }
+        },
+        "irb": {"$ref": "#/$defs/c05Irb"},
+        "n_obligors": {"type": "integer", "minimum": 0},
+        "n_defaults": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

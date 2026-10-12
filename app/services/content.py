@@ -1,8 +1,14 @@
-"""Read the committed CONTRACT-2 documents (index, manifests, artifacts) as they are. Read-only, path-traversal guarded.
+"""Read the committed documents (index, manifests, artifacts, readiness) as they are. Read-only, path-traversal guarded.
+
+Only what the index lists is served: a manifest of an indexed case, an artifact an indexed manifest names (never the
+index, the readiness or a manifest as an "artifact"), so no route answers with a body its OpenAPI response does not
+declare. A document that exists but is not JSON raises ``Unreadable``, which the router answers as a declared 503.
+A case the index lists whose manifest is absent (a planned case, or a partial bake) is a declared state, not an
+unknown case: ``case_listed`` tells the two apart and ``manifest_state`` says what the readiness declares for it.
 
 Nothing here knows a product's manifest shape beyond contract 2's two forms: one artifact (`artifact: {path}` at the
 manifest's top level) or several (`artifacts: [{path, ...}]`, one per variant). The documents are served unchanged;
-their shapes are checked by scripts/check_artifacts.py and the web's contract test, never re-declared here.
+their shapes are checked by scripts/check_artifacts.py and the producer tests, never re-declared here.
 """
 from __future__ import annotations
 
@@ -13,27 +19,84 @@ from typing import Any
 from ..config import REPO_ROOT, Settings
 
 
+class Unreadable(Exception):
+    """A committed document exists but cannot be read as JSON; ``rel`` is its path under the derived root."""
+
+    def __init__(self, rel: str) -> None:
+        super().__init__(rel)
+        self.rel = rel
+
+
 def _derived() -> Path:
     return (REPO_ROOT / Settings().data_dir).resolve()
 
 
 def _read(rel: str) -> Any | None:
-    """A committed JSON document under the derived root, or None (missing, not JSON, or outside the root)."""
+    """A committed JSON document under the derived root, or None (missing, or outside the root). Raises ``Unreadable``
+    when the file is there but is not valid JSON."""
     root = _derived()
     p = (root / rel).resolve()
     if p.suffix != ".json" or (p != root and root not in p.parents) or not p.is_file():
         return None
-    return json.loads(p.read_text(encoding="utf-8"))
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:  # ValueError covers a JSON syntax error and bytes that are not UTF-8
+        raise Unreadable(rel) from exc
 
 
-def load_index() -> dict:
-    return _read("manifests/index.json") or {"cases": []}
+def load_index() -> dict | None:
+    """The case index, or None when the pipeline has not baked this build (never a stand-in body)."""
+    return _read("manifests/index.json")
+
+
+def load_readiness() -> dict | None:
+    """The committed readiness document with the api row set to available (the API answering is the evidence), or
+    None when the document is absent. The row's status becomes real too: the schema forbids provenance real under
+    status active, and the app answering is the real producer of the api row."""
+    doc = _read("readiness.json")
+    if doc is None:
+        return None
+    for entry in doc.get("contracts", []):
+        if entry.get("id") == "api":
+            entry.update(status="real", state="available", provenance="real", reason=None, missing=[])
+    return doc
+
+
+def _entries() -> list[dict]:
+    index = load_index()
+    cases = index.get("cases", []) if isinstance(index, dict) else []
+    return [e for e in cases if isinstance(e, dict) and isinstance(e.get("manifest_path"), str)]
+
+
+def case_listed(case_id: str) -> bool:
+    """Whether the index lists the case (built or planned)."""
+    return any(e.get("case_id") == case_id for e in _entries())
 
 
 def load_manifest(case_id: str) -> dict | None:
-    if "/" in case_id or "\\" in case_id or case_id.startswith("."):
-        return None
-    return _read(f"manifests/{case_id}.json")
+    """The manifest of an indexed case, or None for any other id and for a listed case whose manifest is absent."""
+    for entry in _entries():
+        if entry.get("case_id") == case_id:
+            return _read(entry["manifest_path"])
+    return None
+
+
+def manifest_state(case_id: str) -> tuple[str, dict[str, str]] | None:
+    """The state and bilingual reason the readiness declares for the absent manifest of a listed case, or None when
+    the case is not listed."""
+    for entry in _entries():
+        if entry.get("case_id") != case_id:
+            continue
+        try:
+            ready = load_readiness()
+        except Unreadable:
+            ready = None
+        for row in (ready or {}).get("contracts", []):
+            if row.get("id") == "case-manifest" and entry["manifest_path"] in row.get("missing", []):
+                return row["state"], row["reason"]
+        return "missing", {"en": f"The manifest of {case_id} is not in this build.",
+                           "es": f"El manifiesto de {case_id} no está en esta versión."}
+    return None
 
 
 def artifact_paths(manifest: dict) -> list[str]:
@@ -45,4 +108,13 @@ def artifact_paths(manifest: dict) -> list[str]:
 
 
 def load_artifact(rel: str) -> Any | None:
-    return _read(rel)
+    """An artifact some indexed manifest names, by exactly that path, or None. A manifest that cannot be read names
+    nothing here (it is reported on its own route)."""
+    for entry in _entries():
+        try:
+            manifest = _read(entry["manifest_path"])
+        except Unreadable:
+            continue
+        if isinstance(manifest, dict) and rel in artifact_paths(manifest):
+            return _read(rel)
+    return None

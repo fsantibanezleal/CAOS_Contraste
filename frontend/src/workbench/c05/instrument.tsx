@@ -60,7 +60,7 @@ function PolicySection({ alphas, setAlphas }: { alphas: PolicyAlphas; setAlphas:
   );
 }
 
-export function useC05Instrument(data: CaseData | null, onPick: (id: string) => void): C05Instrument | null {
+export function useInstrument(data: CaseData | null, onPick: (id: string) => void): C05Instrument | null {
   const lang = useShellLang();
   const [approach, setApproach] = useState<Case1>('A4-slr');
   const [p1, setP1] = useState<number | null>(null);
@@ -255,3 +255,6 @@ export function useC05Instrument(data: CaseData | null, onPick: (id: string) => 
     controls: { approach, p1: sel?.p1 ?? 0, gamma, rho, scaled, regime, lgd, amber: alphas.amber, red: alphas.red },
   };
 }
+
+/** The registry's name for this hook is `useInstrument`; the old name stays for the tests that import it. */
+export const useC05Instrument = useInstrument;

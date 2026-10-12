@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/variant-envelope.schema.json",
+  "title": "Variant envelope",
+  "description": "The keys every variant artifact shares (abstract base: a case variant schema composes it with its own outputs). outputs is open here and closed by the case; its optional string kind selects the case schema.",
+  "type": "object",
+  "required": [
+    "schema",
+    "case_id",
+    "variant_id",
+    "model",
+    "outputs",
+    "tests",
+    "impact",
+    "findings",
+    "provenance",
+    "lane"
+  ],
+  "properties": {
+    "schema": {"const": "contraste.case/v1"},
+    "case_id": {"type": "string"},
+    "variant_id": {"type": "string"},
+    "model": {
+      "type": "array",
+      "items": {"$ref": "./model-summary.schema.json"}
+    },
+    "outputs": {
+      "type": "object",
+      "properties": {
+        "kind": {"type": "string"}
+      }
+    },
+    "tests": {
+      "type": "array",
+      "items": {"$ref": "./test-result.schema.json"}
+    },
+    "impact": {
+      "type": "object",
+      "additionalProperties": {"$ref": "./impact-item.schema.json"}
+    },
+    "findings": {
+      "type": "array",
+      "items": {"$ref": "./finding.schema.json"}
+    },
+    "provenance": {"$ref": "./provenance.schema.json"},
+    "lane": {"$ref": "./lane-block.schema.json"}
+  }
+}

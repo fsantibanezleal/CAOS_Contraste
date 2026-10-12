@@ -1,0 +1,8 @@
+{
+  "value": 0.234022265,
+  "unit": "share of EAD",
+  "label": {
+    "en": "Average risk weight, expert PDs (floored at 0.05%)",
+    "es": "Ponderador medio, PD expertas (con piso 0,05%)"
+  }
+}

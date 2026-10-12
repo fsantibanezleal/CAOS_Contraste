@@ -1,0 +1,18 @@
+{
+  "lane": "precompute",
+  "pure_python": false,
+  "wheels": [
+    "numpy",
+    "pypdf",
+    "riskvalidation",
+    "scipy"
+  ],
+  "trace_bytes": 101521,
+  "run_ms_budget": 1500.0,
+  "trace_bytes_budget": 262144,
+  "reasons": [
+    "not pure-python",
+    "wheels outside the live set: ['pypdf']",
+    "runtime exceeds the 1500ms budget"
+  ]
+}

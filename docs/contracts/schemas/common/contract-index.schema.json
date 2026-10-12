@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/contract-index.schema.json",
+  "title": "Contract index",
+  "description": "Catalog row contract-index 1.0.0: the list of ingestion families (data/derived/contract/index.json).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","families"],
+  "properties": {
+    "schema": {"const": "contraste.contract/v1"},
+    "families": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["family","title","path"],
+        "properties": {
+          "family": {"type": "string"},
+          "title": {"$ref": "./text.schema.json"},
+          "path": {"type": "string"}
+        }
+      }
+    }
+  },
+  "x-location": "data/derived/contract/index.json"
+}

@@ -1,0 +1,75 @@
+{
+  "openapi": "3.1.0",
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "info": {
+    "title": "Contraste dormant API",
+    "version": "1.0.0",
+    "summary": "Catalog row api 1.0.0: the read-only API of app/ (ADR-0057), dormant until the API lane is activated.",
+    "description": "Serves the committed documents of data/derived unchanged, GET only. This file holds the paths and the error bodies by hand; frontend/scripts/gen-contract-types.mjs adds one component per schema file under docs/contracts/schemas/ and writes docs/contracts/api.openapi.json and frontend/src/lib/contract.gen.ts. Never edit the generated files."
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "health",
+        "summary": "Liveness.",
+        "responses": {"200": {"description": "The process answers.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Health"}}}}}
+      }
+    },
+    "/healthz": {
+      "get": {
+        "operationId": "healthz",
+        "summary": "Liveness (alias of /health).",
+        "responses": {"200": {"description": "The process answers.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Health"}}}}}
+      }
+    },
+    "/api/cases": {
+      "get": {
+        "operationId": "listCases",
+        "summary": "The case index (catalog row case-index).",
+        "responses": {"200": {"description": "The committed index.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/common-case-index"}}}}}
+      }
+    },
+    "/api/cases/{case_id}/manifest": {
+      "get": {
+        "operationId": "getManifest",
+        "summary": "One case manifest (catalog row case-manifest).",
+        "parameters": [{"name": "case_id", "in": "path", "required": true, "schema": {"type": "string", "pattern": "^[^/\\\\.][^/\\\\]*$"}}],
+        "responses": {
+          "200": {"description": "The committed manifest.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/common-case-manifest"}}}},
+          "404": {"$ref": "#/components/responses/NotFound"}
+        }
+      }
+    },
+    "/api/artifacts/{rel_path}": {
+      "get": {
+        "operationId": "getArtifact",
+        "summary": "A variant or models artifact a manifest names, by its path under data/derived.",
+        "description": "rel_path may contain slashes (for example C04/sp.json). The body is one of the variant and models schemas: the generator replaces x-discover with an anyOf over every component found under a case folder (variant* and models*), so a new case is served without editing this file.",
+        "parameters": [{"name": "rel_path", "in": "path", "required": true, "schema": {"type": "string"}}],
+        "responses": {
+          "200": {"description": "The committed artifact.", "content": {"application/json": {"schema": {"x-discover": "case-artifacts"}}}},
+          "404": {"$ref": "#/components/responses/NotFound"}
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Health": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status"],
+        "properties": {"status": {"const": "ok"}}
+      },
+      "NotFoundBody": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["detail"],
+        "properties": {"detail": {"type": "string", "minLength": 1}}
+      }
+    },
+    "responses": {
+      "NotFound": {"description": "No such case or artifact.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/NotFoundBody"}}}}
+    }
+  }
+}

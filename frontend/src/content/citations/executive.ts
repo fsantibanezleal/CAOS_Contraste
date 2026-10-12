@@ -1,0 +1,21 @@
+// The references of the Introduction's executive view: the supervisory sources of the executive brief (the figures it
+// quotes, each read at its primary source on 2026-10-12) and the case write-ups that carry Contraste's own proof points.
+import type { Citation } from '@fasl-work/caos-app-shell';
+
+const REPO = 'https://github.com/fsantibanezleal/CAOS_Contraste/blob/main/docs/cases';
+
+export const CITATIONS: Citation[] = [
+  { id: 'ecbtrim', label: { en: 'ECB TRIM report', es: 'Informe TRIM del BCE' }, citation: 'European Central Bank (2021). TRIM project report: targeted review of internal models, executive summary and internal validation.', url: 'https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.trim_project_report~aa49bb624c.en.pdf' },
+  { id: 'ecbar2025', label: { en: 'ECB Annual Report 2025', es: 'Informe anual 2025 del BCE' }, citation: 'European Central Bank (2026). Annual Report on supervisory activities 2025, section 1.4.', url: 'https://www.bankingsupervision.europa.eu/press/other-publications/annual-report/html/ssm.ar2025~6ee989dc7e.en.html' },
+  { id: 'ebapr2026', label: { en: 'EBA press release 2026', es: 'Comunicado de la EBA 2026' }, citation: 'European Banking Authority (2026-03-23). Press release: European banking sector enters a period of geopolitical uncertainty from a position of strength.', url: 'https://www.eba.europa.eu/publications-and-media/press-releases/european-banking-sector-enters-period-geopolitical-uncertainty-position-strength' },
+  { id: 'crr3floor', label: { en: 'CRR3 output floor', es: 'CRR3, piso de output' }, citation: 'Regulation (EU) 2024/1623 (CRR3), Article 465(1): the transition of the output floor.', url: 'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32024R1623' },
+  { id: 'praps126', label: 'PRA PS1/26', citation: 'Prudential Regulation Authority (2026-01-20). Implementation of the Basel 3.1 final rules, Policy Statement PS1/26.', url: 'https://www.bankofengland.co.uk/prudential-regulation/publication/2026/january/implementation-of-the-basel-3-1-final-rules-policy-statement' },
+  { id: 'osfie23', label: 'OSFI E-23', citation: 'Office of the Superintendent of Financial Institutions (2025-09-11). Guideline E-23: Model Risk Management (2027), effective 2027-05-01.', url: 'https://www.osfi-bsif.gc.ca/en/guidance/guidance-library/guideline-e-23-model-risk-management-2027' },
+  { id: 'aiact', label: { en: 'EU AI Act', es: 'Ley de IA de la UE' }, citation: 'Regulation (EU) 2024/1689 (AI Act), Annex III 5(b): credit scoring is a high-risk use; the date of application, 2027-12-02, as moved by the Digital Omnibus on AI (PE-CONS 30/26).', url: 'https://data.consilium.europa.eu/doc/document/PE-30-2026-INIT/en/pdf' },
+  { id: 'cmfmi2026', label: { en: 'CMF consultation 2026', es: 'Consulta de la CMF 2026' }, citation: 'Comisión para el Mercado Financiero (2026-08). Informe normativo: consolidation of the use of internal models for provisions and credit risk-weighted assets (RAN 21-9).', url: 'https://www.cmfchile.cl/institucional/legislacion_normativa/normativa_tramite_ver_archivo.php?id=2026080375&seq=1' },
+  { id: 'cmfcal', label: { en: 'CMF Basel III calendar', es: 'Calendario Basilea III de la CMF' }, citation: 'Comisión para el Mercado Financiero. Basel III implementation calendar: the Pillar 2 charge reaches 100% on 2027-12-01.', url: 'https://www.cmfchile.cl/portal/principal/623/articles-100285_doc_pdf.pdf' },
+  { id: 'contrasteC22', label: { en: 'Contraste, case C22', es: 'Contraste, caso C22' }, citation: 'Contraste, case C22: validating the validator (size and power of every test, the published simulations rerun).', url: `${REPO}/C22.md` },
+  { id: 'contrasteC05', label: { en: 'Contraste, case C05', es: 'Contraste, caso C05' }, citation: 'Contraste, case C05: low-default portfolios and PD calibration.', url: `${REPO}/C05.md` },
+  { id: 'contrasteC04', label: { en: 'Contraste, case C04', es: 'Contraste, caso C04' }, citation: 'Contraste, case C04: rating transitions and TTC PD by grade.', url: `${REPO}/C04.md` },
+  { id: 'contrasteC01', label: { en: 'Contraste, case C01', es: 'Contraste, caso C01' }, citation: 'Contraste, case C01: retail cards PD, champion against challenger.', url: `${REPO}/C01.md` },
+];

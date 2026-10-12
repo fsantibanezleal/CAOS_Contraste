@@ -451,7 +451,7 @@ describe('the agency Model group of C04', () => {
             expect(card.note).toContain(`Israel, Rosenthal ${and(lang)} Wei`);
           }
           // the methods' source in full, with its DOI, in the note of the card that names the methods (the first)
-          expect(found[0].note).toContain(`Israel, Rosenthal ${and(lang)} Wei (2001), Mathematical Finance 11(2), 245-265, doi:10.1111/1467-9965.00114`);
+          expect(found[0].note).toContain(`Israel, Rosenthal ${and(lang)} Wei (2001), Mathematical Finance 11(2), 245-265`);
           expect(found[0].note).toContain(lang === 'en' ? 'Bladt and Sørensen 2005' : 'Bladt y Sørensen 2005');
           const series = pdSeries(o);
           const drawn = charts(markup);

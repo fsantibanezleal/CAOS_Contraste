@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/test-result.schema.json",
+  "title": "Test result",
+  "description": "One validation test row, the record riskvalidation writes as TestResult. extras is open by design.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "test_id",
+    "model_id",
+    "segment",
+    "statistic",
+    "p_value",
+    "metric",
+    "h0",
+    "alternative",
+    "policy_version",
+    "alpha_amber",
+    "alpha_red",
+    "light",
+    "n",
+    "n_events",
+    "inputs_hash",
+    "reference",
+    "notes",
+    "extras"
+  ],
+  "properties": {
+    "test_id": {"type": "string"},
+    "model_id": {"type": ["string","null"]},
+    "segment": {"type": ["string","null"]},
+    "statistic": {"type": ["number","null"]},
+    "p_value": {
+      "type": ["number","null"],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "metric": {"type": ["number","null"]},
+    "h0": {"type": "string"},
+    "alternative": {"type": "string"},
+    "policy_version": {"type": "string"},
+    "alpha_amber": {"type": ["number","null"]},
+    "alpha_red": {"type": ["number","null"]},
+    "light": {"type": "string", "enum": ["green","amber","red","not_evaluated","error"]},
+    "n": {"type": ["integer","null"], "minimum": 0},
+    "n_events": {"type": ["integer","null"], "minimum": 0},
+    "inputs_hash": {"type": "string"},
+    "reference": {"type": "string"},
+    "notes": {"type": "string"},
+    "extras": {
+      "type": "object",
+      "additionalProperties": {}
+    }
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "case-index": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/common/case-index.schema.json",
+    "sha256": "edcce7f1f7ba474096bc66c30f49f52053166a0d9a253143e3a9789b07e93f48"
+  },
+  "case-manifest": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/common/case-manifest.schema.json",
+    "sha256": "3a8866194225d51b05712e3700092643ec1340b7f205554711d32b38c971e1f6"
+  },
+  "variant-envelope": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/common/variant-envelope.schema.json",
+    "sha256": "a1a404916972ca99f137e6edcf129a5cab064d3742875d500c02df68eb8ef8bf"
+  },
+  "models-envelope": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/common/models-envelope.schema.json",
+    "sha256": "24de0354a6c462ef81bfb1a722d2c657361e45bf8a016d960fd0fd0f51702994"
+  },
+  "test-result": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/common/test-result.schema.json",
+    "sha256": "9d858573b6c0e44c8d76f17a3be5605bea6a1c44819a3f2d9c69d48b5f78f71c"
+  },
+  "c01-variant": {
+    "version": "2.0.0",
+    "schema": "docs/contracts/schemas/c01/variant.schema.json",
+    "sha256": "d16555c9b1ce6c2fa70bdb36aea1cc3c5138c9143369e3a098afe3a6101a49ab"
+  },
+  "c01-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c01/models.schema.json",
+    "sha256": "539649465c24766c73d5ae09355be4ff13b69128bcfb366f49e36a47b5d14607"
+  },
+  "c04-agency": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c04/variant-agency.schema.json",
+    "sha256": "a512a765ff42381e54e146ecd9bc82f9b27b9451e716f0952c7a54223c926086"
+  },
+  "c04-family": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c04/variant-generator.schema.json",
+    "sha256": "2a2eadd1c6be8382515d8f9f8bd70c28bb459e3457956983e81dd46ac225d819"
+  },
+  "c04-published": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c04/variant-published.schema.json",
+    "sha256": "179f536d74cabca092c296b024abc5215cced59f9d3e22f88a8b213d8f1dffe4"
+  },
+  "c04-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c04/models.schema.json",
+    "sha256": "b018622bcf4a4da2282eba1c9072fb06013b4ef4d3d487b39e59e1e698344351"
+  },
+  "c05-sp": {
+    "version": "2.0.0",
+    "schema": "docs/contracts/schemas/c05/variant-sp.schema.json",
+    "sha256": "87560a787f8775ca3ca68877e020e7e7697947ab0a2b8e3148ab5f2af6901266"
+  },
+  "c05-ldp": {
+    "version": "2.0.0",
+    "schema": "docs/contracts/schemas/c05/variant-ldp.schema.json",
+    "sha256": "f7e3d0c3102efa77c7cef95fe60e651e8e76662d9e92007dd490a7baf2c131a8"
+  },
+  "c05-models-sp": {
+    "version": "2.0.0",
+    "schema": "docs/contracts/schemas/c05/models-sp.schema.json",
+    "sha256": "f26fc1cdf56e8b43565a6bd63df4bb4501339f928f5e0107ef7cc6b4979dff86"
+  },
+  "c05-models-ldp": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c05/models-ldp.schema.json",
+    "sha256": "6fa37bbe589a031456581bd0335aabb9d8cd7c68315603447d472f13b853acc1"
+  },
+  "c22-variant": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c22/variant.schema.json",
+    "sha256": "3b79e0a7c9c2b4921e3fc4261ea6201dd373beacd33d824ea75cc760e4c45060"
+  },
+  "c22-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c22/models.schema.json",
+    "sha256": "3828606a7f05a6d930a44c7c8d54774a82f1945c14fc00fab94417d571071b7c"
+  },
+  "contract-family": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/common/contract-family.schema.json",
+    "sha256": "7131847ba47985b793908a00a00a90a7bcb9103350c65aeae568ae23afbb44a5"
+  },
+  "contract-index": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/common/contract-index.schema.json",
+    "sha256": "b26a953073a86860207563ec26eb708460bd01e9e190419a6c16ff04e91dcab7"
+  },
+  "source-registry": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/common/source-registry.schema.json",
+    "sha256": "8039b1cafd35b6ee051b465c66b6126c102f257c84d46e77c591fc94531ee212"
+  },
+  "licences": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/common/licences.schema.json",
+    "sha256": "aea4b0fa590a820b20394c736558f545d165764657065b6159953cad0b69cdfc"
+  },
+  "licence-manifest": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/common/licence-manifest.schema.json",
+    "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
+  },
+  "api": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/api.openapi.json",
+    "sha256": "c92500eae8c7caf3f053e69f2938e0fbe872fe829123cc45be636f52839226dc"
+  },
+  "readiness": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/common/readiness.schema.json",
+    "sha256": "da9a02b4900dfba0fb24ec2ec7340533af0926b092529e32d9134d435fc5571f"
+  },
+  "c01-pd-rung": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c01/models.schema.json",
+    "sha256": "539649465c24766c73d5ae09355be4ff13b69128bcfb366f49e36a47b5d14607"
+  }
+}
