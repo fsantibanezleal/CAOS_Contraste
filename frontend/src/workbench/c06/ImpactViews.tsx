@@ -106,7 +106,7 @@ export function StageFlowView({ sel }: { sel: C06Sel | null }) {
                       key={b.key}
                       data-flow-band={b.key}
                       d={`M${xL + nodeW} ${b.y0} C${mid} ${b.y0} ${mid} ${b.y1} ${xR} ${b.y1} L${xR} ${b.y1 + b.h} C${mid} ${b.y1 + b.h} ${mid} ${b.y0 + b.h} ${xL + nodeW} ${b.y0 + b.h} Z`}
-                      style={{ fill: colorOf(STAGE_COLOR[b.source]), opacity: picked === null || picked === b.key ? 0.5 : 0.15, stroke: picked === b.key ? 'var(--color-fg)' : 'none' }}
+                      style={{ fill: colorOf(STAGE_COLOR[b.source]), opacity: picked === null || picked === b.key ? 0.5 : 0.15, stroke: picked === b.key ? 'var(--color-fg)' : 'var(--color-surface)', strokeWidth: picked === b.key ? 2 : 1.5 }}
                       role="button"
                       tabIndex={0}
                       aria-label={`${name(b.source)} to ${name(b.target)}`}
@@ -159,8 +159,8 @@ export function StageFlowView({ sel }: { sel: C06Sel | null }) {
             <tbody>
               {flows.map((x) => (
                 <tr key={`${x.source}>${x.target}`} data-flow={`${x.source}:${x.target}`} className={picked === `${x.source}>${x.target}` ? 'ct-current' : undefined}>
-                  <td className="ct-text">{name(x.source)}</td>
-                  <td className="ct-text">{name(x.target)}</td>
+                  <td className="ct-text" style={{ whiteSpace: 'nowrap' }}>{name(x.source)}</td>
+                  <td className="ct-text" style={{ whiteSpace: 'nowrap' }}>{name(x.target)}</td>
                   <td>{formatNumber(x.accounts, lang, { decimals: 0 })}</td>
                   <td>{money(x.gross_carrying_amount, lang, f.currency)}</td>
                 </tr>
@@ -200,8 +200,7 @@ export function WaterfallView({ sel }: { sel: C06Sel | null }) {
   const label = (l: (typeof w.lines)[number]) => pick(l.label, lang);
   const chosen = w.lines.find((l) => l.id === picked) ?? null;
   return (
-    <>
-      <ViewsRow shares={[3, 2]}>
+    <ViewsRow shares={[3, 2]}>
         <PlotCard
           fill
           title={{ en: 'Allowance waterfall, opening to closing', es: 'Cascada de la cobertura, de inicial a final' }}
@@ -236,6 +235,7 @@ export function WaterfallView({ sel }: { sel: C06Sel | null }) {
                         <text className="dg-tick" x={sx(t)} y={height - 6} textAnchor="middle">{formatNumber(t, lang, { decimals: 0 })}</text>
                       </g>
                     ))}
+                    <text className="dg-note" x={width - 4} y={height - 6} textAnchor="end">{cur}</text>
                     {bars.map((b, i) => {
                       const y = top + i * rowH;
                       const h = Math.max(rowH * 0.62, 3);
@@ -306,11 +306,9 @@ export function WaterfallView({ sel }: { sel: C06Sel | null }) {
                 </tr>
               </tfoot>
             </table>
-          </div>
-        </PlotCard>
-      </ViewsRow>
-      <PlotCard title={{ en: 'The overlays, one by one', es: 'Los ajustes, uno por uno' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'An overlay is judgement on top of the model, kept with its rationale, method, review date and whether it moves accounts between stages; it is not a validated model.', es: 'Un ajuste es juicio sobre el modelo, guardado con su justificación, método, fecha de revisión y si mueve cuentas entre etapas; no es un modelo validado.' }}>
-        {o.overlays.length === 0 ? (
+            <h3 className="ct-sub">{pick({ en: 'The overlays, one by one', es: 'Los ajustes, uno por uno' }, lang)}</h3>
+            <p className="ct-note">{pick({ en: 'An overlay is judgement on top of the model, kept with its rationale, method, review date and whether it moves accounts between stages; it is not a validated model.', es: 'Un ajuste es juicio sobre el modelo, guardado con su justificación, método, fecha de revisión y si mueve cuentas entre etapas; no es un modelo validado.' }, lang)}</p>
+            {o.overlays.length === 0 ? (
           <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no overlay.', es: 'Esta variante no lleva ajustes.' }, lang)}</p>
         ) : (
           <div className="ct-scroll">
@@ -340,8 +338,9 @@ export function WaterfallView({ sel }: { sel: C06Sel | null }) {
             </table>
           </div>
         )}
-      </PlotCard>
-    </>
+          </div>
+        </PlotCard>
+      </ViewsRow>
   );
 }
 
@@ -404,7 +403,7 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
                     {g.scenario_ids.map((id, i) => {
                       const [x, y] = corner[i];
                       const anchor = i === 0 ? 'middle' : i === 1 ? 'start' : 'end';
-                      const dy = i === 0 ? -8 : 18;
+                      const dy = i === 0 ? -20 : 28;
                       const dx = i === 0 ? 0 : i === 1 ? 8 : -8;
                       return <text key={id} x={x + dx} y={y + dy} textAnchor={anchor} className="dg-axis-label">{fitLabel(pick(scenarioLabel(id), lang), Math.min(width / 3, 150), 12, 1).lines[0]}</text>;
                     })}
@@ -426,16 +425,16 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
             <thead>
               <tr>
                 <th className="ct-text">{g.scenario_ids.map((id) => pick(scenarioLabel(id), lang)).join(' / ')}</th>
-                <th>{pick({ en: 'ECL, staging recomputed', es: 'PCE, etapas recalculadas' }, lang)}</th>
-                <th>{pick({ en: 'ECL, staging frozen', es: 'PCE, etapas congeladas' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Stage 2 share, recomputed', es: 'Fracción Etapa 2, recalculada' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Stage 2 share, frozen', es: 'Fracción Etapa 2, congelada' }, lang)}</th>
+                <th>{pick({ en: 'ECL, recomputed', es: 'PCE, recalculada' }, lang)}</th>
+                <th>{pick({ en: 'ECL, frozen', es: 'PCE, congelada' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Stage 2, recomputed', es: 'Etapa 2, recalculada' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Stage 2, frozen', es: 'Etapa 2, congelada' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
               {g.points.map((p) => (
                 <tr key={p.weights.join('/')} data-weights={p.weights.join('/')} className={p === near ? 'ct-current' : undefined}>
-                  <td className="ct-text">{p.weights.map((x) => pct(x, lang, 0)).join(' / ')}</td>
+                  <td className="ct-text" style={{ whiteSpace: 'nowrap' }}>{p.weights.map((x) => pct(x, lang, 0)).join(' / ')}</td>
                   <td>{money(p.ecl_recomputed, lang, cur)}</td>
                   <td>{money(p.ecl_frozen, lang, cur)}</td>
                   <td className="ct-wide-only">{pct(p.stage2_ratio_recomputed, lang, 1)}</td>
