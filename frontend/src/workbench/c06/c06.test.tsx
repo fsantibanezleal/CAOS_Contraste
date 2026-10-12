@@ -12,7 +12,7 @@ import type { components } from '../../lib/contract.gen';
 import type { CaseManifest, ModelsArtifact, VariantArtifact } from '../../lib/contract.types';
 import { useC06Instrument } from './instrument';
 import { defaultSel, liveEcl, outputsOf, rescaled, scenarioEcl, type C06Sel } from './selection';
-import { C06ContextView, C06FindingsView, WeightReadout } from './C06Common';
+import { C06ContextView, C06FindingsView, C06VariantsTable, WeightReadout } from './C06Common';
 import { NonLinearityView, SicrView, TermStructureView } from './TermViews';
 import { StageFlowView, StageSummaryView, WaterfallView, WeightsView } from './ImpactViews';
 import { BacktestView, DecileView, IdentitiesView, LadderView, RungsView, TestsView } from './ValidationViews';
@@ -185,5 +185,18 @@ describe('the C06 instrument', () => {
     for (const r of o.reconciliation.allowance) expect(markup).toContain(`data-stage="${r.stage}"`);
     expect(markup).not.toContain('data-closes="false"');
     expect(outputsOf(sel)?.kind).toBe('reporting-date');
+  });
+
+  it('the reporting dates table lists each variant with its model ECL by stage and the overlays apart', () => {
+    const markup = html(<C06VariantsTable variants={[{ id: variant.variant_id, title: { en: '2020-06', es: '2020-06' }, v: variant }]} onPick={() => undefined} current={variant.variant_id} />);
+    expect(markup).toContain(`data-variant="${variant.variant_id}"`);
+    for (const r of o.stage_summary.rows) expect(markup).toContain(money(r.ecl));
+    expect(markup).toContain(money(o.overlays.reduce((a, x) => a + x.amount, 0)));
+    expect(markup).toContain(o.reporting_date);
+  });
+
+  it('a variant without overlays and without Freddie Mac says so, not a chart of zeros', () => {
+    const bare = { ...sel, data: { ...data, variant: { ...variant, outputs: { ...o, overlays: [] } } as unknown as VariantArtifact } } as C06Sel;
+    expect(html(<WaterfallView sel={bare} />)).toContain('This variant carries no overlay.');
   });
 });

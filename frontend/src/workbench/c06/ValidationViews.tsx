@@ -1,13 +1,13 @@
 // C06's validation views: the lifetime PD ladder the fit carries, the lifetime backtest, the calibration by predicted
 // risk decile, the rung comparison, the identities of the reconciliation on their one tolerance basis, and the rows of
 // the tests the engine returned. A value the contract allows to be null is "not available" with its reason.
-import { PlotCard, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type ShellColorToken } from '@fasl-work/caos-app-shell';
+import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import type { TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
-import { MaybeNumber, alignTo, money, pct, unionX } from './format';
+import { ChartOverTable, MaybeNumber, alignTo, money, pct, unionX } from './format';
 import { fitOf, outputsOf, type C06Sel } from './selection';
 
 const COLORS: ShellColorToken[] = ['--color-accent', '--color-magenta', '--color-warn', '--color-good'];
@@ -262,44 +262,57 @@ export function RungsView({ sel }: { sel: C06Sel | null }) {
   if (!sel || !o) return <Pending />;
   const prov = provenanceOf(sel.data.variant.provenance.truth_status);
   return (
-    <PlotCard
-      title={{ en: 'The rungs compared', es: 'Los peldaños comparados' }}
-      lane={REPLAY}
-      provenance={prov}
-      dataKey={stateKey}
-      note={{ en: 'A rung with no covariates has no concordance index: the table says why instead of a number.', es: 'Un peldaño sin covariables no tiene índice de concordancia: la tabla dice por qué en vez de un número.' }}
-    >
-      <div className="ct-scroll">
-        <table className="caos-table ct-wrap-head" data-table="rung-comparison">
-          <thead>
-            <tr>
-              <th className="ct-text">{pick({ en: 'Rung', es: 'Peldaño' }, lang)}</th>
-              <th>{pick({ en: 'Concordance index', es: 'Índice de concordancia' }, lang)}</th>
-              <th>{pick({ en: 'Integrated Brier', es: 'Brier integrado' }, lang)}</th>
-              <th>{pick({ en: '12-month gap', es: 'Brecha a 12 meses' }, lang)}</th>
-              <th className="ct-text">{pick({ en: 'Note', es: 'Nota' }, lang)}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {o.rung_comparison.map((r) => (
-              <tr key={r.rung_id} data-rung={r.rung_id}>
-                <td className="ct-text">{r.rung_id}</td>
-                <td>
-                  <MaybeNumber value={r.c_index} reason={null} format={(v) => formatNumber(v, lang, { digits: 3 })} />
-                </td>
-                <td>
-                  <MaybeNumber value={r.integrated_brier} reason={null} format={(v) => formatNumber(v, lang, { digits: 3 })} />
-                </td>
-                <td>
-                  <MaybeNumber value={r.calibration_gap_12m} reason={null} format={(v) => pct(v, lang, 3)} />
-                </td>
-                <td className="ct-text">{r.reason ?? ''}</td>
+    <ViewsRow>
+      <PlotCard
+        fill
+        title={{ en: 'The rungs compared: integrated Brier score', es: 'Los peldaños comparados: puntaje de Brier integrado' }}
+        lane={REPLAY}
+        provenance={prov}
+        dataKey={stateKey}
+        note={{ en: 'Lower is better. A rung with no covariates has no concordance index: the table says why instead of a number.', es: 'Menor es mejor. Un peldaño sin covariables no tiene índice de concordancia: la tabla dice por qué en vez de un número.' }}
+      >
+        <ChartOverTable
+          chart={
+            <BarChart
+              title={{ en: 'Integrated Brier score by rung', es: 'Puntaje de Brier integrado por peldaño' }}
+              height="fill"
+              orientation="vertical"
+              data={o.rung_comparison.map((r) => ({ id: r.rung_id, label: { en: r.rung_id, es: r.rung_id }, value: r.integrated_brier, tone: 'accent' as const }))}
+              axis={{ label: { en: 'Integrated Brier', es: 'Brier integrado' }, format: { digits: 3 } }}
+            />
+          }
+        >
+          <table className="caos-table ct-wrap-head" data-table="rung-comparison">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Rung', es: 'Peldaño' }, lang)}</th>
+                <th>{pick({ en: 'Concordance index', es: 'Índice de concordancia' }, lang)}</th>
+                <th>{pick({ en: 'Integrated Brier', es: 'Brier integrado' }, lang)}</th>
+                <th>{pick({ en: '12-month gap', es: 'Brecha a 12 meses' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Note', es: 'Nota' }, lang)}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </PlotCard>
+            </thead>
+            <tbody>
+              {o.rung_comparison.map((r) => (
+                <tr key={r.rung_id} data-rung={r.rung_id}>
+                  <td className="ct-text">{r.rung_id}</td>
+                  <td>
+                    <MaybeNumber value={r.c_index} reason={null} format={(v) => formatNumber(v, lang, { digits: 3 })} />
+                  </td>
+                  <td>
+                    <MaybeNumber value={r.integrated_brier} reason={null} format={(v) => formatNumber(v, lang, { digits: 3 })} />
+                  </td>
+                  <td>
+                    <MaybeNumber value={r.calibration_gap_12m} reason={null} format={(v) => pct(v, lang, 3)} />
+                  </td>
+                  <td className="ct-text">{r.reason ?? ''}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </ChartOverTable>
+      </PlotCard>
+    </ViewsRow>
   );
 }
 

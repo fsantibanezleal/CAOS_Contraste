@@ -11,7 +11,7 @@ import { AccountReadout, C06ContextView, C06FindingsView, C06VariantsView, Surfa
 import { StageFlowView, StageSummaryView, WaterfallView, WeightsView } from './ImpactViews';
 import { defaultSel, outputsOf, type C06Sel, type Measure, type Staging, type Surface } from './selection';
 import { NonLinearityView, SicrView, TermStructureView } from './TermViews';
-import { BacktestView, DecileView, IdentitiesView, LadderView, RungsView, TestsView } from './ValidationViews';
+import { BacktestView, DecileView, LadderView, RungsView } from './ValidationViews';
 
 export interface C06Instrument {
   sel: C06Sel | null;
@@ -172,8 +172,6 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       { id: 'backtest', label: { en: 'Backtest', es: 'Backtest' }, content: <BacktestView sel={sel} /> },
       { id: 'deciles', label: { en: 'Deciles', es: 'Deciles' }, content: <DecileView sel={sel} /> },
       { id: 'rungs', label: { en: 'Rungs', es: 'Peldaños' }, content: <RungsView sel={sel} /> },
-      { id: 'identities', label: { en: 'Identities', es: 'Identidades' }, content: <IdentitiesView sel={sel} /> },
-      { id: 'tests', label: { en: 'Tests', es: 'Pruebas' }, content: <TestsView sel={sel} /> },
     ],
     { en: 'Views of the validation', es: 'Vistas de la validación' },
     'c06-validation',

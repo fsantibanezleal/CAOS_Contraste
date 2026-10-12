@@ -1,11 +1,12 @@
 // C06's Findings, Variants and Context groups, and the live read-outs of its rail (ADR-0017 rule 3: every section shows
 // a value that moves with its controls). The Findings card and the fixture notice are shared with C07.
-import { Callout, PlotCard, Readout, ViewsRow, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
+import { BarChart, Callout, PlotCard, Readout, ViewsRow, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { Finding, VariantArtifact } from '../../lib/contract.types';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
-import { STAGE_TEXT, currencyUnit, money, pct } from './format';
+import { ChartOverTable, STAGE_TEXT, currencyUnit, money, pct } from './format';
+import { IdentitiesView, TestRowsCard } from './ValidationViews';
 import { fitOf, liveEcl, nearestPoint, outputsOf, rescaled, type C06Outputs, type C06Sel } from './selection';
 
 const LIVE = 'live' as const;
@@ -114,13 +115,24 @@ export function C06VariantsTable({ variants, onPick, current }: { variants: Arra
   const first = variants[0]?.v;
   return (
     <PlotCard
+      fill
       title={{ en: 'The reporting dates', es: 'Las fechas de reporte' }}
       lane={REPLAY}
       provenance={provenanceOf(first?.provenance.truth_status)}
       dataKey={stateKey}
       note={{ en: 'The model ECL by stage of each reporting date, and the overlays apart from it. Pick a date to load it.', es: 'La PCE del modelo por etapa de cada fecha de reporte, y los ajustes aparte. Elija una fecha para cargarla.' }}
     >
-      <div className="ct-scroll">
+      <ChartOverTable
+        chart={
+          <BarChart
+            title={{ en: 'Model ECL by reporting date', es: 'PCE del modelo por fecha de reporte' }}
+            height="fill"
+            orientation="vertical"
+            data={variants.map(({ id, title, v }) => ({ id, label: title, value: v.outputs.stage_summary.rows.reduce((a, r) => a + r.ecl, 0), tone: 'accent' as const, highlight: id === current }))}
+            axis={{ label: { en: `Model ECL (${first?.outputs.currency ?? ''})`, es: `PCE del modelo (${first?.outputs.currency ?? ''})` }, format: { digits: 3 } }}
+          />
+        }
+      >
         <table className="caos-table ct-wrap-head" data-table="variants-c06">
           <thead>
             <tr>
@@ -153,7 +165,7 @@ export function C06VariantsTable({ variants, onPick, current }: { variants: Arra
             })}
           </tbody>
         </table>
-      </div>
+      </ChartOverTable>
     </PlotCard>
   );
 }
@@ -250,6 +262,8 @@ export function C06ContextView({ sel }: { sel: C06Sel | null }) {
           )}
         </p>
       </PlotCard>
+      <IdentitiesView sel={sel} />
+      <TestRowsCard variant={v} prov={prov} />
     </div>
   );
 }
@@ -301,7 +315,6 @@ export function AccountReadout({ sel }: { sel: C06Sel | null }) {
         { label: { en: 'PD now, annualised', es: 'PD hoy, anualizada' }, value: p?.pd_current_annualised ?? null, unitless: true, format: { percent: true, decimals: 2 } },
         { label: { en: 'Increase against origination', es: 'Aumento contra la originación' }, value: p ? p.pd_current_annualised / p.pd_origination_annualised : null, unit: { en: 'times', es: 'veces' }, format: { digits: 3 }, hint: { en: 'The multiplier the schedule asks for at this origination PD, in the next line.', es: 'El multiplicador que pide la tabla con esta PD de originación, en la línea siguiente.' } },
         { label: { en: 'Multiplier asked at this origination PD', es: 'Multiplicador pedido con esta PD de originación' }, value: multiplier, unit: { en: 'times', es: 'veces' }, format: { digits: 3 } },
-        { label: { en: 'Trigger the run recorded', es: 'Gatillo que registró la corrida' }, text: p ? { en: p.trigger, es: p.trigger } : undefined, value: null, unitless: true },
       ]}
     />
   );

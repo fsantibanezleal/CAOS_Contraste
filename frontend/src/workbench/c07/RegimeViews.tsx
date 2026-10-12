@@ -4,7 +4,7 @@
 // delta against the base. Every drawing has its table with the same numbers; every number is the document's.
 import { BarChart, PlotCard, Stage, ViewsRow, fitLabel, formatNumber, niceTicks, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
 import { useState } from 'react';
-import { MaybeNumber, STAGE_TEXT, money, pct } from '../c06/format';
+import { ChartOverTable, MaybeNumber, STAGE_TEXT, money, pct } from '../c06/format';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { FixtureNotice } from '../c06/C06Common';
@@ -139,7 +139,7 @@ export function ThreeRegimeView({ sel }: { sel: C07Sel | null }) {
             title={{ en: 'Total provision by regime', es: 'Provisión total por régimen' }}
             orientation="horizontal"
             data={o.regimes.map((r) => ({ id: r.regime, label: regimeName(r.regime, r.label), value: r.total_provision, tone: REGIME_TONE[r.regime], highlight: sel.regime === r.regime, hint: STATUS_TEXT[r.status] }))}
-            axis={{ label: { en: `Provision (${cur})`, es: `Provisión (${cur})` }, format: { digits: 3 } }}
+            axis={{ label: { en: 'Provision', es: 'Provisión' }, unit: { en: cur, es: cur }, format: { digits: 3 } }}
           />
           <div className="ct-scroll">
             <table className="caos-table ct-wrap-head" data-table="regimes">
@@ -194,14 +194,16 @@ export function SegmentsView({ sel }: { sel: C07Sel | null }) {
   const cur = c.currency;
   const label = (id: string) => pick(o.portfolio.segments.find((s) => s.segment_id === id)?.label ?? { en: id, es: id }, lang);
   return (
+    <ViewsRow>
     <PlotCard
+      fill
       title={{ en: 'Provision by segment and the gaps against B-1', es: 'Provisión por segmento y las brechas contra B-1' }}
       lane={REPLAY}
       provenance={prov}
       dataKey={stateKey}
       note={{ en: 'A positive gap means the regime provisions more than B-1 for that segment. The IFRS 9 column is the model ECL without overlays; overlays and the B-1 minimum top-up are in the unallocated row.', es: 'Una brecha positiva significa que el régimen provisiona más que B-1 en ese segmento. La columna IFRS 9 es la PCE del modelo sin ajustes; los ajustes y el complemento del mínimo de B-1 están en la fila no asignada.' }}
     >
-      <div className="ct-scroll">
+      <ChartOverTable chart={<GroupedBars o={o} sel={sel} />}>
         <table className="caos-table ct-wrap-head" data-table="segments">
           <thead>
             <tr>
@@ -236,8 +238,9 @@ export function SegmentsView({ sel }: { sel: C07Sel | null }) {
             </tr>
           </tfoot>
         </table>
-      </div>
+      </ChartOverTable>
     </PlotCard>
+    </ViewsRow>
   );
 }
 
@@ -492,7 +495,7 @@ export function Ifrs9View({ sel }: { sel: C07Sel | null }) {
   const cur = d.currency;
   const label = (id: string): BiText => componentLabel(sel, id);
   return (
-    <ViewsRow shares={[1, 1]}>
+    <ViewsRow>
       <PlotCard
         fill
         title={{ en: 'IFRS 9: the probability-weighted ECL', es: 'IFRS 9: la PCE ponderada por probabilidad' }}
@@ -550,10 +553,9 @@ export function Ifrs9View({ sel }: { sel: C07Sel | null }) {
               ))}
             </tbody>
           </table>
-        </div>
-      </PlotCard>
-      <PlotCard fill title={{ en: 'Overlays, each its own line', es: 'Ajustes, cada uno su propia línea' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'Overlays are judgement on top of the model: never merged into a segment or a stage, and counted in the IFRS 9 total as lines of their own.', es: 'Los ajustes son juicio sobre el modelo: nunca se mezclan en un segmento ni en una etapa, y cuentan en el total IFRS 9 como líneas propias.' }}>
-        {d.overlays.length === 0 ? (
+          <h3 className="ct-sub">{pick({ en: 'Overlays, each its own line', es: 'Ajustes, cada uno su propia línea' }, lang)}</h3>
+          <p className="ct-note">{pick({ en: 'Overlays are judgement on top of the model: never merged into a segment or a stage, and counted in the IFRS 9 total as lines of their own.', es: 'Los ajustes son juicio sobre el modelo: nunca se mezclan en un segmento ni en una etapa, y cuentan en el total IFRS 9 como líneas propias.' }, lang)}</p>
+          {d.overlays.length === 0 ? (
           <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no overlay.', es: 'Esta variante no lleva ajustes.' }, lang)}</p>
         ) : (
           <div className="ct-scroll">
@@ -583,6 +585,7 @@ export function Ifrs9View({ sel }: { sel: C07Sel | null }) {
             </table>
           </div>
         )}
+        </div>
       </PlotCard>
     </ViewsRow>
   );
@@ -598,8 +601,10 @@ export function BdeView({ sel }: { sel: C07Sel | null }) {
   const d = o.bde_detail;
   const cur = d.currency;
   return (
-    <ViewsRow shares={[2, 3]}>
+    <ViewsRow>
       <PlotCard fill title={{ en: 'BdE Annex 9: coverage by category', es: 'Anexo 9 del BdE: cobertura por categoría' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'The coverage of each category over its exposure, with the percentages of the alternative solutions of the Annex.', es: 'La cobertura de cada categoría sobre su exposición, con los porcentajes de las soluciones alternativas del Anexo.' }}>
+        <ChartOverTable
+          chart={
         <BarChart
           title={{ en: 'Coverage by category', es: 'Cobertura por categoría' }}
           height="fill"
@@ -607,9 +612,9 @@ export function BdeView({ sel }: { sel: C07Sel | null }) {
           data={d.categories.map((c) => ({ id: c.category, label: CATEGORY_TEXT[c.category], value: c.coverage_rate, tone: c.mapped_stage === 'stage1' ? ('accent' as const) : c.mapped_stage === 'stage2' ? ('warn' as const) : ('bad' as const) }))}
           axis={{ label: { en: 'Coverage', es: 'Cobertura' }, format: { percent: true, decimals: 1 } }}
         />
-      </PlotCard>
-      <PlotCard fill title={{ en: 'The categories in numbers', es: 'Las categorías en números' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+          }
+        >
+        <div>
           <table className="caos-table ct-wrap-head" data-table="bde-categories">
             <thead>
               <tr>
@@ -638,6 +643,7 @@ export function BdeView({ sel }: { sel: C07Sel | null }) {
               : pick({ en: 'Method: internal methodology, validated under the Annex.', es: 'Método: metodología interna, validada bajo el Anexo.' }, lang)}
           </p>
         </div>
+        </ChartOverTable>
       </PlotCard>
     </ViewsRow>
   );
@@ -652,6 +658,18 @@ export function DeltaView({ sel }: { sel: C07Sel | null }) {
   const prov = provenanceOf(sel.data.variant.provenance.truth_status);
   const cur = o.currency;
   const dv = o.delta_vs_base;
+  if (dv === null) {
+    return (
+      <ViewsRow>
+        <PlotCard title={{ en: `Scenario ${o.scenario_id}`, es: `Escenario ${o.scenario_id}` }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
+          <p>{pick(o.scenario.description, lang)}</p>
+          <p className="caos-pending" data-state="unavailable">
+            {pick({ en: 'Not available: this is the base scenario, the reference the other scenarios are measured against, so it has no change to report.', es: 'No disponible: este es el escenario base, la referencia contra la que se miden los otros, así que no tiene cambio que informar.' }, lang)}
+          </p>
+        </PlotCard>
+      </ViewsRow>
+    );
+  }
   return (
     <ViewsRow shares={[1, 1]}>
       <PlotCard fill title={{ en: `Scenario ${o.scenario_id}`, es: `Escenario ${o.scenario_id}` }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
