@@ -4,6 +4,9 @@
 import type { ReactNode } from 'react';
 import { useT } from '../content/bi';
 
+/** SVG path coordinates rounded to a tenth of a pixel (geometry, not a displayed number). */
+const r1 = (x: number): string => String(Math.round(x * 10) / 10);
+
 const W = 480;
 const H = 250;
 const X0 = 56;
@@ -21,7 +24,7 @@ function Frame({ label, children }: { label: string; children: ReactNode }) {
 
 const px = (u: number) => X0 + u * (X1 - X0);
 const py = (v: number) => Y0 - v * (Y0 - Y1);
-const path = (pts: Array<[number, number]>) => pts.map(([u, v], i) => `${i ? 'L' : 'M'}${px(u).toFixed(1)} ${py(v).toFixed(1)}`).join(' ');
+const path = (pts: Array<[number, number]>) => pts.map(([u, v], i) => `${i ? 'L' : 'M'}${r1(px(u))} ${r1(py(v))}`).join(' ');
 const range = (n: number) => Array.from({ length: n + 1 }, (_, i) => i / n);
 
 function Axes({ x, y }: { x: string; y: string }) {
@@ -148,7 +151,7 @@ export function ShapeFigure() {
   const slot = (X1 - X0) / steps.length;
   const mid = (Y0 + Y1) / 2;
   const scale = (Y0 - Y1) / 2.2;
-  const d = steps.map((s, i) => `${i ? 'L' : 'M'}${(X0 + i * slot).toFixed(1)} ${(mid - s * scale).toFixed(1)} L${(X0 + (i + 1) * slot).toFixed(1)} ${(mid - s * scale).toFixed(1)}`).join(' ');
+  const d = steps.map((s, i) => `${i ? 'L' : 'M'}${r1(X0 + i * slot)} ${r1(mid - s * scale)} L${r1(X0 + (i + 1) * slot)} ${r1(mid - s * scale)}`).join(' ');
   return (
     <Frame label={t('An illustrative shape function of an explainable boosting machine', 'Una función de forma ilustrativa de una explainable boosting machine')}>
       <line className="dg-axis" x1={X0} y1={Y0} x2={X0} y2={Y1} />

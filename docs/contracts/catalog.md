@@ -36,7 +36,8 @@ selector's `fnmatch` would, the TypeScript one does not, and every glob in use a
 document under `data/` only when its row's status is `active` (a provider serves it) or a document of it sits under
 `docs/contracts/fixtures/`; `tests/contracts/test_documents.py` and `contract.test.ts` derive that set, no schema is named.
 Rows of units that land after this catalog (the C01 model slot, readiness, live parity) are written as fragments in
-`docs/contracts/rows/` and merged into the table below by the integrator, never edited into it by a unit.
+a per-unit rows fragment (`docs/contracts/rows/<unit>.md`, a folder that exists only while a unit's rows wait) and
+merged into the table below by the integrator, never edited into it by a unit.
 
 PD ranges: PD is open (0, 1) at every estimate site and at the C05 parity points (SDD section Units gate). It stays
 closed [0, 1] at the engine-input parity grids that were not narrowed (`c04-models` capital parity, whose PD 0 probes the
