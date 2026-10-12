@@ -327,7 +327,7 @@ export function StabilityView({ sel }: { sel: Selection | null }) {
             </tbody>
           </table>
         </PlotCard>
-        <PlotCard fill title={{ en: 'Characteristic stability of every input', es: 'Estabilidad de cada característica' }} lane="live" provenance={prov} dataKey={stateKey}>
+        <PlotCard fill title={{ en: 'Stability of each input', es: 'Estabilidad por variable' }} lane="live" provenance={prov} dataKey={stateKey}>
           <div className="ct-scroll">
             <table className="caos-table">
               <thead>
