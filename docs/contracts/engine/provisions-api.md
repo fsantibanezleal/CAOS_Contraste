@@ -279,12 +279,16 @@ def allocate_stages(pd_origination_annualised: np.ndarray, pd_current_annualised
 
 ```python
 def apply_cure_probation(stage_now: np.ndarray, stage_previous: np.ndarray, months_since_cure: np.ndarray,
-                         policy: StagingPolicy) -> StageResult: ...
+                         policy: StagingPolicy, now: StageResult) -> StageResult: ...
 ```
 
-- Units: `months_since_cure` (A,) int64 months since the last stage 2 trigger cleared.
+- Units: `months_since_cure` (A,) int64 months since the last stage 2 trigger cleared; `now` (required) the `StageResult` of
+  `allocate_stages` for `stage_now`.
 - Invariants: an account that is stage 1 now, stage 2 before, with `months_since_cure < policy.probation_months` stays stage 2 with
-  trigger `cure-probation`; every other account is unchanged; with `probation_months = 0` the output equals `stage_now`.
+  trigger `cure-probation`; every other account is unchanged and keeps the trigger and exemption flag of `now`, so every stage 2 or 3
+  account carries a trigger of the C06 `sicr_points.trigger` enumeration; with `probation_months = 0` the output equals `now`.
+- Amended 2026-10-12 (engine review decision C2, riskvalidation v0.05.000): `now` became a required argument; before it, an unchanged
+  stage 2 or 3 account could come back without a trigger.
 - Golden: probation 6 months: `months_since_cure = 3` gives stage 2 `cure-probation`; `months_since_cure = 6` gives stage 1.
 
 ### `riskvalidation.provisions.staging.collective_transfer`
@@ -693,12 +697,19 @@ def overlay_diagnostics(overlays: Sequence[Overlay], allowance_by_stage: Mapping
 ```python
 def reconciliation_identities(allowance: Sequence[RollForwardRow], gca: Sequence[RollForwardRow],
                               waterfall_lines: Sequence[dict], stage_ecl: Mapping[str, float],
-                              model_id: str | None = None) -> TestResult: ...
+                              model_id: str | None = None, *, tolerance: float = 1e-6) -> TestResult: ...
 ```
 
 - Units: as `check_identities`; `test_id = "ifrs9.reconciliation_identities"` (IFRS 7 35H, 35I).
-- Invariants: `metric` is the largest absolute residual; `extras` carries the failing identity names.
-- Light: green when `metric <= 1e-6 * max(1, G)` (the tolerance basis of the Conventions), red otherwise.
+- Invariants: `metric` is the largest absolute roll-forward residual; the largest gap between a stage's closing allowance and its
+  `stage_ecl` is reported separately as `extras.stage_ecl_gap_max` and judged against the same tolerance; `extras` carries the failing
+  identity names. A reconciliation with no rows, without its opening or closing waterfall line, or with a stage lacking its stage
+  ECL returns `light = "not_evaluated"` with the reason, never an
+  infinite metric.
+- Light: green when the metric and `extras.stage_ecl_gap_max` are both `<= tolerance * max(1, G)` (the tolerance basis of the
+  Conventions), red otherwise.
+- Amended 2026-10-12 (engine review decisions C1 and F4, riskvalidation v0.05.000): the stage gap moved out of `metric` into
+  `extras.stage_ecl_gap_max`; the `tolerance` keyword and the `not_evaluated` case were added.
 - Golden: the C06 fixture reconciliation gives `metric = 0.0` and `light = "green"`.
 
 ## Module `riskvalidation/provisions/local_cl.py`
