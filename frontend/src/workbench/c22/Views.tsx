@@ -29,6 +29,9 @@ const STATUS_TEXT: Record<string, BiText> = {
   closed: { en: 'closed (fixed)', es: 'cerrado (corregido)' },
 };
 
+/** The nominal level of the tests, a reference line of every rate plot (a yMark, not a series). */
+const NOMINAL = (level: number) => ({ y: level, label: { en: 'Nominal level', es: 'Nivel nominal' }, tone: 'neutral' as const });
+
 export function c22Of(sel: C22Sel | null): C22Variant | null {
   const v = sel?.data.variant as VariantArtifact<unknown> | undefined;
   return v && isC22(v) ? v : null;
@@ -202,7 +205,6 @@ export function PowerView({ sel }: { sel: C22Sel | null }) {
         if (g.rows.some((s) => s.exact)) out.push({ label: { en: `${first.label.en}, exact`, es: `${first.label.es}, exacta` }, values: at(g.rows, (s) => rateOf(s, r).exact), color, width: 1.2, dash: [6, 4] });
         return out;
       });
-      series.push({ label: { en: 'Nominal level', es: 'Nivel nominal' }, values: x.map(() => sel.level), color: '--color-fg-subtle', width: 1, dash: [2, 4] });
       return { panel: p, x, series, rows: groups.flatMap((g) => g.rows), ruleKey: r };
     });
   }, [sel, v]);
@@ -239,6 +241,7 @@ export function PowerView({ sel }: { sel: C22Sel | null }) {
                 x={{ values: pp.x, label: pp.panel.axis ?? ladder.label, format: { digits: 3 } }}
                 y={{ label: { en: 'Rejection rate', es: 'Tasa de rechazo' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
                 series={pp.series}
+                yMarks={[NOMINAL(sel.level)]}
               />
             ) : (
               <DesignsTable rows={pp.rows} ruleKey={pp.ruleKey} />
@@ -381,7 +384,6 @@ export function PValuesView({ sel }: { sel: C22Sel | null }) {
           const label = s.key.endsWith('@null') ? s.label : { en: `${s.label.en} (${s.key.split('@')[1]})`, es: `${s.label.es} (${s.key.split('@')[1]})` };
           return { label, values: (s.p_histogram ?? []).map((c) => (c / total) * bins), width: 1.6, ...seriesStyle(i) };
         });
-        series.push({ label: { en: 'Uniform', es: 'Uniforme' }, values: x.map(() => 1), color: '--color-fg-subtle', width: 1, dash: [2, 4] });
         return { panel: p, x, series, n: rows.length };
       })
       .filter((p) => p.n > 0);
@@ -405,6 +407,7 @@ export function PValuesView({ sel }: { sel: C22Sel | null }) {
               x={{ values: pp.x, label: { en: 'p-value', es: 'Valor p' }, format: { decimals: 2 } }}
               y={{ label: { en: 'Density', es: 'Densidad' }, format: { decimals: 1 } }}
               series={pp.series}
+              yMarks={[{ y: 1, label: { en: 'Uniform', es: 'Uniforme' }, tone: 'neutral' }]}
             />
           </div>
         ))}
@@ -568,7 +571,6 @@ export function LiveCalculatorView({ sel }: { sel: C22Sel | null }) {
   const p = sel.portfolio;
   const prov = provenanceOf(v.provenance.truth_status);
   const level = pct(lang, sel.level, 0);
-  const nominal = (xs: number[]) => ({ label: { en: 'Nominal level', es: 'Nivel nominal' }, values: xs.map(() => sel.level), color: '--color-fg-subtle' as const, width: 1, dash: [2, 4] });
   const impact = Object.entries(v.impact);
   return (
     <>
@@ -602,7 +604,8 @@ export function LiveCalculatorView({ sel }: { sel: C22Sel | null }) {
             height="fill"
             x={{ values: live.ratios, label: { en: 'True PD / PD applied', es: 'PD verdadera / PD aplicada' }, format: { decimals: 1 } }}
             y={{ label: { en: 'Rejection probability', es: 'Probabilidad de rechazo' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
-            series={[...live.byRatio.map((s) => ({ label: s.label, values: s.values, color: s.color, width: 2 })), nominal(live.ratios)]}
+            series={live.byRatio.map((s) => ({ label: s.label, values: s.values, color: s.color, width: 2 }))}
+            yMarks={[NOMINAL(sel.level)]}
             marks={[{ x: p.ratio, label: { en: 'rail', es: 'panel' } }]}
           />
         </PlotCard>
@@ -618,7 +621,8 @@ export function LiveCalculatorView({ sel }: { sel: C22Sel | null }) {
             height="fill"
             x={{ values: live.rhos, label: { en: 'True asset correlation', es: 'Correlación de activos verdadera' }, format: { percent: true, decimals: 0 } }}
             y={{ label: { en: 'Rejection probability', es: 'Probabilidad de rechazo' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
-            series={[...live.byRho.map((s) => ({ label: s.label, values: s.values, color: s.color, width: 2 })), nominal(live.rhos)]}
+            series={live.byRho.map((s) => ({ label: s.label, values: s.values, color: s.color, width: 2 }))}
+            yMarks={[NOMINAL(sel.level)]}
             marks={[{ x: p.rhoTrue, label: { en: 'rail', es: 'panel' } }]}
           />
         </PlotCard>
@@ -725,8 +729,8 @@ export function C22FindingsView({ sel }: { sel: C22Sel | null }) {
             { label: { en: 'Rate', es: 'Tasa' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).rate : null))), color: '--color-accent', mode: 'points' },
             { label: { en: 'Wilson 95%, low', es: 'Wilson 95%, inferior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).lo : null))), color: '--color-fg-subtle', mode: 'points' },
             { label: { en: 'Wilson 95%, high', es: 'Wilson 95%, superior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).hi : null))), color: '--color-fg-subtle', mode: 'points' },
-            { label: { en: 'Nominal level', es: 'Nivel nominal' }, values: xs.map(() => sel.level), color: '--color-warn', width: 1.2, dash: [6, 4] },
           ]}
+          yMarks={[{ ...NOMINAL(sel.level), tone: 'warn' }]}
         />
       </PlotCard>
     </ViewsRow>

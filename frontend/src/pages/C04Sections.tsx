@@ -171,7 +171,7 @@ export function C04Experiments({ manifest }: { manifest: CaseManifest }) {
             es: `La media de las PD anuales (párrafo 84 de EBA/GL/2017/16), porcentaje al año en escala logarítmica; color la definición (D2 la página de tasas de incumplimiento, D4 la columna de incumplimiento de la página de transiciones), trazo la entidad UE de la agencia (${agencies.map((a) => a.outputs.agency.name).join('; ')}). Un promedio cero no tiene punto. Gris: la tasa TTC de incumplimiento de cada agencia con su matriz agrupada. ${pick(ESMA_DEFINITIONS, 'es')} ${attribution}.`,
           }}
         >
-          <UPlotChart height={CHART_HEIGHT} x={chart.x} y={chart.y} series={chart.series} marks={chart.marks} />
+          <UPlotChart height={CHART_HEIGHT} x={chart.x} y={chart.y} series={chart.series} marks={chart.marks} yMarks={chart.yMarks} />
         </PlotCard>
       )}
     </div>
@@ -630,7 +630,7 @@ export function coverageChart(markov: FamilyVariant): { x: number[]; series: Cha
   return {
     x,
     level: rung.level,
-    series: [...lines, { label: { en: `Nominal ${Math.round(rung.level * 100)}%`, es: `Nominal ${Math.round(rung.level * 100)}%` }, values: x.map(() => rung.level), color: '--color-fg-subtle', width: 1.2, dash: [6, 4] }],
+    series: lines,
   };
 }
 
@@ -673,6 +673,7 @@ function CoverageCard({ markov, thin, provenance }: { markov: FamilyVariant | nu
           x={{ values: chart.x, label: GRADE_AXIS, format: { decimals: 0 } }}
           y={{ label: { en: 'Coverage of the true PD', es: 'Cobertura de la PD verdadera' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
           series={chart.series}
+          yMarks={[{ y: chart.level, label: { en: `Nominal ${Math.round(chart.level * 100)}%`, es: `Nominal ${Math.round(chart.level * 100)}%` }, tone: 'neutral' }]}
         />
       )}
       {thinRungs.length > 0 && (
