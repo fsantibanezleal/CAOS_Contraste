@@ -12,7 +12,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tests" / "contracts"))
 import contract_schemas as cs  # noqa: E402
-import invariants  # noqa: E402
+import c07_invariants as invariants  # noqa: E402
 
 DERIVED = ROOT / "data" / "derived"
 VARIANTS = ("base", "recession", "consumer-arrears-shock", "house-price-fall", "uf-inflation-spike", "combined-severe")
@@ -63,10 +63,10 @@ def test_no_text_presents_banco_andino_as_a_real_bank(built) -> None:
     page = (ROOT / "docs" / "cases" / "C07.md").read_text(encoding="utf-8")
     assert "synthetic" in page.lower() and "Banco Andino" in page
     assert not re.search(r"Banco Andino (is|es) (a )?(real|un banco real)", page)
-    for pattern in (r"real bank's", r"audits? (a |the )?bank"):
-        assert not re.search(pattern, page.lower()) or "not" in page.lower()
     fit = built["models"]["fit"]
-    assert fit["bank"]["synthetic"] is True and "not a real bank" in fit["bank"]["notice"]["en"] or "generated bank" in fit["bank"]["notice"]["en"]
+    assert fit["bank"]["synthetic"] is True and "generated bank" in fit["bank"]["notice"]["en"]
+    assert "not observations of any bank" in fit["bank"]["notice"]["en"]
+    assert all("not a real bank" in d["outputs"]["notice"]["en"] for d in built["variants"].values())
     assert fit["bank"]["name"] == "Banco Andino"
 
 

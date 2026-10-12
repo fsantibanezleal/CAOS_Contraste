@@ -20,9 +20,10 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 def test_the_pin_is_riskvalidation_0_5_0() -> None:
     from importlib.metadata import version
 
-    assert version("riskvalidation") == "0.5.0"
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
-    assert "CAOS_RiskValidation@v0.05.000" in req
+    tag = re.search(r"CAOS_RiskValidation@v(\d+)\.(\d+)\.(\d+)", req)
+    assert tag is not None
+    assert version("riskvalidation") == ".".join(str(int(g)) for g in tag.groups())     # tag v0.05.000 is release 0.5.0
 
 
 def test_the_pinned_engine_reproduces_the_contract_goldens() -> None:

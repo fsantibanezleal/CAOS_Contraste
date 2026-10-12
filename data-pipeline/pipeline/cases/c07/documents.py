@@ -306,8 +306,11 @@ def findings(out: dict[str, Any], rows: list[dict[str, Any]], model_ids: dict[st
     if sc_["light"] in ("amber", "red"):
         f.append({"id": "F-SICR", "severity": "S3" if sc_["light"] == "amber" else "S2", "status": "open",
                   "evidence": [f"ifrs9.sicr_effectiveness@{mid}"],
-                  "title": T(f"Stage 2 defaults {sc_['metric']:.1f} times as often as Stage 1 in the generator's realised outcomes ({sc_['light']})",
-                             f"La Etapa 2 incumple {sc_['metric']:.1f} veces más que la Etapa 1 en los resultados realizados del generador ({sc_['light']})")})
+                  "title": T(f"Stage 2 defaults {sc_['metric']:.1f} times as often as Stage 1 in the generator's realised outcomes, but "
+                             f"{sc_['extras']['share_stage3_direct_from_stage1']:.0%} of Stage 3 entries come directly from Stage 1 ({sc_['light']})",
+                             f"La Etapa 2 incumple {sc_['metric']:.1f} veces más que la Etapa 1 en los resultados realizados del generador, pero "
+                             f"el {sc_['extras']['share_stage3_direct_from_stage1']:.0%} de las entradas a Etapa 3 viene directo de la Etapa 1 "
+                             f"({sc_['light']})")})
     return f
 
 
