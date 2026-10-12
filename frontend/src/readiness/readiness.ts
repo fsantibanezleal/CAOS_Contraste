@@ -77,7 +77,9 @@ export function loadReadiness(_signal?: AbortSignal): Promise<Readiness | null> 
 }
 
 /** The rows a case's views consume: the shared ones, and every row named for the case (`c04-agency` for C04). */
-const SHARED_ROWS = ['case-index', 'case-manifest', 'variant-envelope', 'models-envelope', 'test-result'];
+// `case-manifest` is not one of them: its partial state says which OTHER cases are planned, and a built case's own manifest
+// is there by definition; a planned case is declared absent by its own instrument (readiness/Planned.tsx)
+const SHARED_ROWS = ['case-index', 'variant-envelope', 'models-envelope', 'test-result'];
 export function rowsForCase(doc: Readiness | null, caseId: string): string[] {
   if (!doc) return [];
   const prefix = `${caseId.toLowerCase()}-`;
