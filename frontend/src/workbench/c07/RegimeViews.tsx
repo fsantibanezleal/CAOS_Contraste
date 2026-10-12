@@ -133,15 +133,19 @@ export function ThreeRegimeView({ sel }: { sel: C07Sel | null }) {
           es: 'El total comparable es la suma de las provisiones por segmento más las líneas no asignadas de cada régimen. Las provisiones adicionales de B-1 quedan fuera. La columna IFRS 9 es la medida ponderada por probabilidad, una comparación, no la provisión que los bancos chilenos constituyen sobre los créditos.',
         }}
       >
-        <div className="ct-stack">
-          <FixtureNotice variant={sel.data.variant} />
-          <BarChart
-            title={{ en: 'Total provision by regime', es: 'Provisión total por régimen' }}
-            orientation="horizontal"
-            data={o.regimes.map((r) => ({ id: r.regime, label: regimeName(r.regime, r.label), value: r.total_provision, tone: REGIME_TONE[r.regime], highlight: sel.regime === r.regime, hint: STATUS_TEXT[r.status] }))}
-            axis={{ label: { en: 'Provision', es: 'Provisión' }, unit: { en: cur, es: cur }, format: { digits: 3 } }}
-          />
-          <div className="ct-scroll">
+        <ChartOverTable
+          chart={
+            <BarChart
+              title={{ en: 'Total provision by regime', es: 'Provisión total por régimen' }}
+              height="fill"
+              orientation="vertical"
+              data={o.regimes.map((r) => ({ id: r.regime, label: regimeName(r.regime, r.label), value: r.total_provision, tone: REGIME_TONE[r.regime], highlight: sel.regime === r.regime, hint: STATUS_TEXT[r.status] }))}
+              axis={{ label: { en: cur, es: cur }, format: { digits: 3 } }}
+            />
+          }
+        >
+          <div>
+            <FixtureNotice variant={sel.data.variant} />
             <table className="caos-table ct-wrap-head" data-table="regimes">
               <thead>
                 <tr>
@@ -174,7 +178,7 @@ export function ThreeRegimeView({ sel }: { sel: C07Sel | null }) {
             <p className="ct-note">{pick(o.notice, lang)}</p>
             <p className="ct-note">{pick(BANK_NOTE, lang)}</p>
           </div>
-        </div>
+        </ChartOverTable>
       </PlotCard>
       <PlotCard fill title={{ en: 'Provision by segment', es: 'Provisión por segmento' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
         <GroupedBars o={o} sel={sel} />
