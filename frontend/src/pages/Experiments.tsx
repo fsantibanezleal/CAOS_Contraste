@@ -84,7 +84,7 @@ export function Experiments() {
   const lang = useShellLang();
   const t = useT();
   const all = useArtifact((s) => loadAllManifests(s), []);
-  const built = all.state === 'ready' ? new Set(all.data.index.cases.map((c) => c.case_id)) : null;
+  const built = all.state === 'ready' ? new Set(all.data.manifests.map((m) => m.case_id)) : null;
   return (
     <DocPage wide title={{ en: 'Experiments', es: 'Experimentos' }} lede={t('The coverage of the 22 cases, and every built case variant by variant, read from the committed artifacts.', 'La cobertura de los 22 casos, y cada caso construido variante por variante, leído desde los artefactos comprometidos.')}>
       <DocSection title={{ en: 'Coverage', es: 'Cobertura' }} noRefsReason={{ en: 'The plan of this product.', es: 'El plan de este producto.' }}>
