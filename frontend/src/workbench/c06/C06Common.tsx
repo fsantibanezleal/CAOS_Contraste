@@ -5,7 +5,7 @@ import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { Finding, VariantArtifact } from '../../lib/contract.types';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
-import { ChartOverTable, STAGE_TEXT, currencyUnit, money, pct } from './format';
+import { ChartOverTable, currencyUnit, money, pct } from './format';
 import { IdentitiesView, TestRowsCard } from './ValidationViews';
 import { fitOf, liveEcl, nearestPoint, outputsOf, rescaled, type C06Outputs, type C06Sel } from './selection';
 
@@ -310,7 +310,6 @@ export function AccountReadout({ sel }: { sel: C06Sel | null }) {
       provenance={prov}
       dataKey={stateKey}
       items={[
-        { label: { en: 'Stage', es: 'Etapa' }, text: p ? STAGE_TEXT[p.stage] : undefined, value: null, unitless: true },
         { label: { en: 'PD at origination, annualised', es: 'PD en la originación, anualizada' }, value: p?.pd_origination_annualised ?? null, unitless: true, format: { percent: true, decimals: 2 } },
         { label: { en: 'PD now, annualised', es: 'PD hoy, anualizada' }, value: p?.pd_current_annualised ?? null, unitless: true, format: { percent: true, decimals: 2 } },
         { label: { en: 'Increase against origination', es: 'Aumento contra la originación' }, value: p ? p.pd_current_annualised / p.pd_origination_annualised : null, unit: { en: 'times', es: 'veces' }, format: { digits: 3 }, hint: { en: 'The multiplier the schedule asks for at this origination PD, in the next line.', es: 'El multiplicador que pide la tabla con esta PD de originación, en la línea siguiente.' } },
