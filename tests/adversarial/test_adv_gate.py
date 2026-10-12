@@ -16,7 +16,8 @@ from pathlib import Path
 import pytest
 from planting import NODE, NODE_MODULES, ROOT, link_node_modules, unlink_node_modules
 
-DIST = ROOT / "frontend" / "dist"
+# CONTRASTE_DIST names a built site elsewhere (the checked-out branch cannot build until the web reads the readiness)
+DIST = Path(os.environ.get("CONTRASTE_DIST", ROOT / "frontend" / "dist"))
 BROWSERS = Path(os.environ.get("PLAYWRIGHT_BROWSERS_PATH", ""))
 READY = NODE is not None and (NODE_MODULES / "playwright").is_dir() and (DIST / "index.html").is_file() \
     and BROWSERS.is_dir() and any(BROWSERS.glob("chromium*"))
