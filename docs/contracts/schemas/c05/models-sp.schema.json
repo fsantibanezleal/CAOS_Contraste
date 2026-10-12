@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contraste.fasl-work.com/contracts/c05/models-sp.schema.json",
   "title": "C05 S&P models",
-  "description": "Catalog row c05-models-sp 1.0.0: the C05 models artifact of the S&P fit (any fit_id but ldp).",
+  "description": "Catalog row c05-models-sp 2.0.0: the C05 models artifact of the S&P fit (any fit_id but ldp).",
   "allOf": [
     {"$ref": "../common/models-envelope.schema.json"},
     {
@@ -28,8 +28,8 @@
           "properties": {
             "pd": {
               "type": "number",
-              "minimum": 0,
-              "maximum": 1
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1
             },
             "accuracy_ratio": {"type": "number"}
           }

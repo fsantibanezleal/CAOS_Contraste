@@ -23,7 +23,8 @@
         "pd": {
           "type": "number",
           "minimum": 0,
-          "maximum": 1
+          "maximum": 1,
+          "description": "Closed at 0 on purpose: the capital parity grid includes PD 0 (a grade with no default in any cohort), an engine input that probes the 0.05% floor of CRE32.4 and is not an estimated PD (data-pipeline/pipeline/cases/c04_parity.py:67-69, 154-160)."
         },
         "lgd": {
           "type": "number",
