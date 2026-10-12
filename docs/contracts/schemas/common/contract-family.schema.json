@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/contract-family.schema.json",
+  "title": "Contract family",
+  "description": "Catalog row contract-family 1.0.0: one ingestion family declaration of contract 1 (data/derived/contract/<family>.json), exported from data-pipeline/pipeline/io/contract.py.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "family",
+    "title",
+    "used_by",
+    "fields",
+    "rules",
+    "params",
+    "open_fields",
+    "notes",
+    "param_checks"
+  ],
+  "properties": {
+    "schema": {"const": "contraste.contract/v1"},
+    "family": {"type": "string"},
+    "title": {"$ref": "./text.schema.json"},
+    "used_by": {"$ref": "./text.schema.json"},
+    "fields": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/contractField"}
+    },
+    "rules": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/contractRule"}
+    },
+    "params": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/contractParam"}
+    },
+    "open_fields": {"type": "boolean"},
+    "notes": {
+      "type": "array",
+      "items": {"$ref": "./text.schema.json"}
+    },
+    "param_checks": {
+      "type": "array",
+      "items": {"$ref": "./text.schema.json"}
+    }
+  },
+  "x-location": "data/derived/contract/*.json",
+  "$defs": {
+    "contractField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "meaning",
+        "unit",
+        "lo",
+        "hi",
+        "lo_open",
+        "hi_open",
+        "values",
+        "values_param",
+        "required",
+        "on_missing",
+        "expected"
+      ],
+      "properties": {
+        "name": {"type": "string"},
+        "kind": {"type": "string", "enum": ["str","int","float","flag","date","enum"]},
+        "meaning": {"$ref": "./text.schema.json"},
+        "unit": {"type": "string"},
+        "lo": {"type": ["number","null"]},
+        "hi": {"type": ["number","null"]},
+        "lo_open": {"type": "boolean"},
+        "hi_open": {"type": "boolean"},
+        "values": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "values_param": {"type": ["string","null"]},
+        "required": {"type": "boolean"},
+        "on_missing": {"type": "string", "enum": ["reject","flag"]},
+        "expected": {"type": "string", "description": "The expected range in words, as a rejection states it."}
+      }
+    },
+    "contractParam": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name","kind","meaning","required","values"],
+      "properties": {
+        "name": {"type": "string"},
+        "kind": {"type": "string"},
+        "meaning": {"$ref": "./text.schema.json"},
+        "required": {"type": "boolean"},
+        "values": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "contractRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id","scope","policy","field","statement","group_by","order_by"],
+      "properties": {
+        "id": {"type": "string"},
+        "scope": {"type": "string", "enum": ["record","group"]},
+        "policy": {"type": "string", "enum": ["reject","flag","exclude"]},
+        "field": {"type": "string"},
+        "statement": {"$ref": "./text.schema.json"},
+        "group_by": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "order_by": {"type": ["string","null"]}
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "role": "variant",
+  "variant_id": "sp",
+  "title": {
+    "en": "S&P's EU entity: CEREP's corporate cohorts",
+    "es": "Entidad UE de S&P: cohortes corporativas de CEREP"
+  },
+  "short_title": {
+    "en": "S&P",
+    "es": "S&P"
+  },
+  "regime": {
+    "en": "Corporate long-term ratings, calendar-year and semester cohorts, as ESMA computes them",
+    "es": "Calificaciones corporativas de largo plazo, cohortes anuales y semestrales, como las calcula ESMA"
+  },
+  "truth_status": "real-outcomes",
+  "models_ref": "C04/models-transitions.json",
+  "path": "C04/sp.json",
+  "bytes": 216363,
+  "lane": "precompute",
+  "gate": {
+    "lane": "precompute",
+    "pure_python": false,
+    "wheels": [
+      "numpy",
+      "pypdf",
+      "riskvalidation",
+      "scipy"
+    ],
+    "trace_bytes": 216363,
+    "run_ms_budget": 1500.0,
+    "trace_bytes_budget": 262144,
+    "reasons": [
+      "not pure-python",
+      "wheels outside the live set: ['pypdf']",
+      "runtime exceeds the 1500ms budget"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/text.schema.json",
+  "title": "Text",
+  "description": "A bilingual reader-facing string (English and Spanish), as every reader-facing string is at the source.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["en","es"],
+  "properties": {
+    "en": {"type": "string"},
+    "es": {"type": "string"}
+  }
+}

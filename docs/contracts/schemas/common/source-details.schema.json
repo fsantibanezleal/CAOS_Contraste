@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/source-details.schema.json",
+  "title": "Source details",
+  "description": "What the Context view shows of one source, from the source registry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name","publisher","landing","licence","class","attribution"],
+  "properties": {
+    "name": {"type": "string"},
+    "publisher": {"type": "string"},
+    "landing": {"type": "string"},
+    "licence": {"type": "string"},
+    "class": {"type": "string"},
+    "attribution": {"type": "string"}
+  }
+}

@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c04/variant-published.schema.json",
+  "title": "C04 published variant",
+  "description": "Catalog row c04-published 1.0.0: printed values of the literature beside their recomputation (outputs.kind published).",
+  "allOf": [
+    {"$ref": "../common/variant-envelope.schema.json"},
+    {
+      "properties": {
+        "case_id": {"const": "C04"},
+        "outputs": {
+          "$ref": "#/$defs/c04PublishedOutputs",
+          "properties": {
+            "kind": {"const": "published"}
+          }
+        }
+      },
+      "required": ["case_id","outputs"]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c04Print": {
+      "description": "A printed value beside its recomputation; the bake stops unless they agree (contract section 3).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["printed","recomputed","decimals"],
+      "properties": {
+        "printed": {"type": "number"},
+        "recomputed": {"type": "number"},
+        "decimals": {"type": "integer"}
+      }
+    },
+    "c04Prints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["printed","recomputed","decimals"],
+      "properties": {
+        "printed": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "recomputed": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "decimals": {
+          "type": "array",
+          "items": {"type": "integer"}
+        }
+      }
+    },
+    "c04PublishedOutputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind","irw","sr190","engelmann"],
+      "properties": {
+        "kind": {"const": "published"},
+        "irw": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["rows","jlt_from_printed_generator","theorem3_c","series_terms"],
+          "properties": {
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["matrix","method","printed","recomputed","agrees"],
+                "properties": {
+                  "matrix": {"type": "string"},
+                  "method": {"type": "string"},
+                  "printed": {"type": "number"},
+                  "recomputed": {"type": "number"},
+                  "agrees": {"type": "boolean"}
+                }
+              }
+            },
+            "jlt_from_printed_generator": {"type": "number"},
+            "theorem3_c": {
+              "type": "array",
+              "items": {"type": "boolean"}
+            },
+            "series_terms": {"type": "integer"}
+          }
+        },
+        "sr190": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["defaults","n","rows","n_dagger"],
+          "properties": {
+            "defaults": {"type": "integer", "minimum": 0},
+            "n": {"type": "integer", "minimum": 0},
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["rho","interval","printed","recomputed","agrees"],
+                "properties": {
+                  "rho": {"type": "number"},
+                  "interval": {"type": "string"},
+                  "printed": {
+                    "type": "array",
+                    "items": {"type": "number"}
+                  },
+                  "recomputed": {
+                    "type": "array",
+                    "items": {"type": "number"}
+                  },
+                  "agrees": {"type": "boolean"}
+                }
+              }
+            },
+            "n_dagger": {"$ref": "#/$defs/c04Prints"}
+          }
+        },
+        "engelmann": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["w_ttc","ttc_pd","portfolios","row_sum_deviation"],
+          "properties": {
+            "w_ttc": {"$ref": "#/$defs/c04Prints"},
+            "ttc_pd": {"$ref": "#/$defs/c04Print"},
+            "portfolios": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["name","w0","pd0","extreme","pd_path"],
+                "properties": {
+                  "name": {"type": "string"},
+                  "w0": {
+                    "type": "array",
+                    "items": {"type": "number"}
+                  },
+                  "pd0": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["printed","recomputed","decimals","check","note"],
+                    "properties": {
+                      "printed": {"type": "number"},
+                      "recomputed": {"type": "number"},
+                      "decimals": {"type": "integer"},
+                      "check": {"type": "string", "enum": ["printed digits","entry rounding"]},
+                      "note": {
+                        "anyOf": [
+                          {"$ref": "../common/text.schema.json"},
+                          {"type": "null"}
+                        ]
+                      }
+                    }
+                  },
+                  "extreme": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["kind","printed","recomputed","decimals"],
+                        "properties": {
+                          "kind": {"type": "string", "enum": ["min","max"]},
+                          "printed": {"type": "number"},
+                          "recomputed": {"type": "number"},
+                          "decimals": {"type": "integer"}
+                        }
+                      },
+                      {"type": "null"}
+                    ]
+                  },
+                  "pd_path": {
+                    "type": "array",
+                    "items": {"type": "number"}
+                  }
+                }
+              }
+            },
+            "row_sum_deviation": {"type": "number"}
+          }
+        }
+      }
+    }
+  }
+}

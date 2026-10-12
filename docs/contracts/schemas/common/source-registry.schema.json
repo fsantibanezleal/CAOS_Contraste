@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/source-registry.schema.json",
+  "title": "Source registry",
+  "description": "Catalog row source-registry 1.0.0: the hand-kept registry of every data source the product knows (data-pipeline/config/sources.json) with its licence class, access and fetch plan. doi and attribution are absent for a source that has none.",
+  "x-location": "data-pipeline/config/sources.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "researched", "note", "classes", "sources"],
+  "properties": {
+    "schema": {"const": "contraste.sources/v1"},
+    "researched": {"type": "string", "description": "The date the registry was researched."},
+    "note": {"type": "string"},
+    "classes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mirror-allowed", "derived-only", "link-only", "unusable"],
+      "description": "What each licence class allows.",
+      "properties": {
+        "mirror-allowed": {"type": "string"},
+        "derived-only": {"type": "string"},
+        "link-only": {"type": "string"},
+        "unusable": {"type": "string"}
+      }
+    },
+    "sources": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/sourceRecord"}}
+  },
+  "$defs": {
+    "licenceClass": {"enum": ["mirror-allowed", "derived-only", "link-only", "unusable"]},
+    "sourceRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "publisher", "landing", "licence", "class", "access", "format", "span", "granularity", "fit", "cases", "unverified", "fetch"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+        "name": {"type": "string"},
+        "publisher": {"type": "string"},
+        "landing": {"type": "string"},
+        "doi": {"type": ["string", "null"]},
+        "licence": {"type": "string"},
+        "class": {"$ref": "#/$defs/licenceClass"},
+        "attribution": {"type": "string"},
+        "access": {"type": "string"},
+        "format": {"type": "string"},
+        "span": {"type": "string"},
+        "granularity": {"type": "string"},
+        "fit": {"type": "string"},
+        "cases": {"type": "array", "items": {"type": "string"}, "description": "The case ids that read the source."},
+        "unverified": {"type": "array", "items": {"type": "string"}, "description": "What about the source is not yet verified on a primary page."},
+        "fetch": {
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind", "files"],
+              "properties": {"kind": {"const": "http"}, "files": {"type": "array", "items": {"$ref": "#/$defs/fetchFile"}}}
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind", "plan"],
+              "properties": {"kind": {"const": "cerep"}, "plan": {"$ref": "#/$defs/cerepPlan"}}
+            }
+          ]
+        }
+      }
+    },
+    "fetchFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "url"],
+      "properties": {"name": {"type": "string"}, "url": {"type": "string"}}
+    },
+    "cerepPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["endpoint", "cras", "rating_type", "horizon", "years", "semester_years", "tabs", "pace_seconds", "windows"],
+      "properties": {
+        "endpoint": {"type": "string"},
+        "cras": {"type": "array", "items": {"type": "string"}},
+        "rating_type": {"type": "string"},
+        "horizon": {"type": "string"},
+        "years": {"type": "array", "items": {"type": "integer"}},
+        "semester_years": {"type": "array", "items": {"type": "integer"}},
+        "tabs": {"type": "array", "items": {"type": "integer"}},
+        "pace_seconds": {"type": "number"},
+        "windows": {"type": "array", "items": {"type": "array", "items": {"type": "integer"}}}
+      }
+    }
+  }
+}

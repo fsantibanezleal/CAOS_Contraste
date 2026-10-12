@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c01/models.schema.json",
+  "title": "C01 models",
+  "description": "Catalog row c01-models 1.0.0: a C01 models artifact (one per fit_id: german, taiwan, taiwan-small).",
+  "allOf": [
+    {"$ref": "../common/models-envelope.schema.json"},
+    {
+      "properties": {
+        "case_id": {"const": "C01"},
+        "fit": {"$ref": "#/$defs/c01FitInfo"}
+      },
+      "required": ["case_id","fit"]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c01FeatureMeta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name","meaning","unit","categorical","monotone"],
+      "properties": {
+        "name": {"type": "string"},
+        "meaning": {"$ref": "../common/text.schema.json"},
+        "unit": {"type": "string"},
+        "categorical": {"type": "boolean"},
+        "monotone": {"type": "integer"}
+      }
+    },
+    "c01FitInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source","split","train_rows","features","seed","master_scale","reason_stability"],
+      "properties": {
+        "source": {"type": "string"},
+        "split": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["train","calibration","holdout","folds"],
+          "properties": {
+            "train": {"$ref": "#/$defs/c01SplitPart"},
+            "calibration": {"$ref": "#/$defs/c01SplitPart"},
+            "holdout": {"$ref": "#/$defs/c01SplitPart"},
+            "folds": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["k","repeats"],
+              "properties": {
+                "k": {"type": "integer"},
+                "repeats": {"type": "integer"}
+              }
+            }
+          }
+        },
+        "train_rows": {"type": "integer", "minimum": 0},
+        "features": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c01FeatureMeta"}
+        },
+        "seed": {"type": "integer"},
+        "master_scale": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["grades","upper"],
+          "properties": {
+            "grades": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "upper": {
+              "type": "array",
+              "items": {"type": "number"}
+            }
+          }
+        },
+        "reason_stability": {
+          "anyOf": [
+            {"$ref": "#/$defs/c01ReasonStability"},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "c01ReasonStability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bootstraps","rows","top_k","overlap_mean","overlap_min","overlap"],
+      "properties": {
+        "bootstraps": {"type": "integer", "minimum": 0},
+        "rows": {"type": "integer", "minimum": 0},
+        "top_k": {"type": "integer", "minimum": 0},
+        "overlap_mean": {"type": "number"},
+        "overlap_min": {"type": "number"},
+        "overlap": {
+          "type": "array",
+          "items": {"type": "number"}
+        }
+      }
+    },
+    "c01SplitPart": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["n","defaults","default_rate"],
+      "properties": {
+        "n": {"type": "integer", "minimum": 0},
+        "defaults": {"type": "integer", "minimum": 0},
+        "default_rate": {"type": "number"}
+      }
+    }
+  }
+}

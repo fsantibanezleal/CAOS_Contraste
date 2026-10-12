@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/artifact-entry.schema.json",
+  "title": "Artifact entry",
+  "description": "One artifact a case manifest lists: a models artifact (no models_ref) or a variant artifact (models_ref names the models artifact its rungs come from).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "role",
+    "variant_id",
+    "title",
+    "short_title",
+    "regime",
+    "truth_status",
+    "path",
+    "bytes",
+    "lane",
+    "gate"
+  ],
+  "properties": {
+    "role": {"type": "string", "enum": ["models","variant"]},
+    "variant_id": {"type": "string"},
+    "title": {"$ref": "./text.schema.json"},
+    "short_title": {
+      "allOf": [
+        {"$ref": "./text.schema.json"}
+      ],
+      "description": "The label a chip shows; `title` is the full name."
+    },
+    "regime": {"$ref": "./text.schema.json"},
+    "truth_status": {
+      "type": "string",
+      "enum": ["real-outcomes","synthetic-known-truth","synthetic-calibrated","published-answer"]
+    },
+    "path": {"type": "string"},
+    "bytes": {"type": "integer", "minimum": 0},
+    "lane": {"type": "string", "enum": ["live","precompute"]},
+    "gate": {"$ref": "./gate-verdict.schema.json"},
+    "models_ref": {
+      "type": "string",
+      "description": "Only on a variant entry: the path of the models artifact its rungs come from."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "role": {"const": "variant"}
+        }
+      },
+      "then": {"required": ["models_ref"]},
+      "else": {
+        "not": {"required": ["models_ref"]}
+      }
+    }
+  ]
+}
