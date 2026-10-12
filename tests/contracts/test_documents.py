@@ -56,8 +56,8 @@ def test_discovery_covers_every_schema_file_that_a_document_selects() -> None:
     chosen = {schema_of(p)[1] for p in DOCS}
     selectable = {c.ref for c in cs.candidates()}
     unused = sorted(selectable - chosen)
-    # readiness is produced by CF-B; every other selectable schema must have a committed document
-    assert unused == ["common/readiness"], unused
+    # every selectable schema has a committed document (the readiness is written by CF-B)
+    assert unused == [], unused
 
 
 def test_exactly_one_default_variant_schema() -> None:
@@ -87,20 +87,31 @@ def test_a_document_matched_by_two_schemas_equally_fails_the_selector(monkeypatc
         cs.schema_for_document(path, cs.load_json(path))
 
 
+def declared_absent() -> set[str]:
+    """The manifest paths the readiness declares absent (the planned cases, CF-B): the only index entries without a file."""
+    doc = cs.load_json(cs.DERIVED / "readiness.json")
+    return {m for e in doc["contracts"] if e["id"] == "case-manifest" and e["state"] == "partial" for m in e["missing"]}
+
+
 def test_index_validates() -> None:
     index = cs.load_json(cs.DERIVED / "manifests" / "index.json")
     assert cs.errors("common/case-index", index) == []
     ids_ = [c["case_id"] for c in index["cases"]]
     assert index["n_cases"] == len(ids_) and index["default_case"] in ids_
+    absent = declared_absent()
     for entry in index["cases"]:
-        assert (cs.DERIVED / entry["manifest_path"]).is_file(), entry["manifest_path"]
+        assert (cs.DERIVED / entry["manifest_path"]).is_file() or entry["manifest_path"] in absent, entry["manifest_path"]
     for f in index["files"]:
         assert (cs.DERIVED / f).is_file(), f
 
 
 def test_manifests_validate() -> None:
     index = cs.load_json(cs.DERIVED / "manifests" / "index.json")
+    absent = declared_absent()
     for entry in index["cases"]:
+        if entry["manifest_path"] in absent:  # declared absent by the readiness, never silently
+            assert not (cs.DERIVED / entry["manifest_path"]).exists(), entry["manifest_path"]
+            continue
         m = cs.load_json(cs.DERIVED / entry["manifest_path"])
         assert cs.errors("common/case-manifest", m) == [], entry["case_id"]
         assert m["case_id"] == entry["case_id"]

@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from ..core.gate import classify_lane
+from ..core.schemas import validate_document
 from ..io.formats import write_json
 
 SIG = 9
@@ -38,6 +39,7 @@ def write_artifact(root: Path, rel: str, artifact: dict[str, Any], *, exact: fro
     writing the verdict no longer changes it)."""
     doc = compact(artifact, exact=exact)
     path = Path(root) / rel
+    validate_document(f"data/derived/{rel}", doc)  # an invalid document is never written
     n = write_json(path, doc)
     for _ in range(3):
         gate = classify_lane(pure_python=False, wheels=engines, run_ms=run_ms, trace_bytes=n)
@@ -46,6 +48,7 @@ def write_artifact(root: Path, rel: str, artifact: dict[str, Any], *, exact: fro
         if doc.get("lane") == block:
             break
         doc["lane"] = block
+        validate_document(f"data/derived/{rel}", doc)
         n = write_json(path, doc)
     gate = classify_lane(pure_python=False, wheels=engines, run_ms=run_ms, trace_bytes=n)
     return {"path": rel, "bytes": n, "lane": gate["lane"], "gate": gate}
