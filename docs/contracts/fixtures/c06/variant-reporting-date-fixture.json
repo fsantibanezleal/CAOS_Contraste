@@ -1,0 +1,1405 @@
+{
+  "schema": "contraste.case/v1",
+  "case_id": "C06",
+  "variant_id": "fixture-2020-06",
+  "model": [
+    {
+      "id": "L1-dth",
+      "family": "lifetime-pd",
+      "rung": "discrete-time-hazard",
+      "title": {
+        "en": "Fixture model L1-dth",
+        "es": "Modelo de ejemplo L1-dth"
+      },
+      "short_title": {
+        "en": "L1-dth",
+        "es": "L1-dth"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    }
+  ],
+  "outputs": {
+    "kind": "reporting-date",
+    "reporting_date": "2020-06-30",
+    "currency": "USD",
+    "period_months": 3,
+    "horizon": {
+      "stage1_months": 12,
+      "lifetime_cap_months": 24
+    },
+    "settings": {
+      "discount_convention": "mid-period",
+      "eir_basis": "original",
+      "probation_months": 6,
+      "low_credit_risk_exemption": false,
+      "sicr": {
+        "dpd_backstop": 30,
+        "threefold_ratio": 3.0,
+        "absolute_floor": 0.005,
+        "multiplier_schedule": [
+          {
+            "pd_origination_upper": 0.01,
+            "multiplier": 4.0
+          },
+          {
+            "pd_origination_upper": 0.05,
+            "multiplier": 2.5
+          },
+          {
+            "pd_origination_upper": 0.5,
+            "multiplier": 1.5
+          }
+        ]
+      }
+    },
+    "data_status": {
+      "primary_source": "sba-7a",
+      "freddie_mac_available": false,
+      "freddie_mac_reason": "fixture: no Freddie Mac registration, the SBA 7(a) public twin carries this variant",
+      "notice": {
+        "en": "Fixture, not a result. Round numbers for three accounts.",
+        "es": "Ejemplo, no es un resultado. Numeros redondos para tres cuentas."
+      }
+    },
+    "scenarios": [
+      {
+        "id": "up",
+        "label": {
+          "en": "Up",
+          "es": "Up"
+        },
+        "weight": 0.25,
+        "z_mean": 1.0
+      },
+      {
+        "id": "base",
+        "label": {
+          "en": "Base",
+          "es": "Base"
+        },
+        "weight": 0.5,
+        "z_mean": 0.0
+      },
+      {
+        "id": "down",
+        "label": {
+          "en": "Down",
+          "es": "Down"
+        },
+        "weight": 0.25,
+        "z_mean": -2.0
+      }
+    ],
+    "term_structures": [
+      {
+        "scenario_id": "up",
+        "segment_id": "s1",
+        "months": [
+          3,
+          6,
+          9,
+          12,
+          15,
+          18,
+          21,
+          24
+        ],
+        "hazard": [
+          0.001316362,
+          0.001316362,
+          0.001316362,
+          0.001316362,
+          0.001316362,
+          0.001316362,
+          0.001316362,
+          0.001316362
+        ],
+        "marginal_pd": [
+          0.001316362,
+          0.001314629,
+          0.001312898,
+          0.00131117,
+          0.001309444,
+          0.001307721,
+          0.001305999,
+          0.00130428
+        ],
+        "cumulative_pd": [
+          0.001316362,
+          0.002630991,
+          0.003943889,
+          0.005255059,
+          0.006564504,
+          0.007872224,
+          0.009178223,
+          0.010482503
+        ]
+      },
+      {
+        "scenario_id": "base",
+        "segment_id": "s1",
+        "months": [
+          3,
+          6,
+          9,
+          12,
+          15,
+          18,
+          21,
+          24
+        ],
+        "hazard": [
+          0.003591145,
+          0.003591145,
+          0.003591145,
+          0.003591145,
+          0.003591145,
+          0.003591145,
+          0.003591145,
+          0.003591145
+        ],
+        "marginal_pd": [
+          0.003591145,
+          0.003578249,
+          0.003565399,
+          0.003552595,
+          0.003539837,
+          0.003527125,
+          0.003514458,
+          0.003501837
+        ],
+        "cumulative_pd": [
+          0.003591145,
+          0.007169394,
+          0.010734792,
+          0.014287387,
+          0.017827224,
+          0.021354349,
+          0.024868807,
+          0.028370645
+        ]
+      },
+      {
+        "scenario_id": "down",
+        "segment_id": "s1",
+        "months": [
+          3,
+          6,
+          9,
+          12,
+          15,
+          18,
+          21,
+          24
+        ],
+        "hazard": [
+          0.01888424,
+          0.01888424,
+          0.01888424,
+          0.01888424,
+          0.01888424,
+          0.01888424,
+          0.01888424,
+          0.01888424
+        ],
+        "marginal_pd": [
+          0.01888424,
+          0.018527625,
+          0.018177745,
+          0.017834472,
+          0.017497682,
+          0.017167251,
+          0.016843061,
+          0.016524992
+        ],
+        "cumulative_pd": [
+          0.01888424,
+          0.037411865,
+          0.05558961,
+          0.073424082,
+          0.090921764,
+          0.108089015,
+          0.124932076,
+          0.141457068
+        ]
+      },
+      {
+        "scenario_id": "weighted",
+        "segment_id": "s1",
+        "months": [
+          3,
+          6,
+          9,
+          12,
+          15,
+          18,
+          21,
+          24
+        ],
+        "hazard": [
+          0.006845723,
+          0.006796213,
+          0.00674709,
+          0.006698355,
+          0.00665001,
+          0.006602056,
+          0.006554494,
+          0.006507326
+        ],
+        "marginal_pd": [
+          0.006845723,
+          0.006749688,
+          0.00665536,
+          0.006562708,
+          0.0064717,
+          0.006382305,
+          0.006294494,
+          0.006208237
+        ],
+        "cumulative_pd": [
+          0.006845723,
+          0.013595411,
+          0.020250771,
+          0.026813479,
+          0.033285179,
+          0.039667484,
+          0.045961978,
+          0.052170215
+        ]
+      },
+      {
+        "scenario_id": "up",
+        "segment_id": "s2",
+        "months": [
+          3,
+          6,
+          9,
+          12,
+          15,
+          18,
+          21,
+          24
+        ],
+        "hazard": [
+          0.003188183,
+          0.003188183,
+          0.003188183,
+          0.003188183,
+          0.003188183,
+          0.003188183,
+          0.003188183,
+          0.003188183
+        ],
+        "marginal_pd": [
+          0.003188183,
+          0.003178018,
+          0.003167886,
+          0.003157787,
+          0.003147719,
+          0.003137683,
+          0.00312768,
+          0.003117708
+        ],
+        "cumulative_pd": [
+          0.003188183,
+          0.006366201,
+          0.009534088,
+          0.012691874,
+          0.015839593,
+          0.018977277,
+          0.022104956,
+          0.025222665
+        ]
+      },
+      {
+        "scenario_id": "base",
+        "segment_id": "s2",
+        "months": [
+          3,
+          6,
+          9,
+          12,
+          15,
+          18,
+          21,
+          24
+        ],
+        "hazard": [
+          0.007842799,
+          0.007842799,
+          0.007842799,
+          0.007842799,
+          0.007842799,
+          0.007842799,
+          0.007842799,
+          0.007842799
+        ],
+        "marginal_pd": [
+          0.007842799,
+          0.007781289,
+          0.007720262,
+          0.007659714,
+          0.00759964,
+          0.007540038,
+          0.007480903,
+          0.007422231
+        ],
+        "cumulative_pd": [
+          0.007842799,
+          0.015624088,
+          0.02334435,
+          0.031004064,
+          0.038603704,
+          0.046143742,
+          0.053624644,
+          0.061046876
+        ]
+      },
+      {
+        "scenario_id": "down",
+        "segment_id": "s2",
+        "months": [
+          3,
+          6,
+          9,
+          12,
+          15,
+          18,
+          21,
+          24
+        ],
+        "hazard": [
+          0.034140317,
+          0.034140317,
+          0.034140317,
+          0.034140317,
+          0.034140317,
+          0.034140317,
+          0.034140317,
+          0.034140317
+        ],
+        "marginal_pd": [
+          0.034140317,
+          0.032974755,
+          0.031848987,
+          0.030761652,
+          0.02971144,
+          0.028697082,
+          0.027717354,
+          0.026771075
+        ],
+        "cumulative_pd": [
+          0.034140317,
+          0.067115072,
+          0.098964058,
+          0.129725711,
+          0.15943715,
+          0.188134232,
+          0.215851586,
+          0.242622661
+        ]
+      },
+      {
+        "scenario_id": "weighted",
+        "segment_id": "s2",
+        "months": [
+          3,
+          6,
+          9,
+          12,
+          15,
+          18,
+          21,
+          24
+        ],
+        "hazard": [
+          0.013253524,
+          0.013102492,
+          0.012953503,
+          0.012806569,
+          0.012661704,
+          0.012518917,
+          0.012378216,
+          0.012239608
+        ],
+        "marginal_pd": [
+          0.013253524,
+          0.012928838,
+          0.012614349,
+          0.012309717,
+          0.01201461,
+          0.01172871,
+          0.01145171,
+          0.011183312
+        ],
+        "cumulative_pd": [
+          0.013253524,
+          0.026182362,
+          0.038796712,
+          0.051106428,
+          0.063121038,
+          0.074849748,
+          0.086301458,
+          0.097484769
+        ]
+      }
+    ],
+    "account_curves": [
+      {
+        "account_id": "A1",
+        "segment_id": "s1",
+        "stage": "stage1",
+        "months": [
+          3,
+          6,
+          9,
+          12,
+          15,
+          18,
+          21,
+          24
+        ],
+        "origination_cumulative_pd": [
+          0.005037944,
+          0.010050506,
+          0.015037816,
+          0.02,
+          0.024937185,
+          0.029849496,
+          0.03473706,
+          0.0396
+        ],
+        "current_cumulative_pd": [
+          0.006845723,
+          0.013595411,
+          0.020250771,
+          0.026813479,
+          0.033285179,
+          0.039667484,
+          0.045961978,
+          0.052170215
+        ]
+      },
+      {
+        "account_id": "A2",
+        "segment_id": "s1",
+        "stage": "stage2",
+        "months": [
+          3,
+          6,
+          9,
+          12,
+          15,
+          18,
+          21,
+          24
+        ],
+        "origination_cumulative_pd": [
+          0.005037944,
+          0.010050506,
+          0.015037816,
+          0.02,
+          0.024937185,
+          0.029849496,
+          0.03473706,
+          0.0396
+        ],
+        "current_cumulative_pd": [
+          0.006845723,
+          0.013595411,
+          0.020250771,
+          0.026813479,
+          0.033285179,
+          0.039667484,
+          0.045961978,
+          0.052170215
+        ]
+      }
+    ],
+    "sicr_points": [
+      {
+        "account_id": "A1",
+        "segment_id": "s1",
+        "stage": "stage1",
+        "pd_origination_annualised": 0.02,
+        "pd_current_annualised": 0.025,
+        "trigger": "none"
+      },
+      {
+        "account_id": "A2",
+        "segment_id": "s1",
+        "stage": "stage2",
+        "pd_origination_annualised": 0.02,
+        "pd_current_annualised": 0.07,
+        "trigger": "threefold"
+      }
+    ],
+    "stage_flows": {
+      "from_date": "2019-12-31",
+      "to_date": "2020-06-30",
+      "currency": "USD",
+      "flows": [
+        {
+          "source": "stage1",
+          "target": "stage1",
+          "accounts": 1,
+          "gross_carrying_amount": 100000.0
+        },
+        {
+          "source": "stage1",
+          "target": "stage2",
+          "accounts": 1,
+          "gross_carrying_amount": 80000.0
+        },
+        {
+          "source": "stage2",
+          "target": "stage3",
+          "accounts": 1,
+          "gross_carrying_amount": 50000.0
+        }
+      ]
+    },
+    "stage_summary": {
+      "currency": "USD",
+      "rows": [
+        {
+          "stage": "stage1",
+          "accounts": 1,
+          "gross_carrying_amount": 100000.0,
+          "ecl": 1042.15,
+          "coverage": 0.010422
+        },
+        {
+          "stage": "stage2",
+          "accounts": 1,
+          "gross_carrying_amount": 80000.0,
+          "ecl": 1758.7575,
+          "coverage": 0.021984
+        },
+        {
+          "stage": "stage3",
+          "accounts": 1,
+          "gross_carrying_amount": 50000.0,
+          "ecl": 22222.22,
+          "coverage": 0.444444
+        }
+      ]
+    },
+    "ecl_by_scenario": {
+      "currency": "USD",
+      "rows": [
+        {
+          "scenario_id": "up",
+          "stage": "stage1",
+          "ecl": 204.2
+        },
+        {
+          "scenario_id": "up",
+          "stage": "stage2",
+          "ecl": 352.99
+        },
+        {
+          "scenario_id": "up",
+          "stage": "stage3",
+          "ecl": 22222.22
+        },
+        {
+          "scenario_id": "base",
+          "stage": "stage1",
+          "ecl": 555.2
+        },
+        {
+          "scenario_id": "base",
+          "stage": "stage2",
+          "ecl": 955.55
+        },
+        {
+          "scenario_id": "base",
+          "stage": "stage3",
+          "ecl": 22222.22
+        },
+        {
+          "scenario_id": "down",
+          "stage": "stage1",
+          "ecl": 2854.0
+        },
+        {
+          "scenario_id": "down",
+          "stage": "stage2",
+          "ecl": 4770.94
+        },
+        {
+          "scenario_id": "down",
+          "stage": "stage3",
+          "ecl": 22222.22
+        }
+      ]
+    },
+    "weight_grid": {
+      "currency": "USD",
+      "scenario_ids": [
+        "up",
+        "base",
+        "down"
+      ],
+      "points": [
+        {
+          "weights": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "ecl_recomputed": 23732.97,
+          "ecl_frozen": 23732.97,
+          "stage2_ratio_recomputed": 0.2,
+          "stage2_ratio_frozen": 0.2
+        },
+        {
+          "weights": [
+            0.0,
+            0.75,
+            0.25
+          ],
+          "ecl_recomputed": 25387.83,
+          "ecl_frozen": 25261.52,
+          "stage2_ratio_recomputed": 0.25,
+          "stage2_ratio_frozen": 0.2
+        },
+        {
+          "weights": [
+            0.0,
+            0.5,
+            0.5
+          ],
+          "ecl_recomputed": 27057.97,
+          "ecl_frozen": 26790.07,
+          "stage2_ratio_recomputed": 0.3,
+          "stage2_ratio_frozen": 0.2
+        },
+        {
+          "weights": [
+            0.0,
+            0.25,
+            0.75
+          ],
+          "ecl_recomputed": 28743.39,
+          "ecl_frozen": 28318.61,
+          "stage2_ratio_recomputed": 0.35,
+          "stage2_ratio_frozen": 0.2
+        },
+        {
+          "weights": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "ecl_recomputed": 30444.1,
+          "ecl_frozen": 29847.16,
+          "stage2_ratio_recomputed": 0.4,
+          "stage2_ratio_frozen": 0.2
+        },
+        {
+          "weights": [
+            0.25,
+            0.75,
+            0.0
+          ],
+          "ecl_recomputed": 23494.58,
+          "ecl_frozen": 23494.58,
+          "stage2_ratio_recomputed": 0.2,
+          "stage2_ratio_frozen": 0.2
+        },
+        {
+          "weights": [
+            0.25,
+            0.5,
+            0.25
+          ],
+          "ecl_recomputed": 25148.24,
+          "ecl_frozen": 25023.13,
+          "stage2_ratio_recomputed": 0.25,
+          "stage2_ratio_frozen": 0.2
+        },
+        {
+          "weights": [
+            0.25,
+            0.25,
+            0.5
+          ],
+          "ecl_recomputed": 26817.19,
+          "ecl_frozen": 26551.67,
+          "stage2_ratio_recomputed": 0.3,
+          "stage2_ratio_frozen": 0.2
+        },
+        {
+          "weights": [
+            0.25,
+            0.0,
+            0.75
+          ],
+          "ecl_recomputed": 28501.43,
+          "ecl_frozen": 28080.22,
+          "stage2_ratio_recomputed": 0.35,
+          "stage2_ratio_frozen": 0.2
+        },
+        {
+          "weights": [
+            0.5,
+            0.5,
+            0.0
+          ],
+          "ecl_recomputed": 23256.19,
+          "ecl_frozen": 23256.19,
+          "stage2_ratio_recomputed": 0.2,
+          "stage2_ratio_frozen": 0.2
+        },
+        {
+          "weights": [
+            0.5,
+            0.25,
+            0.25
+          ],
+          "ecl_recomputed": 24908.66,
+          "ecl_frozen": 24784.74,
+          "stage2_ratio_recomputed": 0.25,
+          "stage2_ratio_frozen": 0.2
+        },
+        {
+          "weights": [
+            0.5,
+            0.0,
+            0.5
+          ],
+          "ecl_recomputed": 26576.42,
+          "ecl_frozen": 26313.28,
+          "stage2_ratio_recomputed": 0.3,
+          "stage2_ratio_frozen": 0.2
+        },
+        {
+          "weights": [
+            0.75,
+            0.25,
+            0.0
+          ],
+          "ecl_recomputed": 23017.8,
+          "ecl_frozen": 23017.8,
+          "stage2_ratio_recomputed": 0.2,
+          "stage2_ratio_frozen": 0.2
+        },
+        {
+          "weights": [
+            0.75,
+            0.0,
+            0.25
+          ],
+          "ecl_recomputed": 24669.08,
+          "ecl_frozen": 24546.35,
+          "stage2_ratio_recomputed": 0.25,
+          "stage2_ratio_frozen": 0.2
+        },
+        {
+          "weights": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "ecl_recomputed": 22779.41,
+          "ecl_frozen": 22779.41,
+          "stage2_ratio_recomputed": 0.2,
+          "stage2_ratio_frozen": 0.2
+        }
+      ]
+    },
+    "non_linearity": {
+      "currency": "USD",
+      "parameters": {
+        "pd_ttc": 0.02,
+        "rho": 0.12
+      },
+      "mean_z": -0.25,
+      "pd_weighted": 0.026813479,
+      "pd_at_mean_z": 0.017997448,
+      "ecl_weighted": 25023.13,
+      "ecl_at_mean_path": 24123.13,
+      "index": 0.037309,
+      "z_curve": [
+        {
+          "z": -3.0,
+          "pd_pit": 0.139741765
+        },
+        {
+          "z": -2.0,
+          "pd_pit": 0.073424082
+        },
+        {
+          "z": -1.0,
+          "pd_pit": 0.034377277
+        },
+        {
+          "z": 0.0,
+          "pd_pit": 0.014287387
+        },
+        {
+          "z": 1.0,
+          "pd_pit": 0.005255059
+        },
+        {
+          "z": 2.0,
+          "pd_pit": 0.001706559
+        },
+        {
+          "z": 3.0,
+          "pd_pit": 0.000488396
+        }
+      ],
+      "scenario_points": [
+        {
+          "scenario_id": "up",
+          "z": 1.0,
+          "weight": 0.25,
+          "pd_pit": 0.005255059
+        },
+        {
+          "scenario_id": "base",
+          "z": 0.0,
+          "weight": 0.5,
+          "pd_pit": 0.014287387
+        },
+        {
+          "scenario_id": "down",
+          "z": -2.0,
+          "weight": 0.25,
+          "pd_pit": 0.073424082
+        }
+      ]
+    },
+    "waterfall": {
+      "currency": "USD",
+      "lines": [
+        {
+          "id": "opening",
+          "kind": "opening",
+          "label": {
+            "en": "Opening allowance",
+            "es": "Cobertura inicial"
+          },
+          "amount": 20673.13,
+          "stage": null,
+          "overlay_id": null
+        },
+        {
+          "id": "originations",
+          "kind": "originations",
+          "label": {
+            "en": "Originations",
+            "es": "Originaciones"
+          },
+          "amount": 800.0,
+          "stage": null,
+          "overlay_id": null
+        },
+        {
+          "id": "transfer-1-2",
+          "kind": "transfer-1-2",
+          "label": {
+            "en": "Transfer 1 to 2",
+            "es": "Traspaso 1 a 2"
+          },
+          "amount": 1200.0,
+          "stage": null,
+          "overlay_id": null
+        },
+        {
+          "id": "transfer-2-3",
+          "kind": "transfer-2-3",
+          "label": {
+            "en": "Transfer 2 to 3",
+            "es": "Traspaso 2 a 3"
+          },
+          "amount": 2500.0,
+          "stage": null,
+          "overlay_id": null
+        },
+        {
+          "id": "transfer-2-1",
+          "kind": "transfer-2-1",
+          "label": {
+            "en": "Transfer 2 to 1",
+            "es": "Traspaso 2 a 1"
+          },
+          "amount": -100.0,
+          "stage": null,
+          "overlay_id": null
+        },
+        {
+          "id": "remeasurement",
+          "kind": "remeasurement",
+          "label": {
+            "en": "Parameter remeasurement",
+            "es": "Remedicion de parametros"
+          },
+          "amount": 450.0,
+          "stage": null,
+          "overlay_id": null
+        },
+        {
+          "id": "macro-update",
+          "kind": "macro-update",
+          "label": {
+            "en": "Macro scenario update",
+            "es": "Actualizacion de escenarios"
+          },
+          "amount": 900.0,
+          "stage": null,
+          "overlay_id": null
+        },
+        {
+          "id": "line-OVL-RATES",
+          "kind": "overlay",
+          "label": {
+            "en": "Overlay: rates shock (expert)",
+            "es": "Ajuste: shock de tasas (experto)"
+          },
+          "amount": 1500.0,
+          "stage": "stage1",
+          "overlay_id": "OVL-RATES"
+        },
+        {
+          "id": "write-off",
+          "kind": "write-off",
+          "label": {
+            "en": "Write-offs",
+            "es": "Castigos"
+          },
+          "amount": -2000.0,
+          "stage": null,
+          "overlay_id": null
+        },
+        {
+          "id": "unwinding",
+          "kind": "unwinding",
+          "label": {
+            "en": "Unwinding of the discount",
+            "es": "Devengo del descuento"
+          },
+          "amount": 600.0,
+          "stage": null,
+          "overlay_id": null
+        },
+        {
+          "id": "closing",
+          "kind": "closing",
+          "label": {
+            "en": "Closing allowance",
+            "es": "Cobertura final"
+          },
+          "amount": 26523.13,
+          "stage": null,
+          "overlay_id": null
+        }
+      ]
+    },
+    "overlays": [
+      {
+        "id": "OVL-RATES",
+        "currency": "USD",
+        "rationale": {
+          "en": "Interest-rate shock on floating-rate borrowers, not in the satellite",
+          "es": "Shock de tasas sobre deudores a tasa variable, fuera del satelite"
+        },
+        "method": "expert",
+        "target": "pd",
+        "segment_id": "s1",
+        "amount": 1500.0,
+        "staging_effect": "none",
+        "review_date": "2020-12-31"
+      }
+    ],
+    "reconciliation": {
+      "currency": "USD",
+      "tolerance": 1e-06,
+      "allowance": [
+        {
+          "stage": "stage1",
+          "opening": -7.85,
+          "movements": [
+            {
+              "line_id": "originations",
+              "amount": 600.0
+            },
+            {
+              "line_id": "transfer-1-2",
+              "amount": -400.0
+            },
+            {
+              "line_id": "transfer-2-3",
+              "amount": 0.0
+            },
+            {
+              "line_id": "transfer-2-1",
+              "amount": 200.0
+            },
+            {
+              "line_id": "remeasurement",
+              "amount": 150.0
+            },
+            {
+              "line_id": "macro-update",
+              "amount": 500.0
+            },
+            {
+              "line_id": "write-off",
+              "amount": 0.0
+            },
+            {
+              "line_id": "unwinding",
+              "amount": 0.0
+            },
+            {
+              "line_id": "overlay-OVL-RATES",
+              "amount": 1500.0
+            }
+          ],
+          "closing": 2542.15,
+          "residual": 0.0
+        },
+        {
+          "stage": "stage2",
+          "opening": 858.76,
+          "movements": [
+            {
+              "line_id": "originations",
+              "amount": 200.0
+            },
+            {
+              "line_id": "transfer-1-2",
+              "amount": 1600.0
+            },
+            {
+              "line_id": "transfer-2-3",
+              "amount": -1000.0
+            },
+            {
+              "line_id": "transfer-2-1",
+              "amount": -300.0
+            },
+            {
+              "line_id": "remeasurement",
+              "amount": 100.0
+            },
+            {
+              "line_id": "macro-update",
+              "amount": 300.0
+            },
+            {
+              "line_id": "write-off",
+              "amount": 0.0
+            },
+            {
+              "line_id": "unwinding",
+              "amount": 0.0
+            }
+          ],
+          "closing": 1758.76,
+          "residual": 0.0
+        },
+        {
+          "stage": "stage3",
+          "opening": 19822.22,
+          "movements": [
+            {
+              "line_id": "originations",
+              "amount": 0.0
+            },
+            {
+              "line_id": "transfer-1-2",
+              "amount": 0.0
+            },
+            {
+              "line_id": "transfer-2-3",
+              "amount": 3500.0
+            },
+            {
+              "line_id": "transfer-2-1",
+              "amount": 0.0
+            },
+            {
+              "line_id": "remeasurement",
+              "amount": 200.0
+            },
+            {
+              "line_id": "macro-update",
+              "amount": 100.0
+            },
+            {
+              "line_id": "write-off",
+              "amount": -2000.0
+            },
+            {
+              "line_id": "unwinding",
+              "amount": 600.0
+            }
+          ],
+          "closing": 22222.22,
+          "residual": 0.0
+        }
+      ],
+      "gross_carrying_amount": [
+        {
+          "stage": "stage1",
+          "opening": 165000.0,
+          "movements": [
+            {
+              "line_id": "originations",
+              "amount": 20000.0
+            },
+            {
+              "line_id": "transfers",
+              "amount": -80000.0
+            },
+            {
+              "line_id": "stage2-to-stage3",
+              "amount": 0.0
+            },
+            {
+              "line_id": "repayments",
+              "amount": -5000.0
+            },
+            {
+              "line_id": "write-off",
+              "amount": 0.0
+            }
+          ],
+          "closing": 100000.0,
+          "residual": 0.0
+        },
+        {
+          "stage": "stage2",
+          "opening": 52000.0,
+          "movements": [
+            {
+              "line_id": "originations",
+              "amount": 0.0
+            },
+            {
+              "line_id": "transfers",
+              "amount": 80000.0
+            },
+            {
+              "line_id": "stage2-to-stage3",
+              "amount": -50000.0
+            },
+            {
+              "line_id": "repayments",
+              "amount": -2000.0
+            },
+            {
+              "line_id": "write-off",
+              "amount": 0.0
+            }
+          ],
+          "closing": 80000.0,
+          "residual": 0.0
+        },
+        {
+          "stage": "stage3",
+          "opening": 10000.0,
+          "movements": [
+            {
+              "line_id": "originations",
+              "amount": 0.0
+            },
+            {
+              "line_id": "transfers",
+              "amount": 0.0
+            },
+            {
+              "line_id": "stage2-to-stage3",
+              "amount": 50000.0
+            },
+            {
+              "line_id": "repayments",
+              "amount": 0.0
+            },
+            {
+              "line_id": "write-off",
+              "amount": -10000.0
+            }
+          ],
+          "closing": 50000.0,
+          "residual": 0.0
+        }
+      ]
+    },
+    "lifetime_backtest": {
+      "rows": [
+        {
+          "months": 3,
+          "predicted_cumulative_pd": 0.006845723,
+          "observed_cumulative_pd": 0.004,
+          "gap": -0.002845723,
+          "brier": 0.01,
+          "reason": null
+        },
+        {
+          "months": 6,
+          "predicted_cumulative_pd": 0.013595411,
+          "observed_cumulative_pd": 0.009,
+          "gap": -0.004595411,
+          "brier": 0.01,
+          "reason": null
+        },
+        {
+          "months": 9,
+          "predicted_cumulative_pd": 0.020250771,
+          "observed_cumulative_pd": 0.013,
+          "gap": -0.007250771,
+          "brier": 0.01,
+          "reason": null
+        },
+        {
+          "months": 12,
+          "predicted_cumulative_pd": 0.026813479,
+          "observed_cumulative_pd": 0.018,
+          "gap": -0.008813479,
+          "brier": 0.01,
+          "reason": null
+        },
+        {
+          "months": 15,
+          "predicted_cumulative_pd": 0.033285179,
+          "observed_cumulative_pd": null,
+          "gap": null,
+          "brier": null,
+          "reason": "fixture: horizon beyond the observation cutoff"
+        },
+        {
+          "months": 18,
+          "predicted_cumulative_pd": 0.039667484,
+          "observed_cumulative_pd": null,
+          "gap": null,
+          "brier": null,
+          "reason": "fixture: horizon beyond the observation cutoff"
+        },
+        {
+          "months": 21,
+          "predicted_cumulative_pd": 0.045961978,
+          "observed_cumulative_pd": null,
+          "gap": null,
+          "brier": null,
+          "reason": "fixture: horizon beyond the observation cutoff"
+        },
+        {
+          "months": 24,
+          "predicted_cumulative_pd": 0.052170215,
+          "observed_cumulative_pd": null,
+          "gap": null,
+          "brier": null,
+          "reason": "fixture: horizon beyond the observation cutoff"
+        }
+      ]
+    },
+    "rung_comparison": [
+      {
+        "rung_id": "L0-km",
+        "c_index": null,
+        "integrated_brier": 0.02,
+        "calibration_gap_12m": 0.001,
+        "reason": "fixture: Kaplan-Meier has no covariates, no c-index"
+      },
+      {
+        "rung_id": "L1-dth",
+        "c_index": 0.7,
+        "integrated_brier": 0.018,
+        "calibration_gap_12m": 0.0005,
+        "reason": null
+      },
+      {
+        "rung_id": "L2-cox",
+        "c_index": 0.72,
+        "integrated_brier": 0.017,
+        "calibration_gap_12m": -0.0003,
+        "reason": null
+      }
+    ]
+  },
+  "tests": [
+    {
+      "test_id": "ifrs9.reconciliation_identities",
+      "model_id": "L1-dth",
+      "segment": null,
+      "statistic": 0.0,
+      "p_value": null,
+      "metric": 0.0,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture",
+      "extras": {}
+    }
+  ],
+  "impact": {
+    "ecl_stage1": {
+      "value": 1042.15,
+      "unit": "USD",
+      "label": {
+        "en": "ECL stage1",
+        "es": "ECL stage1"
+      }
+    },
+    "ecl_stage2": {
+      "value": 1758.7575,
+      "unit": "USD",
+      "label": {
+        "en": "ECL stage2",
+        "es": "ECL stage2"
+      }
+    },
+    "ecl_stage3": {
+      "value": 22222.22,
+      "unit": "USD",
+      "label": {
+        "en": "ECL stage3",
+        "es": "ECL stage3"
+      }
+    }
+  },
+  "findings": [],
+  "provenance": {
+    "truth_status": "real-outcomes",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u5-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

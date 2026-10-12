@@ -1,0 +1,661 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c07/variant-three-regime.schema.json",
+  "title": "C07 three-regime variant",
+  "description": "Catalog row c07-outputs 1.0.0: the Chile provisions trilogy for one scenario variant (outputs.kind three-regime).",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C07"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c07Outputs",
+          "properties": {
+            "kind": {
+              "const": "three-regime"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c07Outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "scenario_id",
+        "currency",
+        "synthetic",
+        "notice",
+        "scenario",
+        "portfolio",
+        "regimes",
+        "comparison",
+        "gap_bridge",
+        "b1_detail",
+        "ifrs9_detail",
+        "bde_detail",
+        "delta_vs_base"
+      ],
+      "properties": {
+        "kind": {
+          "const": "three-regime"
+        },
+        "scenario_id": {
+          "type": "string",
+          "enum": [
+            "base",
+            "recession",
+            "consumer-arrears-shock",
+            "house-price-fall",
+            "uf-inflation-spike",
+            "combined-severe"
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "synthetic": {
+          "const": true
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        },
+        "scenario": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "description",
+            "shocks"
+          ],
+          "properties": {
+            "description": {
+              "$ref": "../common/text.schema.json"
+            },
+            "shocks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "driver",
+                  "unit",
+                  "value"
+                ],
+                "properties": {
+                  "driver": {
+                    "type": "string"
+                  },
+                  "unit": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "portfolio": {
+          "$ref": "#/$defs/c07Portfolio"
+        },
+        "regimes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c07Regime"
+          }
+        },
+        "comparison": {
+          "$ref": "#/$defs/c07Comparison"
+        },
+        "gap_bridge": {
+          "$ref": "#/$defs/c07GapBridge"
+        },
+        "b1_detail": {
+          "$ref": "#/$defs/c07B1Detail"
+        },
+        "ifrs9_detail": {
+          "$ref": "#/$defs/c07Ifrs9Detail"
+        },
+        "bde_detail": {
+          "$ref": "#/$defs/c07BdeDetail"
+        },
+        "delta_vs_base": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c07DeltaVsBase"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "C07 three-regime comparison (outputs.kind three-regime): the same synthetic portfolio of Banco Andino under CMF B-1, IFRS 9 and BdE Annex 9 for one scenario variant. Synthetic, never a statement about a bank."
+    },
+    "c07Portfolio": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "segments"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "segment_id",
+              "label",
+              "accounts",
+              "gross_exposure"
+            ],
+            "properties": {
+              "segment_id": {
+                "type": "string"
+              },
+              "label": {
+                "$ref": "../common/text.schema.json"
+              },
+              "accounts": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "gross_exposure": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "c07Regime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "regime",
+        "label",
+        "currency",
+        "total_provision",
+        "coverage_rate",
+        "by_segment",
+        "by_category"
+      ],
+      "properties": {
+        "regime": {
+          "type": "string",
+          "enum": [
+            "cmf-b1",
+            "ifrs9",
+            "bde-annex9"
+          ]
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "total_provision": {
+          "type": "number"
+        },
+        "coverage_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "by_segment": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "segment_id",
+              "provision",
+              "coverage_rate"
+            ],
+            "properties": {
+              "segment_id": {
+                "type": "string"
+              },
+              "provision": {
+                "type": "number"
+              },
+              "coverage_rate": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        },
+        "by_category": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "category_id",
+              "label",
+              "exposure",
+              "provision"
+            ],
+            "properties": {
+              "category_id": {
+                "type": "string"
+              },
+              "label": {
+                "$ref": "../common/text.schema.json"
+              },
+              "exposure": {
+                "type": "number"
+              },
+              "provision": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "c07Comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "rows"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "segment_id",
+              "cmf_b1_provision",
+              "ifrs9_provision",
+              "bde_annex9_provision",
+              "gap_ifrs9_minus_b1",
+              "gap_bde_minus_b1"
+            ],
+            "properties": {
+              "segment_id": {
+                "type": "string"
+              },
+              "cmf_b1_provision": {
+                "type": "number"
+              },
+              "ifrs9_provision": {
+                "type": "number"
+              },
+              "bde_annex9_provision": {
+                "type": "number"
+              },
+              "gap_ifrs9_minus_b1": {
+                "type": "number"
+              },
+              "gap_bde_minus_b1": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "c07GapBridge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "from_regime",
+        "to_regime",
+        "steps"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "from_regime": {
+          "const": "cmf-b1"
+        },
+        "to_regime": {
+          "const": "ifrs9"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "amount"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "$ref": "../common/text.schema.json"
+              },
+              "amount": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      "description": "The gap from the CMF B-1 total to the IFRS 9 total as exhaustive steps whose amounts sum to the gap exactly (an unexplained step is its own line)."
+    },
+    "c07B1Detail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "minimum_check",
+        "group_max_rule",
+        "additional_provisions",
+        "individual"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "minimum_check": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "minimum_rate",
+            "normal_portfolio_exposure",
+            "normal_portfolio_provision_before_minimum",
+            "minimum_amount",
+            "binding",
+            "top_up"
+          ],
+          "properties": {
+            "minimum_rate": {
+              "const": 0.005
+            },
+            "normal_portfolio_exposure": {
+              "type": "number"
+            },
+            "normal_portfolio_provision_before_minimum": {
+              "type": "number"
+            },
+            "minimum_amount": {
+              "type": "number"
+            },
+            "binding": {
+              "type": "boolean"
+            },
+            "top_up": {
+              "type": "number"
+            }
+          }
+        },
+        "group_max_rule": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "segment_id",
+              "standard",
+              "internal",
+              "applied",
+              "method"
+            ],
+            "properties": {
+              "segment_id": {
+                "type": "string"
+              },
+              "standard": {
+                "type": "number"
+              },
+              "internal": {
+                "type": "number"
+              },
+              "applied": {
+                "type": "number"
+              },
+              "method": {
+                "type": "string",
+                "enum": [
+                  "standard",
+                  "internal",
+                  "max"
+                ]
+              }
+            }
+          }
+        },
+        "additional_provisions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "amount",
+            "rationale",
+            "policy_min",
+            "policy_max"
+          ],
+          "properties": {
+            "amount": {
+              "type": "number"
+            },
+            "rationale": {
+              "$ref": "../common/text.schema.json"
+            },
+            "policy_min": {
+              "type": "number"
+            },
+            "policy_max": {
+              "type": "number"
+            }
+          }
+        },
+        "individual": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "normal_substandard_provision",
+            "default_provision"
+          ],
+          "properties": {
+            "normal_substandard_provision": {
+              "type": "number"
+            },
+            "default_provision": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "c07Ifrs9Detail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "stage_summary",
+        "overlays_total"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "stage_summary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "stage",
+              "accounts",
+              "gross_carrying_amount",
+              "ecl",
+              "coverage"
+            ],
+            "properties": {
+              "stage": {
+                "type": "string",
+                "enum": [
+                  "stage1",
+                  "stage2",
+                  "stage3",
+                  "poci"
+                ]
+              },
+              "accounts": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "gross_carrying_amount": {
+                "type": "number"
+              },
+              "ecl": {
+                "type": "number"
+              },
+              "coverage": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        },
+        "overlays_total": {
+          "type": "number"
+        }
+      }
+    },
+    "c07BdeDetail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "categories",
+        "method"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "category",
+              "mapped_stage",
+              "exposure",
+              "provision",
+              "coverage_rate"
+            ],
+            "properties": {
+              "category": {
+                "type": "string",
+                "enum": [
+                  "normal",
+                  "normal-special-watch",
+                  "doubtful",
+                  "written-off"
+                ]
+              },
+              "mapped_stage": {
+                "type": "string",
+                "enum": [
+                  "stage1",
+                  "stage2",
+                  "stage3",
+                  "written-off"
+                ]
+              },
+              "exposure": {
+                "type": "number"
+              },
+              "provision": {
+                "type": "number"
+              },
+              "coverage_rate": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "alternative-solutions",
+            "internal-methodology"
+          ]
+        }
+      }
+    },
+    "c07DeltaVsBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "cmf_b1_delta",
+        "ifrs9_delta",
+        "bde_annex9_delta"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "cmf_b1_delta": {
+          "type": "number"
+        },
+        "ifrs9_delta": {
+          "type": "number"
+        },
+        "bde_annex9_delta": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}
