@@ -1,0 +1,373 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c01/variant.schema.json",
+  "title": "C01 variant",
+  "description": "Catalog row c01-variant 2.0.0: one C01 (retail PD) variant artifact. The default variant schema: its outputs carry no kind.",
+  "allOf": [
+    {"$ref": "../common/variant-envelope.schema.json"},
+    {
+      "properties": {
+        "case_id": {"const": "C01"},
+        "outputs": {"$ref": "#/$defs/c01VariantOutputs"}
+      },
+      "required": ["case_id","outputs"]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c01GradeRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grade","lo","hi","n","d","pd","dr"],
+      "properties": {
+        "grade": {"type": "string"},
+        "lo": {"type": "number"},
+        "hi": {"type": "number"},
+        "n": {"type": "integer", "minimum": 0},
+        "d": {"type": "integer", "minimum": 0},
+        "pd": {
+          "type": ["number","null"],
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "dr": {"type": ["number","null"]}
+      }
+    },
+    "c01GroupStat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["n","default_rate","auc","roc"],
+      "properties": {
+        "n": {"type": "integer", "minimum": 0},
+        "default_rate": {"type": "number"},
+        "auc": {
+          "type": "object",
+          "additionalProperties": {"type": "number"}
+        },
+        "roc": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["fpr","tpr"],
+            "properties": {
+              "fpr": {
+                "type": "array",
+                "items": {"type": "number"}
+              },
+              "tpr": {
+                "type": "array",
+                "items": {"type": "number"}
+              }
+            }
+          },
+          "description": "The ROC of the champion and of every challenger within the group (51 points)."
+        }
+      }
+    },
+    "c01Irb": {
+      "description": "What C01's capital view states (CT-212, CT-214).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_class",
+        "regimes",
+        "by_regime",
+        "revolvers_only",
+        "six_month_full_payers",
+        "lgd_floor_basel3",
+        "lgd_floor_source",
+        "transactor_source",
+        "ead",
+        "parity"
+      ],
+      "properties": {
+        "asset_class": {"type": "string"},
+        "regimes": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "by_regime": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/c01RegimeFacts"}
+        },
+        "revolvers_only": {"type": "boolean"},
+        "six_month_full_payers": {"type": ["integer","null"]},
+        "lgd_floor_basel3": {"type": "number"},
+        "lgd_floor_source": {"type": "string"},
+        "transactor_source": {"type": "string"},
+        "ead": {"$ref": "../common/text.schema.json"},
+        "parity": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {"$ref": "#/$defs/c01RetailParityPoint"}
+            },
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "c01RegimeFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name","pd_floor_revolver","pd_floor","scaling","references"],
+      "properties": {
+        "name": {"type": "string"},
+        "pd_floor_revolver": {"type": ["number","null"], "description": "The QRRE revolvers' PD floor (null for other retail)."},
+        "pd_floor": {"type": "number"},
+        "scaling": {"type": "number"},
+        "references": {
+          "type": "object",
+          "additionalProperties": {"type": "string"}
+        }
+      }
+    },
+    "c01ReliabilityBin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["n","pd","dr","lo","hi"],
+      "properties": {
+        "n": {"type": "integer", "minimum": 0},
+        "pd": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "dr": {"type": "number"},
+        "lo": {"type": "number"},
+        "hi": {"type": "number"}
+      }
+    },
+    "c01RetailParityPoint": {
+      "description": "One point of the retail risk weight, from riskvalidation, for the live port (CT-215).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["regime","asset_class","revolver","pd","lgd","risk_weight"],
+      "properties": {
+        "regime": {"type": "string"},
+        "asset_class": {"type": "string"},
+        "revolver": {"type": "boolean"},
+        "pd": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "lgd": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "risk_weight": {"type": "number"}
+      }
+    },
+    "c01RungOutputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grades","reliability","roc","cap","distribution","cutoff","reliability_raw"],
+      "properties": {
+        "grades": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c01GradeRow"}
+        },
+        "reliability": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c01ReliabilityBin"}
+        },
+        "roc": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["fpr","tpr"],
+          "properties": {
+            "fpr": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "tpr": {
+              "type": "array",
+              "items": {"type": "number"}
+            }
+          }
+        },
+        "cap": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["population","defaults","default_rate"],
+          "properties": {
+            "population": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "defaults": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "default_rate": {"type": "number"}
+          }
+        },
+        "distribution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["log10_pd_edges","defaulters","non_defaulters"],
+          "properties": {
+            "log10_pd_edges": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "defaulters": {
+              "type": "array",
+              "items": {"type": "integer"}
+            },
+            "non_defaulters": {
+              "type": "array",
+              "items": {"type": "integer"}
+            }
+          }
+        },
+        "cutoff": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "cutoff",
+            "approval_rate",
+            "bad_rate",
+            "pd_ead",
+            "ead",
+            "capital_per_lgd",
+            "capital_per_lgd_transactors"
+          ],
+          "properties": {
+            "cutoff": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "approval_rate": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "bad_rate": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "pd_ead": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "ead": {
+              "type": "array",
+              "items": {"type": "number"}
+            },
+            "capital_per_lgd": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {"type": "number"}
+              }
+            },
+            "capital_per_lgd_transactors": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {"type": "number"}
+                  }
+                },
+                {"type": "null"}
+              ]
+            }
+          }
+        },
+        "reliability_raw": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {"$ref": "#/$defs/c01ReliabilityBin"}
+            },
+            {"type": "null"}
+          ],
+          "description": "The same with the six-month full payers as transactors (the cards only; null for the loans)."
+        }
+      }
+    },
+    "c01ScoredSample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ids",
+        "targets",
+        "inputs",
+        "scorecard_points",
+        "scorecard_score",
+        "scorecard_pd",
+        "ebm_logit"
+      ],
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "targets": {
+          "type": "array",
+          "items": {"type": "integer"},
+          "description": "The observed outcome of each sampled applicant (1 = default)."
+        },
+        "inputs": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {"type": "number"},
+                {"type": "string"}
+              ]
+            }
+          }
+        },
+        "scorecard_points": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {"type": "integer"}
+          }
+        },
+        "scorecard_score": {
+          "type": "array",
+          "items": {"type": "integer"}
+        },
+        "scorecard_pd": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "ebm_logit": {
+          "type": "array",
+          "items": {"type": "number"}
+        }
+      }
+    },
+    "c01VariantOutputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rungs","n","defaults","groups","sample","irb"],
+      "properties": {
+        "rungs": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/c01RungOutputs"}
+        },
+        "n": {"type": "integer", "minimum": 0},
+        "defaults": {"type": "integer", "minimum": 0},
+        "groups": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/c01GroupStat"}
+        },
+        "sample": {
+          "anyOf": [
+            {"$ref": "#/$defs/c01ScoredSample"},
+            {"type": "null"}
+          ]
+        },
+        "irb": {"$ref": "#/$defs/c01Irb"}
+      }
+    }
+  }
+}

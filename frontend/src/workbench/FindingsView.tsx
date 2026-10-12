@@ -143,8 +143,10 @@ export function FindingsView({ sel }: { sel: Selection | null }) {
           y={{ label: { en: 'p-value', es: 'Valor p' }, log: true, format: { digits: 2 } }}
           series={[
             { label: { en: 'p-value', es: 'Valor p' }, values: pad(points.map((x) => Math.max(floorP, x.row?.p_value ?? 1))), color: '--color-accent', mode: 'points' },
-            { label: { en: 'Amber threshold', es: 'Umbral ámbar' }, values: xs.map(() => sel.alphas.amber), color: '--color-warn', width: 1.2, dash: [6, 4] },
-            { label: { en: 'Red threshold', es: 'Umbral rojo' }, values: xs.map(() => sel.alphas.red), color: '--color-bad', width: 1.2, dash: [2, 4] },
+          ]}
+          yMarks={[
+            { y: sel.alphas.amber, label: { en: 'Amber threshold', es: 'Umbral ámbar' }, tone: 'warn' },
+            { y: sel.alphas.red, label: { en: 'Red threshold', es: 'Umbral rojo' }, tone: 'bad' },
           ]}
         />
       </PlotCard>

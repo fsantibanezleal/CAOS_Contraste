@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/contract-summary.schema.json",
+  "title": "Contract summary",
+  "description": "The contract-1 report of one source a case read: counts, rule hits and examples.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["family","counts","by_rule","ignored_columns","examples"],
+  "properties": {
+    "family": {"type": "string"},
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input","accepted","rejected","flagged","excluded"],
+      "properties": {
+        "input": {"type": "integer", "minimum": 0},
+        "accepted": {"type": "integer", "minimum": 0},
+        "rejected": {"type": "integer", "minimum": 0},
+        "flagged": {"type": "integer", "minimum": 0},
+        "excluded": {"type": "integer", "minimum": 0}
+      }
+    },
+    "by_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rejected","flagged","excluded"],
+      "properties": {
+        "rejected": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        },
+        "flagged": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        },
+        "excluded": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "ignored_columns": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "examples": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/contractExample"}
+    }
+  },
+  "$defs": {
+    "contractExample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind","row","key","field","value","expected","policy","reason","rule"],
+      "properties": {
+        "kind": {"type": "string", "enum": ["rejected","flagged","excluded"]},
+        "row": {"type": "integer"},
+        "key": {"type": "string"},
+        "field": {"type": "string"},
+        "value": {"type": ["string","null"]},
+        "expected": {"type": "string"},
+        "policy": {"type": "string"},
+        "reason": {"type": "string"},
+        "rule": {"type": ["string","null"]}
+      }
+    }
+  }
+}

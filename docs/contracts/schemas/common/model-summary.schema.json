@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/model-summary.schema.json",
+  "title": "Model summary",
+  "description": "One model of a variant artifact, without its internals.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "family",
+    "rung",
+    "title",
+    "short_title",
+    "engine",
+    "engine_version",
+    "licence",
+    "calibration",
+    "parameters",
+    "checkpoint_sha256"
+  ],
+  "properties": {
+    "id": {"type": "string"},
+    "family": {"type": "string"},
+    "rung": {"type": "string"},
+    "title": {"$ref": "./text.schema.json"},
+    "short_title": {
+      "allOf": [
+        {"$ref": "./text.schema.json"}
+      ],
+      "description": "The label a chip, a column header or a chart key shows (\"P2b PLTR\"); `title` is the full name."
+    },
+    "engine": {"type": "string"},
+    "engine_version": {"type": "string"},
+    "licence": {"type": "string"},
+    "calibration": {
+      "anyOf": [
+        {"$ref": "#/$defs/modelCalibration"},
+        {"type": "null"}
+      ]
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["value","unit"],
+        "properties": {
+          "value": {"type": "number"},
+          "unit": {"type": "string"}
+        }
+      }
+    },
+    "checkpoint_sha256": {
+      "type": ["string","null"],
+      "description": "The weights' hash for a fitted model; null for a formula (C05's approaches and estimators)."
+    }
+  },
+  "$defs": {
+    "modelCalibration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind","fitted_on","x","y"],
+      "properties": {
+        "kind": {"type": "string"},
+        "fitted_on": {"type": "string"},
+        "x": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "y": {
+          "type": "array",
+          "items": {"type": "number"}
+        }
+      }
+    }
+  }
+}

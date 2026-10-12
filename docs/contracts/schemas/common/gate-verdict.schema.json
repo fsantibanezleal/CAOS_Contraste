@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/gate-verdict.schema.json",
+  "title": "Gate verdict",
+  "description": "The lane gate of one artifact: whether the case ran live or precomputed and why.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "lane",
+    "pure_python",
+    "wheels",
+    "trace_bytes",
+    "run_ms_budget",
+    "trace_bytes_budget",
+    "reasons"
+  ],
+  "properties": {
+    "lane": {"type": "string", "enum": ["live","precompute"]},
+    "pure_python": {"type": "boolean"},
+    "wheels": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "trace_bytes": {"type": "integer", "minimum": 0},
+    "run_ms_budget": {"type": "number"},
+    "trace_bytes_budget": {"type": "integer", "minimum": 0},
+    "reasons": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  }
+}

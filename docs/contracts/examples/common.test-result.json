@@ -1,0 +1,25 @@
+{
+  "test_id": "pd.jeffreys",
+  "model_id": "E0-expert",
+  "segment": "A",
+  "statistic": 0.0,
+  "p_value": 0.193755529,
+  "metric": null,
+  "h0": "the PD applied at the start of the period is greater than or equal to the true PD",
+  "alternative": "the true PD exceeds the PD applied (underestimation)",
+  "policy_version": "riskvalidation-default 2026.10.1",
+  "alpha_amber": 0.05,
+  "alpha_red": 0.01,
+  "light": "green",
+  "n": 100,
+  "n_events": 0,
+  "inputs_hash": "194061855bc000ff218e64e08d082a2dba5bd159f6e4b149797a2ae7fef2be2d",
+  "reference": "ECB (2019), Instructions for reporting the validation results of internal models: IRB Pillar I models for credit risk, section 2.5.3.1; Brown, Cai and DasGupta (2001), doi:10.1214/ss/1009213286",
+  "notes": "",
+  "extras": {
+    "pd_applied": 0.0003,
+    "default_rate": 0.0,
+    "posterior_q025": 4.8980731e-06,
+    "posterior_q975": 0.02474527
+  }
+}
