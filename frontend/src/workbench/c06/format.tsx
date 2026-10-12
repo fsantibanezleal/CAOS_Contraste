@@ -1,6 +1,7 @@
 // What the provisions instruments (C06 and C07) share: the number formats, the "not available, with its reason" cell,
 // the text of the four stages and the colour of each stage as a shell token. Nothing here computes a statistic.
 import { formatNumber, pick, useShellLang, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
+import type { ReactNode } from 'react';
 
 /** The stages of the contracts, with the words a reader uses. */
 export type StageId = 'stage1' | 'stage2' | 'stage3' | 'poci';
@@ -78,4 +79,18 @@ export function alignTo(xs: readonly number[], ys: readonly number[], grid: read
     const t = (g - xs[i - 1]) / (xs[i] - xs[i - 1]);
     return ys[i - 1] + t * (ys[i] - ys[i - 1]);
   });
+}
+
+/**
+ * A drawing over its tables inside one filling card: the drawing takes the height the tables leave and the tables
+ * scroll under it. One card per view keeps the drawing and the numbers it draws together, and the gate measures the
+ * drawing (ADR-0071 rule 8), not a short table beside it.
+ */
+export function ChartOverTable({ chart, children }: { chart: ReactNode; children?: ReactNode }) {
+  return (
+    <div className="ct-stack">
+      <div style={{ flex: '1 1 0', minHeight: '15rem', display: 'flex', flexDirection: 'column' }}>{chart}</div>
+      {children ? <div style={{ flex: '0 1 auto', maxHeight: '42%', overflow: 'auto', minHeight: 0 }}>{children}</div> : null}
+    </div>
+  );
 }

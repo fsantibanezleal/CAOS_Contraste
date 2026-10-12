@@ -9,7 +9,7 @@ import { provenanceOf } from '../model';
 import { B1Readout, C07ContextView, C07FindingsView, C07VariantsView, GapReadout, Ifrs9Readout } from './C07Common';
 import { B1View, BdeView, BridgeView, DeltaView, Ifrs9View, SegmentsView, ThreeRegimeView } from './RegimeViews';
 import { componentLabel, defaultSel, outputsOf, type C07Sel, type RegimeId } from './selection';
-import { CalibrationView, TablesView, TestsView } from './ValidationViews';
+import { TablesView } from './ValidationViews';
 
 export interface C07Instrument {
   sel: C07Sel | null;
@@ -173,15 +173,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     { en: 'Views of each regime', es: 'Vistas de cada régimen' },
     'c07-regimes',
   );
-  const validation = tabs(
-    [
-      { id: 'calibration', label: { en: 'Calibration', es: 'Calibración' }, content: <CalibrationView sel={sel} /> },
-      { id: 'tables', label: { en: 'B-1 tables', es: 'Tablas B-1' }, content: <TablesView sel={sel} /> },
-      { id: 'tests', label: { en: 'Tests', es: 'Pruebas' }, content: <TestsView sel={sel} /> },
-    ],
-    { en: 'Views of the validation', es: 'Vistas de la validación' },
-    'c07-validation',
-  );
+  const validation = <TablesView sel={sel} />;
   return {
     sel,
     rail: [regimes, ifrs9, b1],

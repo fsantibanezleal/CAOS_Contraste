@@ -26,28 +26,29 @@ function Box({ x, y, w, h, title, sub, tone }: { x: number; y: number; w: number
 function RegimesFigure() {
   const t = useT();
   const rows = [
-    { y: 14, tone: undefined, name: t('CMF B-1', 'CMF B-1'), role: t('statutory, Chilean loans', 'estatutaria, créditos en Chile') },
-    { y: 96, tone: 'accent' as const, name: t('IFRS 9', 'IFRS 9'), role: t('comparison measure', 'medida de comparación') },
-    { y: 178, tone: 'good' as const, name: t('BdE Annex 9', 'Anejo 9 del BdE'), role: t('Spanish GAAP', 'PGC español') },
+    { y: 14, name: t('CMF B-1', 'CMF B-1'), role: [t('statutory,', 'estatutaria,'), t('Chilean loans', 'créditos en Chile')] },
+    { y: 96, name: t('IFRS 9', 'IFRS 9'), role: [t('comparison', 'medida de'), t('measure', 'comparación')] },
+    { y: 178, name: t('BdE Annex 9', 'Anejo 9 BdE'), role: [t('Spanish', 'PGC'), t('GAAP', 'español')] },
   ];
   return (
     <svg className="ct-docfig" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={t('The three regimes on one portfolio: the CMF B-1 group and individual assessment, the IFRS 9 stages and the Banco de España categories mapped to them', 'Los tres regímenes sobre una cartera: la evaluación grupal e individual de CMF B-1, las etapas de IFRS 9 y las categorías del Banco de España asignadas a ellas')}>
       {rows.map((r) => (
         <g key={r.name}>
-          <text className="dg-box-title" x={8} y={r.y + 30}>{r.name}</text>
-          <text className="dg-box-sub" x={8} y={r.y + 46}>{r.role}</text>
+          <text className="dg-box-title" x={8} y={r.y + 24}>{r.name}</text>
+          <text className="dg-box-sub" x={8} y={r.y + 40}>{r.role[0]}</text>
+          <text className="dg-box-sub" x={8} y={r.y + 53}>{r.role[1]}</text>
         </g>
       ))}
-      <Box x={124} y={14} w={228} h={60} title={t('Group: PE = PI x PDI', 'Grupal: PE = PI x PDI')} sub={t('maximum of standard and internal', 'el mayor entre estándar e interno')} />
-      <Box x={364} y={14} w={108} h={60} title={t('Individual', 'Individual')} sub={t('A1-A6, B1-B4, C1-C6', 'A1-A6, B1-B4, C1-C6')} />
+      <Box x={124} y={14} w={200} h={60} title={t('Group: PE = PI x PDI', 'Grupal: PE = PI x PDI')} sub={t('max(standard, internal)', 'el mayor: estándar o interno')} />
+      <Box x={336} y={14} w={136} h={60} title={t('Individual', 'Individual')} sub="A1-A6, B1-B4, C1-C6" />
       <Box x={124} y={96} w={108} h={60} tone="accent" title={t('Stage 1', 'Etapa 1')} sub={t('12-month ECL', 'PCE a 12 meses')} />
       <Box x={244} y={96} w={108} h={60} tone="accent" title={t('Stage 2', 'Etapa 2')} sub={t('lifetime ECL', 'PCE de vida')} />
-      <Box x={364} y={96} w={108} h={60} tone="accent" title={t('Stage 3', 'Etapa 3')} sub={t('credit-impaired', 'deterioro crediticio')} />
+      <Box x={364} y={96} w={108} h={60} tone="accent" title={t('Stage 3', 'Etapa 3')} sub={t('credit-impaired', 'con deterioro')} />
       <Box x={124} y={178} w={108} h={60} tone="good" title={t('Normal', 'Normal')} sub={t('= Stage 1', '= Etapa 1')} />
       <Box x={244} y={178} w={108} h={60} tone="good" title={t('Special watch', 'Vigilancia')} sub={t('= Stage 2', '= Etapa 2')} />
       <Box x={364} y={178} w={108} h={60} tone="good" title={t('Doubtful', 'Dudoso')} sub={t('= Stage 3', '= Etapa 3')} />
       {[178, 298, 418].map((x) => (
-        <line key={x} className="dg-edge" x1={x - 54} y1={156} x2={x - 54} y2={178} />
+        <line key={x} className="dg-edge" x1={x} y1={156} x2={x} y2={178} />
       ))}
       <text className="dg-note" x={W - 8} y={H - 6} textAnchor="end">{t('Illustrative schematic, not a result', 'Esquema ilustrativo, no un resultado')}</text>
     </svg>
@@ -119,8 +120,8 @@ function Body() {
         <T en="Chile and Spain: one portfolio under three regimes" es="Chile y España: una cartera bajo tres regímenes" />
       </h3>
       <P
-        en={<>Chilean banks adopted IFRS 9 in the 2022 compendium except the impairment chapter for loans: Chapter A-2 states that section 5.5 does not apply to loans and contingent credits, whose criteria are in Chapters B-1 to B-3, an exception the CMF attributes mainly to prudential criteria <Cite id="cmfcncb" /> <Cite id="cmfinforme2019" />. The provision on loans is therefore the B-1 expected loss, not Stage 1, 2 and 3. Individual assessment places the debtor in Normal (A1 to A6), Substandard (B1 to B4) or Default (C1 to C6) with the PI, PDI and PE of the table, and the normal portfolio carries a minimum provision of 0.50 per cent.</>}
-        es={<>Los bancos chilenos adoptaron IFRS 9 en el compendio de 2022 salvo el capítulo de deterioro para colocaciones: el Capítulo A-2 dice que la sección 5.5 no se aplica a las colocaciones ni a los créditos contingentes, cuyos criterios están en los Capítulos B-1 a B-3, una excepción que la CMF atribuye principalmente a criterios prudenciales <Cite id="cmfcncb" /> <Cite id="cmfinforme2019" />. La provisión sobre colocaciones es entonces la pérdida esperada de B-1, no las Etapas 1, 2 y 3. La evaluación individual ubica al deudor en Normal (A1 a A6), Subestándar (B1 a B4) o Incumplimiento (C1 a C6) con la PI, la PDI y la PE de la tabla, y la cartera normal lleva una provisión mínima de 0,50 por ciento.</>}
+        en={<>Chilean banks adopted IFRS 9 in the 2022 compendium except the impairment chapter for loans: Chapter A-2 states that section <Ref>5.5</Ref> does not apply to loans and contingent credits, whose criteria are in Chapters B-1 to B-3, an exception the CMF attributes mainly to prudential criteria <Cite id="cmfcncb" /> <Cite id="cmfinforme2019" />. The provision on loans is therefore the B-1 expected loss, not Stage 1, 2 and 3. Individual assessment places the debtor in Normal (A1 to A6), Substandard (B1 to B4) or Default (C1 to C6) with the PI, PDI and PE of the table, and the normal portfolio carries a minimum provision of 0.50 per cent.</>}
+        es={<>Los bancos chilenos adoptaron IFRS 9 en el compendio de 2022 salvo el capítulo de deterioro para colocaciones: el Capítulo A-2 dice que la sección <Ref>5.5</Ref> no se aplica a las colocaciones ni a los créditos contingentes, cuyos criterios están en los Capítulos B-1 a B-3, una excepción que la CMF atribuye principalmente a criterios prudenciales <Cite id="cmfcncb" /> <Cite id="cmfinforme2019" />. La provisión sobre colocaciones es entonces la pérdida esperada de B-1, no las Etapas 1, 2 y 3. La evaluación individual ubica al deudor en Normal (A1 a A6), Subestándar (B1 a B4) o Incumplimiento (C1 a C6) con la PI, la PDI y la PE de la tabla, y la cartera normal lleva una provisión mínima de 0,50 por ciento.</>}
       />
       <Equation
         tex={String.raw`PE = PI \times PDI, \qquad \mathrm{Prov}_{\mathrm{group}} = \max\bigl(\mathrm{Prov}^{\mathrm{ME}},\ \mathrm{Prov}^{\mathrm{MI}}\bigr) \ \text{unless the internal method has the CMF no-objection}`}

@@ -6,7 +6,7 @@ import { PlotCard, ViewsRow, pick, useShellLang, useWorkbenchState, type BiText,
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { provenanceOf, REPLAY } from '../model';
 import { Pending } from '../Pending';
-import { STAGE_COLOR, STAGE_TEXT, alignTo, money, pct, unionX, MaybeNumber } from './format';
+import { ChartOverTable, STAGE_COLOR, STAGE_TEXT, alignTo, money, pct, unionX, MaybeNumber } from './format';
 import { outputsOf, type C06Outputs, type C06Sel } from './selection';
 
 const WEIGHTED: BiText = { en: 'Probability-weighted', es: 'Ponderada por probabilidad' };
@@ -62,7 +62,7 @@ export function TermStructureView({ sel }: { sel: C06Sel | null }) {
     return i >= 0 ? v[i] : null;
   };
   return (
-    <ViewsRow shares={[3, 2]}>
+    <ViewsRow>
       <PlotCard
         fill
         title={{ en: `${MEASURE[sel.measure].label.en} by scenario, segment ${sel.segment}`, es: `${MEASURE[sel.measure].label.es} por escenario, segmento ${sel.segment}` }}
@@ -74,15 +74,17 @@ export function TermStructureView({ sel }: { sel: C06Sel | null }) {
           es: 'h(t) es la PD condicional de un período dada la supervivencia, q(t) = S(t-1) h(t) su PD incondicional (marginal) y F(t) la suma de q: el documento nombra ambas. La curva ponderada es la PD ponderada por probabilidad; el par segmentado es la cuenta elegida, su curva de originación contra la actual en la misma ventana restante.',
         }}
       >
+        <ChartOverTable
+          chart={
         <UPlotChart
           height="fill"
           x={{ values: grid, label: { en: 'Months after the reporting date', es: 'Meses desde la fecha de reporte' }, format: { decimals: 0 } }}
           y={{ label: m.label, format: { percent: true, digits: 2 } }}
           series={series}
         />
-      </PlotCard>
-      <PlotCard fill title={{ en: 'The curves in numbers', es: 'Las curvas en números' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+          }
+        >
+        <div>
           <table className="caos-table" data-table="term-structures">
             <thead>
               <tr>
@@ -110,6 +112,7 @@ export function TermStructureView({ sel }: { sel: C06Sel | null }) {
             </tbody>
           </table>
         </div>
+        </ChartOverTable>
       </PlotCard>
     </ViewsRow>
   );
@@ -159,7 +162,7 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
     })),
   ];
   return (
-    <ViewsRow shares={[3, 2]}>
+    <ViewsRow>
       <PlotCard
         fill
         title={{ en: 'SICR: annualised PD at origination against now', es: 'SICR: PD anualizada en la originación contra hoy' }}
@@ -171,15 +174,17 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
           es: 'Ejes logarítmicos. Una cuenta sobre una línea ha subido su riesgo más allá de esa prueba. Solo las presunciones de 30 y 90 dpd son de IFRS 9; la tabla de multiplicadores y el piso absoluto son política de Contraste, y el triple es una expectativa supervisora de la EBA, no ley.',
         }}
       >
+        <ChartOverTable
+          chart={
         <UPlotChart
           height="fill"
           x={{ values: grid, label: { en: 'PD at origination (annualised)', es: 'PD en la originación (anualizada)' }, log: true, format: { percent: true, digits: 2 } }}
           y={{ label: { en: 'PD now (annualised)', es: 'PD hoy (anualizada)' }, log: true, format: { percent: true, digits: 2 } }}
           series={series}
         />
-      </PlotCard>
-      <PlotCard fill title={{ en: 'The rule and the accounts', es: 'La regla y las cuentas' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+          }
+        >
+        <div>
           <ul className="ct-evidence" data-table="sicr-rule">
             {s.multiplier_schedule.map((m) => (
               <li key={m.pd_origination_upper} data-multiplier={m.multiplier}>
@@ -218,6 +223,7 @@ export function SicrView({ sel }: { sel: C06Sel | null }) {
             </tbody>
           </table>
         </div>
+        </ChartOverTable>
       </PlotCard>
     </ViewsRow>
   );

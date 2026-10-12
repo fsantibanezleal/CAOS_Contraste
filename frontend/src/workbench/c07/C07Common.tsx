@@ -1,10 +1,11 @@
 // C07's Findings, Variants and Context groups, and the live read-outs of its rail (ADR-0017 rule 3: every section shows
 // a value that moves with its controls).
-import { Callout, PlotCard, Readout, ViewsRow, pick, useShellLang, useWorkbenchState } from '@fasl-work/caos-app-shell';
+import { BarChart, Callout, PlotCard, Readout, ViewsRow, pick, useShellLang, useWorkbenchState } from '@fasl-work/caos-app-shell';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
-import { currencyUnit, money } from '../c06/format';
+import { ChartOverTable, currencyUnit, money } from '../c06/format';
+import { CalibrationView, TestsView } from './ValidationViews';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { fitOf, liveIfrs9, outputsOf, type C07Outputs, type C07Sel } from './selection';
@@ -27,13 +28,24 @@ export function C07VariantsTable({ variants, onPick, current }: { variants: Arra
   const first = variants[0]?.v;
   return (
     <PlotCard
+      fill
       title={{ en: 'The scenarios', es: 'Los escenarios' }}
       lane={REPLAY}
       provenance={provenanceOf(first?.provenance.truth_status)}
       dataKey={stateKey}
       note={{ en: 'The total provision of each regime under each scenario; the IFRS 9 column is the probability-weighted measure. The base scenario has no change to report. Pick a scenario to load it.', es: 'La provisión total de cada régimen bajo cada escenario; la columna IFRS 9 es la medida ponderada por probabilidad. El escenario base no tiene cambio que informar. Elija un escenario para cargarlo.' }}
     >
-      <div className="ct-scroll">
+      <ChartOverTable
+        chart={
+          <BarChart
+            title={{ en: 'IFRS 9 total by scenario (probability-weighted)', es: 'Total IFRS 9 por escenario (ponderada por probabilidad)' }}
+            height="fill"
+            orientation="vertical"
+            data={variants.map(({ id, title, v }) => ({ id, label: title, value: v.outputs.regimes.find((r) => r.regime === 'ifrs9')?.total_provision ?? null, tone: 'warn' as const, highlight: id === current }))}
+            axis={{ label: { en: `IFRS 9 total (${first?.outputs.currency ?? ''})`, es: `Total IFRS 9 (${first?.outputs.currency ?? ''})` }, format: { digits: 3 } }}
+          />
+        }
+      >
         <table className="caos-table ct-wrap-head" data-table="variants-c07">
           <thead>
             <tr>
@@ -62,7 +74,7 @@ export function C07VariantsTable({ variants, onPick, current }: { variants: Arra
             })}
           </tbody>
         </table>
-      </div>
+      </ChartOverTable>
     </PlotCard>
   );
 }
@@ -139,6 +151,8 @@ export function C07ContextView({ sel }: { sel: C07Sel | null }) {
           </table>
         </div>
       </PlotCard>
+      <CalibrationView sel={sel} />
+      <TestsView sel={sel} />
     </div>
   );
 }

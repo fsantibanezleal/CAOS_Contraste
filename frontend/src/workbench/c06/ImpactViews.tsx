@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { provenanceOf, REPLAY } from '../model';
 import { viridis } from '../c04/MatrixMap';
 import { Pending } from '../Pending';
-import { STAGE_COLOR, STAGE_TEXT, MaybeNumber, money, pct } from './format';
+import { ChartOverTable, STAGE_COLOR, STAGE_TEXT, MaybeNumber, money, pct } from './format';
 import { nearestPoint, outputsOf, rescaled, type C06Sel } from './selection';
 
 const LIVE = 'live' as const;
@@ -79,7 +79,7 @@ export function StageFlowView({ sel }: { sel: C06Sel | null }) {
   const chosen = flows.find((x) => `${x.source}>${x.target}` === picked) ?? null;
   const name = (id: string) => pick(STAGE_TEXT[id] ?? { en: id, es: id }, lang);
   return (
-    <ViewsRow shares={[3, 2]}>
+    <ViewsRow>
       <PlotCard
         fill
         title={{ en: `Stage flow, ${f.from_date} to ${f.to_date}`, es: `Flujo de etapas, ${f.from_date} a ${f.to_date}` }}
@@ -91,6 +91,7 @@ export function StageFlowView({ sel }: { sel: C06Sel | null }) {
           es: 'La altura de la banda es el valor en libros bruto. Un flujo que sale de una cuenta POCI termina en dada de baja o castigada: una cuenta POCI sigue POCI toda su vida. Pulse una banda para leerla.',
         }}
       >
+        <ChartOverTable chart={
         <div className="ct-map">
           <Stage label={{ en: 'Stage flow between two reporting dates', es: 'Flujo de etapas entre dos fechas de reporte' }} className="ct-map-stage">
             {({ width, height }) => {
@@ -144,9 +145,8 @@ export function StageFlowView({ sel }: { sel: C06Sel | null }) {
               : pick({ en: 'Pick a band to read its accounts and gross carrying amount.', es: 'Elija una banda para leer sus cuentas y su valor en libros bruto.' }, lang)}
           </p>
         </div>
-      </PlotCard>
-      <PlotCard fill title={{ en: 'The flows in numbers', es: 'Los flujos en números' }} lane={REPLAY} provenance={prov} dataKey={stateKey}>
-        <div className="ct-scroll">
+        }>
+        <div>
           <table className="caos-table" data-table="stage-flows">
             <thead>
               <tr>
@@ -169,6 +169,7 @@ export function StageFlowView({ sel }: { sel: C06Sel | null }) {
           </table>
           <p className="ct-note">{pick({ en: `Between ${f.from_date} and ${f.to_date}.`, es: `Entre ${f.from_date} y ${f.to_date}.` }, lang)}</p>
         </div>
+        </ChartOverTable>
       </PlotCard>
     </ViewsRow>
   );

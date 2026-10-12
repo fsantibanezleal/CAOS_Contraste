@@ -13,7 +13,7 @@ import type { components } from '../../lib/contract.gen';
 import type { CaseManifest, ModelsArtifact, VariantArtifact } from '../../lib/contract.types';
 import { useC07Instrument } from './instrument';
 import { defaultSel, liveIfrs9, outputsOf, reweighted, type C07Sel } from './selection';
-import { C07ContextView, C07FindingsView, Ifrs9Readout } from './C07Common';
+import { C07ContextView, C07FindingsView, C07VariantsTable, Ifrs9Readout } from './C07Common';
 import { B1View, BdeView, BridgeView, DeltaView, Ifrs9View, SegmentsView, ThreeRegimeView } from './RegimeViews';
 import { CalibrationView, TablesView, TestsView } from './ValidationViews';
 
@@ -188,5 +188,12 @@ describe('the C07 instrument', () => {
     expect(markup).toContain('Banco Andino');
     expect(markup).toContain(o.notice.en);
     expect(markup).toContain(variant.provenance.truth_status);
+  });
+
+  it('the scenarios table shows the three totals of each variant and no change for the base', () => {
+    const markup = html(<C07VariantsTable variants={[{ id: variant.variant_id, title: { en: 'Base', es: 'Base' }, v: variant }]} onPick={() => undefined} current={variant.variant_id} />);
+    expect(markup).toContain(`data-variant="${variant.variant_id}"`);
+    for (const r of o.regimes) expect(markup).toContain(clp(r.total_provision));
+    expect(markup).toContain('none (base)');
   });
 });
