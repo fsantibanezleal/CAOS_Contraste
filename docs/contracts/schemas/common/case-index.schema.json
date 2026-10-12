@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/case-index.schema.json",
+  "title": "Case index",
+  "description": "Catalog row case-index 1.0.0: the inventory of cases the site serves (data/derived/manifests/index.json).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","engine_version","n_cases","default_case","cases","files"],
+  "properties": {
+    "schema": {"const": "contraste.index/v1"},
+    "engine_version": {"type": "string"},
+    "n_cases": {"type": "integer", "minimum": 0},
+    "default_case": {"type": "string"},
+    "cases": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/caseIndexEntry"}
+    },
+    "files": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Further files the site serves: the contract-1 declarations."
+    }
+  },
+  "x-location": "data/derived/manifests/index.json",
+  "$defs": {
+    "caseIndexEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["case_id","title","category","category_id","kind","manifest_path"],
+      "properties": {
+        "case_id": {"type": "string"},
+        "title": {"$ref": "./text.schema.json"},
+        "category": {"$ref": "./text.schema.json"},
+        "category_id": {"type": "string"},
+        "kind": {
+          "type": "string",
+          "enum": ["real","synthetic"],
+          "description": "Where the case's data comes from, for the case picker: observed data, a generator, or a published answer."
+        },
+        "manifest_path": {"type": "string"}
+      }
+    }
+  }
+}

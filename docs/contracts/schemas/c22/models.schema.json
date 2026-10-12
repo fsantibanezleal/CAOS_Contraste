@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c22/models.schema.json",
+  "title": "C22 models",
+  "description": "Catalog row c22-models 1.0.0: the C22 models artifact with the exact-probability parity points.",
+  "allOf": [
+    {"$ref": "../common/models-envelope.schema.json"},
+    {
+      "properties": {
+        "case_id": {"const": "C22"},
+        "fit": {"$ref": "#/$defs/c22Fit"}
+      },
+      "required": ["case_id","fit"]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c22Fit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parity","levels"],
+      "properties": {
+        "parity": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/c22Parity"}
+        },
+        "levels": {
+          "type": "array",
+          "items": {"type": "number"}
+        }
+      }
+    },
+    "c22Parity": {
+      "description": "A point of the count tests' exact rejection probability, for the live calculator's parity (CT-308).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "test_id",
+        "n",
+        "pd",
+        "ratio",
+        "rho_true",
+        "rho_assumed",
+        "alpha",
+        "critical_count",
+        "probability"
+      ],
+      "properties": {
+        "test_id": {"type": "string"},
+        "n": {"type": "integer", "minimum": 0},
+        "pd": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "ratio": {"type": "number"},
+        "rho_true": {"type": "number"},
+        "rho_assumed": {"type": ["number","null"]},
+        "alpha": {"type": "number"},
+        "critical_count": {"type": ["integer","null"]},
+        "probability": {"type": "number"}
+      }
+    }
+  }
+}

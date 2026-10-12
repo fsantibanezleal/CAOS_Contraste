@@ -1,0 +1,12 @@
+{
+  "id": "F-JEFF-B",
+  "severity": "S2",
+  "status": "open",
+  "evidence": [
+    "pd.jeffreys@E0-expert@B"
+  ],
+  "title": {
+    "en": "Grade B: 2 defaults of 400 are unlikely at the expert PD (Jeffreys p = 0.005)",
+    "es": "Grado B: 2 incumplimientos de 400 son improbables con la PD experta (Jeffreys p = 0,005)"
+  }
+}

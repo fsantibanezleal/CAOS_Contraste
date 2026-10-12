@@ -1,0 +1,8 @@
+{
+  "name": "ESMA CEREP",
+  "publisher": "European Securities and Markets Authority",
+  "landing": "https://registers.esma.europa.eu/cerep-publication/",
+  "licence": "Reproduction of all information on this site (REGISTERS information) is authorised except as otherwise stated, provided the source is acknowledged",
+  "class": "mirror-allowed",
+  "attribution": "Source: ESMA CEREP; tables transformed by Contraste"
+}

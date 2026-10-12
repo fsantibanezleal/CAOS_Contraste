@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/licence-manifest.schema.json",
+  "title": "Licence manifest",
+  "description": "Catalog row licence-manifest 1.0.0: what data-pipeline/fetch.py retrieved per source, with each file's hash, size and date (data/sources/manifest.json).",
+  "x-location": "data/sources/manifest.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "sources"],
+  "properties": {
+    "schema": {"const": "contraste.licence-manifest/v1"},
+    "sources": {"type": "object", "additionalProperties": {"$ref": "#/$defs/fetchedSource"}, "description": "Source id to what was fetched."}
+  },
+  "$defs": {
+    "fetchedSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "publisher", "landing", "class", "licence", "attribution", "access", "files"],
+      "properties": {
+        "name": {"type": "string"},
+        "publisher": {"type": "string"},
+        "landing": {"type": "string"},
+        "class": {"enum": ["mirror-allowed", "derived-only", "link-only", "unusable"]},
+        "licence": {"type": "string"},
+        "attribution": {"type": "string"},
+        "access": {"type": "string"},
+        "files": {"type": "array", "items": {"$ref": "#/$defs/fetchedFile"}}
+      }
+    },
+    "fetchedFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "url", "sha256", "bytes", "retrieved"],
+      "properties": {
+        "name": {"type": "string"},
+        "url": {"type": "string"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "bytes": {"type": "integer", "minimum": 0},
+        "retrieved": {"type": "string", "description": "The date the file was retrieved."}
+      }
+    }
+  }
+}

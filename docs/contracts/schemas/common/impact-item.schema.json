@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/common/impact-item.schema.json",
+  "title": "Impact item",
+  "description": "One quantified impact of a variant.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["value","unit","label"],
+  "properties": {
+    "value": {"type": ["number","null"]},
+    "unit": {"type": "string"},
+    "label": {"$ref": "./text.schema.json"}
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c04/models.schema.json",
+  "title": "C04 models",
+  "description": "Catalog row c04-models 1.0.0: the C04 models artifact with the live parity points.",
+  "allOf": [
+    {"$ref": "../common/models-envelope.schema.json"},
+    {
+      "properties": {
+        "case_id": {"const": "C04"},
+        "fit": {"$ref": "#/$defs/c04Fit"}
+      },
+      "required": ["case_id","fit"]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c04CapitalPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pd","lgd","maturity","regime","asset_class","risk_weight"],
+      "properties": {
+        "pd": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "lgd": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maturity": {"type": "number"},
+        "regime": {"type": "string"},
+        "asset_class": {"type": "string"},
+        "risk_weight": {"type": "number"}
+      }
+    },
+    "c04Fit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parity","generator"],
+      "properties": {
+        "parity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["projection","intervals","capital"],
+          "properties": {
+            "projection": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/c04ProjectionPoint"}
+            },
+            "intervals": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/c04IntervalPoint"}
+            },
+            "capital": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/c04CapitalPoint"}
+            }
+          }
+        },
+        "generator": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["q","obligors","source"],
+          "properties": {
+            "q": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {"type": "number"}
+              }
+            },
+            "obligors": {
+              "type": "array",
+              "items": {"type": "integer"}
+            },
+            "source": {"type": "string"}
+          }
+        }
+      }
+    },
+    "c04IntervalPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["defaults","n","rho","level","wald","agresti_coull","jeffreys","n_effective"],
+      "properties": {
+        "defaults": {"type": "integer", "minimum": 0},
+        "n": {"type": "integer", "minimum": 0},
+        "rho": {"type": "number"},
+        "level": {"type": "number"},
+        "wald": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "agresti_coull": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "jeffreys": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "n_effective": {"type": "number"}
+      }
+    },
+    "c04ProjectionPoint": {
+      "description": "The live parity of C04's models artifact (contract section 4), and the families' generator.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "agency",
+        "matrix",
+        "origination",
+        "w0",
+        "years",
+        "default_rate",
+        "portfolio_last",
+        "ttc",
+        "ttc_default_rate"
+      ],
+      "properties": {
+        "agency": {"type": "string"},
+        "matrix": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {"type": "number"}
+          }
+        },
+        "origination": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "w0": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "years": {"type": "integer"},
+        "default_rate": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "portfolio_last": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "ttc": {
+          "type": "array",
+          "items": {"type": "number"}
+        },
+        "ttc_default_rate": {"type": "number"}
+      }
+    }
+  }
+}

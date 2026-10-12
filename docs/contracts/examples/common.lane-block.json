@@ -1,0 +1,8 @@
+{
+  "lane": "precompute",
+  "reasons": [
+    "not pure-python",
+    "wheels outside the live set: ['pypdf']",
+    "runtime exceeds the 1500ms budget"
+  ]
+}
