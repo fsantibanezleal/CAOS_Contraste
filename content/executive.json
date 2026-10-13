@@ -1,15 +1,15 @@
 {
   "executive": {
-    "en": "Chief Risk Officer",
-    "es": "Gerente de Riesgos"
+    "en": "Chief risk officers and heads of model validation",
+    "es": "Gerentes de riesgos y jefes de validación de modelos"
   },
   "organisation": {
-    "en": "a Chilean commercial bank supervised by the Financial Market Commission (CMF)",
-    "es": "un banco comercial chileno supervisado por la Comisión para el Mercado Financiero (CMF)"
+    "en": "Banks that build, validate and defend internal credit and provisioning models before their supervisor",
+    "es": "Bancos que construyen, validan y defienden modelos internos de crédito y provisiones ante su supervisor"
   },
   "initiative": {
-    "en": "Get the bank's credit and provisioning models ready for the first CMF review, under proposed rules that allow one application every twelve months.",
-    "es": "Dejar los modelos de crédito y de provisiones del banco listos para la primera revisión de la CMF, bajo una propuesta de norma que admite una solicitud cada doce meses."
+    "en": "Get internal credit and provisioning models ready for supervisory review, as supervisors open the use of internal models.",
+    "es": "Preparar los modelos internos de crédito y provisiones para la revisión del supervisor, a medida que este abre el uso de modelos internos."
   },
   "why_now": {
     "figure": {
@@ -28,8 +28,8 @@
     }
   },
   "vision": {
-    "en": "The risk committee sees what each modelling choice does to capital and provisions, and how often each validation test errs, before the bank files with the CMF.",
-    "es": "El comité de riesgos ve el efecto de cada decisión de modelación en el capital y las provisiones, y el error de cada prueba, antes de presentar a la CMF."
+    "en": "Risk committees see what each modelling choice does to capital and provisions, and how often each validation test errs, before a model is filed.",
+    "es": "Los comités de riesgo ven el efecto de cada decisión de modelación en capital y provisiones, y cuánto yerra cada prueba, antes de presentar un modelo."
   },
   "outcomes": [
     {
@@ -132,52 +132,42 @@
   "dialogue": [
     {
       "question": {
-        "en": "Will the CMF accept this as evidence?",
-        "es": "¿Aceptará la CMF esto como evidencia?"
+        "en": "Will a supervisor accept this as evidence?",
+        "es": "¿Aceptará un supervisor esto como evidencia?"
       },
       "answer": {
-        "en": "Only the CMF decides, and the product certifies no model. Its draft rules ask the bank's validation function to certify each application beforehand, and this gives that function evidence it can re-run.",
-        "es": "Solo la CMF decide, y el producto no certifica ningún modelo. Su propuesta de norma pide que la función de validación del banco certifique cada solicitud antes, y esto le da evidencia que puede repetir."
+        "en": "Only the supervisor decides, and the product certifies no model. The CMF's draft rules ask each bank's validation function to certify an application beforehand, and this gives that function evidence it can re-run.",
+        "es": "Solo el supervisor decide, y el producto no certifica ningún modelo. Las reglas propuestas por la CMF piden que la función de validación de cada banco certifique la solicitud antes, y esto le da evidencia que puede volver a calcular."
       }
     },
     {
       "question": {
-        "en": "Does it compute our own capital and provisions?",
-        "es": "¿Calcula nuestro propio capital y nuestras provisiones?"
+        "en": "Does it compute a bank's own capital and provisions?",
+        "es": "¿Calcula el capital y las provisiones de un banco en particular?"
       },
       "answer": {
-        "en": "No. It runs on public data and on generated banks, so it shows what a choice does, and our validators must test our own loans separately.",
-        "es": "No. Corre sobre datos públicos y sobre bancos generados, de modo que muestra qué hace una decisión, y nuestros validadores deben probar por separado nuestros propios créditos."
+        "en": "No. It runs on public data and on generated banks, so it shows what a choice does; each bank still tests its own loans.",
+        "es": "No. Funciona con datos públicos y con bancos generados, así que muestra qué hace una decisión; cada banco igual debe probar sus propios créditos."
       }
     },
     {
       "question": {
-        "en": "What happens if the CMF turns our application down?",
-        "es": "¿Qué pasa si la CMF rechaza nuestra solicitud?"
+        "en": "What happens if the supervisor turns an application down?",
+        "es": "¿Qué pasa si el supervisor rechaza una solicitud?"
       },
       "answer": {
-        "en": "Under the draft rules the bank may file once every twelve months, unless validation and internal audit show the findings are resolved. Testing before filing protects that year.",
-        "es": "Según la propuesta de norma el banco puede presentar una vez cada doce meses, salvo que validación y auditoría interna muestren que las observaciones están resueltas. Probar antes de presentar protege ese año."
+        "en": "Under the CMF's draft rules a bank may file once every twelve months, unless validation and internal audit show the findings are resolved. Testing before filing protects that year.",
+        "es": "Según las reglas propuestas por la CMF, un banco puede presentar una solicitud cada doce meses, salvo que validación y auditoría interna muestren que las observaciones están resueltas. Probar antes de presentar protege ese año."
       }
     },
     {
       "question": {
-        "en": "Do machine learning models belong in our application?",
-        "es": "¿Pertenecen los modelos de aprendizaje automático a nuestra solicitud?"
+        "en": "Do machine learning models belong in an application?",
+        "es": "¿Caben los modelos de aprendizaje automático en una solicitud?"
       },
       "answer": {
-        "en": "Only if they earn it. The product compares them with the current scorecard on held-out loans and shows the capital difference.",
-        "es": "Solo si se lo ganan. El producto los compara con el scorecard actual sobre créditos reservados y muestra la diferencia de capital."
-      }
-    },
-    {
-      "question": {
-        "en": "What does it cost to run?",
-        "es": "¿Cuánto cuesta operarlo?"
-      },
-      "answer": {
-        "en": "It is free, open software that runs in a web browser, with no server to buy or secure. The cost is the time of our validators.",
-        "es": "Es software libre y abierto que corre en un navegador, sin servidor que comprar ni proteger. El costo es el tiempo de nuestros validadores."
+        "en": "Only if they earn it. The work compares them with the current scorecard on held-out loans and shows the capital difference.",
+        "es": "Solo si se lo ganan. El trabajo los compara con el scorecard actual en créditos reservados y muestra la diferencia de capital."
       }
     }
   ],
@@ -185,8 +175,8 @@
     "initiative": {
       "file": "executive/initiative.svg",
       "caption": {
-        "en": "The chief risk officer stands before the bank's models, with the first CMF filing in 2028 and the new rules in 2031 ahead.",
-        "es": "El gerente de riesgos está frente a los modelos del banco, con la primera presentación a la CMF en 2028 y la nueva norma en 2031 por delante."
+        "en": "A chief risk officer stands before a bank's models, with the first CMF filing in 2028 and the new rules in 2031 ahead.",
+        "es": "Un gerente de riesgos está frente a los modelos del banco, con la primera presentación a la CMF en 2028 y la nueva norma en 2031 por delante."
       }
     },
     "problem": {

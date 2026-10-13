@@ -42,9 +42,12 @@ describe('the Contraste executive view', () => {
     expect('four_cs' in executive).toBe(FOUR_CS.length > 0);
   });
 
-  it('names one executive in one organisation and a source for every figure', () => {
-    expect(executive.executive.en).toBe('Chief Risk Officer');
-    expect(executive.organisation.en).toMatch(/^a Chilean commercial bank/);
+  it('names a family of roles and a class of banks, never one client, and a source for every figure', () => {
+    // general, never tied to a client (Felipe, 2026-10-13): a family of roles, a class of organisations, no first person
+    expect(executive.executive.en).toMatch(/officers .*heads of model validation/i);
+    expect(executive.organisation.en).toMatch(/^Banks that /);
+    const text = JSON.stringify(executive);
+    for (const bad of [/\bour\b/i, /\bnuestr[oa]s?\b/i, /a Chilean commercial bank/i, /\bfree\b/i, /\bprice\b/i, /\bcontact\b/i]) expect(text).not.toMatch(bad);
     expect(executive.outcomes.length).toBeGreaterThanOrEqual(3);
     expect(executive.outcomes.length).toBeLessThanOrEqual(5);
     const fields = executive.sources.map((s) => s.field);
