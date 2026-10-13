@@ -7,6 +7,9 @@
 import type { components } from './contract.gen';
 import { C06_FIT, C06_OUTPUTS } from '../workbench/c06/descriptor';
 import { C07_FIT, C07_OUTPUTS } from '../workbench/c07/descriptor';
+import { C03_FIT, C03_OUTPUTS } from '../workbench/c03/descriptor';
+import { C08_FIT, C08_OUTPUTS } from '../workbench/c08/descriptor';
+import { C09_FIT, C09_OUTPUTS } from '../workbench/c09/descriptor';
 
 /** Every reader-facing string is bilingual at the source. */
 export type Text = components['schemas']['common-text'];
@@ -1245,6 +1248,14 @@ export const MODELS_C04 = {
 // --- C06 and C07 (U5-W): the descriptors live beside the instruments that read them -----------------------------------
 export const VARIANT_C06 = { ...VARIANT, outputs: C06_OUTPUTS } satisfies Record<keyof VariantArtifact, Kind>;
 export const VARIANT_C07 = { ...VARIANT, outputs: C07_OUTPUTS } satisfies Record<keyof VariantArtifact, Kind>;
+// The partial-key oneOf rows of the U6 variant schemas (vintage rows, CCF rows, floor cells, EAD models) have no descriptor
+// form, so each case declares those nodes `json` and its `tests` open (the descriptor files say which).
+export const VARIANT_C03 = { ...VARIANT, outputs: C03_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C08 = { ...VARIANT, outputs: C08_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C09 = { ...VARIANT, outputs: C09_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
+export const MODELS_C03 = { ...MODELS, fit: C03_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
+export const MODELS_C08 = { ...MODELS, fit: C08_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
+export const MODELS_C09 = { ...MODELS, fit: C09_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C06 = { ...MODELS, fit: C06_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C07 = { ...MODELS, fit: C07_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 
@@ -1260,6 +1271,9 @@ export function variantKind(doc: {
   | typeof VARIANT_C05_LDP
   | typeof VARIANT_C06
   | typeof VARIANT_C07
+  | typeof VARIANT_C03
+  | typeof VARIANT_C08
+  | typeof VARIANT_C09
   | typeof VARIANT_C22 {
   const kind = doc.outputs?.kind;
   if (kind === 'agency') return VARIANT_C04_AGENCY;
@@ -1267,6 +1281,9 @@ export function variantKind(doc: {
   if (kind === 'published') return VARIANT_C04_PUBLISHED;
   if (kind === 'reporting-date') return VARIANT_C06;
   if (kind === 'three-regime') return VARIANT_C07;
+  if (kind === 'vintage-cohort') return VARIANT_C03;
+  if (kind === 'default-cohort') return VARIANT_C08;
+  if (kind === 'acceleration-level') return VARIANT_C09;
   return kind === 'sp-calibration' ? VARIANT_C05_SP : kind === 'ldp' ? VARIANT_C05_LDP : kind === 'validator' ? VARIANT_C22 : VARIANT;
 }
 
@@ -1274,11 +1291,14 @@ export function variantKind(doc: {
 export function modelsKind(doc: {
   case_id?: string;
   fit_id?: string;
-}): typeof MODELS | typeof MODELS_C04 | typeof MODELS_C05_SP | typeof MODELS_C05_LDP | typeof MODELS_C06 | typeof MODELS_C07 | typeof MODELS_C22 {
+}): typeof MODELS | typeof MODELS_C04 | typeof MODELS_C05_SP | typeof MODELS_C05_LDP | typeof MODELS_C06 | typeof MODELS_C07 | typeof MODELS_C03 | typeof MODELS_C08 | typeof MODELS_C09 | typeof MODELS_C22 {
   if (doc.case_id === 'C04') return MODELS_C04;
   if (doc.case_id === 'C05') return doc.fit_id === 'ldp' ? MODELS_C05_LDP : MODELS_C05_SP;
   if (doc.case_id === 'C06') return MODELS_C06;
   if (doc.case_id === 'C07') return MODELS_C07;
+  if (doc.case_id === 'C03') return MODELS_C03;
+  if (doc.case_id === 'C08') return MODELS_C08;
+  if (doc.case_id === 'C09') return MODELS_C09;
   if (doc.case_id === 'C22') return MODELS_C22;
   return MODELS;
 }

@@ -5,7 +5,7 @@
 // workout formula, the model table, the benchmarks, the CCF identity and the terminology of Qi (2009) were read at their
 // primary source or, where marked UNVERIFIED, through a summary) and dossier 01 (the Basel framework, section A.5 and C:
 // the LGD floors, the EAD floor and the standardised CCFs). Every display equation carries a caption that defines its
-// symbols. The registry mounts it as one tab of the models group; one file exports one section, so the topic is one
+// symbols. The registry mounts it as one tab of the loss group; one file exports one section, so the topic is one
 // `method` section with one part per question, as sub-tabs (ADR-0017 section 2.1), each part with its own paragraphs,
 // equations and figure, and one honest callout for the topic.
 import { Callout, Cite, DocSection, Equation, Figure, SubTabs } from '@fasl-work/caos-app-shell';
@@ -183,7 +183,7 @@ function Body() {
 
 export const methodologySection: MethodologySection = {
   id: 'lgd-ead',
-  group: 'tests',
+  group: 'loss',
   order: 110,
   title: { en: 'LGD and EAD', es: 'LGD y EAD' },
   Body,
