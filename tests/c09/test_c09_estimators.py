@@ -1,4 +1,4 @@
-"""CT-905, CT-906: a CCF outside [0, 1] is flagged and never clipped; an undefined CCF is excluded and counted."""
+"""CT-1005, CT-1006: a CCF outside [0, 1] is flagged and never clipped; an undefined CCF is excluded and counted."""
 from __future__ import annotations
 
 import numpy as np

@@ -1,8 +1,8 @@
 """The c09-outputs (one per acceleration level) and c09-models documents of C09 from the engine results.
 
-Every estimate, bias, interval, test row, floor and back-test number is returned by a ``riskvalidation`` function (CT-907); this
+Every estimate, bias, interval, test row, floor and back-test number is returned by a ``riskvalidation`` function (CT-1007); this
 module orders them, names them and writes the bilingual text. A CCF is written as ``{value, flag}`` with the engine's ``range_flag``
-and is never clipped (CT-905): after a censor or floor-cap treatment the estimate lies in [0, 1] by construction.
+and is never clipped (CT-1005): after a censor or floor-cap treatment the estimate lies in [0, 1] by construction.
 """
 from __future__ import annotations
 

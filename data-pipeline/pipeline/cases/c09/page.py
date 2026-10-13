@@ -1,4 +1,4 @@
-"""The result table of ``docs/cases/C09.md``, generated from the committed documents (CT-913), and the claims check.
+"""The result table of ``docs/cases/C09.md``, generated from the committed documents (CT-1013), and the claims check.
 
 ``python data-pipeline/pipeline/cases/c09/page.py`` rewrites the block between the two markers of the case page from
 ``data/derived/C09``; the test compares the page's block with ``results_block`` so the page cannot drift from the documents.

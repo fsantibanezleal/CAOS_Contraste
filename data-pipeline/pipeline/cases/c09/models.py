@@ -1,5 +1,5 @@
 """The EAD model ladder of C09: CCF constants by design and treatment, a bounded-scale CCF model, a direct EAD model and a
-utilisation-change model, fitted on the development replications and predicted on the test replications (CT-907, CT-910).
+utilisation-change model, fitted on the development replications and predicted on the test replications (CT-1007, CT-1010).
 
 Every fit, prediction and back-test comes from ``riskvalidation``: ``ccf.aggregate_ccf``, ``ccf.fit_direct_ead``,
 ``ccf.fit_utilisation_change``, ``ccf.predict_ead``, ``ccf.ead_from_ccf``, ``lgd_models.fit_fractional_logit`` and

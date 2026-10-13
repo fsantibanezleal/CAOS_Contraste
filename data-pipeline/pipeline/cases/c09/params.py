@@ -1,5 +1,5 @@
 """The parameter file of the C09 generator: every number the revolving-line generator draws with, its source or its label
-"assumption of the case", and the closed form of the known CCF it implies (CT-902, CT-904).
+"assumption of the case", and the closed form of the known CCF it implies (CT-1002, CT-1004).
 
 Model (docs/design/features/c09/design.md). A line that defaults draws down its undrawn amount over the twelve months before the
 default. The undrawn amount decays geometrically, ``U_m = U_0 exp(-r rho_tier nu sum_{j<=m} w_j)``, with ``nu`` a mean-one gamma

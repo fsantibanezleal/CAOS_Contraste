@@ -3,7 +3,7 @@
 ``build`` makes every document in memory (no input file: the Fed marginals are committed in ``params`` with their hashes);
 ``bake`` writes them, the checksums and the manifest. The documents are the c09-models and c09-outputs contracts
 (docs/contracts/schemas/c09/). Development replications fit the EAD models, independent test replications evaluate every
-estimate against the known CCF; both sets are fixed by seed (CT-903).
+estimate against the known CCF; both sets are fixed by seed (CT-1003).
 """
 from __future__ import annotations
 

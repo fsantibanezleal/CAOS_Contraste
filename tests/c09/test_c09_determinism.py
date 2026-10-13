@@ -1,4 +1,4 @@
-"""CT-911: the bake is a pure function of its seed."""
+"""CT-1011: the bake is a pure function of its seed."""
 from __future__ import annotations
 
 import hashlib
