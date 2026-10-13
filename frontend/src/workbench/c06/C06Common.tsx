@@ -1,6 +1,6 @@
 // C06's Findings, Variants and Context groups, and the live read-outs of its rail (ADR-0017 rule 3: every section shows
 // a value that moves with its controls). The Findings card and the fixture notice are shared with C07.
-import { BarChart, Callout, PlotCard, Readout, ViewsRow, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
+import { BarChart, Callout, PlotCard, Readout, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { Finding, VariantArtifact } from '../../lib/contract.types';
 import { REPLAY, provenanceOf } from '../model';
@@ -286,7 +286,7 @@ export function WeightReadout({ sel }: { sel: C06Sel | null }) {
       provenance={prov}
       dataKey={stateKey}
       items={[
-        { label: { en: 'ECL, frozen', es: 'PCE cong.' }, ...amount(liveEcl(sel)), hint: { en: `The model ECL at these weights: the sum of weight times the ECL of each scenario at the staging of the weighted conditions, with ${label.en} at ${(sel.weight * 100).toFixed(1)}% and the others in their ratios; overlays excluded.`, es: `La PCE del modelo con estos pesos: la suma del peso por la PCE de cada escenario con las etapas de las condiciones ponderadas, con ${label.es} en ${(sel.weight * 100).toFixed(1).replace('.', ',')}% y los otros en sus proporciones; sin ajustes.` } },
+        { label: { en: 'ECL, frozen', es: 'PCE cong.' }, ...amount(liveEcl(sel)), hint: { en: `The model ECL at these weights: the sum of weight times the ECL of each scenario at the staging of the weighted conditions, with ${label.en} at ${formatNumber(sel.weight, 'en', { percent: true, decimals: 1 })} and the others in their ratios; overlays excluded.`, es: `La PCE del modelo con estos pesos: la suma del peso por la PCE de cada escenario con las etapas de las condiciones ponderadas, con ${label.es} en ${formatNumber(sel.weight, 'es', { percent: true, decimals: 1 })} y los otros en sus proporciones; sin ajustes.` } },
         { label: { en: 'Grid, recalc.', es: 'Grilla, recalc.' }, ...amount(near?.ecl_recomputed), hint: { en: 'At the precomputed simplex point nearest to these weights, staging recomputed.', es: 'En el punto del simplex precalculado más cercano a estos pesos, con etapas recalculadas.' } },
         { label: { en: 'Stage 2 share', es: 'Frac. Etapa 2' }, value: near?.stage2_ratio_recomputed ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'At the same grid point, staging recomputed.', es: 'En el mismo punto de la grilla, con etapas recalculadas.' } },
       ]}

@@ -3,7 +3,7 @@
 // Simplex, the staging mode and the surface), each with its control and a live read-out; the groups are the validator's questions: Model,
 // Validation, Impact, Findings, with the Variants and Context views. The workbench calls this hook on every case and
 // uses it when the case is C06 and the variant is a reporting-date document.
-import { ChipGroup, Knob, SubTabs, pick, useShellLang, type BiText, type RailSection } from '@fasl-work/caos-app-shell';
+import { ChipGroup, Knob, SubTabs, formatNumber, pick, useShellLang, type BiText, type RailSection } from '@fasl-work/caos-app-shell';
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import type { CaseData } from '../../api/artifacts';
 import { provenanceOf } from '../model';
@@ -77,7 +77,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <RailSelect
           id="c06-scenario"
           label={{ en: 'Scenario', es: 'Escenario' }}
-          options={o.scenarios.map((s) => ({ id: s.id, label: s.label, hint: { en: `Contract weight ${(s.weight * 100).toFixed(0)}%, factor z ${s.z_mean}`, es: `Peso del contrato ${(s.weight * 100).toFixed(0)}%, factor z ${String(s.z_mean).replace('.', ',')}` } }))}
+          options={o.scenarios.map((s) => ({ id: s.id, label: s.label, hint: { en: `Scenario weight ${formatNumber(s.weight, 'en', { percent: true, decimals: 0 })}, factor z ${formatNumber(s.z_mean, 'en')}`, es: `Peso del escenario ${formatNumber(s.weight, 'es', { percent: true, decimals: 0 })}, factor z ${formatNumber(s.z_mean, 'es')}` } }))}
           value={sel.scenario}
           onChange={(id) => {
             setScenario(id);

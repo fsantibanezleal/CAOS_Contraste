@@ -1,6 +1,6 @@
 // C07's Findings, Variants and Context groups, and the live read-outs of its rail (ADR-0017 rule 3: every section shows
 // a value that moves with its controls).
-import { BarChart, Callout, PlotCard, Readout, ViewsRow, pick, useShellLang, useWorkbenchState } from '@fasl-work/caos-app-shell';
+import { BarChart, Callout, PlotCard, Readout, ViewsRow, formatNumber, pick, useShellLang, useWorkbenchState } from '@fasl-work/caos-app-shell';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
@@ -174,7 +174,7 @@ export function Ifrs9Readout({ sel }: { sel: C07Sel | null }) {
       provenance={prov}
       dataKey={stateKey}
       items={[
-        { label: { en: 'Weighted ECL', es: 'PCE ponderada' }, ...amount(live), hint: { en: `Sum of weight times the ECL of each component, with ${name.en} at ${(sel.weight * 100).toFixed(1)}% and the others in their ratios; overlays excluded. 100% on one scenario is a sensitivity, never the IFRS 9 measure.`, es: `Suma del peso por la PCE de cada componente, con ${name.es} en ${(sel.weight * 100).toFixed(1).replace('.', ',')}% y los otros en sus proporciones; sin ajustes. 100% en un escenario es una sensibilidad, nunca la medida IFRS 9.` } },
+        { label: { en: 'Weighted ECL', es: 'PCE ponderada' }, ...amount(live), hint: { en: `Sum of weight times the ECL of each component, with ${name.en} at ${formatNumber(sel.weight, 'en', { percent: true, decimals: 1 })} and the others in their ratios; overlays excluded. 100% on one scenario is a sensitivity, never the IFRS 9 measure.`, es: `Suma del peso por la PCE de cada componente, con ${name.es} en ${formatNumber(sel.weight, 'es', { percent: true, decimals: 1 })} y los otros en sus proporciones; sin ajustes. 100% en un escenario es una sensibilidad, nunca la medida IFRS 9.` } },
         { label: { en: 'IFRS 9 total', es: 'Total IFRS 9' }, ...amount(live + o.ifrs9_detail.overlays_total), hint: { en: 'The weighted model ECL plus the overlays, which are kept apart from the model.', es: 'La PCE ponderada del modelo más los ajustes, que se mantienen aparte del modelo.' } },
       ]}
     />
@@ -196,7 +196,7 @@ export function ScenarioReadout({ sel }: { sel: C07Sel | null }) {
       provenance={prov}
       dataKey={stateKey}
       items={[
-        { label: { en: 'Contract weight', es: 'Peso del contrato' }, value: c?.weight ?? null, unitless: true, format: { percent: true, decimals: 1 } },
+        { label: { en: 'Scenario weight', es: 'Peso del escenario' }, value: c?.weight ?? null, unitless: true, format: { percent: true, decimals: 1 } },
         { label: { en: 'Factor z', es: 'Factor z' }, value: c?.z ?? null, unitless: true, format: { digits: 3 }, hint: { en: 'The systemic factor the scenario sets, in standard deviations.', es: 'El factor sistémico que fija el escenario, en desviaciones estándar.' } },
         { label: { en: 'ECL, alone', es: 'PCE, sola' }, ...amount(c?.single_scenario_ecl ?? null), hint: { en: 'The ECL if this scenario had all the weight: a sensitivity, never the measure.', es: 'La PCE si este escenario tuviera todo el peso: una sensibilidad, nunca la medida.' } },
       ]}

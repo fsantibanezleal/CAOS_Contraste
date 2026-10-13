@@ -3,6 +3,69 @@
 All notable changes to this product. Versions are X.XX.XXX (VERSION is the single source); every release is
 tagged.
 
+## [0.08.000], 2026-10-13
+
+Contraste now computes loan-loss provisions. Case C06 runs IFRS 9 lifetime PD, staging and the expected credit loss on the public SBA 7(a) small-business loans at six reporting dates from 2006 to 2023, each model tested on what happened after its date. Case C07 provisions one synthetic Chilean bank, Banco Andino, calibrated to CMF system aggregates, under CMF B-1, IFRS 9 and BdE Annex 9 in six scenarios. Six of the 22 cases are built. The engine is riskvalidation 0.05.000; on shell 0.11.2 and template 0.05.000.
+
+- Integration: the case index and the readiness list C06 and C07 as built (16 planned cases remain); the pi contract is 2.0.0 (the C06 and C07 documents join the documents the API may serve); a test row lit by an acceptance band rather than a p-value (the IFRS 9 lifetime PD backtest) keeps its committed light when the policy rail moves, and its threshold is labelled as a policy acceptance band, not regulatory.
+- Case C06 (U5-P1): the real producer of the `c06-outputs` and `c06-models` documents on the SBA 7(a) FOIA loans (the public
+  small-business twin of the mortgage case; Freddie Mac is not used, the owner's account is missing) and the Federal Reserve
+  2026 scenario shapes, for six reporting dates (2006-12, 2008-12, 2010-12, 2019-12, 2020-06, 2023-06). A lifetime PD ladder on
+  statsmodels (Kaplan-Meier, a discrete-time hazard with macro covariates, Cox), term structures per scenario, IFRS 9 staging,
+  probability-weighted ECL, the IFRS 7 35H and 35I roll-forwards and the IFRS 9 battery, every number of a term structure, stage,
+  ECL, allowance and test through `riskvalidation` 0.5.0 (tag v0.05.000). Case package `data-pipeline/pipeline/cases/c06/`,
+  documents under `data/derived/C06/`, page `docs/cases/C06.md`, requirements CT-501 to CT-517 with adversarial validation rows,
+  tests in `tests/c06/` on a committed sample of 12,000 SBA rows.
+- Sources: `sba-foia` and `fed-stress-tests` gain their fetch specifications (`data-pipeline/config/sources.json`) and their
+  files are pinned in `data/sources/manifest.json`.
+- Case C07, the Chile provisions trilogy (U5-P2): the real producer of the `c07-models` and `c07-outputs` contracts. One synthetic bank,
+  "Banco Andino" (171,500 accounts, CLP 6.0 trillion, labelled synthetic), calibrated to the CMF "Informe del Desempeno del Sistema
+  Bancario y Cooperativas" of August 2026 (loan mix, provision index and 90-day delinquency by portfolio, each target with its URL,
+  month and file hash), provisioned under CMF CNCB B-1, IFRS 9 and BdE Circular 4/2017 Annex 9 through `riskvalidation` 0.5.0 in six
+  scenario variants (base, recession, consumer arrears shock, house price fall, UF inflation spike, combined severe). The IFRS 9
+  column is the probability-weighted ECL with overlays as separate lines; the gap from B-1 to IFRS 9 is an exhaustive bridge that
+  closes to the peso. Package `data-pipeline/pipeline/cases/c07/`, documents `data/derived/C07/` (seven documents, about 220 KB, with
+  `SHA256SUMS.txt`), manifest `data/derived/manifests/C07.json`, case page `docs/cases/C07.md`, requirements CT-701 to CT-713 in
+  `docs/design/features/c07/`, tests `tests/c07/` (a 3,430-account book, seconds).
+- Contracts U5-S: the C06 case documents (`docs/contracts/schemas/c06/`: `variant-reporting-date` with outputs.kind
+  `reporting-date`, and `models`) and the C07 case documents (`c07/`: `variant-three-regime` with outputs.kind
+  `three-regime`, and `models`), each strict both ways, PD open (0, 1) at estimate sites, every money block carrying its
+  `currency`, nullable fields with their reason where the bake may lack data; four fixture documents under
+  `docs/contracts/fixtures/c06/` and `c07/` (labelled fixtures, never results).
+- Contracts U5-S: the engine provisions API contract `docs/contracts/engine/provisions-api.md` 1.0.0: signatures, units,
+  invariants and goldens (the 2.68% against 1.80% non-linearity example, the B-1 cells, the Annex 9 tables) of the term
+  structure, staging, ECL, overlays, reconciliation, IFRS 9 battery, CMF B-1 and BdE Annex 9 modules; catalog rows in
+  `docs/contracts/rows/U5.md`; tests in `tests/contracts_u5/`.
+- Contracts U5-S, review fixes: the C06 and C07 schemas, the four fixtures, the engine provisions API and the rows fragment are
+  corrected after the Opus review (fixes 1 to 14); the contracts stay at version 1.0.0 because nothing has consumed them yet.
+  Engine API: competing risks are their own `CompetingRisks` record with `forward_pd` as `(F_D(b) - F_D(a)) / S_all(a)`; one
+  tolerance basis `1e-6 * max(1, G)` (G the total gross carrying amount); `Overlay.stage` (null is carried in the stage1
+  closing); an explicit POCI mask; the low credit risk exemption scope and `lcr_exempt`; one path for the collective transfer;
+  Annex 9 doubtful buckets in days; the 0.50% minimum on the individual normal portfolio; a light rule per validation function;
+  Aalen-Johansen when prepayment competes.
+- Contracts U5-S, C06: waterfall line ids equal allowance movement ids (`overlay-<id>` for overlays), a GCA movement enum,
+  non-negative stage 1 to 3 allowances, a re-balanced fixture, one staging policy source (`settings.sicr` with `default_dpd` and
+  `low_credit_risk_pd`), at least two scenarios, no flow out of POCI, cohort and estimator on the lifetime backtest, and the
+  12, 24 and 36 month decile calibration.
+- Contracts U5-S, C07: the B-1 total is the statutory provisions plus the minimum top-up with additional provisions outside it
+  (`booked_total`); a statutory status per regime and exactly three regimes; the IFRS 9 regime is a probability-weighted ECL over
+  at least two scenarios (weights, staging policy, EIR basis and the variant `z_shift` in the models), overlays are their own
+  lines; `internal` nullable with a reason; Annex 9 segment codes with separate labels; `delta_vs_base` follows the scenario.
+- Tests U5-S: `tests/contracts_u5/test_u5_review_fixes.py` holds one plant per review finding; the rows fragment now passes
+  `scripts/check_contracts.py`; the generated contract types and OpenAPI are regenerated.
+- C06 instrument (`frontend/src/workbench/c06/`): mortgage lifetime PD, IFRS 9 staging and ECL at one reporting date, built against the `c06-outputs` and `c06-models` 1.0.0 contracts and their fixtures. Model: PD term structures per scenario (cumulative, marginal, hazard) with the origination forward curve of the selected account, the SICR scatter with the multiplier, absolute floor and threefold lines drawn from the document's own policy, the non-linearity panel and the ladder. Validation: lifetime backtest, calibration by decile, rung comparison, the roll-forward identities on their one tolerance basis and the test rows. Impact: stage flow between two reporting dates, the allowance waterfall with every overlay as a bar of its own, the scenario-weight simplex (staging recomputed against frozen, with the rail weights marked) and the stage summary.
+- C07 instrument (`frontend/src/workbench/c07/`): the Chile provisions trilogy of the synthetic Banco Andino under CMF B-1, IFRS 9 and BdE Annex 9, built against the `c07-outputs` and `c07-models` 1.0.0 contracts and their fixtures. The three regimes with their legal status, the segments and gaps, the bridge from the B-1 comparable total to the IFRS 9 total, each regime in detail (the B-1 minimum, max rule and additional provisions outside the comparable total; the IFRS 9 probability-weighted components with a single scenario only as a labelled sensitivity and the overlays apart; the BdE categories mapped to stages), the calibration targets, the transcribed B-1 tables and the scenario change against the base.
+- Both instruments show a value the contract allows to be null as "not available" with its reason, say when the document is a fixture, carry their lane on every view, and are registered by `useInstrument` in `instrument.tsx` (no shared file edited). The C06 capital bridge is not drawn: the `c06-outputs` 1.0.0 contract carries no capital data.
+- Methodology: one `method` section on provisions (`pages/methodology/provisions.tsx`, models group): lifetime PD identities, the ECL as a sum of marginal losses, the one-factor conversion and non-linearity with the worked example of dossier 02, the SICR rule, CMF B-1 and BdE Annex 9, a schematic of the three regimes and one honest callout; bilingual, transcribed from dossiers 02 and 03.
+- References of unit U5 in `content/citations/U5.ts` and the coverage rows of C06 and C07 in `content/coverage/U5.ts`.
+- Consumer tests `workbench/c06/c06.test.tsx` and `workbench/c07/c07.test.tsx` render every view from the fixtures and read the numbers back from the markup.
+- C06 and C07 rails fixed against the shell gate on the real bakes (ADR-0071 rules 6 and 7). The long lists taken from the documents (the scenarios, the segments, the 40 sampled accounts) are one select control each (`c06/RailSelect.tsx`, option text fitted with the shell text kit, the whole label and the hint as the title), not columns of chips. The rail is split in sections that each fit the 686 px rail at 1280x800 with a control group and a live read-out: C06 Scenarios, Curves, Account, Simplex; C07 Regimes, Segment, Scenario, Weight, B-1. New read-outs: the weighted curve of the segment in the measure chosen (C06), the regime in focus and the scenario in the document (C07).
+- Money in a rail read-out or control is compact with its unit ("19.6 bn USD", "19,6 mil M USD"), never an eleven-digit amount (`compactMoney`, `axisScale` in `c06/format.tsx`); the tables beside the drawings keep the whole amount. The read-out labels no longer carry a scenario name from the document (the hint does). The C07 additional-provisions knob is in billions with its unit.
+- C06 drawings: the allowance waterfall axis and bar values are in billions with the scale in the axis title (the title no longer overlaps an 11-digit tick); the scenario-weight simplex leaves each lower corner label the room its fitted label needs and gives the whole label as a title; the stage-flow bands are drawn widest first, so a thin band is not covered by a wide one. The Findings card (shared by C06 and C07) fills its stage, so the drawn views keep the 50% floor on the C07 Findings view.
+- Tests: `c06.test.tsx` and `c07.test.tsx` read the real committed documents in both languages (no raw amount in a rail, the select controls, a shortened label with its title, the sections, the read-outs).
+- Rail read-outs shortened to fit (accepted by the main session): the C06 "Weight" row (it repeats the knob), the C06 "Grid ECL, frozen" row and the C07 "BdE - B-1" rail row are no longer in the rail; the first two stay in the Simplex view table and the third in the C07 Segments view.
+- C06 stage flow: the bands are no longer controls of their own (two bands can cross exactly at their middle, so one of them cannot be pointed at there, which the gate measured): a click on a band still selects it, and every flow is a button in the first column of its table row for the keyboard and the screen reader; a band is drawn at least 4 px thick.
+
 ## [0.07.000], 2026-10-12
 
 Contraste now opens for the person accountable for a bank's models: the Introduction leads with an executive view (the
