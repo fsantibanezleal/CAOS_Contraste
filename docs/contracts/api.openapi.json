@@ -177,6 +177,12 @@
                       "$ref": "#/components/schemas/c09-variant-acceleration-level"
                     },
                     {
+                      "$ref": "#/components/schemas/c17-models"
+                    },
+                    {
+                      "$ref": "#/components/schemas/c17-variant-tail-index"
+                    },
+                    {
                       "$ref": "#/components/schemas/c22-models"
                     },
                     {
@@ -12274,6 +12280,2410 @@
           "reference": {
             "type": "string",
             "minLength": 1
+          }
+        }
+      },
+      "c17-models": {
+        "title": "C17 models",
+        "description": "Catalog row c17-models 1.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification).",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/common-models-envelope"
+          },
+          {
+            "properties": {
+              "case_id": {
+                "const": "C17"
+              },
+              "fit": {
+                "$ref": "#/components/schemas/c17Fit"
+              }
+            },
+            "required": [
+              "case_id",
+              "fit"
+            ]
+          },
+          {
+            "properties": {
+              "provenance": {
+                "properties": {
+                  "truth_status": {
+                    "const": "synthetic-known-truth"
+                  }
+                }
+              }
+            },
+            "required": [
+              "provenance"
+            ]
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+      "c17-variant-tail-index": {
+        "title": "C17 tail-index variant",
+        "description": "Catalog row c17-outputs 1.0.0: one tail index of the operational risk case (outputs.kind tail-index), LDA against SMA on a generator of operational loss histories with a known true annual loss distribution.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/common-variant-envelope"
+          },
+          {
+            "properties": {
+              "case_id": {
+                "const": "C17"
+              },
+              "outputs": {
+                "$ref": "#/components/schemas/c17Outputs",
+                "properties": {
+                  "kind": {
+                    "const": "tail-index"
+                  }
+                }
+              }
+            },
+            "required": [
+              "case_id",
+              "outputs"
+            ]
+          },
+          {
+            "properties": {
+              "tests": {
+                "items": {
+                  "if": {
+                    "properties": {
+                      "light": {
+                        "const": "not_evaluated"
+                      }
+                    },
+                    "required": [
+                      "light"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "statistic": {
+                        "type": "null"
+                      },
+                      "p_value": {
+                        "type": "null"
+                      },
+                      "metric": {
+                        "type": "null"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "properties": {
+              "provenance": {
+                "properties": {
+                  "truth_status": {
+                    "const": "synthetic-known-truth"
+                  }
+                }
+              }
+            },
+            "required": [
+              "provenance"
+            ]
+          },
+          {
+            "if": {
+              "properties": {
+                "outputs": {
+                  "properties": {
+                    "tail_index": {
+                      "minimum": 1
+                    }
+                  },
+                  "required": [
+                    "tail_index"
+                  ]
+                }
+              },
+              "required": [
+                "outputs"
+              ]
+            },
+            "then": {
+              "properties": {
+                "outputs": {
+                  "properties": {
+                    "infinite_mean": {
+                      "const": true
+                    },
+                    "truth": {
+                      "properties": {
+                        "annual_loss_mean": {
+                          "properties": {
+                            "value_eur": {
+                              "type": "null"
+                            },
+                            "reason": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "cells": {
+                      "items": {
+                        "properties": {
+                          "capital": {
+                            "properties": {
+                              "sla_mean_corrected": {
+                                "properties": {
+                                  "summary": {
+                                    "type": "null"
+                                  },
+                                  "reason": {
+                                    "type": "string",
+                                    "minLength": 1
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "outputs": {
+                  "properties": {
+                    "infinite_mean": {
+                      "const": false
+                    },
+                    "truth": {
+                      "properties": {
+                        "annual_loss_mean": {
+                          "properties": {
+                            "value_eur": {
+                              "type": "number"
+                            },
+                            "reason": {
+                              "type": "null"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+      "c17Aggregation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "level",
+          "panjer_step_eur",
+          "panjer_points",
+          "fft_points",
+          "fft_padding_factor",
+          "fft_tilt",
+          "mc_years_truth",
+          "mc_years_replication"
+        ],
+        "properties": {
+          "level": {
+            "const": 0.999,
+            "description": "The quantile level of C17: the 99.9 percent annual loss quantile, as a decimal."
+          },
+          "panjer_step_eur": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "panjer_points": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "fft_points": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "fft_padding_factor": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "fft_tilt": {
+            "type": "number",
+            "minimum": 0
+          },
+          "mc_years_truth": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "mc_years_replication": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "description": "How the aggregate loss is computed: the Panjer grid, the FFT size and padding, and the Monte Carlo years."
+      },
+      "c17Agreement": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "max_rel_diff_panjer_fft",
+          "n_compared"
+        ],
+        "properties": {
+          "max_rel_diff_panjer_fft": {
+            "type": "number",
+            "minimum": 0
+          },
+          "n_compared": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "description": "Largest relative difference of the 99.9 percent capital between the Panjer and the FFT aggregation of the same fit."
+      },
+      "c17Band": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "p05",
+          "median",
+          "p95"
+        ],
+        "properties": {
+          "p05": {
+            "type": "number"
+          },
+          "median": {
+            "type": "number"
+          },
+          "p95": {
+            "type": "number"
+          }
+        }
+      },
+      "c17Bank": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "currency",
+          "synthetic",
+          "label",
+          "assets_eur",
+          "business_indicator",
+          "bic_eur",
+          "bucket",
+          "notice"
+        ],
+        "properties": {
+          "currency": {
+            "const": "EUR",
+            "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
+          },
+          "synthetic": {
+            "const": true
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "assets_eur": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "business_indicator": {
+            "$ref": "#/components/schemas/c17Bi"
+          },
+          "bic_eur": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          },
+          "bucket": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3
+          },
+          "notice": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "The synthetic bank of stated size whose losses the generator draws and whose business indicator feeds the SMA; never a real bank."
+      },
+      "c17Bi": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ildc_eur",
+          "sc_eur",
+          "fc_eur",
+          "bi_eur"
+        ],
+        "properties": {
+          "ildc_eur": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          },
+          "sc_eur": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          },
+          "fc_eur": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          },
+          "bi_eur": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          }
+        },
+        "description": "The business indicator BI = ILDC + SC + FC (OPE25.4) of the synthetic bank, three-year averages."
+      },
+      "c17BicBucket": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "bucket",
+          "upper_eur",
+          "coefficient"
+        ],
+        "properties": {
+          "bucket": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3
+          },
+          "upper_eur": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "coefficient": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          }
+        }
+      },
+      "c17Calibration": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "targets",
+          "fit"
+        ],
+        "properties": {
+          "targets": {
+            "$ref": "#/components/schemas/c17Ldce"
+          },
+          "fit": {
+            "$ref": "#/components/schemas/c17CalibrationFit"
+          }
+        }
+      },
+      "c17CalibrationFit": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tail_index",
+          "scale_eur",
+          "fitted_quantiles_eur",
+          "max_abs_log_error",
+          "method"
+        ],
+        "properties": {
+          "tail_index": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "scale_eur": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "fitted_quantiles_eur": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "minItems": 4,
+            "maxItems": 4,
+            "description": "The generator's severity quantiles at the four LDCE percentiles, increasing."
+          },
+          "max_abs_log_error": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Largest |ln(fitted / target)| over the four percentiles."
+          },
+          "method": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "description": "The generator's scale fitted to the four LDCE percentiles at the variant's tail index (least squares on the log quantiles)."
+      },
+      "c17Capital": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "aggregation",
+          "status",
+          "n_defined",
+          "capital_eur",
+          "ratio_to_truth",
+          "share_underestimating",
+          "iqr_over_truth",
+          "log_sd"
+        ],
+        "properties": {
+          "aggregation": {
+            "type": "string",
+            "enum": [
+              "monte-carlo",
+              "panjer",
+              "fft",
+              "closed-form"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "UNVERIFIED"
+            ]
+          },
+          "n_defined": {
+            "type": "integer",
+            "minimum": 2,
+            "description": "Replications with a defined value (a failed fit, or a fit with an infinite mean for a mean-based form, is not counted)."
+          },
+          "capital_eur": {
+            "$ref": "#/components/schemas/c17MoneyQuantiles"
+          },
+          "ratio_to_truth": {
+            "$ref": "#/components/schemas/c17RatioQuantiles"
+          },
+          "share_underestimating": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share in [0, 1]."
+          },
+          "iqr_over_truth": {
+            "type": "number",
+            "minimum": 0
+          },
+          "log_sd": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Standard deviation across the replications of ln(capital / true quantile)."
+          }
+        },
+        "description": "The 99.9 percent capital of one rung across the independent histories of a cell: percentiles, the ratio to the true quantile (bias), the share of histories that underestimate it and the dispersion."
+      },
+      "c17CapitalByRung": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "lda_lognormal",
+          "lda_lognormal_truncated",
+          "lda_splice",
+          "sla",
+          "sla_mean_corrected",
+          "scenario"
+        ],
+        "properties": {
+          "lda_lognormal": {
+            "$ref": "#/components/schemas/c17Capital"
+          },
+          "lda_lognormal_truncated": {
+            "$ref": "#/components/schemas/c17Capital"
+          },
+          "lda_splice": {
+            "$ref": "#/components/schemas/c17Capital"
+          },
+          "sla": {
+            "$ref": "#/components/schemas/c17Capital"
+          },
+          "sla_mean_corrected": {
+            "$ref": "#/components/schemas/c17MeanCorrectedSla"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/c17OptionalCapital"
+          }
+        },
+        "description": "The ladder of dossier 05: rung 1 the Poisson-lognormal LDA fitted ignoring the collection threshold (the biased baseline), rung 2 the truncated severity with the frequency rescaled, rung 3 the lognormal body and GPD tail splice, rung 4 the aggregation by Panjer or FFT (the `aggregation` of each), rung 5 the single loss approximation with (UNVERIFIED) and without the mean correction, rung 6 the scenario combination."
+      },
+      "c17CapitalUnverified": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "aggregation",
+          "status",
+          "n_defined",
+          "capital_eur",
+          "ratio_to_truth",
+          "share_underestimating",
+          "iqr_over_truth",
+          "log_sd"
+        ],
+        "properties": {
+          "aggregation": {
+            "type": "string",
+            "enum": [
+              "monte-carlo",
+              "panjer",
+              "fft",
+              "closed-form"
+            ]
+          },
+          "status": {
+            "const": "UNVERIFIED"
+          },
+          "n_defined": {
+            "type": "integer",
+            "minimum": 2,
+            "description": "Replications with a defined value (a failed fit, or a fit with an infinite mean for a mean-based form, is not counted)."
+          },
+          "capital_eur": {
+            "$ref": "#/components/schemas/c17MoneyQuantiles"
+          },
+          "ratio_to_truth": {
+            "$ref": "#/components/schemas/c17RatioQuantiles"
+          },
+          "share_underestimating": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share in [0, 1]."
+          },
+          "iqr_over_truth": {
+            "type": "number",
+            "minimum": 0
+          },
+          "log_sd": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Standard deviation across the replications of ln(capital / true quantile)."
+          }
+        },
+        "description": "The 99.9 percent capital of one rung across the independent histories of a cell: percentiles, the ratio to the true quantile (bias), the share of histories that underestimate it and the dispersion."
+      },
+      "c17Cell": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "years",
+          "collection_threshold_eur",
+          "currency",
+          "replications",
+          "capital",
+          "aggregation_agreement",
+          "threshold_stability",
+          "sma"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "years": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10,
+            "description": "Years of recorded losses in each history (5 or 10 in the grid; under 5 the SMA is BIC only, OPE25.15)."
+          },
+          "collection_threshold_eur": {
+            "enum": [
+              10000,
+              20000
+            ],
+            "description": "The collection threshold: losses below it are not recorded."
+          },
+          "currency": {
+            "const": "EUR",
+            "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
+          },
+          "replications": {
+            "$ref": "#/components/schemas/c17Replications"
+          },
+          "capital": {
+            "$ref": "#/components/schemas/c17CapitalByRung"
+          },
+          "aggregation_agreement": {
+            "$ref": "#/components/schemas/c17Agreement"
+          },
+          "threshold_stability": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c17StabilityRow"
+            },
+            "minItems": 1
+          },
+          "sma": {
+            "$ref": "#/components/schemas/c17SmaCell"
+          }
+        },
+        "description": "One cell of the grid (years x collection threshold) of a tail-index variant, as replication summaries.",
+        "if": {
+          "properties": {
+            "years": {
+              "maximum": 4
+            }
+          },
+          "required": [
+            "years"
+          ]
+        },
+        "then": {
+          "properties": {
+            "sma": {
+              "properties": {
+                "basis": {
+                  "const": "bic-only"
+                }
+              }
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "sma": {
+              "properties": {
+                "basis": {
+                  "const": "bic-times-ilm"
+                }
+              }
+            }
+          }
+        }
+      },
+      "c17Discretion": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "description",
+          "reference"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "bucket-1-ilm-one",
+              "national-ilm-one",
+              "transitional-bic-only"
+            ]
+          },
+          "description": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "c17Exceedance": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "currency",
+          "grid_eur",
+          "monte_carlo",
+          "panjer",
+          "fft",
+          "quantile_999_eur"
+        ],
+        "properties": {
+          "currency": {
+            "const": "EUR",
+            "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
+          },
+          "grid_eur": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "minItems": 3,
+            "description": "Loss grid, strictly increasing, log-spaced."
+          },
+          "monte_carlo": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "n_years",
+              "seed",
+              "exceedance"
+            ],
+            "properties": {
+              "n_years": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "seed": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "exceedance": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "A share in [0, 1]."
+                },
+                "minItems": 3
+              }
+            }
+          },
+          "panjer": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "step_eur",
+              "exceedance"
+            ],
+            "properties": {
+              "step_eur": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "exceedance": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "A share in [0, 1]."
+                },
+                "minItems": 3
+              }
+            }
+          },
+          "fft": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "n_points",
+              "padding_factor",
+              "tilt",
+              "exceedance"
+            ],
+            "properties": {
+              "n_points": {
+                "type": "integer",
+                "minimum": 2
+              },
+              "padding_factor": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "tilt": {
+                "type": "number",
+                "minimum": 0
+              },
+              "exceedance": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "A share in [0, 1]."
+                },
+                "minItems": 3
+              }
+            }
+          },
+          "quantile_999_eur": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "monte_carlo",
+              "panjer",
+              "fft",
+              "sla"
+            ],
+            "properties": {
+              "monte_carlo": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "panjer": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "fft": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "sla": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            }
+          }
+        },
+        "description": "P(annual loss > x) of the true distribution on one grid by Monte Carlo, Panjer and FFT, with the 99.9 percent quantile of each and of the single loss approximation (the marker)."
+      },
+      "c17Fit": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "currency",
+          "generator",
+          "calibration",
+          "variants",
+          "grid",
+          "ladder",
+          "aggregation",
+          "sma",
+          "scenarios"
+        ],
+        "properties": {
+          "currency": {
+            "const": "EUR",
+            "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
+          },
+          "generator": {
+            "$ref": "#/components/schemas/c17Generator"
+          },
+          "calibration": {
+            "$ref": "#/components/schemas/c17Ldce"
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c17VariantTruth"
+            },
+            "minItems": 4,
+            "maxItems": 4,
+            "description": "One row per tail index in increasing order: 0.6, 0.8, 0.96, 1.1."
+          },
+          "grid": {
+            "$ref": "#/components/schemas/c17Grid"
+          },
+          "ladder": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c17Rung"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "aggregation": {
+            "$ref": "#/components/schemas/c17Aggregation"
+          },
+          "sma": {
+            "$ref": "#/components/schemas/c17SmaSpec"
+          },
+          "scenarios": {
+            "$ref": "#/components/schemas/c17ScenarioSpec"
+          }
+        },
+        "description": "C17 models: the generator, the LDCE calibration targets, the true parameters and quantile of every variant, the grid and its seeds, the ladder, the aggregation settings, the OPE25 specification and the scenario methods."
+      },
+      "c17Generator": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "shaped_on",
+          "assets_eur_bn",
+          "frequency_law",
+          "severity_law",
+          "generator_floor_eur",
+          "notice"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "shaped_on": {
+            "const": "bcbs160-ldce-2008"
+          },
+          "assets_eur_bn": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "frequency_law": {
+            "const": "poisson"
+          },
+          "severity_law": {
+            "const": "gpd"
+          },
+          "generator_floor_eur": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          },
+          "notice": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "The generator of annual operational loss histories for a synthetic bank; its true annual loss distribution is known."
+      },
+      "c17Grid": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "years",
+          "collection_thresholds_eur",
+          "n_replications_per_cell",
+          "seed_base",
+          "seed_stride"
+        ],
+        "properties": {
+          "years": {
+            "const": [
+              5,
+              10
+            ]
+          },
+          "collection_thresholds_eur": {
+            "const": [
+              10000,
+              20000
+            ]
+          },
+          "n_replications_per_cell": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "seed_base": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "seed_stride": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Cell k of variant v uses seed_first = seed_base + (4 v + k) x seed_stride."
+          }
+        }
+      },
+      "c17IlmQuantiles": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "p05",
+          "p25",
+          "median",
+          "p75",
+          "p95"
+        ],
+        "properties": {
+          "p05": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "p25": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "median": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "p75": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "p95": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "description": "Percentiles across the replications of the internal loss multiplier (OPE25.8)."
+      },
+      "c17Ldce": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "currency",
+          "label",
+          "licence_class",
+          "source",
+          "threshold_eur",
+          "frequency",
+          "severity_percentiles",
+          "caveat"
+        ],
+        "properties": {
+          "currency": {
+            "const": "EUR",
+            "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
+          },
+          "label": {
+            "const": "derived-only"
+          },
+          "licence_class": {
+            "const": "derived-only"
+          },
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "title",
+              "url",
+              "date",
+              "table"
+            ],
+            "properties": {
+              "id": {
+                "const": "bcbs160"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "url": {
+                "const": "https://www.bis.org/publ/bcbs160.htm"
+              },
+              "date": {
+                "const": "2009-07-28"
+              },
+              "table": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "description": "BCBS, Results from the 2008 Loss Data Collection Exercise for Operational Risk (BCBS 160)."
+          },
+          "threshold_eur": {
+            "const": 20000,
+            "description": "The LDCE statistics are of losses of EUR 20,000 or more."
+          },
+          "frequency": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "per_eur_bn_assets",
+              "iqr_low",
+              "iqr_high",
+              "statistic"
+            ],
+            "properties": {
+              "per_eur_bn_assets": {
+                "const": 0.82
+              },
+              "iqr_low": {
+                "const": 0.36
+              },
+              "iqr_high": {
+                "const": 1.66
+              },
+              "statistic": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "description": "The median bank's frequency of losses of EUR 20,000 or more per year per EUR billion of consolidated assets."
+          },
+          "severity_percentiles": {
+            "type": "array",
+            "description": "Median across banks of each bank's percentile of the severity (losses of EUR 20,000 or more, Table ILD7), transcribed and locked: the four pairs, each once; the documents carry only the statistics the calibration uses, never a reproduction of the BCBS tables.",
+            "minItems": 4,
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "p",
+                "loss_eur"
+              ],
+              "properties": {
+                "p": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "exclusiveMaximum": 1
+                },
+                "loss_eur": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                }
+              },
+              "oneOf": [
+                {
+                  "properties": {
+                    "p": {
+                      "const": 0.25
+                    },
+                    "loss_eur": {
+                      "const": 27632
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "p": {
+                      "const": 0.5
+                    },
+                    "loss_eur": {
+                      "const": 41916
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "p": {
+                      "const": 0.75
+                    },
+                    "loss_eur": {
+                      "const": 82608
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "p": {
+                      "const": 0.95
+                    },
+                    "loss_eur": {
+                      "const": 418400
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "caveat": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "The BCBS 2008 LDCE calibration targets with their source and the derived-only label (SDD section 5)."
+      },
+      "c17MeanCorrectedSla": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "summary",
+          "reason"
+        ],
+        "properties": {
+          "summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c17CapitalUnverified"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "The mean-corrected single loss approximation F^-1(1 - (1 - alpha) / lambda) + lambda E[X], labelled UNVERIFIED until it is checked against Bocker and Sprittulla (2006) or Degen (2010). Null with its reason when the tail index is 1 or more (no mean).",
+        "oneOf": [
+          {
+            "properties": {
+              "summary": {
+                "$ref": "#/components/schemas/c17CapitalUnverified"
+              },
+              "reason": {
+                "type": "null"
+              }
+            }
+          },
+          {
+            "properties": {
+              "summary": {
+                "type": "null"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        ]
+      },
+      "c17MoneyQuantiles": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "p05",
+          "p25",
+          "median",
+          "p75",
+          "p95"
+        ],
+        "properties": {
+          "p05": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          },
+          "p25": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          },
+          "median": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          },
+          "p75": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          },
+          "p95": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          }
+        },
+        "description": "Percentiles across the replications of a money quantity, in EUR, nondecreasing."
+      },
+      "c17OptionalCapital": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "summary",
+          "reason"
+        ],
+        "properties": {
+          "summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c17Capital"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "A rung the bake may not have evaluated for a cell: the summary, or null with its reason.",
+        "oneOf": [
+          {
+            "properties": {
+              "summary": {
+                "$ref": "#/components/schemas/c17Capital"
+              },
+              "reason": {
+                "type": "null"
+              }
+            }
+          },
+          {
+            "properties": {
+              "summary": {
+                "type": "null"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        ]
+      },
+      "c17Outputs": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "currency",
+          "tail_index",
+          "infinite_mean",
+          "truth",
+          "calibration",
+          "bank",
+          "cells",
+          "exceedance",
+          "sma_response",
+          "scenario_influence"
+        ],
+        "properties": {
+          "kind": {
+            "const": "tail-index"
+          },
+          "currency": {
+            "const": "EUR",
+            "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
+          },
+          "tail_index": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "infinite_mean": {
+            "type": "boolean",
+            "description": "True exactly when the tail index is 1 or more: the mean is infinite, no mean-based quantity is computed and the mean-corrected SLA is absent."
+          },
+          "truth": {
+            "$ref": "#/components/schemas/c17Truth"
+          },
+          "calibration": {
+            "$ref": "#/components/schemas/c17Calibration"
+          },
+          "bank": {
+            "$ref": "#/components/schemas/c17Bank"
+          },
+          "cells": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c17Cell"
+            },
+            "minItems": 4,
+            "maxItems": 4,
+            "description": "The grid in fixed order: 5 years then 10 years, each at collection threshold 10,000 then 20,000."
+          },
+          "exceedance": {
+            "$ref": "#/components/schemas/c17Exceedance"
+          },
+          "sma_response": {
+            "$ref": "#/components/schemas/c17SmaResponse"
+          },
+          "scenario_influence": {
+            "$ref": "#/components/schemas/c17ScenarioInfluence"
+          }
+        },
+        "description": "C17 tail-index outputs (outputs.kind tail-index): one tail index of the generator of operational loss histories for a synthetic bank, calibrated to the BCBS 2008 LDCE quantiles, whose true annual loss distribution is known; the four cells of 5 or 10 years and a collection threshold of 10,000 or 20,000 as replication summaries; money in EUR."
+      },
+      "c17RatioQuantiles": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "p05",
+          "p25",
+          "median",
+          "p75",
+          "p95"
+        ],
+        "properties": {
+          "p05": {
+            "type": "number",
+            "minimum": 0
+          },
+          "p25": {
+            "type": "number",
+            "minimum": 0
+          },
+          "median": {
+            "type": "number",
+            "minimum": 0
+          },
+          "p75": {
+            "type": "number",
+            "minimum": 0
+          },
+          "p95": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "description": "Percentiles across the replications of a ratio to the true 99.9 percent annual loss quantile."
+      },
+      "c17Replications": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "seed_first",
+          "n_replications",
+          "n_failed",
+          "n_losses_median"
+        ],
+        "properties": {
+          "seed_first": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Replication i uses the seed seed_first + i; the ranges are disjoint between cells and variants."
+          },
+          "n_replications": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "n_failed": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Histories whose fit failed to converge; they are counted, never dropped silently."
+          },
+          "n_losses_median": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Median number of recorded losses per history."
+          }
+        },
+        "description": "Independent simulated loss histories: the seeds, the count and the failures. The histories are not in the document."
+      },
+      "c17Rung": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rung_id",
+          "label",
+          "severity_law",
+          "truncated",
+          "aggregation",
+          "status",
+          "reference"
+        ],
+        "properties": {
+          "rung_id": {
+            "type": "string",
+            "enum": [
+              "lda-lognormal",
+              "lda-lognormal-truncated",
+              "lda-splice",
+              "sla",
+              "sla-mean-corrected",
+              "scenario"
+            ]
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "severity_law": {
+            "type": "string",
+            "enum": [
+              "lognormal",
+              "lognormal-truncated",
+              "lognormal-gpd-splice",
+              "gpd",
+              "none"
+            ]
+          },
+          "truncated": {
+            "type": "boolean"
+          },
+          "aggregation": {
+            "type": "string",
+            "enum": [
+              "monte-carlo",
+              "panjer",
+              "fft",
+              "closed-form"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "UNVERIFIED"
+            ]
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "description": "A rung of the operational risk ladder of dossier 05.",
+        "oneOf": [
+          {
+            "properties": {
+              "rung_id": {
+                "type": "string",
+                "enum": [
+                  "lda-lognormal",
+                  "lda-lognormal-truncated",
+                  "lda-splice",
+                  "sla",
+                  "scenario"
+                ]
+              },
+              "status": {
+                "const": "verified"
+              }
+            }
+          },
+          {
+            "properties": {
+              "rung_id": {
+                "const": "sla-mean-corrected"
+              },
+              "status": {
+                "const": "UNVERIFIED"
+              }
+            }
+          }
+        ]
+      },
+      "c17Scenario": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "scenario_id",
+          "label",
+          "kind",
+          "loss_eur",
+          "exceedance_frequency_per_year",
+          "capital_without_eur",
+          "influence"
+        ],
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "percentile",
+              "individual"
+            ]
+          },
+          "loss_eur": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "exceedance_frequency_per_year": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "capital_without_eur": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          },
+          "influence": {
+            "type": "number",
+            "description": "(base capital - capital without the point) / base capital."
+          }
+        }
+      },
+      "c17ScenarioInfluence": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "currency",
+          "cell_id",
+          "seed",
+          "level",
+          "method",
+          "base_capital_eur",
+          "scenarios",
+          "reference"
+        ],
+        "properties": {
+          "currency": {
+            "const": "EUR",
+            "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
+          },
+          "cell_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "seed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "level": {
+            "const": 0.999,
+            "description": "The quantile level of C17: the 99.9 percent annual loss quantile, as a decimal."
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "pseudo-observations",
+              "body-tail",
+              "bayesian-credibility"
+            ]
+          },
+          "base_capital_eur": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "scenarios": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c17Scenario"
+            },
+            "minItems": 1
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "description": "The 99.9 percent capital's sensitivity to each scenario point of one history (the scenario influence)."
+      },
+      "c17ScenarioSpec": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "methods",
+          "reference"
+        ],
+        "properties": {
+          "methods": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "pseudo-observations",
+                "body-tail",
+                "bayesian-credibility"
+              ]
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "c17SmaCell": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "currency",
+          "basis",
+          "reason",
+          "discretion_applied",
+          "bucket",
+          "bic_eur",
+          "lc_eur",
+          "ilm",
+          "orc_eur",
+          "orc_over_true_quantile",
+          "note"
+        ],
+        "properties": {
+          "currency": {
+            "const": "EUR",
+            "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
+          },
+          "basis": {
+            "type": "string",
+            "enum": [
+              "bic-times-ilm",
+              "bic-only"
+            ]
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why capital is BIC only; null on the full basis."
+          },
+          "discretion_applied": {
+            "type": "string",
+            "enum": [
+              "none",
+              "bucket-1-ilm-one",
+              "national-ilm-one",
+              "transitional-bic-only"
+            ]
+          },
+          "bucket": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3
+          },
+          "bic_eur": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          },
+          "lc_eur": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c17MoneyQuantiles"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "LC = 15 x the average annual loss over the available years (OPE25.8); null on the BIC-only basis."
+          },
+          "ilm": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c17IlmQuantiles"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ILM = ln(e - 1 + (LC / BIC)^0.8) (OPE25.8); null on the BIC-only basis."
+          },
+          "orc_eur": {
+            "$ref": "#/components/schemas/c17MoneyQuantiles"
+          },
+          "orc_over_true_quantile": {
+            "$ref": "#/components/schemas/c17RatioQuantiles"
+          },
+          "note": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "The SMA capital of the synthetic bank on the same histories as the LDA of the cell, with the discretion applied as a named field (OPE25.10, OPE25.11, OPE25.15). ORC = BIC x ILM (OPE25.2). The SMA is not calibrated to the 99.9 percent quantile of any bank: the ratio to the true quantile is a comparison, not a claim of equivalence.",
+        "oneOf": [
+          {
+            "properties": {
+              "basis": {
+                "const": "bic-times-ilm"
+              },
+              "reason": {
+                "type": "null"
+              },
+              "discretion_applied": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "bucket-1-ilm-one",
+                  "national-ilm-one"
+                ]
+              },
+              "lc_eur": {
+                "$ref": "#/components/schemas/c17MoneyQuantiles"
+              },
+              "ilm": {
+                "$ref": "#/components/schemas/c17IlmQuantiles"
+              }
+            }
+          },
+          {
+            "properties": {
+              "basis": {
+                "const": "bic-only"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              },
+              "discretion_applied": {
+                "const": "transitional-bic-only"
+              },
+              "lc_eur": {
+                "type": "null"
+              },
+              "ilm": {
+                "type": "null"
+              }
+            }
+          }
+        ],
+        "if": {
+          "properties": {
+            "discretion_applied": {
+              "const": "bucket-1-ilm-one"
+            }
+          },
+          "required": [
+            "discretion_applied"
+          ]
+        },
+        "then": {
+          "properties": {
+            "bucket": {
+              "const": 1
+            }
+          }
+        }
+      },
+      "c17SmaResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "currency",
+          "cell_id",
+          "seed",
+          "bic_eur",
+          "rows"
+        ],
+        "properties": {
+          "currency": {
+            "const": "EUR",
+            "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
+          },
+          "cell_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "seed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "bic_eur": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c17SmaResponseRow"
+            },
+            "minItems": 3
+          }
+        },
+        "description": "The ILM and the capital of one history as a single large loss of growing size is added to its latest year."
+      },
+      "c17SmaResponseRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "added_loss_eur",
+          "lc_eur",
+          "ilm",
+          "orc_eur"
+        ],
+        "properties": {
+          "added_loss_eur": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          },
+          "lc_eur": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          },
+          "ilm": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "orc_eur": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          }
+        }
+      },
+      "c17SmaSpec": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "currency",
+          "buckets",
+          "loss_multiple",
+          "loss_window_years",
+          "minimum_years",
+          "ilm_exponent",
+          "rwa_factor",
+          "discretions",
+          "golden",
+          "reference"
+        ],
+        "properties": {
+          "currency": {
+            "const": "EUR",
+            "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
+          },
+          "buckets": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "uniqueItems": true,
+            "description": "OPE25.7 Table 1, transcribed and locked: 12% to EUR 1bn, 15% from 1bn to 30bn, 18% above.",
+            "items": {
+              "$ref": "#/components/schemas/c17BicBucket",
+              "oneOf": [
+                {
+                  "properties": {
+                    "bucket": {
+                      "const": 1
+                    },
+                    "upper_eur": {
+                      "const": 1000000000
+                    },
+                    "coefficient": {
+                      "const": 0.12
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "bucket": {
+                      "const": 2
+                    },
+                    "upper_eur": {
+                      "const": 30000000000
+                    },
+                    "coefficient": {
+                      "const": 0.15
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "bucket": {
+                      "const": 3
+                    },
+                    "upper_eur": {
+                      "const": null
+                    },
+                    "coefficient": {
+                      "const": 0.18
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "loss_multiple": {
+            "const": 15
+          },
+          "loss_window_years": {
+            "const": 10
+          },
+          "minimum_years": {
+            "const": 5
+          },
+          "ilm_exponent": {
+            "const": 0.8
+          },
+          "rwa_factor": {
+            "const": 12.5
+          },
+          "discretions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c17Discretion"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "golden": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "bi_eur",
+              "bic_eur",
+              "reference"
+            ],
+            "properties": {
+              "bi_eur": {
+                "const": 35000000000
+              },
+              "bic_eur": {
+                "const": 5370000000
+              },
+              "reference": {
+                "const": "OPE25.7 footnote 2"
+              }
+            }
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "description": "The OPE25 standardised approach as specified (dossier 01 section F), with its golden value."
+      },
+      "c17StabilityRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "threshold_eur",
+          "n_exceedances_median",
+          "n_fits",
+          "tail_index",
+          "share_at_least_one"
+        ],
+        "properties": {
+          "threshold_eur": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          },
+          "n_exceedances_median": {
+            "type": "number",
+            "minimum": 0
+          },
+          "n_fits": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "tail_index": {
+            "$ref": "#/components/schemas/c17Band"
+          },
+          "share_at_least_one": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share in [0, 1]."
+          }
+        },
+        "description": "The fitted GPD tail index above one threshold across the replications; share_at_least_one is the share of fits with an infinite-mean tail index."
+      },
+      "c17Truth": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "currency",
+          "frequency",
+          "severity",
+          "annual_loss_quantile",
+          "annual_loss_mean",
+          "notice"
+        ],
+        "properties": {
+          "label": {
+            "const": "synthetic-known-truth"
+          },
+          "currency": {
+            "const": "EUR",
+            "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
+          },
+          "frequency": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "law",
+              "lambda_per_year",
+              "counted_above_eur"
+            ],
+            "properties": {
+              "law": {
+                "const": "poisson"
+              },
+              "lambda_per_year": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "counted_above_eur": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Money in EUR (the `currency` of the enclosing block)."
+              }
+            },
+            "description": "The generator's true annual frequency: Poisson, losses per year at or above `counted_above_eur` (the generator floor, equal to the severity location)."
+          },
+          "severity": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "law",
+              "location_eur",
+              "scale_eur",
+              "tail_index"
+            ],
+            "properties": {
+              "law": {
+                "const": "gpd"
+              },
+              "location_eur": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Money in EUR (the `currency` of the enclosing block)."
+              },
+              "scale_eur": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "tail_index": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            },
+            "description": "The generator's true severity: a generalised Pareto distribution with the tail index of the variant, starting at `location_eur` (the generator floor, no loss is generated below it). Threshold-stable: the loss above any higher collection threshold is again a GPD with the same tail index."
+          },
+          "annual_loss_quantile": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "level",
+              "value_eur",
+              "method",
+              "grid_step_eur",
+              "mc_check"
+            ],
+            "properties": {
+              "level": {
+                "const": 0.999,
+                "description": "The quantile level of C17: the 99.9 percent annual loss quantile, as a decimal."
+              },
+              "value_eur": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "method": {
+                "type": "string",
+                "enum": [
+                  "panjer",
+                  "fft"
+                ]
+              },
+              "grid_step_eur": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "mc_check": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "n_years",
+                  "seed",
+                  "value_eur",
+                  "standard_error_eur",
+                  "agrees"
+                ],
+                "properties": {
+                  "n_years": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "seed": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "value_eur": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "standard_error_eur": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "agrees": {
+                    "type": "boolean",
+                    "description": "True when the Monte Carlo value is within 3 standard errors of the value."
+                  }
+                }
+              }
+            },
+            "description": "The true 99.9 percent quantile of the annual loss of the generating process (all generated losses at or above the generator floor, whatever the collection threshold): computed once by Panjer or FFT on a fine grid and checked by Monte Carlo."
+          },
+          "annual_loss_mean": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value_eur",
+              "reason"
+            ],
+            "properties": {
+              "value_eur": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Null exactly when the tail index is 1 or more: the mean is infinite."
+              },
+              "reason": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Why the mean is absent; null when it is given."
+              }
+            },
+            "oneOf": [
+              {
+                "properties": {
+                  "value_eur": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "reason": {
+                    "type": "null"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "value_eur": {
+                    "type": "null"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
+          },
+          "notice": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "The generator's true parameters and the true 99.9 percent annual loss quantile, labelled synthetic-known-truth. Required in every C17 document: nothing is scored without them."
+      },
+      "c17VariantTruth": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "variant_id",
+          "tail_index",
+          "infinite_mean",
+          "lambda_per_year",
+          "location_eur",
+          "scale_eur",
+          "true_quantile_999_eur",
+          "true_mean_eur",
+          "true_mean_reason"
+        ],
+        "properties": {
+          "variant_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tail_index": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "infinite_mean": {
+            "type": "boolean"
+          },
+          "lambda_per_year": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "location_eur": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in EUR (the `currency` of the enclosing block)."
+          },
+          "scale_eur": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "true_quantile_999_eur": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "true_mean_eur": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "true_mean_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "The true parameters and the true 99.9 percent annual loss quantile of one variant.",
+        "oneOf": [
+          {
+            "properties": {
+              "infinite_mean": {
+                "const": false
+              },
+              "true_mean_eur": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "true_mean_reason": {
+                "type": "null"
+              }
+            }
+          },
+          {
+            "properties": {
+              "infinite_mean": {
+                "const": true
+              },
+              "true_mean_eur": {
+                "type": "null"
+              },
+              "true_mean_reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        ],
+        "if": {
+          "properties": {
+            "tail_index": {
+              "minimum": 1
+            }
+          },
+          "required": [
+            "tail_index"
+          ]
+        },
+        "then": {
+          "properties": {
+            "infinite_mean": {
+              "const": true
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "infinite_mean": {
+              "const": false
+            }
           }
         }
       },

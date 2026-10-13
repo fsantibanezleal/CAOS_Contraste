@@ -2809,6 +2809,645 @@ export interface components {
             reference: string;
         };
         /**
+         * C17 models
+         * @description Catalog row c17-models 1.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification).
+         */
+        "c17-models": components["schemas"]["common-models-envelope"] & {
+            /** @constant */
+            case_id: "C17";
+            fit: components["schemas"]["c17Fit"];
+        } & {
+            provenance: {
+                /** @constant */
+                truth_status?: "synthetic-known-truth";
+            };
+        };
+        /**
+         * C17 tail-index variant
+         * @description Catalog row c17-outputs 1.0.0: one tail index of the operational risk case (outputs.kind tail-index), LDA against SMA on a generator of operational loss histories with a known true annual loss distribution.
+         */
+        "c17-variant-tail-index": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C17";
+            outputs: components["schemas"]["c17Outputs"];
+        } & {
+            tests?: unknown;
+        } & {
+            provenance: {
+                /** @constant */
+                truth_status?: "synthetic-known-truth";
+            };
+        } & unknown;
+        /** @description How the aggregate loss is computed: the Panjer grid, the FFT size and padding, and the Monte Carlo years. */
+        c17Aggregation: {
+            /**
+             * @description The quantile level of C17: the 99.9 percent annual loss quantile, as a decimal.
+             * @constant
+             */
+            level: 0.999;
+            panjer_step_eur: number;
+            panjer_points: number;
+            fft_points: number;
+            fft_padding_factor: number;
+            fft_tilt: number;
+            mc_years_truth: number;
+            mc_years_replication: number;
+        };
+        /** @description Largest relative difference of the 99.9 percent capital between the Panjer and the FFT aggregation of the same fit. */
+        c17Agreement: {
+            max_rel_diff_panjer_fft: number;
+            n_compared: number;
+        };
+        c17Band: {
+            p05: number;
+            median: number;
+            p95: number;
+        };
+        /** @description The synthetic bank of stated size whose losses the generator draws and whose business indicator feeds the SMA; never a real bank. */
+        c17Bank: {
+            /**
+             * @description ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR).
+             * @constant
+             */
+            currency: "EUR";
+            /** @constant */
+            synthetic: true;
+            label: components["schemas"]["common-text"];
+            assets_eur: number;
+            business_indicator: components["schemas"]["c17Bi"];
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            bic_eur: number;
+            bucket: number;
+            notice: components["schemas"]["common-text"];
+        };
+        /** @description The business indicator BI = ILDC + SC + FC (OPE25.4) of the synthetic bank, three-year averages. */
+        c17Bi: {
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            ildc_eur: number;
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            sc_eur: number;
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            fc_eur: number;
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            bi_eur: number;
+        };
+        c17BicBucket: {
+            bucket: number;
+            upper_eur: number | null;
+            coefficient: number;
+        };
+        c17Calibration: {
+            targets: components["schemas"]["c17Ldce"];
+            fit: components["schemas"]["c17CalibrationFit"];
+        };
+        /** @description The generator's scale fitted to the four LDCE percentiles at the variant's tail index (least squares on the log quantiles). */
+        c17CalibrationFit: {
+            tail_index: number;
+            scale_eur: number;
+            /** @description The generator's severity quantiles at the four LDCE percentiles, increasing. */
+            fitted_quantiles_eur: number[];
+            /** @description Largest |ln(fitted / target)| over the four percentiles. */
+            max_abs_log_error: number;
+            method: string;
+        };
+        /** @description The 99.9 percent capital of one rung across the independent histories of a cell: percentiles, the ratio to the true quantile (bias), the share of histories that underestimate it and the dispersion. */
+        c17Capital: {
+            /** @enum {string} */
+            aggregation: "monte-carlo" | "panjer" | "fft" | "closed-form";
+            /** @enum {string} */
+            status: "verified" | "UNVERIFIED";
+            /** @description Replications with a defined value (a failed fit, or a fit with an infinite mean for a mean-based form, is not counted). */
+            n_defined: number;
+            capital_eur: components["schemas"]["c17MoneyQuantiles"];
+            ratio_to_truth: components["schemas"]["c17RatioQuantiles"];
+            /** @description A share in [0, 1]. */
+            share_underestimating: number;
+            iqr_over_truth: number;
+            /** @description Standard deviation across the replications of ln(capital / true quantile). */
+            log_sd: number;
+        };
+        /** @description The ladder of dossier 05: rung 1 the Poisson-lognormal LDA fitted ignoring the collection threshold (the biased baseline), rung 2 the truncated severity with the frequency rescaled, rung 3 the lognormal body and GPD tail splice, rung 4 the aggregation by Panjer or FFT (the `aggregation` of each), rung 5 the single loss approximation with (UNVERIFIED) and without the mean correction, rung 6 the scenario combination. */
+        c17CapitalByRung: {
+            lda_lognormal: components["schemas"]["c17Capital"];
+            lda_lognormal_truncated: components["schemas"]["c17Capital"];
+            lda_splice: components["schemas"]["c17Capital"];
+            sla: components["schemas"]["c17Capital"];
+            sla_mean_corrected: components["schemas"]["c17MeanCorrectedSla"];
+            scenario: components["schemas"]["c17OptionalCapital"];
+        };
+        /** @description The 99.9 percent capital of one rung across the independent histories of a cell: percentiles, the ratio to the true quantile (bias), the share of histories that underestimate it and the dispersion. */
+        c17CapitalUnverified: {
+            /** @enum {string} */
+            aggregation: "monte-carlo" | "panjer" | "fft" | "closed-form";
+            /** @constant */
+            status: "UNVERIFIED";
+            /** @description Replications with a defined value (a failed fit, or a fit with an infinite mean for a mean-based form, is not counted). */
+            n_defined: number;
+            capital_eur: components["schemas"]["c17MoneyQuantiles"];
+            ratio_to_truth: components["schemas"]["c17RatioQuantiles"];
+            /** @description A share in [0, 1]. */
+            share_underestimating: number;
+            iqr_over_truth: number;
+            /** @description Standard deviation across the replications of ln(capital / true quantile). */
+            log_sd: number;
+        };
+        /** @description One cell of the grid (years x collection threshold) of a tail-index variant, as replication summaries. */
+        c17Cell: {
+            id: string;
+            /** @description Years of recorded losses in each history (5 or 10 in the grid; under 5 the SMA is BIC only, OPE25.15). */
+            years: number;
+            /**
+             * @description The collection threshold: losses below it are not recorded.
+             * @enum {unknown}
+             */
+            collection_threshold_eur: 10000 | 20000;
+            /**
+             * @description ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR).
+             * @constant
+             */
+            currency: "EUR";
+            replications: components["schemas"]["c17Replications"];
+            capital: components["schemas"]["c17CapitalByRung"];
+            aggregation_agreement: components["schemas"]["c17Agreement"];
+            threshold_stability: components["schemas"]["c17StabilityRow"][];
+            sma: components["schemas"]["c17SmaCell"];
+        };
+        c17Discretion: {
+            /** @enum {string} */
+            id: "bucket-1-ilm-one" | "national-ilm-one" | "transitional-bic-only";
+            description: components["schemas"]["common-text"];
+            reference: string;
+        };
+        /** @description P(annual loss > x) of the true distribution on one grid by Monte Carlo, Panjer and FFT, with the 99.9 percent quantile of each and of the single loss approximation (the marker). */
+        c17Exceedance: {
+            /**
+             * @description ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR).
+             * @constant
+             */
+            currency: "EUR";
+            /** @description Loss grid, strictly increasing, log-spaced. */
+            grid_eur: number[];
+            monte_carlo: {
+                n_years: number;
+                seed: number;
+                exceedance: number[];
+            };
+            panjer: {
+                step_eur: number;
+                exceedance: number[];
+            };
+            fft: {
+                n_points: number;
+                padding_factor: number;
+                tilt: number;
+                exceedance: number[];
+            };
+            quantile_999_eur: {
+                monte_carlo: number;
+                panjer: number;
+                fft: number;
+                sla: number;
+            };
+        };
+        /** @description C17 models: the generator, the LDCE calibration targets, the true parameters and quantile of every variant, the grid and its seeds, the ladder, the aggregation settings, the OPE25 specification and the scenario methods. */
+        c17Fit: {
+            /**
+             * @description ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR).
+             * @constant
+             */
+            currency: "EUR";
+            generator: components["schemas"]["c17Generator"];
+            calibration: components["schemas"]["c17Ldce"];
+            /** @description One row per tail index in increasing order: 0.6, 0.8, 0.96, 1.1. */
+            variants: components["schemas"]["c17VariantTruth"][];
+            grid: components["schemas"]["c17Grid"];
+            ladder: components["schemas"]["c17Rung"][];
+            aggregation: components["schemas"]["c17Aggregation"];
+            sma: components["schemas"]["c17SmaSpec"];
+            scenarios: components["schemas"]["c17ScenarioSpec"];
+        };
+        /** @description The generator of annual operational loss histories for a synthetic bank; its true annual loss distribution is known. */
+        c17Generator: {
+            name: string;
+            /** @constant */
+            shaped_on: "bcbs160-ldce-2008";
+            assets_eur_bn: number;
+            /** @constant */
+            frequency_law: "poisson";
+            /** @constant */
+            severity_law: "gpd";
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            generator_floor_eur: number;
+            notice: components["schemas"]["common-text"];
+        };
+        c17Grid: {
+            /** @constant */
+            years: [
+                5,
+                10
+            ];
+            /** @constant */
+            collection_thresholds_eur: [
+                10000,
+                20000
+            ];
+            n_replications_per_cell: number;
+            seed_base: number;
+            /** @description Cell k of variant v uses seed_first = seed_base + (4 v + k) x seed_stride. */
+            seed_stride: number;
+        };
+        /** @description Percentiles across the replications of the internal loss multiplier (OPE25.8). */
+        c17IlmQuantiles: {
+            p05: number;
+            p25: number;
+            median: number;
+            p75: number;
+            p95: number;
+        };
+        /** @description The BCBS 2008 LDCE calibration targets with their source and the derived-only label (SDD section 5). */
+        c17Ldce: {
+            /**
+             * @description ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR).
+             * @constant
+             */
+            currency: "EUR";
+            /** @constant */
+            label: "derived-only";
+            /** @constant */
+            licence_class: "derived-only";
+            /** @description BCBS, Results from the 2008 Loss Data Collection Exercise for Operational Risk (BCBS 160). */
+            source: {
+                /** @constant */
+                id: "bcbs160";
+                title: string;
+                /** @constant */
+                url: "https://www.bis.org/publ/bcbs160.htm";
+                /** @constant */
+                date: "2009-07-28";
+                table: string;
+            };
+            /**
+             * @description The LDCE statistics are of losses of EUR 20,000 or more.
+             * @constant
+             */
+            threshold_eur: 20000;
+            /** @description The median bank's frequency of losses of EUR 20,000 or more per year per EUR billion of consolidated assets. */
+            frequency: {
+                /** @constant */
+                per_eur_bn_assets: 0.82;
+                /** @constant */
+                iqr_low: 0.36;
+                /** @constant */
+                iqr_high: 1.66;
+                statistic: string;
+            };
+            /** @description Median across banks of each bank's percentile of the severity (losses of EUR 20,000 or more, Table ILD7), transcribed and locked: the four pairs, each once; the documents carry only the statistics the calibration uses, never a reproduction of the BCBS tables. */
+            severity_percentiles: ({
+                p: number;
+                loss_eur: number;
+            } & ({
+                /** @constant */
+                p?: 0.25;
+                /** @constant */
+                loss_eur?: 27632;
+            } | {
+                /** @constant */
+                p?: 0.5;
+                /** @constant */
+                loss_eur?: 41916;
+            } | {
+                /** @constant */
+                p?: 0.75;
+                /** @constant */
+                loss_eur?: 82608;
+            } | {
+                /** @constant */
+                p?: 0.95;
+                /** @constant */
+                loss_eur?: 418400;
+            }))[];
+            caveat: components["schemas"]["common-text"];
+        };
+        /** @description The mean-corrected single loss approximation F^-1(1 - (1 - alpha) / lambda) + lambda E[X], labelled UNVERIFIED until it is checked against Bocker and Sprittulla (2006) or Degen (2010). Null with its reason when the tail index is 1 or more (no mean). */
+        c17MeanCorrectedSla: {
+            summary: components["schemas"]["c17CapitalUnverified"] | null;
+            reason: string | null;
+        } & ({
+            summary?: components["schemas"]["c17CapitalUnverified"];
+            reason?: null;
+        } | {
+            summary?: null;
+            reason?: string;
+        });
+        /** @description Percentiles across the replications of a money quantity, in EUR, nondecreasing. */
+        c17MoneyQuantiles: {
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            p05: number;
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            p25: number;
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            median: number;
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            p75: number;
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            p95: number;
+        };
+        /** @description A rung the bake may not have evaluated for a cell: the summary, or null with its reason. */
+        c17OptionalCapital: {
+            summary: components["schemas"]["c17Capital"] | null;
+            reason: string | null;
+        } & ({
+            summary?: components["schemas"]["c17Capital"];
+            reason?: null;
+        } | {
+            summary?: null;
+            reason?: string;
+        });
+        /** @description C17 tail-index outputs (outputs.kind tail-index): one tail index of the generator of operational loss histories for a synthetic bank, calibrated to the BCBS 2008 LDCE quantiles, whose true annual loss distribution is known; the four cells of 5 or 10 years and a collection threshold of 10,000 or 20,000 as replication summaries; money in EUR. */
+        c17Outputs: {
+            /** @constant */
+            kind: "tail-index";
+            /**
+             * @description ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR).
+             * @constant
+             */
+            currency: "EUR";
+            tail_index: number;
+            /** @description True exactly when the tail index is 1 or more: the mean is infinite, no mean-based quantity is computed and the mean-corrected SLA is absent. */
+            infinite_mean: boolean;
+            truth: components["schemas"]["c17Truth"];
+            calibration: components["schemas"]["c17Calibration"];
+            bank: components["schemas"]["c17Bank"];
+            /** @description The grid in fixed order: 5 years then 10 years, each at collection threshold 10,000 then 20,000. */
+            cells: components["schemas"]["c17Cell"][];
+            exceedance: components["schemas"]["c17Exceedance"];
+            sma_response: components["schemas"]["c17SmaResponse"];
+            scenario_influence: components["schemas"]["c17ScenarioInfluence"];
+        };
+        /** @description Percentiles across the replications of a ratio to the true 99.9 percent annual loss quantile. */
+        c17RatioQuantiles: {
+            p05: number;
+            p25: number;
+            median: number;
+            p75: number;
+            p95: number;
+        };
+        /** @description Independent simulated loss histories: the seeds, the count and the failures. The histories are not in the document. */
+        c17Replications: {
+            /** @description Replication i uses the seed seed_first + i; the ranges are disjoint between cells and variants. */
+            seed_first: number;
+            n_replications: number;
+            /** @description Histories whose fit failed to converge; they are counted, never dropped silently. */
+            n_failed: number;
+            /** @description Median number of recorded losses per history. */
+            n_losses_median: number;
+        };
+        /** @description A rung of the operational risk ladder of dossier 05. */
+        c17Rung: {
+            /** @enum {string} */
+            rung_id: "lda-lognormal" | "lda-lognormal-truncated" | "lda-splice" | "sla" | "sla-mean-corrected" | "scenario";
+            label: components["schemas"]["common-text"];
+            /** @enum {string} */
+            severity_law: "lognormal" | "lognormal-truncated" | "lognormal-gpd-splice" | "gpd" | "none";
+            truncated: boolean;
+            /** @enum {string} */
+            aggregation: "monte-carlo" | "panjer" | "fft" | "closed-form";
+            /** @enum {string} */
+            status: "verified" | "UNVERIFIED";
+            reference: string;
+        } & ({
+            /** @enum {string} */
+            rung_id?: "lda-lognormal" | "lda-lognormal-truncated" | "lda-splice" | "sla" | "scenario";
+            /** @constant */
+            status?: "verified";
+        } | {
+            /** @constant */
+            rung_id?: "sla-mean-corrected";
+            /** @constant */
+            status?: "UNVERIFIED";
+        });
+        c17Scenario: {
+            scenario_id: string;
+            label: components["schemas"]["common-text"];
+            /** @enum {string} */
+            kind: "percentile" | "individual";
+            loss_eur: number;
+            exceedance_frequency_per_year: number;
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            capital_without_eur: number;
+            /** @description (base capital - capital without the point) / base capital. */
+            influence: number;
+        };
+        /** @description The 99.9 percent capital's sensitivity to each scenario point of one history (the scenario influence). */
+        c17ScenarioInfluence: {
+            /**
+             * @description ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR).
+             * @constant
+             */
+            currency: "EUR";
+            cell_id: string;
+            seed: number;
+            /**
+             * @description The quantile level of C17: the 99.9 percent annual loss quantile, as a decimal.
+             * @constant
+             */
+            level: 0.999;
+            /** @enum {string} */
+            method: "pseudo-observations" | "body-tail" | "bayesian-credibility";
+            base_capital_eur: number;
+            scenarios: components["schemas"]["c17Scenario"][];
+            reference: string;
+        };
+        c17ScenarioSpec: {
+            methods: ("pseudo-observations" | "body-tail" | "bayesian-credibility")[];
+            reference: string;
+        };
+        /** @description The SMA capital of the synthetic bank on the same histories as the LDA of the cell, with the discretion applied as a named field (OPE25.10, OPE25.11, OPE25.15). ORC = BIC x ILM (OPE25.2). The SMA is not calibrated to the 99.9 percent quantile of any bank: the ratio to the true quantile is a comparison, not a claim of equivalence. */
+        c17SmaCell: {
+            /**
+             * @description ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR).
+             * @constant
+             */
+            currency: "EUR";
+            /** @enum {string} */
+            basis: "bic-times-ilm" | "bic-only";
+            /** @description Why capital is BIC only; null on the full basis. */
+            reason: string | null;
+            /** @enum {string} */
+            discretion_applied: "none" | "bucket-1-ilm-one" | "national-ilm-one" | "transitional-bic-only";
+            bucket: number;
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            bic_eur: number;
+            /** @description LC = 15 x the average annual loss over the available years (OPE25.8); null on the BIC-only basis. */
+            lc_eur: components["schemas"]["c17MoneyQuantiles"] | null;
+            /** @description ILM = ln(e - 1 + (LC / BIC)^0.8) (OPE25.8); null on the BIC-only basis. */
+            ilm: components["schemas"]["c17IlmQuantiles"] | null;
+            orc_eur: components["schemas"]["c17MoneyQuantiles"];
+            orc_over_true_quantile: components["schemas"]["c17RatioQuantiles"];
+            note: components["schemas"]["common-text"];
+        } & ({
+            /** @constant */
+            basis?: "bic-times-ilm";
+            reason?: null;
+            /** @enum {string} */
+            discretion_applied?: "none" | "bucket-1-ilm-one" | "national-ilm-one";
+            lc_eur?: components["schemas"]["c17MoneyQuantiles"];
+            ilm?: components["schemas"]["c17IlmQuantiles"];
+        } | {
+            /** @constant */
+            basis?: "bic-only";
+            reason?: string;
+            /** @constant */
+            discretion_applied?: "transitional-bic-only";
+            lc_eur?: null;
+            ilm?: null;
+        });
+        /** @description The ILM and the capital of one history as a single large loss of growing size is added to its latest year. */
+        c17SmaResponse: {
+            /**
+             * @description ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR).
+             * @constant
+             */
+            currency: "EUR";
+            cell_id: string;
+            seed: number;
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            bic_eur: number;
+            rows: components["schemas"]["c17SmaResponseRow"][];
+        };
+        c17SmaResponseRow: {
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            added_loss_eur: number;
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            lc_eur: number;
+            ilm: number;
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            orc_eur: number;
+        };
+        /** @description The OPE25 standardised approach as specified (dossier 01 section F), with its golden value. */
+        c17SmaSpec: {
+            /**
+             * @description ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR).
+             * @constant
+             */
+            currency: "EUR";
+            /** @description OPE25.7 Table 1, transcribed and locked: 12% to EUR 1bn, 15% from 1bn to 30bn, 18% above. */
+            buckets: components["schemas"]["c17BicBucket"][];
+            /** @constant */
+            loss_multiple: 15;
+            /** @constant */
+            loss_window_years: 10;
+            /** @constant */
+            minimum_years: 5;
+            /** @constant */
+            ilm_exponent: 0.8;
+            /** @constant */
+            rwa_factor: 12.5;
+            discretions: components["schemas"]["c17Discretion"][];
+            golden: {
+                /** @constant */
+                bi_eur: 35000000000;
+                /** @constant */
+                bic_eur: 5370000000;
+                /** @constant */
+                reference: "OPE25.7 footnote 2";
+            };
+            reference: string;
+        };
+        /** @description The fitted GPD tail index above one threshold across the replications; share_at_least_one is the share of fits with an infinite-mean tail index. */
+        c17StabilityRow: {
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            threshold_eur: number;
+            n_exceedances_median: number;
+            n_fits: number;
+            tail_index: components["schemas"]["c17Band"];
+            /** @description A share in [0, 1]. */
+            share_at_least_one: number;
+        };
+        /** @description The generator's true parameters and the true 99.9 percent annual loss quantile, labelled synthetic-known-truth. Required in every C17 document: nothing is scored without them. */
+        c17Truth: {
+            /** @constant */
+            label: "synthetic-known-truth";
+            /**
+             * @description ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR).
+             * @constant
+             */
+            currency: "EUR";
+            /** @description The generator's true annual frequency: Poisson, losses per year at or above `counted_above_eur` (the generator floor, equal to the severity location). */
+            frequency: {
+                /** @constant */
+                law: "poisson";
+                lambda_per_year: number;
+                /** @description Money in EUR (the `currency` of the enclosing block). */
+                counted_above_eur: number;
+            };
+            /** @description The generator's true severity: a generalised Pareto distribution with the tail index of the variant, starting at `location_eur` (the generator floor, no loss is generated below it). Threshold-stable: the loss above any higher collection threshold is again a GPD with the same tail index. */
+            severity: {
+                /** @constant */
+                law: "gpd";
+                /** @description Money in EUR (the `currency` of the enclosing block). */
+                location_eur: number;
+                scale_eur: number;
+                tail_index: number;
+            };
+            /** @description The true 99.9 percent quantile of the annual loss of the generating process (all generated losses at or above the generator floor, whatever the collection threshold): computed once by Panjer or FFT on a fine grid and checked by Monte Carlo. */
+            annual_loss_quantile: {
+                /**
+                 * @description The quantile level of C17: the 99.9 percent annual loss quantile, as a decimal.
+                 * @constant
+                 */
+                level: 0.999;
+                value_eur: number;
+                /** @enum {string} */
+                method: "panjer" | "fft";
+                grid_step_eur: number;
+                mc_check: {
+                    n_years: number;
+                    seed: number;
+                    value_eur: number;
+                    standard_error_eur: number;
+                    /** @description True when the Monte Carlo value is within 3 standard errors of the value. */
+                    agrees: boolean;
+                };
+            };
+            annual_loss_mean: {
+                /** @description Null exactly when the tail index is 1 or more: the mean is infinite. */
+                value_eur: number | null;
+                /** @description Why the mean is absent; null when it is given. */
+                reason: string | null;
+            } & ({
+                value_eur?: number;
+                reason?: null;
+            } | {
+                value_eur?: null;
+                reason?: string;
+            });
+            notice: components["schemas"]["common-text"];
+        };
+        /** @description The true parameters and the true 99.9 percent annual loss quantile of one variant. */
+        c17VariantTruth: {
+            variant_id: string;
+            tail_index: number;
+            infinite_mean: boolean;
+            lambda_per_year: number;
+            /** @description Money in EUR (the `currency` of the enclosing block). */
+            location_eur: number;
+            scale_eur: number;
+            true_quantile_999_eur: number;
+            true_mean_eur: number | null;
+            true_mean_reason: string | null;
+        } & ({
+            /** @constant */
+            infinite_mean?: false;
+            true_mean_eur?: number;
+            true_mean_reason?: null;
+        } | {
+            /** @constant */
+            infinite_mean?: true;
+            true_mean_eur?: null;
+            true_mean_reason?: string;
+        });
+        /**
          * C22 models
          * @description Catalog row c22-models 1.0.0: the C22 models artifact with the exact-probability parity points.
          */
@@ -3624,7 +4263,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c03-models"] | components["schemas"]["c03-variant-vintage-cohort"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c08-models"] | components["schemas"]["c08-variant-default-cohort"] | components["schemas"]["c09-models"] | components["schemas"]["c09-variant-acceleration-level"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
+                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c03-models"] | components["schemas"]["c03-variant-vintage-cohort"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c08-models"] | components["schemas"]["c08-variant-default-cohort"] | components["schemas"]["c09-models"] | components["schemas"]["c09-variant-acceleration-level"] | components["schemas"]["c17-models"] | components["schemas"]["c17-variant-tail-index"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
                 };
             };
             404: components["responses"]["NotFound"];
