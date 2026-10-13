@@ -5,7 +5,7 @@ import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '
 import { ChartOverTable } from '../c06/format';
 import { Flagged, U6TestsTable, p2, useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { DESIGN_TEXT, TREATMENT_TEXT, modelLabel, outputsOf, text, type C09Sel } from './selection';
+import { DESIGN_TEXT, ESTIMATOR_TEXT, TREATMENT_TEXT, modelLabel, outputsOf, text, type C09Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
@@ -19,15 +19,18 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
   const truth = o.generator.true_ccf;
   const yes = pick({ en: 'yes', es: 'sí' }, lang);
   const no = pick({ en: 'no', es: 'no' }, lang);
-  const rowLabel = (design: string, treatment: string) => ({
-    en: `${text(DESIGN_TEXT, design).en}, ${text(TREATMENT_TEXT, treatment).en.toLowerCase()}`,
-    es: `${text(DESIGN_TEXT, design).es}, ${text(TREATMENT_TEXT, treatment).es.toLowerCase()}`,
+  // the rail's design only: its treatments under both estimators fit the card (all three designs were 24 bars in a box
+  // that scrolled, and the two estimators of a treatment read as one label twice)
+  const rows = c.rows.filter((r) => r.design === sel.design);
+  const rowLabel = (treatment: string, estimator: string) => ({
+    en: `${text(TREATMENT_TEXT, treatment).en}, ${text(ESTIMATOR_TEXT, estimator).en.toLowerCase()}`,
+    es: `${text(TREATMENT_TEXT, treatment).es}, ${text(ESTIMATOR_TEXT, estimator).es.toLowerCase()}`,
   });
   const data = [
     { id: 'truth', label: { en: 'Known CCF', es: 'CCF conocido' }, value: truth.value, tone: 'neutral' as const },
-    ...c.rows.map((r) => ({
-      id: `${r.design}-${r.treatment}`,
-      label: rowLabel(r.design, r.treatment),
+    ...rows.map((r) => ({
+      id: `${r.design}-${r.treatment}-${r.estimator}`,
+      label: rowLabel(r.treatment, r.estimator),
       value: r.estimate.value,
       tone: r.estimate.flag !== 'in-range' ? ('bad' as const) : r.within_tolerance ? ('good' as const) : ('warn' as const),
     })),
@@ -44,7 +47,8 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
         }}
       >
         <ChartOverTable
-          chart={<BarChart title={{ en: 'CCF by design and treatment', es: 'CCF por diseño y tratamiento' }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: 'Conversion factor', es: 'Factor de conversión' }, format: { percent: true, digits: 2 } }} />}
+          chartMin={`${data.length * 1.5 + 3}rem`}
+          chart={<BarChart title={{ en: `CCF by treatment and estimator, ${text(DESIGN_TEXT, sel.design).en.toLowerCase()}`, es: `CCF por tratamiento y estimador, ${text(DESIGN_TEXT, sel.design).es.toLowerCase()}` }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: 'Conversion factor', es: 'Factor de conversión' }, format: { percent: true, digits: 2 } }} />}
         >
           <p className="ct-note" data-truth={truth.value}>
             {pick(
@@ -59,8 +63,8 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
           <table className="caos-table ct-wrap-head" data-table="ccf-by-design">
             <thead>
               <tr>
-                <th className="ct-text">{pick({ en: 'Design', es: 'Diseño' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Treatment', es: 'Tratamiento' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Estimator', es: 'Estimador' }, lang)}</th>
                 <th>{pick({ en: 'Estimate', es: 'Estimación' }, lang)}</th>
                 <th>{pick({ en: 'Bias', es: 'Sesgo' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Interval', es: 'Intervalo' }, lang)}</th>
@@ -71,10 +75,10 @@ export function ByDesignView({ sel }: { sel: C09Sel | null }) {
               </tr>
             </thead>
             <tbody>
-              {c.rows.map((r) => (
-                <tr key={`${r.design}-${r.treatment}`} data-design={r.design} data-treatment={r.treatment} data-tolerance={String(r.within_tolerance)} className={r.design === sel.design && r.treatment === sel.treatment ? 'ct-current' : undefined}>
-                  <td className="ct-text">{pick(text(DESIGN_TEXT, r.design), lang)}</td>
+              {rows.map((r) => (
+                <tr key={`${r.design}-${r.treatment}-${r.estimator}`} data-design={r.design} data-treatment={r.treatment} data-estimator={r.estimator} data-tolerance={String(r.within_tolerance)} className={r.treatment === sel.treatment ? 'ct-current' : undefined}>
                   <td className="ct-text">{pick(text(TREATMENT_TEXT, r.treatment), lang)}</td>
+                  <td className="ct-text">{pick(text(ESTIMATOR_TEXT, r.estimator), lang)}</td>
                   <td data-estimate-flag={r.estimate.flag}>
                     <Flagged value={r.estimate.value} flag={r.estimate.flag} />
                   </td>
@@ -123,6 +127,7 @@ export function DistributionView({ sel }: { sel: C09Sel | null }) {
         }}
       >
         <ChartOverTable
+          chartMin={`${data.length * 1.5 + 3}rem`}
           chart={<BarChart title={{ en: 'Defaults by realised CCF', es: 'Incumplimientos por CCF realizado' }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: 'Number of defaults', es: 'Número de incumplimientos' }, format: { decimals: 0 } }} />}
         >
           <table className="caos-table ct-wrap-head" data-table="ccf-distribution" data-design={d.design}>

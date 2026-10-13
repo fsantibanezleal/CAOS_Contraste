@@ -509,7 +509,9 @@ def test_the_rows_fragment_has_the_seven_rows_in_the_catalog_columns() -> None:
         assert len(r) == len(header), r[0]
         d = dict(zip(header, r))
         assert d["version"] == "1.0.0"
-        assert d["status"] == "active"
+        # the producers are built (U5 in 0.08.000, U6 in 0.10.000): each row is real, with a committed example
+        assert d["status"] == "real"
+        assert (ROOT / d["example"]).is_file(), d["example"]
         assert d["provider"].startswith("fixture:")
         assert (ROOT / d["schema file"]).is_file(), d["schema file"]
         assert (ROOT / d["provider"].removeprefix("fixture:")).is_file(), d["provider"]
