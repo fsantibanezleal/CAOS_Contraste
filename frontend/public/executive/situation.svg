@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" role="img" aria-label="The people who decide and check models, and the four current approaches, each leaving a gap">
+<title>The people who decide and check models, and the four current approaches, each leaving a gap</title>
+<rect x="1" y="1" width="638" height="438" rx="12" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+<circle cx="64" cy="44.5" r="12.1" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5"/>
+<path d="M 45.3 96 Q 45.3 58.6 64 58.6 Q 82.7 58.6 82.7 96 Z" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-lang="en" x="64" y="124" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Management</text>
+<text data-lang="es" x="64" y="124" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Gerencia</text>
+<circle cx="192" cy="44.5" r="12.1" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5"/>
+<path d="M 173.3 96 Q 173.3 58.6 192 58.6 Q 210.7 58.6 210.7 96 Z" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-lang="en" x="192" y="124" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Accountable</text>
+<text data-lang="es" x="192" y="124" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Función</text>
+<text data-lang="en" x="192" y="150" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">function</text>
+<text data-lang="es" x="192" y="150" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">responsable</text>
+<circle cx="320" cy="44.5" r="12.1" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5"/>
+<path d="M 301.3 96 Q 301.3 58.6 320 58.6 Q 338.7 58.6 338.7 96 Z" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-lang="en" x="320" y="124" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Model</text>
+<text data-lang="es" x="320" y="124" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Dueños de</text>
+<text data-lang="en" x="320" y="150" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">owners</text>
+<text data-lang="es" x="320" y="150" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">modelos</text>
+<circle cx="448" cy="44.5" r="12.1" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5"/>
+<path d="M 429.3 96 Q 429.3 58.6 448 58.6 Q 466.7 58.6 466.7 96 Z" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-lang="en" x="448" y="124" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Validation</text>
+<text data-lang="es" x="448" y="124" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Validación</text>
+<circle cx="576" cy="44.5" r="12.1" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5"/>
+<path d="M 557.3 96 Q 557.3 58.6 576 58.6 Q 594.7 58.6 594.7 96 Z" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-lang="en" x="576" y="124" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Audit and</text>
+<text data-lang="es" x="576" y="124" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Auditoría e</text>
+<text data-lang="en" x="576" y="150" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">inspectors</text>
+<text data-lang="es" x="576" y="150" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">inspectores</text>
+<rect x="34" y="170" width="572" height="14" rx="7" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+<rect x="55" y="164" width="18" height="26" rx="2" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+<path d="M 60 173 L 68 173 M 60 179 L 68 179" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="183" y="164" width="18" height="26" rx="2" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+<path d="M 188 173 L 196 173 M 188 179 L 196 179" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="311" y="164" width="18" height="26" rx="2" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+<path d="M 316 173 L 324 173 M 316 179 L 324 179" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="439" y="164" width="18" height="26" rx="2" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+<path d="M 444 173 L 452 173 M 444 179 L 452 179" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="567" y="164" width="18" height="26" rx="2" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+<path d="M 572 173 L 580 173 M 572 179 L 580 179" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 114 177 L 142 177" fill="none" stroke="var(--color-bad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 5"/>
+<path d="M 242 177 L 270 177" fill="none" stroke="var(--color-bad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 5"/>
+<path d="M 370 177 L 398 177" fill="none" stroke="var(--color-bad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 5"/>
+<path d="M 498 177 L 526 177" fill="none" stroke="var(--color-bad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 5"/>
+<text data-lang="en" x="320" y="220" text-anchor="middle" font-size="18" fill="var(--color-bad)" font-weight="600">Each holds only part of the evidence</text>
+<text data-lang="es" x="320" y="220" text-anchor="middle" font-size="18" fill="var(--color-bad)" font-weight="600">Cada uno tiene solo parte de la evidencia</text>
+<rect x="12" y="238" width="140" height="190" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+<circle cx="64" cy="252.0" r="8.8" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5"/>
+<path d="M 50.4 290 Q 50.4 262.8 64 262.8 Q 77.6 262.8 77.6 290 Z" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="84" y="260" width="28" height="34" rx="2" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+<path d="M 90 270 L 106 270 M 90 278 L 106 278 M 90 286 L 100 286" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-lang="en" x="82" y="328" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">In-house</text>
+<text data-lang="es" x="82" y="328" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Equipos</text>
+<text data-lang="en" x="82" y="352" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">validation</text>
+<text data-lang="es" x="82" y="352" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">internos</text>
+<path d="M 26 366 L 138 366" fill="none" stroke="var(--color-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 4"/>
+<text data-lang="en" x="82" y="390" text-anchor="middle" font-size="18" fill="var(--color-bad)">Thresholds</text>
+<text data-lang="es" x="82" y="390" text-anchor="middle" font-size="18" fill="var(--color-bad)">Umbrales</text>
+<text data-lang="en" x="82" y="414" text-anchor="middle" font-size="18" fill="var(--color-bad)">not measured</text>
+<text data-lang="es" x="82" y="414" text-anchor="middle" font-size="18" fill="var(--color-bad)">sin medir</text>
+<rect x="168" y="238" width="140" height="190" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+<path d="M 208 276 L 238 258 L 268 276 Z" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="214" y="278" width="10" height="18" rx="1" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+<rect x="232" y="278" width="10" height="18" rx="1" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+<rect x="250" y="278" width="10" height="18" rx="1" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+<rect x="206" y="296" width="64" height="6" rx="1" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+<text data-lang="en" x="238" y="328" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Supervisor</text>
+<text data-lang="es" x="238" y="328" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Revisiones</text>
+<text data-lang="en" x="238" y="352" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">reviews</text>
+<text data-lang="es" x="238" y="352" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">supervisoras</text>
+<path d="M 182 366 L 294 366" fill="none" stroke="var(--color-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 4"/>
+<text data-lang="en" x="238" y="390" text-anchor="middle" font-size="18" fill="var(--color-bad)">Only a</text>
+<text data-lang="es" x="238" y="390" text-anchor="middle" font-size="18" fill="var(--color-bad)">Solo una</text>
+<text data-lang="en" x="238" y="414" text-anchor="middle" font-size="18" fill="var(--color-bad)">sample, late</text>
+<text data-lang="es" x="238" y="414" text-anchor="middle" font-size="18" fill="var(--color-bad)">muestra, tarde</text>
+<rect x="324" y="238" width="140" height="190" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+<rect x="364" y="258" width="28" height="40" rx="2" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5"/>
+<rect x="396" y="258" width="28" height="40" rx="2" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+<path d="M 402 270 L 418 270 M 402 278 L 418 278" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-lang="en" x="394" y="328" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Published</text>
+<text data-lang="es" x="394" y="328" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Guías</text>
+<text data-lang="en" x="394" y="352" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">guides</text>
+<text data-lang="es" x="394" y="352" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">publicadas</text>
+<path d="M 338 366 L 450 366" fill="none" stroke="var(--color-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 4"/>
+<text data-lang="en" x="394" y="390" text-anchor="middle" font-size="18" fill="var(--color-bad)">Level left</text>
+<text data-lang="es" x="394" y="390" text-anchor="middle" font-size="18" fill="var(--color-bad)">Nivel a cargo</text>
+<text data-lang="en" x="394" y="414" text-anchor="middle" font-size="18" fill="var(--color-bad)">to each bank</text>
+<text data-lang="es" x="394" y="414" text-anchor="middle" font-size="18" fill="var(--color-bad)">de cada banco</text>
+<rect x="480" y="238" width="140" height="190" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+<rect x="520" y="262" width="60" height="34" rx="3" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
+<rect x="538" y="258" width="24" height="42" rx="3" fill="var(--color-warn)" stroke="var(--color-border)" stroke-width="1.5"/>
+<path d="M 520 279 L 580 279" fill="none" stroke="var(--color-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<text data-lang="en" x="550" y="328" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Management</text>
+<text data-lang="es" x="550" y="328" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">Ajustes de</text>
+<text data-lang="en" x="550" y="352" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">overlays</text>
+<text data-lang="es" x="550" y="352" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">la gerencia</text>
+<path d="M 494 366 L 606 366" fill="none" stroke="var(--color-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 4"/>
+<text data-lang="en" x="550" y="390" text-anchor="middle" font-size="18" fill="var(--color-bad)">Model alone</text>
+<text data-lang="es" x="550" y="390" text-anchor="middle" font-size="18" fill="var(--color-bad)">El modelo</text>
+<text data-lang="en" x="550" y="414" text-anchor="middle" font-size="18" fill="var(--color-bad)">not enough</text>
+<text data-lang="es" x="550" y="414" text-anchor="middle" font-size="18" fill="var(--color-bad)">no basta</text>
+</svg>

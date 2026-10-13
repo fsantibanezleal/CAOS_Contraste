@@ -111,12 +111,12 @@ def test_committed_readiness_is_current():
     assert proc.returncode == 0, proc.stdout + proc.stderr
 
 
-def test_the_16_planned_cases_are_a_partial_case_manifest_with_sorted_paths(repo):
+def test_the_13_planned_cases_are_a_partial_case_manifest_with_sorted_paths(repo):
     e = row(compute(repo), "case-manifest")
     assert (e["state"], e["provenance"]) == ("partial", "real")
-    assert e["missing"] == [f"manifests/{c}.json" for c in PLANNED] and len(PLANNED) == 16
-    assert e["reason"] == fill(template("planned and not built"), n=16, total=22, ids=", ".join(PLANNED))
-    assert "C02, C03, C08" in e["reason"]["en"]
+    assert e["missing"] == [f"manifests/{c}.json" for c in PLANNED] and len(PLANNED) == 13
+    assert e["reason"] == fill(template("planned and not built"), n=13, total=22, ids=", ".join(PLANNED))
+    assert "C02, C10, C11" in e["reason"]["en"]
 
 
 def test_a_planned_case_is_declared_absent_only(repo):
@@ -134,7 +134,7 @@ def test_a_built_case_with_its_manifest_removed_is_partial_with_its_path(repo):
     e = row(compute(repo), "case-manifest")
     assert e["state"] == "partial"
     assert e["missing"] == sorted(["manifests/C04.json"] + [f"manifests/{c}.json" for c in PLANNED])
-    assert e["reason"] == fill(template("a manifest the index lists is absent"), n=17, total=22)
+    assert e["reason"] == fill(template("a manifest the index lists is absent"), n=14, total=22)
 
 
 def test_an_absent_artifact_is_partial_for_its_case_rows(repo):
@@ -233,13 +233,13 @@ def _check_artifacts(r: Path) -> subprocess.CompletedProcess:
 def test_check_artifacts_accepts_an_absent_manifest_only_when_the_current_readiness_declares_it(repo):
     _write_readiness(repo)
     ok = _check_artifacts(repo)
-    assert ok.returncode == 0 and "16 declared absent" in ok.stdout, ok.stdout
+    assert ok.returncode == 0 and "13 declared absent" in ok.stdout, ok.stdout
     (repo / "data" / "derived" / "manifests" / "C22.json").unlink()
     stale = _check_artifacts(repo)  # the readiness was not recomputed: it does not list C22
     assert stale.returncode == 1 and "manifests" in stale.stdout and "C22.json" in stale.stdout
     _write_readiness(repo)
     declared = _check_artifacts(repo)
-    assert declared.returncode == 0 and "17 declared absent" in declared.stdout, declared.stdout
+    assert declared.returncode == 0 and "14 declared absent" in declared.stdout, declared.stdout
 
 
 def test_check_artifacts_still_fails_on_any_other_absent_file(repo):

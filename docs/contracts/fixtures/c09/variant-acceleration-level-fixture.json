@@ -1,0 +1,548 @@
+{
+  "schema": "contraste.case/v1",
+  "case_id": "C09",
+  "variant_id": "fixture-level-5",
+  "model": [
+    {
+      "id": "m-fixed",
+      "family": "lgd-ead",
+      "rung": "ccf-fixed-horizon",
+      "title": {
+        "en": "Fixture model m-fixed",
+        "es": "Modelo de ejemplo m-fixed"
+      },
+      "short_title": {
+        "en": "m-fixed",
+        "es": "m-fixed"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    }
+  ],
+  "outputs": {
+    "kind": "acceleration-level",
+    "level": 5,
+    "level_description": {
+      "en": "Level 5: utilisation accelerates most steeply in the months before default.",
+      "es": "Nivel 5: la utilizacion se acelera con mayor fuerza en los meses previos al incumplimiento."
+    },
+    "currency": "USD",
+    "convention": {
+      "name": "eu-undrawn",
+      "definition": {
+        "en": "CCF = (EAD - drawn at the reference date) / (limit - drawn at the reference date): the share of the undrawn amount drawn by default.",
+        "es": "CCF = (EAD - utilizado en la fecha de referencia) / (limite - utilizado en la fecha de referencia): la parte del monto no utilizado que se usa al incumplir."
+      },
+      "formula": "CCF = (EAD - E(t_r)) / (L(t_r) - E(t_r))",
+      "us_terms": {
+        "en": "The same ratio is the loan equivalent (LEQ) in US terms; Qi (2009) calls EAD over outstanding the CCF and EAD over the limit the EADF.",
+        "es": "La misma razon es el equivalente de credito (LEQ) en terminos de EE.UU.; Qi (2009) llama CCF a EAD sobre el saldo y EADF a EAD sobre el limite."
+      }
+    },
+    "generator": {
+      "name": "revolving-line-generator",
+      "shaped_on": "fed-2025-cards-hypothetical-portfolios",
+      "true_ccf": {
+        "value": 0.6,
+        "flag": "in-range"
+      },
+      "acceleration_factor": 3.0,
+      "acceleration_window_months": 6,
+      "notice": {
+        "en": "Fixture, not a result. The truth is the CCF the generator draws balances with.",
+        "es": "Ejemplo, no es un resultado. La verdad es el CCF con que el generador simula los saldos."
+      }
+    },
+    "replications": {
+      "development": {
+        "seeds": [
+          101,
+          102,
+          103,
+          104
+        ],
+        "n_replications": 4,
+        "n_facilities": 50000,
+        "n_defaults": 2000
+      },
+      "test": {
+        "seeds": [
+          201,
+          202,
+          203,
+          204
+        ],
+        "n_replications": 4,
+        "n_facilities": 50000,
+        "n_defaults": 2000
+      }
+    },
+    "ccf_by_design": {
+      "tolerance": 0.05,
+      "rows": [
+        {
+          "design": "fixed-horizon",
+          "treatment": "none",
+          "estimator": "mean",
+          "estimate": {
+            "value": 1.04,
+            "flag": "above-one"
+          },
+          "truth": {
+            "value": 0.6,
+            "flag": "in-range"
+          },
+          "bias": 0.44,
+          "rmse": 0.49,
+          "ci_low": 0.97,
+          "ci_high": 1.11,
+          "n_defaults": 2000,
+          "share_below_zero": 0.08,
+          "share_above_one": 0.31,
+          "within_tolerance": false
+        },
+        {
+          "design": "fixed-horizon",
+          "treatment": "floor-cap",
+          "estimator": "mean",
+          "estimate": {
+            "value": 0.83,
+            "flag": "in-range"
+          },
+          "truth": {
+            "value": 0.6,
+            "flag": "in-range"
+          },
+          "bias": 0.23,
+          "rmse": 0.28,
+          "ci_low": 0.8,
+          "ci_high": 0.86,
+          "n_defaults": 2000,
+          "share_below_zero": 0.0,
+          "share_above_one": 0.0,
+          "within_tolerance": false
+        },
+        {
+          "design": "cohort",
+          "treatment": "none",
+          "estimator": "mean",
+          "estimate": {
+            "value": 0.93,
+            "flag": "in-range"
+          },
+          "truth": {
+            "value": 0.6,
+            "flag": "in-range"
+          },
+          "bias": 0.33,
+          "rmse": 0.38,
+          "ci_low": 0.88,
+          "ci_high": 0.98,
+          "n_defaults": 2000,
+          "share_below_zero": 0.06,
+          "share_above_one": 0.22,
+          "within_tolerance": false
+        },
+        {
+          "design": "cohort",
+          "treatment": "bounded-scale",
+          "estimator": "mean",
+          "estimate": {
+            "value": 0.64,
+            "flag": "in-range"
+          },
+          "truth": {
+            "value": 0.6,
+            "flag": "in-range"
+          },
+          "bias": 0.04,
+          "rmse": 0.09,
+          "ci_low": 0.61,
+          "ci_high": 0.67,
+          "n_defaults": 2000,
+          "share_below_zero": 0.0,
+          "share_above_one": 0.0,
+          "within_tolerance": true
+        },
+        {
+          "design": "variable-horizon",
+          "treatment": "none",
+          "estimator": "mean",
+          "estimate": {
+            "value": 0.86,
+            "flag": "in-range"
+          },
+          "truth": {
+            "value": 0.6,
+            "flag": "in-range"
+          },
+          "bias": 0.26,
+          "rmse": 0.31,
+          "ci_low": 0.82,
+          "ci_high": 0.9,
+          "n_defaults": 2000,
+          "share_below_zero": 0.05,
+          "share_above_one": 0.17,
+          "within_tolerance": false
+        },
+        {
+          "design": "variable-horizon",
+          "treatment": "floor-cap",
+          "estimator": "mean",
+          "estimate": {
+            "value": 0.74,
+            "flag": "in-range"
+          },
+          "truth": {
+            "value": 0.6,
+            "flag": "in-range"
+          },
+          "bias": 0.14,
+          "rmse": 0.19,
+          "ci_low": 0.71,
+          "ci_high": 0.77,
+          "n_defaults": 2000,
+          "share_below_zero": 0.0,
+          "share_above_one": 0.0,
+          "within_tolerance": false
+        },
+        {
+          "design": "variable-horizon",
+          "treatment": "bounded-scale",
+          "estimator": "mean",
+          "estimate": {
+            "value": 0.66,
+            "flag": "in-range"
+          },
+          "truth": {
+            "value": 0.6,
+            "flag": "in-range"
+          },
+          "bias": 0.06,
+          "rmse": 0.11,
+          "ci_low": 0.62,
+          "ci_high": 0.7,
+          "n_defaults": 2000,
+          "share_below_zero": 0.0,
+          "share_above_one": 0.0,
+          "within_tolerance": false
+        }
+      ]
+    },
+    "ccf_distribution": {
+      "design": "fixed-horizon",
+      "n": 1500,
+      "edges": [
+        -0.5,
+        -0.25,
+        0.0,
+        0.25,
+        0.5,
+        0.75,
+        1.0,
+        1.25,
+        1.5
+      ],
+      "counts": [
+        40,
+        90,
+        180,
+        200,
+        260,
+        330,
+        260,
+        140
+      ],
+      "n_below_zero": 130,
+      "n_above_one": 400
+    },
+    "ead_models": [
+      {
+        "n_clipped_below": null,
+        "n_clipped_above": null,
+        "model_id": "m-fixed",
+        "kind": "ccf-fixed-horizon",
+        "design": "fixed-horizon",
+        "treatment": "floor-cap",
+        "covariates": [
+          "utilisation"
+        ]
+      },
+      {
+        "n_clipped_below": null,
+        "n_clipped_above": null,
+        "model_id": "m-cohort",
+        "kind": "ccf-cohort",
+        "design": "cohort",
+        "treatment": "floor-cap",
+        "covariates": [
+          "utilisation"
+        ]
+      },
+      {
+        "n_clipped_below": null,
+        "n_clipped_above": null,
+        "model_id": "m-variable",
+        "kind": "ccf-variable-horizon",
+        "design": "variable-horizon",
+        "treatment": "bounded-scale",
+        "covariates": [
+          "utilisation"
+        ]
+      },
+      {
+        "n_clipped_below": 12,
+        "n_clipped_above": 31,
+        "model_id": "m-direct",
+        "kind": "direct-ead",
+        "design": null,
+        "treatment": null,
+        "covariates": [
+          "utilisation",
+          "limit"
+        ]
+      },
+      {
+        "n_clipped_below": null,
+        "n_clipped_above": null,
+        "model_id": "m-utilisation",
+        "kind": "utilisation-change",
+        "design": null,
+        "treatment": null,
+        "covariates": [
+          "utilisation"
+        ]
+      }
+    ],
+    "ead_backtest": {
+      "currency": "USD",
+      "bands": [
+        0.0,
+        0.25,
+        0.5,
+        0.75,
+        1.0
+      ],
+      "rows": [
+        {
+          "model_id": "m-fixed",
+          "band_id": "u1",
+          "utilisation_lower": 0.0,
+          "utilisation_upper": 0.25,
+          "n": 500,
+          "predicted_ead": 42400.0,
+          "prediction_flag": "in-range",
+          "realised_ead": 40000.0,
+          "gap": 2400.0,
+          "relative_gap": 0.06,
+          "light": "amber"
+        },
+        {
+          "model_id": "m-fixed",
+          "band_id": "u2",
+          "utilisation_lower": 0.25,
+          "utilisation_upper": 0.5,
+          "n": 500,
+          "predicted_ead": 84800.0,
+          "prediction_flag": "in-range",
+          "realised_ead": 80000.0,
+          "gap": 4800.0,
+          "relative_gap": 0.06,
+          "light": "amber"
+        },
+        {
+          "model_id": "m-fixed",
+          "band_id": "u3",
+          "utilisation_lower": 0.5,
+          "utilisation_upper": 0.75,
+          "n": 500,
+          "predicted_ead": 112800.0,
+          "prediction_flag": "in-range",
+          "realised_ead": 120000.0,
+          "gap": -7200.0,
+          "relative_gap": -0.06,
+          "light": "amber"
+        },
+        {
+          "model_id": "m-fixed",
+          "band_id": "u4",
+          "utilisation_lower": 0.75,
+          "utilisation_upper": 1.0,
+          "n": 500,
+          "predicted_ead": 150400.0,
+          "prediction_flag": "in-range",
+          "realised_ead": 160000.0,
+          "gap": -9600.0,
+          "relative_gap": -0.06,
+          "light": "amber"
+        },
+        {
+          "model_id": "m-direct",
+          "band_id": "u1",
+          "utilisation_lower": 0.0,
+          "utilisation_upper": 0.25,
+          "n": 500,
+          "predicted_ead": 39200.0,
+          "prediction_flag": "in-range",
+          "realised_ead": 40000.0,
+          "gap": -800.0,
+          "relative_gap": -0.02,
+          "light": "green"
+        },
+        {
+          "model_id": "m-direct",
+          "band_id": "u2",
+          "utilisation_lower": 0.25,
+          "utilisation_upper": 0.5,
+          "n": 500,
+          "predicted_ead": 78400.0,
+          "prediction_flag": "in-range",
+          "realised_ead": 80000.0,
+          "gap": -1600.0,
+          "relative_gap": -0.02,
+          "light": "green"
+        },
+        {
+          "model_id": "m-direct",
+          "band_id": "u3",
+          "utilisation_lower": 0.5,
+          "utilisation_upper": 0.75,
+          "n": 500,
+          "predicted_ead": 122400.0,
+          "prediction_flag": "in-range",
+          "realised_ead": 120000.0,
+          "gap": 2400.0,
+          "relative_gap": 0.02,
+          "light": "green"
+        },
+        {
+          "model_id": "m-direct",
+          "band_id": "u4",
+          "utilisation_lower": 0.75,
+          "utilisation_upper": 1.0,
+          "n": 500,
+          "predicted_ead": 163200.0,
+          "prediction_flag": "in-range",
+          "realised_ead": 160000.0,
+          "gap": 3200.0,
+          "relative_gap": 0.02,
+          "light": "green"
+        }
+      ]
+    },
+    "ead_floor": {
+      "currency": "USD",
+      "rule": "on-balance amount + 50% of the off-balance exposure at the SA CCF (CRE32.36, CRE32.64)",
+      "off_balance_share": 0.5,
+      "rows": [
+        {
+          "facility_class": "revolving-commitment",
+          "sa_ccf": 0.4,
+          "reference": "CRE20.98",
+          "n": 1200,
+          "share_binding": 0.18,
+          "mean_ead_before": 640.0,
+          "mean_ead_after": 668.0
+        },
+        {
+          "facility_class": "unconditionally-cancellable",
+          "sa_ccf": 0.1,
+          "reference": "CRE20.100",
+          "n": 800,
+          "share_binding": 0.05,
+          "mean_ead_before": 410.0,
+          "mean_ead_after": 412.0
+        }
+      ]
+    },
+    "small_undrawn": {
+      "currency": "USD",
+      "threshold": 50.0,
+      "applied": true,
+      "n_switched": 120,
+      "reference": "Qi (2009), OCC Economics Working Paper 2009-2"
+    }
+  },
+  "tests": [
+    {
+      "test_id": "lgd_ead.ccf_estimator_bias",
+      "model_id": "m-fixed",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "lgd_ead.ead_backtest_by_band",
+      "model_id": "m-fixed",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    }
+  ],
+  "impact": {
+    "ccf_bias_fixed_horizon": {
+      "value": 0.23,
+      "unit": "share",
+      "label": {
+        "en": "Fixed-horizon CCF bias",
+        "es": "Sesgo del CCF a horizonte fijo"
+      }
+    }
+  },
+  "findings": [],
+  "provenance": {
+    "truth_status": "synthetic-known-truth",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u6-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

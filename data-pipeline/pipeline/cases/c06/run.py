@@ -24,7 +24,7 @@ from riskvalidation.provisions.staging import StageResult, StagingPolicy, alloca
 from . import macro as mc
 from .ladder import Ladder, fit_ladder, quarterly_default_rates
 from .panel import (SEGMENT_IDS, Loans, Observation, balance_fraction, decode_stratum, observe)
-from .readers import FedTables
+from ...io.sba import FedTables
 
 RHO = 0.12                    # asset correlation: dossier 02 B.4 and C.1 use 0.12 for the one-factor conversion
 PERIOD_MONTHS = 3

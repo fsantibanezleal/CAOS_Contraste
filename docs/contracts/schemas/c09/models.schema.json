@@ -1,0 +1,596 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c09/models.schema.json",
+  "title": "C09 models",
+  "description": "Catalog row c09-models 1.0.0: the C09 models artifact (generator and known CCF, marginals, levels, designs, EAD models, floors).",
+  "allOf": [
+    {
+      "$ref": "../common/models-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C09"
+        },
+        "fit": {
+          "$ref": "#/$defs/c09Fit"
+        }
+      },
+      "required": [
+        "case_id",
+        "fit"
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c09Ccf": {
+      "description": "A credit conversion factor with its range flag. In [0, 1] the flag is in-range; below 0 or above 1 (fees, costs, overlimit drawings, limit changes) the value is kept and flagged, never silently clipped.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "flag"
+          ],
+          "properties": {
+            "value": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "flag": {
+              "const": "in-range"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "flag"
+          ],
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMaximum": 0
+            },
+            "flag": {
+              "const": "below-zero"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "flag"
+          ],
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 1
+            },
+            "flag": {
+              "const": "above-one"
+            }
+          }
+        }
+      ]
+    },
+    "c09Convention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "definition",
+        "formula",
+        "us_terms"
+      ],
+      "properties": {
+        "name": {
+          "const": "eu-undrawn"
+        },
+        "definition": {
+          "$ref": "../common/text.schema.json"
+        },
+        "formula": {
+          "type": "string"
+        },
+        "us_terms": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The CCF convention, named on every view: the EU convention, the share of the undrawn amount drawn by default (the LEQ in US terms); Qi (2009) calls EAD over outstanding the CCF."
+    },
+    "c09Generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "shaped_on",
+        "true_ccf",
+        "acceleration_factor",
+        "acceleration_window_months",
+        "notice"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "shaped_on": {
+          "type": "string"
+        },
+        "true_ccf": {
+          "$ref": "#/$defs/c09Ccf"
+        },
+        "acceleration_factor": {
+          "type": "number",
+          "minimum": 0
+        },
+        "acceleration_window_months": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The revolving-line generator with a known CCF; its field structure and marginals follow the Fed 2025 hypothetical card portfolios."
+    },
+    "c09EadModel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_id",
+        "kind",
+        "design",
+        "treatment",
+        "covariates",
+        "n_clipped_below",
+        "n_clipped_above"
+      ],
+      "properties": {
+        "model_id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "ccf-fixed-horizon",
+            "ccf-cohort",
+            "ccf-variable-horizon",
+            "direct-ead",
+            "utilisation-change"
+          ]
+        },
+        "design": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "fixed-horizon",
+                "cohort",
+                "variable-horizon"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "treatment": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "none",
+                "censor",
+                "floor-cap",
+                "bounded-scale"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "covariates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "n_clipped_below": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "direct-ead only: observations whose EADF below 0 was clipped for the fit; null elsewhere."
+        },
+        "n_clipped_above": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "direct-ead only: observations whose EADF above 1 was clipped for the fit; null elsewhere."
+        }
+      },
+      "description": "An EAD model of the ladder; the clipped counts of fit_direct_ead are reported here, never silently.",
+      "oneOf": [
+        {
+          "properties": {
+            "kind": {
+              "const": "direct-ead"
+            },
+            "n_clipped_below": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "n_clipped_above": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "ccf-fixed-horizon",
+                "ccf-cohort",
+                "ccf-variable-horizon",
+                "utilisation-change"
+              ]
+            },
+            "n_clipped_below": {
+              "type": "null"
+            },
+            "n_clipped_above": {
+              "type": "null"
+            }
+          }
+        }
+      ]
+    },
+    "c09SmallUndrawn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "threshold",
+        "applied",
+        "n_switched",
+        "reference"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "threshold": {
+          "type": "number",
+          "minimum": 0
+        },
+        "applied": {
+          "type": "boolean"
+        },
+        "n_switched": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reference": {
+          "type": "string"
+        }
+      },
+      "description": "The small-undrawn rule of Qi (2009): below the threshold the EAD ratio replaces the unstable CCF."
+    },
+    "c09Marginal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field",
+        "distribution",
+        "parameters",
+        "source"
+      ],
+      "properties": {
+        "field": {
+          "type": "string"
+        },
+        "distribution": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "value",
+              "unit"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "source": {
+          "type": "string"
+        }
+      }
+    },
+    "c09Level": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "level",
+        "label",
+        "acceleration_factor",
+        "acceleration_window_months"
+      ],
+      "properties": {
+        "level": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "acceleration_factor": {
+          "type": "number",
+          "minimum": 0
+        },
+        "acceleration_window_months": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "c09Plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "development_seeds",
+        "test_seeds",
+        "n_facilities"
+      ],
+      "properties": {
+        "development_seeds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 1
+        },
+        "test_seeds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 1
+        },
+        "n_facilities": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "c09Design": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "design",
+        "horizon_months",
+        "n_reference",
+        "step_months",
+        "label"
+      ],
+      "properties": {
+        "design": {
+          "type": "string",
+          "enum": [
+            "fixed-horizon",
+            "cohort",
+            "variable-horizon"
+          ]
+        },
+        "horizon_months": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "n_reference": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "step_months": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        }
+      }
+    },
+    "c09SupervisoryCcf": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item",
+        "ccf",
+        "reference"
+      ],
+      "properties": {
+        "item": {
+          "type": "string"
+        },
+        "ccf": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "c09Floors": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "off_balance_share",
+        "reference",
+        "supervisory_ccfs"
+      ],
+      "properties": {
+        "off_balance_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "reference": {
+          "type": "string"
+        },
+        "supervisory_ccfs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c09SupervisoryCcf"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "c09Fit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "convention",
+        "generator",
+        "marginals",
+        "levels",
+        "replications_plan",
+        "designs",
+        "treatments",
+        "ead_models",
+        "small_undrawn",
+        "floors"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "convention": {
+          "$ref": "#/$defs/c09Convention"
+        },
+        "generator": {
+          "$ref": "#/$defs/c09Generator"
+        },
+        "marginals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c09Marginal"
+          },
+          "minItems": 1
+        },
+        "levels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c09Level"
+          },
+          "minItems": 6
+        },
+        "replications_plan": {
+          "$ref": "#/$defs/c09Plan"
+        },
+        "designs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c09Design"
+          },
+          "minItems": 3
+        },
+        "treatments": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "none",
+              "censor",
+              "floor-cap",
+              "bounded-scale"
+            ]
+          },
+          "minItems": 1
+        },
+        "ead_models": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c09EadModel"
+          },
+          "minItems": 1
+        },
+        "small_undrawn": {
+          "$ref": "#/$defs/c09SmallUndrawn"
+        },
+        "floors": {
+          "$ref": "#/$defs/c09Floors"
+        }
+      },
+      "description": "C09 models: the generator with its known CCF, the marginals from the Fed 2025 hypothetical portfolios, the six acceleration levels, the reference-date designs, the treatments, the EAD models and the floors."
+    }
+  }
+}
