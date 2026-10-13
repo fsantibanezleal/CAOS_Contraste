@@ -24,5 +24,6 @@ def test_the_case_page_states_its_data_and_its_results_come_from_the_documents()
 def test_adversarial_a_page_that_claims_mortgage_or_freddie_mac_results_is_found():
     assert page.claim_findings("This case reports Freddie Mac mortgage results for 2008.\n")
     assert page.claim_findings("The data are mortgage loans.\n")
-    assert page.claim_findings("The data are small-business loans, not mortgages, and Freddie Mac's account is missing.\n") == []
+    assert page.claim_findings("The SBA 7(a) data are small-business loans, not mortgages, and Freddie Mac's account is missing.\n") == []
+    assert page.claim_findings("The data are small-business loans, not mortgages.\n") == ["the page does not name the SBA data"]
     assert page.claim_findings("The page names no data at all.\n") != [] or True
