@@ -1,0 +1,790 @@
+{
+  "schema": "contraste.models/v1",
+  "case_id": "C07",
+  "fit_id": "fixture-banco-andino",
+  "model": [
+    {
+      "id": "R3-trilogy",
+      "family": "lifetime-pd",
+      "rung": "three-regime",
+      "title": {
+        "en": "Fixture model R3-trilogy",
+        "es": "Modelo de ejemplo R3-trilogy"
+      },
+      "short_title": {
+        "en": "R3-trilogy",
+        "es": "R3-trilogy"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "details": {}
+    }
+  ],
+  "fit": {
+    "currency": "CLP",
+    "bank": {
+      "name": "Banco Andino",
+      "synthetic": true,
+      "notice": {
+        "en": "Synthetic bank calibrated to public aggregates; fixture values.",
+        "es": "Banco sintetico calibrado a agregados publicos; valores de ejemplo."
+      },
+      "seed": 0,
+      "calibration_source": "fixture, not a CMF figure"
+    },
+    "calibration_targets": [
+      {
+        "metric": "consumer share of loans",
+        "unit": "share",
+        "target": 0.17,
+        "achieved": 0.167,
+        "source": "fixture value, not a CMF figure",
+        "as_of": "2026-06-30"
+      }
+    ],
+    "segments": [
+      {
+        "id": "mortgage",
+        "label": {
+          "en": "Residential mortgages",
+          "es": "Hipotecario vivienda"
+        },
+        "accounts": 300000,
+        "gross_exposure": 60000000000.0,
+        "b1_portfolio": "residential-mortgage",
+        "bde_segment": "B.1.1",
+        "bde_segment_label": {
+          "en": "Vivienda habitual, LTV <= 80%",
+          "es": "Vivienda habitual, LTV <= 80%"
+        }
+      },
+      {
+        "id": "consumer",
+        "label": {
+          "en": "Consumer",
+          "es": "Consumo"
+        },
+        "accounts": 900000,
+        "gross_exposure": 20000000000.0,
+        "b1_portfolio": "consumer",
+        "bde_segment": "B.2",
+        "bde_segment_label": {
+          "en": "Credito al consumo",
+          "es": "Credito al consumo"
+        }
+      },
+      {
+        "id": "commercial-group",
+        "label": {
+          "en": "Commercial (group)",
+          "es": "Comercial grupal"
+        },
+        "accounts": 40000,
+        "gross_exposure": 10000000000.0,
+        "b1_portfolio": "commercial-group",
+        "bde_segment": "A.2.2",
+        "bde_segment_label": {
+          "en": "Pymes",
+          "es": "Pymes"
+        }
+      },
+      {
+        "id": "commercial-individual",
+        "label": {
+          "en": "Commercial (individual)",
+          "es": "Comercial individual"
+        },
+        "accounts": 1200,
+        "gross_exposure": 30000000000.0,
+        "b1_portfolio": "commercial-individual",
+        "bde_segment": "A.2.1",
+        "bde_segment_label": {
+          "en": "Grandes empresas",
+          "es": "Grandes empresas"
+        }
+      }
+    ],
+    "b1_tables": [
+      {
+        "table_id": "mortgage-pe",
+        "portfolio": "residential-mortgage",
+        "source": "CMF CNCB Chapter B-1, dossier 03 section D.5 (3.1.1)",
+        "cells": [
+          {
+            "row": "pvg<=40",
+            "column": "0",
+            "pi": 0.010916,
+            "pdi": 0.000225,
+            "pe": 2e-06
+          },
+          {
+            "row": "pvg<=40",
+            "column": "1-29",
+            "pi": 0.213407,
+            "pdi": 0.000441,
+            "pe": 9.4e-05
+          },
+          {
+            "row": "pvg<=40",
+            "column": "30-59",
+            "pi": 0.460536,
+            "pdi": 0.000482,
+            "pe": 0.000222
+          },
+          {
+            "row": "pvg<=40",
+            "column": "60-89",
+            "pi": 0.751614,
+            "pdi": 0.000482,
+            "pe": 0.000362
+          },
+          {
+            "row": "pvg<=40",
+            "column": "default",
+            "pi": 1.0,
+            "pdi": 0.000537,
+            "pe": 0.000537
+          },
+          {
+            "row": "40<pvg<=80",
+            "column": "0",
+            "pi": 0.019158,
+            "pdi": 0.021955,
+            "pe": 0.000421
+          },
+          {
+            "row": "40<pvg<=80",
+            "column": "1-29",
+            "pi": 0.274332,
+            "pdi": 0.028233,
+            "pe": 0.007745
+          },
+          {
+            "row": "40<pvg<=80",
+            "column": "30-59",
+            "pi": 0.520824,
+            "pdi": 0.029192,
+            "pe": 0.015204
+          },
+          {
+            "row": "40<pvg<=80",
+            "column": "60-89",
+            "pi": 0.789511,
+            "pdi": 0.029192,
+            "pe": 0.023047
+          },
+          {
+            "row": "40<pvg<=80",
+            "column": "default",
+            "pi": 1.0,
+            "pdi": 0.030413,
+            "pe": 0.030413
+          },
+          {
+            "row": "80<pvg<=90",
+            "column": "0",
+            "pi": 0.02515,
+            "pdi": 0.215527,
+            "pe": 0.005421
+          },
+          {
+            "row": "80<pvg<=90",
+            "column": "1-29",
+            "pi": 0.2793,
+            "pdi": 0.2166,
+            "pe": 0.060496
+          },
+          {
+            "row": "80<pvg<=90",
+            "column": "30-59",
+            "pi": 0.5258,
+            "pdi": 0.2192,
+            "pe": 0.115255
+          },
+          {
+            "row": "80<pvg<=90",
+            "column": "60-89",
+            "pi": 0.796952,
+            "pdi": 0.221331,
+            "pe": 0.17639
+          },
+          {
+            "row": "80<pvg<=90",
+            "column": "default",
+            "pi": 1.0,
+            "pdi": 0.22231,
+            "pe": 0.22231
+          },
+          {
+            "row": "pvg>90",
+            "column": "0",
+            "pi": 0.0274,
+            "pdi": 0.272,
+            "pe": 0.007453
+          },
+          {
+            "row": "pvg>90",
+            "column": "1-29",
+            "pi": 0.2843,
+            "pdi": 0.2903,
+            "pe": 0.082532
+          },
+          {
+            "row": "pvg>90",
+            "column": "30-59",
+            "pi": 0.5308,
+            "pdi": 0.2959,
+            "pe": 0.157064
+          },
+          {
+            "row": "pvg>90",
+            "column": "60-89",
+            "pi": 0.803677,
+            "pdi": 0.301558,
+            "pe": 0.242355
+          },
+          {
+            "row": "pvg>90",
+            "column": "default",
+            "pi": 1.0,
+            "pdi": 0.302436,
+            "pe": 0.302436
+          }
+        ]
+      },
+      {
+        "table_id": "individual-categories",
+        "portfolio": "commercial-individual",
+        "source": "CMF CNCB Chapter B-1, dossier 03 section D.3 (2.1)",
+        "cells": [
+          {
+            "row": "A1",
+            "column": "category",
+            "pi": 0.0004,
+            "pdi": 0.9,
+            "pe": 0.00036
+          },
+          {
+            "row": "A2",
+            "column": "category",
+            "pi": 0.001,
+            "pdi": 0.825,
+            "pe": 0.000825
+          },
+          {
+            "row": "A3",
+            "column": "category",
+            "pi": 0.0025,
+            "pdi": 0.875,
+            "pe": 0.0021875
+          },
+          {
+            "row": "A4",
+            "column": "category",
+            "pi": 0.02,
+            "pdi": 0.875,
+            "pe": 0.0175
+          },
+          {
+            "row": "A5",
+            "column": "category",
+            "pi": 0.0475,
+            "pdi": 0.9,
+            "pe": 0.04275
+          },
+          {
+            "row": "A6",
+            "column": "category",
+            "pi": 0.1,
+            "pdi": 0.9,
+            "pe": 0.09
+          },
+          {
+            "row": "B1",
+            "column": "category",
+            "pi": 0.15,
+            "pdi": 0.925,
+            "pe": 0.13875
+          },
+          {
+            "row": "B2",
+            "column": "category",
+            "pi": 0.22,
+            "pdi": 0.925,
+            "pe": 0.2035
+          },
+          {
+            "row": "B3",
+            "column": "category",
+            "pi": 0.33,
+            "pdi": 0.975,
+            "pe": 0.32175
+          },
+          {
+            "row": "B4",
+            "column": "category",
+            "pi": 0.45,
+            "pdi": 0.975,
+            "pe": 0.43875
+          }
+        ]
+      },
+      {
+        "table_id": "consumer-pi",
+        "portfolio": "consumer",
+        "source": "CMF CNCB Chapter B-1, dossier 03 section D.5 (3.1.3)",
+        "cells": [
+          {
+            "row": "0-7",
+            "column": "mortgage-no-arrears",
+            "pi": 0.033,
+            "pdi": null,
+            "pe": null
+          },
+          {
+            "row": "0-7",
+            "column": "mortgage-arrears",
+            "pi": 0.146,
+            "pdi": null,
+            "pe": null
+          },
+          {
+            "row": "0-7",
+            "column": "no-mortgage-no-arrears",
+            "pi": 0.066,
+            "pdi": null,
+            "pe": null
+          },
+          {
+            "row": "0-7",
+            "column": "no-mortgage-arrears",
+            "pi": 0.198,
+            "pdi": null,
+            "pe": null
+          },
+          {
+            "row": "8-30",
+            "column": "mortgage-no-arrears",
+            "pi": 0.204,
+            "pdi": null,
+            "pe": null
+          },
+          {
+            "row": "8-30",
+            "column": "mortgage-arrears",
+            "pi": 0.416,
+            "pdi": null,
+            "pe": null
+          },
+          {
+            "row": "8-30",
+            "column": "no-mortgage-no-arrears",
+            "pi": 0.306,
+            "pdi": null,
+            "pe": null
+          },
+          {
+            "row": "8-30",
+            "column": "no-mortgage-arrears",
+            "pi": 0.485,
+            "pdi": null,
+            "pe": null
+          },
+          {
+            "row": "31-60",
+            "column": "mortgage-no-arrears",
+            "pi": 0.502,
+            "pdi": null,
+            "pe": null
+          },
+          {
+            "row": "31-60",
+            "column": "mortgage-arrears",
+            "pi": 0.63,
+            "pdi": null,
+            "pe": null
+          },
+          {
+            "row": "31-60",
+            "column": "no-mortgage-no-arrears",
+            "pi": 0.651,
+            "pdi": null,
+            "pe": null
+          },
+          {
+            "row": "31-60",
+            "column": "no-mortgage-arrears",
+            "pi": 0.663,
+            "pdi": null,
+            "pe": null
+          },
+          {
+            "row": "61-89",
+            "column": "mortgage-no-arrears",
+            "pi": 0.626,
+            "pdi": null,
+            "pe": null
+          },
+          {
+            "row": "61-89",
+            "column": "mortgage-arrears",
+            "pi": 0.817,
+            "pdi": null,
+            "pe": null
+          },
+          {
+            "row": "61-89",
+            "column": "no-mortgage-no-arrears",
+            "pi": 0.723,
+            "pdi": null,
+            "pe": null
+          },
+          {
+            "row": "61-89",
+            "column": "no-mortgage-arrears",
+            "pi": 0.869,
+            "pdi": null,
+            "pe": null
+          }
+        ]
+      }
+    ],
+    "b1_default_categories": [
+      {
+        "category": "C1",
+        "tpe_upper": 0.03,
+        "provision_rate": 0.02
+      },
+      {
+        "category": "C2",
+        "tpe_upper": 0.2,
+        "provision_rate": 0.1
+      },
+      {
+        "category": "C3",
+        "tpe_upper": 0.3,
+        "provision_rate": 0.25
+      },
+      {
+        "category": "C4",
+        "tpe_upper": 0.5,
+        "provision_rate": 0.4
+      },
+      {
+        "category": "C5",
+        "tpe_upper": 0.8,
+        "provision_rate": 0.65
+      },
+      {
+        "category": "C6",
+        "tpe_upper": null,
+        "provision_rate": 0.9
+      }
+    ],
+    "ifrs9": {
+      "pd_ladder_rung": "L1-dth",
+      "discount_convention": "mid-period",
+      "eir_basis": "original",
+      "weighting_scenarios": [
+        {
+          "id": "upside",
+          "label": {
+            "en": "Upside",
+            "es": "Favorable"
+          },
+          "weight": 0.25,
+          "z_offset": 1.0
+        },
+        {
+          "id": "central",
+          "label": {
+            "en": "Central",
+            "es": "Central"
+          },
+          "weight": 0.5,
+          "z_offset": 0.0
+        },
+        {
+          "id": "downside",
+          "label": {
+            "en": "Downside",
+            "es": "Adverso"
+          },
+          "weight": 0.25,
+          "z_offset": -2.0
+        }
+      ],
+      "staging_policy": {
+        "dpd_backstop": 30,
+        "default_dpd": 90,
+        "threefold_ratio": 3.0,
+        "absolute_floor": 0.005,
+        "probation_months": 6,
+        "low_credit_risk_pd": null,
+        "multiplier_schedule": [
+          {
+            "pd_origination_upper": 0.01,
+            "multiplier": 4.0
+          },
+          {
+            "pd_origination_upper": 0.05,
+            "multiplier": 2.5
+          },
+          {
+            "pd_origination_upper": 0.5,
+            "multiplier": 1.5
+          }
+        ],
+        "source": "fixture: Contraste policy parameters, not IFRS 9 requirements"
+      },
+      "segments": [
+        {
+          "segment_id": "mortgage",
+          "pd_ttc": 0.02,
+          "rho": 0.12,
+          "lgd": 0.4
+        },
+        {
+          "segment_id": "consumer",
+          "pd_ttc": 0.02,
+          "rho": 0.12,
+          "lgd": 0.4
+        },
+        {
+          "segment_id": "commercial-group",
+          "pd_ttc": 0.02,
+          "rho": 0.12,
+          "lgd": 0.4
+        },
+        {
+          "segment_id": "commercial-individual",
+          "pd_ttc": 0.02,
+          "rho": 0.12,
+          "lgd": 0.4
+        }
+      ]
+    },
+    "bde": {
+      "normal_coverage": [
+        {
+          "segment": "B.1.1",
+          "normal": 0.007,
+          "special_watch": 0.18
+        },
+        {
+          "segment": "B.2",
+          "normal": 0.018,
+          "special_watch": 0.202
+        },
+        {
+          "segment": "A.2.2",
+          "normal": 0.011,
+          "special_watch": 0.178
+        },
+        {
+          "segment": "A.2.1",
+          "normal": 0.006,
+          "special_watch": 0.096
+        }
+      ],
+      "doubtful_bucket_labels": [
+        ">90d-6m",
+        "6-9m",
+        "9-12m",
+        "12-15m",
+        "15-18m",
+        "18-21m",
+        ">21m"
+      ],
+      "doubtful_bucket_upper_days": [
+        183,
+        274,
+        365,
+        457,
+        548,
+        639,
+        null
+      ],
+      "doubtful_coverage": [
+        {
+          "segment": "B.1.1",
+          "by_bucket": [
+            0.45,
+            0.5,
+            0.65,
+            0.7,
+            0.85,
+            0.95,
+            1.0
+          ]
+        },
+        {
+          "segment": "B.2",
+          "by_bucket": [
+            0.55,
+            0.65,
+            0.8,
+            0.85,
+            0.95,
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "segment": "A.2.2",
+          "by_bucket": [
+            0.65,
+            0.7,
+            0.75,
+            0.85,
+            0.9,
+            0.95,
+            1.0
+          ]
+        },
+        {
+          "segment": "A.2.1",
+          "by_bucket": [
+            0.55,
+            0.65,
+            0.75,
+            0.9,
+            0.95,
+            1.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    "scenarios": [
+      {
+        "id": "base",
+        "label": {
+          "en": "Base",
+          "es": "Base"
+        },
+        "z_shift": 0.0,
+        "shocks": []
+      },
+      {
+        "id": "recession",
+        "label": {
+          "en": "Recession",
+          "es": "Recesion"
+        },
+        "z_shift": -1.5,
+        "shocks": [
+          {
+            "driver": "gdp-growth",
+            "unit": "percentage points",
+            "value": -3.0
+          },
+          {
+            "driver": "unemployment",
+            "unit": "percentage points",
+            "value": 4.0
+          }
+        ]
+      },
+      {
+        "id": "consumer-arrears-shock",
+        "label": {
+          "en": "Consumer arrears shock",
+          "es": "Shock de mora de consumo"
+        },
+        "z_shift": -0.5,
+        "shocks": [
+          {
+            "driver": "consumer-arrears",
+            "unit": "percentage points",
+            "value": 3.0
+          }
+        ]
+      },
+      {
+        "id": "house-price-fall",
+        "label": {
+          "en": "House price fall",
+          "es": "Caida del precio de viviendas"
+        },
+        "z_shift": -0.6,
+        "shocks": [
+          {
+            "driver": "house-prices",
+            "unit": "percent",
+            "value": -15.0
+          }
+        ]
+      },
+      {
+        "id": "uf-inflation-spike",
+        "label": {
+          "en": "UF inflation spike",
+          "es": "Alza de inflacion UF"
+        },
+        "z_shift": -0.4,
+        "shocks": [
+          {
+            "driver": "uf-inflation",
+            "unit": "percentage points",
+            "value": 4.0
+          }
+        ]
+      },
+      {
+        "id": "combined-severe",
+        "label": {
+          "en": "Combined severe",
+          "es": "Severo combinado"
+        },
+        "z_shift": -2.5,
+        "shocks": [
+          {
+            "driver": "gdp-growth",
+            "unit": "percentage points",
+            "value": -5.0
+          },
+          {
+            "driver": "unemployment",
+            "unit": "percentage points",
+            "value": 6.0
+          },
+          {
+            "driver": "house-prices",
+            "unit": "percent",
+            "value": -25.0
+          }
+        ]
+      }
+    ]
+  },
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u5-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

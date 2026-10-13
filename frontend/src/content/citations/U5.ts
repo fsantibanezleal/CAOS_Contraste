@@ -1,0 +1,27 @@
+// The references of unit U5 (provisions: cases C06 and C07 and the Methodology section on provisions). Every entry is
+// transcribed from research dossier 02 (IFRS 9 expected credit loss and provisioning, sections A, B, C and the
+// source list) and dossier 03 (Chile CMF and Spain BdE, sections D and K and the source list), where each DOI or URL
+// was read at its primary source on 2026-10-04. The shell reports an entry without a DOI or URL; regulatory texts
+// carry their URL. An id already in base.ts (gordy2003, vasicek2002, bcbs2005irb) is not repeated here.
+import type { Citation } from '@fasl-work/caos-app-shell';
+
+export const CITATIONS: Citation[] = [
+  // the standard and the supervisory guidance on it
+  { id: 'ifrs9', label: 'IFRS 9', citation: 'IASB (2014). IFRS 9 Financial Instruments, as endorsed by Commission Regulation (EU) 2016/2067 of 22 November 2016, OJ L 323, 29.11.2016, p. 1. Section 5.5 and Appendix B5.5.', url: 'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32016R2067' },
+  { id: 'bcbsd350', label: 'BCBS d350', citation: 'Basel Committee on Banking Supervision (2015). Guidance on credit risk and accounting for expected credit losses. December 2015.', url: 'https://www.bis.org/bcbs/publ/d350.htm' },
+  { id: 'gppc2016', label: 'GPPC 2016', citation: 'Global Public Policy Committee (2016). The implementation of IFRS 9 impairment requirements by banks: considerations for those charged with governance of systemically important banks. 17 June 2016.', url: 'https://www.globalpublicpolicycommittee.org/wp-content/uploads/2022/12/gppc-ifrs9-implementation-considerations-20160617.pdf' },
+  { id: 'ebagl201706', label: 'EBA/GL/2017/06', citation: "European Banking Authority (2017). Guidelines on credit institutions' credit risk management practices and accounting for expected credit losses, EBA/GL/2017/06, 12 May 2017.", url: 'https://www.eba.europa.eu/documents/10180/1842525/d769d006-d992-4202-8838-711a034e80a2/Final%20Guidelines%20on%20Accounting%20for%20Expected%20Credit%20Losses%20(EBA-GL-2017-06).pdf' },
+  { id: 'eba2021ifrs9', label: 'EBA 2021', citation: 'European Banking Authority (2021). IFRS 9 implementation by EU institutions, Monitoring report, EBA/Rep/2021/35, 24 November 2021.', doi: '10.2853/631076' },
+  { id: 'eba2023ifrs9', label: 'EBA 2023', citation: 'European Banking Authority (2023). IFRS 9 implementation by EU institutions, 2023 Monitoring report, EBA/Rep/2023/36, November 2023.', doi: '10.2853/269836' },
+  { id: 'ecb2024overlays', label: { en: 'ECB 2024 overlays', es: 'BCE 2024 ajustes' }, citation: 'ECB Banking Supervision (2024). IFRS 9 overlays and model improvements for novel risks. July 2024.', doi: '10.2866/034127' },
+  { id: 'abadsuarez2017', label: 'Abad and Suarez 2017', citation: 'Abad, J. and Suarez, J. (2017). Assessing the cyclical implications of IFRS 9: a recursive model. ESRB Occasional Paper No 12, July 2017.', doi: '10.2849/2685' },
+  // the term structure and the one-factor conversion
+  { id: 'botha2025', label: 'Botha and Verster 2025', citation: 'Botha, A. and Verster, T. (2025). Approaches for modelling the term-structure of default risk under IFRS 9: a tutorial using discrete-time survival analysis. arXiv 2507.15441.', doi: '10.48550/arXiv.2507.15441' },
+  { id: 'finegray1999', label: 'Fine and Gray 1999', citation: 'Fine, J. P. and Gray, R. J. (1999). A proportional hazards model for the subdistribution of a competing risk. Journal of the American Statistical Association 94(446), 496-509.', doi: '10.1080/01621459.1999.10474144' },
+  { id: 'perederiy2015', label: 'Perederiy 2015', citation: 'Perederiy, V. (2015). Endogenous derivation and forecast of lifetime PDs. arXiv 1507.05415.', doi: '10.48550/arXiv.1507.05415' },
+  // Chile and Spain
+  { id: 'cmfcncb', label: { en: 'CMF CNCB', es: 'CMF CNCB' }, citation: 'Comisión para el Mercado Financiero (Chile). Compendio de Normas Contables para Bancos (CNCB), Chapters A-2 and B-1, consolidated text with Circular N° 2.243 of 2019-12-20 as base and later circulars.', url: 'https://www.cmfchile.cl/portal/normativa/624/articles-29177_doc_pdf.pdf' },
+  { id: 'cmfinforme2019', label: { en: 'CMF 2019 report', es: 'Informe CMF 2019' }, citation: 'Comisión para el Mercado Financiero (Chile) (2019). Informe Normativo: Actualización del Compendio de Normas Contables para Bancos (CNCB). December 2019.', url: 'https://www.cmfchile.cl/sitio/aplic/serdoc/ver_sgd.php?s567=f8ae1f2ad241b192597e3ad7614e5f3eVFdwQmVFOVVSWGxOUkVsNVRXcFJNazVCUFQwPQ%3D%3D&secuencia=-1&t=1627454704' },
+  { id: 'bdecirc42017', label: { en: 'BdE Circular 4/2017', es: 'Circular 4/2017 del BdE' }, citation: 'Banco de España (2017). Circular 4/2017, de 27 de noviembre, a entidades de crédito, sobre normas de información financiera pública y reservada, y modelos de estados financieros. BOE núm. 296, 2017-12-06 (BOE-A-2017-14334), Anejo 9.', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2017-14334' },
+  { id: 'bdecirc62021', label: { en: 'BdE Circular 6/2021', es: 'Circular 6/2021 del BdE' }, citation: 'Banco de España (2021). Circular 6/2021, de 22 de diciembre, que modifica la Circular 4/2017 (BOE-A-2021-21666): tablas de los puntos 140, 144 y 172 del Anejo 9, aplicables desde el 30 de junio de 2022.', url: 'https://www.boe.es/buscar/doc.php?id=BOE-A-2021-21666' },
+];
