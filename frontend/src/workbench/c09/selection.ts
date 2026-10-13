@@ -50,6 +50,11 @@ export const TREATMENT_TEXT: Record<string, Bi> = {
   'floor-cap': { en: 'Floor and cap', es: 'Piso y tope' },
   'bounded-scale': { en: 'Bounded scale', es: 'Escala acotada' },
 };
+/** How the facility factors of a design become one CCF: their mean, or the pooled ratio of the sums. */
+export const ESTIMATOR_TEXT: Record<string, Bi> = {
+  mean: { en: 'Mean of the factors', es: 'Media de los factores' },
+  pooled: { en: 'Pooled ratio', es: 'Razón agregada' },
+};
 const KIND_TEXT: Record<string, Bi> = {
   'ccf-fixed-horizon': { en: 'Fixed-horizon CCF', es: 'CCF a horizonte fijo' },
   'ccf-cohort': { en: 'Cohort CCF', es: 'CCF por cohorte' },

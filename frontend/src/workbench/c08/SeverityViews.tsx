@@ -36,6 +36,7 @@ export function DistributionView({ sel }: { sel: C08Sel | null }) {
         }}
       >
         <ChartOverTable
+          chartMin={`${data.length * 1.5 + 3}rem`}
           chart={<BarChart title={{ en: 'Share of defaults by LGD tenth', es: 'Proporción de incumplimientos por décima de LGD' }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: 'Share of the defaults', es: 'Proporción de los incumplimientos' }, format: { percent: true, digits: 2 } }} />}
         >
           <table className="caos-table ct-wrap-head" data-table="lgd-summary" data-treatment={d.treatment}>
