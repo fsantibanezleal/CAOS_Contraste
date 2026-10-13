@@ -6,7 +6,6 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from riskvalidation.provisions import ecl as rv_ecl
 from riskvalidation.provisions import overlays as rv_ov
 from riskvalidation.provisions.overlays import Overlay
 from riskvalidation.provisions.reconciliation import check_identities
@@ -19,7 +18,7 @@ from . import models as md
 from .panel import Loans
 from .readers import FREDDIE_REASON, FedTables
 from .rollforward import build_rollforward
-from .run import CAP_Q, LIFETIME_CAP_MONTHS, PERIOD_MONTHS, RHO, STAGE1_MONTHS, DateRun, run_date
+from .run import LIFETIME_CAP_MONTHS, PERIOD_MONTHS, RHO, STAGE1_MONTHS, DateRun, run_date
 from ...io import contract as c1
 
 WINDOW_MONTHS = 12
@@ -68,7 +67,7 @@ def validate_inputs(loans: Loans, fed: FedTables, run: DateRun, panel_every: int
     mac = c1.validate("macro_path", macro_rows, params={"observation_date": rd})
     if not panel.ok or not mac.ok or panel.rejected or mac.rejected:
         raise ValueError(f"{rd}: contract 1 rejects the readers' output: loan_panel {panel.counts()}, macro_path {mac.counts()}")
-    return {"loan_panel": {**panel.summary(), "every": panel_every}, "macro_path": mac.summary()}
+    return {"loan_panel": panel.summary(), "macro_path": mac.summary()}
 
 
 def bake_variant(loans: Loans, fed: FedTables, reporting_date: np.datetime64, seed: int, *, overlays: list[Overlay] | None = None,
