@@ -3,6 +3,20 @@
 All notable changes to this product. Versions are X.XX.XXX (VERSION is the single source); every release is
 tagged.
 
+## [0.10.001], 2026-10-13
+
+The built cases no longer read as served by a fixture, and no bar chart scrolls inside its drawing.
+
+- The catalog rows of C03, C06, C07, C08 and C09 (outputs and models) and of the two engine contracts are `real`: their
+  owner is the producer (the case package, or the released riskvalidation module), their example a committed
+  document, their producer test the case's own document test. The App had printed "Served by its provider
+  (fixture:...); the real producer is not built yet" above these five cases since their bakes replaced the fixtures.
+- C09's CCF estimates show the rail's design: its four treatments under both estimators (the mean of the facility
+  factors and the pooled ratio), named in the label and in a column of the table. Before, the 24 rows of the three
+  designs scrolled inside the chart and the two estimators of a treatment read as one label twice.
+- The LGD distribution of C08 and the realised CCF distribution of C09 give their chart the height its rows need
+  (`ChartOverTable` takes `chartMin`), so their first and last bins are no longer cut.
+
 ## [0.10.000], 2026-10-13
 
 Contraste now validates loss severity and exposure, and its executive view frames the industry problem. Case C03 tests SME PD models by approval vintage on the SBA 7(a) loans through 2008, each cohort trained only on vintages whose five-year mark precedes it; case C08 builds LGD and downturn LGD on the SBA charge-offs with six model rungs, the downturn add-on and the IRB LGD floors; case C09 measures how each CCF design and treatment misses a known CCF on generated revolving lines. Nine of the 22 cases are built. The site lands on the Introduction's executive view, the problem of defending internal risk models before supervisors in five sub-tabs, general and never tied to a client. The engine is riskvalidation 0.06.000; on shell 0.13.0 and template 0.07.000.

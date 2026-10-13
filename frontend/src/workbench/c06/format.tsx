@@ -105,10 +105,11 @@ export function alignTo(xs: readonly number[], ys: readonly number[], grid: read
  * scroll under it. One card per view keeps the drawing and the numbers it draws together, and the gate measures the
  * drawing (ADR-0071 rule 8), not a short table beside it.
  */
-export function ChartOverTable({ chart, children }: { chart: ReactNode; children?: ReactNode }) {
+export function ChartOverTable({ chart, children, chartMin = '15rem' }: { chart: ReactNode; children?: ReactNode; chartMin?: string }) {
+  // `chartMin`: a horizontal bar chart needs about 1.5rem a row, or its rows scroll inside the drawing
   return (
     <div className="ct-stack">
-      <div style={{ flex: '1 1 0', minHeight: '15rem', display: 'flex', flexDirection: 'column' }}>{chart}</div>
+      <div style={{ flex: '1 1 0', minHeight: chartMin, display: 'flex', flexDirection: 'column' }}>{chart}</div>
       {children ? <div style={{ flex: '0 1 auto', maxHeight: '42%', overflow: 'auto', minHeight: 0 }}>{children}</div> : null}
     </div>
   );
