@@ -3,7 +3,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { CaseIndex, CaseManifest, EbmExport, ModelsArtifact, ScorecardDetails, VariantArtifact } from '../lib/contract.types';
-import { COMMITTED, relight } from '../lib/policy';
+import { bandEvaluated, COMMITTED, relight, thresholdLabel } from '../lib/policy';
 import { ebmLogit, scoreScorecard } from './scorer';
 
 const derived = new URL('../../../data/derived/', import.meta.url);
@@ -46,16 +46,18 @@ describe('the live policy reproduces every committed light under the committed a
   for (const entry of index.cases.filter((c) => existsSync(new URL(c.manifest_path, derived)))) {
     const manifest = read<CaseManifest>(entry.manifest_path);
     const variants = manifest.artifacts.filter((x) => x.role === 'variant');
+    // a case whose tests are all metric thresholds (C07's regime comparison: no p-value) has no significance alphas
+    const statistical = variants.some((a) => read<VariantArtifact>(a.path).tests.some((t) => t.p_value !== null));
     it(`${manifest.case_id}: some variant carries a committed light`, () => {
-      expect(variants.some((a) => read<VariantArtifact>(a.path).tests.some((t) => t.alpha_amber !== null))).toBe(true);
+      if (statistical) expect(variants.some((a) => read<VariantArtifact>(a.path).tests.some((t) => t.alpha_amber !== null))).toBe(true);
     });
     for (const a of variants) {
       it(`${manifest.case_id}/${a.variant_id}`, () => {
         const variant = read<VariantArtifact>(a.path);
         // a variant whose results are measured rates (C04's known-truth families, its papers) carries no test rows;
-        // one that carries them must have lights evaluated under the policy
+        // one that carries a statistical test (a p-value) must have lights evaluated under the policy
         const evaluated = variant.tests.filter((t) => t.alpha_amber !== null);
-        if (variant.tests.length) expect(evaluated.length).toBeGreaterThan(0);
+        if (variant.tests.some((t) => t.p_value !== null)) expect(evaluated.length).toBeGreaterThan(0);
         for (const t of variant.tests) {
           if (t.alpha_amber !== null) {
             expect(t.alpha_amber).toBe(COMMITTED.amber);
@@ -70,5 +72,12 @@ describe('the live policy reproduces every committed light under the committed a
     const row = { alpha_amber: 0.05, alpha_red: 0.01, light: 'amber', p_value: 0.02 } as never;
     expect(relight(row, { amber: 0.05, red: 0.03 })).toBe('red');
     expect(relight(row, { amber: 0.01, red: 0.001 })).toBe('green');
+  });
+  it('a band-lit row (alphas without a p-value, the lifetime PD backtest) keeps its committed light under any policy', () => {
+    const row = { alpha_amber: 0.05, alpha_red: 0.01, light: 'amber', p_value: null, policy_version: 'p' } as never;
+    expect(bandEvaluated(row)).toBe(true);
+    expect(relight(row, { amber: 0.2, red: 0.1 })).toBe('amber');
+    expect(relight(row, { amber: 0.001, red: 0.0001 })).toBe('amber');
+    expect(thresholdLabel(row, COMMITTED).en).toMatch(/^Policy acceptance band, not regulatory/);
   });
 });

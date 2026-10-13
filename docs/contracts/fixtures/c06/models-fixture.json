@@ -1,0 +1,324 @@
+{
+  "schema": "contraste.models/v1",
+  "case_id": "C06",
+  "fit_id": "fixture-sba-7a",
+  "model": [
+    {
+      "id": "L1-dth",
+      "family": "lifetime-pd",
+      "rung": "discrete-time-hazard",
+      "title": {
+        "en": "Fixture model L1-dth",
+        "es": "Modelo de ejemplo L1-dth"
+      },
+      "short_title": {
+        "en": "L1-dth",
+        "es": "L1-dth"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "details": {}
+    }
+  ],
+  "fit": {
+    "currency": "USD",
+    "segments": [
+      {
+        "id": "s1",
+        "label": {
+          "en": "Segment s1",
+          "es": "Segmento s1"
+        },
+        "pd_ttc": 0.02,
+        "accounts": 2
+      },
+      {
+        "id": "s2",
+        "label": {
+          "en": "Segment s2",
+          "es": "Segmento s2"
+        },
+        "pd_ttc": 0.04,
+        "accounts": 2
+      }
+    ],
+    "scenario_definitions": [
+      {
+        "id": "up",
+        "label": {
+          "en": "Up",
+          "es": "Up"
+        },
+        "weight": 0.25,
+        "source": "fixture: illustrative, not the Fed 2026 paths",
+        "z_path": [
+          {
+            "months": 12,
+            "z": 1.0
+          },
+          {
+            "months": 24,
+            "z": 0.5
+          }
+        ],
+        "macro": [
+          {
+            "variable": "unemployment",
+            "unit": "percent",
+            "months": [
+              12,
+              24
+            ],
+            "values": [
+              3.0,
+              3.5
+            ]
+          }
+        ]
+      },
+      {
+        "id": "base",
+        "label": {
+          "en": "Base",
+          "es": "Base"
+        },
+        "weight": 0.5,
+        "source": "fixture: illustrative, not the Fed 2026 paths",
+        "z_path": [
+          {
+            "months": 12,
+            "z": 0.0
+          },
+          {
+            "months": 24,
+            "z": 0.0
+          }
+        ],
+        "macro": [
+          {
+            "variable": "unemployment",
+            "unit": "percent",
+            "months": [
+              12,
+              24
+            ],
+            "values": [
+              4.0,
+              4.0
+            ]
+          }
+        ]
+      },
+      {
+        "id": "down",
+        "label": {
+          "en": "Down",
+          "es": "Down"
+        },
+        "weight": 0.25,
+        "source": "fixture: illustrative, not the Fed 2026 paths",
+        "z_path": [
+          {
+            "months": 12,
+            "z": -2.0
+          },
+          {
+            "months": 24,
+            "z": -1.0
+          }
+        ],
+        "macro": [
+          {
+            "variable": "unemployment",
+            "unit": "percent",
+            "months": [
+              12,
+              24
+            ],
+            "values": [
+              6.0,
+              5.0
+            ]
+          }
+        ]
+      }
+    ],
+    "pit": {
+      "rho": 0.12,
+      "method": "one-factor Vasicek, z extracted from default rates",
+      "z_hat": [
+        {
+          "period": "2019-12-31",
+          "z": 0.2
+        },
+        {
+          "period": "2020-06-30",
+          "z": -0.4
+        }
+      ],
+      "satellite": {
+        "intercept": 0.0,
+        "ar1": 0.6,
+        "coefficients": [
+          {
+            "name": "unemployment",
+            "value": -0.1
+          }
+        ]
+      }
+    },
+    "ladder": [
+      {
+        "rung_id": "L0-km",
+        "kind": "kaplan-meier",
+        "covariates": [],
+        "macro_covariates": [],
+        "competing_prepayment": false,
+        "training_cutoff": "2019-12-31",
+        "coefficients": [],
+        "baseline": {
+          "months": [
+            3,
+            6,
+            9,
+            12,
+            15,
+            18,
+            21,
+            24
+          ],
+          "cumulative_pd": [
+            0.005037944,
+            0.010050506,
+            0.015037816,
+            0.02,
+            0.024937185,
+            0.029849496,
+            0.03473706,
+            0.0396
+          ]
+        }
+      },
+      {
+        "rung_id": "L1-dth",
+        "kind": "discrete-time-hazard",
+        "covariates": [
+          "ltv",
+          "age"
+        ],
+        "macro_covariates": [
+          "unemployment"
+        ],
+        "competing_prepayment": true,
+        "training_cutoff": "2019-12-31",
+        "coefficients": [
+          {
+            "name": "ltv",
+            "estimate": 0.8,
+            "std_error": 0.1
+          },
+          {
+            "name": "unemployment",
+            "estimate": 0.3,
+            "std_error": null
+          }
+        ],
+        "baseline": {
+          "months": [
+            3,
+            6,
+            9,
+            12,
+            15,
+            18,
+            21,
+            24
+          ],
+          "cumulative_pd": [
+            0.006845723,
+            0.013595411,
+            0.020250771,
+            0.026813479,
+            0.033285179,
+            0.039667484,
+            0.045961978,
+            0.052170215
+          ]
+        }
+      }
+    ],
+    "lgd": {
+      "kind": "workout",
+      "discounting": "original EIR",
+      "segments": [
+        {
+          "segment_id": "s1",
+          "lgd": 0.4,
+          "basis": "fixture"
+        },
+        {
+          "segment_id": "s2",
+          "lgd": 0.5,
+          "basis": "fixture"
+        }
+      ]
+    },
+    "ead": {
+      "amortising": true,
+      "ccf_revolving": null,
+      "reason": "fixture: term loans only, no revolving facility"
+    },
+    "staging_policy": {
+      "dpd_backstop": 30,
+      "default_dpd": 90,
+      "threefold_ratio": 3.0,
+      "absolute_floor": 0.005,
+      "probation_months": 6,
+      "low_credit_risk_pd": null,
+      "multiplier_schedule": [
+        {
+          "pd_origination_upper": 0.01,
+          "multiplier": 4.0
+        },
+        {
+          "pd_origination_upper": 0.05,
+          "multiplier": 2.5
+        },
+        {
+          "pd_origination_upper": 0.5,
+          "multiplier": 1.5
+        }
+      ],
+      "source": "fixture: Contraste policy parameters, not IFRS 9 requirements"
+    }
+  },
+  "provenance": {
+    "truth_status": "real-outcomes",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u5-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

@@ -188,12 +188,15 @@ function Robustness({ manifest }: { manifest: CaseManifest }) {
 }
 
 const HAS_OWN_BENCHMARK = new Set(['C04', 'C05', 'C22']);
+/** Cases with no champion-against-challenger comparison (the provisions cases C06 and C07 compare regimes, in the App): no section here, their data still appears under Provenance. */
+const NO_BENCHMARK = new Set(['C06', 'C07']);
 
 export function Benchmark() {
   const t = useT();
   const all = useArtifact((s) => loadAllManifests(s), []);
   const manifests = all.state === 'ready' ? all.data.manifests : [];
-  const comparable = manifests.filter((m) => !HAS_OWN_BENCHMARK.has(m.case_id));
+  const shown = manifests.filter((m) => !NO_BENCHMARK.has(m.case_id));
+  const comparable = shown.filter((m) => !HAS_OWN_BENCHMARK.has(m.case_id));
   return (
     <DocPage
       wide
@@ -220,7 +223,7 @@ export function Benchmark() {
         />
       </DocSection>
       {all.state === 'ready' &&
-        manifests.map((m) => (
+        shown.map((m) => (
           <DocSection
             key={m.case_id}
             area={HAS_OWN_BENCHMARK.has(m.case_id) ? 'results' : 'comparison'}
