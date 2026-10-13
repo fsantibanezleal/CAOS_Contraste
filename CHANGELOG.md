@@ -3,6 +3,14 @@
 All notable changes to this product. Versions are X.XX.XXX (VERSION is the single source); every release is
 tagged.
 
+## [0.09.000], 2026-10-13
+
+The Introduction opens on the executive view rebuilt to the standard every CAOS app now shares (the shell's ExecutiveView, 0.12.0): it is addressed to the chief risk officer of a Chilean commercial bank preparing the first CMF review of the bank's internal credit and provisioning models, with the CMF's own estimate of what is at stake, the outcomes proved by Contraste's committed results, the questions that officer asks, and three illustrations of the initiative, the problem and the proposed solution. The 4 C's section is pending their definition.
+
+- The executive view is rebuilt on the shell's `ExecutiveView` (shell 0.12.0): one executive (the chief risk officer of a Chilean commercial bank), one context (the CMF's proposed internal-model rules), one sourced figure to act now (571 million US dollars of extra provisions on individual commercial loans, January 2031) and four outcomes whose proofs are Contraste's committed results (cases C07, C05, C01, C22), with a five-question dialogue, from `content/executive.json`.
+- Three hand-authored illustrations of the initiative, the problem and the proposed solution, one shared setting, in `frontend/public/executive/`, in English and Spanish, theme tokens only.
+- The Introduction's old executive areas (initiative, outcomes, positioning, credibility) are removed; the technical view keeps its five areas. The shell pin is exactly 0.12.0. `frontend/src/content/executive.test.ts` checks the data and the three drawings.
+
 ## [0.08.000], 2026-10-13
 
 Contraste now computes loan-loss provisions. Case C06 runs IFRS 9 lifetime PD, staging and the expected credit loss on the public SBA 7(a) small-business loans at six reporting dates from 2006 to 2023, each model tested on what happened after its date. Case C07 provisions one synthetic Chilean bank, Banco Andino, calibrated to CMF system aggregates, under CMF B-1, IFRS 9 and BdE Annex 9 in six scenarios. Six of the 22 cases are built. The engine is riskvalidation 0.05.000; on shell 0.11.2 and template 0.05.000.
