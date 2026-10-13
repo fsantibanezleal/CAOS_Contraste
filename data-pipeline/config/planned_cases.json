@@ -28,34 +28,6 @@
   }
  },
  {
-  "case_id": "C06",
-  "title": {
-   "en": "Mortgage lifetime PD, IFRS 9 staging and ECL",
-   "es": "PD de por vida de hipotecas, etapas de IFRS 9 y pérdida esperada"
-  },
-  "category_id": "provisions",
-  "kind": "real",
-  "unit": "U5",
-  "question": {
-   "en": "How do lifetime PD, IFRS 9 staging and expected credit loss behave on mortgages across reporting dates?",
-   "es": "¿Cómo se comportan la PD de por vida, las etapas de IFRS 9 y la pérdida esperada en hipotecas a lo largo de las fechas de reporte?"
-  }
- },
- {
-  "case_id": "C07",
-  "title": {
-   "en": "Chile provisions trilogy: CMF B-1 vs IFRS 9 vs BdE Annex 9",
-   "es": "Trilogía de provisiones en Chile: CMF B-1 vs IFRS 9 vs Anexo 9 del BdE"
-  },
-  "category_id": "provisions",
-  "kind": "synthetic",
-  "unit": "U5",
-  "question": {
-   "en": "How far apart are the provisions of CMF B-1, IFRS 9 and BdE Annex 9 on the same portfolio under stress?",
-   "es": "¿Qué tan distintas son las provisiones de CMF B-1, IFRS 9 y el Anexo 9 del BdE sobre una misma cartera bajo tensión?"
-  }
- },
- {
   "case_id": "C08",
   "title": {
    "en": "LGD and downturn LGD",

@@ -17,15 +17,15 @@ from pipeline import cases as cases_pkg  # noqa: E402
 from pipeline import registry  # noqa: E402
 from pipeline.stages import export  # noqa: E402
 
-BUILT = ["C01", "C04", "C05", "C22"]
+BUILT = ["C01", "C04", "C05", "C06", "C07", "C22"]
 ALL = [f"C{n:02d}" for n in range(1, 23)]
 PLANNED = [c for c in ALL if c not in BUILT]
-UNITS = {"C06": "U5", "C07": "U5", "C03": "U6", "C08": "U6", "C09": "U6", "C10": "U7", "C11": "U8", "C13": "U8",
+UNITS = {"C03": "U6", "C08": "U6", "C09": "U6", "C10": "U7", "C11": "U8", "C13": "U8",
          "C12": "U9", "C14": "U10", "C15": "U10", "C16": "U11", "C17": "U12", "C18": "U13", "C19": "U13",
          "C02": "U14", "C20": "U14", "C21": "U14"}
 
 
-def test_the_four_built_cases_are_discovered_in_id_order():
+def test_the_built_cases_are_discovered_in_id_order():
     assert [c.id for c in cases_pkg.CASES] == BUILT
     assert all(callable(getattr(c, "bake", None)) for c in cases_pkg.CASES)
 

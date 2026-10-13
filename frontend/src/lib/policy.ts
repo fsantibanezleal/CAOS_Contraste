@@ -16,13 +16,20 @@ export const COMMITTED: PolicyAlphas = { amber: 0.05, red: 0.01 };
 
 /** True when the committed row was evaluated by a p-value threshold (a descriptive test carries none). */
 export function evaluated(row: TestRow): boolean {
-  return row.alpha_amber !== null && row.alpha_red !== null && row.light !== 'error';
+  return row.alpha_amber !== null && row.alpha_red !== null && row.light !== 'error' && row.p_value !== null;
+}
+
+/** True when the row's alphas are the confidence levels of an acceptance band, not p-value thresholds: it carries
+ * them without a p-value (the IFRS 9 lifetime PD backtest's Vasicek band, provisions API contract). The policy rail
+ * does not move such a light; it stays the committed one. */
+export function bandEvaluated(row: TestRow): boolean {
+  return row.alpha_amber !== null && row.alpha_red !== null && row.light !== 'error' && row.p_value === null;
 }
 
 export function relight(row: TestRow, alphas: PolicyAlphas): Light {
   if (!evaluated(row)) return row.light;
-  const p = row.p_value;
-  if (p === null || !Number.isFinite(p)) return 'not_evaluated';
+  const p = row.p_value as number;
+  if (!Number.isFinite(p)) return 'not_evaluated';
   if (p < alphas.red) return 'red';
   return p < alphas.amber ? 'amber' : 'green';
 }
@@ -37,6 +44,11 @@ export function regulatoryReference(row: TestRow): string | null {
 export function thresholdLabel(row: TestRow, alphas: PolicyAlphas): Text {
   const reg = regulatoryReference(row);
   if (reg) return { en: `Regulatory threshold (${reg})`, es: `Umbral regulatorio (${reg})` };
+  if (bandEvaluated(row))
+    return {
+      en: `Policy acceptance band, not regulatory: amber outside the ${row.alpha_amber} band, red outside the ${row.alpha_red} band (${row.policy_version}); the policy rail does not change it`,
+      es: `Banda de aceptación de política, no regulatoria: ámbar fuera de la banda ${String(row.alpha_amber).replace('.', ',')}, rojo fuera de la banda ${String(row.alpha_red).replace('.', ',')} (${row.policy_version}); el control de política no la cambia`,
+    };
   if (!evaluated(row)) return { en: 'Descriptive: no threshold in the policy', es: 'Descriptiva: sin umbral en la política' };
   return {
     en: `Policy threshold, not regulatory: amber below ${alphas.amber}, red below ${alphas.red} (${row.policy_version})`,
