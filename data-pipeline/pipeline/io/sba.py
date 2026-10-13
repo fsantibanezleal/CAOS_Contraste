@@ -1,6 +1,8 @@
 """Readers of C06 (CT-501 to CT-503): the SBA 7(a) FOIA loan file, the Federal Reserve scenario and history tables, and
 the Freddie Mac slot.
 
+Shared by the cases that read these sources (C03, C06, C08; U6 sizing reservation R1); moved from cases/c06/readers.py.
+
 A reader maps the publisher's layout to named columns and does nothing else: no filtering, no recoding, no imputation
 (those are ``panel.prepare``, which counts every exclusion). A missing input stops the bake with the URL the file comes
 from, never a made-up path. The Freddie Mac slot raises a declared absence that the bake records.
