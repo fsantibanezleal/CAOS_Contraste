@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c10/variant-correlation-grid.schema.json",
+  "title": "C10 correlation-grid variant",
+  "description": "Catalog row c10-outputs-grid 1.0.0: the simulator's correlation grid of the portfolio credit capital case (outputs.kind correlation-grid), on a generator with a known correlation.",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C10"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c10GridOutputs",
+          "properties": {
+            "kind": {
+              "const": "correlation-grid"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    },
+    {
+      "properties": {
+        "provenance": {
+          "properties": {
+            "truth_status": {
+              "const": "synthetic-known-truth"
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "if": {
+              "properties": {
+                "light": {
+                  "const": "not_evaluated"
+                }
+              },
+              "required": [
+                "light"
+              ]
+            },
+            "then": {
+              "properties": {
+                "statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c10Estimator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "estimator",
+        "mean_estimate",
+        "bias",
+        "rmse",
+        "coverage",
+        "rejection_rate",
+        "rejection_se",
+        "rejection_ci_low",
+        "rejection_ci_high"
+      ],
+      "properties": {
+        "estimator": {
+          "type": "string",
+          "enum": [
+            "maximum-likelihood",
+            "moments"
+          ]
+        },
+        "mean_estimate": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+        },
+        "bias": {
+          "type": "number",
+          "description": "mean_estimate minus known_rho."
+        },
+        "rmse": {
+          "type": "number",
+          "minimum": 0
+        },
+        "coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "rejection_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "rejection_se": {
+          "type": "number",
+          "minimum": 0
+        },
+        "rejection_ci_low": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "rejection_ci_high": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        }
+      },
+      "description": "One estimator in one grid cell over the valid replications: bias, rmse, the coverage of its 95% interval, and the rate at which H0: rho = null_rho is rejected at level alpha with its Monte Carlo standard error and Wilson interval."
+    },
+    "c10GridCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "known_rho",
+        "series_length_years",
+        "n_replications",
+        "n_valid",
+        "n_failed",
+        "role",
+        "estimators"
+      ],
+      "properties": {
+        "known_rho": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+        },
+        "series_length_years": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "n_replications": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "n_valid": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_failed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "size",
+            "power"
+          ]
+        },
+        "estimators": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c10Estimator"
+          },
+          "minItems": 2
+        }
+      },
+      "description": "One cell of the simulator's correlation grid. role is size where known_rho equals the generator's null_rho (the rejection rate is then the exact size) and power elsewhere (a producer check). n_valid + n_failed = n_replications."
+    },
+    "c10SimGenerator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "shaped_on",
+        "known_pd",
+        "rho_grid",
+        "series_length_years",
+        "n_replications",
+        "null_rho",
+        "alpha",
+        "seed",
+        "notice"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "shaped_on": {
+          "type": "string"
+        },
+        "known_pd": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "description": "An estimate-site PD is open: 0 < pd < 1."
+        },
+        "rho_grid": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+          },
+          "minItems": 2,
+          "description": "The known asset correlations, strictly increasing."
+        },
+        "series_length_years": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "n_replications": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "null_rho": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+        },
+        "alpha": {
+          "const": 0.05
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The Vasicek simulator with a known correlation: a yearly factor draw per year, the large-homogeneous-portfolio default fraction, then the fit. null_rho is on the grid."
+    },
+    "c10GridOutputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "label",
+        "generator",
+        "size_power_definition",
+        "cells"
+      ],
+      "properties": {
+        "kind": {
+          "const": "correlation-grid"
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "generator": {
+          "$ref": "#/$defs/c10SimGenerator"
+        },
+        "size_power_definition": {
+          "$ref": "../common/text.schema.json"
+        },
+        "cells": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c10GridCell"
+          },
+          "minItems": 2
+        }
+      },
+      "description": "C10 correlation-grid outputs (outputs.kind correlation-grid): the exact size and power of the correlation estimates on a simulator with a known correlation, for one series length. The known correlation is a required field of the generator and of every cell."
+    }
+  }
+}
