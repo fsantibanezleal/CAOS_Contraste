@@ -1,12 +1,12 @@
-// The Introduction opens for the person who answers to the supervisor for a bank's models (ADR-0017 section 2.1, the
-// executive view of 2026-10-12) and then turns technical. Two views: `executive`, first and open on load, in business
-// language, with every claim of value a number with its unit and its source (transcribed from the executive brief of
-// the design document, each figure read at its primary source on 2026-10-12), and `technical`, the previous page under
-// its five areas: problem, principles, math with its glossary, pipeline and honesty.
-import { Callout, Cite, DocPage, DocSection, Equation, Figure, Glossary, Question, Stat, Tabs } from '@fasl-work/caos-app-shell';
+// The Introduction opens on the executive view (ADR-0017 section 2.1; CAOS_MANAGE conventions/problem-context-first.md):
+// the shell's ExecutiveView rendering content/executive.json, written for one executive in one context (the chief risk
+// officer of a Chilean commercial bank, the CMF's proposed internal-model rules), every figure sourced in the file. It then
+// turns technical: the previous page under its five areas, problem, principles, math with its glossary, pipeline and honesty.
+import { Callout, Cite, DocPage, DocSection, Equation, ExecutiveView, Figure, Glossary, Tabs } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { OverviewFigure } from '../architecture/figures';
-import { L, P, Ref, T, useT } from '../content/bi';
+import { L, P, T, useT } from '../content/bi';
+import executive from '../../../content/executive.json';
 import { NoTranslateRefs } from './NoTranslateRefs';
 
 /** One list item written in both languages. */
@@ -15,161 +15,6 @@ const Li = ({ en, es }: { en: ReactNode; es: ReactNode }) => (
     <T en={en} es={es} />
   </li>
 );
-
-/** A statement with its number: the value written as each language writes it, its unit and its source. */
-const S = ({ en, es, unit, source }: { en: string; es?: string; unit: { en: string; es: string }; source: { en: string; es: string } }) => (
-  <Stat value={{ en, es: es ?? en }} unit={unit} source={source} />
-);
-
-const SRC = {
-  trim: { en: 'ECB, TRIM project report', es: 'BCE, informe del proyecto TRIM' },
-  ar: { en: 'ECB, Annual Report on supervisory activities 2025', es: 'BCE, Informe anual de actividades de supervisión 2025' },
-  eba: { en: 'EBA, press release of 2026-03-23', es: 'EBA, comunicado del 2026-03-23' },
-  crr: { en: 'CRR3, Article 465(1)', es: 'CRR3, artículo 465(1)' },
-  cmf: { en: 'CMF, Basel III calendar', es: 'CMF, calendario de Basilea III' },
-  c22: { en: 'Contraste, case C22', es: 'Contraste, caso C22' },
-  c05: { en: 'Contraste, case C05', es: 'Contraste, caso C05' },
-  c04: { en: 'Contraste, case C04', es: 'Contraste, caso C04' },
-  c01: { en: 'Contraste, case C01', es: 'Contraste, caso C01' },
-};
-
-function Executive() {
-  return (
-    <>
-      <DocSection
-        area="initiative"
-        title={{ en: 'The initiative', es: 'La iniciativa' }}
-        refs={['ecbtrim', 'ecbar2025', 'crr3floor', 'praps126', 'osfie23', 'aiact', 'ebapr2026', 'cmfcal', 'cmfmi2026']}
-      >
-        <P
-          en={<>The person accountable for a bank's models answers to the supervisor for them: in most banks the chief risk officer, with the head of model validation. Their initiative is to keep the bank's internal credit and provisioning models defensible to the supervisor through the regime changes of 2027, and to know what each modelling choice costs in capital before the supervisor does. The reason to act now is measured, and it has four parts.</>}
-          es={<>La persona que responde ante el supervisor por los modelos de un banco es, en la mayoría de los bancos, el gerente de riesgos, junto con el responsable de validación de modelos. Su iniciativa es mantener defendibles ante el supervisor los modelos internos de crédito y de provisiones del banco a través de los cambios de régimen de 2027, y saber qué cuesta en capital cada decisión de modelación antes de que lo sepa el supervisor. La razón para actuar ahora es medible y tiene cuatro partes.</>}
-        />
-        <ul>
-          <Li
-            en={<>The last time the euro-area supervisor reviewed internal models at scale it ran 200 on-site investigations at 65 banks and raised <S en="5,800" unit={{ en: 'findings, about 30% of them of high severity', es: 'hallazgos, cerca de un 30% de ellos de severidad alta' }} source={SRC.trim} /> <Cite id="ecbtrim" />. The models reviewed ended with about <S en="12" unit={{ en: '% more risk-weighted assets (about EUR 275 billion), with a median effect of 51 basis points on the CET1 ratio', es: '% más de activos ponderados por riesgo (unos 275 mil millones de euros), con un efecto mediano de 51 puntos base en la razón CET1' }} source={SRC.trim} />.</>}
-            es={<>La última vez que el supervisor de la zona euro revisó modelos internos a gran escala realizó 200 investigaciones in situ en 65 bancos y levantó <S en="5800" unit={{ en: 'findings', es: 'hallazgos, cerca de un 30% de ellos de severidad alta' }} source={SRC.trim} /> <Cite id="ecbtrim" />. Los modelos revisados terminaron con cerca de <S en="12" unit={{ en: '%', es: '% más de activos ponderados por riesgo (unos 275 mil millones de euros), con un efecto mediano de 51 puntos base en la razón CET1' }} source={SRC.trim} />.</>}
-          />
-          <Li
-            en={<>It has not eased: in 2025 the ECB launched <S en="77" unit={{ en: 'internal model investigations, with 16 findings each on average and almost half of them of high severity', es: 'investigaciones de modelos internos, con 16 hallazgos en promedio cada una y casi la mitad de severidad alta' }} source={SRC.ar} /> <Cite id="ecbar2025" />.</>}
-            es={<>No ha cedido: en 2025 el BCE inició <S en="77" unit={{ en: 'investigations', es: 'investigaciones de modelos internos, con 16 hallazgos en promedio cada una y casi la mitad de severidad alta' }} source={SRC.ar} /> <Cite id="ecbar2025" />.</>}
-          />
-          <Li
-            en={<>The finding that sits closest to this product: banks "often did not ensure that all appropriate validation analyses and adequate quantitative thresholds were in place, in particular for the back-testing, discriminatory power and stability tests" <Cite id="ecbtrim" />.</>}
-            es={<>El hallazgo más cercano a este producto: los bancos "con frecuencia no se aseguraron de contar con todos los análisis de validación apropiados ni con umbrales cuantitativos adecuados, en particular para las pruebas de backtesting, poder discriminatorio y estabilidad" (traducción propia) <Cite id="ecbtrim" />.</>}
-          />
-          <Li
-            en={<>2027 changes four regimes at once: the EU output floor reaches <S en="60" unit={{ en: '% in 2027 (72.5% from 2030)', es: '% en 2027 (72,5% desde 2030)' }} source={SRC.crr} /> <Cite id="crr3floor" />; the UK's Basel 3.1 rules take effect on 2027-01-01 <Cite id="praps126" />; Canada's model risk guideline E-23 on 2027-05-01 <Cite id="osfie23" />; and credit scoring becomes a high-risk AI system in the EU on 2027-12-02 <Cite id="aiact" />. The EBA projects an average <S en="4.7" es="4,7" unit={{ en: '% increase in Tier 1 minimum required capital once the floor is fully in, with the banks bound by it rising from 2 to 33', es: '% de aumento del capital mínimo exigido de Nivel 1 una vez que el piso rija por completo, y los bancos sujetos a él suben de 2 a 33' }} source={SRC.eba} /> <Cite id="ebapr2026" />.</>}
-            es={<>2027 cambia cuatro regímenes a la vez: el piso de output de la UE llega a <S en="60" unit={{ en: '%', es: '% en 2027 (72,5% desde 2030)' }} source={SRC.crr} /> <Cite id="crr3floor" />; las reglas de Basilea <Ref>3.1</Ref> del Reino Unido entran en vigor el 2027-01-01 <Cite id="praps126" />; la directriz E-23 de riesgo de modelos de Canadá el 2027-05-01 <Cite id="osfie23" />; y el scoring de crédito pasa a ser un sistema de IA de alto riesgo en la UE el 2027-12-02 <Cite id="aiact" />. La EBA proyecta un <S en="4.7" es="4,7" unit={{ en: '%', es: '% de aumento promedio del capital mínimo exigido de Nivel 1 una vez que el piso rija por completo, y los bancos sujetos a él suben de 2 a 33' }} source={SRC.eba} /> <Cite id="ebapr2026" />.</>}
-          />
-          <Li
-            en={<>In Chile the Pillar 2 charge reaches <S en="100" unit={{ en: '% on 2027-12-01', es: '% el 2027-12-01' }} source={SRC.cmf} /> <Cite id="cmfcal" />, and the CMF consulted in August 2026 on opening internal models for provisions and credit risk-weighted assets, which no bank uses today <Cite id="cmfmi2026" />.</>}
-            es={<>En Chile el cargo de Pilar 2 llega al <S en="100" unit={{ en: '%', es: '% el 2027-12-01' }} source={SRC.cmf} /> <Cite id="cmfcal" />, y la CMF consultó en agosto de 2026 abrir los modelos internos para provisiones y activos ponderados por riesgo de crédito, que hoy ningún banco usa <Cite id="cmfmi2026" />.</>}
-          />
-        </ul>
-      </DocSection>
-
-      <DocSection area="outcomes" title={{ en: 'The outcomes', es: 'Los resultados' }} refs={['contrasteC22', 'contrasteC05', 'contrasteC04', 'contrasteC01']}>
-        <P
-          en={<>The vision: a validation function that can say, with numbers, how far each of its tests can be trusted and what each modelling choice costs, before it signs an opinion. Each capability below is tied to the business outcome it gives and to a proof point recomputed from public inputs or from generators whose truth is known.</>}
-          es={<>La visión: una función de validación que puede decir, con números, hasta dónde se puede confiar en cada una de sus pruebas y cuánto cuesta cada decisión de modelación, antes de firmar una opinión. Cada capacidad de la tabla se ata al resultado de negocio que entrega y a una prueba cuantificada, recalculada desde insumos públicos o desde generadores cuya verdad se conoce.</>}
-        />
-        <table className="caos-table ct-wrap-head">
-          <thead>
-            <tr>
-              <th className="caos-col-text"><T en="Capability" es="Capacidad" /></th>
-              <th className="caos-col-text"><T en="Business outcome" es="Resultado de negocio" /></th>
-              <th className="caos-col-text"><T en="Proof point" es="Prueba" /></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="caos-col-text"><T en="It recomputes published supervisory and academic results cell by cell" es="Recalcula celda por celda resultados supervisores y académicos publicados" /></td>
-              <td className="caos-col-text"><T en="A number that stands when a supervisor or an auditor re-runs it" es="Un número que se sostiene cuando un supervisor o un auditor lo vuelve a correr" /></td>
-              <td className="caos-col-text"><S en="143 of 144" es="143 de 144" unit={{ en: 'cells of the Basel Committee Working Paper 14, Tables 7 and 8, reproduced', es: 'celdas de las tablas 7 y 8 del documento de trabajo 14 del Comité de Basilea, reproducidas' }} source={SRC.c22} /> <Cite id="contrasteC22" /></td>
-            </tr>
-            <tr>
-              <td className="caos-col-text"><T en="It measures how often each validation test is wrong" es="Mide con qué frecuencia se equivoca cada prueba de validación" /></td>
-              <td className="caos-col-text"><T en="No sound model rejected, and no weak one passed, because of the test" es="Ningún modelo sano rechazado y ninguno débil aprobado por culpa de la prueba" /></td>
-              <td className="caos-col-text">
-                <S en="10.98" es="10,98" unit={{ en: '% of correct PDs rejected by a standard calibration test (Hosmer-Lemeshow) at a 5% level', es: '% de PD correctas rechazadas por una prueba de calibración estándar (Hosmer-Lemeshow) a un nivel de 5%' }} source={SRC.c22} />{' '}
-                <T en="; the supervisor's discrimination test raises a false alarm 17.0% of the time in the case's setting. Both were found by measurement and corrected in the product." es="; la prueba de discriminación del supervisor da una falsa alarma el 17,0% de las veces en el escenario del caso. Ambas se encontraron midiendo y se corrigieron en el producto." />{' '}
-                <Cite id="contrasteC22" />
-              </td>
-            </tr>
-            <tr>
-              <td className="caos-col-text"><T en="It prices a modelling choice in capital" es="Pone precio en capital a una decisión de modelación" /></td>
-              <td className="caos-col-text"><T en="The board sees the capital effect of a calibration or a data definition before it is committed" es="El directorio ve el efecto en capital de una calibración o de una definición de datos antes de comprometerla" /></td>
-              <td className="caos-col-text">
-                <S en="64.8" es="64,8" unit={{ en: '% more capital asked by carrying last year\'s PD curve unchanged instead of recalibrating it', es: '% más de capital exigido por llevar sin cambios la curva de PD del año anterior en vez de recalibrarla' }} source={SRC.c05} />{' '}
-                <T en="; one default definition against another moves the speculative-grade PD from 26.64% to 8.61% and the portfolio's risk weight from 58.0% to 47.5%." es="; una definición de incumplimiento frente a otra mueve la PD del grado especulativo de 26,64% a 8,61% y el ponderador de riesgo de la cartera de 58,0% a 47,5%." />{' '}
-                <Cite id="contrasteC05" /> <Cite id="contrasteC04" />
-              </td>
-            </tr>
-            <tr>
-              <td className="caos-col-text"><T en="It holds a challenger model to the same tests as the champion" es="Somete al modelo retador a las mismas pruebas que al campeón" /></td>
-              <td className="caos-col-text"><T en="Complexity is adopted only where it earns its keep" es="La complejidad se adopta solo donde se justifica" /></td>
-              <td className="caos-col-text">
-                <S en="0.018" es="0,018" unit={{ en: 'AUC gained over the scorecard by a monotone gradient-boosted model on 9000 held-out records, saving 4.2% of capital', es: 'de AUC ganado sobre la scorecard por un modelo de gradient boosting monótono en 9000 registros reservados, con un ahorro de 4,2% del capital' }} source={SRC.c01} />{' '}
-                <T en="; on 300 records it beats nothing." es="; con 300 registros no supera a nada." /> <Cite id="contrasteC01" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </DocSection>
-
-      <DocSection area="positioning" title={{ en: 'The positioning', es: 'El posicionamiento' }} noRefsReason={{ en: 'States what the product offers; the proof points are cited under the outcomes.', es: 'Declara lo que ofrece el producto; las pruebas se citan en los resultados.' }}>
-        <ul>
-          <Li
-            en={<><strong>Reproducible</strong>: the supervisor will re-run the number, so every result is recomputed from published inputs with its gap recorded, and the opinion never rests on a figure nobody can rebuild.</>}
-            es={<><strong>Reproducible</strong>: el supervisor volverá a correr el número, así que cada resultado se recalcula desde insumos publicados con su brecha registrada, y la opinión nunca descansa en una cifra que nadie puede reconstruir.</>}
-          />
-          <Li
-            en={<><strong>Measured</strong>: a test is evidence only as far as its error rates are known, so each test comes with its measured false alarm rate and its power, which is the threshold work the supervisor found missing.</>}
-            es={<><strong>Medido</strong>: una prueba es evidencia solo hasta donde se conocen sus tasas de error, así que cada prueba trae su tasa de falsa alarma y su potencia medidas, que es el trabajo de umbrales que el supervisor echó de menos.</>}
-          />
-          <Li
-            en={<><strong>Priced</strong>: a modelling choice is a capital decision, so each calibration, definition and model swap is shown with what it changes in risk-weighted assets, and the choice is made knowingly.</>}
-            es={<><strong>Valorizado</strong>: una decisión de modelación es una decisión de capital, así que cada calibración, definición y cambio de modelo se muestra con lo que cambia en los activos ponderados por riesgo, y la decisión se toma con conocimiento.</>}
-          />
-          <Li
-            en={<><strong>Open</strong>: an opinion must be checkable by a third party, so the code, the data sources with their licences, the seeds and the expected ranges are public, and the limits are stated on every case.</>}
-            es={<><strong>Abierto</strong>: una opinión debe poder verificarla un tercero, así que el código, las fuentes de datos con sus licencias, las semillas y los rangos esperados son públicos, y los límites se declaran en cada caso.</>}
-          />
-        </ul>
-      </DocSection>
-
-      <DocSection area="credibility" title={{ en: 'The credibility', es: 'La credibilidad' }} refs={['wp14', 'contrasteC22']}>
-        <Question
-          question={<T en="Does it reproduce what a supervisor would run?" es="¿Reproduce lo que correría un supervisor?" />}
-          answer={<P en={<>For the tests it covers, yes, against published answers: 143 of 144 cells of Working Paper 14 <Cite id="wp14" />, 50 of 54 of a published stability study, and the published calibration and migration tables, each gap recorded. It covers credit scoring, rating calibration, rating migrations and the tests themselves today; provisions, market, liquidity and operational risk are planned and shown as not built yet.</>} es={<>Para las pruebas que cubre, sí, contra respuestas publicadas: 143 de 144 celdas del documento de trabajo 14 <Cite id="wp14" />, 50 de 54 de un estudio publicado de estabilidad, y las tablas publicadas de calibración y de migración, cada brecha registrada. Hoy cubre scoring de crédito, calibración de calificaciones, migraciones de calificación y las pruebas mismas; provisiones, mercado, liquidez y riesgo operacional están planificados y se muestran como aún no construidos.</>} />}
-        />
-        <Question
-          question={<T en="Can I trust its tests?" es="¿Puedo confiar en sus pruebas?" />}
-          answer={<P en={<>You can see how far: 19 of 21 tests hold their stated size, and the two that do not are named, with how much they over-reject <Cite id="contrasteC22" />. Where a widely used test misleads, the product says so and shows the measurement.</>} es={<>Se puede ver hasta dónde: 19 de 21 pruebas mantienen su tamaño declarado, y las dos que no lo hacen están nombradas, con cuánto rechazan de más <Cite id="contrasteC22" />. Donde una prueba muy usada induce a error, el producto lo dice y muestra la medición.</>} />}
-        />
-        <Question
-          question={<T en="What does it change in my capital or provisions?" es="¿Qué cambia en mi capital o en mis provisiones?" />}
-          answer={<P en="It shows what a choice changes on public and generated portfolios, as in the outcomes above. It does not compute your capital: it runs on no bank's portfolio." es="Muestra lo que cambia una decisión sobre carteras públicas y generadas, como en los resultados de arriba. No calcula su capital: no corre sobre la cartera de ningún banco." />}
-        />
-        <Question
-          question={<T en="How does it fit my model inventory and governance?" es="¿Cómo calza con mi inventario de modelos y mi gobierno?" />}
-          answer={<P en="It is a workbench, not an inventory or a workflow system. It records its own models and findings; it does not ingest a bank's inventory." es="Es un banco de trabajo, no un inventario ni un sistema de flujos. Registra sus propios modelos y hallazgos; no incorpora el inventario de un banco." />}
-        />
-        <Question
-          question={<T en="What about machine-learning challengers and the AI rules?" es="¿Qué pasa con los modelos retadores de aprendizaje automático y las reglas de IA?" />}
-          answer={<P en="It tests a monotone boosted model and an explainable additive model beside the scorecard, with paired tests, calibration and capital. It does not certify compliance with the AI Act or any regulation." es="Prueba un modelo con boosting monótono y un modelo aditivo explicable junto a la scorecard, con pruebas pareadas, calibración y capital. No certifica el cumplimiento de la ley de IA ni de ninguna otra regulación." />}
-        />
-        <Callout variant="honest" title={<T en="Limits" es="Límites" />}>
-          <T
-            en="Every case runs on public data or on generated data with known truth; no result is a regulatory threshold; a passed test is evidence, not compliance; the product certifies no model, represents no real bank and has no affiliation with any institution or supervisor named here."
-            es="Cada caso corre sobre datos públicos o sobre datos generados con verdad conocida; ningún resultado es un umbral regulatorio; una prueba aprobada es evidencia, no cumplimiento; el producto no certifica ningún modelo, no representa a ningún banco real y no tiene afiliación con ninguna institución ni supervisor nombrado aquí."
-          />
-        </Callout>
-      </DocSection>
-    </>
-  );
-}
 
 function Technical() {
   const t = useT();
@@ -308,8 +153,8 @@ export function Introduction() {
     <DocPage
       title={{ en: 'Introduction', es: 'Introducción' }}
       lede={t(
-        'Build financial risk models, then validate them the way a model risk function and a supervisor would: this page opens with what is at stake for the person who answers for a bank\'s models, and then turns to the problem, the principles, the mathematics, the pipeline and the limits of the work.',
-        'Construir modelos de riesgo financiero y validarlos como lo harían una función de riesgo de modelos y un supervisor: esta página abre con lo que está en juego para quien responde por los modelos de un banco, y luego pasa al problema, los principios, las matemáticas, el pipeline y los límites del trabajo.',
+        'Build financial risk models, then validate them the way a model risk function and a supervisor would: this page opens with what is at stake for the chief risk officer of a Chilean bank, and then turns to the problem, the principles, the mathematics, the pipeline and the limits of the work.',
+        'Construir modelos de riesgo financiero y validarlos como lo harían una función de riesgo de modelos y un supervisor: esta página abre con lo que está en juego para el gerente de riesgos de un banco chileno, y luego pasa al problema, los principios, las matemáticas, el pipeline y los límites del trabajo.',
       )}
     >
       <NoTranslateRefs />
@@ -317,7 +162,7 @@ export function Introduction() {
         ariaLabel={t('Views of the introduction', 'Vistas de la introducción')}
         initial="executive"
         tabs={[
-          { id: 'executive', label: t('Executive view', 'Vista ejecutiva'), content: <Executive /> },
+          { id: 'executive', label: t('Executive view', 'Vista ejecutiva'), content: <ExecutiveView data={executive} base={import.meta.env.BASE_URL} /> },
           { id: 'technical', label: t('Technical view', 'Vista técnica'), content: <Technical /> },
         ]}
       />
