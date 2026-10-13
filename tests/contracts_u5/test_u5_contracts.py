@@ -23,6 +23,16 @@ SCHEMAS = ROOT / "docs" / "contracts" / "schemas"
 API = ROOT / "docs" / "contracts" / "engine" / "provisions-api.md"
 ROWS = ROOT / "docs" / "contracts" / "rows" / "U5.md"
 
+ROW_IDS = ["c06-outputs", "c06-models", "c07-outputs", "c07-models", "engine-provisions-api"]
+
+
+def catalog_rows(ids):
+    """The catalog rows of these contract ids, header first (the unit's rows fragment was merged by the integrator)."""
+    catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
+    lines = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0].splitlines()
+    head = [ln for ln in lines if ln.startswith("| id | version")]
+    return head + ["|---|"] + [ln for ln in lines if ln.startswith("| ") and ln.split("|")[1].strip() in ids]
+
 EXPECTED = {
     "c06/models": FIXTURES / "c06" / "models-fixture.json",
     "c06/variant-reporting-date": FIXTURES / "c06" / "variant-reporting-date-fixture.json",
@@ -327,7 +337,7 @@ def row_cells(line: str) -> list[str]:
 def test_the_rows_fragment_has_the_five_rows_in_the_catalog_columns() -> None:
     catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
     header = next(row_cells(ln) for ln in catalog.splitlines() if ln.startswith("| id | version"))
-    lines = [ln for ln in ROWS.read_text(encoding="utf-8").splitlines() if ln.startswith("|")]
+    lines = [ln for ln in catalog_rows(ROW_IDS) if ln.startswith("|")]
     rows = [row_cells(ln) for ln in lines]
     assert rows[0] == header
     data = [r for r in rows[1:] if not all(set(c) <= set(":- ") for c in r)]
