@@ -1,0 +1,325 @@
+{
+  "schema": "contraste.models/v1",
+  "case_id": "C08",
+  "fit_id": "fixture-sba-chargeoff-twin",
+  "model": [
+    {
+      "id": "L2-fractional-logit",
+      "family": "lgd-ead",
+      "rung": "fractional-logit",
+      "title": {
+        "en": "Fixture model L2-fractional-logit",
+        "es": "Modelo de ejemplo L2-fractional-logit"
+      },
+      "short_title": {
+        "en": "L2-fractional-logit",
+        "es": "L2-fractional-logit"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "details": {}
+    }
+  ],
+  "fit": {
+    "currency": "USD",
+    "lgd_proxy": {
+      "definition": {
+        "en": "LGD proxy = gross charge-off amount over the exposure at charge-off (SBA 7(a) fields GrossChargeOffAmount and the disbursed exposure). It is a proxy, not a workout LGD.",
+        "es": "Proxy de LGD = monto bruto castigado sobre la exposicion al castigo (campos SBA 7(a) GrossChargeOffAmount y la exposicion desembolsada). Es un proxy, no una LGD de recuperacion."
+      },
+      "formula": "gross_charge_off / exposure_at_charge_off",
+      "source_field": "GrossChargeOffAmount",
+      "exposure_field": "fixture: the field the bake states",
+      "recovery_cash_flows_available": false,
+      "bias_direction": "upward",
+      "bias_statement": {
+        "en": "The SBA 7(a) public file has no recovery cash flows after charge-off, so the proxy ignores recoveries and costs: it overstates the loss net of recoveries (upward bias) and can exceed 1 when capitalised interest or fees are charged off. Realised LGD in the workout sense needs recovery data this file does not carry.",
+        "es": "El archivo publico SBA 7(a) no tiene flujos de recuperacion posteriores al castigo, de modo que el proxy ignora recuperaciones y costos: sobreestima la perdida neta de recuperaciones (sesgo al alza) y puede superar 1 si se castigan intereses capitalizados o comisiones. La LGD realizada en sentido de recuperacion exige datos que este archivo no trae."
+      }
+    },
+    "data_status": {
+      "primary_source": "sba-7a-chargeoff-twin",
+      "freddie_mac_available": false,
+      "freddie_mac_reason": "fixture: the owner's Freddie Mac registration does not exist yet; the SBA charge-off twin carries this case",
+      "notice": {
+        "en": "Fixture, not a result. The Freddie Mac slot stays empty until the account exists; no number stands in for it.",
+        "es": "Ejemplo, no es un resultado. El espacio de Freddie Mac queda vacio hasta que exista la cuenta; ningun numero lo reemplaza."
+      }
+    },
+    "cohorts": [
+      {
+        "id": "2003-06",
+        "label": {
+          "en": "Defaults 2003-06",
+          "es": "Incumplimientos 2003-06"
+        },
+        "first_year": 2003,
+        "last_year": 2006
+      },
+      {
+        "id": "2007-08",
+        "label": {
+          "en": "Defaults 2007-08",
+          "es": "Incumplimientos 2007-08"
+        },
+        "first_year": 2007,
+        "last_year": 2008
+      },
+      {
+        "id": "2009-10",
+        "label": {
+          "en": "Defaults 2009-10",
+          "es": "Incumplimientos 2009-10"
+        },
+        "first_year": 2009,
+        "last_year": 2010
+      },
+      {
+        "id": "2011-13",
+        "label": {
+          "en": "Defaults 2011-13",
+          "es": "Incumplimientos 2011-13"
+        },
+        "first_year": 2011,
+        "last_year": 2013
+      },
+      {
+        "id": "2014-19",
+        "label": {
+          "en": "Defaults 2014-19",
+          "es": "Incumplimientos 2014-19"
+        },
+        "first_year": 2014,
+        "last_year": 2019
+      },
+      {
+        "id": "2020-23",
+        "label": {
+          "en": "Defaults 2020-23",
+          "es": "Incumplimientos 2020-23"
+        },
+        "first_year": 2020,
+        "last_year": 2023
+      }
+    ],
+    "training": {
+      "cutoff_date": "2008-12-31",
+      "n_defaults": 12000,
+      "n_open_workouts_excluded": 1500,
+      "closure_rule": {
+        "en": "Only defaults whose charge-off closed before the cutoff enter the training set; later default cohorts are the tests.",
+        "es": "Solo entran al entrenamiento los incumplimientos cuyo castigo cerro antes del corte; las cohortes posteriores son de prueba."
+      }
+    },
+    "workout": {
+      "discount_rate_convention": "none-proxy",
+      "discount_rate": null,
+      "incomplete_workouts": {
+        "treatment": "not-applicable",
+        "n_excluded": 0,
+        "n_projected": 0,
+        "reason": "fixture: the SBA file has no workout cash flows to discount or to project"
+      },
+      "note": {
+        "en": "No discounting applies to a charge-off proxy; a workout LGD would use the EBA/GL/2017/16 rate (paragraph UNVERIFIED).",
+        "es": "No se descuenta un proxy de castigo; una LGD de recuperacion usaria la tasa de EBA/GL/2017/16 (parrafo NO VERIFICADO)."
+      }
+    },
+    "ladder": [
+      {
+        "rung_id": "L1-ols",
+        "kind": "ols",
+        "covariates": [
+          "term_months",
+          "naics_sector"
+        ],
+        "coefficients": [
+          {
+            "name": "term_months",
+            "estimate": 0.001,
+            "std_error": 0.0002
+          }
+        ],
+        "epsilon": null,
+        "training_cutoff": "2008-12-31",
+        "library": "numpy",
+        "library_version": "fixture"
+      },
+      {
+        "rung_id": "L2-fractional-logit",
+        "kind": "fractional-logit",
+        "covariates": [
+          "term_months",
+          "naics_sector"
+        ],
+        "coefficients": [
+          {
+            "name": "term_months",
+            "estimate": 0.004,
+            "std_error": 0.001
+          }
+        ],
+        "epsilon": null,
+        "training_cutoff": "2008-12-31",
+        "library": "statsmodels",
+        "library_version": "fixture"
+      },
+      {
+        "rung_id": "L3-beta",
+        "kind": "beta",
+        "covariates": [
+          "term_months"
+        ],
+        "coefficients": [],
+        "epsilon": 0.001,
+        "training_cutoff": "2008-12-31",
+        "library": "statsmodels",
+        "library_version": "fixture"
+      },
+      {
+        "rung_id": "L5-gradient-boosted",
+        "kind": "gradient-boosted",
+        "covariates": [
+          "term_months",
+          "naics_sector"
+        ],
+        "coefficients": [],
+        "epsilon": null,
+        "training_cutoff": "2008-12-31",
+        "library": "catboost",
+        "library_version": "fixture"
+      }
+    ],
+    "downturn": {
+      "approach": {
+        "en": "Cohort-based add-on over the downturn years of a supplied macro path.",
+        "es": "Ajuste por cohortes sobre los anos de crisis de una trayectoria macro entregada."
+      },
+      "period": {
+        "first_year": 2007,
+        "last_year": 2010,
+        "indicator": "unemployment rate (fixture path)",
+        "macro_source": "fixture: a constructed path, not BLS data"
+      }
+    },
+    "floors": {
+      "regime": "basel-iii-final",
+      "source": "dossier 01 section A.5 (CRE32.16, CRE32.58 to CRE32.59); the collateral order of the retail secured floors (financial, receivables, real estate, other physical) is read as the corporate order, UNVERIFIED",
+      "cells": [
+        {
+          "id": "corporate-unsecured",
+          "portfolio": "corporate",
+          "collateral": "unsecured",
+          "floor": 0.25,
+          "reference": "CRE32.16"
+        },
+        {
+          "id": "corporate-financial",
+          "portfolio": "corporate",
+          "collateral": "financial",
+          "floor": 0.0,
+          "reference": "CRE32.16"
+        },
+        {
+          "id": "corporate-receivables",
+          "portfolio": "corporate",
+          "collateral": "receivables",
+          "floor": 0.1,
+          "reference": "CRE32.16"
+        },
+        {
+          "id": "corporate-real-estate",
+          "portfolio": "corporate",
+          "collateral": "real-estate",
+          "floor": 0.1,
+          "reference": "CRE32.16"
+        },
+        {
+          "id": "corporate-other-physical",
+          "portfolio": "corporate",
+          "collateral": "other-physical",
+          "floor": 0.15,
+          "reference": "CRE32.16"
+        },
+        {
+          "id": "retail-mortgage",
+          "portfolio": "retail",
+          "collateral": "mortgage",
+          "floor": 0.05,
+          "reference": "CRE32.58"
+        },
+        {
+          "id": "retail-qrre",
+          "portfolio": "retail",
+          "collateral": "qrre",
+          "floor": 0.5,
+          "reference": "CRE32.58"
+        },
+        {
+          "id": "retail-other-unsecured",
+          "portfolio": "retail",
+          "collateral": "unsecured",
+          "floor": 0.3,
+          "reference": "CRE32.58"
+        },
+        {
+          "id": "retail-other-financial",
+          "portfolio": "retail",
+          "collateral": "financial",
+          "floor": 0.0,
+          "reference": "CRE32.59"
+        },
+        {
+          "id": "retail-other-receivables",
+          "portfolio": "retail",
+          "collateral": "receivables",
+          "floor": 0.1,
+          "reference": "CRE32.59"
+        },
+        {
+          "id": "retail-other-real-estate",
+          "portfolio": "retail",
+          "collateral": "real-estate",
+          "floor": 0.1,
+          "reference": "CRE32.59"
+        },
+        {
+          "id": "retail-other-physical",
+          "portfolio": "retail",
+          "collateral": "other-physical",
+          "floor": 0.15,
+          "reference": "CRE32.59"
+        }
+      ]
+    }
+  },
+  "provenance": {
+    "truth_status": "real-outcomes",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u6-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

@@ -1,0 +1,665 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c03/variant-vintage-cohort.schema.json",
+  "title": "C03 vintage-cohort variant",
+  "description": "Catalog row c03-outputs 1.0.0: one test cohort of approval fiscal years of the SME PD by vintage case (outputs.kind vintage-cohort), on the SBA 7(a) data.",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C03"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c03Outputs",
+          "properties": {
+            "kind": {
+              "const": "vintage-cohort"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c03Cohort": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "first_fy",
+        "last_fy",
+        "approval_fiscal_years"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "first_fy": {
+          "type": "integer",
+          "minimum": 1991,
+          "description": "First approval fiscal year of the test cohort (SBA fiscal years start on 1 October)."
+        },
+        "last_fy": {
+          "type": "integer",
+          "minimum": 1991
+        },
+        "approval_fiscal_years": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1991
+          },
+          "minItems": 1
+        }
+      },
+      "description": "One test cohort of approval fiscal years (SDD section 5: FY2006-07, 2008-10, 2011-14, 2015-17, 2018-20)."
+    },
+    "c03Training": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "first_fy",
+        "last_fy",
+        "cutoff_date",
+        "n_loans",
+        "n_events",
+        "crisis_included",
+        "rationale"
+      ],
+      "properties": {
+        "first_fy": {
+          "type": "integer",
+          "minimum": 1991
+        },
+        "last_fy": {
+          "type": "integer",
+          "minimum": 1991
+        },
+        "cutoff_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "n_loans": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "crisis_included": {
+          "type": "boolean"
+        },
+        "rationale": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The training window: out-of-time by approval fiscal year, trained through the crisis; its last fiscal year precedes the first fiscal year of the test cohort."
+    },
+    "c03Target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "horizon_months",
+        "observed_at_months",
+        "censoring",
+        "definition"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "horizon_months": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Months from approval over which a charge-off counts (60 for the 5-year target)."
+        },
+        "observed_at_months": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The target is read for a vintage only when its 5-year mark has been observed."
+        },
+        "censoring": {
+          "type": "string",
+          "enum": [
+            "exempt-right-censored",
+            "excluded"
+          ]
+        },
+        "definition": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The 5-year charge-off target and how loans without an observed outcome (EXEMPT, still active) are handled."
+    },
+    "c03DataStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary_source",
+        "files_as_of",
+        "fiscal_year_start",
+        "notice"
+      ],
+      "properties": {
+        "primary_source": {
+          "type": "string"
+        },
+        "files_as_of": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "fiscal_year_start": {
+          "type": "string",
+          "description": "Month and day the SBA fiscal year starts (10-01)."
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        }
+      }
+    },
+    "c03VintageCurve": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fiscal_year",
+        "n",
+        "gross_approval",
+        "months",
+        "predicted_cumulative_pd",
+        "observed_cumulative_pd",
+        "observed_until_month",
+        "reason"
+      ],
+      "properties": {
+        "fiscal_year": {
+          "type": "integer",
+          "minimum": 1991
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "gross_approval": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Total gross approval of the vintage in the `currency` of the outputs."
+        },
+        "months": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 1,
+          "description": "Months since approval, strictly increasing."
+        },
+        "predicted_cumulative_pd": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An estimate-site PD is open: 0 < pd < 1."
+          },
+          "minItems": 1
+        },
+        "observed_cumulative_pd": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "A share or an observed rate in [0, 1]."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "minItems": 1,
+          "description": "Null where the horizon is beyond the observation cutoff."
+        },
+        "observed_until_month": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Why the observed curve stops before the last month; null when it reaches it."
+        }
+      },
+      "description": "The predicted and the observed cumulative charge-off PD of one approval-year vintage."
+    },
+    "c03VintageRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fiscal_year",
+        "n",
+        "n_resolved",
+        "n_exempt_censored",
+        "gross_approval",
+        "observed_5y_pd",
+        "predicted_5y_pd",
+        "gap",
+        "brier",
+        "auc",
+        "reason"
+      ],
+      "properties": {
+        "fiscal_year": {
+          "type": "integer",
+          "minimum": 1991
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_resolved": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_exempt_censored": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "gross_approval": {
+          "type": "number",
+          "minimum": 0
+        },
+        "observed_5y_pd": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A share or an observed rate in [0, 1]."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Null when the vintage has not reached its 5-year mark; the reason says why."
+        },
+        "predicted_5y_pd": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "description": "An estimate-site PD is open: 0 < pd < 1."
+        },
+        "gap": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Observed minus predicted at the 5-year mark; null when unobserved."
+        },
+        "brier": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "auc": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A share or an observed rate in [0, 1]."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "c03VintageSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "rows"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c03VintageRow"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "c03DecileRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decile",
+        "n",
+        "predicted_pd",
+        "observed_pd",
+        "ci_low",
+        "ci_high"
+      ],
+      "properties": {
+        "decile": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "predicted_pd": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "description": "An estimate-site PD is open: 0 < pd < 1."
+        },
+        "observed_pd": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "ci_low": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "ci_high": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        }
+      }
+    },
+    "c03Calibration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rung_id",
+        "scope",
+        "rows"
+      ],
+      "properties": {
+        "rung_id": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string",
+          "description": "The vintages pooled: those whose 5-year mark is observed."
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c03DecileRow"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "c03RungResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rung_id",
+        "auc",
+        "auc_ci_low",
+        "auc_ci_high",
+        "brier",
+        "calibration_gap_5y",
+        "reason"
+      ],
+      "properties": {
+        "rung_id": {
+          "type": "string"
+        },
+        "auc": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A share or an observed rate in [0, 1]."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "auc_ci_low": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A share or an observed rate in [0, 1]."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "auc_ci_high": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A share or an observed rate in [0, 1]."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "brier": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "calibration_gap_5y": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "c03StabilityRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fiscal_year",
+        "psi",
+        "observed_5y_pd"
+      ],
+      "properties": {
+        "fiscal_year": {
+          "type": "integer",
+          "minimum": 1991
+        },
+        "psi": {
+          "type": "number",
+          "minimum": 0
+        },
+        "observed_5y_pd": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A share or an observed rate in [0, 1]."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "c03Stability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "training_mean_5y_pd",
+        "psi_note",
+        "rows"
+      ],
+      "properties": {
+        "training_mean_5y_pd": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "psi_note": {
+          "$ref": "../common/text.schema.json"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c03StabilityRow"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "Population stability of each test vintage against the training window and its observed 5-year rate against the training mean (the crisis contrast)."
+    },
+    "c03Outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "currency",
+        "cohort",
+        "training",
+        "target",
+        "data_status",
+        "vintage_curves",
+        "vintage_summary",
+        "calibration",
+        "rung_comparison",
+        "stability"
+      ],
+      "properties": {
+        "kind": {
+          "const": "vintage-cohort"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "cohort": {
+          "$ref": "#/$defs/c03Cohort"
+        },
+        "training": {
+          "$ref": "#/$defs/c03Training"
+        },
+        "target": {
+          "$ref": "#/$defs/c03Target"
+        },
+        "data_status": {
+          "$ref": "#/$defs/c03DataStatus"
+        },
+        "vintage_curves": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c03VintageCurve"
+          },
+          "minItems": 1
+        },
+        "vintage_summary": {
+          "$ref": "#/$defs/c03VintageSummary"
+        },
+        "calibration": {
+          "$ref": "#/$defs/c03Calibration"
+        },
+        "rung_comparison": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c03RungResult"
+          },
+          "minItems": 1
+        },
+        "stability": {
+          "$ref": "#/$defs/c03Stability"
+        }
+      },
+      "description": "C03 vintage-cohort outputs (outputs.kind vintage-cohort): one test cohort of approval fiscal years. PD open (0, 1) at estimate sites; the 5-year charge-off target is observed only at each vintage's 5-year mark; a value the bake may lack is nullable with its reason; money in `currency`."
+    }
+  }
+}

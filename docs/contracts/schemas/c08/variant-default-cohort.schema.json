@@ -1,0 +1,925 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c08/variant-default-cohort.schema.json",
+  "title": "C08 default-cohort variant",
+  "description": "Catalog row c08-outputs 1.0.0: one default cohort of the LGD and downturn LGD case (outputs.kind default-cohort), on the SBA charge-off twin.",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C08"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c08Outputs",
+          "properties": {
+            "kind": {
+              "const": "default-cohort"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c08Text": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "en",
+        "es"
+      ],
+      "properties": {
+        "en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "es": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "c08Lgd": {
+      "description": "A loss given default with its range flag. In [0, 1] the flag is in-range; below 0 or above 1 (fees, costs, overlimit drawings, limit changes) the value is kept and flagged, never silently clipped.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "flag"
+          ],
+          "properties": {
+            "value": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "flag": {
+              "const": "in-range"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "flag"
+          ],
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMaximum": 0
+            },
+            "flag": {
+              "const": "below-zero"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "flag"
+          ],
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 1
+            },
+            "flag": {
+              "const": "above-one"
+            }
+          }
+        }
+      ]
+    },
+    "c08Cohort": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "first_year",
+        "last_year"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "first_year": {
+          "type": "integer",
+          "minimum": 1990
+        },
+        "last_year": {
+          "type": "integer",
+          "minimum": 1990
+        }
+      },
+      "description": "One default cohort by default year (SDD section 5: 2003-06, 2007-08, 2009-10, 2011-13, 2014-19, 2020-23)."
+    },
+    "c08LgdProxy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "definition",
+        "formula",
+        "source_field",
+        "exposure_field",
+        "recovery_cash_flows_available",
+        "bias_direction",
+        "bias_statement"
+      ],
+      "properties": {
+        "definition": {
+          "$ref": "#/$defs/c08Text"
+        },
+        "formula": {
+          "type": "string"
+        },
+        "source_field": {
+          "type": "string",
+          "description": "The SBA 7(a) field the numerator reads (GrossChargeOffAmount)."
+        },
+        "exposure_field": {
+          "type": "string"
+        },
+        "recovery_cash_flows_available": {
+          "type": "boolean"
+        },
+        "bias_direction": {
+          "type": "string",
+          "enum": [
+            "upward",
+            "downward",
+            "unknown"
+          ]
+        },
+        "bias_statement": {
+          "$ref": "#/$defs/c08Text"
+        }
+      },
+      "description": "The LGD proxy of the SBA charge-off twin and its bias, required in every C08 document: the file has no recovery cash flows, so the proxy is the gross charge-off over the exposure at charge-off, not a workout LGD (dossier 08 A.6)."
+    },
+    "c08DataStatus": {
+      "description": "Freddie Mac is a nullable slot: while the owner's account does not exist it is unavailable and the reason is stated; no number stands in for it.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "primary_source",
+            "freddie_mac_available",
+            "freddie_mac_reason",
+            "notice"
+          ],
+          "properties": {
+            "primary_source": {
+              "type": "string"
+            },
+            "freddie_mac_available": {
+              "const": false
+            },
+            "freddie_mac_reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "notice": {
+              "$ref": "../common/text.schema.json"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "primary_source",
+            "freddie_mac_available",
+            "freddie_mac_reason",
+            "notice"
+          ],
+          "properties": {
+            "primary_source": {
+              "type": "string"
+            },
+            "freddie_mac_available": {
+              "const": true
+            },
+            "freddie_mac_reason": {
+              "type": "null"
+            },
+            "notice": {
+              "$ref": "../common/text.schema.json"
+            }
+          }
+        }
+      ]
+    },
+    "c08Training": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cutoff_date",
+        "n_defaults",
+        "n_open_workouts_excluded",
+        "closure_rule"
+      ],
+      "properties": {
+        "cutoff_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "n_defaults": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_open_workouts_excluded": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "closure_rule": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "Out-of-time by default date; the training set holds only defaults whose workout closed before the cutoff."
+    },
+    "c08Workout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "discount_rate_convention",
+        "discount_rate",
+        "incomplete_workouts",
+        "note"
+      ],
+      "properties": {
+        "discount_rate_convention": {
+          "type": "string",
+          "enum": [
+            "eba-interbank-plus-5pp",
+            "fixed",
+            "none-proxy"
+          ]
+        },
+        "discount_rate": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "incomplete_workouts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "treatment",
+            "n_excluded",
+            "n_projected",
+            "reason"
+          ],
+          "properties": {
+            "treatment": {
+              "type": "string",
+              "enum": [
+                "excluded",
+                "projected",
+                "not-applicable"
+              ]
+            },
+            "n_excluded": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "n_projected": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "reason": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "note": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "How realised LGD is built: a workout LGD discounts recoveries (rate convention EBA/GL/2017/16, paragraph UNVERIFIED); the SBA twin has no cash flows, so none-proxy and not-applicable."
+    },
+    "c08Exposure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "gross_charge_off_total",
+        "exposure_at_charge_off_total"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "gross_charge_off_total": {
+          "type": "number",
+          "minimum": 0
+        },
+        "exposure_at_charge_off_total": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "c08Bin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lower",
+        "upper",
+        "n",
+        "share"
+      ],
+      "properties": {
+        "lower": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "upper": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        }
+      }
+    },
+    "c08Mass": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "n",
+        "share"
+      ],
+      "properties": {
+        "n": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        }
+      }
+    },
+    "c08Distribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "n",
+        "treatment",
+        "bins",
+        "mass_at_zero",
+        "mass_at_one",
+        "n_below_zero",
+        "share_below_zero",
+        "n_above_one",
+        "share_above_one",
+        "lowest",
+        "highest",
+        "mean",
+        "median"
+      ],
+      "properties": {
+        "n": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "treatment": {
+          "const": "flagged-not-clipped"
+        },
+        "bins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c08Bin"
+          },
+          "minItems": 2
+        },
+        "mass_at_zero": {
+          "$ref": "#/$defs/c08Mass"
+        },
+        "mass_at_one": {
+          "$ref": "#/$defs/c08Mass"
+        },
+        "n_below_zero": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "share_below_zero": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "n_above_one": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "share_above_one": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "lowest": {
+          "$ref": "#/$defs/c08Lgd"
+        },
+        "highest": {
+          "$ref": "#/$defs/c08Lgd"
+        },
+        "mean": {
+          "$ref": "#/$defs/c08Lgd"
+        },
+        "median": {
+          "$ref": "#/$defs/c08Lgd"
+        }
+      },
+      "description": "The realised LGD distribution on [0, 1] with its masses at 0 and 1; realised values outside [0, 1] are counted and flagged, never clipped into the end bins."
+    },
+    "c08RungResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rung_id",
+        "r2",
+        "rmse",
+        "mae",
+        "spearman",
+        "calibration_gap",
+        "reason"
+      ],
+      "properties": {
+        "rung_id": {
+          "type": "string"
+        },
+        "r2": {
+          "anyOf": [
+            {
+              "type": "number",
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rmse": {
+          "type": "number",
+          "minimum": 0
+        },
+        "mae": {
+          "type": "number",
+          "minimum": 0
+        },
+        "spearman": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "calibration_gap": {
+          "type": "number"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "c08RealisedRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rung_id",
+        "cohort_id",
+        "n",
+        "realised",
+        "predicted",
+        "ci_low",
+        "ci_high",
+        "gap"
+      ],
+      "properties": {
+        "rung_id": {
+          "type": "string"
+        },
+        "cohort_id": {
+          "type": "string"
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "realised": {
+          "$ref": "#/$defs/c08Lgd"
+        },
+        "predicted": {
+          "$ref": "#/$defs/c08Lgd"
+        },
+        "ci_low": {
+          "type": "number"
+        },
+        "ci_high": {
+          "type": "number"
+        },
+        "gap": {
+          "type": "number"
+        }
+      }
+    },
+    "c08BucketRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rung_id",
+        "bucket",
+        "n",
+        "predicted",
+        "realised"
+      ],
+      "properties": {
+        "rung_id": {
+          "type": "string"
+        },
+        "bucket": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "predicted": {
+          "$ref": "#/$defs/c08Lgd"
+        },
+        "realised": {
+          "$ref": "#/$defs/c08Lgd"
+        }
+      }
+    },
+    "c08EndpointRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rung_id",
+        "epsilon",
+        "mean_predicted",
+        "rmse"
+      ],
+      "properties": {
+        "rung_id": {
+          "type": "string"
+        },
+        "epsilon": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 0.5
+        },
+        "mean_predicted": {
+          "$ref": "#/$defs/c08Lgd"
+        },
+        "rmse": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "c08DownturnPeriod": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "first_year",
+        "last_year",
+        "indicator",
+        "macro_source"
+      ],
+      "properties": {
+        "first_year": {
+          "type": "integer",
+          "minimum": 1990
+        },
+        "last_year": {
+          "type": "integer",
+          "minimum": 1990
+        },
+        "indicator": {
+          "type": "string"
+        },
+        "macro_source": {
+          "type": "string"
+        }
+      }
+    },
+    "c08DownturnRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cohort_id",
+        "n",
+        "long_run_lgd",
+        "downturn_lgd",
+        "add_on",
+        "crisis_realised_lgd",
+        "covered",
+        "shortfall"
+      ],
+      "properties": {
+        "cohort_id": {
+          "type": "string"
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "long_run_lgd": {
+          "$ref": "#/$defs/c08Lgd"
+        },
+        "downturn_lgd": {
+          "$ref": "#/$defs/c08Lgd"
+        },
+        "add_on": {
+          "type": "number",
+          "description": "downturn_lgd minus long_run_lgd."
+        },
+        "crisis_realised_lgd": {
+          "$ref": "#/$defs/c08Lgd"
+        },
+        "covered": {
+          "type": "boolean"
+        },
+        "shortfall": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "c08DownturnCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "n_cohorts",
+        "share_covered"
+      ],
+      "properties": {
+        "n_cohorts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "share_covered": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        }
+      }
+    },
+    "c08Downturn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "period",
+        "approach",
+        "rows",
+        "coverage"
+      ],
+      "properties": {
+        "period": {
+          "$ref": "#/$defs/c08DownturnPeriod"
+        },
+        "approach": {
+          "$ref": "../common/text.schema.json"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c08DownturnRow"
+          },
+          "minItems": 1
+        },
+        "coverage": {
+          "$ref": "#/$defs/c08DownturnCoverage"
+        }
+      },
+      "description": "The downturn add-on against the realised crisis losses (dossier 04 F.4: Contraste's own cohort-based add-on, an illustration, not a regulatory estimate; the EBA/GL/2019/03 wording is UNVERIFIED)."
+    },
+    "c08FloorRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "segment_id",
+        "floor_id",
+        "floor",
+        "reference",
+        "n",
+        "share_binding",
+        "mean_before",
+        "mean_after",
+        "uplift"
+      ],
+      "properties": {
+        "segment_id": {
+          "type": "string"
+        },
+        "floor_id": {
+          "type": "string"
+        },
+        "floor": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "share_binding": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "mean_before": {
+          "$ref": "#/$defs/c08Lgd"
+        },
+        "mean_after": {
+          "$ref": "#/$defs/c08Lgd"
+        },
+        "uplift": {
+          "type": "number",
+          "description": "mean_after minus mean_before, never negative."
+        }
+      }
+    },
+    "c08FloorsBite": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "regime",
+        "rows",
+        "note"
+      ],
+      "properties": {
+        "regime": {
+          "type": "string"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c08FloorRow"
+          },
+          "minItems": 1
+        },
+        "note": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "How much the IRB LGD floors (Basel III final, CRE32.16, CRE32.58 to CRE32.59) bind on the estimates."
+    },
+    "c08Outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "currency",
+        "cohort",
+        "lgd_proxy",
+        "data_status",
+        "training",
+        "workout",
+        "exposure",
+        "lgd_distribution",
+        "rung_comparison",
+        "realised_vs_predicted",
+        "calibration_by_bucket",
+        "endpoint_sensitivity",
+        "downturn",
+        "floors_bite"
+      ],
+      "properties": {
+        "kind": {
+          "const": "default-cohort"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "cohort": {
+          "$ref": "#/$defs/c08Cohort"
+        },
+        "lgd_proxy": {
+          "$ref": "#/$defs/c08LgdProxy"
+        },
+        "data_status": {
+          "$ref": "#/$defs/c08DataStatus"
+        },
+        "training": {
+          "$ref": "#/$defs/c08Training"
+        },
+        "workout": {
+          "$ref": "#/$defs/c08Workout"
+        },
+        "exposure": {
+          "$ref": "#/$defs/c08Exposure"
+        },
+        "lgd_distribution": {
+          "$ref": "#/$defs/c08Distribution"
+        },
+        "rung_comparison": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c08RungResult"
+          },
+          "minItems": 1
+        },
+        "realised_vs_predicted": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c08RealisedRow"
+          },
+          "minItems": 1
+        },
+        "calibration_by_bucket": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c08BucketRow"
+          },
+          "minItems": 1
+        },
+        "endpoint_sensitivity": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c08EndpointRow"
+          }
+        },
+        "downturn": {
+          "$ref": "#/$defs/c08Downturn"
+        },
+        "floors_bite": {
+          "$ref": "#/$defs/c08FloorsBite"
+        }
+      },
+      "description": "C08 default-cohort outputs (outputs.kind default-cohort): one test default cohort. LGD in [0, 1] with the cases outside it (fees, costs) allowed and flagged, never clipped; the LGD proxy definition and bias statement are required; money in `currency`."
+    }
+  }
+}

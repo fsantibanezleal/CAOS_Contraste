@@ -1,0 +1,294 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c03/models.schema.json",
+  "title": "C03 models",
+  "description": "Catalog row c03-models 1.0.0: the C03 models artifact (vintage definition, target, training window, test cohorts, PD rungs).",
+  "allOf": [
+    {
+      "$ref": "../common/models-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C03"
+        },
+        "fit": {
+          "$ref": "#/$defs/c03Fit"
+        }
+      },
+      "required": [
+        "case_id",
+        "fit"
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c03Training": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "first_fy",
+        "last_fy",
+        "cutoff_date",
+        "n_loans",
+        "n_events",
+        "crisis_included",
+        "rationale"
+      ],
+      "properties": {
+        "first_fy": {
+          "type": "integer",
+          "minimum": 1991
+        },
+        "last_fy": {
+          "type": "integer",
+          "minimum": 1991
+        },
+        "cutoff_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "n_loans": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "crisis_included": {
+          "type": "boolean"
+        },
+        "rationale": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The training window: out-of-time by approval fiscal year, trained through the crisis; its last fiscal year precedes the first fiscal year of the test cohort."
+    },
+    "c03Target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "horizon_months",
+        "observed_at_months",
+        "censoring",
+        "definition"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "horizon_months": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Months from approval over which a charge-off counts (60 for the 5-year target)."
+        },
+        "observed_at_months": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The target is read for a vintage only when its 5-year mark has been observed."
+        },
+        "censoring": {
+          "type": "string",
+          "enum": [
+            "exempt-right-censored",
+            "excluded"
+          ]
+        },
+        "definition": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The 5-year charge-off target and how loans without an observed outcome (EXEMPT, still active) are handled."
+    },
+    "c03DataStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary_source",
+        "files_as_of",
+        "fiscal_year_start",
+        "notice"
+      ],
+      "properties": {
+        "primary_source": {
+          "type": "string"
+        },
+        "files_as_of": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "fiscal_year_start": {
+          "type": "string",
+          "description": "Month and day the SBA fiscal year starts (10-01)."
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        }
+      }
+    },
+    "c03CohortWindow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "first_fy",
+        "last_fy"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "first_fy": {
+          "type": "integer",
+          "minimum": 1991
+        },
+        "last_fy": {
+          "type": "integer",
+          "minimum": 1991
+        }
+      }
+    },
+    "c03Coefficient": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "estimate",
+        "std_error"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "estimate": {
+          "type": "number"
+        },
+        "std_error": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "c03Rung": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rung_id",
+        "kind",
+        "covariates",
+        "coefficients",
+        "training_cutoff",
+        "engine"
+      ],
+      "properties": {
+        "rung_id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "covariates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "coefficients": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c03Coefficient"
+          }
+        },
+        "training_cutoff": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "engine": {
+          "type": "string"
+        }
+      },
+      "description": "A PD rung of the existing engine ladder, fitted on the training window."
+    },
+    "c03VintageDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "basis",
+        "fiscal_year_start",
+        "label"
+      ],
+      "properties": {
+        "basis": {
+          "type": "string"
+        },
+        "fiscal_year_start": {
+          "type": "string"
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        }
+      }
+    },
+    "c03Fit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "vintage_definition",
+        "target",
+        "training",
+        "cohort_windows",
+        "ladder",
+        "data_status"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "vintage_definition": {
+          "$ref": "#/$defs/c03VintageDefinition"
+        },
+        "target": {
+          "$ref": "#/$defs/c03Target"
+        },
+        "training": {
+          "$ref": "#/$defs/c03Training"
+        },
+        "cohort_windows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c03CohortWindow"
+          },
+          "minItems": 1
+        },
+        "ladder": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c03Rung"
+          },
+          "minItems": 1
+        },
+        "data_status": {
+          "$ref": "#/$defs/c03DataStatus"
+        }
+      },
+      "description": "C03 models: the vintage definition, the target, the training window, the five test cohorts and the PD rungs."
+    }
+  }
+}
