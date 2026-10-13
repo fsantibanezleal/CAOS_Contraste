@@ -66,67 +66,9 @@ appropriate use in decisions (the impact view and the findings record).
 
 ## Executive brief
 
-The problem in its real context, written before any development and in business language, as
-[the template's executive-brief guide (06)](https://github.com/fsantibanezleal/CAOS_PRODUCT_TEMPLATE/blob/v0.05.000/docs/guides/06_executive-brief.md) describes and `scripts/check_sdd.py` checks.
-Transcribed on 2026-10-12 from the executive brief of the product plan, which was written from the problem-context
-dossier of 2026-10-12 under the problem-context-first convention; no claim was changed or added. The brief is written
-for the person accountable for a bank's model risk: the supervisory texts name functions, not job titles (the ECB Guide
-to internal models says the management body and senior management approve the rating and estimation processes; PRA
-SS1/23 gives an accountable senior function the model risk framework and independent validation; an independent
-validation function gives the opinion on each model), and in most banks that is the chief risk officer and the head of
-model validation, a mapping that is this brief's reading and not a quotation. The golden rule it is held to: would the
-person who answers to the supervisor for a bank's models give this thirty more minutes, or delegate it down?
+The executive view of the Introduction is data, kept apart from this document: one file frames the industry problem of defending internal risk models before supervisors, in five sections, with its illustrations and the linked source of every figure, in English and Spanish. It is valid against the shell's `executive.schema.json` 2.0.0, is general and never tied to a client, and is rendered by the shell's `ExecutiveView` as the first view of the Introduction. The standard is CAOS_MANAGE `conventions/problem-context-first.md`.
 
 Data file: `content/executive.json`
-
-### Initiative
-
-The initiative: keep the bank's internal credit and provisioning models defensible to the supervisor through the regime
-changes of 2027, and know what each modelling choice costs in capital before the supervisor does. Why now, with the
-numbers:
-
-- The last time the euro-area supervisor reviewed internal models at scale it ran 200 on-site investigations at 65 banks and raised more than 5,800 findings, about 30% of them of high severity; the models reviewed ended with about 12% more risk-weighted assets (about EUR 275 billion) and a median effect of 51 basis points on the CET1 ratio (source: https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.trim_project_report~aa49bb624c.en.pdf)
-- It has not eased: in 2025 the ECB launched 77 internal model investigations with an average of 16 findings each, almost half of high severity (source: https://www.bankingsupervision.europa.eu/press/other-publications/annual-report/html/ssm.ar2025~6ee989dc7e.en.html)
-- The finding that sits closest to this product: banks "often did not ensure that all appropriate validation analyses and adequate quantitative thresholds were in place, in particular for the back-testing, discriminatory power and stability tests" (ECB, TRIM project report, internal validation, page 30) (source: https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.trim_project_report~aa49bb624c.en.pdf)
-- 2027 changes four regimes at once: the EU output floor reaches 60% (72.5% from 2030; Regulation (EU) 2024/1623, Article 465(1)), the UK's Basel 3.1 rules take effect on 2027-01-01 (PRA PS1/26), Canada's model risk guideline E-23 on 2027-05-01 (OSFI), and credit scoring becomes a high-risk AI system in the EU on 2027-12-02 (Regulation (EU) 2024/1689, Annex III 5(b), as moved by the Digital Omnibus); the EBA projects an average 4.7% increase in Tier 1 minimum required capital once the floor is fully in, and the banks bound by it rising from 2 to 33 (EBA press release, 2026-03-23) (source: https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32024R1623; https://www.bankofengland.co.uk/prudential-regulation/publication/2026/january/implementation-of-the-basel-3-1-final-rules-policy-statement; https://www.osfi-bsif.gc.ca/en/guidance/guidance-library/guideline-e-23-model-risk-management-2027; https://data.consilium.europa.eu/doc/document/PE-30-2026-INIT/en/pdf; https://www.eba.europa.eu/publications-and-media/press-releases/european-banking-sector-enters-period-geopolitical-uncertainty-position-strength)
-- In Chile the Pillar 2 charge reaches 100% on 2027-12-01 and the CMF consulted in August 2026 on opening internal models for provisions and credit risk-weighted assets, which no bank uses today (CMF calendar and informe normativo, as read in dossier 03 sections A.3 and C.3) (source: https://www.cmfchile.cl/portal/principal/623/articles-100285_doc_pdf.pdf; https://www.cmfchile.cl/institucional/legislacion_normativa/normativa_tramite_ver_archivo.php?id=2026080375&seq=1)
-
-### Outcomes
-
-The vision: a validation function that can say, with numbers, how far each of its tests can be trusted and what each
-modelling choice costs, before it signs an opinion.
-
-| capability | business outcome | proof point |
-|---|---|---|
-| It recomputes published supervisory and academic results cell by cell | A number that stands when a supervisor or an auditor re-runs it | 143 of 144 cells of the Basel Committee's Working Paper 14, Tables 7 and 8, reproduced (case page C22, line 173; dossier R1) (source: docs/cases/C22.md) |
-| It measures how often each validation test is wrong | No sound model rejected, and no weak one passed, because of the test | A standard calibration test (Hosmer-Lemeshow) rejects correct PDs 10.98% of the time at a 5% level; the supervisor's discrimination test raises a false alarm 17.0% of the time in the case's setting; both were found by measurement and corrected in the product (case page C22, lines 100 to 158; dossier R7, R8) (source: docs/cases/C22.md) |
-| It prices a modelling choice in capital | The board sees the capital effect of a calibration or a data definition before it is committed | Carrying last year's PD curve unchanged asks 64.8% more capital than recalibrating it; one default definition against another moves the speculative-grade PD from 26.64% to 8.61% and the portfolio's risk weight from 58.0% to 47.5% (case pages C05, lines 84 to 89, and C04, lines 98 to 115; dossier R16, R15) (source: docs/cases/C05.md; docs/cases/C04.md) |
-| It holds a challenger model to the same tests as the champion | Complexity is adopted only where it earns its keep | A monotone gradient-boosted model beats the scorecard by 0.018 AUC on 9,000 held-out records and saves 4.2% of capital, and beats nothing on 300 records (case page C01, lines 52 to 85; dossier R20, R13) (source: docs/cases/C01.md) |
-
-### Positioning
-
-Four value points, each tied to that person's problem (Felipe's four C's are not yet defined in the records; these four
-stand until he gives them).
-
-- **Reproducible**: the supervisor will re-run the number, so every result is recomputed from published inputs with its gap recorded and the opinion does not rest on a figure nobody can rebuild.
-- **Measured**: a test is evidence only as far as its error rates are known, so each test comes with its measured false alarm rate and its power, which is the threshold work the supervisor found missing.
-- **Priced**: a modelling choice is a capital decision, so each calibration, definition and model swap is shown with what it changes in risk-weighted assets and the choice is made knowingly.
-- **Open**: an opinion must be checkable by a third party, so the code, the data sources with their licences, the seeds and the expected ranges are public and the limits are stated on every case.
-
-### Credibility
-
-- Q: Does it reproduce what a supervisor would run?
-  A: For the tests it covers, yes, against published answers: 143 of 144 cells of Working Paper 14, 50 of 54 of a published stability study, and the published calibration and migration tables, each gap recorded (dossier R1 to R4). It covers credit scoring, rating calibration, rating migrations and the tests themselves today; provisions, market, liquidity and operational risk are planned and shown as not built yet.
-- Q: Can I trust its tests?
-  A: You can see how far. 19 of 21 tests hold their stated size; the two that do not are named, with how much they over-reject (dossier R6). Where a widely used test misleads, the product says so and shows the measurement.
-- Q: What does it change in my capital or provisions?
-  A: It shows what a choice changes on public and generated portfolios (the examples above). It does not compute your capital: it runs on no bank's portfolio.
-- Q: How does it fit my model inventory and governance?
-  A: It is a workbench, not an inventory or a workflow system. It records its own models and findings; it does not ingest a bank's inventory.
-- Q: What about machine-learning challengers and the AI rules?
-  A: It tests a monotone boosted model and an explainable additive model beside the scorecard, with paired tests, calibration and capital. It does not certify compliance with the AI Act or any regulation.
-
-Limits: every case runs on public data or on generated data with known truth; no result is a regulatory threshold; a passed test is evidence, not compliance; the product certifies no model, represents no real bank and has no affiliation with any institution or supervisor named here.
 
 ## Research basis
 
@@ -162,7 +104,7 @@ or address.
 | TabPFN is a research challenger on the small cases only, with its weights licence shown | Code Apache-2.0, default weights non-commercial; the v2 weights carry the Prior Labs License | https://doi.org/10.1038/s41586-024-08328-6 |
 | The explainable additive challenger is the EBM | Glass-box GA2M with monotone shape functions | https://arxiv.org/abs/1909.09223 |
 | The four UCI credit datasets are mirror-allowed (CC BY 4.0) and carry the credit-scoring cases | Taiwan cards with six months of history, German credit as the twin | https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients |
-| The executive brief rests on the supervisory record, not on surveys | 77 investigations in 2025, about 16 findings each; no primary source found for fines or inventory sizes | https://www.bankingsupervision.europa.eu/press/other-publications/annual-report/html/ssm.ar2025~6ee989dc7e.en.html |
+| The executive view rests on the supervisory record, not on surveys | 77 investigations in 2025, about 16 findings each; no primary source found for fines or inventory sizes | https://www.bankingsupervision.europa.eu/press/other-publications/annual-report/html/ssm.ar2025~6ee989dc7e.en.html |
 
 Choices with no source because they are engineering, measured in this document instead: the live lane runs TypeScript
 ports with parity tests (Pyodide is not used, and is admitted only by measurement, see `Lanes`), and the page and
