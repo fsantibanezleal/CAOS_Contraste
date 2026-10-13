@@ -17,7 +17,7 @@ from riskvalidation.provisions import staging as S
 from riskvalidation.provisions import term_structure as T
 from riskvalidation.validation import ifrs9 as V
 
-from c06_helpers import ENGINE_FUNCTIONS, engine_logic_findings
+from c06_helpers import engine_logic_findings
 
 ROOT = Path(__file__).resolve().parents[2]
 PACKAGE = ROOT / "data-pipeline" / "pipeline" / "cases" / "c06"

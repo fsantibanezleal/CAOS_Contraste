@@ -14,7 +14,9 @@ SEED = 42
 REPORTING_DATES = ("2006-12-31", "2008-12-31", "2010-12-31", "2019-12-31", "2020-06-30", "2023-06-30")
 RUN_MS = 600_000.0
 DEFAULT_VARIANT = "rd-2020-06"
-MIN_QUARTER_AT_RISK = 1000
+#: a quarter enters the implied systematic factor with at least this many loans at risk (the young book of the first years
+#: has almost no defaults, which is its age and not the cycle)
+MIN_QUARTER_AT_RISK = 50_000
 ENGINES = {"numpy", "scipy", "pandas", "statsmodels", "riskvalidation"}
 #: the money blocks are written exact: their identities close to 1e-6 of the gross amount, and rounding to nine significant
 #: digits would only add noise to them
