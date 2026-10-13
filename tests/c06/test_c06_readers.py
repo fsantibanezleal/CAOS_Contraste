@@ -5,7 +5,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from pipeline.cases.c06 import macro, panel, readers
+from pipeline.cases.c06 import macro, panel
+from pipeline.io import sba as readers
 from pipeline.cases.c06.variant import loan_panel_records
 from pipeline.io import contract as c1
 
