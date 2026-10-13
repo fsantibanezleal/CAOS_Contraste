@@ -6,7 +6,7 @@ import { PlotCard, ViewsRow, pick, useShellLang, useWorkbenchState, type BiText,
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { provenanceOf, REPLAY } from '../model';
 import { Pending } from '../Pending';
-import { ChartOverTable, STAGE_COLOR, STAGE_TEXT, alignTo, money, pct, unionX, MaybeNumber } from './format';
+import { ChartOverTable, STAGE_COLOR, STAGE_TEXT, alignTo, money, pct, unionX, MaybeNumber, segmentLabel } from './format';
 import { outputsOf, type C06Outputs, type C06Sel } from './selection';
 
 const WEIGHTED: BiText = { en: 'Probability-weighted', es: 'Ponderada por probabilidad' };
@@ -65,7 +65,7 @@ export function TermStructureView({ sel }: { sel: C06Sel | null }) {
     <ViewsRow>
       <PlotCard
         fill
-        title={{ en: `${MEASURE[sel.measure].label.en} by scenario, segment ${sel.segment}`, es: `${MEASURE[sel.measure].label.es} por escenario, segmento ${sel.segment}` }}
+        title={{ en: `${MEASURE[sel.measure].label.en} by scenario, ${segmentLabel(sel.segment).en.toLowerCase()}`, es: `${MEASURE[sel.measure].label.es} por escenario, ${segmentLabel(sel.segment).es.toLowerCase()}` }}
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}

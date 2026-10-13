@@ -9,6 +9,7 @@ import type { CaseData } from '../../api/artifacts';
 import { provenanceOf } from '../model';
 import { RailSelect } from './RailSelect';
 import { AccountReadout, C06ContextView, CurveReadout, C06FindingsView, C06VariantsView, SurfaceReadout, WeightReadout } from './C06Common';
+import { segmentLabel } from './format';
 import { StageFlowView, StageSummaryView, WaterfallView, WeightsView } from './ImpactViews';
 import { defaultSel, outputsOf, type C06Sel, type Measure, type Staging, type Surface } from './selection';
 import { NonLinearityView, SicrView, TermStructureView } from './TermViews';
@@ -113,7 +114,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     content: (
       <>
         <ChipGroup id="c06-measure" label={{ en: 'Measure', es: 'Medida' }} options={MEASURES} value={sel.measure} onChange={(id) => setMeasure(id as Measure)} />
-        <RailSelect id="c06-segment" label={{ en: 'Segment', es: 'Segmento' }} options={segments.map((id) => ({ id, label: { en: id, es: id } }))} value={sel.segment} onChange={setSegment} />
+        <RailSelect id="c06-segment" label={{ en: 'Segment', es: 'Segmento' }} options={segments.map((id) => ({ id, label: segmentLabel(id) }))} value={sel.segment} onChange={setSegment} />
         <CurveReadout sel={sel} />
       </>
     ),
@@ -126,7 +127,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <RailSelect
           id="c06-account"
           label={{ en: 'Account', es: 'Cuenta' }}
-          options={o.account_curves.map((a) => ({ id: a.account_id, label: { en: a.account_id, es: a.account_id }, hint: { en: `${a.stage}, segment ${a.segment_id}`, es: `${a.stage}, segmento ${a.segment_id}` } }))}
+          options={o.account_curves.map((a) => ({ id: a.account_id, label: { en: a.account_id, es: a.account_id }, hint: { en: `${a.stage}, ${segmentLabel(a.segment_id).en.toLowerCase()}`, es: `${a.stage}, ${segmentLabel(a.segment_id).es.toLowerCase()}` } }))}
           value={sel.account}
           onChange={setAccount}
         />

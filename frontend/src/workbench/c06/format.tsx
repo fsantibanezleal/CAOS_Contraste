@@ -113,3 +113,14 @@ export function ChartOverTable({ chart, children }: { chart: ReactNode; children
     </div>
   );
 }
+
+/** A loan-term segment of the documents (`term-le-60`, `term-61-120`, `term-121-240`, `term-gt-240`) in words. */
+export function segmentLabel(id: string): { en: string; es: string } {
+  const m = /^term-(le|gt)-(\d+)$/.exec(id);
+  if (m) return m[1] === 'le'
+    ? { en: `Term up to ${m[2]} months`, es: `Plazo hasta ${m[2]} meses` }
+    : { en: `Term over ${m[2]} months`, es: `Plazo sobre ${m[2]} meses` };
+  const r = /^term-(\d+)-(\d+)$/.exec(id);
+  if (r) return { en: `Term ${r[1]} to ${r[2]} months`, es: `Plazo de ${r[1]} a ${r[2]} meses` };
+  return { en: id, es: id };
+}

@@ -53,7 +53,7 @@ function GroupedBars({ o, sel }: { o: C07Outputs; sel: C07Sel }) {
       <Stage label={{ en: 'Provision by segment under the three regimes', es: 'Provisión por segmento bajo los tres regímenes' }} className="ct-map-stage">
         {({ width, height }) => {
           const left = 64;
-          const bottom = 40;
+          const bottom = 54;
           const top = 10;
           const plotW = Math.max(width - left - 8, 40);
           const plotH = Math.max(height - top - bottom, 40);
@@ -94,7 +94,17 @@ function GroupedBars({ o, sel }: { o: C07Outputs; sel: C07Sel }) {
                         />
                       );
                     })}
-                    <text className="dg-axis-label" x={left + gi * gw + gw / 2} y={height - 22} textAnchor="middle">{fitLabel(label(r.segment_id), gw - 6, 12, 1).lines[0]}</text>
+                    {(() => {
+                      const fit = fitLabel(label(r.segment_id), gw - 6, 12, 2);
+                      return (
+                        <text className="dg-axis-label" x={left + gi * gw + gw / 2} y={height - 38} textAnchor="middle">
+                          <title>{label(r.segment_id)}</title>
+                          {fit.lines.map((ln, li) => (
+                            <tspan key={li} x={left + gi * gw + gw / 2} dy={li === 0 ? 0 : 14}>{ln}</tspan>
+                          ))}
+                        </text>
+                      );
+                    })()}
                   </g>
                 );
               })}
@@ -170,7 +180,7 @@ export function ThreeRegimeView({ sel }: { sel: C07Sel | null }) {
               {o.regimes.flatMap((r) =>
                 r.unallocated_lines.map((u) => (
                   <li key={`${r.regime}-${u.id}`} data-unallocated={u.id}>
-                    {`${pick(regimeName(r.regime, r.label), lang)}: ${pick(u.label, lang)}, ${money(u.amount, lang, cur)}`}
+                    {`${pick(regimeName(r.regime, r.label), lang)}: ${pick(u.label, lang)}, ${u.amount === 0 ? (lang === 'es' ? 'no se requiere' : 'none needed') : `${money(u.amount, lang, cur)} ${cur}`}`}
                   </li>
                 )),
               )}
