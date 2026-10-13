@@ -33,11 +33,14 @@ is marked UNVERIFIED here and is not silently decided.
 - Dataclasses are frozen. A function that cannot compute a value because data is missing raises `ValueError` with the reason, or (a
   validation function) returns the `not_evaluated` light with its reason in `notes` and `statistic`, `p_value` and `metric` all null; it never returns a placeholder number.
 - The parameters of a light rule that are not alphas (`rho_green`, `rho_amber`, `gap_amber`, `gap_red`, `tolerance`) travel in the row's `extras["thresholds"]`, a mapping from the parameter name to its value, beside `alpha_amber` and `alpha_red`; a view reads them from there to explain a light.
+- Zero spread: a sample has zero spread when its standard deviation is at most `1e-12 * max(1, m)` with `m` the largest absolute value of the gaps or estimates it is computed from (a scale-aware float tolerance); every clause below that speaks of zero spread or `sd = 0` uses this test.
+- Amended 2026-10-13 (engine review, riskvalidation U6-E, deviation 6): the zero-spread tolerance above is stated; before it the clauses said `sd = 0` without defining equality in floating point.
 - Tolerance: every golden value states its own tolerance or is exact; a golden stated to six decimals holds to `5e-7`.
-- A validation function returns one `TestResult` of `riskvalidation`, serialised by `dataclasses.asdict` into a row that validates
+- A validation function returns one `TestResult` of `riskvalidation`, serialised by `TestResult.to_dict()` into a row that validates
   against `common/test-result` (the schema `docs/contracts/schemas/common/test-result.schema.json`): `test_id`, `model_id`,
   `segment`, `statistic`, `p_value`, `metric`, `h0`, `alternative`, `policy_version`, `alpha_amber`, `alpha_red`, `light`, `n`,
   `n_events`, `inputs_hash`, `reference`, `notes`, `extras`.
+- Amended 2026-10-13 (engine review, riskvalidation U6-E, finding F3): the row is serialised by `TestResult.to_dict()` (core/result.py), not `dataclasses.asdict`: for a `not_evaluated` result `asdict` gives `statistic = nan`, whereas `to_dict()` gives null, which the `not_evaluated` rule requires.
 
 ## How the documents use the engine
 
@@ -206,9 +209,10 @@ class LgdFit:
     kind: str                  # "ols", "fractional-logit", "beta", "hurdle", "tobit"
     names: tuple[str, ...]     # one per column of X
     coefficients: np.ndarray   # (K,) of the mean model (for a hurdle: the severity stage)
-    extras: dict               # beta: "phi", "epsilon"; hurdle: "stage1_coefficients"; tobit: "sigma"
+    extras: dict               # beta: "phi", "epsilon"; hurdle: "stage1_coefficients", "severity_columns"; tobit: "sigma"
 ```
 
+- Amended 2026-10-13 (engine review, riskvalidation U6-E, deviation 2): the hurdle `extras` also hold `severity_columns`, the indices of the severity-stage columns in `X`.
 - Units: coefficients on the link scale of the kind (identity for ols and tobit, logit for the rest).
 - Invariants: `kind` is one of the five strings (the document `ladder[].kind` adds `gradient-boosted` and `cure-decomposition`, which
   are not fits of this class); a fit stores everything `predict_lgd` needs and nothing else.
@@ -257,9 +261,10 @@ def fit_hurdle(X: np.ndarray, y: np.ndarray, X_severity: np.ndarray | None = Non
 ```
 
 - Units: stage 1 is a logit of `y > 0` on `X`; stage 2 is a fractional logit of `y` on `X_severity` (default `X`) among the exposures with
-  `y > 0`; `E[LGD] = Pr(loss > 0) * E[LGD | loss > 0]` (Leow and Mues 2012; Tong, Mues and Thomas 2013; dossier 04 F.3).
+  `y > 0`; `X_severity` must consist of columns of `X` (matched by value, the column indices kept in `extras["severity_columns"]`), because `predict_lgd(fit, X)` receives only `X`; any other `X_severity` raises `ValueError`; `E[LGD] = Pr(loss > 0) * E[LGD | loss > 0]` (Leow and Mues 2012; Tong, Mues and Thomas 2013; dossier 04 F.3).
 - Invariants: `coefficients` are the stage 2 ones and `extras["stage1_coefficients"]` the stage 1 ones; fewer than `min_positive` (default 5) positive-loss
-  exposures raise `ValueError`; predictions in [0, 1].
+  exposures raise `ValueError`, and so does a sample in which every `y` is positive (stage 1 then has no finite maximiser); predictions in [0, 1].
+- Amended 2026-10-13 (engine review, riskvalidation U6-E, deviations 2 and 9): the severity-column rule (`extras["severity_columns"]`) and the every-`y`-positive refusal are stated; the implementation already behaved so.
 - Golden: intercept-only `X = [[1], [1], [1], [1]]`, `y = [0, 0.4, 0.4, 0.4]`: stage 1 probability `0.75` (coefficient `ln 3 = 1.098612`),
   stage 2 mean `0.4` (coefficient `ln(0.4 / 0.6) = -0.405465`), prediction `0.75 * 0.4 = 0.3` to 1e-9. (The golden runs with `min_positive=3`.)
 
@@ -370,7 +375,8 @@ def reference_indices(design: str, default_index: int, cohort_start_index: int |
   result (R,) int64.
 - Invariants: fixed horizon gives `[t_d - horizon]`; cohort gives `[cohort_start_index]` (required, `ValueError` otherwise; the start of the
   calendar cohort that contains `t_d`); variable horizon gives `t_d - horizon + k * step` for `k = 0 .. n_reference - 1`; a negative index
-  raises `ValueError` (the reference date precedes the first observation).
+  raises `ValueError` (the reference date precedes the first observation); every reference index must lie before `default_index` (a reference at or after `t_d` is not a reference date, dossier 04 G.1), so a call that would give an index `>= default_index` raises `ValueError`, which includes a `cohort_start_index == default_index` (a default in the first month of its cohort).
+- Amended 2026-10-13 (engine review, riskvalidation U6-E, deviation 4): the reference-before-default rule and the cohort-start case are stated; the bake must handle a default in the first month of its cohort.
 - Golden: `default_index = 21`: fixed horizon `[9]`; cohort with `cohort_start_index = 12` `[12]`; variable horizon `[9, 12, 15, 18]`.
 
 ### `riskvalidation.lgd_ead.ccf.ccf_observations`
@@ -446,7 +452,8 @@ def to_us_terms(drawn: np.ndarray, limit: np.ndarray, ead: np.ndarray) -> tuple[
 
 - Units: money (A,); returns `(leq, ccf_us, eadf)`: `leq = (ead - drawn) / (limit - drawn)` (the EU CCF), `ccf_us = ead / drawn` (Qi 2009: EAD as a share of
   the outstanding amount) and `eadf = ead / limit` (EAD as a share of the credit line).
-- Invariants: undefined entries (`limit == drawn`, `drawn == 0`) are NaN; the function exists so a page can show both conventions and never mix them.
+- Invariants: undefined entries (`limit <= drawn`, `drawn == 0`) are NaN, consistent with `ccf_observations` (an undrawn amount that is not positive gives NaN); the function exists so a page can show both conventions and never mix them.
+- Amended 2026-10-13 (engine review, riskvalidation U6-E, deviation 3): the NaN condition is `limit <= drawn`, not only `limit == drawn`.
 - Golden: `(600, 1000, 900) = (0.75, 1.5, 0.9)`.
 
 ### `riskvalidation.lgd_ead.ccf.small_undrawn_rule`
@@ -482,11 +489,12 @@ def fit_direct_ead(X: np.ndarray, ead: np.ndarray, limit: np.ndarray,
                    names: tuple[str, ...] | None = None) -> EadFit: ...
 ```
 
-- Units: money (N,) for `ead` and `limit` (strictly positive); the target is the EADF `ead / limit`, fitted with a fractional logit (an intercept column in `X`).
+- Units: money (N,): `ead` (N,) finite (zero is allowed, as in the golden; a negative `ead` is clipped to an EADF of 0 and counted in `n_clipped_below`) and `limit` (N,) strictly positive; the target is the EADF `ead / limit`, fitted with a fractional logit (an intercept column in `X`).
   Dossier 04 G.3 describes direct EAD models (a zero-adjusted gamma mixture, Tong et al. 2016); that mixture is **not** in 1.0.0 of this contract and
   would be a minor version.
 - Invariants: an EADF outside [0, 1] (an overlimit EAD) is clipped to [0, 1] for the fit and counted in `extras["n_clipped_below"]` and `["n_clipped_above"]`,
   never silently; the clipped counts are reported in the document as `ead_models[].n_clipped_below` and `n_clipped_above` (integers for a `direct-ead` model, null for the other kinds).
+- Amended 2026-10-13 (engine review, riskvalidation U6-E, deviation 1): `ead` need only be finite and `limit` strictly positive; before it the clause said both were strictly positive, which the golden (`ead = 0`) contradicts, and a negative `ead` is counted in `n_clipped_below`.
 - Golden: `X = [[1, 0], [1, 0], [1, 1], [1, 1]]`, `ead = [0, 500, 500, 1000]`, `limit = [1000, 1000, 1000, 1000]` gives `coefficients = [-1.098612, 2.197225]`
   (the `fit_fractional_logit` golden, since the EADF is `[0, 0.5, 0.5, 1.0]`).
 
@@ -702,7 +710,8 @@ def ead_backtest_by_band(predicted_ead: np.ndarray, realised_ead: np.ndarray, ut
 - Units: money (N,) for predicted and realised EAD in the same currency (the currency travels in the document, `ead_backtest.currency`), `utilisation` (N,) the drawn share of the limit at the reference
   date, `band_edges` (B + 1,) strictly increasing; bands are `[edge_i, edge_{i+1})`, the last closed; a utilisation outside the edges raises `ValueError`. `test_id = "lgd_ead.ead_backtest_by_band"`. `h0`: predicted EAD equals realised EAD in every utilisation band (back-tested in currency, not only as a CCF; dossier 04 G.3).
 - Invariants: per band `gap = sum(predicted) - sum(realised)` and `relative_gap = gap / sum(realised)`; `statistic` is the relative gap of the total; `metric = max_band |relative_gap|`;
-  `extras["bands"]` lists `lower`, `upper`, `n`, `predicted_ead`, `realised_ead`, `gap`, `relative_gap`; a band with no observation is listed with null values and does not enter the metric; when the realised EAD of a band is 0 its `relative_gap` is null and the band does not enter the metric (its `gap` is still listed), and when the total realised EAD is 0 `statistic` is null; when every band is empty the test gives `not_evaluated`; `p_value` is null; `extras["thresholds"]` carries `gap_amber` and `gap_red`.
+  `extras["bands"]` lists `lower`, `upper`, `n`, `predicted_ead`, `realised_ead`, `gap`, `relative_gap`; a band with no observation is listed with null values and does not enter the metric; when the realised EAD of a band is 0 its `relative_gap` is null and the band does not enter the metric (its `gap` is still listed), and when the total realised EAD is 0 `statistic` is null; when every band is empty, or there is no realised EAD in any band, the test gives `not_evaluated` (the metric would be a maximum over an empty set); `p_value` is null; `extras["thresholds"]` carries `gap_amber` and `gap_red`.
+- Amended 2026-10-13 (engine review, riskvalidation U6-E, deviation 5): bands that are not empty but carry no realised EAD anywhere give `not_evaluated`.
 - Light: green when `metric <= gap_amber` (0.10), amber when `metric <= gap_red` (0.25), red above.
 - Golden: `predicted_ead = [900, 500]`, `realised_ead = [800, 600]`, `utilisation = [0.2, 0.8]`, `band_edges = [0, 0.5, 1.0]`: band 1 `relative_gap = 0.125`, band 2 `relative_gap = -0.166667`,
   `statistic = 0.0`, `metric = 0.166667`, `light = "amber"`.
