@@ -18,7 +18,7 @@ SEED = 20261012
 
 
 def make_sample(data_root: str | Path, out: str | Path, n: int = N_ROWS, seed: int = SEED) -> tuple[Path, list[Path]]:
-    from .readers import FED_COLUMNS, FED_FILES, SBA_COLUMNS, SBA_FILES
+    from ...io.sba import FED_COLUMNS, FED_FILES, SBA_COLUMNS, SBA_FILES
 
     root, out = Path(data_root), Path(out)
     frames = [pd.read_csv(root / "raw" / "sba-foia" / f, usecols=list(SBA_COLUMNS), dtype=str, keep_default_na=False) for f in SBA_FILES]

@@ -16,7 +16,7 @@ from typing import Any
 import pytest
 
 import contract_schemas as cs
-from test_u5_contracts import API, EXPECTED, ROOT, ROWS, SCHEMAS, api_sections, load
+from test_u5_contracts import API, EXPECTED, ROOT, ROW_IDS, SCHEMAS, api_sections, catalog_rows, load
 
 C06 = "c06/variant-reporting-date"
 C07 = "c07/variant-three-regime"
@@ -375,10 +375,10 @@ def test_the_waterfall_sign_is_stated() -> None:
 
 
 def test_the_rows_fragment_passes_the_catalog_checker_and_cites_tests_that_exist() -> None:
-    res = subprocess.run([sys.executable, str(ROOT / "scripts" / "check_contracts.py"), str(ROWS),
+    res = subprocess.run([sys.executable, str(ROOT / "scripts" / "check_contracts.py"), str(ROOT / "docs" / "contracts" / "catalog.md"),
                           "--repo-root", str(ROOT)], capture_output=True, text=True, cwd=ROOT)
     assert res.returncode == 0, res.stdout + res.stderr
-    text = ROWS.read_text(encoding="utf-8")
+    text = "\n".join(catalog_rows(ROW_IDS))
     for path, name in re.findall(r"(tests/[\w/\.]+\.py)::(\w+)", text):
         src = (ROOT / path).read_text(encoding="utf-8")
         assert re.search(rf"^def {name}\(", src, flags=re.M), f"{path}::{name} does not exist"

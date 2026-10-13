@@ -17,7 +17,7 @@ import time
 import urllib.error
 import urllib.request
 
-ROUTES = ("", "introduction", "methodology", "implementation", "experiments", "benchmark")
+ROUTES = ("", "introduction", "app", "methodology", "implementation", "experiments", "benchmark")
 
 
 def get(url: str) -> tuple[int, str, bytes]:

@@ -113,7 +113,7 @@ function ApplicantReadout({ sel }: { sel: Selection | null }) {
 }
 
 /** The cases whose rail leaves the variant's title out to fit 1280 x 800 (see the variant list below). */
-const DENSE_RAIL = new Set(['C04', 'C05']);
+const DENSE_RAIL = new Set(['C04', 'C05', 'C22']);
 
 /** The live scores of the chosen applicant, from the committed points table and EBM export alone. */
 export function liveScores(sel: Selection | null) {
@@ -186,7 +186,7 @@ export function Workbench() {
         .filter((a) => a.role === 'variant')
         // the selected variant's title under the chips, a one-line note by the shell's design; the rails of C04 (nine
         // variants, three sections) and C05 (three sections with chip groups) scrolled at 1280 x 800 with titles of two
-        // lines, C04's in every font and C05's in the gate's wide font (ADR-0071 rule 6): there the title is in the
+        // lines, C04's in every font and C05's and C22's in the gate's wide font (ADR-0071 rule 6): there the title is in the
         // Variants and Context groups
         .map((a) => ({ id: a.variant_id, label: a.short_title, note: DENSE_RAIL.has(data.manifest.case_id) ? undefined : a.title, lane: 'replay' as const }))
     : [];

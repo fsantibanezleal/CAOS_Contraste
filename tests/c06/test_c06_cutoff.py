@@ -9,7 +9,7 @@ import pytest
 
 from pipeline.cases.c06 import ladder, macro, panel
 from pipeline.cases.c06.panel import EXIT_DEFAULT, EXIT_MATURED, EXIT_OPEN, EXIT_PAID
-from pipeline.cases.c06.readers import FedTables
+from pipeline.io.sba import FedTables
 from pipeline.cases.c06.run import run_date
 
 R = np.datetime64("2010-12-31")

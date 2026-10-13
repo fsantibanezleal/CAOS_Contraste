@@ -15,7 +15,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-from .readers import FedTables
+from ...io.sba import FedTables
 
 MACRO_VARS = ("unemployment_rate", "real_gdp_growth", "prime_rate")
 MACRO_UNITS = {"unemployment_rate": "percent", "real_gdp_growth": "percent, annualised", "prime_rate": "percent"}

@@ -1,4 +1,4 @@
-# Vendored from fsantibanezleal/CAOS_PRODUCT_TEMPLATE at tag v0.05.000, path scripts/check_sdd.py. Update from the source, never edit here.
+# Vendored from fsantibanezleal/CAOS_PRODUCT_TEMPLATE at tag v0.07.000, path scripts/check_sdd.py. Update from the source, never edit here.
 #!/usr/bin/env python3
 """T10, the SDD gate (ADR-0075, ADR-0078): a design document exists, and every requirement names a gate that is real.
 
@@ -10,11 +10,21 @@ only appears in a string, a comment, another test's body or a skipped test.
 
 Checks, in increasing strength:
 
-0. **The executive brief** (CAOS_MANAGE ``conventions/problem-context-first.md``): a ``## Executive brief`` section right
-   after ``Problem and non-goals`` with the parts Initiative, Outcomes, Positioning and Credibility in order, none
-   empty; Initiative with a quantified statement and its source or assumption; Outcomes a three-row table whose proof
-   points each hold a number and a source; Positioning exactly four bullets; Credibility three questions with
-   answers and a ``Limits:`` line; no equation anywhere in it. Guide: ``docs/guides/06_executive-brief.md``.
+0. **The executive view** (CAOS_MANAGE ``conventions/problem-context-first.md``, decided 2026-10-13; template 0.07.000): the
+   product commits ``content/executive.json``, valid against the shell's ``executive.schema.json`` version 2.0.0 (read from
+   ``frontend/node_modules/@fasl-work/caos-app-shell/src/content/``; without ``npm ci``, or with an older schema, the check
+   fails and says so, never passes), each finding naming the field path. The file frames a problem space for a decision
+   maker: a title, a key statement, headline figures, the five sub-tabs (pain, context, situation, trends, proposal) at their
+   floors and the three illustrations (pain, situation, proposal). On top of the schema the check holds what a schema
+   cannot say, the same rules as the shell's ``validateExecutive``: the 4 C's in order, the weights of the causes at most
+   100, every action owner a role of the situation, the writing limits in both languages (30 words a sentence, one
+   sentence for key messages, captions, actions and checks, two for the key statement, 25 words a paragraph, no equation,
+   no inline citation, no promotional or client-bound wording), and the sources: unique ids, every citation names one,
+   every source is cited, each an https link whose title and note cite no file. The three illustration files exist under
+   ``frontend/public/`` as SVG documents with a viewBox. The SDD's ``Executive brief`` section sits right after
+   ``Problem and non-goals``, once, and names the file in a ``Data file: content/executive.json`` line; it restates nothing of
+   the view (no part heading, list, table, sentence of the file, or more than 120 words).
+   Guide: ``docs/guides/06_executive-brief.md``. Needs the ``jsonschema`` package (``requirements-dev.txt``).
 1. ``docs/design/SDD.md`` has the twelve sections the convention requires, each a level-2 heading ``## <name>`` (an
    optional ``N.`` prefix) outside code fences and HTML comments, once, in order, each with a non-blank line under it;
    a research basis citing at least three distinct sources (a DOI counts once however it is written; example,
@@ -48,11 +58,12 @@ while verifying nothing, which is the failure the rule exists for.
 reviewed with the pull request that adds it; otherwise the status is a finding. A planned feature still names the file
 each gate will have (counted apart, never reported as a real gate).
 
-Standard library only; exit 1 on any finding. Usage: ``python scripts/check_sdd.py [repo_root]``.
+Standard library plus ``jsonschema`` (for check 0); exit 1 on any finding. Usage: ``python scripts/check_sdd.py [repo_root]``.
 """
 from __future__ import annotations
 
 import ast
+import json
 import re
 import sys
 from pathlib import Path
@@ -67,21 +78,28 @@ SECTIONS = (
     "Method ladder", "Cases", "Oracles", "Deploy driver", "Risks and kill criteria", "ADR fit",
 )
 BRIEF = "Executive brief"
-BRIEF_PARTS = ("Initiative", "Outcomes", "Positioning", "Credibility")
 GUIDE = "see docs/guides/06_executive-brief.md"
-OUTCOMES_HEAD = ["capability", "business outcome", "proof point"]
+EXEC_FILE = "content/executive.json"
+EXEC_SCHEMA = "frontend/node_modules/@fasl-work/caos-app-shell/src/content/executive.schema.json"
+EXEC_SCHEMA_VERSION = "2.0.0"  # the contract: the shell 0.13.0 schema; an older installed schema is refused
+# The 4 C's of the proposal, in order (Felipe, 2026-10-13): the shell's FOUR_CS names, English and Spanish.
+FOUR_CS = (("Choice", "Elección"), ("Context", "Contexto"), ("Cost", "Costo"), ("Control", "Control"))
+MAX_WORDS = 30
+MIN_PARAGRAPH_WORDS = 25
+EQUATION = re.compile(r"\$|\\\(|\\\[|\\[a-zA-Z]+")
+INLINE_CITATIONS = (re.compile(r"\(\s*Source", re.I), re.compile(r"\[\d+\]"), re.compile(r"\(\s*ECB"), re.compile(r"\(\w[^()]*\d{4}\)"))
+FILE_CITATIONS = (re.compile(r"\bfile\s*\d", re.I), re.compile(r"\barchivo\s*\d", re.I), re.compile(r"\.pdf\b", re.I), re.compile(r"\bPublished on\b", re.I))
+PROMOTIONAL = tuple(re.compile(p, re.I) for p in (
+    r"\bour\s+clients?\b", r"\bnuestros?\s+clientes?\b", r"\bcontact\s+us\b", r"\bcontáctenos\b", r"\bbuy\b", r"\bcomprar\b",
+    r"\bprices?\b", r"\bprecios?\b", r"\boffers?\b", r"\bofertas?\b"))
+DATA_LINE = re.compile(rf"^\s*Data file: `?{re.escape(EXEC_FILE)}`?\s*$")
+BRIEF_MAX_WORDS = 120  # the section names the file and says why; the view itself is the file
 FENCE = re.compile(r"^\s*(```+|~~~+)")
 HEADING = re.compile(r"^(?P<hashes>#{2,3}) (?P<title>.+?)\s*$")
 LEVEL2 = re.compile(r"^## (?:\d+[.)]?\s+)?(?P<title>.+?)\s*$")
-NUMBER = re.compile(r"(?<![A-Za-z\d-])\d")
-CITED = re.compile(r"^(?P<claim>.+?)\s*\((?P<kind>source|assumption):\s*(?P<value>.+)\)\s*[.]?\s*$")
 BULLET = re.compile(r"^\s*[-*+] ")
-VALUE_POINT = re.compile(r"^[-*+] \*\*[^*]+\*\*: \S.*$")
-QUESTION = re.compile(r"^\s*- Q: \S")
-ANSWER = re.compile(r"^\s+A: \S")
-LIMITS = re.compile(r"^\s*Limits: \S")
+NUMBERED = re.compile(r"^\s*\d+[.)] ")
 MIN_SOURCES = 3
-CLAIM_WORDS, INTRO_WORDS, OUTCOME_WORDS, VALUE_WORDS, QA_WORDS, LIMITS_WORDS = 3, 8, 3, 6, 3, 5  # distinct words that say something
 SOURCE = re.compile(r"\b10\.\d{4,9}/[^\s)>\]|]+|https?://[^\s)>\]|]+")
 UNVERIFIED = re.compile(r"^\s*(?:[-*+]\s+)?(?:\*\*)?UNVERIFIED(?:\*\*)?\s*:", re.M)
 PLACEHOLDER = {"-", "?", "todo", "unknown", "n/a", "na", "tbd", "..."}
@@ -100,12 +118,6 @@ PLACEHOLDER_HOSTS = {"localhost", "127.0.0.1", "0.0.0.0", "example.com", "exampl
 FILLER = {"tbd", "tba", "tbc", "todo", "fixme", "xxx", "lorem", "ipsum", "dolor", "sit", "amet", "placeholder", "unknown", "n/a", "na",
           "none", "foo", "bar", "baz", "asdf", "qwerty", "x", "y", "z"}
 TOKEN = re.compile(r"[A-Za-z0-9%][A-Za-z0-9%.'/-]*")
-# what a number is not: a date, a year after a preposition or standing alone, or an index (``Step 1``, ``item 2``, ``3.``)
-DATE = re.compile(r"(?<![\d-])\d{4}-\d{2}(?:-\d{2})?(?![\d-])")
-YEAR_AFTER = re.compile(r"(?i)\b(?:since|in|by|from|until|till|during|before|after|as of|year|fy|circa)\s+(?:19|20|21)\d{2}\b")
-YEAR_ALONE = re.compile(r"(?<![\w.,-])(?:19|20|21)\d{2}(?=\s*(?:$|[.,;:)]))")
-ENUMERATOR = re.compile(r"(?i)(?<![A-Za-z\d-])(?:step|item|point|part|phase|row|table|figure|fig|section|chapter|question|q)\.?\s*\d+\b")
-LEADING_INDEX = re.compile(r"^\s*\(?\d+[.):]\s+")
 DOI_REGISTRANT_PLACEHOLDER = re.compile(r"^(?:0+|1234|12345|9999)$")
 DOI_SUFFIX_PLACEHOLDER = re.compile(r"(?i)^(?:fake|example|test|placeholder|tbd|todo|xxx|dummy|made-?up|lorem)")
 LOCAL_ONLY = re.compile(r"local-only:\s*(?P<why>[^|;]+)", re.I)
@@ -253,7 +265,7 @@ def sections_findings(text: str) -> list[str]:
     return out
 
 
-# ---------------------------------------------------------------- the executive brief
+# ---------------------------------------------------------------- the executive view
 
 def outline(text: str) -> list[tuple[int, str, int]]:
     """Level-2 and level-3 headings of already-stripped text, as (level, title, line index). A level-2 title has its
@@ -283,61 +295,339 @@ def too_short(text: str, floor: int) -> bool:
     return len(words(text)) < floor
 
 
-def is_number(text: str) -> bool:
-    """Digits standing alone (a unit may follow); the 0 of R0 or the 19 of COVID-19 is part of a name, not a number, and
-    neither is a date, a year (``since 2026``, ``in 2026`` or a lone ``2026``) or an index (``Step 1``, ``item 2``, ``3.``)."""
-    cleaned = LEADING_INDEX.sub("", text)
-    for pattern in (DATE, YEAR_AFTER, ENUMERATOR, YEAR_ALONE):
-        cleaned = pattern.sub(" ", cleaned)
-    return NUMBER.search(cleaned) is not None
+def load_executive() -> tuple[dict | None, list[str]]:
+    """The parsed ``content/executive.json`` and what is wrong with reading it."""
+    path = ROOT / EXEC_FILE
+    if not path.is_file():
+        return None, [f"{EXEC_FILE} is missing: the executive view is one data file every product writes first, from its research ({GUIDE})"]
+    try:
+        data = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (ValueError, OSError) as e:
+        return None, [f"{EXEC_FILE} is not valid JSON: {e}"]
+    if not isinstance(data, dict):
+        return None, [f"{EXEC_FILE} is not valid JSON of the executive view: the document must be an object, not {type(data).__name__}"]
+    return data, []
 
 
-def instantiated() -> bool:
-    """A product made from the template carries ``.template-version``; the template itself does not."""
-    return (ROOT / ".template-version").is_file()
-
-
-def cited_findings(text: str, where: str) -> list[str]:
-    """A quantified statement ``<claim with a number> (source: ...)`` or ``(assumption: <reason>)``: what is wrong."""
-    m = CITED.search(text.strip().lstrip("-* ").strip())
-    if m is None:
-        return [f"{where} has no '(source: ...)' or '(assumption: ...)' after the claim"]
-    out: list[str] = []
-    if not is_number(m["claim"]):
-        out.append(f"{where} states no number in its claim (many, significant and several are not numbers; nor is a year or an index)")
-    elif too_short(m["claim"], CLAIM_WORDS):
-        out.append(f"{where} has a claim that is a placeholder or has fewer than {CLAIM_WORDS} distinct words ({m['claim'].strip()[:50]!r})")
-    value = m["value"].strip()
-    if m["kind"] == "assumption":
-        if instantiated():
-            out.append(f"{where} gives an assumption, which a product made from the template (.template-version is present) cannot "
-                       "ship on: replace it with a number from a source, or remove the claim")
-        if len(value.split()) < 5:
-            out.append(f"{where} gives an assumption with fewer than five words of reason ({value!r})")
-        elif too_short(value, 5):
-            out.append(f"{where} gives an assumption whose reason is placeholder words ({value[:50]!r})")
-        return out
-    for part in (p.strip().strip("`").strip() for p in value.split(";")):
-        if re.match(r"10\.\d{4,9}/\S+$", part) or re.match(r"https?://\S+$", part):
-            if canonical_source(part) is None:
-                out.append(f"{where} cites a source that is a placeholder, not a work ({part!r})")
-            continue
-        target = (ROOT / part.split("#")[0]).resolve() if part.split("#")[0] else None
-        if target is None or ROOT not in target.parents or not target.is_file():
-            out.append(f"{where} cites a source that is not a DOI, an http URL or a file in the repository ({part!r})")
+def field_path(parts) -> str:
+    """``outcomes[1].proof.unit`` from the path of a schema error."""
+    out = ""
+    for p in parts:
+        out += f"[{p}]" if isinstance(p, int) else (f".{p}" if out else str(p))
     return out
 
 
-def brief_findings(text: str) -> list[str]:
-    """The executive brief (problem-context-first): its place, four parts in order, each with its own content. Read from
-    the text a reader sees: no fenced block (a ``~~~`` fence is closed only by ``~~~``) and no HTML comment."""
+def schema_findings(data: dict) -> list[str]:
+    """The data against the shell's ``executive.schema.json`` (installed by ``npm ci``), one finding per violation with
+    its field path. A schema that cannot be read, or a validator that is not installed, is a finding: a check that
+    could not run never passes."""
+    schema_path = ROOT / EXEC_SCHEMA
+    if not schema_path.is_file():
+        return [f"{EXEC_SCHEMA} is absent: run 'npm ci' in frontend/ (the shell's schema is the contract of {EXEC_FILE}, and a file "
+                "that was not validated is not accepted)"]
+    try:
+        import jsonschema  # noqa: PLC0415
+    except ImportError:
+        return ["the jsonschema package is not installed: pip install jsonschema==4.26.0 (it is in requirements-dev.txt); "
+                f"{EXEC_FILE} cannot be validated without it"]
+    try:
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        validator = jsonschema.Draft202012Validator(schema)
+    except (ValueError, OSError, jsonschema.SchemaError) as e:
+        return [f"{EXEC_SCHEMA} cannot be read as a JSON Schema: {e}"]
+    if f"version {EXEC_SCHEMA_VERSION}" not in str(schema.get("title", "")):
+        return [f"{EXEC_SCHEMA} is not version {EXEC_SCHEMA_VERSION} (its title says {schema.get('title')!r}): the executive view is written to "
+                f"schema {EXEC_SCHEMA_VERSION} of shell 0.13.0; run 'npm ci' in frontend/ with the pinned shell"]
+    out: list[str] = []
+    for err in sorted(validator.iter_errors(data), key=lambda e: [str(p) for p in e.absolute_path]):
+        where = field_path(err.absolute_path)
+        if err.validator == "required":
+            missing = [k for k in err.validator_value if k not in err.instance]
+            where = field_path([*err.absolute_path, *missing[:1]])
+            out.append(f"{EXEC_FILE}: {where} is required and missing")
+        elif err.validator == "additionalProperties":
+            extra = [k for k in err.instance if k not in err.schema.get("properties", {})]
+            out.append(f"{EXEC_FILE}: {field_path([*err.absolute_path, *extra[:1]])} is not a field of the executive view (nothing else is allowed)")
+        elif err.validator == "anyOf":
+            out.append(f"{EXEC_FILE}: {where or '(file)'} matches none of the allowed forms")
+        else:
+            out.append(f"{EXEC_FILE}: {where or '(file)'}: {err.message[:120]}")
+    return out
+
+
+def sentences_of(text: str) -> list[str]:
+    """A sentence ends at ``.``, ``?`` or ``!`` followed by a space or the end; a decimal point is not an end."""
+    return [s.strip() for s in re.split(r"(?<=[.?!])\s+", text) if s.strip()]
+
+
+def words_in(text: str) -> int:
+    return sum(1 for w in text.split() if re.search(r"[^\W_]", w))
+
+
+def writing_problems(text: str, max_sentences: int | None = None, min_words: int | None = None) -> list[str]:
+    """What breaks the writing limits of the view in one text, as the shell's ``writingProblems`` says it."""
+    out: list[str] = []
+    sentences = sentences_of(text)
+    for s in sentences:
+        n = words_in(s)
+        if n > MAX_WORDS:
+            out.append(f"a sentence of {n} words; the limit is {MAX_WORDS}")
+    if max_sentences is not None and len(sentences) > max_sentences:
+        out.append(f"must be one sentence, has {len(sentences)}" if max_sentences == 1 else f"has {len(sentences)} sentences; the limit is {max_sentences}")
+    if min_words is not None and words_in(text) < min_words:
+        out.append(f"has {words_in(text)} words; a paragraph needs at least {min_words} (no one-line sections)")
+    if EQUATION.search(text):
+        out.append("holds an equation or a TeX marker; the executive view holds none")
+    if any(rx.search(text) for rx in INLINE_CITATIONS):
+        out.append('holds an inline citation; give the source in "sources"')
+    for rx in PROMOTIONAL:
+        m = rx.search(text)
+        if m:
+            out.append(f'holds promotional or client-bound wording ("{m.group(0)}"); the executive view is general, never a client, never a pitch')
+    return out
+
+
+def source_text_problems(text: str, max_sentences: int | None = None) -> list[str]:
+    """A source's title or note: the sentence limit, and no file name or number in place of the link."""
+    out: list[str] = []
+    sentences = sentences_of(text)
+    for s in sentences:
+        n = words_in(s)
+        if n > MAX_WORDS:
+            out.append(f"a sentence of {n} words; the limit is {MAX_WORDS}")
+    if max_sentences is not None and len(sentences) > max_sentences:
+        out.append(f"must be one sentence, has {len(sentences)}")
+    written = re.search(r"https?://", text, re.I) is not None
+    for rx in FILE_CITATIONS:
+        if rx.pattern.startswith(r"\.pdf") and written:
+            continue
+        m = rx.search(text)
+        if m:
+            out.append(f'cites a file name or number in place of the link ("{m.group(0)}"); give the publication as the title and its https link as the url')
+    return out
+
+
+def text_fields(d: dict) -> list[tuple[str, dict, int | None, int | None]]:
+    """Every text field with its path, the most sentences it may hold and the fewest words (the shell's ``executiveTextFields``)."""
+    out: list[tuple[str, dict, int | None, int | None]] = []
+
+    def add(path, text, sentences=None, min_words=None):
+        out.append((path, text, sentences, min_words))
+
+    def figure(base, f):
+        for k in ("heading", "value", "unit"):
+            add(f"{base}.{k}", f[k])
+
+    add("title", d["title"], 1)
+    add("key_statement", d["key_statement"], 2)
+    for i, f in enumerate(d["headline_figures"]):
+        figure(f"headline_figures[{i}]", f)
+    pain, context, situation, trends, proposal = d["pain"], d["context"], d["situation"], d["trends"], d["proposal"]
+    add("pain.key_message", pain["key_message"], 1)
+    for i, p in enumerate(pain["paragraphs"]):
+        add(f"pain.paragraphs[{i}]", p, None, MIN_PARAGRAPH_WORDS)
+    for i, b in enumerate(pain["bearers"]):
+        for k in ("who", "cost", "measure"):
+            add(f"pain.bearers[{i}].{k}", b[k])
+    for i, f in enumerate(pain["figures"]):
+        figure(f"pain.figures[{i}]", f)
+    for i, c in enumerate(pain["causes"]):
+        add(f"pain.causes[{i}].cause", c["cause"])
+    add("context.key_message", context["key_message"], 1)
+    for i, p in enumerate(context["paragraphs"]):
+        add(f"context.paragraphs[{i}]", p, None, MIN_PARAGRAPH_WORDS)
+    add("context.setting", context["setting"])
+    for i, f in enumerate(context["forces"]):
+        add(f"context.forces[{i}].force", f["force"])
+    for i, e in enumerate(context["evidence"]):
+        add(f"context.evidence[{i}].statement", e["statement"], 1)
+    add("situation.key_message", situation["key_message"], 1)
+    for i, r in enumerate(situation["roles"]):
+        for k in ("role", "decides", "needs"):
+            add(f"situation.roles[{i}].{k}", r[k])
+    add("situation.interaction", situation["interaction"], 1)
+    for i, a in enumerate(situation["state_of_the_art"]):
+        for k in ("approach", "achieves", "falls_short"):
+            add(f"situation.state_of_the_art[{i}].{k}", a[k])
+    figure("situation.status", situation["status"])
+    add("situation.status.date", situation["status"]["date"])
+    add("trends.key_message", trends["key_message"], 1)
+    for i, t in enumerate(trends["items"]):
+        add(f"trends.items[{i}].trend", t["trend"])
+        add(f"trends.items[{i}].signal.statement", t["signal"]["statement"], 1)
+        add(f"trends.items[{i}].effect", t["effect"])
+    add("proposal.key_message", proposal["key_message"], 1)
+    for i, p in enumerate(proposal["paragraphs"]):
+        add(f"proposal.paragraphs[{i}]", p, None, MIN_PARAGRAPH_WORDS)
+    for i, c in enumerate(proposal["four_cs"]):
+        add(f"proposal.four_cs[{i}].c", c["c"])
+        add(f"proposal.four_cs[{i}].applies", c["applies"], 1)
+    for i, a in enumerate(proposal["actions"]):
+        add(f"proposal.actions[{i}].action", a["action"], 1)
+        add(f"proposal.actions[{i}].owner", a["owner"])
+        add(f"proposal.actions[{i}].horizon", a["horizon"])
+        add(f"proposal.actions[{i}].check", a["check"], 1)
+    for i, r in enumerate(proposal["risks"]):
+        add(f"proposal.risks[{i}]", r, 1)
+    for i, u in enumerate(proposal["unknowns"]):
+        add(f"proposal.unknowns[{i}]", u, 1)
+    if "handoff" in proposal:
+        add("proposal.handoff", proposal["handoff"], 1)
+    for name in ("pain", "situation", "proposal"):
+        add(f"illustrations.{name}.caption", d["illustrations"][name]["caption"], 1)
+    return out
+
+
+def citations(d: dict) -> list[tuple[str, str]]:
+    """Every citation of a source as (field path, source id), in the order the view shows them."""
+    out = [(f"headline_figures[{i}].source", f["source"]) for i, f in enumerate(d["headline_figures"])]
+    out += [(f"pain.figures[{i}].source", f["source"]) for i, f in enumerate(d["pain"]["figures"])]
+    out += [(f"context.evidence[{i}].source", e["source"]) for i, e in enumerate(d["context"]["evidence"])]
+    out += [(f"situation.state_of_the_art[{i}].source", a["source"]) for i, a in enumerate(d["situation"]["state_of_the_art"])]
+    out.append(("situation.status.source", d["situation"]["status"]["source"]))
+    out += [(f"trends.items[{i}].signal.source", t["signal"]["source"]) for i, t in enumerate(d["trends"]["items"])]
+    return out
+
+
+def rules_findings(d: dict) -> list[str]:
+    """What the schema cannot say, on a structurally sound file: the 4 C's, the weights, the owners, the writing and the sources."""
+    out: list[str] = []
+
+    def add(path: str, message: str) -> None:
+        out.append(f"{EXEC_FILE}: {path}: {message}")
+
+    for i, row in enumerate(d["proposal"]["four_cs"]):
+        en, es = FOUR_CS[i]
+        if row["c"]["en"] != en or row["c"]["es"] != es:
+            found = f'"{row["c"]["en"]}" and "{row["c"]["es"]}"'
+            add(f"proposal.four_cs[{i}].c", f'must be "{en}" in English and "{es}" in Spanish (the 4 C\'s in order); found {found}')
+    total = sum(c["weight"] for c in d["pain"]["causes"])
+    if total > 100:
+        add("pain.causes", f"the weights add to {total} percent; non-overlapping causes add to at most 100")
+    roles = {(r["role"]["en"], r["role"]["es"]) for r in d["situation"]["roles"]}
+    for i, a in enumerate(d["proposal"]["actions"]):
+        if (a["owner"]["en"], a["owner"]["es"]) not in roles:
+            names = ", ".join(f'"{r[0]}"' for r in sorted(roles))
+            add(f"proposal.actions[{i}].owner", f"must be one of the roles of the current situation ({names}), written the same in both languages")
+    for path, text, sentences, min_words in text_fields(d):
+        for lang in ("en", "es"):
+            for m in writing_problems(text[lang], sentences, min_words):
+                add(f"{path}.{lang}", m)
+    ids: dict[str, int] = {}
+    for i, s in enumerate(d["sources"]):
+        if s["id"] in ids:
+            add(f"sources[{i}].id", f'"{s["id"]}" is already the id of sources[{ids[s["id"]]}]')
+        else:
+            ids[s["id"]] = i
+        for lang in ("en", "es"):
+            for m in source_text_problems(s["title"][lang]):
+                add(f"sources[{i}].title.{lang}", m)
+            if "note" in s:
+                for m in source_text_problems(s["note"][lang], 1):
+                    add(f"sources[{i}].note.{lang}", m)
+    cited: set[str] = set()
+    for path, sid in citations(d):
+        if sid not in ids:
+            add(path, f'"{sid}" is not the id of any source (the ids are {", ".join(ids)})')
+        else:
+            cited.add(sid)
+    for i, s in enumerate(d["sources"]):
+        if s["id"] not in cited:
+            add(f"sources[{i}].id", f'"{s["id"]}" is cited by no figure or claim; every source backs a figure or a claim')
+    return out
+
+
+def illustration_findings(data: dict) -> list[str]:
+    """The three illustration files exist under ``frontend/public/`` (the site root the shell fetches them from), inside it,
+    and are SVG documents with a viewBox. What they draw is the shell's gate and the reviewer's judgement."""
+    out: list[str] = []
+    site = (ROOT / "frontend" / "public").resolve()
+    for name, ill in data.get("illustrations", {}).items():
+        files = ill.get("file") if isinstance(ill, dict) else None
+        if isinstance(files, str):
+            files = {"": files}
+        if not isinstance(files, dict):
+            continue
+        for lang, rel in files.items():
+            where = f"illustrations.{name}.file" + (f".{lang}" if lang else "")
+            if not isinstance(rel, str) or rel.startswith(("http://", "https://", "//", "/")):
+                out.append(f"{EXEC_FILE}: {where} must be a path under frontend/public/ ({rel!r})")
+                continue
+            target = (site / rel).resolve()
+            if site not in target.parents:
+                out.append(f"{EXEC_FILE}: {where} leaves frontend/public/ ({rel!r})")
+            elif not target.is_file():
+                out.append(f"{EXEC_FILE}: {where}: frontend/public/{rel} does not exist")
+            else:
+                svg = target.read_text(encoding="utf-8", errors="replace")
+                if not re.search(r"<svg\b[^>]*\bviewBox=\"[^\"]+\"", svg):
+                    out.append(f"{EXEC_FILE}: {where}: frontend/public/{rel} is not an SVG document with a viewBox")
+    return out
+
+
+def executive_findings() -> list[str]:
+    data, out = load_executive()
+    if data is None:
+        return out
+    out = schema_findings(data)
+    if out:  # the later rules read the structure: run them only on a structurally sound file, so a typo never throws
+        return out
+    out += rules_findings(data)
+    out += illustration_findings(data)
+    return out
+
+
+def restated(data: dict | None, body: str) -> list[str]:
+    """Why a brief section restates the view instead of naming its file: a part heading, a list, a table, a copied sentence
+    of the data file, or more than ``BRIEF_MAX_WORDS`` words."""
+    out: list[str] = []
+    lines = [ln for ln in body.splitlines() if ln.strip()]
+    if any(HEADING.match(ln) and ln.lstrip().startswith("###") for ln in lines):
+        out.append("a part heading (the four parts of the old brief are not the standard)")
+    if any(BULLET.match(ln) or NUMBERED.match(ln) for ln in lines):
+        out.append("a list")
+    if any(ln.lstrip().startswith("|") for ln in lines):
+        out.append("a table")
+    if data is not None:
+        flat = " ".join(re.sub(r"[\s`*_]+", " ", body).lower().split())
+        copied = next((s for text in _texts(data) for part in sentences_of(text)
+                       if len((s := " ".join(part.lower().split()).rstrip(".?!")).split()) >= 4 and s in flat), None)
+        if copied:
+            out.append(f"a sentence of {EXEC_FILE} ({copied[:40]!r}...)")
+    prose = [ln for ln in lines if not DATA_LINE.match(ln)]
+    n = len(" ".join(prose).split())
+    if n > BRIEF_MAX_WORDS:
+        out.append(f"{n} words; at most {BRIEF_MAX_WORDS}")
+    return out
+
+
+def _texts(node) -> list[str]:
+    """Every English and Spanish text of the data file (a ``{en, es}`` object), for the restating check."""
+    out: list[str] = []
+    if isinstance(node, dict):
+        if set(node) == {"en", "es"} and all(isinstance(v, str) for v in node.values()):
+            out += list(node.values())
+        else:
+            for k, v in node.items():
+                if k != "sources":
+                    out += _texts(v)
+    elif isinstance(node, list):
+        for v in node:
+            out += _texts(v)
+    return out
+
+
+def brief_findings(text: str, data: dict | None) -> list[str]:
+    """The ``Executive brief`` section: right after ``Problem and non-goals``, once, before ``Research basis``, naming the data
+    file in a ``Data file: content/executive.json`` line and restating nothing of the view. Read from the text a reader
+    sees: no fenced block (a ``~~~`` fence is closed only by ``~~~``) and no HTML comment."""
     text = strip_markup(text, mark_math=True)
     lines = text.splitlines()
     heads = outline(text)
     twos = [(t, i) for lv, t, i in heads if lv == 2]
     names = [t.lower() for t, _ in twos]
     if BRIEF.lower() not in names:
-        return [f"SDD.md has no section {BRIEF!r} (four parts, before any development): {GUIDE}"]
+        return [f"SDD.md has no section {BRIEF!r} (it names {EXEC_FILE} and restates nothing, before any development): {GUIDE}"]
     pos = names.index(BRIEF.lower())
     out: list[str] = []
     if names.count(BRIEF.lower()) > 1:
@@ -348,123 +638,22 @@ def brief_findings(text: str) -> list[str]:
         out.append(f"SDD.md section {BRIEF!r} must come before 'Research basis': {GUIDE}")
     start = twos[pos][1]
     end = twos[pos + 1][1] if pos + 1 < len(twos) else len(lines)
-    body = lines[start + 1:end]
-    parts = [(t, i) for lv, t, i in heads if lv == 3 and start < i < end]
-    found = [t for t, _ in parts]
-    missing = [p for p in BRIEF_PARTS if p not in found]
-    out += [f"SDD.md {BRIEF!r} has no part {p!r}: {GUIDE}" for p in missing]
-    if not missing and found != list(BRIEF_PARTS):
-        out.append(f"SDD.md {BRIEF!r} parts must be in this order: {', '.join(BRIEF_PARTS)}: {GUIDE}")
-    joined = "\n".join(body)
-    if "$" in joined or "\\(" in joined:
-        out.append(f"SDD.md {BRIEF!r} holds an equation ($, \\( or a math block); the brief is business language: {GUIDE}")
-    for n, (title, i) in enumerate(parts):
-        if title not in BRIEF_PARTS:
-            continue
-        stop = parts[n + 1][1] if n + 1 < len(parts) else end
-        part = lines[i + 1:stop]
-        if not "".join(part).strip():
-            out.append(f"SDD.md {BRIEF!r}: {title} is empty: {GUIDE}")
-            continue
-        out += PART_CHECKS[title](part)
+    body = "\n".join(lines[start + 1:end])
+    if not any(DATA_LINE.match(ln) for ln in body.splitlines()):
+        out.append(f"SDD.md {BRIEF!r} has no line 'Data file: {EXEC_FILE}': the executive view is that file, and the SDD names it: {GUIDE}")
+    why = restated(data, body)
+    if why:
+        out.append(f"SDD.md {BRIEF!r} restates the executive view instead of naming its file ({'; '.join(why)}): {GUIDE}")
     return out
-
-
-def initiative_findings(part: list[str]) -> list[str]:
-    out: list[str] = []
-    good = 0
-    prose = " ".join(ln for ln in part if ln.strip() and not BULLET.match(ln) and not ln.strip().startswith("|"))
-    if too_short(prose, INTRO_WORDS):
-        out.append(f"SDD.md Initiative has no introduction of at least {INTRO_WORDS} distinct words naming the owner and the "
-                   f"initiative (a placeholder or a stub does not count): {GUIDE}")
-    for line in part:
-        if not (line.lstrip().startswith("- ") and CITED.search(line)):
-            continue
-        problems = cited_findings(line, f"Initiative statement {line.strip()[2:60]!r}")
-        out += problems
-        good += not problems
-    if good == 0:
-        out.append(f"SDD.md Initiative has no quantified statement: a line '- <claim with a number> (source: <DOI, URL or path>)' or '(assumption: <reason>)': {GUIDE}")
-    return out
-
-
-def outcomes_findings(part: list[str]) -> list[str]:
-    rows = table_rows("\n".join(part), OUTCOMES_HEAD)
-    if rows is None:
-        return [f"SDD.md Outcomes has no table with the columns {' | '.join(OUTCOMES_HEAD)}: {GUIDE}"]
-    out: list[str] = []
-    if len(rows) < 3:
-        out.append(f"SDD.md Outcomes has {len(rows)} rows; at least 3 are required (capability, business outcome, proof point): {GUIDE}")
-    for cells in rows:
-        label = cells[0] if cells and cells[0] else "(unnamed)"
-        if len(cells) != 3 or not all(cells):
-            out.append(f"SDD.md Outcomes row {label!r} has an empty cell")
-            continue
-        if too_short(cells[0], 2):
-            out.append(f"SDD.md Outcomes row {label!r} has a capability that is a placeholder or a stub")
-        if too_short(cells[1], OUTCOME_WORDS):
-            out.append(f"SDD.md Outcomes row {label!r} has a business outcome that is a placeholder or has fewer than {OUTCOME_WORDS} distinct words")
-        out += cited_findings(cells[2], f"SDD.md Outcomes proof point of {label!r}")
-    capabilities = [c[0].strip().lower() for c in rows if c]
-    if len(set(capabilities)) < len(capabilities):
-        out.append(f"SDD.md Outcomes repeats a capability; each row is a different capability: {GUIDE}")
-    return out
-
-
-def positioning_findings(part: list[str]) -> list[str]:
-    bullets = [ln.strip() for ln in part if BULLET.match(ln)]
-    out: list[str] = []
-    if len(bullets) != 4:
-        out.append(f"SDD.md Positioning has {len(bullets)} bullets; exactly 4 are required: {GUIDE}")
-    labels: list[str] = []
-    for b in bullets:
-        if not VALUE_POINT.match(b):
-            out.append(f"SDD.md Positioning bullet {b[:50]!r} is not '- **<value point>**: <the problem of that owner it answers>'")
-            continue
-        label, _, rest = b[2:].partition("**: ")
-        label = label.strip("*")
-        labels.append(label.strip().lower())
-        if too_short(label, 1) or too_short(rest, VALUE_WORDS):
-            out.append(f"SDD.md Positioning bullet {b[:50]!r} is a placeholder or a stub (a value point and at least {VALUE_WORDS} distinct words of the problem it answers)")
-    if len(set(labels)) < len(labels):
-        out.append(f"SDD.md Positioning repeats a value point; the four are different: {GUIDE}")
-    return out
-
-
-def credibility_findings(part: list[str]) -> list[str]:
-    questions: list[str] = []
-    for n, line in enumerate(part):
-        if not QUESTION.match(line):
-            continue
-        nxt = next((ln for ln in part[n + 1:] if ln.strip()), "")
-        if not ANSWER.match(nxt):
-            continue
-        q = line.split("Q:", 1)[1].strip()
-        a = nxt.split("A:", 1)[1].strip()
-        if not too_short(q, QA_WORDS) and not too_short(a, QA_WORDS):
-            questions.append(" ".join(q.lower().split()))
-    out: list[str] = []
-    distinct = len(set(questions))
-    if distinct < 3:
-        out.append(f"SDD.md Credibility has {distinct} different questions with real answers; at least 3 are required ('- Q: ...' then "
-                   f"'  A: ...', each of at least {QA_WORDS} distinct words, no placeholder): {GUIDE}")
-    limits = [ln for ln in part if LIMITS.match(ln)]
-    if not limits:
-        out.append(f"SDD.md Credibility has no 'Limits:' line: {GUIDE}")
-    elif all(too_short(ln.split("Limits:", 1)[1], LIMITS_WORDS) for ln in limits):
-        out.append(f"SDD.md Credibility 'Limits:' is a placeholder or has fewer than {LIMITS_WORDS} distinct words: {GUIDE}")
-    return out
-
-
-PART_CHECKS = {"Initiative": initiative_findings, "Outcomes": outcomes_findings,
-               "Positioning": positioning_findings, "Credibility": credibility_findings}
 
 
 def sdd_findings() -> list[str]:
     if not SDD.is_file():
         return [f"{SDD.relative_to(ROOT).as_posix()} is missing"]
     text = SDD.read_text(encoding="utf-8")
-    out: list[str] = brief_findings(text)
+    data, _ = load_executive()
+    out: list[str] = brief_findings(text, data)
+    out += executive_findings()
     out += sections_findings(text)
     stripped = strip_markup(text)
     research = section_text(stripped, "Research basis")

@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "2.0.0",
+    "version": "3.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "09557a0127a5d9932d526bbe8f00efe12920f23d8068ef4b760d58cdd647adf0"
+    "sha256": "8e3ab236787655cca20a7a491c7b624909775631da70f55d505fae20ebd7d2a0"
   },
   "readiness": {
     "version": "1.0.0",
@@ -123,5 +123,65 @@
     "version": "1.0.0",
     "schema": "docs/contracts/schemas/c01/models.schema.json",
     "sha256": "539649465c24766c73d5ae09355be4ff13b69128bcfb366f49e36a47b5d14607"
+  },
+  "c06-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c06/variant-reporting-date.schema.json",
+    "sha256": "839e27249aac384f977a8c465c524027a50023693744b174d204299129fe47f7"
+  },
+  "c06-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c06/models.schema.json",
+    "sha256": "e36d4635c9434b0f1fa4c5b7c3033c7ac49512b1e6700390e9fad50ab3690ac8"
+  },
+  "c07-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c07/variant-three-regime.schema.json",
+    "sha256": "11e400cfc560f094f8c49a8cf8cdba10fd4a85122d8ceb3a75b4cfadf16d7413"
+  },
+  "c07-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c07/models.schema.json",
+    "sha256": "9427cbbbc9ed3c4525f69d2b0ce209f37f1db835bb282730439f386300f72678"
+  },
+  "engine-provisions-api": {
+    "version": "1.0.1",
+    "schema": "docs/contracts/engine/provisions-api.md",
+    "sha256": "e1c93696f989676a339bbb69d48bbf347ffd41c3f2a0e58ae41f8ab56e0d8b0d"
+  },
+  "c03-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c03/variant-vintage-cohort.schema.json",
+    "sha256": "de49f0af9aeb13e608332d5db4f71f2f0d7524ef7afc2f90851b446d6f3580ec"
+  },
+  "c03-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c03/models.schema.json",
+    "sha256": "ee07f14472df56680ee59e90cec8c4f999ffeb080cac6569ad8d792d88eebd68"
+  },
+  "c08-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c08/variant-default-cohort.schema.json",
+    "sha256": "eb69b3fa898e539099de071bd895a7e6120e563d9d278e3e404c935c04fdeb47"
+  },
+  "c08-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c08/models.schema.json",
+    "sha256": "9edf6f09ee9cd6ee09757e8b92336b53df58aef51aa64ff94e891a312dfb4e83"
+  },
+  "c09-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c09/variant-acceleration-level.schema.json",
+    "sha256": "1e621f8efe6309ea13d2c4c18a13a9afec186ab81af9dd1895245a9525642180"
+  },
+  "c09-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c09/models.schema.json",
+    "sha256": "c7ae40cf9da48e6519befdab80a2127d745b1b1c9918b9b2980e271c7e6f7115"
+  },
+  "engine-lgd-ead-api": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/engine/lgd-ead-api.md",
+    "sha256": "b218449ea32c4686c382da0bcb422da866281a70bba99a470bd86b627d87921a"
   }
 }
