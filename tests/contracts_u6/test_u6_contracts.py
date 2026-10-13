@@ -230,8 +230,10 @@ def test_a_predicted_pd_of_zero_or_one_fails_at_every_c03_estimate_site(bad: int
 
 
 def wrapper_sites(ref: str) -> list[tuple]:
-    """Paths of every {value, flag} object of the fixture (the LGD wrapper of C08, the CCF wrapper of C09)."""
-    return [p for p, o in closed_objects(ref) if set(o) == {"value", "flag"}]
+    """Paths of every realised {value, flag} object of the fixture (the LGD wrapper of C08, the CCF wrapper of C09). The
+    prediction sites of C08 are inside [0, 1] by construction and are tested in test_u6_fixes.py."""
+    return [p for p, o in closed_objects(ref)
+            if set(o) == {"value", "flag"} and p[-1] not in ("predicted", "mean_predicted", "mean_before", "mean_after")]
 
 
 @pytest.mark.parametrize("ref", [C08, C09, C09M])
@@ -240,6 +242,8 @@ def test_an_out_of_range_lgd_or_ccf_passes_only_with_its_flag(ref: str) -> None:
     sites = wrapper_sites(ref)
     assert len(sites) >= (4 if "variant" in ref else 1), (ref, len(sites))
     for path in sites:
+        if path[-1] == "estimate" and get(doc, path[:-1]).get("treatment") in ("censor", "floor-cap"):
+            continue  # a treated estimate is inside [0, 1] by construction: test_u6_fixes.py::test_m12
         for value, flag, ok in [(1.25, "above-one", True), (-0.2, "below-zero", True),
                                 (1.25, "in-range", False), (-0.2, "in-range", False), (0.5, "above-one", False),
                                 (0.5, "below-zero", False), (1.25, "below-zero", False), (-0.2, "above-one", False),
@@ -286,7 +290,7 @@ def test_a_money_block_without_its_currency_fails(ref: str) -> None:
         assert cs.errors(ref, worse) != [], f"{ref}: {path} with a non-ISO currency validates"
 
 
-MONEY_NAMES = {"gross_approval", "gross_charge_off", "exposure_at_charge_off", "gross_charge_off_total", "ead", "predicted_ead",
+MONEY_NAMES = {"gross_approval", "gross_charge_off", "gross_approval_total", "gross_charge_off_total", "ead", "predicted_ead",
                "realised_ead", "gap", "mean_ead_before", "mean_ead_after", "threshold", "total_gross_approval",
                "limit", "drawn", "undrawn", "ead_floor", "off_balance"}
 
@@ -313,7 +317,7 @@ def test_a_c08_document_without_the_lgd_proxy_statement_fails(ref: str) -> None:
     doc = load(ref)
     proxy = doc[root]["lgd_proxy"]
     assert proxy["recovery_cash_flows_available"] is False
-    assert proxy["bias_direction"] == "upward"
+    assert proxy["bias_direction"] == "downward"
     for key in proxy:
         bad = copy.deepcopy(doc)
         del bad[root]["lgd_proxy"][key]
@@ -371,6 +375,7 @@ def test_c03_the_five_year_target_is_read_only_at_each_vintages_five_year_mark()
     assert o["target"]["horizon_months"] == 60 and o["target"]["observed_at_months"] == 60
     for vc in o["vintage_curves"]:
         row = rows[vc["fiscal_year"]]
+        assert row["mark_observed"] == (vc["observed_until_month"] >= 60)
         i60 = vc["months"].index(60)
         assert math.isclose(row["predicted_5y_pd"], vc["predicted_cumulative_pd"][i60], abs_tol=1e-9)
         if vc["observed_until_month"] >= 60:
@@ -383,7 +388,7 @@ def test_c03_the_five_year_target_is_read_only_at_each_vintages_five_year_mark()
 
 def test_c03_the_cohort_and_the_training_window_do_not_overlap() -> None:
     o = out(C03)
-    assert o["training"]["last_fy"] < o["cohort"]["first_fy"]
+    assert o["training"]["last_fy"] <= o["cohort"]["first_fy"] - 6  # decision D1: the 5-year mark precedes the first approval
     assert o["cohort"]["first_fy"] <= o["cohort"]["last_fy"]
     assert sorted(r["fiscal_year"] for r in o["vintage_summary"]["rows"]) == list(
         range(o["cohort"]["first_fy"], o["cohort"]["last_fy"] + 1))

@@ -25,6 +25,41 @@
         "case_id",
         "outputs"
       ]
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "if": {
+              "properties": {
+                "light": {
+                  "const": "not_evaluated"
+                }
+              },
+              "required": [
+                "light"
+              ]
+            },
+            "then": {
+              "properties": {
+                "statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
     }
   ],
   "unevaluatedProperties": false,
@@ -48,7 +83,7 @@
       }
     },
     "c08Lgd": {
-      "description": "A loss given default with its range flag. In [0, 1] the flag is in-range; below 0 or above 1 (fees, costs, overlimit drawings, limit changes) the value is kept and flagged, never silently clipped.",
+      "description": "A realised loss given default with its range flag. In [0, 1] the flag is in-range; below 0 or above 1 (fees, costs, overlimit drawings, limit changes) the value is kept and flagged, never silently clipped.",
       "oneOf": [
         {
           "type": "object",
@@ -104,6 +139,25 @@
         }
       ]
     },
+    "c08LgdPrediction": {
+      "description": "A predicted loss given default at an estimate site: always inside [0, 1] (SDD section 4: predictions inside [0, 1]), so the flag is always in-range.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "flag"
+      ],
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "flag": {
+          "const": "in-range"
+        }
+      }
+    },
     "c08Cohort": {
       "type": "object",
       "additionalProperties": false,
@@ -148,31 +202,30 @@
           "$ref": "#/$defs/c08Text"
         },
         "formula": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1,
+          "description": "The proxy as a formula over SBA 7(a) field names."
         },
         "source_field": {
-          "type": "string",
-          "description": "The SBA 7(a) field the numerator reads (GrossChargeOffAmount)."
+          "const": "GrossChargeOffAmount",
+          "description": "The SBA 7(a) field the numerator reads."
         },
         "exposure_field": {
-          "type": "string"
+          "const": "GrossApproval",
+          "description": "The SBA 7(a) field the denominator reads: the gross approved amount, the only exposure field the file carries (decision D2)."
         },
         "recovery_cash_flows_available": {
           "type": "boolean"
         },
         "bias_direction": {
-          "type": "string",
-          "enum": [
-            "upward",
-            "downward",
-            "unknown"
-          ]
+          "const": "downward",
+          "description": "The proxy LGD is biased low (decision D2)."
         },
         "bias_statement": {
           "$ref": "#/$defs/c08Text"
         }
       },
-      "description": "The LGD proxy of the SBA charge-off twin and its bias, required in every C08 document: the file has no recovery cash flows, so the proxy is the gross charge-off over the exposure at charge-off, not a workout LGD (dossier 08 A.6)."
+      "description": "The LGD proxy of the SBA charge-off twin and its bias, required in every C08 document: the file has no recovery cash flows, so the proxy is the gross charge-off amount over the gross approved amount (GrossApproval), not a workout LGD (dossier 08 A.6). The approved amount overstates the exposure at default of an amortising loan, so the proxy is biased low (decision D2)."
     },
     "c08DataStatus": {
       "description": "Freddie Mac is a nullable slot: while the owner's account does not exist it is unavailable and the reason is stated; no number stands in for it.",
@@ -327,7 +380,52 @@
           "$ref": "../common/text.schema.json"
         }
       },
-      "description": "How realised LGD is built: a workout LGD discounts recoveries (rate convention EBA/GL/2017/16, paragraph UNVERIFIED); the SBA twin has no cash flows, so none-proxy and not-applicable."
+      "description": "How realised LGD is built: a workout LGD discounts recoveries (rate convention EBA/GL/2017/16, paragraph UNVERIFIED); the SBA twin has no cash flows, so none-proxy, no discount rate and not-applicable.",
+      "oneOf": [
+        {
+          "properties": {
+            "discount_rate_convention": {
+              "const": "none-proxy"
+            },
+            "discount_rate": {
+              "type": "null"
+            },
+            "incomplete_workouts": {
+              "properties": {
+                "treatment": {
+                  "const": "not-applicable"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "discount_rate_convention": {
+              "type": "string",
+              "enum": [
+                "eba-interbank-plus-5pp",
+                "fixed"
+              ]
+            },
+            "discount_rate": {
+              "type": "number",
+              "minimum": 0
+            },
+            "incomplete_workouts": {
+              "properties": {
+                "treatment": {
+                  "type": "string",
+                  "enum": [
+                    "excluded",
+                    "projected"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "c08Exposure": {
       "type": "object",
@@ -335,7 +433,7 @@
       "required": [
         "currency",
         "gross_charge_off_total",
-        "exposure_at_charge_off_total"
+        "gross_approval_total"
       ],
       "properties": {
         "currency": {
@@ -347,9 +445,10 @@
           "type": "number",
           "minimum": 0
         },
-        "exposure_at_charge_off_total": {
+        "gross_approval_total": {
           "type": "number",
-          "minimum": 0
+          "minimum": 0,
+          "description": "Sum of GrossApproval over the cohort, the proxy denominator."
         }
       }
     },
@@ -569,7 +668,7 @@
           "$ref": "#/$defs/c08Lgd"
         },
         "predicted": {
-          "$ref": "#/$defs/c08Lgd"
+          "$ref": "#/$defs/c08LgdPrediction"
         },
         "ci_low": {
           "type": "number"
@@ -605,7 +704,7 @@
           "minimum": 0
         },
         "predicted": {
-          "$ref": "#/$defs/c08Lgd"
+          "$ref": "#/$defs/c08LgdPrediction"
         },
         "realised": {
           "$ref": "#/$defs/c08Lgd"
@@ -631,7 +730,7 @@
           "exclusiveMaximum": 0.5
         },
         "mean_predicted": {
-          "$ref": "#/$defs/c08Lgd"
+          "$ref": "#/$defs/c08LgdPrediction"
         },
         "rmse": {
           "type": "number",
@@ -799,16 +898,176 @@
           "description": "A share or an observed rate in [0, 1]."
         },
         "mean_before": {
-          "$ref": "#/$defs/c08Lgd"
+          "$ref": "#/$defs/c08LgdPrediction"
         },
         "mean_after": {
-          "$ref": "#/$defs/c08Lgd"
+          "$ref": "#/$defs/c08LgdPrediction"
         },
         "uplift": {
           "type": "number",
+          "minimum": 0,
           "description": "mean_after minus mean_before, never negative."
         }
-      }
+      },
+      "description": "The bite of one floor cell; (floor_id, floor, reference) is one of the 12 transcribed cells.",
+      "oneOf": [
+        {
+          "properties": {
+            "floor_id": {
+              "const": "corporate-unsecured"
+            },
+            "floor": {
+              "const": 0.25
+            },
+            "reference": {
+              "const": "CRE32.16"
+            }
+          }
+        },
+        {
+          "properties": {
+            "floor_id": {
+              "const": "corporate-financial"
+            },
+            "floor": {
+              "const": 0.0
+            },
+            "reference": {
+              "const": "CRE32.16"
+            }
+          }
+        },
+        {
+          "properties": {
+            "floor_id": {
+              "const": "corporate-receivables"
+            },
+            "floor": {
+              "const": 0.1
+            },
+            "reference": {
+              "const": "CRE32.16"
+            }
+          }
+        },
+        {
+          "properties": {
+            "floor_id": {
+              "const": "corporate-real-estate"
+            },
+            "floor": {
+              "const": 0.1
+            },
+            "reference": {
+              "const": "CRE32.16"
+            }
+          }
+        },
+        {
+          "properties": {
+            "floor_id": {
+              "const": "corporate-other-physical"
+            },
+            "floor": {
+              "const": 0.15
+            },
+            "reference": {
+              "const": "CRE32.16"
+            }
+          }
+        },
+        {
+          "properties": {
+            "floor_id": {
+              "const": "retail-mortgage"
+            },
+            "floor": {
+              "const": 0.05
+            },
+            "reference": {
+              "const": "CRE32.58 to CRE32.59"
+            }
+          }
+        },
+        {
+          "properties": {
+            "floor_id": {
+              "const": "retail-qrre"
+            },
+            "floor": {
+              "const": 0.5
+            },
+            "reference": {
+              "const": "CRE32.58 to CRE32.59"
+            }
+          }
+        },
+        {
+          "properties": {
+            "floor_id": {
+              "const": "retail-other-unsecured"
+            },
+            "floor": {
+              "const": 0.3
+            },
+            "reference": {
+              "const": "CRE32.58 to CRE32.59"
+            }
+          }
+        },
+        {
+          "properties": {
+            "floor_id": {
+              "const": "retail-other-financial"
+            },
+            "floor": {
+              "const": 0.0
+            },
+            "reference": {
+              "const": "CRE32.58 to CRE32.59"
+            }
+          }
+        },
+        {
+          "properties": {
+            "floor_id": {
+              "const": "retail-other-receivables"
+            },
+            "floor": {
+              "const": 0.1
+            },
+            "reference": {
+              "const": "CRE32.58 to CRE32.59"
+            }
+          }
+        },
+        {
+          "properties": {
+            "floor_id": {
+              "const": "retail-other-real-estate"
+            },
+            "floor": {
+              "const": 0.1
+            },
+            "reference": {
+              "const": "CRE32.58 to CRE32.59"
+            }
+          }
+        },
+        {
+          "properties": {
+            "floor_id": {
+              "const": "retail-other-physical"
+            },
+            "floor": {
+              "const": 0.15
+            },
+            "reference": {
+              "const": "CRE32.58 to CRE32.59"
+            }
+          }
+        }
+      ]
     },
     "c08FloorsBite": {
       "type": "object",
@@ -910,7 +1169,9 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/c08EndpointRow"
-          }
+          },
+          "minItems": 2,
+          "description": "Two epsilons at least, for the beta rungs (SDD section 4)."
         },
         "downturn": {
           "$ref": "#/$defs/c08Downturn"

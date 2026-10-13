@@ -199,6 +199,8 @@
     ],
     "ead_models": [
       {
+        "n_clipped_below": null,
+        "n_clipped_above": null,
         "model_id": "m-fixed",
         "kind": "ccf-fixed-horizon",
         "design": "fixed-horizon",
@@ -208,6 +210,8 @@
         ]
       },
       {
+        "n_clipped_below": null,
+        "n_clipped_above": null,
         "model_id": "m-cohort",
         "kind": "ccf-cohort",
         "design": "cohort",
@@ -217,6 +221,8 @@
         ]
       },
       {
+        "n_clipped_below": null,
+        "n_clipped_above": null,
         "model_id": "m-variable",
         "kind": "ccf-variable-horizon",
         "design": "variable-horizon",
@@ -226,6 +232,8 @@
         ]
       },
       {
+        "n_clipped_below": 12,
+        "n_clipped_above": 31,
         "model_id": "m-direct",
         "kind": "direct-ead",
         "design": null,
@@ -236,6 +244,8 @@
         ]
       },
       {
+        "n_clipped_below": null,
+        "n_clipped_above": null,
         "model_id": "m-utilisation",
         "kind": "utilisation-change",
         "design": null,

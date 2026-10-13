@@ -44,18 +44,6 @@
         "es": "Un credito es evento si se castiga dentro de 60 meses desde la aprobacion; el objetivo de una cosecha se lee solo en su marca de 5 anos. Los creditos EXEMPT (vigentes) son censurados por la derecha."
       }
     },
-    "training": {
-      "first_fy": 1991,
-      "last_fy": 2012,
-      "cutoff_date": "2017-09-30",
-      "n_loans": 600000,
-      "n_events": 54000,
-      "crisis_included": true,
-      "rationale": {
-        "en": "Fixture: trained on vintages whose 5-year mark closed before the cutoff, so the crisis defaults are in the training outcomes.",
-        "es": "Ejemplo: entrenado con cosechas cuya marca de 5 anos cerro antes del corte, de modo que los incumplimientos de la crisis estan en los resultados de entrenamiento."
-      }
-    },
     "cohort_windows": [
       {
         "id": "fy2006-07",
@@ -64,7 +52,19 @@
           "es": "AF2006-07"
         },
         "first_fy": 2006,
-        "last_fy": 2007
+        "last_fy": 2007,
+        "training": {
+          "first_fy": 1991,
+          "last_fy": 2000,
+          "cutoff_date": "2005-09-30",
+          "n_loans": 400000,
+          "n_events": 36000,
+          "crisis_included": false,
+          "rationale": {
+            "en": "Fixture: vintages up to FY2000, whose 5-year mark closes on 2005-09-30, before the first approval of FY2006.",
+            "es": "Ejemplo: cosechas hasta AF2000, cuya marca de 5 anos cierra el 2005-09-30, antes de la primera aprobacion de AF2006."
+          }
+        }
       },
       {
         "id": "fy2008-10",
@@ -73,7 +73,19 @@
           "es": "AF2008-10"
         },
         "first_fy": 2008,
-        "last_fy": 2010
+        "last_fy": 2010,
+        "training": {
+          "first_fy": 1991,
+          "last_fy": 2002,
+          "cutoff_date": "2007-09-30",
+          "n_loans": 480000,
+          "n_events": 43200,
+          "crisis_included": false,
+          "rationale": {
+            "en": "Fixture: vintages up to FY2002, whose 5-year mark closes on 2007-09-30, before the first approval of FY2008.",
+            "es": "Ejemplo: cosechas hasta AF2002, cuya marca de 5 anos cierra el 2007-09-30, antes de la primera aprobacion de AF2008."
+          }
+        }
       },
       {
         "id": "fy2011-14",
@@ -82,7 +94,19 @@
           "es": "AF2011-14"
         },
         "first_fy": 2011,
-        "last_fy": 2014
+        "last_fy": 2014,
+        "training": {
+          "first_fy": 1991,
+          "last_fy": 2005,
+          "cutoff_date": "2010-09-30",
+          "n_loans": 600000,
+          "n_events": 54000,
+          "crisis_included": true,
+          "rationale": {
+            "en": "Fixture: vintages up to FY2005, whose 5-year mark closes on 2010-09-30, before the first approval of FY2011.",
+            "es": "Ejemplo: cosechas hasta AF2005, cuya marca de 5 anos cierra el 2010-09-30, antes de la primera aprobacion de AF2011."
+          }
+        }
       },
       {
         "id": "fy2015-17",
@@ -91,7 +115,19 @@
           "es": "AF2015-17"
         },
         "first_fy": 2015,
-        "last_fy": 2017
+        "last_fy": 2017,
+        "training": {
+          "first_fy": 1991,
+          "last_fy": 2009,
+          "cutoff_date": "2014-09-30",
+          "n_loans": 760000,
+          "n_events": 68400,
+          "crisis_included": true,
+          "rationale": {
+            "en": "Fixture: vintages up to FY2009, whose 5-year mark closes on 2014-09-30, before the first approval of FY2015.",
+            "es": "Ejemplo: cosechas hasta AF2009, cuya marca de 5 anos cierra el 2014-09-30, antes de la primera aprobacion de AF2015."
+          }
+        }
       },
       {
         "id": "fy2018-20",
@@ -100,7 +136,19 @@
           "es": "AF2018-20"
         },
         "first_fy": 2018,
-        "last_fy": 2020
+        "last_fy": 2020,
+        "training": {
+          "first_fy": 1991,
+          "last_fy": 2012,
+          "cutoff_date": "2017-09-30",
+          "n_loans": 880000,
+          "n_events": 79200,
+          "crisis_included": true,
+          "rationale": {
+            "en": "Fixture: vintages up to FY2012, whose 5-year mark closes on 2017-09-30, before the first approval of FY2018.",
+            "es": "Ejemplo: cosechas hasta AF2012, cuya marca de 5 anos cierra el 2017-09-30, antes de la primera aprobacion de AF2018."
+          }
+        }
       }
     ],
     "ladder": [

@@ -25,6 +25,41 @@
         "case_id",
         "outputs"
       ]
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "if": {
+              "properties": {
+                "light": {
+                  "const": "not_evaluated"
+                }
+              },
+              "required": [
+                "light"
+              ]
+            },
+            "then": {
+              "properties": {
+                "statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
     }
   ],
   "unevaluatedProperties": false,
@@ -277,7 +312,39 @@
         "within_tolerance": {
           "type": "boolean"
         }
-      }
+      },
+      "description": "One CCF estimate against the known truth. After a censor or floor-cap treatment the estimate lies inside [0, 1] and is flagged in-range; an untreated estimate may be flagged outside it.",
+      "oneOf": [
+        {
+          "properties": {
+            "treatment": {
+              "type": "string",
+              "enum": [
+                "censor",
+                "floor-cap"
+              ]
+            },
+            "estimate": {
+              "properties": {
+                "flag": {
+                  "const": "in-range"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "treatment": {
+              "type": "string",
+              "enum": [
+                "none",
+                "bounded-scale"
+              ]
+            }
+          }
+        }
+      ]
     },
     "c09CcfByDesign": {
       "type": "object",
@@ -360,7 +427,9 @@
         "kind",
         "design",
         "treatment",
-        "covariates"
+        "covariates",
+        "n_clipped_below",
+        "n_clipped_above"
       ],
       "properties": {
         "model_id": {
@@ -412,8 +481,69 @@
           "items": {
             "type": "string"
           }
+        },
+        "n_clipped_below": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "direct-ead only: observations whose EADF below 0 was clipped for the fit; null elsewhere."
+        },
+        "n_clipped_above": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "direct-ead only: observations whose EADF above 1 was clipped for the fit; null elsewhere."
         }
-      }
+      },
+      "description": "An EAD model of the ladder; the clipped counts of fit_direct_ead are reported here, never silently.",
+      "oneOf": [
+        {
+          "properties": {
+            "kind": {
+              "const": "direct-ead"
+            },
+            "n_clipped_below": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "n_clipped_above": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "ccf-fixed-horizon",
+                "ccf-cohort",
+                "ccf-variable-horizon",
+                "utilisation-change"
+              ]
+            },
+            "n_clipped_below": {
+              "type": "null"
+            },
+            "n_clipped_above": {
+              "type": "null"
+            }
+          }
+        }
+      ]
     },
     "c09BacktestRow": {
       "type": "object",
@@ -425,6 +555,7 @@
         "utilisation_upper",
         "n",
         "predicted_ead",
+        "prediction_flag",
         "realised_ead",
         "gap",
         "relative_gap",
@@ -451,7 +582,14 @@
         },
         "predicted_ead": {
           "type": "number",
-          "minimum": 0
+          "description": "Sum of the predicted EAD of the band. Negative only with prediction_flag outside-range."
+        },
+        "prediction_flag": {
+          "type": "string",
+          "enum": [
+            "in-range",
+            "outside-range"
+          ]
         },
         "realised_ead": {
           "type": "number",
@@ -474,7 +612,28 @@
             "error"
           ]
         }
-      }
+      },
+      "description": "One model in one utilisation band. A utilisation-change prediction is not clipped: prediction_flag is outside-range when any facility of the band has an unclipped prediction below 0 or above its limit (api predict_ead).",
+      "oneOf": [
+        {
+          "properties": {
+            "prediction_flag": {
+              "const": "in-range"
+            },
+            "predicted_ead": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "properties": {
+            "prediction_flag": {
+              "const": "outside-range"
+            }
+          }
+        }
+      ]
     },
     "c09EadBacktest": {
       "type": "object",

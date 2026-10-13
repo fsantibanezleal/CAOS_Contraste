@@ -40,12 +40,13 @@ def envelope_common(truth: str) -> dict:
     }
 
 
-def test_row(test_id: str, model_id: str) -> dict:
+def test_row(test_id: str, model_id: str, reason: str) -> dict:
+    """A not_evaluated row: statistic, p_value and metric are null and the reason sits in notes (never a placeholder number)."""
     return {
-        "test_id": test_id, "model_id": model_id, "segment": None, "statistic": 0.0, "p_value": None,
-        "metric": 0.0, "h0": "fixture row", "alternative": "fixture row", "policy_version": "fixture",
+        "test_id": test_id, "model_id": model_id, "segment": None, "statistic": None, "p_value": None,
+        "metric": None, "h0": "fixture row", "alternative": "fixture row", "policy_version": "fixture",
         "alpha_amber": None, "alpha_red": None, "light": "not_evaluated", "n": None, "n_events": None,
-        "inputs_hash": "0" * 64, "reference": "fixture, not a result", "notes": "fixture", "extras": {},
+        "inputs_hash": "0" * 64, "reference": "fixture, not a result", "notes": reason, "extras": {},
     }
 
 
@@ -64,6 +65,7 @@ def model_record(mid: str, family: str, rung: str) -> dict:
     return d
 
 
+NE = "fixture: the test did not run, no number stands in for it"
 FIXTURE_NOTICE = txt("Fixture, not a result. Round numbers for the contract.",
                      "Ejemplo, no es un resultado. Numeros redondos para el contrato.")
 
@@ -100,6 +102,30 @@ C03_VINTAGES = [
 ]
 
 
+C03_WINDOWS = [("fy2006-07", 2006, 2007), ("fy2008-10", 2008, 2010), ("fy2011-14", 2011, 2014), ("fy2015-17", 2015, 2017),
+               ("fy2018-20", 2018, 2020)]
+
+
+def window(wid: str, first_fy: int, last_fy: int) -> dict:
+    """A test cohort with its training window (decision D1): training stops at the last approval year whose 5-year charge-off
+    mark precedes the first approval date of the cohort, last_fy = first_fy - 6; the crisis outcomes (the 2007-2010
+    charge-offs) enter the training only from the FY2011-14 cohort on."""
+    t_last = first_fy - 6
+    return {
+        "id": wid, "label": txt(f"FY{first_fy}-{str(last_fy)[2:]}", f"AF{first_fy}-{str(last_fy)[2:]}"),
+        "first_fy": first_fy, "last_fy": last_fy,
+        "training": {
+            "first_fy": 1991, "last_fy": t_last, "cutoff_date": f"{t_last + 5}-09-30",
+            "n_loans": 40000 * (t_last - 1990), "n_events": 3600 * (t_last - 1990),
+            "crisis_included": t_last + 5 >= 2008,
+            "rationale": txt(f"Fixture: vintages up to FY{t_last}, whose 5-year mark closes on {t_last + 5}-09-30, before the first "
+                             f"approval of FY{first_fy}.",
+                             f"Ejemplo: cosechas hasta AF{t_last}, cuya marca de 5 anos cierra el {t_last + 5}-09-30, antes de la "
+                             f"primera aprobacion de AF{first_fy}."),
+        },
+    }
+
+
 def build_c03() -> tuple[dict, dict]:
     curves, rows, stab = [], [], []
     for fy, n, resolved, gross, pred, obs, until in C03_VINTAGES:
@@ -110,7 +136,8 @@ def build_c03() -> tuple[dict, dict]:
                        "reason": reason})
         o5 = obs[-1]
         rows.append({"fiscal_year": fy, "n": n, "n_resolved": resolved, "n_exempt_censored": n - resolved,
-                     "gross_approval": gross, "observed_5y_pd": o5, "predicted_5y_pd": pred[-1],
+                     "gross_approval": gross, "five_year_mark_date": f"{fy + 5}-09-30", "mark_observed": o5 is not None,
+                     "observed_5y_pd": o5, "predicted_5y_pd": pred[-1],
                      "gap": None if o5 is None else r(o5 - pred[-1]), "brier": None if o5 is None else 0.07,
                      "auc": None if o5 is None else 0.71, "reason": reason if o5 is None else None})
         stab.append({"fiscal_year": fy, "psi": 0.04 + 0.01 * (fy - 2018), "observed_5y_pd": o5})
@@ -147,7 +174,7 @@ def build_c03() -> tuple[dict, dict]:
         "schema": "contraste.case/v1", "case_id": "C03", "variant_id": "fixture-fy2018-20",
         "model": [model_summary("P1-woe-scorecard", "credit-scoring", "woe-scorecard")],
         "outputs": out,
-        "tests": [test_row("pd.vintage_calibration", "P1-woe-scorecard")],
+        "tests": [test_row("pd.vintage_calibration", "P1-woe-scorecard", NE)],
         "impact": {"observed_5y_pd_fy2018": {"value": 0.092, "unit": "share", "label": txt("Observed 5-year PD, FY2018", "PD observada a 5 anos, AF2018")}},
         "findings": [],
         **envelope_common("real-outcomes"),
@@ -160,13 +187,7 @@ def build_c03() -> tuple[dict, dict]:
             "vintage_definition": {"basis": "approval fiscal year", "fiscal_year_start": "10-01",
                                    "label": txt("SBA fiscal year, 1 October to 30 September", "Ano fiscal SBA, 1 de octubre a 30 de septiembre")},
             "target": C03_TARGET,
-            "training": C03_TRAINING,
-            "cohort_windows": [
-                {"id": "fy2006-07", "label": txt("FY2006-07", "AF2006-07"), "first_fy": 2006, "last_fy": 2007},
-                {"id": "fy2008-10", "label": txt("FY2008-10", "AF2008-10"), "first_fy": 2008, "last_fy": 2010},
-                {"id": "fy2011-14", "label": txt("FY2011-14", "AF2011-14"), "first_fy": 2011, "last_fy": 2014},
-                {"id": "fy2015-17", "label": txt("FY2015-17", "AF2015-17"), "first_fy": 2015, "last_fy": 2017},
-                {"id": "fy2018-20", "label": txt("FY2018-20", "AF2018-20"), "first_fy": 2018, "last_fy": 2020}],
+            "cohort_windows": [window(i, a, b) for i, a, b in C03_WINDOWS],
             "ladder": [
                 {"rung_id": "P1-woe-scorecard", "kind": "woe-scorecard", "covariates": ["term_months", "naics_sector"],
                  "coefficients": [{"name": "term_months", "estimate": -0.2, "std_error": 0.02},
@@ -184,22 +205,26 @@ def build_c03() -> tuple[dict, dict]:
 # ------------------------------------------------------------------------------------------------------- C08
 
 C08_PROXY = {
-    "definition": txt("LGD proxy = gross charge-off amount over the exposure at charge-off (SBA 7(a) fields GrossChargeOffAmount and the "
-                      "disbursed exposure). It is a proxy, not a workout LGD.",
-                      "Proxy de LGD = monto bruto castigado sobre la exposicion al castigo (campos SBA 7(a) GrossChargeOffAmount y la "
-                      "exposicion desembolsada). Es un proxy, no una LGD de recuperacion."),
-    "formula": "gross_charge_off / exposure_at_charge_off",
+    "definition": txt("LGD proxy = gross charge-off amount over the gross approved amount (SBA 7(a) fields GrossChargeOffAmount and "
+                      "GrossApproval, the only exposure field the file carries). It is a proxy, not a workout LGD.",
+                      "Proxy de LGD = monto bruto castigado sobre el monto bruto aprobado (campos SBA 7(a) GrossChargeOffAmount y "
+                      "GrossApproval, el unico campo de exposicion del archivo). Es un proxy, no una LGD de recuperacion."),
+    "formula": "GrossChargeOffAmount / GrossApproval",
     "source_field": "GrossChargeOffAmount",
-    "exposure_field": "fixture: the field the bake states",
+    "exposure_field": "GrossApproval",
     "recovery_cash_flows_available": False,
-    "bias_direction": "upward",
-    "bias_statement": txt("The SBA 7(a) public file has no recovery cash flows after charge-off, so the proxy ignores recoveries and "
-                          "costs: it overstates the loss net of recoveries (upward bias) and can exceed 1 when capitalised interest or "
-                          "fees are charged off. Realised LGD in the workout sense needs recovery data this file does not carry.",
-                          "El archivo publico SBA 7(a) no tiene flujos de recuperacion posteriores al castigo, de modo que el proxy "
-                          "ignora recuperaciones y costos: sobreestima la perdida neta de recuperaciones (sesgo al alza) y puede "
-                          "superar 1 si se castigan intereses capitalizados o comisiones. La LGD realizada en sentido de recuperacion "
-                          "exige datos que este archivo no trae."),
+    "bias_direction": "downward",
+    "bias_statement": txt("The proxy is biased low: the approved amount overstates the exposure at default of an amortising loan, "
+                          "so the denominator is too large. A second effect pushes the other way: the SBA 7(a) public file has no "
+                          "recovery cash flows after charge-off, so the proxy ignores recoveries and costs and overstates the loss "
+                          "net of recoveries; it can also exceed 1 when capitalised interest or fees are charged off. The stated "
+                          "direction is the denominator effect (decision D2).",
+                          "El proxy tiene sesgo a la baja: el monto aprobado sobreestima la exposicion al incumplimiento de un credito "
+                          "que se amortiza, de modo que el denominador es demasiado grande. Un segundo efecto va en sentido contrario: "
+                          "el archivo publico SBA 7(a) no tiene flujos de recuperacion posteriores al castigo, de modo que el proxy "
+                          "ignora recuperaciones y costos y sobreestima la perdida neta de recuperaciones; tambien puede superar 1 si "
+                          "se castigan intereses capitalizados o comisiones. La direccion declarada es el efecto del denominador "
+                          "(decision D2)."),
 }
 C08_STATUS = {
     "primary_source": "sba-7a-chargeoff-twin", "freddie_mac_available": False,
@@ -263,7 +288,7 @@ def build_c08() -> tuple[dict, dict]:
         "kind": "default-cohort", "currency": "USD",
         "cohort": {"id": "2009-10", "label": txt("Defaults 2009-10", "Incumplimientos 2009-10"), "first_year": 2009, "last_year": 2010},
         "lgd_proxy": C08_PROXY, "data_status": C08_STATUS, "training": C08_TRAINING, "workout": C08_WORKOUT,
-        "exposure": {"currency": "USD", "gross_charge_off_total": 2.8e8, "exposure_at_charge_off_total": 4.0e8},
+        "exposure": {"currency": "USD", "gross_charge_off_total": 2.8e8, "gross_approval_total": 4.0e8},
         "lgd_distribution": dist,
         "rung_comparison": [
             {"rung_id": "L1-ols", "r2": 0.12, "rmse": 0.31, "mae": 0.26, "spearman": 0.35, "calibration_gap": -0.09, "reason": None},
@@ -290,7 +315,7 @@ def build_c08() -> tuple[dict, dict]:
         "schema": "contraste.case/v1", "case_id": "C08", "variant_id": "fixture-2009-10",
         "model": [model_summary("L2-fractional-logit", "lgd-ead", "fractional-logit")],
         "outputs": out,
-        "tests": [test_row("lgd_ead.lgd_calibration_by_segment", "L2-fractional-logit")],
+        "tests": [test_row("lgd_ead.lgd_calibration_by_segment", "L2-fractional-logit", NE)],
         "impact": {"mean_lgd_proxy": {"value": 0.64, "unit": "share", "label": txt("Mean LGD proxy", "LGD proxy media")}},
         "findings": [],
         **envelope_common("real-outcomes"),
@@ -301,13 +326,13 @@ def build_c08() -> tuple[dict, dict]:
         ("corporate-receivables", "corporate", "receivables", 0.10, "CRE32.16"),
         ("corporate-real-estate", "corporate", "real-estate", 0.10, "CRE32.16"),
         ("corporate-other-physical", "corporate", "other-physical", 0.15, "CRE32.16"),
-        ("retail-mortgage", "retail", "mortgage", 0.05, "CRE32.58"),
-        ("retail-qrre", "retail", "qrre", 0.50, "CRE32.58"),
-        ("retail-other-unsecured", "retail", "unsecured", 0.30, "CRE32.58"),
-        ("retail-other-financial", "retail", "financial", 0.0, "CRE32.59"),
-        ("retail-other-receivables", "retail", "receivables", 0.10, "CRE32.59"),
-        ("retail-other-real-estate", "retail", "real-estate", 0.10, "CRE32.59"),
-        ("retail-other-physical", "retail", "other-physical", 0.15, "CRE32.59"),
+        ("retail-mortgage", "retail", "mortgage", 0.05, "CRE32.58 to CRE32.59"),
+        ("retail-qrre", "retail", "qrre", 0.50, "CRE32.58 to CRE32.59"),
+        ("retail-other-unsecured", "retail", "unsecured", 0.30, "CRE32.58 to CRE32.59"),
+        ("retail-other-financial", "retail", "financial", 0.0, "CRE32.58 to CRE32.59"),
+        ("retail-other-receivables", "retail", "receivables", 0.10, "CRE32.58 to CRE32.59"),
+        ("retail-other-real-estate", "retail", "real-estate", 0.10, "CRE32.58 to CRE32.59"),
+        ("retail-other-physical", "retail", "other-physical", 0.15, "CRE32.58 to CRE32.59"),
     ]
     models = {
         "schema": "contraste.models/v1", "case_id": "C08", "fit_id": "fixture-sba-chargeoff-twin",
@@ -365,14 +390,19 @@ C09_GENERATOR = {
 }
 C09_DESIGNS = ("fixed-horizon", "cohort", "variable-horizon")
 C09_SMALL = {"currency": "USD", "threshold": 50.0, "applied": True, "n_switched": 120, "reference": "Qi (2009), OCC Economics Working Paper 2009-2"}
-C09_MODELS = [
+def _clip(m: dict) -> dict:
+    return {"n_clipped_below": None, "n_clipped_above": None, **m}
+
+
+C09_MODELS = [_clip(m) for m in [
     {"model_id": "m-fixed", "kind": "ccf-fixed-horizon", "design": "fixed-horizon", "treatment": "floor-cap", "covariates": ["utilisation"]},
     {"model_id": "m-cohort", "kind": "ccf-cohort", "design": "cohort", "treatment": "floor-cap", "covariates": ["utilisation"]},
     {"model_id": "m-variable", "kind": "ccf-variable-horizon", "design": "variable-horizon", "treatment": "bounded-scale",
      "covariates": ["utilisation"]},
-    {"model_id": "m-direct", "kind": "direct-ead", "design": None, "treatment": None, "covariates": ["utilisation", "limit"]},
+    {"model_id": "m-direct", "kind": "direct-ead", "design": None, "treatment": None, "covariates": ["utilisation", "limit"],
+     "n_clipped_below": 12, "n_clipped_above": 31},
     {"model_id": "m-utilisation", "kind": "utilisation-change", "design": None, "treatment": None, "covariates": ["utilisation"]},
-]
+]]
 
 
 def build_c09() -> tuple[dict, dict]:
@@ -401,7 +431,7 @@ def build_c09() -> tuple[dict, dict]:
             real = 40000 * (i + 1)
             pred = round(real * (scale if i < 2 else 2 - scale))
             bt.append({"model_id": mid, "band_id": f"u{i + 1}", "utilisation_lower": band_edges[i],
-                       "utilisation_upper": band_edges[i + 1], "n": 500, "predicted_ead": float(pred),
+                       "utilisation_upper": band_edges[i + 1], "n": 500, "predicted_ead": float(pred), "prediction_flag": "in-range",
                        "realised_ead": float(real), "gap": float(pred - real), "relative_gap": r((pred - real) / real, 9),
                        "light": "green" if abs(pred - real) / real < 0.05 else "amber"})
     out = {
@@ -429,7 +459,7 @@ def build_c09() -> tuple[dict, dict]:
         "schema": "contraste.case/v1", "case_id": "C09", "variant_id": "fixture-level-5",
         "model": [model_summary("m-fixed", "lgd-ead", "ccf-fixed-horizon")],
         "outputs": out,
-        "tests": [test_row("lgd_ead.ccf_estimator_bias", "m-fixed"), test_row("lgd_ead.ead_backtest_by_band", "m-fixed")],
+        "tests": [test_row("lgd_ead.ccf_estimator_bias", "m-fixed", NE), test_row("lgd_ead.ead_backtest_by_band", "m-fixed", NE)],
         "impact": {"ccf_bias_fixed_horizon": {"value": 0.23, "unit": "share", "label": txt("Fixed-horizon CCF bias", "Sesgo del CCF a horizonte fijo")}},
         "findings": [],
         **envelope_common("synthetic-known-truth"),

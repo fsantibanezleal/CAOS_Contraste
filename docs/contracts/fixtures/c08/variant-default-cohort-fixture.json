@@ -37,17 +37,17 @@
     },
     "lgd_proxy": {
       "definition": {
-        "en": "LGD proxy = gross charge-off amount over the exposure at charge-off (SBA 7(a) fields GrossChargeOffAmount and the disbursed exposure). It is a proxy, not a workout LGD.",
-        "es": "Proxy de LGD = monto bruto castigado sobre la exposicion al castigo (campos SBA 7(a) GrossChargeOffAmount y la exposicion desembolsada). Es un proxy, no una LGD de recuperacion."
+        "en": "LGD proxy = gross charge-off amount over the gross approved amount (SBA 7(a) fields GrossChargeOffAmount and GrossApproval, the only exposure field the file carries). It is a proxy, not a workout LGD.",
+        "es": "Proxy de LGD = monto bruto castigado sobre el monto bruto aprobado (campos SBA 7(a) GrossChargeOffAmount y GrossApproval, el unico campo de exposicion del archivo). Es un proxy, no una LGD de recuperacion."
       },
-      "formula": "gross_charge_off / exposure_at_charge_off",
+      "formula": "GrossChargeOffAmount / GrossApproval",
       "source_field": "GrossChargeOffAmount",
-      "exposure_field": "fixture: the field the bake states",
+      "exposure_field": "GrossApproval",
       "recovery_cash_flows_available": false,
-      "bias_direction": "upward",
+      "bias_direction": "downward",
       "bias_statement": {
-        "en": "The SBA 7(a) public file has no recovery cash flows after charge-off, so the proxy ignores recoveries and costs: it overstates the loss net of recoveries (upward bias) and can exceed 1 when capitalised interest or fees are charged off. Realised LGD in the workout sense needs recovery data this file does not carry.",
-        "es": "El archivo publico SBA 7(a) no tiene flujos de recuperacion posteriores al castigo, de modo que el proxy ignora recuperaciones y costos: sobreestima la perdida neta de recuperaciones (sesgo al alza) y puede superar 1 si se castigan intereses capitalizados o comisiones. La LGD realizada en sentido de recuperacion exige datos que este archivo no trae."
+        "en": "The proxy is biased low: the approved amount overstates the exposure at default of an amortising loan, so the denominator is too large. A second effect pushes the other way: the SBA 7(a) public file has no recovery cash flows after charge-off, so the proxy ignores recoveries and costs and overstates the loss net of recoveries; it can also exceed 1 when capitalised interest or fees are charged off. The stated direction is the denominator effect (decision D2).",
+        "es": "El proxy tiene sesgo a la baja: el monto aprobado sobreestima la exposicion al incumplimiento de un credito que se amortiza, de modo que el denominador es demasiado grande. Un segundo efecto va en sentido contrario: el archivo publico SBA 7(a) no tiene flujos de recuperacion posteriores al castigo, de modo que el proxy ignora recuperaciones y costos y sobreestima la perdida neta de recuperaciones; tambien puede superar 1 si se castigan intereses capitalizados o comisiones. La direccion declarada es el efecto del denominador (decision D2)."
       }
     },
     "data_status": {
@@ -85,7 +85,7 @@
     "exposure": {
       "currency": "USD",
       "gross_charge_off_total": 280000000.0,
-      "exposure_at_charge_off_total": 400000000.0
+      "gross_approval_total": 400000000.0
     },
     "lgd_distribution": {
       "n": 4000,
@@ -509,9 +509,9 @@
       "test_id": "lgd_ead.lgd_calibration_by_segment",
       "model_id": "L2-fractional-logit",
       "segment": null,
-      "statistic": 0.0,
+      "statistic": null,
       "p_value": null,
-      "metric": 0.0,
+      "metric": null,
       "h0": "fixture row",
       "alternative": "fixture row",
       "policy_version": "fixture",
@@ -522,7 +522,7 @@
       "n_events": null,
       "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
       "reference": "fixture, not a result",
-      "notes": "fixture",
+      "notes": "fixture: the test did not run, no number stands in for it",
       "extras": {}
     }
   ],
