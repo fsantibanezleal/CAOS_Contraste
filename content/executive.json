@@ -1,0 +1,244 @@
+{
+  "executive": {
+    "en": "Chief Risk Officer",
+    "es": "Gerente de Riesgos"
+  },
+  "organisation": {
+    "en": "a Chilean commercial bank supervised by the Financial Market Commission (CMF)",
+    "es": "un banco comercial chileno supervisado por la Comisión para el Mercado Financiero (CMF)"
+  },
+  "initiative": {
+    "en": "Get the bank's credit and provisioning models ready for the first CMF review, under proposed rules that allow one application every twelve months.",
+    "es": "Dejar los modelos de crédito y de provisiones del banco listos para la primera revisión de la CMF, bajo una propuesta de norma que admite una solicitud cada doce meses."
+  },
+  "why_now": {
+    "figure": {
+      "value": {
+        "en": "571",
+        "es": "571"
+      },
+      "unit": {
+        "en": "million US dollars of extra provisions on individually assessed commercial loans across Chilean banks, if the proposed provisioning model applied without the banks' own models",
+        "es": "millones de dólares de provisiones adicionales en los créditos comerciales evaluados individualmente de los bancos chilenos, si el modelo de provisiones propuesto se aplicara sin modelos propios de los bancos"
+      }
+    },
+    "deadline": {
+      "en": "January 2031, unless the bank's own models are approved before then",
+      "es": "enero de 2031, salvo que los modelos propios del banco sean aprobados antes"
+    }
+  },
+  "vision": {
+    "en": "The risk committee sees what each modelling choice does to capital and provisions, and how often each validation test errs, before the bank files with the CMF.",
+    "es": "El comité de riesgos ve el efecto de cada decisión de modelación en el capital y las provisiones, y el error de cada prueba, antes de presentar a la CMF."
+  },
+  "outcomes": [
+    {
+      "capability": {
+        "en": "Compares the Chilean statutory provision with an IFRS 9 expected-loss estimate on the same loans, step by step",
+        "es": "Compara la provisión estatutaria chilena con una estimación de pérdida esperada IFRS 9 sobre los mismos créditos, paso a paso"
+      },
+      "outcome": {
+        "en": "The effect of a recession on provisions is known before the committee decides",
+        "es": "El efecto de una recesión sobre las provisiones se conoce antes de que el comité decida"
+      },
+      "proof": {
+        "value": {
+          "en": "74.0",
+          "es": "74,0"
+        },
+        "unit": {
+          "en": "percent rise in the expected-loss estimate under a recession, against 29.9 percent for the statutory provision, on a generated bank",
+          "es": "por ciento de alza en la estimación de pérdida esperada ante una recesión, frente a 29,9 por ciento en la provisión estatutaria, en un banco generado"
+        },
+        "statement": {
+          "en": "The two measures move by different amounts, so following one does not tell the bank where the other stands.",
+          "es": "Las dos medidas se mueven en magnitudes distintas, de modo que seguir una no dice al banco dónde está la otra."
+        }
+      }
+    },
+    {
+      "capability": {
+        "en": "Shows the capital that a calibration choice implies before the model is submitted",
+        "es": "Muestra el capital que implica una decisión de calibración antes de presentar el modelo"
+      },
+      "outcome": {
+        "en": "The capital cost of a modelling choice is on the table before it reaches the CMF",
+        "es": "El costo en capital de una decisión de modelación está sobre la mesa antes de llegar a la CMF"
+      },
+      "proof": {
+        "value": {
+          "en": "64.8",
+          "es": "64,8"
+        },
+        "unit": {
+          "en": "percent more capital if the previous year's default curve is carried forward unchanged rather than recalibrated, in a worked example on public rating data",
+          "es": "por ciento más de capital si la curva de incumplimiento del año anterior se arrastra sin cambios en lugar de recalibrarse, en un ejemplo con datos públicos de clasificaciones"
+        },
+        "statement": {
+          "en": "A calibration left unchecked can raise the capital requirement by about two thirds.",
+          "es": "Una calibración sin revisar puede subir el requerimiento de capital en cerca de dos tercios."
+        }
+      }
+    },
+    {
+      "capability": {
+        "en": "Compares a machine learning model with the current scorecard on loans held out of its training",
+        "es": "Compara un modelo de aprendizaje automático con el scorecard actual sobre créditos reservados fuera de su entrenamiento"
+      },
+      "outcome": {
+        "en": "A machine learning model is approved for the capital it saves, not for its novelty",
+        "es": "Un modelo de aprendizaje automático se aprueba por el capital que ahorra, no por su novedad"
+      },
+      "proof": {
+        "value": {
+          "en": "4.2",
+          "es": "4,2"
+        },
+        "unit": {
+          "en": "percent less capital for the machine learning model at the same approval rate, on 9,000 held-out public card loans",
+          "es": "por ciento menos de capital para el modelo de aprendizaje automático con la misma tasa de aprobación, en 9.000 créditos de tarjeta públicos reservados"
+        },
+        "statement": {
+          "en": "On 300 loans the same comparison found no model clearly better, so the amount of data decides the answer.",
+          "es": "Con 300 créditos la misma comparación no halló ningún modelo claramente mejor, así que la cantidad de datos decide la respuesta."
+        }
+      }
+    },
+    {
+      "capability": {
+        "en": "Measures how often each validation test raises a false alarm or misses a real defect",
+        "es": "Mide con qué frecuencia cada prueba de validación da una falsa alarma o deja pasar un defecto real"
+      },
+      "outcome": {
+        "en": "Correct models are not sent back for rework by a test that rejects too often",
+        "es": "Los modelos correctos no vuelven a retrabajo por una prueba que rechaza demasiado"
+      },
+      "proof": {
+        "value": {
+          "en": "10.98",
+          "es": "10,98"
+        },
+        "unit": {
+          "en": "percent of correct models rejected by one widely used test that promises to reject 5 percent",
+          "es": "por ciento de modelos correctos rechazados por una prueba muy usada que promete rechazar 5 por ciento"
+        },
+        "statement": {
+          "en": "A correct model would be sent back for rework about one time in nine.",
+          "es": "Un modelo correcto volvería a retrabajo cerca de una vez de cada nueve."
+        }
+      }
+    }
+  ],
+  "dialogue": [
+    {
+      "question": {
+        "en": "Will the CMF accept this as evidence?",
+        "es": "¿Aceptará la CMF esto como evidencia?"
+      },
+      "answer": {
+        "en": "Only the CMF decides, and the product certifies no model. Its draft rules ask the bank's validation function to certify each application beforehand, and this gives that function evidence it can re-run.",
+        "es": "Solo la CMF decide, y el producto no certifica ningún modelo. Su propuesta de norma pide que la función de validación del banco certifique cada solicitud antes, y esto le da evidencia que puede repetir."
+      }
+    },
+    {
+      "question": {
+        "en": "Does it compute our own capital and provisions?",
+        "es": "¿Calcula nuestro propio capital y nuestras provisiones?"
+      },
+      "answer": {
+        "en": "No. It runs on public data and on generated banks, so it shows what a choice does, and our validators must test our own loans separately.",
+        "es": "No. Corre sobre datos públicos y sobre bancos generados, de modo que muestra qué hace una decisión, y nuestros validadores deben probar por separado nuestros propios créditos."
+      }
+    },
+    {
+      "question": {
+        "en": "What happens if the CMF turns our application down?",
+        "es": "¿Qué pasa si la CMF rechaza nuestra solicitud?"
+      },
+      "answer": {
+        "en": "Under the draft rules the bank may file once every twelve months, unless validation and internal audit show the findings are resolved. Testing before filing protects that year.",
+        "es": "Según la propuesta de norma el banco puede presentar una vez cada doce meses, salvo que validación y auditoría interna muestren que las observaciones están resueltas. Probar antes de presentar protege ese año."
+      }
+    },
+    {
+      "question": {
+        "en": "Do machine learning models belong in our application?",
+        "es": "¿Pertenecen los modelos de aprendizaje automático a nuestra solicitud?"
+      },
+      "answer": {
+        "en": "Only if they earn it. The product compares them with the current scorecard on held-out loans and shows the capital difference.",
+        "es": "Solo si se lo ganan. El producto los compara con el scorecard actual sobre créditos reservados y muestra la diferencia de capital."
+      }
+    },
+    {
+      "question": {
+        "en": "What does it cost to run?",
+        "es": "¿Cuánto cuesta operarlo?"
+      },
+      "answer": {
+        "en": "It is free, open software that runs in a web browser, with no server to buy or secure. The cost is the time of our validators.",
+        "es": "Es software libre y abierto que corre en un navegador, sin servidor que comprar ni proteger. El costo es el tiempo de nuestros validadores."
+      }
+    }
+  ],
+  "illustrations": {
+    "initiative": {
+      "file": "executive/initiative.svg",
+      "caption": {
+        "en": "The chief risk officer stands before the bank's models, with the first CMF filing in 2028 and the new rules in 2031 ahead.",
+        "es": "El gerente de riesgos está frente a los modelos del banco, con la primera presentación a la CMF en 2028 y la nueva norma en 2031 por delante."
+      }
+    },
+    "problem": {
+      "file": "executive/problem.svg",
+      "caption": {
+        "en": "Models checked by hand leave the capital effect unknown, and a returned application costs a year of waiting.",
+        "es": "Los modelos revisados a mano dejan desconocido el efecto en capital, y una solicitud devuelta cuesta un año de espera."
+      }
+    },
+    "solution": {
+      "file": "executive/solution.svg",
+      "caption": {
+        "en": "With the evidence in the committee room, each model reaches the CMF tested in advance and its capital effect already shown.",
+        "es": "Con la evidencia en la sala del comité, cada modelo llega a la CMF probado de antemano y con su efecto en capital ya mostrado."
+      }
+    }
+  },
+  "sources": [
+    {
+      "field": "why_now.figure",
+      "source": {
+        "en": "CMF, Informe Normativo, August 2026, \"Propuesta normativa para la adopción de metodologías internas en el cálculo de activos ponderados por riesgo de crédito y provisiones\", section V.2 item 3 (page 71): individual exposures of 132,000 million US dollars, 30 percent of assets, and 571 million US dollars of higher provisions if the proposed model applied directly; the effect disappears or reverses if banks obtain approved internal models before the individual-portfolio changes take effect in January 2031. The same report states that no institution uses internal models for provisions or risk-weighted assets (page 4), that banks may file internal models for individual exposures from January 2028 (page 19), that the first filing must cover at least 20 percent of the modelable universe (page 14), that the validation function must certify each application beforehand (page 57) and that a bank may file once every twelve months, with an exception when validation and internal audit show the findings are resolved (page 57). Published on cmfchile.cl, section Normativa en trámite (normative proposals under consultation), file 2026080375.",
+        "es": "CMF, Informe Normativo, agosto de 2026, \"Propuesta normativa para la adopción de metodologías internas en el cálculo de activos ponderados por riesgo de crédito y provisiones\", sección V.2 punto 3 (página 71): exposiciones individuales por 132.000 millones de dólares, 30 por ciento de los activos, y 571 millones de dólares de mayores provisiones si el modelo propuesto se aplicara directamente; el efecto desaparece o se revierte si los bancos obtienen modelos internos aprobados antes de que los cambios de la cartera individual entren en vigor en enero de 2031. El mismo informe señala que ninguna institución usa modelos internos para provisiones o activos ponderados por riesgo (página 4), que los bancos pueden presentar modelos internos de exposiciones individuales desde enero de 2028 (página 19), que la primera presentación debe cubrir al menos 20 por ciento del universo modelable (página 14), que la función de validación debe certificar cada solicitud antes (página 57) y que un banco puede presentar una solicitud cada doce meses, con una excepción cuando validación y auditoría interna muestran que las observaciones están resueltas (página 57). Publicado en cmfchile.cl, sección Normativa en trámite, archivo 2026080375."
+      }
+    },
+    {
+      "field": "outcomes[0].proof",
+      "source": {
+        "en": "Contraste's own committed results, case C07 (a generated bank, Banco Andino, calibrated to public CMF aggregates; not a real bank): the recession variant raises the statutory CMF B-1 provision by 29.9 percent (45.5 billion pesos over 152.0 billion) and the IFRS 9 expected-loss estimate by 74.0 percent (72.2 billion over 97.6 billion), in data/derived/C07/recession.json (outputs.delta_vs_base) and data/derived/C07/base.json, summarised in docs/cases/C07.md lines 160 to 171.",
+        "es": "Resultados comprometidos del propio Contraste, caso C07 (un banco generado, Banco Andino, calibrado a agregados públicos de la CMF; no es un banco real): la variante de recesión sube la provisión estatutaria CMF B-1 en 29,9 por ciento (45,5 mil millones de pesos sobre 152,0) y la estimación de pérdida esperada IFRS 9 en 74,0 por ciento (72,2 mil millones sobre 97,6), en data/derived/C07/recession.json (outputs.delta_vs_base) y data/derived/C07/base.json, resumidos en docs/cases/C07.md líneas 160 a 171."
+      }
+    },
+    {
+      "field": "outcomes[1].proof",
+      "source": {
+        "en": "Contraste's own committed results, case C05 (S&P corporate rating data, calibration of default probabilities, year 2010): carrying the 2009 default curve unchanged gives an average risk weight of 90.7 percent against 55.0 percent for the scaled likelihood ratio, which is 64.8 percent more capital, in docs/cases/C05.md lines 60 to 90, from the committed documents in data/derived/C05.",
+        "es": "Resultados comprometidos del propio Contraste, caso C05 (datos públicos de clasificaciones corporativas de S&P, calibración de probabilidades de incumplimiento, año 2010): arrastrar sin cambios la curva de incumplimiento de 2009 da una ponderación de riesgo promedio de 90,7 por ciento frente a 55,0 por ciento de la razón de verosimilitud escalada, es decir 64,8 por ciento más de capital, en docs/cases/C05.md líneas 60 a 90, desde los documentos comprometidos en data/derived/C05."
+      }
+    },
+    {
+      "field": "outcomes[2].proof",
+      "source": {
+        "en": "Contraste's own committed results, case C01 (9,000 held-out records of the public Taiwan credit card data): at 80 percent approved, LGD 50 percent and Basel III, the scorecard's book needs NT$28.8 million of capital and the monotone gradient boosting model's NT$27.7 million, 4.2 percent less; on 300 German loans no model beats the scorecard significantly (p 0.615), in docs/cases/C01.md lines 52 to 85.",
+        "es": "Resultados comprometidos del propio Contraste, caso C01 (9.000 registros reservados de los datos públicos de tarjetas de crédito de Taiwán): con 80 por ciento aprobado, LGD de 50 por ciento y Basilea III, la cartera del scorecard necesita NT$28,8 millones de capital y la del modelo de gradient boosting monótono NT$27,7 millones, 4,2 por ciento menos; con 300 créditos alemanes ningún modelo supera al scorecard de forma significativa (p 0,615), en docs/cases/C01.md líneas 52 a 85."
+      }
+    },
+    {
+      "field": "outcomes[3].proof",
+      "source": {
+        "en": "Contraste's own committed results, case C22 (simulated size of 21 validation tests): the Hosmer-Lemeshow test with G minus 2 degrees of freedom on probabilities of default set before the outcomes rejects a correct model 10.98 percent of the time at its stated 5 percent level, in docs/cases/C22.md lines 120 to 131, from data/derived/C22.",
+        "es": "Resultados comprometidos del propio Contraste, caso C22 (tamaño simulado de 21 pruebas de validación): la prueba de Hosmer-Lemeshow con G menos 2 grados de libertad sobre probabilidades de incumplimiento fijadas antes de los resultados rechaza un modelo correcto 10,98 por ciento de las veces con su nivel declarado de 5 por ciento, en docs/cases/C22.md líneas 120 a 131, desde data/derived/C22."
+      }
+    }
+  ]
+}
