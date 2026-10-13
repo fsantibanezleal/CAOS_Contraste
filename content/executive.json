@@ -29,7 +29,7 @@
   },
   "vision": {
     "en": "Risk committees see what each modelling choice does to capital and provisions, and how often each validation test errs, before a model is filed.",
-    "es": "Los comités de riesgo ven qué hace cada decisión de modelación al capital y las provisiones, y cuánto yerra cada prueba de validación, antes de presentar un modelo."
+    "es": "Los comités de riesgo ven el efecto de cada decisión de modelación en capital y provisiones, y cuánto yerra cada prueba, antes de presentar un modelo."
   },
   "outcomes": [
     {
