@@ -177,6 +177,15 @@
                       "$ref": "#/components/schemas/c09-variant-acceleration-level"
                     },
                     {
+                      "$ref": "#/components/schemas/c10-models"
+                    },
+                    {
+                      "$ref": "#/components/schemas/c10-variant-correlation-grid"
+                    },
+                    {
+                      "$ref": "#/components/schemas/c10-variant-loan-type"
+                    },
+                    {
                       "$ref": "#/components/schemas/c22-models"
                     },
                     {
@@ -12276,6 +12285,2621 @@
             "minLength": 1
           }
         }
+      },
+      "c10-models": {
+        "title": "C10 models",
+        "description": "Catalog row c10-models 1.0.0: the C10 models artifact (loan types, estimators, the rung ladder, the illustrative portfolio's specification, the granularity parameters, the simulator grid).",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/common-models-envelope"
+          },
+          {
+            "properties": {
+              "case_id": {
+                "const": "C10"
+              },
+              "fit": {
+                "$ref": "#/components/schemas/c10ModelsFit"
+              },
+              "provenance": {
+                "properties": {
+                  "inputs": {
+                    "contains": {
+                      "properties": {
+                        "source": {
+                          "const": "illustrative-portfolio"
+                        },
+                        "class": {
+                          "const": "illustrative"
+                        }
+                      },
+                      "required": [
+                        "source",
+                        "class"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "required": [
+              "case_id",
+              "fit"
+            ]
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+      "c10-variant-correlation-grid": {
+        "title": "C10 correlation-grid variant",
+        "description": "Catalog row c10-outputs-grid 1.0.0: the simulator's correlation grid of the portfolio credit capital case (outputs.kind correlation-grid), on a generator with a known correlation.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/common-variant-envelope"
+          },
+          {
+            "properties": {
+              "case_id": {
+                "const": "C10"
+              },
+              "outputs": {
+                "$ref": "#/components/schemas/c10GridOutputs",
+                "properties": {
+                  "kind": {
+                    "const": "correlation-grid"
+                  }
+                }
+              }
+            },
+            "required": [
+              "case_id",
+              "outputs"
+            ]
+          },
+          {
+            "properties": {
+              "provenance": {
+                "properties": {
+                  "truth_status": {
+                    "const": "synthetic-known-truth"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "properties": {
+              "tests": {
+                "items": {
+                  "if": {
+                    "properties": {
+                      "light": {
+                        "const": "not_evaluated"
+                      }
+                    },
+                    "required": [
+                      "light"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "statistic": {
+                        "type": "null"
+                      },
+                      "p_value": {
+                        "type": "null"
+                      },
+                      "metric": {
+                        "type": "null"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+      "c10-variant-loan-type": {
+        "title": "C10 loan-type variant",
+        "description": "Catalog row c10-outputs 1.0.0: one Federal Reserve loan type of the portfolio credit capital case (outputs.kind loan-type), real charge-off rates and an illustrative portfolio.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/common-variant-envelope"
+          },
+          {
+            "properties": {
+              "case_id": {
+                "const": "C10"
+              },
+              "outputs": {
+                "$ref": "#/components/schemas/c10LoanTypeOutputs",
+                "properties": {
+                  "kind": {
+                    "const": "loan-type"
+                  }
+                }
+              }
+            },
+            "required": [
+              "case_id",
+              "outputs"
+            ]
+          },
+          {
+            "properties": {
+              "provenance": {
+                "properties": {
+                  "truth_status": {
+                    "const": "real-outcomes"
+                  },
+                  "inputs": {
+                    "contains": {
+                      "properties": {
+                        "source": {
+                          "const": "illustrative-portfolio"
+                        },
+                        "class": {
+                          "const": "illustrative"
+                        }
+                      },
+                      "required": [
+                        "source",
+                        "class"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "properties": {
+              "tests": {
+                "items": {
+                  "if": {
+                    "properties": {
+                      "light": {
+                        "const": "not_evaluated"
+                      }
+                    },
+                    "required": [
+                      "light"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "statistic": {
+                        "type": "null"
+                      },
+                      "p_value": {
+                        "type": "null"
+                      },
+                      "metric": {
+                        "type": "null"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+      "c10AnnualRate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "year",
+          "window",
+          "n_quarters",
+          "loss_rate",
+          "reason",
+          "fitted_cdf",
+          "implied_factor",
+          "exceeds_99",
+          "exceeds_999"
+        ],
+        "properties": {
+          "year": {
+            "type": "integer",
+            "minimum": 1985
+          },
+          "window": {
+            "type": "string",
+            "enum": [
+              "fit",
+              "evaluation"
+            ]
+          },
+          "n_quarters": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4,
+            "description": "Quarters of the year present in the table."
+          },
+          "loss_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 1,
+                "description": "An observed annual loss rate as a decimal per year, open (0, 1): the implied factor needs it."
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The mean of the four quarterly annualised net charge-off rates; null when a quarter is missing."
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the rate is null; null when it is present."
+          },
+          "fitted_cdf": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "A share or an observed rate in [0, 1]."
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The fitted Vasicek distribution function at the rate: where the year falls in the fit."
+          },
+          "implied_factor": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The systematic factor z at which the conditional PD equals the rate (dossier 04 C.4)."
+          },
+          "exceeds_99": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "True when the rate is above the fitted 99% quantile."
+          },
+          "exceeds_999": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "True when the rate is above the fitted 99.9% quantile."
+          }
+        },
+        "description": "One calendar year of the loss-rate series with its position in the fitted distribution. A year with all four quarters carries every number and no reason; a year with a missing quarter carries null numbers and the reason, never an interpolated rate.",
+        "oneOf": [
+          {
+            "properties": {
+              "n_quarters": {
+                "const": 4
+              },
+              "loss_rate": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 1,
+                "description": "An observed annual loss rate as a decimal per year, open (0, 1): the implied factor needs it."
+              },
+              "reason": {
+                "type": "null"
+              },
+              "fitted_cdf": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "A share or an observed rate in [0, 1]."
+              },
+              "implied_factor": {
+                "type": "number"
+              },
+              "exceeds_99": {
+                "type": "boolean"
+              },
+              "exceeds_999": {
+                "type": "boolean"
+              }
+            }
+          },
+          {
+            "properties": {
+              "n_quarters": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 3
+              },
+              "loss_rate": {
+                "type": "null"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              },
+              "fitted_cdf": {
+                "type": "null"
+              },
+              "implied_factor": {
+                "type": "null"
+              },
+              "exceeds_99": {
+                "type": "null"
+              },
+              "exceeds_999": {
+                "type": "null"
+              }
+            }
+          }
+        ]
+      },
+      "c10Backtest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "n_years_evaluated",
+          "rows"
+        ],
+        "properties": {
+          "n_years_evaluated": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10BacktestRow"
+            },
+            "minItems": 3
+          }
+        },
+        "description": "The tail back-test of the evaluation window against the quantiles fitted on the fit window (dossier 05 G.5; engine validation.portfolio.tail_backtest)."
+      },
+      "c10BacktestRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "level",
+          "fitted_quantile",
+          "expected_exceedances",
+          "observed_exceedances",
+          "years_exceeding",
+          "p_value_upper",
+          "light"
+        ],
+        "properties": {
+          "level": {
+            "type": "number",
+            "enum": [
+              0.95,
+              0.99,
+              0.999
+            ]
+          },
+          "fitted_quantile": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An observed annual loss rate as a decimal per year, open (0, 1): the implied factor needs it."
+          },
+          "expected_exceedances": {
+            "type": "number",
+            "minimum": 0
+          },
+          "observed_exceedances": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "years_exceeding": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1985
+            }
+          },
+          "p_value_upper": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          },
+          "light": {
+            "type": "string",
+            "enum": [
+              "green",
+              "amber",
+              "red",
+              "not_evaluated",
+              "error"
+            ]
+          }
+        },
+        "description": "Years of the evaluation window above one fitted quantile: expected = n_years (1 - level), observed, and the upper binomial tail probability P(X >= observed) with success probability 1 - level."
+      },
+      "c10Calibration": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pd",
+          "rho",
+          "source"
+        ],
+        "properties": {
+          "pd": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An estimate-site PD is open: 0 < pd < 1."
+          },
+          "rho": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+          },
+          "source": {
+            "const": "fit-maximum-likelihood"
+          }
+        },
+        "description": "The single PD and correlation the C1 rungs use, taken from the maximum-likelihood fit."
+      },
+      "c10Curve": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "x",
+          "pdf",
+          "cdf"
+        ],
+        "properties": {
+          "x": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1,
+              "description": "An observed annual loss rate as a decimal per year, open (0, 1): the implied factor needs it."
+            },
+            "minItems": 8,
+            "description": "Loss rates, strictly increasing."
+          },
+          "pdf": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 0
+            },
+            "minItems": 8,
+            "description": "The Vasicek (large homogeneous portfolio) density at x."
+          },
+          "cdf": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A share or an observed rate in [0, 1]."
+            },
+            "minItems": 8,
+            "description": "The distribution function at x, nondecreasing."
+          }
+        }
+      },
+      "c10DataStatus": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source",
+          "table",
+          "series",
+          "seasonal_adjustment",
+          "bank_scope",
+          "files_as_of",
+          "quarters_expected",
+          "missing_quarters",
+          "notice"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "table": {
+            "type": "string"
+          },
+          "series": {
+            "type": "string"
+          },
+          "seasonal_adjustment": {
+            "type": "string",
+            "enum": [
+              "SA",
+              "NSA"
+            ]
+          },
+          "bank_scope": {
+            "type": "string"
+          },
+          "files_as_of": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "quarters_expected": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "missing_quarters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10MissingQuarter"
+            }
+          },
+          "notice": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "Where the loss-rate series came from: the Federal Reserve charge-off release (dossier 08 B.4, row 23), the table, the series column and the quarters it lacks."
+      },
+      "c10Estimator": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "estimator",
+          "mean_estimate",
+          "bias",
+          "rmse",
+          "coverage",
+          "rejection_rate",
+          "rejection_se",
+          "rejection_ci_low",
+          "rejection_ci_high"
+        ],
+        "properties": {
+          "estimator": {
+            "type": "string",
+            "enum": [
+              "maximum-likelihood",
+              "moments"
+            ]
+          },
+          "mean_estimate": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+          },
+          "bias": {
+            "type": "number",
+            "description": "mean_estimate minus known_rho."
+          },
+          "rmse": {
+            "type": "number",
+            "minimum": 0
+          },
+          "coverage": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          },
+          "rejection_rate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          },
+          "rejection_se": {
+            "type": "number",
+            "minimum": 0
+          },
+          "rejection_ci_low": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          },
+          "rejection_ci_high": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          }
+        },
+        "description": "One estimator in one grid cell over the valid replications: bias, rmse, the coverage of its 95% interval, and the rate at which H0: rho = null_rho is rejected at level alpha with its Monte Carlo standard error and Wilson interval."
+      },
+      "c10EstimatorSpec": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "engine_function",
+          "interval_method",
+          "reference"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "maximum-likelihood",
+              "moments"
+            ]
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "engine_function": {
+            "type": "string",
+            "minLength": 1
+          },
+          "interval_method": {
+            "type": "string",
+            "enum": [
+              "profile-likelihood",
+              "parametric-bootstrap"
+            ]
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "c10Euler": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rung_method",
+          "currency",
+          "levels"
+        ],
+        "properties": {
+          "rung_method": {
+            "type": "string",
+            "enum": [
+              "gaussian-copula-one-factor",
+              "gaussian-copula-multi-factor",
+              "student-t-copula",
+              "creditrisk-plus"
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "description": "ISO 4217 code of the money fields of this block."
+          },
+          "levels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10EulerLevel"
+            },
+            "minItems": 2
+          }
+        },
+        "description": "The Euler contributions of one sample-based rung, by portfolio group, at both levels."
+      },
+      "c10EulerAnchor": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "method",
+          "rows"
+        ],
+        "properties": {
+          "method": {
+            "const": "emmer-tasche-2005-one-factor"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10EulerAnchorRow"
+            },
+            "minItems": 2
+          }
+        },
+        "description": "The closed-form one-factor VaR contributions of Emmer and Tasche (2005), the anchor of the sample contributions."
+      },
+      "c10EulerAnchorRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "group_id",
+          "rc_var"
+        ],
+        "properties": {
+          "group_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rc_var": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in the `currency` of the enclosing block."
+          }
+        }
+      },
+      "c10EulerLevel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "level",
+          "var_total",
+          "es_total",
+          "var_sum_tolerance",
+          "es_sum_tolerance",
+          "var_method",
+          "es_method",
+          "rows",
+          "anchor",
+          "anchor_reason"
+        ],
+        "properties": {
+          "level": {
+            "type": "number",
+            "enum": [
+              0.99,
+              0.999
+            ],
+            "description": "A confidence level as a decimal."
+          },
+          "var_total": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in the `currency` of the enclosing block."
+          },
+          "es_total": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in the `currency` of the enclosing block."
+          },
+          "var_sum_tolerance": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Relative tolerance of the sum of the VaR contributions against var_total."
+          },
+          "es_sum_tolerance": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Relative tolerance of the sum of the ES contributions against es_total."
+          },
+          "var_method": {
+            "type": "string",
+            "enum": [
+              "kernel",
+              "closed-form-one-factor"
+            ]
+          },
+          "es_method": {
+            "type": "string",
+            "enum": [
+              "tail-sample"
+            ]
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10EulerRow"
+            },
+            "minItems": 2
+          },
+          "anchor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c10EulerAnchor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "anchor_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "The contributions at one level. The contributions of a level sum to its totals within the stated tolerances (a producer check); the anchor is null with its reason where no closed form exists.",
+        "oneOf": [
+          {
+            "properties": {
+              "anchor": {
+                "$ref": "#/components/schemas/c10EulerAnchor"
+              },
+              "anchor_reason": {
+                "type": "null"
+              }
+            }
+          },
+          {
+            "properties": {
+              "anchor": {
+                "type": "null"
+              },
+              "anchor_reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        ]
+      },
+      "c10EulerRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "group_id",
+          "ead",
+          "rc_var",
+          "rc_es",
+          "share_var",
+          "share_es"
+        ],
+        "properties": {
+          "group_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "ead": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in the `currency` of the enclosing block."
+          },
+          "rc_var": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in the `currency` of the enclosing block."
+          },
+          "rc_es": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in the `currency` of the enclosing block."
+          },
+          "share_var": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          },
+          "share_es": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          }
+        },
+        "description": "The Euler contribution of one group to the VaR and to the ES (dossier 05 G.4: E[L_i | L = VaR], E[L_i | L >= VaR])."
+      },
+      "c10Fit": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "n_years_used",
+          "maximum_likelihood",
+          "moments"
+        ],
+        "properties": {
+          "n_years_used": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "maximum_likelihood": {
+            "$ref": "#/components/schemas/c10MlFit"
+          },
+          "moments": {
+            "$ref": "#/components/schemas/c10MomentsFit"
+          }
+        },
+        "description": "The two fits of the yearly series; n_years_used counts the fit-window years with a rate."
+      },
+      "c10FittedDistribution": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pd",
+          "rho",
+          "curve",
+          "quantiles"
+        ],
+        "properties": {
+          "pd": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An estimate-site PD is open: 0 < pd < 1."
+          },
+          "rho": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+          },
+          "curve": {
+            "$ref": "#/components/schemas/c10Curve"
+          },
+          "quantiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10Quantile"
+            },
+            "minItems": 2
+          }
+        },
+        "description": "The fitted (maximum-likelihood) Vasicek distribution of the yearly loss rate: its density and distribution function and its quantiles; pd and rho equal the maximum-likelihood estimates (a producer check)."
+      },
+      "c10GaPortfolio": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ga_ratio",
+          "k_star",
+          "ga_add_on_share",
+          "ga_money"
+        ],
+        "properties": {
+          "ga_ratio": {
+            "type": "number",
+            "minimum": 0
+          },
+          "k_star": {
+            "type": "number",
+            "minimum": 0
+          },
+          "ga_add_on_share": {
+            "type": "number",
+            "minimum": 0
+          },
+          "ga_money": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in the `currency` of the enclosing block."
+          }
+        },
+        "description": "The adjustment for the illustrative portfolio: ga_add_on_share = ga_ratio * k_star, as a share of EAD, and in money."
+      },
+      "c10GaRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "n_names",
+          "hhi",
+          "ga_ratio"
+        ],
+        "properties": {
+          "n_names": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "hhi": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "ga_ratio": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "description": "The granularity adjustment of n identical names of the portfolio's mix: ga_ratio times n is constant."
+      },
+      "c10Granularity": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "currency",
+          "xi",
+          "gamma",
+          "q",
+          "alpha_q",
+          "delta",
+          "delta_reference",
+          "delta_reference_source",
+          "applies_to_portfolio",
+          "by_n_names"
+        ],
+        "properties": {
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "description": "ISO 4217 code of the money fields of this block."
+          },
+          "xi": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "gamma": {
+            "type": "number",
+            "minimum": 0
+          },
+          "q": {
+            "type": "number",
+            "enum": [
+              0.99,
+              0.999
+            ],
+            "description": "A confidence level as a decimal."
+          },
+          "alpha_q": {
+            "type": "number",
+            "exclusiveMinimum": 1,
+            "description": "The q-quantile of the Gamma factor with shape xi and rate xi (mean 1, variance 1/xi)."
+          },
+          "delta": {
+            "type": "number",
+            "minimum": 0
+          },
+          "delta_reference": {
+            "const": 4.83
+          },
+          "delta_reference_source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "applies_to_portfolio": {
+            "$ref": "#/components/schemas/c10GaPortfolio"
+          },
+          "by_n_names": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10GaRow"
+            },
+            "minItems": 5
+          }
+        },
+        "description": "The granularity adjustment of Gordy and Lutkebohmert (2013) (dossier 04 H.5): delta = (alpha_q - 1)(xi + (1 - xi) / alpha_q) (eq. 15), 4.83 at xi 0.25 and q 0.999, the adjustment for the portfolio, and the adjustment against the number of names."
+      },
+      "c10GranularitySpec": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "xi",
+          "gamma",
+          "xi_reference",
+          "q_reference",
+          "delta_reference",
+          "reference"
+        ],
+        "properties": {
+          "xi": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "gamma": {
+            "type": "number",
+            "minimum": 0
+          },
+          "xi_reference": {
+            "const": 0.25
+          },
+          "q_reference": {
+            "const": 0.999
+          },
+          "delta_reference": {
+            "const": 4.83
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "description": "The granularity parameters and the golden delta of Gordy and Lutkebohmert (2013) (eq. 15): 4.83 at xi 0.25 and q 0.999."
+      },
+      "c10GridCell": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "known_rho",
+          "series_length_years",
+          "n_replications",
+          "n_valid",
+          "n_failed",
+          "role",
+          "estimators"
+        ],
+        "properties": {
+          "known_rho": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+          },
+          "series_length_years": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "n_replications": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "n_valid": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "n_failed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "size",
+              "power"
+            ]
+          },
+          "estimators": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10Estimator"
+            },
+            "minItems": 2
+          }
+        },
+        "description": "One cell of the simulator's correlation grid. role is size where known_rho equals the generator's null_rho (the rejection rate is then the exact size) and power elsewhere (a producer check). n_valid + n_failed = n_replications."
+      },
+      "c10GridOutputs": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "label",
+          "generator",
+          "size_power_definition",
+          "cells"
+        ],
+        "properties": {
+          "kind": {
+            "const": "correlation-grid"
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "generator": {
+            "$ref": "#/components/schemas/c10SimGenerator"
+          },
+          "size_power_definition": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "cells": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10GridCell"
+            },
+            "minItems": 2
+          }
+        },
+        "description": "C10 correlation-grid outputs (outputs.kind correlation-grid): the exact size and power of the correlation estimates on a simulator with a known correlation, for one series length. The known correlation is a required field of the generator and of every cell."
+      },
+      "c10Group": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "n_names",
+          "ead_each",
+          "pd",
+          "lgd",
+          "loading",
+          "sector"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "n_names": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "ead_each": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Money in the `currency` of the enclosing block."
+          },
+          "pd": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An estimate-site PD is open: 0 < pd < 1."
+          },
+          "lgd": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          },
+          "loading": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "The factor loading sqrt(rho) of the group's names on the systematic factor."
+          },
+          "sector": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "description": "A group of identical names of the illustrative portfolio (dossier 04 H.1: EAD, expected LGD, PD, loading, sector)."
+      },
+      "c10Interval": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "estimate",
+          "ci_low",
+          "ci_high"
+        ],
+        "properties": {
+          "estimate": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+          },
+          "ci_low": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+          },
+          "ci_high": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+          }
+        },
+        "description": "An estimate with its interval, all inside (0, 1); ci_low <= estimate <= ci_high (a producer check)."
+      },
+      "c10IrbReference": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "regime",
+          "asset_class",
+          "reference",
+          "pd",
+          "lgd",
+          "irb_correlation",
+          "fitted_correlation",
+          "k_irb",
+          "ec_lhp_fitted",
+          "ratio_fitted_to_irb"
+        ],
+        "properties": {
+          "regime": {
+            "type": "string"
+          },
+          "asset_class": {
+            "type": "string"
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          },
+          "pd": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An estimate-site PD is open: 0 < pd < 1."
+          },
+          "lgd": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          },
+          "irb_correlation": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+          },
+          "fitted_correlation": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+          },
+          "k_irb": {
+            "type": "number",
+            "minimum": 0,
+            "description": "The IRB capital requirement per unit of EAD (engine regulatory.irb.capital_requirement)."
+          },
+          "ec_lhp_fitted": {
+            "type": "number",
+            "minimum": 0,
+            "description": "lgd * (LHP quantile at 99.9% with the fitted correlation - pd), per unit of EAD."
+          },
+          "ratio_fitted_to_irb": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "description": "How the fitted correlation compares with the IRB correlation of the loan type's regulatory class (dossier 04 C.4): the capital per unit of EAD both ways. Retail classes carry no maturity adjustment."
+      },
+      "c10LoanTypeOutputs": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "loan_type",
+          "label",
+          "currency",
+          "loss_rate_definition",
+          "windows",
+          "data_status",
+          "annual_rates",
+          "fit",
+          "profile_likelihood",
+          "fitted_distribution",
+          "backtest",
+          "irb_reference",
+          "portfolio",
+          "rungs",
+          "granularity",
+          "euler"
+        ],
+        "properties": {
+          "kind": {
+            "const": "loan-type"
+          },
+          "loan_type": {
+            "type": "string",
+            "enum": [
+              "commercial-industrial",
+              "commercial-real-estate",
+              "residential",
+              "credit-cards",
+              "other-consumer"
+            ]
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "description": "ISO 4217 code of the money fields of this block."
+          },
+          "loss_rate_definition": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "windows": {
+            "$ref": "#/components/schemas/c10Windows"
+          },
+          "data_status": {
+            "$ref": "#/components/schemas/c10DataStatus"
+          },
+          "annual_rates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10AnnualRate"
+            },
+            "minItems": 8
+          },
+          "fit": {
+            "$ref": "#/components/schemas/c10Fit"
+          },
+          "profile_likelihood": {
+            "$ref": "#/components/schemas/c10Profile"
+          },
+          "fitted_distribution": {
+            "$ref": "#/components/schemas/c10FittedDistribution"
+          },
+          "backtest": {
+            "$ref": "#/components/schemas/c10Backtest"
+          },
+          "irb_reference": {
+            "$ref": "#/components/schemas/c10IrbReference"
+          },
+          "portfolio": {
+            "$ref": "#/components/schemas/c10Portfolio"
+          },
+          "rungs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10Rung"
+            },
+            "minItems": 8
+          },
+          "granularity": {
+            "$ref": "#/components/schemas/c10Granularity"
+          },
+          "euler": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10Euler"
+            },
+            "minItems": 1
+          }
+        },
+        "description": "C10 loan-type outputs (outputs.kind loan-type): one Federal Reserve loan type, the Vasicek fit to its yearly loss rates (fit 1985-2006), the 2007-2012 tail back-test, and the loss distributions of the illustrative portfolio by rung with the Euler contributions and the concentration measures. Loss rates are decimals per year; money carries its currency."
+      },
+      "c10LoanTypeSpec": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "table_column",
+          "irb_asset_class",
+          "irb_reference"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "commercial-industrial",
+              "commercial-real-estate",
+              "residential",
+              "credit-cards",
+              "other-consumer"
+            ]
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "table_column": {
+            "type": "string",
+            "minLength": 1
+          },
+          "irb_asset_class": {
+            "type": "string"
+          },
+          "irb_reference": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "description": "A loan type of the Federal Reserve table and the IRB asset class its fitted correlation is compared with."
+      },
+      "c10LossCurve": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "currency",
+          "loss",
+          "cdf",
+          "density"
+        ],
+        "properties": {
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "description": "ISO 4217 code of the money fields of this block."
+          },
+          "loss": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Money in the `currency` of the enclosing block."
+            },
+            "minItems": 8,
+            "description": "Portfolio loss in money, strictly increasing."
+          },
+          "cdf": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A share or an observed rate in [0, 1]."
+            },
+            "minItems": 8,
+            "description": "The distribution function of the loss, nondecreasing."
+          },
+          "density": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 0
+            },
+            "minItems": 8,
+            "description": "The density (per unit of money) or the histogram density."
+          }
+        },
+        "description": "The loss distribution of a rung on a money grid; the three arrays have one length."
+      },
+      "c10Measure": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "level",
+          "el",
+          "var",
+          "es",
+          "es_reason",
+          "ec",
+          "var_se",
+          "es_se"
+        ],
+        "properties": {
+          "level": {
+            "type": "number",
+            "enum": [
+              0.99,
+              0.999
+            ],
+            "description": "A confidence level as a decimal."
+          },
+          "el": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in the `currency` of the enclosing block."
+          },
+          "var": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in the `currency` of the enclosing block."
+          },
+          "es": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "description": "Money in the `currency` of the enclosing block."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "es_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ec": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Money in the `currency` of the enclosing block."
+          },
+          "var_se": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Monte Carlo standard error of the VaR; null for an analytic rung."
+          },
+          "es_se": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Monte Carlo standard error of the ES; null for an analytic rung."
+          }
+        },
+        "description": "EL, VaR, ES and EC at one level (dossier 04 H.1): EC = VaR - EL. VaR is not below EL and ES is not below VaR (a producer check, JSON Schema cannot compare fields). A rung that defines no ES (the granularity adjustment) has es null and the reason.",
+        "oneOf": [
+          {
+            "properties": {
+              "es": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Money in the `currency` of the enclosing block."
+              },
+              "es_reason": {
+                "type": "null"
+              }
+            }
+          },
+          {
+            "properties": {
+              "es": {
+                "type": "null"
+              },
+              "es_reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        ]
+      },
+      "c10MissingQuarter": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "quarter",
+          "reason"
+        ],
+        "properties": {
+          "quarter": {
+            "type": "string",
+            "pattern": "^\\d{4}Q[1-4]$"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "description": "A quarter missing from the Federal Reserve table, with its reason; never interpolated."
+      },
+      "c10MlFit": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pd",
+          "rho",
+          "log_likelihood",
+          "converged",
+          "interval_method",
+          "level"
+        ],
+        "properties": {
+          "pd": {
+            "$ref": "#/components/schemas/c10PdInterval"
+          },
+          "rho": {
+            "$ref": "#/components/schemas/c10Interval"
+          },
+          "log_likelihood": {
+            "type": "number"
+          },
+          "converged": {
+            "type": "boolean"
+          },
+          "interval_method": {
+            "type": "string",
+            "enum": [
+              "profile-likelihood"
+            ]
+          },
+          "level": {
+            "const": 0.95
+          }
+        },
+        "description": "The maximum-likelihood fit of the Vasicek distribution to the yearly rates of the fit window (dossier 04 C.4; engine asrf_fit.fit_ml), intervals by the profile likelihood."
+      },
+      "c10ModelsFit": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "currency",
+          "windows",
+          "loan_types",
+          "estimators",
+          "ladder",
+          "portfolio_spec",
+          "granularity",
+          "simulator"
+        ],
+        "properties": {
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "description": "ISO 4217 code of the money fields of this block."
+          },
+          "windows": {
+            "$ref": "#/components/schemas/c10Windows"
+          },
+          "loan_types": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10LoanTypeSpec"
+            },
+            "minItems": 5
+          },
+          "estimators": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10EstimatorSpec"
+            },
+            "minItems": 2
+          },
+          "ladder": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10RungSpec"
+            },
+            "minItems": 8
+          },
+          "portfolio_spec": {
+            "$ref": "#/components/schemas/c10PortfolioSpec"
+          },
+          "granularity": {
+            "$ref": "#/components/schemas/c10GranularitySpec"
+          },
+          "simulator": {
+            "$ref": "#/components/schemas/c10SimSpec"
+          }
+        },
+        "description": "C10 models: the five loan types, the two estimators, the eight rungs of the ladder, the illustrative portfolio's specification, the granularity parameters and the simulator's grid."
+      },
+      "c10MomentsFit": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pd",
+          "rho",
+          "interval_method",
+          "n_bootstrap",
+          "level"
+        ],
+        "properties": {
+          "pd": {
+            "$ref": "#/components/schemas/c10PdInterval"
+          },
+          "rho": {
+            "$ref": "#/components/schemas/c10Interval"
+          },
+          "interval_method": {
+            "type": "string",
+            "enum": [
+              "parametric-bootstrap"
+            ]
+          },
+          "n_bootstrap": {
+            "type": "integer",
+            "minimum": 100
+          },
+          "level": {
+            "const": 0.95
+          }
+        },
+        "description": "The method-of-moments fit (engine asrf_fit.fit_moments), intervals by the parametric bootstrap."
+      },
+      "c10PdInterval": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "estimate",
+          "ci_low",
+          "ci_high"
+        ],
+        "properties": {
+          "estimate": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An estimate-site PD is open: 0 < pd < 1."
+          },
+          "ci_low": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An estimate-site PD is open: 0 < pd < 1."
+          },
+          "ci_high": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An estimate-site PD is open: 0 < pd < 1."
+          }
+        },
+        "description": "A PD estimate with its interval, all inside the open interval (0, 1)."
+      },
+      "c10Portfolio": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "notice",
+          "currency",
+          "n_names",
+          "total_ead",
+          "groups",
+          "lgd_mean",
+          "lgd_gamma",
+          "levels",
+          "horizon_years",
+          "calibration",
+          "hhi",
+          "effective_names",
+          "largest_share"
+        ],
+        "properties": {
+          "label": {
+            "const": "illustrative"
+          },
+          "notice": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "description": "ISO 4217 code of the money fields of this block."
+          },
+          "n_names": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "total_ead": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Money in the `currency` of the enclosing block."
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10Group"
+            },
+            "minItems": 2
+          },
+          "lgd_mean": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          },
+          "lgd_gamma": {
+            "type": "number",
+            "minimum": 0,
+            "description": "gamma of V[LGD] = gamma E[LGD] (1 - E[LGD]) (Gordy and Lutkebohmert 2013, eq. 16)."
+          },
+          "levels": {
+            "type": "array",
+            "const": [
+              0.99,
+              0.999
+            ]
+          },
+          "horizon_years": {
+            "const": 1
+          },
+          "calibration": {
+            "$ref": "#/components/schemas/c10Calibration"
+          },
+          "hhi": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "effective_names": {
+            "type": "number",
+            "minimum": 1
+          },
+          "largest_share": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "description": "The illustrative portfolio: constructed, never a bank's (labelled `illustrative` here and in the provenance). hhi = sum of squared exposure shares and effective_names = 1 / hhi (dossier 04 H.6)."
+      },
+      "c10PortfolioSpec": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "notice",
+          "currency",
+          "groups",
+          "lgd_mean",
+          "lgd_gamma",
+          "levels",
+          "horizon_years"
+        ],
+        "properties": {
+          "label": {
+            "const": "illustrative"
+          },
+          "notice": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "description": "ISO 4217 code of the money fields of this block."
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c10Group"
+            },
+            "minItems": 2
+          },
+          "lgd_mean": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          },
+          "lgd_gamma": {
+            "type": "number",
+            "minimum": 0
+          },
+          "levels": {
+            "type": "array",
+            "const": [
+              0.99,
+              0.999
+            ]
+          },
+          "horizon_years": {
+            "const": 1
+          }
+        },
+        "description": "The specification of the illustrative portfolio the bake builds per loan type: constructed, never a bank's."
+      },
+      "c10Profile": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "level",
+          "rho",
+          "log_likelihood",
+          "pd_at_rho",
+          "max_log_likelihood",
+          "cutoff"
+        ],
+        "properties": {
+          "level": {
+            "const": 0.95
+          },
+          "rho": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1,
+              "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+            },
+            "minItems": 8,
+            "description": "The correlation grid, strictly increasing."
+          },
+          "log_likelihood": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 8,
+            "description": "The profile log-likelihood at each grid correlation (the PD maximised out)."
+          },
+          "pd_at_rho": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1,
+              "description": "An estimate-site PD is open: 0 < pd < 1."
+            },
+            "minItems": 8,
+            "description": "The maximising PD at each grid correlation."
+          },
+          "max_log_likelihood": {
+            "type": "number"
+          },
+          "cutoff": {
+            "type": "number",
+            "description": "max_log_likelihood minus the chi-square(1) quantile at `level`, halved."
+          }
+        },
+        "description": "The profile likelihood of the asset correlation (dossier 04 C.4; engine asrf_fit.profile_likelihood): the three arrays have one length."
+      },
+      "c10Quantile": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "level",
+          "value"
+        ],
+        "properties": {
+          "level": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "value": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An observed annual loss rate as a decimal per year, open (0, 1): the implied factor needs it."
+          }
+        }
+      },
+      "c10Rung": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "rung",
+          "method",
+          "label",
+          "currency",
+          "estimator",
+          "evaluated",
+          "reason",
+          "parameters",
+          "diagnostics",
+          "simulation",
+          "measures",
+          "distribution"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "c1-lhp",
+              "c2-gaussian-1f",
+              "c2-gaussian-mf",
+              "c3-student-t",
+              "c4-creditrisk-plus",
+              "c5-granularity",
+              "c6-is-gaussian",
+              "c6-is-student-t"
+            ]
+          },
+          "rung": {
+            "type": "string",
+            "enum": [
+              "C1",
+              "C2",
+              "C3",
+              "C4",
+              "C5",
+              "C6"
+            ]
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "lhp-vasicek",
+              "gaussian-copula-one-factor",
+              "gaussian-copula-multi-factor",
+              "student-t-copula",
+              "creditrisk-plus",
+              "granularity-adjustment",
+              "importance-sampling"
+            ]
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "description": "ISO 4217 code of the money fields of this block."
+          },
+          "estimator": {
+            "type": "string",
+            "enum": [
+              "analytic",
+              "monte-carlo",
+              "none"
+            ]
+          },
+          "evaluated": {
+            "type": "boolean"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the rung did not run; null when it ran."
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "value",
+                "unit"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                },
+                "unit": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "diagnostics": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "value",
+                "unit"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                },
+                "unit": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "simulation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c10Simulation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "measures": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/c10Measure"
+                },
+                "minItems": 2
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "distribution": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c10LossCurve"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "One rung of the portfolio ladder (dossier 04 'Portfolio credit risk': C1 LHP, C2 Gaussian copula, C3 Student-t copula, C4 CreditRisk+, C5 granularity adjustment, C6 importance sampling) on the illustrative portfolio. A rung that did not run (importance sampling for the Student-t copula) is a not-evaluated row: evaluated false, its reason, no measure, no curve; never a number.",
+        "oneOf": [
+          {
+            "properties": {
+              "evaluated": {
+                "const": true
+              },
+              "estimator": {
+                "const": "analytic"
+              },
+              "reason": {
+                "type": "null"
+              },
+              "simulation": {
+                "type": "null"
+              },
+              "measures": {
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "var_se": {
+                      "type": "null"
+                    },
+                    "es_se": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "distribution": {
+                "$ref": "#/components/schemas/c10LossCurve"
+              }
+            }
+          },
+          {
+            "properties": {
+              "evaluated": {
+                "const": true
+              },
+              "estimator": {
+                "const": "monte-carlo"
+              },
+              "reason": {
+                "type": "null"
+              },
+              "simulation": {
+                "$ref": "#/components/schemas/c10Simulation"
+              },
+              "measures": {
+                "type": "array",
+                "items": {
+                  "properties": {
+                    "var_se": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "es_se": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "es": {
+                      "type": "number",
+                      "minimum": 0,
+                      "description": "Money in the `currency` of the enclosing block."
+                    }
+                  }
+                }
+              },
+              "distribution": {
+                "$ref": "#/components/schemas/c10LossCurve"
+              }
+            }
+          },
+          {
+            "properties": {
+              "evaluated": {
+                "const": false
+              },
+              "estimator": {
+                "const": "none"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              },
+              "simulation": {
+                "type": "null"
+              },
+              "measures": {
+                "type": "null"
+              },
+              "distribution": {
+                "type": "null"
+              }
+            }
+          }
+        ]
+      },
+      "c10RungSpec": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "rung",
+          "method",
+          "label",
+          "estimator",
+          "n_scenarios",
+          "engine_function",
+          "reference",
+          "parameters"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "c1-lhp",
+              "c2-gaussian-1f",
+              "c2-gaussian-mf",
+              "c3-student-t",
+              "c4-creditrisk-plus",
+              "c5-granularity",
+              "c6-is-gaussian",
+              "c6-is-student-t"
+            ]
+          },
+          "rung": {
+            "type": "string",
+            "enum": [
+              "C1",
+              "C2",
+              "C3",
+              "C4",
+              "C5",
+              "C6"
+            ]
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "lhp-vasicek",
+              "gaussian-copula-one-factor",
+              "gaussian-copula-multi-factor",
+              "student-t-copula",
+              "creditrisk-plus",
+              "granularity-adjustment",
+              "importance-sampling"
+            ]
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "estimator": {
+            "type": "string",
+            "enum": [
+              "analytic",
+              "monte-carlo"
+            ]
+          },
+          "n_scenarios": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Monte Carlo scenarios; null for an analytic rung."
+          },
+          "engine_function": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "value",
+                "unit"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                },
+                "unit": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "description": "The specification of one rung: its engine function, its reference and its parameters."
+      },
+      "c10SimGenerator": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "shaped_on",
+          "known_pd",
+          "rho_grid",
+          "series_length_years",
+          "n_replications",
+          "null_rho",
+          "alpha",
+          "seed",
+          "notice"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "shaped_on": {
+            "type": "string"
+          },
+          "known_pd": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An estimate-site PD is open: 0 < pd < 1."
+          },
+          "rho_grid": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1,
+              "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+            },
+            "minItems": 2,
+            "description": "The known asset correlations, strictly increasing."
+          },
+          "series_length_years": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "n_replications": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "null_rho": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+          },
+          "alpha": {
+            "const": 0.05
+          },
+          "seed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "notice": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "The Vasicek simulator with a known correlation: a yearly factor draw per year, the large-homogeneous-portfolio default fraction, then the fit. null_rho is on the grid."
+      },
+      "c10SimSpec": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "known_pd",
+          "rho_grid",
+          "series_lengths_years",
+          "n_replications",
+          "null_rho",
+          "alpha",
+          "seed"
+        ],
+        "properties": {
+          "known_pd": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An estimate-site PD is open: 0 < pd < 1."
+          },
+          "rho_grid": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1,
+              "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+            },
+            "minItems": 2
+          },
+          "series_lengths_years": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 2
+            },
+            "minItems": 1
+          },
+          "n_replications": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "null_rho": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+          },
+          "alpha": {
+            "const": 0.05
+          },
+          "seed": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "description": "The simulator's grid: the known correlations, the series lengths, the replications."
+      },
+      "c10Simulation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "n_scenarios",
+          "seed",
+          "chunk_size"
+        ],
+        "properties": {
+          "n_scenarios": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "seed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "chunk_size": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "description": "How a Monte Carlo rung was run: scenarios, seed, and the chunk bound on memory."
+      },
+      "c10Window": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "first_year",
+          "last_year",
+          "n_years"
+        ],
+        "properties": {
+          "first_year": {
+            "type": "integer",
+            "minimum": 1985
+          },
+          "last_year": {
+            "type": "integer",
+            "minimum": 1985
+          },
+          "n_years": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "description": "A window of calendar years; n_years = last_year - first_year + 1 (a producer check)."
+      },
+      "c10Windows": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fit",
+          "evaluation"
+        ],
+        "properties": {
+          "fit": {
+            "$ref": "#/components/schemas/c10Window"
+          },
+          "evaluation": {
+            "$ref": "#/components/schemas/c10Window"
+          }
+        },
+        "description": "The fit window (SDD section 5: 1985-2006) and the out-of-sample evaluation window (2007-2012); the fit window ends before the evaluation window begins."
       },
       "c22-models": {
         "title": "C22 models",

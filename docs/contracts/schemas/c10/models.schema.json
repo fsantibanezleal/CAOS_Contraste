@@ -1,0 +1,530 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c10/models.schema.json",
+  "title": "C10 models",
+  "description": "Catalog row c10-models 1.0.0: the C10 models artifact (loan types, estimators, the rung ladder, the illustrative portfolio's specification, the granularity parameters, the simulator grid).",
+  "allOf": [
+    {
+      "$ref": "../common/models-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C10"
+        },
+        "fit": {
+          "$ref": "#/$defs/c10ModelsFit"
+        },
+        "provenance": {
+          "properties": {
+            "inputs": {
+              "contains": {
+                "properties": {
+                  "source": {
+                    "const": "illustrative-portfolio"
+                  },
+                  "class": {
+                    "const": "illustrative"
+                  }
+                },
+                "required": [
+                  "source",
+                  "class"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "fit"
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c10Window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "first_year",
+        "last_year",
+        "n_years"
+      ],
+      "properties": {
+        "first_year": {
+          "type": "integer",
+          "minimum": 1985
+        },
+        "last_year": {
+          "type": "integer",
+          "minimum": 1985
+        },
+        "n_years": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "description": "A window of calendar years; n_years = last_year - first_year + 1 (a producer check)."
+    },
+    "c10Windows": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fit",
+        "evaluation"
+      ],
+      "properties": {
+        "fit": {
+          "$ref": "#/$defs/c10Window"
+        },
+        "evaluation": {
+          "$ref": "#/$defs/c10Window"
+        }
+      },
+      "description": "The fit window (SDD section 5: 1985-2006) and the out-of-sample evaluation window (2007-2012); the fit window ends before the evaluation window begins."
+    },
+    "c10Group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "n_names",
+        "ead_each",
+        "pd",
+        "lgd",
+        "loading",
+        "sector"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "n_names": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "ead_each": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Money in the `currency` of the enclosing block."
+        },
+        "pd": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "description": "An estimate-site PD is open: 0 < pd < 1."
+        },
+        "lgd": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "loading": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "description": "The factor loading sqrt(rho) of the group's names on the systematic factor."
+        },
+        "sector": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A group of identical names of the illustrative portfolio (dossier 04 H.1: EAD, expected LGD, PD, loading, sector)."
+    },
+    "c10LoanTypeSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "table_column",
+        "irb_asset_class",
+        "irb_reference"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "commercial-industrial",
+            "commercial-real-estate",
+            "residential",
+            "credit-cards",
+            "other-consumer"
+          ]
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "table_column": {
+          "type": "string",
+          "minLength": 1
+        },
+        "irb_asset_class": {
+          "type": "string"
+        },
+        "irb_reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A loan type of the Federal Reserve table and the IRB asset class its fitted correlation is compared with."
+    },
+    "c10EstimatorSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "engine_function",
+        "interval_method",
+        "reference"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "maximum-likelihood",
+            "moments"
+          ]
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "engine_function": {
+          "type": "string",
+          "minLength": 1
+        },
+        "interval_method": {
+          "type": "string",
+          "enum": [
+            "profile-likelihood",
+            "parametric-bootstrap"
+          ]
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "c10RungSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "rung",
+        "method",
+        "label",
+        "estimator",
+        "n_scenarios",
+        "engine_function",
+        "reference",
+        "parameters"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "c1-lhp",
+            "c2-gaussian-1f",
+            "c2-gaussian-mf",
+            "c3-student-t",
+            "c4-creditrisk-plus",
+            "c5-granularity",
+            "c6-is-gaussian",
+            "c6-is-student-t"
+          ]
+        },
+        "rung": {
+          "type": "string",
+          "enum": [
+            "C1",
+            "C2",
+            "C3",
+            "C4",
+            "C5",
+            "C6"
+          ]
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "lhp-vasicek",
+            "gaussian-copula-one-factor",
+            "gaussian-copula-multi-factor",
+            "student-t-copula",
+            "creditrisk-plus",
+            "granularity-adjustment",
+            "importance-sampling"
+          ]
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "estimator": {
+          "type": "string",
+          "enum": [
+            "analytic",
+            "monte-carlo"
+          ]
+        },
+        "n_scenarios": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Monte Carlo scenarios; null for an analytic rung."
+        },
+        "engine_function": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "value",
+              "unit"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "description": "The specification of one rung: its engine function, its reference and its parameters."
+    },
+    "c10PortfolioSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "notice",
+        "currency",
+        "groups",
+        "lgd_mean",
+        "lgd_gamma",
+        "levels",
+        "horizon_years"
+      ],
+      "properties": {
+        "label": {
+          "const": "illustrative"
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c10Group"
+          },
+          "minItems": 2
+        },
+        "lgd_mean": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "lgd_gamma": {
+          "type": "number",
+          "minimum": 0
+        },
+        "levels": {
+          "type": "array",
+          "const": [
+            0.99,
+            0.999
+          ]
+        },
+        "horizon_years": {
+          "const": 1
+        }
+      },
+      "description": "The specification of the illustrative portfolio the bake builds per loan type: constructed, never a bank's."
+    },
+    "c10GranularitySpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "xi",
+        "gamma",
+        "xi_reference",
+        "q_reference",
+        "delta_reference",
+        "reference"
+      ],
+      "properties": {
+        "xi": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "gamma": {
+          "type": "number",
+          "minimum": 0
+        },
+        "xi_reference": {
+          "const": 0.25
+        },
+        "q_reference": {
+          "const": 0.999
+        },
+        "delta_reference": {
+          "const": 4.83
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The granularity parameters and the golden delta of Gordy and Lutkebohmert (2013) (eq. 15): 4.83 at xi 0.25 and q 0.999."
+    },
+    "c10SimSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "known_pd",
+        "rho_grid",
+        "series_lengths_years",
+        "n_replications",
+        "null_rho",
+        "alpha",
+        "seed"
+      ],
+      "properties": {
+        "known_pd": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "description": "An estimate-site PD is open: 0 < pd < 1."
+        },
+        "rho_grid": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+          },
+          "minItems": 2
+        },
+        "series_lengths_years": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "minItems": 1
+        },
+        "n_replications": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "null_rho": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "description": "An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1)."
+        },
+        "alpha": {
+          "const": 0.05
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "description": "The simulator's grid: the known correlations, the series lengths, the replications."
+    },
+    "c10ModelsFit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "windows",
+        "loan_types",
+        "estimators",
+        "ladder",
+        "portfolio_spec",
+        "granularity",
+        "simulator"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "windows": {
+          "$ref": "#/$defs/c10Windows"
+        },
+        "loan_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c10LoanTypeSpec"
+          },
+          "minItems": 5
+        },
+        "estimators": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c10EstimatorSpec"
+          },
+          "minItems": 2
+        },
+        "ladder": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c10RungSpec"
+          },
+          "minItems": 8
+        },
+        "portfolio_spec": {
+          "$ref": "#/$defs/c10PortfolioSpec"
+        },
+        "granularity": {
+          "$ref": "#/$defs/c10GranularitySpec"
+        },
+        "simulator": {
+          "$ref": "#/$defs/c10SimSpec"
+        }
+      },
+      "description": "C10 models: the five loan types, the two estimators, the eight rungs of the ladder, the illustrative portfolio's specification, the granularity parameters and the simulator's grid."
+    }
+  }
+}
