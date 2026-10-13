@@ -279,6 +279,188 @@ export interface components {
             irb: components["schemas"]["c01Irb"];
         };
         /**
+         * C03 models
+         * @description Catalog row c03-models 1.0.0: the C03 models artifact (vintage definition, target, training window, test cohorts, PD rungs).
+         */
+        "c03-models": components["schemas"]["common-models-envelope"] & {
+            /** @constant */
+            case_id: "C03";
+            fit: components["schemas"]["c03Fit"];
+        };
+        /**
+         * C03 vintage-cohort variant
+         * @description Catalog row c03-outputs 1.0.0: one test cohort of approval fiscal years of the SME PD by vintage case (outputs.kind vintage-cohort), on the SBA 7(a) data.
+         */
+        "c03-variant-vintage-cohort": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C03";
+            outputs: components["schemas"]["c03Outputs"];
+        };
+        c03Calibration: {
+            rung_id: string;
+            /** @description The vintages pooled: those whose 5-year mark is observed. */
+            scope: string;
+            rows: components["schemas"]["c03DecileRow"][];
+        };
+        c03Coefficient: {
+            name: string;
+            estimate: number;
+            std_error: number | null;
+        };
+        /** @description One test cohort of approval fiscal years (SDD section 5: FY2006-07, 2008-10, 2011-14, 2015-17, 2018-20). */
+        c03Cohort: {
+            id: string;
+            label: components["schemas"]["common-text"];
+            /** @description First approval fiscal year of the test cohort (SBA fiscal years start on 1 October). */
+            first_fy: number;
+            last_fy: number;
+            approval_fiscal_years: number[];
+        };
+        c03CohortWindow: {
+            id: string;
+            label: components["schemas"]["common-text"];
+            first_fy: number;
+            last_fy: number;
+        };
+        c03DataStatus: {
+            primary_source: string;
+            files_as_of: string;
+            /** @description Month and day the SBA fiscal year starts (10-01). */
+            fiscal_year_start: string;
+            notice: components["schemas"]["common-text"];
+        };
+        c03DecileRow: {
+            decile: number;
+            n: number;
+            /** @description An estimate-site PD is open: 0 < pd < 1. */
+            predicted_pd: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            observed_pd: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            ci_low: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            ci_high: number;
+        };
+        /** @description C03 models: the vintage definition, the target, the training window, the five test cohorts and the PD rungs. */
+        c03Fit: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            vintage_definition: components["schemas"]["c03VintageDefinition"];
+            target: components["schemas"]["c03Target"];
+            training: components["schemas"]["c03Training"];
+            cohort_windows: components["schemas"]["c03CohortWindow"][];
+            ladder: components["schemas"]["c03Rung"][];
+            data_status: components["schemas"]["c03DataStatus"];
+        };
+        /** @description C03 vintage-cohort outputs (outputs.kind vintage-cohort): one test cohort of approval fiscal years. PD open (0, 1) at estimate sites; the 5-year charge-off target is observed only at each vintage's 5-year mark; a value the bake may lack is nullable with its reason; money in `currency`. */
+        c03Outputs: {
+            /** @constant */
+            kind: "vintage-cohort";
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            cohort: components["schemas"]["c03Cohort"];
+            training: components["schemas"]["c03Training"];
+            target: components["schemas"]["c03Target"];
+            data_status: components["schemas"]["c03DataStatus"];
+            vintage_curves: components["schemas"]["c03VintageCurve"][];
+            vintage_summary: components["schemas"]["c03VintageSummary"];
+            calibration: components["schemas"]["c03Calibration"];
+            rung_comparison: components["schemas"]["c03RungResult"][];
+            stability: components["schemas"]["c03Stability"];
+        };
+        /** @description A PD rung of the existing engine ladder, fitted on the training window. */
+        c03Rung: {
+            rung_id: string;
+            kind: string;
+            covariates: string[];
+            coefficients: components["schemas"]["c03Coefficient"][];
+            training_cutoff: string;
+            engine: string;
+        };
+        c03RungResult: {
+            rung_id: string;
+            auc: number | null;
+            auc_ci_low: number | null;
+            auc_ci_high: number | null;
+            brier: number | null;
+            calibration_gap_5y: number | null;
+            reason: string | null;
+        };
+        /** @description Population stability of each test vintage against the training window and its observed 5-year rate against the training mean (the crisis contrast). */
+        c03Stability: {
+            /** @description A share or an observed rate in [0, 1]. */
+            training_mean_5y_pd: number;
+            psi_note: components["schemas"]["common-text"];
+            rows: components["schemas"]["c03StabilityRow"][];
+        };
+        c03StabilityRow: {
+            fiscal_year: number;
+            psi: number;
+            observed_5y_pd: number | null;
+        };
+        /** @description The 5-year charge-off target and how loans without an observed outcome (EXEMPT, still active) are handled. */
+        c03Target: {
+            name: string;
+            /** @description Months from approval over which a charge-off counts (60 for the 5-year target). */
+            horizon_months: number;
+            /** @description The target is read for a vintage only when its 5-year mark has been observed. */
+            observed_at_months: number;
+            /** @enum {string} */
+            censoring: "exempt-right-censored" | "excluded";
+            definition: components["schemas"]["common-text"];
+        };
+        /** @description The training window: out-of-time by approval fiscal year, trained through the crisis; its last fiscal year precedes the first fiscal year of the test cohort. */
+        c03Training: {
+            first_fy: number;
+            last_fy: number;
+            cutoff_date: string;
+            n_loans: number;
+            n_events: number;
+            crisis_included: boolean;
+            rationale: components["schemas"]["common-text"];
+        };
+        /** @description The predicted and the observed cumulative charge-off PD of one approval-year vintage. */
+        c03VintageCurve: {
+            fiscal_year: number;
+            n: number;
+            /** @description Total gross approval of the vintage in the `currency` of the outputs. */
+            gross_approval: number;
+            /** @description Months since approval, strictly increasing. */
+            months: number[];
+            predicted_cumulative_pd: number[];
+            /** @description Null where the horizon is beyond the observation cutoff. */
+            observed_cumulative_pd: (number | null)[];
+            observed_until_month: number;
+            /** @description Why the observed curve stops before the last month; null when it reaches it. */
+            reason: string | null;
+        };
+        c03VintageDefinition: {
+            basis: string;
+            fiscal_year_start: string;
+            label: components["schemas"]["common-text"];
+        };
+        c03VintageRow: {
+            fiscal_year: number;
+            n: number;
+            n_resolved: number;
+            n_exempt_censored: number;
+            gross_approval: number;
+            /** @description Null when the vintage has not reached its 5-year mark; the reason says why. */
+            observed_5y_pd: number | null;
+            /** @description An estimate-site PD is open: 0 < pd < 1. */
+            predicted_5y_pd: number;
+            /** @description Observed minus predicted at the 5-year mark; null when unobserved. */
+            gap: number | null;
+            brier: number | null;
+            auc: number | null;
+            reason: string | null;
+        };
+        c03VintageSummary: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            rows: components["schemas"]["c03VintageRow"][];
+        };
+        /**
          * C04 models
          * @description Catalog row c04-models 1.0.0: the C04 models artifact with the live parity points.
          */
@@ -1788,6 +1970,515 @@ export interface components {
             z_offset: number;
         };
         /**
+         * C08 models
+         * @description Catalog row c08-models 1.0.0: the C08 models artifact (LGD proxy and bias, cohorts, rungs, downturn specification, floor cells).
+         */
+        "c08-models": components["schemas"]["common-models-envelope"] & {
+            /** @constant */
+            case_id: "C08";
+            fit: components["schemas"]["c08Fit"];
+        };
+        /**
+         * C08 default-cohort variant
+         * @description Catalog row c08-outputs 1.0.0: one default cohort of the LGD and downturn LGD case (outputs.kind default-cohort), on the SBA charge-off twin.
+         */
+        "c08-variant-default-cohort": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C08";
+            outputs: components["schemas"]["c08Outputs"];
+        };
+        c08Bin: {
+            lower: number;
+            upper: number;
+            n: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            share: number;
+        };
+        c08BucketRow: {
+            rung_id: string;
+            bucket: number;
+            n: number;
+            predicted: components["schemas"]["c08Lgd"];
+            realised: components["schemas"]["c08Lgd"];
+        };
+        c08Coefficient: {
+            name: string;
+            estimate: number;
+            std_error: number | null;
+        };
+        /** @description One default cohort by default year (SDD section 5: 2003-06, 2007-08, 2009-10, 2011-13, 2014-19, 2020-23). */
+        c08Cohort: {
+            id: string;
+            label: components["schemas"]["common-text"];
+            first_year: number;
+            last_year: number;
+        };
+        /** @description Freddie Mac is a nullable slot: while the owner's account does not exist it is unavailable and the reason is stated; no number stands in for it. */
+        c08DataStatus: {
+            primary_source: string;
+            /** @constant */
+            freddie_mac_available: false;
+            freddie_mac_reason: string;
+            notice: components["schemas"]["common-text"];
+        } | {
+            primary_source: string;
+            /** @constant */
+            freddie_mac_available: true;
+            freddie_mac_reason: null;
+            notice: components["schemas"]["common-text"];
+        };
+        /** @description The realised LGD distribution on [0, 1] with its masses at 0 and 1; realised values outside [0, 1] are counted and flagged, never clipped into the end bins. */
+        c08Distribution: {
+            n: number;
+            /** @constant */
+            treatment: "flagged-not-clipped";
+            bins: components["schemas"]["c08Bin"][];
+            mass_at_zero: components["schemas"]["c08Mass"];
+            mass_at_one: components["schemas"]["c08Mass"];
+            n_below_zero: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            share_below_zero: number;
+            n_above_one: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            share_above_one: number;
+            lowest: components["schemas"]["c08Lgd"];
+            highest: components["schemas"]["c08Lgd"];
+            mean: components["schemas"]["c08Lgd"];
+            median: components["schemas"]["c08Lgd"];
+        };
+        /** @description The downturn add-on against the realised crisis losses (dossier 04 F.4: Contraste's own cohort-based add-on, an illustration, not a regulatory estimate; the EBA/GL/2019/03 wording is UNVERIFIED). */
+        c08Downturn: {
+            period: components["schemas"]["c08DownturnPeriod"];
+            approach: components["schemas"]["common-text"];
+            rows: components["schemas"]["c08DownturnRow"][];
+            coverage: components["schemas"]["c08DownturnCoverage"];
+        };
+        c08DownturnCoverage: {
+            n_cohorts: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            share_covered: number;
+        };
+        c08DownturnPeriod: {
+            first_year: number;
+            last_year: number;
+            indicator: string;
+            macro_source: string;
+        };
+        c08DownturnRow: {
+            cohort_id: string;
+            n: number;
+            long_run_lgd: components["schemas"]["c08Lgd"];
+            downturn_lgd: components["schemas"]["c08Lgd"];
+            /** @description downturn_lgd minus long_run_lgd. */
+            add_on: number;
+            crisis_realised_lgd: components["schemas"]["c08Lgd"];
+            covered: boolean;
+            shortfall: number;
+        };
+        c08DownturnSpec: {
+            approach: components["schemas"]["common-text"];
+            period: components["schemas"]["c08DownturnPeriod"];
+        };
+        c08EndpointRow: {
+            rung_id: string;
+            epsilon: number;
+            mean_predicted: components["schemas"]["c08Lgd"];
+            rmse: number;
+        };
+        c08Exposure: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            gross_charge_off_total: number;
+            exposure_at_charge_off_total: number;
+        };
+        /** @description C08 models: the LGD proxy and its bias, the default cohorts, the rungs, the downturn specification and the floor cells. */
+        c08Fit: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            lgd_proxy: components["schemas"]["c08LgdProxy"];
+            data_status: components["schemas"]["c08DataStatus"];
+            cohorts: components["schemas"]["c08Cohort"][];
+            training: components["schemas"]["c08Training"];
+            workout: components["schemas"]["c08Workout"];
+            ladder: components["schemas"]["c08RungSpec"][];
+            downturn: components["schemas"]["c08DownturnSpec"];
+            floors: components["schemas"]["c08Floors"];
+        };
+        c08FloorCell: {
+            id: string;
+            /** @enum {string} */
+            portfolio: "corporate" | "retail";
+            /** @enum {string} */
+            collateral: "unsecured" | "financial" | "receivables" | "real-estate" | "other-physical" | "qrre" | "mortgage";
+            /** @description A share or an observed rate in [0, 1]. */
+            floor: number;
+            reference: string;
+        };
+        c08FloorRow: {
+            segment_id: string;
+            floor_id: string;
+            /** @description A share or an observed rate in [0, 1]. */
+            floor: number;
+            reference: string;
+            n: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            share_binding: number;
+            mean_before: components["schemas"]["c08Lgd"];
+            mean_after: components["schemas"]["c08Lgd"];
+            /** @description mean_after minus mean_before, never negative. */
+            uplift: number;
+        };
+        /** @description The LGD floor cells transcribed from dossier 01 section A.5. */
+        c08Floors: {
+            regime: string;
+            cells: components["schemas"]["c08FloorCell"][];
+            source: string;
+        };
+        /** @description How much the IRB LGD floors (Basel III final, CRE32.16, CRE32.58 to CRE32.59) bind on the estimates. */
+        c08FloorsBite: {
+            regime: string;
+            rows: components["schemas"]["c08FloorRow"][];
+            note: components["schemas"]["common-text"];
+        };
+        /** @description A loss given default with its range flag. In [0, 1] the flag is in-range; below 0 or above 1 (fees, costs, overlimit drawings, limit changes) the value is kept and flagged, never silently clipped. */
+        c08Lgd: {
+            value: number;
+            /** @constant */
+            flag: "in-range";
+        } | {
+            value: number;
+            /** @constant */
+            flag: "below-zero";
+        } | {
+            value: number;
+            /** @constant */
+            flag: "above-one";
+        };
+        /** @description The LGD proxy of the SBA charge-off twin and its bias, required in every C08 document: the file has no recovery cash flows, so the proxy is the gross charge-off over the exposure at charge-off, not a workout LGD (dossier 08 A.6). */
+        c08LgdProxy: {
+            definition: components["schemas"]["c08Text"];
+            formula: string;
+            /** @description The SBA 7(a) field the numerator reads (GrossChargeOffAmount). */
+            source_field: string;
+            exposure_field: string;
+            recovery_cash_flows_available: boolean;
+            /** @enum {string} */
+            bias_direction: "upward" | "downward" | "unknown";
+            bias_statement: components["schemas"]["c08Text"];
+        };
+        c08Mass: {
+            n: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            share: number;
+        };
+        /** @description C08 default-cohort outputs (outputs.kind default-cohort): one test default cohort. LGD in [0, 1] with the cases outside it (fees, costs) allowed and flagged, never clipped; the LGD proxy definition and bias statement are required; money in `currency`. */
+        c08Outputs: {
+            /** @constant */
+            kind: "default-cohort";
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            cohort: components["schemas"]["c08Cohort"];
+            lgd_proxy: components["schemas"]["c08LgdProxy"];
+            data_status: components["schemas"]["c08DataStatus"];
+            training: components["schemas"]["c08Training"];
+            workout: components["schemas"]["c08Workout"];
+            exposure: components["schemas"]["c08Exposure"];
+            lgd_distribution: components["schemas"]["c08Distribution"];
+            rung_comparison: components["schemas"]["c08RungResult"][];
+            realised_vs_predicted: components["schemas"]["c08RealisedRow"][];
+            calibration_by_bucket: components["schemas"]["c08BucketRow"][];
+            endpoint_sensitivity: components["schemas"]["c08EndpointRow"][];
+            downturn: components["schemas"]["c08Downturn"];
+            floors_bite: components["schemas"]["c08FloorsBite"];
+        };
+        c08RealisedRow: {
+            rung_id: string;
+            cohort_id: string;
+            n: number;
+            realised: components["schemas"]["c08Lgd"];
+            predicted: components["schemas"]["c08Lgd"];
+            ci_low: number;
+            ci_high: number;
+            gap: number;
+        };
+        c08RungResult: {
+            rung_id: string;
+            r2: number | null;
+            rmse: number;
+            mae: number;
+            spearman: number | null;
+            calibration_gap: number;
+            reason: string | null;
+        };
+        c08RungSpec: {
+            rung_id: string;
+            /** @enum {string} */
+            kind: "ols" | "fractional-logit" | "beta" | "hurdle" | "tobit" | "gradient-boosted" | "cure-decomposition";
+            covariates: string[];
+            coefficients: components["schemas"]["c08Coefficient"][];
+            /** @description The endpoint transformation of beta rungs; null elsewhere. */
+            epsilon: number | null;
+            training_cutoff: string;
+            library: string;
+            library_version: string;
+        };
+        c08Text: {
+            en: string;
+            es: string;
+        };
+        /** @description Out-of-time by default date; the training set holds only defaults whose workout closed before the cutoff. */
+        c08Training: {
+            cutoff_date: string;
+            n_defaults: number;
+            n_open_workouts_excluded: number;
+            closure_rule: components["schemas"]["common-text"];
+        };
+        /** @description How realised LGD is built: a workout LGD discounts recoveries (rate convention EBA/GL/2017/16, paragraph UNVERIFIED); the SBA twin has no cash flows, so none-proxy and not-applicable. */
+        c08Workout: {
+            /** @enum {string} */
+            discount_rate_convention: "eba-interbank-plus-5pp" | "fixed" | "none-proxy";
+            discount_rate: number | null;
+            incomplete_workouts: {
+                /** @enum {string} */
+                treatment: "excluded" | "projected" | "not-applicable";
+                n_excluded: number;
+                n_projected: number;
+                reason: string | null;
+            };
+            note: components["schemas"]["common-text"];
+        };
+        /**
+         * C09 models
+         * @description Catalog row c09-models 1.0.0: the C09 models artifact (generator and known CCF, marginals, levels, designs, EAD models, floors).
+         */
+        "c09-models": components["schemas"]["common-models-envelope"] & {
+            /** @constant */
+            case_id: "C09";
+            fit: components["schemas"]["c09Fit"];
+        };
+        /**
+         * C09 acceleration-level variant
+         * @description Catalog row c09-outputs 1.0.0: one utilisation acceleration level of the EAD and CCF case (outputs.kind acceleration-level), on a generator with a known CCF.
+         */
+        "c09-variant-acceleration-level": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C09";
+            outputs: components["schemas"]["c09Outputs"];
+        };
+        c09BacktestRow: {
+            model_id: string;
+            band_id: string;
+            utilisation_lower: number;
+            utilisation_upper: number;
+            n: number;
+            predicted_ead: number;
+            realised_ead: number;
+            /** @description predicted_ead minus realised_ead, in currency. */
+            gap: number;
+            relative_gap: number;
+            /** @enum {string} */
+            light: "green" | "amber" | "red" | "not_evaluated" | "error";
+        };
+        /** @description A credit conversion factor with its range flag. In [0, 1] the flag is in-range; below 0 or above 1 (fees, costs, overlimit drawings, limit changes) the value is kept and flagged, never silently clipped. */
+        c09Ccf: {
+            value: number;
+            /** @constant */
+            flag: "in-range";
+        } | {
+            value: number;
+            /** @constant */
+            flag: "below-zero";
+        } | {
+            value: number;
+            /** @constant */
+            flag: "above-one";
+        };
+        c09CcfByDesign: {
+            /** @description The error within which the known CCF counts as recovered. */
+            tolerance: number;
+            rows: components["schemas"]["c09CcfRow"][];
+        };
+        c09CcfRow: {
+            /** @enum {string} */
+            design: "fixed-horizon" | "cohort" | "variable-horizon";
+            /** @enum {string} */
+            treatment: "none" | "censor" | "floor-cap" | "bounded-scale";
+            /** @enum {string} */
+            estimator: "mean" | "pooled";
+            estimate: components["schemas"]["c09Ccf"];
+            truth: components["schemas"]["c09Ccf"];
+            /** @description estimate minus truth. */
+            bias: number;
+            rmse: number;
+            ci_low: number;
+            ci_high: number;
+            n_defaults: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            share_below_zero: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            share_above_one: number;
+            within_tolerance: boolean;
+        };
+        /** @description The CCF convention, named on every view: the EU convention, the share of the undrawn amount drawn by default (the LEQ in US terms); Qi (2009) calls EAD over outstanding the CCF. */
+        c09Convention: {
+            /** @constant */
+            name: "eu-undrawn";
+            definition: components["schemas"]["common-text"];
+            formula: string;
+            us_terms: components["schemas"]["common-text"];
+        };
+        c09Design: {
+            /** @enum {string} */
+            design: "fixed-horizon" | "cohort" | "variable-horizon";
+            horizon_months: number | null;
+            n_reference: number | null;
+            step_months: number | null;
+            label: components["schemas"]["common-text"];
+        };
+        /** @description The estimated CCF histogram with its mass below 0 and above 1 kept. */
+        c09Distribution: {
+            /** @enum {string} */
+            design: "fixed-horizon" | "cohort" | "variable-horizon";
+            n: number;
+            /** @description Bin edges, strictly increasing, the first below 0 and the last above 1. */
+            edges: number[];
+            counts: number[];
+            n_below_zero: number;
+            n_above_one: number;
+        };
+        /** @description EAD back-testing in currency by utilisation band, not only the CCF. */
+        c09EadBacktest: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            /** @description Utilisation band edges. */
+            bands: number[];
+            rows: components["schemas"]["c09BacktestRow"][];
+        };
+        /** @description The IRB EAD floor: on-balance amount plus 50% of the off-balance exposure at the SA CCF (CRE32.36, CRE32.64). */
+        c09EadFloor: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            rule: string;
+            /** @description A share or an observed rate in [0, 1]. */
+            off_balance_share: number;
+            rows: components["schemas"]["c09FloorRow"][];
+        };
+        c09EadModel: {
+            model_id: string;
+            /** @enum {string} */
+            kind: "ccf-fixed-horizon" | "ccf-cohort" | "ccf-variable-horizon" | "direct-ead" | "utilisation-change";
+            design: ("fixed-horizon" | "cohort" | "variable-horizon") | null;
+            treatment: ("none" | "censor" | "floor-cap" | "bounded-scale") | null;
+            covariates: string[];
+        };
+        /** @description C09 models: the generator with its known CCF, the marginals from the Fed 2025 hypothetical portfolios, the six acceleration levels, the reference-date designs, the treatments, the EAD models and the floors. */
+        c09Fit: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            convention: components["schemas"]["c09Convention"];
+            generator: components["schemas"]["c09Generator"];
+            marginals: components["schemas"]["c09Marginal"][];
+            levels: components["schemas"]["c09Level"][];
+            replications_plan: components["schemas"]["c09Plan"];
+            designs: components["schemas"]["c09Design"][];
+            treatments: ("none" | "censor" | "floor-cap" | "bounded-scale")[];
+            ead_models: components["schemas"]["c09EadModel"][];
+            small_undrawn: components["schemas"]["c09SmallUndrawn"];
+            floors: components["schemas"]["c09Floors"];
+        };
+        c09FloorRow: {
+            facility_class: string;
+            /** @description A share or an observed rate in [0, 1]. */
+            sa_ccf: number;
+            reference: string;
+            n: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            share_binding: number;
+            mean_ead_before: number;
+            mean_ead_after: number;
+        };
+        c09Floors: {
+            /** @description A share or an observed rate in [0, 1]. */
+            off_balance_share: number;
+            reference: string;
+            supervisory_ccfs: components["schemas"]["c09SupervisoryCcf"][];
+        };
+        /** @description The revolving-line generator with a known CCF; its field structure and marginals follow the Fed 2025 hypothetical card portfolios. */
+        c09Generator: {
+            name: string;
+            shaped_on: string;
+            true_ccf: components["schemas"]["c09Ccf"];
+            acceleration_factor: number;
+            acceleration_window_months: number;
+            notice: components["schemas"]["common-text"];
+        };
+        c09Level: {
+            level: number;
+            label: components["schemas"]["common-text"];
+            acceleration_factor: number;
+            acceleration_window_months: number;
+        };
+        c09Marginal: {
+            field: string;
+            distribution: string;
+            parameters: {
+                name: string;
+                value: number;
+                unit: string;
+            }[];
+            source: string;
+        };
+        /** @description C09 acceleration-level outputs (outputs.kind acceleration-level): one utilisation acceleration level. CCF in the EU convention; values outside [0, 1] allowed and flagged; the known truth sits beside every estimate; money in `currency`. */
+        c09Outputs: {
+            /** @constant */
+            kind: "acceleration-level";
+            /** @description Utilisation acceleration level, 0 (none) to 5. */
+            level: number;
+            level_description: components["schemas"]["common-text"];
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            convention: components["schemas"]["c09Convention"];
+            generator: components["schemas"]["c09Generator"];
+            replications: components["schemas"]["c09Replications"];
+            ccf_by_design: components["schemas"]["c09CcfByDesign"];
+            ccf_distribution: components["schemas"]["c09Distribution"];
+            ead_models: components["schemas"]["c09EadModel"][];
+            ead_backtest: components["schemas"]["c09EadBacktest"];
+            ead_floor: components["schemas"]["c09EadFloor"];
+            small_undrawn: components["schemas"]["c09SmallUndrawn"];
+        };
+        c09Plan: {
+            development_seeds: number[];
+            test_seeds: number[];
+            n_facilities: number;
+        };
+        c09ReplicationSet: {
+            seeds: number[];
+            n_replications: number;
+            n_facilities: number;
+            n_defaults: number;
+        };
+        /** @description Independent simulated development and test replications with fixed seeds, disjoint between the two sets. */
+        c09Replications: {
+            development: components["schemas"]["c09ReplicationSet"];
+            test: components["schemas"]["c09ReplicationSet"];
+        };
+        /** @description The small-undrawn rule of Qi (2009): below the threshold the EAD ratio replaces the unstable CCF. */
+        c09SmallUndrawn: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            threshold: number;
+            applied: boolean;
+            n_switched: number;
+            reference: string;
+        };
+        c09SupervisoryCcf: {
+            item: string;
+            /** @description A share or an observed rate in [0, 1]. */
+            ccf: number;
+            reference: string;
+        };
+        /**
          * C22 models
          * @description Catalog row c22-models 1.0.0: the C22 models artifact with the exact-probability parity points.
          */
@@ -2603,7 +3294,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
+                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c03-models"] | components["schemas"]["c03-variant-vintage-cohort"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c08-models"] | components["schemas"]["c08-variant-default-cohort"] | components["schemas"]["c09-models"] | components["schemas"]["c09-variant-acceleration-level"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
                 };
             };
             404: components["responses"]["NotFound"];

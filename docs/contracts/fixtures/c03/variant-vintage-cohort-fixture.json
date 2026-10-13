@@ -1,0 +1,402 @@
+{
+  "schema": "contraste.case/v1",
+  "case_id": "C03",
+  "variant_id": "fixture-fy2018-20",
+  "model": [
+    {
+      "id": "P1-woe-scorecard",
+      "family": "credit-scoring",
+      "rung": "woe-scorecard",
+      "title": {
+        "en": "Fixture model P1-woe-scorecard",
+        "es": "Modelo de ejemplo P1-woe-scorecard"
+      },
+      "short_title": {
+        "en": "P1-woe-scorecard",
+        "es": "P1-woe-scorecard"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    }
+  ],
+  "outputs": {
+    "kind": "vintage-cohort",
+    "currency": "USD",
+    "cohort": {
+      "id": "fy2018-20",
+      "label": {
+        "en": "FY2018-20",
+        "es": "AF2018-20"
+      },
+      "first_fy": 2018,
+      "last_fy": 2020,
+      "approval_fiscal_years": [
+        2018,
+        2019,
+        2020
+      ]
+    },
+    "training": {
+      "first_fy": 1991,
+      "last_fy": 2012,
+      "cutoff_date": "2017-09-30",
+      "n_loans": 600000,
+      "n_events": 54000,
+      "crisis_included": true,
+      "rationale": {
+        "en": "Fixture: trained on vintages whose 5-year mark closed before the cutoff, so the crisis defaults are in the training outcomes.",
+        "es": "Ejemplo: entrenado con cosechas cuya marca de 5 anos cerro antes del corte, de modo que los incumplimientos de la crisis estan en los resultados de entrenamiento."
+      }
+    },
+    "target": {
+      "name": "charged-off-within-60-months",
+      "horizon_months": 60,
+      "observed_at_months": 60,
+      "censoring": "exempt-right-censored",
+      "definition": {
+        "en": "A loan counts as an event when it is charged off within 60 months of approval; the target of a vintage is read only at its 5-year mark. EXEMPT (active) loans are right-censored.",
+        "es": "Un credito es evento si se castiga dentro de 60 meses desde la aprobacion; el objetivo de una cosecha se lee solo en su marca de 5 anos. Los creditos EXEMPT (vigentes) son censurados por la derecha."
+      }
+    },
+    "data_status": {
+      "primary_source": "sba-7a",
+      "files_as_of": "2024-06-30",
+      "fiscal_year_start": "10-01",
+      "notice": {
+        "en": "Fixture, not a result. The as-of date is a fixture value so that two vintages show an unobserved 5-year mark.",
+        "es": "Ejemplo, no es un resultado. La fecha de corte es un valor de ejemplo para que dos cosechas muestren una marca de 5 anos no observada."
+      }
+    },
+    "vintage_curves": [
+      {
+        "fiscal_year": 2018,
+        "n": 24000,
+        "gross_approval": 5100000000.0,
+        "months": [
+          12,
+          24,
+          36,
+          48,
+          60
+        ],
+        "predicted_cumulative_pd": [
+          0.012,
+          0.031,
+          0.052,
+          0.071,
+          0.087
+        ],
+        "observed_cumulative_pd": [
+          0.01,
+          0.027,
+          0.049,
+          0.074,
+          0.092
+        ],
+        "observed_until_month": 69,
+        "reason": null
+      },
+      {
+        "fiscal_year": 2019,
+        "n": 25000,
+        "gross_approval": 5600000000.0,
+        "months": [
+          12,
+          24,
+          36,
+          48,
+          60
+        ],
+        "predicted_cumulative_pd": [
+          0.011,
+          0.029,
+          0.05,
+          0.068,
+          0.083
+        ],
+        "observed_cumulative_pd": [
+          0.009,
+          0.026,
+          0.047,
+          0.066,
+          null
+        ],
+        "observed_until_month": 57,
+        "reason": "fixture: the 5-year mark of this vintage is beyond the observation cutoff (as-of 2024-06-30)"
+      },
+      {
+        "fiscal_year": 2020,
+        "n": 21000,
+        "gross_approval": 4400000000.0,
+        "months": [
+          12,
+          24,
+          36,
+          48,
+          60
+        ],
+        "predicted_cumulative_pd": [
+          0.01,
+          0.027,
+          0.046,
+          0.063,
+          0.077
+        ],
+        "observed_cumulative_pd": [
+          0.006,
+          0.018,
+          0.033,
+          null,
+          null
+        ],
+        "observed_until_month": 45,
+        "reason": "fixture: the 5-year mark of this vintage is beyond the observation cutoff (as-of 2024-06-30)"
+      }
+    ],
+    "vintage_summary": {
+      "currency": "USD",
+      "rows": [
+        {
+          "fiscal_year": 2018,
+          "n": 24000,
+          "n_resolved": 22800,
+          "n_exempt_censored": 1200,
+          "gross_approval": 5100000000.0,
+          "observed_5y_pd": 0.092,
+          "predicted_5y_pd": 0.087,
+          "gap": 0.005,
+          "brier": 0.07,
+          "auc": 0.71,
+          "reason": null
+        },
+        {
+          "fiscal_year": 2019,
+          "n": 25000,
+          "n_resolved": 22000,
+          "n_exempt_censored": 3000,
+          "gross_approval": 5600000000.0,
+          "observed_5y_pd": null,
+          "predicted_5y_pd": 0.083,
+          "gap": null,
+          "brier": null,
+          "auc": null,
+          "reason": "fixture: the 5-year mark of this vintage is beyond the observation cutoff (as-of 2024-06-30)"
+        },
+        {
+          "fiscal_year": 2020,
+          "n": 21000,
+          "n_resolved": 15000,
+          "n_exempt_censored": 6000,
+          "gross_approval": 4400000000.0,
+          "observed_5y_pd": null,
+          "predicted_5y_pd": 0.077,
+          "gap": null,
+          "brier": null,
+          "auc": null,
+          "reason": "fixture: the 5-year mark of this vintage is beyond the observation cutoff (as-of 2024-06-30)"
+        }
+      ]
+    },
+    "calibration": {
+      "rung_id": "P1-woe-scorecard",
+      "scope": "vintages with an observed 5-year mark",
+      "rows": [
+        {
+          "decile": 1,
+          "n": 1000,
+          "predicted_pd": 0.0102,
+          "observed_pd": 0.009792,
+          "ci_low": 0.0,
+          "ci_high": 0.021792
+        },
+        {
+          "decile": 2,
+          "n": 1000,
+          "predicted_pd": 0.0208,
+          "observed_pd": 0.020176,
+          "ci_low": 0.008176,
+          "ci_high": 0.032176
+        },
+        {
+          "decile": 3,
+          "n": 1000,
+          "predicted_pd": 0.0318,
+          "observed_pd": 0.031164,
+          "ci_low": 0.019164,
+          "ci_high": 0.043164
+        },
+        {
+          "decile": 4,
+          "n": 1000,
+          "predicted_pd": 0.0432,
+          "observed_pd": 0.042768,
+          "ci_low": 0.030768,
+          "ci_high": 0.054768
+        },
+        {
+          "decile": 5,
+          "n": 1000,
+          "predicted_pd": 0.055,
+          "observed_pd": 0.055,
+          "ci_low": 0.043,
+          "ci_high": 0.067
+        },
+        {
+          "decile": 6,
+          "n": 1000,
+          "predicted_pd": 0.0672,
+          "observed_pd": 0.067872,
+          "ci_low": 0.055872,
+          "ci_high": 0.079872
+        },
+        {
+          "decile": 7,
+          "n": 1000,
+          "predicted_pd": 0.0798,
+          "observed_pd": 0.081396,
+          "ci_low": 0.069396,
+          "ci_high": 0.093396
+        },
+        {
+          "decile": 8,
+          "n": 1000,
+          "predicted_pd": 0.0928,
+          "observed_pd": 0.095584,
+          "ci_low": 0.083584,
+          "ci_high": 0.107584
+        },
+        {
+          "decile": 9,
+          "n": 1000,
+          "predicted_pd": 0.1062,
+          "observed_pd": 0.110448,
+          "ci_low": 0.098448,
+          "ci_high": 0.122448
+        },
+        {
+          "decile": 10,
+          "n": 1000,
+          "predicted_pd": 0.12,
+          "observed_pd": 0.126,
+          "ci_low": 0.114,
+          "ci_high": 0.138
+        }
+      ]
+    },
+    "rung_comparison": [
+      {
+        "rung_id": "P1-woe-scorecard",
+        "auc": 0.71,
+        "auc_ci_low": 0.69,
+        "auc_ci_high": 0.73,
+        "brier": 0.07,
+        "calibration_gap_5y": 0.005,
+        "reason": null
+      },
+      {
+        "rung_id": "P4-monotone-gbm",
+        "auc": 0.74,
+        "auc_ci_low": 0.72,
+        "auc_ci_high": 0.76,
+        "brier": 0.068,
+        "calibration_gap_5y": -0.004,
+        "reason": null
+      },
+      {
+        "rung_id": "P2-penalised-logit",
+        "auc": null,
+        "auc_ci_low": null,
+        "auc_ci_high": null,
+        "brier": null,
+        "calibration_gap_5y": null,
+        "reason": "fixture: the rung is not fitted on this cohort"
+      }
+    ],
+    "stability": {
+      "training_mean_5y_pd": 0.09,
+      "psi_note": {
+        "en": "Fixture PSI values; 0.10 and 0.25 are conventions, not limits.",
+        "es": "Valores PSI de ejemplo; 0,10 y 0,25 son convenciones, no limites."
+      },
+      "rows": [
+        {
+          "fiscal_year": 2018,
+          "psi": 0.04,
+          "observed_5y_pd": 0.092
+        },
+        {
+          "fiscal_year": 2019,
+          "psi": 0.05,
+          "observed_5y_pd": null
+        },
+        {
+          "fiscal_year": 2020,
+          "psi": 0.06,
+          "observed_5y_pd": null
+        }
+      ]
+    }
+  },
+  "tests": [
+    {
+      "test_id": "pd.vintage_calibration",
+      "model_id": "P1-woe-scorecard",
+      "segment": null,
+      "statistic": 0.0,
+      "p_value": null,
+      "metric": 0.0,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture",
+      "extras": {}
+    }
+  ],
+  "impact": {
+    "observed_5y_pd_fy2018": {
+      "value": 0.092,
+      "unit": "share",
+      "label": {
+        "en": "Observed 5-year PD, FY2018",
+        "es": "PD observada a 5 anos, AF2018"
+      }
+    }
+  },
+  "findings": [],
+  "provenance": {
+    "truth_status": "real-outcomes",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u6-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}
