@@ -164,7 +164,130 @@
           "minimum": 1
         }
       },
-      "description": "One of the six windows of SDD C11; the variant id is the window id."
+      "description": "One of the six windows of SDD C11 with the dates of decision D2; the variant id is the window id.",
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "window_id": {
+                  "const": "equity-2007-09"
+                },
+                "asset_class": {
+                  "type": "string",
+                  "enum": [
+                    "equity"
+                  ]
+                },
+                "start_date": {
+                  "const": "2007-07-02"
+                },
+                "end_date": {
+                  "const": "2009-06-30"
+                }
+              }
+            },
+            {
+              "properties": {
+                "window_id": {
+                  "const": "equity-2020"
+                },
+                "asset_class": {
+                  "type": "string",
+                  "enum": [
+                    "equity"
+                  ]
+                },
+                "start_date": {
+                  "const": "2020-02-03"
+                },
+                "end_date": {
+                  "const": "2020-06-30"
+                }
+              }
+            },
+            {
+              "properties": {
+                "window_id": {
+                  "const": "rates-2022"
+                },
+                "asset_class": {
+                  "type": "string",
+                  "enum": [
+                    "rates"
+                  ]
+                },
+                "start_date": {
+                  "const": "2022-01-03"
+                },
+                "end_date": {
+                  "const": "2022-12-30"
+                }
+              }
+            },
+            {
+              "properties": {
+                "window_id": {
+                  "const": "fx-2008"
+                },
+                "asset_class": {
+                  "type": "string",
+                  "enum": [
+                    "fx"
+                  ]
+                },
+                "start_date": {
+                  "const": "2008-07-01"
+                },
+                "end_date": {
+                  "const": "2009-06-30"
+                }
+              }
+            },
+            {
+              "properties": {
+                "window_id": {
+                  "const": "mixed-2023"
+                },
+                "asset_class": {
+                  "type": "string",
+                  "enum": [
+                    "mixed"
+                  ]
+                },
+                "start_date": {
+                  "const": "2023-03-01"
+                },
+                "end_date": {
+                  "const": "2023-05-31"
+                }
+              }
+            },
+            {
+              "properties": {
+                "window_id": {
+                  "const": "calm-2004-06"
+                },
+                "asset_class": {
+                  "type": "string",
+                  "enum": [
+                    "equity",
+                    "rates",
+                    "fx",
+                    "mixed"
+                  ]
+                },
+                "start_date": {
+                  "const": "2004-01-02"
+                },
+                "end_date": {
+                  "const": "2006-12-29"
+                }
+              }
+            }
+          ]
+        }
+      ]
     },
     "c11Component": {
       "type": "object",
@@ -436,17 +559,13 @@
       ],
       "properties": {
         "start": {
-          "type": "string",
-          "pattern": "^(19\\d{2}|200[0-6])-\\d{2}-\\d{2}$",
-          "description": "A date before 2007-01-01: the hyperparameters are fixed on a pre-2007 span (SDD C11)."
+          "const": "1995-01-01"
         },
         "end": {
-          "type": "string",
-          "pattern": "^(19\\d{2}|200[0-6])-\\d{2}-\\d{2}$",
-          "description": "A date before 2007-01-01: the hyperparameters are fixed on a pre-2007 span (SDD C11)."
+          "const": "2003-12-31"
         }
       },
-      "description": "The span on which the hyperparameters were fixed: it ends before 2007 and before the window it serves."
+      "description": "The span on which the hyperparameters were fixed (decision D1): 1995-01-01 to 2003-12-31 for every window, so it ends before the earliest test window (calm 2004-06) and tunes on none."
     },
     "c11Hyperparameters": {
       "type": "object",
@@ -459,6 +578,9 @@
         "age_weight_lambda",
         "evt_threshold_fraction",
         "garch_refit_every_days",
+        "caviar_n_starts",
+        "gas_n_starts",
+        "seed",
         "others"
       ],
       "properties": {
@@ -490,6 +612,18 @@
         "garch_refit_every_days": {
           "type": "integer",
           "minimum": 1
+        },
+        "caviar_n_starts": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "gas_n_starts": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0
         },
         "others": {
           "type": "array",
@@ -1293,6 +1427,7 @@
       "required": [
         "significance",
         "hac_kernel",
+        "hac_lags",
         "champions",
         "dm",
         "mcs"
@@ -1305,6 +1440,11 @@
         },
         "hac_kernel": {
           "const": "bartlett"
+        },
+        "hac_lags": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The lag count of every Diebold-Mariano row: 0 for one-step forecasts (engine contract, scoring.diebold_mariano)."
         },
         "champions": {
           "type": "array",
@@ -1471,7 +1611,103 @@
           }
         }
       },
-      "description": "The C11 window document: market VaR and ES forecasts of the ladder, strictly rolling, and their back-tests."
+      "description": "The C11 window document: market VaR and ES forecasts of the ladder, strictly rolling, and their back-tests.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "window": {
+                "properties": {
+                  "n_forecast_days": {
+                    "maximum": 249
+                  }
+                },
+                "required": [
+                  "n_forecast_days"
+                ]
+              }
+            },
+            "required": [
+              "window"
+            ]
+          },
+          "then": {
+            "properties": {
+              "models": {
+                "items": {
+                  "properties": {
+                    "by_level": {
+                      "items": {
+                        "if": {
+                          "properties": {
+                            "alpha": {
+                              "const": 0.01
+                            }
+                          },
+                          "required": [
+                            "alpha"
+                          ]
+                        },
+                        "then": {
+                          "properties": {
+                            "traffic_light": {
+                              "properties": {
+                                "final_zone": {
+                                  "const": "not_evaluated"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "models": {
+                "items": {
+                  "properties": {
+                    "by_level": {
+                      "items": {
+                        "if": {
+                          "properties": {
+                            "alpha": {
+                              "const": 0.01
+                            }
+                          },
+                          "required": [
+                            "alpha"
+                          ]
+                        },
+                        "then": {
+                          "properties": {
+                            "traffic_light": {
+                              "properties": {
+                                "final_zone": {
+                                  "type": "string",
+                                  "enum": [
+                                    "green",
+                                    "amber",
+                                    "red"
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }

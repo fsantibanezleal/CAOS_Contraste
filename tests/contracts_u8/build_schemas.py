@@ -89,8 +89,6 @@ def C(value) -> dict:
 NULL = {"type": "null"}
 B = {"type": "boolean"}
 DATE = S(pattern=r"^\d{4}-\d{2}-\d{2}$")
-PRE2007 = S("A date before 2007-01-01: the hyperparameters are fixed on a pre-2007 span (SDD C11).",
-            pattern=r"^(19\d{2}|200[0-6])-\d{2}-\d{2}$")
 UNIT = N("A share or an observed rate in [0, 1].", minimum=0, maximum=1)
 PROB = N("A probability in [0, 1].", minimum=0, maximum=1)
 LOSS_POS = N("A positive loss number (document convention) as a decimal of the portfolio value.", exclusiveMinimum=0)
@@ -110,6 +108,39 @@ def couple(ob: dict, *groups: list[dict]) -> dict:
     must match."""
     ob["allOf"] = [{"oneOf": [{"properties": alt} for alt in group]} for group in groups]
     return ob
+
+
+def prefix(arr: dict, *alternatives: dict) -> dict:
+    """Pins the first items of an array to constants: every alternative narrows properties of the item at its position
+    (prefixItems under allOf, so the generated types still read ``items``)."""
+    arr.setdefault("allOf", []).append({"prefixItems": [{"properties": alt} for alt in alternatives]})
+    return arr
+
+
+# Decision D1 (plans/contraste/units/U8-sizing.md): every window hyperparameters are fixed once on this span, which ends
+# before the earliest test window (calm 2004-06). Decision D2: the window dates. Review F2: the schema ties each window id to them.
+D1_START, D1_END = "1995-01-01", "2003-12-31"
+WINDOW_TABLE = [  # window_id, asset classes allowed, start, end
+    ("equity-2007-09", ("equity",), "2007-07-02", "2009-06-30"),
+    ("equity-2020", ("equity",), "2020-02-03", "2020-06-30"),
+    ("rates-2022", ("rates",), "2022-01-03", "2022-12-30"),
+    ("fx-2008", ("fx",), "2008-07-01", "2009-06-30"),
+    ("mixed-2023", ("mixed",), "2023-03-01", "2023-05-31"),
+    ("calm-2004-06", ("equity", "rates", "fx", "mixed"), "2004-01-02", "2006-12-29"),  # the class of the calm window is not decided
+]
+WINDOW_IDS = [w[0] for w in WINDOW_TABLE]
+
+
+def window_alternatives() -> list[dict]:
+    return [{"window_id": C(w), "asset_class": E(*classes), "start_date": C(a), "end_date": C(b)}
+            for w, classes, a, b in WINDOW_TABLE]
+
+
+# MAR32.9 Table 1 (dossier 01 D.4) and 12 CFR 217.204 Table 1 (dossier 05 B.4), transcribed
+MAR32_CUM = [8.11, 28.58, 54.32, 75.81, 89.22, 95.88, 98.63, 99.60, 99.89, 99.97, 99.99]
+MAR32_FRTB = [1.50, 1.50, 1.50, 1.50, 1.50, 1.70, 1.76, 1.83, 1.88, 1.92, 2.00]
+MAR32_US = [3.00, 3.00, 3.00, 3.00, 3.00, 3.40, 3.50, 3.65, 3.75, 3.85, 4.00]
+MAR32_ZONE = ["green"] * 5 + ["amber"] * 5 + ["red"]
 
 
 def reachable(root: str, defs: dict) -> dict:
@@ -211,14 +242,14 @@ def build_c11() -> None:
     d["c11SignConvention"] = sign_convention("c11", "C11")
     d["c11Level"] = Ob({"alpha": ALPHA}, "A tail level of the return convention: 0.01 (99 percent VaR, the Basel level) or 0.025 "
                                          "(97.5 percent, the FRTB ES level).")
-    d["c11Window"] = Ob({
-        "window_id": E("equity-2007-09", "equity-2020", "rates-2022", "fx-2008", "mixed-2023", "calm-2004-06"),
+    d["c11Window"] = couple(Ob({
+        "window_id": E(*WINDOW_IDS),
         "asset_class": E("equity", "rates", "fx", "mixed"),
         "title": TXT,
         "start_date": DATE,
         "end_date": DATE,
         "n_forecast_days": Int(1),
-    }, "One of the six windows of SDD C11; the variant id is the window id.")
+    }, "One of the six windows of SDD C11 with the dates of decision D2; the variant id is the window id."), window_alternatives())
     d["c11Component"] = Ob({
         "series_id": S(), "label": TXT,
         "source_class": E("derived-only", "mirror-allowed"),
@@ -259,8 +290,9 @@ def build_c11() -> None:
                                       "a JSON Schema rule)."),
         "realised_loss": R("c11Realised"),
     }, "The forecast grid shared by every model: dates once, the estimation window of each day, the realised losses.")
-    d["c11Span"] = Ob({"start": PRE2007, "end": PRE2007},
-                      "The span on which the hyperparameters were fixed: it ends before 2007 and before the window it serves.")
+    d["c11Span"] = Ob({"start": C(D1_START), "end": C(D1_END)},
+                      "The span on which the hyperparameters were fixed (decision D1): 1995-01-01 to 2003-12-31 for every window, so it "
+                      "ends before the earliest test window (calm 2004-06) and tunes on none.")
     d["c11Hyperparameters"] = Ob({
         "fixed_on": R("c11Span"),
         "tuned_on_test_window": C(False),
@@ -269,6 +301,9 @@ def build_c11() -> None:
         "age_weight_lambda": N(exclusiveMinimum=0, exclusiveMaximum=1),
         "evt_threshold_fraction": N(exclusiveMinimum=0, exclusiveMaximum=1),
         "garch_refit_every_days": Int(1),
+        "caviar_n_starts": Int(1),
+        "gas_n_starts": Int(1),
+        "seed": Int(0),
         "others": A(NAME_MAP),
     }, "The hyperparameters (window length, lambda, EVT threshold fraction) fixed on the span, never tuned on a test window.")
     d["c11TrafficLight"] = couple(
@@ -351,6 +386,7 @@ def build_c11() -> None:
     d["c11Comparison"] = Ob({
         "significance": N(exclusiveMinimum=0, exclusiveMaximum=1),
         "hac_kernel": C("bartlett"),
+        "hac_lags": Int(0, desc="The lag count of every Diebold-Mariano row: 0 for one-step forecasts (engine contract, scoring.diebold_mariano)."),
         "champions": A(R("c11Champion"), 1),
         "dm": A(R("c11DmRow")),
         "mcs": A(R("c11McsSet"), 1),
@@ -381,12 +417,13 @@ def build_c11() -> None:
     }, "The C11 window document: market VaR and ES forecasts of the ladder, strictly rolling, and their back-tests.")
 
     # --- models
-    d["c11WindowPlan"] = Ob({
-        "window_id": E("equity-2007-09", "equity-2020", "rates-2022", "fx-2008", "mixed-2023", "calm-2004-06"),
+    d["c11WindowPlan"] = couple(Ob({
+        "window_id": E(*WINDOW_IDS),
         "asset_class": E("equity", "rates", "fx", "mixed"),
         "start_date": DATE, "end_date": DATE,
         "fixed_on": R("c11Span"),
-    }, "A window and the span on which its hyperparameters were fixed (before the window starts and before 2007).")
+    }, "A window with the dates of decision D2 and the span of decision D1 on which its hyperparameters were fixed."),
+        window_alternatives())
     d["c11Parameter"] = Ob({"name": S(), "min": N(), "median": N(), "max": N(), "unit": S()},
                            "A fitted parameter across the refits of a window: minimum, median and maximum.")
     d["c11RungWindowFit"] = Ob({
@@ -416,7 +453,9 @@ def build_c11() -> None:
     })
     d["c11TrafficTable"] = Ob({
         "window_days": C(250), "confidence": C(0.99), "reference": S(),
-        "rows": A(R("c11TrafficRow"), 11, maximum=11),
+        "rows": prefix(A(R("c11TrafficRow"), 11, maximum=11), *[
+            {"exceptions": C(i), "zone": C(MAR32_ZONE[i]), "frtb_multiplier": C(MAR32_FRTB[i]), "us_multiplier": C(MAR32_US[i]),
+             "cumulative_probability_pct": C(MAR32_CUM[i])} for i in range(11)]),
     }, "MAR32.9 Table 1 with the US factors (dossier 01 D.4, dossier 05 B.4); the reference for every traffic-light band.")
     d["c11EsReference"] = Ob({
         "statistic": C("Z2"), "n_days": C(250), "alpha": C(0.025), "yellow": C(-0.7), "red": C(-1.8), "status": TXT,
@@ -435,7 +474,7 @@ def build_c11() -> None:
     d["c11Fit"] = Ob({
         "sign_convention": R("c11SignConvention"),
         "levels": A(R("c11Level"), 1),
-        "windows": A(R("c11WindowPlan"), 6, maximum=6),
+        "windows": prefix(A(R("c11WindowPlan"), 6, maximum=6), *[{"window_id": C(w)} for w in WINDOW_IDS]),
         "ladder": A(R("c11Rung"), 1),
         "traffic_light": R("c11TrafficTable"),
         "es_reference": R("c11EsReference"),
@@ -443,6 +482,17 @@ def build_c11() -> None:
         "eligibility_gates": A(R("c11Gate"), 1),
         "data_sources": A(R("c11Source"), 1),
     }, "The C11 models document: the six windows, the ladder, the bands and the reference points the views draw.")
+
+    d["c11Outputs"]["allOf"] = [{
+        "if": {"properties": {"window": {"properties": {"n_forecast_days": {"maximum": 249}}, "required": ["n_forecast_days"]}},
+               "required": ["window"]},
+        "then": {"properties": {"models": {"items": {"properties": {"by_level": {"items": {
+            "if": {"properties": {"alpha": C(0.01)}, "required": ["alpha"]},
+            "then": {"properties": {"traffic_light": {"properties": {"final_zone": C("not_evaluated")}}}}}}}}}}},
+        "else": {"properties": {"models": {"items": {"properties": {"by_level": {"items": {
+            "if": {"properties": {"alpha": C(0.01)}, "required": ["alpha"]},
+            "then": {"properties": {"traffic_light": {"properties": {"final_zone": E("green", "amber", "red")}}}}}}}}}}},
+    }]
 
     variant_schema("C11", "variant-window", "window", "C11 window variant",
                    "Catalog row c11-outputs 1.0.0: one window of the market VaR and ES back-testing case (outputs.kind window), "
@@ -533,7 +583,7 @@ def build_c13() -> None:
         "pnl_summary": A(R("c13PnlSummary"), 2, maximum=2),
         "pla": R("c13Pla"),
         "example": R("c13Example"),
-        "desk_backtest": A(R("c13DeskLevel"), 2, maximum=2),
+        "desk_backtest": prefix(A(R("c13DeskLevel"), 2, maximum=2), {"alpha": C(0.025)}, {"alpha": C(0.01)}),
         "detection": R("c13Detection"),
     }, "The C13 deficiency document: the PLA and desk back-test of a desk whose model has one known planted deficiency.")
     d["c13Outputs"]["allOf"] = [{
@@ -549,18 +599,21 @@ def build_c13() -> None:
         "pnl_unit": C("decimal-of-desk-notional"), "window_days": C(250), "seed_rule": C("seed_base+replication_index"),
         "notice": TXT,
     }, "The desk P&L generator with a known risk model.")
-    d["c13DeficiencyPlan"] = Ob({
+    d["c13DeficiencyPlan"] = couple(Ob({
         "deficiency_id": E(*DEFS6), "planted": B, "mechanism": TXT, "parameters": A(NAME_MAP),
         "intended_to_fail": E("none", "spearman", "ks", "either"),
-    }, "One planted deficiency and how the generator plants it.")
-    d["c13DeskLimit"] = Ob({"alpha": ALPHA, "limit_exceptions": Int(0), "reference": S()})
+    }, "One planted deficiency and how the generator plants it."),
+        [{"deficiency_id": C("none"), "planted": C(False), "intended_to_fail": C("none")},
+         {"deficiency_id": E(*DEFS6[1:]), "planted": C(True), "intended_to_fail": E("spearman", "ks", "either")}])
+    d["c13DeskLimit"] = couple(Ob({"alpha": ALPHA, "limit_exceptions": Int(0), "reference": S()}),
+                               [{"alpha": C(0.01), "limit_exceptions": C(12)}, {"alpha": C(0.025), "limit_exceptions": C(30)}])
     d["c13ReplicationPlan"] = Ob({"n_replications": Int(1), "seed_base": Int(0), "seed_rule": C("seed_base+replication_index")})
     d["c13Fit"] = Ob({
         "sign_convention": R("c13SignConvention"),
         "generator": R("c13GeneratorSpec"),
-        "deficiencies": A(R("c13DeficiencyPlan"), 6, maximum=6),
+        "deficiencies": prefix(A(R("c13DeficiencyPlan"), 6, maximum=6), *[{"deficiency_id": C(x)} for x in DEFS6]),
         "pla_thresholds": R("c13PlaThresholds"),
-        "desk_limits": A(R("c13DeskLimit"), 2, maximum=2),
+        "desk_limits": prefix(A(R("c13DeskLimit"), 2, maximum=2), {"alpha": C(0.025)}, {"alpha": C(0.01)}),
         "replication_plan": R("c13ReplicationPlan"),
     }, "The C13 models document: the generator, the six deficiencies it plants, the PLA and desk limits.")
 

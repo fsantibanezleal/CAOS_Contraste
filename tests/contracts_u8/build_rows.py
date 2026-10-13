@@ -32,8 +32,11 @@ def missing(case: str, doc: str, extra: str) -> str:
             f"{case} view shows its Pending state (data-state loading) while the data is not there, never an empty chart. {extra}")
 
 
+F = "tests/contracts_u8/test_u8_fixes.py::"
+
+
 def tests(*names: str) -> str:
-    return ", ".join(T + n for n in names)
+    return ", ".join((F + n[1:] if n.startswith("@") else T + n) for n in names)
 
 
 ROWS = [
@@ -42,21 +45,27 @@ ROWS = [
      "frontend/src/workbench/c11/, to come)",
      "docs/contracts/schemas/c11/variant-window.schema.json", "docs/contracts/fixtures/c11/variant-window-fixture.json",
      tests("test_a_forecast_on_or_before_the_end_of_its_estimation_window_is_caught",
-           "test_a_span_that_does_not_end_before_the_window_or_before_2007_is_caught",
+           "test_a_span_that_is_not_the_d1_span_is_caught_by_the_schema_and_the_producer_check",
            "test_the_forecast_arrays_align_with_the_grid_and_es_is_never_below_var",
            "test_the_exceedances_the_scores_and_the_ftest_inputs_recompute_from_the_realised_series",
            "test_the_rolling_250_day_count_and_the_zone_recompute_at_one_percent_and_are_null_at_2_5",
            "test_the_kupiec_and_christoffersen_rows_recompute_from_the_exceedance_days",
            "test_a_back_test_that_cannot_run_is_a_not_evaluated_row_with_its_reason_never_a_number",
            "test_the_diebold_mariano_rows_recompute_on_the_common_sample",
-           "test_a_document_without_its_sign_convention_fails"),
+           "test_a_document_without_its_sign_convention_fails",
+           "@test_f2_the_fx_2008_window_dated_2008_is_refused_and_a_correct_window_id_date_pair_is_accepted",
+           "@test_f3_a_window_under_250_days_with_an_evaluated_traffic_light_is_refused",
+           "@test_d3_a_window_of_250_days_or_more_with_a_not_evaluated_traffic_light_is_refused",
+           "@test_f8_a_contradicting_document_is_refused"),
      missing("C11", "window artifact", C11_EXTRA)),
     ("c11-models",
      "U8-S (producer U8-P1 in data-pipeline/pipeline/cases/c11/, to come; consumer U8-W in frontend/src/workbench/c11/, to come)",
      "docs/contracts/schemas/c11/models.schema.json", "docs/contracts/fixtures/c11/models-fixture.json",
      tests("test_the_fixture_exists_and_is_discovered_by_exactly_one_schema", "test_the_window_ids_are_the_six_of_the_sdd",
            "test_the_traffic_light_table_is_the_transcribed_mar32_9_table",
-           "test_the_c11_models_ladder_and_the_variant_models_agree"),
+           "test_the_c11_models_ladder_and_the_variant_models_agree",
+           "@test_f6_a_changed_mar32_9_row_is_refused",
+           "@test_f2_six_copies_of_one_window_in_the_models_are_refused"),
      missing("C11", "models artifact", C11_EXTRA)),
     ("c13-outputs",
      "U8-S (producer U8-P2 in data-pipeline/pipeline/cases/c13/ with its own tests/c13/ suite, to come; consumer U8-W in "
@@ -73,7 +82,8 @@ ROWS = [
      "U8-S (producer U8-P2 in data-pipeline/pipeline/cases/c13/, to come; consumer U8-W in frontend/src/workbench/c13/, to come)",
      "docs/contracts/schemas/c13/models.schema.json", "docs/contracts/fixtures/c13/models-fixture.json",
      tests("test_the_fixture_exists_and_is_discovered_by_exactly_one_schema",
-           "test_the_c13_models_plan_lists_exactly_the_six_deficiencies"),
+           "test_the_c13_models_plan_lists_exactly_the_six_deficiencies",
+           "@test_f7_c13_models_deficiency_plans_are_coupled_and_ordered"),
      missing("C13", "models artifact", C13_EXTRA)),
 ]
 API_OWNER = ("U8-S (implemented by U8-E in CAOS_RiskValidation riskvalidation.market and riskvalidation.validation.market, with "

@@ -239,7 +239,7 @@ def build_c11_variant() -> tuple[dict, dict]:
             for lk in ("fz0", "tick"):
                 if lk == "fz0" and results[mid][a]["state"] == "not-forecast":
                     dm_rows.append({"model_id": mid, "versus": champ, "alpha": a, "loss": lk, "mean_diff": None, "dm_statistic": None,
-                                    "p_value": None, "hac_lags": 5, "n_common": None, "direction": "not-evaluated",
+                                    "p_value": None, "hac_lags": 0, "n_common": None, "direction": "not-evaluated",
                                     "not_evaluated_reason": "the model forecasts no ES: FZ0 is not defined"})
                     continue
                 idx = list(range(n))
@@ -251,12 +251,12 @@ def build_c11_variant() -> tuple[dict, dict]:
                     return mm.fz0_loss(loss[i], res["var"][i], res["es"][i], a) if lk == "fz0" else mm.tick_loss(loss[i], res["var"][i], a)
 
                 diff = [lossf(mid, i) - lossf(champ, i) for i in idx]
-                z = mm.dm_statistic(diff, 5)
+                z = mm.dm_statistic(diff, 0)
                 pv = mm.two_sided_p(z)
                 md = sum(diff) / len(diff)
                 direction = "indistinguishable" if pv >= 0.05 else ("better" if md < 0 else "worse")
                 dm_rows.append({"model_id": mid, "versus": champ, "alpha": a, "loss": lk, "mean_diff": r(md, 9), "dm_statistic": r(z),
-                                "p_value": r(pv), "hac_lags": 5, "n_common": len(idx), "direction": direction,
+                                "p_value": r(pv), "hac_lags": 0, "n_common": len(idx), "direction": direction,
                                 "not_evaluated_reason": None})
         scored = [(fz_mean(mid, a), mid) for mid, *_ in MODELS if fz_mean(mid, a) is not None]
         best = min(scored)[1]
@@ -268,7 +268,7 @@ def build_c11_variant() -> tuple[dict, dict]:
                 idx = [i for i in range(n) if results[mid][a]["es"][i] is not None and results[best][a]["es"][i] is not None]
                 diff = [mm.fz0_loss(loss[i], results[mid][a]["var"][i], results[mid][a]["es"][i], a)
                         - mm.fz0_loss(loss[i], results[best][a]["var"][i], results[best][a]["es"][i], a) for i in idx]
-                p = mm.two_sided_p(mm.dm_statistic(diff, 5))
+                p = mm.two_sided_p(mm.dm_statistic(diff, 0))
             members.append({"model_id": mid, "in_set": p >= 0.10, "p_value": r(p)})
         mcs.append({"alpha": a, "loss": "fz0", "statistic": "TR", "confidence": 0.90, "n_bootstrap": 1000, "block_length": 10,
                     "members": members, "n_in_set": sum(1 for m in members if m["in_set"])})
@@ -318,12 +318,12 @@ def build_c11_variant() -> tuple[dict, dict]:
         "grid": {"scheme": "rolling", "estimation_window_days": 1000, "dates": [x.isoformat() for x in grid],
                  "estimation_start": [x.isoformat() for x in est_start], "estimation_end": [x.isoformat() for x in est_end],
                  "realised_loss": {"status": "included", "loss": loss, "reason": None}},
-        "hyperparameters": {"fixed_on": {"start": "1995-01-03", "end": "2006-12-29"}, "tuned_on_test_window": False,
+        "hyperparameters": {"fixed_on": {"start": "1995-01-01", "end": "2003-12-31"}, "tuned_on_test_window": False,
                             "estimation_window_days": 1000, "ewma_lambda": 0.94, "age_weight_lambda": 0.98,
-                            "evt_threshold_fraction": 0.10, "garch_refit_every_days": 1,
+                            "evt_threshold_fraction": 0.10, "garch_refit_every_days": 1, "caviar_n_starts": 20, "gas_n_starts": 20, "seed": 0,
                             "others": [{"name": "hs_window", "value": 250, "unit": "days"}]},
         "models": models_out,
-        "comparison": {"significance": 0.05, "hac_kernel": "bartlett", "champions": champions, "dm": dm_rows, "mcs": mcs},
+        "comparison": {"significance": 0.05, "hac_kernel": "bartlett", "hac_lags": 0, "champions": champions, "dm": dm_rows, "mcs": mcs},
         "es_backtests": [zscore[k] for k in sorted(zscore)],
     }
     doc = {
@@ -349,13 +349,13 @@ def sign_convention() -> dict:
                               "documento guarda perdidas positivas, como decimales del valor de la cartera.")}
 
 
-WINDOW_PLAN = [
-    ("equity-2007-09", "equity", "2007-07-02", "2009-06-30", "1995-01-03", "2006-12-29"),
-    ("equity-2020", "equity", "2020-02-03", "2020-06-30", "1995-01-03", "2006-12-29"),
-    ("rates-2022", "rates", "2022-01-03", "2022-12-30", "1995-01-03", "2006-12-29"),
-    ("fx-2008", "fx", "2008-01-02", "2008-12-31", "1995-01-03", "2006-12-29"),
-    ("mixed-2023", "mixed", "2023-03-01", "2023-05-31", "1995-01-03", "2006-12-29"),
-    ("calm-2004-06", "equity", "2004-01-02", "2006-12-29", "1995-01-03", "2003-12-31"),
+WINDOW_PLAN = [  # decision D2 (dates) and decision D1 (the span)
+    ("equity-2007-09", "equity", "2007-07-02", "2009-06-30", "1995-01-01", "2003-12-31"),
+    ("equity-2020", "equity", "2020-02-03", "2020-06-30", "1995-01-01", "2003-12-31"),
+    ("rates-2022", "rates", "2022-01-03", "2022-12-30", "1995-01-01", "2003-12-31"),
+    ("fx-2008", "fx", "2008-07-01", "2009-06-30", "1995-01-01", "2003-12-31"),
+    ("mixed-2023", "mixed", "2023-03-01", "2023-05-31", "1995-01-01", "2003-12-31"),
+    ("calm-2004-06", "equity", "2004-01-02", "2006-12-29", "1995-01-01", "2003-12-31"),
 ]
 
 

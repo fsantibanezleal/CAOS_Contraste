@@ -206,11 +206,26 @@ def spearman(x: list[float], y: list[float]) -> float:
 
 
 def ks_statistic(x: list[float], y: list[float], step: float = 0.004) -> float:
-    """KS = sup |F_RTPL - F_HPL| with F(x) = step * #{obs <= x} (MAR32.39 to MAR32.41); x is HPL, y is RTPL."""
+    """KS = sup |F_RTPL - F_HPL| with F(x) = step * #{obs <= x} (MAR32.39 to MAR32.41); x is HPL, y is RTPL. The gap is an
+    exact integer count of steps, divided by the number of observations only at the end, so 30 steps is exactly 30/250 =
+    0.12 and never 0.12000000000000002 (review F5)."""
+    import bisect
     sx, sy = sorted(x), sorted(y)
     pts = sorted(set(x) | set(y))
-    import bisect
-    return max(abs(step * bisect.bisect_right(sy, p) - step * bisect.bisect_right(sx, p)) for p in pts)
+    gap = max(abs(bisect.bisect_right(sy, p) - bisect.bisect_right(sx, p)) for p in pts)
+    return gap / len(x)
+
+
+def sample_var_es(returns: list[float], alpha: float) -> tuple[float, float]:
+    """Empirical VaR and ES in the return convention (dossier 05 A.0, D-3 as amended by review F4): VaR is the k-th smallest
+    return with k = ceil(alpha N); ES is the tail integral (1/alpha) int_0^alpha F^-1(u) du of the empirical quantile
+    function, which gives the k-th return the fractional weight alpha N - (k - 1)."""
+    import math as _m
+    n = len(returns)
+    s = sorted(returns)
+    k = _m.ceil(alpha * n - 1e-12)
+    es = (sum(s[: k - 1]) + (alpha * n - (k - 1)) * s[k - 1]) / (alpha * n)
+    return s[k - 1], es
 
 
 def pla_zone(rho: float, ks: float) -> str:
