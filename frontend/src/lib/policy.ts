@@ -15,8 +15,20 @@ export interface PolicyAlphas {
 export const COMMITTED: PolicyAlphas = { amber: 0.05, red: 0.01 };
 
 /** True when the committed row was evaluated by a p-value threshold (a descriptive test carries none). */
+/** The tolerance of a row lit by a tolerance on its metric (the CCF estimator bias of C09: its light depends only on the
+ * bias against the tolerance, its p-value is informative; engine contract lgd-ead-api), or null. */
+export function toleranceOf(row: TestRow): number | null {
+  const tol = (row.extras as { thresholds?: { tolerance?: unknown } } | null | undefined)?.thresholds?.tolerance;
+  return typeof tol === 'number' && Number.isFinite(tol) ? tol : null;
+}
+
+/** True when the row's light comes from a tolerance on its metric, not from its p-value: the policy rail does not move it. */
+export function toleranceEvaluated(row: TestRow): boolean {
+  return row.alpha_amber !== null && row.alpha_red !== null && row.light !== 'error' && toleranceOf(row) !== null;
+}
+
 export function evaluated(row: TestRow): boolean {
-  return row.alpha_amber !== null && row.alpha_red !== null && row.light !== 'error' && row.p_value !== null;
+  return row.alpha_amber !== null && row.alpha_red !== null && row.light !== 'error' && row.p_value !== null && toleranceOf(row) === null;
 }
 
 /** True when the row's alphas are the confidence levels of an acceptance band, not p-value thresholds: it carries
@@ -44,6 +56,13 @@ export function regulatoryReference(row: TestRow): string | null {
 export function thresholdLabel(row: TestRow, alphas: PolicyAlphas): Text {
   const reg = regulatoryReference(row);
   if (reg) return { en: `Regulatory threshold (${reg})`, es: `Umbral regulatorio (${reg})` };
+  if (toleranceEvaluated(row)) {
+    const tol = toleranceOf(row) as number;
+    return {
+      en: `Policy tolerance, not regulatory: the light compares the metric with a tolerance of ${tol} (${row.policy_version}); the policy rail does not change it`,
+      es: `Tolerancia de política, no regulatoria: la luz compara la métrica con una tolerancia de ${String(tol).replace('.', ',')} (${row.policy_version}); el control de política no la cambia`,
+    };
+  }
   if (bandEvaluated(row))
     return {
       en: `Policy acceptance band, not regulatory: amber outside the ${row.alpha_amber} band, red outside the ${row.alpha_red} band (${row.policy_version}); the policy rail does not change it`,

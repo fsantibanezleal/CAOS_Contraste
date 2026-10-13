@@ -1,4 +1,4 @@
-"""The revolving-line generator with a known CCF (CT-902, CT-903, CT-904).
+"""The revolving-line generator with a known CCF (CT-1002, CT-1003, CT-1004).
 
 ``draw_population(seed, n_facilities)`` draws the facilities of one replication and which of them default, with every random
 number the lines need (level-independent: the same seed gives the same facilities at every acceleration level, so only the drawing

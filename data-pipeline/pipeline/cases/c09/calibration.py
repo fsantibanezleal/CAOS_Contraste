@@ -1,4 +1,4 @@
-"""The calibration of the C09 generator from the Federal Reserve 2025 hypothetical card portfolios (CT-901).
+"""The calibration of the C09 generator from the Federal Reserve 2025 hypothetical card portfolios (CT-1001).
 
 The three files (``cards-low-risk-2025.csv``, ``cards-typical-risk-2025.csv``, ``cards-high-risk-2025.csv``) are 200 hypothetical
 card accounts each, published with the 2025 supervisory stress test (https://www.federalreserve.gov/supervisionreg/dfa-stress-tests-2025.htm).

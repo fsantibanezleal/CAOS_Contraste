@@ -135,6 +135,17 @@ def test_residue_marker_flags_the_example_variants_and_not_a_hyphenated_id():
     assert not marker.search("UNCONDITIONAL_COVERAGE = 0.99")
 
 
+def test_residue_marker_flags_the_example_executive_view_and_not_a_product_own():
+    sys.path.insert(0, str(SCRIPTS))
+    import check_template_residue as r
+
+    marker = dict(r.MARKERS)["the example executive view"]
+    assert marker.search('"en": "Hospital capacity in respiratory seasons"')
+    assert marker.search('"es": "Capacidad hospitalaria en las temporadas respiratorias"')
+    assert marker.search("https://www.nao.org.uk/wp-content/uploads/2026/09/Managing-the-flow-of-patients-through-hospital-from-AE-Summary.pdf")
+    assert not marker.search('"title": { "en": "Provisioning for commercial loans in Chile" }')
+
+
 def test_residue_guard_scans_the_helper_scripts_and_skips_its_own_tests(tmp_path):
     tree = _git_tree(tmp_path)
     _put(tree, "scripts/precompute.ps1", "# E.g.:  ./scripts/precompute.ps1 EX02_epidemic --seed 7\n")

@@ -341,6 +341,9 @@ export function Methodology() {
               ...registered('tests', lang),
             ],
           },
+          ...(registered('loss', lang).length > 0
+            ? [{ id: 'loss', label: t('Loss severity and exposure', 'Severidad de pérdida y exposición'), tabs: registered('loss', lang) }]
+            : []),
         ]}
       />
     </DocPage>

@@ -254,8 +254,8 @@ export function EndpointsView({ sel }: { sel: C08Sel | null }) {
           chart={
             <UPlotChart
               height="fill"
-              x={{ values: rows.map((r) => r.epsilon), label: { en: 'Endpoint shift epsilon', es: 'Desplazamiento de los extremos epsilon' }, log: true, format: { digits: 2 } }}
-              y={{ label: { en: 'Mean predicted LGD', es: 'LGD media predicha' }, format: { percent: true, digits: 2 } }}
+              x={{ values: rows.map((r) => r.epsilon), label: { en: 'Endpoint shift epsilon', es: 'Desplazamiento de los extremos epsilon' }, log: true, format: { notation: 'scientific', digits: 2 } }}
+              y={{ label: { en: 'Mean predicted LGD', es: 'LGD media predicha' }, format: { percent: true, decimals: 1 } }}
               series={[
                 { label: { en: 'Mean predicted LGD', es: 'LGD media predicha' }, values: rows.map((r) => r.mean_predicted.value), color: '--color-accent', width: 2.4 },
               ]}

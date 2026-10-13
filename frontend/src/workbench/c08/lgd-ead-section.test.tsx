@@ -25,9 +25,9 @@ const paragraphs = (m: string) => [...m.matchAll(/<p>(.*?)<\/p>/gs)].map((x) => 
 describe('the LGD and EAD Methodology topic', () => {
   afterEach(() => setLang('en'));
 
-  it('is registered in the tests group (the models group already holds the six peers rule 5 allows) with the area and kind the gate reads', () => {
+  it('is registered in the loss severity and exposure group (a group of its own, so no group holds more than the six peers rule 5 allows) with the area and kind the gate reads', () => {
     expect(REGISTERED_SECTIONS.map((s) => s.id)).toContain('lgd-ead');
-    expect(methodologySection.group).toBe('tests');
+    expect(methodologySection.group).toBe('loss');
     expect(markup('en')).toContain('data-area="method"');
     expect(markup('en')).toContain('data-method-kind="classical"');
   });
