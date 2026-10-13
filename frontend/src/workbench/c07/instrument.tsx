@@ -1,12 +1,14 @@
 // The C07 instrument (U5-W): the Chile provisions trilogy of the synthetic Banco Andino under CMF B-1, IFRS 9 and BdE
-// Annex 9 for one scenario variant. The rail has three sections (Regimes: the regime and the segment; IFRS 9: the
-// weight of a weighted scenario; B-1: the additional provisions within the board's limits), each with a live
-// read-out; the groups are Comparison (with the scenario change), Regimes, Validation and Findings (the shell allows six peers), with the Variants and Context views.
+// Annex 9 for one scenario variant. The rail is split in five
+// sections (ADR-0071 rule 6: Regimes, Segment, Scenario, Weight, and B-1 with the additional provisions inside the board limits), each with its
+// control and a live read-out; the groups are Comparison (with the scenario change), Regimes, Validation and Findings (the shell allows six peers), with the Variants and Context views.
 import { ChipGroup, Knob, SubTabs, pick, useShellLang, type BiText, type RailSection } from '@fasl-work/caos-app-shell';
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import type { CaseData } from '../../api/artifacts';
 import { provenanceOf } from '../model';
-import { B1Readout, C07ContextView, C07FindingsView, C07VariantsView, GapReadout, Ifrs9Readout } from './C07Common';
+import { RailSelect } from '../c06/RailSelect';
+import { compactMoney } from '../c06/format';
+import { B1Readout, C07ContextView, C07FindingsView, C07VariantsView, GapReadout, Ifrs9Readout, RegimeReadout, ScenarioReadout } from './C07Common';
 import { B1View, BdeView, BridgeView, DeltaView, Ifrs9View, SegmentsView, ThreeRegimeView } from './RegimeViews';
 import { componentLabel, defaultSel, outputsOf, type C07Sel, type RegimeId } from './selection';
 import { TablesView } from './ValidationViews';
@@ -69,6 +71,8 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
   const prov = provenanceOf(data.variant.provenance.truth_status);
   const comps = o.ifrs9_detail.weighted_components;
   const add = o.b1_detail.additional_provisions;
+  // the amounts of the rail are in billions or millions with the unit beside them, never an eleven-digit amount
+  const scale = { div: add.policy_max >= 1e9 ? 1e9 : add.policy_max >= 1e6 ? 1e6 : 1, unit: compactMoney(add.policy_max, o.currency).unit };
   const moved = comps.find((c) => c.scenario_id === sel.scenario)?.weight !== sel.weight;
 
   const regimes: RailSection = {
@@ -77,7 +81,16 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     content: (
       <>
         <ChipGroup id="c07-regime" label={{ en: 'Regime in focus', es: 'Régimen en foco' }} options={REGIMES} value={sel.regime} onChange={(id) => setRegime(id as RegimeId)} />
-        <ChipGroup
+        <RegimeReadout sel={sel} />
+      </>
+    ),
+  };
+  const segmentSection: RailSection = {
+    id: 'segment',
+    label: { en: 'Segment', es: 'Segmento' },
+    content: (
+      <>
+        <RailSelect
           id="c07-segment"
           label={{ en: 'Segment', es: 'Segmento' }}
           options={o.portfolio.segments.map((s) => ({ id: s.segment_id, label: SHORT[s.segment_id] ?? s.label, hint: s.label }))}
@@ -88,12 +101,12 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       </>
     ),
   };
-  const ifrs9: RailSection = {
-    id: 'ifrs9',
-    label: { en: 'IFRS 9', es: 'IFRS 9' },
+  const scenarioSection: RailSection = {
+    id: 'scenario',
+    label: { en: 'Scenario', es: 'Escenario' },
     content: (
       <>
-        <ChipGroup
+        <RailSelect
           id="c07-scenario"
           label={{ en: 'Weighted scenario', es: 'Escenario ponderado' }}
           options={comps.map((c) => ({ id: c.scenario_id, label: componentLabel(sel, c.scenario_id), hint: { en: `Contract weight ${(c.weight * 100).toFixed(0)}%, factor z ${c.z}`, es: `Peso del contrato ${(c.weight * 100).toFixed(0)}%, factor z ${String(c.z).replace('.', ',')}` } }))}
@@ -103,6 +116,15 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
             setWeight(comps.find((c) => c.scenario_id === id)?.weight ?? null);
           }}
         />
+        <ScenarioReadout sel={sel} />
+      </>
+    ),
+  };
+  const weightSection: RailSection = {
+    id: 'weight',
+    label: { en: 'Weight', es: 'Peso' },
+    content: (
+      <>
         <Knob
           id="c07-weight"
           label={{ en: 'Weight', es: 'Peso' }}
@@ -136,12 +158,13 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
             id="c07-additional"
             label={{ en: 'Additional provisions', es: 'Provisiones adicionales' }}
             hint={{ en: 'Counter-cyclical, set by the board within its policy limits; outside the comparable total and never a cover for model deficiencies.', es: 'Contracíclicas, fijadas por el directorio dentro de sus límites de política; fuera del total comparable y nunca una cobertura para deficiencias de los modelos.' }}
-            value={sel.additional ?? add.amount}
-            min={add.policy_min}
-            max={add.policy_max}
-            step={(add.policy_max - add.policy_min) / 100}
-            format={{ decimals: 0 }}
-            onChange={setAdditional}
+            value={(sel.additional ?? add.amount) / scale.div}
+            min={add.policy_min / scale.div}
+            max={add.policy_max / scale.div}
+            step={(add.policy_max - add.policy_min) / 100 / scale.div}
+            unit={scale.unit}
+            format={{ digits: 4 }}
+            onChange={(v) => setAdditional(v * scale.div)}
           />
         ) : (
           <p className="ct-note">{pick({ en: 'The board policy fixes the additional provisions: there is nothing to move.', es: 'La política del directorio fija las provisiones adicionales: no hay nada que mover.' }, lang)}</p>
@@ -176,7 +199,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
   const validation = <TablesView sel={sel} />;
   return {
     sel,
-    rail: [regimes, ifrs9, b1],
+    rail: [regimes, segmentSection, scenarioSection, weightSection, b1],
     groups: [
       { id: 'comparison', label: { en: 'Comparison', es: 'Comparación' }, lane: 'replay', provenance: prov, content: comparison },
       { id: 'regimes', label: { en: 'Regimes', es: 'Regímenes' }, lane: 'live', provenance: prov, content: regimesGroup },

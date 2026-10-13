@@ -4,11 +4,11 @@ import { BarChart, Callout, PlotCard, Readout, ViewsRow, pick, useShellLang, use
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
-import { ChartOverTable, currencyUnit, money } from '../c06/format';
+import { ChartOverTable, compactMoney, money } from '../c06/format';
 import { CalibrationView, TestsView } from './ValidationViews';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
-import { fitOf, liveIfrs9, outputsOf, type C07Outputs, type C07Sel } from './selection';
+import { componentLabel, fitOf, liveIfrs9, outputsOf, type C07Outputs, type C07Sel } from './selection';
 
 const LIVE = 'live' as const;
 
@@ -157,16 +157,16 @@ export function C07ContextView({ sel }: { sel: C07Sel | null }) {
   );
 }
 
-/** The live read-out of the IFRS 9 section: the weighted model ECL at the rail's weights, overlays apart. */
+/** The live read-out of the Weight section: the weighted model ECL at the rail's weights, and the IFRS 9 total with the overlays. */
 export function Ifrs9Readout({ sel }: { sel: C07Sel | null }) {
   const stateKey = useWorkbenchState()?.stateKey;
   const o = outputsOf(sel);
   const prov = provenanceOf(sel?.data.variant.provenance.truth_status);
-  const title = { en: 'IFRS 9 at these weights', es: 'IFRS 9 con estos pesos' };
+  const title = { en: 'IFRS 9 at this weight', es: 'IFRS 9 con este peso' };
   if (!sel || !o) return <Readout title={title} lane={LIVE} provenance={prov} dataKey={stateKey} items={[]} />;
-  const unit = currencyUnit(o.currency);
-  const format = { decimals: o.currency === 'CLP' ? 0 : 2 };
+  const amount = (v: number | null | undefined) => compactMoney(v, o.currency);
   const live = liveIfrs9(sel);
+  const name = componentLabel(sel, sel.scenario);
   return (
     <Readout
       title={title}
@@ -174,24 +174,66 @@ export function Ifrs9Readout({ sel }: { sel: C07Sel | null }) {
       provenance={prov}
       dataKey={stateKey}
       items={[
-        { label: { en: `Weight, ${sel.scenario}`, es: `Peso, ${sel.scenario}` }, value: sel.weight, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'The other components keep their ratios. 100% on one scenario is a sensitivity, never the IFRS 9 measure.', es: 'Los otros componentes conservan sus proporciones. 100% en un escenario es una sensibilidad, nunca la medida IFRS 9.' } },
-        { label: { en: 'Weighted model ECL', es: 'PCE del modelo ponderada' }, value: live, unit, format, hint: { en: 'Sum of weight times the ECL of each component; overlays excluded.', es: 'Suma del peso por la PCE de cada componente; sin ajustes.' } },
-        { label: { en: 'Overlays', es: 'Ajustes' }, value: o.ifrs9_detail.overlays_total, unit, format },
-        { label: { en: 'IFRS 9 total at these weights', es: 'Total IFRS 9 con estos pesos' }, value: live + o.ifrs9_detail.overlays_total, unit, format },
+        { label: { en: 'Weighted ECL', es: 'PCE ponderada' }, ...amount(live), hint: { en: `Sum of weight times the ECL of each component, with ${name.en} at ${(sel.weight * 100).toFixed(1)}% and the others in their ratios; overlays excluded. 100% on one scenario is a sensitivity, never the IFRS 9 measure.`, es: `Suma del peso por la PCE de cada componente, con ${name.es} en ${(sel.weight * 100).toFixed(1).replace('.', ',')}% y los otros en sus proporciones; sin ajustes. 100% en un escenario es una sensibilidad, nunca la medida IFRS 9.` } },
+        { label: { en: 'IFRS 9 total', es: 'Total IFRS 9' }, ...amount(live + o.ifrs9_detail.overlays_total), hint: { en: 'The weighted model ECL plus the overlays, which are kept apart from the model.', es: 'La PCE ponderada del modelo más los ajustes, que se mantienen aparte del modelo.' } },
       ]}
     />
   );
 }
 
-/** The live read-out of the Regimes section: the three provisions and the two gaps of the chosen segment. */
+/** The live read-out of the Scenario section: what the document says of the weighted scenario in focus. */
+export function ScenarioReadout({ sel }: { sel: C07Sel | null }) {
+  const stateKey = useWorkbenchState()?.stateKey;
+  const o = outputsOf(sel);
+  const prov = provenanceOf(sel?.data.variant.provenance.truth_status);
+  const title = { en: 'Scenario in the document', es: 'Escenario en el documento' };
+  const c = o?.ifrs9_detail.weighted_components.find((x) => x.scenario_id === sel?.scenario) ?? null;
+  const amount = (v: number | null | undefined) => compactMoney(v, o?.currency ?? '');
+  return (
+    <Readout
+      title={title}
+      lane={LIVE}
+      provenance={prov}
+      dataKey={stateKey}
+      items={[
+        { label: { en: 'Contract weight', es: 'Peso del contrato' }, value: c?.weight ?? null, unitless: true, format: { percent: true, decimals: 1 } },
+        { label: { en: 'Factor z', es: 'Factor z' }, value: c?.z ?? null, unitless: true, format: { digits: 3 }, hint: { en: 'The systemic factor the scenario sets, in standard deviations.', es: 'El factor sistémico que fija el escenario, en desviaciones estándar.' } },
+        { label: { en: 'ECL, alone', es: 'PCE, sola' }, ...amount(c?.single_scenario_ecl ?? null), hint: { en: 'The ECL if this scenario had all the weight: a sensitivity, never the measure.', es: 'La PCE si este escenario tuviera todo el peso: una sensibilidad, nunca la medida.' } },
+      ]}
+    />
+  );
+}
+
+/** The live read-out of the Regimes section: the total and the coverage of the regime in focus. */
+export function RegimeReadout({ sel }: { sel: C07Sel | null }) {
+  const stateKey = useWorkbenchState()?.stateKey;
+  const o = outputsOf(sel);
+  const prov = provenanceOf(sel?.data.variant.provenance.truth_status);
+  const title = { en: 'Regime in focus', es: 'Régimen en foco' };
+  const r = o?.regimes.find((x) => x.regime === sel?.regime) ?? null;
+  const amount = (v: number | null | undefined) => compactMoney(v, o?.currency ?? '');
+  return (
+    <Readout
+      title={title}
+      lane={LIVE}
+      provenance={prov}
+      dataKey={stateKey}
+      items={[
+        { label: { en: 'Total provision', es: 'Provisión total' }, ...amount(r?.total_provision ?? null), hint: r ? { en: r.label.en, es: r.label.es } : undefined },
+        { label: { en: 'Coverage', es: 'Cobertura' }, value: r?.coverage_rate ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'The total provision over the gross exposure it is measured on.', es: 'La provisión total sobre la exposición bruta en que se mide.' } },
+      ]}
+    />
+  );
+}
+
+/** The live read-out of the Segment section: the three provisions of the chosen segment and the gap of IFRS 9 to B-1. */
 export function GapReadout({ sel }: { sel: C07Sel | null }) {
   const stateKey = useWorkbenchState()?.stateKey;
   const o = outputsOf(sel);
   const prov = provenanceOf(sel?.data.variant.provenance.truth_status);
-  const title = { en: 'The segment under the three regimes', es: 'El segmento bajo los tres regímenes' };
+  const title = { en: 'Segment provisions', es: 'Provisiones del segmento' };
   const row = o?.comparison.rows.find((r) => r.segment_id === sel?.segment) ?? null;
-  const unit = currencyUnit(o?.currency ?? '');
-  const format = { decimals: o?.currency === 'CLP' ? 0 : 2 };
+  const amount = (v: number | null | undefined) => compactMoney(v, o?.currency ?? '');
   return (
     <Readout
       title={title}
@@ -199,17 +241,16 @@ export function GapReadout({ sel }: { sel: C07Sel | null }) {
       provenance={prov}
       dataKey={stateKey}
       items={[
-        { label: { en: 'CMF B-1', es: 'CMF B-1' }, value: row?.cmf_b1_provision ?? null, unit, format },
-        { label: { en: 'IFRS 9', es: 'IFRS 9' }, hint: { en: 'The probability-weighted measure.', es: 'La medida ponderada por probabilidad.' }, value: row?.ifrs9_provision ?? null, unit, format },
-        { label: { en: 'BdE 9', es: 'BdE 9' }, value: row?.bde_annex9_provision ?? null, unit, format },
-        { label: { en: 'IFRS 9 - B-1', es: 'IFRS 9 - B-1' }, value: row?.gap_ifrs9_minus_b1 ?? null, unit, format },
-        { label: { en: 'BdE - B-1', es: 'BdE - B-1' }, value: row?.gap_bde_minus_b1 ?? null, unit, format },
+        { label: { en: 'CMF B-1', es: 'CMF B-1' }, ...amount(row?.cmf_b1_provision ?? null) },
+        { label: { en: 'IFRS 9', es: 'IFRS 9' }, hint: { en: 'The probability-weighted measure.', es: 'La medida ponderada por probabilidad.' }, ...amount(row?.ifrs9_provision ?? null) },
+        { label: { en: 'BdE 9', es: 'BdE 9' }, ...amount(row?.bde_annex9_provision ?? null) },
+        { label: { en: 'IFRS 9 - B-1', es: 'IFRS 9 - B-1' }, hint: { en: 'The gap of the IFRS 9 measure to B-1; the gap of BdE to B-1 is in the Segments view.', es: 'La brecha de la medida IFRS 9 a B-1; la brecha de BdE a B-1 está en la vista de segmentos.' }, ...amount(row?.gap_ifrs9_minus_b1 ?? null) },
       ]}
     />
   );
 }
 
-/** The live read-out of the B-1 section: the minimum check and the booked total at the additional provisions tried. */
+/** The live read-out of the B-1 section: the booked total at the additional provisions tried, and the minimum check. */
 export function B1Readout({ sel }: { sel: C07Sel | null }) {
   const stateKey = useWorkbenchState()?.stateKey;
   const o = outputsOf(sel);
@@ -219,8 +260,7 @@ export function B1Readout({ sel }: { sel: C07Sel | null }) {
   const d = o.b1_detail;
   const comparable = o.regimes.find((r) => r.regime === 'cmf-b1')?.total_provision ?? 0;
   const additional = sel.additional ?? d.additional_provisions.amount;
-  const unit = currencyUnit(o.currency);
-  const format = { decimals: o.currency === 'CLP' ? 0 : 2 };
+  const amount = (v: number | null | undefined) => compactMoney(v, o.currency);
   return (
     <Readout
       title={title}
@@ -228,13 +268,11 @@ export function B1Readout({ sel }: { sel: C07Sel | null }) {
       provenance={prov}
       dataKey={stateKey}
       items={[
-        { label: { en: 'Comparable total', es: 'Total comparable' }, value: comparable, unit, format, hint: { en: 'Group, individual and the minimum top-up: what the regimes are compared on.', es: 'Grupal, individual y el complemento del mínimo: lo que se compara entre regímenes.' } },
-        { label: { en: 'Additional provisions', es: 'Provisiones adicionales' }, value: additional, unit, format },
-        { label: { en: 'Booked total', es: 'Total constituido' }, value: comparable + additional, unit, format },
-        { label: { en: 'Minimum top-up', es: 'Complemento del mínimo' }, value: d.minimum_check.top_up, unit, format },
-        { label: { en: 'Minimum rate on the normal portfolio', es: 'Tasa mínima sobre la cartera normal' }, value: d.minimum_check.minimum_rate, unitless: true, format: { percent: true, decimals: 2 } },
+        { label: { en: 'Comparable total', es: 'Total comparable' }, ...amount(comparable), hint: { en: 'Group, individual and the minimum top-up: what the regimes are compared on.', es: 'Grupal, individual y el complemento del mínimo: lo que se compara entre regímenes.' } },
+        { label: { en: 'Booked total', es: 'Total constituido' }, ...amount(comparable + additional), hint: { en: 'The comparable total plus the additional provisions tried above.', es: 'El total comparable más las provisiones adicionales probadas arriba.' } },
+        { label: { en: 'Minimum top-up', es: 'Compl. del mínimo' }, ...amount(d.minimum_check.top_up) },
+        { label: { en: 'Minimum rate', es: 'Tasa mínima' }, value: d.minimum_check.minimum_rate, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: 'The minimum rate on the normal portfolio.', es: 'La tasa mínima sobre la cartera normal.' } },
       ]}
     />
   );
 }
-
