@@ -34,7 +34,7 @@ sections cite; multipliers, floors, probation lengths and horizons are policy pa
   amount, the waterfall and the stage-closing identities; a `RollForwardRow.residual` is always the difference `closing - (opening + sum(movements))` itself, never a clipped or tolerance-adjusted value (a document may store it rounded to 1e-9).
   Probability identities close to `1e-12`, and a tighter tolerance is written where a function needs one. Every golden value states
   its own tolerance (`to 1e-8`) or is exact.
-- A validation function returns one `TestResult` of `riskvalidation`, serialised by `dataclasses.asdict` into a row that validates
+- A validation function returns one `TestResult` of `riskvalidation`, serialised by `TestResult.to_dict()` into a row that validates
   against `common/test-result` (the schema `docs/contracts/schemas/common/test-result.schema.json`): `test_id`, `model_id`,
   `segment`, `statistic`, `p_value`, `metric`, `h0`, `alternative`, `policy_version`, `alpha_amber`, `alpha_red`, `light`, `n`,
   `n_events`, `inputs_hash`, `reference`, `notes`, `extras`.

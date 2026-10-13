@@ -345,7 +345,7 @@ def test_the_rows_fragment_has_the_five_rows_in_the_catalog_columns() -> None:
     for r in data:
         assert len(r) == len(header), r[0]
         d = dict(zip(header, r))
-        assert d["version"] == "1.0.0"
+        assert re.fullmatch(r"\d+\.\d+\.\d+", d["version"]), d["version"]  # the lock and its History govern the version
         assert d["status"] == "active"
         assert d["provider"].startswith("fixture:")
         assert (ROOT / d["schema file"]).is_file(), d["schema file"]

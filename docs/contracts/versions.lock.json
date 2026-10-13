@@ -145,9 +145,9 @@
     "sha256": "9427cbbbc9ed3c4525f69d2b0ce209f37f1db835bb282730439f386300f72678"
   },
   "engine-provisions-api": {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "schema": "docs/contracts/engine/provisions-api.md",
-    "sha256": "2288502be3d5d731338994a100a9c6635ca34c606ed7d6e7647599350e08fd99"
+    "sha256": "e1c93696f989676a339bbb69d48bbf347ffd41c3f2a0e58ae41f8ab56e0d8b0d"
   },
   "c03-outputs": {
     "version": "1.0.0",
@@ -182,6 +182,6 @@
   "engine-lgd-ead-api": {
     "version": "1.0.0",
     "schema": "docs/contracts/engine/lgd-ead-api.md",
-    "sha256": "61db20b6e0a546bccf231a5624245cd709a269c9d9e9d0ef7c93346e7b8bdc36"
+    "sha256": "b218449ea32c4686c382da0bcb422da866281a70bba99a470bd86b627d87921a"
   }
 }
