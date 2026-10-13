@@ -1,0 +1,24 @@
+# Requirements: U6-P3, case C09 (EAD and CCF for revolving lines)
+
+Status: live
+
+EARS (Mavin et al., RE'09, doi:10.1109/RE.2009.9). Every requirement names the gate that fails when it is violated. The
+bake is `data-pipeline/pipeline/cases/c09/`; the documents are `data/derived/C09/` (contracts `c09-models` and `c09-outputs`
+1.0.0, the producer side); the methods are `riskvalidation` 0.6.0 (engine contract `engine-lgd-ead-api` 1.0.0, the consumer
+side). The design is [`design.md`](design.md); the adversarial checks are [`validation.md`](validation.md).
+
+| ID | Requirement | Gate |
+|---|---|---|
+| CT-901 | THE C09 generator calibration SHALL give every marginal its value, unit and source (the Federal Reserve 2025 card portfolio file, its URL, size and file hash), SHALL equal a recalculation from the fetched files when they are present, and SHALL refuse a marginal without a source. | `tests/c09/test_c09_calibration.py::test_every_marginal_names_its_source_and_matches_the_fetched_files` |
+| CT-902 | THE generator SHALL state the known CCF of each acceleration level in closed form from its parameters, and the fixed-horizon estimate on a large sample SHALL reproduce it within the stated tolerance at every level. | `tests/c09/test_c09_generator.py::test_the_fixed_horizon_estimate_reproduces_the_known_ccf_at_a_large_sample` |
+| CT-903 | THE development and test replications SHALL be independent: their seeds SHALL be disjoint, two replications SHALL differ, and one replication SHALL be reproduced exactly by its seed. | `tests/c09/test_c09_replications.py::test_development_and_test_replications_are_independent_by_seed` |
+| CT-904 | THE six acceleration levels SHALL be 0 to 5 with level 0 free of acceleration, a non-decreasing acceleration factor and a strictly increasing known CCF, and the levels SHALL share their facilities for one seed so that only the drawing profile differs. | `tests/c09/test_c09_generator.py::test_the_six_levels_are_ordered_and_share_their_facilities` |
+| CT-905 | A CCF below 0 or above 1 SHALL be kept and flagged and SHALL NOT be clipped unless a named treatment is asked for, and the share below 0 and above 1 SHALL be counted before every treatment. | `tests/c09/test_c09_estimators.py::test_a_ccf_outside_the_unit_interval_is_kept_flagged_and_counted_before_any_treatment` |
+| CT-906 | THE CCF of a line whose undrawn amount at the reference date is not positive SHALL be undefined (excluded and counted, never 0 or 1), and a default in the first month of its calendar cohort SHALL be left out of the cohort design and counted. | `tests/c09/test_c09_estimators.py::test_an_undefined_ccf_is_excluded_and_counted_and_a_first_month_default_leaves_the_cohort_design` |
+| CT-907 | EVERY CCF, treatment, aggregate, fit, prediction, floor and test row of a C09 document SHALL be returned by a `riskvalidation` function, never computed in the product, and the pinned engine SHALL reproduce the CCF and EAD golden values of the engine contract. | `tests/c09/test_c09_engine_calls.py::test_the_pinned_engine_reproduces_the_contract_goldens` |
+| CT-908 | EVERY committed document of `data/derived/C09/` SHALL validate against its `c09-*` schema, say that it is synthetic, and be listed by the manifest with its size and by a checksum file whose digest matches the file. | `tests/c09/test_c09_documents.py::test_every_committed_document_validates_and_is_listed_with_its_hash` |
+| CT-909 | EVERY CCF estimate of a document SHALL carry the known CCF beside it, equal to the generator's known CCF of that level, with a bias equal to the estimate minus the truth and a tolerance flag that agrees with it. | `tests/c09/test_c09_documents.py::test_every_estimate_carries_its_known_truth_and_a_consistent_bias` |
+| CT-910 | THE direct-EAD model SHALL report the observations whose EAD share of the limit was clipped, an EAD back-test SHALL be in currency by utilisation band, and a prediction outside [0, limit] SHALL be flagged outside-range, never clipped. | `tests/c09/test_c09_documents.py::test_the_ead_models_report_their_clipped_counts_and_the_backtest_flags_unclipped_predictions` |
+| CT-911 | THE bake SHALL be deterministic: two bakes with the same seed SHALL write byte-identical documents, and two seeds SHALL write different ones. | `tests/c09/test_c09_determinism.py::test_two_bakes_with_the_same_seed_write_the_same_bytes` |
+| CT-912 | NO text of C09 SHALL present the generated lines as observations of a real portfolio: every document and the case page SHALL carry the synthetic notice. | `tests/c09/test_c09_documents.py::test_no_text_presents_the_generated_lines_as_real_data` |
+| CT-913 | THE results block of `docs/cases/C09.md` SHALL be the one generated from the committed documents. | `tests/c09/test_c09_case_page.py::test_the_case_page_results_block_is_generated_from_the_committed_documents` |
