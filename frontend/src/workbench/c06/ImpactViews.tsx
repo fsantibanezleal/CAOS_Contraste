@@ -414,7 +414,7 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
                       const [x, y] = at(p.weights);
                       return <circle key={p.weights.join('/')} cx={x} cy={y} r={Math.max(Math.min(r / 9, 14), 5)} style={{ fill: viridis(t(value(p))), stroke: 'var(--color-surface)', strokeWidth: 1 }}><title>{`${p.weights.map((x2) => pct(x2, lang, 0)).join(' / ')}: ${fmt(value(p))}`}</title></circle>;
                     })}
-                    <circle cx={live[0]} cy={live[1]} r={Math.max(Math.min(r / 9, 14), 5) + 4} data-live-weights={weights.map((x) => x.toFixed(3)).join('/')} style={{ fill: 'none', stroke: 'var(--color-fg)', strokeWidth: 2.4 }} />
+                    <circle cx={live[0]} cy={live[1]} r={Math.max(Math.min(r / 9, 14), 5) + 4} data-live-weights={weights.map((x) => String(Math.round(x * 1000) / 1000)).join('/')} style={{ fill: 'none', stroke: 'var(--color-fg)', strokeWidth: 2.4 }} />
                     {g.scenario_ids.map((id, i) => {
                       const [x, y] = corner[i];
                       const anchor = i === 0 ? 'middle' : i === 1 ? 'start' : 'end';

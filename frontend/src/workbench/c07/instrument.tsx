@@ -2,7 +2,7 @@
 // Annex 9 for one scenario variant. The rail is split in five
 // sections (ADR-0071 rule 6: Regimes, Segment, Scenario, Weight, and B-1 with the additional provisions inside the board limits), each with its
 // control and a live read-out; the groups are Comparison (with the scenario change), Regimes, Validation and Findings (the shell allows six peers), with the Variants and Context views.
-import { ChipGroup, Knob, SubTabs, pick, useShellLang, type BiText, type RailSection } from '@fasl-work/caos-app-shell';
+import { ChipGroup, Knob, SubTabs, formatNumber, pick, useShellLang, type BiText, type RailSection } from '@fasl-work/caos-app-shell';
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import type { CaseData } from '../../api/artifacts';
 import { provenanceOf } from '../model';
@@ -109,7 +109,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <RailSelect
           id="c07-scenario"
           label={{ en: 'Weighted scenario', es: 'Escenario ponderado' }}
-          options={comps.map((c) => ({ id: c.scenario_id, label: componentLabel(sel, c.scenario_id), hint: { en: `Contract weight ${(c.weight * 100).toFixed(0)}%, factor z ${c.z}`, es: `Peso del contrato ${(c.weight * 100).toFixed(0)}%, factor z ${String(c.z).replace('.', ',')}` } }))}
+          options={comps.map((c) => ({ id: c.scenario_id, label: componentLabel(sel, c.scenario_id), hint: { en: `Scenario weight ${formatNumber(c.weight, 'en', { percent: true, decimals: 0 })}, factor z ${formatNumber(c.z, 'en')}`, es: `Peso del escenario ${formatNumber(c.weight, 'es', { percent: true, decimals: 0 })}, factor z ${formatNumber(c.z, 'es')}` } }))}
           value={sel.scenario}
           onChange={(id) => {
             setScenario(id);
