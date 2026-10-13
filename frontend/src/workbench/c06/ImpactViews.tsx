@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { provenanceOf, REPLAY } from '../model';
 import { viridis } from '../c04/MatrixMap';
 import { Pending } from '../Pending';
-import { ChartOverTable, STAGE_COLOR, STAGE_TEXT, MaybeNumber, money, pct } from './format';
+import { ChartOverTable, STAGE_COLOR, STAGE_TEXT, MaybeNumber, axisScale, money, pct } from './format';
 import { nearestPoint, outputsOf, rescaled, type C06Sel } from './selection';
 
 const LIVE = 'live' as const;
@@ -66,6 +66,14 @@ function layout(flows: Array<{ source: string; target: string; accounts: number;
   return { L, R, bands };
 }
 
+/** A band is drawn at least 4 px thick (centred on its own position) so a sliver of a flow can still be pointed at; the layout stays proportional. */
+function bandPath(b: Band, x0: number, x1: number, mid: number): string {
+  const h = Math.max(b.h, 4);
+  const y0 = b.y0 - (h - b.h) / 2;
+  const y1 = b.y1 - (h - b.h) / 2;
+  return `M${x0} ${y0} C${mid} ${y0} ${mid} ${y1} ${x1} ${y1} L${x1} ${y1 + h} C${mid} ${y1 + h} ${mid} ${y0 + h} ${x0} ${y0 + h} Z`;
+}
+
 /** The stage flow between two reporting dates: bands from the stage at the first date to the stage at the second. */
 export function StageFlowView({ sel }: { sel: C06Sel | null }) {
   const lang = useShellLang();
@@ -87,8 +95,8 @@ export function StageFlowView({ sel }: { sel: C06Sel | null }) {
         provenance={prov}
         dataKey={stateKey}
         note={{
-          en: 'Band height is the gross carrying amount. A flow out of a POCI account ends in derecognised or written off: a POCI account stays POCI for its life. Click a band to read it.',
-          es: 'La altura de la banda es el valor en libros bruto. Un flujo que sale de una cuenta POCI termina en dada de baja o castigada: una cuenta POCI sigue POCI toda su vida. Pulse una banda para leerla.',
+          en: 'Band height is the gross carrying amount. A flow out of a POCI account ends in derecognised or written off: a POCI account stays POCI for its life. Click a band, or the button of its row, to read it.',
+          es: 'La altura de la banda es el valor en libros bruto. Un flujo que sale de una cuenta POCI termina en dada de baja o castigada: una cuenta POCI sigue POCI toda su vida. Pulse una banda, o el botón de su fila, para leerla.',
         }}
       >
         <ChartOverTable chart={
@@ -102,17 +110,15 @@ export function StageFlowView({ sel }: { sel: C06Sel | null }) {
               const mid = (xL + nodeW + xR) / 2;
               return (
                 <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={pick({ en: 'Stage flow', es: 'Flujo de etapas' }, lang)}>
-                  {bands.map((b) => (
+                  {/* the widest band first, so a thin band is drawn over a wide one. The bands cross, and two of them can cross exactly at their middle, so a band is not a control of its own: the mouse reads it by a click, the keyboard and the screen reader by the button of its row in the table */}
+                  {[...bands].sort((a, b) => b.h - a.h).map((b) => (
                     <path
                       key={b.key}
                       data-flow-band={b.key}
-                      d={`M${xL + nodeW} ${b.y0} C${mid} ${b.y0} ${mid} ${b.y1} ${xR} ${b.y1} L${xR} ${b.y1 + b.h} C${mid} ${b.y1 + b.h} ${mid} ${b.y0 + b.h} ${xL + nodeW} ${b.y0 + b.h} Z`}
+                      d={bandPath(b, xL + nodeW, xR, mid)}
                       style={{ fill: colorOf(STAGE_COLOR[b.source]), opacity: picked === null || picked === b.key ? 0.5 : 0.15, stroke: picked === b.key ? 'var(--color-fg)' : 'var(--color-surface)', strokeWidth: picked === b.key ? 2 : 1.5 }}
-                      role="button"
-                      tabIndex={0}
-                      aria-label={`${name(b.source)} to ${name(b.target)}`}
+                      aria-hidden="true"
                       onClick={() => setPicked(picked === b.key ? null : b.key)}
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setPicked(picked === b.key ? null : b.key)}
                     />
                   ))}
                   {SOURCES.filter((id) => L[id]).map((id) => (
@@ -159,7 +165,11 @@ export function StageFlowView({ sel }: { sel: C06Sel | null }) {
             <tbody>
               {flows.map((x) => (
                 <tr key={`${x.source}>${x.target}`} data-flow={`${x.source}:${x.target}`} className={picked === `${x.source}>${x.target}` ? 'ct-current' : undefined}>
-                  <td className="ct-text" style={{ whiteSpace: 'nowrap' }}>{name(x.source)}</td>
+                  <td className="ct-text" style={{ whiteSpace: 'nowrap' }}>
+                    <button type="button" className="ct-linkbutton" aria-pressed={picked === `${x.source}>${x.target}`} onClick={() => setPicked(picked === `${x.source}>${x.target}` ? null : `${x.source}>${x.target}`)}>
+                      {name(x.source)}
+                    </button>
+                  </td>
                   <td className="ct-text" style={{ whiteSpace: 'nowrap' }}>{name(x.target)}</td>
                   <td>{formatNumber(x.accounts, lang, { decimals: 0 })}</td>
                   <td>{money(x.gross_carrying_amount, lang, f.currency)}</td>
@@ -224,6 +234,8 @@ export function WaterfallView({ sel }: { sel: C06Sel | null }) {
                 const rowH = (height - top - axis) / bars.length;
                 const lo = Math.min(0, ...bars.map((b) => b.lo));
                 const hi = Math.max(...bars.map((b) => b.hi), 1e-9);
+                // the axis is in billions or millions, its scale said in the unit beside it: an eleven-digit tick is as wide as the unit
+                const scale = axisScale(Math.max(Math.abs(lo), Math.abs(hi)), cur);
                 const ticks = niceTicks(lo, hi, plotW, 54, 6);
                 const dmin = Math.min(lo, ticks[0]);
                 const dmax = Math.max(hi, ticks[ticks.length - 1]);
@@ -233,10 +245,10 @@ export function WaterfallView({ sel }: { sel: C06Sel | null }) {
                     {ticks.map((t) => (
                       <g key={t}>
                         <line className="dg-grid" x1={sx(t)} x2={sx(t)} y1={top} y2={height - axis} />
-                        <text className="dg-tick" x={sx(t)} y={height - 6} textAnchor="middle">{formatNumber(t, lang, { decimals: 0 })}</text>
+                        <text className="dg-tick" x={sx(t)} y={height - 6} textAnchor="middle">{formatNumber(t / scale.div, lang, { digits: 4 })}</text>
                       </g>
                     ))}
-                    <text className="dg-note" x={width - 4} y={height - 6} textAnchor="end">{cur}</text>
+                    <text className="dg-note" x={width - 4} y={height - 6} textAnchor="end">{pick(scale.unit, lang)}</text>
                     {bars.map((b, i) => {
                       const y = top + i * rowH;
                       const h = Math.max(rowH * 0.62, 3);
@@ -258,7 +270,7 @@ export function WaterfallView({ sel }: { sel: C06Sel | null }) {
                             onClick={() => setPicked(isPick ? null : b.line.id)}
                             onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setPicked(isPick ? null : b.line.id)}
                           />
-                          <text className="dg-tick" x={x + wd + 4} y={y + rowH / 2 + 4}>{money(b.line.amount, lang, cur)}</text>
+                          <text className="dg-tick" x={x + wd + 4} y={y + rowH / 2 + 4}>{formatNumber(b.line.amount / scale.div, lang, { digits: 4 })}</text>
                         </g>
                       );
                     })}
@@ -387,7 +399,9 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
           <div className="ct-map">
             <Stage label={{ en: 'Scenario-weight simplex', es: 'Simplex de pesos de escenarios' }} className="ct-map-stage">
               {({ width, height }) => {
-                const r = Math.max(Math.min(width / 2 - 70, (height - 60) / 1.5), 30);
+                // the two lower labels run outwards from their corners: the drawing leaves each the room its fitted label needs
+                const labelW = Math.min(Math.max(width * 0.26, 64), 150);
+                const r = Math.max(Math.min((width / 2 - labelW - 14) / 0.866, (height - 60) / 1.5), 30);
                 const cx = width / 2;
                 const cy = height / 2 + r * 0.1;
                 const corner = CORNER_ANGLES.map((a) => [cx + r * Math.cos((a * Math.PI) / 180), cy + r * Math.sin((a * Math.PI) / 180)] as const);
@@ -406,7 +420,13 @@ export function WeightsView({ sel }: { sel: C06Sel | null }) {
                       const anchor = i === 0 ? 'middle' : i === 1 ? 'start' : 'end';
                       const dy = i === 0 ? -20 : 28;
                       const dx = i === 0 ? 0 : i === 1 ? 8 : -8;
-                      return <text key={id} x={x + dx} y={y + dy} textAnchor={anchor} className="dg-axis-label">{fitLabel(pick(scenarioLabel(id), lang), Math.min(width / 3, 150), 12, 1).lines[0]}</text>;
+                      const full = pick(scenarioLabel(id), lang);
+                      return (
+                        <text key={id} x={x + dx} y={y + dy} textAnchor={anchor} className="dg-axis-label">
+                          {fitLabel(full, i === 0 ? Math.min(width * 0.8, 220) : labelW, 12, 1).lines[0]}
+                          <title>{full}</title>
+                        </text>
+                      );
                     })}
                   </svg>
                 );

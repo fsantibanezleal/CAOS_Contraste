@@ -3,11 +3,11 @@
 // probability-weighted measure, never a single-scenario number unlabelled; the B-1 additional provisions stay outside
 // the comparable total; a null the contract allows says "not available" with its reason.
 import { readFileSync } from 'node:fs';
-import { formatNumber } from '@fasl-work/caos-app-shell';
+import { formatNumber, useLangStore } from '@fasl-work/caos-app-shell';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router';
 import type { ReactElement } from 'react';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import type { CaseData } from '../../api/artifacts';
 import type { components } from '../../lib/contract.gen';
 import type { CaseManifest, ModelsArtifact, VariantArtifact } from '../../lib/contract.types';
@@ -195,5 +195,73 @@ describe('the C07 instrument', () => {
     expect(markup).toContain(`data-variant="${variant.variant_id}"`);
     for (const r of o.regimes) expect(markup).toContain(clp(r.total_provision));
     expect(markup).toContain('none (base)');
+  });
+});
+
+// The gate on the real committed bake (U5-P2) failed in the rail: the segment labels are long and the amounts are
+// eleven digits of CLP. These tests read the real document.
+const realDir = new URL('../../../../data/derived/C07/', import.meta.url);
+const realVariant = JSON.parse(readFileSync(new URL('base.json', realDir), 'utf8')) as VariantArtifact<Outputs>;
+const realModels = JSON.parse(readFileSync(new URL('models-banco-andino.json', realDir), 'utf8')) as ModelsArtifact;
+const realData = { manifest, variant: realVariant as unknown as VariantArtifact, models: realModels } as CaseData;
+const escape = (t: string) => t.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#x27;');
+const setLang = (lang: 'en' | 'es') => {
+  (useLangStore.getInitialState() as { lang: string }).lang = lang;
+  useLangStore.setState({ lang });
+};
+
+function RailSection({ at }: { at: number }) {
+  const inst = useC07Instrument(realData, () => undefined);
+  return <div>{inst ? inst.rail[at].content : null}</div>;
+}
+const railHtml = (at: number, lang: 'en' | 'es' = 'en') => {
+  setLang(lang);
+  return html(<RailSection at={at} />);
+};
+const RAW_AMOUNT = /\d{1,3}(?:[,. ]\d{3}){3,}/;
+
+describe('the C07 rail on the real document', () => {
+  afterEach(() => setLang('en'));
+
+  it('prints no raw amount in the rail: money is compact with its unit, in both languages', () => {
+    for (const at of [0, 1, 2, 3, 4]) for (const lang of ['en', 'es'] as const) expect(railHtml(at, lang), `section ${at} ${lang}`).not.toMatch(RAW_AMOUNT);
+    expect(railHtml(0)).toContain('bn CLP');
+    expect(railHtml(0, 'es')).toContain('mil M CLP');
+    expect(railHtml(4)).toContain('bn CLP');
+  });
+
+  it('the segment list is one select control, not a column of chips with long labels', () => {
+    const markup = railHtml(1);
+    expect(markup).toMatch(/data-control="c07-segment"[^>]*><label[^>]*>Segment<\/label><select/);
+    expect(markup.match(/<option/g)?.length).toBe(realVariant.outputs.portfolio.segments.length);
+    // the regime keeps its three chips: a small choice
+    expect(railHtml(0)).toMatch(/data-control="c07-regime"[^>]*><span[^>]*>Regime in focus<\/span><div class="caos-chip-row"/);
+    expect(railHtml(2)).toMatch(/data-control="c07-scenario"[^>]*><label[^>]*>Weighted scenario<\/label><select/);
+  });
+
+  it('a long segment label is shortened in the option and the whole label is its title', () => {
+    const long = realVariant.outputs.portfolio.segments.find((x) => x.segment_id === 'mortgage-ltv-gt80')!.label.en;
+    const markup = railHtml(1);
+    expect(markup).toContain(`title="${escape(long)}`);
+    expect(markup).not.toContain(`>${escape(long)}</option>`);
+  });
+
+  it('the additional-provisions control is in billions with its unit', () => {
+    const markup = railHtml(4);
+    expect(markup).toContain('bn CLP');
+    expect(markup).not.toContain('15,000,000,000');
+  });
+
+  it('the rail is split in sections that each fit the rail: one control group and one read-out apiece', () => {
+    function Sections() {
+      const inst = useC07Instrument(realData, () => undefined);
+      return <p>{inst ? inst.rail.map((r) => r.id).join('|') : 'none'}</p>;
+    }
+    expect(html(<Sections />)).toContain('regimes|segment|scenario|weight|b1');
+    for (const at of [0, 1, 2, 3, 4]) expect(railHtml(at).match(/class="caos-readout"/g)?.length, `section ${at}`).toBe(1);
+  });
+
+  it('the findings card fills its stage, so the drawn views keep the floor of ADR-0071 rule 8', () => {
+    expect(html(<C07FindingsView sel={defaultSel(realData)} />)).toMatch(/<figure class="caos-plot fill"/);
   });
 });

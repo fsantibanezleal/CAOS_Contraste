@@ -2,17 +2,18 @@
 // (docs/contracts/fixtures/c06). Every view carries its lane and its numbers are the fixture's, read back from the
 // markup; a field the contract allows to be null says "not available" with its reason, never an empty chart.
 import { readFileSync } from 'node:fs';
-import { formatNumber } from '@fasl-work/caos-app-shell';
+import { formatNumber, useLangStore } from '@fasl-work/caos-app-shell';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MemoryRouter } from 'react-router';
 import type { ReactElement } from 'react';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import type { CaseData } from '../../api/artifacts';
 import type { components } from '../../lib/contract.gen';
 import type { CaseManifest, ModelsArtifact, VariantArtifact } from '../../lib/contract.types';
 import { useC06Instrument } from './instrument';
+import { axisScale, compactMoney } from './format';
 import { defaultSel, liveEcl, outputsOf, rescaled, scenarioEcl, type C06Sel } from './selection';
-import { C06ContextView, C06FindingsView, C06VariantsTable, WeightReadout } from './C06Common';
+import { C06ContextView, C06FindingsView, C06VariantsTable, CurveReadout, WeightReadout } from './C06Common';
 import { NonLinearityView, SicrView, TermStructureView } from './TermViews';
 import { StageFlowView, StageSummaryView, WaterfallView, WeightsView } from './ImpactViews';
 import { BacktestView, DecileView, IdentitiesView, LadderView, RungsView, TestsView } from './ValidationViews';
@@ -198,5 +199,97 @@ describe('the C06 instrument', () => {
   it('a variant without overlays and without Freddie Mac says so, not a chart of zeros', () => {
     const bare = { ...sel, data: { ...data, variant: { ...variant, outputs: { ...o, overlays: [] } } as unknown as VariantArtifact } } as C06Sel;
     expect(html(<WaterfallView sel={bare} />)).toContain('This variant carries no overlay.');
+  });
+});
+
+// The gate on the real committed bake (U5-P1) failed in the rail and in two drawings: these tests read the real
+// document, whose scenario labels are long and whose amounts have eleven digits.
+const realDir = new URL('../../../../data/derived/C06/', import.meta.url);
+const realVariant = JSON.parse(readFileSync(new URL('rd-2020-06.json', realDir), 'utf8')) as VariantArtifact<Outputs>;
+const realModels = JSON.parse(readFileSync(new URL('models-rd-2020-06.json', realDir), 'utf8')) as ModelsArtifact;
+const realData = { manifest, variant: realVariant as unknown as VariantArtifact, models: realModels } as CaseData;
+const escape = (t: string) => t.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#x27;');
+const setLang = (lang: 'en' | 'es') => {
+  (useLangStore.getInitialState() as { lang: string }).lang = lang;
+  useLangStore.setState({ lang });
+};
+
+function RailSection({ at }: { at: number }) {
+  const inst = useC06Instrument(realData, () => undefined);
+  return <div>{inst ? inst.rail[at].content : null}</div>;
+}
+const railHtml = (at: number, lang: 'en' | 'es' = 'en') => {
+  setLang(lang);
+  return html(<RailSection at={at} />);
+};
+const RAW_AMOUNT = /\d{1,3}(?:[,. ]\d{3}){3,}/;
+
+describe('the C06 rail on the real document', () => {
+  afterEach(() => setLang('en'));
+
+  it('prints no raw amount in the rail: money is compact with its unit, in both languages', () => {
+    for (const at of [0, 1, 2, 3]) for (const lang of ['en', 'es'] as const) expect(railHtml(at, lang), `section ${at} ${lang}`).not.toMatch(RAW_AMOUNT);
+    expect(railHtml(0)).toContain('bn USD');
+    expect(railHtml(0, 'es')).toContain('mil M USD');
+    expect(railHtml(3)).toContain('bn USD');
+  });
+
+  it('compact money keeps the unit with the value and leaves a null as null', () => {
+    expect(compactMoney(19_584_239_970.51, 'USD').unit).toEqual({ en: 'bn USD', es: 'mil M USD' });
+    expect(compactMoney(19_584_239_970.51, 'USD').value).toBeCloseTo(19.58423997, 6);
+    expect(compactMoney(590_890_026.3, 'CLP').unit).toEqual({ en: 'm CLP', es: 'M CLP' });
+    expect(compactMoney(1234.5, 'USD').unit).toEqual({ en: 'USD', es: 'USD' });
+    expect(compactMoney(null, 'USD').value).toBeNull();
+    expect(axisScale(30_000_000_000, 'USD')).toEqual({ div: 1e9, unit: { en: 'bn USD', es: 'mil M USD' } });
+  });
+
+  it('the scenario, the segment and the account are one select control each, not columns of chips', () => {
+    const scenarios = railHtml(0);
+    expect(scenarios).toMatch(/data-control="c06-scenario"[^>]*><label[^>]*>Scenario<\/label><select/);
+    const curves = railHtml(1);
+    expect(curves).toMatch(/data-control="c06-segment"[^>]*><label[^>]*>Segment<\/label><select/);
+    const account = railHtml(2);
+    expect(account).toMatch(/data-control="c06-account"[^>]*><label[^>]*>Account<\/label><select/);
+    expect(account.match(/<option/g)?.length).toBe(realVariant.outputs.account_curves.length);
+    // the measure keeps its three chips: a small choice
+    expect(curves).toMatch(/data-control="c06-measure"[^>]*><span[^>]*>Measure<\/span><div class="caos-chip-row"/);
+  });
+
+  it('a long scenario label is shortened in the option and the whole label is its title', () => {
+    const long = realVariant.outputs.scenarios.find((x) => x.id === 'adverse')!.label.en;
+    expect(long.length).toBeGreaterThan(40);
+    const markup = railHtml(0);
+    expect(markup).toContain(`title="${escape(long)}`);
+    expect(markup).not.toContain(`>${escape(long)}</option>`);
+    expect(markup).toContain('…');
+  });
+
+  it('the rail is split in sections that each fit the rail: one control group and one read-out apiece', () => {
+    function Sections() {
+      const inst = useC06Instrument(realData, () => undefined);
+      return <p>{inst ? inst.rail.map((r) => r.id).join('|') : 'none'}</p>;
+    }
+    expect(html(<Sections />)).toContain('scenarios|curves|account|simplex');
+    for (const at of [0, 1, 2, 3]) expect(railHtml(at).match(/class="caos-readout"/g)?.length, `section ${at}`).toBe(1);
+  });
+
+  it('the curve read-out moves with the measure and the segment', () => {
+    function Curve({ measure }: { measure: 'cumulative' | 'hazard' }) {
+      const base = defaultSel(realData) as C06Sel;
+      return <CurveReadout sel={{ ...base, measure }} />;
+    }
+    const f = html(<Curve measure="cumulative" />);
+    expect(f).toContain('F(12 m)');
+    expect(html(<Curve measure="hazard" />)).toContain('h(12 m)');
+    expect(f).not.toContain('not available');
+  });
+
+  it('a read-out label never carries a scenario name from the document', () => {
+    expect(railHtml(0)).not.toMatch(/Weight, [A-Z]/);
+    expect(railHtml(0, 'es')).not.toMatch(/Peso, [A-Z]/);
+  });
+
+  it('the findings card fills its stage, so the drawn views keep the floor of ADR-0071 rule 8', () => {
+    expect(html(<C06FindingsView sel={defaultSel(realData)} />)).toMatch(/<figure class="caos-plot fill"/);
   });
 });

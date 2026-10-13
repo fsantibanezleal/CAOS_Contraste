@@ -1,13 +1,14 @@
-// The C06 instrument (U5-W): mortgage lifetime PD, IFRS 9 staging and ECL at one reporting date. The rail has three
-// sections (Scenarios: the weight of a scenario; Curves: the segment, the measure and the account; Simplex: the
-// staging mode and the surface), each with a live read-out; the groups are the validator's questions: Model,
+// The C06 instrument (U5-W): mortgage lifetime PD, IFRS 9 staging and ECL at one reporting date. The rail is split in four
+// sections (ADR-0071 rule 6: Scenarios, the weight of a scenario; Curves, the measure and the segment; Account, the sampled account;
+// Simplex, the staging mode and the surface), each with its control and a live read-out; the groups are the validator's questions: Model,
 // Validation, Impact, Findings, with the Variants and Context views. The workbench calls this hook on every case and
 // uses it when the case is C06 and the variant is a reporting-date document.
 import { ChipGroup, Knob, SubTabs, pick, useShellLang, type BiText, type RailSection } from '@fasl-work/caos-app-shell';
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import type { CaseData } from '../../api/artifacts';
 import { provenanceOf } from '../model';
-import { AccountReadout, C06ContextView, C06FindingsView, C06VariantsView, SurfaceReadout, WeightReadout } from './C06Common';
+import { RailSelect } from './RailSelect';
+import { AccountReadout, C06ContextView, CurveReadout, C06FindingsView, C06VariantsView, SurfaceReadout, WeightReadout } from './C06Common';
 import { StageFlowView, StageSummaryView, WaterfallView, WeightsView } from './ImpactViews';
 import { defaultSel, outputsOf, type C06Sel, type Measure, type Staging, type Surface } from './selection';
 import { NonLinearityView, SicrView, TermStructureView } from './TermViews';
@@ -73,7 +74,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     label: { en: 'Scenarios', es: 'Escenarios' },
     content: (
       <>
-        <ChipGroup
+        <RailSelect
           id="c06-scenario"
           label={{ en: 'Scenario', es: 'Escenario' }}
           options={o.scenarios.map((s) => ({ id: s.id, label: s.label, hint: { en: `Contract weight ${(s.weight * 100).toFixed(0)}%, factor z ${s.z_mean}`, es: `Peso del contrato ${(s.weight * 100).toFixed(0)}%, factor z ${String(s.z_mean).replace('.', ',')}` } }))}
@@ -112,8 +113,17 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     content: (
       <>
         <ChipGroup id="c06-measure" label={{ en: 'Measure', es: 'Medida' }} options={MEASURES} value={sel.measure} onChange={(id) => setMeasure(id as Measure)} />
-        <ChipGroup id="c06-segment" label={{ en: 'Segment', es: 'Segmento' }} options={segments.map((id) => ({ id, label: { en: id, es: id } }))} value={sel.segment} onChange={setSegment} />
-        <ChipGroup
+        <RailSelect id="c06-segment" label={{ en: 'Segment', es: 'Segmento' }} options={segments.map((id) => ({ id, label: { en: id, es: id } }))} value={sel.segment} onChange={setSegment} />
+        <CurveReadout sel={sel} />
+      </>
+    ),
+  };
+  const accountSection: RailSection = {
+    id: 'account',
+    label: { en: 'Account', es: 'Cuenta' },
+    content: (
+      <>
+        <RailSelect
           id="c06-account"
           label={{ en: 'Account', es: 'Cuenta' }}
           options={o.account_curves.map((a) => ({ id: a.account_id, label: { en: a.account_id, es: a.account_id }, hint: { en: `${a.stage}, segment ${a.segment_id}`, es: `${a.stage}, segmento ${a.segment_id}` } }))}
@@ -188,7 +198,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
   );
   return {
     sel,
-    rail: [scenarios, curves, simplex],
+    rail: [scenarios, curves, accountSection, simplex],
     groups: [
       { id: 'model', label: { en: 'Model', es: 'Modelo' }, lane: 'replay', provenance: prov, content: model },
       { id: 'validation', label: { en: 'Validation', es: 'Validación' }, lane: 'replay', provenance: prov, content: validation },

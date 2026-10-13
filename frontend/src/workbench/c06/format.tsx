@@ -1,6 +1,6 @@
 // What the provisions instruments (C06 and C07) share: the number formats, the "not available, with its reason" cell,
 // the text of the four stages and the colour of each stage as a shell token. Nothing here computes a statistic.
-import { formatNumber, pick, useShellLang, type BiText, type ShellColorToken } from '@fasl-work/caos-app-shell';
+import { formatNumber, pick, useShellLang, type BiText, type FormatOptions, type ShellColorToken } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 
 /** The stages of the contracts, with the words a reader uses. */
@@ -46,6 +46,25 @@ export function MaybeNumber({ value, reason, format }: { value: number | null; r
       {reason ? <span className="ct-note" style={{ display: 'block', whiteSpace: 'normal', maxWidth: '18rem', marginLeft: 'auto', textAlign: 'right' }}>({reason})</span> : null}
     </span>
   );
+}
+
+/**
+ * An amount for a place that is narrow (the rail's read-outs, an axis): the value scaled to billions or millions with
+ * the unit that says so ("19.6 bn USD", "19,6 mil M USD"), never an eleven-digit amount. The table beside a drawing
+ * keeps the whole amount; a null stays null so the read-out says "not available" in the same unit.
+ */
+export function compactMoney(v: number | null | undefined, currency: string): { value: number | null; unit: BiText; format: FormatOptions } {
+  const a = v === null || v === undefined || !Number.isFinite(v) ? 0 : Math.abs(v);
+  const [div, en, es] = a >= 1e9 || a === 0 ? [1e9, 'bn', 'mil M'] : a >= 1e6 ? [1e6, 'm', 'M'] : [1, '', ''];
+  const unit: BiText = div === 1 ? { en: currency, es: currency } : { en: `${en} ${currency}`, es: `${es} ${currency}` };
+  return { value: v === null || v === undefined || !Number.isFinite(v) ? null : v / div, unit, format: { digits: 4 } };
+}
+
+/** The scale of an axis of amounts: the divisor and the unit text its title carries, chosen from the largest tick. */
+export function axisScale(max: number, currency: string): { div: number; unit: BiText } {
+  const c = compactMoney(max, currency);
+  const div = max >= 1e9 ? 1e9 : max >= 1e6 ? 1e6 : 1;
+  return { div, unit: c.unit };
 }
 
 /** The unit of an axis or a column, "USD" or "CLP", as a bilingual text. */

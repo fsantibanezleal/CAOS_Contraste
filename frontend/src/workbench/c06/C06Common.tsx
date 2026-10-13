@@ -5,7 +5,7 @@ import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { Finding, VariantArtifact } from '../../lib/contract.types';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
-import { ChartOverTable, currencyUnit, money, pct } from './format';
+import { ChartOverTable, compactMoney, money, pct } from './format';
 import { IdentitiesView, TestRowsCard } from './ValidationViews';
 import { fitOf, liveEcl, nearestPoint, outputsOf, rescaled, type C06Outputs, type C06Sel } from './selection';
 
@@ -55,6 +55,7 @@ export function FindingsCard({ variant }: { variant: VariantArtifact }) {
   const findings: Finding[] = [...variant.findings].sort((a, b) => order.indexOf(a.severity) - order.indexOf(b.severity));
   return (
     <PlotCard
+      fill
       title={{ en: 'What the validation found', es: 'Lo que encontró la validación' }}
       lane={REPLAY}
       provenance={provenanceOf(variant.provenance.truth_status)}
@@ -276,8 +277,8 @@ export function WeightReadout({ sel }: { sel: C06Sel | null }) {
   if (!sel || !o) return <Readout title={{ en: 'ECL at these weights', es: 'PCE con estos pesos' }} lane={LIVE} provenance={prov} dataKey={stateKey} items={[]} />;
   const weights = rescaled(o, sel.scenario, sel.weight);
   const near = nearestPoint(o, weights);
-  const unit = currencyUnit(o.currency);
   const label = o.scenarios.find((s) => s.id === sel.scenario)?.label ?? { en: sel.scenario, es: sel.scenario };
+  const amount = (v: number | null | undefined) => compactMoney(v, o.currency);
   return (
     <Readout
       title={{ en: 'ECL at these weights', es: 'PCE con estos pesos' }}
@@ -285,11 +286,36 @@ export function WeightReadout({ sel }: { sel: C06Sel | null }) {
       provenance={prov}
       dataKey={stateKey}
       items={[
-        { label: { en: `Weight, ${label.en}`, es: `Peso, ${label.es}` }, value: sel.weight, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'The other scenarios keep their ratios.', es: 'Los otros escenarios conservan sus proporciones.' } },
-        { label: { en: 'Model ECL, frozen', es: 'PCE del modelo, cong.' }, value: liveEcl(sel), unit, format: { decimals: o.currency === 'CLP' ? 0 : 2 }, hint: { en: 'The sum of weight times the ECL of each scenario at the staging of the weighted conditions; overlays excluded.', es: 'La suma del peso por la PCE de cada escenario con las etapas de las condiciones ponderadas; sin ajustes.' } },
-        { label: { en: 'Grid ECL, recomputed', es: 'PCE de grilla, recalc.' }, value: near?.ecl_recomputed ?? null, unit, format: { decimals: o.currency === 'CLP' ? 0 : 2 }, hint: { en: 'At the precomputed simplex point nearest to these weights, staging recomputed.', es: 'En el punto del simplex precalculado más cercano a estos pesos, con etapas recalculadas.' } },
-        { label: { en: 'Grid ECL, frozen', es: 'PCE de grilla, cong.' }, value: near?.ecl_frozen ?? null, unit, format: { decimals: o.currency === 'CLP' ? 0 : 2 }, hint: { en: 'At the same grid point, staging frozen.', es: 'En el mismo punto de la grilla, con etapas congeladas.' } },
-        { label: { en: 'Stage 2 share', es: 'Fracción Etapa 2' }, value: near?.stage2_ratio_recomputed ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'At the same grid point, staging recomputed.', es: 'En el mismo punto de la grilla, con etapas recalculadas.' } },
+        { label: { en: 'ECL, frozen', es: 'PCE cong.' }, ...amount(liveEcl(sel)), hint: { en: `The model ECL at these weights: the sum of weight times the ECL of each scenario at the staging of the weighted conditions, with ${label.en} at ${(sel.weight * 100).toFixed(1)}% and the others in their ratios; overlays excluded.`, es: `La PCE del modelo con estos pesos: la suma del peso por la PCE de cada escenario con las etapas de las condiciones ponderadas, con ${label.es} en ${(sel.weight * 100).toFixed(1).replace('.', ',')}% y los otros en sus proporciones; sin ajustes.` } },
+        { label: { en: 'Grid, recalc.', es: 'Grilla, recalc.' }, ...amount(near?.ecl_recomputed), hint: { en: 'At the precomputed simplex point nearest to these weights, staging recomputed.', es: 'En el punto del simplex precalculado más cercano a estos pesos, con etapas recalculadas.' } },
+        { label: { en: 'Stage 2 share', es: 'Frac. Etapa 2' }, value: near?.stage2_ratio_recomputed ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: { en: 'At the same grid point, staging recomputed.', es: 'En el mismo punto de la grilla, con etapas recalculadas.' } },
+      ]}
+    />
+  );
+}
+
+/** The live read-out of the Curves section: the weighted curve of the segment, in the measure chosen, at the first horizon and at the last. */
+export function CurveReadout({ sel }: { sel: C06Sel | null }) {
+  const stateKey = useWorkbenchState()?.stateKey;
+  const o = outputsOf(sel);
+  const prov = provenanceOf(sel?.data.variant.provenance.truth_status);
+  const title = { en: 'Weighted curve, this segment', es: 'Curva ponderada, este segmento' };
+  if (!sel || !o) return <Readout title={title} lane={LIVE} provenance={prov} dataKey={stateKey} items={[]} />;
+  const key = sel.measure === 'cumulative' ? 'cumulative_pd' : sel.measure === 'marginal' ? 'marginal_pd' : 'hazard';
+  const symbol = sel.measure === 'cumulative' ? 'F' : sel.measure === 'marginal' ? 'q' : 'h';
+  const ts = o.term_structures.find((t) => t.scenario_id === 'weighted' && t.segment_id === sel.segment) ?? null;
+  const first = ts ? ts[key][ts.months.indexOf(o.horizon.stage1_months)] : undefined;
+  const last = ts ? ts[key][ts[key].length - 1] : undefined;
+  const lastMonth = ts ? ts.months[ts.months.length - 1] : null;
+  return (
+    <Readout
+      title={title}
+      lane={LIVE}
+      provenance={prov}
+      dataKey={stateKey}
+      items={[
+        { label: { en: `${symbol}(${o.horizon.stage1_months} m)`, es: `${symbol}(${o.horizon.stage1_months} m)` }, value: first ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: `The probability-weighted curve of ${sel.segment} at month ${o.horizon.stage1_months}, in the measure chosen above.`, es: `La curva ponderada por probabilidad de ${sel.segment} en el mes ${o.horizon.stage1_months}, en la medida elegida arriba.` } },
+        { label: { en: `${symbol}(${lastMonth ?? 'last'} m)`, es: `${symbol}(${lastMonth ?? 'último'} m)` }, value: last ?? null, unitless: true, format: { percent: true, decimals: 2 }, hint: { en: `The same curve at its last month.`, es: `La misma curva en su último mes.` } },
       ]}
     />
   );
@@ -305,15 +331,15 @@ export function AccountReadout({ sel }: { sel: C06Sel | null }) {
   const multiplier = p && rule ? (rule.multiplier_schedule.find((m) => p.pd_origination_annualised <= m.pd_origination_upper) ?? rule.multiplier_schedule[rule.multiplier_schedule.length - 1]).multiplier : null;
   return (
     <Readout
-      title={{ en: 'The SICR test of this account', es: 'La prueba SICR de esta cuenta' }}
+      title={{ en: 'SICR test, this account', es: 'Prueba SICR, esta cuenta' }}
       lane={LIVE}
       provenance={prov}
       dataKey={stateKey}
       items={[
-        { label: { en: 'PD at origination, annualised', es: 'PD en la originación, anualizada' }, value: p?.pd_origination_annualised ?? null, unitless: true, format: { percent: true, decimals: 2 } },
-        { label: { en: 'PD now, annualised', es: 'PD hoy, anualizada' }, value: p?.pd_current_annualised ?? null, unitless: true, format: { percent: true, decimals: 2 } },
-        { label: { en: 'Increase against origination', es: 'Aumento contra la originación' }, value: p ? p.pd_current_annualised / p.pd_origination_annualised : null, unit: { en: 'times', es: 'veces' }, format: { digits: 3 }, hint: { en: 'The multiplier the schedule asks for at this origination PD, in the next line.', es: 'El multiplicador que pide la tabla con esta PD de originación, en la línea siguiente.' } },
-        { label: { en: 'Multiplier asked at this origination PD', es: 'Multiplicador pedido con esta PD de originación' }, value: multiplier, unit: { en: 'times', es: 'veces' }, format: { digits: 3 } },
+        { label: { en: 'PD at origination', es: 'PD originación' }, hint: { en: 'Annualised.', es: 'Anualizada.' }, value: p?.pd_origination_annualised ?? null, unitless: true, format: { percent: true, decimals: 2 } },
+        { label: { en: 'PD now', es: 'PD hoy' }, hint: { en: 'Annualised.', es: 'Anualizada.' }, value: p?.pd_current_annualised ?? null, unitless: true, format: { percent: true, decimals: 2 } },
+        { label: { en: 'Increase', es: 'Aumento' }, value: p ? p.pd_current_annualised / p.pd_origination_annualised : null, unit: { en: 'times', es: 'veces' }, format: { digits: 3 }, hint: { en: 'The PD now over the PD at origination; the multiplier the schedule asks for at this origination PD is in the next line.', es: 'La PD hoy sobre la PD de originación; el multiplicador que pide la tabla con esta PD de originación está en la línea siguiente.' } },
+        { label: { en: 'Multiplier asked', es: 'Multiplicador pedido' }, hint: { en: 'The multiplier of the schedule at this origination PD.', es: 'El multiplicador de la tabla con esta PD de originación.' }, value: multiplier, unit: { en: 'times', es: 'veces' }, format: { digits: 3 } },
       ]}
     />
   );
@@ -331,8 +357,8 @@ export function SurfaceReadout({ sel }: { sel: C06Sel | null }) {
   const vals = o.weight_grid.points.map(pick1);
   const near = nearestPoint(o, rescaled(o, sel.scenario, sel.weight));
   const money1 = sel.surface === 'ecl';
-  const unit = money1 ? currencyUnit(o.currency) : undefined;
-  const format = money1 ? { decimals: o.currency === 'CLP' ? 0 : 2 } : { percent: true, decimals: 1 };
+  // an amount is scaled to billions or millions with its unit, each value in its own scale (the rail is 248 px wide)
+  const item = (v: number | null) => (money1 ? compactMoney(v, o.currency) : { value: v, unitless: true as const, format: { percent: true, decimals: 1 } });
   return (
     <Readout
       title={{ en: 'The surface drawn', es: 'La superficie dibujada' }}
@@ -340,9 +366,9 @@ export function SurfaceReadout({ sel }: { sel: C06Sel | null }) {
       provenance={prov}
       dataKey={stateKey}
       items={[
-        { label: { en: 'Lowest on the grid', es: 'Mínimo de la grilla' }, value: Math.min(...vals), unit, unitless: !money1, format },
-        { label: { en: 'Highest on the grid', es: 'Máximo de la grilla' }, value: Math.max(...vals), unit, unitless: !money1, format },
-        { label: { en: 'At the nearest point to the rail weights', es: 'En el punto más cercano a los pesos del panel' }, value: near ? pick1(near) : null, unit, unitless: !money1, format },
+        { label: { en: 'Lowest', es: 'Mínimo' }, hint: { en: 'The lowest value of the surface on the grid.', es: 'El valor más bajo de la superficie en la grilla.' }, ...item(Math.min(...vals)) },
+        { label: { en: 'Highest', es: 'Máximo' }, hint: { en: 'The highest value of the surface on the grid.', es: 'El valor más alto de la superficie en la grilla.' }, ...item(Math.max(...vals)) },
+        { label: { en: 'At weights', es: 'Con pesos' }, ...item(near ? pick1(near) : null), hint: { en: 'At the simplex point nearest to the weights of the rail.', es: 'En el punto del simplex más cercano a los pesos del panel.' } },
       ]}
     />
   );
