@@ -2575,6 +2575,38 @@
         }
       ]
     },
+    "fed-stress-tests": {
+      "name": "Federal Reserve supervisory stress test scenarios and methodology data (2025, 2026)",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "landing": "https://www.federalreserve.gov/supervisionreg/dfa-stress-tests-2026.htm",
+      "class": "mirror-allowed",
+      "licence": "information on Board's website is in the public domain and may be copied and distributed without permission",
+      "attribution": "Board of Governors of the Federal Reserve System, supervisory stress test scenarios and methodology",
+      "access": "http",
+      "files": [
+        {
+          "name": "2026_Final_Historic_Domestic.csv",
+          "url": "https://www.federalreserve.gov/supervisionreg/files/2026_Final_Historic_Domestic.csv",
+          "sha256": "6d08aadcf82d65dcf36b856792040b82ceceef79a46ff0239afd41e0c4e7f653",
+          "bytes": 16936,
+          "retrieved": "2026-10-12"
+        },
+        {
+          "name": "2026_Final_Supervisory_Baseline_Domestic.csv",
+          "url": "https://www.federalreserve.gov/supervisionreg/files/2026_Final_Supervisory_Baseline_Domestic.csv",
+          "sha256": "76e236695be2c8372890078acf8c01273ba5198a19afb5037045a963737c1bcc",
+          "bytes": 1692,
+          "retrieved": "2026-10-12"
+        },
+        {
+          "name": "2026_Final_Supervisory_Severely_Adverse_Domestic.csv",
+          "url": "https://www.federalreserve.gov/supervisionreg/files/2026_Final_Supervisory_Severely_Adverse_Domestic.csv",
+          "sha256": "45c2859ae7246c071b69df8623854751f0629b04393957e14fe28bc33c04ebbb",
+          "bytes": 1824,
+          "retrieved": "2026-10-12"
+        }
+      ]
+    },
     "israel-rosenthal-wei-2001": {
       "name": "Finding generators for Markov chains via empirical transition matrices, with applications to credit ratings (authors' version), section 4",
       "publisher": "R. B. Israel, J. S. Rosenthal and J. Z. Wei; Mathematical Finance 11(2):245-265 (2001)",
@@ -2608,6 +2640,52 @@
           "sha256": "949dbc3873852a930d3532183efcab4199ac9478b1f70b32101c9e9f37084459",
           "bytes": 242425,
           "retrieved": "2026-10-05"
+        }
+      ]
+    },
+    "sba-foia": {
+      "name": "SBA 7(a) and 504 FOIA loan data",
+      "publisher": "U.S. Small Business Administration",
+      "landing": "https://data.sba.gov/dataset/7a-504-foia",
+      "class": "mirror-allowed",
+      "licence": "licence \"U.S. Government Works\"; data.gov: usa.gov public domain label",
+      "attribution": "U.S. Small Business Administration, 7(a) and 504 FOIA data",
+      "access": "http",
+      "files": [
+        {
+          "name": "FOIA_7a_FY1991_FY1999_asof_260630.csv",
+          "url": "https://data.sba.gov/sites/default/files/uploaded_resources/FOIA_7a_FY1991_FY1999_asof_260630.csv",
+          "sha256": "05040efc4a43224a02460d606ea744579a54b650bdb99663a833ed0b31936213",
+          "bytes": 146416885,
+          "retrieved": "2026-10-12"
+        },
+        {
+          "name": "FOIA_7a_FY2000_FY2009_asof_260630.csv",
+          "url": "https://data.sba.gov/sites/default/files/uploaded_resources/FOIA_7a_FY2000_FY2009_asof_260630.csv",
+          "sha256": "66674e18a700fbba0378c25118c291ac2759784a550c643cab5747eced763d6a",
+          "bytes": 318425094,
+          "retrieved": "2026-10-12"
+        },
+        {
+          "name": "FOIA_7a_FY2010_FY2019_asof_260630.csv",
+          "url": "https://data.sba.gov/sites/default/files/uploaded_resources/FOIA_7a_FY2010_FY2019_asof_260630.csv",
+          "sha256": "01a3e2c7988a6f4052e53f218a309feb2ec2fe42887bebdc0fa94ac8b1024ade",
+          "bytes": 255101999,
+          "retrieved": "2026-10-12"
+        },
+        {
+          "name": "FOIA_7a_FY2020_Present_asof_260630.csv",
+          "url": "https://data.sba.gov/sites/default/files/uploaded_resources/FOIA_7a_FY2020_Present_asof_260630.csv",
+          "sha256": "6c1e9132b5141a19f82bdc8ccafb86c9a01662461cad41ddb36a3cf409d8a4fe",
+          "bytes": 181130871,
+          "retrieved": "2026-10-12"
+        },
+        {
+          "name": "7a_504_foia_data_dictionary.xlsx",
+          "url": "https://data.sba.gov/sites/default/files/uploaded_resources/7a_504_foia_data_dictionary.xlsx",
+          "sha256": "777ba97a6f92e325f79905610816cb59d41f1971cd964c54dc30ef02730a3941",
+          "bytes": 24529,
+          "retrieved": "2026-10-12"
         }
       ]
     },

@@ -22,9 +22,10 @@ describe('threshold labels', () => {
           expect(label.en.toLowerCase()).not.toMatch(/^regulatory/);
           expect(label.es.toLowerCase()).not.toMatch(/^umbral regulatorio/);
           if (t.alpha_amber !== null) {
-            expect(label.en).toMatch(/^Policy threshold, not regulatory/);
+            // a p-value threshold, or the acceptance band of a row lit without a p-value (the lifetime PD backtest)
+            expect(label.en).toMatch(t.p_value === null ? /^Policy acceptance band, not regulatory/ : /^Policy threshold, not regulatory/);
             expect(label.en).toContain(t.policy_version);
-            expect(label.es).toMatch(/^Umbral de política, no regulatorio/);
+            expect(label.es).toMatch(t.p_value === null ? /^Banda de aceptación de política, no regulatoria/ : /^Umbral de política, no regulatorio/);
           }
         }
       });
