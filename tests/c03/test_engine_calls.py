@@ -4,6 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
+from riskvalidation.core.policy import default_policy
 from riskvalidation.core.registry import spec
 
 from pipeline.cases.c03 import evaluate
@@ -31,7 +32,7 @@ def test_the_battery_rows_are_engine_test_results(sample_bake):
     assert {"disc.auc_vs_initial", "disc.delong", "pd.jeffreys", "pd.binomial", "pd.binomial_vasicek", "pd.hosmer_lemeshow",
             "pd.spiegelhalter", "stability.psi"} <= ids
     assert not ids & {"disc.auc", "pd.brier", "pd.ece", "disc.ks"}, "a descriptive metric has no light: it is not a row"
-    assert {r["policy_version"] for r in rows} == {"riskvalidation-default 2026.10.1"}
+    assert {r["policy_version"] for r in rows} == {default_policy().label}
     assert {r["light"] for r in rows} <= {"green", "amber", "red", "not_evaluated"}
     for r in rows:
         assert set(r) == set(TEST_RESULT_KEYS)
