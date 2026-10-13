@@ -1,0 +1,322 @@
+{
+  "schema": "contraste.models/v1",
+  "case_id": "C09",
+  "fit_id": "fixture-generator",
+  "model": [
+    {
+      "id": "m-fixed",
+      "family": "lgd-ead",
+      "rung": "ccf-fixed-horizon",
+      "title": {
+        "en": "Fixture model m-fixed",
+        "es": "Modelo de ejemplo m-fixed"
+      },
+      "short_title": {
+        "en": "m-fixed",
+        "es": "m-fixed"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "details": {}
+    }
+  ],
+  "fit": {
+    "currency": "USD",
+    "convention": {
+      "name": "eu-undrawn",
+      "definition": {
+        "en": "CCF = (EAD - drawn at the reference date) / (limit - drawn at the reference date): the share of the undrawn amount drawn by default.",
+        "es": "CCF = (EAD - utilizado en la fecha de referencia) / (limite - utilizado en la fecha de referencia): la parte del monto no utilizado que se usa al incumplir."
+      },
+      "formula": "CCF = (EAD - E(t_r)) / (L(t_r) - E(t_r))",
+      "us_terms": {
+        "en": "The same ratio is the loan equivalent (LEQ) in US terms; Qi (2009) calls EAD over outstanding the CCF and EAD over the limit the EADF.",
+        "es": "La misma razon es el equivalente de credito (LEQ) en terminos de EE.UU.; Qi (2009) llama CCF a EAD sobre el saldo y EADF a EAD sobre el limite."
+      }
+    },
+    "generator": {
+      "name": "revolving-line-generator",
+      "shaped_on": "fed-2025-cards-hypothetical-portfolios",
+      "true_ccf": {
+        "value": 0.6,
+        "flag": "in-range"
+      },
+      "acceleration_factor": 3.0,
+      "acceleration_window_months": 6,
+      "notice": {
+        "en": "Fixture, not a result. The truth is the CCF the generator draws balances with.",
+        "es": "Ejemplo, no es un resultado. La verdad es el CCF con que el generador simula los saldos."
+      }
+    },
+    "marginals": [
+      {
+        "field": "credit_limit",
+        "distribution": "lognormal",
+        "parameters": [
+          {
+            "name": "mu",
+            "value": 8.5,
+            "unit": "ln USD"
+          },
+          {
+            "name": "sigma",
+            "value": 0.7,
+            "unit": "ln USD"
+          }
+        ],
+        "source": "fixture values; the bake reads the Fed 2025 cards-*-2025.csv files"
+      },
+      {
+        "field": "utilisation_at_reference",
+        "distribution": "beta",
+        "parameters": [
+          {
+            "name": "alpha",
+            "value": 1.2,
+            "unit": "-"
+          },
+          {
+            "name": "beta",
+            "value": 2.4,
+            "unit": "-"
+          }
+        ],
+        "source": "fixture values; the bake reads the Fed 2025 cards-*-2025.csv files"
+      }
+    ],
+    "levels": [
+      {
+        "level": 0,
+        "label": {
+          "en": "Level 0",
+          "es": "Nivel 0"
+        },
+        "acceleration_factor": 1.0,
+        "acceleration_window_months": 0
+      },
+      {
+        "level": 1,
+        "label": {
+          "en": "Level 1",
+          "es": "Nivel 1"
+        },
+        "acceleration_factor": 1.25,
+        "acceleration_window_months": 6
+      },
+      {
+        "level": 2,
+        "label": {
+          "en": "Level 2",
+          "es": "Nivel 2"
+        },
+        "acceleration_factor": 1.5,
+        "acceleration_window_months": 6
+      },
+      {
+        "level": 3,
+        "label": {
+          "en": "Level 3",
+          "es": "Nivel 3"
+        },
+        "acceleration_factor": 2.0,
+        "acceleration_window_months": 6
+      },
+      {
+        "level": 4,
+        "label": {
+          "en": "Level 4",
+          "es": "Nivel 4"
+        },
+        "acceleration_factor": 2.5,
+        "acceleration_window_months": 6
+      },
+      {
+        "level": 5,
+        "label": {
+          "en": "Level 5",
+          "es": "Nivel 5"
+        },
+        "acceleration_factor": 3.0,
+        "acceleration_window_months": 6
+      }
+    ],
+    "replications_plan": {
+      "development_seeds": [
+        101,
+        102,
+        103,
+        104
+      ],
+      "test_seeds": [
+        201,
+        202,
+        203,
+        204
+      ],
+      "n_facilities": 50000
+    },
+    "designs": [
+      {
+        "design": "fixed-horizon",
+        "horizon_months": 12,
+        "n_reference": 1,
+        "step_months": null,
+        "label": {
+          "en": "Fixed horizon: 12 months before default",
+          "es": "Horizonte fijo: 12 meses antes del incumplimiento"
+        }
+      },
+      {
+        "design": "cohort",
+        "horizon_months": null,
+        "n_reference": 1,
+        "step_months": 12,
+        "label": {
+          "en": "Yearly cohort: the cohort start",
+          "es": "Cohorte anual: el inicio de la cohorte"
+        }
+      },
+      {
+        "design": "variable-horizon",
+        "horizon_months": 12,
+        "n_reference": 4,
+        "step_months": 3,
+        "label": {
+          "en": "Variable horizon: quarterly reference dates in the year before default",
+          "es": "Horizonte variable: fechas trimestrales de referencia en el ano previo al incumplimiento"
+        }
+      }
+    ],
+    "treatments": [
+      "none",
+      "censor",
+      "floor-cap",
+      "bounded-scale"
+    ],
+    "ead_models": [
+      {
+        "n_clipped_below": null,
+        "n_clipped_above": null,
+        "model_id": "m-fixed",
+        "kind": "ccf-fixed-horizon",
+        "design": "fixed-horizon",
+        "treatment": "floor-cap",
+        "covariates": [
+          "utilisation"
+        ]
+      },
+      {
+        "n_clipped_below": null,
+        "n_clipped_above": null,
+        "model_id": "m-cohort",
+        "kind": "ccf-cohort",
+        "design": "cohort",
+        "treatment": "floor-cap",
+        "covariates": [
+          "utilisation"
+        ]
+      },
+      {
+        "n_clipped_below": null,
+        "n_clipped_above": null,
+        "model_id": "m-variable",
+        "kind": "ccf-variable-horizon",
+        "design": "variable-horizon",
+        "treatment": "bounded-scale",
+        "covariates": [
+          "utilisation"
+        ]
+      },
+      {
+        "n_clipped_below": 12,
+        "n_clipped_above": 31,
+        "model_id": "m-direct",
+        "kind": "direct-ead",
+        "design": null,
+        "treatment": null,
+        "covariates": [
+          "utilisation",
+          "limit"
+        ]
+      },
+      {
+        "n_clipped_below": null,
+        "n_clipped_above": null,
+        "model_id": "m-utilisation",
+        "kind": "utilisation-change",
+        "design": null,
+        "treatment": null,
+        "covariates": [
+          "utilisation"
+        ]
+      }
+    ],
+    "small_undrawn": {
+      "currency": "USD",
+      "threshold": 50.0,
+      "applied": true,
+      "n_switched": 120,
+      "reference": "Qi (2009), OCC Economics Working Paper 2009-2"
+    },
+    "floors": {
+      "off_balance_share": 0.5,
+      "reference": "CRE32.36, CRE32.64, CRE32.33; dossier 01 section A.5",
+      "supervisory_ccfs": [
+        {
+          "item": "direct-credit-substitutes",
+          "ccf": 1.0,
+          "reference": "CRE20.94 to CRE20.101"
+        },
+        {
+          "item": "nifs-rufs-transaction-related-contingents",
+          "ccf": 0.5,
+          "reference": "CRE20.94 to CRE20.101"
+        },
+        {
+          "item": "commitments",
+          "ccf": 0.4,
+          "reference": "CRE20.98"
+        },
+        {
+          "item": "short-term-self-liquidating-trade-letters-of-credit",
+          "ccf": 0.2,
+          "reference": "CRE20.94 to CRE20.101"
+        },
+        {
+          "item": "unconditionally-cancellable",
+          "ccf": 0.1,
+          "reference": "CRE20.100"
+        }
+      ]
+    }
+  },
+  "provenance": {
+    "truth_status": "synthetic-known-truth",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u6-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

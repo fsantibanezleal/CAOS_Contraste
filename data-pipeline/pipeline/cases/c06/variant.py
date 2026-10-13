@@ -16,7 +16,7 @@ from . import build as bd
 from . import macro as mc
 from . import models as md
 from .panel import Loans
-from .readers import FREDDIE_REASON, FedTables
+from ...io.sba import FREDDIE_REASON, FedTables
 from .rollforward import build_rollforward
 from .run import LIFETIME_CAP_MONTHS, PERIOD_MONTHS, RHO, STAGE1_MONTHS, DateRun, run_date
 from ...io import contract as c1

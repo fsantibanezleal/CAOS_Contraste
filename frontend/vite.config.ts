@@ -52,5 +52,7 @@ export default defineConfig({
   },
   resolve: { dedupe: ['react', 'react-dom', 'react-router'] },
   // component tests (.test.tsx) render views on the server from the committed artifacts
-  test: { environment: 'node', include: ['src/**/*.test.ts', 'src/**/*.test.tsx'] },
+  // the instrument tests sweep every view over every selection in both languages: 2 to 4 s each alone, past vitest's
+  // 5 s default when the files run in parallel on a loaded machine (C04, C05 and the App timed out, 2026-10-13)
+  test: { environment: 'node', include: ['src/**/*.test.ts', 'src/**/*.test.tsx'], testTimeout: 60_000 },
 });

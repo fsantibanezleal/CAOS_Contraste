@@ -1,0 +1,565 @@
+{
+  "schema": "contraste.case/v1",
+  "case_id": "C08",
+  "variant_id": "fixture-2009-10",
+  "model": [
+    {
+      "id": "L2-fractional-logit",
+      "family": "lgd-ead",
+      "rung": "fractional-logit",
+      "title": {
+        "en": "Fixture model L2-fractional-logit",
+        "es": "Modelo de ejemplo L2-fractional-logit"
+      },
+      "short_title": {
+        "en": "L2-fractional-logit",
+        "es": "L2-fractional-logit"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    }
+  ],
+  "outputs": {
+    "kind": "default-cohort",
+    "currency": "USD",
+    "cohort": {
+      "id": "2009-10",
+      "label": {
+        "en": "Defaults 2009-10",
+        "es": "Incumplimientos 2009-10"
+      },
+      "first_year": 2009,
+      "last_year": 2010
+    },
+    "lgd_proxy": {
+      "definition": {
+        "en": "LGD proxy = gross charge-off amount over the gross approved amount (SBA 7(a) fields GrossChargeOffAmount and GrossApproval, the only exposure field the file carries). It is a proxy, not a workout LGD.",
+        "es": "Proxy de LGD = monto bruto castigado sobre el monto bruto aprobado (campos SBA 7(a) GrossChargeOffAmount y GrossApproval, el unico campo de exposicion del archivo). Es un proxy, no una LGD de recuperacion."
+      },
+      "formula": "GrossChargeOffAmount / GrossApproval",
+      "source_field": "GrossChargeOffAmount",
+      "exposure_field": "GrossApproval",
+      "recovery_cash_flows_available": false,
+      "bias_direction": "downward",
+      "bias_statement": {
+        "en": "The proxy is biased low: the approved amount overstates the exposure at default of an amortising loan, so the denominator is too large. A second effect pushes the other way: the SBA 7(a) public file has no recovery cash flows after charge-off, so the proxy ignores recoveries and costs and overstates the loss net of recoveries; it can also exceed 1 when capitalised interest or fees are charged off. The stated direction is the denominator effect (decision D2).",
+        "es": "El proxy tiene sesgo a la baja: el monto aprobado sobreestima la exposicion al incumplimiento de un credito que se amortiza, de modo que el denominador es demasiado grande. Un segundo efecto va en sentido contrario: el archivo publico SBA 7(a) no tiene flujos de recuperacion posteriores al castigo, de modo que el proxy ignora recuperaciones y costos y sobreestima la perdida neta de recuperaciones; tambien puede superar 1 si se castigan intereses capitalizados o comisiones. La direccion declarada es el efecto del denominador (decision D2)."
+      }
+    },
+    "data_status": {
+      "primary_source": "sba-7a-chargeoff-twin",
+      "freddie_mac_available": false,
+      "freddie_mac_reason": "fixture: the owner's Freddie Mac registration does not exist yet; the SBA charge-off twin carries this case",
+      "notice": {
+        "en": "Fixture, not a result. The Freddie Mac slot stays empty until the account exists; no number stands in for it.",
+        "es": "Ejemplo, no es un resultado. El espacio de Freddie Mac queda vacio hasta que exista la cuenta; ningun numero lo reemplaza."
+      }
+    },
+    "training": {
+      "cutoff_date": "2008-12-31",
+      "n_defaults": 12000,
+      "n_open_workouts_excluded": 1500,
+      "closure_rule": {
+        "en": "Only defaults whose charge-off closed before the cutoff enter the training set; later default cohorts are the tests.",
+        "es": "Solo entran al entrenamiento los incumplimientos cuyo castigo cerro antes del corte; las cohortes posteriores son de prueba."
+      }
+    },
+    "workout": {
+      "discount_rate_convention": "none-proxy",
+      "discount_rate": null,
+      "incomplete_workouts": {
+        "treatment": "not-applicable",
+        "n_excluded": 0,
+        "n_projected": 0,
+        "reason": "fixture: the SBA file has no workout cash flows to discount or to project"
+      },
+      "note": {
+        "en": "No discounting applies to a charge-off proxy; a workout LGD would use the EBA/GL/2017/16 rate (paragraph UNVERIFIED).",
+        "es": "No se descuenta un proxy de castigo; una LGD de recuperacion usaria la tasa de EBA/GL/2017/16 (parrafo NO VERIFICADO)."
+      }
+    },
+    "exposure": {
+      "currency": "USD",
+      "gross_charge_off_total": 280000000.0,
+      "gross_approval_total": 400000000.0
+    },
+    "lgd_distribution": {
+      "n": 4000,
+      "treatment": "flagged-not-clipped",
+      "bins": [
+        {
+          "lower": 0.0,
+          "upper": 0.1,
+          "n": 300,
+          "share": 0.075
+        },
+        {
+          "lower": 0.1,
+          "upper": 0.2,
+          "n": 80,
+          "share": 0.02
+        },
+        {
+          "lower": 0.2,
+          "upper": 0.3,
+          "n": 90,
+          "share": 0.0225
+        },
+        {
+          "lower": 0.3,
+          "upper": 0.4,
+          "n": 100,
+          "share": 0.025
+        },
+        {
+          "lower": 0.4,
+          "upper": 0.5,
+          "n": 130,
+          "share": 0.0325
+        },
+        {
+          "lower": 0.5,
+          "upper": 0.6,
+          "n": 160,
+          "share": 0.04
+        },
+        {
+          "lower": 0.6,
+          "upper": 0.7,
+          "n": 230,
+          "share": 0.0575
+        },
+        {
+          "lower": 0.7,
+          "upper": 0.8,
+          "n": 330,
+          "share": 0.0825
+        },
+        {
+          "lower": 0.8,
+          "upper": 0.9,
+          "n": 560,
+          "share": 0.14
+        },
+        {
+          "lower": 0.9,
+          "upper": 1.0,
+          "n": 1972,
+          "share": 0.493
+        }
+      ],
+      "mass_at_zero": {
+        "n": 220,
+        "share": 0.055
+      },
+      "mass_at_one": {
+        "n": 1500,
+        "share": 0.375
+      },
+      "n_below_zero": 8,
+      "share_below_zero": 0.002,
+      "n_above_one": 40,
+      "share_above_one": 0.01,
+      "lowest": {
+        "value": -0.05,
+        "flag": "below-zero"
+      },
+      "highest": {
+        "value": 1.12,
+        "flag": "above-one"
+      },
+      "mean": {
+        "value": 0.64,
+        "flag": "in-range"
+      },
+      "median": {
+        "value": 0.78,
+        "flag": "in-range"
+      }
+    },
+    "rung_comparison": [
+      {
+        "rung_id": "L1-ols",
+        "r2": 0.12,
+        "rmse": 0.31,
+        "mae": 0.26,
+        "spearman": 0.35,
+        "calibration_gap": -0.09,
+        "reason": null
+      },
+      {
+        "rung_id": "L2-fractional-logit",
+        "r2": 0.15,
+        "rmse": 0.3,
+        "mae": 0.25,
+        "spearman": 0.38,
+        "calibration_gap": -0.03,
+        "reason": null
+      },
+      {
+        "rung_id": "L3-beta",
+        "r2": null,
+        "rmse": 0.3,
+        "mae": 0.25,
+        "spearman": null,
+        "calibration_gap": -0.04,
+        "reason": "fixture: the beta rung depends on the endpoint transformation, see endpoint_sensitivity"
+      }
+    ],
+    "realised_vs_predicted": [
+      {
+        "rung_id": "L1-ols",
+        "cohort_id": "2003-06",
+        "n": 4000,
+        "realised": {
+          "value": 0.52,
+          "flag": "in-range"
+        },
+        "predicted": {
+          "value": 0.49,
+          "flag": "in-range"
+        },
+        "ci_low": 0.5,
+        "ci_high": 0.54,
+        "gap": 0.03
+      },
+      {
+        "rung_id": "L1-ols",
+        "cohort_id": "2007-08",
+        "n": 4000,
+        "realised": {
+          "value": 0.68,
+          "flag": "in-range"
+        },
+        "predicted": {
+          "value": 0.65,
+          "flag": "in-range"
+        },
+        "ci_low": 0.66,
+        "ci_high": 0.7,
+        "gap": 0.03
+      },
+      {
+        "rung_id": "L1-ols",
+        "cohort_id": "2009-10",
+        "n": 4000,
+        "realised": {
+          "value": 0.74,
+          "flag": "in-range"
+        },
+        "predicted": {
+          "value": 0.65,
+          "flag": "in-range"
+        },
+        "ci_low": 0.72,
+        "ci_high": 0.76,
+        "gap": 0.09
+      },
+      {
+        "rung_id": "L2-fractional-logit",
+        "cohort_id": "2003-06",
+        "n": 4000,
+        "realised": {
+          "value": 0.52,
+          "flag": "in-range"
+        },
+        "predicted": {
+          "value": 0.51,
+          "flag": "in-range"
+        },
+        "ci_low": 0.5,
+        "ci_high": 0.54,
+        "gap": 0.01
+      },
+      {
+        "rung_id": "L2-fractional-logit",
+        "cohort_id": "2007-08",
+        "n": 4000,
+        "realised": {
+          "value": 0.68,
+          "flag": "in-range"
+        },
+        "predicted": {
+          "value": 0.67,
+          "flag": "in-range"
+        },
+        "ci_low": 0.66,
+        "ci_high": 0.7,
+        "gap": 0.01
+      },
+      {
+        "rung_id": "L2-fractional-logit",
+        "cohort_id": "2009-10",
+        "n": 4000,
+        "realised": {
+          "value": 0.74,
+          "flag": "in-range"
+        },
+        "predicted": {
+          "value": 0.71,
+          "flag": "in-range"
+        },
+        "ci_low": 0.72,
+        "ci_high": 0.76,
+        "gap": 0.03
+      }
+    ],
+    "calibration_by_bucket": [
+      {
+        "rung_id": "L2-fractional-logit",
+        "bucket": 1,
+        "n": 800,
+        "predicted": {
+          "value": 0.35,
+          "flag": "in-range"
+        },
+        "realised": {
+          "value": 0.33,
+          "flag": "in-range"
+        }
+      },
+      {
+        "rung_id": "L2-fractional-logit",
+        "bucket": 2,
+        "n": 800,
+        "predicted": {
+          "value": 0.55,
+          "flag": "in-range"
+        },
+        "realised": {
+          "value": 0.57,
+          "flag": "in-range"
+        }
+      },
+      {
+        "rung_id": "L2-fractional-logit",
+        "bucket": 3,
+        "n": 800,
+        "predicted": {
+          "value": 0.68,
+          "flag": "in-range"
+        },
+        "realised": {
+          "value": 0.7,
+          "flag": "in-range"
+        }
+      },
+      {
+        "rung_id": "L2-fractional-logit",
+        "bucket": 4,
+        "n": 800,
+        "predicted": {
+          "value": 0.8,
+          "flag": "in-range"
+        },
+        "realised": {
+          "value": 0.78,
+          "flag": "in-range"
+        }
+      },
+      {
+        "rung_id": "L2-fractional-logit",
+        "bucket": 5,
+        "n": 800,
+        "predicted": {
+          "value": 0.93,
+          "flag": "in-range"
+        },
+        "realised": {
+          "value": 0.95,
+          "flag": "in-range"
+        }
+      }
+    ],
+    "endpoint_sensitivity": [
+      {
+        "rung_id": "L3-beta",
+        "epsilon": 0.0001,
+        "mean_predicted": {
+          "value": 0.6,
+          "flag": "in-range"
+        },
+        "rmse": 0.31
+      },
+      {
+        "rung_id": "L3-beta",
+        "epsilon": 0.001,
+        "mean_predicted": {
+          "value": 0.62,
+          "flag": "in-range"
+        },
+        "rmse": 0.3
+      },
+      {
+        "rung_id": "L3-beta",
+        "epsilon": 0.01,
+        "mean_predicted": {
+          "value": 0.66,
+          "flag": "in-range"
+        },
+        "rmse": 0.3
+      }
+    ],
+    "downturn": {
+      "period": {
+        "first_year": 2007,
+        "last_year": 2010,
+        "indicator": "unemployment rate (fixture path)",
+        "macro_source": "fixture: a constructed path, not BLS data"
+      },
+      "approach": {
+        "en": "Cohort-based add-on: the default-weighted mean LGD in the downturn years minus the long-run mean. An illustration, not a regulatory estimate.",
+        "es": "Ajuste por cohortes: la LGD media ponderada por incumplimientos en los anos de crisis menos la media de largo plazo. Una ilustracion, no una estimacion regulatoria."
+      },
+      "rows": [
+        {
+          "cohort_id": "2007-08",
+          "n": 5000,
+          "long_run_lgd": {
+            "value": 0.55,
+            "flag": "in-range"
+          },
+          "downturn_lgd": {
+            "value": 0.7,
+            "flag": "in-range"
+          },
+          "add_on": 0.15,
+          "crisis_realised_lgd": {
+            "value": 0.68,
+            "flag": "in-range"
+          },
+          "covered": true,
+          "shortfall": 0.0
+        },
+        {
+          "cohort_id": "2009-10",
+          "n": 4000,
+          "long_run_lgd": {
+            "value": 0.55,
+            "flag": "in-range"
+          },
+          "downturn_lgd": {
+            "value": 0.7,
+            "flag": "in-range"
+          },
+          "add_on": 0.15,
+          "crisis_realised_lgd": {
+            "value": 0.74,
+            "flag": "in-range"
+          },
+          "covered": false,
+          "shortfall": 0.04
+        }
+      ],
+      "coverage": {
+        "n_cohorts": 2,
+        "share_covered": 0.5
+      }
+    },
+    "floors_bite": {
+      "regime": "basel-iii-final",
+      "rows": [
+        {
+          "segment_id": "sme-unsecured",
+          "floor_id": "corporate-unsecured",
+          "floor": 0.25,
+          "reference": "CRE32.16",
+          "n": 2400,
+          "share_binding": 0.12,
+          "mean_before": {
+            "value": 0.62,
+            "flag": "in-range"
+          },
+          "mean_after": {
+            "value": 0.63,
+            "flag": "in-range"
+          },
+          "uplift": 0.01
+        },
+        {
+          "segment_id": "sme-real-estate",
+          "floor_id": "corporate-real-estate",
+          "floor": 0.1,
+          "reference": "CRE32.16",
+          "n": 1600,
+          "share_binding": 0.03,
+          "mean_before": {
+            "value": 0.41,
+            "flag": "in-range"
+          },
+          "mean_after": {
+            "value": 0.415,
+            "flag": "in-range"
+          },
+          "uplift": 0.005
+        }
+      ],
+      "note": {
+        "en": "Fixture floors from dossier 01 A.5; the bite is the mean uplift they cause.",
+        "es": "Pisos de ejemplo del dossier 01 A.5; el efecto es el alza media que causan."
+      }
+    }
+  },
+  "tests": [
+    {
+      "test_id": "lgd_ead.lgd_calibration_by_segment",
+      "model_id": "L2-fractional-logit",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    }
+  ],
+  "impact": {
+    "mean_lgd_proxy": {
+      "value": 0.64,
+      "unit": "share",
+      "label": {
+        "en": "Mean LGD proxy",
+        "es": "LGD proxy media"
+      }
+    }
+  },
+  "findings": [],
+  "provenance": {
+    "truth_status": "real-outcomes",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u6-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

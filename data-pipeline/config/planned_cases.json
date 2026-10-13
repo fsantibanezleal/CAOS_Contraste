@@ -14,48 +14,6 @@
   }
  },
  {
-  "case_id": "C03",
-  "title": {
-   "en": "SME PD by vintage through 2008",
-   "es": "PD de pymes por añada hasta 2008"
-  },
-  "category_id": "credit-scoring",
-  "kind": "real",
-  "unit": "U6",
-  "question": {
-   "en": "Does an SME PD model trained through the 2008 crisis hold up on later approval vintages?",
-   "es": "¿Resiste un modelo de PD de pymes entrenado durante la crisis de 2008 en añadas de aprobación posteriores?"
-  }
- },
- {
-  "case_id": "C08",
-  "title": {
-   "en": "LGD and downturn LGD",
-   "es": "LGD y LGD de recesión"
-  },
-  "category_id": "lgd-ead",
-  "kind": "real",
-  "unit": "U6",
-  "question": {
-   "en": "How does loss given default move across default cohorts, and what does a downturn LGD add?",
-   "es": "¿Cómo se mueve la pérdida dado el incumplimiento entre cohortes de incumplimiento, y qué agrega una LGD de recesión?"
-  }
- },
- {
-  "case_id": "C09",
-  "title": {
-   "en": "EAD and CCF for revolving lines",
-   "es": "EAD y CCF de líneas rotativas"
-  },
-  "category_id": "lgd-ead",
-  "kind": "synthetic",
-  "unit": "U6",
-  "question": {
-   "en": "Can exposure at default and the credit conversion factor of revolving lines be recovered when utilisation accelerates?",
-   "es": "¿Se pueden recuperar la exposición al incumplimiento y el factor de conversión de crédito de líneas rotativas cuando se acelera la utilización?"
-  }
- },
- {
   "case_id": "C10",
   "title": {
    "en": "Portfolio credit capital: ASRF, Vasicek fit, copula MC",
