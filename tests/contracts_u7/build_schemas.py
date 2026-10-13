@@ -40,6 +40,9 @@ METHODS = ["lhp-vasicek", "gaussian-copula-one-factor", "gaussian-copula-multi-f
            "granularity-adjustment", "importance-sampling"]
 RUNG_IDS = ["c1-lhp", "c2-gaussian-1f", "c2-gaussian-mf", "c3-student-t", "c4-creditrisk-plus", "c5-granularity",
             "c6-is-gaussian", "c6-is-student-t"]
+IRB_RETAIL = ["residential_mortgage", "qrre", "other_retail", "retail_consumer"]
+IRB_CLASSES = ["corporate", "sovereign", "bank", "financial_institution", "sme", "hvcre"] + IRB_RETAIL
+IRB_REGIMES = ["basel3", "crr3", "basel2", "cl_ran21_6"]
 LOAN_TYPES = ["commercial-industrial", "commercial-real-estate", "residential", "credit-cards", "other-consumer"]
 
 ILLUSTRATIVE_INPUT = {"contains": {"properties": {"source": {"const": "illustrative-portfolio"}, "class": {"const": "illustrative"}},
@@ -48,11 +51,14 @@ ILLUSTRATIVE_INPUT = {"contains": {"properties": {"source": {"const": "illustrat
 
 def c10_defs() -> dict:
     d: dict = {}
-    d["c10Window"] = Ob({"first_year": YEAR, "last_year": YEAR, "n_years": Int(1)},
-                        "A window of calendar years; n_years = last_year - first_year + 1 (a producer check).")
-    d["c10Windows"] = Ob({"fit": R("c10Window"), "evaluation": R("c10Window")},
-                         "The fit window (SDD section 5: 1985-2006) and the out-of-sample evaluation window (2007-2012); the fit "
-                         "window ends before the evaluation window begins.")
+    d["c10FitWindow"] = Ob({"first_year": {"const": 1985}, "last_year": {"const": 2006}, "n_years": {"const": 22}},
+                           "The fit window, fixed by the SDD (section 5, case C10): 1985-2006.")
+    d["c10EvaluationWindow"] = Ob({"first_year": {"const": 2007}, "last_year": {"const": 2012}, "n_years": {"const": 6}},
+                                  "The out-of-sample evaluation window, fixed by the SDD (section 5, case C10): 2007-2012. "
+                                  "A fit window that overlaps it, or windows swapped, fail the schema.")
+    d["c10Windows"] = Ob({"fit": R("c10FitWindow"), "evaluation": R("c10EvaluationWindow")},
+                         "The fit window (1985-2006) and the out-of-sample evaluation window (2007-2012); the fit window "
+                         "ends before the evaluation window begins.")
     d["c10Interval"] = Ob({"estimate": RHO, "ci_low": RHO, "ci_high": RHO},
                           "An estimate with its interval, all inside (0, 1); ci_low <= estimate <= ci_high (a producer check).")
     d["c10PdInterval"] = Ob({"estimate": PD, "ci_low": PD, "ci_high": PD},
@@ -131,14 +137,24 @@ def c10_defs() -> dict:
                           "The tail back-test of the evaluation window against the quantiles fitted on the fit window (dossier "
                           "05 G.5; engine validation.portfolio.tail_backtest).")
     d["c10IrbReference"] = Ob({
-        "regime": S(), "asset_class": S(), "reference": S(minLength=1),
+        "regime": E(*IRB_REGIMES), "asset_class": E(*IRB_CLASSES), "reference": S(minLength=1),
         "pd": PD, "lgd": UNIT,
+        "maturity": nullable(N(minimum=1, maximum=5), "Effective maturity in years, 1 to 5; null for a retail class."),
+        "maturity_adjustment": nullable(N(exclusiveMinimum=0),
+                                        "(1 + (M - 2.5) b) / (1 - 1.5 b) with b = (0.11852 - 0.05478 ln PD)^2; null for a retail class."),
         "irb_correlation": RHO, "fitted_correlation": RHO,
-        "k_irb": N(minimum=0, description="The IRB capital requirement per unit of EAD (engine regulatory.irb.capital_requirement)."),
-        "ec_lhp_fitted": N(minimum=0, description="lgd * (LHP quantile at 99.9% with the fitted correlation - pd), per unit of EAD."),
+        "k_irb": N(minimum=0, description="The IRB capital requirement per unit of EAD (engine regulatory.irb.capital_requirement), "
+                                          "with the maturity adjustment where the class has one."),
+        "ec_lhp_fitted": N(minimum=0, description="lgd * (LHP quantile at 99.9% with the fitted correlation - pd) times the same "
+                                                  "maturity adjustment as k_irb, per unit of EAD."),
         "ratio_fitted_to_irb": N(minimum=0),
     }, "How the fitted correlation compares with the IRB correlation of the loan type's regulatory class (dossier 04 C.4): the "
-       "capital per unit of EAD both ways. Retail classes carry no maturity adjustment.")
+       "capital per unit of EAD both ways, with the same maturity treatment on both sides, so the ratio isolates the correlation. "
+       "Retail classes carry no maturity and no maturity adjustment; the other classes carry both.")
+    one_of(d["c10IrbReference"],
+           {"asset_class": E(*IRB_RETAIL), "maturity": {"type": "null"}, "maturity_adjustment": {"type": "null"}},
+           {"asset_class": E(*[c for c in IRB_CLASSES if c not in IRB_RETAIL]), "maturity": N(minimum=1, maximum=5),
+            "maturity_adjustment": N(exclusiveMinimum=0)})
     d["c10Group"] = Ob({
         "id": S(minLength=1), "label": TXT,
         "n_names": Int(1), "ead_each": N(exclusiveMinimum=0, description="Money in the `currency` of the enclosing block."),
@@ -194,8 +210,8 @@ def c10_defs() -> dict:
         "estimator": E("analytic", "monte-carlo", "none"),
         "evaluated": B,
         "reason": nullable(S(), "Why the rung did not run; null when it ran."),
-        "parameters": A(NAME_MAP),
-        "diagnostics": A(NAME_MAP),
+        "parameters": A(NAME_MAP, desc="The declared inputs of the rung; a rung that did not run may keep them."),
+        "diagnostics": A(NAME_MAP, desc="Numbers measured by running the rung; empty when the rung did not run."),
         "simulation": nullable(R("c10Simulation")),
         "measures": nullable(A(R("c10Measure"), 2)),
         "distribution": nullable(R("c10LossCurve")),
@@ -213,32 +229,54 @@ def c10_defs() -> dict:
             "measures": {"type": "array", "items": {"properties": {"var_se": N(minimum=0), "es_se": N(minimum=0), "es": MONEY}}},
             "distribution": R("c10LossCurve")},
            {"evaluated": {"const": False}, "estimator": {"const": "none"}, "reason": S(minLength=1), "simulation": {"type": "null"},
+            "diagnostics": {"type": "array", "maxItems": 0},
             "measures": {"type": "null"}, "distribution": {"type": "null"}})
-    d["c10GaRow"] = Ob({"n_names": Int(1), "hhi": N(minimum=0, maximum=1), "ga_ratio": N(minimum=0)},
-                       "The granularity adjustment of n identical names of the portfolio's mix: ga_ratio times n is constant.")
-    d["c10GaPortfolio"] = Ob({
-        "ga_ratio": N(minimum=0), "k_star": N(minimum=0), "ga_add_on_share": N(minimum=0), "ga_money": MONEY,
-    }, "The adjustment for the illustrative portfolio: ga_add_on_share = ga_ratio * k_star, as a share of EAD, and in money.")
-    d["c10Granularity"] = Ob({
-        "currency": CUR,
-        "xi": N(exclusiveMinimum=0), "gamma": N(minimum=0), "q": LEVEL,
+    d["c10GaRow"] = Ob({
+        "n_names": Int(1), "hhi": N(minimum=0, maximum=1), "ga": N(minimum=0),
+        "truth_ga": nullable(N(minimum=0), "alpha_q(L_n) - mu(alpha_q(X)) from the CreditRisk+ recursion of the same single-factor "
+                                           "model, as a share of EAD; null with its reason where the recursion was not run."),
+        "truth_reason": nullable(S()),
+    }, "The granularity adjustment (a share of EAD) of n identical names of the portfolio's mix at the level of by_n_names_level, "
+       "with the recursion's value beside it: ga times n is constant.")
+    one_of(d["c10GaRow"], {"truth_ga": N(minimum=0), "truth_reason": {"type": "null"}},
+           {"truth_ga": {"type": "null"}, "truth_reason": S(minLength=1)})
+    d["c10GaLevel"] = Ob({
+        "q": LEVEL,
         "alpha_q": N("The q-quantile of the Gamma factor with shape xi and rate xi (mean 1, variance 1/xi).", exclusiveMinimum=1),
         "delta": N(minimum=0),
+        "ga": N("The granularity adjustment of the portfolio at this level, a share of EAD (Gordy and Lutkebohmert 2013, eq. 9 "
+                "and 17).", minimum=0),
+        "ga_money": MONEY,
+    }, "The adjustment at one level: ga_money = ga * total_ead (a producer check). The C5 rung's VaR at this level is the C1 VaR "
+       "plus ga_money.")
+    d["c10Granularity"] = Ob({
+        "currency": CUR,
+        "xi": N(exclusiveMinimum=0), "gamma": N(minimum=0),
+        "k_source": {"const": "irb-regulatory-correlation"},
+        "k_star": N("K* = sum_i s_i K_i with K_i the IRB capital per unit of EAD at the regulatory correlation (Gordy and "
+                    "Lutkebohmert 2013, algorithm step iv, p. 47).", minimum=0),
         "delta_reference": {"const": 4.83},
         "delta_reference_source": S(minLength=1),
-        "applies_to_portfolio": R("c10GaPortfolio"),
+        "levels": A(R("c10GaLevel"), 2),
+        "by_n_names_level": {"const": 0.999},
         "by_n_names": A(R("c10GaRow"), 5),
     }, "The granularity adjustment of Gordy and Lutkebohmert (2013) (dossier 04 H.5): delta = (alpha_q - 1)(xi + (1 - xi) / "
-       "alpha_q) (eq. 15), 4.83 at xi 0.25 and q 0.999, the adjustment for the portfolio, and the adjustment against the number "
-       "of names.")
+       "alpha_q) (eq. 15), 4.83 at xi 0.25 and q 0.999 (p. 46); the adjustment GA is a share of EAD (eq. 9, p. 41; eq. 17), per "
+       "level for the portfolio and against the number of names. At xi 0.25 the delta of the 99.9% level lies in [4.825, 4.835].")
+    d["c10Granularity"]["if"] = {"properties": {"xi": {"const": 0.25}}, "required": ["xi"]}
+    d["c10Granularity"]["then"] = {"properties": {"levels": {"items": {
+        "if": {"properties": {"q": {"const": 0.999}}, "required": ["q"]},
+        "then": {"properties": {"delta": {"minimum": 4.825, "maximum": 4.835}}}}}}}
     d["c10EulerRow"] = Ob({
         "group_id": S(minLength=1), "ead": MONEY,
         "rc_var": MONEY, "rc_es": MONEY, "share_var": UNIT, "share_es": UNIT,
     }, "The Euler contribution of one group to the VaR and to the ES (dossier 05 G.4: E[L_i | L = VaR], E[L_i | L >= VaR]).")
     d["c10EulerAnchorRow"] = Ob({"group_id": S(minLength=1), "rc_var": MONEY})
-    d["c10EulerAnchor"] = Ob({"method": {"const": "emmer-tasche-2005-one-factor"}, "rows": A(R("c10EulerAnchorRow"), 2)},
-                             "The closed-form one-factor VaR contributions of Emmer and Tasche (2005), the anchor of the sample "
-                             "contributions.")
+    d["c10EulerAnchor"] = Ob({"method": {"const": "asrf-asymptotic"}, "asrf_var": MONEY, "rows": A(R("c10EulerAnchorRow"), 2)},
+                             "The asymptotic one-factor VaR contributions u_j * Phi((c_j - sqrt(rho_j) q_(1-alpha)(X)) / "
+                             "sqrt(1 - rho_j)): the first term of Emmer and Tasche (2005) eq. 2.17 (Gordy 2003 portfolio "
+                             "invariance), not their full contribution. asrf_var is the sum of the rows, the infinitely granular "
+                             "VaR; the sample VaR sits near it, not on it (a producer check recomputes both).")
     d["c10EulerLevel"] = Ob({
         "level": LEVEL,
         "var_total": MONEY, "es_total": MONEY,
@@ -292,7 +330,7 @@ def c10_defs() -> dict:
        "which H0: rho = null_rho is rejected at level alpha with its Monte Carlo standard error and Wilson interval.")
     d["c10GridCell"] = Ob({
         "known_rho": RHO,
-        "series_length_years": Int(2),
+        "series_length_years": {"type": "integer", "enum": [22, 40]},
         "n_replications": Int(1), "n_valid": Int(0), "n_failed": Int(0),
         "role": E("size", "power"),
         "estimators": A(R("c10Estimator"), 2),
@@ -302,7 +340,7 @@ def c10_defs() -> dict:
         "name": S(), "shaped_on": S(),
         "known_pd": PD,
         "rho_grid": A(RHO, 2, "The known asset correlations, strictly increasing."),
-        "series_length_years": Int(2),
+        "series_length_years": {"type": "integer", "enum": [22, 40]},
         "n_replications": Int(1),
         "null_rho": RHO,
         "alpha": {"const": 0.05},
@@ -322,7 +360,7 @@ def c10_defs() -> dict:
     d["c10LoanTypeSpec"] = Ob({
         "id": E(*LOAN_TYPES), "label": TXT,
         "table_column": S(minLength=1),
-        "irb_asset_class": S(), "irb_reference": S(minLength=1),
+        "irb_asset_class": E(*IRB_CLASSES), "irb_reference": S(minLength=1),
     }, "A loan type of the Federal Reserve table and the IRB asset class its fitted correlation is compared with.")
     d["c10EstimatorSpec"] = Ob({
         "id": E("maximum-likelihood", "moments"), "label": TXT,
@@ -336,7 +374,10 @@ def c10_defs() -> dict:
         "engine_function": S(minLength=1),
         "reference": S(minLength=1),
         "parameters": A(NAME_MAP),
-    }, "The specification of one rung: its engine function, its reference and its parameters.")
+    }, "The specification of one rung: its engine function, its reference and its parameters. A Monte Carlo rung has its "
+       "scenario count; an analytic rung has none.")
+    one_of(d["c10RungSpec"], {"estimator": {"const": "analytic"}, "n_scenarios": {"type": "null"}},
+           {"estimator": {"const": "monte-carlo"}, "n_scenarios": Int(1)})
     d["c10PortfolioSpec"] = Ob({
         "label": {"const": "illustrative"},
         "notice": TXT,
@@ -349,13 +390,14 @@ def c10_defs() -> dict:
     }, "The specification of the illustrative portfolio the bake builds per loan type: constructed, never a bank's.")
     d["c10GranularitySpec"] = Ob({
         "xi": N(exclusiveMinimum=0), "gamma": N(minimum=0),
+        "k_source": {"const": "irb-regulatory-correlation"},
         "xi_reference": {"const": 0.25}, "q_reference": {"const": 0.999}, "delta_reference": {"const": 4.83},
         "reference": S(minLength=1),
     }, "The granularity parameters and the golden delta of Gordy and Lutkebohmert (2013) (eq. 15): 4.83 at xi 0.25 and q 0.999.")
     d["c10SimSpec"] = Ob({
         "known_pd": PD,
         "rho_grid": A(RHO, 2),
-        "series_lengths_years": A(Int(2), 1),
+        "series_lengths_years": A({"type": "integer", "enum": [22, 40]}, 1),
         "n_replications": Int(1),
         "null_rho": RHO,
         "alpha": {"const": 0.05},

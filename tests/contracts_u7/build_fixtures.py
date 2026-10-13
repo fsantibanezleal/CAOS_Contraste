@@ -174,7 +174,7 @@ def curve(scale: float) -> dict:
             "density": [r(lhp_pdf(x / scale, PD_HAT, RHO_HAT) / scale / SCALE_X, 12) for x in CURVE_X]}
 
 
-def measures(scale_var: float, scale_es: float, el: float, se: tuple[float, float] | None, ga_money: float | None = None) -> list[dict]:
+def measures(scale_var: float, scale_es: float, el: float, se: tuple[float, float] | None, ga_money: dict | None = None) -> list[dict]:
     out = []
     for q in (0.99, 0.999):
         var = SCALE_X * lhp_quantile(q, PD_HAT, RHO_HAT) * scale_var
@@ -184,7 +184,7 @@ def measures(scale_var: float, scale_es: float, el: float, se: tuple[float, floa
         if se is not None:
             m["var_se"], m["es_se"] = r(se[0] * var, 2), r(se[1] * es, 2)
         if ga_money is not None:
-            m["var"] = r(var + ga_money * (1.0 if q == 0.999 else 0.5), 2)
+            m["var"] = r(var + ga_money[q], 2)
             m["ec"] = r(m["var"] - el, 2)
             m["es"], m["es_reason"] = None, "the granularity adjustment is a quantile add-on and defines no expected shortfall"
         out.append(m)
@@ -199,22 +199,31 @@ def rung(rid: str, rung_id: str, method: str, label: tuple[str, str], estimator:
             "simulation": simulation, "measures": ms, "distribution": None if curve_scale is None else curve(curve_scale)}
 
 
+def asrf_rows(q: float, rho: float) -> list[dict]:
+    """The asymptotic one-factor VaR contribution of each group: ead lgd p(G(1 - q)) summed over its names (dossier 04 C.4;
+    the first term of Emmer and Tasche 2005 eq. 2.17)."""
+    z = ND.inv_cdf(1 - q)
+    return [{"group_id": g["id"],
+             "rc_var": r(g["n_names"] * g["ead_each"] * g["lgd"]
+                         * ND.cdf((ND.inv_cdf(g["pd"]) - math.sqrt(rho) * z) / math.sqrt(1 - rho)), 2)} for g in GROUPS]
+
+
 def euler_level(q: float, var_total: float, es_total: float, v_share: list[float], e_share: list[float], v_bias: float,
                 anchor: bool) -> dict:
-    rows, anchor_rows = [], []
+    rows = []
     for k, g in enumerate(GROUPS):
         ead = g["n_names"] * g["ead_each"]
         rc_var = r(var_total * v_share[k] * (1 + (v_bias if k == len(GROUPS) - 1 else 0.0)), 2)
         rc_es = r(es_total * e_share[k], 2)
         rows.append({"group_id": g["id"], "ead": ead, "rc_var": rc_var, "rc_es": rc_es, "share_var": 0.0, "share_es": 0.0})
-        anchor_rows.append({"group_id": g["id"], "rc_var": r(var_total * v_share[k], 2)})
     rows[-1]["rc_es"] = r(es_total - sum(x["rc_es"] for x in rows[:-1]), 2)
     for x in rows:
         x["share_var"], x["share_es"] = r(x["rc_var"] / var_total), r(x["rc_es"] / es_total)
     return {"level": q, "var_total": var_total, "es_total": es_total, "var_sum_tolerance": 0.01, "es_sum_tolerance": 1e-6,
             "var_method": "kernel", "es_method": "tail-sample", "rows": rows,
-            "anchor": {"method": "emmer-tasche-2005-one-factor", "rows": anchor_rows} if anchor else None,
-            "anchor_reason": None if anchor else "the closed form of Emmer and Tasche (2005) is a one-factor Gaussian result; "
+            "anchor": ({"method": "asrf-asymptotic", "asrf_var": r(sum(x["rc_var"] for x in asrf_rows(q, RHO_HAT)), 2),
+                        "rows": asrf_rows(q, RHO_HAT)} if anchor else None),
+            "anchor_reason": None if anchor else "the asymptotic one-factor contribution is a Gaussian one-factor result; "
                                                  "no closed form is specified for this rung"}
 
 
@@ -253,10 +262,14 @@ def build_loan_type() -> tuple[dict, dict]:
                "interval_method": "parametric-bootstrap", "n_bootstrap": 200, "level": 0.95}
     k_irb = LGD * (lhp_quantile(0.999, PD_HAT, 0.15) - PD_HAT)
     ec_fit = LGD * (q999 - PD_HAT)
-    ga_ratio = r(0.8 / (1 / HHI), 12)
-    k_star = r(LGD * (q999 - PD_HAT), 12)
-    ga_share = r(ga_ratio * k_star, 12)
-    ga_money = r(ga_share * TOTAL_EAD, 2)
+    k_star = r(k_irb, 12)  # the fixture's K*: the IRB K per unit of EAD at the regulatory correlation (one class, one PD)
+    ga999 = r(0.08 * HHI, 12)  # GA of eq. 17 as a share of EAD (Gordy and Lutkebohmert 2013, eq. 9); a made-up scale 0.08 / n
+    ga_levels = []
+    for q_, ga_ in ((0.99, r(0.4 * ga999, 12)), (0.999, ga999)):
+        a_ = r(gamma_quantile(0.25, q_), 9)
+        ga_levels.append({"q": q_, "alpha_q": a_, "delta": r((a_ - 1) * (0.25 + 0.75 / a_), 9), "ga": ga_,
+                          "ga_money": r(ga_ * TOTAL_EAD, 2)})
+    ga_money = {x["q"]: x["ga_money"] for x in ga_levels}
 
     def mc(n: int) -> dict:
         return {"n_scenarios": n, "seed": 4001, "chunk_size": 100000}
@@ -330,7 +343,7 @@ def build_loan_type() -> tuple[dict, dict]:
             "quantiles": [{"level": lv, "value": r(lhp_quantile(lv, PD_HAT, RHO_HAT))} for lv in QUANTILE_LEVELS]},
         "backtest": {"n_years_evaluated": len(ev), "rows": bt_rows},
         "irb_reference": {"regime": "basel3", "asset_class": "residential_mortgage", "reference": "CRE31.14", "pd": PD_HAT,
-                          "lgd": LGD, "irb_correlation": 0.15, "fitted_correlation": RHO_HAT, "k_irb": r(k_irb),
+                          "lgd": LGD, "maturity": None, "maturity_adjustment": None, "irb_correlation": 0.15, "fitted_correlation": RHO_HAT, "k_irb": r(k_irb),
                           "ec_lhp_fitted": r(ec_fit), "ratio_fitted_to_irb": r(ec_fit / k_irb)},
         "portfolio": {"label": "illustrative", "notice": NOTICE_ILLUSTRATIVE, "currency": CUR,
                       "n_names": sum(g["n_names"] for g in GROUPS), "total_ead": TOTAL_EAD, "groups": GROUPS, "lgd_mean": LGD,
@@ -339,12 +352,14 @@ def build_loan_type() -> tuple[dict, dict]:
                       "hhi": r(HHI), "effective_names": r(1 / HHI),
                       "largest_share": r(max(g["ead_each"] for g in GROUPS) / TOTAL_EAD)},
         "rungs": rungs,
-        "granularity": {"currency": CUR, "xi": 0.25, "gamma": 0.25, "q": 0.999, "alpha_q": ALPHA_Q, "delta": DELTA,
+        "granularity": {"currency": CUR, "xi": 0.25, "gamma": 0.25, "k_source": "irb-regulatory-correlation", "k_star": k_star,
                         "delta_reference": 4.83,
-                        "delta_reference_source": "Gordy and Lutkebohmert (2013), eq. 15 (dossier 04 H.5)",
-                        "applies_to_portfolio": {"ga_ratio": ga_ratio, "k_star": k_star, "ga_add_on_share": ga_share,
-                                                 "ga_money": ga_money},
-                        "by_n_names": [{"n_names": n, "hhi": r(1 / n), "ga_ratio": r(0.8 / n)}
+                        "delta_reference_source": "Gordy and Lutkebohmert (2013), eq. 15 and p. 46 (dossier 04 H.5)",
+                        "levels": ga_levels, "by_n_names_level": 0.999,
+                        "by_n_names": [{"n_names": n, "hhi": r(1 / n), "ga": r(0.08 / n, 12),
+                                        "truth_ga": r(0.93 * 0.08 / n, 12) if n <= 200 else None,
+                                        "truth_reason": None if n <= 200 else
+                                        "fixture: the CreditRisk+ recursion was not run beyond 200 names"}
                                        for n in (10, 20, 50, 100, 200, 500, 1000)]},
         "euler": euler,
     }
@@ -489,7 +504,7 @@ def models_doc() -> dict:
         "ladder": ladder,
         "portfolio_spec": {"label": "illustrative", "notice": NOTICE_ILLUSTRATIVE, "currency": CUR, "groups": GROUPS, "lgd_mean": LGD,
                            "lgd_gamma": 0.25, "levels": [0.99, 0.999], "horizon_years": 1},
-        "granularity": {"xi": 0.25, "gamma": 0.25, "xi_reference": 0.25, "q_reference": 0.999, "delta_reference": 4.83,
+        "granularity": {"xi": 0.25, "gamma": 0.25, "k_source": "irb-regulatory-correlation", "xi_reference": 0.25, "q_reference": 0.999, "delta_reference": 4.83,
                         "reference": "Gordy and Lutkebohmert (2013), eq. 15 and eq. 16 (dossier 04 H.5)"},
         "simulator": {"known_pd": 0.02, "rho_grid": [r(0.02 * k, 2) for k in range(1, 13)], "series_lengths_years": [22, 40],
                       "n_replications": 1000, "null_rho": 0.12, "alpha": 0.05, "seed": 7001},

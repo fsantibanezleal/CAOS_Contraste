@@ -2977,10 +2977,12 @@ export interface components {
             currency: string;
             levels: components["schemas"]["c10EulerLevel"][];
         };
-        /** @description The closed-form one-factor VaR contributions of Emmer and Tasche (2005), the anchor of the sample contributions. */
+        /** @description The asymptotic one-factor VaR contributions u_j * Phi((c_j - sqrt(rho_j) q_(1-alpha)(X)) / sqrt(1 - rho_j)): the first term of Emmer and Tasche (2005) eq. 2.17 (Gordy 2003 portfolio invariance), not their full contribution. asrf_var is the sum of the rows, the infinitely granular VaR; the sample VaR sits near it, not on it (a producer check recomputes both). */
         c10EulerAnchor: {
             /** @constant */
-            method: "emmer-tasche-2005-one-factor";
+            method: "asrf-asymptotic";
+            /** @description Money in the `currency` of the enclosing block. */
+            asrf_var: number;
             rows: components["schemas"]["c10EulerAnchorRow"][];
         };
         c10EulerAnchorRow: {
@@ -3031,11 +3033,29 @@ export interface components {
             /** @description A share or an observed rate in [0, 1]. */
             share_es: number;
         };
+        /** @description The out-of-sample evaluation window, fixed by the SDD (section 5, case C10): 2007-2012. A fit window that overlaps it, or windows swapped, fail the schema. */
+        c10EvaluationWindow: {
+            /** @constant */
+            first_year: 2007;
+            /** @constant */
+            last_year: 2012;
+            /** @constant */
+            n_years: 6;
+        };
         /** @description The two fits of the yearly series; n_years_used counts the fit-window years with a rate. */
         c10Fit: {
             n_years_used: number;
             maximum_likelihood: components["schemas"]["c10MlFit"];
             moments: components["schemas"]["c10MomentsFit"];
+        };
+        /** @description The fit window, fixed by the SDD (section 5, case C10): 1985-2006. */
+        c10FitWindow: {
+            /** @constant */
+            first_year: 1985;
+            /** @constant */
+            last_year: 2006;
+            /** @constant */
+            n_years: 22;
         };
         /** @description The fitted (maximum-likelihood) Vasicek distribution of the yearly loss rate: its density and distribution function and its quantiles; pd and rho equal the maximum-likelihood estimates (a producer check). */
         c10FittedDistribution: {
@@ -3046,26 +3066,8 @@ export interface components {
             curve: components["schemas"]["c10Curve"];
             quantiles: components["schemas"]["c10Quantile"][];
         };
-        /** @description The adjustment for the illustrative portfolio: ga_add_on_share = ga_ratio * k_star, as a share of EAD, and in money. */
-        c10GaPortfolio: {
-            ga_ratio: number;
-            k_star: number;
-            ga_add_on_share: number;
-            /** @description Money in the `currency` of the enclosing block. */
-            ga_money: number;
-        };
-        /** @description The granularity adjustment of n identical names of the portfolio's mix: ga_ratio times n is constant. */
-        c10GaRow: {
-            n_names: number;
-            hhi: number;
-            ga_ratio: number;
-        };
-        /** @description The granularity adjustment of Gordy and Lutkebohmert (2013) (dossier 04 H.5): delta = (alpha_q - 1)(xi + (1 - xi) / alpha_q) (eq. 15), 4.83 at xi 0.25 and q 0.999, the adjustment for the portfolio, and the adjustment against the number of names. */
-        c10Granularity: {
-            /** @description ISO 4217 code of the money fields of this block. */
-            currency: string;
-            xi: number;
-            gamma: number;
+        /** @description The adjustment at one level: ga_money = ga * total_ead (a producer check). The C5 rung's VaR at this level is the C1 VaR plus ga_money. */
+        c10GaLevel: {
             /**
              * @description A confidence level as a decimal.
              * @enum {number}
@@ -3074,16 +3076,50 @@ export interface components {
             /** @description The q-quantile of the Gamma factor with shape xi and rate xi (mean 1, variance 1/xi). */
             alpha_q: number;
             delta: number;
+            /** @description The granularity adjustment of the portfolio at this level, a share of EAD (Gordy and Lutkebohmert 2013, eq. 9 and 17). */
+            ga: number;
+            /** @description Money in the `currency` of the enclosing block. */
+            ga_money: number;
+        };
+        /** @description The granularity adjustment (a share of EAD) of n identical names of the portfolio's mix at the level of by_n_names_level, with the recursion's value beside it: ga times n is constant. */
+        c10GaRow: {
+            n_names: number;
+            hhi: number;
+            ga: number;
+            /** @description alpha_q(L_n) - mu(alpha_q(X)) from the CreditRisk+ recursion of the same single-factor model, as a share of EAD; null with its reason where the recursion was not run. */
+            truth_ga: number | null;
+            truth_reason: string | null;
+        } & ({
+            truth_ga?: number;
+            truth_reason?: null;
+        } | {
+            truth_ga?: null;
+            truth_reason?: string;
+        });
+        /** @description The granularity adjustment of Gordy and Lutkebohmert (2013) (dossier 04 H.5): delta = (alpha_q - 1)(xi + (1 - xi) / alpha_q) (eq. 15), 4.83 at xi 0.25 and q 0.999 (p. 46); the adjustment GA is a share of EAD (eq. 9, p. 41; eq. 17), per level for the portfolio and against the number of names. At xi 0.25 the delta of the 99.9% level lies in [4.825, 4.835]. */
+        c10Granularity: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            xi: number;
+            gamma: number;
+            /** @constant */
+            k_source: "irb-regulatory-correlation";
+            /** @description K* = sum_i s_i K_i with K_i the IRB capital per unit of EAD at the regulatory correlation (Gordy and Lutkebohmert 2013, algorithm step iv, p. 47). */
+            k_star: number;
             /** @constant */
             delta_reference: 4.83;
             delta_reference_source: string;
-            applies_to_portfolio: components["schemas"]["c10GaPortfolio"];
+            levels: components["schemas"]["c10GaLevel"][];
+            /** @constant */
+            by_n_names_level: 0.999;
             by_n_names: components["schemas"]["c10GaRow"][];
         };
         /** @description The granularity parameters and the golden delta of Gordy and Lutkebohmert (2013) (eq. 15): 4.83 at xi 0.25 and q 0.999. */
         c10GranularitySpec: {
             xi: number;
             gamma: number;
+            /** @constant */
+            k_source: "irb-regulatory-correlation";
             /** @constant */
             xi_reference: 0.25;
             /** @constant */
@@ -3096,7 +3132,8 @@ export interface components {
         c10GridCell: {
             /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
             known_rho: number;
-            series_length_years: number;
+            /** @enum {integer} */
+            series_length_years: 22 | 40;
             n_replications: number;
             n_valid: number;
             n_failed: number;
@@ -3137,25 +3174,41 @@ export interface components {
             /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
             ci_high: number;
         };
-        /** @description How the fitted correlation compares with the IRB correlation of the loan type's regulatory class (dossier 04 C.4): the capital per unit of EAD both ways. Retail classes carry no maturity adjustment. */
+        /** @description How the fitted correlation compares with the IRB correlation of the loan type's regulatory class (dossier 04 C.4): the capital per unit of EAD both ways, with the same maturity treatment on both sides, so the ratio isolates the correlation. Retail classes carry no maturity and no maturity adjustment; the other classes carry both. */
         c10IrbReference: {
-            regime: string;
-            asset_class: string;
+            /** @enum {string} */
+            regime: "basel3" | "crr3" | "basel2" | "cl_ran21_6";
+            /** @enum {string} */
+            asset_class: "corporate" | "sovereign" | "bank" | "financial_institution" | "sme" | "hvcre" | "residential_mortgage" | "qrre" | "other_retail" | "retail_consumer";
             reference: string;
             /** @description An estimate-site PD is open: 0 < pd < 1. */
             pd: number;
             /** @description A share or an observed rate in [0, 1]. */
             lgd: number;
+            /** @description Effective maturity in years, 1 to 5; null for a retail class. */
+            maturity: number | null;
+            /** @description (1 + (M - 2.5) b) / (1 - 1.5 b) with b = (0.11852 - 0.05478 ln PD)^2; null for a retail class. */
+            maturity_adjustment: number | null;
             /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
             irb_correlation: number;
             /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
             fitted_correlation: number;
-            /** @description The IRB capital requirement per unit of EAD (engine regulatory.irb.capital_requirement). */
+            /** @description The IRB capital requirement per unit of EAD (engine regulatory.irb.capital_requirement), with the maturity adjustment where the class has one. */
             k_irb: number;
-            /** @description lgd * (LHP quantile at 99.9% with the fitted correlation - pd), per unit of EAD. */
+            /** @description lgd * (LHP quantile at 99.9% with the fitted correlation - pd) times the same maturity adjustment as k_irb, per unit of EAD. */
             ec_lhp_fitted: number;
             ratio_fitted_to_irb: number;
-        };
+        } & ({
+            /** @enum {string} */
+            asset_class?: "residential_mortgage" | "qrre" | "other_retail" | "retail_consumer";
+            maturity?: null;
+            maturity_adjustment?: null;
+        } | {
+            /** @enum {string} */
+            asset_class?: "corporate" | "sovereign" | "bank" | "financial_institution" | "sme" | "hvcre";
+            maturity?: number;
+            maturity_adjustment?: number;
+        });
         /** @description C10 loan-type outputs (outputs.kind loan-type): one Federal Reserve loan type, the Vasicek fit to its yearly loss rates (fit 1985-2006), the 2007-2012 tail back-test, and the loss distributions of the illustrative portfolio by rung with the Euler contributions and the concentration measures. Loss rates are decimals per year; money carries its currency. */
         c10LoanTypeOutputs: {
             /** @constant */
@@ -3185,7 +3238,8 @@ export interface components {
             id: "commercial-industrial" | "commercial-real-estate" | "residential" | "credit-cards" | "other-consumer";
             label: components["schemas"]["common-text"];
             table_column: string;
-            irb_asset_class: string;
+            /** @enum {string} */
+            irb_asset_class: "corporate" | "sovereign" | "bank" | "financial_institution" | "sme" | "hvcre" | "residential_mortgage" | "qrre" | "other_retail" | "retail_consumer";
             irb_reference: string;
         };
         /** @description The loss distribution of a rung on a money grid; the three arrays have one length. */
@@ -3354,11 +3408,13 @@ export interface components {
             evaluated: boolean;
             /** @description Why the rung did not run; null when it ran. */
             reason: string | null;
+            /** @description The declared inputs of the rung; a rung that did not run may keep them. */
             parameters: {
                 name: string;
                 value: number;
                 unit: string;
             }[];
+            /** @description Numbers measured by running the rung; empty when the rung did not run. */
             diagnostics: {
                 name: string;
                 value: number;
@@ -3400,10 +3456,11 @@ export interface components {
             estimator?: "none";
             reason?: string;
             simulation?: null;
+            diagnostics?: unknown[];
             measures?: null;
             distribution?: null;
         });
-        /** @description The specification of one rung: its engine function, its reference and its parameters. */
+        /** @description The specification of one rung: its engine function, its reference and its parameters. A Monte Carlo rung has its scenario count; an analytic rung has none. */
         c10RungSpec: {
             /** @enum {string} */
             id: "c1-lhp" | "c2-gaussian-1f" | "c2-gaussian-mf" | "c3-student-t" | "c4-creditrisk-plus" | "c5-granularity" | "c6-is-gaussian" | "c6-is-student-t";
@@ -3423,7 +3480,15 @@ export interface components {
                 value: number;
                 unit: string;
             }[];
-        };
+        } & ({
+            /** @constant */
+            estimator?: "analytic";
+            n_scenarios?: null;
+        } | {
+            /** @constant */
+            estimator?: "monte-carlo";
+            n_scenarios?: number;
+        });
         /** @description The Vasicek simulator with a known correlation: a yearly factor draw per year, the large-homogeneous-portfolio default fraction, then the fit. null_rho is on the grid. */
         c10SimGenerator: {
             name: string;
@@ -3432,7 +3497,8 @@ export interface components {
             known_pd: number;
             /** @description The known asset correlations, strictly increasing. */
             rho_grid: number[];
-            series_length_years: number;
+            /** @enum {integer} */
+            series_length_years: 22 | 40;
             n_replications: number;
             /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
             null_rho: number;
@@ -3446,7 +3512,7 @@ export interface components {
             /** @description An estimate-site PD is open: 0 < pd < 1. */
             known_pd: number;
             rho_grid: number[];
-            series_lengths_years: number[];
+            series_lengths_years: (22 | 40)[];
             n_replications: number;
             /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
             null_rho: number;
@@ -3460,16 +3526,10 @@ export interface components {
             seed: number;
             chunk_size: number;
         };
-        /** @description A window of calendar years; n_years = last_year - first_year + 1 (a producer check). */
-        c10Window: {
-            first_year: number;
-            last_year: number;
-            n_years: number;
-        };
-        /** @description The fit window (SDD section 5: 1985-2006) and the out-of-sample evaluation window (2007-2012); the fit window ends before the evaluation window begins. */
+        /** @description The fit window (1985-2006) and the out-of-sample evaluation window (2007-2012); the fit window ends before the evaluation window begins. */
         c10Windows: {
-            fit: components["schemas"]["c10Window"];
-            evaluation: components["schemas"]["c10Window"];
+            fit: components["schemas"]["c10FitWindow"];
+            evaluation: components["schemas"]["c10EvaluationWindow"];
         };
         /**
          * C22 models
