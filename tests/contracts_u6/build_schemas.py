@@ -102,6 +102,23 @@ def ranged(prefix: str, what: str) -> dict:
     }
 
 
+def prediction(what: str) -> dict:
+    """The wrapper of an estimate-site LGD (C08): inside [0, 1] by construction, so the flag is always in-range. The
+    realised-LGD wrapper `ranged` keeps and flags values outside [0, 1]; a prediction never needs that."""
+    return {
+        "description": f"A {what} at an estimate site: always inside [0, 1] (SDD section 4: predictions inside [0, 1]), so "
+                       "the flag is always in-range.",
+        **Ob({"value": N(minimum=0, maximum=1), "flag": {"const": "in-range"}}),
+    }
+
+
+def one_of(ob: dict, *alternatives: dict) -> dict:
+    """Adds a ``oneOf`` of coupled-field alternatives to a closed object: each alternative narrows properties the object
+    already declares, so ``additionalProperties: false`` still holds."""
+    ob["oneOf"] = [{"properties": a} for a in alternatives]
+    return ob
+
+
 def reachable(root: str, defs: dict) -> dict:
     seen: dict = {}
     todo = [root]
@@ -126,6 +143,18 @@ def reachable(root: str, defs: dict) -> dict:
     return {k: seen[k] for k in defs if k in seen}
 
 
+# A not_evaluated test row carries no number and states its reason (engine contract, Conventions). The shared
+# common/test-result schema is outside U6-S's write scope, so the rule is composed here on the variant's `tests`; the
+# integrator can move it to common/test-result as a contract bump.
+NOT_EVALUATED_RULE = {
+    "properties": {"tests": {"items": {
+        "if": {"properties": {"light": {"const": "not_evaluated"}}, "required": ["light"]},
+        "then": {"properties": {"statistic": {"type": "null"}, "p_value": {"type": "null"}, "metric": {"type": "null"},
+                                "notes": {"type": "string", "minLength": 1}}},
+    }}},
+}
+
+
 def variant_schema(case: str, ref: str, kind: str, title: str, desc: str, root: str, defs: dict) -> None:
     doc = {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -137,6 +166,7 @@ def variant_schema(case: str, ref: str, kind: str, title: str, desc: str, root: 
             {"properties": {"case_id": {"const": case},
                             "outputs": {"$ref": f"#/$defs/{root}", "properties": {"kind": {"const": kind}}}},
              "required": ["case_id", "outputs"]},
+            NOT_EVALUATED_RULE,
         ],
         "unevaluatedProperties": False,
         "$defs": reachable(root, defs),
@@ -185,12 +215,14 @@ def c03_defs() -> dict:
         "n_loans": Int(0), "n_events": Int(0),
         "crisis_included": B,
         "rationale": TXT,
-    }, "The training window: out-of-time by approval fiscal year, trained through the crisis; its last fiscal year precedes "
-       "the first fiscal year of the test cohort.")
+    }, "The training window (decision D1): strict out-of-time by approval fiscal year. It holds only approval cohorts whose "
+       "5-year charge-off mark falls before the first approval date of the test cohort: last_fy <= cohort.first_fy - 6, and "
+       "cutoff_date is at most 30 September of cohort.first_fy - 1. The 'trained through the crisis' claim (crisis_included) "
+       "holds only for a test cohort from FY2011-14 on, whose training outcomes include the crisis-era charge-offs.")
     d["c03Target"] = Ob({
         "name": S(),
-        "horizon_months": Int(1, desc="Months from approval over which a charge-off counts (60 for the 5-year target)."),
-        "observed_at_months": Int(1, desc="The target is read for a vintage only when its 5-year mark has been observed."),
+        "horizon_months": {"const": 60, "description": "Months from approval over which a charge-off counts: the 5-year target."},
+        "observed_at_months": {"const": 60, "description": "The target is read for a vintage only at its 5-year mark (60 months after its last approval)."},
         "censoring": E("exempt-right-censored", "excluded"),
         "definition": TXT,
     }, "The 5-year charge-off target and how loans without an observed outcome (EXEMPT, still active) are handled.")
@@ -207,23 +239,35 @@ def c03_defs() -> dict:
         "months": A(Int(1), 1, "Months since approval, strictly increasing."),
         "predicted_cumulative_pd": A(PD, 1),
         "observed_cumulative_pd": A(nullable(UNIT), 1, "Null where the horizon is beyond the observation cutoff."),
-        "observed_until_month": Int(0),
-        "reason": nullable(S(), "Why the observed curve stops before the last month; null when it reaches it."),
+        "observed_until_month": Int(0, desc="Months from the last approval of the vintage to files_as_of."),
+        "reason": nullable(S(), "Why the observed curve stops before the 5-year mark; null when it reaches it."),
     }, "The predicted and the observed cumulative charge-off PD of one approval-year vintage.")
+    one_of(d["c03VintageCurve"],
+           {"observed_until_month": Int(60), "reason": {"type": "null"}, "observed_cumulative_pd": A(UNIT, 1)},
+           {"observed_until_month": Int(0, 59), "reason": S(minLength=1),
+            "observed_cumulative_pd": {"type": "array", "contains": {"type": "null"}, "minContains": 1}})
     d["c03VintageRow"] = Ob({
         "fiscal_year": Int(1991),
         "n": Int(0), "n_resolved": Int(0), "n_exempt_censored": Int(0),
         "gross_approval": N(minimum=0),
+        "five_year_mark_date": DATE,
+        "mark_observed": B,
         "observed_5y_pd": nullable(UNIT, "Null when the vintage has not reached its 5-year mark; the reason says why."),
         "predicted_5y_pd": PD,
         "gap": nullable(N(), "Observed minus predicted at the 5-year mark; null when unobserved."),
         "brier": nullable(N(minimum=0)),
         "auc": nullable(UNIT),
         "reason": nullable(S()),
-    })
+    }, "One vintage at its 5-year mark. five_year_mark_date is 30 September of fiscal_year + 5; mark_observed is true exactly "
+       "when it is on or before data_status.files_as_of (a producer check). Observed: the PD, the gap and no reason. Unobserved: "
+       "no PD, no gap, no brier, no auc, and the reason.")
+    one_of(d["c03VintageRow"],
+           {"mark_observed": {"const": True}, "observed_5y_pd": UNIT, "gap": N(), "reason": {"type": "null"}},
+           {"mark_observed": {"const": False}, "observed_5y_pd": {"type": "null"}, "gap": {"type": "null"},
+            "brier": {"type": "null"}, "auc": {"type": "null"}, "reason": S(minLength=1)})
     d["c03VintageSummary"] = Ob({"currency": CUR, "rows": A(R("c03VintageRow"), 1)})
     d["c03DecileRow"] = Ob({
-        "decile": Int(1), "n": Int(0),
+        "decile": Int(1, 10), "n": Int(0),
         "predicted_pd": PD, "observed_pd": UNIT, "ci_low": UNIT, "ci_high": UNIT,
     })
     d["c03Calibration"] = Ob({
@@ -260,26 +304,49 @@ def c03_defs() -> dict:
     }, "C03 vintage-cohort outputs (outputs.kind vintage-cohort): one test cohort of approval fiscal years. PD open (0, 1) at "
        "estimate sites; the 5-year charge-off target is observed only at each vintage's 5-year mark; a value the bake may lack "
        "is nullable with its reason; money in `currency`.")
-    d["c03CohortWindow"] = Ob({"id": S(), "label": TXT, "first_fy": Int(1991), "last_fy": Int(1991)})
+    d["c03CohortWindow"] = Ob({
+        "id": S(), "label": TXT, "first_fy": Int(1991), "last_fy": Int(1991),
+        "training": R("c03Training"),
+    }, "A test cohort with its own training window (decision D1): every variant trains only on approval cohorts whose 5-year "
+       "mark precedes its first approval date.")
     d["c03Coefficient"] = Ob({"name": S(), "estimate": N(), "std_error": nullable(N(minimum=0))})
     d["c03Rung"] = Ob({
-        "rung_id": S(), "kind": S(), "covariates": A(S()), "coefficients": A(R("c03Coefficient")),
+        "rung_id": S(),
+        "kind": E("constant", "woe-scorecard", "penalised-logit", "pltr", "ebm", "monotone-gbm", "tabpfn"),
+        "covariates": A(S()), "coefficients": A(R("c03Coefficient")),
         "training_cutoff": DATE, "engine": S(),
-    }, "A PD rung of the existing engine ladder, fitted on the training window.")
+    }, "A PD rung of the existing engine ladder (docs/design/features/c01-retail-pd/design.md rungs P0 to P5), fitted on a "
+       "training window; training_cutoff is that of the latest cohort window, the earlier windows' cutoffs sit in cohort_windows.")
     d["c03VintageDefinition"] = Ob({"basis": S(), "fiscal_year_start": S(), "label": TXT})
     d["c03Fit"] = Ob({
         "currency": CUR,
         "vintage_definition": R("c03VintageDefinition"),
         "target": R("c03Target"),
-        "training": R("c03Training"),
         "cohort_windows": A(R("c03CohortWindow"), 1),
         "ladder": A(R("c03Rung"), 1),
         "data_status": R("c03DataStatus"),
-    }, "C03 models: the vintage definition, the target, the training window, the five test cohorts and the PD rungs.")
+    }, "C03 models: the vintage definition, the target, the five test cohorts each with its own training window, and the PD rungs.")
     return d
 
 
 # ----------------------------------------------------------------------------------------------------------- C08
+
+# The 12 LGD floor cells of dossier 01 section A.5: id, portfolio, collateral, floor, reference. The dossier cites
+# CRE32.58 to CRE32.59 jointly for the retail cells, so the split between the two paragraphs is not asserted.
+FLOOR_CELLS = [
+    ("corporate-unsecured", "corporate", "unsecured", 0.25, "CRE32.16"),
+    ("corporate-financial", "corporate", "financial", 0.0, "CRE32.16"),
+    ("corporate-receivables", "corporate", "receivables", 0.10, "CRE32.16"),
+    ("corporate-real-estate", "corporate", "real-estate", 0.10, "CRE32.16"),
+    ("corporate-other-physical", "corporate", "other-physical", 0.15, "CRE32.16"),
+    ("retail-mortgage", "retail", "mortgage", 0.05, "CRE32.58 to CRE32.59"),
+    ("retail-qrre", "retail", "qrre", 0.50, "CRE32.58 to CRE32.59"),
+    ("retail-other-unsecured", "retail", "unsecured", 0.30, "CRE32.58 to CRE32.59"),
+    ("retail-other-financial", "retail", "financial", 0.0, "CRE32.58 to CRE32.59"),
+    ("retail-other-receivables", "retail", "receivables", 0.10, "CRE32.58 to CRE32.59"),
+    ("retail-other-real-estate", "retail", "real-estate", 0.10, "CRE32.58 to CRE32.59"),
+    ("retail-other-physical", "retail", "other-physical", 0.15, "CRE32.58 to CRE32.59"),
+]
 
 C08_TEXT = Ob({"en": S(minLength=1), "es": S(minLength=1)})
 
@@ -287,19 +354,24 @@ C08_TEXT = Ob({"en": S(minLength=1), "es": S(minLength=1)})
 def c08_defs() -> dict:
     d: dict = {}
     d["c08Text"] = C08_TEXT
-    d["c08Lgd"] = ranged("c08", "loss given default")
+    d["c08Lgd"] = ranged("c08", "realised loss given default")
+    d["c08LgdPrediction"] = prediction("predicted loss given default")
     d["c08Cohort"] = Ob({"id": S(), "label": TXT, "first_year": Int(1990), "last_year": Int(1990)},
                        "One default cohort by default year (SDD section 5: 2003-06, 2007-08, 2009-10, 2011-13, 2014-19, 2020-23).")
     d["c08LgdProxy"] = Ob({
         "definition": R("c08Text"),
-        "formula": S(),
-        "source_field": S(desc="The SBA 7(a) field the numerator reads (GrossChargeOffAmount)."),
-        "exposure_field": S(),
+        "formula": S("The proxy as a formula over SBA 7(a) field names.", minLength=1),
+        "source_field": {"const": "GrossChargeOffAmount", "description": "The SBA 7(a) field the numerator reads."},
+        "exposure_field": {"const": "GrossApproval",
+                           "description": "The SBA 7(a) field the denominator reads: the gross approved amount, the only exposure "
+                                          "field the file carries (decision D2)."},
         "recovery_cash_flows_available": B,
-        "bias_direction": E("upward", "downward", "unknown"),
+        "bias_direction": {"const": "downward", "description": "The proxy LGD is biased low (decision D2)."},
         "bias_statement": R("c08Text"),
     }, "The LGD proxy of the SBA charge-off twin and its bias, required in every C08 document: the file has no recovery "
-       "cash flows, so the proxy is the gross charge-off over the exposure at charge-off, not a workout LGD (dossier 08 A.6).")
+       "cash flows, so the proxy is the gross charge-off amount over the gross approved amount (GrossApproval), not a workout "
+       "LGD (dossier 08 A.6). The approved amount overstates the exposure at default of an amortising loan, so the proxy is "
+       "biased low (decision D2).")
 
     def status(available: bool) -> dict:
         return Ob({
@@ -327,11 +399,16 @@ def c08_defs() -> dict:
         }),
         "note": TXT,
     }, "How realised LGD is built: a workout LGD discounts recoveries (rate convention EBA/GL/2017/16, paragraph UNVERIFIED); "
-       "the SBA twin has no cash flows, so none-proxy and not-applicable.")
+       "the SBA twin has no cash flows, so none-proxy, no discount rate and not-applicable.")
+    one_of(d["c08Workout"],
+           {"discount_rate_convention": {"const": "none-proxy"}, "discount_rate": {"type": "null"},
+            "incomplete_workouts": {"properties": {"treatment": {"const": "not-applicable"}}}},
+           {"discount_rate_convention": E("eba-interbank-plus-5pp", "fixed"), "discount_rate": N(minimum=0),
+            "incomplete_workouts": {"properties": {"treatment": E("excluded", "projected")}}})
     d["c08Exposure"] = Ob({
         "currency": CUR,
         "gross_charge_off_total": N(minimum=0),
-        "exposure_at_charge_off_total": N(minimum=0),
+        "gross_approval_total": N(minimum=0, description="Sum of GrossApproval over the cohort, the proxy denominator."),
     })
     d["c08Bin"] = Ob({"lower": N(minimum=0, maximum=1), "upper": N(minimum=0, maximum=1), "n": Int(0), "share": UNIT})
     d["c08Mass"] = Ob({"n": Int(0), "share": UNIT})
@@ -356,16 +433,16 @@ def c08_defs() -> dict:
     })
     d["c08RealisedRow"] = Ob({
         "rung_id": S(), "cohort_id": S(), "n": Int(0),
-        "realised": R("c08Lgd"), "predicted": R("c08Lgd"),
+        "realised": R("c08Lgd"), "predicted": R("c08LgdPrediction"),
         "ci_low": N(), "ci_high": N(), "gap": N(),
     })
     d["c08BucketRow"] = Ob({
-        "rung_id": S(), "bucket": Int(1), "n": Int(0), "predicted": R("c08Lgd"), "realised": R("c08Lgd"),
+        "rung_id": S(), "bucket": Int(1), "n": Int(0), "predicted": R("c08LgdPrediction"), "realised": R("c08Lgd"),
     })
     d["c08EndpointRow"] = Ob({
         "rung_id": S(),
         "epsilon": N(exclusiveMinimum=0, exclusiveMaximum=0.5),
-        "mean_predicted": R("c08Lgd"),
+        "mean_predicted": R("c08LgdPrediction"),
         "rmse": N(minimum=0),
     })
     d["c08DownturnPeriod"] = Ob({
@@ -391,9 +468,11 @@ def c08_defs() -> dict:
         "segment_id": S(), "floor_id": S(),
         "floor": UNIT, "reference": S(minLength=1),
         "n": Int(0), "share_binding": UNIT,
-        "mean_before": R("c08Lgd"), "mean_after": R("c08Lgd"),
-        "uplift": N(desc="mean_after minus mean_before, never negative."),
-    })
+        "mean_before": R("c08LgdPrediction"), "mean_after": R("c08LgdPrediction"),
+        "uplift": N(minimum=0, description="mean_after minus mean_before, never negative."),
+    }, "The bite of one floor cell; (floor_id, floor, reference) is one of the 12 transcribed cells.")
+    one_of(d["c08FloorRow"], *[{"floor_id": {"const": i}, "floor": {"const": f}, "reference": {"const": ref}}
+                               for i, _p, _c, f, ref in FLOOR_CELLS])
     d["c08FloorsBite"] = Ob({
         "regime": S(), "rows": A(R("c08FloorRow"), 1),
         "note": TXT,
@@ -411,7 +490,7 @@ def c08_defs() -> dict:
         "rung_comparison": A(R("c08RungResult"), 1),
         "realised_vs_predicted": A(R("c08RealisedRow"), 1),
         "calibration_by_bucket": A(R("c08BucketRow"), 1),
-        "endpoint_sensitivity": A(R("c08EndpointRow")),
+        "endpoint_sensitivity": A(R("c08EndpointRow"), 2, "Two epsilons at least, for the beta rungs (SDD section 4)."),
         "downturn": R("c08Downturn"),
         "floors_bite": R("c08FloorsBite"),
     }, "C08 default-cohort outputs (outputs.kind default-cohort): one test default cohort. LGD in [0, 1] with the cases outside it "
@@ -432,6 +511,8 @@ def c08_defs() -> dict:
         "collateral": E("unsecured", "financial", "receivables", "real-estate", "other-physical", "qrre", "mortgage"),
         "floor": UNIT, "reference": S(minLength=1),
     })
+    one_of(d["c08FloorCell"], *[{"id": {"const": i}, "portfolio": {"const": p}, "collateral": {"const": c},
+                                 "floor": {"const": f}, "reference": {"const": ref}} for i, p, c, f, ref in FLOOR_CELLS])
     d["c08Floors"] = Ob({"regime": S(), "cells": A(R("c08FloorCell"), 1), "source": S()},
                        "The LGD floor cells transcribed from dossier 01 section A.5.")
     d["c08DownturnSpec"] = Ob({"approach": TXT, "period": R("c08DownturnPeriod")})
@@ -485,7 +566,11 @@ def c09_defs() -> dict:
         "n_defaults": Int(0),
         "share_below_zero": UNIT, "share_above_one": UNIT,
         "within_tolerance": B,
-    })
+    }, "One CCF estimate against the known truth. After a censor or floor-cap treatment the estimate lies inside [0, 1] and "
+       "is flagged in-range; an untreated estimate may be flagged outside it.")
+    one_of(d["c09CcfRow"],
+           {"treatment": E("censor", "floor-cap"), "estimate": {"properties": {"flag": {"const": "in-range"}}}},
+           {"treatment": E("none", "bounded-scale")})
     d["c09CcfByDesign"] = Ob({
         "tolerance": N(minimum=0, description="The error within which the known CCF counts as recovered."),
         "rows": A(R("c09CcfRow"), 1),
@@ -503,16 +588,28 @@ def c09_defs() -> dict:
         "design": nullable(E("fixed-horizon", "cohort", "variable-horizon")),
         "treatment": nullable(E("none", "censor", "floor-cap", "bounded-scale")),
         "covariates": A(S()),
-    })
+        "n_clipped_below": nullable(Int(0), "direct-ead only: observations whose EADF below 0 was clipped for the fit; null elsewhere."),
+        "n_clipped_above": nullable(Int(0), "direct-ead only: observations whose EADF above 1 was clipped for the fit; null elsewhere."),
+    }, "An EAD model of the ladder; the clipped counts of fit_direct_ead are reported here, never silently.")
+    one_of(d["c09EadModel"],
+           {"kind": {"const": "direct-ead"}, "n_clipped_below": Int(0), "n_clipped_above": Int(0)},
+           {"kind": E("ccf-fixed-horizon", "ccf-cohort", "ccf-variable-horizon", "utilisation-change"),
+            "n_clipped_below": {"type": "null"}, "n_clipped_above": {"type": "null"}})
     d["c09BacktestRow"] = Ob({
         "model_id": S(), "band_id": S(),
         "utilisation_lower": N(minimum=0), "utilisation_upper": N(minimum=0),
         "n": Int(0),
-        "predicted_ead": N(minimum=0), "realised_ead": N(minimum=0),
+        "predicted_ead": N(description="Sum of the predicted EAD of the band. Negative only with prediction_flag outside-range."),
+        "prediction_flag": E("in-range", "outside-range"),
+        "realised_ead": N(minimum=0),
         "gap": N(desc="predicted_ead minus realised_ead, in currency."),
         "relative_gap": N(),
         "light": LIGHT,
-    })
+    }, "One model in one utilisation band. A utilisation-change prediction is not clipped: prediction_flag is outside-range "
+       "when any facility of the band has an unclipped prediction below 0 or above its limit (api predict_ead).")
+    one_of(d["c09BacktestRow"],
+           {"prediction_flag": {"const": "in-range"}, "predicted_ead": N(minimum=0)},
+           {"prediction_flag": {"const": "outside-range"}})
     d["c09EadBacktest"] = Ob({
         "currency": CUR, "bands": A(N(), 2, "Utilisation band edges."), "rows": A(R("c09BacktestRow"), 1),
     }, "EAD back-testing in currency by utilisation band, not only the CCF.")

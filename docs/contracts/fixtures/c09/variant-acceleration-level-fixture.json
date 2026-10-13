@@ -262,6 +262,8 @@
     },
     "ead_models": [
       {
+        "n_clipped_below": null,
+        "n_clipped_above": null,
         "model_id": "m-fixed",
         "kind": "ccf-fixed-horizon",
         "design": "fixed-horizon",
@@ -271,6 +273,8 @@
         ]
       },
       {
+        "n_clipped_below": null,
+        "n_clipped_above": null,
         "model_id": "m-cohort",
         "kind": "ccf-cohort",
         "design": "cohort",
@@ -280,6 +284,8 @@
         ]
       },
       {
+        "n_clipped_below": null,
+        "n_clipped_above": null,
         "model_id": "m-variable",
         "kind": "ccf-variable-horizon",
         "design": "variable-horizon",
@@ -289,6 +295,8 @@
         ]
       },
       {
+        "n_clipped_below": 12,
+        "n_clipped_above": 31,
         "model_id": "m-direct",
         "kind": "direct-ead",
         "design": null,
@@ -299,6 +307,8 @@
         ]
       },
       {
+        "n_clipped_below": null,
+        "n_clipped_above": null,
         "model_id": "m-utilisation",
         "kind": "utilisation-change",
         "design": null,
@@ -325,6 +335,7 @@
           "utilisation_upper": 0.25,
           "n": 500,
           "predicted_ead": 42400.0,
+          "prediction_flag": "in-range",
           "realised_ead": 40000.0,
           "gap": 2400.0,
           "relative_gap": 0.06,
@@ -337,6 +348,7 @@
           "utilisation_upper": 0.5,
           "n": 500,
           "predicted_ead": 84800.0,
+          "prediction_flag": "in-range",
           "realised_ead": 80000.0,
           "gap": 4800.0,
           "relative_gap": 0.06,
@@ -349,6 +361,7 @@
           "utilisation_upper": 0.75,
           "n": 500,
           "predicted_ead": 112800.0,
+          "prediction_flag": "in-range",
           "realised_ead": 120000.0,
           "gap": -7200.0,
           "relative_gap": -0.06,
@@ -361,6 +374,7 @@
           "utilisation_upper": 1.0,
           "n": 500,
           "predicted_ead": 150400.0,
+          "prediction_flag": "in-range",
           "realised_ead": 160000.0,
           "gap": -9600.0,
           "relative_gap": -0.06,
@@ -373,6 +387,7 @@
           "utilisation_upper": 0.25,
           "n": 500,
           "predicted_ead": 39200.0,
+          "prediction_flag": "in-range",
           "realised_ead": 40000.0,
           "gap": -800.0,
           "relative_gap": -0.02,
@@ -385,6 +400,7 @@
           "utilisation_upper": 0.5,
           "n": 500,
           "predicted_ead": 78400.0,
+          "prediction_flag": "in-range",
           "realised_ead": 80000.0,
           "gap": -1600.0,
           "relative_gap": -0.02,
@@ -397,6 +413,7 @@
           "utilisation_upper": 0.75,
           "n": 500,
           "predicted_ead": 122400.0,
+          "prediction_flag": "in-range",
           "realised_ead": 120000.0,
           "gap": 2400.0,
           "relative_gap": 0.02,
@@ -409,6 +426,7 @@
           "utilisation_upper": 1.0,
           "n": 500,
           "predicted_ead": 163200.0,
+          "prediction_flag": "in-range",
           "realised_ead": 160000.0,
           "gap": 3200.0,
           "relative_gap": 0.02,
@@ -454,9 +472,9 @@
       "test_id": "lgd_ead.ccf_estimator_bias",
       "model_id": "m-fixed",
       "segment": null,
-      "statistic": 0.0,
+      "statistic": null,
       "p_value": null,
-      "metric": 0.0,
+      "metric": null,
       "h0": "fixture row",
       "alternative": "fixture row",
       "policy_version": "fixture",
@@ -467,16 +485,16 @@
       "n_events": null,
       "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
       "reference": "fixture, not a result",
-      "notes": "fixture",
+      "notes": "fixture: the test did not run, no number stands in for it",
       "extras": {}
     },
     {
       "test_id": "lgd_ead.ead_backtest_by_band",
       "model_id": "m-fixed",
       "segment": null,
-      "statistic": 0.0,
+      "statistic": null,
       "p_value": null,
-      "metric": 0.0,
+      "metric": null,
       "h0": "fixture row",
       "alternative": "fixture row",
       "policy_version": "fixture",
@@ -487,7 +505,7 @@
       "n_events": null,
       "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
       "reference": "fixture, not a result",
-      "notes": "fixture",
+      "notes": "fixture: the test did not run, no number stands in for it",
       "extras": {}
     }
   ],

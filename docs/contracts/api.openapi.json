@@ -1080,6 +1080,41 @@
               "case_id",
               "outputs"
             ]
+          },
+          {
+            "properties": {
+              "tests": {
+                "items": {
+                  "if": {
+                    "properties": {
+                      "light": {
+                        "const": "not_evaluated"
+                      }
+                    },
+                    "required": [
+                      "light"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "statistic": {
+                        "type": "null"
+                      },
+                      "p_value": {
+                        "type": "null"
+                      },
+                      "metric": {
+                        "type": "null"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         ],
         "unevaluatedProperties": false
@@ -1181,7 +1216,8 @@
           "id",
           "label",
           "first_fy",
-          "last_fy"
+          "last_fy",
+          "training"
         ],
         "properties": {
           "id": {
@@ -1197,8 +1233,12 @@
           "last_fy": {
             "type": "integer",
             "minimum": 1991
+          },
+          "training": {
+            "$ref": "#/components/schemas/c03Training"
           }
-        }
+        },
+        "description": "A test cohort with its own training window (decision D1): every variant trains only on approval cohorts whose 5-year mark precedes its first approval date."
       },
       "c03DataStatus": {
         "type": "object",
@@ -1240,7 +1280,8 @@
         "properties": {
           "decile": {
             "type": "integer",
-            "minimum": 1
+            "minimum": 1,
+            "maximum": 10
           },
           "n": {
             "type": "integer",
@@ -1279,7 +1320,6 @@
           "currency",
           "vintage_definition",
           "target",
-          "training",
           "cohort_windows",
           "ladder",
           "data_status"
@@ -1295,9 +1335,6 @@
           },
           "target": {
             "$ref": "#/components/schemas/c03Target"
-          },
-          "training": {
-            "$ref": "#/components/schemas/c03Training"
           },
           "cohort_windows": {
             "type": "array",
@@ -1317,7 +1354,7 @@
             "$ref": "#/components/schemas/c03DataStatus"
           }
         },
-        "description": "C03 models: the vintage definition, the target, the training window, the five test cohorts and the PD rungs."
+        "description": "C03 models: the vintage definition, the target, the five test cohorts each with its own training window, and the PD rungs."
       },
       "c03Outputs": {
         "type": "object",
@@ -1398,7 +1435,16 @@
             "type": "string"
           },
           "kind": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "constant",
+              "woe-scorecard",
+              "penalised-logit",
+              "pltr",
+              "ebm",
+              "monotone-gbm",
+              "tabpfn"
+            ]
           },
           "covariates": {
             "type": "array",
@@ -1420,7 +1466,7 @@
             "type": "string"
           }
         },
-        "description": "A PD rung of the existing engine ladder, fitted on the training window."
+        "description": "A PD rung of the existing engine ladder (docs/design/features/c01-retail-pd/design.md rungs P0 to P5), fitted on a training window; training_cutoff is that of the latest cohort window, the earlier windows' cutoffs sit in cohort_windows."
       },
       "c03RungResult": {
         "type": "object",
@@ -1585,14 +1631,12 @@
             "type": "string"
           },
           "horizon_months": {
-            "type": "integer",
-            "minimum": 1,
-            "description": "Months from approval over which a charge-off counts (60 for the 5-year target)."
+            "const": 60,
+            "description": "Months from approval over which a charge-off counts: the 5-year target."
           },
           "observed_at_months": {
-            "type": "integer",
-            "minimum": 1,
-            "description": "The target is read for a vintage only when its 5-year mark has been observed."
+            "const": 60,
+            "description": "The target is read for a vintage only at its 5-year mark (60 months after its last approval)."
           },
           "censoring": {
             "type": "string",
@@ -1647,7 +1691,7 @@
             "$ref": "#/components/schemas/common-text"
           }
         },
-        "description": "The training window: out-of-time by approval fiscal year, trained through the crisis; its last fiscal year precedes the first fiscal year of the test cohort."
+        "description": "The training window (decision D1): strict out-of-time by approval fiscal year. It holds only approval cohorts whose 5-year charge-off mark falls before the first approval date of the test cohort: last_fy <= cohort.first_fy - 6, and cutoff_date is at most 30 September of cohort.first_fy - 1. The 'trained through the crisis' claim (crisis_included) holds only for a test cohort from FY2011-14 on, whose training outcomes include the crisis-era charge-offs."
       },
       "c03VintageCurve": {
         "type": "object",
@@ -1715,7 +1759,8 @@
           },
           "observed_until_month": {
             "type": "integer",
-            "minimum": 0
+            "minimum": 0,
+            "description": "Months from the last approval of the vintage to files_as_of."
           },
           "reason": {
             "anyOf": [
@@ -1726,10 +1771,53 @@
                 "type": "null"
               }
             ],
-            "description": "Why the observed curve stops before the last month; null when it reaches it."
+            "description": "Why the observed curve stops before the 5-year mark; null when it reaches it."
           }
         },
-        "description": "The predicted and the observed cumulative charge-off PD of one approval-year vintage."
+        "description": "The predicted and the observed cumulative charge-off PD of one approval-year vintage.",
+        "oneOf": [
+          {
+            "properties": {
+              "observed_until_month": {
+                "type": "integer",
+                "minimum": 60
+              },
+              "reason": {
+                "type": "null"
+              },
+              "observed_cumulative_pd": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "A share or an observed rate in [0, 1]."
+                },
+                "minItems": 1
+              }
+            }
+          },
+          {
+            "properties": {
+              "observed_until_month": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 59
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              },
+              "observed_cumulative_pd": {
+                "type": "array",
+                "contains": {
+                  "type": "null"
+                },
+                "minContains": 1
+              }
+            }
+          }
+        ]
       },
       "c03VintageDefinition": {
         "type": "object",
@@ -1760,6 +1848,8 @@
           "n_resolved",
           "n_exempt_censored",
           "gross_approval",
+          "five_year_mark_date",
+          "mark_observed",
           "observed_5y_pd",
           "predicted_5y_pd",
           "gap",
@@ -1787,6 +1877,13 @@
           "gross_approval": {
             "type": "number",
             "minimum": 0
+          },
+          "five_year_mark_date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "mark_observed": {
+            "type": "boolean"
           },
           "observed_5y_pd": {
             "anyOf": [
@@ -1853,7 +1950,52 @@
               }
             ]
           }
-        }
+        },
+        "description": "One vintage at its 5-year mark. five_year_mark_date is 30 September of fiscal_year + 5; mark_observed is true exactly when it is on or before data_status.files_as_of (a producer check). Observed: the PD, the gap and no reason. Unobserved: no PD, no gap, no brier, no auc, and the reason.",
+        "oneOf": [
+          {
+            "properties": {
+              "mark_observed": {
+                "const": true
+              },
+              "observed_5y_pd": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "A share or an observed rate in [0, 1]."
+              },
+              "gap": {
+                "type": "number"
+              },
+              "reason": {
+                "type": "null"
+              }
+            }
+          },
+          {
+            "properties": {
+              "mark_observed": {
+                "const": false
+              },
+              "observed_5y_pd": {
+                "type": "null"
+              },
+              "gap": {
+                "type": "null"
+              },
+              "brier": {
+                "type": "null"
+              },
+              "auc": {
+                "type": "null"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        ]
       },
       "c03VintageSummary": {
         "type": "object",
@@ -9347,6 +9489,41 @@
               "case_id",
               "outputs"
             ]
+          },
+          {
+            "properties": {
+              "tests": {
+                "items": {
+                  "if": {
+                    "properties": {
+                      "light": {
+                        "const": "not_evaluated"
+                      }
+                    },
+                    "required": [
+                      "light"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "statistic": {
+                        "type": "null"
+                      },
+                      "p_value": {
+                        "type": "null"
+                      },
+                      "metric": {
+                        "type": "null"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         ],
         "unevaluatedProperties": false
@@ -9406,7 +9583,7 @@
             "minimum": 0
           },
           "predicted": {
-            "$ref": "#/components/schemas/c08Lgd"
+            "$ref": "#/components/schemas/c08LgdPrediction"
           },
           "realised": {
             "$ref": "#/components/schemas/c08Lgd"
@@ -9749,7 +9926,7 @@
             "exclusiveMaximum": 0.5
           },
           "mean_predicted": {
-            "$ref": "#/components/schemas/c08Lgd"
+            "$ref": "#/components/schemas/c08LgdPrediction"
           },
           "rmse": {
             "type": "number",
@@ -9763,7 +9940,7 @@
         "required": [
           "currency",
           "gross_charge_off_total",
-          "exposure_at_charge_off_total"
+          "gross_approval_total"
         ],
         "properties": {
           "currency": {
@@ -9775,9 +9952,10 @@
             "type": "number",
             "minimum": 0
           },
-          "exposure_at_charge_off_total": {
+          "gross_approval_total": {
             "type": "number",
-            "minimum": 0
+            "minimum": 0,
+            "description": "Sum of GrossApproval over the cohort, the proxy denominator."
           }
         }
       },
@@ -9879,7 +10057,237 @@
             "type": "string",
             "minLength": 1
           }
-        }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "id": {
+                "const": "corporate-unsecured"
+              },
+              "portfolio": {
+                "const": "corporate"
+              },
+              "collateral": {
+                "const": "unsecured"
+              },
+              "floor": {
+                "const": 0.25
+              },
+              "reference": {
+                "const": "CRE32.16"
+              }
+            }
+          },
+          {
+            "properties": {
+              "id": {
+                "const": "corporate-financial"
+              },
+              "portfolio": {
+                "const": "corporate"
+              },
+              "collateral": {
+                "const": "financial"
+              },
+              "floor": {
+                "const": 0
+              },
+              "reference": {
+                "const": "CRE32.16"
+              }
+            }
+          },
+          {
+            "properties": {
+              "id": {
+                "const": "corporate-receivables"
+              },
+              "portfolio": {
+                "const": "corporate"
+              },
+              "collateral": {
+                "const": "receivables"
+              },
+              "floor": {
+                "const": 0.1
+              },
+              "reference": {
+                "const": "CRE32.16"
+              }
+            }
+          },
+          {
+            "properties": {
+              "id": {
+                "const": "corporate-real-estate"
+              },
+              "portfolio": {
+                "const": "corporate"
+              },
+              "collateral": {
+                "const": "real-estate"
+              },
+              "floor": {
+                "const": 0.1
+              },
+              "reference": {
+                "const": "CRE32.16"
+              }
+            }
+          },
+          {
+            "properties": {
+              "id": {
+                "const": "corporate-other-physical"
+              },
+              "portfolio": {
+                "const": "corporate"
+              },
+              "collateral": {
+                "const": "other-physical"
+              },
+              "floor": {
+                "const": 0.15
+              },
+              "reference": {
+                "const": "CRE32.16"
+              }
+            }
+          },
+          {
+            "properties": {
+              "id": {
+                "const": "retail-mortgage"
+              },
+              "portfolio": {
+                "const": "retail"
+              },
+              "collateral": {
+                "const": "mortgage"
+              },
+              "floor": {
+                "const": 0.05
+              },
+              "reference": {
+                "const": "CRE32.58 to CRE32.59"
+              }
+            }
+          },
+          {
+            "properties": {
+              "id": {
+                "const": "retail-qrre"
+              },
+              "portfolio": {
+                "const": "retail"
+              },
+              "collateral": {
+                "const": "qrre"
+              },
+              "floor": {
+                "const": 0.5
+              },
+              "reference": {
+                "const": "CRE32.58 to CRE32.59"
+              }
+            }
+          },
+          {
+            "properties": {
+              "id": {
+                "const": "retail-other-unsecured"
+              },
+              "portfolio": {
+                "const": "retail"
+              },
+              "collateral": {
+                "const": "unsecured"
+              },
+              "floor": {
+                "const": 0.3
+              },
+              "reference": {
+                "const": "CRE32.58 to CRE32.59"
+              }
+            }
+          },
+          {
+            "properties": {
+              "id": {
+                "const": "retail-other-financial"
+              },
+              "portfolio": {
+                "const": "retail"
+              },
+              "collateral": {
+                "const": "financial"
+              },
+              "floor": {
+                "const": 0
+              },
+              "reference": {
+                "const": "CRE32.58 to CRE32.59"
+              }
+            }
+          },
+          {
+            "properties": {
+              "id": {
+                "const": "retail-other-receivables"
+              },
+              "portfolio": {
+                "const": "retail"
+              },
+              "collateral": {
+                "const": "receivables"
+              },
+              "floor": {
+                "const": 0.1
+              },
+              "reference": {
+                "const": "CRE32.58 to CRE32.59"
+              }
+            }
+          },
+          {
+            "properties": {
+              "id": {
+                "const": "retail-other-real-estate"
+              },
+              "portfolio": {
+                "const": "retail"
+              },
+              "collateral": {
+                "const": "real-estate"
+              },
+              "floor": {
+                "const": 0.1
+              },
+              "reference": {
+                "const": "CRE32.58 to CRE32.59"
+              }
+            }
+          },
+          {
+            "properties": {
+              "id": {
+                "const": "retail-other-physical"
+              },
+              "portfolio": {
+                "const": "retail"
+              },
+              "collateral": {
+                "const": "other-physical"
+              },
+              "floor": {
+                "const": 0.15
+              },
+              "reference": {
+                "const": "CRE32.58 to CRE32.59"
+              }
+            }
+          }
+        ]
       },
       "c08FloorRow": {
         "type": "object",
@@ -9923,16 +10331,176 @@
             "description": "A share or an observed rate in [0, 1]."
           },
           "mean_before": {
-            "$ref": "#/components/schemas/c08Lgd"
+            "$ref": "#/components/schemas/c08LgdPrediction"
           },
           "mean_after": {
-            "$ref": "#/components/schemas/c08Lgd"
+            "$ref": "#/components/schemas/c08LgdPrediction"
           },
           "uplift": {
             "type": "number",
+            "minimum": 0,
             "description": "mean_after minus mean_before, never negative."
           }
-        }
+        },
+        "description": "The bite of one floor cell; (floor_id, floor, reference) is one of the 12 transcribed cells.",
+        "oneOf": [
+          {
+            "properties": {
+              "floor_id": {
+                "const": "corporate-unsecured"
+              },
+              "floor": {
+                "const": 0.25
+              },
+              "reference": {
+                "const": "CRE32.16"
+              }
+            }
+          },
+          {
+            "properties": {
+              "floor_id": {
+                "const": "corporate-financial"
+              },
+              "floor": {
+                "const": 0
+              },
+              "reference": {
+                "const": "CRE32.16"
+              }
+            }
+          },
+          {
+            "properties": {
+              "floor_id": {
+                "const": "corporate-receivables"
+              },
+              "floor": {
+                "const": 0.1
+              },
+              "reference": {
+                "const": "CRE32.16"
+              }
+            }
+          },
+          {
+            "properties": {
+              "floor_id": {
+                "const": "corporate-real-estate"
+              },
+              "floor": {
+                "const": 0.1
+              },
+              "reference": {
+                "const": "CRE32.16"
+              }
+            }
+          },
+          {
+            "properties": {
+              "floor_id": {
+                "const": "corporate-other-physical"
+              },
+              "floor": {
+                "const": 0.15
+              },
+              "reference": {
+                "const": "CRE32.16"
+              }
+            }
+          },
+          {
+            "properties": {
+              "floor_id": {
+                "const": "retail-mortgage"
+              },
+              "floor": {
+                "const": 0.05
+              },
+              "reference": {
+                "const": "CRE32.58 to CRE32.59"
+              }
+            }
+          },
+          {
+            "properties": {
+              "floor_id": {
+                "const": "retail-qrre"
+              },
+              "floor": {
+                "const": 0.5
+              },
+              "reference": {
+                "const": "CRE32.58 to CRE32.59"
+              }
+            }
+          },
+          {
+            "properties": {
+              "floor_id": {
+                "const": "retail-other-unsecured"
+              },
+              "floor": {
+                "const": 0.3
+              },
+              "reference": {
+                "const": "CRE32.58 to CRE32.59"
+              }
+            }
+          },
+          {
+            "properties": {
+              "floor_id": {
+                "const": "retail-other-financial"
+              },
+              "floor": {
+                "const": 0
+              },
+              "reference": {
+                "const": "CRE32.58 to CRE32.59"
+              }
+            }
+          },
+          {
+            "properties": {
+              "floor_id": {
+                "const": "retail-other-receivables"
+              },
+              "floor": {
+                "const": 0.1
+              },
+              "reference": {
+                "const": "CRE32.58 to CRE32.59"
+              }
+            }
+          },
+          {
+            "properties": {
+              "floor_id": {
+                "const": "retail-other-real-estate"
+              },
+              "floor": {
+                "const": 0.1
+              },
+              "reference": {
+                "const": "CRE32.58 to CRE32.59"
+              }
+            }
+          },
+          {
+            "properties": {
+              "floor_id": {
+                "const": "retail-other-physical"
+              },
+              "floor": {
+                "const": 0.15
+              },
+              "reference": {
+                "const": "CRE32.58 to CRE32.59"
+              }
+            }
+          }
+        ]
       },
       "c08Floors": {
         "type": "object",
@@ -9985,7 +10553,7 @@
         "description": "How much the IRB LGD floors (Basel III final, CRE32.16, CRE32.58 to CRE32.59) bind on the estimates."
       },
       "c08Lgd": {
-        "description": "A loss given default with its range flag. In [0, 1] the flag is in-range; below 0 or above 1 (fees, costs, overlimit drawings, limit changes) the value is kept and flagged, never silently clipped.",
+        "description": "A realised loss given default with its range flag. In [0, 1] the flag is in-range; below 0 or above 1 (fees, costs, overlimit drawings, limit changes) the value is kept and flagged, never silently clipped.",
         "oneOf": [
           {
             "type": "object",
@@ -10041,6 +10609,25 @@
           }
         ]
       },
+      "c08LgdPrediction": {
+        "description": "A predicted loss given default at an estimate site: always inside [0, 1] (SDD section 4: predictions inside [0, 1]), so the flag is always in-range.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "value",
+          "flag"
+        ],
+        "properties": {
+          "value": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "flag": {
+            "const": "in-range"
+          }
+        }
+      },
       "c08LgdProxy": {
         "type": "object",
         "additionalProperties": false,
@@ -10058,31 +10645,30 @@
             "$ref": "#/components/schemas/c08Text"
           },
           "formula": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "description": "The proxy as a formula over SBA 7(a) field names."
           },
           "source_field": {
-            "type": "string",
-            "description": "The SBA 7(a) field the numerator reads (GrossChargeOffAmount)."
+            "const": "GrossChargeOffAmount",
+            "description": "The SBA 7(a) field the numerator reads."
           },
           "exposure_field": {
-            "type": "string"
+            "const": "GrossApproval",
+            "description": "The SBA 7(a) field the denominator reads: the gross approved amount, the only exposure field the file carries (decision D2)."
           },
           "recovery_cash_flows_available": {
             "type": "boolean"
           },
           "bias_direction": {
-            "type": "string",
-            "enum": [
-              "upward",
-              "downward",
-              "unknown"
-            ]
+            "const": "downward",
+            "description": "The proxy LGD is biased low (decision D2)."
           },
           "bias_statement": {
             "$ref": "#/components/schemas/c08Text"
           }
         },
-        "description": "The LGD proxy of the SBA charge-off twin and its bias, required in every C08 document: the file has no recovery cash flows, so the proxy is the gross charge-off over the exposure at charge-off, not a workout LGD (dossier 08 A.6)."
+        "description": "The LGD proxy of the SBA charge-off twin and its bias, required in every C08 document: the file has no recovery cash flows, so the proxy is the gross charge-off amount over the gross approved amount (GrossApproval), not a workout LGD (dossier 08 A.6). The approved amount overstates the exposure at default of an amortising loan, so the proxy is biased low (decision D2)."
       },
       "c08Mass": {
         "type": "object",
@@ -10179,7 +10765,9 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/c08EndpointRow"
-            }
+            },
+            "minItems": 2,
+            "description": "Two epsilons at least, for the beta rungs (SDD section 4)."
           },
           "downturn": {
             "$ref": "#/components/schemas/c08Downturn"
@@ -10218,7 +10806,7 @@
             "$ref": "#/components/schemas/c08Lgd"
           },
           "predicted": {
-            "$ref": "#/components/schemas/c08Lgd"
+            "$ref": "#/components/schemas/c08LgdPrediction"
           },
           "ci_low": {
             "type": "number"
@@ -10476,7 +11064,52 @@
             "$ref": "#/components/schemas/common-text"
           }
         },
-        "description": "How realised LGD is built: a workout LGD discounts recoveries (rate convention EBA/GL/2017/16, paragraph UNVERIFIED); the SBA twin has no cash flows, so none-proxy and not-applicable."
+        "description": "How realised LGD is built: a workout LGD discounts recoveries (rate convention EBA/GL/2017/16, paragraph UNVERIFIED); the SBA twin has no cash flows, so none-proxy, no discount rate and not-applicable.",
+        "oneOf": [
+          {
+            "properties": {
+              "discount_rate_convention": {
+                "const": "none-proxy"
+              },
+              "discount_rate": {
+                "type": "null"
+              },
+              "incomplete_workouts": {
+                "properties": {
+                  "treatment": {
+                    "const": "not-applicable"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "properties": {
+              "discount_rate_convention": {
+                "type": "string",
+                "enum": [
+                  "eba-interbank-plus-5pp",
+                  "fixed"
+                ]
+              },
+              "discount_rate": {
+                "type": "number",
+                "minimum": 0
+              },
+              "incomplete_workouts": {
+                "properties": {
+                  "treatment": {
+                    "type": "string",
+                    "enum": [
+                      "excluded",
+                      "projected"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
       },
       "c09-models": {
         "title": "C09 models",
@@ -10527,6 +11160,41 @@
               "case_id",
               "outputs"
             ]
+          },
+          {
+            "properties": {
+              "tests": {
+                "items": {
+                  "if": {
+                    "properties": {
+                      "light": {
+                        "const": "not_evaluated"
+                      }
+                    },
+                    "required": [
+                      "light"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "statistic": {
+                        "type": "null"
+                      },
+                      "p_value": {
+                        "type": "null"
+                      },
+                      "metric": {
+                        "type": "null"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         ],
         "unevaluatedProperties": false
@@ -10541,6 +11209,7 @@
           "utilisation_upper",
           "n",
           "predicted_ead",
+          "prediction_flag",
           "realised_ead",
           "gap",
           "relative_gap",
@@ -10567,7 +11236,14 @@
           },
           "predicted_ead": {
             "type": "number",
-            "minimum": 0
+            "description": "Sum of the predicted EAD of the band. Negative only with prediction_flag outside-range."
+          },
+          "prediction_flag": {
+            "type": "string",
+            "enum": [
+              "in-range",
+              "outside-range"
+            ]
           },
           "realised_ead": {
             "type": "number",
@@ -10590,7 +11266,28 @@
               "error"
             ]
           }
-        }
+        },
+        "description": "One model in one utilisation band. A utilisation-change prediction is not clipped: prediction_flag is outside-range when any facility of the band has an unclipped prediction below 0 or above its limit (api predict_ead).",
+        "oneOf": [
+          {
+            "properties": {
+              "prediction_flag": {
+                "const": "in-range"
+              },
+              "predicted_ead": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "properties": {
+              "prediction_flag": {
+                "const": "outside-range"
+              }
+            }
+          }
+        ]
       },
       "c09Ccf": {
         "description": "A credit conversion factor with its range flag. In [0, 1] the flag is in-range; below 0 or above 1 (fees, costs, overlimit drawings, limit changes) the value is kept and flagged, never silently clipped.",
@@ -10753,7 +11450,39 @@
           "within_tolerance": {
             "type": "boolean"
           }
-        }
+        },
+        "description": "One CCF estimate against the known truth. After a censor or floor-cap treatment the estimate lies inside [0, 1] and is flagged in-range; an untreated estimate may be flagged outside it.",
+        "oneOf": [
+          {
+            "properties": {
+              "treatment": {
+                "type": "string",
+                "enum": [
+                  "censor",
+                  "floor-cap"
+                ]
+              },
+              "estimate": {
+                "properties": {
+                  "flag": {
+                    "const": "in-range"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "properties": {
+              "treatment": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "bounded-scale"
+                ]
+              }
+            }
+          }
+        ]
       },
       "c09Convention": {
         "type": "object",
@@ -10962,7 +11691,9 @@
           "kind",
           "design",
           "treatment",
-          "covariates"
+          "covariates",
+          "n_clipped_below",
+          "n_clipped_above"
         ],
         "properties": {
           "model_id": {
@@ -11014,8 +11745,69 @@
             "items": {
               "type": "string"
             }
+          },
+          "n_clipped_below": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "direct-ead only: observations whose EADF below 0 was clipped for the fit; null elsewhere."
+          },
+          "n_clipped_above": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "direct-ead only: observations whose EADF above 1 was clipped for the fit; null elsewhere."
           }
-        }
+        },
+        "description": "An EAD model of the ladder; the clipped counts of fit_direct_ead are reported here, never silently.",
+        "oneOf": [
+          {
+            "properties": {
+              "kind": {
+                "const": "direct-ead"
+              },
+              "n_clipped_below": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "n_clipped_above": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          {
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "ccf-fixed-horizon",
+                  "ccf-cohort",
+                  "ccf-variable-horizon",
+                  "utilisation-change"
+                ]
+              },
+              "n_clipped_below": {
+                "type": "null"
+              },
+              "n_clipped_above": {
+                "type": "null"
+              }
+            }
+          }
+        ]
       },
       "c09Fit": {
         "type": "object",
