@@ -1,0 +1,2046 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c15/variant-annex1-variant.schema.json",
+  "title": "C15 annex1-variant variant",
+  "description": "Catalog row c15-outputs 1.0.0: one SDD variant of the IRRBB case on a CLP and UF balance sheet under RAN 21-13 Annex 1 (outputs.kind annex1-variant).",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C15"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c15Outputs",
+          "properties": {
+            "kind": {
+              "const": "annex1-variant"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "if": {
+              "properties": {
+                "light": {
+                  "const": "not_evaluated"
+                }
+              },
+              "required": [
+                "light"
+              ]
+            },
+            "then": {
+              "properties": {
+                "statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c15Label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "en",
+        "es"
+      ],
+      "properties": {
+        "en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "es": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A non-empty bilingual label (an empty string is not a label)."
+    },
+    "c15Sign": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "delta_eve",
+        "delta_nii",
+        "reference",
+        "statement"
+      ],
+      "properties": {
+        "delta_eve": {
+          "const": "positive-is-loss"
+        },
+        "delta_nii": {
+          "const": "positive-is-loss"
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "statement": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "Sign convention, stated in the document: a positive delta EVE or delta NII is a loss (SRP31.129; dossier 01 H.4)."
+    },
+    "c15Units": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "money_scale",
+        "rate",
+        "compounding",
+        "shock",
+        "bucket_midpoint",
+        "dates"
+      ],
+      "properties": {
+        "money_scale": {
+          "type": "string",
+          "enum": [
+            "units",
+            "thousands",
+            "millions"
+          ]
+        },
+        "rate": {
+          "const": "decimal"
+        },
+        "compounding": {
+          "const": "continuous"
+        },
+        "shock": {
+          "const": "basis-points"
+        },
+        "bucket_midpoint": {
+          "const": "years"
+        },
+        "dates": {
+          "const": "ISO-8601"
+        }
+      },
+      "description": "Units of every number: money in the stated scale of its currency, rates as decimals discounted continuously (SRP31.129), shocks in basis points, bucket midpoints in years, dates ISO."
+    },
+    "c15Assumption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit",
+        "source_kind",
+        "source"
+      ],
+      "properties": {
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "regulatory-cap",
+            "fitted",
+            "synthetic-stated"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A behavioural assumption as a named field: its value, its unit and where it comes from (the regulatory cap, a fit, or a stated synthetic value), so a view can show the result with and without it."
+    },
+    "c15Assumptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nmd_core_share",
+        "nmd_core_maturity_years",
+        "prepayment_cpr",
+        "term_deposit_redemption_rate",
+        "deposit_beta"
+      ],
+      "properties": {
+        "nmd_core_share": {
+          "$ref": "#/$defs/c15Assumption"
+        },
+        "nmd_core_maturity_years": {
+          "$ref": "#/$defs/c15Assumption"
+        },
+        "prepayment_cpr": {
+          "$ref": "#/$defs/c15Assumption"
+        },
+        "term_deposit_redemption_rate": {
+          "$ref": "#/$defs/c15Assumption"
+        },
+        "deposit_beta": {
+          "$ref": "#/$defs/c15Assumption"
+        }
+      },
+      "description": "The five behavioural assumptions. nmd_core_share and nmd_core_maturity_years are the balance-weighted averages of nmd_segments."
+    },
+    "c15Flow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bucket",
+        "midpoint_years",
+        "amount"
+      ],
+      "properties": {
+        "bucket": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 19,
+          "description": "Bucket of the 19 of SRP31.96 Table 3, 1 (overnight) to 19 (over 20 years)."
+        },
+        "midpoint_years": {
+          "type": "number",
+          "enum": [
+            0.0028,
+            0.0417,
+            0.1667,
+            0.375,
+            0.625,
+            0.875,
+            1.25,
+            1.75,
+            2.5,
+            3.5,
+            4.5,
+            5.5,
+            6.5,
+            7.5,
+            8.5,
+            9.5,
+            12.5,
+            17.5,
+            25.0
+          ],
+          "description": "Bucket midpoint in years: one of the 19 of SRP31.96 Table 3."
+        },
+        "amount": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        }
+      },
+      "description": "A net notional repricing cash flow in one bucket (assets positive, liabilities negative)."
+    },
+    "c15NmdSegment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "balance",
+        "core_share",
+        "core_share_cap",
+        "core_share_flag",
+        "core_maturity_years",
+        "core_maturity_cap_years",
+        "maturity_flag",
+        "source_kind",
+        "source"
+      ],
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "retail-operational",
+            "retail-non-operational",
+            "wholesale"
+          ]
+        },
+        "balance": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "core_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "core_share_cap": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "core_share_flag": {
+          "type": "string",
+          "enum": [
+            "within-cap",
+            "above-cap"
+          ]
+        },
+        "core_maturity_years": {
+          "type": "number",
+          "minimum": 0
+        },
+        "core_maturity_cap_years": {
+          "type": "number",
+          "minimum": 0
+        },
+        "maturity_flag": {
+          "type": "string",
+          "enum": [
+            "within-cap",
+            "above-cap"
+          ]
+        },
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "regulatory-cap",
+            "fitted",
+            "synthetic-stated"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A non-maturity deposit segment with its core share and core maturity beside the SRP31 Table 4 caps. A value above its cap passes only with the flag above-cap (an internal assumption beyond the standardised cap, the SVB lesson of dossier 05 D.7); a flag on an in-cap value fails.",
+      "oneOf": [
+        {
+          "properties": {
+            "category": {
+              "const": "retail-operational"
+            },
+            "core_share_cap": {
+              "const": 0.9
+            },
+            "core_maturity_cap_years": {
+              "const": 5.0
+            },
+            "core_share": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.9
+            },
+            "core_share_flag": {
+              "const": "within-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5.0
+            },
+            "maturity_flag": {
+              "const": "within-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "retail-operational"
+            },
+            "core_share_cap": {
+              "const": 0.9
+            },
+            "core_maturity_cap_years": {
+              "const": 5.0
+            },
+            "core_share": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.9
+            },
+            "core_share_flag": {
+              "const": "within-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "exclusiveMinimum": 5.0
+            },
+            "maturity_flag": {
+              "const": "above-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "retail-operational"
+            },
+            "core_share_cap": {
+              "const": 0.9
+            },
+            "core_maturity_cap_years": {
+              "const": 5.0
+            },
+            "core_share": {
+              "type": "number",
+              "exclusiveMinimum": 0.9,
+              "maximum": 1
+            },
+            "core_share_flag": {
+              "const": "above-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5.0
+            },
+            "maturity_flag": {
+              "const": "within-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "retail-operational"
+            },
+            "core_share_cap": {
+              "const": 0.9
+            },
+            "core_maturity_cap_years": {
+              "const": 5.0
+            },
+            "core_share": {
+              "type": "number",
+              "exclusiveMinimum": 0.9,
+              "maximum": 1
+            },
+            "core_share_flag": {
+              "const": "above-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "exclusiveMinimum": 5.0
+            },
+            "maturity_flag": {
+              "const": "above-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "retail-non-operational"
+            },
+            "core_share_cap": {
+              "const": 0.7
+            },
+            "core_maturity_cap_years": {
+              "const": 4.5
+            },
+            "core_share": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.7
+            },
+            "core_share_flag": {
+              "const": "within-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 4.5
+            },
+            "maturity_flag": {
+              "const": "within-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "retail-non-operational"
+            },
+            "core_share_cap": {
+              "const": 0.7
+            },
+            "core_maturity_cap_years": {
+              "const": 4.5
+            },
+            "core_share": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.7
+            },
+            "core_share_flag": {
+              "const": "within-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "exclusiveMinimum": 4.5
+            },
+            "maturity_flag": {
+              "const": "above-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "retail-non-operational"
+            },
+            "core_share_cap": {
+              "const": 0.7
+            },
+            "core_maturity_cap_years": {
+              "const": 4.5
+            },
+            "core_share": {
+              "type": "number",
+              "exclusiveMinimum": 0.7,
+              "maximum": 1
+            },
+            "core_share_flag": {
+              "const": "above-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 4.5
+            },
+            "maturity_flag": {
+              "const": "within-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "retail-non-operational"
+            },
+            "core_share_cap": {
+              "const": 0.7
+            },
+            "core_maturity_cap_years": {
+              "const": 4.5
+            },
+            "core_share": {
+              "type": "number",
+              "exclusiveMinimum": 0.7,
+              "maximum": 1
+            },
+            "core_share_flag": {
+              "const": "above-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "exclusiveMinimum": 4.5
+            },
+            "maturity_flag": {
+              "const": "above-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "wholesale"
+            },
+            "core_share_cap": {
+              "const": 0.5
+            },
+            "core_maturity_cap_years": {
+              "const": 4.0
+            },
+            "core_share": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.5
+            },
+            "core_share_flag": {
+              "const": "within-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 4.0
+            },
+            "maturity_flag": {
+              "const": "within-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "wholesale"
+            },
+            "core_share_cap": {
+              "const": 0.5
+            },
+            "core_maturity_cap_years": {
+              "const": 4.0
+            },
+            "core_share": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.5
+            },
+            "core_share_flag": {
+              "const": "within-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "exclusiveMinimum": 4.0
+            },
+            "maturity_flag": {
+              "const": "above-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "wholesale"
+            },
+            "core_share_cap": {
+              "const": 0.5
+            },
+            "core_maturity_cap_years": {
+              "const": 4.0
+            },
+            "core_share": {
+              "type": "number",
+              "exclusiveMinimum": 0.5,
+              "maximum": 1
+            },
+            "core_share_flag": {
+              "const": "above-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 4.0
+            },
+            "maturity_flag": {
+              "const": "within-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "wholesale"
+            },
+            "core_share_cap": {
+              "const": 0.5
+            },
+            "core_maturity_cap_years": {
+              "const": 4.0
+            },
+            "core_share": {
+              "type": "number",
+              "exclusiveMinimum": 0.5,
+              "maximum": 1
+            },
+            "core_share_flag": {
+              "const": "above-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "exclusiveMinimum": 4.0
+            },
+            "maturity_flag": {
+              "const": "above-cap"
+            }
+          }
+        }
+      ]
+    },
+    "c15ShockSize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "parallel_bp",
+        "short_bp",
+        "long_bp",
+        "origin",
+        "label",
+        "method"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "parallel_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "short_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "long_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "srp31-table-2024",
+            "srp31-table-2016",
+            "cmf-annex1",
+            "contraste-estimate"
+          ]
+        },
+        "label": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c15Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "method": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The shock sizes applied to a currency, in basis points. A currency without an entry in the BCBS table (CLP is not in either) passes only labelled as a Contraste estimate with its method, never as a regulatory parameter (dossier 01 H.3).",
+      "oneOf": [
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "type": "string",
+              "enum": [
+                "ARS",
+                "AUD",
+                "BRL",
+                "CAD",
+                "CHF",
+                "CNY",
+                "EUR",
+                "GBP",
+                "HKD",
+                "IDR",
+                "INR",
+                "JPY",
+                "KRW",
+                "MXN",
+                "RUB",
+                "SAR",
+                "SEK",
+                "SGD",
+                "TRY",
+                "USD",
+                "ZAR"
+              ]
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "type": "string",
+              "enum": [
+                "ARS",
+                "AUD",
+                "BRL",
+                "CAD",
+                "CHF",
+                "CNY",
+                "EUR",
+                "GBP",
+                "HKD",
+                "IDR",
+                "INR",
+                "JPY",
+                "KRW",
+                "MXN",
+                "RUB",
+                "SAR",
+                "SEK",
+                "SGD",
+                "TRY",
+                "USD",
+                "ZAR"
+              ]
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "cmf-annex1"
+            },
+            "currency": {
+              "type": "string",
+              "enum": [
+                "CLP",
+                "CLF"
+              ]
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "contraste-estimate"
+            },
+            "label": {
+              "$ref": "#/$defs/c15Label"
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "c15Bank": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "synthetic",
+        "notice",
+        "seed",
+        "calibration_source"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "synthetic": {
+          "const": true
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "calibration_source": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The synthetic Banco Andino, calibrated to CMF aggregates (U5's calibration); fixtures say so."
+    },
+    "c15Ur": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "code",
+        "treated_as_one_currency",
+        "definition",
+        "uf_value",
+        "uf_value_currency",
+        "uf_date",
+        "uf_source"
+      ],
+      "properties": {
+        "label": {
+          "const": "UR"
+        },
+        "code": {
+          "const": "CLF"
+        },
+        "treated_as_one_currency": {
+          "const": true
+        },
+        "definition": {
+          "$ref": "../common/text.schema.json"
+        },
+        "uf_value": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "uf_value_currency": {
+          "const": "CLP"
+        },
+        "uf_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "uf_source": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The UR currency of RAN 21-13 Annex 1: all CLP-indexed flows are treated as one currency (CLF, UF-indexed). UF amounts are CLF; uf_value is the CLP value of one UF on uf_date."
+    },
+    "c15Variant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "description",
+        "parameters"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "long-uf",
+            "short-uf",
+            "cpi-surprise",
+            "clp-steepener",
+            "offset-on-off",
+            "floors-active"
+          ]
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "description": {
+          "$ref": "../common/text.schema.json"
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "value",
+              "unit"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "description": "The SDD variant of the case (section 5): one document per variant."
+    },
+    "c15Point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenor_years",
+        "observed_yield",
+        "zero_rate"
+      ],
+      "properties": {
+        "tenor_years": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "observed_yield": {
+          "type": "number"
+        },
+        "zero_rate": {
+          "type": "number"
+        }
+      },
+      "description": "One tenor: the observed BCCh yield and the fitted continuously compounded zero rate."
+    },
+    "c15Curve": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "curve",
+        "month",
+        "date",
+        "source",
+        "series_codes",
+        "attribution",
+        "observed_kind",
+        "compounding",
+        "fit",
+        "points",
+        "zero_rates_at_midpoints"
+      ],
+      "properties": {
+        "curve": {
+          "type": "string",
+          "enum": [
+            "CLP",
+            "UR"
+          ]
+        },
+        "month": {
+          "type": "string",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
+        },
+        "date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "series_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "attribution": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observed_kind": {
+          "const": "secondary-market-yield"
+        },
+        "compounding": {
+          "const": "continuous"
+        },
+        "fit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "model",
+            "parameters",
+            "rmse_bp"
+          ],
+          "properties": {
+            "model": {
+              "type": "string",
+              "enum": [
+                "nelson-siegel",
+                "svensson"
+              ]
+            },
+            "parameters": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "value",
+                  "unit"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "number"
+                  },
+                  "unit": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 1
+            },
+            "rmse_bp": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c15Point"
+          },
+          "minItems": 1
+        },
+        "zero_rates_at_midpoints": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 19,
+          "maxItems": 19,
+          "description": "Zero rate at each bucket midpoint, bucket 1 first."
+        }
+      },
+      "description": "A BCCh F022 sovereign curve (CLP or UF) of the stated month, fitted to a zero curve and labelled as an adaptation: the attribution names the Banco Central de Chile as the owner of the source and the fit as Contraste's (BCCh terms, dossier 08 C.7). Required: the C15 bake waits for the BCCh account."
+    },
+    "c15Curves": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clp",
+        "ur"
+      ],
+      "properties": {
+        "clp": {
+          "$ref": "#/$defs/c15Curve"
+        },
+        "ur": {
+          "$ref": "#/$defs/c15Curve"
+        }
+      }
+    },
+    "c15Item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_id",
+        "label",
+        "side",
+        "category",
+        "behavioural_class",
+        "source",
+        "amount",
+        "cash_flows"
+      ],
+      "properties": {
+        "item_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "side": {
+          "type": "string",
+          "enum": [
+            "asset",
+            "liability"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "cash",
+            "securities",
+            "loans-fixed",
+            "loans-floating",
+            "loans-uf",
+            "deposits-nmd",
+            "deposits-time",
+            "borrowings",
+            "other"
+          ]
+        },
+        "behavioural_class": {
+          "type": "string",
+          "enum": [
+            "none",
+            "nmd-retail-operational",
+            "nmd-retail-non-operational",
+            "nmd-wholesale",
+            "term-deposit",
+            "prepayable-loan"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cash_flows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c15Flow"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "One synthetic Banco Andino item in the currency of its leg, slotted into the buckets (the Annex 1 NMD caps applied)."
+    },
+    "c15Leg": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "leg",
+        "currency",
+        "items",
+        "assets_total",
+        "liabilities_total",
+        "net_position"
+      ],
+      "properties": {
+        "leg": {
+          "type": "string",
+          "enum": [
+            "CLP",
+            "UR"
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "enum": [
+            "CLP",
+            "CLF"
+          ]
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c15Item"
+          },
+          "minItems": 1
+        },
+        "assets_total": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "liabilities_total": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "net_position": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        }
+      },
+      "description": "One leg of the banking book in the currency of the leg (CLF for the UR leg): net_position = assets minus liabilities. The CLP leg is in CLP and the UR leg is in CLF.",
+      "oneOf": [
+        {
+          "properties": {
+            "leg": {
+              "const": "CLP"
+            },
+            "currency": {
+              "const": "CLP"
+            }
+          }
+        },
+        {
+          "properties": {
+            "leg": {
+              "const": "UR"
+            },
+            "currency": {
+              "const": "CLF"
+            }
+          }
+        }
+      ]
+    },
+    "c15NiiSize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "parallel_bp",
+        "origin"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "enum": [
+            "CLP",
+            "CLF"
+          ]
+        },
+        "parallel_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "origin": {
+          "const": "cmf-annex1"
+        }
+      },
+      "description": "The delta NII shock of Annex 1 Hoja 9: one parallel size, 300 bp for CLP and CLF."
+    },
+    "c15LegEve": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shape_bp",
+        "floor_bound_buckets",
+        "net_cash_flows",
+        "eve",
+        "kao",
+        "delta_eve"
+      ],
+      "properties": {
+        "shape_bp": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 19,
+          "maxItems": 19,
+          "description": "Shock in basis points at each bucket midpoint before the floor."
+        },
+        "floor_bound_buckets": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 19,
+            "description": "Bucket of the 19 of SRP31.96 Table 3, 1 (overnight) to 19 (over 20 years)."
+          }
+        },
+        "net_cash_flows": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+          },
+          "minItems": 19,
+          "maxItems": 19,
+          "description": "One value per bucket, bucket 1 first; net notional repricing cash flows, assets positive, liabilities negative."
+        },
+        "eve": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "kao": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "delta_eve": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        }
+      },
+      "description": "One leg under one shock, in the reporting currency (the UR leg converted at the UF value)."
+    },
+    "c15Pair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "delta_clp",
+        "delta_ur",
+        "opposite_signs",
+        "with_offset",
+        "without_offset",
+        "used"
+      ],
+      "properties": {
+        "delta_clp": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "delta_ur": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "opposite_signs": {
+          "type": "boolean"
+        },
+        "with_offset": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "without_offset": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "used": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        }
+      },
+      "description": "The CLP and CLF pair. with_offset applies the 50 percent offsetting rule when the two have opposite signs; without_offset is the sum of the positive parts; used is the one the offset_rule state selects."
+    },
+    "c15EveRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shock",
+        "clp",
+        "ur",
+        "pair",
+        "total_delta_eve"
+      ],
+      "properties": {
+        "shock": {
+          "type": "string",
+          "enum": [
+            "parallel-up",
+            "parallel-down",
+            "steepener",
+            "flattener",
+            "short-up",
+            "short-down"
+          ]
+        },
+        "clp": {
+          "$ref": "#/$defs/c15LegEve"
+        },
+        "ur": {
+          "$ref": "#/$defs/c15LegEve"
+        },
+        "pair": {
+          "$ref": "#/$defs/c15Pair"
+        },
+        "total_delta_eve": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        }
+      }
+    },
+    "c15EveMeasure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "base_eve_clp",
+        "base_eve_ur",
+        "rows",
+        "delta_eve",
+        "worst_shock",
+        "delta_eve_share_tier1"
+      ],
+      "properties": {
+        "base_eve_clp": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "base_eve_ur": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c15EveRow"
+          },
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "delta_eve": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "worst_shock": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "parallel-up",
+                "parallel-down",
+                "steepener",
+                "flattener",
+                "short-up",
+                "short-down"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delta_eve_share_tier1": {
+          "type": "number"
+        }
+      },
+      "description": "Annex 1 delta EVE: the maximum over the six shocks of the pair total (there is no other currency in this book)."
+    },
+    "c15NiiLeg": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shock_bp",
+        "cash_flows",
+        "floor_bound_buckets",
+        "delta_nii"
+      ],
+      "properties": {
+        "shock_bp": {
+          "type": "number"
+        },
+        "cash_flows": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+          },
+          "minItems": 6,
+          "maxItems": 6,
+          "description": "Net repricing cash flows of the buckets with t_k < 1, in the reporting currency."
+        },
+        "floor_bound_buckets": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 19,
+            "description": "Bucket of the 19 of SRP31.96 Table 3, 1 (overnight) to 19 (over 20 years)."
+          }
+        },
+        "delta_nii": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        }
+      },
+      "description": "One leg under one parallel shock: delta NII = sum over the first six buckets of CF x (r0 - ri) x (1 - t_k)."
+    },
+    "c15NiiRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shock",
+        "clp",
+        "ur",
+        "pair"
+      ],
+      "properties": {
+        "shock": {
+          "type": "string",
+          "enum": [
+            "parallel-up",
+            "parallel-down"
+          ]
+        },
+        "clp": {
+          "$ref": "#/$defs/c15NiiLeg"
+        },
+        "ur": {
+          "$ref": "#/$defs/c15NiiLeg"
+        },
+        "pair": {
+          "$ref": "#/$defs/c15Pair"
+        }
+      }
+    },
+    "c15NiiMeasure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rows",
+        "max_pair",
+        "indexation_charge",
+        "delta_nii",
+        "worst_shock",
+        "delta_nii_share_tier1"
+      ],
+      "properties": {
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c15NiiRow"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "max_pair": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "indexation_charge": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "delta_nii": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "worst_shock": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "parallel-up",
+                "parallel-down"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delta_nii_share_tier1": {
+          "type": "number"
+        }
+      },
+      "description": "Annex 1 delta NII = the maximum over the two parallel shocks of the pair, plus the indexation charge."
+    },
+    "c15FloorEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "leg",
+        "measure",
+        "shock",
+        "buckets_floored",
+        "delta_with_floor",
+        "delta_without_floor",
+        "effect"
+      ],
+      "properties": {
+        "leg": {
+          "type": "string",
+          "enum": [
+            "CLP",
+            "UR"
+          ]
+        },
+        "measure": {
+          "type": "string",
+          "enum": [
+            "delta-eve",
+            "delta-nii"
+          ]
+        },
+        "shock": {
+          "type": "string",
+          "enum": [
+            "parallel-up",
+            "parallel-down",
+            "steepener",
+            "flattener",
+            "short-up",
+            "short-down"
+          ]
+        },
+        "buckets_floored": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "delta_with_floor": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "delta_without_floor": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "effect": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        }
+      },
+      "description": "The effect of a binding post-shock floor on a leg's measure: with minus without."
+    },
+    "c15Floors": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ur_floor",
+        "other_floor",
+        "rule",
+        "effects"
+      ],
+      "properties": {
+        "ur_floor": {
+          "const": -0.02
+        },
+        "other_floor": {
+          "const": 0.0
+        },
+        "rule": {
+          "$ref": "#/$defs/c15Label"
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c15FloorEffect"
+          }
+        }
+      },
+      "description": "Annex 1 post-shock floors: -2 percent for UR rates, 0 percent for other currencies (or the pre-shock rate if lower)."
+    },
+    "c15Offset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "share",
+        "applies_to",
+        "rule",
+        "reference"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "on",
+            "off",
+            "compared"
+          ]
+        },
+        "share": {
+          "const": 0.5
+        },
+        "applies_to": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "CLP",
+              "CLF"
+            ]
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "rule": {
+          "$ref": "#/$defs/c15Label"
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The state of the CLP and CLF offset rule: on, off, or compared (both are in every pair; the rule applies in used)."
+    },
+    "c15Indexation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rate",
+        "net_position_uf_units",
+        "pn_ur",
+        "abs_pn_ur",
+        "charge",
+        "formula",
+        "note"
+      ],
+      "properties": {
+        "rate": {
+          "const": 0.025
+        },
+        "net_position_uf_units": {
+          "type": "number"
+        },
+        "pn_ur": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "abs_pn_ur": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "charge": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "formula": {
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The standardised indexation (reajustabilidad) charge: 2.5 percent of the absolute net UF position PN_UR (an implied 2.5 percent inflation surprise). pn_ur = net UF position x uf_value, assets positive."
+    },
+    "c15CpiScenario": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "surprise_pp",
+            "effect",
+            "formula"
+          ],
+          "properties": {
+            "surprise_pp": {
+              "type": "number"
+            },
+            "effect": {
+              "type": "number",
+              "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+            },
+            "formula": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "description": "A CPI surprise applied to the net UF position, loss-positive: effect = -pn_ur x surprise_pp / 100."
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Null when the variant applies no CPI surprise."
+    },
+    "c15ThresholdTest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "measure",
+        "base",
+        "ratio",
+        "threshold",
+        "breached"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "nii-tier1",
+            "eve-tier1",
+            "nii-margin"
+          ]
+        },
+        "measure": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "base": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "ratio": {
+          "type": "number"
+        },
+        "threshold": {
+          "type": "number",
+          "minimum": 0
+        },
+        "breached": {
+          "type": "boolean"
+        }
+      },
+      "description": "One prioritised-bank test of Annex 1: delta NII over Tier 1 (5 percent), delta EVE over Tier 1 (15 percent), delta NII over the 12-month net interest and indexation margin (18 percent)."
+    },
+    "c15Thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tier1",
+        "net_interest_and_indexation_margin_12m",
+        "tests",
+        "prioritised",
+        "reference"
+      ],
+      "properties": {
+        "tier1": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "net_interest_and_indexation_margin_12m": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "tests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c15ThresholdTest"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "prioritised": {
+          "type": "boolean"
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The banco priorizado tests; prioritised is true when any test is breached."
+    },
+    "c15Outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "variant",
+        "as_of",
+        "balance_sheet_month",
+        "curves_month",
+        "reporting_currency",
+        "sign_convention",
+        "units",
+        "bank",
+        "ur_currency",
+        "curves",
+        "assumptions",
+        "nmd_segments",
+        "legs",
+        "eve_shock_sizes",
+        "nii_shock_sizes",
+        "floors",
+        "offset_rule",
+        "indexation_charge",
+        "cpi_scenario",
+        "eve",
+        "nii",
+        "thresholds"
+      ],
+      "properties": {
+        "kind": {
+          "const": "annex1-variant"
+        },
+        "variant": {
+          "$ref": "#/$defs/c15Variant"
+        },
+        "as_of": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "balance_sheet_month": {
+          "type": "string",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
+        },
+        "curves_month": {
+          "type": "string",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
+        },
+        "reporting_currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "sign_convention": {
+          "$ref": "#/$defs/c15Sign"
+        },
+        "units": {
+          "$ref": "#/$defs/c15Units"
+        },
+        "bank": {
+          "$ref": "#/$defs/c15Bank"
+        },
+        "ur_currency": {
+          "$ref": "#/$defs/c15Ur"
+        },
+        "curves": {
+          "$ref": "#/$defs/c15Curves"
+        },
+        "assumptions": {
+          "$ref": "#/$defs/c15Assumptions"
+        },
+        "nmd_segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c15NmdSegment"
+          },
+          "minItems": 1
+        },
+        "legs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c15Leg"
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "The CLP leg and the UR leg, in that order.",
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "leg": {
+                    "const": "CLP"
+                  }
+                },
+                "required": [
+                  "leg"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "leg": {
+                    "const": "UR"
+                  }
+                },
+                "required": [
+                  "leg"
+                ]
+              }
+            }
+          ]
+        },
+        "eve_shock_sizes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c15ShockSize"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "nii_shock_sizes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c15NiiSize"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "floors": {
+          "$ref": "#/$defs/c15Floors"
+        },
+        "offset_rule": {
+          "$ref": "#/$defs/c15Offset"
+        },
+        "indexation_charge": {
+          "$ref": "#/$defs/c15Indexation"
+        },
+        "cpi_scenario": {
+          "$ref": "#/$defs/c15CpiScenario"
+        },
+        "eve": {
+          "$ref": "#/$defs/c15EveMeasure"
+        },
+        "nii": {
+          "$ref": "#/$defs/c15NiiMeasure"
+        },
+        "thresholds": {
+          "$ref": "#/$defs/c15Thresholds"
+        }
+      },
+      "description": "C15 annex1-variant outputs (outputs.kind annex1-variant): IRRBB on a CLP and UF balance sheet under RAN 21-13 Annex 1 for one SDD variant, balance sheet and curves as of one stated month. Money is in the reporting currency CLP; the UR leg is converted at the stated UF value."
+    }
+  }
+}

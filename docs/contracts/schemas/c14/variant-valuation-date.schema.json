@@ -1,0 +1,1728 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c14/variant-valuation-date.schema.json",
+  "title": "C14 valuation-date variant",
+  "description": "Catalog row c14-outputs 1.0.0: one valuation date of the IRRBB case on a USD balance sheet (outputs.kind valuation-date), real FDIC aggregates and synthetic behaviour.",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C14"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c14Outputs",
+          "properties": {
+            "kind": {
+              "const": "valuation-date"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "if": {
+              "properties": {
+                "light": {
+                  "const": "not_evaluated"
+                }
+              },
+              "required": [
+                "light"
+              ]
+            },
+            "then": {
+              "properties": {
+                "statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c14Label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "en",
+        "es"
+      ],
+      "properties": {
+        "en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "es": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A non-empty bilingual label (an empty string is not a label)."
+    },
+    "c14Sign": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "delta_eve",
+        "delta_nii",
+        "reference",
+        "statement"
+      ],
+      "properties": {
+        "delta_eve": {
+          "const": "positive-is-loss"
+        },
+        "delta_nii": {
+          "const": "positive-is-loss"
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "statement": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "Sign convention, stated in the document: a positive delta EVE or delta NII is a loss (SRP31.129; dossier 01 H.4)."
+    },
+    "c14Units": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "money_scale",
+        "rate",
+        "compounding",
+        "shock",
+        "bucket_midpoint",
+        "dates"
+      ],
+      "properties": {
+        "money_scale": {
+          "type": "string",
+          "enum": [
+            "units",
+            "thousands",
+            "millions"
+          ]
+        },
+        "rate": {
+          "const": "decimal"
+        },
+        "compounding": {
+          "const": "continuous"
+        },
+        "shock": {
+          "const": "basis-points"
+        },
+        "bucket_midpoint": {
+          "const": "years"
+        },
+        "dates": {
+          "const": "ISO-8601"
+        }
+      },
+      "description": "Units of every number: money in the stated scale of its currency, rates as decimals discounted continuously (SRP31.129), shocks in basis points, bucket midpoints in years, dates ISO."
+    },
+    "c14Assumption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit",
+        "source_kind",
+        "source"
+      ],
+      "properties": {
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "regulatory-cap",
+            "fitted",
+            "synthetic-stated"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A behavioural assumption as a named field: its value, its unit and where it comes from (the regulatory cap, a fit, or a stated synthetic value), so a view can show the result with and without it."
+    },
+    "c14Assumptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nmd_core_share",
+        "nmd_core_maturity_years",
+        "prepayment_cpr",
+        "term_deposit_redemption_rate",
+        "deposit_beta"
+      ],
+      "properties": {
+        "nmd_core_share": {
+          "$ref": "#/$defs/c14Assumption"
+        },
+        "nmd_core_maturity_years": {
+          "$ref": "#/$defs/c14Assumption"
+        },
+        "prepayment_cpr": {
+          "$ref": "#/$defs/c14Assumption"
+        },
+        "term_deposit_redemption_rate": {
+          "$ref": "#/$defs/c14Assumption"
+        },
+        "deposit_beta": {
+          "$ref": "#/$defs/c14Assumption"
+        }
+      },
+      "description": "The five behavioural assumptions. nmd_core_share and nmd_core_maturity_years are the balance-weighted averages of nmd_segments."
+    },
+    "c14Flow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bucket",
+        "midpoint_years",
+        "amount"
+      ],
+      "properties": {
+        "bucket": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 19,
+          "description": "Bucket of the 19 of SRP31.96 Table 3, 1 (overnight) to 19 (over 20 years)."
+        },
+        "midpoint_years": {
+          "type": "number",
+          "enum": [
+            0.0028,
+            0.0417,
+            0.1667,
+            0.375,
+            0.625,
+            0.875,
+            1.25,
+            1.75,
+            2.5,
+            3.5,
+            4.5,
+            5.5,
+            6.5,
+            7.5,
+            8.5,
+            9.5,
+            12.5,
+            17.5,
+            25.0
+          ],
+          "description": "Bucket midpoint in years: one of the 19 of SRP31.96 Table 3."
+        },
+        "amount": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        }
+      },
+      "description": "A net notional repricing cash flow in one bucket (assets positive, liabilities negative)."
+    },
+    "c14NmdSegment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "balance",
+        "core_share",
+        "core_share_cap",
+        "core_share_flag",
+        "core_maturity_years",
+        "core_maturity_cap_years",
+        "maturity_flag",
+        "source_kind",
+        "source"
+      ],
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "retail-transactional",
+            "retail-non-transactional",
+            "wholesale"
+          ]
+        },
+        "balance": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "core_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "core_share_cap": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "core_share_flag": {
+          "type": "string",
+          "enum": [
+            "within-cap",
+            "above-cap"
+          ]
+        },
+        "core_maturity_years": {
+          "type": "number",
+          "minimum": 0
+        },
+        "core_maturity_cap_years": {
+          "type": "number",
+          "minimum": 0
+        },
+        "maturity_flag": {
+          "type": "string",
+          "enum": [
+            "within-cap",
+            "above-cap"
+          ]
+        },
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "regulatory-cap",
+            "fitted",
+            "synthetic-stated"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A non-maturity deposit segment with its core share and core maturity beside the SRP31 Table 4 caps. A value above its cap passes only with the flag above-cap (an internal assumption beyond the standardised cap, the SVB lesson of dossier 05 D.7); a flag on an in-cap value fails.",
+      "oneOf": [
+        {
+          "properties": {
+            "category": {
+              "const": "retail-transactional"
+            },
+            "core_share_cap": {
+              "const": 0.9
+            },
+            "core_maturity_cap_years": {
+              "const": 5.0
+            },
+            "core_share": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.9
+            },
+            "core_share_flag": {
+              "const": "within-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5.0
+            },
+            "maturity_flag": {
+              "const": "within-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "retail-transactional"
+            },
+            "core_share_cap": {
+              "const": 0.9
+            },
+            "core_maturity_cap_years": {
+              "const": 5.0
+            },
+            "core_share": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.9
+            },
+            "core_share_flag": {
+              "const": "within-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "exclusiveMinimum": 5.0
+            },
+            "maturity_flag": {
+              "const": "above-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "retail-transactional"
+            },
+            "core_share_cap": {
+              "const": 0.9
+            },
+            "core_maturity_cap_years": {
+              "const": 5.0
+            },
+            "core_share": {
+              "type": "number",
+              "exclusiveMinimum": 0.9,
+              "maximum": 1
+            },
+            "core_share_flag": {
+              "const": "above-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5.0
+            },
+            "maturity_flag": {
+              "const": "within-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "retail-transactional"
+            },
+            "core_share_cap": {
+              "const": 0.9
+            },
+            "core_maturity_cap_years": {
+              "const": 5.0
+            },
+            "core_share": {
+              "type": "number",
+              "exclusiveMinimum": 0.9,
+              "maximum": 1
+            },
+            "core_share_flag": {
+              "const": "above-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "exclusiveMinimum": 5.0
+            },
+            "maturity_flag": {
+              "const": "above-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "retail-non-transactional"
+            },
+            "core_share_cap": {
+              "const": 0.7
+            },
+            "core_maturity_cap_years": {
+              "const": 4.5
+            },
+            "core_share": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.7
+            },
+            "core_share_flag": {
+              "const": "within-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 4.5
+            },
+            "maturity_flag": {
+              "const": "within-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "retail-non-transactional"
+            },
+            "core_share_cap": {
+              "const": 0.7
+            },
+            "core_maturity_cap_years": {
+              "const": 4.5
+            },
+            "core_share": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.7
+            },
+            "core_share_flag": {
+              "const": "within-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "exclusiveMinimum": 4.5
+            },
+            "maturity_flag": {
+              "const": "above-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "retail-non-transactional"
+            },
+            "core_share_cap": {
+              "const": 0.7
+            },
+            "core_maturity_cap_years": {
+              "const": 4.5
+            },
+            "core_share": {
+              "type": "number",
+              "exclusiveMinimum": 0.7,
+              "maximum": 1
+            },
+            "core_share_flag": {
+              "const": "above-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 4.5
+            },
+            "maturity_flag": {
+              "const": "within-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "retail-non-transactional"
+            },
+            "core_share_cap": {
+              "const": 0.7
+            },
+            "core_maturity_cap_years": {
+              "const": 4.5
+            },
+            "core_share": {
+              "type": "number",
+              "exclusiveMinimum": 0.7,
+              "maximum": 1
+            },
+            "core_share_flag": {
+              "const": "above-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "exclusiveMinimum": 4.5
+            },
+            "maturity_flag": {
+              "const": "above-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "wholesale"
+            },
+            "core_share_cap": {
+              "const": 0.5
+            },
+            "core_maturity_cap_years": {
+              "const": 4.0
+            },
+            "core_share": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.5
+            },
+            "core_share_flag": {
+              "const": "within-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 4.0
+            },
+            "maturity_flag": {
+              "const": "within-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "wholesale"
+            },
+            "core_share_cap": {
+              "const": 0.5
+            },
+            "core_maturity_cap_years": {
+              "const": 4.0
+            },
+            "core_share": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.5
+            },
+            "core_share_flag": {
+              "const": "within-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "exclusiveMinimum": 4.0
+            },
+            "maturity_flag": {
+              "const": "above-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "wholesale"
+            },
+            "core_share_cap": {
+              "const": 0.5
+            },
+            "core_maturity_cap_years": {
+              "const": 4.0
+            },
+            "core_share": {
+              "type": "number",
+              "exclusiveMinimum": 0.5,
+              "maximum": 1
+            },
+            "core_share_flag": {
+              "const": "above-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 4.0
+            },
+            "maturity_flag": {
+              "const": "within-cap"
+            }
+          }
+        },
+        {
+          "properties": {
+            "category": {
+              "const": "wholesale"
+            },
+            "core_share_cap": {
+              "const": 0.5
+            },
+            "core_maturity_cap_years": {
+              "const": 4.0
+            },
+            "core_share": {
+              "type": "number",
+              "exclusiveMinimum": 0.5,
+              "maximum": 1
+            },
+            "core_share_flag": {
+              "const": "above-cap"
+            },
+            "core_maturity_years": {
+              "type": "number",
+              "exclusiveMinimum": 4.0
+            },
+            "maturity_flag": {
+              "const": "above-cap"
+            }
+          }
+        }
+      ]
+    },
+    "c14ShockSize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "parallel_bp",
+        "short_bp",
+        "long_bp",
+        "origin",
+        "label",
+        "method"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "parallel_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "short_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "long_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "srp31-table-2024",
+            "srp31-table-2016",
+            "cmf-annex1",
+            "contraste-estimate"
+          ]
+        },
+        "label": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c14Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "method": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The shock sizes applied to a currency, in basis points. A currency without an entry in the BCBS table (CLP is not in either) passes only labelled as a Contraste estimate with its method, never as a regulatory parameter (dossier 01 H.3).",
+      "oneOf": [
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "type": "string",
+              "enum": [
+                "ARS",
+                "AUD",
+                "BRL",
+                "CAD",
+                "CHF",
+                "CNY",
+                "EUR",
+                "GBP",
+                "HKD",
+                "IDR",
+                "INR",
+                "JPY",
+                "KRW",
+                "MXN",
+                "RUB",
+                "SAR",
+                "SEK",
+                "SGD",
+                "TRY",
+                "USD",
+                "ZAR"
+              ]
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "type": "string",
+              "enum": [
+                "ARS",
+                "AUD",
+                "BRL",
+                "CAD",
+                "CHF",
+                "CNY",
+                "EUR",
+                "GBP",
+                "HKD",
+                "IDR",
+                "INR",
+                "JPY",
+                "KRW",
+                "MXN",
+                "RUB",
+                "SAR",
+                "SEK",
+                "SGD",
+                "TRY",
+                "USD",
+                "ZAR"
+              ]
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "cmf-annex1"
+            },
+            "currency": {
+              "type": "string",
+              "enum": [
+                "CLP",
+                "CLF"
+              ]
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "contraste-estimate"
+            },
+            "label": {
+              "$ref": "#/$defs/c14Label"
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "c14Outlier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "threshold_share_tier1",
+        "tier1",
+        "eve_risk_measure",
+        "ratio",
+        "breached",
+        "reference"
+      ],
+      "properties": {
+        "threshold_share_tier1": {
+          "const": 0.15
+        },
+        "tier1": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "eve_risk_measure": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "ratio": {
+          "type": "number",
+          "minimum": 0
+        },
+        "breached": {
+          "type": "boolean"
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The outlier test: the EVE risk measure against 15 percent of Tier 1 capital (SRP31.82 to SRP31.83)."
+    },
+    "c14Bank": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "cert",
+        "aggregates",
+        "behaviour",
+        "notice"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cert": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "aggregates": {
+          "const": "real"
+        },
+        "behaviour": {
+          "const": "synthetic"
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The bank of the case (real FDIC aggregates, synthetic behaviour: SDD section 5)."
+    },
+    "c14Report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "report_date",
+        "source",
+        "fields"
+      ],
+      "properties": {
+        "report_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      },
+      "description": "One FDIC call-report quarter read for the case and the financials fields taken from it."
+    },
+    "c14Data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "call_reports",
+        "data_cutoff",
+        "read_up_to_valuation_date",
+        "rule"
+      ],
+      "properties": {
+        "call_reports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c14Report"
+          },
+          "minItems": 1
+        },
+        "data_cutoff": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "read_up_to_valuation_date": {
+          "const": true
+        },
+        "rule": {
+          "$ref": "#/$defs/c14Label"
+        }
+      },
+      "description": "The call reports read for the valuation date. Never one dated after it: data_cutoff is the latest report date read and is on or before the valuation date (a producer test checks the dates; a false flag fails)."
+    },
+    "c14Point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenor_years",
+        "observed_yield",
+        "zero_rate"
+      ],
+      "properties": {
+        "tenor_years": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "observed_yield": {
+          "type": "number"
+        },
+        "zero_rate": {
+          "type": "number"
+        }
+      },
+      "description": "One tenor of the curve: the observed par yield and the continuously compounded zero rate."
+    },
+    "c14Curve": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "date",
+        "source",
+        "observed_kind",
+        "compounding",
+        "interpolation",
+        "missing_tenors",
+        "points",
+        "zero_rates_at_midpoints"
+      ],
+      "properties": {
+        "date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observed_kind": {
+          "const": "par-yield"
+        },
+        "compounding": {
+          "const": "continuous"
+        },
+        "interpolation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "missing_tenors": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c14Point"
+          },
+          "minItems": 2
+        },
+        "zero_rates_at_midpoints": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 19,
+          "maxItems": 19,
+          "description": "Zero rate at each bucket midpoint, bucket 1 first."
+        }
+      },
+      "description": "The US Treasury par yield curve of the valuation date, bootstrapped to continuously compounded zero rates and read at the 19 midpoints. Tenors the date lacks are listed, never filled silently (dossier 08 C.2)."
+    },
+    "c14Item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_id",
+        "label",
+        "side",
+        "category",
+        "behavioural_class",
+        "repricing_type",
+        "source_field",
+        "reported_amount",
+        "reason_missing",
+        "slotting_assumption",
+        "amount",
+        "cash_flows"
+      ],
+      "properties": {
+        "item_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "side": {
+          "type": "string",
+          "enum": [
+            "asset",
+            "liability"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "cash",
+            "securities-htm",
+            "securities-afs",
+            "loans-fixed",
+            "loans-floating",
+            "other-assets",
+            "deposits-transactional",
+            "deposits-non-transactional",
+            "deposits-time",
+            "borrowings",
+            "other-liabilities"
+          ]
+        },
+        "behavioural_class": {
+          "type": "string",
+          "enum": [
+            "none",
+            "nmd-retail-transactional",
+            "nmd-retail-non-transactional",
+            "nmd-wholesale",
+            "term-deposit",
+            "prepayable-loan"
+          ]
+        },
+        "repricing_type": {
+          "type": "string",
+          "enum": [
+            "fixed",
+            "floating",
+            "non-maturity"
+          ]
+        },
+        "source_field": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reported_amount": {
+          "anyOf": [
+            {
+              "type": "number",
+              "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason_missing": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c14Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "slotting_assumption": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cash_flows": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "behavioural",
+            "contractual"
+          ],
+          "properties": {
+            "behavioural": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/c14Flow"
+              },
+              "minItems": 1
+            },
+            "contractual": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/c14Flow"
+              },
+              "minItems": 1
+            }
+          }
+        }
+      },
+      "description": "One balance-sheet item slotted into the buckets. A call-report item the FDIC financials lack has reported_amount null with its reason and the slotting assumption that replaces it, never a fabricated number; a reported item has no reason. cash_flows under behavioural and contractual (every NMD in the overnight bucket) are net notional flows.",
+      "oneOf": [
+        {
+          "properties": {
+            "reported_amount": {
+              "type": "number"
+            },
+            "reason_missing": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "reported_amount": {
+              "type": "null"
+            },
+            "reason_missing": {
+              "$ref": "#/$defs/c14Label"
+            }
+          }
+        }
+      ]
+    },
+    "c14BalanceSheet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "as_of",
+        "items",
+        "total_assets",
+        "total_liabilities"
+      ],
+      "properties": {
+        "as_of": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c14Item"
+          },
+          "minItems": 1
+        },
+        "total_assets": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "total_liabilities": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        }
+      },
+      "description": "The slotted balance sheet of the valuation date."
+    },
+    "c14GapRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bucket",
+        "midpoint_years",
+        "assets",
+        "liabilities",
+        "gap"
+      ],
+      "properties": {
+        "bucket": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 19,
+          "description": "Bucket of the 19 of SRP31.96 Table 3, 1 (overnight) to 19 (over 20 years)."
+        },
+        "midpoint_years": {
+          "type": "number",
+          "enum": [
+            0.0028,
+            0.0417,
+            0.1667,
+            0.375,
+            0.625,
+            0.875,
+            1.25,
+            1.75,
+            2.5,
+            3.5,
+            4.5,
+            5.5,
+            6.5,
+            7.5,
+            8.5,
+            9.5,
+            12.5,
+            17.5,
+            25.0
+          ],
+          "description": "Bucket midpoint in years: one of the 19 of SRP31.96 Table 3."
+        },
+        "assets": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "liabilities": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "gap": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        }
+      },
+      "description": "Repricing gap of one bucket: assets, liabilities and their difference (dossier 05 D.1)."
+    },
+    "c14DurationGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_value",
+        "liability_value",
+        "asset_duration_years",
+        "liability_duration_years",
+        "duration_gap_years",
+        "equity_change_100bp_up"
+      ],
+      "properties": {
+        "asset_value": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "liability_value": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "asset_duration_years": {
+          "type": "number",
+          "minimum": 0
+        },
+        "liability_duration_years": {
+          "type": "number",
+          "minimum": 0
+        },
+        "duration_gap_years": {
+          "type": "number"
+        },
+        "equity_change_100bp_up": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        }
+      },
+      "description": "Duration gap DGAP = D_A - (L / A) D_L and the first-order change in equity for +100 bp, -DGAP x A x 0.01 (dossier 05 D.2)."
+    },
+    "c14Ladder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nmd_assumption",
+        "repricing_gap",
+        "delta_nii_gap_100bp_up",
+        "duration_gap"
+      ],
+      "properties": {
+        "nmd_assumption": {
+          "type": "string",
+          "enum": [
+            "behavioural",
+            "contractual"
+          ]
+        },
+        "repricing_gap": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c14GapRow"
+          },
+          "minItems": 19,
+          "maxItems": 19
+        },
+        "delta_nii_gap_100bp_up": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "duration_gap": {
+          "$ref": "#/$defs/c14DurationGap"
+        }
+      },
+      "description": "Rungs 1 and 2 of the IRRBB ladder under one NMD assumption. delta_nii_gap_100bp_up is loss-positive: -sum over t_k < 1 of G_k x 0.01 x (1 - t_k)."
+    },
+    "c14ShockResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shock",
+        "shape_bp",
+        "floor_bound_buckets",
+        "net_cash_flows",
+        "eve",
+        "kao",
+        "delta_eve",
+        "delta_eve_share_tier1",
+        "delta_nii",
+        "delta_nii_reason"
+      ],
+      "properties": {
+        "shock": {
+          "type": "string",
+          "enum": [
+            "parallel-up",
+            "parallel-down",
+            "steepener",
+            "flattener",
+            "short-up",
+            "short-down"
+          ]
+        },
+        "shape_bp": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 19,
+          "maxItems": 19,
+          "description": "Shock in basis points at each bucket midpoint before the floor."
+        },
+        "floor_bound_buckets": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 19,
+            "description": "Bucket of the 19 of SRP31.96 Table 3, 1 (overnight) to 19 (over 20 years)."
+          },
+          "description": "Buckets where the post-shock floor binds."
+        },
+        "net_cash_flows": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+          },
+          "minItems": 19,
+          "maxItems": 19,
+          "description": "One value per bucket, bucket 1 first; net notional repricing cash flows, assets positive, liabilities negative."
+        },
+        "eve": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "kao": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "delta_eve": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "delta_eve_share_tier1": {
+          "type": "number"
+        },
+        "delta_nii": {
+          "anyOf": [
+            {
+              "type": "number",
+              "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delta_nii_reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c14Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The result of one prescribed shock: net_cash_flows are the scenario cash flows (the term-deposit redemption multiplier of SRP31.125 moves cash flows), eve = sum CF x exp(-R t), delta_eve = EVE_0 - EVE_i + KAO (positive is a loss). delta_nii exists for the two parallel shocks only (SRP31.90) and is null with its reason otherwise.",
+      "oneOf": [
+        {
+          "properties": {
+            "shock": {
+              "type": "string",
+              "enum": [
+                "parallel-up",
+                "parallel-down"
+              ]
+            },
+            "delta_nii": {
+              "type": "number"
+            },
+            "delta_nii_reason": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "shock": {
+              "type": "string",
+              "enum": [
+                "steepener",
+                "flattener",
+                "short-up",
+                "short-down"
+              ]
+            },
+            "delta_nii": {
+              "type": "null"
+            },
+            "delta_nii_reason": {
+              "$ref": "#/$defs/c14Label"
+            }
+          }
+        }
+      ]
+    },
+    "c14Scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "calibration",
+        "nmd_assumption",
+        "shock_size",
+        "floor",
+        "base_eve",
+        "shocks",
+        "eve_risk_measure",
+        "worst_shock",
+        "outlier"
+      ],
+      "properties": {
+        "calibration": {
+          "type": "string",
+          "enum": [
+            "2024",
+            "2016"
+          ]
+        },
+        "nmd_assumption": {
+          "type": "string",
+          "enum": [
+            "behavioural",
+            "contractual"
+          ]
+        },
+        "shock_size": {
+          "$ref": "#/$defs/c14ShockSize"
+        },
+        "floor": {
+          "anyOf": [
+            {
+              "type": "number",
+              "maximum": 0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Post-shock floor, not above zero (SRP31.93); null: none."
+        },
+        "base_eve": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "shocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c14ShockResult"
+          },
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "eve_risk_measure": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "worst_shock": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "parallel-up",
+                "parallel-down",
+                "steepener",
+                "flattener",
+                "short-up",
+                "short-down"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outlier": {
+          "$ref": "#/$defs/c14Outlier"
+        }
+      },
+      "description": "One calibration of the shock sizes under one NMD assumption: the six shocks in the order parallel-up, parallel-down, steepener, flattener, short-up, short-down, the EVE risk measure (the maximum over the six of the positive losses, SRP31.129) and its outlier test."
+    },
+    "c14Comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "calibration",
+        "shock",
+        "delta_eve_behavioural",
+        "delta_eve_contractual",
+        "difference"
+      ],
+      "properties": {
+        "calibration": {
+          "type": "string",
+          "enum": [
+            "2024",
+            "2016"
+          ]
+        },
+        "shock": {
+          "type": "string",
+          "enum": [
+            "parallel-up",
+            "parallel-down",
+            "steepener",
+            "flattener",
+            "short-up",
+            "short-down"
+          ]
+        },
+        "delta_eve_behavioural": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "delta_eve_contractual": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "difference": {
+          "type": "number",
+          "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        }
+      },
+      "description": "Delta EVE with and without the behavioural NMD assumptions, always reported (dossier 05 D.7); difference = behavioural minus contractual."
+    },
+    "c14Outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "valuation_date",
+        "quarter",
+        "currency",
+        "sign_convention",
+        "units",
+        "bank",
+        "data",
+        "curve",
+        "assumptions",
+        "nmd_segments",
+        "balance_sheet",
+        "ladder",
+        "scenarios",
+        "behavioural_comparison"
+      ],
+      "properties": {
+        "kind": {
+          "const": "valuation-date"
+        },
+        "valuation_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "quarter": {
+          "type": "string",
+          "pattern": "^\\d{4}-Q[1-4]$"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "sign_convention": {
+          "$ref": "#/$defs/c14Sign"
+        },
+        "units": {
+          "$ref": "#/$defs/c14Units"
+        },
+        "bank": {
+          "$ref": "#/$defs/c14Bank"
+        },
+        "data": {
+          "$ref": "#/$defs/c14Data"
+        },
+        "curve": {
+          "$ref": "#/$defs/c14Curve"
+        },
+        "assumptions": {
+          "$ref": "#/$defs/c14Assumptions"
+        },
+        "nmd_segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c14NmdSegment"
+          },
+          "minItems": 1
+        },
+        "balance_sheet": {
+          "$ref": "#/$defs/c14BalanceSheet"
+        },
+        "ladder": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c14Ladder"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "scenarios": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c14Scenario"
+          },
+          "minItems": 4,
+          "maxItems": 4,
+          "description": "2024 and 2016 calibrations, each with and without behavioural NMD."
+        },
+        "behavioural_comparison": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c14Comparison"
+          },
+          "minItems": 12,
+          "maxItems": 12
+        }
+      },
+      "description": "C14 valuation-date outputs (outputs.kind valuation-date): IRRBB on a USD balance sheet at one valuation date, the six shocks of SRP31.90 in two calibrations and with and without behavioural NMD. The variant is the valuation date (the call reports are dated); the calibration and the NMD assumption are rows inside it so a view toggles them on one balance sheet."
+    }
+  }
+}
