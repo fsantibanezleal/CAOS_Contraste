@@ -1,8 +1,9 @@
 // The Introduction opens on the executive view (ADR-0017 section 2.1; CAOS_MANAGE conventions/problem-context-first.md):
-// the shell's ExecutiveView rendering content/executive.json, written for one executive in one context (the chief risk
-// officer of a Chilean commercial bank, the CMF's proposed internal-model rules), every figure sourced in the file. It then
-// turns technical: the previous page under its five areas, problem, principles, math with its glossary, pipeline and honesty.
-import { Callout, Cite, DocPage, DocSection, Equation, ExecutiveView, Figure, Glossary, Tabs } from '@fasl-work/caos-app-shell';
+// the shell's ExecutiveView rendering content/executive.json, the industry problem of defending internal risk models
+// before supervisors (the pain, the context, the current situation, the trends, the proposal), general and never tied to a
+// client, every figure linked to its source in the file. It then turns technical: the previous page, its subsections as
+// sub-tabs (problem, principles, math with its glossary, pipeline, honesty, how to read the App, the six pages).
+import { Callout, Cite, DocPage, DocSection, Equation, ExecutiveView, Figure, Glossary, SubTabs, Tabs } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
 import { OverviewFigure } from '../architecture/figures';
 import { L, P, T, useT } from '../content/bi';
@@ -16,10 +17,14 @@ const Li = ({ en, es }: { en: ReactNode; es: ReactNode }) => (
   </li>
 );
 
+/** The technical view's subsections, each a sub-tab (a page with subsections is never one long scroll). */
 function Technical() {
   const t = useT();
-  return (
-    <>
+  const tabs = [
+    {
+      id: 'problem',
+      label: t('What Contraste is', 'Qué es Contraste'),
+      content: (
       <DocSection area="problem" title={{ en: 'What Contraste is', es: 'Qué es Contraste' }} refs={['sr117', 'sr262', 'ss123', 'ecb2019']}>
         <P
           en={<>A bank's financial, risk and analytical models must be technically robust, compliant with the regulation that applies to them, and used appropriately in decisions. The people who build them and the people who validate them independently need the same things: the model families done properly, the full battery of validation tests with their exact formulas and references, the model's regulatory and accounting impact, and a record of what was found. Contraste is that workbench, for authored cases built on public data and on generators whose truth is known.</>}
@@ -33,7 +38,12 @@ function Technical() {
           <OverviewFigure />
         </Figure>
       </DocSection>
-
+      ),
+    },
+    {
+      id: 'principles',
+      label: t('The principles', 'Los principios'),
+      content: (
       <DocSection area="principles" title={{ en: 'The principles', es: 'Los principios' }} refs={['ecb2019']}>
         <P
           en={<>Three principles decide what a case is allowed to claim. First, every fit and every test runs on a leakage-safe partition: a locked stratified holdout of 30%, a calibration slice of 20% of the rest that is disjoint from it, and a training slice where every binning, weight of evidence, rule, hyperparameter and fit is learned, with repeated stratified five-fold cross-validation inside it for each choice a rung makes. Nothing the holdout holds is ever used to choose or to fit.</>}
@@ -51,7 +61,12 @@ function Technical() {
           ]}
         />
       </DocSection>
-
+      ),
+    },
+    {
+      id: 'math',
+      label: t('The mathematics', 'Las matemáticas'),
+      content: (
       <DocSection area="math" title={{ en: 'The mathematics', es: 'Las matemáticas' }} refs={['wp14', 'bcbs2005irb', 'vasicek2002']}>
         <P
           en={<>Four quantities carry the product: how often a test rejects, how sure that rate is, how well a score ranks, and what a PD costs in capital.</>}
@@ -92,7 +107,12 @@ function Technical() {
           ]}
         />
       </DocSection>
-
+      ),
+    },
+    {
+      id: 'pipeline',
+      label: t('The pipeline', 'El pipeline'),
+      content: (
       <DocSection area="pipeline" title={{ en: 'The pipeline', es: 'El pipeline' }} noRefsReason={{ en: 'Describes this repository.', es: 'Describe este repositorio.' }}>
         <ol>
           <Li en="Ingest: a fetched public source is read through the input contract, which checks every field's kind, unit and range, and the licence class of the source decides what may be committed." es="Ingesta: una fuente pública descargada se lee a través del contrato de entrada, que revisa el tipo, la unidad y el rango de cada campo, y la clase de licencia de la fuente decide qué puede comprometerse." />
@@ -102,7 +122,12 @@ function Technical() {
           <Li en="Show: the web replays the committed artifacts and recomputes live what is light and exact, such as a scorecard, a policy light or the capital at any approval rate; a case not built yet says so." es="Muestra: la web reproduce los artefactos comprometidos y recalcula en vivo lo que es liviano y exacto, como una scorecard, una luz de política o el capital a cualquier tasa de aprobación; un caso aún no construido lo dice." />
         </ol>
       </DocSection>
-
+      ),
+    },
+    {
+      id: 'honesty',
+      label: t('What is exact, and what is not', 'Qué es exacto y qué no'),
+      content: (
       <DocSection area="honesty" title={{ en: 'What is exact, and what is not', es: 'Qué es exacto y qué no' }} noRefsReason={{ en: 'States the product\'s limits.', es: 'Declara los límites del producto.' }}>
         <P
           en="What is exact: the formulas and constants of each test as the engine runs them, the reproduction of published tables with the gap recorded, and every number a view draws, which comes from a committed artifact or from a recomputation that a test compares with the pipeline. What is illustrative: the generators, whose truth is known because it is assumed, the synthetic institutions, which are labelled as such, and the cases still planned, which show no number at all."
@@ -120,7 +145,13 @@ function Technical() {
           />
         </Callout>
       </DocSection>
-
+      ),
+    },
+    {
+      id: 'read',
+      label: t('Reading the App and the site', 'Leer la App y el sitio'),
+      content: (
+        <>
       <DocSection title={{ en: 'How to read the App', es: 'Cómo leer la App' }} noRefsReason={{ en: 'Describes this interface.', es: 'Describe esta interfaz.' }}>
         <P
           en="The App is one workbench. The rail on the left holds what you choose and what you read: the case, its variant, and the case's live inputs in sections, each with a read-out that moves with its controls. The instrument beside it has one row of groups: Model, Validation, Impact, Findings, Variants and Context."
@@ -134,8 +165,8 @@ function Technical() {
       <DocSection title={{ en: 'The six pages', es: 'Las seis páginas' }} noRefsReason={{ en: 'Describes this site.', es: 'Describe este sitio.' }}>
         <L
           items={[
-            { en: 'App: the workbench, the landing page.', es: 'App: el banco de trabajo, la página de inicio.' },
-            { en: 'Introduction: what Contraste is and how to read it (this page).', es: 'Introducción: qué es Contraste y cómo leerlo (esta página).' },
+            { en: 'Introduction: the landing page, with the executive view of the problem first and then the technical view (this page).', es: 'Introducción: la página de inicio, con la vista ejecutiva del problema primero y luego la vista técnica (esta página).' },
+            { en: 'App: the workbench, opened from the navigation or from the link at the end of the executive view.', es: 'App: el banco de trabajo, que se abre desde la navegación o desde el enlace al final de la vista ejecutiva.' },
             { en: 'Methodology: the model families and the validation tests, with their equations, assumptions and sources.', es: 'Metodología: las familias de modelos y las pruebas de validación, con sus ecuaciones, supuestos y fuentes.' },
             { en: 'Implementation: the pipeline, the contracts, the sources and their licences, the lanes, the engine and the gates.', es: 'Implementación: el pipeline, los contratos, las fuentes y sus licencias, los carriles, el motor y las compuertas.' },
             { en: 'Experiments: the coverage of the 22 cases and, case by case, every variant read from its artifacts.', es: 'Experimentos: la cobertura de los 22 casos y, caso por caso, cada variante leída desde sus artefactos.' },
@@ -143,8 +174,11 @@ function Technical() {
           ]}
         />
       </DocSection>
-    </>
-  );
+        </>
+      ),
+    },
+  ];
+  return <SubTabs ariaLabel={t('Parts of the technical view', 'Partes de la vista técnica')} tabs={tabs} />;
 }
 
 export function Introduction() {
@@ -153,8 +187,8 @@ export function Introduction() {
     <DocPage
       title={{ en: 'Introduction', es: 'Introducción' }}
       lede={t(
-        'Build financial risk models, then validate them the way a model risk function and a supervisor would: this page opens with what is at stake for the chief risk officer of a Chilean bank, and then turns to the problem, the principles, the mathematics, the pipeline and the limits of the work.',
-        'Construir modelos de riesgo financiero y validarlos como lo harían una función de riesgo de modelos y un supervisor: esta página abre con lo que está en juego para el gerente de riesgos de un banco chileno, y luego pasa al problema, los principios, las matemáticas, el pipeline y los límites del trabajo.',
+        'The industry problem of defending internal risk models before supervisors, framed for decision makers: the pain, its context, the current situation, the trends and a proposal. The technical view then shows how the work explores it.',
+        'El problema de la industria de defender ante los supervisores los modelos internos de riesgo, planteado para quienes deciden: el problema, su contexto, la situación actual, las tendencias y una propuesta. La vista técnica muestra luego cómo lo explora el trabajo.',
       )}
     >
       <NoTranslateRefs />
