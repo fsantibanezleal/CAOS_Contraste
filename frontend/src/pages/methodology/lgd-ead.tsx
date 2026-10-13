@@ -35,8 +35,8 @@ function LgdFigure() {
       <text className="dg-marker-label" x={x(0)} y={base + 20} textAnchor="middle">0</text>
       <text className="dg-marker-label" x={x(1)} y={base + 20} textAnchor="middle">1</text>
       <text className="dg-tick" x={x(0.5)} y={base + 20} textAnchor="middle">{t('0.5', '0,5')}</text>
-      <text className="dg-axis-label" x={x(0) + 6} y={32} textAnchor="start">{t('mass at exactly 0', 'masa en exactamente 0')}</text>
-      <text className="dg-axis-label" x={x(1) - 6} y={32} textAnchor="end">{t('mass at exactly 1', 'masa en exactamente 1')}</text>
+      <text className="dg-axis-label" x={x(0) + 6} y={32} textAnchor="start">{t('mass at 0', 'masa en 0')}</text>
+      <text className="dg-axis-label" x={x(1) - 6} y={32} textAnchor="end">{t('mass at 1', 'masa en 1')}</text>
       <text className="dg-note" x={x(-0.15)} y={base - 20} textAnchor="start">{t('below 0', 'bajo 0')}</text>
       <text className="dg-note" x={x(1.15)} y={base - 30} textAnchor="end">{t('above 1', 'sobre 1')}</text>
       <text className="dg-axis-label" x={W / 2} y={base + 44} textAnchor="middle">{t('LGD, flagged and counted outside 0 and 1, never clipped', 'LGD, marcada y contada fuera de 0 y 1, nunca recortada')}</text>
