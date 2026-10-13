@@ -55,6 +55,8 @@ Contraste now validates loss severity and exposure, and its executive view frame
 - The Introduction's technical view shows its subsections as sub-tabs (six, with the two reading guides merged to stay within six peers); its lede no longer names a role or a country.
 - Three new hand-authored illustrations (`pain`, `situation`, `proposal`) replace the three of the previous view; the pain and the proposal share one setting. The executive test now holds schema 2.0.0, the headline figure and its link, the general wording, the depth and the illustrations.
 - The SDD's executive section names the data file and restates nothing.
+- CI: the checks job installs the web dependencies and the schema validator before the SDD guard, as template 0.07.000
+  does, since the guard validates `content/executive.json` against the shell's installed schema.
 
 ## [0.09.001], 2026-10-13
 
