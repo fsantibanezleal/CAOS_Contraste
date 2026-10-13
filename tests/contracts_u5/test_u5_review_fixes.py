@@ -16,7 +16,7 @@ from typing import Any
 import pytest
 
 import contract_schemas as cs
-from test_u5_contracts import API, EXPECTED, FIXTURES, ROOT, ROWS, SCHEMAS, api_sections, load
+from test_u5_contracts import API, EXPECTED, ROOT, ROWS, SCHEMAS, api_sections, load
 
 C06 = "c06/variant-reporting-date"
 C07 = "c07/variant-three-regime"
