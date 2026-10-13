@@ -2809,6 +2809,733 @@ export interface components {
             reference: string;
         };
         /**
+         * C11 models
+         * @description Catalog row c11-models 1.0.0: the C11 models artifact (windows and spans, the ladder with its fitted parameters, the Basel bands, the ES reference points).
+         */
+        "c11-models": components["schemas"]["common-models-envelope"] & {
+            /** @constant */
+            case_id: "C11";
+            fit: components["schemas"]["c11Fit"];
+        };
+        /**
+         * C11 window variant
+         * @description Catalog row c11-outputs 1.0.0: one window of the market VaR and ES back-testing case (outputs.kind window), strictly rolling, on public daily series.
+         */
+        "c11-variant-window": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C11";
+            outputs: components["schemas"]["c11Outputs"];
+        } & {
+            tests?: unknown;
+        };
+        /** @description The champion at a level: the lowest average FZ0 among the eligible models with a score; null, with its reason, when there is none. */
+        c11Champion: {
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+            model_id: string | null;
+            reason: string | null;
+        } & ({
+            model_id?: string;
+            reason?: null;
+        } | {
+            model_id?: null;
+            reason?: string;
+        });
+        /** @description Eligibility first, then the comparative back-test of Nolde and Ziegel: DM against the champion and the MCS. */
+        c11Comparison: {
+            significance: number;
+            /** @constant */
+            hac_kernel: "bartlett";
+            champions: components["schemas"]["c11Champion"][];
+            dm: components["schemas"]["c11DmRow"][];
+            mcs: components["schemas"]["c11McsSet"][];
+        };
+        /** @description A component of the window's stated portfolio and the licence class of its source (dossier 08 C.5, C.2, C.8). */
+        c11Component: {
+            series_id: string;
+            label: components["schemas"]["common-text"];
+            /** @enum {string} */
+            source_class: "derived-only" | "mirror-allowed";
+            weight: number;
+            /** @description How the series becomes a return of the portfolio (a log return, a duration times a yield change). */
+            transform: string;
+        };
+        c11DataStatus: {
+            first_observation: string;
+            last_observation: string;
+            n_observed_days: number;
+            missing_days: components["schemas"]["c11MissingDays"];
+        };
+        /** @description A Diebold-Mariano comparison of one model against the champion (dossier 05 B.6) under FZ0 or the tick loss. */
+        c11DmRow: {
+            model_id: string;
+            versus: string;
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+            /** @enum {string} */
+            loss: "fz0" | "tick";
+            /** @description Mean loss differential, model minus champion, on the common sample: negative is better. */
+            mean_diff: number | null;
+            dm_statistic: number | null;
+            p_value: number | null;
+            hac_lags: number;
+            /** @description Days where every compared forecast is defined. */
+            n_common: number | null;
+            /** @enum {string} */
+            direction: "better" | "worse" | "indistinguishable" | "not-evaluated";
+            not_evaluated_reason: string | null;
+        } & ({
+            mean_diff?: number;
+            dm_statistic?: number;
+            /** @description A probability in [0, 1]. */
+            p_value?: number;
+            n_common?: number;
+            /** @enum {string} */
+            direction?: "better" | "worse" | "indistinguishable";
+            not_evaluated_reason?: null;
+        } | {
+            mean_diff?: null;
+            dm_statistic?: null;
+            p_value?: null;
+            n_common?: null;
+            /** @constant */
+            direction?: "not-evaluated";
+            not_evaluated_reason?: string;
+        });
+        /** @description The simulated null distribution of the Acerbi-Szekely Z2 for one model, with the realised statistic (dossier 05 B.5). */
+        c11EsNull: {
+            model_id: string;
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+            /** @constant */
+            statistic: "Z2";
+            realised: number;
+            /** @description Simulated per model: Z2 at the 5 percent quantile of the null (yellow). */
+            critical_5pct: number;
+            /** @description Simulated per model: Z2 at the 0.01 percent quantile of the null (red). */
+            critical_0_01pct: number;
+            n_draws: number;
+            /** @description A probability in [0, 1]. */
+            p_value: number;
+            histogram: components["schemas"]["c11Histogram"];
+        };
+        /** @description The published reference points of Acerbi and Szekely for Z2 (dossier 05 B.5): a reference, never a regulatory threshold; each model's own simulated critical values are in the outputs. */
+        c11EsReference: {
+            /** @constant */
+            statistic: "Z2";
+            /** @constant */
+            n_days: 250;
+            /** @constant */
+            alpha: 0.025;
+            /** @constant */
+            yellow: -0.7;
+            /** @constant */
+            red: -1.8;
+            status: components["schemas"]["common-text"];
+        };
+        /** @description The C11 models document: the six windows, the ladder, the bands and the reference points the views draw. */
+        c11Fit: {
+            sign_convention: components["schemas"]["c11SignConvention"];
+            levels: components["schemas"]["c11Level"][];
+            windows: components["schemas"]["c11WindowPlan"][];
+            ladder: components["schemas"]["c11Rung"][];
+            traffic_light: components["schemas"]["c11TrafficTable"];
+            es_reference: components["schemas"]["c11EsReference"];
+            scoring: components["schemas"]["c11Scoring"];
+            eligibility_gates: components["schemas"]["c11Gate"][];
+            data_sources: components["schemas"]["c11Source"][];
+        };
+        /** @description An eligibility gate: the model is ineligible when the row of this test is red at any level. */
+        c11Gate: {
+            test_id: string;
+            rule: components["schemas"]["common-text"];
+        };
+        /** @description The forecast grid shared by every model: dates once, the estimation window of each day, the realised losses. */
+        c11Grid: {
+            /** @constant */
+            scheme: "rolling";
+            /** @description The maximum look-back, in observed days; each rung's own window is in the models document. */
+            estimation_window_days: number;
+            /** @description The forecast days, strictly increasing, missing days skipped. */
+            dates: string[];
+            /** @description First day of the estimation window of each forecast day. */
+            estimation_start: string[];
+            /** @description Last day of the estimation window of each forecast day: strictly before the forecast day (the forecast for day t uses data to t-1; a producer check, since a date comparison is not a JSON Schema rule). */
+            estimation_end: string[];
+            realised_loss: components["schemas"]["c11Realised"];
+        };
+        c11Histogram: {
+            edges: number[];
+            counts: number[];
+        };
+        /** @description The hyperparameters (window length, lambda, EVT threshold fraction) fixed on the span, never tuned on a test window. */
+        c11Hyperparameters: {
+            fixed_on: components["schemas"]["c11Span"];
+            /** @constant */
+            tuned_on_test_window: false;
+            estimation_window_days: number;
+            ewma_lambda: number;
+            age_weight_lambda: number;
+            evt_threshold_fraction: number;
+            garch_refit_every_days: number;
+            others: {
+                name: string;
+                value: number;
+                unit: string;
+            }[];
+        };
+        /** @description A tail level of the return convention: 0.01 (99 percent VaR, the Basel level) or 0.025 (97.5 percent, the FRTB ES level). */
+        c11Level: {
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+        };
+        /** @description One model at one tail level: its forecasts, exceedances, scores and traffic light. */
+        c11LevelResult: {
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+            /** @description One-step VaR forecast per grid day, a positive loss. */
+            var: number[];
+            /** @description One-step ES forecast per grid day, a positive loss not below the VaR; null on a day the ES is undefined (conditional EVT with xi at or above 1) or for a model that forecasts no ES. */
+            es: (number | null)[];
+            /** @enum {string} */
+            es_status: "forecast" | "undefined-on-days" | "not-forecast";
+            /** @description Indices into the grid of the days the ES is undefined. */
+            es_undefined_days: number[];
+            /** @description Indices into the grid of the days the loss exceeded the VaR. */
+            exceedance_days: number[];
+            n_scored: number;
+            n_exceedances: number;
+            /** @description alpha times n_scored. */
+            expected_exceedances: number;
+            /** @description Days with both VaR and ES defined: the sample of the FZ0 average. */
+            n_fz0: number;
+            /** @description Average FZ0 loss (dossier 05 A.1) over the n_fz0 days; null when no day has an ES. */
+            fz0_mean: number | null;
+            fz0_reason: string | null;
+            /** @description Average tick loss of the VaR over the n_scored days. */
+            tick_loss_mean: number;
+            /** @description At alpha 0.01 only; null at 0.025. */
+            traffic_light: components["schemas"]["c11TrafficLight"] | null;
+            /** @description The test rows of this model and level (segment alpha=<alpha>). */
+            test_ids: string[];
+        } & (({
+            /** @constant */
+            es_status?: "forecast";
+            es_undefined_days?: number[];
+        } | {
+            /** @constant */
+            es_status?: "undefined-on-days";
+            es_undefined_days?: number[];
+        } | {
+            /** @constant */
+            es_status?: "not-forecast";
+            es_undefined_days?: number[];
+        }) & ({
+            fz0_mean?: number;
+            fz0_reason?: null;
+        } | {
+            fz0_mean?: null;
+            fz0_reason?: string;
+        }) & ({
+            /** @constant */
+            alpha?: 0.01;
+            traffic_light?: components["schemas"]["c11TrafficLight"];
+        } | {
+            /** @constant */
+            alpha?: 0.025;
+            traffic_light?: null;
+        }));
+        c11McsMember: {
+            model_id: string;
+            in_set: boolean;
+            /** @description A probability in [0, 1]. */
+            p_value: number;
+        };
+        /** @description The model confidence set on FZ0 at one level (Hansen, Lunde and Nason 2011; dossier 05 B.6). */
+        c11McsSet: {
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+            /** @constant */
+            loss: "fz0";
+            /** @enum {string} */
+            statistic: "Tmax" | "TR";
+            confidence: number;
+            n_bootstrap: number;
+            block_length: number;
+            members: components["schemas"]["c11McsMember"][];
+            n_in_set: number;
+        };
+        /** @description A day missing from a public series (a holiday, a gap) is skipped in the rolling window and counted here, never filled. */
+        c11MissingDays: {
+            count: number;
+            dates: string[];
+            /** @constant */
+            treatment: "skipped-not-filled";
+        };
+        /** @description One model of the ladder in this window; eligible when no eligibility-gate row is red (the traditional back-tests of dossier 05 'Champion selection rule'). */
+        c11ModelOutput: {
+            model_id: string;
+            rung: string;
+            eligible: boolean;
+            failed_gates: string[];
+            by_level: components["schemas"]["c11LevelResult"][];
+        };
+        /** @description The C11 window document: market VaR and ES forecasts of the ladder, strictly rolling, and their back-tests. */
+        c11Outputs: {
+            /** @constant */
+            kind: "window";
+            window: components["schemas"]["c11Window"];
+            sign_convention: components["schemas"]["c11SignConvention"];
+            levels: components["schemas"]["c11Level"][];
+            portfolio: components["schemas"]["c11Portfolio"];
+            data_status: components["schemas"]["c11DataStatus"];
+            grid: components["schemas"]["c11Grid"];
+            hyperparameters: components["schemas"]["c11Hyperparameters"];
+            models: components["schemas"]["c11ModelOutput"][];
+            comparison: components["schemas"]["c11Comparison"];
+            es_backtests: components["schemas"]["c11EsNull"][];
+        };
+        /** @description A fitted parameter across the refits of a window: minimum, median and maximum. */
+        c11Parameter: {
+            name: string;
+            min: number;
+            median: number;
+            max: number;
+            unit: string;
+        };
+        /** @description The portfolio stated for the window; returns and losses are decimals of its value. */
+        c11Portfolio: {
+            description: components["schemas"]["common-text"];
+            /** @constant */
+            value_unit: "decimal-of-portfolio-value";
+            /** @description ISO 4217 code of the portfolio. */
+            currency: string;
+            /** @enum {string} */
+            weighting: "constant-weights-daily-rebalanced" | "buy-and-hold";
+            components: components["schemas"]["c11Component"][];
+        };
+        /** @description The realised loss per forecast day (positive number, a decimal of the portfolio value). Withheld, with its reason, when a component of the portfolio is derived-only (dossier 08 C.5: only model outputs are committed). */
+        c11Realised: {
+            /** @enum {string} */
+            status: "included" | "withheld-derived-only";
+            loss: number[] | null;
+            reason: string | null;
+        } & ({
+            /** @constant */
+            status?: "included";
+            loss?: number[];
+            reason?: null;
+        } | {
+            /** @constant */
+            status?: "withheld-derived-only";
+            loss?: null;
+            reason?: string;
+        });
+        /** @description A rung of the market ladder (dossier 05 'Method ladders': rungs 1 to 10; rung 10 is a challenger only). */
+        c11Rung: {
+            model_id: string;
+            rung: string;
+            title: components["schemas"]["common-text"];
+            family: string;
+            /** @description The primary source of the method (dossier 05 A.2). */
+            source: string;
+            /** @enum {string} */
+            status: "fitted" | "challenger-not-run";
+            not_run_reason: string | null;
+            /** @enum {string} */
+            innovation: "none" | "normal" | "student-t" | "skew-t" | "gpd-tail" | "empirical";
+            estimation_window_days: number | null;
+            refit_every_days: number | null;
+            forecasts_es: boolean;
+            es_method: string;
+            window_fits: components["schemas"]["c11RungWindowFit"][];
+        } & ({
+            /** @constant */
+            status?: "fitted";
+            not_run_reason?: null;
+        } | {
+            /** @constant */
+            status?: "challenger-not-run";
+            not_run_reason?: string;
+            window_fits?: components["schemas"]["c11RungWindowFit"][];
+        });
+        c11RungWindowFit: {
+            window_id: string;
+            n_refits: number;
+            n_convergence_failures: number;
+            parameters: components["schemas"]["c11Parameter"][];
+        };
+        c11Scoring: {
+            fz0_formula: string;
+            tick_formula: string;
+            /** @constant */
+            hac_kernel: "bartlett";
+            mcs_confidence: number;
+            /** @enum {string} */
+            mcs_statistic: "Tmax" | "TR";
+            selection_rule: components["schemas"]["common-text"];
+        };
+        /** @description The sign convention, a required field of every C11 document (dossier 05 A.0): the engine stores the return convention (VaR and ES negative at the tail level alpha 0.01 or 0.025, needed by the FZ0 loss) and the document stores positive loss numbers, the conversion made once at the reporting layer. The definition states both in words. */
+        c11SignConvention: {
+            /** @constant */
+            engine_convention: "return-negative";
+            /** @constant */
+            document_convention: "positive-loss";
+            definition: components["schemas"]["common-text"] & {
+                en?: unknown;
+                es?: unknown;
+            };
+        };
+        c11Source: {
+            series_id: string;
+            title: components["schemas"]["common-text"];
+            /** @enum {string} */
+            source_class: "derived-only" | "mirror-allowed";
+            url: string;
+            licence_note: components["schemas"]["common-text"];
+        };
+        /** @description The span on which the hyperparameters were fixed: it ends before 2007 and before the window it serves. */
+        c11Span: {
+            /** @description A date before 2007-01-01: the hyperparameters are fixed on a pre-2007 span (SDD C11). */
+            start: string;
+            /** @description A date before 2007-01-01: the hyperparameters are fixed on a pre-2007 span (SDD C11). */
+            end: string;
+        };
+        /** @description The Basel traffic light at the 99 percent level over rolling 250-day windows (MAR32.9): the zone of each complete window and the days spent in each zone. With fewer than 250 forecast days it is not evaluated, with its reason. */
+        c11TrafficLight: {
+            /** @constant */
+            window_days: 250;
+            n_windows: number;
+            max_rolling_exceedances: number | null;
+            final_rolling_exceedances: number | null;
+            /** @enum {string} */
+            final_zone: "green" | "amber" | "red" | "not_evaluated";
+            days_green: number | null;
+            days_amber: number | null;
+            days_red: number | null;
+            reason: string | null;
+        } & ({
+            n_windows?: number;
+            max_rolling_exceedances?: number;
+            final_rolling_exceedances?: number;
+            /** @enum {string} */
+            final_zone?: "green" | "amber" | "red";
+            days_green?: number;
+            days_amber?: number;
+            days_red?: number;
+            reason?: null;
+        } | {
+            /** @constant */
+            final_zone?: "not_evaluated";
+            max_rolling_exceedances?: null;
+            final_rolling_exceedances?: null;
+            days_green?: null;
+            days_amber?: null;
+            days_red?: null;
+            reason?: string;
+        });
+        c11TrafficRow: {
+            /** @description The number of exceptions in 250 days; 10 stands for ten or more. */
+            exceptions: number;
+            /** @enum {string} */
+            zone: "green" | "amber" | "red";
+            /** @description The backtesting-dependent multiplier m_c of MAR32.9 Table 1. */
+            frtb_multiplier: number;
+            /** @description The US multiplication factor of 12 CFR 217.204 Table 1 (dossier 05 B.4). */
+            us_multiplier: number;
+            /** @description P(X <= exceptions), X ~ Bin(250, 0.01), in percent (MAR32.9 Table 1). */
+            cumulative_probability_pct: number;
+        };
+        /** @description MAR32.9 Table 1 with the US factors (dossier 01 D.4, dossier 05 B.4); the reference for every traffic-light band. */
+        c11TrafficTable: {
+            /** @constant */
+            window_days: 250;
+            /** @constant */
+            confidence: 0.99;
+            reference: string;
+            rows: components["schemas"]["c11TrafficRow"][];
+        };
+        /** @description One of the six windows of SDD C11; the variant id is the window id. */
+        c11Window: {
+            /** @enum {string} */
+            window_id: "equity-2007-09" | "equity-2020" | "rates-2022" | "fx-2008" | "mixed-2023" | "calm-2004-06";
+            /** @enum {string} */
+            asset_class: "equity" | "rates" | "fx" | "mixed";
+            title: components["schemas"]["common-text"];
+            start_date: string;
+            end_date: string;
+            n_forecast_days: number;
+        };
+        /** @description A window and the span on which its hyperparameters were fixed (before the window starts and before 2007). */
+        c11WindowPlan: {
+            /** @enum {string} */
+            window_id: "equity-2007-09" | "equity-2020" | "rates-2022" | "fx-2008" | "mixed-2023" | "calm-2004-06";
+            /** @enum {string} */
+            asset_class: "equity" | "rates" | "fx" | "mixed";
+            start_date: string;
+            end_date: string;
+            fixed_on: components["schemas"]["c11Span"];
+        };
+        /**
+         * C13 models
+         * @description Catalog row c13-models 1.0.0: the C13 models artifact (generator, the six planted deficiencies, the PLA thresholds, the desk limits).
+         */
+        "c13-models": components["schemas"]["common-models-envelope"] & {
+            /** @constant */
+            case_id: "C13";
+            fit: components["schemas"]["c13Fit"];
+        };
+        /**
+         * C13 deficiency variant
+         * @description Catalog row c13-outputs 1.0.0: one planted model deficiency of the FRTB desk eligibility case (outputs.kind deficiency), on a generator whose truth is known.
+         */
+        "c13-variant-deficiency": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C13";
+            outputs: components["schemas"]["c13Outputs"];
+        } & {
+            tests?: unknown;
+        };
+        /** @description One planted deficiency and how the generator plants it. */
+        c13DeficiencyPlan: {
+            /** @enum {string} */
+            deficiency_id: "none" | "missing-basis" | "stale-volatility" | "wrong-correlation" | "omitted-factor" | "time-misalignment";
+            planted: boolean;
+            mechanism: components["schemas"]["common-text"];
+            parameters: {
+                name: string;
+                value: number;
+                unit: string;
+            }[];
+            /** @enum {string} */
+            intended_to_fail: "none" | "spearman" | "ks" | "either";
+        };
+        /** @description Desk back-testing at one level (MAR32.18 to 19): the exception count over 250 days against the limit (more than 12 at 99 percent or 30 at 97.5 percent moves the desk to the standardised approach). */
+        c13DeskLevel: {
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+            /** @enum {string} */
+            basis: "APL" | "HPL";
+            limit_exceptions: number;
+            /** @constant */
+            n_days: 250;
+            exceptions: components["schemas"]["c13Dist"];
+            n_within_limit: number;
+            n_over_limit: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            share_over_limit: number;
+        } & ({
+            /** @constant */
+            alpha?: 0.01;
+            /** @constant */
+            limit_exceptions?: 12;
+        } | {
+            /** @constant */
+            alpha?: 0.025;
+            /** @constant */
+            limit_exceptions?: 30;
+        });
+        c13DeskLimit: {
+            /** @enum {number} */
+            alpha: 0.01 | 0.025;
+            limit_exceptions: number;
+            reference: string;
+        };
+        /** @description The rate at which the PLA catches the planted deficiency: its power; with no deficiency planted it is the false-alarm rate, the size. */
+        c13Detection: {
+            /** @enum {string} */
+            role: "size" | "power";
+            rule: components["schemas"]["common-text"];
+            n_replications: number;
+            n_amber_or_red: number;
+            n_red: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            share_amber_or_red: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            share_red: number;
+            /** @description The Monte Carlo standard error of share_amber_or_red. */
+            mc_se: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            ci_low: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            ci_high: number;
+            by_test: {
+                spearman_flagged: number;
+                ks_flagged: number;
+                desk_backtest_flagged: number;
+            };
+            /** @description Replications where the intended test flagged the desk; null when none was planted. */
+            intended_test_flagged: number | null;
+        };
+        /** @description The distribution of a statistic across the replications. */
+        c13Dist: {
+            mean: number;
+            sd: number;
+            q05: number;
+            q50: number;
+            q95: number;
+            min: number;
+            max: number;
+        };
+        /** @description One replication kept whole, for the rank scatter and the two ECDFs with the KS gap. */
+        c13Example: {
+            replication_index: number;
+            seed: number;
+            /** @description 250 daily HPL values, decimals of the notional. */
+            hpl: number[];
+            /** @description 250 daily RTPL values, decimals of the notional. */
+            rtpl: number[];
+            spearman: number;
+            ks: number;
+            /** @enum {string} */
+            zone: "green" | "amber" | "red";
+        };
+        /** @description The C13 models document: the generator, the six deficiencies it plants, the PLA and desk limits. */
+        c13Fit: {
+            sign_convention: components["schemas"]["c13SignConvention"];
+            generator: components["schemas"]["c13GeneratorSpec"];
+            deficiencies: components["schemas"]["c13DeficiencyPlan"][];
+            pla_thresholds: components["schemas"]["c13PlaThresholds"];
+            desk_limits: components["schemas"]["c13DeskLimit"][];
+            replication_plan: components["schemas"]["c13ReplicationPlan"];
+        };
+        /** @description The desk P&L generator with a known risk model; synthetic, labelled so on every view. */
+        c13Generator: {
+            name: string;
+            n_risk_factors: number;
+            /** @constant */
+            pnl_unit: "decimal-of-desk-notional";
+            /** @constant */
+            window_days: 250;
+            n_replications: number;
+            seed_base: number;
+            /** @constant */
+            seed_rule: "seed_base+replication_index";
+            notice: components["schemas"]["common-text"];
+        };
+        /** @description The desk P&L generator with a known risk model. */
+        c13GeneratorSpec: {
+            name: string;
+            true_risk_model: components["schemas"]["common-text"];
+            parameters: {
+                name: string;
+                value: number;
+                unit: string;
+            }[];
+            /** @constant */
+            pnl_unit: "decimal-of-desk-notional";
+            /** @constant */
+            window_days: 250;
+            /** @constant */
+            seed_rule: "seed_base+replication_index";
+            notice: components["schemas"]["common-text"];
+        };
+        /** @description The deficiency the generator planted in the desk's risk model: the known truth of the case, a required field. */
+        c13Known: {
+            /** @enum {string} */
+            deficiency_id: "none" | "missing-basis" | "stale-volatility" | "wrong-correlation" | "omitted-factor" | "time-misalignment";
+            planted: boolean;
+            mechanism: components["schemas"]["common-text"];
+            /** @description The planted severity, with units. */
+            parameters: {
+                name: string;
+                value: number;
+                unit: string;
+            }[];
+            /** @enum {string} */
+            intended_to_fail: "none" | "spearman" | "ks" | "either";
+        } & ({
+            /** @constant */
+            deficiency_id?: "none";
+            /** @constant */
+            planted?: false;
+            /** @constant */
+            intended_to_fail?: "none";
+        } | {
+            /** @enum {string} */
+            deficiency_id?: "missing-basis" | "stale-volatility" | "wrong-correlation" | "omitted-factor" | "time-misalignment";
+            /** @constant */
+            planted?: true;
+            /** @enum {string} */
+            intended_to_fail?: "spearman" | "ks" | "either";
+        });
+        /** @description The C13 deficiency document: the PLA and desk back-test of a desk whose model has one known planted deficiency. */
+        c13Outputs: {
+            /** @constant */
+            kind: "deficiency";
+            known_deficiency: components["schemas"]["c13Known"];
+            sign_convention: components["schemas"]["c13SignConvention"];
+            generator: components["schemas"]["c13Generator"];
+            pnl_summary: components["schemas"]["c13PnlSummary"][];
+            pla: components["schemas"]["c13Pla"];
+            example: components["schemas"]["c13Example"];
+            desk_backtest: components["schemas"]["c13DeskLevel"][];
+            detection: components["schemas"]["c13Detection"];
+        } & unknown;
+        c13Pla: {
+            thresholds: components["schemas"]["c13PlaThresholds"];
+            spearman: components["schemas"]["c13Dist"];
+            ks: components["schemas"]["c13Dist"];
+            zones: components["schemas"]["c13Zones"];
+        };
+        /** @description The zone boundaries of MAR32.42 and the ECDF step of MAR32.39 to 41 (dossier 01 D.4), transcribed. */
+        c13PlaThresholds: {
+            /** @constant */
+            spearman_green: 0.8;
+            /** @constant */
+            spearman_red: 0.7;
+            /** @constant */
+            ks_green: 0.09;
+            /** @constant */
+            ks_red: 0.12;
+            /** @constant */
+            ecdf_step: 0.004;
+            /** @constant */
+            window_days: 250;
+            /** @constant */
+            reference: "MAR32.42";
+        };
+        /** @description A summary of the desk's hypothetical (HPL) or risk-theoretical (RTPL) P&L, median across replications, decimals of the notional. */
+        c13PnlSummary: {
+            /** @enum {string} */
+            series: "HPL" | "RTPL";
+            mean: number;
+            sd: number;
+            skewness: number;
+            excess_kurtosis: number;
+            min: number;
+            max: number;
+        };
+        c13ReplicationPlan: {
+            n_replications: number;
+            seed_base: number;
+            /** @constant */
+            seed_rule: "seed_base+replication_index";
+        };
+        /** @description The sign convention, a required field of every C13 document (dossier 05 A.0): the engine stores the return convention (VaR and ES negative at the tail level alpha 0.01 or 0.025, needed by the FZ0 loss) and the document stores positive loss numbers, the conversion made once at the reporting layer. The definition states both in words. */
+        c13SignConvention: {
+            /** @constant */
+            engine_convention: "return-negative";
+            /** @constant */
+            document_convention: "positive-loss";
+            definition: components["schemas"]["common-text"] & {
+                en?: unknown;
+                es?: unknown;
+            };
+        };
+        c13ZoneCounts: {
+            green: number;
+            amber: number;
+            red: number;
+        };
+        /** @description The PLA zone counts across replications: of the joint MAR32.42 zone, of the Spearman statistic alone and of the KS statistic alone. */
+        c13Zones: {
+            n: number;
+            overall: components["schemas"]["c13ZoneCounts"];
+            spearman: components["schemas"]["c13ZoneCounts"];
+            ks: components["schemas"]["c13ZoneCounts"];
+        };
+        /**
          * C22 models
          * @description Catalog row c22-models 1.0.0: the C22 models artifact with the exact-probability parity points.
          */
@@ -3624,7 +4351,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c03-models"] | components["schemas"]["c03-variant-vintage-cohort"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c08-models"] | components["schemas"]["c08-variant-default-cohort"] | components["schemas"]["c09-models"] | components["schemas"]["c09-variant-acceleration-level"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
+                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c03-models"] | components["schemas"]["c03-variant-vintage-cohort"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c08-models"] | components["schemas"]["c08-variant-default-cohort"] | components["schemas"]["c09-models"] | components["schemas"]["c09-variant-acceleration-level"] | components["schemas"]["c11-models"] | components["schemas"]["c11-variant-window"] | components["schemas"]["c13-models"] | components["schemas"]["c13-variant-deficiency"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
                 };
             };
             404: components["responses"]["NotFound"];
