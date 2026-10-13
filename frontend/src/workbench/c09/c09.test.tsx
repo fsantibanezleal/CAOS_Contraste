@@ -61,21 +61,31 @@ describe('the C09 instrument', () => {
     }
   });
 
-  it('the known CCF is drawn against every estimate, with the bias, the interval and the shares outside [0, 1]', () => {
-    const markup = html(<ByDesignView sel={sel} />);
-    expect(markup).toContain(`data-truth="${o.generator.true_ccf.value}"`);
-    expect(markup).toContain(pct(o.generator.true_ccf.value));
-    expect(markup).toContain(escapeHtml(o.generator.notice.en));
-    for (const r of o.ccf_by_design.rows) {
-      expect(markup).toContain(`data-design="${r.design}" data-treatment="${r.treatment}"`);
-      expect(markup).toContain(pct(r.estimate.value));
-      expect(markup).toContain(pct(r.bias));
-      expect(markup).toContain(pct(r.ci_low));
-      expect(markup).toContain(pct(r.share_above_one));
+  it('the known CCF is drawn against every estimate of the rail design, with the estimator, the bias, the interval and the shares outside [0, 1]', () => {
+    const designs = [...new Set(o.ccf_by_design.rows.map((r) => r.design))];
+    const all: string[] = [];
+    for (const design of designs) {
+      const markup = html(<ByDesignView sel={{ ...sel, design }} />);
+      all.push(markup);
+      expect(markup).toContain(`data-truth="${o.generator.true_ccf.value}"`);
+      expect(markup).toContain(pct(o.generator.true_ccf.value));
+      expect(markup).toContain(escapeHtml(o.generator.notice.en));
+      expect(markup).toContain(pct(o.ccf_by_design.tolerance));
+      for (const r of o.ccf_by_design.rows) {
+        const row = `data-design="${r.design}" data-treatment="${r.treatment}" data-estimator="${r.estimator}"`;
+        if (r.design !== design) {
+          expect(markup, `${design}: a row of ${r.design}`).not.toContain(`data-design="${r.design}"`);
+          continue;
+        }
+        expect(markup).toContain(row);
+        expect(markup).toContain(pct(r.estimate.value));
+        expect(markup).toContain(pct(r.bias));
+        expect(markup).toContain(pct(r.ci_low));
+        expect(markup).toContain(pct(r.share_above_one));
+      }
     }
-    expect(markup).toContain(`data-tolerance="true"`);
-    expect(markup).toContain(`data-tolerance="false"`);
-    expect(markup).toContain(pct(o.ccf_by_design.tolerance));
+    expect(all.join('')).toContain(`data-tolerance="true"`);
+    expect(all.join('')).toContain(`data-tolerance="false"`);
   });
 
   it('an estimate above one is printed as it is, with its flag, never clipped', () => {
