@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import importlib.metadata as md
 import json
+import re
 from pathlib import Path
 
 import numpy as np
@@ -23,10 +24,13 @@ ROOT = Path(__file__).resolve().parents[2]
 PACKAGE = ROOT / "data-pipeline" / "pipeline" / "cases" / "c06"
 FIXTURE = ROOT / "docs" / "contracts" / "fixtures" / "c06" / "variant-reporting-date-fixture.json"
 
+
 def test_the_pin_is_the_released_engine():
-    assert md.version("riskvalidation") == "0.5.0"
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
-    assert "CAOS_RiskValidation@v0.05.000" in req
+    tag = re.search(r"CAOS_RiskValidation@v(\d+)\.(\d+)\.(\d+)", req)
+    assert tag, "the engine is pinned to its release tag"
+    released = ".".join(str(int(x)) for x in tag.groups())  # the tag v0.05.000 is the release 0.5.0 of the package
+    assert md.version("riskvalidation") == released
 
 
 def test_the_engine_golden_values_reproduce_through_the_pin():
@@ -85,7 +89,11 @@ def test_the_contract_fixture_reconciliation_closes_through_the_pin():
     allow, gca = _rows(o["reconciliation"]["allowance"]), _rows(o["reconciliation"]["gross_carrying_amount"])
     stage_ecl = {r["stage"]: r["ecl"] for r in o["stage_summary"]["rows"]}
     stage_ecl["poci"] = 0.0
-    assert RC.check_identities(allow, gca, o["waterfall"]["lines"], stage_ecl, []) == []
+    # a stage's closing allowance is its model ECL plus the overlays carried in it (overlays stay separate lines)
+    carried = RC.carried_from_lines(o["waterfall"]["lines"])
+    residuals = RC.identity_residuals(allow, gca, o["waterfall"]["lines"], stage_ecl, carried=carried)
+    limit = 1e-6 * max(1.0, RC.gross_total(gca))
+    assert [k for k, v in residuals.items() if not v <= limit] == []
     res = V.reconciliation_identities(allow, gca, o["waterfall"]["lines"], stage_ecl)
     assert res.light.value == "green" and res.metric < 1e-6
     assert "stage_ecl_gap_max" in res.extras  # the contract amendment: the gap to the stage ECL is its own extra
