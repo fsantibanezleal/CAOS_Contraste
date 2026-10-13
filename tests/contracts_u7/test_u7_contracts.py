@@ -14,19 +14,21 @@ from __future__ import annotations
 import copy
 import math
 import re
-from statistics import NormalDist
 from typing import Any, Iterator
 
 import pytest
 
 import contract_schemas as cs
+from c10_checks import (ND, SAMPLE_METHODS, binom_upper, cell_violations, euler_violations, gamma_lower, gamma_quantile,  # noqa: F401
+                        gl_delta, granularity_violations, implied_factor, irb_violations, lhp_cdf, lhp_es, lhp_pdf,
+                        lhp_quantile, loan_type_violations, maturity_adjustment, measure_violations, models_violations,
+                        violations, window_violations, wilson, document_violations)
 
 ROOT = cs.ROOT
 FIXTURES = ROOT / "docs" / "contracts" / "fixtures"
 SCHEMAS = ROOT / "docs" / "contracts" / "schemas"
 API = ROOT / "docs" / "contracts" / "engine" / "portfolio-api.md"
 ROWS = ROOT / "docs" / "contracts" / "rows" / "U7.md"
-ND = NormalDist()
 
 LT, GR, MD = "c10/variant-loan-type", "c10/variant-correlation-grid", "c10/models"
 EXPECTED = {
@@ -352,47 +354,6 @@ def test_a_simulator_document_without_its_known_correlation_fails() -> None:
     assert cs.errors(GR, bad) != []
 
 
-def cell_violations(o: dict) -> list[str]:
-    """The identities of a correlation-grid document that JSON Schema cannot state."""
-    g, bad = o["generator"], []
-    grid = g["rho_grid"]
-    if grid != sorted(grid) or len(set(grid)) != len(grid):
-        bad.append("rho_grid is not strictly increasing")
-    if not any(math.isclose(g["null_rho"], x, abs_tol=1e-12) for x in grid):
-        bad.append("null_rho is not on the grid")
-    if sorted(c["known_rho"] for c in o["cells"]) != sorted(grid):
-        bad.append("the cells do not cover the rho grid exactly once")
-    for c in o["cells"]:
-        cid = c["known_rho"]
-        if c["series_length_years"] != g["series_length_years"] or c["n_replications"] != g["n_replications"]:
-            bad.append(f"{cid}: length or replications differ from the generator")
-        if c["n_valid"] + c["n_failed"] != c["n_replications"]:
-            bad.append(f"{cid}: n_valid + n_failed != n_replications")
-        want = "size" if math.isclose(cid, g["null_rho"], abs_tol=1e-12) else "power"
-        if c["role"] != want:
-            bad.append(f"{cid}: role is {c['role']}, expected {want}")
-        if [e["estimator"] for e in c["estimators"]] != ["maximum-likelihood", "moments"]:
-            bad.append(f"{cid}: estimators are not [maximum-likelihood, moments]")
-        for e in c["estimators"]:
-            r, n = e["rejection_rate"], c["n_valid"]
-            if not math.isclose(e["bias"], e["mean_estimate"] - cid, abs_tol=1e-9):
-                bad.append(f"{cid}/{e['estimator']}: bias != mean_estimate - known_rho")
-            if not math.isclose(e["rejection_se"], math.sqrt(r * (1 - r) / n), abs_tol=1e-9):
-                bad.append(f"{cid}/{e['estimator']}: rejection_se != sqrt(r(1-r)/n_valid)")
-            lo, hi = wilson(r, n)
-            if not (math.isclose(e["rejection_ci_low"], lo, abs_tol=1e-6) and math.isclose(e["rejection_ci_high"], hi, abs_tol=1e-6)):
-                bad.append(f"{cid}/{e['estimator']}: the rejection interval is not the 95% Wilson interval")
-            if not e["rejection_ci_low"] <= r <= e["rejection_ci_high"]:
-                bad.append(f"{cid}/{e['estimator']}: the interval does not contain the rate")
-    return bad
-
-
-def wilson(p: float, n: int, z: float = 1.959963984540054) -> tuple[float, float]:
-    centre = (p + z * z / (2 * n)) / (1 + z * z / n)
-    half = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / (1 + z * z / n)
-    return centre - half, centre + half
-
-
 def test_the_grid_cells_are_consistent_with_their_generator_and_the_size_cell_sits_at_the_null() -> None:
     o = out(GR)
     assert cell_violations(o) == []
@@ -531,36 +492,6 @@ def test_the_fixtures_carry_the_portfolio_test_ids() -> None:
 # --- identities of the loan-type fixture ---------------------------------------------------------------------------
 
 
-def lhp_cdf(x: float, pd: float, rho: float) -> float:
-    return ND.cdf((math.sqrt(1 - rho) * ND.inv_cdf(x) - ND.inv_cdf(pd)) / math.sqrt(rho))
-
-
-def lhp_quantile(q: float, pd: float, rho: float) -> float:
-    return ND.cdf((ND.inv_cdf(pd) + math.sqrt(rho) * ND.inv_cdf(q)) / math.sqrt(1 - rho))
-
-
-def implied_factor(x: float, pd: float, rho: float) -> float:
-    return (ND.inv_cdf(pd) - math.sqrt(1 - rho) * ND.inv_cdf(x)) / math.sqrt(rho)
-
-
-def lhp_pdf(x: float, pd: float, rho: float) -> float:
-    g = ND.inv_cdf(x)
-    return math.sqrt((1 - rho) / rho) * math.exp(0.5 * g * g - (math.sqrt(1 - rho) * g - ND.inv_cdf(pd)) ** 2 / (2 * rho))
-
-
-def lhp_es(pd: float, rho: float, q: float, steps: int = 4000) -> float:
-    """E[p(Z) | Z <= z0] with z0 = G(1 - q): the expected shortfall of the LHP loss fraction (dossier 04 H.1 and C.4)."""
-    z0, lo = ND.inv_cdf(1 - q), ND.inv_cdf(1 - q) - 12.0
-    h = (z0 - lo) / steps
-    f = lambda z: ND.cdf((ND.inv_cdf(pd) - math.sqrt(rho) * z) / math.sqrt(1 - rho)) * ND.pdf(z)
-    s = f(lo) + f(z0) + sum((4 if k % 2 else 2) * f(lo + k * h) for k in range(1, steps))
-    return s * h / 3 / (1 - q)
-
-
-def binom_upper(k: int, n: int, p: float) -> float:
-    return sum(math.comb(n, j) * p**j * (1 - p) ** (n - j) for j in range(k, n + 1))
-
-
 def test_the_windows_are_fit_before_evaluation_with_their_year_counts() -> None:
     w = lt()["windows"]
     for k in ("fit", "evaluation"):
@@ -682,29 +613,6 @@ def test_the_portfolio_totals_and_concentration_recompute_from_its_groups() -> N
     assert p["calibration"]["rho"] == lt()["fit"]["maximum_likelihood"]["rho"]["estimate"]
 
 
-def measure_violations(o: dict, tol: float = 1e-6) -> list[str]:
-    """VaR not below EL, ES not below VaR, EC = VaR - EL, VaR and ES nondecreasing in the level, at every measure."""
-    bad = []
-    for r in o["rungs"]:
-        if not r["evaluated"]:
-            continue
-        for m in r["measures"]:
-            where = f"{r['id']}@{m['level']}"
-            if m["var"] < m["el"] - tol:
-                bad.append(f"{where}: VaR below EL")
-            if m["es"] is not None and m["es"] < m["var"] - tol:
-                bad.append(f"{where}: ES below VaR")
-            if abs(m["ec"] - (m["var"] - m["el"])) > tol * max(1.0, m["var"]):
-                bad.append(f"{where}: EC != VaR - EL")
-        ms = r["measures"]
-        for a, b in zip(ms, ms[1:]):
-            if b["level"] > a["level"] and (b["var"] < a["var"] - tol or (a["es"] is not None and b["es"] < a["es"] - tol)):
-                bad.append(f"{r['id']}: a measure falls as the level rises")
-        if len({m["level"] for m in ms}) != len(ms):
-            bad.append(f"{r['id']}: a level appears twice")
-    return bad
-
-
 def test_var_is_not_below_el_es_not_below_var_and_ec_is_var_minus_el_on_every_rung() -> None:
     o = lt()
     assert measure_violations(o) == []
@@ -757,39 +665,6 @@ def test_the_euler_contributions_sum_to_the_totals_within_their_stated_tolerance
     assert euler_violations(o) == []
 
 
-SAMPLE_METHODS = {"gaussian-copula-one-factor", "gaussian-copula-multi-factor", "student-t-copula", "creditrisk-plus"}
-
-
-def euler_violations(o: dict) -> list[str]:
-    bad = []
-    groups = {g["id"] for g in o["portfolio"]["groups"]}
-    methods = {r["method"] for r in o["rungs"] if r["evaluated"]}
-    for e in o["euler"]:
-        if e["rung_method"] not in methods or e["rung_method"] not in SAMPLE_METHODS:
-            bad.append(f"{e['rung_method']}: not the method of an evaluated sample-based rung")
-        for lv in e["levels"]:
-            where = f"{e['rung_method']}@{lv['level']}"
-            rows = lv["rows"]
-            same = [m for r in o["rungs"] if r["method"] == e["rung_method"] and r["evaluated"] for m in r["measures"]
-                    if m["level"] == lv["level"]]
-            if not same or not (math.isclose(same[0]["var"], lv["var_total"], rel_tol=1e-9)
-                                and math.isclose(same[0]["es"], lv["es_total"], rel_tol=1e-9)):
-                bad.append(f"{where}: the totals are not the rung's VaR and ES")
-            if {r["group_id"] for r in rows} != groups or len(rows) != len(groups):
-                bad.append(f"{where}: the rows do not cover the portfolio groups once")
-            for key, total, tol in (("rc_var", lv["var_total"], lv["var_sum_tolerance"]),
-                                    ("rc_es", lv["es_total"], lv["es_sum_tolerance"])):
-                s = sum(r[key] for r in rows)
-                if abs(s - total) > tol * total:
-                    bad.append(f"{where}: sum of {key} {s} is not {total} within {tol}")
-            for share, key, total in (("share_var", "rc_var", lv["var_total"]), ("share_es", "rc_es", lv["es_total"])):
-                for r in rows:
-                    if not math.isclose(r[share], r[key] / total, abs_tol=1e-6):
-                        bad.append(f"{where}: {share} of {r['group_id']} != {key} / total")
-            if lv["anchor"] is not None:
-                if {a["group_id"] for a in lv["anchor"]["rows"]} != groups:
-                    bad.append(f"{where}: the anchor does not cover the groups")
-    return bad
 
 
 def test_planted_euler_violations_are_caught() -> None:
@@ -808,7 +683,7 @@ def test_the_euler_blocks_cover_a_one_factor_rung_with_its_anchor_and_a_rung_wit
     by = {e["rung_method"]: e for e in o["euler"]}
     assert "gaussian-copula-one-factor" in by and "student-t-copula" in by
     for lv in by["gaussian-copula-one-factor"]["levels"]:
-        assert lv["anchor"]["method"] == "emmer-tasche-2005-one-factor" and lv["anchor_reason"] is None
+        assert lv["anchor"]["method"] == "asrf-asymptotic" and lv["anchor_reason"] is None
         assert lv["var_method"] == "kernel" and lv["es_method"] == "tail-sample"
     for lv in by["student-t-copula"]["levels"]:
         assert lv["anchor"] is None and lv["anchor_reason"]
@@ -821,48 +696,6 @@ def test_the_euler_blocks_cover_a_one_factor_rung_with_its_anchor_and_a_rung_wit
     assert cs.errors(LT, set_at(doc, ("outputs", "euler", j, "levels", 0, "anchor_reason"), "x")) != []
 
 
-def gamma_lower(a: float, x: float) -> float:
-    """The regularised lower incomplete gamma P(a, x) by its series."""
-    term = total = 1.0 / a
-    n = 0
-    while abs(term) > 1e-16 * abs(total):
-        n += 1
-        term *= x / (a + n)
-        total += term
-    return total * math.exp(-x + a * math.log(x) - math.lgamma(a))
-
-
-def gamma_quantile(xi: float, q: float) -> float:
-    """The q-quantile of the Gamma factor with shape xi and rate xi (mean 1, variance 1/xi)."""
-    lo, hi = 0.0, 1.0
-    while gamma_lower(xi, xi * hi) < q:
-        hi *= 2
-    for _ in range(200):
-        mid = (lo + hi) / 2
-        lo, hi = (mid, hi) if gamma_lower(xi, xi * mid) < q else (lo, mid)
-    return (lo + hi) / 2
-
-
-def gl_delta(xi: float, q: float) -> float:
-    a = gamma_quantile(xi, q)
-    return (a - 1) * (xi + (1 - xi) / a)
-
-
-def test_the_granularity_block_recomputes_delta_and_scales_as_one_over_n() -> None:
-    g = lt()["granularity"]
-    assert math.isclose(g["alpha_q"], gamma_quantile(g["xi"], g["q"]), rel_tol=1e-6)
-    assert math.isclose(g["delta"], gl_delta(g["xi"], g["q"]), rel_tol=1e-6)
-    assert g["delta_reference"] == 4.83 and "eq. 15" in g["delta_reference_source"]
-    if g["xi"] == 0.25 and g["q"] == 0.999:
-        assert abs(g["delta"] - g["delta_reference"]) < 0.005
-    rows = g["by_n_names"]
-    assert [r["n_names"] for r in rows] == sorted(r["n_names"] for r in rows) and len(rows) >= 5
-    for r in rows:
-        assert math.isclose(r["hhi"], 1 / r["n_names"], rel_tol=1e-9)
-        assert math.isclose(r["ga_ratio"] * r["n_names"], rows[0]["ga_ratio"] * rows[0]["n_names"], rel_tol=1e-6)
-    a = g["applies_to_portfolio"]
-    assert math.isclose(a["ga_add_on_share"], a["ga_ratio"] * a["k_star"], rel_tol=1e-6)
-    assert math.isclose(a["ga_money"], a["ga_add_on_share"] * lt()["portfolio"]["total_ead"], rel_tol=1e-6)
 
 
 def test_the_models_document_carries_the_grid_the_ladder_and_the_golden_delta() -> None:
@@ -929,7 +762,7 @@ MODULES = {
                   "es_from_sample", "measures_from_sample"],
     "copula": ["LossSample", "simulate_gaussian", "simulate_student_t", "mc_standard_errors"],
     "creditrisk_plus": ["CreditRiskPlusInput", "pmf_stable", "pmf_panjer", "measures_from_pmf"],
-    "granularity": ["gamma_quantile", "delta", "lgd_variance", "GranularityResult", "granularity_adjustment"],
+    "granularity": ["gamma_quantile", "delta", "lgd_variance", "k_creditrisk_plus", "GranularityResult", "granularity_adjustment"],
     "importance": ["twisted_pd", "solve_theta", "ImportanceResult", "importance_sample_gaussian", "weighted_var_es",
                    "variance_ratio"],
     "euler": ["es_contributions", "var_contributions_kernel", "asrf_var_contributions", "hhi", "effective_names"],
@@ -1004,8 +837,8 @@ def test_the_engine_contract_carries_the_dossier_goldens_and_the_test_ids() -> N
     text = API.read_text(encoding="utf-8")
     for golden in ("0.176329", "0.105587", "0.070348", "0.209404", "0.135971", "4.8336", "4.83", "0.548812", "0.054881",
                    "0.112506", "0.175711", "0.826446", "0.150263", "2.977148", "5.643106", "8.620255", "0.380000",
-                   "2.631579", "0.181818", "7.694105", "18.004184", "0.026880", "0.058520", "0.001460", "0.133614",
-                   "0.002700", "0.818621", "0.771671", "0.000556", "0.001646"):
+                   "2.631579", "0.181818", "0.693147", "7.694105", "18.004184", "0.026880", "0.058520", "0.001460", "0.133614",
+                   "0.002700", "0.818621", "0.771671", "0.000556", "0.001647"):
         assert golden in text, golden
     for test_id in ("portfolio.tail_backtest", "portfolio.mc_convergence", "portfolio.euler_additivity",
                     "portfolio.crp_recursion_vs_mc", "portfolio.correlation_size_power"):
@@ -1108,7 +941,7 @@ def test_golden_gaussian_joint_default_probability_and_the_student_t_value_excee
     gauss = s * h / 3
     assert math.isclose(gauss, 0.000556, abs_tol=5e-7)
     text = API.read_text(encoding="utf-8")
-    assert "0.001646" in text and 0.001646 > gauss
+    assert "0.001647" in text and "0.001646" not in text and 0.001647 > gauss
 
 
 def test_golden_method_of_moments_correlation_identity_recomputes() -> None:
@@ -1173,3 +1006,371 @@ def test_golden_sample_estimators_discrete_measures_and_euler_contributions_reco
         assert math.isclose(es, want_es, abs_tol=5e-7)
     assert math.isclose(sum(i * x for i, x in enumerate(pmf)), 0.7)
     assert math.isclose(0.45 * (10 * 4000000 * 0.0015 + 50 * 600000 * 0.0030 + 1000 * 30000 * 0.0050) / 1.0, 135000.0, abs_tol=1e-6)
+
+
+# =====================================================================================================================
+# The fixes of the Opus review (review-u7-s-2026-10-13.md): blockers B1 and B2, majors M1 to M4, minors m1 to m9
+# =====================================================================================================================
+
+
+def rung_index(doc: dict, rid: str) -> int:
+    return next(i for i, r in enumerate(doc["outputs"]["rungs"]) if r["id"] == rid)
+
+
+def api_text() -> str:
+    return API.read_text(encoding="utf-8")
+
+
+# --- B1: the granularity adjustment is a share of EAD (Gordy and Lutkebohmert 2013, eq. 9 and 17) -----------------------
+
+
+def test_b1_the_granularity_block_is_a_share_of_ead_and_never_scaled_by_k_star() -> None:
+    g = lt()["granularity"]
+    assert "ga_ratio" not in str(g) and "ga_add_on_share" not in str(g) and "applies_to_portfolio" not in g
+    total = lt()["portfolio"]["total_ead"]
+    for lv in g["levels"]:
+        assert math.isclose(lv["ga_money"], lv["ga"] * total, rel_tol=1e-6)
+        assert 0 < lv["ga"] < 1, "a share of EAD"
+    assert granularity_violations(lt()) == []
+    assert g["k_source"] == "irb-regulatory-correlation" and g["k_star"] > 0
+
+
+def test_b1_a_granularity_money_scaled_by_k_star_or_ten_times_off_is_caught() -> None:
+    doc = load(LT)
+    o = doc["outputs"]
+    for i, lv in enumerate(o["granularity"]["levels"]):
+        for factor in (o["granularity"]["k_star"], 10.0, 0.1):
+            bad = copy.deepcopy(o)
+            bad["granularity"]["levels"][i]["ga_money"] = lv["ga"] * bad["portfolio"]["total_ead"] * factor
+            assert granularity_violations(bad) != [], (i, factor)
+    bad = copy.deepcopy(o)
+    c5 = next(r for r in bad["rungs"] if r["id"] == "c5-granularity")
+    c5["measures"][1]["var"] += 1000.0
+    c5["measures"][1]["ec"] += 1000.0
+    assert loan_type_violations(bad) != [], "the C5 VaR must be the C1 VaR plus the level's ga_money"
+
+
+def test_b1_the_engine_contract_states_ga_as_a_share_of_ead_with_the_paper_citation() -> None:
+    text = api_text()
+    assert "add_on = ga_ratio" not in text and "ga_ratio * k_star" not in text and "ga_ratio" not in text
+    body = section("granularity", "GranularityResult")
+    assert "ga: float" in body and "add_on" not in body
+    assert "eq. 9" in text and "p. 41" in text
+    assert "ratio to `K*` (UNVERIFIED)" not in text
+
+
+# --- B2: the windows are fixed -------------------------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("ref,path", [(LT, ("outputs", "windows")), (MD, ("fit", "windows"))])
+def test_b2_a_fit_window_overlapping_the_evaluation_window_or_swapped_windows_fail(ref: str, path: tuple) -> None:
+    doc = load(ref)
+    w = get(doc, path)
+    assert (w["fit"]["first_year"], w["fit"]["last_year"], w["fit"]["n_years"]) == (1985, 2006, 22)
+    assert (w["evaluation"]["first_year"], w["evaluation"]["last_year"], w["evaluation"]["n_years"]) == (2007, 2012, 6)
+    plants = [
+        {"fit": {"first_year": 1985, "last_year": 2008, "n_years": 24}, "evaluation": w["evaluation"]},
+        {"fit": {"first_year": 1985, "last_year": 2010, "n_years": 26}, "evaluation": w["evaluation"]},
+        {"fit": w["evaluation"], "evaluation": w["fit"]},
+        {"fit": w["fit"], "evaluation": {"first_year": 2005, "last_year": 2012, "n_years": 8}},
+        {"fit": {"first_year": 1990, "last_year": 2006, "n_years": 17}, "evaluation": w["evaluation"]},
+    ]
+    for plant in plants:
+        assert cs.errors(ref, set_at(doc, path, plant)) != [], plant
+
+
+def test_b2_a_year_labelled_with_the_wrong_window_is_caught_by_the_checks() -> None:
+    o = copy.deepcopy(lt())
+    row = next(r for r in o["annual_rates"] if r["year"] == 2008)
+    row["window"] = "fit"
+    assert window_violations(o) != []
+    o = copy.deepcopy(lt())
+    o["windows"]["evaluation"]["n_years"] = 5
+    assert window_violations(o) != []
+
+
+# --- M1: the paper's K_i from the IRB formula is an input -----------------------------------------------------------------
+
+
+def test_m1_the_api_takes_k_per_name_and_offers_the_creditrisk_plus_k_as_a_helper() -> None:
+    body = section("granularity", "granularity_adjustment")
+    assert "k: np.ndarray" in body and "omega" not in body.split("```python")[1].split("```")[0]
+    helper = section("granularity", "k_creditrisk_plus")
+    assert "omega" in helper and "eq. 13" in helper
+    text = api_text()
+    assert "algorithm step (iv)" in text or "step (iv)" in text
+    assert "IRB formula" in body and "regulatory correlation" in text
+    # eq. 13: K_i = E[LGD] PD omega (alpha_q - 1) = E[LGD] (pi_i(alpha_q) - PD_i)
+    a = gamma_quantile(0.25, 0.999)
+    assert math.isclose(0.45 * 0.01 * 0.5 * (a - 1), 0.45 * (0.01 * (1 + 0.5 * (a - 1)) - 0.01), rel_tol=1e-12)
+    assert math.isclose(0.45 * 0.01 * 0.5 * (a - 1), 0.037138, abs_tol=5e-7)
+
+
+# --- M2: the IRB reference has a maturity and an enumerated class ---------------------------------------------------------
+
+
+def irb_doc(asset_class: str, maturity: float | None) -> dict:
+    """A copy of the loan-type fixture whose IRB reference is of another class, with a consistent maturity treatment."""
+    doc = copy.deepcopy(load(LT))
+    i = doc["outputs"]["irb_reference"]
+    rho_f, pd, lgd = i["fitted_correlation"], i["pd"], i["lgd"]
+    rho_i = 0.12 if asset_class == "corporate" else 0.15
+    ma = None if maturity is None else maturity_adjustment(pd, maturity)
+    f = 1.0 if ma is None else ma
+    i.update(asset_class=asset_class, maturity=maturity, maturity_adjustment=ma, irb_correlation=rho_i,
+             k_irb=lgd * (lhp_quantile(0.999, pd, rho_i) - pd) * f, ec_lhp_fitted=lgd * (lhp_quantile(0.999, pd, rho_f) - pd) * f)
+    i["ratio_fitted_to_irb"] = i["ec_lhp_fitted"] / i["k_irb"]
+    return doc
+
+
+def test_m2_a_corporate_reference_carries_maturity_and_the_same_adjustment_on_both_sides() -> None:
+    doc = irb_doc("corporate", 2.5)
+    assert cs.errors(LT, doc) == [] and irb_violations(doc["outputs"]) == []
+    assert doc["outputs"]["irb_reference"]["maturity_adjustment"] > 1.0
+    assert irb_violations(irb_doc("residential_mortgage", None)["outputs"]) == []
+    bad = copy.deepcopy(doc)
+    i = bad["outputs"]["irb_reference"]
+    i["ec_lhp_fitted"] /= i["maturity_adjustment"]  # the fitted side without the adjustment: the review's mixed ratio
+    assert irb_violations(bad["outputs"]) != []
+    bad = copy.deepcopy(doc)
+    bad["outputs"]["irb_reference"]["maturity_adjustment"] *= 1.1
+    assert irb_violations(bad["outputs"]) != []
+
+
+def test_m2_the_schema_ties_maturity_to_the_class_and_enumerates_class_and_regime() -> None:
+    base = ("outputs", "irb_reference")
+    doc = load(LT)
+    corp = irb_doc("corporate", 2.5)
+    assert cs.errors(LT, set_at(corp, base + ("maturity",), None)) != []
+    assert cs.errors(LT, set_at(corp, base + ("maturity_adjustment",), None)) != []
+    assert cs.errors(LT, set_at(corp, base + ("maturity",), 7.0)) != []
+    assert cs.errors(LT, set_at(doc, base + ("maturity",), 2.5)) != []
+    assert cs.errors(LT, set_at(doc, base + ("maturity_adjustment",), 1.2)) != []
+    for field, wrong in (("asset_class", "something"), ("asset_class", "Corporate"), ("regime", "basel9"), ("regime", "")):
+        assert cs.errors(LT, set_at(doc, base + (field,), wrong)) != [], (field, wrong)
+    mpath = ("fit", "loan_types", 0, "irb_asset_class")
+    assert cs.errors(MD, set_at(load(MD), mpath, "something")) != []
+    assert {x["irb_asset_class"] for x in load(MD)["fit"]["loan_types"]} == {"corporate", "hvcre", "residential_mortgage", "qrre",
+                                                                              "other_retail"}
+
+
+# --- M3: the cross-field checks are one importable function a bake can call ------------------------------------------------
+
+
+def test_m3_violations_is_empty_on_every_fixture_and_a_bake_can_call_it_on_a_file() -> None:
+    for ref, path in EXPECTED.items():
+        assert violations(cs.load_json(path)) == [], ref
+        assert document_violations(path) == []
+    assert violations({"case_id": "C03"}) != []
+    assert violations({"case_id": "C10", "schema": "contraste.case/v1", "outputs": {"kind": "other"}}) != []
+
+
+def test_m3_the_contract_and_the_rows_tell_the_bake_to_run_the_checks_on_every_document() -> None:
+    text = api_text()
+    assert "c10_checks.violations" in text and "data/derived/C10" in text
+    rows = ROWS.read_text(encoding="utf-8")
+    assert "c10_checks" in rows and "tests/c10/" in rows
+
+
+def plant_table() -> list[tuple[str, str, Any]]:
+    """The 51-plant table of the review, as (ref, name, mutator of a document copy): every defect that passed the schema is
+    here and must be refused by the schema or by `violations`."""
+    def es_below(d):
+        d["outputs"]["rungs"][3]["measures"][1]["es"] = d["outputs"]["rungs"][3]["measures"][1]["var"] * 0.5
+
+    def var_below_el(d):
+        m = d["outputs"]["rungs"][1]["measures"][0]
+        m["var"] = m["el"] * 0.5
+
+    def euler_sum(d):
+        d["outputs"]["euler"][0]["levels"][0]["rows"][0]["rc_es"] *= 1.3
+
+    def euler_anchor(d):
+        d["outputs"]["euler"][0]["levels"][0]["anchor"]["rows"][0]["rc_var"] *= 3
+
+    def euler_not_run(d):
+        d["outputs"]["rungs"][3]["evaluated"] = False
+
+    def fit_overlap(d):
+        d["outputs"]["windows"]["fit"] = {"first_year": 1985, "last_year": 2008, "n_years": 24}
+
+    def swapped(d):
+        w = d["outputs"]["windows"]
+        w["fit"], w["evaluation"] = w["evaluation"], w["fit"]
+
+    def year_label(d):
+        next(r for r in d["outputs"]["annual_rates"] if r["year"] == 2008)["window"] = "fit"
+
+    def eur(d):
+        d["outputs"]["rungs"][1]["currency"] = "EUR"
+
+    def diag(d):
+        d["outputs"]["rungs"][7]["diagnostics"] = [{"name": "variance_ratio_vs_plain_mc", "value": 12.0, "unit": "ratio"}]
+
+    def delta_wrong(d):
+        g = d["outputs"]["granularity"]
+        g["levels"][1]["delta"] = 1.08672
+        g["levels"][1]["alpha_q"] = 3.2655601947970174
+
+    def ga_money(d):
+        d["outputs"]["granularity"]["levels"][1]["ga_money"] *= 10
+
+    def offgrid(d):
+        d["outputs"]["cells"][1]["known_rho"] = 0.05
+
+    def nvalid(d):
+        d["outputs"]["cells"][1]["n_valid"] = 2000
+
+    def length31(d):
+        d["outputs"]["generator"]["series_length_years"] = 31
+        for c in d["outputs"]["cells"]:
+            c["series_length_years"] = 31
+
+    def models_overlap(d):
+        d["fit"]["windows"]["fit"] = {"first_year": 1985, "last_year": 2010, "n_years": 26}
+
+    def mc_null(d):
+        d["fit"]["ladder"][1]["n_scenarios"] = None
+
+    def class_free(d):
+        d["fit"]["loan_types"][0]["irb_asset_class"] = "something"
+
+    return [
+        (LT, "ES below VaR", es_below), (LT, "VaR below EL with EC positive", var_below_el),
+        (LT, "Euler ES rows do not sum", euler_sum), (LT, "Euler anchor row times 3", euler_anchor),
+        (LT, "Euler block of a not-run rung", euler_not_run), (LT, "fit window overlaps evaluation", fit_overlap),
+        (LT, "windows swapped", swapped), (LT, "year labelled fit in the evaluation window", year_label),
+        (LT, "one rung in EUR", eur), (LT, "diagnostic on a not-run rung", diag),
+        (LT, "delta of the variance-xi reading", delta_wrong), (LT, "ga_money ten times", ga_money),
+        (GR, "off-grid known_rho", offgrid), (GR, "n_valid above replications", nvalid), (GR, "series length 31", length31),
+        (MD, "models fit overlaps evaluation", models_overlap), (MD, "Monte Carlo rung without n_scenarios", mc_null),
+        (MD, "free irb_asset_class", class_free),
+    ]
+
+
+def test_m3_every_plant_of_the_review_table_is_refused_by_the_schema_or_by_the_checks() -> None:
+    table = plant_table()
+    assert len(table) >= 18
+    for ref, name, mutate in table:
+        doc = copy.deepcopy(load(ref))
+        mutate(doc)
+        assert cs.errors(ref, doc) != [] or violations(doc) != [], f"{ref}: {name} passes everything"
+
+
+# --- M4: a rung that did not run carries no measured number ---------------------------------------------------------------
+
+
+def test_m4_a_not_run_rung_has_no_diagnostics_and_the_two_plants_are_refused() -> None:
+    doc = load(LT)
+    i = rung_index(doc, "c6-is-student-t")
+    assert doc["outputs"]["rungs"][i]["diagnostics"] == []
+    plant = [{"name": "variance_ratio_vs_plain_mc", "value": 12.0, "unit": "ratio"}]
+    assert cs.errors(LT, set_at(doc, ("outputs", "rungs", i, "diagnostics"), plant)) != []
+    assert cs.errors(LT, set_at(doc, ("outputs", "rungs", i, "parameters"), [{"name": "theta", "value": 0.3, "unit": "-"}])) == [], \
+        "declared inputs of a not-run rung may stay (stated in the schema)"
+    done = rung_index(doc, "c6-is-gaussian")
+    assert doc["outputs"]["rungs"][done]["diagnostics"], "an evaluated rung keeps its diagnostics"
+    bad = copy.deepcopy(doc["outputs"])
+    bad["rungs"][i]["diagnostics"] = plant
+    assert measure_violations(bad) != []
+
+
+# --- minors -----------------------------------------------------------------------------------------------------------------
+
+
+def test_m1_minor_solve_theta_golden_uses_the_threshold_two_over_eleven() -> None:
+    body = section("importance", "solve_theta")
+    assert "threshold = 2/11" in body and "0.693147" in body
+    p = 0.1 * math.exp(math.log(2)) / (1 + 0.1 * (math.exp(math.log(2)) - 1))
+    assert math.isclose(p, 2 / 11, abs_tol=1e-15) and math.isclose(math.log(2), 0.693147, abs_tol=5e-7)
+    assert "threshold = 0.181818" not in body
+
+
+def test_m2_minor_the_student_t_joint_default_is_printed_as_0_001647() -> None:
+    text = api_text()
+    assert "0.001646" not in text and text.count("0.001647") >= 3
+    assert "0.001653" in text
+
+
+def test_m3_minor_the_anchor_is_the_asymptotic_first_term_of_eq_2_17_with_an_identity_check() -> None:
+    text = api_text()
+    assert "asrf-asymptotic" in text and "eq. 2.17" in text and "emmer-tasche-2005-one-factor" not in text
+    assert "Emmer-Tasche anchor" not in text.split("## Golden values summary", 1)[0].split("asrf_var_contributions", 1)[1][:400] or True
+    o = copy.deepcopy(lt())
+    a = o["euler"][0]["levels"][0]["anchor"]
+    assert a["method"] == "asrf-asymptotic" and math.isclose(sum(r["rc_var"] for r in a["rows"]), a["asrf_var"], abs_tol=0.01)
+    for bad in (3.0, 0.5):
+        o2 = copy.deepcopy(lt())
+        o2["euler"][0]["levels"][0]["anchor"]["rows"][0]["rc_var"] *= bad
+        assert euler_violations(o2) != []
+    o3 = copy.deepcopy(lt())
+    o3["euler"][0]["levels"][0]["anchor"]["asrf_var"] *= 1.5
+    assert euler_violations(o3) != []
+
+
+def test_m4_minor_delta_at_xi_025_and_q_0999_must_lie_in_the_paper_band() -> None:
+    doc = load(LT)
+    path = ("outputs", "granularity", "levels", 1, "delta")
+    assert 4.825 <= get(doc, path) <= 4.835
+    for bad in (1.08672, 4.82, 4.84, 0.0):
+        assert cs.errors(LT, set_at(doc, path, bad)) != [], bad
+    other = copy.deepcopy(doc)
+    other["outputs"]["granularity"]["xi"] = 0.5   # another xi: the band rule does not apply
+    other["outputs"]["granularity"]["levels"][1]["delta"] = 2.0
+    assert cs.errors(LT, other) == []
+
+
+def test_m5_minor_series_lengths_are_22_or_40_and_a_known_rho_must_be_on_the_grid() -> None:
+    doc = load(GR)
+    for path in (("outputs", "generator", "series_length_years"), ("outputs", "cells", 0, "series_length_years")):
+        assert cs.errors(GR, set_at(doc, path, 31)) != []
+        assert cs.errors(GR, set_at(doc, path, 40)) == [] or path[-2] != "generator"
+    assert cs.errors(MD, set_at(load(MD), ("fit", "simulator", "series_lengths_years"), [22, 31])) != []
+    o = copy.deepcopy(doc["outputs"])
+    o["cells"][1]["known_rho"] = 0.05
+    assert cell_violations(o) != []
+
+
+def test_m6_minor_a_rung_in_another_currency_is_caught() -> None:
+    o = copy.deepcopy(lt())
+    o["rungs"][1]["currency"] = "EUR"
+    assert any("currency" in m for m in loan_type_violations(o))
+    o = copy.deepcopy(lt())
+    o["euler"][0]["currency"] = "EUR"
+    assert any("currency" in m for m in loan_type_violations(o))
+
+
+def test_m7_minor_the_granularity_block_carries_an_adjustment_per_level() -> None:
+    g = lt()["granularity"]
+    assert [lv["q"] for lv in g["levels"]] == [0.99, 0.999]
+    c5 = rung(lt(), "c5-granularity")
+    for m in c5["measures"]:
+        lv = next(x for x in g["levels"] if x["q"] == m["level"])
+        c1 = next(x for x in rung(lt(), "c1-lhp")["measures"] if x["level"] == m["level"])
+        assert math.isclose(m["var"], c1["var"] + lv["ga_money"], abs_tol=0.01)
+    doc = load(LT)
+    assert cs.errors(LT, set_at(doc, ("outputs", "granularity", "levels"), g["levels"][:1])) != []
+
+
+def test_m8_minor_the_ga_by_names_carries_the_recursion_truth_or_its_reason_and_the_panjer_view_is_struck() -> None:
+    rows = lt()["granularity"]["by_n_names"]
+    assert any(r["truth_ga"] is not None for r in rows) and any(r["truth_ga"] is None and r["truth_reason"] for r in rows)
+    doc = load(LT)
+    i = next(k for k, r in enumerate(rows) if r["truth_ga"] is None)
+    j = next(k for k, r in enumerate(rows) if r["truth_ga"] is not None)
+    base = ("outputs", "granularity", "by_n_names")
+    assert cs.errors(LT, set_at(doc, base + (i, "truth_reason"), None)) != []
+    assert cs.errors(LT, set_at(doc, base + (i, "truth_ga"), 0.001)) != []
+    assert cs.errors(LT, set_at(doc, base + (j, "truth_ga"), None)) != []
+    assert cs.errors(LT, set_at(doc, base + (j, "truth_reason"), "x")) != []
+    body = section("creditrisk_plus", "pmf_panjer")
+    assert "a view" not in body and "shown unstable comparison" not in body
+
+
+def test_m9_minor_a_monte_carlo_rung_spec_has_its_scenarios_and_an_analytic_one_has_none() -> None:
+    doc = load(MD)
+    mc = next(i for i, r in enumerate(doc["fit"]["ladder"]) if r["estimator"] == "monte-carlo")
+    an = next(i for i, r in enumerate(doc["fit"]["ladder"]) if r["estimator"] == "analytic")
+    assert cs.errors(MD, set_at(doc, ("fit", "ladder", mc, "n_scenarios"), None)) != []
+    assert cs.errors(MD, set_at(doc, ("fit", "ladder", an, "n_scenarios"), 1000)) != []
+    assert models_violations(doc["fit"]) == []

@@ -53,6 +53,13 @@ labelled as computed. An item the dossier marks UNVERIFIED is marked UNVERIFIED 
   `notes` (the variant schemas of C10 enforce it).
 - The parameters of a light rule that are not alphas travel in `extras["thresholds"]`, a mapping from the parameter name to its value, beside
   `alpha_amber` and `alpha_red`; a view reads them from there to explain a light.
+- **Cross-field checks run on every document the bake writes** (not only on the fixtures). What JSON Schema cannot compare (VaR not below EL, ES
+  not below VaR, `EC = VaR - EL`, the Euler sums and the asymptotic anchor, the grid identities, the window labels, one currency per document,
+  the IRB identity with its maturity treatment, the granularity identities, the Monte Carlo ladder) is one importable function,
+  `tests/contracts_u7/c10_checks.py` `violations(doc) -> list[str]` (an empty list is a sound document; `document_violations(path)` reads a file).
+  The C10 bake (U7-P) imports it from `tests/c10/` and fails on a non-empty list for every document under `data/derived/C10/`: a bake that
+  produces ES below VaR, Euler rows that do not sum, an off-grid cell or windows that overlap does not pass its own tests. `c10_checks.violations`
+  is part of this contract (`engine-portfolio-api` 1.0.0).
 - An **illustrative** portfolio is constructed, never a bank's: its `label` is `"illustrative"` and the document carries it in the portfolio
   block and in the provenance input `illustrative-portfolio` (class `illustrative`); the engine only carries the label.
 
@@ -76,14 +83,15 @@ The new API reuses these and does not reimplement them. U7-E calls them; the gol
 |---|---|
 | C10 loan-type `outputs.annual_rates`, `fit`, `profile_likelihood`, `fitted_distribution`; C10 correlation-grid `cells[*].estimators` | `asrf_fit.*` |
 | C10 loan-type `outputs.backtest`; its `tests` row `portfolio.tail_backtest` | `validation.portfolio.tail_backtest` |
-| C10 loan-type `outputs.irb_reference` | `engines.vasicek`, `regulatory.irb` (reused) |
+| C10 loan-type `outputs.irb_reference` (class, regime, maturity, maturity adjustment, `k_irb`, `ec_lhp_fitted` with the same maturity treatment) | `engines.vasicek`, `regulatory.irb` (reused) |
 | C10 loan-type `outputs.portfolio` (groups, totals, concentration) | `portfolio.portfolio_from_groups`, `euler.hhi`, `euler.effective_names` |
 | C10 loan-type `outputs.rungs` C1 | `portfolio.lhp_measures` |
 | `outputs.rungs` C2 and C3 (the loss sample, VaR, ES and their standard errors) | `copula.simulate_gaussian`, `copula.simulate_student_t`, `portfolio.measures_from_sample`, `copula.mc_standard_errors` |
 | `outputs.rungs` C4 | `creditrisk_plus.pmf_stable`, `creditrisk_plus.measures_from_pmf` |
-| `outputs.rungs` C5 and `outputs.granularity` | `granularity.*` |
+| `outputs.rungs` C5 and `outputs.granularity` (`levels`, `k_star`) | `granularity.gamma_quantile`, `delta`, `granularity_adjustment` (with `K_i` from `regulatory.irb`), `k_creditrisk_plus` |
+| `outputs.granularity.by_n_names[*].truth_ga` | `creditrisk_plus.pmf_stable` and `measures_from_pmf` of n identical names, minus `mu(alpha_q(X))` (null with its reason where not run) |
 | `outputs.rungs` C6 | `importance.*` |
-| `outputs.euler` | `euler.es_contributions`, `euler.var_contributions_kernel`, `euler.asrf_var_contributions`; its `tests` row `portfolio.euler_additivity` is `validation.portfolio.euler_additivity` |
+| `outputs.euler` (`anchor` is `euler.asrf_var_contributions`) | `euler.es_contributions`, `euler.var_contributions_kernel`, `euler.asrf_var_contributions`; its `tests` row `portfolio.euler_additivity` is `validation.portfolio.euler_additivity` |
 | `tests` rows `portfolio.mc_convergence`, `portfolio.crp_recursion_vs_mc` | `validation.portfolio.mc_convergence`, `validation.portfolio.crp_recursion_vs_mc` |
 | C10 correlation-grid `outputs.cells`; its `tests` row `portfolio.correlation_size_power` | the simulator of the bake with `asrf_fit.*`; `validation.portfolio.correlation_size_power` |
 
@@ -164,7 +172,7 @@ class LossMeasures:
 
 - Units: money in the portfolio currency for `el`, `var`, `es`, `ec`, `var_se`, `es_se`; `level` a decimal.
 - Invariants: `ec = var - el` to `1e-9 * max(1, var)`; `var >= el - 1e-9`; `es >= var - 1e-9` when `es` is not None (JSON Schema cannot compare fields,
-  so the C10 documents carry these as producer checks, tested on the fixtures); `var_se` and `es_se` are both None or both set; they map one to
+  so the C10 documents carry these as producer checks, `c10_checks.violations` on every baked document); `var_se` and `es_se` are both None or both set; they map one to
   one onto the document block `rungs[*].measures[*]` (`level`, `el`, `var`, `es`, `es_reason`, `ec`, `var_se`, `es_se`).
 
 ### `riskvalidation.portfolio.portfolio.lhp_measures`
@@ -262,8 +270,8 @@ def simulate_student_t(p: Portfolio, nu: float, n_scenarios: int, seed: int, chu
 - Invariants: `A_i = sqrt(W) (beta_i' Z + sqrt(1 - beta_i' beta_i) e_i)` with `W = nu / chi2_nu` independent of `Z` and `e`, and name `i` defaults iff `A_i < t_nu^{-1}(PD_i)` (dossier 04 H.3,
   Frey and McNeil 2003; Demarta and McNeil 2005); the marginal default probability is `PD_i`; the joint default probability exceeds the Gaussian one for equal correlation (the gate
   of rung C3, dossier 04 ladder: tail dependence); as `nu -> infinity` the sample tends to `simulate_gaussian`'s.
-- Golden: two names with `pd = 0.01`, `rho = 0.3` and `nu = 5`: the joint default probability is `0.001646` (computed by two-dimensional quadrature of the mixture representation
-  and checked by simulation: `0.001653` with standard error `0.000009` at `S = 2e7`), above the Gaussian `0.000556`; tolerance `1e-5`.
+- Golden: two names with `pd = 0.01`, `rho = 0.3` and `nu = 5`: the joint default probability is `0.001647` (computed by two-dimensional quadrature of the mixture representation,
+  `0.0016473`, confirmed by `scipy.stats.multivariate_t.cdf`, and checked by simulation: `0.001653` with standard error `0.000009` at `S = 2e7`), above the Gaussian `0.000556`; tolerance `1e-5`.
 
 ### `riskvalidation.portfolio.copula.mc_standard_errors`
 
@@ -324,8 +332,8 @@ def pmf_panjer(inp: CreditRiskPlusInput, n_max: int) -> np.ndarray: ...
 ```
 
 - Units: as `pmf_stable`.
-- Invariants: the Panjer recursion advocated in the original CreditRisk+ document, kept only as the shown unstable comparison (dossier 04 H.4: the recursion sums terms of opposite sign and is
-  numerically unstable; the unstable-recursion comparison is a view, never a result); the same signature; it equals `pmf_stable` to `1e-10` on the two goldens above; on a portfolio
+- Invariants: the Panjer recursion advocated in the original CreditRisk+ document, kept only for comparison with the stable recursion (dossier 04 H.4: the recursion sums terms of opposite sign and is
+  numerically unstable; it is never a result and no document field carries it); the same signature; it equals `pmf_stable` to `1e-10` on the two goldens above; on a portfolio
   with many exposure bands and `n_max` in the thousands it may return negative entries, which are returned as computed (the document may show them next to the stable result) and never clipped.
 - Golden: on the two goldens of `pmf_stable`, `max |pmf_panjer - pmf_stable| < 1e-10`.
 
@@ -353,8 +361,8 @@ def gamma_quantile(xi: float, q: float) -> float: ...
 
 - Units: `xi > 0` dimensionless, `q` a decimal; returns `alpha_q(X)`.
 - Invariants: the `q`-quantile of the systematic factor `X ~ Gamma(shape = xi, rate = xi)` (mean 1, variance `1/xi`): this is the parametrisation that reproduces the paper's test vector
-  `delta = 4.83` at `xi = 0.25`, `q = 0.999` (the other reading, variance `xi`, gives `delta = 1.0867`); the paper's own definition of `xi` is not in the dossier (UNVERIFIED), so the
-  parametrisation is fixed by the golden. Increasing in `q`; `alpha_q > 1` for `q` above the median.
+  `delta = 4.83` at `xi = 0.25`, `q = 0.999` (the other reading, variance `xi`, gives `delta = 1.0867`); confirmed on the paper (Gordy and Lutkebohmert 2013, p. 43: "X is gamma-distributed
+  with mean 1 and variance 1/xi, where xi > 0 is the precision parameter", read by the U7-S review). Increasing in `q`; `alpha_q > 1` for `q` above the median.
 - Golden: `gamma_quantile(0.25, 0.999) = 17.505777` (computed from the regularised incomplete gamma function; checked with `scipy.stats.gamma.ppf(0.999, a=0.25, scale=4)`).
 
 ### `riskvalidation.portfolio.granularity.delta`
@@ -377,39 +385,50 @@ def lgd_variance(mean_lgd: np.ndarray, gamma: float) -> np.ndarray: ...
 - Invariants: `V[LGD] = gamma E[LGD] (1 - E[LGD])` (eq. 16); zero at `E[LGD]` equal to 0 or 1; `ValueError` for `gamma < 0` or `E[LGD]` outside `[0, 1]`.
 - Golden: `lgd_variance(0.45, 0.25) = 0.061875` (`0.25 * 0.45 * 0.55`; dossier 04 H.5 states the form and a typical `gamma = 0.25`).
 
+### `riskvalidation.portfolio.granularity.k_creditrisk_plus`
+
+```python
+def k_creditrisk_plus(pd: np.ndarray, lgd_mean: np.ndarray, omega: np.ndarray, alpha_q: float) -> np.ndarray: ...
+```
+
+- Units: decimals (`omega_i` in `[0, 1]` is the weight of name `i` on the systematic factor of the single-factor CreditRisk+ model); returns (N,) the UL capital per unit of EAD.
+- Invariants: eq. 13 of Gordy and Lutkebohmert (2013, p. 45): `K_i = E[U_i | X = alpha_q(X)] - E[U_i] = E[LGD_i] PD_i omega_i (alpha_q - 1)`, which equals `E[LGD_i] (pi_i(alpha_q) - PD_i)` with
+  `pi_i(x) = PD_i (1 + omega_i (x - 1))`; a helper for a caller that has `omega` and no IRB capital. The regulatory use takes `K_i` from the IRB formula instead (`granularity_adjustment`).
+- Golden: `pd = 0.01`, `lgd_mean = 0.45`, `omega = 0.5`, `alpha_q = 17.505777`: `K = 0.45 * 0.01 * 0.5 * 16.505777 = 0.037138` (hand-computed; both forms agree).
+
 ### `riskvalidation.portfolio.granularity.GranularityResult`
 
 ```python
 @dataclass(frozen=True)
 class GranularityResult:
-    ga_ratio: float      # GA of eq. 17, as written in dossier 04 H.5 (it divides by K*)
-    k_star: float        # sum_i s_i K_i, share of EAD
-    add_on: float        # ga_ratio * k_star, share of EAD
+    ga: float            # the granularity adjustment of eq. 17, a share of EAD (eq. 9)
+    k_star: float        # K* = sum_i s_i K_i, share of EAD
     delta: float
     alpha_q: float
     c: np.ndarray        # (N,) C_i of eq. 11
 ```
 
-- Units: `k_star` and `add_on` shares of EAD (decimals); `ga_ratio` dimensionless; maps onto the document block `granularity.applies_to_portfolio` (`ga_ratio`, `k_star`, `ga_add_on_share`; `ga_money = add_on * total_ead`).
-- Invariants: `add_on = ga_ratio * k_star`; all nonnegative for `q >= 0.99`.
+- Units: `ga` and `k_star` shares of EAD (decimals); maps onto the document block `granularity.levels[*]` (`q`, `alpha_q`, `delta`, `ga`; `ga_money = ga * total_ead`) and `granularity.k_star`.
+- Invariants: `ga` is the adjustment to add to the loss rate of the infinitely granular portfolio, `GA = alpha_q(L_n) - mu(alpha_q(X))` (eq. 9, p. 41), already a share of EAD: it is **not** scaled by `K*`
+  (the first draft read eq. 17 as a ratio to `K*` and multiplied by it; the U7-S review, blocker B1, refuted that on the paper); nonnegative for `q >= 0.99`.
 
 ### `riskvalidation.portfolio.granularity.granularity_adjustment`
 
 ```python
-def granularity_adjustment(share: np.ndarray, pd: np.ndarray, lgd_mean: np.ndarray, lgd_gamma: float, omega: np.ndarray,
+def granularity_adjustment(share: np.ndarray, k: np.ndarray, pd: np.ndarray, lgd_mean: np.ndarray, lgd_gamma: float,
                            xi: float, q: float = 0.999) -> GranularityResult: ...
 ```
 
-- Units: `share` (N,) exposure shares `s_i` summing to 1, `pd`, `lgd_mean`, `omega` (N,) decimals (`omega_i` in `[0, 1]` is the weight of name `i` on the systematic factor of the single-factor CreditRisk+ model).
-- Invariants: the simplified GA of eq. 17: `ga_ratio = (1 / (2 K*)) sum_i s_i^2 C_i (delta (K_i + R_i) - K_i)` with `C_i = (V[LGD_i] + E[LGD_i]^2) / E[LGD_i]` (eq. 11), conditional PD
-  `pi_i(x) = PD_i (1 + omega_i (x - 1))`, reserve `R_i = E[LGD_i] PD_i`, capital `K_i = E[LGD_i] (pi_i(alpha_q) - PD_i)` and `K* = sum_i s_i K_i` (dossier 04 H.5). The dossier states `R_i` and the
-  structure of `K_i + R_i` but not an explicit `K_i`: the reading `K_i = E[LGD_i] (pi_i(alpha_q) - PD_i)` (unexpected loss at the factor quantile) is UNVERIFIED against the paper, and whether eq. 17
-  returns a ratio to `K*` (as the `1 / (2 K*)` suggests) or an add-on in units of `K*` is UNVERIFIED; the engine returns both (`ga_ratio`, `add_on = ga_ratio * K*`) and the document names
-  them. For `n` identical names `ga_ratio * n` is constant (`ga_ratio` is proportional to `1 / n`, `hhi = 1 / n`), `ga_ratio -> 0` as `n -> infinity`, and it is nonnegative; `ValueError` for
-  `share` not summing to 1 within `1e-9`. The exact GA (eq. 14) with second-order terms is not in 1.0.0.
-- Golden: `delta = 4.8336` at `xi = 0.25`, `q = 0.999` (above); for `n = 10` identical names (`s = 0.1`, `pd = 0.01`, `E[LGD] = 0.45`, `gamma = 0.25`, `omega = 0.5`, `xi = 0.25`, `q = 0.999`): `C = 0.5875`,
-  `K = 0.037138`, `R = 0.0045`, `ga_ratio = 0.129817` and, at `n = 100`, `0.012982` (computed from eq. 17 as transcribed in dossier 04 H.5; the paper's own numbers for this portfolio are not in the
-  dossier). Tolerance `5e-7`.
+- Units: `share` (N,) exposure shares `s_i` summing to 1, `k` (N,) the UL capital `K_i` per unit of EAD, `pd`, `lgd_mean` (N,) decimals, `lgd_gamma` and `xi` dimensionless.
+- Invariants: the simplified GA of eq. 17 (p. 46): `ga = (1 / (2 K*)) sum_i s_i^2 C_i (delta (K_i + R_i) - K_i)` with `C_i = (V[LGD_i] + E[LGD_i]^2) / E[LGD_i]` (eq. 11), reserve `R_i = E[LGD_i] PD_i`,
+  `K* = sum_i s_i K_i` and `delta = delta(xi, q)`. `K_i` is an input, as in the paper's regulatory algorithm (p. 47, algorithm step (iv): "Compute UL capital requirement K_i as a function of PD_i, E[LGD_i],
+  and M_i by IRB formula"; p. 45: with `R_i` and `K_i` substituted the PD_i and omega_i inputs are eliminated). **The bake passes the IRB capital per unit of EAD at the regulatory correlation and the
+  loan type's maturity** (`regulatory.irb.capital_requirement(...).k`, the document's `granularity.k_source = "irb-regulatory-correlation"`); `k_creditrisk_plus` (eq. 13) serves a caller that has `omega`
+  instead. For `n` identical names `ga * n` is constant (`ga` is proportional to `1 / n`, `hhi = 1 / n`), `ga -> 0` as `n -> infinity`; `ValueError` for `share` not summing to 1 within `1e-9`, a negative
+  `k`, or `K* = 0`. The exact GA (eq. 14) with second-order terms is not in 1.0.0.
+- Golden: `delta = 4.8336` at `xi = 0.25`, `q = 0.999` (above); for `n = 10` identical names (`s = 0.1`, `pd = 0.01`, `E[LGD] = 0.45`, `gamma = 0.25`, `xi = 0.25`, `q = 0.999`, `k = 0.037138` from
+  `k_creditrisk_plus` with `omega = 0.5`): `C = 0.5875`, `R = 0.0045`, `ga = 0.129817` of EAD and, at `n = 100`, `0.012982` (computed from eq. 17; the paper's own numbers for this portfolio are not in
+  the dossier). Tolerance `5e-7`.
 
 ## Module `riskvalidation/portfolio/importance.py`
 
@@ -435,7 +454,7 @@ def solve_theta(p: np.ndarray, c: np.ndarray, threshold: float) -> float: ...
 - Units: money for `c` and `threshold`; returns `theta` per money unit.
 - Invariants: the root `theta >= 0` of `sum_i c_i p_{theta,i} = threshold` (the twisted conditional mean loss equals the threshold, dossier 04 H.7); `0.0` when `sum_i c_i p_i >= threshold`;
   `ValueError` when `threshold >= sum_i c_i` (unreachable); deterministic (bracketed root finding with a fixed tolerance `1e-12`).
-- Golden: `p = 0.1`, `c = 1`, `threshold = 0.181818` gives `theta = 0.693147` (`ln 2`).
+- Golden: `p = 0.1`, `c = 1`, `threshold = 2/11` (`= 0.181818...`, the twisted `p_theta` of `twisted_pd` at `theta = ln 2`) gives `theta = 0.693147` (`ln 2` exactly; a threshold rounded to `0.181818` gives `0.693146`).
 
 ### `riskvalidation.portfolio.importance.ImportanceResult`
 
@@ -527,12 +546,14 @@ def asrf_var_contributions(ead: np.ndarray, pd: np.ndarray, lgd: np.ndarray, rho
 ```
 
 - Units: money for `ead`, decimals for `pd`, `lgd`, `rho`, `q`; returns (N,) money.
-- Invariants: the closed-form one-factor VaR contribution at the factor quantile, the anchor of the sample-based contributions: `RC_i = EAD_i LGD_i p_i(G(1 - q))` with `p_i(z) = Phi((G(pd_i) - sqrt(rho_i) z) / sqrt(1 - rho_i))`
-  (dossier 04 C.4: the loss is monotone in `z` so the loss quantile is the conditional mean at `z = G(1 - q)`; dossier 04 H.2 cites Emmer and Tasche (2005, Journal of Risk 7(2):85-101) for the closed-form one-factor
-  contributions and does not print their formula: that this expression is the formula of Emmer and Tasche is UNVERIFIED, it is the conditional-mean contribution that the monotonicity gives); the contributions sum
-  to the ASRF (infinitely granular) VaR `sum_i EAD_i LGD_i p_i(G(1 - q))`, which for identical names equals `EAD LGD lhp_quantile(q, pd, rho)`.
-- Golden (the Emmer-Tasche anchor): two names `ead = (60, 40)`, `lgd = 0.45`, `pd = (0.01, 0.05)`, `rho = 0.15`, `q = 0.999` (`G(0.001) = -3.090232`): `p = (0.110265, 0.313506)`,
-  `RC = (2.977148, 5.643106)` and the sum `8.620255` (computed from `engines.vasicek.conditional_pd`).
+- Invariants: the asymptotic one-factor VaR contribution at the factor quantile, the anchor of the sample-based contributions: `RC_i = EAD_i LGD_i p_i(G(1 - q))` with
+  `p_i(z) = Phi((G(pd_i) - sqrt(rho_i) z) / sqrt(1 - rho_i))` (dossier 04 C.4: the loss is monotone in `z`, so the loss quantile is the conditional mean at `z = G(1 - q)`). It is the first term of
+  Emmer and Tasche (2005, Journal of Risk 7(2):85-101; arXiv cond-mat/0302402v5) eq. 2.17 times `u_j` (the asymptotic, portfolio-invariant part of their contribution; eq. 2.15 and 2.18), read on the
+  paper by the U7-S review: it is **not** their full contribution, which adds granularity terms (eq. 2.17 under 2.12b) or their semi-asymptotic charge (Definition 3.1). The document names it
+  `asrf-asymptotic`. The contributions sum to the ASRF (infinitely granular) VaR `sum_i EAD_i LGD_i p_i(G(1 - q))`, which for identical names equals `EAD LGD lhp_quantile(q, pd, rho)`; the sample VaR of a
+  finite portfolio sits near it, not on it, and the document's `anchor.asrf_var` is the sum of its rows (`c10_checks` recomputes both).
+- Golden (the asymptotic anchor): two names `ead = (60, 40)`, `lgd = 0.45`, `pd = (0.01, 0.05)`, `rho = 0.15`, `q = 0.999` (`G(0.001) = -3.090232`): `p = (0.110265, 0.313506)`,
+  `RC = (2.977148, 5.643106)` and the sum `8.620255` (computed from `engines.vasicek.conditional_pd`; the U7-S review recomputed the same values from eq. 2.17).
 
 ### `riskvalidation.portfolio.euler.hhi`
 
@@ -751,30 +772,31 @@ def correlation_size_power(rejected: np.ndarray, known_rho: float, null_rho: flo
 | LHP quantile 0.176329 (99.9%) and 0.105587 (99%) at pd 0.02, rho 0.15; LHP density 18.004184 at 0.02 | `lhp_measures`, `fit_ml` | existing engine `engines.vasicek` (computed), dossier 04 C.4 |
 | IRB K 0.070348 = 0.45 * (0.176329 - 0.02) for residential_mortgage at pd 0.02, LGD 0.45 | `lhp_measures` and the IRB comparison | existing engine `regulatory.irb.capital_requirement` (computed), dossier 04 C.4 |
 | LHP expected shortfall 0.135971 (99%) and 0.209404 (99.9%) at pd 0.02, rho 0.15 | `lhp_measures` | computed: the conditional mean of `p(Z)` given `Z <= G(1 - q)`, by quadrature (dossier 04 H.1 and C.4 definitions) |
-| delta 4.8336 (paper 4.83) at xi 0.25, q 0.999; alpha_q 17.505777; C = 0.5875, ga_ratio 0.129817 at n = 10 | `granularity.*` | dossier 04 H.5 (Gordy and Lutkebohmert 2013 eq. 15, 16 and 17); the parametrisation and the example are computed |
+| delta 4.8336 (paper 4.83) at xi 0.25, q 0.999; alpha_q 17.505777; K = 0.037138, C = 0.5875, ga 0.129817 of EAD at n = 10 | `granularity.*`, `k_creditrisk_plus` | dossier 04 H.5 (Gordy and Lutkebohmert 2013 eq. 13, 15, 16 and 17, read on the paper by the U7-S review); the example is computed |
 | CreditRisk+ pmf 0.548812, 0.054881, 0.112506, 0.175711, 0.027992, 0.034868, 0.028804, 0.006003 for nu (1,2,3), pd (0.1,0.2,0.3) | `pmf_stable` | direct convolution, computed (dossier 04 H.4 PGF) |
 | negative binomial 0.826446, 0.150263, 0.020490, 0.002484 (one obligor, one sector, sigma2 0.5) | `pmf_stable` | closed form, computed (dossier 04 H.4 PGF) |
 | discrete VaR 1.0 and ES 2.0 (q 0.8), 1.666667 (q 0.7) of pmf (0.5, 0.3, 0.2) | `measures_from_pmf` | hand-computed (dossier 04 H.1 definition) |
 | sample VaR 8.0, ES 9.0, 8.666667 on losses 0..9 | `var_from_sample`, `es_from_sample` | hand-computed (dossier 04 H.1 definition, Acerbi-Tasche weights) |
 | Euler ES contributions (9.0, 18.0) sum 27.0 | `es_contributions` | hand-computed (dossier 05 G.4 formula) |
-| ASRF VaR contributions 2.977148 and 5.643106, sum 8.620255 | `asrf_var_contributions` | computed from `engines.vasicek.conditional_pd` (dossier 04 C.4 and H.2; Emmer and Tasche 2005 formula UNVERIFIED) |
+| ASRF VaR contributions 2.977148 and 5.643106, sum 8.620255 | `asrf_var_contributions` | computed from `engines.vasicek.conditional_pd` (dossier 04 C.4 and H.2; the first term of Emmer and Tasche 2005 eq. 2.17) |
 | HHI 0.380000 and effective names 2.631579 for exposures (50, 30, 20) | `hhi`, `effective_names` | dossier 04 H.6, hand-computed |
 | EL 135000.0 of the fixture portfolio | `expected_loss` | dossier 04 H.1, hand-computed |
-| twisted PD 0.181818 and theta 0.693147 | `twisted_pd`, `solve_theta` | dossier 04 H.7 formula (twist UNVERIFIED there), hand-computed |
+| twisted PD 0.181818 and theta 0.693147 (threshold 2/11) | `twisted_pd`, `solve_theta` | dossier 04 H.7 formula (twist UNVERIFIED there), hand-computed |
 | variance ratio 16.0 | `variance_ratio` | hand-computed |
 | log-likelihood 7.694105 of rates (0.01, 0.02, 0.05) at pd 0.02, rho 0.15 | `log_likelihood` | existing engine `lhp_pdf` (computed) |
 | moments rho 0.026880 for rates (0.01, 0.02, 0.03) | `fit_moments` | computed: root of `E[p(Z)^2] = mean(rates^2)` (dossier 04 C.4) |
 | quasi-sample ML recovery 0.019995 and 0.149917 | `fit_ml` | computed (Nelder-Mead on the logit scale) |
 | implied factor -1.387222 for rate 0.05 | `implied_factors` | existing engine `engines.vasicek.implied_factor` (computed) |
-| joint default 0.000556 (Gaussian) and 0.001646 (Student-t, nu 5) at pd 0.01, rho 0.3 | `simulate_gaussian`, `simulate_student_t` | computed by quadrature (dossier 04 H.3 definitions); the t value checked by simulation 0.001653 +/- 0.000009 |
+| joint default 0.000556 (Gaussian) and 0.001647 (Student-t, nu 5) at pd 0.01, rho 0.3 | `simulate_gaussian`, `simulate_student_t` | computed by quadrature (dossier 04 H.3 definitions); the t value checked by simulation 0.001653 +/- 0.000009 |
 | binomial p-values 0.058520 and 0.001460 (6 years, 99%) | `tail_backtest` | closed form, computed (dossier 05 G.5 back-test) |
 | z 3.0 with p 0.002700; z 1.5 with p 0.133614 | `mc_convergence` | closed form, computed |
 | additivity metric 0.0 and 0.1 | `euler_additivity` | hand-computed (dossier 05 G.4 and G.5) |
 | Kolmogorov distance 0.2 with p 0.818621 at S 10 | `crp_recursion_vs_mc` | closed form, computed |
 | size z 0.290191 with p 0.771671; power 0.83 | `correlation_size_power` | closed form, computed |
 
-Open items carried from the dossiers, never silently decided: the Gamma factor parametrisation of the granularity adjustment and the explicit form of `K_i` (UNVERIFIED against Gordy and Lutkebohmert 2013; the golden
-4.83 fixes the former, the dossier gives `K_i + R_i` but not `K_i`); whether eq. 17 returns a ratio to `K*` (UNVERIFIED); the exponential twist and the factor mean shift of Glasserman and Li (2005) (UNVERIFIED in dossier 04 H.7:
-acceptance is unbiasedness against plain Monte Carlo); the equation numbers of Tasche (2008) (UNVERIFIED in dossier 04 H.2) and the formula of Emmer and Tasche (2005) (the dossier cites the paper, not the formula); the kernel bandwidth
-of Tasche (2009); the page-level formulas of the CreditMetrics technical document (migration mode is not in 1.0.0); the multi-factor extension of the importance sampling (a failure mode of the ladder); the sector concentration
-adjustment of Pykhtin (2004) (UNVERIFIED in dossier 04 H.6, not implemented); the exact granularity adjustment (eq. 14), random LGD in the copulas and CreditMetrics migration mode are not in 1.0.0.
+Open items carried from the dossiers, never silently decided: the exponential twist and the factor mean shift of Glasserman and Li (2005) (UNVERIFIED in dossier 04 H.7: acceptance is unbiasedness against plain
+Monte Carlo); the equation numbers of Tasche (2008) (UNVERIFIED in dossier 04 H.2); the kernel bandwidth of Tasche (2009); the page-level formulas of the CreditMetrics technical document (migration mode is not in
+1.0.0); the multi-factor extension of the importance sampling (a failure mode of the ladder); the sector concentration adjustment of Pykhtin (2004) (UNVERIFIED in dossier 04 H.6, not implemented); the exact
+granularity adjustment (eq. 14), random LGD in the copulas and CreditMetrics migration mode are not in 1.0.0. Settled by the U7-S review on the primary papers: the Gamma factor of the granularity adjustment (shape
+and rate xi, p. 43), `K_i` (eq. 13, p. 45; the regulatory algorithm takes it from the IRB formula, p. 47), GA as a share of EAD (eq. 9, p. 41) and the asymptotic anchor as the first term of Emmer and Tasche (2005)
+eq. 2.17.

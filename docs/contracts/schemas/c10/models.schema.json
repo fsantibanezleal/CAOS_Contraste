@@ -44,7 +44,7 @@
   ],
   "unevaluatedProperties": false,
   "$defs": {
-    "c10Window": {
+    "c10FitWindow": {
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -54,19 +54,37 @@
       ],
       "properties": {
         "first_year": {
-          "type": "integer",
-          "minimum": 1985
+          "const": 1985
         },
         "last_year": {
-          "type": "integer",
-          "minimum": 1985
+          "const": 2006
         },
         "n_years": {
-          "type": "integer",
-          "minimum": 1
+          "const": 22
         }
       },
-      "description": "A window of calendar years; n_years = last_year - first_year + 1 (a producer check)."
+      "description": "The fit window, fixed by the SDD (section 5, case C10): 1985-2006."
+    },
+    "c10EvaluationWindow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "first_year",
+        "last_year",
+        "n_years"
+      ],
+      "properties": {
+        "first_year": {
+          "const": 2007
+        },
+        "last_year": {
+          "const": 2012
+        },
+        "n_years": {
+          "const": 6
+        }
+      },
+      "description": "The out-of-sample evaluation window, fixed by the SDD (section 5, case C10): 2007-2012. A fit window that overlaps it, or windows swapped, fail the schema."
     },
     "c10Windows": {
       "type": "object",
@@ -77,13 +95,13 @@
       ],
       "properties": {
         "fit": {
-          "$ref": "#/$defs/c10Window"
+          "$ref": "#/$defs/c10FitWindow"
         },
         "evaluation": {
-          "$ref": "#/$defs/c10Window"
+          "$ref": "#/$defs/c10EvaluationWindow"
         }
       },
-      "description": "The fit window (SDD section 5: 1985-2006) and the out-of-sample evaluation window (2007-2012); the fit window ends before the evaluation window begins."
+      "description": "The fit window (1985-2006) and the out-of-sample evaluation window (2007-2012); the fit window ends before the evaluation window begins."
     },
     "c10Group": {
       "type": "object",
@@ -169,7 +187,19 @@
           "minLength": 1
         },
         "irb_asset_class": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "corporate",
+            "sovereign",
+            "bank",
+            "financial_institution",
+            "sme",
+            "hvcre",
+            "residential_mortgage",
+            "qrre",
+            "other_retail",
+            "retail_consumer"
+          ]
         },
         "irb_reference": {
           "type": "string",
@@ -321,7 +351,30 @@
           }
         }
       },
-      "description": "The specification of one rung: its engine function, its reference and its parameters."
+      "description": "The specification of one rung: its engine function, its reference and its parameters. A Monte Carlo rung has its scenario count; an analytic rung has none.",
+      "oneOf": [
+        {
+          "properties": {
+            "estimator": {
+              "const": "analytic"
+            },
+            "n_scenarios": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "estimator": {
+              "const": "monte-carlo"
+            },
+            "n_scenarios": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      ]
     },
     "c10PortfolioSpec": {
       "type": "object",
@@ -384,6 +437,7 @@
       "required": [
         "xi",
         "gamma",
+        "k_source",
         "xi_reference",
         "q_reference",
         "delta_reference",
@@ -397,6 +451,9 @@
         "gamma": {
           "type": "number",
           "minimum": 0
+        },
+        "k_source": {
+          "const": "irb-regulatory-correlation"
         },
         "xi_reference": {
           "const": 0.25
@@ -447,7 +504,10 @@
           "type": "array",
           "items": {
             "type": "integer",
-            "minimum": 2
+            "enum": [
+              22,
+              40
+            ]
           },
           "minItems": 1
         },

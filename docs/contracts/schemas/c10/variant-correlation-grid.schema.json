@@ -163,7 +163,10 @@
         },
         "series_length_years": {
           "type": "integer",
-          "minimum": 2
+          "enum": [
+            22,
+            40
+          ]
         },
         "n_replications": {
           "type": "integer",
@@ -235,7 +238,10 @@
         },
         "series_length_years": {
           "type": "integer",
-          "minimum": 2
+          "enum": [
+            22,
+            40
+          ]
         },
         "n_replications": {
           "type": "integer",

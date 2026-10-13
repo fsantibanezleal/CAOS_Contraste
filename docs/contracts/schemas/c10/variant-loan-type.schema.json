@@ -91,7 +91,7 @@
   ],
   "unevaluatedProperties": false,
   "$defs": {
-    "c10Window": {
+    "c10FitWindow": {
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -101,19 +101,37 @@
       ],
       "properties": {
         "first_year": {
-          "type": "integer",
-          "minimum": 1985
+          "const": 1985
         },
         "last_year": {
-          "type": "integer",
-          "minimum": 1985
+          "const": 2006
         },
         "n_years": {
-          "type": "integer",
-          "minimum": 1
+          "const": 22
         }
       },
-      "description": "A window of calendar years; n_years = last_year - first_year + 1 (a producer check)."
+      "description": "The fit window, fixed by the SDD (section 5, case C10): 1985-2006."
+    },
+    "c10EvaluationWindow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "first_year",
+        "last_year",
+        "n_years"
+      ],
+      "properties": {
+        "first_year": {
+          "const": 2007
+        },
+        "last_year": {
+          "const": 2012
+        },
+        "n_years": {
+          "const": 6
+        }
+      },
+      "description": "The out-of-sample evaluation window, fixed by the SDD (section 5, case C10): 2007-2012. A fit window that overlaps it, or windows swapped, fail the schema."
     },
     "c10Windows": {
       "type": "object",
@@ -124,13 +142,13 @@
       ],
       "properties": {
         "fit": {
-          "$ref": "#/$defs/c10Window"
+          "$ref": "#/$defs/c10FitWindow"
         },
         "evaluation": {
-          "$ref": "#/$defs/c10Window"
+          "$ref": "#/$defs/c10EvaluationWindow"
         }
       },
-      "description": "The fit window (SDD section 5: 1985-2006) and the out-of-sample evaluation window (2007-2012); the fit window ends before the evaluation window begins."
+      "description": "The fit window (1985-2006) and the out-of-sample evaluation window (2007-2012); the fit window ends before the evaluation window begins."
     },
     "c10Interval": {
       "type": "object",
@@ -769,6 +787,8 @@
         "reference",
         "pd",
         "lgd",
+        "maturity",
+        "maturity_adjustment",
         "irb_correlation",
         "fitted_correlation",
         "k_irb",
@@ -777,10 +797,28 @@
       ],
       "properties": {
         "regime": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "basel3",
+            "crr3",
+            "basel2",
+            "cl_ran21_6"
+          ]
         },
         "asset_class": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "corporate",
+            "sovereign",
+            "bank",
+            "financial_institution",
+            "sme",
+            "hvcre",
+            "residential_mortgage",
+            "qrre",
+            "other_retail",
+            "retail_consumer"
+          ]
         },
         "reference": {
           "type": "string",
@@ -798,6 +836,31 @@
           "maximum": 1,
           "description": "A share or an observed rate in [0, 1]."
         },
+        "maturity": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 5
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Effective maturity in years, 1 to 5; null for a retail class."
+        },
+        "maturity_adjustment": {
+          "anyOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "(1 + (M - 2.5) b) / (1 - 1.5 b) with b = (0.11852 - 0.05478 ln PD)^2; null for a retail class."
+        },
         "irb_correlation": {
           "type": "number",
           "exclusiveMinimum": 0,
@@ -813,19 +876,64 @@
         "k_irb": {
           "type": "number",
           "minimum": 0,
-          "description": "The IRB capital requirement per unit of EAD (engine regulatory.irb.capital_requirement)."
+          "description": "The IRB capital requirement per unit of EAD (engine regulatory.irb.capital_requirement), with the maturity adjustment where the class has one."
         },
         "ec_lhp_fitted": {
           "type": "number",
           "minimum": 0,
-          "description": "lgd * (LHP quantile at 99.9% with the fitted correlation - pd), per unit of EAD."
+          "description": "lgd * (LHP quantile at 99.9% with the fitted correlation - pd) times the same maturity adjustment as k_irb, per unit of EAD."
         },
         "ratio_fitted_to_irb": {
           "type": "number",
           "minimum": 0
         }
       },
-      "description": "How the fitted correlation compares with the IRB correlation of the loan type's regulatory class (dossier 04 C.4): the capital per unit of EAD both ways. Retail classes carry no maturity adjustment."
+      "description": "How the fitted correlation compares with the IRB correlation of the loan type's regulatory class (dossier 04 C.4): the capital per unit of EAD both ways, with the same maturity treatment on both sides, so the ratio isolates the correlation. Retail classes carry no maturity and no maturity adjustment; the other classes carry both.",
+      "oneOf": [
+        {
+          "properties": {
+            "asset_class": {
+              "type": "string",
+              "enum": [
+                "residential_mortgage",
+                "qrre",
+                "other_retail",
+                "retail_consumer"
+              ]
+            },
+            "maturity": {
+              "type": "null"
+            },
+            "maturity_adjustment": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "asset_class": {
+              "type": "string",
+              "enum": [
+                "corporate",
+                "sovereign",
+                "bank",
+                "financial_institution",
+                "sme",
+                "hvcre"
+              ]
+            },
+            "maturity": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "maturity_adjustment": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          }
+        }
+      ]
     },
     "c10Group": {
       "type": "object",
@@ -1286,7 +1394,8 @@
                 "type": "string"
               }
             }
-          }
+          },
+          "description": "The declared inputs of the rung; a rung that did not run may keep them."
         },
         "diagnostics": {
           "type": "array",
@@ -1309,7 +1418,8 @@
                 "type": "string"
               }
             }
-          }
+          },
+          "description": "Numbers measured by running the rung; empty when the rung did not run."
         },
         "simulation": {
           "anyOf": [
@@ -1434,6 +1544,10 @@
             "simulation": {
               "type": "null"
             },
+            "diagnostics": {
+              "type": "array",
+              "maxItems": 0
+            },
             "measures": {
               "type": "null"
             },
@@ -1450,7 +1564,9 @@
       "required": [
         "n_names",
         "hhi",
-        "ga_ratio"
+        "ga",
+        "truth_ga",
+        "truth_reason"
       ],
       "properties": {
         "n_names": {
@@ -1462,72 +1578,70 @@
           "minimum": 0,
           "maximum": 1
         },
-        "ga_ratio": {
+        "ga": {
           "type": "number",
           "minimum": 0
+        },
+        "truth_ga": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "alpha_q(L_n) - mu(alpha_q(X)) from the CreditRisk+ recursion of the same single-factor model, as a share of EAD; null with its reason where the recursion was not run."
+        },
+        "truth_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
-      "description": "The granularity adjustment of n identical names of the portfolio's mix: ga_ratio times n is constant."
+      "description": "The granularity adjustment (a share of EAD) of n identical names of the portfolio's mix at the level of by_n_names_level, with the recursion's value beside it: ga times n is constant.",
+      "oneOf": [
+        {
+          "properties": {
+            "truth_ga": {
+              "type": "number",
+              "minimum": 0
+            },
+            "truth_reason": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "truth_ga": {
+              "type": "null"
+            },
+            "truth_reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
     },
-    "c10GaPortfolio": {
+    "c10GaLevel": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "ga_ratio",
-        "k_star",
-        "ga_add_on_share",
-        "ga_money"
-      ],
-      "properties": {
-        "ga_ratio": {
-          "type": "number",
-          "minimum": 0
-        },
-        "k_star": {
-          "type": "number",
-          "minimum": 0
-        },
-        "ga_add_on_share": {
-          "type": "number",
-          "minimum": 0
-        },
-        "ga_money": {
-          "type": "number",
-          "minimum": 0,
-          "description": "Money in the `currency` of the enclosing block."
-        }
-      },
-      "description": "The adjustment for the illustrative portfolio: ga_add_on_share = ga_ratio * k_star, as a share of EAD, and in money."
-    },
-    "c10Granularity": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "currency",
-        "xi",
-        "gamma",
         "q",
         "alpha_q",
         "delta",
-        "delta_reference",
-        "delta_reference_source",
-        "applies_to_portfolio",
-        "by_n_names"
+        "ga",
+        "ga_money"
       ],
       "properties": {
-        "currency": {
-          "type": "string",
-          "pattern": "^[A-Z]{3}$",
-          "description": "ISO 4217 code of the money fields of this block."
-        },
-        "xi": {
-          "type": "number",
-          "exclusiveMinimum": 0
-        },
-        "gamma": {
-          "type": "number",
-          "minimum": 0
-        },
         "q": {
           "type": "number",
           "enum": [
@@ -1545,6 +1659,56 @@
           "type": "number",
           "minimum": 0
         },
+        "ga": {
+          "type": "number",
+          "minimum": 0,
+          "description": "The granularity adjustment of the portfolio at this level, a share of EAD (Gordy and Lutkebohmert 2013, eq. 9 and 17)."
+        },
+        "ga_money": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Money in the `currency` of the enclosing block."
+        }
+      },
+      "description": "The adjustment at one level: ga_money = ga * total_ead (a producer check). The C5 rung's VaR at this level is the C1 VaR plus ga_money."
+    },
+    "c10Granularity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "xi",
+        "gamma",
+        "k_source",
+        "k_star",
+        "delta_reference",
+        "delta_reference_source",
+        "levels",
+        "by_n_names_level",
+        "by_n_names"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "xi": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "gamma": {
+          "type": "number",
+          "minimum": 0
+        },
+        "k_source": {
+          "const": "irb-regulatory-correlation"
+        },
+        "k_star": {
+          "type": "number",
+          "minimum": 0,
+          "description": "K* = sum_i s_i K_i with K_i the IRB capital per unit of EAD at the regulatory correlation (Gordy and Lutkebohmert 2013, algorithm step iv, p. 47)."
+        },
         "delta_reference": {
           "const": 4.83
         },
@@ -1552,8 +1716,15 @@
           "type": "string",
           "minLength": 1
         },
-        "applies_to_portfolio": {
-          "$ref": "#/$defs/c10GaPortfolio"
+        "levels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c10GaLevel"
+          },
+          "minItems": 2
+        },
+        "by_n_names_level": {
+          "const": 0.999
         },
         "by_n_names": {
           "type": "array",
@@ -1563,7 +1734,43 @@
           "minItems": 5
         }
       },
-      "description": "The granularity adjustment of Gordy and Lutkebohmert (2013) (dossier 04 H.5): delta = (alpha_q - 1)(xi + (1 - xi) / alpha_q) (eq. 15), 4.83 at xi 0.25 and q 0.999, the adjustment for the portfolio, and the adjustment against the number of names."
+      "description": "The granularity adjustment of Gordy and Lutkebohmert (2013) (dossier 04 H.5): delta = (alpha_q - 1)(xi + (1 - xi) / alpha_q) (eq. 15), 4.83 at xi 0.25 and q 0.999 (p. 46); the adjustment GA is a share of EAD (eq. 9, p. 41; eq. 17), per level for the portfolio and against the number of names. At xi 0.25 the delta of the 99.9% level lies in [4.825, 4.835].",
+      "if": {
+        "properties": {
+          "xi": {
+            "const": 0.25
+          }
+        },
+        "required": [
+          "xi"
+        ]
+      },
+      "then": {
+        "properties": {
+          "levels": {
+            "items": {
+              "if": {
+                "properties": {
+                  "q": {
+                    "const": 0.999
+                  }
+                },
+                "required": [
+                  "q"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "delta": {
+                    "minimum": 4.825,
+                    "maximum": 4.835
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "c10EulerRow": {
       "type": "object",
@@ -1635,11 +1842,17 @@
       "additionalProperties": false,
       "required": [
         "method",
+        "asrf_var",
         "rows"
       ],
       "properties": {
         "method": {
-          "const": "emmer-tasche-2005-one-factor"
+          "const": "asrf-asymptotic"
+        },
+        "asrf_var": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Money in the `currency` of the enclosing block."
         },
         "rows": {
           "type": "array",
@@ -1649,7 +1862,7 @@
           "minItems": 2
         }
       },
-      "description": "The closed-form one-factor VaR contributions of Emmer and Tasche (2005), the anchor of the sample contributions."
+      "description": "The asymptotic one-factor VaR contributions u_j * Phi((c_j - sqrt(rho_j) q_(1-alpha)(X)) / sqrt(1 - rho_j)): the first term of Emmer and Tasche (2005) eq. 2.17 (Gordy 2003 portfolio invariance), not their full contribution. asrf_var is the sum of the rows, the infinitely granular VaR; the sample VaR sits near it, not on it (a producer check recomputes both)."
     },
     "c10EulerLevel": {
       "type": "object",

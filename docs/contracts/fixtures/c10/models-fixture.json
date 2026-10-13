@@ -371,6 +371,7 @@
     "granularity": {
       "xi": 0.25,
       "gamma": 0.25,
+      "k_source": "irb-regulatory-correlation",
       "xi_reference": 0.25,
       "q_reference": 0.999,
       "delta_reference": 4.83,
