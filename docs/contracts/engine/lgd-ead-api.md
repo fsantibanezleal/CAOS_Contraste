@@ -6,7 +6,7 @@ every function are written by U6-E against this file: a function exists with exa
 invariant is a test. Changing a signature, a unit or a golden value is a breaking change (a new major version of this contract).
 Sources: dossier 04 (`wip/contraste/04-credit-risk-models-sota-2026-10-04.md`, sections F.1 to F.4 for LGD and G.1 to G.3 for EAD and
 CCF) and dossier 01 (`wip/contraste/01-basel-pillar1-pillar2-framework-2026-10-04.md`, section A.5 for the IRB LGD, EAD and CCF
-floors, section B.2 for the standardised CCFs); the product SDD section 4 gives the acceptance rows this contract serves ("LGD
+floors, section C for the standardised CCFs, CRE20.94 to CRE20.101); the product SDD section 4 gives the acceptance rows this contract serves ("LGD
 rungs", "CCF/EAD rungs") and section 5 the cases C03, C08 and C09.
 
 The engine computes; it states no compliance claim. Nothing here is a Basel, CRR or EBA requirement beyond what the dossier sections
@@ -31,7 +31,8 @@ is marked UNVERIFIED here and is not silently decided.
 - Every function is pure and deterministic (no hidden state, no randomness, no I/O, inputs never mutated) and returns new arrays. A
   fit is deterministic for the same inputs (the optimiser, its start and its tolerance are fixed by the implementation).
 - Dataclasses are frozen. A function that cannot compute a value because data is missing raises `ValueError` with the reason, or (a
-  validation function) returns the `not_evaluated` light with its reason in `notes`; it never returns a placeholder number.
+  validation function) returns the `not_evaluated` light with its reason in `notes` and `statistic`, `p_value` and `metric` all null; it never returns a placeholder number.
+- The parameters of a light rule that are not alphas (`rho_green`, `rho_amber`, `gap_amber`, `gap_red`, `tolerance`) travel in the row's `extras["thresholds"]`, a mapping from the parameter name to its value, beside `alpha_amber` and `alpha_red`; a view reads them from there to explain a light.
 - Tolerance: every golden value states its own tolerance or is exact; a golden stated to six decimals holds to `5e-7`.
 - A validation function returns one `TestResult` of `riskvalidation`, serialised by `dataclasses.asdict` into a row that validates
   against `common/test-result` (the schema `docs/contracts/schemas/common/test-result.schema.json`): `test_id`, `model_id`,
@@ -54,7 +55,9 @@ is marked UNVERIFIED here and is not silently decided.
 
 The C08 document describes a **proxy**: the SBA 7(a) public file has no recovery cash flows (dossier 08 A.6), so the C08 bake does
 not call `workout_lgd`; it states `workout.discount_rate_convention = "none-proxy"` and `incomplete_workouts.treatment =
-"not-applicable"`, and divides the gross charge-off by the exposure at charge-off. `workout_lgd` serves the workout case (and its
+"not-applicable"`, and divides the gross charge-off amount (`GrossChargeOffAmount`) by the gross approved amount (`GrossApproval`, the only
+exposure field the file carries; decision D2 of `plans/contraste/units/U6-sizing.md`). The approved amount overstates the exposure at default of an
+amortising loan, so the proxy is **biased low**: the document states `lgd_proxy.exposure_field = "GrossApproval"` and `bias_direction = "downward"`. `workout_lgd` serves the workout case (and its
 golden values) the moment recovery data exists, for instance the Freddie Mac loss fields once the owner's account does.
 
 ## Module `riskvalidation/lgd_ead/workout.py`
@@ -87,7 +90,7 @@ def workout_lgd(ead: np.ndarray, times: np.ndarray, recoveries: np.ndarray, cost
   `recoveries`, `costs`, `drawings` (A, K) money, nonnegative, zero-padded where an exposure has fewer than `K` flows; `rate` a decimal per
   year, scalar or (A,); the result (A,) LGD decimals, **not clipped**.
 - Invariants: `LGD = 1 - sum_k (R - C - Add) (1 + r)^(-t) / EAD`; with `rate = 0` the result is `1 - sum(R - C - Add) / EAD`; the result is
-  nonincreasing in `recoveries` and nondecreasing in `costs`, `drawings` and `rate`; a value below 0 or above 1 is returned as is (the
+  nonincreasing in `recoveries` and nondecreasing in `costs` and `drawings`; it is nondecreasing in `rate` when every net flow `R - C - Add` is nonnegative, otherwise the sign of `dLGD/dr` is the sign of `sum_k t (R - C - Add) (1 + r)^(-t-1)` (the second golden below, a negative net flow, gives LGD `1.150000` at `r = 0` and `1.136364` at `r = 0.10`: it decreases with the rate); a value below 0 or above 1 is returned as is (the
   caller flags it with `range_flag`).
 - Golden: one exposure `ead = 100`, `times = [[1, 2]]`, `recoveries = [[40, 30]]`, `costs = [[10, 0]]`, `drawings = [[0, 0]]`, `rate = 0.10`:
   `PV = 30 / 1.1 + 30 / 1.21 = 52.066116`, `LGD = 0.479339`. With `recoveries = [[5, 0]]`, `costs = [[20, 0]]`: `LGD = 1.136364` (above-one). With
@@ -455,7 +458,7 @@ def small_undrawn_rule(drawn: np.ndarray, limit: np.ndarray, ead: np.ndarray,
 
 - Units: money (A,); `threshold` money in the same currency (Qi 2009 switches below USD 50); returns `(switched, ratio)` with `switched` (A,) bool for
   `limit - drawn < threshold` and `ratio` (A,) equal to the EADF `ead / limit` where switched and to the EU CCF elsewhere.
-- Invariants: the threshold is a parameter, never a hard-coded constant; the document block `small_undrawn` records it with its currency and the number switched.
+- Invariants: `ratio` holds two different quantities, the EADF where `switched` and the EU CCF elsewhere, and is never aggregated (never averaged, summed or pooled) across the two kinds; a caller aggregates the switched and the unswitched entries separately, selected by `switched`. The threshold is a parameter, never a hard-coded constant; the document block `small_undrawn` records it with its currency and the number switched.
 - Golden: `threshold = 50`; `(drawn, limit, ead) = (980, 1000, 990)` is switched with ratio `0.99`; `(600, 1000, 900)` is not, with ratio `0.75`.
 
 ### `riskvalidation.lgd_ead.ccf.EadFit`
@@ -483,7 +486,7 @@ def fit_direct_ead(X: np.ndarray, ead: np.ndarray, limit: np.ndarray,
   Dossier 04 G.3 describes direct EAD models (a zero-adjusted gamma mixture, Tong et al. 2016); that mixture is **not** in 1.0.0 of this contract and
   would be a minor version.
 - Invariants: an EADF outside [0, 1] (an overlimit EAD) is clipped to [0, 1] for the fit and counted in `extras["n_clipped_below"]` and `["n_clipped_above"]`,
-  never silently; the clipped count is reported in the document.
+  never silently; the clipped counts are reported in the document as `ead_models[].n_clipped_below` and `n_clipped_above` (integers for a `direct-ead` model, null for the other kinds).
 - Golden: `X = [[1, 0], [1, 0], [1, 1], [1, 1]]`, `ead = [0, 500, 500, 1000]`, `limit = [1000, 1000, 1000, 1000]` gives `coefficients = [-1.098612, 2.197225]`
   (the `fit_fractional_logit` golden, since the EADF is `[0, 0.5, 0.5, 1.0]`).
 
@@ -505,7 +508,7 @@ def predict_ead(fit: EadFit, X: np.ndarray, drawn_ref: np.ndarray, limit_ref: np
 ```
 
 - Units: money (M,); the result (M,) money. `direct-ead`: `limit_ref * EADF_hat`; `utilisation-change`: `drawn_ref + limit_ref * delta_hat`.
-- Invariants: the `direct-ead` prediction lies in [0, limit_ref]; the `utilisation-change` prediction is not clipped (flag it in the document).
+- Invariants: the `direct-ead` prediction lies in [0, limit_ref]; the `utilisation-change` prediction is not clipped, and the document flags it: `ead_backtest.rows[].prediction_flag` is `outside-range` when any facility of the band has a prediction below 0 or above its limit (and the band's `predicted_ead` may then be negative), `in-range` otherwise.
 - Golden: the `fit_direct_ead` golden fit with `X = [[1, 1]]`, `limit_ref = [1000]` gives `750.0` (the fitted EADF of that group is 0.75); the
   `fit_utilisation_change` golden fit with `X = [[1]]`, `drawn_ref = [600]`, `limit_ref = [1000]` gives `900.0`.
 
@@ -533,8 +536,8 @@ def lgd_floor(portfolio: str, collateral: str) -> float: ...
 - Units: `portfolio` in `{"corporate", "retail"}`, `collateral` in `{"unsecured", "financial", "receivables", "real-estate", "other-physical", "qrre", "mortgage"}`;
   the result an LGD decimal. A combination without a cell (a corporate `qrre`) raises `ValueError`. Sovereign exposures are exempt (CRE32.16) and are not
   passed to this function.
-- Invariants: the table below, exactly; the floor of a partly secured exposure is not a cell of dossier 01 (the blending formula is not transcribed, UNVERIFIED), so
-  the caller applies the floor per secured and unsecured part and combines them.
+- Invariants: the table below, exactly; the floor of a partly secured exposure is not a cell: dossier 01 (section A.5, CRE32.17) gives it as
+  `Floor = LGD_U,floor E_U / (E (1 + H_E)) + LGD_S,floor E_S / (E (1 + H_E))`, with `E_S` capped at `E (1 + H_E)` and `E_U = E (1 + H_E) - E_S`, and the caller applies the floor to each part with this function and combines them with that formula.
 - Golden (every cell):
 
 | portfolio | collateral | floor | reference |
@@ -544,16 +547,16 @@ def lgd_floor(portfolio: str, collateral: str) -> float: ...
 | corporate | receivables | 0.10 | CRE32.16 |
 | corporate | real-estate | 0.10 | CRE32.16 |
 | corporate | other-physical | 0.15 | CRE32.16 |
-| retail | mortgage | 0.05 | CRE32.58 |
-| retail | qrre | 0.50 | CRE32.58 |
-| retail | unsecured | 0.30 | CRE32.58 |
-| retail | financial | 0.00 | CRE32.59 |
-| retail | receivables | 0.10 | CRE32.59 |
-| retail | real-estate | 0.10 | CRE32.59 |
-| retail | other-physical | 0.15 | CRE32.59 |
+| retail | mortgage | 0.05 | CRE32.58 to CRE32.59 |
+| retail | qrre | 0.50 | CRE32.58 to CRE32.59 |
+| retail | unsecured | 0.30 | CRE32.58 to CRE32.59 |
+| retail | financial | 0.00 | CRE32.58 to CRE32.59 |
+| retail | receivables | 0.10 | CRE32.58 to CRE32.59 |
+| retail | real-estate | 0.10 | CRE32.58 to CRE32.59 |
+| retail | other-physical | 0.15 | CRE32.58 to CRE32.59 |
 
   The retail secured floors are listed in the dossier as "0% / 10% / 10% / 15% by collateral" without naming the order; the order financial, receivables, real
-  estate, other physical is read from the corporate row and is **UNVERIFIED** against CRE32.59. The same cells are the C08 models `floors.cells`.
+  estate, other physical is read from the corporate row and is **UNVERIFIED**; the dossier cites CRE32.58 to CRE32.59 jointly, so the split of the seven retail cells between the two paragraphs is not asserted. The same cells are the C08 models `floors.cells`.
 
 ### `riskvalidation.lgd_ead.floors.FloorBite`
 
@@ -592,7 +595,7 @@ def supervisory_ccf(item: str) -> float: ...
 - Units: `item` in `{"direct-credit-substitutes", "nifs-rufs-transaction-related-contingents", "commitments",
   "short-term-self-liquidating-trade-letters-of-credit", "unconditionally-cancellable"}`; the result a CCF decimal. The F-IRB CCFs equal the standardised ones (CRE32.33),
   CRE20.94 to CRE20.101.
-- Invariants: the table below, exactly (dossier 01 sections A.5 and B.2); an unknown item raises `ValueError`.
+- Invariants: the table below, exactly (dossier 01 sections A.5 and C); an unknown item raises `ValueError`.
 - Golden: `direct-credit-substitutes = 1.0`, `nifs-rufs-transaction-related-contingents = 0.5`, `commitments = 0.4` (CRE20.98), `short-term-self-liquidating-trade-letters-of-credit = 0.2`,
   `unconditionally-cancellable = 0.1` (CRE20.100). Basel II's 75% for commitments (old CRE32.33) is not implemented.
 
@@ -605,7 +608,7 @@ def ead_floor(drawn: np.ndarray, limit: np.ndarray, sa_ccf: np.ndarray, off_bala
 - Units: money (A,); `sa_ccf` (A,) the standardised CCF of the facility; the result (A,) money. Dossier 01 A.5 states the floor as "on-balance amount + 50% of off-balance exposure
   using the SA CCF" (CRE32.36 corporate, CRE32.64 retail; sovereigns exempt): `floor = drawn + off_balance_share * sa_ccf * (limit - drawn)`. The reading that the 50% applies
   to the SA-CCF-weighted off-balance exposure follows the dossier's wording and is **UNVERIFIED** against the paragraph text.
-- Invariants: `drawn <= floor <= limit` for `sa_ccf` in [0, 1]; nondecreasing in `sa_ccf` and `limit`.
+- Invariants: the off-balance amount is `max(limit - drawn, 0)`, so `floor = drawn + off_balance_share * sa_ccf * max(limit - drawn, 0)`; `drawn <= floor <= max(drawn, limit)` for `sa_ccf` in [0, 1] and `off_balance_share` in [0, 1]; nondecreasing in `sa_ccf` and `limit`. An overdrawn line (`drawn > limit`, which the C09 generator produces) has no off-balance amount and its floor is `drawn`.
 - Golden: `(600, 1000, 0.40) = 600 + 0.5 * 0.4 * 400 = 680.0`.
 
 ### `riskvalidation.lgd_ead.floors.apply_ead_floor`
@@ -636,8 +639,7 @@ def lgd_calibration_by_segment(realised: np.ndarray, predicted: np.ndarray, segm
 - Units: `realised` and `predicted` (N,) LGD decimals of one segment (realised values outside [0, 1] are kept); `test_id = "lgd_ead.lgd_calibration_by_segment"`.
   `h0`: the mean realised LGD equals the mean predicted LGD in the segment.
 - Invariants: with `d = realised - predicted`, `statistic = mean(d) / (sd(d) / sqrt(N))` (paired t, `N - 1` degrees of freedom, `sd` with `ddof = 1`), `p_value` two-sided, `metric = mean(d)`;
-  `extras` carries `mean_realised`, `mean_predicted`, `ci_low`, `ci_high` (95% interval of the mean gap), `n_below_zero` and `n_above_one` of the realised values; `N < 2` or `sd(d) = 0`
-  gives `not_evaluated`.
+  `extras` carries `mean_realised`, `mean_predicted`, `ci_low`, `ci_high` (95% interval of the mean gap), `n_below_zero` and `n_above_one` of the realised values; `N < 2` gives `not_evaluated`; `sd(d) = 0` with `mean(d) != 0` gives `red` (a certain gap) with `statistic` null, `p_value` null and the gap in `metric`; `sd(d) = 0` with `mean(d) = 0` gives `green`.
 - Light: green when `p_value >= alpha_amber` (0.05), amber when `alpha_red <= p_value < alpha_amber` (0.01), red below `alpha_red`.
 - Golden: `realised = [0.4, 0.5, 0.6]`, `predicted = [0.3, 0.3, 0.3]` gives `statistic = 3.464102`, `p_value = 0.074180` (two-sided, two degrees of freedom: `1 - t / sqrt(t^2 + 2)`), `metric = 0.2`,
   `light = "green"`.
@@ -653,8 +655,7 @@ def lgd_calibration_over_time(realised: np.ndarray, predicted: np.ndarray, perio
 - Units: `realised`, `predicted` (N,) decimals and `period` (N,) integers (a default year or a cohort index); `test_id = "lgd_ead.lgd_calibration_over_time"`. `h0`: in every period the mean
   realised LGD equals the mean predicted LGD.
 - Invariants: the paired t of the segment test per period with at least 2 observations and nonzero spread; `statistic` is the largest `|t|` over those periods; `p_value` is the Bonferroni-adjusted
-  `min(1, K * p_min)` with `K` the number of periods tested; `metric` is the largest `|mean(d)|` over the periods; `extras["periods"]` lists `period`, `n`, `mean_gap`, `t`, `p` of each; no period
-  evaluable gives `not_evaluated`.
+  `min(1, K * p_min)` with `K` the number of periods tested; `metric` is the largest `|mean(d)|` over every period with at least one observation (tested or not); `extras["periods"]` lists `period`, `n`, `mean_gap`, `t`, `p` of each period (`t` and `p` null where not tested); `extras["excluded"]` lists each period not tested with its `period`, `n` and `reason` (fewer than 2 observations, or zero spread). A period with zero spread and `mean(d) != 0` makes the light `red`; no period tested and no such period gives `not_evaluated`.
 - Light: as `lgd_calibration_by_segment`, on the adjusted `p_value`.
 - Golden: period A with `d = [0.1, 0.2, 0.3]` (`t = 3.464102`, `p = 0.074180`) and period B with `d = [-0.1, 0.0, 0.1]` (`t = 0`, `p = 1.0`) give `statistic = 3.464102`, `p_value = 0.148360`
   (`2 * 0.074180`), `metric = 0.2`, `light = "green"`.
@@ -671,7 +672,7 @@ def lgd_discrimination(realised: np.ndarray, predicted: np.ndarray, segment: str
   the rank-statistic family the engine's discrimination tests already use, and U6-E reuses an existing implementation if one exists (the numbers are the same).
 - Invariants: `statistic = metric = rho` in [-1, 1]; `p_value` is the two-sided p of the rank correlation; `N < 3` or a constant input gives `not_evaluated`.
 - Light: green when `rho >= rho_green` (0.30), amber when `rho_amber <= rho < rho_green` (0.10), red below. LGD rank power is modest in the literature (R2 between 4% and 43% in Loterman et al. 2012,
-  dossier 04 F.3), so the gate is low and is a Contraste gate, not a regulatory one.
+  dossier 04 F.3), so the gate is low and is a Contraste gate, not a regulatory one. `extras["thresholds"]` carries `rho_green` and `rho_amber`.
 - Golden: `realised = [0.1, 0.4, 0.6, 0.9]`, `predicted = [0.2, 0.3, 0.7, 0.8]` gives `statistic = 1.0`, `light = "green"`; with `predicted = [0.8, 0.7, 0.3, 0.2]`, `statistic = -1.0`, `light = "red"`.
 
 ### `riskvalidation.validation.lgd_ead.downturn_coverage`
@@ -685,7 +686,7 @@ def downturn_coverage(estimate: float, realised_downturn: np.ndarray, segment: s
 - Units: `estimate` the downturn LGD decimal, `realised_downturn` (N,) realised LGD decimals of the defaults in the downturn period; `test_id = "lgd_ead.downturn_coverage"`. `h0`: the mean realised
   downturn LGD does not exceed the estimate; `alternative`: it does (the estimate does not cover the downturn losses).
 - Invariants: `statistic = (mean(realised) - estimate) / (sd / sqrt(N))`, one-sided upper `p_value` with `N - 1` degrees of freedom, `metric = max(0, mean(realised) - estimate)` (the shortfall, the
-  same number as `coverage_shortfall`); `N < 2` or zero spread gives `not_evaluated`.
+  same number as `coverage_shortfall`); `N < 2` gives `not_evaluated`; zero spread with a shortfall gives `red` (`statistic` and `p_value` null, `metric` the shortfall) and zero spread with no shortfall gives `green`.
 - Light: green when `p_value >= alpha_amber` (0.05), amber when `alpha_red <= p_value < alpha_amber`, red below `alpha_red`.
 - Golden: `estimate = 0.55`, `realised_downturn = [0.5, 0.6, 0.7]` gives `statistic = 0.866025`, `p_value = 0.238884` (one-sided, two degrees of freedom: `0.5 - t / (2 sqrt(t^2 + 2))`), `metric = 0.05`,
   `light = "green"`.
@@ -701,8 +702,7 @@ def ead_backtest_by_band(predicted_ead: np.ndarray, realised_ead: np.ndarray, ut
 - Units: money (N,) for predicted and realised EAD in the same currency (the currency travels in the document, `ead_backtest.currency`), `utilisation` (N,) the drawn share of the limit at the reference
   date, `band_edges` (B + 1,) strictly increasing; bands are `[edge_i, edge_{i+1})`, the last closed; a utilisation outside the edges raises `ValueError`. `test_id = "lgd_ead.ead_backtest_by_band"`. `h0`: predicted EAD equals realised EAD in every utilisation band (back-tested in currency, not only as a CCF; dossier 04 G.3).
 - Invariants: per band `gap = sum(predicted) - sum(realised)` and `relative_gap = gap / sum(realised)`; `statistic` is the relative gap of the total; `metric = max_band |relative_gap|`;
-  `extras["bands"]` lists `lower`, `upper`, `n`, `predicted_ead`, `realised_ead`, `gap`, `relative_gap`; a band with no observation is listed with null values and does not enter the metric;
-  `p_value` is null.
+  `extras["bands"]` lists `lower`, `upper`, `n`, `predicted_ead`, `realised_ead`, `gap`, `relative_gap`; a band with no observation is listed with null values and does not enter the metric; when the realised EAD of a band is 0 its `relative_gap` is null and the band does not enter the metric (its `gap` is still listed), and when the total realised EAD is 0 `statistic` is null; when every band is empty the test gives `not_evaluated`; `p_value` is null; `extras["thresholds"]` carries `gap_amber` and `gap_red`.
 - Light: green when `metric <= gap_amber` (0.10), amber when `metric <= gap_red` (0.25), red above.
 - Golden: `predicted_ead = [900, 500]`, `realised_ead = [800, 600]`, `utilisation = [0.2, 0.8]`, `band_edges = [0, 0.5, 1.0]`: band 1 `relative_gap = 0.125`, band 2 `relative_gap = -0.166667`,
   `statistic = 0.0`, `metric = 0.166667`, `light = "amber"`.
@@ -717,7 +717,7 @@ def ccf_estimator_bias(estimates: np.ndarray, truth: float, tolerance: float, mo
 - Units: `estimates` (R,) CCF decimals, one per independent test replication of the C09 generator (not clipped), `truth` the generator's known CCF, `tolerance` a CCF decimal (the document
   `ccf_by_design.tolerance`); `test_id = "lgd_ead.ccf_estimator_bias"`. `h0`: the estimator is unbiased (the mean estimate equals the known CCF).
 - Invariants: with `e = estimates - truth`, `metric = mean(e)` (the bias, equal to `ccf_bias(mean(estimates), truth)`), `statistic = mean(e) / (sd(e) / sqrt(R))`, `p_value` two-sided with `R - 1`
-  degrees of freedom; `extras` carries `rmse`, `ci_low`, `ci_high` and `within_tolerance`; `R < 2` or zero spread gives `not_evaluated`.
+  degrees of freedom; `extras` carries `rmse`, `ci_low`, `ci_high` and `within_tolerance`; `R < 2` or zero spread leaves `statistic` and `p_value` null; the test keeps its light for `R >= 1` (the light depends only on `abs(metric)` against the tolerance), and `R < 1` gives `not_evaluated`; `extras["thresholds"]` carries `tolerance`.
 - Light: green when `abs(metric) <= tolerance`, amber when `abs(metric) <= 2 * tolerance`, red above; the p-value is informative (a statistically significant bias inside the tolerance stays green, and
   the view shows both).
 - Golden: `estimates = [0.61, 0.63, 0.65]`, `truth = 0.60`, `tolerance = 0.05` gives `metric = 0.03`, `statistic = 2.598076`, `p_value = 0.121690` (two-sided, two degrees of freedom), `light = "green"`.
@@ -733,9 +733,9 @@ def ccf_estimator_bias(estimates: np.ndarray, truth: float, tolerance: float, mo
 | CCF 0.827586 (fixed horizon), 0.8 (cohort), mean 0.780634 and pooled 0.787234 (variable horizon) for the constructed facility | `ccf_observations`, `aggregate_ccf` | dossier 04 G.1, hand-computed |
 | treated mean 0.266667 (censor) and 0.36 (floor-cap) against 0.4 (none) | `treat_ccf` | dossier 04 G.2, hand-computed |
 | LGD floors 0.25, 0.00, 0.10, 0.10, 0.15 (corporate) and 0.05, 0.50, 0.30, 0.00, 0.10, 0.10, 0.15 (retail); EAD floor 680 | `lgd_floor`, `ead_floor` | dossier 01 A.5 (CRE32.16, CRE32.58 to CRE32.59, CRE32.36, CRE32.64) |
-| SA CCFs 1.0, 0.5, 0.4, 0.2, 0.1 | `supervisory_ccf` | dossier 01 A.5 and B.2 (CRE32.33, CRE20.94 to CRE20.101) |
+| SA CCFs 1.0, 0.5, 0.4, 0.2, 0.1 | `supervisory_ccf` | dossier 01 A.5 and C (CRE32.33, CRE20.94 to CRE20.101) |
 | t = 3.464102 with p = 0.074180 at two degrees of freedom | `lgd_calibration_by_segment` | closed form, hand-computed |
 
 Open items carried from the dossiers, never silently decided: the EBA/GL/2017/16 paragraph for the discount rate and the EBA/GL/2019/03 downturn approaches (UNVERIFIED in dossier 04); the
-Moral (2006) reference-date designs (summary only); the retail secured floor order and the EAD floor reading (above); the blending formula for partly secured exposures; the zero-adjusted gamma
+Moral (2006) reference-date designs (summary only); the retail secured floor order and the EAD floor reading (above); the zero-adjusted gamma
 direct EAD model (not in 1.0.0); whether the EBA's CCF guidelines consulted in 2025 are final (UNVERIFIED in dossier 04 G.2, not implemented).

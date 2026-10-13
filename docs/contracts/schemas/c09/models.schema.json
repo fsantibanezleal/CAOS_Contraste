@@ -149,7 +149,9 @@
         "kind",
         "design",
         "treatment",
-        "covariates"
+        "covariates",
+        "n_clipped_below",
+        "n_clipped_above"
       ],
       "properties": {
         "model_id": {
@@ -201,8 +203,69 @@
           "items": {
             "type": "string"
           }
+        },
+        "n_clipped_below": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "direct-ead only: observations whose EADF below 0 was clipped for the fit; null elsewhere."
+        },
+        "n_clipped_above": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "direct-ead only: observations whose EADF above 1 was clipped for the fit; null elsewhere."
         }
-      }
+      },
+      "description": "An EAD model of the ladder; the clipped counts of fit_direct_ead are reported here, never silently.",
+      "oneOf": [
+        {
+          "properties": {
+            "kind": {
+              "const": "direct-ead"
+            },
+            "n_clipped_below": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "n_clipped_above": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "ccf-fixed-horizon",
+                "ccf-cohort",
+                "ccf-variable-horizon",
+                "utilisation-change"
+              ]
+            },
+            "n_clipped_below": {
+              "type": "null"
+            },
+            "n_clipped_above": {
+              "type": "null"
+            }
+          }
+        }
+      ]
     },
     "c09SmallUndrawn": {
       "type": "object",

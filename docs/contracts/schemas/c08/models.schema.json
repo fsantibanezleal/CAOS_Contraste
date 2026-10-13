@@ -86,31 +86,30 @@
           "$ref": "#/$defs/c08Text"
         },
         "formula": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1,
+          "description": "The proxy as a formula over SBA 7(a) field names."
         },
         "source_field": {
-          "type": "string",
-          "description": "The SBA 7(a) field the numerator reads (GrossChargeOffAmount)."
+          "const": "GrossChargeOffAmount",
+          "description": "The SBA 7(a) field the numerator reads."
         },
         "exposure_field": {
-          "type": "string"
+          "const": "GrossApproval",
+          "description": "The SBA 7(a) field the denominator reads: the gross approved amount, the only exposure field the file carries (decision D2)."
         },
         "recovery_cash_flows_available": {
           "type": "boolean"
         },
         "bias_direction": {
-          "type": "string",
-          "enum": [
-            "upward",
-            "downward",
-            "unknown"
-          ]
+          "const": "downward",
+          "description": "The proxy LGD is biased low (decision D2)."
         },
         "bias_statement": {
           "$ref": "#/$defs/c08Text"
         }
       },
-      "description": "The LGD proxy of the SBA charge-off twin and its bias, required in every C08 document: the file has no recovery cash flows, so the proxy is the gross charge-off over the exposure at charge-off, not a workout LGD (dossier 08 A.6)."
+      "description": "The LGD proxy of the SBA charge-off twin and its bias, required in every C08 document: the file has no recovery cash flows, so the proxy is the gross charge-off amount over the gross approved amount (GrossApproval), not a workout LGD (dossier 08 A.6). The approved amount overstates the exposure at default of an amortising loan, so the proxy is biased low (decision D2)."
     },
     "c08DataStatus": {
       "description": "Freddie Mac is a nullable slot: while the owner's account does not exist it is unavailable and the reason is stated; no number stands in for it.",
@@ -265,7 +264,52 @@
           "$ref": "../common/text.schema.json"
         }
       },
-      "description": "How realised LGD is built: a workout LGD discounts recoveries (rate convention EBA/GL/2017/16, paragraph UNVERIFIED); the SBA twin has no cash flows, so none-proxy and not-applicable."
+      "description": "How realised LGD is built: a workout LGD discounts recoveries (rate convention EBA/GL/2017/16, paragraph UNVERIFIED); the SBA twin has no cash flows, so none-proxy, no discount rate and not-applicable.",
+      "oneOf": [
+        {
+          "properties": {
+            "discount_rate_convention": {
+              "const": "none-proxy"
+            },
+            "discount_rate": {
+              "type": "null"
+            },
+            "incomplete_workouts": {
+              "properties": {
+                "treatment": {
+                  "const": "not-applicable"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "discount_rate_convention": {
+              "type": "string",
+              "enum": [
+                "eba-interbank-plus-5pp",
+                "fixed"
+              ]
+            },
+            "discount_rate": {
+              "type": "number",
+              "minimum": 0
+            },
+            "incomplete_workouts": {
+              "properties": {
+                "treatment": {
+                  "type": "string",
+                  "enum": [
+                    "excluded",
+                    "projected"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "c08DownturnPeriod": {
       "type": "object",
@@ -430,7 +474,237 @@
           "type": "string",
           "minLength": 1
         }
-      }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "id": {
+              "const": "corporate-unsecured"
+            },
+            "portfolio": {
+              "const": "corporate"
+            },
+            "collateral": {
+              "const": "unsecured"
+            },
+            "floor": {
+              "const": 0.25
+            },
+            "reference": {
+              "const": "CRE32.16"
+            }
+          }
+        },
+        {
+          "properties": {
+            "id": {
+              "const": "corporate-financial"
+            },
+            "portfolio": {
+              "const": "corporate"
+            },
+            "collateral": {
+              "const": "financial"
+            },
+            "floor": {
+              "const": 0.0
+            },
+            "reference": {
+              "const": "CRE32.16"
+            }
+          }
+        },
+        {
+          "properties": {
+            "id": {
+              "const": "corporate-receivables"
+            },
+            "portfolio": {
+              "const": "corporate"
+            },
+            "collateral": {
+              "const": "receivables"
+            },
+            "floor": {
+              "const": 0.1
+            },
+            "reference": {
+              "const": "CRE32.16"
+            }
+          }
+        },
+        {
+          "properties": {
+            "id": {
+              "const": "corporate-real-estate"
+            },
+            "portfolio": {
+              "const": "corporate"
+            },
+            "collateral": {
+              "const": "real-estate"
+            },
+            "floor": {
+              "const": 0.1
+            },
+            "reference": {
+              "const": "CRE32.16"
+            }
+          }
+        },
+        {
+          "properties": {
+            "id": {
+              "const": "corporate-other-physical"
+            },
+            "portfolio": {
+              "const": "corporate"
+            },
+            "collateral": {
+              "const": "other-physical"
+            },
+            "floor": {
+              "const": 0.15
+            },
+            "reference": {
+              "const": "CRE32.16"
+            }
+          }
+        },
+        {
+          "properties": {
+            "id": {
+              "const": "retail-mortgage"
+            },
+            "portfolio": {
+              "const": "retail"
+            },
+            "collateral": {
+              "const": "mortgage"
+            },
+            "floor": {
+              "const": 0.05
+            },
+            "reference": {
+              "const": "CRE32.58 to CRE32.59"
+            }
+          }
+        },
+        {
+          "properties": {
+            "id": {
+              "const": "retail-qrre"
+            },
+            "portfolio": {
+              "const": "retail"
+            },
+            "collateral": {
+              "const": "qrre"
+            },
+            "floor": {
+              "const": 0.5
+            },
+            "reference": {
+              "const": "CRE32.58 to CRE32.59"
+            }
+          }
+        },
+        {
+          "properties": {
+            "id": {
+              "const": "retail-other-unsecured"
+            },
+            "portfolio": {
+              "const": "retail"
+            },
+            "collateral": {
+              "const": "unsecured"
+            },
+            "floor": {
+              "const": 0.3
+            },
+            "reference": {
+              "const": "CRE32.58 to CRE32.59"
+            }
+          }
+        },
+        {
+          "properties": {
+            "id": {
+              "const": "retail-other-financial"
+            },
+            "portfolio": {
+              "const": "retail"
+            },
+            "collateral": {
+              "const": "financial"
+            },
+            "floor": {
+              "const": 0.0
+            },
+            "reference": {
+              "const": "CRE32.58 to CRE32.59"
+            }
+          }
+        },
+        {
+          "properties": {
+            "id": {
+              "const": "retail-other-receivables"
+            },
+            "portfolio": {
+              "const": "retail"
+            },
+            "collateral": {
+              "const": "receivables"
+            },
+            "floor": {
+              "const": 0.1
+            },
+            "reference": {
+              "const": "CRE32.58 to CRE32.59"
+            }
+          }
+        },
+        {
+          "properties": {
+            "id": {
+              "const": "retail-other-real-estate"
+            },
+            "portfolio": {
+              "const": "retail"
+            },
+            "collateral": {
+              "const": "real-estate"
+            },
+            "floor": {
+              "const": 0.1
+            },
+            "reference": {
+              "const": "CRE32.58 to CRE32.59"
+            }
+          }
+        },
+        {
+          "properties": {
+            "id": {
+              "const": "retail-other-physical"
+            },
+            "portfolio": {
+              "const": "retail"
+            },
+            "collateral": {
+              "const": "other-physical"
+            },
+            "floor": {
+              "const": 0.15
+            },
+            "reference": {
+              "const": "CRE32.58 to CRE32.59"
+            }
+          }
+        }
+      ]
     },
     "c08Floors": {
       "type": "object",
