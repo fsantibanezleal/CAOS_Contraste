@@ -1,4 +1,4 @@
-"""CT-907: the pinned engine reproduces the CCF and EAD goldens of docs/contracts/engine/lgd-ead-api.md (the consumer test),
+"""CT-1007: the pinned engine reproduces the CCF and EAD goldens of docs/contracts/engine/lgd-ead-api.md (the consumer test),
 and the C09 numbers come from it."""
 from __future__ import annotations
 

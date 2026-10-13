@@ -68,6 +68,18 @@ export function FindingsCard({ variant }: { variant: VariantArtifact }) {
           {pick({ en: 'No finding is recorded in this variant.', es: 'Esta variante no registra hallazgos.' }, lang)}
         </p>
       ) : (
+        <ChartOverTable
+          chart={
+            // the findings by severity, so a short list still shows its weight at a glance (and the stage is drawn)
+            <BarChart
+              title={{ en: 'Findings by severity', es: 'Hallazgos por severidad' }}
+              height="fill"
+              orientation="horizontal"
+              data={order.map((s) => ({ id: s, label: SEVERITY_TEXT[s] ?? { en: s, es: s }, value: findings.filter((f) => f.severity === s).length, tone: s === 'S1' || s === 'S2' ? ('bad' as const) : ('warn' as const) }))}
+              axis={{ label: { en: 'Findings', es: 'Hallazgos' }, format: { decimals: 0 } }}
+            />
+          }
+        >
         <div className="ct-scroll">
           <table className="caos-table" data-table="findings">
             <thead>
@@ -95,6 +107,7 @@ export function FindingsCard({ variant }: { variant: VariantArtifact }) {
             </tbody>
           </table>
         </div>
+        </ChartOverTable>
       )}
     </PlotCard>
   );

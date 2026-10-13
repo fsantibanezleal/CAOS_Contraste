@@ -1,4 +1,4 @@
-"""CT-902, CT-904: the known CCF is a closed form of the parameters and the generator reproduces it; the six levels."""
+"""CT-1002, CT-1004: the known CCF is a closed form of the parameters and the generator reproduces it; the six levels."""
 from __future__ import annotations
 
 import math

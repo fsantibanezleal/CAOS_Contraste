@@ -1,4 +1,4 @@
-"""CT-901: the generator's marginals name their source and equal a recalculation from the fetched Federal Reserve files."""
+"""CT-1001: the generator's marginals name their source and equal a recalculation from the fetched Federal Reserve files."""
 from __future__ import annotations
 
 import hashlib

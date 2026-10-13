@@ -13,6 +13,7 @@ import { C04Benchmark } from './C04Sections';
 import { C05BenchmarkSection } from './C05Sections';
 import { C22BenchmarkSection } from './C22Sections';
 import { NoTranslateRefs } from './NoTranslateRefs';
+import { U6BenchmarkSection, U6_BENCHMARK_CASES } from './U6Sections';
 
 function Comparison({ v, title }: { v: VariantArtifact; title: string }) {
   const lang = useShellLang();
@@ -196,7 +197,7 @@ export function Benchmark() {
   const all = useArtifact((s) => loadAllManifests(s), []);
   const manifests = all.state === 'ready' ? all.data.manifests : [];
   const shown = manifests.filter((m) => !NO_BENCHMARK.has(m.case_id));
-  const comparable = shown.filter((m) => !HAS_OWN_BENCHMARK.has(m.case_id));
+  const comparable = shown.filter((m) => !HAS_OWN_BENCHMARK.has(m.case_id) && !U6_BENCHMARK_CASES.has(m.case_id));
   return (
     <DocPage
       wide
@@ -230,7 +231,7 @@ export function Benchmark() {
             title={{ en: `${m.case_id}: ${m.title.en}`, es: `${m.case_id}: ${m.title.es}` }}
             noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos comprometidos.' }}
           >
-            {m.case_id === 'C04' ? <C04Benchmark manifest={m} /> : m.case_id === 'C05' ? <C05BenchmarkSection manifest={m} /> : m.case_id === 'C22' ? <C22BenchmarkSection manifest={m} /> : <CaseBenchmark manifest={m} />}
+            {m.case_id === 'C04' ? <C04Benchmark manifest={m} /> : m.case_id === 'C05' ? <C05BenchmarkSection manifest={m} /> : m.case_id === 'C22' ? <C22BenchmarkSection manifest={m} /> : U6_BENCHMARK_CASES.has(m.case_id) ? <U6BenchmarkSection manifest={m} /> : <CaseBenchmark manifest={m} />}
           </DocSection>
         ))}
       {all.state === 'ready' && comparable.length > 0 && (
