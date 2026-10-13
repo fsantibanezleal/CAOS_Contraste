@@ -1,0 +1,1477 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c11/variant-window.schema.json",
+  "title": "C11 window variant",
+  "description": "Catalog row c11-outputs 1.0.0: one window of the market VaR and ES back-testing case (outputs.kind window), strictly rolling, on public daily series.",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C11"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c11Outputs",
+          "properties": {
+            "kind": {
+              "const": "window"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "if": {
+              "properties": {
+                "light": {
+                  "const": "not_evaluated"
+                }
+              },
+              "required": [
+                "light"
+              ]
+            },
+            "then": {
+              "properties": {
+                "statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c11SignConvention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "engine_convention",
+        "document_convention",
+        "definition"
+      ],
+      "properties": {
+        "engine_convention": {
+          "const": "return-negative"
+        },
+        "document_convention": {
+          "const": "positive-loss"
+        },
+        "definition": {
+          "allOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "properties": {
+                "en": {
+                  "minLength": 1
+                },
+                "es": {
+                  "minLength": 1
+                }
+              }
+            }
+          ]
+        }
+      },
+      "description": "The sign convention, a required field of every C11 document (dossier 05 A.0): the engine stores the return convention (VaR and ES negative at the tail level alpha 0.01 or 0.025, needed by the FZ0 loss) and the document stores positive loss numbers, the conversion made once at the reporting layer. The definition states both in words."
+    },
+    "c11Level": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alpha"
+      ],
+      "properties": {
+        "alpha": {
+          "type": "number",
+          "enum": [
+            0.01,
+            0.025
+          ]
+        }
+      },
+      "description": "A tail level of the return convention: 0.01 (99 percent VaR, the Basel level) or 0.025 (97.5 percent, the FRTB ES level)."
+    },
+    "c11Window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "window_id",
+        "asset_class",
+        "title",
+        "start_date",
+        "end_date",
+        "n_forecast_days"
+      ],
+      "properties": {
+        "window_id": {
+          "type": "string",
+          "enum": [
+            "equity-2007-09",
+            "equity-2020",
+            "rates-2022",
+            "fx-2008",
+            "mixed-2023",
+            "calm-2004-06"
+          ]
+        },
+        "asset_class": {
+          "type": "string",
+          "enum": [
+            "equity",
+            "rates",
+            "fx",
+            "mixed"
+          ]
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "start_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "end_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "n_forecast_days": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "description": "One of the six windows of SDD C11; the variant id is the window id."
+    },
+    "c11Component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "series_id",
+        "label",
+        "source_class",
+        "weight",
+        "transform"
+      ],
+      "properties": {
+        "series_id": {
+          "type": "string"
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "source_class": {
+          "type": "string",
+          "enum": [
+            "derived-only",
+            "mirror-allowed"
+          ]
+        },
+        "weight": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "transform": {
+          "type": "string",
+          "description": "How the series becomes a return of the portfolio (a log return, a duration times a yield change)."
+        }
+      },
+      "description": "A component of the window's stated portfolio and the licence class of its source (dossier 08 C.5, C.2, C.8)."
+    },
+    "c11Portfolio": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "value_unit",
+        "currency",
+        "weighting",
+        "components"
+      ],
+      "properties": {
+        "description": {
+          "$ref": "../common/text.schema.json"
+        },
+        "value_unit": {
+          "const": "decimal-of-portfolio-value"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the portfolio."
+        },
+        "weighting": {
+          "type": "string",
+          "enum": [
+            "constant-weights-daily-rebalanced",
+            "buy-and-hold"
+          ]
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c11Component"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "The portfolio stated for the window; returns and losses are decimals of its value."
+    },
+    "c11MissingDays": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "count",
+        "dates",
+        "treatment"
+      ],
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dates": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          }
+        },
+        "treatment": {
+          "const": "skipped-not-filled"
+        }
+      },
+      "description": "A day missing from a public series (a holiday, a gap) is skipped in the rolling window and counted here, never filled."
+    },
+    "c11DataStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "first_observation",
+        "last_observation",
+        "n_observed_days",
+        "missing_days"
+      ],
+      "properties": {
+        "first_observation": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "last_observation": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "n_observed_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "missing_days": {
+          "$ref": "#/$defs/c11MissingDays"
+        }
+      }
+    },
+    "c11Realised": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "loss",
+        "reason"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "included",
+            "withheld-derived-only"
+          ]
+        },
+        "loss": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The realised loss per forecast day (positive number, a decimal of the portfolio value). Withheld, with its reason, when a component of the portfolio is derived-only (dossier 08 C.5: only model outputs are committed).",
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "status": {
+                  "const": "included"
+                },
+                "loss": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "minItems": 1
+                },
+                "reason": {
+                  "type": "null"
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "const": "withheld-derived-only"
+                },
+                "loss": {
+                  "type": "null"
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c11Grid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scheme",
+        "estimation_window_days",
+        "dates",
+        "estimation_start",
+        "estimation_end",
+        "realised_loss"
+      ],
+      "properties": {
+        "scheme": {
+          "const": "rolling"
+        },
+        "estimation_window_days": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The maximum look-back, in observed days; each rung's own window is in the models document."
+        },
+        "dates": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "minItems": 1,
+          "description": "The forecast days, strictly increasing, missing days skipped."
+        },
+        "estimation_start": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "minItems": 1,
+          "description": "First day of the estimation window of each forecast day."
+        },
+        "estimation_end": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "minItems": 1,
+          "description": "Last day of the estimation window of each forecast day: strictly before the forecast day (the forecast for day t uses data to t-1; a producer check, since a date comparison is not a JSON Schema rule)."
+        },
+        "realised_loss": {
+          "$ref": "#/$defs/c11Realised"
+        }
+      },
+      "description": "The forecast grid shared by every model: dates once, the estimation window of each day, the realised losses."
+    },
+    "c11Span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end"
+      ],
+      "properties": {
+        "start": {
+          "type": "string",
+          "pattern": "^(19\\d{2}|200[0-6])-\\d{2}-\\d{2}$",
+          "description": "A date before 2007-01-01: the hyperparameters are fixed on a pre-2007 span (SDD C11)."
+        },
+        "end": {
+          "type": "string",
+          "pattern": "^(19\\d{2}|200[0-6])-\\d{2}-\\d{2}$",
+          "description": "A date before 2007-01-01: the hyperparameters are fixed on a pre-2007 span (SDD C11)."
+        }
+      },
+      "description": "The span on which the hyperparameters were fixed: it ends before 2007 and before the window it serves."
+    },
+    "c11Hyperparameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fixed_on",
+        "tuned_on_test_window",
+        "estimation_window_days",
+        "ewma_lambda",
+        "age_weight_lambda",
+        "evt_threshold_fraction",
+        "garch_refit_every_days",
+        "others"
+      ],
+      "properties": {
+        "fixed_on": {
+          "$ref": "#/$defs/c11Span"
+        },
+        "tuned_on_test_window": {
+          "const": false
+        },
+        "estimation_window_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "ewma_lambda": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "age_weight_lambda": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "evt_threshold_fraction": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "garch_refit_every_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "others": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "value",
+              "unit"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "description": "The hyperparameters (window length, lambda, EVT threshold fraction) fixed on the span, never tuned on a test window."
+    },
+    "c11TrafficLight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "window_days",
+        "n_windows",
+        "max_rolling_exceedances",
+        "final_rolling_exceedances",
+        "final_zone",
+        "days_green",
+        "days_amber",
+        "days_red",
+        "reason"
+      ],
+      "properties": {
+        "window_days": {
+          "const": 250
+        },
+        "n_windows": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_rolling_exceedances": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "final_rolling_exceedances": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "final_zone": {
+          "type": "string",
+          "enum": [
+            "green",
+            "amber",
+            "red",
+            "not_evaluated"
+          ]
+        },
+        "days_green": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "days_amber": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "days_red": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The Basel traffic light at the 99 percent level over rolling 250-day windows (MAR32.9): the zone of each complete window and the days spent in each zone. With fewer than 250 forecast days it is not evaluated, with its reason.",
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "n_windows": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "max_rolling_exceedances": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "final_rolling_exceedances": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "final_zone": {
+                  "type": "string",
+                  "enum": [
+                    "green",
+                    "amber",
+                    "red"
+                  ]
+                },
+                "days_green": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "days_amber": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "days_red": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "reason": {
+                  "type": "null"
+                }
+              }
+            },
+            {
+              "properties": {
+                "final_zone": {
+                  "const": "not_evaluated"
+                },
+                "max_rolling_exceedances": {
+                  "type": "null"
+                },
+                "final_rolling_exceedances": {
+                  "type": "null"
+                },
+                "days_green": {
+                  "type": "null"
+                },
+                "days_amber": {
+                  "type": "null"
+                },
+                "days_red": {
+                  "type": "null"
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c11LevelResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alpha",
+        "var",
+        "es",
+        "es_status",
+        "es_undefined_days",
+        "exceedance_days",
+        "n_scored",
+        "n_exceedances",
+        "expected_exceedances",
+        "n_fz0",
+        "fz0_mean",
+        "fz0_reason",
+        "tick_loss_mean",
+        "traffic_light",
+        "test_ids"
+      ],
+      "properties": {
+        "alpha": {
+          "type": "number",
+          "enum": [
+            0.01,
+            0.025
+          ]
+        },
+        "var": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "A positive loss number (document convention) as a decimal of the portfolio value."
+          },
+          "minItems": 1,
+          "description": "One-step VaR forecast per grid day, a positive loss."
+        },
+        "es": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "description": "A positive loss number (document convention) as a decimal of the portfolio value."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "minItems": 1,
+          "description": "One-step ES forecast per grid day, a positive loss not below the VaR; null on a day the ES is undefined (conditional EVT with xi at or above 1) or for a model that forecasts no ES."
+        },
+        "es_status": {
+          "type": "string",
+          "enum": [
+            "forecast",
+            "undefined-on-days",
+            "not-forecast"
+          ]
+        },
+        "es_undefined_days": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "description": "Indices into the grid of the days the ES is undefined."
+        },
+        "exceedance_days": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "description": "Indices into the grid of the days the loss exceeded the VaR."
+        },
+        "n_scored": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "n_exceedances": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "expected_exceedances": {
+          "type": "number",
+          "minimum": 0,
+          "description": "alpha times n_scored."
+        },
+        "n_fz0": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Days with both VaR and ES defined: the sample of the FZ0 average."
+        },
+        "fz0_mean": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Average FZ0 loss (dossier 05 A.1) over the n_fz0 days; null when no day has an ES."
+        },
+        "fz0_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tick_loss_mean": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Average tick loss of the VaR over the n_scored days."
+        },
+        "traffic_light": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c11TrafficLight"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "At alpha 0.01 only; null at 0.025."
+        },
+        "test_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^market\\."
+          },
+          "minItems": 1,
+          "description": "The test rows of this model and level (segment alpha=<alpha>)."
+        }
+      },
+      "description": "One model at one tail level: its forecasts, exceedances, scores and traffic light.",
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "es_status": {
+                  "const": "forecast"
+                },
+                "es_undefined_days": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "maxItems": 0
+                }
+              }
+            },
+            {
+              "properties": {
+                "es_status": {
+                  "const": "undefined-on-days"
+                },
+                "es_undefined_days": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "minItems": 1
+                }
+              }
+            },
+            {
+              "properties": {
+                "es_status": {
+                  "const": "not-forecast"
+                },
+                "es_undefined_days": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "maxItems": 0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "fz0_mean": {
+                  "type": "number"
+                },
+                "fz0_reason": {
+                  "type": "null"
+                }
+              }
+            },
+            {
+              "properties": {
+                "fz0_mean": {
+                  "type": "null"
+                },
+                "fz0_reason": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "alpha": {
+                  "const": 0.01
+                },
+                "traffic_light": {
+                  "$ref": "#/$defs/c11TrafficLight"
+                }
+              }
+            },
+            {
+              "properties": {
+                "alpha": {
+                  "const": 0.025
+                },
+                "traffic_light": {
+                  "type": "null"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c11ModelOutput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_id",
+        "rung",
+        "eligible",
+        "failed_gates",
+        "by_level"
+      ],
+      "properties": {
+        "model_id": {
+          "type": "string"
+        },
+        "rung": {
+          "type": "string",
+          "pattern": "^R([1-9]|10)$"
+        },
+        "eligible": {
+          "type": "boolean"
+        },
+        "failed_gates": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^market\\."
+          }
+        },
+        "by_level": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c11LevelResult"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "One model of the ladder in this window; eligible when no eligibility-gate row is red (the traditional back-tests of dossier 05 'Champion selection rule')."
+    },
+    "c11Champion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alpha",
+        "model_id",
+        "reason"
+      ],
+      "properties": {
+        "alpha": {
+          "type": "number",
+          "enum": [
+            0.01,
+            0.025
+          ]
+        },
+        "model_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The champion at a level: the lowest average FZ0 among the eligible models with a score; null, with its reason, when there is none.",
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "model_id": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": "null"
+                }
+              }
+            },
+            {
+              "properties": {
+                "model_id": {
+                  "type": "null"
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c11DmRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_id",
+        "versus",
+        "alpha",
+        "loss",
+        "mean_diff",
+        "dm_statistic",
+        "p_value",
+        "hac_lags",
+        "n_common",
+        "direction",
+        "not_evaluated_reason"
+      ],
+      "properties": {
+        "model_id": {
+          "type": "string"
+        },
+        "versus": {
+          "type": "string"
+        },
+        "alpha": {
+          "type": "number",
+          "enum": [
+            0.01,
+            0.025
+          ]
+        },
+        "loss": {
+          "type": "string",
+          "enum": [
+            "fz0",
+            "tick"
+          ]
+        },
+        "mean_diff": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Mean loss differential, model minus champion, on the common sample: negative is better."
+        },
+        "dm_statistic": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "p_value": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A probability in [0, 1]."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "hac_lags": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_common": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Days where every compared forecast is defined."
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "better",
+            "worse",
+            "indistinguishable",
+            "not-evaluated"
+          ]
+        },
+        "not_evaluated_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "A Diebold-Mariano comparison of one model against the champion (dossier 05 B.6) under FZ0 or the tick loss.",
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "mean_diff": {
+                  "type": "number"
+                },
+                "dm_statistic": {
+                  "type": "number"
+                },
+                "p_value": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "A probability in [0, 1]."
+                },
+                "n_common": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "direction": {
+                  "type": "string",
+                  "enum": [
+                    "better",
+                    "worse",
+                    "indistinguishable"
+                  ]
+                },
+                "not_evaluated_reason": {
+                  "type": "null"
+                }
+              }
+            },
+            {
+              "properties": {
+                "mean_diff": {
+                  "type": "null"
+                },
+                "dm_statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "n_common": {
+                  "type": "null"
+                },
+                "direction": {
+                  "const": "not-evaluated"
+                },
+                "not_evaluated_reason": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c11McsMember": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_id",
+        "in_set",
+        "p_value"
+      ],
+      "properties": {
+        "model_id": {
+          "type": "string"
+        },
+        "in_set": {
+          "type": "boolean"
+        },
+        "p_value": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A probability in [0, 1]."
+        }
+      }
+    },
+    "c11McsSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alpha",
+        "loss",
+        "statistic",
+        "confidence",
+        "n_bootstrap",
+        "block_length",
+        "members",
+        "n_in_set"
+      ],
+      "properties": {
+        "alpha": {
+          "type": "number",
+          "enum": [
+            0.01,
+            0.025
+          ]
+        },
+        "loss": {
+          "const": "fz0"
+        },
+        "statistic": {
+          "type": "string",
+          "enum": [
+            "Tmax",
+            "TR"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "n_bootstrap": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "block_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c11McsMember"
+          },
+          "minItems": 1
+        },
+        "n_in_set": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "description": "The model confidence set on FZ0 at one level (Hansen, Lunde and Nason 2011; dossier 05 B.6)."
+    },
+    "c11Comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "significance",
+        "hac_kernel",
+        "champions",
+        "dm",
+        "mcs"
+      ],
+      "properties": {
+        "significance": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "hac_kernel": {
+          "const": "bartlett"
+        },
+        "champions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c11Champion"
+          },
+          "minItems": 1
+        },
+        "dm": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c11DmRow"
+          }
+        },
+        "mcs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c11McsSet"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "Eligibility first, then the comparative back-test of Nolde and Ziegel: DM against the champion and the MCS."
+    },
+    "c11Histogram": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "edges",
+        "counts"
+      ],
+      "properties": {
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2
+        },
+        "counts": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "c11EsNull": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_id",
+        "alpha",
+        "statistic",
+        "realised",
+        "critical_5pct",
+        "critical_0_01pct",
+        "n_draws",
+        "p_value",
+        "histogram"
+      ],
+      "properties": {
+        "model_id": {
+          "type": "string"
+        },
+        "alpha": {
+          "type": "number",
+          "enum": [
+            0.01,
+            0.025
+          ]
+        },
+        "statistic": {
+          "const": "Z2"
+        },
+        "realised": {
+          "type": "number"
+        },
+        "critical_5pct": {
+          "type": "number",
+          "description": "Simulated per model: Z2 at the 5 percent quantile of the null (yellow)."
+        },
+        "critical_0_01pct": {
+          "type": "number",
+          "description": "Simulated per model: Z2 at the 0.01 percent quantile of the null (red)."
+        },
+        "n_draws": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "p_value": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A probability in [0, 1]."
+        },
+        "histogram": {
+          "$ref": "#/$defs/c11Histogram"
+        }
+      },
+      "description": "The simulated null distribution of the Acerbi-Szekely Z2 for one model, with the realised statistic (dossier 05 B.5)."
+    },
+    "c11Outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "window",
+        "sign_convention",
+        "levels",
+        "portfolio",
+        "data_status",
+        "grid",
+        "hyperparameters",
+        "models",
+        "comparison",
+        "es_backtests"
+      ],
+      "properties": {
+        "kind": {
+          "const": "window"
+        },
+        "window": {
+          "$ref": "#/$defs/c11Window"
+        },
+        "sign_convention": {
+          "$ref": "#/$defs/c11SignConvention"
+        },
+        "levels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c11Level"
+          },
+          "minItems": 1
+        },
+        "portfolio": {
+          "$ref": "#/$defs/c11Portfolio"
+        },
+        "data_status": {
+          "$ref": "#/$defs/c11DataStatus"
+        },
+        "grid": {
+          "$ref": "#/$defs/c11Grid"
+        },
+        "hyperparameters": {
+          "$ref": "#/$defs/c11Hyperparameters"
+        },
+        "models": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c11ModelOutput"
+          },
+          "minItems": 1
+        },
+        "comparison": {
+          "$ref": "#/$defs/c11Comparison"
+        },
+        "es_backtests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c11EsNull"
+          }
+        }
+      },
+      "description": "The C11 window document: market VaR and ES forecasts of the ladder, strictly rolling, and their back-tests."
+    }
+  }
+}

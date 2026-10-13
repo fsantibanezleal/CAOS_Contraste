@@ -1,0 +1,310 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c13/models.schema.json",
+  "title": "C13 models",
+  "description": "Catalog row c13-models 1.0.0: the C13 models artifact (generator, the six planted deficiencies, the PLA thresholds, the desk limits).",
+  "allOf": [
+    {
+      "$ref": "../common/models-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C13"
+        },
+        "fit": {
+          "$ref": "#/$defs/c13Fit"
+        }
+      },
+      "required": [
+        "case_id",
+        "fit"
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c13SignConvention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "engine_convention",
+        "document_convention",
+        "definition"
+      ],
+      "properties": {
+        "engine_convention": {
+          "const": "return-negative"
+        },
+        "document_convention": {
+          "const": "positive-loss"
+        },
+        "definition": {
+          "allOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "properties": {
+                "en": {
+                  "minLength": 1
+                },
+                "es": {
+                  "minLength": 1
+                }
+              }
+            }
+          ]
+        }
+      },
+      "description": "The sign convention, a required field of every C13 document (dossier 05 A.0): the engine stores the return convention (VaR and ES negative at the tail level alpha 0.01 or 0.025, needed by the FZ0 loss) and the document stores positive loss numbers, the conversion made once at the reporting layer. The definition states both in words."
+    },
+    "c13PlaThresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "spearman_green",
+        "spearman_red",
+        "ks_green",
+        "ks_red",
+        "ecdf_step",
+        "window_days",
+        "reference"
+      ],
+      "properties": {
+        "spearman_green": {
+          "const": 0.8
+        },
+        "spearman_red": {
+          "const": 0.7
+        },
+        "ks_green": {
+          "const": 0.09
+        },
+        "ks_red": {
+          "const": 0.12
+        },
+        "ecdf_step": {
+          "const": 0.004
+        },
+        "window_days": {
+          "const": 250
+        },
+        "reference": {
+          "const": "MAR32.42"
+        }
+      },
+      "description": "The zone boundaries of MAR32.42 and the ECDF step of MAR32.39 to 41 (dossier 01 D.4), transcribed."
+    },
+    "c13GeneratorSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "true_risk_model",
+        "parameters",
+        "pnl_unit",
+        "window_days",
+        "seed_rule",
+        "notice"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "true_risk_model": {
+          "$ref": "../common/text.schema.json"
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "value",
+              "unit"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "pnl_unit": {
+          "const": "decimal-of-desk-notional"
+        },
+        "window_days": {
+          "const": 250
+        },
+        "seed_rule": {
+          "const": "seed_base+replication_index"
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The desk P&L generator with a known risk model."
+    },
+    "c13DeficiencyPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deficiency_id",
+        "planted",
+        "mechanism",
+        "parameters",
+        "intended_to_fail"
+      ],
+      "properties": {
+        "deficiency_id": {
+          "type": "string",
+          "enum": [
+            "none",
+            "missing-basis",
+            "stale-volatility",
+            "wrong-correlation",
+            "omitted-factor",
+            "time-misalignment"
+          ]
+        },
+        "planted": {
+          "type": "boolean"
+        },
+        "mechanism": {
+          "$ref": "../common/text.schema.json"
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "value",
+              "unit"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "intended_to_fail": {
+          "type": "string",
+          "enum": [
+            "none",
+            "spearman",
+            "ks",
+            "either"
+          ]
+        }
+      },
+      "description": "One planted deficiency and how the generator plants it."
+    },
+    "c13DeskLimit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alpha",
+        "limit_exceptions",
+        "reference"
+      ],
+      "properties": {
+        "alpha": {
+          "type": "number",
+          "enum": [
+            0.01,
+            0.025
+          ]
+        },
+        "limit_exceptions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reference": {
+          "type": "string"
+        }
+      }
+    },
+    "c13ReplicationPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "n_replications",
+        "seed_base",
+        "seed_rule"
+      ],
+      "properties": {
+        "n_replications": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "seed_base": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "seed_rule": {
+          "const": "seed_base+replication_index"
+        }
+      }
+    },
+    "c13Fit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sign_convention",
+        "generator",
+        "deficiencies",
+        "pla_thresholds",
+        "desk_limits",
+        "replication_plan"
+      ],
+      "properties": {
+        "sign_convention": {
+          "$ref": "#/$defs/c13SignConvention"
+        },
+        "generator": {
+          "$ref": "#/$defs/c13GeneratorSpec"
+        },
+        "deficiencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c13DeficiencyPlan"
+          },
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "pla_thresholds": {
+          "$ref": "#/$defs/c13PlaThresholds"
+        },
+        "desk_limits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c13DeskLimit"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "replication_plan": {
+          "$ref": "#/$defs/c13ReplicationPlan"
+        }
+      },
+      "description": "The C13 models document: the generator, the six deficiencies it plants, the PLA and desk limits."
+    }
+  }
+}
