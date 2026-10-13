@@ -18,7 +18,8 @@ SAMPLE_DATES = ("2010-12-31", "2020-06-30")
 
 @pytest.fixture(scope="session")
 def tables():
-    from pipeline.cases.c06 import panel, readers
+    from pipeline.cases.c06 import panel
+    from pipeline.io import sba as readers
 
     df = readers.read_sba(DATA)
     fed = readers.read_fed(DATA)

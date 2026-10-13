@@ -1,0 +1,224 @@
+{
+  "schema": "contraste.models/v1",
+  "case_id": "C03",
+  "fit_id": "fixture-sba-7a",
+  "model": [
+    {
+      "id": "P1-woe-scorecard",
+      "family": "credit-scoring",
+      "rung": "woe-scorecard",
+      "title": {
+        "en": "Fixture model P1-woe-scorecard",
+        "es": "Modelo de ejemplo P1-woe-scorecard"
+      },
+      "short_title": {
+        "en": "P1-woe-scorecard",
+        "es": "P1-woe-scorecard"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "details": {}
+    }
+  ],
+  "fit": {
+    "currency": "USD",
+    "vintage_definition": {
+      "basis": "approval fiscal year",
+      "fiscal_year_start": "10-01",
+      "label": {
+        "en": "SBA fiscal year, 1 October to 30 September",
+        "es": "Ano fiscal SBA, 1 de octubre a 30 de septiembre"
+      }
+    },
+    "target": {
+      "name": "charged-off-within-60-months",
+      "horizon_months": 60,
+      "observed_at_months": 60,
+      "censoring": "exempt-right-censored",
+      "definition": {
+        "en": "A loan counts as an event when it is charged off within 60 months of approval; the target of a vintage is read only at its 5-year mark. EXEMPT (active) loans are right-censored.",
+        "es": "Un credito es evento si se castiga dentro de 60 meses desde la aprobacion; el objetivo de una cosecha se lee solo en su marca de 5 anos. Los creditos EXEMPT (vigentes) son censurados por la derecha."
+      }
+    },
+    "cohort_windows": [
+      {
+        "id": "fy2006-07",
+        "label": {
+          "en": "FY2006-07",
+          "es": "AF2006-07"
+        },
+        "first_fy": 2006,
+        "last_fy": 2007,
+        "training": {
+          "first_fy": 1991,
+          "last_fy": 2000,
+          "cutoff_date": "2005-09-30",
+          "n_loans": 400000,
+          "n_events": 36000,
+          "crisis_included": false,
+          "rationale": {
+            "en": "Fixture: vintages up to FY2000, whose 5-year mark closes on 2005-09-30, before the first approval of FY2006.",
+            "es": "Ejemplo: cosechas hasta AF2000, cuya marca de 5 anos cierra el 2005-09-30, antes de la primera aprobacion de AF2006."
+          }
+        }
+      },
+      {
+        "id": "fy2008-10",
+        "label": {
+          "en": "FY2008-10",
+          "es": "AF2008-10"
+        },
+        "first_fy": 2008,
+        "last_fy": 2010,
+        "training": {
+          "first_fy": 1991,
+          "last_fy": 2002,
+          "cutoff_date": "2007-09-30",
+          "n_loans": 480000,
+          "n_events": 43200,
+          "crisis_included": false,
+          "rationale": {
+            "en": "Fixture: vintages up to FY2002, whose 5-year mark closes on 2007-09-30, before the first approval of FY2008.",
+            "es": "Ejemplo: cosechas hasta AF2002, cuya marca de 5 anos cierra el 2007-09-30, antes de la primera aprobacion de AF2008."
+          }
+        }
+      },
+      {
+        "id": "fy2011-14",
+        "label": {
+          "en": "FY2011-14",
+          "es": "AF2011-14"
+        },
+        "first_fy": 2011,
+        "last_fy": 2014,
+        "training": {
+          "first_fy": 1991,
+          "last_fy": 2005,
+          "cutoff_date": "2010-09-30",
+          "n_loans": 600000,
+          "n_events": 54000,
+          "crisis_included": true,
+          "rationale": {
+            "en": "Fixture: vintages up to FY2005, whose 5-year mark closes on 2010-09-30, before the first approval of FY2011.",
+            "es": "Ejemplo: cosechas hasta AF2005, cuya marca de 5 anos cierra el 2010-09-30, antes de la primera aprobacion de AF2011."
+          }
+        }
+      },
+      {
+        "id": "fy2015-17",
+        "label": {
+          "en": "FY2015-17",
+          "es": "AF2015-17"
+        },
+        "first_fy": 2015,
+        "last_fy": 2017,
+        "training": {
+          "first_fy": 1991,
+          "last_fy": 2009,
+          "cutoff_date": "2014-09-30",
+          "n_loans": 760000,
+          "n_events": 68400,
+          "crisis_included": true,
+          "rationale": {
+            "en": "Fixture: vintages up to FY2009, whose 5-year mark closes on 2014-09-30, before the first approval of FY2015.",
+            "es": "Ejemplo: cosechas hasta AF2009, cuya marca de 5 anos cierra el 2014-09-30, antes de la primera aprobacion de AF2015."
+          }
+        }
+      },
+      {
+        "id": "fy2018-20",
+        "label": {
+          "en": "FY2018-20",
+          "es": "AF2018-20"
+        },
+        "first_fy": 2018,
+        "last_fy": 2020,
+        "training": {
+          "first_fy": 1991,
+          "last_fy": 2012,
+          "cutoff_date": "2017-09-30",
+          "n_loans": 880000,
+          "n_events": 79200,
+          "crisis_included": true,
+          "rationale": {
+            "en": "Fixture: vintages up to FY2012, whose 5-year mark closes on 2017-09-30, before the first approval of FY2018.",
+            "es": "Ejemplo: cosechas hasta AF2012, cuya marca de 5 anos cierra el 2017-09-30, antes de la primera aprobacion de AF2018."
+          }
+        }
+      }
+    ],
+    "ladder": [
+      {
+        "rung_id": "P1-woe-scorecard",
+        "kind": "woe-scorecard",
+        "covariates": [
+          "term_months",
+          "naics_sector"
+        ],
+        "coefficients": [
+          {
+            "name": "term_months",
+            "estimate": -0.2,
+            "std_error": 0.02
+          },
+          {
+            "name": "intercept",
+            "estimate": -2.1,
+            "std_error": null
+          }
+        ],
+        "training_cutoff": "2017-09-30",
+        "engine": "riskvalidation"
+      },
+      {
+        "rung_id": "P4-monotone-gbm",
+        "kind": "monotone-gbm",
+        "covariates": [
+          "term_months",
+          "naics_sector"
+        ],
+        "coefficients": [],
+        "training_cutoff": "2017-09-30",
+        "engine": "riskvalidation"
+      }
+    ],
+    "data_status": {
+      "primary_source": "sba-7a",
+      "files_as_of": "2024-06-30",
+      "fiscal_year_start": "10-01",
+      "notice": {
+        "en": "Fixture, not a result. The as-of date is a fixture value so that two vintages show an unobserved 5-year mark.",
+        "es": "Ejemplo, no es un resultado. La fecha de corte es un valor de ejemplo para que dos cosechas muestren una marca de 5 anos no observada."
+      }
+    }
+  },
+  "provenance": {
+    "truth_status": "real-outcomes",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u6-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

@@ -64,7 +64,7 @@ class C06:
         from ...stages.export import write_artifact
         from ... import __version__
         from . import build as bd
-        from . import readers
+        from ...io import sba as readers
         from .panel import prepare
         from .variant import bake_variant
 

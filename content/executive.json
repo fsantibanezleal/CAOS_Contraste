@@ -1,234 +1,885 @@
 {
-  "executive": {
-    "en": "Chief risk officers and heads of model validation",
-    "es": "Gerentes de riesgos y jefes de validación de modelos"
+  "title": {
+    "en": "Defending internal risk models before the supervisor",
+    "es": "Defender ante el supervisor los modelos internos de riesgo"
   },
-  "organisation": {
-    "en": "Banks that build, validate and defend internal credit and provisioning models before their supervisor",
-    "es": "Bancos que construyen, validan y defienden modelos internos de crédito y provisiones ante su supervisor"
+  "key_statement": {
+    "en": "Banks set capital and provisions with internal models, and supervisors keep finding deficiencies in them that raise capital or block approval. Models that can be defended on reproducible, measured and owned evidence turn that risk into a managed one.",
+    "es": "Los bancos fijan capital y provisiones con modelos internos, y los supervisores siguen encontrando en ellos deficiencias que elevan el capital o impiden la aprobación. Los modelos que se pueden defender con evidencia reproducible, medida y con responsable convierten ese riesgo en uno gestionado."
   },
-  "initiative": {
-    "en": "Get internal credit and provisioning models ready for supervisory review, as supervisors open the use of internal models.",
-    "es": "Preparar los modelos internos de crédito y provisiones para la revisión del supervisor, a medida que este abre el uso de modelos internos."
-  },
-  "why_now": {
-    "figure": {
+  "headline_figures": [
+    {
+      "heading": {
+        "en": "Chile, provisions",
+        "es": "Chile, provisiones"
+      },
       "value": {
         "en": "571",
         "es": "571"
       },
       "unit": {
-        "en": "million US dollars of extra provisions on individually assessed commercial loans across Chilean banks, if the proposed provisioning model applied without the banks' own models",
-        "es": "millones de dólares de provisiones adicionales en los créditos comerciales evaluados individualmente de los bancos chilenos, si el modelo de provisiones propuesto se aplicara sin modelos propios de los bancos"
-      }
-    },
-    "deadline": {
-      "en": "January 2031, unless the bank's own models are approved before then",
-      "es": "enero de 2031, salvo que los modelos propios del banco sean aprobados antes"
-    }
-  },
-  "vision": {
-    "en": "Risk committees see what each modelling choice does to capital and provisions, and how often each validation test errs, before a model is filed.",
-    "es": "Los comités de riesgo ven el efecto de cada decisión de modelación en capital y provisiones, y cuánto yerra cada prueba, antes de presentar un modelo."
-  },
-  "outcomes": [
-    {
-      "capability": {
-        "en": "Compares the Chilean statutory provision with an IFRS 9 expected-loss estimate on the same loans, step by step",
-        "es": "Compara la provisión estatutaria chilena con una estimación de pérdida esperada IFRS 9 sobre los mismos créditos, paso a paso"
+        "en": "million US dollars of extra provisions on individually assessed commercial loans across Chilean banks, if the proposed model applied without their own models; January 2031, unless those are approved first",
+        "es": "millones de dólares de provisiones adicionales en créditos comerciales evaluados individualmente de bancos chilenos, si el modelo propuesto se aplicara sin modelos propios; enero de 2031 salvo aprobación previa"
       },
-      "outcome": {
-        "en": "The effect of a recession on provisions is known before the committee decides",
-        "es": "El efecto de una recesión sobre las provisiones se conoce antes de que el comité decida"
-      },
-      "proof": {
-        "value": {
-          "en": "74.0",
-          "es": "74,0"
-        },
-        "unit": {
-          "en": "percent rise in the expected-loss estimate under a recession, against 29.9 percent for the statutory provision, on a generated bank",
-          "es": "por ciento de alza en la estimación de pérdida esperada ante una recesión, frente a 29,9 por ciento en la provisión estatutaria, en un banco generado"
-        },
-        "statement": {
-          "en": "The two measures move by different amounts, so following one does not tell the bank where the other stands.",
-          "es": "Las dos medidas se mueven en magnitudes distintas, de modo que seguir una no dice al banco dónde está la otra."
-        }
-      }
+      "source": "cmf-normative"
     },
     {
-      "capability": {
-        "en": "Shows the capital that a calibration choice implies before the model is submitted",
-        "es": "Muestra el capital que implica una decisión de calibración antes de presentar el modelo"
+      "heading": {
+        "en": "Euro area, review of internal models",
+        "es": "Zona euro, revisión de modelos internos"
       },
-      "outcome": {
-        "en": "The capital cost of a modelling choice is on the table before it reaches the CMF",
-        "es": "El costo en capital de una decisión de modelación está sobre la mesa antes de llegar a la CMF"
+      "value": {
+        "en": "5,800",
+        "es": "5.800"
       },
-      "proof": {
-        "value": {
-          "en": "64.8",
-          "es": "64,8"
-        },
-        "unit": {
-          "en": "percent more capital if the previous year's default curve is carried forward unchanged rather than recalibrated, in a worked example on public rating data",
-          "es": "por ciento más de capital si la curva de incumplimiento del año anterior se arrastra sin cambios en lugar de recalibrarse, en un ejemplo con datos públicos de clasificaciones"
-        },
-        "statement": {
-          "en": "A calibration left unchecked can raise the capital requirement by about two thirds.",
-          "es": "Una calibración sin revisar puede subir el requerimiento de capital en cerca de dos tercios."
-        }
-      }
+      "unit": {
+        "en": "findings from 200 on-site investigations of internal models at 65 banks, about 30 percent of high severity",
+        "es": "hallazgos de 200 investigaciones in situ de modelos internos en 65 bancos, cerca de 30 por ciento de severidad alta"
+      },
+      "source": "ecb-trim"
     },
     {
-      "capability": {
-        "en": "Compares a machine learning model with the current scorecard on loans held out of its training",
-        "es": "Compara un modelo de aprendizaje automático con el scorecard actual sobre créditos reservados fuera de su entrenamiento"
+      "heading": {
+        "en": "Euro area, 2025",
+        "es": "Zona euro, 2025"
       },
-      "outcome": {
-        "en": "A machine learning model is approved for the capital it saves, not for its novelty",
-        "es": "Un modelo de aprendizaje automático se aprueba por el capital que ahorra, no por su novedad"
+      "value": {
+        "en": "16",
+        "es": "16"
       },
-      "proof": {
-        "value": {
-          "en": "4.2",
-          "es": "4,2"
-        },
-        "unit": {
-          "en": "percent less capital for the machine learning model at the same approval rate, on 9,000 held-out public card loans",
-          "es": "por ciento menos de capital para el modelo de aprendizaje automático con la misma tasa de aprobación, en 9.000 créditos de tarjeta públicos reservados"
-        },
-        "statement": {
-          "en": "On 300 loans the same comparison found no model clearly better, so the amount of data decides the answer.",
-          "es": "Con 300 créditos la misma comparación no halló ningún modelo claramente mejor, así que la cantidad de datos decide la respuesta."
-        }
-      }
-    },
-    {
-      "capability": {
-        "en": "Measures how often each validation test raises a false alarm or misses a real defect",
-        "es": "Mide con qué frecuencia cada prueba de validación da una falsa alarma o deja pasar un defecto real"
+      "unit": {
+        "en": "findings on average in each of the 77 internal model investigations launched in 2025, almost half of them of high severity",
+        "es": "hallazgos en promedio en cada una de las 77 investigaciones de modelos internos iniciadas en 2025, casi la mitad de severidad alta"
       },
-      "outcome": {
-        "en": "Correct models are not sent back for rework by a test that rejects too often",
-        "es": "Los modelos correctos no vuelven a retrabajo por una prueba que rechaza demasiado"
-      },
-      "proof": {
-        "value": {
-          "en": "10.98",
-          "es": "10,98"
-        },
-        "unit": {
-          "en": "percent of correct models rejected by one widely used test that promises to reject 5 percent",
-          "es": "por ciento de modelos correctos rechazados por una prueba muy usada que promete rechazar 5 por ciento"
-        },
-        "statement": {
-          "en": "A correct model would be sent back for rework about one time in nine.",
-          "es": "Un modelo correcto volvería a retrabajo cerca de una vez de cada nueve."
-        }
-      }
+      "source": "ecb-ar2025"
     }
   ],
-  "dialogue": [
-    {
-      "question": {
-        "en": "Will a supervisor accept this as evidence?",
-        "es": "¿Aceptará un supervisor esto como evidencia?"
-      },
-      "answer": {
-        "en": "Only the supervisor decides, and the product certifies no model. The CMF's draft rules ask each bank's validation function to certify an application beforehand, and this gives that function evidence it can re-run.",
-        "es": "Solo el supervisor decide, y el producto no certifica ningún modelo. Las reglas propuestas por la CMF piden que la función de validación de cada banco certifique la solicitud antes, y esto le da evidencia que puede volver a calcular."
-      }
+  "pain": {
+    "key_message": {
+      "en": "Internal risk models decide capital and provisions, yet supervisors keep finding deficiencies in them, and every serious deficiency costs capital, time or approval.",
+      "es": "Los modelos internos de riesgo deciden capital y provisiones, pero los supervisores siguen encontrando deficiencias en ellos, y cada deficiencia seria cuesta capital, tiempo o aprobación."
     },
-    {
-      "question": {
-        "en": "Does it compute a bank's own capital and provisions?",
-        "es": "¿Calcula el capital y las provisiones de un banco en particular?"
+    "paragraphs": [
+      {
+        "en": "Banks estimate the chance that a borrower defaults, the loss if that happens and the provisions to hold, and they increasingly do so with their own models. These estimates set how much capital and how many provisions a bank must carry, so an error in a model is an error in the balance sheet.",
+        "es": "Los bancos estiman la probabilidad de que un deudor incumpla, la pérdida si ocurre y las provisiones que deben mantener, y cada vez más lo hacen con modelos propios. Esas estimaciones fijan cuánto capital y cuántas provisiones debe tener un banco, así que un error de modelo es un error en el balance."
       },
-      "answer": {
-        "en": "No. It runs on public data and on generated banks, so it shows what a choice does; each bank still tests its own loans.",
-        "es": "No. Funciona con datos públicos y con bancos generados, así que muestra qué hace una decisión; cada banco igual debe probar sus propios créditos."
+      {
+        "en": "When a supervisor finds a model unsound, the bank must hold more capital, accept limits on the model or withdraw it. The weakness found most often is the evidence behind the model: validation analyses and quantitative thresholds missing for back-testing, discriminatory power and stability.",
+        "es": "Cuando un supervisor encuentra un modelo defectuoso, el banco debe mantener más capital, aceptar límites al modelo o retirarlo. La debilidad más frecuente es la evidencia detrás del modelo: faltan análisis de validación y umbrales cuantitativos para pruebas retrospectivas, poder discriminatorio y estabilidad."
       }
+    ],
+    "bearers": [
+      {
+        "who": {
+          "en": "Shareholders and the finance function",
+          "es": "Accionistas y la función de finanzas"
+        },
+        "cost": {
+          "en": "Higher capital requirements and provisions when a model is limited or rejected",
+          "es": "Mayores requerimientos de capital y provisiones cuando un modelo se limita o se rechaza"
+        },
+        "measure": {
+          "en": "Change in risk-weighted assets and in the capital ratio after a supervisory decision",
+          "es": "Cambio en los activos ponderados por riesgo y en el índice de capital tras una decisión supervisora"
+        }
+      },
+      {
+        "who": {
+          "en": "Model owners and development teams",
+          "es": "Dueños de modelos y equipos de desarrollo"
+        },
+        "cost": {
+          "en": "Months of rework, models limited or withdrawn, and approvals that come late",
+          "es": "Meses de retrabajo, modelos limitados o retirados y aprobaciones que llegan tarde"
+        },
+        "measure": {
+          "en": "Number and severity of findings in each supervisory investigation",
+          "es": "Número y severidad de los hallazgos en cada investigación supervisora"
+        }
+      },
+      {
+        "who": {
+          "en": "Validation teams and internal audit",
+          "es": "Equipos de validación y auditoría interna"
+        },
+        "cost": {
+          "en": "Opinions that cannot be defended when the evidence cannot be reproduced",
+          "es": "Opiniones que no se pueden defender cuando la evidencia no se puede reproducir"
+        },
+        "measure": {
+          "en": "Share of models validated on time with documented thresholds",
+          "es": "Proporción de modelos validados a tiempo con umbrales documentados"
+        }
+      },
+      {
+        "who": {
+          "en": "Borrowers and customers",
+          "es": "Deudores y clientes"
+        },
+        "cost": {
+          "en": "Credit decisions and terms that rest on a model whose errors were never tested",
+          "es": "Decisiones de crédito y condiciones que descansan en un modelo cuyos errores nunca se probaron"
+        },
+        "measure": {
+          "en": "Rate of wrong approvals and refusals found when predictions are compared with outcomes",
+          "es": "Tasa de aprobaciones y rechazos erróneos al comparar las predicciones con los resultados"
+        }
+      },
+      {
+        "who": {
+          "en": "Supervisors",
+          "es": "Supervisores"
+        },
+        "cost": {
+          "en": "Inspection capacity spent on finding the same weaknesses again and again",
+          "es": "Capacidad de inspección gastada en encontrar una y otra vez las mismas debilidades"
+        },
+        "measure": {
+          "en": "Findings per investigation and share of high severity",
+          "es": "Hallazgos por investigación y proporción de severidad alta"
+        }
+      }
+    ],
+    "figures": [
+      {
+        "heading": {
+          "en": "Capital effect",
+          "es": "Efecto en el capital"
+        },
+        "value": {
+          "en": "12",
+          "es": "12"
+        },
+        "unit": {
+          "en": "percent rise in the risk-weighted assets of the models assessed, after the supervisory decisions that followed the euro area review of internal models",
+          "es": "por ciento de aumento en los activos ponderados por riesgo de los modelos evaluados, tras las decisiones supervisoras que siguieron a la revisión de modelos internos de la zona euro"
+        },
+        "source": "ecb-trim"
+      },
+      {
+        "heading": {
+          "en": "Severity today",
+          "es": "Severidad hoy"
+        },
+        "value": {
+          "en": "Almost half",
+          "es": "Casi la mitad"
+        },
+        "unit": {
+          "en": "of the findings in the 2025 internal model investigations were of high severity",
+          "es": "de los hallazgos de las investigaciones de modelos internos de 2025 fueron de severidad alta"
+        },
+        "source": "ecb-ar2025"
+      },
+      {
+        "heading": {
+          "en": "Provisions beyond the model",
+          "es": "Provisiones más allá del modelo"
+        },
+        "value": {
+          "en": "25",
+          "es": "25"
+        },
+        "unit": {
+          "en": "percent, roughly, of the loan loss coverage in performing loan books comes from management overlays, with no visible downward trend",
+          "es": "por ciento, aproximadamente, de la cobertura de pérdidas de los préstamos vigentes proviene de ajustes de la administración, sin una tendencia visible a la baja"
+        },
+        "source": "ecb-overlays"
+      }
+    ],
+    "causes": [
+      {
+        "cause": {
+          "en": "Validation evidence without agreed thresholds and without measured error rates of the tests",
+          "es": "Evidencia de validación sin umbrales acordados y sin tasas de error medidas de las pruebas"
+        },
+        "weight": 35
+      },
+      {
+        "cause": {
+          "en": "Complex models, including machine learning, that are hard to explain and to challenge",
+          "es": "Modelos complejos, incluido el aprendizaje automático, difíciles de explicar y de desafiar"
+        },
+        "weight": 25
+      },
+      {
+        "cause": {
+          "en": "Rules that change faster than model documentation, inventories and results can follow",
+          "es": "Normas que cambian más rápido de lo que pueden seguir la documentación, los inventarios y los resultados de los modelos"
+        },
+        "weight": 20
+      },
+      {
+        "cause": {
+          "en": "Validation functions that lack independence, capacity or reproducible evidence",
+          "es": "Funciones de validación sin independencia, capacidad o evidencia reproducible"
+        },
+        "weight": 20
+      }
+    ]
+  },
+  "context": {
+    "key_message": {
+      "en": "Rules tighten in every major jurisdiction while models grow more complex, and supervisors increasingly ask for evidence rather than assertion.",
+      "es": "Las normas se endurecen en todas las grandes jurisdicciones mientras los modelos se vuelven más complejos, y los supervisores piden cada vez más evidencia y no afirmaciones."
     },
-    {
-      "question": {
-        "en": "What happens if the supervisor turns an application down?",
-        "es": "¿Qué pasa si el supervisor rechaza una solicitud?"
+    "paragraphs": [
+      {
+        "en": "The setting is the large or mid-sized bank that estimates its own risk parameters for credit, provisions or capital under a prudential supervisor. Each model sits in an inventory with an owner, an independent validator and a place in the governance approved by the board.",
+        "es": "El escenario es el banco grande o mediano que estima sus propios parámetros de riesgo para crédito, provisiones o capital bajo un supervisor prudencial. Cada modelo está en un inventario con un dueño, un validador independiente y un lugar en la gobernanza aprobada por el directorio."
       },
-      "answer": {
-        "en": "Under the CMF's draft rules a bank may file once every twelve months, unless validation and internal audit show the findings are resolved. Testing before filing protects that year.",
-        "es": "Según las reglas propuestas por la CMF, un banco puede presentar una solicitud cada doce meses, salvo que validación y auditoría interna muestren que las observaciones están resueltas. Probar antes de presentar protege ese año."
+      {
+        "en": "Since 2011 supervisors have asked for effective challenge: critical analysis by objective, competent people with the standing to change the model. Newer texts add proportionality, lifecycle governance and, for machine learning, explainability and out-of-time testing.",
+        "es": "Desde 2011 los supervisores piden un desafío efectivo: un análisis crítico hecho por personas objetivas y competentes con la jerarquía para cambiar el modelo. Los textos más nuevos agregan proporcionalidad, gobernanza del ciclo de vida y, para el aprendizaje automático, explicabilidad y pruebas fuera de tiempo."
       }
+    ],
+    "setting": {
+      "en": "Banks that estimate defaults, losses and provisions with their own models, supervised under euro area, British, Canadian, American or Chilean rules, with a growing share of machine learning.",
+      "es": "Bancos que estiman incumplimientos, pérdidas y provisiones con modelos propios, supervisados bajo normas de la zona euro, británicas, canadienses, estadounidenses o chilenas, con un uso creciente de aprendizaje automático."
     },
-    {
-      "question": {
-        "en": "Do machine learning models belong in an application?",
-        "es": "¿Caben los modelos de aprendizaje automático en una solicitud?"
+    "forces": [
+      {
+        "force": {
+          "en": "Supervisors test models by on-site investigation and expect documented quantitative thresholds.",
+          "es": "Los supervisores prueban los modelos con investigaciones in situ y esperan umbrales cuantitativos documentados."
+        },
+        "direction": "rising"
       },
-      "answer": {
-        "en": "Only if they earn it. The work compares them with the current scorecard on held-out loans and shows the capital difference.",
-        "es": "Solo si se lo ganan. El trabajo los compara con el scorecard actual en créditos reservados y muestra la diferencia de capital."
+      {
+        "force": {
+          "en": "Several regimes change dates close together, so banking groups carry different texts at once.",
+          "es": "Varios regímenes cambian de fecha casi a la vez, así que los grupos bancarios cargan con textos distintos al mismo tiempo."
+        },
+        "direction": "rising"
+      },
+      {
+        "force": {
+          "en": "Machine learning enters credit models faster than shared validation practice develops.",
+          "es": "El aprendizaje automático entra en los modelos de crédito más rápido de lo que se desarrolla una práctica común de validación."
+        },
+        "direction": "rising"
+      },
+      {
+        "force": {
+          "en": "In the United States the 2011 guidance gave way in 2026 to a text aimed at larger institutions.",
+          "es": "En Estados Unidos la guía de 2011 dio paso en 2026 a un texto dirigido a las instituciones más grandes."
+        },
+        "direction": "easing"
       }
+    ],
+    "evidence": [
+      {
+        "statement": {
+          "en": "The euro area guide to internal models asks institutions for quantitative thresholds in at least four test families: back-testing, discriminatory power, analyses of overrides and stability.",
+          "es": "La guía de modelos internos de la zona euro pide a las instituciones umbrales cuantitativos en al menos cuatro familias: pruebas retrospectivas, poder discriminatorio, análisis de excepciones y estabilidad."
+        },
+        "source": "ecb-egim"
+      },
+      {
+        "statement": {
+          "en": "The British principles for model risk management took effect on 17 May 2024 for firms with internal model approval.",
+          "es": "Los principios británicos de gestión del riesgo de modelo entraron en vigor el 17 de mayo de 2024 para las entidades con aprobación de modelos internos."
+        },
+        "source": "pra-ss123"
+      },
+      {
+        "statement": {
+          "en": "The Canadian guideline applies from 1 May 2027 to all federally regulated financial institutions, in proportion to their size and risk.",
+          "es": "La directriz canadiense se aplica desde el 1 de mayo de 2027 a todas las instituciones financieras reguladas a nivel federal, en proporción a su tamaño y riesgo."
+        },
+        "source": "osfi-e23"
+      },
+      {
+        "statement": {
+          "en": "The United States letter of 17 April 2026 replaced the 2011 guidance and is most relevant to organisations with over 30 billion dollars in assets.",
+          "es": "La carta estadounidense del 17 de abril de 2026 reemplazó la guía de 2011 y es más relevante para organizaciones con más de 30 mil millones de dólares en activos."
+        },
+        "source": "fed-sr262"
+      }
+    ]
+  },
+  "situation": {
+    "key_message": {
+      "en": "Owners, validators, inspectors and managers each hold part of the evidence, so few can show how reliable the validation tests themselves are.",
+      "es": "Dueños, validadores, inspectores y gerentes tienen cada uno una parte de la evidencia, así que pocos pueden mostrar cuán confiables son las pruebas de validación mismas."
+    },
+    "roles": [
+      {
+        "role": {
+          "en": "Management body and senior management",
+          "es": "Órgano de administración y alta gerencia"
+        },
+        "decides": {
+          "en": "Which model approaches and risk appetite are approved, and when to ask supervisors for approval.",
+          "es": "Qué enfoques de modelos y qué apetito de riesgo se aprueban, y cuándo pedir la aprobación al supervisor."
+        },
+        "needs": {
+          "en": "A clear view of model risk and of what each model changes in capital and provisions.",
+          "es": "Una visión clara del riesgo de modelo y de lo que cada modelo cambia en capital y provisiones."
+        }
+      },
+      {
+        "role": {
+          "en": "Accountable senior function for model risk",
+          "es": "Función senior responsable del riesgo de modelo"
+        },
+        "decides": {
+          "en": "How models are tiered, how much model risk is tolerated and how remediation is owned.",
+          "es": "Cómo se clasifican los modelos, cuánto riesgo de modelo se tolera y quién es responsable de la remediación."
+        },
+        "needs": {
+          "en": "One inventory and comparable evidence across all models and tiers.",
+          "es": "Un solo inventario y evidencia comparable en todos los modelos y niveles."
+        }
+      },
+      {
+        "role": {
+          "en": "Model owners and developers",
+          "es": "Dueños y desarrolladores de modelos"
+        },
+        "decides": {
+          "en": "Model design, data, calibration and when to recalibrate or replace a model.",
+          "es": "El diseño, los datos y la calibración del modelo, y cuándo recalibrarlo o reemplazarlo."
+        },
+        "needs": {
+          "en": "Clear challenge criteria and fast, reproducible feedback on each change.",
+          "es": "Criterios de desafío claros y una retroalimentación rápida y reproducible sobre cada cambio."
+        }
+      },
+      {
+        "role": {
+          "en": "Independent model validation",
+          "es": "Validación independiente de modelos"
+        },
+        "decides": {
+          "en": "Whether a model is sound and fit for its intended use, and which limits apply.",
+          "es": "Si un modelo es sólido y apto para su uso previsto, y qué límites se aplican."
+        },
+        "needs": {
+          "en": "Tests with known error rates, agreed thresholds and evidence that a third party can replicate.",
+          "es": "Pruebas con tasas de error conocidas, umbrales acordados y evidencia que un tercero pueda replicar."
+        }
+      },
+      {
+        "role": {
+          "en": "Internal audit and supervisory inspectors",
+          "es": "Auditoría interna e inspectores supervisores"
+        },
+        "decides": {
+          "en": "Whether the validation process is adequate and whether a model should be limited or approved.",
+          "es": "Si el proceso de validación es adecuado y si un modelo debe limitarse o aprobarse."
+        },
+        "needs": {
+          "en": "Documentation that lets an independent party reach the same results.",
+          "es": "Documentación que permita a un tercero independiente llegar a los mismos resultados."
+        }
+      }
+    ],
+    "interaction": {
+      "en": "Owners build, validators challenge, senior management approves and inspectors verify, and every handover loses evidence when results cannot be reproduced or compared.",
+      "es": "Los dueños construyen, los validadores desafían, la alta gerencia aprueba y los inspectores verifican, y cada traspaso pierde evidencia cuando los resultados no se pueden reproducir ni comparar."
+    },
+    "state_of_the_art": [
+      {
+        "approach": {
+          "en": "In-house validation teams running a standard battery of tests",
+          "es": "Equipos internos de validación que aplican una batería estándar de pruebas"
+        },
+        "achieves": {
+          "en": "An independent opinion on each model, in line with supervisory principles.",
+          "es": "Una opinión independiente sobre cada modelo, en línea con los principios supervisores."
+        },
+        "falls_short": {
+          "en": "Thresholds are often missing or unmeasured, which the euro area review found for back-testing, discriminatory power and stability.",
+          "es": "Los umbrales suelen faltar o no estar medidos, algo que la revisión de la zona euro halló en pruebas retrospectivas, poder discriminatorio y estabilidad."
+        },
+        "source": "ecb-trim"
+      },
+      {
+        "approach": {
+          "en": "Supervisory investigations and benchmarking across banks",
+          "es": "Investigaciones supervisoras y comparación entre bancos"
+        },
+        "achieves": {
+          "en": "Comparable checks on many banks and a record of findings with severity.",
+          "es": "Revisiones comparables en muchos bancos y un registro de hallazgos con su severidad."
+        },
+        "falls_short": {
+          "en": "They reach a sample of models each year, with 77 investigations launched in 2025, and find many deficiencies late.",
+          "es": "Alcanzan una muestra de modelos cada año, con 77 investigaciones iniciadas en 2025, y encuentran muchas deficiencias tarde."
+        },
+        "source": "ecb-ar2025"
+      },
+      {
+        "approach": {
+          "en": "Published supervisory guides that name the tests and the thresholds expected",
+          "es": "Guías supervisoras publicadas que nombran las pruebas y los umbrales esperados"
+        },
+        "achieves": {
+          "en": "A shared language of tests, reporting and quantitative thresholds.",
+          "es": "Un lenguaje común de pruebas, reportes y umbrales cuantitativos."
+        },
+        "falls_short": {
+          "en": "They ask that tests be conservative but leave to each bank the level of the thresholds and the proof that tests work.",
+          "es": "Piden que las pruebas sean conservadoras pero dejan a cada banco el nivel de los umbrales y la prueba de que las pruebas funcionan."
+        },
+        "source": "ecb-egim"
+      },
+      {
+        "approach": {
+          "en": "Management overlays on top of model provisions",
+          "es": "Ajustes de la administración sobre las provisiones del modelo"
+        },
+        "achieves": {
+          "en": "A way to react to risks the model does not yet capture.",
+          "es": "Una forma de reaccionar a riesgos que el modelo aún no captura."
+        },
+        "falls_short": {
+          "en": "They have become permanent, so the model alone no longer carries a large part of the estimate.",
+          "es": "Se han vuelto permanentes, así que el modelo por sí solo ya no sostiene una parte grande de la estimación."
+        },
+        "source": "ecb-overlays"
+      }
+    ],
+    "status": {
+      "heading": {
+        "en": "Rating systems in use",
+        "es": "Sistemas de calificación en uso"
+      },
+      "value": {
+        "en": "18",
+        "es": "18"
+      },
+      "unit": {
+        "en": "percent fewer rating systems in the euro area between the end of 2022 and the end of 2024",
+        "es": "por ciento menos de sistemas de calificación en la zona euro entre fines de 2022 y fines de 2024"
+      },
+      "date": {
+        "en": "End of 2024",
+        "es": "Fines de 2024"
+      },
+      "source": "ecb-newsletter"
     }
-  ],
+  },
+  "trends": {
+    "key_message": {
+      "en": "Capital rules, new jurisdictions and artificial intelligence regulation arrive within the next two years, and the banks with the least reproducible evidence feel them first.",
+      "es": "Las reglas de capital, las nuevas jurisdicciones y la regulación de inteligencia artificial llegan en los próximos dos años, y los bancos con menos evidencia reproducible las sienten primero."
+    },
+    "items": [
+      {
+        "trend": {
+          "en": "Capital floors make every model result a capital question.",
+          "es": "Los pisos de capital convierten cada resultado de modelo en una cuestión de capital."
+        },
+        "kind": "regulatory",
+        "direction": "rising",
+        "horizon": "two_years",
+        "signal": {
+          "statement": {
+            "en": "The European Banking Authority projects a 4.7 percent average rise in minimum Tier 1 capital once the output floor applies; institutions bound by it grow from 2 to 33.",
+            "es": "La Autoridad Bancaria Europea proyecta 4,7 por ciento más de capital mínimo de nivel 1 con el piso, y las instituciones sujetas a él pasan de 2 a 33."
+          },
+          "source": "eba-2026"
+        },
+        "effect": {
+          "en": "Senior management and the accountable function must show the capital effect of each model choice before filing it.",
+          "es": "La alta gerencia y la función responsable deben mostrar el efecto en el capital de cada elección de modelo antes de presentarla."
+        },
+        "confidence": "high"
+      },
+      {
+        "trend": {
+          "en": "Model risk rules reach new jurisdictions on fixed dates.",
+          "es": "Las reglas de riesgo de modelo llegan a nuevas jurisdicciones en fechas fijas."
+        },
+        "kind": "regulatory",
+        "direction": "rising",
+        "horizon": "two_years",
+        "signal": {
+          "statement": {
+            "en": "The Canadian guideline on model risk management takes effect on 1 May 2027 and covers the whole model lifecycle, including advanced artificial intelligence.",
+            "es": "La directriz canadiense de riesgo de modelo entra en vigor el 1 de mayo de 2027 y cubre todo el ciclo de vida del modelo, incluida la inteligencia artificial avanzada."
+          },
+          "source": "osfi-e23"
+        },
+        "effect": {
+          "en": "Banking groups need one validation practice that holds across regimes, run by independent validation teams.",
+          "es": "Los grupos bancarios necesitan una práctica de validación única que valga en todos los regímenes, ejecutada por equipos independientes de validación."
+        },
+        "confidence": "high"
+      },
+      {
+        "trend": {
+          "en": "Chile opens internal models for credit capital and provisions.",
+          "es": "Chile abre los modelos internos para el capital por riesgo de crédito y las provisiones."
+        },
+        "kind": "regulatory",
+        "direction": "rising",
+        "horizon": "two_years",
+        "signal": {
+          "statement": {
+            "en": "The Chilean supervisor proposed in August 2026 that banks may submit internal models for individual exposures from January 2028, with the provisioning adjustments taking effect in January 2031.",
+            "es": "El supervisor chileno propuso en agosto de 2026 recibir modelos internos de exposiciones individuales desde enero de 2028, con los ajustes de provisiones vigentes desde enero de 2031."
+          },
+          "source": "cmf-normative"
+        },
+        "effect": {
+          "en": "Management bodies must decide whether to seek approval, and model owners and validators must build the case in time.",
+          "es": "Los órganos de administración deben decidir si piden aprobación, y los dueños de modelos y los validadores deben construir el caso a tiempo."
+        },
+        "confidence": "medium"
+      },
+      {
+        "trend": {
+          "en": "Machine learning and artificial intelligence enter credit decisions under high-risk rules.",
+          "es": "El aprendizaje automático y la inteligencia artificial entran en las decisiones de crédito bajo reglas de alto riesgo."
+        },
+        "kind": "technological",
+        "direction": "rising",
+        "horizon": "two_years",
+        "signal": {
+          "statement": {
+            "en": "The European Union artificial intelligence act lists systems that evaluate the creditworthiness of natural persons or set their credit score as high-risk systems.",
+            "es": "La ley de inteligencia artificial de la Unión Europea clasifica como sistemas de alto riesgo los que evalúan la solvencia de personas naturales o establecen su puntaje de crédito."
+          },
+          "source": "ai-act"
+        },
+        "effect": {
+          "en": "Model owners and independent validators must prove that complex models are explainable, tested out of time and fairly challenged.",
+          "es": "Los dueños de modelos y los validadores independientes deben probar que los modelos complejos son explicables, se prueban fuera de tiempo y se desafían de forma justa."
+        },
+        "confidence": "high"
+      },
+      {
+        "trend": {
+          "en": "Supervisors ask that deficiencies are fixed before an application, not after it.",
+          "es": "Los supervisores piden que las deficiencias se corrijan antes de una solicitud y no después."
+        },
+        "kind": "practice",
+        "direction": "rising",
+        "horizon": "now",
+        "signal": {
+          "statement": {
+            "en": "The euro area supervisor says it will seek to ensure that application packages do not include models with material deficiencies.",
+            "es": "El supervisor de la zona euro dice que procurará que los paquetes de solicitud no incluyan modelos con deficiencias materiales."
+          },
+          "source": "ecb-newsletter"
+        },
+        "effect": {
+          "en": "Independent validation and internal audit are judged by the follow-up of deficiencies, not only by the opinion they issue.",
+          "es": "La validación independiente y la auditoría interna se juzgan por el seguimiento de las deficiencias y no solo por la opinión que emiten."
+        },
+        "confidence": "medium"
+      }
+    ]
+  },
+  "proposal": {
+    "key_message": {
+      "en": "Treat model evidence as a shared and reproducible asset, with agreed thresholds, measured test error rates and named owners, so every model can be defended on proof.",
+      "es": "Tratar la evidencia de los modelos como un activo compartido y reproducible, con umbrales acordados, tasas de error medidas y responsables con nombre, para defender cada modelo con pruebas."
+    },
+    "paragraphs": [
+      {
+        "en": "The approach answers the four causes of the pain. Agree quantitative thresholds before a model goes into use. Measure how often each test raises a false alarm or misses a real defect, so a result is read for what it can prove.",
+        "es": "El enfoque responde a las cuatro causas del problema. Se acuerdan umbrales cuantitativos antes de usar un modelo. Se mide con qué frecuencia cada prueba da una falsa alarma o deja pasar un defecto real, para leer cada resultado por lo que puede probar."
+      },
+      {
+        "en": "Make the evidence reproducible, so an independent third party obtains the same numbers from open data and code. Show the capital and provision effect of each modelling choice to senior management before a supervisor does, and extend the same discipline to machine learning challengers.",
+        "es": "Se hace reproducible la evidencia, de modo que un tercero independiente obtenga los mismos números con datos y código abiertos. Se muestra a la alta gerencia el efecto en capital y provisiones de cada elección de modelado antes de que lo haga un supervisor. La misma disciplina se extiende a los modelos desafiantes de aprendizaje automático."
+      }
+    ],
+    "four_cs": [
+      {
+        "c": {
+          "en": "Choice",
+          "es": "Elección"
+        },
+        "applies": {
+          "en": "Banks keep the freedom to use proprietary, vendor or open models, because the same tests and thresholds apply to whichever model is chosen.",
+          "es": "Los bancos conservan la libertad de usar modelos propietarios, de proveedores o abiertos, porque las mismas pruebas y umbrales valen para el modelo que se elija."
+        }
+      },
+      {
+        "c": {
+          "en": "Context",
+          "es": "Contexto"
+        },
+        "applies": {
+          "en": "Test results are read against business meaning, such as the capital, provisions and decisions a model changes, so findings are accurate and matter to those who decide.",
+          "es": "Los resultados se leen frente al significado de negocio, como el capital, las provisiones y las decisiones que cambia un modelo, para que los hallazgos sean exactos."
+        }
+      },
+      {
+        "c": {
+          "en": "Cost",
+          "es": "Costo"
+        },
+        "applies": {
+          "en": "The effort of validation and the capital cost of each modelling choice are made visible, so management can weigh what assurance costs against what a weak model costs.",
+          "es": "Se hacen visibles el esfuerzo de validación y el costo en capital de cada elección de modelado, para comparar el costo del aseguramiento con el de un modelo débil."
+        }
+      },
+      {
+        "c": {
+          "en": "Control",
+          "es": "Control"
+        },
+        "applies": {
+          "en": "One governance covers data, models and the machine learning that challenges them, with owners, thresholds and remediation recorded in a single inventory.",
+          "es": "Una sola gobernanza cubre los datos, los modelos y el aprendizaje automático que los desafía, con responsables, umbrales y remediación registrados en un único inventario."
+        }
+      }
+    ],
+    "actions": [
+      {
+        "action": {
+          "en": "Agree quantitative thresholds for back-testing, discriminatory power, stability and overrides before each model goes into use.",
+          "es": "Acordar umbrales cuantitativos de pruebas retrospectivas, poder discriminatorio, estabilidad y excepciones antes de usar cada modelo."
+        },
+        "owner": {
+          "en": "Accountable senior function for model risk",
+          "es": "Función senior responsable del riesgo de modelo"
+        },
+        "horizon": {
+          "en": "Within six months",
+          "es": "En seis meses"
+        },
+        "check": {
+          "en": "Every model in the inventory has documented thresholds approved by the accountable function.",
+          "es": "Cada modelo del inventario tiene umbrales documentados y aprobados por la función responsable."
+        }
+      },
+      {
+        "action": {
+          "en": "Measure the false alarm rate and the detection rate of each validation test on data whose truth is known.",
+          "es": "Medir la tasa de falsas alarmas y la tasa de detección de cada prueba de validación con datos cuya verdad se conoce."
+        },
+        "owner": {
+          "en": "Independent model validation",
+          "es": "Validación independiente de modelos"
+        },
+        "horizon": {
+          "en": "Within one year",
+          "es": "En un año"
+        },
+        "check": {
+          "en": "Each test in the validation battery has a recorded false alarm rate and detection rate.",
+          "es": "Cada prueba de la batería de validación tiene una tasa de falsas alarmas y una de detección registradas."
+        }
+      },
+      {
+        "action": {
+          "en": "Keep the evidence of every model reproducible from versioned data and code.",
+          "es": "Mantener la evidencia de cada modelo reproducible a partir de datos y código versionados."
+        },
+        "owner": {
+          "en": "Model owners and developers",
+          "es": "Dueños y desarrolladores de modelos"
+        },
+        "horizon": {
+          "en": "Within one year",
+          "es": "En un año"
+        },
+        "check": {
+          "en": "An independent team reruns the evidence of a sampled model and obtains the same results.",
+          "es": "Un equipo independiente repite la evidencia de un modelo de la muestra y obtiene los mismos resultados."
+        }
+      },
+      {
+        "action": {
+          "en": "Require every model filing or change to state the change it implies in risk-weighted assets and provisions.",
+          "es": "Exigir que cada solicitud o cambio de modelo declare el cambio que implica en activos ponderados por riesgo y en provisiones."
+        },
+        "owner": {
+          "en": "Management body and senior management",
+          "es": "Órgano de administración y alta gerencia"
+        },
+        "horizon": {
+          "en": "Before each filing or change",
+          "es": "Antes de cada solicitud o cambio"
+        },
+        "check": {
+          "en": "Each filing reaches the management body with its capital and provision effect written beside the opinion.",
+          "es": "Cada solicitud llega al órgano de administración con su efecto en capital y provisiones junto a la opinión."
+        }
+      },
+      {
+        "action": {
+          "en": "Audit the follow-up of validation findings against the thresholds and report gaps to the management body.",
+          "es": "Auditar el seguimiento de los hallazgos de validación frente a los umbrales e informar las brechas al órgano de administración."
+        },
+        "owner": {
+          "en": "Internal audit and supervisory inspectors",
+          "es": "Auditoría interna e inspectores supervisores"
+        },
+        "horizon": {
+          "en": "Every year",
+          "es": "Cada año"
+        },
+        "check": {
+          "en": "Gaps found by the audit are closed within the period set by the management body.",
+          "es": "Las brechas halladas por la auditoría se cierran dentro del plazo fijado por el órgano de administración."
+        }
+      }
+    ],
+    "risks": [
+      {
+        "en": "A test with known error rates can create false comfort if a passed test is read as compliance.",
+        "es": "Una prueba con tasas de error conocidas puede dar falsa tranquilidad si una prueba aprobada se lee como cumplimiento."
+      },
+      {
+        "en": "Thresholds set too tight raise the validation workload without lowering real model risk.",
+        "es": "Umbrales demasiado estrictos elevan la carga de validación sin reducir el riesgo real de modelo."
+      }
+    ],
+    "unknowns": [
+      {
+        "en": "The weights of the causes are a judgement of relative size, not a measured split.",
+        "es": "Los pesos de las causas son un juicio de tamaño relativo y no una división medida."
+      },
+      {
+        "en": "No public source gives the size of bank model inventories or validation backlogs, so the capacity gap is not measured.",
+        "es": "Ninguna fuente pública da el tamaño de los inventarios de modelos ni de los rezagos de validación de los bancos, así que la brecha de capacidad no está medida."
+      },
+      {
+        "en": "How supervisors will weigh open and reproducible evidence in approval decisions is not yet stated.",
+        "es": "Cómo ponderarán los supervisores la evidencia abierta y reproducible en las decisiones de aprobación aún no está establecido."
+      }
+    ],
+    "handoff": {
+      "en": "The technical view shows how one part of this problem, the reproducible testing of credit risk models on public data, is explored.",
+      "es": "La vista técnica muestra cómo se explora una parte de este problema, la prueba reproducible de modelos de riesgo de crédito con datos públicos."
+    }
+  },
   "illustrations": {
-    "initiative": {
-      "file": "executive/initiative.svg",
+    "pain": {
+      "file": "executive/pain.svg",
       "caption": {
-        "en": "A chief risk officer stands before a bank's models, with the first CMF filing in 2028 and the new rules in 2031 ahead.",
-        "es": "Un gerente de riesgos está frente a los modelos del banco, con la primera presentación a la CMF en 2028 y la nueva norma en 2031 por delante."
+        "en": "Models feed capital and provisions, but the evidence between the model and the supervisor breaks at the handovers.",
+        "es": "Los modelos alimentan el capital y las provisiones, pero la evidencia entre el modelo y el supervisor se rompe en los traspasos."
       }
     },
-    "problem": {
-      "file": "executive/problem.svg",
+    "situation": {
+      "file": "executive/situation.svg",
       "caption": {
-        "en": "Models checked by hand leave the capital effect unknown, and a returned application costs a year of waiting.",
-        "es": "Los modelos revisados a mano dejan desconocido el efecto en capital, y una solicitud devuelta cuesta un año de espera."
+        "en": "Each role and each current approach holds part of the evidence, and none of them shows how reliable the tests are.",
+        "es": "Cada rol y cada enfoque actual tiene una parte de la evidencia, y ninguno muestra cuán confiables son las pruebas."
       }
     },
-    "solution": {
-      "file": "executive/solution.svg",
+    "proposal": {
+      "file": "executive/proposal.svg",
       "caption": {
-        "en": "With the evidence in the committee room, each model reaches the CMF tested in advance and its capital effect already shown.",
-        "es": "Con la evidencia en la sala del comité, cada modelo llega a la CMF probado de antemano y con su efecto en capital ya mostrado."
+        "en": "The same setting with reproducible, measured evidence flowing through each handover to the supervisor.",
+        "es": "El mismo escenario con evidencia reproducible y medida que fluye por cada traspaso hasta el supervisor."
       }
     }
   },
   "sources": [
     {
-      "field": "why_now.figure",
-      "source": {
-        "en": "CMF, Informe Normativo, August 2026, \"Propuesta normativa para la adopción de metodologías internas en el cálculo de activos ponderados por riesgo de crédito y provisiones\", section V.2 item 3 (page 71): individual exposures of 132,000 million US dollars, 30 percent of assets, and 571 million US dollars of higher provisions if the proposed model applied directly; the effect disappears or reverses if banks obtain approved internal models before the individual-portfolio changes take effect in January 2031. The same report states that no institution uses internal models for provisions or risk-weighted assets (page 4), that banks may file internal models for individual exposures from January 2028 (page 19), that the first filing must cover at least 20 percent of the modelable universe (page 14), that the validation function must certify each application beforehand (page 57) and that a bank may file once every twelve months, with an exception when validation and internal audit show the findings are resolved (page 57). Published on cmfchile.cl, section Normativa en trámite (normative proposals under consultation), file 2026080375.",
-        "es": "CMF, Informe Normativo, agosto de 2026, \"Propuesta normativa para la adopción de metodologías internas en el cálculo de activos ponderados por riesgo de crédito y provisiones\", sección V.2 punto 3 (página 71): exposiciones individuales por 132.000 millones de dólares, 30 por ciento de los activos, y 571 millones de dólares de mayores provisiones si el modelo propuesto se aplicara directamente; el efecto desaparece o se revierte si los bancos obtienen modelos internos aprobados antes de que los cambios de la cartera individual entren en vigor en enero de 2031. El mismo informe señala que ninguna institución usa modelos internos para provisiones o activos ponderados por riesgo (página 4), que los bancos pueden presentar modelos internos de exposiciones individuales desde enero de 2028 (página 19), que la primera presentación debe cubrir al menos 20 por ciento del universo modelable (página 14), que la función de validación debe certificar cada solicitud antes (página 57) y que un banco puede presentar una solicitud cada doce meses, con una excepción cuando validación y auditoría interna muestran que las observaciones están resueltas (página 57). Publicado en cmfchile.cl, sección Normativa en trámite, archivo 2026080375."
+      "id": "cmf-normative",
+      "title": {
+        "en": "Chilean financial market commission, regulatory report of August 2026: proposal to adopt internal methodologies for credit risk-weighted assets and provisions",
+        "es": "Comisión para el Mercado Financiero de Chile, informe normativo de agosto 2026: propuesta de adopción de metodologías internas para activos ponderados por riesgo de crédito y provisiones"
+      },
+      "url": "https://www.cmfchile.cl/institucional/legislacion_normativa/normativa_tramite_ver_archivo.php?id=2026080375&seq=1",
+      "note": {
+        "en": "Section V.2, page 71.",
+        "es": "Sección V.2, página 71."
       }
     },
     {
-      "field": "outcomes[0].proof",
-      "source": {
-        "en": "Contraste's own committed results, case C07 (a generated bank, Banco Andino, calibrated to public CMF aggregates; not a real bank): the recession variant raises the statutory CMF B-1 provision by 29.9 percent (45.5 billion pesos over 152.0 billion) and the IFRS 9 expected-loss estimate by 74.0 percent (72.2 billion over 97.6 billion), in data/derived/C07/recession.json (outputs.delta_vs_base) and data/derived/C07/base.json, summarised in docs/cases/C07.md lines 160 to 171.",
-        "es": "Resultados comprometidos del propio Contraste, caso C07 (un banco generado, Banco Andino, calibrado a agregados públicos de la CMF; no es un banco real): la variante de recesión sube la provisión estatutaria CMF B-1 en 29,9 por ciento (45,5 mil millones de pesos sobre 152,0) y la estimación de pérdida esperada IFRS 9 en 74,0 por ciento (72,2 mil millones sobre 97,6), en data/derived/C07/recession.json (outputs.delta_vs_base) y data/derived/C07/base.json, resumidos en docs/cases/C07.md líneas 160 a 171."
+      "id": "ecb-trim",
+      "title": {
+        "en": "European Central Bank, report on the targeted review of internal models",
+        "es": "Banco Central Europeo, informe sobre la revisión específica de modelos internos"
+      },
+      "url": "https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.trim_project_report~aa49bb624c.en.pdf",
+      "note": {
+        "en": "Executive summary and the section on internal validation.",
+        "es": "Resumen ejecutivo y sección sobre validación interna."
       }
     },
     {
-      "field": "outcomes[1].proof",
-      "source": {
-        "en": "Contraste's own committed results, case C05 (S&P corporate rating data, calibration of default probabilities, year 2010): carrying the 2009 default curve unchanged gives an average risk weight of 90.7 percent against 55.0 percent for the scaled likelihood ratio, which is 64.8 percent more capital, in docs/cases/C05.md lines 60 to 90, from the committed documents in data/derived/C05.",
-        "es": "Resultados comprometidos del propio Contraste, caso C05 (datos públicos de clasificaciones corporativas de S&P, calibración de probabilidades de incumplimiento, año 2010): arrastrar sin cambios la curva de incumplimiento de 2009 da una ponderación de riesgo promedio de 90,7 por ciento frente a 55,0 por ciento de la razón de verosimilitud escalada, es decir 64,8 por ciento más de capital, en docs/cases/C05.md líneas 60 a 90, desde los documentos comprometidos en data/derived/C05."
+      "id": "ecb-ar2025",
+      "title": {
+        "en": "European Central Bank, annual report on supervisory activities 2025",
+        "es": "Banco Central Europeo, informe anual sobre actividades de supervisión 2025"
+      },
+      "url": "https://www.bankingsupervision.europa.eu/press/other-publications/annual-report/html/ssm.ar2025~6ee989dc7e.en.html"
+    },
+    {
+      "id": "ecb-overlays",
+      "title": {
+        "en": "European Central Bank, report on IFRS 9 overlays and model improvements for novel risks, July 2024",
+        "es": "Banco Central Europeo, informe sobre ajustes de la administración bajo IFRS 9 y mejoras de modelos ante riesgos novedosos, julio de 2024"
+      },
+      "url": "https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.IFRS9novelrisks_202407~5e0eb30b5c.en.pdf"
+    },
+    {
+      "id": "ecb-egim",
+      "title": {
+        "en": "European Central Bank, guide to internal models, June 2026",
+        "es": "Banco Central Europeo, guía de modelos internos, junio de 2026"
+      },
+      "url": "https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.supervisory_guide_egim_202606.en.pdf",
+      "note": {
+        "en": "Credit risk chapter and the section on machine learning.",
+        "es": "Capítulo de riesgo de crédito y sección sobre aprendizaje automático."
       }
     },
     {
-      "field": "outcomes[2].proof",
-      "source": {
-        "en": "Contraste's own committed results, case C01 (9,000 held-out records of the public Taiwan credit card data): at 80 percent approved, LGD 50 percent and Basel III, the scorecard's book needs NT$28.8 million of capital and the monotone gradient boosting model's NT$27.7 million, 4.2 percent less; on 300 German loans no model beats the scorecard significantly (p 0.615), in docs/cases/C01.md lines 52 to 85.",
-        "es": "Resultados comprometidos del propio Contraste, caso C01 (9.000 registros reservados de los datos públicos de tarjetas de crédito de Taiwán): con 80 por ciento aprobado, LGD de 50 por ciento y Basilea III, la cartera del scorecard necesita NT$28,8 millones de capital y la del modelo de gradient boosting monótono NT$27,7 millones, 4,2 por ciento menos; con 300 créditos alemanes ningún modelo supera al scorecard de forma significativa (p 0,615), en docs/cases/C01.md líneas 52 a 85."
+      "id": "pra-ss123",
+      "title": {
+        "en": "Bank of England, model risk management principles for banks (supervisory statement 1/23)",
+        "es": "Banco de Inglaterra, principios de gestión del riesgo de modelo para bancos (declaración supervisora 1/23)"
+      },
+      "url": "https://www.bankofengland.co.uk/prudential-regulation/publication/2023/may/model-risk-management-principles-for-banks"
+    },
+    {
+      "id": "osfi-e23",
+      "title": {
+        "en": "Office of the Superintendent of Financial Institutions of Canada, guideline E-23 on model risk management",
+        "es": "Oficina del Superintendente de Instituciones Financieras de Canadá, directriz E-23 de gestión del riesgo de modelo"
+      },
+      "url": "https://www.osfi-bsif.gc.ca/en/guidance/guidance-library/guideline-e-23-model-risk-management-2027"
+    },
+    {
+      "id": "fed-sr262",
+      "title": {
+        "en": "Board of Governors of the Federal Reserve System, letter SR 26-2 on model risk management, 17 April 2026",
+        "es": "Junta de Gobernadores del Sistema de la Reserva Federal, carta SR 26-2 sobre gestión del riesgo de modelo, 17 de abril de 2026"
+      },
+      "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.htm"
+    },
+    {
+      "id": "eba-2026",
+      "title": {
+        "en": "European Banking Authority, press release of 23 March 2026 on the European banking sector",
+        "es": "Autoridad Bancaria Europea, comunicado del 23 de marzo de 2026 sobre el sector bancario europeo"
+      },
+      "url": "https://www.eba.europa.eu/publications-and-media/press-releases/european-banking-sector-enters-period-geopolitical-uncertainty-position-strength"
+    },
+    {
+      "id": "ai-act",
+      "title": {
+        "en": "European Union artificial intelligence act, annex III: high-risk artificial intelligence systems",
+        "es": "Ley de inteligencia artificial de la Unión Europea, anexo III: sistemas de inteligencia artificial de alto riesgo"
+      },
+      "url": "https://artificialintelligenceact.eu/annex/3/",
+      "note": {
+        "en": "Point 5(b), on creditworthiness and credit scores.",
+        "es": "Punto 5(b), sobre solvencia y puntajes de crédito."
       }
     },
     {
-      "field": "outcomes[3].proof",
-      "source": {
-        "en": "Contraste's own committed results, case C22 (simulated size of 21 validation tests): the Hosmer-Lemeshow test with G minus 2 degrees of freedom on probabilities of default set before the outcomes rejects a correct model 10.98 percent of the time at its stated 5 percent level, in docs/cases/C22.md lines 120 to 131, from data/derived/C22.",
-        "es": "Resultados comprometidos del propio Contraste, caso C22 (tamaño simulado de 21 pruebas de validación): la prueba de Hosmer-Lemeshow con G menos 2 grados de libertad sobre probabilidades de incumplimiento fijadas antes de los resultados rechaza un modelo correcto 10,98 por ciento de las veces con su nivel declarado de 5 por ciento, en docs/cases/C22.md líneas 120 a 131, desde data/derived/C22."
-      }
+      "id": "ecb-newsletter",
+      "title": {
+        "en": "European Central Bank, supervision newsletter of 13 August 2025 on the supervision of internal models",
+        "es": "Banco Central Europeo, boletín de supervisión del 13 de agosto de 2025 sobre la supervisión de modelos internos"
+      },
+      "url": "https://www.bankingsupervision.europa.eu/press/supervisory-newsletters/newsletter/2025/html/ssm.nl250813_1.en.html"
     }
   ]
 }

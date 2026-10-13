@@ -1,8 +1,8 @@
 // The coverage of the 22 cases and, case by case, every variant read from its committed artifacts. No number on this
 // page is typed in: whether a case is built comes from the index, every metric from the variant artifacts (T13).
-import { DocPage, DocSection, Equation, Figure, PlotCard, TabGroups, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
+import { DocPage, DocSection, Equation, Figure, PlotCard, TabGroups, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { loadAllManifests, loadAllVariants, useArtifact } from '../api/artifacts';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT, relight } from '../lib/policy';
@@ -14,6 +14,7 @@ import { C04Experiments } from './C04Sections';
 import { C05ExperimentsSection } from './C05Sections';
 import { C22ExperimentsSection } from './C22Sections';
 import { NoTranslateRefs } from './NoTranslateRefs';
+import { U6ExperimentsSection, U6_CASES } from './U6Sections';
 
 function CaseVariants({ manifest }: { manifest: CaseManifest }) {
   const lang = useShellLang();
@@ -93,8 +94,8 @@ function CaseFacts({ m }: { m: CaseManifest }) {
     .join(', ');
   return (
     <P
-      en={`The case was baked with seed ${m.seed} by ${engine || 'the pipeline'} and holds ${variants.length} variants (${titles}). It reads ${m.sources.join(', ')}, and the ${expected} expected ranges it declared before the bake all held when it ran. Every number below is read from those committed artifacts when the page opens, and none is typed into this page.`}
-      es={`El caso se generó con la semilla ${m.seed} por ${engine || 'el pipeline'} y contiene ${variants.length} variantes (${titles}). Lee ${m.sources.join(', ')}, y los ${expected} rangos esperados que declaró antes de la generación se cumplieron todos cuando corrió. Cada número de abajo se lee de esos artefactos comprometidos cuando se abre la página, y ninguno está escrito en esta página.`}
+      en={`The case was baked with seed ${m.seed} by ${engine || 'the pipeline'} and holds ${variants.length} variants (${titles}). ${m.sources.length ? `It reads ${m.sources.join(', ')}, and the` : 'It reads no outside file (its data are generated), and the'} ${expected} expected ranges it declared before the bake all held when it ran. Every number below is read from those committed artifacts when the page opens, and none is typed into this page.`}
+      es={`El caso se generó con la semilla ${m.seed} por ${engine || 'el pipeline'} y contiene ${variants.length} variantes (${titles}). ${m.sources.length ? `Lee ${m.sources.join(', ')}, y los` : 'No lee ningún archivo externo (sus datos se generan), y los'} ${expected} rangos esperados que declaró antes de la generación se cumplieron todos cuando corrió. Cada número de abajo se lee de esos artefactos comprometidos cuando se abre la página, y ninguno está escrito en esta página.`}
     />
   );
 }
@@ -108,11 +109,18 @@ function CaseTopic({ m }: { m: CaseManifest }) {
     >
       <P en={m.question.en} es={m.question.es} />
       <CaseFacts m={m} />
+      {U6_CASES.has(m.case_id) ? (
+        <P
+          en="Each variant of this case is the same question asked of different data, and the table below reads one headline row per variant from its artifact, in the measures this case declares; a number the artifact leaves out is said to be not available, with its reason, in the App."
+          es="Cada variante de este caso es la misma pregunta hecha a datos distintos, y la tabla de abajo lee una fila de resultados por variante desde su artefacto, en las medidas que declara este caso; un número que el artefacto omite se dice no disponible, con su razón, en la App."
+        />
+      ) : (
       <P
         en="Each variant of a case is the same question asked of different data, and the tables and charts below are read from its artifacts: the number of records, the default rate, the discrimination of the champion and of the best challenger, and the policy light of its calibration and stability tests under the committed thresholds. A variant that perturbs the data has a known effect, and a sound test must detect it or must not, as the case declares."
         es="Cada variante de un caso es la misma pregunta hecha a datos distintos, y las tablas y gráficos de abajo se leen de sus artefactos: el número de registros, la tasa de incumplimiento, la discriminación del campeón y del mejor retador, y la luz de política de sus pruebas de calibración y estabilidad bajo los umbrales comprometidos. Una variante que perturba los datos tiene un efecto conocido, y una prueba sana debe detectarlo o no, según declara el caso."
       />
-      {m.case_id === 'C04' ? <C04Experiments manifest={m} /> : m.case_id === 'C05' ? <C05ExperimentsSection manifest={m} /> : m.case_id === 'C22' ? <C22ExperimentsSection manifest={m} /> : <CaseVariants manifest={m} />}
+      )}
+      {m.case_id === 'C04' ? <C04Experiments manifest={m} /> : m.case_id === 'C05' ? <C05ExperimentsSection manifest={m} /> : m.case_id === 'C22' ? <C22ExperimentsSection manifest={m} /> : U6_CASES.has(m.case_id) ? <U6ExperimentsSection manifest={m} /> : <CaseVariants manifest={m} />}
     </DocSection>
   );
 }
@@ -192,6 +200,28 @@ function Metrics() {
   );
 }
 
+/** The question families the case tabs are grouped by (ADR-0071 rule 5: at most six peer tabs, then group by the question), keyed by the category of the coverage registry; a category without a family keeps its own title. */
+const FAMILY: Record<string, { id: string; label: BiText }> = {
+  'credit-scoring': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Scoring de crédito y PD' } },
+  'ratings-calibration': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Scoring de crédito y PD' } },
+  provisions: { id: 'provisions', label: { en: 'Provisions', es: 'Provisiones' } },
+  'lgd-ead': { id: 'loss', label: { en: 'Loss severity and exposure', es: 'Severidad de pérdida y exposición' } },
+  validator: { id: 'validator', label: { en: 'Validating the validator', es: 'Validar al validador' } },
+};
+
+/** The case tabs grouped by the question family of their category; the order of the families is the order of the first case. */
+export function groupCases(tabs: Array<{ id: string; label: string; content: ReactNode }>): Array<{ id: string; label: BiText; tabs: Array<{ id: string; label: string; content: ReactNode }> }> {
+  const groups: Array<{ id: string; label: BiText; tabs: Array<{ id: string; label: string; content: ReactNode }> }> = [];
+  for (const tab of tabs) {
+    const category = CASES.find((c) => c.id.toLowerCase() === tab.id)?.category ?? 'other';
+    const fam = FAMILY[category] ?? { id: category, label: CATEGORY_TITLES[category] ?? { en: 'Other cases', es: 'Otros casos' } };
+    const g = groups.find((x) => x.id === fam.id);
+    if (g) g.tabs.push(tab);
+    else groups.push({ id: fam.id, label: fam.label, tabs: [tab] });
+  }
+  return groups;
+}
+
 export function Experiments() {
   const lang = useShellLang();
   const t = useT();
@@ -238,7 +268,9 @@ export function Experiments() {
               { id: 'metrics', label: t('Metrics', 'Métricas'), content: <Metrics /> },
             ],
           },
-          { id: 'cases', label: t('What did each built case find?', '¿Qué encontró cada caso construido?'), tabs: caseTabs },
+          ...(all.state === 'ready'
+            ? groupCases(caseTabs).map((g) => ({ id: g.id, label: pick(g.label, lang), tabs: g.tabs }))
+            : [{ id: 'cases', label: t('What did each built case find?', '¿Qué encontró cada caso construido?'), tabs: caseTabs }]),
         ]}
       />
     </DocPage>
