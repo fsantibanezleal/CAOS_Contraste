@@ -1,4 +1,4 @@
-"""The CCF observations, treatments and estimates of C09, every number returned by ``riskvalidation`` 0.6.0 (CT-905, CT-906, CT-907).
+"""The CCF observations, treatments and estimates of C09, every number returned by ``riskvalidation`` 0.6.0 (CT-1005, CT-1006, CT-1007).
 
 ``observe`` reads each defaulter's balance path at the reference dates of a design through ``ccf.reference_indices`` and
 ``ccf.ccf_observations``; ``treat`` applies a named treatment through ``ccf.treat_ccf``; ``aggregate`` returns the estimate through

@@ -2,7 +2,7 @@
 Federal Reserve 2025 hypothetical card portfolios, at six utilisation acceleration levels, estimated through ``riskvalidation``
 0.6.0 (``lgd_ead.ccf``, ``lgd_ead.floors``, ``lgd_ead.lgd_models``, ``validation.lgd_ead``).
 
-The design is docs/design/features/c09/design.md; requirements CT-901 to CT-913 hold it. Truth status synthetic-known-truth: the
+The design is docs/design/features/c09/design.md; requirements CT-1001 to CT-1013 hold it. Truth status synthetic-known-truth: the
 lines are generated, not observed, and the CCF each level is drawn with is stated by the parameters (``params.known_ccf``).
 """
 from __future__ import annotations
