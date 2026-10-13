@@ -284,9 +284,10 @@ the ones the dossiers and `docs/frameworks/` record.
 | models | interpret-core | 0.7.8 | the EBM (GA2M) challenger with monotone shape functions | none recorded |
 | models | lightgbm | 4.7.0 | the monotone gradient-boosted challenger | xgboost as the second boosting engine on the same constraints |
 | models | xgboost | 3.4.1 | the second gradient-boosting engine, to show the gain is a property of the data | none recorded |
+| models | catboost | 1.2.10 | the gradient-boosted LGD challenger of case C08 (U6 sizing technology matrix) | lightgbm on the same features |
 | models | shap | 0.52.0 | reason codes and explanation stability of the boosted rung | none recorded (0.53.0 is current and was not adopted) |
 | data | pypdf | 6.19.0 | reading the published tables of the papers (Tasche, Pluto and Tasche, BCBS WP14) | none recorded (6.20.0 is current and was not adopted) |
-| engine | riskvalidation | v0.05.000 | the validation tests, regulatory calculators and generators (git tag until its first PyPI release) | none: no toolkit implements the ECB tests as specified |
+| engine | riskvalidation | v0.06.000 | the validation tests, regulatory calculators and generators (git tag until its first PyPI release) | none: no toolkit implements the ECB tests as specified |
 | models (optional) | torch | 2.14.1 | CPU runtime of the TabPFN extra, outside the default install | none recorded |
 | models (optional) | tabpfn | 9.1.0 | the TabPFN challenger of the small cases, weights under the Prior Labs License | none recorded |
 | tests | pytest | 9.1.1 | the pipeline, contract, guard and adversarial tests | none recorded |
