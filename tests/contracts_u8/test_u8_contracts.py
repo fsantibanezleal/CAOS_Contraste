@@ -22,6 +22,7 @@ import pytest
 
 import contract_schemas as cs
 import market_math as mm
+import producer_checks as pc
 
 ROOT = cs.ROOT
 FIXTURES = ROOT / "docs" / "contracts" / "fixtures"
@@ -234,40 +235,9 @@ def test_a_document_without_its_sign_convention_fails(ref: str) -> None:
 # --- C11: windows, leakage, hyperparameters ------------------------------------------------------------------------
 
 
-def d(s: str) -> date:
-    return date.fromisoformat(s)
-
-
-def leakage_violations(o: dict) -> list[str]:
-    """The leakage rule (SDD C11: strictly rolling, the forecast for day t uses data to t-1): every forecast date is
-    strictly after the end of its estimation window, which itself starts no later than it ends, and the forecast
-    dates and window ends never go backwards."""
-    g = o["grid"]
-    n = len(g["dates"])
-    found = []
-    if not (len(g["estimation_start"]) == len(g["estimation_end"]) == n):
-        return ["the estimation arrays do not align with the forecast dates"]
-    for i in range(n):
-        if not d(g["estimation_end"][i]) < d(g["dates"][i]):
-            found.append(f"day {i}: forecast {g['dates'][i]} is not after its estimation end {g['estimation_end'][i]}")
-        if not d(g["estimation_start"][i]) <= d(g["estimation_end"][i]):
-            found.append(f"day {i}: the estimation window starts after it ends")
-        if i and not (d(g["dates"][i]) > d(g["dates"][i - 1]) and d(g["estimation_end"][i]) >= d(g["estimation_end"][i - 1])):
-            found.append(f"day {i}: dates or window ends go backwards")
-    return found
-
-
-def span_violations(o: dict) -> list[str]:
-    """The hyperparameter span ends before the window it serves, and before 2007 (SDD C11: fixed on a pre-2007 span)."""
-    h, w = o["hyperparameters"]["fixed_on"], o["window"]
-    found = []
-    if not d(h["start"]) <= d(h["end"]):
-        found.append("the span starts after it ends")
-    if not d(h["end"]) < d(w["start_date"]):
-        found.append(f"the span ends {h['end']}, not before the window start {w['start_date']}")
-    if not d(h["end"]) < date(2007, 1, 1):
-        found.append(f"the span ends {h['end']}, not before 2007")
-    return found
+d = pc.d
+leakage_violations = pc.leakage_violations
+span_violations = pc.span_violations
 
 
 def test_the_fixture_has_no_leakage_and_a_valid_span() -> None:
@@ -293,19 +263,23 @@ def test_an_estimation_window_that_starts_after_it_ends_is_caught() -> None:
     assert leakage_violations(doc["outputs"]) != []
 
 
-def test_a_span_that_does_not_end_before_the_window_or_before_2007_is_caught() -> None:
+def test_a_span_that_is_not_the_d1_span_is_caught_by_the_schema_and_the_producer_check() -> None:
+    """Decision D1 (review F1): 1995-01-01 to 2003-12-31 for every window; a span overlapping the calm 2004-06 test window
+    (the superseded 1995-2006 span, or 2004-2006) is refused."""
     o = copy.deepcopy(out(C11))
-    o["hyperparameters"]["fixed_on"]["end"] = o["window"]["start_date"]
-    assert span_violations(o) != []
-    late = copy.deepcopy(out(C11))
-    late["hyperparameters"]["fixed_on"]["end"] = "2007-01-01"
-    assert span_violations(late) != []
-    doc = load(C11)
-    doc["outputs"]["hyperparameters"]["fixed_on"]["end"] = "2007-01-01"
-    assert cs.errors(C11, doc) != [], "the schema accepts a span ending in 2007 or later"
+    assert o["hyperparameters"]["fixed_on"] == {"start": "1995-01-01", "end": "2003-12-31"}
+    for start, end in (("1995-01-03", "2006-12-29"), ("2004-01-02", "2006-12-29"), ("1995-01-01", "2007-01-01"),
+                       ("1995-01-01", "2004-01-02"), ("1995-01-02", "2003-12-31")):
+        doc = load(C11)
+        doc["outputs"]["hyperparameters"]["fixed_on"] = {"start": start, "end": end}
+        assert cs.errors(C11, doc) != [], (start, end)
+        assert span_violations(doc["outputs"]) != [], (start, end)
     doc = load(C11)
     doc["outputs"]["hyperparameters"]["tuned_on_test_window"] = True
     assert cs.errors(C11, doc) != []
+    mdoc = load(C11M)
+    mdoc["fit"]["windows"][5]["fixed_on"]["end"] = "2005-06-30"
+    assert cs.errors(C11M, mdoc) != [] and pc.c11_models_violations(mdoc) != []
 
 
 def c11_variant_documents() -> list[tuple[str, dict]]:
@@ -321,15 +295,7 @@ def c11_variant_documents() -> list[tuple[str, dict]]:
 
 def test_every_committed_c11_document_obeys_the_producer_checks() -> None:
     for name, doc in c11_variant_documents():
-        o = doc["outputs"]
-        assert leakage_violations(o) == [], name
-        assert span_violations(o) == [], name
-        derived = any(c["source_class"] == "derived-only" for c in o["portfolio"]["components"])
-        assert (o["grid"]["realised_loss"]["status"] == "withheld-derived-only") == derived, name
-        for m in o["models"]:
-            for lv in m["by_level"]:
-                assert all(e is None or e >= v for v, e in zip(lv["var"], lv["es"])), (name, m["model_id"])
-        assert o["data_status"]["missing_days"]["count"] == len(o["data_status"]["missing_days"]["dates"]), name
+        assert pc.c11_variant_violations(doc) == [], name
 
 
 def test_the_window_ids_are_the_six_of_the_sdd() -> None:
@@ -406,10 +372,11 @@ def test_the_forecast_arrays_align_with_the_grid_and_es_is_never_below_var() -> 
 
 
 def test_es_below_var_is_caught() -> None:
-    o = copy.deepcopy(out(C11))
-    lv = o["models"][0]["by_level"][0]
+    doc = copy.deepcopy(load(C11))
+    lv = doc["outputs"]["models"][0]["by_level"][0]
     lv["es"][5] = lv["var"][5] * 0.5
-    assert any(e is not None and e < v for v, e in zip(lv["var"], lv["es"]))
+    assert pc.c11_variant_violations(doc) != [], "the producer check does not report ES below VaR"
+    assert any("ES below VaR" in x for x in pc.c11_variant_violations(doc))
 
 
 def test_the_es_status_matches_the_null_pattern() -> None:
@@ -490,12 +457,16 @@ def test_the_rolling_250_day_count_and_the_zone_recompute_at_one_percent_and_are
 
 def test_a_window_shorter_than_250_days_has_a_not_evaluated_traffic_light_with_its_reason() -> None:
     doc = load(C11)
-    lv = doc["outputs"]["models"][0]["by_level"][0]
-    assert lv["alpha"] == 0.01
-    lv["traffic_light"] = {"window_days": 250, "n_windows": 0, "max_rolling_exceedances": None, "final_rolling_exceedances": None,
-                           "final_zone": "not_evaluated", "days_green": None, "days_amber": None, "days_red": None,
-                           "reason": "fewer than 250 forecast days"}
+    doc["outputs"]["window"].update({"window_id": "equity-2020", "asset_class": "equity", "start_date": "2020-02-03",
+                                     "end_date": "2020-06-30", "n_forecast_days": 100})
+    for m in doc["outputs"]["models"]:
+        for lv in m["by_level"]:
+            if lv["traffic_light"] is not None:
+                lv["traffic_light"] = {"window_days": 250, "n_windows": 0, "max_rolling_exceedances": None,
+                                       "final_rolling_exceedances": None, "final_zone": "not_evaluated", "days_green": None,
+                                       "days_amber": None, "days_red": None, "reason": "fewer than 250 forecast days"}
     assert cs.errors(C11, doc) == []
+    lv = doc["outputs"]["models"][0]["by_level"][0]
     lv["traffic_light"]["reason"] = None
     assert cs.errors(C11, doc) != [], "a not-evaluated zone without its reason validates"
     lv["traffic_light"].update({"reason": "fewer than 250 forecast days", "max_rolling_exceedances": 3})

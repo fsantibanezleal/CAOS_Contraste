@@ -85,17 +85,13 @@
       ],
       "properties": {
         "start": {
-          "type": "string",
-          "pattern": "^(19\\d{2}|200[0-6])-\\d{2}-\\d{2}$",
-          "description": "A date before 2007-01-01: the hyperparameters are fixed on a pre-2007 span (SDD C11)."
+          "const": "1995-01-01"
         },
         "end": {
-          "type": "string",
-          "pattern": "^(19\\d{2}|200[0-6])-\\d{2}-\\d{2}$",
-          "description": "A date before 2007-01-01: the hyperparameters are fixed on a pre-2007 span (SDD C11)."
+          "const": "2003-12-31"
         }
       },
-      "description": "The span on which the hyperparameters were fixed: it ends before 2007 and before the window it serves."
+      "description": "The span on which the hyperparameters were fixed (decision D1): 1995-01-01 to 2003-12-31 for every window, so it ends before the earliest test window (calm 2004-06) and tunes on none."
     },
     "c11WindowPlan": {
       "type": "object",
@@ -140,7 +136,130 @@
           "$ref": "#/$defs/c11Span"
         }
       },
-      "description": "A window and the span on which its hyperparameters were fixed (before the window starts and before 2007)."
+      "description": "A window with the dates of decision D2 and the span of decision D1 on which its hyperparameters were fixed.",
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "window_id": {
+                  "const": "equity-2007-09"
+                },
+                "asset_class": {
+                  "type": "string",
+                  "enum": [
+                    "equity"
+                  ]
+                },
+                "start_date": {
+                  "const": "2007-07-02"
+                },
+                "end_date": {
+                  "const": "2009-06-30"
+                }
+              }
+            },
+            {
+              "properties": {
+                "window_id": {
+                  "const": "equity-2020"
+                },
+                "asset_class": {
+                  "type": "string",
+                  "enum": [
+                    "equity"
+                  ]
+                },
+                "start_date": {
+                  "const": "2020-02-03"
+                },
+                "end_date": {
+                  "const": "2020-06-30"
+                }
+              }
+            },
+            {
+              "properties": {
+                "window_id": {
+                  "const": "rates-2022"
+                },
+                "asset_class": {
+                  "type": "string",
+                  "enum": [
+                    "rates"
+                  ]
+                },
+                "start_date": {
+                  "const": "2022-01-03"
+                },
+                "end_date": {
+                  "const": "2022-12-30"
+                }
+              }
+            },
+            {
+              "properties": {
+                "window_id": {
+                  "const": "fx-2008"
+                },
+                "asset_class": {
+                  "type": "string",
+                  "enum": [
+                    "fx"
+                  ]
+                },
+                "start_date": {
+                  "const": "2008-07-01"
+                },
+                "end_date": {
+                  "const": "2009-06-30"
+                }
+              }
+            },
+            {
+              "properties": {
+                "window_id": {
+                  "const": "mixed-2023"
+                },
+                "asset_class": {
+                  "type": "string",
+                  "enum": [
+                    "mixed"
+                  ]
+                },
+                "start_date": {
+                  "const": "2023-03-01"
+                },
+                "end_date": {
+                  "const": "2023-05-31"
+                }
+              }
+            },
+            {
+              "properties": {
+                "window_id": {
+                  "const": "calm-2004-06"
+                },
+                "asset_class": {
+                  "type": "string",
+                  "enum": [
+                    "equity",
+                    "rates",
+                    "fx",
+                    "mixed"
+                  ]
+                },
+                "start_date": {
+                  "const": "2004-01-02"
+                },
+                "end_date": {
+                  "const": "2006-12-29"
+                }
+              }
+            }
+          ]
+        }
+      ]
     },
     "c11Parameter": {
       "type": "object",
@@ -399,7 +518,222 @@
             "$ref": "#/$defs/c11TrafficRow"
           },
           "minItems": 11,
-          "maxItems": 11
+          "maxItems": 11,
+          "allOf": [
+            {
+              "prefixItems": [
+                {
+                  "properties": {
+                    "exceptions": {
+                      "const": 0
+                    },
+                    "zone": {
+                      "const": "green"
+                    },
+                    "frtb_multiplier": {
+                      "const": 1.5
+                    },
+                    "us_multiplier": {
+                      "const": 3.0
+                    },
+                    "cumulative_probability_pct": {
+                      "const": 8.11
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "exceptions": {
+                      "const": 1
+                    },
+                    "zone": {
+                      "const": "green"
+                    },
+                    "frtb_multiplier": {
+                      "const": 1.5
+                    },
+                    "us_multiplier": {
+                      "const": 3.0
+                    },
+                    "cumulative_probability_pct": {
+                      "const": 28.58
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "exceptions": {
+                      "const": 2
+                    },
+                    "zone": {
+                      "const": "green"
+                    },
+                    "frtb_multiplier": {
+                      "const": 1.5
+                    },
+                    "us_multiplier": {
+                      "const": 3.0
+                    },
+                    "cumulative_probability_pct": {
+                      "const": 54.32
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "exceptions": {
+                      "const": 3
+                    },
+                    "zone": {
+                      "const": "green"
+                    },
+                    "frtb_multiplier": {
+                      "const": 1.5
+                    },
+                    "us_multiplier": {
+                      "const": 3.0
+                    },
+                    "cumulative_probability_pct": {
+                      "const": 75.81
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "exceptions": {
+                      "const": 4
+                    },
+                    "zone": {
+                      "const": "green"
+                    },
+                    "frtb_multiplier": {
+                      "const": 1.5
+                    },
+                    "us_multiplier": {
+                      "const": 3.0
+                    },
+                    "cumulative_probability_pct": {
+                      "const": 89.22
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "exceptions": {
+                      "const": 5
+                    },
+                    "zone": {
+                      "const": "amber"
+                    },
+                    "frtb_multiplier": {
+                      "const": 1.7
+                    },
+                    "us_multiplier": {
+                      "const": 3.4
+                    },
+                    "cumulative_probability_pct": {
+                      "const": 95.88
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "exceptions": {
+                      "const": 6
+                    },
+                    "zone": {
+                      "const": "amber"
+                    },
+                    "frtb_multiplier": {
+                      "const": 1.76
+                    },
+                    "us_multiplier": {
+                      "const": 3.5
+                    },
+                    "cumulative_probability_pct": {
+                      "const": 98.63
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "exceptions": {
+                      "const": 7
+                    },
+                    "zone": {
+                      "const": "amber"
+                    },
+                    "frtb_multiplier": {
+                      "const": 1.83
+                    },
+                    "us_multiplier": {
+                      "const": 3.65
+                    },
+                    "cumulative_probability_pct": {
+                      "const": 99.6
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "exceptions": {
+                      "const": 8
+                    },
+                    "zone": {
+                      "const": "amber"
+                    },
+                    "frtb_multiplier": {
+                      "const": 1.88
+                    },
+                    "us_multiplier": {
+                      "const": 3.75
+                    },
+                    "cumulative_probability_pct": {
+                      "const": 99.89
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "exceptions": {
+                      "const": 9
+                    },
+                    "zone": {
+                      "const": "amber"
+                    },
+                    "frtb_multiplier": {
+                      "const": 1.92
+                    },
+                    "us_multiplier": {
+                      "const": 3.85
+                    },
+                    "cumulative_probability_pct": {
+                      "const": 99.97
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "exceptions": {
+                      "const": 10
+                    },
+                    "zone": {
+                      "const": "red"
+                    },
+                    "frtb_multiplier": {
+                      "const": 2.0
+                    },
+                    "us_multiplier": {
+                      "const": 4.0
+                    },
+                    "cumulative_probability_pct": {
+                      "const": 99.99
+                    }
+                  }
+                }
+              ]
+            }
+          ]
         }
       },
       "description": "MAR32.9 Table 1 with the US factors (dossier 01 D.4, dossier 05 B.4); the reference for every traffic-light band."
@@ -556,7 +890,55 @@
             "$ref": "#/$defs/c11WindowPlan"
           },
           "minItems": 6,
-          "maxItems": 6
+          "maxItems": 6,
+          "allOf": [
+            {
+              "prefixItems": [
+                {
+                  "properties": {
+                    "window_id": {
+                      "const": "equity-2007-09"
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "window_id": {
+                      "const": "equity-2020"
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "window_id": {
+                      "const": "rates-2022"
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "window_id": {
+                      "const": "fx-2008"
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "window_id": {
+                      "const": "mixed-2023"
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "window_id": {
+                      "const": "calm-2004-06"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
         },
         "ladder": {
           "type": "array",

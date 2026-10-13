@@ -34,7 +34,12 @@ starts) and **Golden** (a number recomputed by `tests/contracts_u8/market_math.p
   rolling scheme of dossier 05 "Candidate cases and leakage-safe evaluation windows"); no function receives the realised value of the
   day it forecasts. The case documents record, per forecast day, the end of its estimation window, which is strictly before the day
   (a producer check, since a date comparison is not a JSON Schema rule); the hyperparameters (window length, lambda, EVT threshold
-  fraction) are fixed on a span that ends before 2007 and before the window they serve, never tuned on a test window.
+  fraction, the CAViaR and GAS starts and the seed) are fixed once, for every window, on 1995-01-01 to 2003-12-31 (decision D1 of the U8
+  sizing: the span ends before the earliest test window, calm 2004-06, and a span reaching into the 2004 to 2006 calm window would tune on it); the six
+  windows have the dates of decision D2 (calm 2004-01-02 to 2006-12-29; equity 2007-09 2007-07-02 to 2009-06-30; FX 2008 2008-07-01 to
+  2009-06-30; equity 2020 2020-02-03 to 2020-06-30; rates 2022 2022-01-03 to 2022-12-30; mixed 2023 2023-03-01 to 2023-05-31), which the
+  schemas bind to the window ids. No lead-in: a window with fewer than 250 forecast days carries the Basel traffic light as
+  `not_evaluated` with its reason (decision D3; MAR32.9 is defined on 250 observations) and every other back-test runs on the days it has.
 - **Missing days**: a day missing from a public series (a holiday, a gap) is skipped in the rolling window and counted in the document
   (`data_status.missing_days`), never filled; a function never receives a NaN return (`ValueError`); the caller removes the day.
 - Every function is pure and deterministic (no hidden state, no I/O, inputs never mutated); a function that simulates or bootstraps takes
@@ -104,10 +109,14 @@ def var_es_from_sample(returns: np.ndarray, alpha: float) -> tuple[float, float]
 ```
 
 - Units: `returns` (N,) decimals; `alpha` in (0, 0.5); the result `(var, es)` in the return convention.
-- Invariants: with `k = ceil(alpha * N)` and the returns sorted ascending, `var` is the k-th smallest return and `es` is the mean of the k
-  smallest (D-3: the left-continuous inverse `F^-1(alpha) = inf{y : F(y) >= alpha}` of A.0 and its tail mean, so `es <= var`); `ValueError`
-  for `alpha` outside (0, 0.5), `N = 0` or a NaN; the result is invariant to the order of `returns`.
-- Golden: `returns = [-0.001 * i for i in 1..100]`, `alpha = 0.05` gives `var = -0.096` and `es = -0.098` (`k = 5`).
+- Invariants: with `k = ceil(alpha * N)` and the returns `r(1) <= ... <= r(N)` sorted ascending, `var = r(k)` (D-3: the left-continuous
+  inverse `F^-1(alpha) = inf{y : F(y) >= alpha}` of A.0) and `es = (sum_{i<k} r(i) + (alpha N - (k - 1)) r(k)) / (alpha N)`, the
+  tail integral `(1/alpha) integral_0^alpha F^-1(u) du` of the empirical quantile function of A.0: the k-th return carries the fractional
+  weight `alpha N - (k - 1)` when `alpha N` is not an integer (review F4: the mean of the k smallest overstates the tail count, and `alpha N` is
+  2.5 and 6.25 for the 250-day rung at 0.01 and 0.025); `es <= var`; `ValueError` for `alpha` outside (0, 0.5), `N = 0` or a NaN; the
+  result is invariant to the order of `returns`.
+- Golden: `returns = [-0.001 * i for i in 1..100]`: `alpha = 0.05` gives `var = -0.096` and `es = -0.098` (`k = 5`, an integer
+  `alpha N`); `alpha = 0.025` gives `var = -0.098` and `es = -0.0992` (`k = 3`, `alpha N = 2.5`: `(-0.100 - 0.099 + 0.5 * -0.098) / 2.5`).
 
 ### `riskvalidation.market.conventions.var_es_from_distribution`
 
@@ -167,7 +176,7 @@ def age_weighted_var_es(returns: np.ndarray, alpha: float, lam: float, window: i
 def filtered_hs_var_es(std_residuals: np.ndarray, mu_next: float, sigma_next: float, alpha: float) -> tuple[float, float]: ...
 ```
 
-- Units: `std_residuals` (N,) standardised residuals `z_t = r_t / sigma_t` of a GARCH or EWMA filter fitted on data before the forecast day;
+- Units: `std_residuals` (N,) standardised residuals `z_t = (r_t - mu_t) / sigma_t` (the conditional mean removed, so the mean is not counted twice) of a GARCH or EWMA filter fitted on data before the forecast day;
   `mu_next` and `sigma_next` the one-step conditional mean and volatility (decimals); the result in the return convention.
 - Invariants: the scenarios are `r*_{T+1} = mu_next + sigma_next * z_s` for every residual `z_s` (A.2 row 3; D-4: all residuals are used,
   not a random bootstrap, so the forecast is deterministic) and the result is `var_es_from_sample(scenarios, alpha)`; with `mu_next = 0` the
@@ -532,7 +541,9 @@ class DmResult:
 def diebold_mariano(loss_a: np.ndarray, loss_b: np.ndarray, lags: int) -> DmResult: ...
 ```
 
-- Units: per-day losses (FZ0 for the pair (VaR, ES), the tick loss for the VaR, B.6) on the common sample; `lags >= 0`.
+- Units: per-day losses (FZ0 for the pair (VaR, ES), the tick loss for the VaR, B.6) on the common sample; `lags >= 0`. The lag rule (review F11): the forecasts of this
+  contract are one-step ahead, so `lags = 0` (h - 1 lags for an h-step forecast, after Diebold and Mariano 1995; UNVERIFIED: the primary text was not read in this session); the
+  documents record the value used in `comparison.hac_lags` and every `dm` row repeats it.
 - Invariants: `d_t = loss_a_t - loss_b_t`, `DM = mean(d) / sqrt(LRV / T)` with the Newey-West long-run variance `LRV = g0 + 2 sum_{j=1}^{lags} (1 - j/(lags+1)) g_j`, `g_j = (1/T) sum_t (d_t - mean)(d_{t-j} - mean)` (D-2: the dossier says only
   "a HAC long-run variance"; the Bartlett kernel is the contract choice and the documents name it, `comparison.hac_kernel = "bartlett"`); `p_value = 2 (1 - Phi(|DM|))` (the dossier: `DM -> N(0, 1)`); a negative `mean_diff` means model A has the lower loss;
   `ValueError` if `d` has zero spread (the statistic is undefined) or `T <= lags + 1`; the two series must be defined on the same days.
@@ -629,8 +640,10 @@ def pla_ks(hpl: np.ndarray, rtpl: np.ndarray) -> float: ...
 ```
 
 - Units: as `pla_spearman`; the result in [0, 1].
-- Invariants: `KS = sup_x |F_RTPL(x) - F_HPL(x)|` with `F(x) = 0.004 * #{observations <= x}` (MAR32.39 to MAR32.41, D.4: the ECDF step is 0.004 for 250 observations); the supremum is taken over the union of the observations; symmetric in the two series; 0 for identical series; `ValueError` unless both have 250 finite observations.
-- Golden: `hpl = [0, 1, ..., 249]` and `rtpl = hpl + 0.5` give `0.004` (every ECDF step is shifted by one observation).
+- Invariants: `KS = sup_x |F_RTPL(x) - F_HPL(x)|` with `F(x) = 0.004 * #{observations <= x}` (MAR32.39 to MAR32.41, D.4: the ECDF step is 0.004 for 250 observations). The gap is computed as an exact integer
+  count of steps, `gap = max_x |#{rtpl <= x} - #{hpl <= x}|`, and `KS = gap / 250`: the literal product `0.004 * a - 0.004 * b` gives `0.12000000000000002` for an exact 30-step gap, which would put a desk that MAR32.42
+  classes as amber (KS not above 0.12) in red (review F5); `30 / 250` is exactly the float `0.12`. The supremum is taken over the union of the observations; symmetric in the two series; 0 for identical series; `ValueError` unless both have 250 finite observations.
+- Golden: `hpl = [0, 1, ..., 249]` and `rtpl = hpl + 0.5` give `0.004` (every ECDF step is shifted by one observation); `rtpl = hpl + 29.5` (a 30-step gap) gives exactly `0.12` and, with Spearman 1.0, the `pla_zone` amber; `rtpl = hpl + 30.5` (31 steps) gives `0.124`, red.
 
 ### `riskvalidation.market.frtb.pla_zone`
 
@@ -747,21 +760,22 @@ def du_escanciano_conditional(pit: np.ndarray, alpha: float, lags: int = 5, mode
 
 - Test: test_id = "market.du_escanciano_conditional"; `segment = "alpha=<alpha>"`.
 - Units: `pit` as above; `statistic = C_ES(m)`; `p_value` chi-square(`lags`); `n = T`; `extras = {"lags": lags}`.
-- Light: by `p_value`; `not_evaluated` as the unconditional test, or `T <= lags`.
+- Light: by `p_value`; `not_evaluated` as the unconditional test, or `T <= lags`, or when `H - alpha/2` has zero spread.
 - Invariants: `C_ES(m) = T sum_{j=1}^m rho_j^2`, the Box-Pierce statistic of the first `m` autocorrelations of `H_t - alpha/2` (B.5); nonnegative; asymptotically chi-square(`m`).
 - Golden: a constant `H` series has zero spread and is `not_evaluated`; the 5 percent critical value is `chi2.ppf(0.95, m)` (3.841 for `m = 1`, 5.991 for `m = 2`).
 
 ### `riskvalidation.validation.market.mcneil_frey_residual_test`
 
 ```python
-def mcneil_frey_residual_test(loss: np.ndarray, var: np.ndarray, es: np.ndarray, sigma: np.ndarray, model_id: str | None = None, n_boot: int = 10000, seed: int = 0, alpha_amber: float = 0.10, alpha_red: float = 0.05) -> TestResult: ...
+def mcneil_frey_residual_test(loss: np.ndarray, var: np.ndarray, es: np.ndarray, sigma: np.ndarray, alpha: float, model_id: str | None = None, n_boot: int = 10000, seed: int = 0, alpha_amber: float = 0.10, alpha_red: float = 0.05) -> TestResult: ...
 ```
 
-- Test: test_id = "market.mcneil_frey_residual_test"; `segment = "alpha=<alpha>"` (the caller passes the level in the row's segment through `extras`).
+- Test: test_id = "market.mcneil_frey_residual_test"; `segment = "alpha=<alpha>"`.
 - Units: positive loss numbers (T,), `sigma` (T,) the conditional volatility forecasts; `statistic` the mean of the exceedance residuals; `p_value` the one-sided bootstrap p-value of a zero mean; `n_events` the exceedance count.
 - Light: by `p_value`; `not_evaluated` with fewer than 2 exceedances (D-8 reasoning: a bootstrap needs spread) or any NaN `es`.
 - Invariants: on exceedance days `r_t = (L_t - ES_t) / sigma_t` should be i.i.d. with mean zero (B.5, McNeil and Frey 2000); same inputs and seed give the same p-value.
-- Golden: exceedance residuals `[-0.5, 0.5]` have mean 0 and a p-value near 0.5 (symmetric bootstrap); the statistic equals the mean of the residuals to `1e-12`.
+- Golden: the bootstrap resamples the exceedance residuals centred at their mean, with a +1 correction, and the p-value is the share of resampled means at or above the observed mean (a positive mean means the loss exceeds the ES, risk underestimated).
+  Exceedance residuals `[1.0, 2.0, 3.0]` give `statistic = 2.0`; every centred resample mean is at most 1.0, so `p_value = 1/(n_boot + 1) = 0.00009999` for `n_boot = 10000`, any seed.
 
 ### `riskvalidation.validation.market.dynamic_quantile_test`
 
@@ -804,4 +818,6 @@ def desk_backtest(loss: np.ndarray, var: np.ndarray, alpha: float, model_id: str
 - UNVERIFIED details to read at the primary source before transcription: the age-weighted HS interpolation and ES rule (Boudoukh et al. 1998), the `(y)^-` convention and the Taylor (2019) ALD ES extension of CAViaR, the DQ regressor set, the GAS-FZ recursions (Patton, Ziegel and Chen 2019),
   the Weibull form of the duration test (Christoffersen and Pelletier 2004), the McNeil-Frey threshold fraction, the Zangari origin of Cornish-Fisher VaR, the primary Acerbi and Szekely text, and whether the desk test counts a missing value as an exception.
 - Contract decisions D-1 to D-8 above (D-1 the exact two-sided p-value, D-2 the Bartlett HAC kernel, D-3 the empirical VaR and ES of a sample, D-4 FHS without resampling, D-5 the one-sided Du-Escanciano p-value, D-6 the Cornish-Fisher validity domain, D-7 the independence test at no exceedance, D-8 the minimum exceedances of the duration and McNeil-Frey tests) are the integrator's to amend before U8-E starts.
-- The calm 2004-06 window overlaps the span 1995 to 2006 the sizing names for the hyperparameters: the document requires the span to end before the window starts, so that window's span ends before 2004 (the C11 models fixture shows 1995-01-03 to 2003-12-31); U8-P1 confirms.
+- Acceptance check of U8-P1 and U8-P2 (review F14): CI runs no pytest (ADR-0074), so the producer checks of `tests/contracts_u8/producer_checks.py` (leakage, span, window dates, counts, recomputed statistics, the variant id) run only in a local
+  pytest run; `pytest tests/contracts_u8` green on the committed documents of `data/derived/C11` and `C13` is an acceptance check of those two units.
+- The asset class of the calm 2004-06 window is not decided by the SDD or decision D2, so the schema accepts any of the four for that window and no other.

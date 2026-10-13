@@ -736,7 +736,27 @@
             "$ref": "#/$defs/c13DeskLevel"
           },
           "minItems": 2,
-          "maxItems": 2
+          "maxItems": 2,
+          "allOf": [
+            {
+              "prefixItems": [
+                {
+                  "properties": {
+                    "alpha": {
+                      "const": 0.025
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "alpha": {
+                      "const": 0.01
+                    }
+                  }
+                }
+              ]
+            }
+          ]
         },
         "detection": {
           "$ref": "#/$defs/c13Detection"

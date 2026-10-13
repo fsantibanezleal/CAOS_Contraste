@@ -2846,6 +2846,8 @@ export interface components {
             significance: number;
             /** @constant */
             hac_kernel: "bartlett";
+            /** @description The lag count of every Diebold-Mariano row: 0 for one-step forecasts (engine contract, scoring.diebold_mariano). */
+            hac_lags: number;
             champions: components["schemas"]["c11Champion"][];
             dm: components["schemas"]["c11DmRow"][];
             mcs: components["schemas"]["c11McsSet"][];
@@ -2937,7 +2939,7 @@ export interface components {
         c11Fit: {
             sign_convention: components["schemas"]["c11SignConvention"];
             levels: components["schemas"]["c11Level"][];
-            windows: components["schemas"]["c11WindowPlan"][];
+            windows: components["schemas"]["c11WindowPlan"][] & unknown;
             ladder: components["schemas"]["c11Rung"][];
             traffic_light: components["schemas"]["c11TrafficTable"];
             es_reference: components["schemas"]["c11EsReference"];
@@ -2978,6 +2980,9 @@ export interface components {
             age_weight_lambda: number;
             evt_threshold_fraction: number;
             garch_refit_every_days: number;
+            caviar_n_starts: number;
+            gas_n_starts: number;
+            seed: number;
             others: {
                 name: string;
                 value: number;
@@ -3094,7 +3099,7 @@ export interface components {
             models: components["schemas"]["c11ModelOutput"][];
             comparison: components["schemas"]["c11Comparison"];
             es_backtests: components["schemas"]["c11EsNull"][];
-        };
+        } & unknown;
         /** @description A fitted parameter across the refits of a window: minimum, median and maximum. */
         c11Parameter: {
             name: string;
@@ -3194,12 +3199,12 @@ export interface components {
             url: string;
             licence_note: components["schemas"]["common-text"];
         };
-        /** @description The span on which the hyperparameters were fixed: it ends before 2007 and before the window it serves. */
+        /** @description The span on which the hyperparameters were fixed (decision D1): 1995-01-01 to 2003-12-31 for every window, so it ends before the earliest test window (calm 2004-06) and tunes on none. */
         c11Span: {
-            /** @description A date before 2007-01-01: the hyperparameters are fixed on a pre-2007 span (SDD C11). */
-            start: string;
-            /** @description A date before 2007-01-01: the hyperparameters are fixed on a pre-2007 span (SDD C11). */
-            end: string;
+            /** @constant */
+            start: "1995-01-01";
+            /** @constant */
+            end: "2003-12-31";
         };
         /** @description The Basel traffic light at the 99 percent level over rolling 250-day windows (MAR32.9): the zone of each complete window and the days spent in each zone. With fewer than 250 forecast days it is not evaluated, with its reason. */
         c11TrafficLight: {
@@ -3253,9 +3258,9 @@ export interface components {
             /** @constant */
             confidence: 0.99;
             reference: string;
-            rows: components["schemas"]["c11TrafficRow"][];
+            rows: components["schemas"]["c11TrafficRow"][] & unknown;
         };
-        /** @description One of the six windows of SDD C11; the variant id is the window id. */
+        /** @description One of the six windows of SDD C11 with the dates of decision D2; the variant id is the window id. */
         c11Window: {
             /** @enum {string} */
             window_id: "equity-2007-09" | "equity-2020" | "rates-2022" | "fx-2008" | "mixed-2023" | "calm-2004-06";
@@ -3265,8 +3270,62 @@ export interface components {
             start_date: string;
             end_date: string;
             n_forecast_days: number;
-        };
-        /** @description A window and the span on which its hyperparameters were fixed (before the window starts and before 2007). */
+        } & ({
+            /** @constant */
+            window_id?: "equity-2007-09";
+            /** @enum {string} */
+            asset_class?: "equity";
+            /** @constant */
+            start_date?: "2007-07-02";
+            /** @constant */
+            end_date?: "2009-06-30";
+        } | {
+            /** @constant */
+            window_id?: "equity-2020";
+            /** @enum {string} */
+            asset_class?: "equity";
+            /** @constant */
+            start_date?: "2020-02-03";
+            /** @constant */
+            end_date?: "2020-06-30";
+        } | {
+            /** @constant */
+            window_id?: "rates-2022";
+            /** @enum {string} */
+            asset_class?: "rates";
+            /** @constant */
+            start_date?: "2022-01-03";
+            /** @constant */
+            end_date?: "2022-12-30";
+        } | {
+            /** @constant */
+            window_id?: "fx-2008";
+            /** @enum {string} */
+            asset_class?: "fx";
+            /** @constant */
+            start_date?: "2008-07-01";
+            /** @constant */
+            end_date?: "2009-06-30";
+        } | {
+            /** @constant */
+            window_id?: "mixed-2023";
+            /** @enum {string} */
+            asset_class?: "mixed";
+            /** @constant */
+            start_date?: "2023-03-01";
+            /** @constant */
+            end_date?: "2023-05-31";
+        } | {
+            /** @constant */
+            window_id?: "calm-2004-06";
+            /** @enum {string} */
+            asset_class?: "equity" | "rates" | "fx" | "mixed";
+            /** @constant */
+            start_date?: "2004-01-02";
+            /** @constant */
+            end_date?: "2006-12-29";
+        });
+        /** @description A window with the dates of decision D2 and the span of decision D1 on which its hyperparameters were fixed. */
         c11WindowPlan: {
             /** @enum {string} */
             window_id: "equity-2007-09" | "equity-2020" | "rates-2022" | "fx-2008" | "mixed-2023" | "calm-2004-06";
@@ -3275,7 +3334,61 @@ export interface components {
             start_date: string;
             end_date: string;
             fixed_on: components["schemas"]["c11Span"];
-        };
+        } & ({
+            /** @constant */
+            window_id?: "equity-2007-09";
+            /** @enum {string} */
+            asset_class?: "equity";
+            /** @constant */
+            start_date?: "2007-07-02";
+            /** @constant */
+            end_date?: "2009-06-30";
+        } | {
+            /** @constant */
+            window_id?: "equity-2020";
+            /** @enum {string} */
+            asset_class?: "equity";
+            /** @constant */
+            start_date?: "2020-02-03";
+            /** @constant */
+            end_date?: "2020-06-30";
+        } | {
+            /** @constant */
+            window_id?: "rates-2022";
+            /** @enum {string} */
+            asset_class?: "rates";
+            /** @constant */
+            start_date?: "2022-01-03";
+            /** @constant */
+            end_date?: "2022-12-30";
+        } | {
+            /** @constant */
+            window_id?: "fx-2008";
+            /** @enum {string} */
+            asset_class?: "fx";
+            /** @constant */
+            start_date?: "2008-07-01";
+            /** @constant */
+            end_date?: "2009-06-30";
+        } | {
+            /** @constant */
+            window_id?: "mixed-2023";
+            /** @enum {string} */
+            asset_class?: "mixed";
+            /** @constant */
+            start_date?: "2023-03-01";
+            /** @constant */
+            end_date?: "2023-05-31";
+        } | {
+            /** @constant */
+            window_id?: "calm-2004-06";
+            /** @enum {string} */
+            asset_class?: "equity" | "rates" | "fx" | "mixed";
+            /** @constant */
+            start_date?: "2004-01-02";
+            /** @constant */
+            end_date?: "2006-12-29";
+        });
         /**
          * C13 models
          * @description Catalog row c13-models 1.0.0: the C13 models artifact (generator, the six planted deficiencies, the PLA thresholds, the desk limits).
@@ -3309,7 +3422,21 @@ export interface components {
             }[];
             /** @enum {string} */
             intended_to_fail: "none" | "spearman" | "ks" | "either";
-        };
+        } & ({
+            /** @constant */
+            deficiency_id?: "none";
+            /** @constant */
+            planted?: false;
+            /** @constant */
+            intended_to_fail?: "none";
+        } | {
+            /** @enum {string} */
+            deficiency_id?: "missing-basis" | "stale-volatility" | "wrong-correlation" | "omitted-factor" | "time-misalignment";
+            /** @constant */
+            planted?: true;
+            /** @enum {string} */
+            intended_to_fail?: "spearman" | "ks" | "either";
+        });
         /** @description Desk back-testing at one level (MAR32.18 to 19): the exception count over 250 days against the limit (more than 12 at 99 percent or 30 at 97.5 percent moves the desk to the standardised approach). */
         c13DeskLevel: {
             /** @enum {number} */
@@ -3340,7 +3467,17 @@ export interface components {
             alpha: 0.01 | 0.025;
             limit_exceptions: number;
             reference: string;
-        };
+        } & ({
+            /** @constant */
+            alpha?: 0.01;
+            /** @constant */
+            limit_exceptions?: 12;
+        } | {
+            /** @constant */
+            alpha?: 0.025;
+            /** @constant */
+            limit_exceptions?: 30;
+        });
         /** @description The rate at which the PLA catches the planted deficiency: its power; with no deficiency planted it is the false-alarm rate, the size. */
         c13Detection: {
             /** @enum {string} */
@@ -3394,9 +3531,9 @@ export interface components {
         c13Fit: {
             sign_convention: components["schemas"]["c13SignConvention"];
             generator: components["schemas"]["c13GeneratorSpec"];
-            deficiencies: components["schemas"]["c13DeficiencyPlan"][];
+            deficiencies: components["schemas"]["c13DeficiencyPlan"][] & unknown;
             pla_thresholds: components["schemas"]["c13PlaThresholds"];
-            desk_limits: components["schemas"]["c13DeskLimit"][];
+            desk_limits: components["schemas"]["c13DeskLimit"][] & unknown;
             replication_plan: components["schemas"]["c13ReplicationPlan"];
         };
         /** @description The desk P&L generator with a known risk model; synthetic, labelled so on every view. */
@@ -3469,7 +3606,7 @@ export interface components {
             pnl_summary: components["schemas"]["c13PnlSummary"][];
             pla: components["schemas"]["c13Pla"];
             example: components["schemas"]["c13Example"];
-            desk_backtest: components["schemas"]["c13DeskLevel"][];
+            desk_backtest: components["schemas"]["c13DeskLevel"][] & unknown;
             detection: components["schemas"]["c13Detection"];
         } & unknown;
         c13Pla: {
