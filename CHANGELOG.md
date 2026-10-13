@@ -3,6 +3,13 @@
 All notable changes to this product. Versions are X.XX.XXX (VERSION is the single source); every release is
 tagged.
 
+## [0.09.001], 2026-10-13
+
+The executive view is general, never tied to one bank: it is addressed to chief risk officers and heads of model validation at banks that build internal credit and provisioning models; its answers no longer speak from inside one bank, and the question on cost is removed.
+
+- content/executive.json: the audience and the organisation are a family of roles and a class of banks; the initiative, the vision, the dialogue and the captions are general; four questions remain.
+- The initiative illustration's Spanish label reads 'Modelos de un banco'.
+
 ## [0.09.000], 2026-10-13
 
 The Introduction opens on the executive view rebuilt to the standard every CAOS app now shares (the shell's ExecutiveView, 0.12.0): it is addressed to the chief risk officer of a Chilean commercial bank preparing the first CMF review of the bank's internal credit and provisioning models, with the CMF's own estimate of what is at stake, the outcomes proved by Contraste's committed results, the questions that officer asks, and three illustrations of the initiative, the problem and the proposed solution. The 4 C's section is pending their definition.
