@@ -173,6 +173,8 @@ const EAR_EVAR_LEVEL: Kind = { object: {
   eve_quantile: 'number',
   ear: 'number',
   evar: 'number',
+  ear_se: 'number',
+  evar_se: 'number',
 } };
 
 const EAR_EVAR: Kind = { object: {
@@ -188,10 +190,9 @@ const EAR_EVAR: Kind = { object: {
   base_nii: 'number',
   base_eve: 'number',
   levels: { array: EAR_EVAR_LEVEL },
-  monte_carlo_error: { object: {
-    ear: 'number',
-    evar: 'number',
-  } },
+  // the Monte Carlo error is per level since engine-irrbb-api 1.1.0 (U10-S follow-up after the engine review)
+  mc_error_method: 'string',
+  n_batches: 'integer',
 } };
 
 const OUT_OF_SAMPLE: Kind = 'json';
