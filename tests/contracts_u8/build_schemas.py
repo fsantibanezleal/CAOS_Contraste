@@ -112,8 +112,11 @@ def couple(ob: dict, *groups: list[dict]) -> dict:
 
 def prefix(arr: dict, *alternatives: dict) -> dict:
     """Pins the first items of an array to constants: every alternative narrows properties of the item at its position
-    (prefixItems under allOf, so the generated types still read ``items``)."""
-    arr.setdefault("allOf", []).append({"prefixItems": [{"properties": alt} for alt in alternatives]})
+    (prefixItems under allOf, so the generated types still read ``items``). The subschema states its length too
+    (minItems and maxItems equal to the tuple's): the strict validator of the frontend's contract test refuses a tuple
+    without them (integration of U8, 2026-10-14)."""
+    n = len(alternatives)
+    arr.setdefault("allOf", []).append({"prefixItems": [{"properties": alt} for alt in alternatives], "minItems": n, "maxItems": n})
     return arr
 
 

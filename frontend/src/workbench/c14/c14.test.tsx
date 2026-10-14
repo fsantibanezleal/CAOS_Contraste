@@ -286,7 +286,11 @@ describe('the C14 instrument', () => {
       expect(markup).toContain(cell(l.ear, 'en'));
       expect(markup).toContain(cell(l.evar, 'en'));
     }
-    expect(markup).toContain(cell(e.monte_carlo_error.ear, 'en'));
+    for (const l of e.levels) {
+      expect(markup).toContain(`data-ear-se="${l.ear_se}"`);
+      expect(markup).toContain(`data-evar-se="${l.evar_se}"`);
+    }
+    expect(markup).toContain(`data-mc-method="${e.mc_error_method}"`);
     for (const p of e.parameters) expect(markup).toContain(escapeHtml(p.name));
     expect(markup).toContain(escapeHtml(o.sign_convention.statement.en));
   });

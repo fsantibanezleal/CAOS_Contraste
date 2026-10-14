@@ -264,6 +264,8 @@ export function EarEvarView({ sel }: { sel: C14Sel | null }) {
                 <th className="ct-wide-only">{pick({ en: `EVE quantile (${unit})`, es: `Cuantil del EVE (${unit})` }, lang)}</th>
                 <th>{pick({ en: `EaR (${unit})`, es: `EaR (${unit})` }, lang)}</th>
                 <th>{pick({ en: `EVaR (${unit})`, es: `EVaR (${unit})` }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: `EaR Monte Carlo error (${unit})`, es: `Error de Monte Carlo del EaR (${unit})` }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: `EVaR Monte Carlo error (${unit})`, es: `Error de Monte Carlo del EVaR (${unit})` }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -274,6 +276,8 @@ export function EarEvarView({ sel }: { sel: C14Sel | null }) {
                   <td className="ct-wide-only">{cell(l.eve_quantile, lang)}</td>
                   <td>{cell(l.ear, lang)}</td>
                   <td>{cell(l.evar, lang)}</td>
+                  <td className="ct-wide-only" data-ear-se={l.ear_se}>{cell(l.ear_se, lang)}</td>
+                  <td className="ct-wide-only" data-evar-se={l.evar_se}>{cell(l.evar_se, lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -294,10 +298,8 @@ export function EarEvarView({ sel }: { sel: C14Sel | null }) {
             <dd>{cell(e.base_nii, lang)}</dd>
             <dt>{pick({ en: `Base EVE (${unit})`, es: `EVE base (${unit})` }, lang)}</dt>
             <dd>{cell(e.base_eve, lang)}</dd>
-            <dt>{pick({ en: `Monte Carlo error of EaR (${unit})`, es: `Error de Monte Carlo del EaR (${unit})` }, lang)}</dt>
-            <dd>{cell(e.monte_carlo_error.ear, lang)}</dd>
-            <dt>{pick({ en: `Monte Carlo error of EVaR (${unit})`, es: `Error de Monte Carlo del EVaR (${unit})` }, lang)}</dt>
-            <dd>{cell(e.monte_carlo_error.evar, lang)}</dd>
+            <dt>{pick({ en: 'Monte Carlo error', es: 'Error de Monte Carlo' }, lang)}</dt>
+            <dd data-mc-method={e.mc_error_method}>{pick({ en: `batch means over ${e.n_batches} batches of the paths, per level in the table`, es: `medias por lotes sobre ${e.n_batches} lotes de las trayectorias, por nivel en la tabla` }, lang)}</dd>
           </dl>
         </ChartOverTable>
       </PlotCard>
