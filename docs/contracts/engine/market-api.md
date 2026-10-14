@@ -108,12 +108,12 @@ def from_loss_numbers(values: np.ndarray) -> np.ndarray: ...
 def var_es_from_sample(returns: np.ndarray, alpha: float) -> tuple[float, float]: ...
 ```
 
-- Units: `returns` (N,) decimals; `alpha` in (0, 0.5); the result `(var, es)` in the return convention.
+- Units: `returns` (N,) decimals; `alpha` in (0, 0.5] (widened from the open interval so that the median-level golden of `volatility_updated_hs_var_es` runs; the other functions of this contract keep the open (0, 0.5)); the result `(var, es)` in the return convention.
 - Invariants: with `k = ceil(alpha * N)` and the returns `r(1) <= ... <= r(N)` sorted ascending, `var = r(k)` (D-3: the left-continuous
   inverse `F^-1(alpha) = inf{y : F(y) >= alpha}` of A.0) and `es = (sum_{i<k} r(i) + (alpha N - (k - 1)) r(k)) / (alpha N)`, the
   tail integral `(1/alpha) integral_0^alpha F^-1(u) du` of the empirical quantile function of A.0: the k-th return carries the fractional
   weight `alpha N - (k - 1)` when `alpha N` is not an integer (review F4: the mean of the k smallest overstates the tail count, and `alpha N` is
-  2.5 and 6.25 for the 250-day rung at 0.01 and 0.025); `es <= var`; `ValueError` for `alpha` outside (0, 0.5), `N = 0` or a NaN; the
+  2.5 and 6.25 for the 250-day rung at 0.01 and 0.025); `es <= var`; `ValueError` for `alpha` outside (0, 0.5], `N = 0` or a NaN; the
   result is invariant to the order of `returns`.
 - Golden: `returns = [-0.001 * i for i in 1..100]`: `alpha = 0.05` gives `var = -0.096` and `es = -0.098` (`k = 5`, an integer
   `alpha N`); `alpha = 0.025` gives `var = -0.098` and `es = -0.0992` (`k = 3`, `alpha N = 2.5`: `(-0.100 - 0.099 + 0.5 * -0.098) / 2.5`).
@@ -164,11 +164,15 @@ def age_weighted_var_es(returns: np.ndarray, alpha: float, lam: float, window: i
 ```
 
 - Units: `returns` (N,) decimals with `N >= window`; `lam` in (0, 1) (0.98 and 0.99 for rung 2); the result in the return convention.
-- Invariants: the weight of the return observed `i` days ago is `age_weights(lam, window)[i-1]`; the returns are sorted ascending, the
-  weights cumulated to `alpha` and the quantile interpolated linearly (A.2 row 2); as `lam` tends to 1 the result tends to
-  `historical_var_es`; `es <= var`. UNVERIFIED: which points the linear interpolation joins (the midpoints of the weight steps or the
-  cumulated weights themselves) is not stated in the dossier, and the tail-mean rule for the ES is not given there at all; U8-E reads
-  Boudoukh, Richardson and Whitelaw (1998, author PDF in A.2 row 2) and its worked example before transcription. No golden value until then.
+- Invariants (Boudoukh, Richardson and Whitelaw 1998, pages 6 and 7; review of the engine, finding B1): the weight of the return observed `i` days ago is `age_weights(lam, window)[i-1]`; the returns are sorted
+  ascending with weights `w_j` and cumulated weights `C_j`. Half of each weight lies on each side of its return, up to the point halfway to the neighbour, so the quantile function `Q` has two knots per return: `(C_j - w_j/2, r_j)`
+  and, at the cumulated weight, `(C_j, (r_j + r_(j+1))/2)` (a knot halfway between neighbouring returns; the last return has only the first), linear between knots, constant at `r_1` below the first and at `r_N` above the last.
+  `var = Q(alpha)`. Interpolating only between the first knots of each return is wrong: it gives 2.647 percent where the paper gives 2.63. Decision D-9 (the paper gives no ES rule): `es` is the tail integral
+  `(1/alpha) integral_0^alpha Q(u) du` of that same `Q` (the definition of A.0 applied to the distribution the VaR is read from), exact by trapezoids; `es <= var` because `Q` is nondecreasing. As `lam` tends to 1 the
+  result is the equal-weight interpolation of the paper (its historical simulation, 2.35 percent, halfway between 2.40 and 2.30), within one return spacing of `historical_var_es`, not equal to it.
+- Golden: the table of page 6, `lam = 0.98`, `window = 100`, `alpha = 0.05`, with the returns -3.3, -2.9, -2.7, -2.5, -2.4 and -2.3 percent observed 3, 2, 65, 45, 5 and 30 days ago and every other return of the window above -2.3 percent:
+  the cumulated weights give the knots `(0.0478, -2.70 percent)` and `(0.0511, -2.60 percent)` (the paper: `2.70 - 0.10 (0.05 - 0.0478)/(0.0511 - 0.0478)`), so `var = -0.026338` (the paper: 2.63 percent) and `es = -0.030471`;
+  the same six returns observed 25 days later (28, 27, 90, 70, 30 and 55 days ago) give `var = -0.023419` (the paper: 2.34 percent) and `es = -0.028055`.
 
 ### `riskvalidation.market.historical.filtered_hs_var_es`
 
@@ -190,7 +194,7 @@ def volatility_updated_hs_var_es(returns: np.ndarray, sigma_hist: np.ndarray, si
 ```
 
 - Units: `returns` (N,) decimals; `sigma_hist` (N,) the conditional volatility estimated on each of those days; `sigma_next` the volatility
-  for the forecast day; the result in the return convention.
+  for the forecast day; `alpha` in (0, 0.5] (as `var_es_from_sample`, which it calls); the result in the return convention.
 - Invariants: the scenarios are `r*_i = r_i * sigma_next / sigma_hist_i` (Hull and White 1998, A.2 row 3) and the result is
   `var_es_from_sample(scenarios, alpha)`; with `sigma_hist` constant and equal to `sigma_next` the result equals `historical_var_es` on the whole input.
 - Golden: `returns = [-0.02, 0.01]`, `sigma_hist = [0.01, 0.02]`, `sigma_next = 0.015`, `alpha = 0.5` gives scenarios `[-0.03, 0.0075]` and `(-0.03, -0.03)`.
@@ -363,7 +367,7 @@ def conditional_evt_forecast(returns: np.ndarray, alpha: float, threshold_fracti
 ```
 
 - Units: `returns` (N,) decimals before the forecast day; the result in the return convention.
-- Invariants: an AR-GARCH filter is fitted by QML, the standardised residuals are tail-fitted by `fit_gpd`, and `VaR_{t+1} = mu_{t+1} + sigma_{t+1} z_q` in the loss convention (A.2 row 10),
+- Invariants: a constant-mean GARCH(1,1) filter (no AR term: the mean is a constant, the daily returns of the cases carry negligible autocorrelation, and the GPD sees the standardised residuals; McNeil and Frey's own use of an AR(1) term is UNVERIFIED) is fitted by normal QML, the standardised residuals are tail-fitted by `fit_gpd`, and `VaR_{t+1} = mu_{t+1} + sigma_{t+1} z_q` in the loss convention (A.2 row 10),
   returned in the return convention; deterministic; `es = None` exactly when `xi >= 1`; the forecast never reads a return dated on or after the forecast day.
 
 ### `riskvalidation.market.evt.threshold_stability`
@@ -423,8 +427,13 @@ def caviar_es_forecast(fit: CaviarFit, y: np.ndarray) -> float: ...
 ```
 
 - Units: as `caviar_var_forecast`; the result the next-day ES in the return convention.
-- Invariants: `es <= caviar_var_forecast(fit, y)`. UNVERIFIED: the ALD-based ES extension of Taylor (2019, JBES 37(1):121-133) is cited in dossier 05 A.2 row 11 but its equations are not transcribed there;
-  U8-E reads the paper before transcription. No golden value until then.
+- Invariants: `es <= caviar_var_forecast(fit, y)`. The ES-CAViaR of Taylor (2019, JBES 37(1):121-133), in the autoregressive form restated in arXiv 2603.02357 section 3.2: `ES_t = VaR_t - x_t`, with
+  `x_t = g0 + g1 (VaR_{t-1} - r_{t-1}) + g2 x_{t-1}` if `r_{t-1} <= VaR_{t-1}` and `x_t = x_{t-1}` otherwise, and `x_1` the sample gap `VaR - ES` of the estimation series. The parameters are estimated by maximising the asymmetric Laplace
+  pseudo-likelihood `f(r) = ((alpha - 1) / ES_t) exp((r - VaR_t)(alpha - 1{r <= VaR_t}) / (alpha ES_t))`; the restatement states no sign constraints, and the contract keeps `g0, g1 >= 0` and `0 <= g2 < 1` so that `x_t >= 0` and `es <= var`.
+  Decision D-10: Taylor's own estimator is joint (VaR and ES parameters together); the engine at the reviewed head (task/u8-market 76f557e) estimates in two steps, the VaR path fixed from the tick-loss fit of `fit_caviar` and only
+  `(g0, g1, g2)` maximised. A document produced by the two-step estimator says so (`window_fits` of the rung names the estimator); a joint estimator, started from the tick-loss fit, replaces D-10 by an amendment of this clause.
+  The equations are confirmed against the restatement only (the primary text was not retrieved: UNVERIFIED).
+- Golden: none (a fit has no closed form); the test is the invariant above, with the recursion re-run by explicit loops.
 
 ### `riskvalidation.market.caviar.dynamic_quantile_statistic`
 
@@ -433,8 +442,9 @@ def dynamic_quantile_statistic(hits: np.ndarray, var: np.ndarray, alpha: float, 
 ```
 
 - Units: `hits` (T,) the exceedance indicators `1{y_t < VaR_t}`; `var` (T,) the VaR forecasts; the result `(statistic, p_value)` of the dynamic quantile (DQ) test of Engle and Manganelli (2004), asymptotically chi-square.
-- Invariants: `p_value` in [0, 1]; the statistic is the Wald-type quadratic form of the regression of `hits - alpha` on a constant, `lags` lagged hits and the contemporaneous VaR; UNVERIFIED: the dossier names the test
-  (A.2 row 11) but gives neither the regressor set nor the degrees of freedom; U8-E reads the paper and the regressor set above is the one to confirm.
+- Invariants: `p_value` in [0, 1]; the statistic is the Wald-type quadratic form of the regression of `hits - alpha` on a constant, `lags` lagged hits and the contemporaneous VaR, `Hit' X (X'X)^+ X' Hit / (alpha (1 - alpha))`, with chi-square degrees of freedom equal to the
+  rank of `X` (`lags + 2` in general; confirmed on secondary sources only, the primary text of Engle and Manganelli is UNVERIFIED). The asymptotic p-value is oversized at the production configurations (about 0.099 at alpha 0.01 and
+  T = 250, 0.082 at alpha 0.025 and T = 250, 0.143 at alpha 0.01 and T = 750, on correct i.i.d. hits at the 5 percent level), so the row of the test (`validation.market.dynamic_quantile_test`) does not use it for its light.
 
 ## Module `riskvalidation/market/gas_fz.py`
 
@@ -780,14 +790,15 @@ def mcneil_frey_residual_test(loss: np.ndarray, var: np.ndarray, es: np.ndarray,
 ### `riskvalidation.validation.market.dynamic_quantile_test`
 
 ```python
-def dynamic_quantile_test(hits: np.ndarray, var: np.ndarray, alpha: float, lags: int = 4, model_id: str | None = None, alpha_amber: float = 0.10, alpha_red: float = 0.05) -> TestResult: ...
+def dynamic_quantile_test(hits: np.ndarray, var: np.ndarray, alpha: float, lags: int = 4, model_id: str | None = None, n_mc: int = 10000, seed: int = 0, alpha_amber: float = 0.10, alpha_red: float = 0.05) -> TestResult: ...
 ```
 
 - Test: test_id = "market.dynamic_quantile_test"; `segment = "alpha=<alpha>"`.
-- Units: as `caviar.dynamic_quantile_statistic`; `statistic` the DQ statistic; `p_value` chi-square; `n = T`.
+- Units: as `caviar.dynamic_quantile_statistic`; `statistic` the DQ statistic; `p_value` a Monte Carlo p-value (Dufour form, as `duration_test`): `n_mc` simulated Bernoulli(`alpha`) hit series with the same `var` column, the share of simulated statistics at or above the observed one with the +1 correction; `extras["p_value_asymptotic"]` the chi-square p-value; `n = T`.
 - Light: by `p_value`; `not_evaluated` when `T <= lags + 2`.
-- Invariants: wraps `caviar.dynamic_quantile_statistic` and adds nothing; UNVERIFIED as that function (dossier 05 A.2 row 11 names the test without its form).
-- Golden: none until U8-E transcribes the statistic (UNVERIFIED); the invariant above is the test until then.
+- Invariants: the statistic is that of `caviar.dynamic_quantile_statistic`; the light uses the Monte Carlo `p_value`. Size requirement: on correct forecasts (i.i.d. Bernoulli(`alpha`) hits and a random VaR column) the rejection rate of the
+  light's red threshold at 5 percent must be near nominal, between 0.03 and 0.07 with at least 2000 replications, at (0.01, T = 250), (0.025, T = 250) and (0.01, T = 750); the engine's size tests cover those three configurations. Same inputs and seed give the same p-value.
+- Golden: none (a Monte Carlo p-value); the size requirement above is the test.
 
 ### `riskvalidation.validation.market.pla_test`
 
@@ -817,7 +828,7 @@ def desk_backtest(loss: np.ndarray, var: np.ndarray, alpha: float, model_id: str
 
 - UNVERIFIED details to read at the primary source before transcription: the age-weighted HS interpolation and ES rule (Boudoukh et al. 1998), the `(y)^-` convention and the Taylor (2019) ALD ES extension of CAViaR, the DQ regressor set, the GAS-FZ recursions (Patton, Ziegel and Chen 2019),
   the Weibull form of the duration test (Christoffersen and Pelletier 2004), the McNeil-Frey threshold fraction, the Zangari origin of Cornish-Fisher VaR, the primary Acerbi and Szekely text, and whether the desk test counts a missing value as an exception.
-- Contract decisions D-1 to D-8 above (D-1 the exact two-sided p-value, D-2 the Bartlett HAC kernel, D-3 the empirical VaR and ES of a sample, D-4 FHS without resampling, D-5 the one-sided Du-Escanciano p-value, D-6 the Cornish-Fisher validity domain, D-7 the independence test at no exceedance, D-8 the minimum exceedances of the duration and McNeil-Frey tests) are the integrator's to amend before U8-E starts.
+- Contract decisions D-1 to D-10 above (D-1 the exact two-sided p-value, D-2 the Bartlett HAC kernel, D-3 the empirical VaR and ES of a sample, D-4 FHS without resampling, D-5 the one-sided Du-Escanciano p-value, D-6 the Cornish-Fisher validity domain, D-7 the independence test at no exceedance, D-8 the minimum exceedances of the duration and McNeil-Frey tests, D-9 the ES of the age-weighted HS as the tail integral of the corrected quantile function, D-10 the two-step estimation of the Taylor ES-CAViaR as implemented at the reviewed engine head) are the integrator's to amend before U8-E starts.
 - Acceptance check of U8-P1 and U8-P2 (review F14): CI runs no pytest (ADR-0074), so the producer checks of `tests/contracts_u8/producer_checks.py` (leakage, span, window dates, counts, recomputed statistics, the variant id) run only in a local
   pytest run; `pytest tests/contracts_u8` green on the committed documents of `data/derived/C11` and `C13` is an acceptance check of those two units.
 - The calm 2004-06 window is the control window (decision D4): its asset class is `mixed`, with the same portfolio composition as the mixed 2023 window (equity, rates and FX), and the schemas bind it as they bind the other five.
