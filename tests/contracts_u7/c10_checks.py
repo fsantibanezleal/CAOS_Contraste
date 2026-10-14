@@ -16,7 +16,6 @@ import json
 import math
 from pathlib import Path
 from statistics import NormalDist
-from typing import Any
 
 ND = NormalDist()
 RETAIL = ("residential_mortgage", "qrre", "other_retail", "retail_consumer")
@@ -54,7 +53,8 @@ def lhp_es(pd: float, rho: float, q: float, steps: int = 4000) -> float:
     """E[p(Z) | Z <= G(1 - q)]: the expected shortfall of the LHP loss fraction (Simpson quadrature)."""
     z0, lo = ND.inv_cdf(1 - q), ND.inv_cdf(1 - q) - 12.0
     h = (z0 - lo) / steps
-    f = lambda z: conditional_pd(pd, rho, z) * ND.pdf(z)
+    def f(z):
+        return conditional_pd(pd, rho, z) * ND.pdf(z)
     s = f(lo) + f(z0) + sum((4 if k % 2 else 2) * f(lo + k * h) for k in range(1, steps))
     return s * h / 3 / (1 - q)
 

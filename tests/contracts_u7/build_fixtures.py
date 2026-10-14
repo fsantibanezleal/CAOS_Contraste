@@ -51,7 +51,8 @@ def implied_factor(x: float, pd: float, rho: float) -> float:
 def lhp_es(pd: float, rho: float, q: float, steps: int = 4000) -> float:
     z0, lo = ND.inv_cdf(1 - q), ND.inv_cdf(1 - q) - 12.0
     h = (z0 - lo) / steps
-    f = lambda z: ND.cdf((ND.inv_cdf(pd) - math.sqrt(rho) * z) / math.sqrt(1 - rho)) * ND.pdf(z)
+    def f(z):
+        return ND.cdf((ND.inv_cdf(pd) - math.sqrt(rho) * z) / math.sqrt(1 - rho)) * ND.pdf(z)
     s = f(lo) + f(z0) + sum((4 if k % 2 else 2) * f(lo + k * h) for k in range(1, steps))
     return s * h / 3 / (1 - q)
 
