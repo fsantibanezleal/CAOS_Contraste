@@ -23,10 +23,11 @@ from ...core.manifest import build_artifact, build_case_manifest, build_models_a
 from ...core.schemas import validate_document
 from ...io import contract as c1
 from ...io import sources as registry
+from ...io import treasury
 from ...io.formats import write_json
 from ...stages.export import write_artifact
 from . import assumptions as asm
-from . import fdic, fetch, models, treasury
+from . import fdic, fetch, models
 from . import variant as vt
 from .slotting import build_items, t
 
