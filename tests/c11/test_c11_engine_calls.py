@@ -1,4 +1,4 @@
-"""CT-1106, CT-1107: every number is the pinned engine; the product defines none of its functions; fits are deterministic."""
+"""CT-606, CT-607: every number is the pinned engine; the product defines none of its functions; fits are deterministic."""
 from __future__ import annotations
 
 import ast

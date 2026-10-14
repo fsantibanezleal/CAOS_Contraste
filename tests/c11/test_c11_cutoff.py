@@ -1,4 +1,4 @@
-"""CT-1104, CT-1105: no forecast uses its own day or later; the hyperparameters see nothing after 2003-12-31."""
+"""CT-604, CT-605: no forecast uses its own day or later; the hyperparameters see nothing after 2003-12-31."""
 from __future__ import annotations
 
 import dataclasses
