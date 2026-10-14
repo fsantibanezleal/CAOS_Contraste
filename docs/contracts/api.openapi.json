@@ -186,6 +186,18 @@
                       "$ref": "#/components/schemas/c10-variant-loan-type"
                     },
                     {
+                      "$ref": "#/components/schemas/c11-models"
+                    },
+                    {
+                      "$ref": "#/components/schemas/c11-variant-window"
+                    },
+                    {
+                      "$ref": "#/components/schemas/c13-models"
+                    },
+                    {
+                      "$ref": "#/components/schemas/c13-variant-deficiency"
+                    },
+                    {
                       "$ref": "#/components/schemas/c22-models"
                     },
                     {
@@ -15161,6 +15173,3792 @@
           }
         },
         "description": "The fit window (1985-2006) and the out-of-sample evaluation window (2007-2012); the fit window ends before the evaluation window begins."
+      },
+      "c11-models": {
+        "title": "C11 models",
+        "description": "Catalog row c11-models 1.0.0: the C11 models artifact (windows and spans, the ladder with its fitted parameters, the Basel bands, the ES reference points).",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/common-models-envelope"
+          },
+          {
+            "properties": {
+              "case_id": {
+                "const": "C11"
+              },
+              "fit": {
+                "$ref": "#/components/schemas/c11Fit"
+              }
+            },
+            "required": [
+              "case_id",
+              "fit"
+            ]
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+      "c11-variant-window": {
+        "title": "C11 window variant",
+        "description": "Catalog row c11-outputs 1.0.0: one window of the market VaR and ES back-testing case (outputs.kind window), strictly rolling, on public daily series.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/common-variant-envelope"
+          },
+          {
+            "properties": {
+              "case_id": {
+                "const": "C11"
+              },
+              "outputs": {
+                "$ref": "#/components/schemas/c11Outputs",
+                "properties": {
+                  "kind": {
+                    "const": "window"
+                  }
+                }
+              }
+            },
+            "required": [
+              "case_id",
+              "outputs"
+            ]
+          },
+          {
+            "properties": {
+              "tests": {
+                "items": {
+                  "if": {
+                    "properties": {
+                      "light": {
+                        "const": "not_evaluated"
+                      }
+                    },
+                    "required": [
+                      "light"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "statistic": {
+                        "type": "null"
+                      },
+                      "p_value": {
+                        "type": "null"
+                      },
+                      "metric": {
+                        "type": "null"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+      "c11Champion": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "alpha",
+          "model_id",
+          "reason"
+        ],
+        "properties": {
+          "alpha": {
+            "type": "number",
+            "enum": [
+              0.01,
+              0.025
+            ]
+          },
+          "model_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "The champion at a level: the lowest average FZ0 among the eligible models with a score; null, with its reason, when there is none.",
+        "allOf": [
+          {
+            "oneOf": [
+              {
+                "properties": {
+                  "model_id": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "null"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "model_id": {
+                    "type": "null"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "c11Comparison": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "significance",
+          "hac_kernel",
+          "hac_lags",
+          "champions",
+          "dm",
+          "mcs"
+        ],
+        "properties": {
+          "significance": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "hac_kernel": {
+            "const": "bartlett"
+          },
+          "hac_lags": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "The lag count of every Diebold-Mariano row: 0 for one-step forecasts (engine contract, scoring.diebold_mariano)."
+          },
+          "champions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11Champion"
+            },
+            "minItems": 1
+          },
+          "dm": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11DmRow"
+            }
+          },
+          "mcs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11McsSet"
+            },
+            "minItems": 1
+          }
+        },
+        "description": "Eligibility first, then the comparative back-test of Nolde and Ziegel: DM against the champion and the MCS."
+      },
+      "c11Component": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "series_id",
+          "label",
+          "source_class",
+          "weight",
+          "transform"
+        ],
+        "properties": {
+          "series_id": {
+            "type": "string"
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "source_class": {
+            "type": "string",
+            "enum": [
+              "derived-only",
+              "mirror-allowed"
+            ]
+          },
+          "weight": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          },
+          "transform": {
+            "type": "string",
+            "description": "How the series becomes a return of the portfolio (a log return, a duration times a yield change)."
+          }
+        },
+        "description": "A component of the window's stated portfolio and the licence class of its source (dossier 08 C.5, C.2, C.8)."
+      },
+      "c11DataStatus": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "first_observation",
+          "last_observation",
+          "n_observed_days",
+          "missing_days"
+        ],
+        "properties": {
+          "first_observation": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "last_observation": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "n_observed_days": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "missing_days": {
+            "$ref": "#/components/schemas/c11MissingDays"
+          }
+        }
+      },
+      "c11DmRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "model_id",
+          "versus",
+          "alpha",
+          "loss",
+          "mean_diff",
+          "dm_statistic",
+          "p_value",
+          "hac_lags",
+          "n_common",
+          "direction",
+          "not_evaluated_reason"
+        ],
+        "properties": {
+          "model_id": {
+            "type": "string"
+          },
+          "versus": {
+            "type": "string"
+          },
+          "alpha": {
+            "type": "number",
+            "enum": [
+              0.01,
+              0.025
+            ]
+          },
+          "loss": {
+            "type": "string",
+            "enum": [
+              "fz0",
+              "tick"
+            ]
+          },
+          "mean_diff": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Mean loss differential, model minus champion, on the common sample: negative is better."
+          },
+          "dm_statistic": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "p_value": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "A probability in [0, 1]."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "hac_lags": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "n_common": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Days where every compared forecast is defined."
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "better",
+              "worse",
+              "indistinguishable",
+              "not-evaluated"
+            ]
+          },
+          "not_evaluated_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "A Diebold-Mariano comparison of one model against the champion (dossier 05 B.6) under FZ0 or the tick loss.",
+        "allOf": [
+          {
+            "oneOf": [
+              {
+                "properties": {
+                  "mean_diff": {
+                    "type": "number"
+                  },
+                  "dm_statistic": {
+                    "type": "number"
+                  },
+                  "p_value": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "A probability in [0, 1]."
+                  },
+                  "n_common": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "direction": {
+                    "type": "string",
+                    "enum": [
+                      "better",
+                      "worse",
+                      "indistinguishable"
+                    ]
+                  },
+                  "not_evaluated_reason": {
+                    "type": "null"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "mean_diff": {
+                    "type": "null"
+                  },
+                  "dm_statistic": {
+                    "type": "null"
+                  },
+                  "p_value": {
+                    "type": "null"
+                  },
+                  "n_common": {
+                    "type": "null"
+                  },
+                  "direction": {
+                    "const": "not-evaluated"
+                  },
+                  "not_evaluated_reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "c11EsNull": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "model_id",
+          "alpha",
+          "statistic",
+          "realised",
+          "critical_5pct",
+          "critical_0_01pct",
+          "n_draws",
+          "p_value",
+          "histogram"
+        ],
+        "properties": {
+          "model_id": {
+            "type": "string"
+          },
+          "alpha": {
+            "type": "number",
+            "enum": [
+              0.01,
+              0.025
+            ]
+          },
+          "statistic": {
+            "const": "Z2"
+          },
+          "realised": {
+            "type": "number"
+          },
+          "critical_5pct": {
+            "type": "number",
+            "description": "Simulated per model: Z2 at the 5 percent quantile of the null (yellow)."
+          },
+          "critical_0_01pct": {
+            "type": "number",
+            "description": "Simulated per model: Z2 at the 0.01 percent quantile of the null (red)."
+          },
+          "n_draws": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "p_value": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A probability in [0, 1]."
+          },
+          "histogram": {
+            "$ref": "#/components/schemas/c11Histogram"
+          }
+        },
+        "description": "The simulated null distribution of the Acerbi-Szekely Z2 for one model, with the realised statistic (dossier 05 B.5)."
+      },
+      "c11EsReference": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "statistic",
+          "n_days",
+          "alpha",
+          "yellow",
+          "red",
+          "status"
+        ],
+        "properties": {
+          "statistic": {
+            "const": "Z2"
+          },
+          "n_days": {
+            "const": 250
+          },
+          "alpha": {
+            "const": 0.025
+          },
+          "yellow": {
+            "const": -0.7
+          },
+          "red": {
+            "const": -1.8
+          },
+          "status": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "The published reference points of Acerbi and Szekely for Z2 (dossier 05 B.5): a reference, never a regulatory threshold; each model's own simulated critical values are in the outputs."
+      },
+      "c11Fit": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sign_convention",
+          "levels",
+          "windows",
+          "ladder",
+          "traffic_light",
+          "es_reference",
+          "scoring",
+          "eligibility_gates",
+          "data_sources"
+        ],
+        "properties": {
+          "sign_convention": {
+            "$ref": "#/components/schemas/c11SignConvention"
+          },
+          "levels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11Level"
+            },
+            "minItems": 1
+          },
+          "windows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11WindowPlan"
+            },
+            "minItems": 6,
+            "maxItems": 6,
+            "allOf": [
+              {
+                "prefixItems": [
+                  {
+                    "properties": {
+                      "window_id": {
+                        "const": "equity-2007-09"
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "window_id": {
+                        "const": "equity-2020"
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "window_id": {
+                        "const": "rates-2022"
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "window_id": {
+                        "const": "fx-2008"
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "window_id": {
+                        "const": "mixed-2023"
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "window_id": {
+                        "const": "calm-2004-06"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "ladder": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11Rung"
+            },
+            "minItems": 1
+          },
+          "traffic_light": {
+            "$ref": "#/components/schemas/c11TrafficTable"
+          },
+          "es_reference": {
+            "$ref": "#/components/schemas/c11EsReference"
+          },
+          "scoring": {
+            "$ref": "#/components/schemas/c11Scoring"
+          },
+          "eligibility_gates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11Gate"
+            },
+            "minItems": 1
+          },
+          "data_sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11Source"
+            },
+            "minItems": 1
+          }
+        },
+        "description": "The C11 models document: the six windows, the ladder, the bands and the reference points the views draw."
+      },
+      "c11Gate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "test_id",
+          "rule"
+        ],
+        "properties": {
+          "test_id": {
+            "type": "string",
+            "pattern": "^market\\."
+          },
+          "rule": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "An eligibility gate: the model is ineligible when the row of this test is red at any level."
+      },
+      "c11Grid": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "scheme",
+          "estimation_window_days",
+          "dates",
+          "estimation_start",
+          "estimation_end",
+          "realised_loss"
+        ],
+        "properties": {
+          "scheme": {
+            "const": "rolling"
+          },
+          "estimation_window_days": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The maximum look-back, in observed days; each rung's own window is in the models document."
+          },
+          "dates": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "minItems": 1,
+            "description": "The forecast days, strictly increasing, missing days skipped."
+          },
+          "estimation_start": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "minItems": 1,
+            "description": "First day of the estimation window of each forecast day."
+          },
+          "estimation_end": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "minItems": 1,
+            "description": "Last day of the estimation window of each forecast day: strictly before the forecast day (the forecast for day t uses data to t-1; a producer check, since a date comparison is not a JSON Schema rule)."
+          },
+          "realised_loss": {
+            "$ref": "#/components/schemas/c11Realised"
+          }
+        },
+        "description": "The forecast grid shared by every model: dates once, the estimation window of each day, the realised losses."
+      },
+      "c11Histogram": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "edges",
+          "counts"
+        ],
+        "properties": {
+          "edges": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2
+          },
+          "counts": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "minItems": 1
+          }
+        }
+      },
+      "c11Hyperparameters": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fixed_on",
+          "tuned_on_test_window",
+          "estimation_window_days",
+          "ewma_lambda",
+          "age_weight_lambda",
+          "evt_threshold_fraction",
+          "garch_refit_every_days",
+          "caviar_n_starts",
+          "gas_n_starts",
+          "seed",
+          "others"
+        ],
+        "properties": {
+          "fixed_on": {
+            "$ref": "#/components/schemas/c11Span"
+          },
+          "tuned_on_test_window": {
+            "const": false
+          },
+          "estimation_window_days": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "ewma_lambda": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "age_weight_lambda": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "evt_threshold_fraction": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "garch_refit_every_days": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "caviar_n_starts": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "gas_n_starts": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "seed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "others": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "value",
+                "unit"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                },
+                "unit": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "description": "The hyperparameters (window length, lambda, EVT threshold fraction) fixed on the span, never tuned on a test window."
+      },
+      "c11Level": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "alpha"
+        ],
+        "properties": {
+          "alpha": {
+            "type": "number",
+            "enum": [
+              0.01,
+              0.025
+            ]
+          }
+        },
+        "description": "A tail level of the return convention: 0.01 (99 percent VaR, the Basel level) or 0.025 (97.5 percent, the FRTB ES level)."
+      },
+      "c11LevelResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "alpha",
+          "var",
+          "es",
+          "es_status",
+          "es_undefined_days",
+          "exceedance_days",
+          "n_scored",
+          "n_exceedances",
+          "expected_exceedances",
+          "n_fz0",
+          "fz0_mean",
+          "fz0_reason",
+          "tick_loss_mean",
+          "traffic_light",
+          "test_ids"
+        ],
+        "properties": {
+          "alpha": {
+            "type": "number",
+            "enum": [
+              0.01,
+              0.025
+            ]
+          },
+          "var": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "A positive loss number (document convention) as a decimal of the portfolio value."
+            },
+            "minItems": 1,
+            "description": "One-step VaR forecast per grid day, a positive loss."
+          },
+          "es": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "description": "A positive loss number (document convention) as a decimal of the portfolio value."
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "minItems": 1,
+            "description": "One-step ES forecast per grid day, a positive loss not below the VaR; null on a day the ES is undefined (conditional EVT with xi at or above 1) or for a model that forecasts no ES."
+          },
+          "es_status": {
+            "type": "string",
+            "enum": [
+              "forecast",
+              "undefined-on-days",
+              "not-forecast"
+            ]
+          },
+          "es_undefined_days": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "description": "Indices into the grid of the days the ES is undefined."
+          },
+          "exceedance_days": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "description": "Indices into the grid of the days the loss exceeded the VaR."
+          },
+          "n_scored": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "n_exceedances": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "expected_exceedances": {
+            "type": "number",
+            "minimum": 0,
+            "description": "alpha times n_scored."
+          },
+          "n_fz0": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Days with both VaR and ES defined: the sample of the FZ0 average."
+          },
+          "fz0_mean": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Average FZ0 loss (dossier 05 A.1) over the n_fz0 days; null when no day has an ES."
+          },
+          "fz0_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tick_loss_mean": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Average tick loss of the VaR over the n_scored days."
+          },
+          "traffic_light": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c11TrafficLight"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "At alpha 0.01 only; null at 0.025."
+          },
+          "test_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^market\\."
+            },
+            "minItems": 1,
+            "description": "The test rows of this model and level (segment alpha=<alpha>)."
+          }
+        },
+        "description": "One model at one tail level: its forecasts, exceedances, scores and traffic light.",
+        "allOf": [
+          {
+            "oneOf": [
+              {
+                "properties": {
+                  "es_status": {
+                    "const": "forecast"
+                  },
+                  "es_undefined_days": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "maxItems": 0
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "es_status": {
+                    "const": "undefined-on-days"
+                  },
+                  "es_undefined_days": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "minItems": 1
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "es_status": {
+                    "const": "not-forecast"
+                  },
+                  "es_undefined_days": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "maxItems": 0
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "oneOf": [
+              {
+                "properties": {
+                  "fz0_mean": {
+                    "type": "number"
+                  },
+                  "fz0_reason": {
+                    "type": "null"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "fz0_mean": {
+                    "type": "null"
+                  },
+                  "fz0_reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "oneOf": [
+              {
+                "properties": {
+                  "alpha": {
+                    "const": 0.01
+                  },
+                  "traffic_light": {
+                    "$ref": "#/components/schemas/c11TrafficLight"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "alpha": {
+                    "const": 0.025
+                  },
+                  "traffic_light": {
+                    "type": "null"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "c11McsMember": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "model_id",
+          "in_set",
+          "p_value"
+        ],
+        "properties": {
+          "model_id": {
+            "type": "string"
+          },
+          "in_set": {
+            "type": "boolean"
+          },
+          "p_value": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A probability in [0, 1]."
+          }
+        }
+      },
+      "c11McsSet": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "alpha",
+          "loss",
+          "statistic",
+          "confidence",
+          "n_bootstrap",
+          "block_length",
+          "members",
+          "n_in_set"
+        ],
+        "properties": {
+          "alpha": {
+            "type": "number",
+            "enum": [
+              0.01,
+              0.025
+            ]
+          },
+          "loss": {
+            "const": "fz0"
+          },
+          "statistic": {
+            "type": "string",
+            "enum": [
+              "Tmax",
+              "TR"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "n_bootstrap": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "block_length": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11McsMember"
+            },
+            "minItems": 1
+          },
+          "n_in_set": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "description": "The model confidence set on FZ0 at one level (Hansen, Lunde and Nason 2011; dossier 05 B.6)."
+      },
+      "c11MissingDays": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "count",
+          "dates",
+          "treatment"
+        ],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "dates": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          },
+          "treatment": {
+            "const": "skipped-not-filled"
+          }
+        },
+        "description": "A day missing from a public series (a holiday, a gap) is skipped in the rolling window and counted here, never filled."
+      },
+      "c11ModelOutput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "model_id",
+          "rung",
+          "eligible",
+          "failed_gates",
+          "by_level"
+        ],
+        "properties": {
+          "model_id": {
+            "type": "string"
+          },
+          "rung": {
+            "type": "string",
+            "pattern": "^R([1-9]|10)$"
+          },
+          "eligible": {
+            "type": "boolean"
+          },
+          "failed_gates": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^market\\."
+            }
+          },
+          "by_level": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11LevelResult"
+            },
+            "minItems": 1
+          }
+        },
+        "description": "One model of the ladder in this window; eligible when no eligibility-gate row is red (the traditional back-tests of dossier 05 'Champion selection rule')."
+      },
+      "c11Outputs": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "window",
+          "sign_convention",
+          "levels",
+          "portfolio",
+          "data_status",
+          "grid",
+          "hyperparameters",
+          "models",
+          "comparison",
+          "es_backtests"
+        ],
+        "properties": {
+          "kind": {
+            "const": "window"
+          },
+          "window": {
+            "$ref": "#/components/schemas/c11Window"
+          },
+          "sign_convention": {
+            "$ref": "#/components/schemas/c11SignConvention"
+          },
+          "levels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11Level"
+            },
+            "minItems": 1
+          },
+          "portfolio": {
+            "$ref": "#/components/schemas/c11Portfolio"
+          },
+          "data_status": {
+            "$ref": "#/components/schemas/c11DataStatus"
+          },
+          "grid": {
+            "$ref": "#/components/schemas/c11Grid"
+          },
+          "hyperparameters": {
+            "$ref": "#/components/schemas/c11Hyperparameters"
+          },
+          "models": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11ModelOutput"
+            },
+            "minItems": 1
+          },
+          "comparison": {
+            "$ref": "#/components/schemas/c11Comparison"
+          },
+          "es_backtests": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11EsNull"
+            }
+          }
+        },
+        "description": "The C11 window document: market VaR and ES forecasts of the ladder, strictly rolling, and their back-tests.",
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "window": {
+                  "properties": {
+                    "n_forecast_days": {
+                      "maximum": 249
+                    }
+                  },
+                  "required": [
+                    "n_forecast_days"
+                  ]
+                }
+              },
+              "required": [
+                "window"
+              ]
+            },
+            "then": {
+              "properties": {
+                "models": {
+                  "items": {
+                    "properties": {
+                      "by_level": {
+                        "items": {
+                          "if": {
+                            "properties": {
+                              "alpha": {
+                                "const": 0.01
+                              }
+                            },
+                            "required": [
+                              "alpha"
+                            ]
+                          },
+                          "then": {
+                            "properties": {
+                              "traffic_light": {
+                                "properties": {
+                                  "final_zone": {
+                                    "const": "not_evaluated"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "models": {
+                  "items": {
+                    "properties": {
+                      "by_level": {
+                        "items": {
+                          "if": {
+                            "properties": {
+                              "alpha": {
+                                "const": 0.01
+                              }
+                            },
+                            "required": [
+                              "alpha"
+                            ]
+                          },
+                          "then": {
+                            "properties": {
+                              "traffic_light": {
+                                "properties": {
+                                  "final_zone": {
+                                    "type": "string",
+                                    "enum": [
+                                      "green",
+                                      "amber",
+                                      "red"
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "c11Parameter": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "min",
+          "median",
+          "max",
+          "unit"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "min": {
+            "type": "number"
+          },
+          "median": {
+            "type": "number"
+          },
+          "max": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          }
+        },
+        "description": "A fitted parameter across the refits of a window: minimum, median and maximum."
+      },
+      "c11Portfolio": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "description",
+          "value_unit",
+          "currency",
+          "weighting",
+          "components"
+        ],
+        "properties": {
+          "description": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "value_unit": {
+            "const": "decimal-of-portfolio-value"
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "description": "ISO 4217 code of the portfolio."
+          },
+          "weighting": {
+            "type": "string",
+            "enum": [
+              "constant-weights-daily-rebalanced",
+              "buy-and-hold"
+            ]
+          },
+          "components": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11Component"
+            },
+            "minItems": 1
+          }
+        },
+        "description": "The portfolio stated for the window; returns and losses are decimals of its value."
+      },
+      "c11Realised": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "loss",
+          "reason"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "included",
+              "withheld-derived-only"
+            ]
+          },
+          "loss": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "The realised loss per forecast day (positive number, a decimal of the portfolio value). Withheld, with its reason, when a component of the portfolio is derived-only (dossier 08 C.5: only model outputs are committed).",
+        "allOf": [
+          {
+            "oneOf": [
+              {
+                "properties": {
+                  "status": {
+                    "const": "included"
+                  },
+                  "loss": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "minItems": 1
+                  },
+                  "reason": {
+                    "type": "null"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "status": {
+                    "const": "withheld-derived-only"
+                  },
+                  "loss": {
+                    "type": "null"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "c11Rung": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "model_id",
+          "rung",
+          "title",
+          "family",
+          "source",
+          "status",
+          "not_run_reason",
+          "innovation",
+          "estimation_window_days",
+          "refit_every_days",
+          "forecasts_es",
+          "es_method",
+          "window_fits"
+        ],
+        "properties": {
+          "model_id": {
+            "type": "string"
+          },
+          "rung": {
+            "type": "string",
+            "pattern": "^R([1-9]|10)$"
+          },
+          "title": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "family": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "description": "The primary source of the method (dossier 05 A.2)."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "fitted",
+              "challenger-not-run"
+            ]
+          },
+          "not_run_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "innovation": {
+            "type": "string",
+            "enum": [
+              "none",
+              "normal",
+              "student-t",
+              "skew-t",
+              "gpd-tail",
+              "empirical"
+            ]
+          },
+          "estimation_window_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "refit_every_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "forecasts_es": {
+            "type": "boolean"
+          },
+          "es_method": {
+            "type": "string"
+          },
+          "window_fits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11RungWindowFit"
+            }
+          }
+        },
+        "description": "A rung of the market ladder (dossier 05 'Method ladders': rungs 1 to 10; rung 10 is a challenger only).",
+        "allOf": [
+          {
+            "oneOf": [
+              {
+                "properties": {
+                  "status": {
+                    "const": "fitted"
+                  },
+                  "not_run_reason": {
+                    "type": "null"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "status": {
+                    "const": "challenger-not-run"
+                  },
+                  "not_run_reason": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "window_fits": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/c11RungWindowFit"
+                    },
+                    "maxItems": 0
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "c11RungWindowFit": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "window_id",
+          "n_refits",
+          "n_convergence_failures",
+          "parameters"
+        ],
+        "properties": {
+          "window_id": {
+            "type": "string"
+          },
+          "n_refits": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "n_convergence_failures": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11Parameter"
+            }
+          }
+        }
+      },
+      "c11Scoring": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fz0_formula",
+          "tick_formula",
+          "hac_kernel",
+          "mcs_confidence",
+          "mcs_statistic",
+          "selection_rule"
+        ],
+        "properties": {
+          "fz0_formula": {
+            "type": "string"
+          },
+          "tick_formula": {
+            "type": "string"
+          },
+          "hac_kernel": {
+            "const": "bartlett"
+          },
+          "mcs_confidence": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "mcs_statistic": {
+            "type": "string",
+            "enum": [
+              "Tmax",
+              "TR"
+            ]
+          },
+          "selection_rule": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        }
+      },
+      "c11SignConvention": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "engine_convention",
+          "document_convention",
+          "definition"
+        ],
+        "properties": {
+          "engine_convention": {
+            "const": "return-negative"
+          },
+          "document_convention": {
+            "const": "positive-loss"
+          },
+          "definition": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/common-text"
+              },
+              {
+                "properties": {
+                  "en": {
+                    "minLength": 1
+                  },
+                  "es": {
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "description": "The sign convention, a required field of every C11 document (dossier 05 A.0): the engine stores the return convention (VaR and ES negative at the tail level alpha 0.01 or 0.025, needed by the FZ0 loss) and the document stores positive loss numbers, the conversion made once at the reporting layer. The definition states both in words."
+      },
+      "c11Source": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "series_id",
+          "title",
+          "source_class",
+          "url",
+          "licence_note"
+        ],
+        "properties": {
+          "series_id": {
+            "type": "string"
+          },
+          "title": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "source_class": {
+            "type": "string",
+            "enum": [
+              "derived-only",
+              "mirror-allowed"
+            ]
+          },
+          "url": {
+            "type": "string"
+          },
+          "licence_note": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        }
+      },
+      "c11Span": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "start",
+          "end"
+        ],
+        "properties": {
+          "start": {
+            "const": "1995-01-01"
+          },
+          "end": {
+            "const": "2003-12-31"
+          }
+        },
+        "description": "The span on which the hyperparameters were fixed (decision D1): 1995-01-01 to 2003-12-31 for every window, so it ends before the earliest test window (calm 2004-06) and tunes on none."
+      },
+      "c11TrafficLight": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "window_days",
+          "n_windows",
+          "max_rolling_exceedances",
+          "final_rolling_exceedances",
+          "final_zone",
+          "days_green",
+          "days_amber",
+          "days_red",
+          "reason"
+        ],
+        "properties": {
+          "window_days": {
+            "const": 250
+          },
+          "n_windows": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "max_rolling_exceedances": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "final_rolling_exceedances": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "final_zone": {
+            "type": "string",
+            "enum": [
+              "green",
+              "amber",
+              "red",
+              "not_evaluated"
+            ]
+          },
+          "days_green": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "days_amber": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "days_red": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "The Basel traffic light at the 99 percent level over rolling 250-day windows (MAR32.9): the zone of each complete window and the days spent in each zone. With fewer than 250 forecast days it is not evaluated, with its reason.",
+        "allOf": [
+          {
+            "oneOf": [
+              {
+                "properties": {
+                  "n_windows": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "max_rolling_exceedances": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "final_rolling_exceedances": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "final_zone": {
+                    "type": "string",
+                    "enum": [
+                      "green",
+                      "amber",
+                      "red"
+                    ]
+                  },
+                  "days_green": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "days_amber": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "days_red": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "reason": {
+                    "type": "null"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "final_zone": {
+                    "const": "not_evaluated"
+                  },
+                  "max_rolling_exceedances": {
+                    "type": "null"
+                  },
+                  "final_rolling_exceedances": {
+                    "type": "null"
+                  },
+                  "days_green": {
+                    "type": "null"
+                  },
+                  "days_amber": {
+                    "type": "null"
+                  },
+                  "days_red": {
+                    "type": "null"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "c11TrafficRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "exceptions",
+          "zone",
+          "frtb_multiplier",
+          "us_multiplier",
+          "cumulative_probability_pct"
+        ],
+        "properties": {
+          "exceptions": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10,
+            "description": "The number of exceptions in 250 days; 10 stands for ten or more."
+          },
+          "zone": {
+            "type": "string",
+            "enum": [
+              "green",
+              "amber",
+              "red"
+            ]
+          },
+          "frtb_multiplier": {
+            "type": "number",
+            "description": "The backtesting-dependent multiplier m_c of MAR32.9 Table 1."
+          },
+          "us_multiplier": {
+            "type": "number",
+            "description": "The US multiplication factor of 12 CFR 217.204 Table 1 (dossier 05 B.4)."
+          },
+          "cumulative_probability_pct": {
+            "type": "number",
+            "description": "P(X <= exceptions), X ~ Bin(250, 0.01), in percent (MAR32.9 Table 1)."
+          }
+        }
+      },
+      "c11TrafficTable": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "window_days",
+          "confidence",
+          "reference",
+          "rows"
+        ],
+        "properties": {
+          "window_days": {
+            "const": 250
+          },
+          "confidence": {
+            "const": 0.99
+          },
+          "reference": {
+            "type": "string"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c11TrafficRow"
+            },
+            "minItems": 11,
+            "maxItems": 11,
+            "allOf": [
+              {
+                "prefixItems": [
+                  {
+                    "properties": {
+                      "exceptions": {
+                        "const": 0
+                      },
+                      "zone": {
+                        "const": "green"
+                      },
+                      "frtb_multiplier": {
+                        "const": 1.5
+                      },
+                      "us_multiplier": {
+                        "const": 3
+                      },
+                      "cumulative_probability_pct": {
+                        "const": 8.11
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "exceptions": {
+                        "const": 1
+                      },
+                      "zone": {
+                        "const": "green"
+                      },
+                      "frtb_multiplier": {
+                        "const": 1.5
+                      },
+                      "us_multiplier": {
+                        "const": 3
+                      },
+                      "cumulative_probability_pct": {
+                        "const": 28.58
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "exceptions": {
+                        "const": 2
+                      },
+                      "zone": {
+                        "const": "green"
+                      },
+                      "frtb_multiplier": {
+                        "const": 1.5
+                      },
+                      "us_multiplier": {
+                        "const": 3
+                      },
+                      "cumulative_probability_pct": {
+                        "const": 54.32
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "exceptions": {
+                        "const": 3
+                      },
+                      "zone": {
+                        "const": "green"
+                      },
+                      "frtb_multiplier": {
+                        "const": 1.5
+                      },
+                      "us_multiplier": {
+                        "const": 3
+                      },
+                      "cumulative_probability_pct": {
+                        "const": 75.81
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "exceptions": {
+                        "const": 4
+                      },
+                      "zone": {
+                        "const": "green"
+                      },
+                      "frtb_multiplier": {
+                        "const": 1.5
+                      },
+                      "us_multiplier": {
+                        "const": 3
+                      },
+                      "cumulative_probability_pct": {
+                        "const": 89.22
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "exceptions": {
+                        "const": 5
+                      },
+                      "zone": {
+                        "const": "amber"
+                      },
+                      "frtb_multiplier": {
+                        "const": 1.7
+                      },
+                      "us_multiplier": {
+                        "const": 3.4
+                      },
+                      "cumulative_probability_pct": {
+                        "const": 95.88
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "exceptions": {
+                        "const": 6
+                      },
+                      "zone": {
+                        "const": "amber"
+                      },
+                      "frtb_multiplier": {
+                        "const": 1.76
+                      },
+                      "us_multiplier": {
+                        "const": 3.5
+                      },
+                      "cumulative_probability_pct": {
+                        "const": 98.63
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "exceptions": {
+                        "const": 7
+                      },
+                      "zone": {
+                        "const": "amber"
+                      },
+                      "frtb_multiplier": {
+                        "const": 1.83
+                      },
+                      "us_multiplier": {
+                        "const": 3.65
+                      },
+                      "cumulative_probability_pct": {
+                        "const": 99.6
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "exceptions": {
+                        "const": 8
+                      },
+                      "zone": {
+                        "const": "amber"
+                      },
+                      "frtb_multiplier": {
+                        "const": 1.88
+                      },
+                      "us_multiplier": {
+                        "const": 3.75
+                      },
+                      "cumulative_probability_pct": {
+                        "const": 99.89
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "exceptions": {
+                        "const": 9
+                      },
+                      "zone": {
+                        "const": "amber"
+                      },
+                      "frtb_multiplier": {
+                        "const": 1.92
+                      },
+                      "us_multiplier": {
+                        "const": 3.85
+                      },
+                      "cumulative_probability_pct": {
+                        "const": 99.97
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "exceptions": {
+                        "const": 10
+                      },
+                      "zone": {
+                        "const": "red"
+                      },
+                      "frtb_multiplier": {
+                        "const": 2
+                      },
+                      "us_multiplier": {
+                        "const": 4
+                      },
+                      "cumulative_probability_pct": {
+                        "const": 99.99
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "description": "MAR32.9 Table 1 with the US factors (dossier 01 D.4, dossier 05 B.4); the reference for every traffic-light band."
+      },
+      "c11Window": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "window_id",
+          "asset_class",
+          "title",
+          "start_date",
+          "end_date",
+          "n_forecast_days"
+        ],
+        "properties": {
+          "window_id": {
+            "type": "string",
+            "enum": [
+              "equity-2007-09",
+              "equity-2020",
+              "rates-2022",
+              "fx-2008",
+              "mixed-2023",
+              "calm-2004-06"
+            ]
+          },
+          "asset_class": {
+            "type": "string",
+            "enum": [
+              "equity",
+              "rates",
+              "fx",
+              "mixed"
+            ]
+          },
+          "title": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "start_date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "end_date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "n_forecast_days": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "description": "One of the six windows of SDD C11 with the dates of decision D2; the variant id is the window id.",
+        "allOf": [
+          {
+            "oneOf": [
+              {
+                "properties": {
+                  "window_id": {
+                    "const": "equity-2007-09"
+                  },
+                  "asset_class": {
+                    "type": "string",
+                    "enum": [
+                      "equity"
+                    ]
+                  },
+                  "start_date": {
+                    "const": "2007-07-02"
+                  },
+                  "end_date": {
+                    "const": "2009-06-30"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "window_id": {
+                    "const": "equity-2020"
+                  },
+                  "asset_class": {
+                    "type": "string",
+                    "enum": [
+                      "equity"
+                    ]
+                  },
+                  "start_date": {
+                    "const": "2020-02-03"
+                  },
+                  "end_date": {
+                    "const": "2020-06-30"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "window_id": {
+                    "const": "rates-2022"
+                  },
+                  "asset_class": {
+                    "type": "string",
+                    "enum": [
+                      "rates"
+                    ]
+                  },
+                  "start_date": {
+                    "const": "2022-01-03"
+                  },
+                  "end_date": {
+                    "const": "2022-12-30"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "window_id": {
+                    "const": "fx-2008"
+                  },
+                  "asset_class": {
+                    "type": "string",
+                    "enum": [
+                      "fx"
+                    ]
+                  },
+                  "start_date": {
+                    "const": "2008-07-01"
+                  },
+                  "end_date": {
+                    "const": "2009-06-30"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "window_id": {
+                    "const": "mixed-2023"
+                  },
+                  "asset_class": {
+                    "type": "string",
+                    "enum": [
+                      "mixed"
+                    ]
+                  },
+                  "start_date": {
+                    "const": "2023-03-01"
+                  },
+                  "end_date": {
+                    "const": "2023-05-31"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "window_id": {
+                    "const": "calm-2004-06"
+                  },
+                  "asset_class": {
+                    "type": "string",
+                    "enum": [
+                      "mixed"
+                    ]
+                  },
+                  "start_date": {
+                    "const": "2004-01-02"
+                  },
+                  "end_date": {
+                    "const": "2006-12-29"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "c11WindowPlan": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "window_id",
+          "asset_class",
+          "start_date",
+          "end_date",
+          "fixed_on"
+        ],
+        "properties": {
+          "window_id": {
+            "type": "string",
+            "enum": [
+              "equity-2007-09",
+              "equity-2020",
+              "rates-2022",
+              "fx-2008",
+              "mixed-2023",
+              "calm-2004-06"
+            ]
+          },
+          "asset_class": {
+            "type": "string",
+            "enum": [
+              "equity",
+              "rates",
+              "fx",
+              "mixed"
+            ]
+          },
+          "start_date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "end_date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "fixed_on": {
+            "$ref": "#/components/schemas/c11Span"
+          }
+        },
+        "description": "A window with the dates of decision D2 and the span of decision D1 on which its hyperparameters were fixed.",
+        "allOf": [
+          {
+            "oneOf": [
+              {
+                "properties": {
+                  "window_id": {
+                    "const": "equity-2007-09"
+                  },
+                  "asset_class": {
+                    "type": "string",
+                    "enum": [
+                      "equity"
+                    ]
+                  },
+                  "start_date": {
+                    "const": "2007-07-02"
+                  },
+                  "end_date": {
+                    "const": "2009-06-30"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "window_id": {
+                    "const": "equity-2020"
+                  },
+                  "asset_class": {
+                    "type": "string",
+                    "enum": [
+                      "equity"
+                    ]
+                  },
+                  "start_date": {
+                    "const": "2020-02-03"
+                  },
+                  "end_date": {
+                    "const": "2020-06-30"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "window_id": {
+                    "const": "rates-2022"
+                  },
+                  "asset_class": {
+                    "type": "string",
+                    "enum": [
+                      "rates"
+                    ]
+                  },
+                  "start_date": {
+                    "const": "2022-01-03"
+                  },
+                  "end_date": {
+                    "const": "2022-12-30"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "window_id": {
+                    "const": "fx-2008"
+                  },
+                  "asset_class": {
+                    "type": "string",
+                    "enum": [
+                      "fx"
+                    ]
+                  },
+                  "start_date": {
+                    "const": "2008-07-01"
+                  },
+                  "end_date": {
+                    "const": "2009-06-30"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "window_id": {
+                    "const": "mixed-2023"
+                  },
+                  "asset_class": {
+                    "type": "string",
+                    "enum": [
+                      "mixed"
+                    ]
+                  },
+                  "start_date": {
+                    "const": "2023-03-01"
+                  },
+                  "end_date": {
+                    "const": "2023-05-31"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "window_id": {
+                    "const": "calm-2004-06"
+                  },
+                  "asset_class": {
+                    "type": "string",
+                    "enum": [
+                      "mixed"
+                    ]
+                  },
+                  "start_date": {
+                    "const": "2004-01-02"
+                  },
+                  "end_date": {
+                    "const": "2006-12-29"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "c13-models": {
+        "title": "C13 models",
+        "description": "Catalog row c13-models 1.0.0: the C13 models artifact (generator, the six planted deficiencies, the PLA thresholds, the desk limits).",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/common-models-envelope"
+          },
+          {
+            "properties": {
+              "case_id": {
+                "const": "C13"
+              },
+              "fit": {
+                "$ref": "#/components/schemas/c13Fit"
+              }
+            },
+            "required": [
+              "case_id",
+              "fit"
+            ]
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+      "c13-variant-deficiency": {
+        "title": "C13 deficiency variant",
+        "description": "Catalog row c13-outputs 1.0.0: one planted model deficiency of the FRTB desk eligibility case (outputs.kind deficiency), on a generator whose truth is known.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/common-variant-envelope"
+          },
+          {
+            "properties": {
+              "case_id": {
+                "const": "C13"
+              },
+              "outputs": {
+                "$ref": "#/components/schemas/c13Outputs",
+                "properties": {
+                  "kind": {
+                    "const": "deficiency"
+                  }
+                }
+              }
+            },
+            "required": [
+              "case_id",
+              "outputs"
+            ]
+          },
+          {
+            "properties": {
+              "tests": {
+                "items": {
+                  "if": {
+                    "properties": {
+                      "light": {
+                        "const": "not_evaluated"
+                      }
+                    },
+                    "required": [
+                      "light"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "statistic": {
+                        "type": "null"
+                      },
+                      "p_value": {
+                        "type": "null"
+                      },
+                      "metric": {
+                        "type": "null"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "unevaluatedProperties": false
+      },
+      "c13DeficiencyPlan": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "deficiency_id",
+          "planted",
+          "mechanism",
+          "parameters",
+          "intended_to_fail"
+        ],
+        "properties": {
+          "deficiency_id": {
+            "type": "string",
+            "enum": [
+              "none",
+              "missing-basis",
+              "stale-volatility",
+              "wrong-correlation",
+              "omitted-factor",
+              "time-misalignment"
+            ]
+          },
+          "planted": {
+            "type": "boolean"
+          },
+          "mechanism": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "value",
+                "unit"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                },
+                "unit": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "intended_to_fail": {
+            "type": "string",
+            "enum": [
+              "none",
+              "spearman",
+              "ks",
+              "either"
+            ]
+          }
+        },
+        "description": "One planted deficiency and how the generator plants it.",
+        "allOf": [
+          {
+            "oneOf": [
+              {
+                "properties": {
+                  "deficiency_id": {
+                    "const": "none"
+                  },
+                  "planted": {
+                    "const": false
+                  },
+                  "intended_to_fail": {
+                    "const": "none"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "deficiency_id": {
+                    "type": "string",
+                    "enum": [
+                      "missing-basis",
+                      "stale-volatility",
+                      "wrong-correlation",
+                      "omitted-factor",
+                      "time-misalignment"
+                    ]
+                  },
+                  "planted": {
+                    "const": true
+                  },
+                  "intended_to_fail": {
+                    "type": "string",
+                    "enum": [
+                      "spearman",
+                      "ks",
+                      "either"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "c13DeskLevel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "alpha",
+          "basis",
+          "limit_exceptions",
+          "n_days",
+          "exceptions",
+          "n_within_limit",
+          "n_over_limit",
+          "share_over_limit"
+        ],
+        "properties": {
+          "alpha": {
+            "type": "number",
+            "enum": [
+              0.01,
+              0.025
+            ]
+          },
+          "basis": {
+            "type": "string",
+            "enum": [
+              "APL",
+              "HPL"
+            ]
+          },
+          "limit_exceptions": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "n_days": {
+            "const": 250
+          },
+          "exceptions": {
+            "$ref": "#/components/schemas/c13Dist"
+          },
+          "n_within_limit": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "n_over_limit": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "share_over_limit": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          }
+        },
+        "description": "Desk back-testing at one level (MAR32.18 to 19): the exception count over 250 days against the limit (more than 12 at 99 percent or 30 at 97.5 percent moves the desk to the standardised approach).",
+        "allOf": [
+          {
+            "oneOf": [
+              {
+                "properties": {
+                  "alpha": {
+                    "const": 0.01
+                  },
+                  "limit_exceptions": {
+                    "const": 12
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "alpha": {
+                    "const": 0.025
+                  },
+                  "limit_exceptions": {
+                    "const": 30
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "c13DeskLimit": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "alpha",
+          "limit_exceptions",
+          "reference"
+        ],
+        "properties": {
+          "alpha": {
+            "type": "number",
+            "enum": [
+              0.01,
+              0.025
+            ]
+          },
+          "limit_exceptions": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reference": {
+            "type": "string"
+          }
+        },
+        "allOf": [
+          {
+            "oneOf": [
+              {
+                "properties": {
+                  "alpha": {
+                    "const": 0.01
+                  },
+                  "limit_exceptions": {
+                    "const": 12
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "alpha": {
+                    "const": 0.025
+                  },
+                  "limit_exceptions": {
+                    "const": 30
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "c13Detection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "role",
+          "rule",
+          "n_replications",
+          "n_amber_or_red",
+          "n_red",
+          "share_amber_or_red",
+          "share_red",
+          "mc_se",
+          "ci_low",
+          "ci_high",
+          "by_test",
+          "intended_test_flagged"
+        ],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "size",
+              "power"
+            ]
+          },
+          "rule": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "n_replications": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "n_amber_or_red": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "n_red": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "share_amber_or_red": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          },
+          "share_red": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          },
+          "mc_se": {
+            "type": "number",
+            "minimum": 0,
+            "description": "The Monte Carlo standard error of share_amber_or_red."
+          },
+          "ci_low": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          },
+          "ci_high": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          },
+          "by_test": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "spearman_flagged",
+              "ks_flagged",
+              "desk_backtest_flagged"
+            ],
+            "properties": {
+              "spearman_flagged": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "ks_flagged": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "desk_backtest_flagged": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "intended_test_flagged": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Replications where the intended test flagged the desk; null when none was planted."
+          }
+        },
+        "description": "The rate at which the PLA catches the planted deficiency: its power; with no deficiency planted it is the false-alarm rate, the size."
+      },
+      "c13Dist": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "mean",
+          "sd",
+          "q05",
+          "q50",
+          "q95",
+          "min",
+          "max"
+        ],
+        "properties": {
+          "mean": {
+            "type": "number"
+          },
+          "sd": {
+            "type": "number",
+            "minimum": 0
+          },
+          "q05": {
+            "type": "number"
+          },
+          "q50": {
+            "type": "number"
+          },
+          "q95": {
+            "type": "number"
+          },
+          "min": {
+            "type": "number"
+          },
+          "max": {
+            "type": "number"
+          }
+        },
+        "description": "The distribution of a statistic across the replications."
+      },
+      "c13Example": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "replication_index",
+          "seed",
+          "hpl",
+          "rtpl",
+          "spearman",
+          "ks",
+          "zone"
+        ],
+        "properties": {
+          "replication_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "seed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "hpl": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 250,
+            "maxItems": 250,
+            "description": "250 daily HPL values, decimals of the notional."
+          },
+          "rtpl": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 250,
+            "maxItems": 250,
+            "description": "250 daily RTPL values, decimals of the notional."
+          },
+          "spearman": {
+            "type": "number",
+            "minimum": -1,
+            "maximum": 1
+          },
+          "ks": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "zone": {
+            "type": "string",
+            "enum": [
+              "green",
+              "amber",
+              "red"
+            ]
+          }
+        },
+        "description": "One replication kept whole, for the rank scatter and the two ECDFs with the KS gap."
+      },
+      "c13Fit": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sign_convention",
+          "generator",
+          "deficiencies",
+          "pla_thresholds",
+          "desk_limits",
+          "replication_plan"
+        ],
+        "properties": {
+          "sign_convention": {
+            "$ref": "#/components/schemas/c13SignConvention"
+          },
+          "generator": {
+            "$ref": "#/components/schemas/c13GeneratorSpec"
+          },
+          "deficiencies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c13DeficiencyPlan"
+            },
+            "minItems": 6,
+            "maxItems": 6,
+            "allOf": [
+              {
+                "prefixItems": [
+                  {
+                    "properties": {
+                      "deficiency_id": {
+                        "const": "none"
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "deficiency_id": {
+                        "const": "missing-basis"
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "deficiency_id": {
+                        "const": "stale-volatility"
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "deficiency_id": {
+                        "const": "wrong-correlation"
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "deficiency_id": {
+                        "const": "omitted-factor"
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "deficiency_id": {
+                        "const": "time-misalignment"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "pla_thresholds": {
+            "$ref": "#/components/schemas/c13PlaThresholds"
+          },
+          "desk_limits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c13DeskLimit"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "allOf": [
+              {
+                "prefixItems": [
+                  {
+                    "properties": {
+                      "alpha": {
+                        "const": 0.025
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "alpha": {
+                        "const": 0.01
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "replication_plan": {
+            "$ref": "#/components/schemas/c13ReplicationPlan"
+          }
+        },
+        "description": "The C13 models document: the generator, the six deficiencies it plants, the PLA and desk limits."
+      },
+      "c13Generator": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "n_risk_factors",
+          "pnl_unit",
+          "window_days",
+          "n_replications",
+          "seed_base",
+          "seed_rule",
+          "notice"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "n_risk_factors": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pnl_unit": {
+            "const": "decimal-of-desk-notional"
+          },
+          "window_days": {
+            "const": 250
+          },
+          "n_replications": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "seed_base": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "seed_rule": {
+            "const": "seed_base+replication_index"
+          },
+          "notice": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "The desk P&L generator with a known risk model; synthetic, labelled so on every view."
+      },
+      "c13GeneratorSpec": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "true_risk_model",
+          "parameters",
+          "pnl_unit",
+          "window_days",
+          "seed_rule",
+          "notice"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "true_risk_model": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "value",
+                "unit"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                },
+                "unit": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "pnl_unit": {
+            "const": "decimal-of-desk-notional"
+          },
+          "window_days": {
+            "const": 250
+          },
+          "seed_rule": {
+            "const": "seed_base+replication_index"
+          },
+          "notice": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "The desk P&L generator with a known risk model."
+      },
+      "c13Known": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "deficiency_id",
+          "planted",
+          "mechanism",
+          "parameters",
+          "intended_to_fail"
+        ],
+        "properties": {
+          "deficiency_id": {
+            "type": "string",
+            "enum": [
+              "none",
+              "missing-basis",
+              "stale-volatility",
+              "wrong-correlation",
+              "omitted-factor",
+              "time-misalignment"
+            ]
+          },
+          "planted": {
+            "type": "boolean"
+          },
+          "mechanism": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "value",
+                "unit"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                },
+                "unit": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "The planted severity, with units."
+          },
+          "intended_to_fail": {
+            "type": "string",
+            "enum": [
+              "none",
+              "spearman",
+              "ks",
+              "either"
+            ]
+          }
+        },
+        "description": "The deficiency the generator planted in the desk's risk model: the known truth of the case, a required field.",
+        "allOf": [
+          {
+            "oneOf": [
+              {
+                "properties": {
+                  "deficiency_id": {
+                    "const": "none"
+                  },
+                  "planted": {
+                    "const": false
+                  },
+                  "intended_to_fail": {
+                    "const": "none"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "deficiency_id": {
+                    "type": "string",
+                    "enum": [
+                      "missing-basis",
+                      "stale-volatility",
+                      "wrong-correlation",
+                      "omitted-factor",
+                      "time-misalignment"
+                    ]
+                  },
+                  "planted": {
+                    "const": true
+                  },
+                  "intended_to_fail": {
+                    "type": "string",
+                    "enum": [
+                      "spearman",
+                      "ks",
+                      "either"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "c13Outputs": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "known_deficiency",
+          "sign_convention",
+          "generator",
+          "pnl_summary",
+          "pla",
+          "example",
+          "desk_backtest",
+          "detection"
+        ],
+        "properties": {
+          "kind": {
+            "const": "deficiency"
+          },
+          "known_deficiency": {
+            "$ref": "#/components/schemas/c13Known"
+          },
+          "sign_convention": {
+            "$ref": "#/components/schemas/c13SignConvention"
+          },
+          "generator": {
+            "$ref": "#/components/schemas/c13Generator"
+          },
+          "pnl_summary": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c13PnlSummary"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "pla": {
+            "$ref": "#/components/schemas/c13Pla"
+          },
+          "example": {
+            "$ref": "#/components/schemas/c13Example"
+          },
+          "desk_backtest": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c13DeskLevel"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "allOf": [
+              {
+                "prefixItems": [
+                  {
+                    "properties": {
+                      "alpha": {
+                        "const": 0.025
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "alpha": {
+                        "const": 0.01
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "detection": {
+            "$ref": "#/components/schemas/c13Detection"
+          }
+        },
+        "description": "The C13 deficiency document: the PLA and desk back-test of a desk whose model has one known planted deficiency.",
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "known_deficiency": {
+                  "properties": {
+                    "deficiency_id": {
+                      "const": "none"
+                    }
+                  },
+                  "required": [
+                    "deficiency_id"
+                  ]
+                }
+              },
+              "required": [
+                "known_deficiency"
+              ]
+            },
+            "then": {
+              "properties": {
+                "detection": {
+                  "properties": {
+                    "role": {
+                      "const": "size"
+                    }
+                  }
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "detection": {
+                  "properties": {
+                    "role": {
+                      "const": "power"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "c13Pla": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "thresholds",
+          "spearman",
+          "ks",
+          "zones"
+        ],
+        "properties": {
+          "thresholds": {
+            "$ref": "#/components/schemas/c13PlaThresholds"
+          },
+          "spearman": {
+            "$ref": "#/components/schemas/c13Dist"
+          },
+          "ks": {
+            "$ref": "#/components/schemas/c13Dist"
+          },
+          "zones": {
+            "$ref": "#/components/schemas/c13Zones"
+          }
+        }
+      },
+      "c13PlaThresholds": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "spearman_green",
+          "spearman_red",
+          "ks_green",
+          "ks_red",
+          "ecdf_step",
+          "window_days",
+          "reference"
+        ],
+        "properties": {
+          "spearman_green": {
+            "const": 0.8
+          },
+          "spearman_red": {
+            "const": 0.7
+          },
+          "ks_green": {
+            "const": 0.09
+          },
+          "ks_red": {
+            "const": 0.12
+          },
+          "ecdf_step": {
+            "const": 0.004
+          },
+          "window_days": {
+            "const": 250
+          },
+          "reference": {
+            "const": "MAR32.42"
+          }
+        },
+        "description": "The zone boundaries of MAR32.42 and the ECDF step of MAR32.39 to 41 (dossier 01 D.4), transcribed."
+      },
+      "c13PnlSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "series",
+          "mean",
+          "sd",
+          "skewness",
+          "excess_kurtosis",
+          "min",
+          "max"
+        ],
+        "properties": {
+          "series": {
+            "type": "string",
+            "enum": [
+              "HPL",
+              "RTPL"
+            ]
+          },
+          "mean": {
+            "type": "number"
+          },
+          "sd": {
+            "type": "number",
+            "minimum": 0
+          },
+          "skewness": {
+            "type": "number"
+          },
+          "excess_kurtosis": {
+            "type": "number"
+          },
+          "min": {
+            "type": "number"
+          },
+          "max": {
+            "type": "number"
+          }
+        },
+        "description": "A summary of the desk's hypothetical (HPL) or risk-theoretical (RTPL) P&L, median across replications, decimals of the notional."
+      },
+      "c13ReplicationPlan": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "n_replications",
+          "seed_base",
+          "seed_rule"
+        ],
+        "properties": {
+          "n_replications": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "seed_base": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "seed_rule": {
+            "const": "seed_base+replication_index"
+          }
+        }
+      },
+      "c13SignConvention": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "engine_convention",
+          "document_convention",
+          "definition"
+        ],
+        "properties": {
+          "engine_convention": {
+            "const": "return-negative"
+          },
+          "document_convention": {
+            "const": "positive-loss"
+          },
+          "definition": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/common-text"
+              },
+              {
+                "properties": {
+                  "en": {
+                    "minLength": 1
+                  },
+                  "es": {
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "description": "The sign convention, a required field of every C13 document (dossier 05 A.0): the engine stores the return convention (VaR and ES negative at the tail level alpha 0.01 or 0.025, needed by the FZ0 loss) and the document stores positive loss numbers, the conversion made once at the reporting layer. The definition states both in words."
+      },
+      "c13ZoneCounts": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "green",
+          "amber",
+          "red"
+        ],
+        "properties": {
+          "green": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "amber": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "red": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "c13Zones": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "n",
+          "overall",
+          "spearman",
+          "ks"
+        ],
+        "properties": {
+          "n": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "overall": {
+            "$ref": "#/components/schemas/c13ZoneCounts"
+          },
+          "spearman": {
+            "$ref": "#/components/schemas/c13ZoneCounts"
+          },
+          "ks": {
+            "$ref": "#/components/schemas/c13ZoneCounts"
+          }
+        },
+        "description": "The PLA zone counts across replications: of the joint MAR32.42 zone, of the Spearman statistic alone and of the KS statistic alone."
       },
       "c22-models": {
         "title": "C22 models",
