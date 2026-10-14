@@ -111,7 +111,7 @@ class Portfolio:
     ead: np.ndarray          # (N,) money, strictly positive
     pd: np.ndarray           # (N,) open (0, 1)
     lgd: np.ndarray          # (N,) expected LGD in [0, 1]
-    loadings: np.ndarray     # (N, F) factor loadings beta_i; each row has sum of squares < 1
+    loadings: np.ndarray     # (N, F) factor loadings beta_i; each row has beta_i' Sigma beta_i < 1 (Sigma = factor_corr)
     factor_corr: np.ndarray  # (F, F) correlation matrix of the factors (identity for F = 1), symmetric positive definite
     group: np.ndarray        # (N,) int64 index into group_ids
     group_ids: tuple[str, ...]
@@ -122,7 +122,7 @@ class Portfolio:
 
 - Units: money in `currency`; PD, LGD and loadings decimals; `lgd_gamma` dimensionless.
 - Invariants: `__post_init__` raises `ValueError` for a shape mismatch, `ead <= 0`, a PD outside the open interval, an LGD outside `[0, 1]`, a
-  loading row with `sum of squares >= 1`, a `factor_corr` that is not a symmetric positive definite correlation matrix, a `group` index out
+  loading row with `beta_i' Sigma beta_i >= 1`, a `factor_corr` that is not a symmetric positive definite correlation matrix, a `group` index out
   of range, an empty `group_ids` entry or a `currency` that is not three capital letters. The arrays are copied and made read-only. In the
   one-factor case `F = 1`, `loadings[i, 0] = sqrt(rho_i)` and the asset correlation of two names is `loadings[i, 0] loadings[j, 0]`.
 - Golden: the fixture portfolio (`docs/contracts/fixtures/c10/variant-loan-type-fixture.json`, `outputs.portfolio.groups`) has `N = 1060`
@@ -185,8 +185,8 @@ def lhp_measures(total_ead: float, lgd: float, pd: float, rho: float, levels: Se
   and `es_se` None.
 - Invariants: `el = total_ead lgd pd`; `var = total_ead lgd lhp_quantile(q, pd, rho)` (`engines.vasicek`, dossier 04 C.4); `es = total_ead lgd E[p(Z) | Z <= G(1 - q)]`,
   the expected shortfall of the loss fraction `p(Z)`, computed by quadrature (Simpson on `[G(1-q) - 12, G(1-q)]`, 4000 steps; tolerance `5e-6`),
-  where `G` is the standard normal quantile; it is the large-portfolio limit, so a finite portfolio's MC sample sits below it when its names are
-  not infinitely granular only through the granularity effect (dossier 04 H.5). `EC` at 99.9% equals `total_ead` times the IRB form `K` of a retail
+  where `G` is the standard normal quantile; it is the large-portfolio limit, so the VaR of a finite portfolio sits above the LHP VaR by the granularity
+  effect (the granularity adjustment is nonnegative, dossier 04 H.5). `EC` at 99.9% equals `total_ead` times the IRB form `K` of a retail
   class without maturity adjustment when `lgd` and `rho` are the IRB's (golden below).
 - Golden: `total_ead = 1`, `lgd = 1`, `pd = 0.02`, `rho = 0.15`: at 0.99 `var = 0.105587`, `es = 0.135971`; at 0.999 `var = 0.176329`, `es = 0.209404`, `el = 0.02`,
   `ec = 0.156329`. With `lgd = 0.45`: `ec(0.999) = 0.45 * (0.176329 - 0.02) = 0.070348`, the IRB `K` of `capital_requirement("residential_mortgage", 0.02, 0.45)` (existing
@@ -220,7 +220,7 @@ def measures_from_sample(losses: np.ndarray, levels: Sequence[float], el: float,
 ```
 
 - Units: money; `el` the portfolio's expected loss (`expected_loss(p)`, supplied so the measure does not re-estimate it from the sample).
-- Invariants: per level `var = var_from_sample`, `es = es_from_sample`, `ec = var - el`, and `var_se`, `es_se` from `copula.mc_standard_errors(losses, q, n_batches)`; `var >= el`
+- Invariants: per level `var = var_from_sample`, `es = es_from_sample`, `ec = var - el`, and `var_se`, `es_se` from `copula.mc_standard_errors(losses, q, n_batches)`; for a sample with fewer than `10 * n_batches` losses (the batch requirement of `mc_standard_errors`) `var_se` and `es_se` are None, never an error and never a number; `var >= el`
   is not forced: a sample whose VaR falls below `el` (a toy sample) raises `ValueError` with the reason rather than returning a negative capital.
 - Golden: `losses = [0, 1, ..., 9]`, `el = 4.5`, `levels = (0.9,)`: `var = 8.0`, `es = 9.0`, `ec = 3.5`.
 
@@ -251,7 +251,7 @@ def simulate_gaussian(p: Portfolio, n_scenarios: int, seed: int, chunk_scenarios
 ```
 
 - Units: money; `n_scenarios`, `chunk_scenarios` positive integers.
-- Invariants: the asset return `A_i = beta_i' Z + sqrt(1 - beta_i' beta_i) e_i` with `Z ~ N(0, factor_corr)` and `e_i` independent `N(0, 1)`; name `i` defaults iff `A_i < G(PD_i)` and
+- Invariants: the asset return `A_i = beta_i' Z + sqrt(1 - beta_i' Sigma beta_i) e_i` with `Z ~ N(0, factor_corr)` (Sigma = factor_corr, so `Var(A_i) = 1` and the marginal default probability is `PD_i` also when the factors are correlated; the scale without Sigma is right only for uncorrelated factors) and `e_i` independent `N(0, 1)`; name `i` defaults iff `A_i < G(PD_i)` and
   then loses `ead_i lgd_i` (dossier 04 H.3, Li 2000); the marginal default probability of each name is `PD_i` (within 4 Monte Carlo standard errors); the mean loss is `expected_loss(p)`
   within 4 standard errors; reproducible for the same `(seed, n_scenarios, chunk_scenarios)`; one chunk holds at most `chunk_scenarios * N * 8` bytes; `ValueError` for a
   non-positive count. For a portfolio of identical names with `F = 1`, `VaR_q / (sum ead * lgd)` converges to `lhp_quantile(q, pd, rho)` as `N` grows, within the Monte Carlo
@@ -267,7 +267,7 @@ def simulate_student_t(p: Portfolio, nu: float, n_scenarios: int, seed: int, chu
 ```
 
 - Units: as `simulate_gaussian`; `nu > 2` degrees of freedom (`ValueError` otherwise).
-- Invariants: `A_i = sqrt(W) (beta_i' Z + sqrt(1 - beta_i' beta_i) e_i)` with `W = nu / chi2_nu` independent of `Z` and `e`, and name `i` defaults iff `A_i < t_nu^{-1}(PD_i)` (dossier 04 H.3,
+- Invariants: `A_i = sqrt(W) (beta_i' Z + sqrt(1 - beta_i' Sigma beta_i) e_i)` with `W = nu / chi2_nu` independent of `Z` and `e`, and name `i` defaults iff `A_i < t_nu^{-1}(PD_i)` (dossier 04 H.3,
   Frey and McNeil 2003; Demarta and McNeil 2005); the marginal default probability is `PD_i`; the joint default probability exceeds the Gaussian one for equal correlation (the gate
   of rung C3, dossier 04 ladder: tail dependence); as `nu -> infinity` the sample tends to `simulate_gaussian`'s.
 - Golden: two names with `pd = 0.01`, `rho = 0.3` and `nu = 5`: the joint default probability is `0.001647` (computed by two-dimensional quadrature of the mixture representation,
@@ -333,8 +333,7 @@ def pmf_panjer(inp: CreditRiskPlusInput, n_max: int) -> np.ndarray: ...
 
 - Units: as `pmf_stable`.
 - Invariants: the Panjer recursion advocated in the original CreditRisk+ document, kept only for comparison with the stable recursion (dossier 04 H.4: the recursion sums terms of opposite sign and is
-  numerically unstable; it is never a result and no document field carries it); the same signature; it equals `pmf_stable` to `1e-10` on the two goldens above; on a portfolio
-  with many exposure bands and `n_max` in the thousands it may return negative entries, which are returned as computed (the document may show them next to the stable result) and never clipped.
+  numerically unstable; it is never a result and no document field carries it); the same signature; it equals `pmf_stable` to `1e-10` on the two goldens above; entries are never clipped; the U7-E review found no negative entry on four harsh stress cases, the largest gap to `pmf_stable` being 2.8e-11, so no negative entry is promised or expected.
 - Golden: on the two goldens of `pmf_stable`, `max |pmf_panjer - pmf_stable| < 1e-10`.
 
 ### `riskvalidation.portfolio.creditrisk_plus.measures_from_pmf`
@@ -484,7 +483,7 @@ def importance_sample_gaussian(p: Portfolio, threshold: float, n_scenarios: int,
 - Invariants: given the factor, defaults are drawn from the twisted conditional probabilities; the factor is drawn with mean `factor_shift` (None: the engine solves the shift deterministically
   by maximising the log of the zero-variance density, UNVERIFIED in dossier 04 H.7); the weight is the likelihood ratio `exp(-theta L + sum_i ln(1 + p_i (exp(theta c_i) - 1))) exp(-mu' z + mu' mu / 2)`
   for factor shift `mu` (identity-correlated factors; `ValueError` for a correlated `factor_corr`, the multi-factor twist is a failure mode of the ladder). **Unbiasedness against plain Monte Carlo is the
-  acceptance test:** for any `factor_shift` and any `threshold`, the weighted tail probability `sum(weights * (losses > x)) / S` agrees with the plain Monte Carlo estimate of `simulate_gaussian` within
+  acceptance test:** for any `factor_shift` and any `threshold`, the weighted tail probability `sum(weights * (losses > x)) / S` (divided by the scenario count `S`, never by the realised weight sum: the latter is itself random and biases a rare tail) agrees with the plain Monte Carlo estimate of `simulate_gaussian` within
   4 combined standard errors, and the weighted `VaR` and `ES` agree with the plain ones within the same bound. Only the Gaussian copula is supported: `ValueError("no Student-t twist")` for a
   Student-t portfolio request through the bake (the rung is then a not-evaluated row).
 - Golden: for one name (`pd = 0.1`, `ead = lgd = 1`, `F = 1`, `rho = 0.3`) the weighted mean of `D` equals `0.1` and `mean(weights) = 1` within 4 standard errors at `S = 1e6`; the weighted mean of `1{L > 0.5}`
@@ -497,8 +496,8 @@ def weighted_var_es(res: ImportanceResult, q: float) -> tuple[float, float, floa
 ```
 
 - Units: money; returns `(var, es, se_var, se_es)`.
-- Invariants: the weighted empirical quantile (smallest loss whose normalised weight cumulative reaches `q`) and the weighted Acerbi-Tasche ES; the standard errors by the batch-means estimator of
-  `mc_standard_errors` on 20 consecutive batches; with unit weights they equal the plain estimators.
+- Invariants: the weighted empirical quantile (smallest loss `x` with `1 - sum(weights * (losses > x)) / S >= q`, the tail probability divided by `S`, never by the realised weight sum) and the weighted Acerbi-Tasche ES with the same normalisation (tail mass `sum(weights * 1{L > VaR}) / S` plus the boundary mass); the standard errors by the batch-means estimator of
+  `mc_standard_errors` on 20 consecutive batches; with unit weights `sum(weights) = S` and they equal the plain estimators.
 - Golden: `losses = [0, 1, 2, 3]`, `weights = [1, 1, 1, 1]`, `q = 0.5`: `var = 1.0`, `es = 2.5`.
 
 ### `riskvalidation.portfolio.importance.variance_ratio`
@@ -712,7 +711,7 @@ def mc_convergence(estimate: float, se: float, anchor: float, quantity: str = "v
 - Units: `estimate`, `se`, `anchor` in the same unit (money or a loss rate); `quantity` in `{"var", "es", "ec"}` (a label for the notes); `test_id = "portfolio.mc_convergence"`. `h0`: the Monte Carlo estimate equals the
   analytic anchor (the LHP quantile of C1, or the CreditRisk+ recursion); `alternative`: it differs.
 - Invariants: `statistic = (estimate - anchor) / se`, `p_value = 2 (1 - Phi(abs(statistic)))`, `metric = estimate - anchor`; `extras` carries `estimate`, `se`, `anchor`, `quantity`; `se <= 0` or a NaN input gives `not_evaluated`.
-  The anchor is exact only for a large homogeneous portfolio: a finite portfolio is expected to sit below the LHP by the granularity effect, so the bake compares an LHP-like portfolio (many equal names) and reports
+  The anchor is exact only for a large homogeneous portfolio: a finite portfolio's VaR is expected to sit above the LHP VaR by the granularity effect, so the bake compares an LHP-like portfolio (many equal names) and reports
   the granularity gap separately (dossier 04 H.5).
 - Light: green when `p_value >= alpha_amber`, amber when `alpha_red <= p_value < alpha_amber`, red below `alpha_red`.
 - Golden: `estimate = 0.1030`, `anchor = 0.1000`, `se = 0.0010`: `statistic = 3.0`, `p_value = 0.002700`, `metric = 0.003`, `light = "red"`; with `estimate = 0.1015`: `statistic = 1.5`, `p_value = 0.133614`, `light = "green"`.
