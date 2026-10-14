@@ -3,6 +3,7 @@
 // product.json, so the gate refuses to measure any other subject. Extra arguments are passed through, for example
 //   npm run gate -- --sizes 1280x800 --themes light   (a quick pass while working)
 //   npm run gate -- --url https://<domain>           (the deployed origin, after a deploy)
+// The gate always runs with --require-focus (shell 0.14.0, G18, ADR-0070): an App without Focus mode fails.
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -17,5 +18,5 @@ const extra = process.argv.slice(2);
 const target = extra.includes('--url') ? [] : ['--serve', join(here, '..', 'dist')];
 if (process.env.VITE_BASE && !extra.includes('--url')) target.push('--base-path', process.env.VITE_BASE);
 const out = ['--out', join(here, '..', 'gate-output')];
-const run = spawnSync(process.execPath, [bin, ...target, '--expect-brand', product.name, ...out, ...extra], { stdio: 'inherit' });
+const run = spawnSync(process.execPath, [bin, ...target, '--expect-brand', product.name, ...out, '--require-focus', ...extra], { stdio: 'inherit' });
 process.exit(run.status ?? 1);
