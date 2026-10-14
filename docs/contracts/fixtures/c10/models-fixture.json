@@ -1,0 +1,437 @@
+{
+  "schema": "contraste.models/v1",
+  "case_id": "C10",
+  "fit_id": "fixture-c10",
+  "model": [
+    {
+      "id": "m-lhp",
+      "family": "portfolio-credit-capital",
+      "rung": "C1",
+      "title": {
+        "en": "Fixture model m-lhp",
+        "es": "Modelo de ejemplo m-lhp"
+      },
+      "short_title": {
+        "en": "m-lhp",
+        "es": "m-lhp"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "BSD-3-Clause",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "details": {}
+    },
+    {
+      "id": "m-gaussian-1f",
+      "family": "portfolio-credit-capital",
+      "rung": "C2",
+      "title": {
+        "en": "Fixture model m-gaussian-1f",
+        "es": "Modelo de ejemplo m-gaussian-1f"
+      },
+      "short_title": {
+        "en": "m-gaussian-1f",
+        "es": "m-gaussian-1f"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "BSD-3-Clause",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "details": {}
+    },
+    {
+      "id": "m-student-t",
+      "family": "portfolio-credit-capital",
+      "rung": "C3",
+      "title": {
+        "en": "Fixture model m-student-t",
+        "es": "Modelo de ejemplo m-student-t"
+      },
+      "short_title": {
+        "en": "m-student-t",
+        "es": "m-student-t"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "BSD-3-Clause",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "details": {}
+    }
+  ],
+  "fit": {
+    "currency": "USD",
+    "windows": {
+      "fit": {
+        "first_year": 1985,
+        "last_year": 2006,
+        "n_years": 22
+      },
+      "evaluation": {
+        "first_year": 2007,
+        "last_year": 2012,
+        "n_years": 6
+      }
+    },
+    "loan_types": [
+      {
+        "id": "commercial-industrial",
+        "label": {
+          "en": "Commercial and industrial",
+          "es": "Comerciales e industriales"
+        },
+        "table_column": "fixture: the column name is set by the bake from the Board's table",
+        "irb_asset_class": "corporate",
+        "irb_reference": "CRE31.5"
+      },
+      {
+        "id": "commercial-real-estate",
+        "label": {
+          "en": "Commercial real estate",
+          "es": "Inmobiliario comercial"
+        },
+        "table_column": "fixture: the column name is set by the bake from the Board's table",
+        "irb_asset_class": "hvcre",
+        "irb_reference": "CRE31.11"
+      },
+      {
+        "id": "residential",
+        "label": {
+          "en": "Residential real estate",
+          "es": "Credito hipotecario residencial"
+        },
+        "table_column": "fixture: the column name is set by the bake from the Board's table",
+        "irb_asset_class": "residential_mortgage",
+        "irb_reference": "CRE31.14"
+      },
+      {
+        "id": "credit-cards",
+        "label": {
+          "en": "Credit cards",
+          "es": "Tarjetas de credito"
+        },
+        "table_column": "fixture: the column name is set by the bake from the Board's table",
+        "irb_asset_class": "qrre",
+        "irb_reference": "CRE31.15"
+      },
+      {
+        "id": "other-consumer",
+        "label": {
+          "en": "Other consumer",
+          "es": "Otro consumo"
+        },
+        "table_column": "fixture: the column name is set by the bake from the Board's table",
+        "irb_asset_class": "other_retail",
+        "irb_reference": "CRE31.16"
+      }
+    ],
+    "estimators": [
+      {
+        "id": "maximum-likelihood",
+        "label": {
+          "en": "Maximum likelihood",
+          "es": "Maxima verosimilitud"
+        },
+        "engine_function": "riskvalidation.portfolio.asrf_fit.fit_ml",
+        "interval_method": "profile-likelihood",
+        "reference": "Vasicek (2002); dossier 04 C.4"
+      },
+      {
+        "id": "moments",
+        "label": {
+          "en": "Method of moments",
+          "es": "Metodo de momentos"
+        },
+        "engine_function": "riskvalidation.portfolio.asrf_fit.fit_moments",
+        "interval_method": "parametric-bootstrap",
+        "reference": "dossier 04 C.4 (E[L^2] = joint default probability)"
+      }
+    ],
+    "ladder": [
+      {
+        "id": "c1-lhp",
+        "rung": "C1",
+        "method": "lhp-vasicek",
+        "label": {
+          "en": "Large homogeneous portfolio (Vasicek)",
+          "es": "Cartera homogenea grande (Vasicek)"
+        },
+        "estimator": "analytic",
+        "n_scenarios": null,
+        "engine_function": "riskvalidation.portfolio.portfolio.lhp_measures",
+        "reference": "Vasicek (2002), Risk, December 2002; dossier 04 C.4",
+        "parameters": [
+          {
+            "name": "pd",
+            "value": 0.003,
+            "unit": "decimal"
+          },
+          {
+            "name": "rho",
+            "value": 0.06,
+            "unit": "-"
+          }
+        ]
+      },
+      {
+        "id": "c2-gaussian-1f",
+        "rung": "C2",
+        "method": "gaussian-copula-one-factor",
+        "label": {
+          "en": "Gaussian copula, one factor",
+          "es": "Copula gaussiana, un factor"
+        },
+        "estimator": "monte-carlo",
+        "n_scenarios": 1000000,
+        "engine_function": "riskvalidation.portfolio.copula.simulate_gaussian",
+        "reference": "Li (2000); dossier 04 H.3",
+        "parameters": [
+          {
+            "name": "rho",
+            "value": 0.06,
+            "unit": "-"
+          }
+        ]
+      },
+      {
+        "id": "c2-gaussian-mf",
+        "rung": "C2",
+        "method": "gaussian-copula-multi-factor",
+        "label": {
+          "en": "Gaussian copula, sector factors",
+          "es": "Copula gaussiana, factores sectoriales"
+        },
+        "estimator": "monte-carlo",
+        "n_scenarios": 1000000,
+        "engine_function": "riskvalidation.portfolio.copula.simulate_gaussian",
+        "reference": "Li (2000); dossier 04 H.3",
+        "parameters": [
+          {
+            "name": "n_factors",
+            "value": 2,
+            "unit": "-"
+          }
+        ]
+      },
+      {
+        "id": "c3-student-t",
+        "rung": "C3",
+        "method": "student-t-copula",
+        "label": {
+          "en": "Student-t copula",
+          "es": "Copula t de Student"
+        },
+        "estimator": "monte-carlo",
+        "n_scenarios": 1000000,
+        "engine_function": "riskvalidation.portfolio.copula.simulate_student_t",
+        "reference": "Frey and McNeil (2003); Demarta and McNeil (2005); dossier 04 H.3",
+        "parameters": [
+          {
+            "name": "nu",
+            "value": 5,
+            "unit": "-"
+          }
+        ]
+      },
+      {
+        "id": "c4-creditrisk-plus",
+        "rung": "C4",
+        "method": "creditrisk-plus",
+        "label": {
+          "en": "CreditRisk+ (stable recursion)",
+          "es": "CreditRisk+ (recursion estable)"
+        },
+        "estimator": "analytic",
+        "n_scenarios": null,
+        "engine_function": "riskvalidation.portfolio.creditrisk_plus.pmf_stable",
+        "reference": "Haaf, Reiss and Schoenmakers (2004); dossier 04 H.4",
+        "parameters": [
+          {
+            "name": "sigma2",
+            "value": 0.5,
+            "unit": "-"
+          }
+        ]
+      },
+      {
+        "id": "c5-granularity",
+        "rung": "C5",
+        "method": "granularity-adjustment",
+        "label": {
+          "en": "Granularity adjustment",
+          "es": "Ajuste por granularidad"
+        },
+        "estimator": "analytic",
+        "n_scenarios": null,
+        "engine_function": "riskvalidation.portfolio.granularity.granularity_adjustment",
+        "reference": "Gordy and Lutkebohmert (2013); dossier 04 H.5",
+        "parameters": [
+          {
+            "name": "xi",
+            "value": 0.25,
+            "unit": "-"
+          },
+          {
+            "name": "gamma",
+            "value": 0.25,
+            "unit": "-"
+          }
+        ]
+      },
+      {
+        "id": "c6-is-gaussian",
+        "rung": "C6",
+        "method": "importance-sampling",
+        "label": {
+          "en": "Importance sampling, Gaussian copula",
+          "es": "Muestreo por importancia, copula gaussiana"
+        },
+        "estimator": "monte-carlo",
+        "n_scenarios": 100000,
+        "engine_function": "riskvalidation.portfolio.importance.importance_sample_gaussian",
+        "reference": "Glasserman and Li (2005); dossier 04 H.7 (the twist is UNVERIFIED there)",
+        "parameters": []
+      },
+      {
+        "id": "c6-is-student-t",
+        "rung": "C6",
+        "method": "importance-sampling",
+        "label": {
+          "en": "Importance sampling, Student-t copula",
+          "es": "Muestreo por importancia, copula t"
+        },
+        "estimator": "monte-carlo",
+        "n_scenarios": 100000,
+        "engine_function": "riskvalidation.portfolio.importance.importance_sample_gaussian",
+        "reference": "Glasserman and Li (2005); no Student-t twist is specified, the rung is a not-evaluated row",
+        "parameters": []
+      }
+    ],
+    "portfolio_spec": {
+      "label": "illustrative",
+      "notice": {
+        "en": "Illustrative portfolio: constructed for the contract, never a bank's.",
+        "es": "Cartera ilustrativa: construida para el contrato, nunca la de un banco."
+      },
+      "currency": "USD",
+      "groups": [
+        {
+          "id": "g-large",
+          "label": {
+            "en": "Large names",
+            "es": "Nombres grandes"
+          },
+          "n_names": 10,
+          "ead_each": 4000000.0,
+          "pd": 0.0015,
+          "lgd": 0.45,
+          "loading": 0.22,
+          "sector": "prime"
+        },
+        {
+          "id": "g-mid",
+          "label": {
+            "en": "Mid-size names",
+            "es": "Nombres medianos"
+          },
+          "n_names": 50,
+          "ead_each": 600000.0,
+          "pd": 0.003,
+          "lgd": 0.45,
+          "loading": 0.25,
+          "sector": "prime"
+        },
+        {
+          "id": "g-small",
+          "label": {
+            "en": "Small names",
+            "es": "Nombres pequenos"
+          },
+          "n_names": 1000,
+          "ead_each": 30000.0,
+          "pd": 0.005,
+          "lgd": 0.45,
+          "loading": 0.3,
+          "sector": "near-prime"
+        }
+      ],
+      "lgd_mean": 0.45,
+      "lgd_gamma": 0.25,
+      "levels": [
+        0.99,
+        0.999
+      ],
+      "horizon_years": 1
+    },
+    "granularity": {
+      "xi": 0.25,
+      "gamma": 0.25,
+      "k_source": "irb-regulatory-correlation",
+      "xi_reference": 0.25,
+      "q_reference": 0.999,
+      "delta_reference": 4.83,
+      "reference": "Gordy and Lutkebohmert (2013), eq. 15 and eq. 16 (dossier 04 H.5)"
+    },
+    "simulator": {
+      "known_pd": 0.02,
+      "rho_grid": [
+        0.02,
+        0.04,
+        0.06,
+        0.08,
+        0.1,
+        0.12,
+        0.14,
+        0.16,
+        0.18,
+        0.2,
+        0.22,
+        0.24
+      ],
+      "series_lengths_years": [
+        22,
+        40
+      ],
+      "n_replications": 1000,
+      "null_rho": 0.12,
+      "alpha": 0.05,
+      "seed": 7001
+    }
+  },
+  "provenance": {
+    "truth_status": "real-outcomes",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      },
+      {
+        "source": "illustrative-portfolio",
+        "class": "illustrative",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture",
+      "illustrative-portfolio": "illustrative"
+    },
+    "generators": [
+      "fixture:u7-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}
