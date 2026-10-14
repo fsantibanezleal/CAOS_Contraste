@@ -32,9 +32,9 @@ describe('the Experiments case tabs are grouped by the question family', () => {
     for (const g of groups) expect(pick(g.label, 'es').length).toBeGreaterThan(0);
   });
   it('keeps a case of a category without a family in a group of its own, titled by its category', () => {
-    const g = groupCases([{ id: 'c10', label: 'C10', content: null }]);
+    const g = groupCases([{ id: 'c18', label: 'C18', content: null }]);
     expect(g).toHaveLength(1);
-    expect(pick(g[0].label, 'en')).toBe('Portfolio capital');
+    expect(pick(g[0].label, 'en')).toBe('Capital and stress testing');
   });
 });
 
