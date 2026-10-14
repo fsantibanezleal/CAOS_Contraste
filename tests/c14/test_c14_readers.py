@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 import pytest
-from conftest import ROOT, data_root, requires_raw
+from c14_support import ROOT, data_root, requires_raw
 
 from pipeline.cases.c14 import fdic, treasury
 

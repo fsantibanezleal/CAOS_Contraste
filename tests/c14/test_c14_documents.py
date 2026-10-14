@@ -7,7 +7,7 @@ import c14_docs as d
 import contract_schemas as cs
 import pytest
 import semantics
-from conftest import data_root, requires_raw
+from c14_support import data_root, requires_raw
 
 
 def test_every_committed_document_validates_passes_the_semantic_checks_and_is_listed_with_its_hash() -> None:
@@ -111,7 +111,7 @@ def test_no_value_is_dated_after_its_valuation_date_and_later_data_changes_nothi
 
 @requires_raw
 def test_a_variant_does_not_change_when_every_later_report_is_removed(built) -> None:
-    from conftest import SEED
+    from c14_support import SEED
     from pipeline.cases.c14 import bake
 
     cut = bake.build(SEED, data_root(), n_paths=2000, drop_after="2021-12-31", only=("vd-2021-q4",))
