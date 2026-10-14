@@ -2809,6 +2809,729 @@ export interface components {
             reference: string;
         };
         /**
+         * C10 models
+         * @description Catalog row c10-models 1.0.0: the C10 models artifact (loan types, estimators, the rung ladder, the illustrative portfolio's specification, the granularity parameters, the simulator grid).
+         */
+        "c10-models": components["schemas"]["common-models-envelope"] & {
+            /** @constant */
+            case_id: "C10";
+            fit: components["schemas"]["c10ModelsFit"];
+            provenance?: {
+                inputs?: unknown;
+            };
+        };
+        /**
+         * C10 correlation-grid variant
+         * @description Catalog row c10-outputs-grid 1.0.0: the simulator's correlation grid of the portfolio credit capital case (outputs.kind correlation-grid), on a generator with a known correlation.
+         */
+        "c10-variant-correlation-grid": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C10";
+            outputs: components["schemas"]["c10GridOutputs"];
+        } & {
+            provenance?: {
+                /** @constant */
+                truth_status?: "synthetic-known-truth";
+            };
+        } & {
+            tests?: unknown;
+        };
+        /**
+         * C10 loan-type variant
+         * @description Catalog row c10-outputs 1.0.0: one Federal Reserve loan type of the portfolio credit capital case (outputs.kind loan-type), real charge-off rates and an illustrative portfolio.
+         */
+        "c10-variant-loan-type": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C10";
+            outputs: components["schemas"]["c10LoanTypeOutputs"];
+        } & {
+            provenance?: {
+                /** @constant */
+                truth_status?: "real-outcomes";
+                inputs?: unknown;
+            };
+        } & {
+            tests?: unknown;
+        };
+        /** @description One calendar year of the loss-rate series with its position in the fitted distribution. A year with all four quarters carries every number and no reason; a year with a missing quarter carries null numbers and the reason, never an interpolated rate. */
+        c10AnnualRate: {
+            year: number;
+            /** @enum {string} */
+            window: "fit" | "evaluation";
+            /** @description Quarters of the year present in the table. */
+            n_quarters: number;
+            /** @description The mean of the four quarterly annualised net charge-off rates; null when a quarter is missing. */
+            loss_rate: number | null;
+            /** @description Why the rate is null; null when it is present. */
+            reason: string | null;
+            /** @description The fitted Vasicek distribution function at the rate: where the year falls in the fit. */
+            fitted_cdf: number | null;
+            /** @description The systematic factor z at which the conditional PD equals the rate (dossier 04 C.4). */
+            implied_factor: number | null;
+            /** @description True when the rate is above the fitted 99% quantile. */
+            exceeds_99: boolean | null;
+            /** @description True when the rate is above the fitted 99.9% quantile. */
+            exceeds_999: boolean | null;
+        } & ({
+            /** @constant */
+            n_quarters?: 4;
+            /** @description An observed annual loss rate as a decimal per year, open (0, 1): the implied factor needs it. */
+            loss_rate?: number;
+            reason?: null;
+            /** @description A share or an observed rate in [0, 1]. */
+            fitted_cdf?: number;
+            implied_factor?: number;
+            exceeds_99?: boolean;
+            exceeds_999?: boolean;
+        } | {
+            n_quarters?: number;
+            loss_rate?: null;
+            reason?: string;
+            fitted_cdf?: null;
+            implied_factor?: null;
+            exceeds_99?: null;
+            exceeds_999?: null;
+        });
+        /** @description The tail back-test of the evaluation window against the quantiles fitted on the fit window (dossier 05 G.5; engine validation.portfolio.tail_backtest). */
+        c10Backtest: {
+            n_years_evaluated: number;
+            rows: components["schemas"]["c10BacktestRow"][];
+        };
+        /** @description Years of the evaluation window above one fitted quantile: expected = n_years (1 - level), observed, and the upper binomial tail probability P(X >= observed) with success probability 1 - level. */
+        c10BacktestRow: {
+            /** @enum {number} */
+            level: 0.95 | 0.99 | 0.999;
+            /** @description An observed annual loss rate as a decimal per year, open (0, 1): the implied factor needs it. */
+            fitted_quantile: number;
+            expected_exceedances: number;
+            observed_exceedances: number;
+            years_exceeding: number[];
+            /** @description A share or an observed rate in [0, 1]. */
+            p_value_upper: number;
+            /** @enum {string} */
+            light: "green" | "amber" | "red" | "not_evaluated" | "error";
+        };
+        /** @description The single PD and correlation the C1 rungs use, taken from the maximum-likelihood fit. */
+        c10Calibration: {
+            /** @description An estimate-site PD is open: 0 < pd < 1. */
+            pd: number;
+            /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
+            rho: number;
+            /** @constant */
+            source: "fit-maximum-likelihood";
+        };
+        c10Curve: {
+            /** @description Loss rates, strictly increasing. */
+            x: number[];
+            /** @description The Vasicek (large homogeneous portfolio) density at x. */
+            pdf: number[];
+            /** @description The distribution function at x, nondecreasing. */
+            cdf: number[];
+        };
+        /** @description Where the loss-rate series came from: the Federal Reserve charge-off release (dossier 08 B.4, row 23), the table, the series column and the quarters it lacks. */
+        c10DataStatus: {
+            source: string;
+            table: string;
+            series: string;
+            /** @enum {string} */
+            seasonal_adjustment: "SA" | "NSA";
+            bank_scope: string;
+            files_as_of: string;
+            quarters_expected: number;
+            missing_quarters: components["schemas"]["c10MissingQuarter"][];
+            notice: components["schemas"]["common-text"];
+        };
+        /** @description One estimator in one grid cell over the valid replications: bias, rmse, the coverage of its 95% interval, and the rate at which H0: rho = null_rho is rejected at level alpha with its Monte Carlo standard error and Wilson interval. */
+        c10Estimator: {
+            /** @enum {string} */
+            estimator: "maximum-likelihood" | "moments";
+            /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
+            mean_estimate: number;
+            /** @description mean_estimate minus known_rho. */
+            bias: number;
+            rmse: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            coverage: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            rejection_rate: number;
+            rejection_se: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            rejection_ci_low: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            rejection_ci_high: number;
+        };
+        c10EstimatorSpec: {
+            /** @enum {string} */
+            id: "maximum-likelihood" | "moments";
+            label: components["schemas"]["common-text"];
+            engine_function: string;
+            /** @enum {string} */
+            interval_method: "profile-likelihood" | "parametric-bootstrap";
+            reference: string;
+        };
+        /** @description The Euler contributions of one sample-based rung, by portfolio group, at both levels. */
+        c10Euler: {
+            /** @enum {string} */
+            rung_method: "gaussian-copula-one-factor" | "gaussian-copula-multi-factor" | "student-t-copula" | "creditrisk-plus";
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            levels: components["schemas"]["c10EulerLevel"][];
+        };
+        /** @description The asymptotic one-factor VaR contributions u_j * Phi((c_j - sqrt(rho_j) q_(1-alpha)(X)) / sqrt(1 - rho_j)): the first term of Emmer and Tasche (2005) eq. 2.17 (Gordy 2003 portfolio invariance), not their full contribution. asrf_var is the sum of the rows, the infinitely granular VaR; the sample VaR sits near it, not on it (a producer check recomputes both). */
+        c10EulerAnchor: {
+            /** @constant */
+            method: "asrf-asymptotic";
+            /** @description Money in the `currency` of the enclosing block. */
+            asrf_var: number;
+            rows: components["schemas"]["c10EulerAnchorRow"][];
+        };
+        c10EulerAnchorRow: {
+            group_id: string;
+            /** @description Money in the `currency` of the enclosing block. */
+            rc_var: number;
+        };
+        /** @description The contributions at one level. The contributions of a level sum to its totals within the stated tolerances (a producer check); the anchor is null with its reason where no closed form exists. */
+        c10EulerLevel: {
+            /**
+             * @description A confidence level as a decimal.
+             * @enum {number}
+             */
+            level: 0.99 | 0.999;
+            /** @description Money in the `currency` of the enclosing block. */
+            var_total: number;
+            /** @description Money in the `currency` of the enclosing block. */
+            es_total: number;
+            /** @description Relative tolerance of the sum of the VaR contributions against var_total. */
+            var_sum_tolerance: number;
+            /** @description Relative tolerance of the sum of the ES contributions against es_total. */
+            es_sum_tolerance: number;
+            /** @enum {string} */
+            var_method: "kernel" | "closed-form-one-factor";
+            /** @enum {string} */
+            es_method: "tail-sample";
+            rows: components["schemas"]["c10EulerRow"][];
+            anchor: components["schemas"]["c10EulerAnchor"] | null;
+            anchor_reason: string | null;
+        } & ({
+            anchor?: components["schemas"]["c10EulerAnchor"];
+            anchor_reason?: null;
+        } | {
+            anchor?: null;
+            anchor_reason?: string;
+        });
+        /** @description The Euler contribution of one group to the VaR and to the ES (dossier 05 G.4: E[L_i | L = VaR], E[L_i | L >= VaR]). */
+        c10EulerRow: {
+            group_id: string;
+            /** @description Money in the `currency` of the enclosing block. */
+            ead: number;
+            /** @description Money in the `currency` of the enclosing block. */
+            rc_var: number;
+            /** @description Money in the `currency` of the enclosing block. */
+            rc_es: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            share_var: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            share_es: number;
+        };
+        /** @description The out-of-sample evaluation window, fixed by the SDD (section 5, case C10): 2007-2012. A fit window that overlaps it, or windows swapped, fail the schema. */
+        c10EvaluationWindow: {
+            /** @constant */
+            first_year: 2007;
+            /** @constant */
+            last_year: 2012;
+            /** @constant */
+            n_years: 6;
+        };
+        /** @description The two fits of the yearly series; n_years_used counts the fit-window years with a rate. */
+        c10Fit: {
+            n_years_used: number;
+            maximum_likelihood: components["schemas"]["c10MlFit"];
+            moments: components["schemas"]["c10MomentsFit"];
+        };
+        /** @description The fit window, fixed by the SDD (section 5, case C10): 1985-2006. */
+        c10FitWindow: {
+            /** @constant */
+            first_year: 1985;
+            /** @constant */
+            last_year: 2006;
+            /** @constant */
+            n_years: 22;
+        };
+        /** @description The fitted (maximum-likelihood) Vasicek distribution of the yearly loss rate: its density and distribution function and its quantiles; pd and rho equal the maximum-likelihood estimates (a producer check). */
+        c10FittedDistribution: {
+            /** @description An estimate-site PD is open: 0 < pd < 1. */
+            pd: number;
+            /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
+            rho: number;
+            curve: components["schemas"]["c10Curve"];
+            quantiles: components["schemas"]["c10Quantile"][];
+        };
+        /** @description The adjustment at one level: ga_money = ga * total_ead (a producer check). The C5 rung's VaR at this level is the C1 VaR plus ga_money. */
+        c10GaLevel: {
+            /**
+             * @description A confidence level as a decimal.
+             * @enum {number}
+             */
+            q: 0.99 | 0.999;
+            /** @description The q-quantile of the Gamma factor with shape xi and rate xi (mean 1, variance 1/xi). */
+            alpha_q: number;
+            delta: number;
+            /** @description The granularity adjustment of the portfolio at this level, a share of EAD (Gordy and Lutkebohmert 2013, eq. 9 and 17). */
+            ga: number;
+            /** @description Money in the `currency` of the enclosing block. */
+            ga_money: number;
+        };
+        /** @description The granularity adjustment (a share of EAD) of n identical names of the portfolio's mix at the level of by_n_names_level, with the recursion's value beside it: ga times n is constant. */
+        c10GaRow: {
+            n_names: number;
+            hhi: number;
+            ga: number;
+            /** @description alpha_q(L_n) - mu(alpha_q(X)) from the CreditRisk+ recursion of the same single-factor model, as a share of EAD; null with its reason where the recursion was not run. */
+            truth_ga: number | null;
+            truth_reason: string | null;
+        } & ({
+            truth_ga?: number;
+            truth_reason?: null;
+        } | {
+            truth_ga?: null;
+            truth_reason?: string;
+        });
+        /** @description The granularity adjustment of Gordy and Lutkebohmert (2013) (dossier 04 H.5): delta = (alpha_q - 1)(xi + (1 - xi) / alpha_q) (eq. 15), 4.83 at xi 0.25 and q 0.999 (p. 46); the adjustment GA is a share of EAD (eq. 9, p. 41; eq. 17), per level for the portfolio and against the number of names. At xi 0.25 the delta of the 99.9% level lies in [4.825, 4.835]. */
+        c10Granularity: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            xi: number;
+            gamma: number;
+            /** @constant */
+            k_source: "irb-regulatory-correlation";
+            /** @description K* = sum_i s_i K_i with K_i the IRB capital per unit of EAD at the regulatory correlation (Gordy and Lutkebohmert 2013, algorithm step iv, p. 47). */
+            k_star: number;
+            /** @constant */
+            delta_reference: 4.83;
+            delta_reference_source: string;
+            levels: components["schemas"]["c10GaLevel"][];
+            /** @constant */
+            by_n_names_level: 0.999;
+            by_n_names: components["schemas"]["c10GaRow"][];
+        };
+        /** @description The granularity parameters and the golden delta of Gordy and Lutkebohmert (2013) (eq. 15): 4.83 at xi 0.25 and q 0.999. */
+        c10GranularitySpec: {
+            xi: number;
+            gamma: number;
+            /** @constant */
+            k_source: "irb-regulatory-correlation";
+            /** @constant */
+            xi_reference: 0.25;
+            /** @constant */
+            q_reference: 0.999;
+            /** @constant */
+            delta_reference: 4.83;
+            reference: string;
+        };
+        /** @description One cell of the simulator's correlation grid. role is size where known_rho equals the generator's null_rho (the rejection rate is then the exact size) and power elsewhere (a producer check). n_valid + n_failed = n_replications. */
+        c10GridCell: {
+            /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
+            known_rho: number;
+            /** @enum {integer} */
+            series_length_years: 22 | 40;
+            n_replications: number;
+            n_valid: number;
+            n_failed: number;
+            /** @enum {string} */
+            role: "size" | "power";
+            estimators: components["schemas"]["c10Estimator"][];
+        };
+        /** @description C10 correlation-grid outputs (outputs.kind correlation-grid): the exact size and power of the correlation estimates on a simulator with a known correlation, for one series length. The known correlation is a required field of the generator and of every cell. */
+        c10GridOutputs: {
+            /** @constant */
+            kind: "correlation-grid";
+            label: components["schemas"]["common-text"];
+            generator: components["schemas"]["c10SimGenerator"];
+            size_power_definition: components["schemas"]["common-text"];
+            cells: components["schemas"]["c10GridCell"][];
+        };
+        /** @description A group of identical names of the illustrative portfolio (dossier 04 H.1: EAD, expected LGD, PD, loading, sector). */
+        c10Group: {
+            id: string;
+            label: components["schemas"]["common-text"];
+            n_names: number;
+            /** @description Money in the `currency` of the enclosing block. */
+            ead_each: number;
+            /** @description An estimate-site PD is open: 0 < pd < 1. */
+            pd: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            lgd: number;
+            /** @description The factor loading sqrt(rho) of the group's names on the systematic factor. */
+            loading: number;
+            sector: string;
+        };
+        /** @description An estimate with its interval, all inside (0, 1); ci_low <= estimate <= ci_high (a producer check). */
+        c10Interval: {
+            /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
+            estimate: number;
+            /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
+            ci_low: number;
+            /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
+            ci_high: number;
+        };
+        /** @description How the fitted correlation compares with the IRB correlation of the loan type's regulatory class (dossier 04 C.4): the capital per unit of EAD both ways, with the same maturity treatment on both sides, so the ratio isolates the correlation. Retail classes carry no maturity and no maturity adjustment; the other classes carry both. */
+        c10IrbReference: {
+            /** @enum {string} */
+            regime: "basel3" | "crr3" | "basel2" | "cl_ran21_6";
+            /** @enum {string} */
+            asset_class: "corporate" | "sovereign" | "bank" | "financial_institution" | "sme" | "hvcre" | "residential_mortgage" | "qrre" | "other_retail" | "retail_consumer";
+            reference: string;
+            /** @description An estimate-site PD is open: 0 < pd < 1. */
+            pd: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            lgd: number;
+            /** @description Effective maturity in years, 1 to 5; null for a retail class. */
+            maturity: number | null;
+            /** @description (1 + (M - 2.5) b) / (1 - 1.5 b) with b = (0.11852 - 0.05478 ln PD)^2; null for a retail class. */
+            maturity_adjustment: number | null;
+            /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
+            irb_correlation: number;
+            /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
+            fitted_correlation: number;
+            /** @description The IRB capital requirement per unit of EAD (engine regulatory.irb.capital_requirement), with the maturity adjustment where the class has one. */
+            k_irb: number;
+            /** @description lgd * (LHP quantile at 99.9% with the fitted correlation - pd) times the same maturity adjustment as k_irb, per unit of EAD. */
+            ec_lhp_fitted: number;
+            ratio_fitted_to_irb: number;
+        } & ({
+            /** @enum {string} */
+            asset_class?: "residential_mortgage" | "qrre" | "other_retail" | "retail_consumer";
+            maturity?: null;
+            maturity_adjustment?: null;
+        } | {
+            /** @enum {string} */
+            asset_class?: "corporate" | "sovereign" | "bank" | "financial_institution" | "sme" | "hvcre";
+            maturity?: number;
+            maturity_adjustment?: number;
+        });
+        /** @description C10 loan-type outputs (outputs.kind loan-type): one Federal Reserve loan type, the Vasicek fit to its yearly loss rates (fit 1985-2006), the 2007-2012 tail back-test, and the loss distributions of the illustrative portfolio by rung with the Euler contributions and the concentration measures. Loss rates are decimals per year; money carries its currency. */
+        c10LoanTypeOutputs: {
+            /** @constant */
+            kind: "loan-type";
+            /** @enum {string} */
+            loan_type: "commercial-industrial" | "commercial-real-estate" | "residential" | "credit-cards" | "other-consumer";
+            label: components["schemas"]["common-text"];
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            loss_rate_definition: components["schemas"]["common-text"];
+            windows: components["schemas"]["c10Windows"];
+            data_status: components["schemas"]["c10DataStatus"];
+            annual_rates: components["schemas"]["c10AnnualRate"][];
+            fit: components["schemas"]["c10Fit"];
+            profile_likelihood: components["schemas"]["c10Profile"];
+            fitted_distribution: components["schemas"]["c10FittedDistribution"];
+            backtest: components["schemas"]["c10Backtest"];
+            irb_reference: components["schemas"]["c10IrbReference"];
+            portfolio: components["schemas"]["c10Portfolio"];
+            rungs: components["schemas"]["c10Rung"][];
+            granularity: components["schemas"]["c10Granularity"];
+            euler: components["schemas"]["c10Euler"][];
+        };
+        /** @description A loan type of the Federal Reserve table and the IRB asset class its fitted correlation is compared with. */
+        c10LoanTypeSpec: {
+            /** @enum {string} */
+            id: "commercial-industrial" | "commercial-real-estate" | "residential" | "credit-cards" | "other-consumer";
+            label: components["schemas"]["common-text"];
+            table_column: string;
+            /** @enum {string} */
+            irb_asset_class: "corporate" | "sovereign" | "bank" | "financial_institution" | "sme" | "hvcre" | "residential_mortgage" | "qrre" | "other_retail" | "retail_consumer";
+            irb_reference: string;
+        };
+        /** @description The loss distribution of a rung on a money grid; the three arrays have one length. */
+        c10LossCurve: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            /** @description Portfolio loss in money, strictly increasing. */
+            loss: number[];
+            /** @description The distribution function of the loss, nondecreasing. */
+            cdf: number[];
+            /** @description The density (per unit of money) or the histogram density. */
+            density: number[];
+        };
+        /** @description EL, VaR, ES and EC at one level (dossier 04 H.1): EC = VaR - EL. VaR is not below EL and ES is not below VaR (a producer check, JSON Schema cannot compare fields). A rung that defines no ES (the granularity adjustment) has es null and the reason. */
+        c10Measure: {
+            /**
+             * @description A confidence level as a decimal.
+             * @enum {number}
+             */
+            level: 0.99 | 0.999;
+            /** @description Money in the `currency` of the enclosing block. */
+            el: number;
+            /** @description Money in the `currency` of the enclosing block. */
+            var: number;
+            es: number | null;
+            es_reason: string | null;
+            /** @description Money in the `currency` of the enclosing block. */
+            ec: number;
+            /** @description Monte Carlo standard error of the VaR; null for an analytic rung. */
+            var_se: number | null;
+            /** @description Monte Carlo standard error of the ES; null for an analytic rung. */
+            es_se: number | null;
+        } & ({
+            /** @description Money in the `currency` of the enclosing block. */
+            es?: number;
+            es_reason?: null;
+        } | {
+            es?: null;
+            es_reason?: string;
+        });
+        /** @description A quarter missing from the Federal Reserve table, with its reason; never interpolated. */
+        c10MissingQuarter: {
+            quarter: string;
+            reason: string;
+        };
+        /** @description The maximum-likelihood fit of the Vasicek distribution to the yearly rates of the fit window (dossier 04 C.4; engine asrf_fit.fit_ml), intervals by the profile likelihood. */
+        c10MlFit: {
+            pd: components["schemas"]["c10PdInterval"];
+            rho: components["schemas"]["c10Interval"];
+            log_likelihood: number;
+            converged: boolean;
+            /** @enum {string} */
+            interval_method: "profile-likelihood";
+            /** @constant */
+            level: 0.95;
+        };
+        /** @description C10 models: the five loan types, the two estimators, the eight rungs of the ladder, the illustrative portfolio's specification, the granularity parameters and the simulator's grid. */
+        c10ModelsFit: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            windows: components["schemas"]["c10Windows"];
+            loan_types: components["schemas"]["c10LoanTypeSpec"][];
+            estimators: components["schemas"]["c10EstimatorSpec"][];
+            ladder: components["schemas"]["c10RungSpec"][];
+            portfolio_spec: components["schemas"]["c10PortfolioSpec"];
+            granularity: components["schemas"]["c10GranularitySpec"];
+            simulator: components["schemas"]["c10SimSpec"];
+        };
+        /** @description The method-of-moments fit (engine asrf_fit.fit_moments), intervals by the parametric bootstrap. */
+        c10MomentsFit: {
+            pd: components["schemas"]["c10PdInterval"];
+            rho: components["schemas"]["c10Interval"];
+            /** @enum {string} */
+            interval_method: "parametric-bootstrap";
+            n_bootstrap: number;
+            /** @constant */
+            level: 0.95;
+        };
+        /** @description A PD estimate with its interval, all inside the open interval (0, 1). */
+        c10PdInterval: {
+            /** @description An estimate-site PD is open: 0 < pd < 1. */
+            estimate: number;
+            /** @description An estimate-site PD is open: 0 < pd < 1. */
+            ci_low: number;
+            /** @description An estimate-site PD is open: 0 < pd < 1. */
+            ci_high: number;
+        };
+        /** @description The illustrative portfolio: constructed, never a bank's (labelled `illustrative` here and in the provenance). hhi = sum of squared exposure shares and effective_names = 1 / hhi (dossier 04 H.6). */
+        c10Portfolio: {
+            /** @constant */
+            label: "illustrative";
+            notice: components["schemas"]["common-text"];
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            n_names: number;
+            /** @description Money in the `currency` of the enclosing block. */
+            total_ead: number;
+            groups: components["schemas"]["c10Group"][];
+            /** @description A share or an observed rate in [0, 1]. */
+            lgd_mean: number;
+            /** @description gamma of V[LGD] = gamma E[LGD] (1 - E[LGD]) (Gordy and Lutkebohmert 2013, eq. 16). */
+            lgd_gamma: number;
+            /** @constant */
+            levels: [
+                0.99,
+                0.999
+            ];
+            /** @constant */
+            horizon_years: 1;
+            calibration: components["schemas"]["c10Calibration"];
+            hhi: number;
+            effective_names: number;
+            largest_share: number;
+        };
+        /** @description The specification of the illustrative portfolio the bake builds per loan type: constructed, never a bank's. */
+        c10PortfolioSpec: {
+            /** @constant */
+            label: "illustrative";
+            notice: components["schemas"]["common-text"];
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            groups: components["schemas"]["c10Group"][];
+            /** @description A share or an observed rate in [0, 1]. */
+            lgd_mean: number;
+            lgd_gamma: number;
+            /** @constant */
+            levels: [
+                0.99,
+                0.999
+            ];
+            /** @constant */
+            horizon_years: 1;
+        };
+        /** @description The profile likelihood of the asset correlation (dossier 04 C.4; engine asrf_fit.profile_likelihood): the three arrays have one length. */
+        c10Profile: {
+            /** @constant */
+            level: 0.95;
+            /** @description The correlation grid, strictly increasing. */
+            rho: number[];
+            /** @description The profile log-likelihood at each grid correlation (the PD maximised out). */
+            log_likelihood: number[];
+            /** @description The maximising PD at each grid correlation. */
+            pd_at_rho: number[];
+            max_log_likelihood: number;
+            /** @description max_log_likelihood minus the chi-square(1) quantile at `level`, halved. */
+            cutoff: number;
+        };
+        c10Quantile: {
+            level: number;
+            /** @description An observed annual loss rate as a decimal per year, open (0, 1): the implied factor needs it. */
+            value: number;
+        };
+        /** @description One rung of the portfolio ladder (dossier 04 'Portfolio credit risk': C1 LHP, C2 Gaussian copula, C3 Student-t copula, C4 CreditRisk+, C5 granularity adjustment, C6 importance sampling) on the illustrative portfolio. A rung that did not run (importance sampling for the Student-t copula) is a not-evaluated row: evaluated false, its reason, no measure, no curve; never a number. */
+        c10Rung: {
+            /** @enum {string} */
+            id: "c1-lhp" | "c2-gaussian-1f" | "c2-gaussian-mf" | "c3-student-t" | "c4-creditrisk-plus" | "c5-granularity" | "c6-is-gaussian" | "c6-is-student-t";
+            /** @enum {string} */
+            rung: "C1" | "C2" | "C3" | "C4" | "C5" | "C6";
+            /** @enum {string} */
+            method: "lhp-vasicek" | "gaussian-copula-one-factor" | "gaussian-copula-multi-factor" | "student-t-copula" | "creditrisk-plus" | "granularity-adjustment" | "importance-sampling";
+            label: components["schemas"]["common-text"];
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            /** @enum {string} */
+            estimator: "analytic" | "monte-carlo" | "none";
+            evaluated: boolean;
+            /** @description Why the rung did not run; null when it ran. */
+            reason: string | null;
+            /** @description The declared inputs of the rung; a rung that did not run may keep them. */
+            parameters: {
+                name: string;
+                value: number;
+                unit: string;
+            }[];
+            /** @description Numbers measured by running the rung; empty when the rung did not run. */
+            diagnostics: {
+                name: string;
+                value: number;
+                unit: string;
+            }[];
+            simulation: components["schemas"]["c10Simulation"] | null;
+            measures: components["schemas"]["c10Measure"][] | null;
+            distribution: components["schemas"]["c10LossCurve"] | null;
+        } & ({
+            /** @constant */
+            evaluated?: true;
+            /** @constant */
+            estimator?: "analytic";
+            reason?: null;
+            simulation?: null;
+            measures?: {
+                var_se?: null;
+                es_se?: null;
+            }[];
+            distribution?: components["schemas"]["c10LossCurve"];
+        } | {
+            /** @constant */
+            evaluated?: true;
+            /** @constant */
+            estimator?: "monte-carlo";
+            reason?: null;
+            simulation?: components["schemas"]["c10Simulation"];
+            measures?: {
+                var_se?: number;
+                es_se?: number;
+                /** @description Money in the `currency` of the enclosing block. */
+                es?: number;
+            }[];
+            distribution?: components["schemas"]["c10LossCurve"];
+        } | {
+            /** @constant */
+            evaluated?: false;
+            /** @constant */
+            estimator?: "none";
+            reason?: string;
+            simulation?: null;
+            diagnostics?: unknown[];
+            measures?: null;
+            distribution?: null;
+        });
+        /** @description The specification of one rung: its engine function, its reference and its parameters. A Monte Carlo rung has its scenario count; an analytic rung has none. */
+        c10RungSpec: {
+            /** @enum {string} */
+            id: "c1-lhp" | "c2-gaussian-1f" | "c2-gaussian-mf" | "c3-student-t" | "c4-creditrisk-plus" | "c5-granularity" | "c6-is-gaussian" | "c6-is-student-t";
+            /** @enum {string} */
+            rung: "C1" | "C2" | "C3" | "C4" | "C5" | "C6";
+            /** @enum {string} */
+            method: "lhp-vasicek" | "gaussian-copula-one-factor" | "gaussian-copula-multi-factor" | "student-t-copula" | "creditrisk-plus" | "granularity-adjustment" | "importance-sampling";
+            label: components["schemas"]["common-text"];
+            /** @enum {string} */
+            estimator: "analytic" | "monte-carlo";
+            /** @description Monte Carlo scenarios; null for an analytic rung. */
+            n_scenarios: number | null;
+            engine_function: string;
+            reference: string;
+            parameters: {
+                name: string;
+                value: number;
+                unit: string;
+            }[];
+        } & ({
+            /** @constant */
+            estimator?: "analytic";
+            n_scenarios?: null;
+        } | {
+            /** @constant */
+            estimator?: "monte-carlo";
+            n_scenarios?: number;
+        });
+        /** @description The Vasicek simulator with a known correlation: a yearly factor draw per year, the large-homogeneous-portfolio default fraction, then the fit. null_rho is on the grid. */
+        c10SimGenerator: {
+            name: string;
+            shaped_on: string;
+            /** @description An estimate-site PD is open: 0 < pd < 1. */
+            known_pd: number;
+            /** @description The known asset correlations, strictly increasing. */
+            rho_grid: number[];
+            /** @enum {integer} */
+            series_length_years: 22 | 40;
+            n_replications: number;
+            /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
+            null_rho: number;
+            /** @constant */
+            alpha: 0.05;
+            seed: number;
+            notice: components["schemas"]["common-text"];
+        };
+        /** @description The simulator's grid: the known correlations, the series lengths, the replications. */
+        c10SimSpec: {
+            /** @description An estimate-site PD is open: 0 < pd < 1. */
+            known_pd: number;
+            rho_grid: number[];
+            series_lengths_years: (22 | 40)[];
+            n_replications: number;
+            /** @description An asset correlation is open: 0 < rho < 1 (the Vasicek model has no value at 0 or 1). */
+            null_rho: number;
+            /** @constant */
+            alpha: 0.05;
+            seed: number;
+        };
+        /** @description How a Monte Carlo rung was run: scenarios, seed, and the chunk bound on memory. */
+        c10Simulation: {
+            n_scenarios: number;
+            seed: number;
+            chunk_size: number;
+        };
+        /** @description The fit window (1985-2006) and the out-of-sample evaluation window (2007-2012); the fit window ends before the evaluation window begins. */
+        c10Windows: {
+            fit: components["schemas"]["c10FitWindow"];
+            evaluation: components["schemas"]["c10EvaluationWindow"];
+        };
+        /**
          * C22 models
          * @description Catalog row c22-models 1.0.0: the C22 models artifact with the exact-probability parity points.
          */
@@ -3624,7 +4347,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c03-models"] | components["schemas"]["c03-variant-vintage-cohort"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c08-models"] | components["schemas"]["c08-variant-default-cohort"] | components["schemas"]["c09-models"] | components["schemas"]["c09-variant-acceleration-level"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
+                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c03-models"] | components["schemas"]["c03-variant-vintage-cohort"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c08-models"] | components["schemas"]["c08-variant-default-cohort"] | components["schemas"]["c09-models"] | components["schemas"]["c09-variant-acceleration-level"] | components["schemas"]["c10-models"] | components["schemas"]["c10-variant-correlation-grid"] | components["schemas"]["c10-variant-loan-type"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
                 };
             };
             404: components["responses"]["NotFound"];
