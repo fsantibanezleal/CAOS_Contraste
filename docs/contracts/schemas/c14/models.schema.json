@@ -168,7 +168,7 @@
           ]
         }
       },
-      "description": "The shock sizes applied to a currency, in basis points. A currency without an entry in the BCBS table (CLP is not in either) passes only labelled as a Contraste estimate with its method, never as a regulatory parameter (dossier 01 H.3).",
+      "description": "The shock sizes applied to a currency, in basis points. A tabled size is exactly the table's (SRP31.90 Table 2, d368 Annex 2 Table 1, RAN 21-13 Annex 1 Hoja 9); a currency without an entry in the BCBS table (CLP is in neither) passes only labelled as a Contraste estimate with its method, never as a regulatory parameter (dossier 01 H.3), and a tabled currency cannot be relabelled as an estimate.",
       "oneOf": [
         {
           "properties": {
@@ -176,30 +176,516 @@
               "const": "srp31-table-2024"
             },
             "currency": {
-              "type": "string",
-              "enum": [
-                "ARS",
-                "AUD",
-                "BRL",
-                "CAD",
-                "CHF",
-                "CNY",
-                "EUR",
-                "GBP",
-                "HKD",
-                "IDR",
-                "INR",
-                "JPY",
-                "KRW",
-                "MXN",
-                "RUB",
-                "SAR",
-                "SEK",
-                "SGD",
-                "TRY",
-                "USD",
-                "ZAR"
-              ]
+              "const": "ARS"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "AUD"
+            },
+            "parallel_bp": {
+              "const": 350
+            },
+            "short_bp": {
+              "const": 425
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "BRL"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "CAD"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 275
+            },
+            "long_bp": {
+              "const": 175
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "CHF"
+            },
+            "parallel_bp": {
+              "const": 175
+            },
+            "short_bp": {
+              "const": 250
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "CNY"
+            },
+            "parallel_bp": {
+              "const": 225
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "EUR"
+            },
+            "parallel_bp": {
+              "const": 225
+            },
+            "short_bp": {
+              "const": 350
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "GBP"
+            },
+            "parallel_bp": {
+              "const": 275
+            },
+            "short_bp": {
+              "const": 425
+            },
+            "long_bp": {
+              "const": 250
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "HKD"
+            },
+            "parallel_bp": {
+              "const": 225
+            },
+            "short_bp": {
+              "const": 375
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "IDR"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "parallel_bp": {
+              "const": 325
+            },
+            "short_bp": {
+              "const": 475
+            },
+            "long_bp": {
+              "const": 225
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "JPY"
+            },
+            "parallel_bp": {
+              "const": 100
+            },
+            "short_bp": {
+              "const": 100
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "KRW"
+            },
+            "parallel_bp": {
+              "const": 225
+            },
+            "short_bp": {
+              "const": 350
+            },
+            "long_bp": {
+              "const": 225
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "MXN"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "RUB"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "SAR"
+            },
+            "parallel_bp": {
+              "const": 275
+            },
+            "short_bp": {
+              "const": 375
+            },
+            "long_bp": {
+              "const": 250
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "SEK"
+            },
+            "parallel_bp": {
+              "const": 275
+            },
+            "short_bp": {
+              "const": 425
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "SGD"
+            },
+            "parallel_bp": {
+              "const": 175
+            },
+            "short_bp": {
+              "const": 250
+            },
+            "long_bp": {
+              "const": 225
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "TRY"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "USD"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 225
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "ZAR"
+            },
+            "parallel_bp": {
+              "const": 325
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
             },
             "label": {
               "type": "null"
@@ -215,30 +701,516 @@
               "const": "srp31-table-2016"
             },
             "currency": {
-              "type": "string",
-              "enum": [
-                "ARS",
-                "AUD",
-                "BRL",
-                "CAD",
-                "CHF",
-                "CNY",
-                "EUR",
-                "GBP",
-                "HKD",
-                "IDR",
-                "INR",
-                "JPY",
-                "KRW",
-                "MXN",
-                "RUB",
-                "SAR",
-                "SEK",
-                "SGD",
-                "TRY",
-                "USD",
-                "ZAR"
-              ]
+              "const": "ARS"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "AUD"
+            },
+            "parallel_bp": {
+              "const": 300
+            },
+            "short_bp": {
+              "const": 450
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "BRL"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "CAD"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "CHF"
+            },
+            "parallel_bp": {
+              "const": 100
+            },
+            "short_bp": {
+              "const": 150
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "CNY"
+            },
+            "parallel_bp": {
+              "const": 250
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "EUR"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 250
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "GBP"
+            },
+            "parallel_bp": {
+              "const": 250
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "HKD"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 250
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "IDR"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 350
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "JPY"
+            },
+            "parallel_bp": {
+              "const": 100
+            },
+            "short_bp": {
+              "const": 100
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "KRW"
+            },
+            "parallel_bp": {
+              "const": 300
+            },
+            "short_bp": {
+              "const": 400
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "MXN"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "RUB"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "SAR"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "SEK"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "SGD"
+            },
+            "parallel_bp": {
+              "const": 150
+            },
+            "short_bp": {
+              "const": 200
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "TRY"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "USD"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "ZAR"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
             },
             "label": {
               "type": "null"
@@ -254,11 +1226,41 @@
               "const": "cmf-annex1"
             },
             "currency": {
-              "type": "string",
-              "enum": [
-                "CLP",
-                "CLF"
-              ]
+              "const": "CLP"
+            },
+            "parallel_bp": {
+              "const": 300
+            },
+            "short_bp": {
+              "const": 400
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "cmf-annex1"
+            },
+            "currency": {
+              "const": "CLF"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 250
+            },
+            "long_bp": {
+              "const": 150
             },
             "label": {
               "type": "null"
@@ -272,6 +1274,33 @@
           "properties": {
             "origin": {
               "const": "contraste-estimate"
+            },
+            "currency": {
+              "not": {
+                "enum": [
+                  "ARS",
+                  "AUD",
+                  "BRL",
+                  "CAD",
+                  "CHF",
+                  "CNY",
+                  "EUR",
+                  "GBP",
+                  "HKD",
+                  "IDR",
+                  "INR",
+                  "JPY",
+                  "KRW",
+                  "MXN",
+                  "RUB",
+                  "SAR",
+                  "SEK",
+                  "SGD",
+                  "TRY",
+                  "USD",
+                  "ZAR"
+                ]
+              }
             },
             "label": {
               "$ref": "#/$defs/c14Label"
@@ -514,7 +1543,199 @@
           "description": "Bucket midpoint in years: one of the 19 of SRP31.96 Table 3."
         }
       },
-      "description": "One of the 19 time buckets of SRP31.96 Table 3."
+      "description": "One of the 19 time buckets of SRP31.96 Table 3.",
+      "oneOf": [
+        {
+          "properties": {
+            "bucket": {
+              "const": 1
+            },
+            "midpoint_years": {
+              "const": 0.0028
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 2
+            },
+            "midpoint_years": {
+              "const": 0.0417
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 3
+            },
+            "midpoint_years": {
+              "const": 0.1667
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 4
+            },
+            "midpoint_years": {
+              "const": 0.375
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 5
+            },
+            "midpoint_years": {
+              "const": 0.625
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 6
+            },
+            "midpoint_years": {
+              "const": 0.875
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 7
+            },
+            "midpoint_years": {
+              "const": 1.25
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 8
+            },
+            "midpoint_years": {
+              "const": 1.75
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 9
+            },
+            "midpoint_years": {
+              "const": 2.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 10
+            },
+            "midpoint_years": {
+              "const": 3.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 11
+            },
+            "midpoint_years": {
+              "const": 4.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 12
+            },
+            "midpoint_years": {
+              "const": 5.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 13
+            },
+            "midpoint_years": {
+              "const": 6.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 14
+            },
+            "midpoint_years": {
+              "const": 7.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 15
+            },
+            "midpoint_years": {
+              "const": 8.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 16
+            },
+            "midpoint_years": {
+              "const": 9.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 17
+            },
+            "midpoint_years": {
+              "const": 12.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 18
+            },
+            "midpoint_years": {
+              "const": 17.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 19
+            },
+            "midpoint_years": {
+              "const": 25.0
+            }
+          }
+        }
+      ]
     },
     "c14NmdCap": {
       "type": "object",
@@ -614,17 +1835,149 @@
       "properties": {
         "prepayment_gamma": {
           "type": "array",
-          "items": {
-            "$ref": "#/$defs/c14Gamma"
-          },
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c14Gamma",
+              "properties": {
+                "shock": {
+                  "const": "parallel-up"
+                },
+                "gamma": {
+                  "const": 0.8
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14Gamma",
+              "properties": {
+                "shock": {
+                  "const": "parallel-down"
+                },
+                "gamma": {
+                  "const": 1.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14Gamma",
+              "properties": {
+                "shock": {
+                  "const": "steepener"
+                },
+                "gamma": {
+                  "const": 0.8
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14Gamma",
+              "properties": {
+                "shock": {
+                  "const": "flattener"
+                },
+                "gamma": {
+                  "const": 1.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14Gamma",
+              "properties": {
+                "shock": {
+                  "const": "short-up"
+                },
+                "gamma": {
+                  "const": 0.8
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14Gamma",
+              "properties": {
+                "shock": {
+                  "const": "short-down"
+                },
+                "gamma": {
+                  "const": 1.2
+                }
+              }
+            }
+          ],
+          "items": false,
           "minItems": 6,
           "maxItems": 6
         },
         "term_deposit_u": {
           "type": "array",
-          "items": {
-            "$ref": "#/$defs/c14UMult"
-          },
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c14UMult",
+              "properties": {
+                "shock": {
+                  "const": "parallel-up"
+                },
+                "u": {
+                  "const": 1.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14UMult",
+              "properties": {
+                "shock": {
+                  "const": "parallel-down"
+                },
+                "u": {
+                  "const": 0.8
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14UMult",
+              "properties": {
+                "shock": {
+                  "const": "steepener"
+                },
+                "u": {
+                  "const": 0.8
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14UMult",
+              "properties": {
+                "shock": {
+                  "const": "flattener"
+                },
+                "u": {
+                  "const": 1.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14UMult",
+              "properties": {
+                "shock": {
+                  "const": "short-up"
+                },
+                "u": {
+                  "const": 1.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14UMult",
+              "properties": {
+                "shock": {
+                  "const": "short-down"
+                },
+                "u": {
+                  "const": 0.8
+                }
+              }
+            }
+          ],
+          "items": false,
           "minItems": 6,
           "maxItems": 6
         },
@@ -634,6 +1987,57 @@
         }
       },
       "description": "The scenario multipliers of the prepayment rate and the term-deposit redemption rate, in the order of the six shocks."
+    },
+    "c14NmdCaps": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/c14NmdCap",
+          "properties": {
+            "category": {
+              "const": "retail-transactional"
+            },
+            "core_share_cap": {
+              "const": 0.9
+            },
+            "core_maturity_cap_years": {
+              "const": 5.0
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/c14NmdCap",
+          "properties": {
+            "category": {
+              "const": "retail-non-transactional"
+            },
+            "core_share_cap": {
+              "const": 0.7
+            },
+            "core_maturity_cap_years": {
+              "const": 4.5
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/c14NmdCap",
+          "properties": {
+            "category": {
+              "const": "wholesale"
+            },
+            "core_share_cap": {
+              "const": 0.5
+            },
+            "core_maturity_cap_years": {
+              "const": 4.0
+            }
+          }
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3,
+      "description": "The three SRP31 Table 4 caps, exactly the table's."
     },
     "c14Bank": {
       "type": "object",
@@ -901,7 +2305,8 @@
         "currency": {
           "type": "string",
           "pattern": "^[A-Z]{3}$",
-          "description": "ISO 4217 code of the money fields of this block."
+          "description": "ISO 4217 code of the money fields of this block.",
+          "const": "USD"
         },
         "sign_convention": {
           "$ref": "#/$defs/c14Sign"
@@ -914,25 +2319,538 @@
         },
         "buckets": {
           "type": "array",
-          "items": {
-            "$ref": "#/$defs/c14BucketDef"
-          },
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 1
+                },
+                "midpoint_years": {
+                  "const": 0.0028
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 2
+                },
+                "midpoint_years": {
+                  "const": 0.0417
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 3
+                },
+                "midpoint_years": {
+                  "const": 0.1667
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 4
+                },
+                "midpoint_years": {
+                  "const": 0.375
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 5
+                },
+                "midpoint_years": {
+                  "const": 0.625
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 6
+                },
+                "midpoint_years": {
+                  "const": 0.875
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 7
+                },
+                "midpoint_years": {
+                  "const": 1.25
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 8
+                },
+                "midpoint_years": {
+                  "const": 1.75
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 9
+                },
+                "midpoint_years": {
+                  "const": 2.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 10
+                },
+                "midpoint_years": {
+                  "const": 3.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 11
+                },
+                "midpoint_years": {
+                  "const": 4.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 12
+                },
+                "midpoint_years": {
+                  "const": 5.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 13
+                },
+                "midpoint_years": {
+                  "const": 6.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 14
+                },
+                "midpoint_years": {
+                  "const": 7.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 15
+                },
+                "midpoint_years": {
+                  "const": 8.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 16
+                },
+                "midpoint_years": {
+                  "const": 9.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 17
+                },
+                "midpoint_years": {
+                  "const": 12.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 18
+                },
+                "midpoint_years": {
+                  "const": 17.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 19
+                },
+                "midpoint_years": {
+                  "const": 25.0
+                }
+              }
+            }
+          ],
+          "items": false,
           "minItems": 19,
           "maxItems": 19
         },
         "shock_tables": {
           "type": "array",
-          "items": {
-            "$ref": "#/$defs/c14ShockTable"
-          },
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c14ShockTable",
+              "properties": {
+                "calibration": {
+                  "const": "2024"
+                },
+                "rounding_bp": {
+                  "const": 25
+                },
+                "rows": {
+                  "const": [
+                    {
+                      "currency": "ARS",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "AUD",
+                      "parallel_bp": 350,
+                      "short_bp": 425,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "BRL",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "CAD",
+                      "parallel_bp": 200,
+                      "short_bp": 275,
+                      "long_bp": 175
+                    },
+                    {
+                      "currency": "CHF",
+                      "parallel_bp": 175,
+                      "short_bp": 250,
+                      "long_bp": 200
+                    },
+                    {
+                      "currency": "CNY",
+                      "parallel_bp": 225,
+                      "short_bp": 300,
+                      "long_bp": 150
+                    },
+                    {
+                      "currency": "EUR",
+                      "parallel_bp": 225,
+                      "short_bp": 350,
+                      "long_bp": 200
+                    },
+                    {
+                      "currency": "GBP",
+                      "parallel_bp": 275,
+                      "short_bp": 425,
+                      "long_bp": 250
+                    },
+                    {
+                      "currency": "HKD",
+                      "parallel_bp": 225,
+                      "short_bp": 375,
+                      "long_bp": 200
+                    },
+                    {
+                      "currency": "IDR",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "INR",
+                      "parallel_bp": 325,
+                      "short_bp": 475,
+                      "long_bp": 225
+                    },
+                    {
+                      "currency": "JPY",
+                      "parallel_bp": 100,
+                      "short_bp": 100,
+                      "long_bp": 100
+                    },
+                    {
+                      "currency": "KRW",
+                      "parallel_bp": 225,
+                      "short_bp": 350,
+                      "long_bp": 225
+                    },
+                    {
+                      "currency": "MXN",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 200
+                    },
+                    {
+                      "currency": "RUB",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "SAR",
+                      "parallel_bp": 275,
+                      "short_bp": 375,
+                      "long_bp": 250
+                    },
+                    {
+                      "currency": "SEK",
+                      "parallel_bp": 275,
+                      "short_bp": 425,
+                      "long_bp": 200
+                    },
+                    {
+                      "currency": "SGD",
+                      "parallel_bp": 175,
+                      "short_bp": 250,
+                      "long_bp": 225
+                    },
+                    {
+                      "currency": "TRY",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "USD",
+                      "parallel_bp": 200,
+                      "short_bp": 300,
+                      "long_bp": 225
+                    },
+                    {
+                      "currency": "ZAR",
+                      "parallel_bp": 325,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14ShockTable",
+              "properties": {
+                "calibration": {
+                  "const": "2016"
+                },
+                "rounding_bp": {
+                  "const": 50
+                },
+                "rows": {
+                  "const": [
+                    {
+                      "currency": "ARS",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "AUD",
+                      "parallel_bp": 300,
+                      "short_bp": 450,
+                      "long_bp": 200
+                    },
+                    {
+                      "currency": "BRL",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "CAD",
+                      "parallel_bp": 200,
+                      "short_bp": 300,
+                      "long_bp": 150
+                    },
+                    {
+                      "currency": "CHF",
+                      "parallel_bp": 100,
+                      "short_bp": 150,
+                      "long_bp": 100
+                    },
+                    {
+                      "currency": "CNY",
+                      "parallel_bp": 250,
+                      "short_bp": 300,
+                      "long_bp": 150
+                    },
+                    {
+                      "currency": "EUR",
+                      "parallel_bp": 200,
+                      "short_bp": 250,
+                      "long_bp": 100
+                    },
+                    {
+                      "currency": "GBP",
+                      "parallel_bp": 250,
+                      "short_bp": 300,
+                      "long_bp": 150
+                    },
+                    {
+                      "currency": "HKD",
+                      "parallel_bp": 200,
+                      "short_bp": 250,
+                      "long_bp": 100
+                    },
+                    {
+                      "currency": "IDR",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 350
+                    },
+                    {
+                      "currency": "INR",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "JPY",
+                      "parallel_bp": 100,
+                      "short_bp": 100,
+                      "long_bp": 100
+                    },
+                    {
+                      "currency": "KRW",
+                      "parallel_bp": 300,
+                      "short_bp": 400,
+                      "long_bp": 200
+                    },
+                    {
+                      "currency": "MXN",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "RUB",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "SAR",
+                      "parallel_bp": 200,
+                      "short_bp": 300,
+                      "long_bp": 150
+                    },
+                    {
+                      "currency": "SEK",
+                      "parallel_bp": 200,
+                      "short_bp": 300,
+                      "long_bp": 150
+                    },
+                    {
+                      "currency": "SGD",
+                      "parallel_bp": 150,
+                      "short_bp": 200,
+                      "long_bp": 100
+                    },
+                    {
+                      "currency": "TRY",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "USD",
+                      "parallel_bp": 200,
+                      "short_bp": 300,
+                      "long_bp": 150
+                    },
+                    {
+                      "currency": "ZAR",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "items": false,
           "minItems": 2,
           "maxItems": 2
         },
         "applied_sizes": {
           "type": "array",
-          "items": {
-            "$ref": "#/$defs/c14ShockSize"
-          },
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c14ShockSize",
+              "properties": {
+                "origin": {
+                  "const": "srp31-table-2024"
+                },
+                "currency": {
+                  "const": "USD"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14ShockSize",
+              "properties": {
+                "origin": {
+                  "const": "srp31-table-2016"
+                },
+                "currency": {
+                  "const": "USD"
+                }
+              }
+            }
+          ],
+          "items": false,
           "minItems": 2,
           "maxItems": 2
         },
@@ -940,12 +2858,7 @@
           "$ref": "#/$defs/c14ShockShape"
         },
         "nmd_caps": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/c14NmdCap"
-          },
-          "minItems": 3,
-          "maxItems": 3
+          "$ref": "#/$defs/c14NmdCaps"
         },
         "multipliers": {
           "$ref": "#/$defs/c14Multipliers"

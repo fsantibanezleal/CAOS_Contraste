@@ -174,13 +174,13 @@
         "value": 0.512903226,
         "unit": "share",
         "source_kind": "fitted",
-        "source": "balance-weighted average of nmd_segments"
+        "source": "balance-weighted average of the used values of nmd_segments"
       },
       "nmd_core_maturity_years": {
         "value": 3.451612903,
         "unit": "years",
         "source_kind": "fitted",
-        "source": "balance-weighted average of nmd_segments"
+        "source": "balance-weighted average of the used values of nmd_segments"
       },
       "prepayment_cpr": {
         "value": 0.04,
@@ -205,36 +205,39 @@
       {
         "category": "wholesale",
         "balance": 93500000.0,
-        "core_share": 0.4,
+        "requested_core_share": 0.4,
         "core_share_cap": 0.5,
-        "core_share_flag": "within-cap",
-        "core_maturity_years": 3.0,
+        "core_share_used": 0.4,
+        "requested_core_maturity_years": 3.0,
         "core_maturity_cap_years": 4.0,
-        "maturity_flag": "within-cap",
+        "core_maturity_used_years": 3.0,
+        "cap_applied": false,
         "source_kind": "synthetic-stated",
         "source": "fixture value, synthetic behaviour stated"
       },
       {
         "category": "retail-transactional",
         "balance": 21250000.0,
-        "core_share": 0.9,
+        "requested_core_share": 0.9,
         "core_share_cap": 0.9,
-        "core_share_flag": "within-cap",
-        "core_maturity_years": 5.0,
+        "core_share_used": 0.9,
+        "requested_core_maturity_years": 5.0,
         "core_maturity_cap_years": 5.0,
-        "maturity_flag": "within-cap",
+        "core_maturity_used_years": 5.0,
+        "cap_applied": false,
         "source_kind": "regulatory-cap",
         "source": "SRP31 Table 4 cap taken as the assumption"
       },
       {
         "category": "retail-non-transactional",
         "balance": 17000000.0,
-        "core_share": 0.65,
+        "requested_core_share": 0.65,
         "core_share_cap": 0.7,
-        "core_share_flag": "within-cap",
-        "core_maturity_years": 4.0,
+        "core_share_used": 0.65,
+        "requested_core_maturity_years": 4.0,
         "core_maturity_cap_years": 4.5,
-        "maturity_flag": "within-cap",
+        "core_maturity_used_years": 4.0,
+        "cap_applied": false,
         "source_kind": "fitted",
         "source": "fixture value standing for a fitted replicating portfolio"
       }
@@ -979,6 +982,7 @@
       {
         "calibration": "2024",
         "nmd_assumption": "behavioural",
+        "nmd_treatment": "standardised-capped",
         "shock_size": {
           "currency": "USD",
           "parallel_bp": 200,
@@ -1369,6 +1373,7 @@
       {
         "calibration": "2024",
         "nmd_assumption": "contractual",
+        "nmd_treatment": "contractual-overnight",
         "shock_size": {
           "currency": "USD",
           "parallel_bp": 200,
@@ -1759,6 +1764,7 @@
       {
         "calibration": "2016",
         "nmd_assumption": "behavioural",
+        "nmd_treatment": "standardised-capped",
         "shock_size": {
           "currency": "USD",
           "parallel_bp": 200,
@@ -2150,6 +2156,7 @@
       {
         "calibration": "2016",
         "nmd_assumption": "contractual",
+        "nmd_treatment": "contractual-overnight",
         "shock_size": {
           "currency": "USD",
           "parallel_bp": 200,
@@ -2539,6 +2546,227 @@
         }
       }
     ],
+    "dynamic_nii": {
+      "horizon_months": 12,
+      "balance_sheet_assumption": {
+        "kind": "constant",
+        "growth_annual": 0,
+        "description": {
+          "en": "Constant balance sheet: maturing and repricing flows are replaced by identical new ones.",
+          "es": "Balance constante: los flujos que vencen o reprecian se reemplazan por otros identicos."
+        }
+      },
+      "items": [
+        {
+          "item_id": "D1",
+          "side": "asset",
+          "balance": 29750000.0,
+          "rate0": 0.0205,
+          "spread": 0.02,
+          "beta": 1.0,
+          "reprice_months": 0
+        },
+        {
+          "item_id": "D2",
+          "side": "asset",
+          "balance": 97750000.0,
+          "rate0": 0.03,
+          "spread": 0.03,
+          "beta": 1.0,
+          "reprice_months": 60
+        },
+        {
+          "item_id": "D3",
+          "side": "asset",
+          "balance": 6800000.0,
+          "rate0": 0.0005,
+          "spread": 0.0,
+          "beta": 1.0,
+          "reprice_months": 0
+        },
+        {
+          "item_id": "D4",
+          "side": "liability",
+          "balance": 131750000.0,
+          "rate0": 0.00015,
+          "spread": 0.0,
+          "beta": 0.3,
+          "reprice_months": 0
+        },
+        {
+          "item_id": "D5",
+          "side": "liability",
+          "balance": 10200000.0,
+          "rate0": 0.0005,
+          "spread": 0.0,
+          "beta": 1.0,
+          "reprice_months": 6
+        },
+        {
+          "item_id": "D6",
+          "side": "liability",
+          "balance": 8500000.0,
+          "rate0": 0.0015,
+          "spread": 0.001,
+          "beta": 1.0,
+          "reprice_months": 12
+        }
+      ],
+      "scenarios": [
+        {
+          "scenario": "base",
+          "shock_bp": 0.0,
+          "short_rate_path": [
+            0.0005,
+            0.0005,
+            0.0005,
+            0.0005,
+            0.0005,
+            0.0005,
+            0.0005,
+            0.0005,
+            0.0005,
+            0.0005,
+            0.0005,
+            0.0005
+          ],
+          "monthly_nii": [
+            292346.875,
+            292346.875,
+            292346.875,
+            292346.875,
+            292346.875,
+            292346.875,
+            292346.875,
+            292346.875,
+            292346.875,
+            292346.875,
+            292346.875,
+            292346.875
+          ],
+          "total": 3508162.5,
+          "delta_vs_base": 0.0
+        },
+        {
+          "scenario": "parallel-up",
+          "shock_bp": 200,
+          "short_rate_path": [
+            0.0205,
+            0.0205,
+            0.0205,
+            0.0205,
+            0.0205,
+            0.0205,
+            0.0205,
+            0.0205,
+            0.0205,
+            0.0205,
+            0.0205,
+            0.0205
+          ],
+          "monthly_nii": [
+            287388.541667,
+            287388.541667,
+            287388.541667,
+            287388.541667,
+            287388.541667,
+            287388.541667,
+            270388.541667,
+            270388.541667,
+            270388.541667,
+            270388.541667,
+            270388.541667,
+            270388.541667
+          ],
+          "total": 3346662.5,
+          "delta_vs_base": 161500.0
+        },
+        {
+          "scenario": "parallel-down",
+          "shock_bp": -200,
+          "short_rate_path": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "monthly_nii": [
+            292470.833333,
+            292470.833333,
+            292470.833333,
+            292470.833333,
+            292470.833333,
+            292470.833333,
+            292895.833333,
+            292895.833333,
+            292895.833333,
+            292895.833333,
+            292895.833333,
+            292895.833333
+          ],
+          "total": 3512200.0,
+          "delta_vs_base": -4037.5
+        }
+      ]
+    },
+    "ear_evar": {
+      "method": "hw1f",
+      "n_paths": 10000,
+      "seed": 0,
+      "horizon_months": 12,
+      "parameters": [
+        {
+          "name": "a",
+          "value": 0.1,
+          "unit": "per year"
+        },
+        {
+          "name": "sigma",
+          "value": 0.01,
+          "unit": "per year"
+        }
+      ],
+      "base_nii": 3508162.5,
+      "base_eve": -5130553.463344,
+      "levels": [
+        {
+          "level": 0.95,
+          "nii_quantile": 3262591.125,
+          "eve_quantile": -5643608.809678,
+          "ear": 245571.375,
+          "evar": 513055.346334
+        },
+        {
+          "level": 0.99,
+          "nii_quantile": 3157346.25,
+          "eve_quantile": -5900136.482846,
+          "ear": 350816.25,
+          "evar": 769583.019502
+        }
+      ],
+      "monte_carlo_error": {
+        "ear": 2455.71375,
+        "evar": 5130.553463
+      }
+    },
+    "out_of_sample": {
+      "applicable": true,
+      "projection_date": "2021-12-31",
+      "realised_period_start": "2022-01-01",
+      "realised_period_end": "2022-12-31",
+      "projected_delta_nii": 161500.0,
+      "realised_delta_nii": 180880.0,
+      "relative_error": 0.107142857,
+      "reason": null
+    },
     "behavioural_comparison": [
       {
         "calibration": "2024",

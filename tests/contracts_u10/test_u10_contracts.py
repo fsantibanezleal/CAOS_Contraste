@@ -1,26 +1,33 @@
 """U10-S: the C14 and C15 case contracts, their fixtures, the catalog rows and the engine IRRBB API contract.
 
 The fixtures validate by discovery (tests/contracts/contract_schemas.py) against exactly one schema; the schemas are strict
-both ways (a removed or an added key fails); a bucket outside the 19 of SRP31.96 Table 3 fails; an NMD core share or
-maturity above its SRP31 Table 4 cap passes only with its flag; a shock size for a currency without a table entry passes
-only labelled as a Contraste estimate; a money block without its currency fails; the standardised EVE risk measure is the
-maximum over the six shocks of the aggregated positive losses and every number of a fixture recomputes here from the
-formulas of dossier 01 H and dossier 03 F.2, written independently of the fixture builder; a C14 document never reads a
-call report dated after its valuation date; a C15 document carries the UR currency, the offset rule state and the
-indexation charge; the engine contract names every function of the modules table of plans/contraste/units/U10-sizing.md
-with a signature, units and a golden value or an invariant, and its golden values recompute here. The fixtures are labelled
-as fixtures and never published as results.
+both ways (a removed or an added key fails); the order of the six shocks, of the four C14 scenarios, of the 19 buckets with
+their midpoints, the shock sizes, the tables of the models documents and the thresholds are fixed by the schemas; an NMD
+position above its SRP31 Table 4 cap validates only with cap_applied true and the used value at the cap; a shock size for a
+currency without a table entry passes only labelled as a Contraste estimate; a money block without its currency fails.
+
+The cross-field checks (the dating rule, the recomputation of every EVE, delta NII, pair, offset, charge and threshold) are
+importable functions in ``semantics.py`` that a bake calls on every document it writes; these tests run them over every
+committed document (the fixtures and data/derived/C14, C15) and over a table of planted defects, each of which must be
+refused by the schema or by the checker. The engine contract names every function of the modules table of
+plans/contraste/units/U10-sizing.md with a signature, units and a golden value or an invariant, and its golden values
+recompute here. The fixtures are labelled as fixtures and never published as results.
 """
 from __future__ import annotations
 
 import copy
 import math
+import random
 import re
-from typing import Any, Iterator
+from typing import Any, Callable, Iterator
 
 import pytest
+from jsonschema import Draft202012Validator
 
 import contract_schemas as cs
+import semantics as sm
+
+shape, post_rate, eve_of, dense, close = sm.shape_bp, sm.post_rate, sm.eve_of, sm.dense, sm.close
 
 ROOT = cs.ROOT
 FIXTURES = ROOT / "docs" / "contracts" / "fixtures"
@@ -90,6 +97,14 @@ MODEL_KEYS = ["c14-models", "c15-models"]
 
 def ref_of(key: str) -> str:
     return FILES[key][0]
+
+
+def all_documents() -> list:
+    """Every C14 and C15 document the contracts cover: the fixtures and the baked documents under data/derived/C14 and C15."""
+    paths = [p for _, p in FILES.values()]
+    for case in ("C14", "C15"):
+        paths += sorted((ROOT / "data" / "derived" / case).glob("*.json")) if (ROOT / "data" / "derived" / case).is_dir() else []
+    return paths
 
 
 # --- the fixtures -------------------------------------------------------------------------------------------------------
@@ -179,15 +194,22 @@ def closed_objects(key: str) -> list[tuple[tuple, dict]]:
     return list(objects(doc[root_of(key)], (root_of(key),)))
 
 
+def probes(key: str) -> list[tuple[tuple, dict]]:
+    """One object per shape of the document (its path without indices and its keys), so a probe run stays short."""
+    seen, found = set(), []
+    for path, obj in closed_objects(key):
+        shape = (tuple(p for p in path if not isinstance(p, int)), tuple(sorted(obj)))
+        if shape not in seen:
+            seen.add(shape)
+            found.append((path, obj))
+    return found
+
+
 @pytest.mark.parametrize("key", ALL)
 def test_a_key_removed_from_any_object_fails(key: str) -> None:
     ref, doc = ref_of(key), load(key)
-    checked, seen = 0, set()
-    for path, obj in closed_objects(key):
-        shape = (tuple(p for p in path if not isinstance(p, int)), tuple(sorted(obj)))
-        if shape in seen:  # one probe per object shape keeps the run short; every shape of the document is probed
-            continue
-        seen.add(shape)
+    checked = 0
+    for path, obj in probes(key):
         for k in list(obj):
             bad = copy.deepcopy(doc)
             del get(bad, path)[k]
@@ -199,12 +221,7 @@ def test_a_key_removed_from_any_object_fails(key: str) -> None:
 @pytest.mark.parametrize("key", ALL)
 def test_a_key_added_to_any_object_fails(key: str) -> None:
     ref, doc = ref_of(key), load(key)
-    seen = set()
-    for path, obj in closed_objects(key):
-        shape = (tuple(p for p in path if not isinstance(p, int)), tuple(sorted(obj)))
-        if shape in seen:
-            continue
-        seen.add(shape)
+    for path, _ in probes(key):
         bad = copy.deepcopy(doc)
         get(bad, path)["unknown_key"] = 1
         assert cs.errors(ref, bad) != [], f"{key}: adding a key at {'/'.join(map(str, path))} still validates"
@@ -249,7 +266,7 @@ def test_a_wrong_case_id_is_rejected_and_no_fixture_validates_against_another_ca
 @pytest.mark.parametrize("key", ALL)
 def test_a_money_block_without_its_currency_fails(key: str) -> None:
     ref, doc = ref_of(key), load(key)
-    sites = [(p, o) for p, o in closed_objects(key) if "currency" in o and "tenor_years" not in o]
+    sites = [(p, o) for p, o in probes(key) if "currency" in o and "tenor_years" not in o]
     assert sites, f"{key}: no object carries a currency"
     for path, _ in sites:
         bad = copy.deepcopy(doc)
@@ -266,7 +283,8 @@ MONEY_NAMES = {"amount", "balance", "assets", "liabilities", "gap", "asset_value
                "liabilities_total", "net_position", "delta_clp", "delta_ur", "with_offset", "without_offset", "used",
                "total_delta_eve", "max_pair", "charge", "pn_ur", "abs_pn_ur", "effect", "delta_with_floor",
                "delta_without_floor", "base_eve_clp", "base_eve_ur", "measure", "net_interest_and_indexation_margin_12m",
-               "delta_nii_gap_100bp_up"}
+               "delta_nii_gap_100bp_up", "total", "delta_vs_base", "base_nii", "nii_quantile", "eve_quantile", "ear", "evar",
+               "projected_delta_nii", "realised_delta_nii"}
 
 
 @pytest.mark.parametrize("key", VARIANT_KEYS)
@@ -280,6 +298,18 @@ def test_every_money_field_sits_under_a_block_that_states_its_currency(key: str)
                 assert any("currency" in get(doc, path[:n]) or "reporting_currency" in get(doc, path[:n])
                            for n in range(len(path), 0, -1)), f"{key}: money field {'/'.join(map(str, path))}/{k} has no currency"
     assert found > 40, found
+
+
+@pytest.mark.parametrize("key", ["c14-2022-q4", "c14-models"])
+def test_the_c14_currency_is_usd_and_the_c15_reporting_currency_is_clp(key: str) -> None:
+    ref, doc = ref_of(key), load(key)
+    bad = copy.deepcopy(doc)
+    bad[root_of(key)]["currency"] = "CLP"
+    assert cs.errors(ref, bad) != []
+    for k in C15_OUT + ["c15-models"]:
+        ref15, d15 = ref_of(k), load(k)
+        d15[root_of(k)]["reporting_currency"] = "USD"
+        assert cs.errors(ref15, d15) != []
 
 
 # --- the 19 buckets -----------------------------------------------------------------------------------------------------
@@ -301,13 +331,26 @@ def test_a_bucket_outside_the_nineteen_fails(key: str) -> None:
             assert cs.errors(ref, bad) != [], f"{key} {path}: {field}={bad_value} still validates"
 
 
+@pytest.mark.parametrize("key", VARIANT_KEYS + ["c14-models", "c15-models"])
+def test_a_bucket_paired_with_another_buckets_midpoint_fails(key: str) -> None:
+    ref, doc = ref_of(key), load(key)
+    sites = bucket_sites(key)
+    for path in sites[:: max(1, len(sites) // 25)]:
+        o = get(doc, path)
+        other = MIDPOINTS[o["bucket"] % 19]          # the midpoint of the next bucket (a valid midpoint, the wrong pairing)
+        bad = copy.deepcopy(doc)
+        get(bad, path)["midpoint_years"] = other
+        assert cs.errors(ref, bad) != [], f"{key} {path}: bucket {o['bucket']} with midpoint {other} validates"
+
+
 @pytest.mark.parametrize("key", VARIANT_KEYS)
 def test_a_dense_bucket_array_of_the_wrong_length_fails(key: str) -> None:
     ref, doc = ref_of(key), load(key)
-    dense = [p for p, o in closed_objects(key) for k, v in o.items()
-             if isinstance(v, list) and len(v) == 19 and all(isinstance(x, (int, float)) for x in v) and k not in ("weights", "floor_bound_buckets")]
-    assert dense
-    for path in {tuple(p) for p in dense}:
+    dense_sites = [p for p, o in closed_objects(key) for k, v in o.items()
+                   if isinstance(v, list) and len(v) == 19 and all(isinstance(x, (int, float)) for x in v)
+                   and k not in ("weights", "floor_bound_buckets")]
+    assert dense_sites
+    for path in {tuple(p) for p in dense_sites}:
         obj = get(doc, path)
         for k, v in obj.items():
             if isinstance(v, list) and len(v) == 19 and all(isinstance(x, (int, float)) for x in v) and k != "floor_bound_buckets":
@@ -328,15 +371,15 @@ def test_the_bucket_midpoints_pair_with_their_bucket_in_every_fixture() -> None:
         assert [b["midpoint_years"] for b in buckets] == MIDPOINTS
 
 
-# --- NMD caps, with their flags -----------------------------------------------------------------------------------------
+# --- NMD caps: requested, cap, used and cap_applied (D2 of the U10 sizing) -----------------------------------------------
 
 
 def nmd_sites(key: str) -> list[tuple]:
-    return [p for p, o in closed_objects(key) if "core_share" in o and "core_share_cap" in o]
+    return [p for p, o in closed_objects(key) if "requested_core_share" in o]
 
 
 @pytest.mark.parametrize("key", C14_OUT + C15_OUT)
-def test_an_nmd_core_share_or_maturity_above_its_cap_passes_only_with_its_flag(key: str) -> None:
+def test_an_nmd_position_above_its_cap_validates_only_with_cap_applied_and_the_used_value_at_the_cap(key: str) -> None:
     ref, doc = ref_of(key), load(key)
     caps = CAPS if key in C14_OUT else CAPS15
     sites = nmd_sites(key)
@@ -345,31 +388,37 @@ def test_an_nmd_core_share_or_maturity_above_its_cap_passes_only_with_its_flag(k
         seg = get(doc, path)
         cap_share, cap_mat = caps[seg["category"]]
         assert seg["core_share_cap"] == cap_share and seg["core_maturity_cap_years"] == cap_mat
-        for value, flag, ok in [(cap_share + 0.05, "above-cap", True), (cap_share + 0.05, "within-cap", False),
-                                (cap_share, "within-cap", True), (cap_share, "above-cap", False),
-                                (cap_share - 0.1, "above-cap", False), (cap_share - 0.1, "within-cap", True)]:
+        cases = [  # requested share, used share, requested maturity, used maturity, cap_applied, valid
+            (cap_share + 0.05, cap_share, 1.0, 1.0, True, True),
+            (cap_share + 0.05, cap_share, 1.0, 1.0, False, False),      # above the cap, cap_applied false
+            (cap_share + 0.05, cap_share + 0.05, 1.0, 1.0, True, False),  # above the cap, used not at the cap
+            (cap_share, cap_share, 1.0, 1.0, False, True),
+            (cap_share, cap_share, 1.0, 1.0, True, False),              # at the cap, cap_applied true
+            (cap_share - 0.1, cap_share - 0.1, 1.0, 1.0, True, False),  # within the cap, cap_applied true
+            (cap_share - 0.1, cap_share - 0.1, cap_mat + 1.0, cap_mat, True, True),
+            (cap_share - 0.1, cap_share - 0.1, cap_mat + 1.0, cap_mat, False, False),
+            (cap_share - 0.1, cap_share - 0.1, cap_mat + 1.0, cap_mat + 1.0, True, False),
+            (cap_share - 0.1, cap_share - 0.1, cap_mat, cap_mat, False, True),
+        ]
+        for rs, us, rm, um, applied, ok in cases:
             m = copy.deepcopy(doc)
-            get(m, path).update({"core_share": value, "core_share_flag": flag})
-            assert (cs.errors(ref, m) == []) is ok, f"{key} {path}: core_share ({value}, {flag}) expected {'pass' if ok else 'fail'}"
-        for value, flag, ok in [(cap_mat + 1.0, "above-cap", True), (cap_mat + 1.0, "within-cap", False),
-                                (cap_mat, "within-cap", True), (cap_mat - 1.0, "above-cap", False)]:
-            m = copy.deepcopy(doc)
-            get(m, path).update({"core_maturity_years": value, "maturity_flag": flag})
-            assert (cs.errors(ref, m) == []) is ok, f"{key} {path}: maturity ({value}, {flag}) expected {'pass' if ok else 'fail'}"
+            get(m, path).update({"requested_core_share": rs, "core_share_used": us, "requested_core_maturity_years": rm,
+                                 "core_maturity_used_years": um, "cap_applied": applied})
+            assert (cs.errors(ref, m) == []) is ok, f"{key} {path}: {(rs, us, rm, um, applied)} expected {'pass' if ok else 'fail'}"
         m = copy.deepcopy(doc)
         get(m, path)["core_share_cap"] = 0.99
         assert cs.errors(ref, m) != [], "a cap other than the SRP31 Table 4 cap validates"
 
 
-def test_the_flags_agree_with_the_values_in_every_fixture_and_one_fixture_is_flagged() -> None:
-    flagged = 0
+def test_the_used_value_equals_min_of_request_and_cap_in_every_fixture_and_one_fixture_applies_a_cap() -> None:
+    applied = 0
     for key in C14_OUT + C15_OUT:
         for path in nmd_sites(key):
             s = get(load(key), path)
-            assert s["core_share_flag"] == ("above-cap" if s["core_share"] > s["core_share_cap"] else "within-cap")
-            assert s["maturity_flag"] == ("above-cap" if s["core_maturity_years"] > s["core_maturity_cap_years"] else "within-cap")
-            flagged += s["core_share_flag"] == "above-cap" or s["maturity_flag"] == "above-cap"
-    assert flagged >= 1, "no fixture carries a flagged cap exceedance, so the flag path is untested on a document"
+            assert s["core_share_used"] == min(s["requested_core_share"], s["core_share_cap"])
+            assert s["core_maturity_used_years"] == min(s["requested_core_maturity_years"], s["core_maturity_cap_years"])
+            applied += s["cap_applied"]
+    assert applied >= 2, "the cap_applied path is not on a fixture for both cases"
 
 
 @pytest.mark.parametrize("key", C14_OUT + C15_OUT)
@@ -388,309 +437,271 @@ def test_the_named_assumptions_carry_a_value_and_a_source(key: str) -> None:
         bad = copy.deepcopy(doc)
         bad["outputs"]["assumptions"][n]["source_kind"] = "guess"
         assert cs.errors(ref, bad) != []
-    segs = out(key)["nmd_segments"]
-    total = sum(s["balance"] for s in segs)
-    assert math.isclose(a["nmd_core_share"]["value"], sum(s["balance"] * s["core_share"] for s in segs) / total, abs_tol=1e-9)
-    assert math.isclose(a["nmd_core_maturity_years"]["value"], sum(s["balance"] * s["core_maturity_years"] for s in segs) / total,
-                        abs_tol=1e-9)
 
 
 # --- shock sizes: a currency without a table entry is a labelled Contraste estimate -----------------------------------
 
 
-def shock_size_sites(key: str) -> list[tuple]:
-    return [p for p, o in closed_objects(key) if {"parallel_bp", "origin", "label", "method"} <= set(o)]
+def def_errors(schema_ref: str, name: str, obj: Any) -> list[str]:
+    sid = f"{cs.BASE}{schema_ref}.schema.json#/$defs/{name}"
+    v = Draft202012Validator({"$schema": cs.DIALECT, "$ref": sid}, registry=cs.registry())
+    return [e.message for e in v.iter_errors(obj)]
 
 
-@pytest.mark.parametrize("key", ["c14-2022-q4", "c14-models", "c15-long-uf", "c15-models"])
-def test_a_shock_size_for_an_untabled_currency_passes_only_labelled_as_a_contraste_estimate(key: str) -> None:
-    ref, doc = ref_of(key), load(key)
-    sites = shock_size_sites(key)
-    assert sites
+@pytest.mark.parametrize("schema_ref,name", [(C14, "c14ShockSize"), (C14M, "c14ShockSize"), (C15, "c15ShockSize"), (C15M, "c15ShockSize")])
+def test_a_shock_size_for_an_untabled_currency_passes_only_labelled_as_a_contraste_estimate(schema_ref: str, name: str) -> None:
     label = {"en": "Contraste estimate, not a regulatory parameter", "es": "Estimacion de Contraste, no es un parametro regulatorio"}
-    for path in sites:
-        m = copy.deepcopy(doc)
-        get(m, path).update({"currency": "CLP", "origin": "srp31-table-2024", "label": None, "method": None})
-        assert cs.errors(ref, m) != [], f"{key} {path}: CLP under a BCBS table validates"
-        m = copy.deepcopy(doc)
-        get(m, path).update({"currency": "CLP", "origin": "srp31-table-2016", "label": None, "method": None})
-        assert cs.errors(ref, m) != []
-        m = copy.deepcopy(doc)
-        get(m, path).update({"currency": "CLP", "origin": "contraste-estimate", "label": None, "method": "SRP98.56 to SRP98.63"})
-        assert cs.errors(ref, m) != [], "an unlabelled estimate validates"
-        m = copy.deepcopy(doc)
-        get(m, path).update({"currency": "CLP", "origin": "contraste-estimate", "label": label, "method": None})
-        assert cs.errors(ref, m) != [], "an estimate without its method validates"
-        m = copy.deepcopy(doc)
-        get(m, path).update({"currency": "CLP", "origin": "contraste-estimate", "label": label, "method": "SRP98.56 to SRP98.63"})
-        assert cs.errors(ref, m) == [], cs.errors(ref, m)
-        m = copy.deepcopy(doc)
-        get(m, path).update({"label": label})
-        if get(doc, path)["origin"] != "contraste-estimate":
-            assert cs.errors(ref, m) != [], "a tabled size carrying an estimate label validates"
+    base = {"currency": "CLP", "parallel_bp": 250.0, "short_bp": 350.0, "long_bp": 150.0, "origin": "contraste-estimate",
+            "label": label, "method": "SRP98.56 to SRP98.63 on BCCh yields"}
+    assert def_errors(schema_ref, name, base) == []
+    for patch, why in (({"label": None}, "an unlabelled estimate"), ({"method": None}, "an estimate without its method"),
+                       ({"origin": "srp31-table-2024", "label": None, "method": None}, "CLP under the 2024 table"),
+                       ({"origin": "srp31-table-2016", "label": None, "method": None}, "CLP under the 2016 table"),
+                       ({"currency": "USD"}, "a tabled currency relabelled as an estimate"),
+                       ({"currency": "EUR"}, "a tabled currency relabelled as an estimate")):
+        assert def_errors(schema_ref, name, {**base, **patch}) != [], why
+    usd = {"currency": "USD", "parallel_bp": 200, "short_bp": 300, "long_bp": 225, "origin": "srp31-table-2024", "label": None, "method": None}
+    assert def_errors(schema_ref, name, usd) == []
+    for patch, why in (({"parallel_bp": 999}, "a changed table value"), ({"origin": "srp31-table-2016"}, "the 2016 origin on the 2024 values"),
+                       ({"label": label}, "a tabled size carrying a label"), ({"currency": "CLP"}, "CLP under a BCBS table")):
+        assert def_errors(schema_ref, name, {**usd, **patch}) != [], why
+    for i, ccy in enumerate(CCY21):
+        for origin, table in (("srp31-table-2024", T2024), ("srp31-table-2016", T2016)):
+            ok = {"currency": ccy, "parallel_bp": table["parallel"][i], "short_bp": table["short"][i], "long_bp": table["long"][i],
+                  "origin": origin, "label": None, "method": None}
+            assert def_errors(schema_ref, name, ok) == [], (ccy, origin)
+    for ccy, vals in (("CLP", (300, 400, 200)), ("CLF", (200, 250, 150))):
+        ok = {"currency": ccy, "parallel_bp": vals[0], "short_bp": vals[1], "long_bp": vals[2], "origin": "cmf-annex1", "label": None, "method": None}
+        assert def_errors(schema_ref, name, ok) == []
+        assert def_errors(schema_ref, name, {**ok, "parallel_bp": vals[0] + 50}) != []
+    assert def_errors(schema_ref, name, {**usd, "currency": "EUR", "origin": "cmf-annex1"}) != []
 
 
-# --- the shock calculus (written here independently of the fixture builder) -------------------------------------------
+# --- the semantic checker: importable, clean on every document, and the planted defects -----------------------------------
 
 
-def shape(shock: str, par: float, short: float, long: float) -> list[float]:
-    s = [short * math.exp(-t / 4) for t in MIDPOINTS]
-    lg = [long * (1 - math.exp(-t / 4)) for t in MIDPOINTS]
-    return {
-        "parallel-up": [par] * 19, "parallel-down": [-par] * 19,
-        "short-up": s, "short-down": [-x for x in s],
-        "steepener": [-0.65 * abs(a) + 0.9 * abs(b) for a, b in zip(s, lg)],
-        "flattener": [0.8 * abs(a) - 0.6 * abs(b) for a, b in zip(s, lg)],
-    }[shock]
+@pytest.mark.parametrize("path", all_documents(), ids=lambda p: p.name)
+def test_the_semantic_checker_is_clean_on_every_committed_c14_and_c15_document(path) -> None:
+    doc = cs.load_json(path)
+    ref = cs.schema_for_document(path, doc)
+    assert cs.errors(ref, doc) == []
+    assert sm.check_document(doc) == []
 
 
-def post_rate(r0: float, d_bp: float, floor: float | None) -> float:
-    r = r0 + d_bp / 1e4
-    return r if floor is None else max(r, min(floor, r0))
+def test_the_checker_is_an_importable_function_a_bake_calls() -> None:
+    assert callable(sm.check_document) and callable(sm.dating_violations)
+    assert sm.check_document({"case_id": "C03"}) != []
+    late = load("c14-2022-q4")
+    late["outputs"]["data"]["call_reports"].append({"report_date": "2023-03-31", "source": "x", "fields": ["ASSET"]})
+    assert any("after the valuation date" in m for m in sm.dating_violations(late))
+    assert sm.check_document(late) != []
 
 
-def eve_of(cf: list[float], rates: list[float]) -> float:
-    return sum(c * math.exp(-r * t) for c, r, t in zip(cf, rates, MIDPOINTS))
+def refused(key: str, doc: dict) -> bool:
+    """Refused as a bake would refuse it: the schema first, then the checker (a crash of the checker is a refusal)."""
+    if cs.errors(ref_of(key), doc):
+        return True
+    try:
+        return sm.check_document(doc) != []
+    except (KeyError, IndexError, TypeError, ZeroDivisionError, StopIteration, ValueError):
+        return True
 
 
-def close(a: float, b: float, rel: float = 1e-9, tol: float = 5e-3) -> bool:
-    return math.isclose(a, b, rel_tol=rel, abs_tol=tol)
+def _swap(doc: dict, path: tuple, i: int, j: int) -> None:
+    arr = get(doc, path)
+    arr[i], arr[j] = arr[j], arr[i]
 
 
-def dense(flows: list[dict]) -> list[float]:
-    v = [0.0] * 19
-    for f in flows:
-        v[f["bucket"] - 1] += f["amount"]
-    return v
+def _offset_row(o: dict) -> dict:
+    return next(r for r in o["eve"]["rows"] + o["nii"]["rows"] if r["pair"]["opposite_signs"])
 
 
-@pytest.mark.parametrize("key", C14_OUT)
-def test_c14_the_shock_shapes_recompute_from_the_size_table_and_the_floor_flags_the_bound_buckets(key: str) -> None:
-    o = out(key)
-    r0 = o["curve"]["zero_rates_at_midpoints"]
-    assert len(o["scenarios"]) == 4
-    assert {(s["calibration"], s["nmd_assumption"]) for s in o["scenarios"]} == {
-        (c, n) for c in ("2024", "2016") for n in ("behavioural", "contractual")}
-    for sc in o["scenarios"]:
-        sz = sc["shock_size"]
-        table = T2024 if sc["calibration"] == "2024" else T2016
-        i = CCY21.index("USD")
-        assert (sz["parallel_bp"], sz["short_bp"], sz["long_bp"]) == (table["parallel"][i], table["short"][i], table["long"][i])
-        assert sz["origin"] == ("srp31-table-2024" if sc["calibration"] == "2024" else "srp31-table-2016")
-        assert [s["shock"] for s in sc["shocks"]] == SHOCKS
-        for s in sc["shocks"]:
-            for got, want in zip(s["shape_bp"], shape(s["shock"], sz["parallel_bp"], sz["short_bp"], sz["long_bp"])):
-                assert math.isclose(got, want, abs_tol=5e-6), (key, s["shock"])
-            bound = [k + 1 for k in range(19) if r0[k] + s["shape_bp"][k] / 1e4 < (min(sc["floor"], r0[k]) if sc["floor"] is not None else -9)]
-            assert s["floor_bound_buckets"] == bound, (key, s["shock"])
+def _c14_set(path: tuple, value: Any) -> Callable[[dict], None]:
+    def f(d: dict) -> None:
+        get(d, path[:-1])[path[-1]] = value
+    return f
 
 
-def test_c14_a_floor_binds_in_at_least_one_fixture() -> None:
-    assert any(s["floor_bound_buckets"] for k in C14_OUT for sc in out(k)["scenarios"] for s in sc["shocks"]), "no floor binds"
+def _plants() -> list[tuple[str, str, Callable[[dict], None]]]:
+    o14 = ("outputs",)
+    sc0 = o14 + ("scenarios", 0)
+    p: list[tuple[str, str, Callable[[dict], None]]] = []
+    A = p.append
+    # --- C14 variant
+    A(("call report dated after the valuation date", "c14-2022-q4", lambda d: (
+        d["outputs"]["data"]["call_reports"].append({"report_date": "2023-03-31", "source": "x", "fields": ["ASSET"]}),
+        d["outputs"]["data"].update({"data_cutoff": "2023-03-31"}))))
+    A(("curve dated after the valuation date", "c14-2022-q4", _c14_set(o14 + ("curve", "date"), "2023-01-31")))
+    A(("balance sheet dated after the valuation date", "c14-2022-q4", _c14_set(o14 + ("balance_sheet", "as_of"), "2023-01-31")))
+    A(("read_up_to_valuation_date false", "c14-2022-q4", _c14_set(o14 + ("data", "read_up_to_valuation_date"), False)))
+    A(("currency CLP on the USD case", "c14-2022-q4", _c14_set(o14 + ("currency",), "CLP")))
+    A(("USD 2024 parallel 999 bp", "c14-2022-q4", _c14_set(sc0 + ("shock_size", "parallel_bp"), 999)))
+    A(("calibration 2024 carrying the 2016 size", "c14-2022-q4", lambda d: d["outputs"]["scenarios"][0].update(
+        {"shock_size": copy.deepcopy(d["outputs"]["scenarios"][2]["shock_size"])})))
+    A(("tabled USD relabelled as a Contraste estimate", "c14-2022-q4", lambda d: d["outputs"]["scenarios"][0]["shock_size"].update(
+        {"origin": "contraste-estimate", "label": {"en": "estimate", "es": "estimacion"}, "method": "x"})))
+    A(("steepener and flattener rows swapped", "c14-2022-q4", lambda d: _swap(d, sc0 + ("shocks",), 2, 3)))
+    A(("flattener replaced by a second steepener", "c14-2022-q4", lambda d: d["outputs"]["scenarios"][0]["shocks"].__setitem__(
+        3, copy.deepcopy(d["outputs"]["scenarios"][0]["shocks"][2]))))
+    A(("four scenarios all 2024 behavioural", "c14-2022-q4", lambda d: [d["outputs"]["scenarios"].__setitem__(
+        i, copy.deepcopy(d["outputs"]["scenarios"][0])) for i in (1, 2, 3)]))
+    A(("scenario order changed", "c14-2022-q4", lambda d: _swap(d, o14 + ("scenarios",), 0, 1)))
+    A(("behavioural scenario with the contractual treatment", "c14-2022-q4", _c14_set(sc0 + ("nmd_treatment",), "contractual-overnight")))
+    A(("a flow's bucket with the wrong midpoint", "c14-2022-q4", _c14_set(
+        o14 + ("balance_sheet", "items", 0, "cash_flows", "behavioural", 0, "midpoint_years"), 3.5)))
+    A(("19 repricing-gap rows all bucket 1", "c14-2022-q4", lambda d: [r.update({"bucket": 1, "midpoint_years": 0.0028})
+                                                                      for r in d["outputs"]["ladder"][0]["repricing_gap"]]))
+    A(("a bucket 20 in a repricing-gap row", "c14-2022-q4", _c14_set(o14 + ("ladder", 0, "repricing_gap", 0, "bucket"), 20)))
+    A(("outlier breached inverted", "c14-2022-q4", lambda d: d["outputs"]["scenarios"][1]["outlier"].update(
+        {"breached": not d["outputs"]["scenarios"][1]["outlier"]["breached"]})))
+    A(("negative EVE risk measure", "c14-2022-q4", _c14_set(sc0 + ("eve_risk_measure",), -1.0)))
+    A(("EVE risk measure not the maximum", "c14-2022-q4", lambda d: d["outputs"]["scenarios"][0].update(
+        {"eve_risk_measure": d["outputs"]["scenarios"][0]["eve_risk_measure"] * 0.5})))
+    A(("a delta EVE changed", "c14-2022-q4", lambda d: d["outputs"]["scenarios"][0]["shocks"][0].update(
+        {"delta_eve": d["outputs"]["scenarios"][0]["shocks"][0]["delta_eve"] + 1000.0})))
+    A(("a delta NII changed", "c14-2022-q4", lambda d: d["outputs"]["scenarios"][0]["shocks"][0].update(
+        {"delta_nii": d["outputs"]["scenarios"][0]["shocks"][0]["delta_nii"] + 1000.0})))
+    A(("delta NII on the steepener", "c14-2022-q4", _c14_set(sc0 + ("shocks", 2, "delta_nii"), 1.0)))
+    A(("post-shock floor +1 percent", "c14-2022-q4", _c14_set(sc0 + ("floor",), 0.01)))
+    A(("NMD above its cap with cap_applied false", "c14-2022-q4", _c14_set(o14 + ("nmd_segments", 2, "cap_applied"), False)))
+    A(("NMD above its cap with the used value not at the cap", "c14-2022-q4", _c14_set(o14 + ("nmd_segments", 2, "core_share_used"), 0.75)))
+    A(("NMD within the cap with cap_applied true", "c14-2021-q4", _c14_set(o14 + ("nmd_segments", 2, "cap_applied"), True)))
+    A(("NMD used value not min(request, cap)", "c14-2021-q4", _c14_set(o14 + ("nmd_segments", 0, "core_share_used"), 0.3)))
+    A(("NMD cash flows not slotted at the used share", "c14-2022-q4", lambda d: d["outputs"]["balance_sheet"]["items"][7]["cash_flows"][
+        "behavioural"].__setitem__(0, {**d["outputs"]["balance_sheet"]["items"][7]["cash_flows"]["behavioural"][0], "amount": -1.0})))
+    A(("assumption not the weighted average of the used values", "c14-2022-q4", _c14_set(o14 + ("assumptions", "nmd_core_share", "value"), 0.5)))
+    for blk in ("dynamic_nii", "ear_evar", "out_of_sample"):
+        A((f"{blk} removed", "c14-2022-q4", lambda d, b=blk: d["outputs"].pop(b)))
+    A(("dynamic NII monthly value changed", "c14-2022-q4", lambda d: d["outputs"]["dynamic_nii"]["scenarios"][1]["monthly_nii"].__setitem__(0, 1.0)))
+    A(("dynamic NII path shorter than the horizon", "c14-2022-q4", lambda d: d["outputs"]["dynamic_nii"].update({"horizon_months": 24})))
+    A(("dynamic NII total changed", "c14-2022-q4", lambda d: d["outputs"]["dynamic_nii"]["scenarios"][2].update({"total": 5.0})))
+    A(("EaR not base minus quantile", "c14-2022-q4", lambda d: d["outputs"]["ear_evar"]["levels"][0].update({"ear": 1.0})))
+    A(("EaR 99 below 95", "c14-2022-q4", lambda d: d["outputs"]["ear_evar"].update({"levels": [d["outputs"]["ear_evar"]["levels"][1], d["outputs"]["ear_evar"]["levels"][0]]})))
+    A(("EaR levels with a third level", "c14-2022-q4", lambda d: d["outputs"]["ear_evar"]["levels"].append(copy.deepcopy(d["outputs"]["ear_evar"]["levels"][0]))))
+    A(("out-of-sample period inside the data window", "c14-2021-q4", _c14_set(o14 + ("out_of_sample", "realised_period_start"), "2021-06-01")))
+    A(("out-of-sample relative error changed", "c14-2021-q4", _c14_set(o14 + ("out_of_sample", "relative_error"), 0.9)))
+    A(("out-of-sample not applicable without a reason", "c14-2022-q4", _c14_set(o14 + ("out_of_sample", "reason"), None)))
+    A(("behavioural comparison difference changed", "c14-2022-q4", _c14_set(o14 + ("behavioural_comparison", 0, "difference"), 5.0)))
+    A(("behavioural comparison rows reordered", "c14-2022-q4", lambda d: _swap(d, o14 + ("behavioural_comparison",), 0, 1)))
+    A(("a missing item with no reason", "c14-2022-q4", _c14_set(o14 + ("balance_sheet", "items", 7, "reason_missing"), None)))
+    # --- C14 models
+    A(("bucket 1 and 2 midpoints swapped", "c14-models", lambda d: (d["fit"]["buckets"][0].update({"midpoint_years": 0.0417}),
+                                                                   d["fit"]["buckets"][1].update({"midpoint_years": 0.0028}))))
+    A(("a 2024 shock-table cell changed", "c14-models", _c14_set(("fit", "shock_tables", 0, "rows", 19, "long_bp"), 250)))
+    A(("a 2016 shock-table cell changed", "c14-models", _c14_set(("fit", "shock_tables", 1, "rows", 4, "parallel_bp"), 150)))
+    A(("wholesale NMD cap 0.6", "c14-models", _c14_set(("fit", "nmd_caps", 2, "core_share_cap"), 0.6)))
+    A(("gamma of parallel-up 1.2", "c14-models", _c14_set(("fit", "multipliers", "prepayment_gamma", 0, "gamma"), 1.2)))
+    A(("u of parallel-down 1.2", "c14-models", _c14_set(("fit", "multipliers", "term_deposit_u", 1, "u"), 1.2)))
+    A(("shock shape x = 5", "c14-models", _c14_set(("fit", "shock_shape", "x"), 5)))
+    A(("weighted average maturity not sum w m / 2", "c14-models", _c14_set(("fit", "nmd_models", 0, "weighted_average_maturity_years"), 2.0)))
+    A(("a parameter change flagged without a breach", "c14-models", _c14_set(("fit", "nmd_parameter_changes", 2, "flagged"), True)))
+    A(("applied size CLP under a BCBS table", "c14-models", lambda d: d["fit"]["applied_sizes"][0].update({"currency": "CLP"})))
+    # --- C15 variant
+    A(("indexation charge zeroed and left out of delta NII", "c15-long-uf", lambda d: (
+        d["outputs"]["indexation_charge"].update({"charge": 0.0}), d["outputs"]["nii"].update(
+            {"indexation_charge": 0.0, "delta_nii": d["outputs"]["nii"]["max_pair"]}))))
+    A(("delta NII equal to the max pair with the charge block intact", "c15-long-uf", lambda d: d["outputs"]["nii"].update(
+        {"delta_nii": d["outputs"]["nii"]["max_pair"]})))
+    A(("indexation charge not 2.5 percent of |PN_UR|", "c15-long-uf", lambda d: d["outputs"]["indexation_charge"].update({"charge": 1.0})))
+    A(("indexation rate 0.03", "c15-long-uf", _c14_set(o14 + ("indexation_charge", "rate"), 0.03)))
+    A(("indexation block removed", "c15-long-uf", lambda d: d["outputs"].pop("indexation_charge")))
+    A(("UR leg removed", "c15-long-uf", lambda d: d["outputs"]["legs"].pop(1)))
+    A(("UR leg relabelled CLP", "c15-long-uf", _c14_set(o14 + ("legs", 1, "leg"), "CLP")))
+    A(("dynamic NII removed", "c15-long-uf", lambda d: d["outputs"].pop("dynamic_nii")))
+    A(("C15 dynamic NII legs reordered", "c15-long-uf", lambda d: _swap(d, o14 + ("dynamic_nii", "legs"), 0, 1)))
+    A(("C15 dynamic NII monthly value changed", "c15-long-uf", lambda d: d["outputs"]["dynamic_nii"]["legs"][0]["scenarios"][1]["monthly_nii"].__setitem__(0, 1.0)))
+    A(("CLP Annex 1 parallel 250", "c15-long-uf", _c14_set(o14 + ("eve_shock_sizes", 0, "parallel_bp"), 250)))
+    A(("CLF delta NII size 200", "c15-long-uf", _c14_set(o14 + ("nii_shock_sizes", 1, "parallel_bp"), 200)))
+    A(("EUR under cmf-annex1", "c15-long-uf", lambda d: d["outputs"]["eve_shock_sizes"][0].update({"currency": "EUR"})))
+    A(("offset state off while used is the offset value", "c15-offset-on-off", _c14_set(o14 + ("offset_rule", "state"), "off")))
+    A(("with_offset equal to without_offset on an opposite-sign pair", "c15-offset-on-off", lambda d: _offset_row(d["outputs"])["pair"].update(
+        {"with_offset": _offset_row(d["outputs"])["pair"]["without_offset"]})))
+    A(("opposite_signs flag wrong", "c15-offset-on-off", lambda d: _offset_row(d["outputs"])["pair"].update({"opposite_signs": False})))
+    A(("offset share 0.6", "c15-offset-on-off", _c14_set(o14 + ("offset_rule", "share"), 0.6)))
+    A(("eve-tier1 threshold 0.20", "c15-long-uf", _c14_set(o14 + ("thresholds", "tests", 1, "threshold"), 0.20)))
+    A(("thresholds reordered", "c15-long-uf", lambda d: _swap(d, o14 + ("thresholds", "tests"), 0, 1)))
+    A(("breached flag inverted", "c15-long-uf", lambda d: d["outputs"]["thresholds"]["tests"][0].update(
+        {"breached": not d["outputs"]["thresholds"]["tests"][0]["breached"]})))
+    A(("prioritised not any breached", "c15-long-uf", lambda d: d["outputs"]["thresholds"].update(
+        {"prioritised": not d["outputs"]["thresholds"]["prioritised"]})))
+    A(("reporting currency USD", "c15-long-uf", _c14_set(o14 + ("reporting_currency",), "USD")))
+    A(("EVE rows parallel-up and parallel-down swapped", "c15-long-uf", lambda d: _swap(d, o14 + ("eve", "rows"), 0, 1)))
+    A(("NII rows swapped", "c15-long-uf", lambda d: _swap(d, o14 + ("nii", "rows"), 0, 1)))
+    A(("a delta EVE changed", "c15-long-uf", lambda d: d["outputs"]["eve"]["rows"][2]["clp"].update(
+        {"delta_eve": d["outputs"]["eve"]["rows"][2]["clp"]["delta_eve"] + 1e6})))
+    A(("NMD above its cap with cap_applied false", "c15-cpi-surprise", _c14_set(o14 + ("nmd_segments", 0, "cap_applied"), False)))
+    A(("NMD used value above the cap", "c15-cpi-surprise", _c14_set(o14 + ("nmd_segments", 0, "core_share_used"), 0.95)))
+    A(("UR floor -3 percent", "c15-long-uf", _c14_set(o14 + ("floors", "ur_floor"), -0.03)))
+    A(("curves of another month", "c15-long-uf", _c14_set(o14 + ("curves", "ur", "month"), "2026-05")))
+    A(("CPI effect changed", "c15-cpi-surprise", lambda d: d["outputs"]["cpi_scenario"].update({"effect": 1.0})))
+    A(("a curve null", "c15-long-uf", _c14_set(o14 + ("curves", "ur"), None)))
+    # --- C15 models
+    A(("Annex 1 CLP parallel 250", "c15-models", _c14_set(("fit", "annex1_table", 2, "parallel_bp"), 250)))
+    A(("Annex 1 table rows reordered", "c15-models", lambda d: _swap(d, ("fit", "annex1_table"), 0, 1)))
+    A(("nii-margin threshold 0.25", "c15-models", _c14_set(("fit", "prioritised_thresholds", 2, "threshold"), 0.25)))
+    A(("retail-operational maturity cap 7 years", "c15-models", _c14_set(("fit", "nmd_caps", 0, "core_maturity_cap_years"), 7.0)))
+    A(("UR floor -1 percent", "c15-models", _c14_set(("fit", "floors", "ur_floor"), -0.01)))
+    A(("indexation rate 0.03", "c15-models", _c14_set(("fit", "indexation_rate"), 0.03)))
+    A(("offset share 0.6", "c15-models", _c14_set(("fit", "offset_share"), 0.6)))
+    A(("weighted average maturity of a window not sum w m / 2", "c15-models", _c14_set(("fit", "nmd_models", 0, "stability", 0, "weighted_average_maturity_years"), 2.5)))
+    A(("CLP size under a BCBS table", "c15-models", lambda d: d["fit"]["eve_shock_sizes"][0].update({"origin": "srp31-table-2024"})))
+    return p
 
 
-@pytest.mark.parametrize("key", C14_OUT)
-def test_c14_every_eve_and_delta_eve_recomputes_and_the_risk_measure_is_the_max_of_the_positive_losses(key: str) -> None:
-    o = out(key)
-    r0 = o["curve"]["zero_rates_at_midpoints"]
-    flows = {n: [0.0] * 19 for n in ("behavioural", "contractual")}
-    for item in o["balance_sheet"]["items"]:
-        for n in flows:
-            for b, v in enumerate(dense(item["cash_flows"][n])):
-                flows[n][b] += v
-    for sc in o["scenarios"]:
-        base = flows[sc["nmd_assumption"]]
-        assert close(sc["base_eve"], eve_of(base, r0))
-        losses = []
-        for s in sc["shocks"]:
-            rates = [post_rate(a, d, sc["floor"]) for a, d in zip(r0, s["shape_bp"])]
-            assert close(s["eve"], eve_of(s["net_cash_flows"], rates)), (key, sc["calibration"], s["shock"])
-            assert close(s["delta_eve"], sc["base_eve"] - s["eve"] + s["kao"]), (key, s["shock"])
-            assert close(s["delta_eve_share_tier1"] * sc["outlier"]["tier1"], s["delta_eve"], tol=1e-2)
-            losses.append(max(0.0, s["delta_eve"]))
-        assert close(sc["eve_risk_measure"], max(losses))
-        if max(losses) > 0:
-            worst = max(sc["shocks"], key=lambda s: s["delta_eve"])["shock"]
-            assert sc["worst_shock"] == worst
-        else:
-            assert sc["worst_shock"] is None
-    assert any(s["kao"] != 0 for sc in o["scenarios"] for s in sc["shocks"]), "no fixture exercises the automatic-option add-on"
+PLANTS = _plants()
 
 
-@pytest.mark.parametrize("key", C14_OUT)
-def test_c14_delta_nii_is_the_one_year_gap_formula_for_the_two_parallel_shocks_only(key: str) -> None:
-    ref, doc = ref_of(key), load(key)
-    o = out(key)
-    r0 = o["curve"]["zero_rates_at_midpoints"]
-    for sc_i, sc in enumerate(o["scenarios"]):
-        base = [0.0] * 19
-        for item in o["balance_sheet"]["items"]:
-            for b, v in enumerate(dense(item["cash_flows"][sc["nmd_assumption"]])):
-                base[b] += v
-        for s_i, s in enumerate(sc["shocks"]):
-            if s["shock"] in ("parallel-up", "parallel-down"):
-                assert s["delta_nii"] is not None and s["delta_nii_reason"] is None
-                want = sum(base[k] * (r0[k] - post_rate(r0[k], s["shape_bp"][k], sc["floor"])) * (1 - MIDPOINTS[k]) for k in range(6))
-                assert close(s["delta_nii"], want), (key, sc["calibration"], s["shock"])
-            else:
-                assert s["delta_nii"] is None and s["delta_nii_reason"]["en"]
-            bad = copy.deepcopy(doc)
-            site = bad["outputs"]["scenarios"][sc_i]["shocks"][s_i]
-            if s["shock"] in ("parallel-up", "parallel-down"):
-                site["delta_nii"], site["delta_nii_reason"] = None, {"en": "x", "es": "x"}
-            else:
-                site["delta_nii"], site["delta_nii_reason"] = 1.0, None
-            assert cs.errors(ref, bad) != [], "delta_nii present or absent against the shock kind validates"
+def test_the_plant_table_has_no_duplicate_names_per_document_and_is_large() -> None:
+    names = [(k, n) for n, k, _ in PLANTS]
+    assert len(names) == len(set(names)) and len(PLANTS) >= 80
 
 
-@pytest.mark.parametrize("key", C14_OUT)
-def test_c14_the_term_deposit_redemption_overlay_moves_the_redeemed_share_to_the_first_bucket(key: str) -> None:
-    o = out(key)
-    rate0 = o["assumptions"]["term_deposit_redemption_rate"]["value"]
-    td = [i for i in o["balance_sheet"]["items"] if i["behavioural_class"] == "term-deposit"]
-    assert td
-    amount = sum(i["amount"] for i in td)
-    for sc in o["scenarios"]:
-        base = [0.0] * 19
-        for item in o["balance_sheet"]["items"]:
-            for b, v in enumerate(dense(item["cash_flows"][sc["nmd_assumption"]])):
-                base[b] += v
-        for s, u in zip(sc["shocks"], U):
-            moved = amount * min(1.0, u * rate0)
-            assert close(s["net_cash_flows"][0] - base[0], -moved), (key, s["shock"])
-            assert close(sum(s["net_cash_flows"]), sum(base)), "the overlay changes the total"
+@pytest.mark.parametrize("name,key,mutate", PLANTS, ids=[f"{k}:{n}" for n, k, _ in PLANTS])
+def test_a_planted_defect_is_refused_by_the_schema_or_the_checker(name: str, key: str, mutate: Callable[[dict], None]) -> None:
+    doc = load(key)
+    assert not refused(key, doc), f"{key}: the unmodified document is refused"
+    mutate(doc)
+    assert refused(key, doc), f"{key}: planted defect '{name}' validates and passes the checker"
 
 
-@pytest.mark.parametrize("key", C14_OUT)
-def test_c14_the_outlier_test_is_fifteen_percent_of_tier_one_and_the_behavioural_comparison_closes(key: str) -> None:
-    o = out(key)
-    for sc in o["scenarios"]:
-        ot = sc["outlier"]
-        assert ot["threshold_share_tier1"] == 0.15
-        assert close(ot["eve_risk_measure"], sc["eve_risk_measure"])
-        assert math.isclose(ot["ratio"], ot["eve_risk_measure"] / ot["tier1"], rel_tol=1e-6, abs_tol=1e-9)
-        assert ot["breached"] == (ot["ratio"] > 0.15)
-    by = {(s["calibration"], s["nmd_assumption"]): {x["shock"]: x["delta_eve"] for x in s["shocks"]} for s in o["scenarios"]}
-    rows = o["behavioural_comparison"]
-    assert len(rows) == 12 and {(r["calibration"], r["shock"]) for r in rows} == {(c, s) for c in ("2024", "2016") for s in SHOCKS}
-    for r in rows:
-        assert close(r["delta_eve_behavioural"], by[(r["calibration"], "behavioural")][r["shock"]])
-        assert close(r["delta_eve_contractual"], by[(r["calibration"], "contractual")][r["shock"]])
-        assert close(r["difference"], r["delta_eve_behavioural"] - r["delta_eve_contractual"])
-    # the SVB lesson on the fixture: the behavioural assumptions pass the outlier test that the contractual ones breach
-    flags = {(s["calibration"], s["nmd_assumption"]): s["outlier"]["breached"] for s in o["scenarios"]}
-    assert flags[("2024", "contractual")] is True and flags[("2024", "behavioural")] is False
-
-
-# --- C14 dating: the call reports are read only up to the valuation date -----------------------------------------------
-
-
-def dating_violations(doc: dict) -> list[str]:
-    o = doc["outputs"]
-    v = o["valuation_date"]
-    found = [f"call report {r['report_date']} is after the valuation date {v}" for r in o["data"]["call_reports"] if r["report_date"] > v]
-    if o["data"]["data_cutoff"] > v:
-        found.append(f"data cutoff {o['data']['data_cutoff']} is after the valuation date {v}")
-    if o["data"]["call_reports"] and o["data"]["data_cutoff"] != max(r["report_date"] for r in o["data"]["call_reports"]):
-        found.append("the data cutoff is not the latest call report date")
-    if o["curve"]["date"] != v:
-        found.append(f"the curve date {o['curve']['date']} is not the valuation date {v}")
-    if o["balance_sheet"]["as_of"] != v:
-        found.append(f"the balance sheet is as of {o['balance_sheet']['as_of']}, not the valuation date {v}")
-    return found
-
-
-def validate_document(ref: str, doc: dict) -> list[str]:
-    """Schema errors plus the dating rule: what the producer test of the C14 rows runs on a document."""
-    return cs.errors(ref, doc) + (dating_violations(doc) if ref == C14 else [])
+def test_shocks_out_of_order_and_a_c15_delta_nii_without_the_charge_and_a_c14_without_the_dynamic_blocks_are_refused() -> None:
+    names = {n for n, _, _ in PLANTS}
+    for n in ("steepener and flattener rows swapped", "EVE rows parallel-up and parallel-down swapped",
+              "indexation charge zeroed and left out of delta NII", "delta NII equal to the max pair with the charge block intact",
+              "dynamic_nii removed", "ear_evar removed", "out_of_sample removed"):
+        assert n in names
 
 
 @pytest.mark.parametrize("key", C14_OUT)
 def test_c14_no_call_report_is_dated_after_the_valuation_date(key: str) -> None:
     doc = load(key)
-    assert dating_violations(doc) == []
+    assert sm.dating_violations(doc) == []
     assert doc["outputs"]["data"]["read_up_to_valuation_date"] is True
-    assert doc["variant_id"].endswith(doc["outputs"]["quarter"].lower())
     late = copy.deepcopy(doc)
     late["outputs"]["data"]["call_reports"].append({"report_date": "2099-12-31", "source": "x", "fields": ["ASSET"]})
     late["outputs"]["data"]["data_cutoff"] = "2099-12-31"
-    assert validate_document(C14, late) != []
-    assert any("after the valuation date" in m for m in dating_violations(late))
+    assert any("after the valuation date" in m for m in sm.dating_violations(late))
     flag = copy.deepcopy(doc)
     flag["outputs"]["data"]["read_up_to_valuation_date"] = False
     assert cs.errors(C14, flag) != []
-    curve = copy.deepcopy(doc)
-    curve["outputs"]["curve"]["date"] = "2099-12-31"
-    assert validate_document(C14, curve) != []
 
 
-def test_c14_the_two_fixtures_are_two_valuation_dates() -> None:
-    dates = {out(k)["valuation_date"] for k in C14_OUT}
-    assert dates == {"2021-12-31", "2022-12-31"}
-    assert {out(k)["quarter"] for k in C14_OUT} == {"2021-Q4", "2022-Q4"}
+def test_c14_the_two_fixtures_are_two_valuation_dates_and_the_out_of_sample_row_is_on_2021_q4() -> None:
+    assert {out(k)["valuation_date"] for k in C14_OUT} == {"2021-12-31", "2022-12-31"}
+    assert out("c14-2021-q4")["out_of_sample"]["applicable"] is True
+    assert out("c14-2021-q4")["out_of_sample"]["realised_period_start"] > "2021-12-31"
+    assert out("c14-2022-q4")["out_of_sample"]["applicable"] is False
 
 
-# --- a call-report item the FDIC financials lack is nullable with its reason and the slotting assumption ---------------
+def test_c14_the_behavioural_assumptions_pass_the_outlier_test_that_the_contractual_ones_breach() -> None:
+    for key in C14_OUT:
+        flags = {(s["calibration"], s["nmd_assumption"]): s["outlier"]["breached"] for s in out(key)["scenarios"]}
+        assert flags[("2024", "contractual")] is True and flags[("2024", "behavioural")] is False
 
 
-@pytest.mark.parametrize("key", C14_OUT)
-def test_c14_a_missing_call_report_item_is_null_with_its_reason_and_the_slotting_assumption(key: str) -> None:
-    ref, doc = ref_of(key), load(key)
-    items = out(key)["balance_sheet"]["items"]
-    missing = [(i, it) for i, it in enumerate(items) if it["reported_amount"] is None]
-    present = [(i, it) for i, it in enumerate(items) if it["reported_amount"] is not None]
-    assert missing and present
-    for i, it in missing:
-        assert it["reason_missing"]["en"] and it["slotting_assumption"]
-        bad = copy.deepcopy(doc)
-        bad["outputs"]["balance_sheet"]["items"][i]["reason_missing"] = None
-        assert cs.errors(ref, bad) != [], "a null item without its reason validates"
-        bad = copy.deepcopy(doc)
-        bad["outputs"]["balance_sheet"]["items"][i]["slotting_assumption"] = ""
-        assert cs.errors(ref, bad) != [], "a null item without its slotting assumption validates"
-    for i, it in present:
-        assert it["reason_missing"] is None
-        bad = copy.deepcopy(doc)
-        bad["outputs"]["balance_sheet"]["items"][i]["reason_missing"] = {"en": "x", "es": "x"}
-        assert cs.errors(ref, bad) != [], "a reported item that also states a reason validates"
-    for i, it in enumerate(items):
-        side = 1.0 if it["side"] == "asset" else -1.0
-        for n in ("behavioural", "contractual"):
-            assert close(sum(dense(it["cash_flows"][n])), side * it["amount"]), (it["item_id"], n)
-    bs = out(key)["balance_sheet"]
-    assert close(bs["total_assets"], sum(i["amount"] for i in items if i["side"] == "asset"))
-    assert close(bs["total_liabilities"], sum(i["amount"] for i in items if i["side"] == "liability"))
-
-
-@pytest.mark.parametrize("key", C14_OUT)
-def test_c14_the_ladder_rungs_recompute(key: str) -> None:
-    o = out(key)
-    r0 = o["curve"]["zero_rates_at_midpoints"]
-    for lad in o["ladder"]:
-        n = lad["nmd_assumption"]
-        gap = [0.0] * 19
-        assets = [0.0] * 19
-        liabs = [0.0] * 19
-        for it in o["balance_sheet"]["items"]:
-            for b, v in enumerate(dense(it["cash_flows"][n])):
-                if it["side"] == "asset":
-                    assets[b] += v
-                else:
-                    liabs[b] += -v
-        assert [r["bucket"] for r in lad["repricing_gap"]] == list(range(1, 20))
-        for b, r in enumerate(lad["repricing_gap"]):
-            assert close(r["assets"], assets[b]) and close(r["liabilities"], liabs[b]) and close(r["gap"], assets[b] - liabs[b])
-        # D.1: dNII ~ sum over t_k < 1 of G_k * dr * (1 - t_k), dr = +100 bp; the document is loss-positive
-        want = -sum((assets[k] - liabs[k]) * 0.01 * (1 - MIDPOINTS[k]) for k in range(6))
-        assert close(lad["delta_nii_gap_100bp_up"], want)
-        dg = lad["duration_gap"]
-        assert math.isclose(dg["duration_gap_years"], dg["asset_duration_years"] - dg["liability_value"] / dg["asset_value"]
-                            * dg["liability_duration_years"], abs_tol=1e-6)
-        assert close(dg["equity_change_100bp_up"], -dg["duration_gap_years"] * dg["asset_value"] * 0.01)
-    assert {lad["nmd_assumption"] for lad in o["ladder"]} == {"behavioural", "contractual"}
-
-
-# --- the C14 models document -------------------------------------------------------------------------------------------
+def test_c14_a_floor_binds_in_at_least_one_fixture_and_the_automatic_option_addon_is_exercised() -> None:
+    assert any(s["floor_bound_buckets"] for k in C14_OUT for sc in out(k)["scenarios"] for s in sc["shocks"]), "no floor binds"
+    assert any(s["kao"] != 0 for k in C14_OUT for sc in out(k)["scenarios"] for s in sc["shocks"])
 
 
 def test_c14_models_carry_the_transcribed_shock_tables_the_multipliers_and_the_caps() -> None:
@@ -710,37 +721,15 @@ def test_c14_models_carry_the_transcribed_shock_tables_the_multipliers_and_the_c
     assert f["outlier"]["threshold_share_tier1"] == 0.15
 
 
-def test_c14_the_replicating_portfolios_sum_to_one_and_report_their_weighted_maturity() -> None:
-    f = fit("c14-models")
-    assert f["nmd_models"]
-    for m in f["nmd_models"]:
-        w = [t["weight"] for t in m["tranches"]]
-        assert all(x >= 0 for x in w) and math.isclose(sum(w), 1.0, abs_tol=1e-9) and math.isclose(m["weights_sum"], 1.0, abs_tol=1e-9)
-        # rolling tranche reinvested evenly over its life: a tranche of maturity m has weighted average maturity m / 2
-        # (BCBS 368 footnote 38: one sixtieth reinvested monthly in a five-year fixed is 2.5 years)
-        assert math.isclose(m["weighted_average_maturity_years"], sum(t["weight"] * t["maturity_years"] / 2 for t in m["tranches"]),
-                            abs_tol=1e-6)
-        for win in m["stability"]:
-            assert len(win["weights"]) == len(m["tranches"]) and math.isclose(sum(win["weights"]), 1.0, abs_tol=1e-9)
-            assert win["window_start"] < win["window_end"]
-
-
 def test_c14_a_behavioural_parameter_change_that_coincides_with_a_limit_breach_is_flagged() -> None:
-    f = fit("c14-models")
-    changes = f["nmd_parameter_changes"]
-    assert changes and any(c["flagged"] for c in changes) and any(not c["flagged"] for c in changes)
-    for c in changes:
-        assert c["from_date"] < c["to_date"]
-        assert c["flagged"] == (c["from_value"] != c["to_value"] and c["limit_breach_in_window"]), c
-
-
-# --- C15: the UR currency, the offset rule state and the indexation charge ----------------------------------------------
+    changes = fit("c14-models")["nmd_parameter_changes"]
+    assert any(c["flagged"] for c in changes) and any(not c["flagged"] for c in changes)
 
 
 @pytest.mark.parametrize("key", C15_OUT)
 def test_c15_the_ur_currency_the_offset_state_and_the_indexation_charge_are_required(key: str) -> None:
     ref, doc = ref_of(key), load(key)
-    for field in ("ur_currency", "offset_rule", "indexation_charge", "floors", "thresholds", "curves", "legs", "cpi_scenario"):
+    for field in ("ur_currency", "offset_rule", "indexation_charge", "floors", "thresholds", "curves", "legs", "cpi_scenario", "dynamic_nii"):
         bad = copy.deepcopy(doc)
         del bad["outputs"][field]
         assert cs.errors(ref, bad) != [], f"{key}: a document without {field} validates"
@@ -748,44 +737,20 @@ def test_c15_the_ur_currency_the_offset_state_and_the_indexation_charge_are_requ
     assert o["ur_currency"]["code"] == "CLF" and o["ur_currency"]["label"] == "UR" and o["ur_currency"]["treated_as_one_currency"] is True
     assert o["offset_rule"]["state"] in ("on", "off", "compared") and o["offset_rule"]["share"] == 0.5
     assert o["indexation_charge"]["rate"] == 0.025
-    for field in ("code", "label", "treated_as_one_currency", "uf_value", "uf_date"):
-        bad = copy.deepcopy(doc)
-        del bad["outputs"]["ur_currency"][field]
-        assert cs.errors(ref, bad) != []
-    for field in ("state", "share", "rule"):
-        bad = copy.deepcopy(doc)
-        del bad["outputs"]["offset_rule"][field]
-        assert cs.errors(ref, bad) != []
-    for field in ("rate", "pn_ur", "charge"):
-        bad = copy.deepcopy(doc)
-        del bad["outputs"]["indexation_charge"][field]
-        assert cs.errors(ref, bad) != []
-    # the UR leg: dropping it, or relabelling it as CLP, fails
-    bad = copy.deepcopy(doc)
-    bad["outputs"]["legs"] = [leg for leg in bad["outputs"]["legs"] if leg["leg"] != "UR"]
-    assert cs.errors(ref, bad) != []
-    for relabel in ("CLP",):
-        bad = copy.deepcopy(doc)
-        for leg in bad["outputs"]["legs"]:
-            leg["leg"] = relabel
-        assert cs.errors(ref, bad) != [], "two CLP legs and no UR leg validate"
-    bad = copy.deepcopy(doc)
-    bad["outputs"]["legs"][1]["currency"] = "CLP"
-    assert cs.errors(ref, bad) != [], "a UR leg in CLP validates"
-    assert [leg["leg"] for leg in o["legs"]] == ["CLP", "UR"] and [leg["currency"] for leg in o["legs"]] == ["CLP", "CLF"]
+    for blk, fields in (("ur_currency", ("code", "label", "treated_as_one_currency", "uf_value", "uf_date")),
+                        ("offset_rule", ("state", "share", "rule")), ("indexation_charge", ("rate", "pn_ur", "charge"))):
+        for field in fields:
+            bad = copy.deepcopy(doc)
+            del bad["outputs"][blk][field]
+            assert cs.errors(ref, bad) != []
     bad = copy.deepcopy(doc)
     bad["outputs"]["offset_rule"]["state"] = "maybe"
     assert cs.errors(ref, bad) != []
-    bad = copy.deepcopy(doc)
-    bad["outputs"]["indexation_charge"]["rate"] = 0.03
-    assert cs.errors(ref, bad) != []
+    assert [leg["leg"] for leg in o["legs"]] == ["CLP", "UR"] and [leg["currency"] for leg in o["legs"]] == ["CLP", "CLF"]
 
 
 def cmf_pair(clp: float, clf: float) -> float:
-    """dossier 03 F.2: the CLP and CLF pair with the 50 percent offset when the two have opposite signs."""
-    if clp * clf >= 0:
-        return max(clp, 0.0) + max(clf, 0.0)
-    return max(0.5 * clp + clf, 0.0) if clp <= 0 else max(clp + 0.5 * clf, 0.0)
+    return sm.cmf_pair(clp, clf, True)
 
 
 @pytest.mark.parametrize("clp,clf,want", [(10.0, 20.0, 30.0), (-10.0, -20.0, 0.0), (30.0, -20.0, 20.0), (-20.0, 30.0, 20.0),
@@ -795,161 +760,20 @@ def test_the_cmf_offset_rule_golden_values_on_both_signs(clp: float, clf: float,
     assert f"| {clp:g} | {clf:g} | {want:g} |" in API.read_text(encoding="utf-8"), (clp, clf, want)
 
 
-def c15_rates(o: dict, leg: str) -> list[float]:
-    return o["curves"]["clp" if leg == "CLP" else "ur"]["zero_rates_at_midpoints"]
-
-
-def c15_floor(o: dict, leg: str) -> float:
-    return o["floors"]["ur_floor"] if leg == "UR" else o["floors"]["other_floor"]
-
-
-@pytest.mark.parametrize("key", C15_OUT)
-def test_c15_the_pair_offset_the_eve_and_the_indexation_charge_recompute(key: str) -> None:
-    o = out(key)
-    uf = o["ur_currency"]["uf_value"]
-    legs = {leg["leg"]: leg for leg in o["legs"]}
-    state = o["offset_rule"]["state"]
-    base = {}
-    for name, leg in legs.items():
-        conv = uf if name == "UR" else 1.0
-        base[name] = [v * conv for v in dense([f for it in leg["items"] for f in it["cash_flows"]])]
-        r0 = c15_rates(o, name)
-        assert close(o["eve"]["base_eve_clp" if name == "CLP" else "base_eve_ur"], eve_of(base[name], r0))
-        side_total = sum((1 if it["side"] == "asset" else -1) * it["amount"] for it in leg["items"])
-        assert close(leg["net_position"], side_total)
-    assert [r["shock"] for r in o["eve"]["rows"]] == SHOCKS
-    totals = []
-    for row in o["eve"]["rows"]:
-        deltas = {}
-        for name, res in (("CLP", row["clp"]), ("UR", row["ur"])):
-            sz = {s["currency"]: s for s in o["eve_shock_sizes"]}["CLP" if name == "CLP" else "CLF"]
-            r0 = c15_rates(o, name)
-            want_shape = shape(row["shock"], sz["parallel_bp"], sz["short_bp"], sz["long_bp"])
-            for got, w in zip(res["shape_bp"], want_shape):
-                assert math.isclose(got, w, abs_tol=5e-6)
-            rates = [post_rate(a, d, c15_floor(o, name)) for a, d in zip(r0, res["shape_bp"])]
-            assert close(res["eve"], eve_of(res["net_cash_flows"], rates)), (key, row["shock"], name)
-            base_eve = o["eve"]["base_eve_clp" if name == "CLP" else "base_eve_ur"]
-            assert close(res["delta_eve"], base_eve - res["eve"] + res["kao"]), (key, row["shock"], name)
-            deltas[name] = res["delta_eve"]
-        pair = row["pair"]
-        assert close(pair["delta_clp"], deltas["CLP"]) and close(pair["delta_ur"], deltas["UR"])
-        assert pair["opposite_signs"] == (deltas["CLP"] * deltas["UR"] < 0)
-        assert close(pair["with_offset"], cmf_pair(deltas["CLP"], deltas["UR"]))
-        assert close(pair["without_offset"], max(deltas["CLP"], 0) + max(deltas["UR"], 0))
-        assert close(pair["used"], pair["without_offset"] if state == "off" else pair["with_offset"])
-        assert close(row["total_delta_eve"], pair["used"])
-        totals.append(row["total_delta_eve"])
-    assert close(o["eve"]["delta_eve"], max(totals))
-    assert o["eve"]["worst_shock"] == SHOCKS[totals.index(max(totals))]
-    # the indexation charge: 2.5 percent of the absolute net UF position, in the reporting currency
-    ic = o["indexation_charge"]
-    assert close(ic["pn_ur"], legs["UR"]["net_position"] * uf)
-    assert close(ic["abs_pn_ur"], abs(ic["pn_ur"])) and close(ic["charge"], 0.025 * abs(ic["pn_ur"]))
-    assert math.isclose(ic["net_position_uf_units"] * uf, ic["pn_ur"], rel_tol=1e-9, abs_tol=1e-3)
-    if state == "compared":
-        assert any(r["pair"]["opposite_signs"] for r in o["eve"]["rows"] + o["nii"]["rows"]), \
-            "the compared fixture has no shock where the two legs have opposite signs"
-        assert any(not close(r["pair"]["with_offset"], r["pair"]["without_offset"]) for r in o["eve"]["rows"] + o["nii"]["rows"])
-
-
-@pytest.mark.parametrize("key", C15_OUT)
-def test_c15_delta_nii_is_the_max_pair_plus_the_indexation_charge(key: str) -> None:
-    o = out(key)
-    uf = o["ur_currency"]["uf_value"]
-    legs = {leg["leg"]: leg for leg in o["legs"]}
-    base = {n: [v * (uf if n == "UR" else 1.0) for v in dense([f for it in legs[n]["items"] for f in it["cash_flows"]])] for n in legs}
-    assert [r["shock"] for r in o["nii"]["rows"]] == ["parallel-up", "parallel-down"]
-    sizes = {s["currency"]: s["parallel_bp"] for s in o["nii_shock_sizes"]}
-    assert sizes == {"CLP": 300, "CLF": 300}
-    pairs = []
-    for row in o["nii"]["rows"]:
-        d = {}
-        for name, res in (("CLP", row["clp"]), ("UR", row["ur"])):
-            sign = 1 if row["shock"] == "parallel-up" else -1
-            assert res["shock_bp"] == sign * 300
-            r0 = c15_rates(o, name)
-            want = sum(base[name][k] * (r0[k] - post_rate(r0[k], res["shock_bp"], c15_floor(o, name))) * (1 - MIDPOINTS[k])
-                       for k in range(6))
-            assert close(res["delta_nii"], want), (key, row["shock"], name)
-            assert len(res["cash_flows"]) == 6 and all(close(a, b) for a, b in zip(res["cash_flows"], base[name][:6]))
-            d[name] = res["delta_nii"]
-        p = row["pair"]
-        assert close(p["with_offset"], cmf_pair(d["CLP"], d["UR"])) and close(p["without_offset"], max(d["CLP"], 0) + max(d["UR"], 0))
-        assert close(p["used"], p["without_offset"] if o["offset_rule"]["state"] == "off" else p["with_offset"])
-        pairs.append(p["used"])
-    n = o["nii"]
-    assert close(n["max_pair"], max(pairs))
-    assert close(n["indexation_charge"], o["indexation_charge"]["charge"])
-    assert close(n["delta_nii"], n["max_pair"] + n["indexation_charge"])
-
-
-@pytest.mark.parametrize("key", C15_OUT)
-def test_c15_the_floor_effects_recompute_and_the_prioritised_bank_tests_follow_the_thresholds(key: str) -> None:
-    o = out(key)
-    fl = o["floors"]
-    assert (fl["ur_floor"], fl["other_floor"]) == (-0.02, 0.0)
-    uf = o["ur_currency"]["uf_value"]
-    legs = {leg["leg"]: leg for leg in o["legs"]}
-    for e in fl["effects"]:
-        assert close(e["effect"], e["delta_with_floor"] - e["delta_without_floor"])
-        assert e["buckets_floored"] >= 1
-        name = e["leg"]
-        row = next(r for r in (o["eve"]["rows"] if e["measure"] == "delta-eve" else o["nii"]["rows"]) if r["shock"] == e["shock"])
-        res = row["clp"] if name == "CLP" else row["ur"]
-        r0 = c15_rates(o, name)
-        if e["measure"] == "delta-eve":
-            nofloor = [r0[k] + res["shape_bp"][k] / 1e4 for k in range(19)]
-            base_eve = o["eve"]["base_eve_clp" if name == "CLP" else "base_eve_ur"]
-            assert close(e["delta_with_floor"], res["delta_eve"])
-            assert close(e["delta_without_floor"], base_eve - eve_of(res["net_cash_flows"], nofloor) + res["kao"])
-            assert e["buckets_floored"] == len(res["floor_bound_buckets"])
-        else:
-            conv = uf if name == "UR" else 1.0
-            base = [v * conv for v in dense([f for it in legs[name]["items"] for f in it["cash_flows"]])]
-            assert close(e["delta_with_floor"], res["delta_nii"])
-            assert close(e["delta_without_floor"], sum(base[k] * (-res["shock_bp"] / 1e4) * (1 - MIDPOINTS[k]) for k in range(6)))
-    th = o["thresholds"]
-    got = {t["id"]: t for t in th["tests"]}
-    assert {i: (t["threshold"]) for i, t in got.items()} == {"nii-tier1": 0.05, "eve-tier1": 0.15, "nii-margin": 0.18}
-    assert close(got["nii-tier1"]["measure"], o["nii"]["delta_nii"]) and close(got["eve-tier1"]["measure"], o["eve"]["delta_eve"])
-    assert close(got["nii-tier1"]["base"], th["tier1"]) and close(got["eve-tier1"]["base"], th["tier1"])
-    assert close(got["nii-margin"]["base"], th["net_interest_and_indexation_margin_12m"])
-    for t in got.values():
-        assert math.isclose(t["ratio"], t["measure"] / t["base"], rel_tol=1e-6)
-        assert t["breached"] == (t["ratio"] > t["threshold"])
-    assert th["prioritised"] == any(t["breached"] for t in got.values())
-
-
-def test_c15_the_floors_active_variant_exists_and_the_variant_ids_are_the_sdd_ones() -> None:
-    ref = cs.load_json(SCHEMAS / "c15" / "variant-annex1-variant.schema.json")
-    ids = ref["$defs"]["c15Variant"]["properties"]["id"]["enum"]
-    assert ids == ["long-uf", "short-uf", "cpi-surprise", "clp-steepener", "offset-on-off", "floors-active"]
+def test_c15_the_variants_and_months_are_the_sdd_ones_and_one_fixture_is_compared_with_opposite_signs() -> None:
+    schema = cs.load_json(SCHEMAS / "c15" / "variant-annex1-variant.schema.json")
+    assert schema["$defs"]["c15Variant"]["properties"]["id"]["enum"] == ["long-uf", "short-uf", "cpi-surprise", "clp-steepener", "offset-on-off", "floors-active"]
     assert {out(k)["variant"]["id"] for k in C15_OUT} == {"long-uf", "offset-on-off", "cpi-surprise"}
-    for k in C15_OUT:
-        doc = load(k)
-        assert doc["variant_id"] == "fixture-" + out(k)["variant"]["id"]
-        assert out(k)["balance_sheet_month"] == out(k)["curves_month"] == out(k)["as_of"][:7]
-        assert out(k)["curves"]["clp"]["month"] == out(k)["curves"]["ur"]["month"] == out(k)["curves_month"]
-
-
-@pytest.mark.parametrize("key", C15_OUT)
-def test_c15_the_cpi_surprise_effect_and_the_curves_are_required_and_attributed(key: str) -> None:
-    ref, doc = ref_of(key), load(key)
-    o = out(key)
-    cpi = o["cpi_scenario"]
-    if cpi is not None:
-        # loss-positive: a net UF asset gains from an inflation surprise
-        assert close(cpi["effect"], -o["indexation_charge"]["pn_ur"] * cpi["surprise_pp"] / 100)
-    for c in ("clp", "ur"):
-        assert "Banco Central de Chile" in o["curves"][c]["attribution"] and "adaptation" in o["curves"][c]["attribution"]
-        bad = copy.deepcopy(doc)
-        bad["outputs"]["curves"][c] = None
-        assert cs.errors(ref, bad) != [], "a null curve validates: the C15 curves are required"
-
-
-def test_c15_one_fixture_applies_a_cpi_surprise_and_the_others_do_not() -> None:
+    o = out("c15-offset-on-off")
+    assert o["offset_rule"]["state"] == "compared"
+    assert any(r["pair"]["opposite_signs"] and r["pair"]["with_offset"] != r["pair"]["without_offset"] for r in o["eve"]["rows"] + o["nii"]["rows"])
     assert [out(k)["cpi_scenario"] is not None for k in C15_OUT] == [False, False, True]
+
+
+def test_c15_floors_bind_and_the_dynamic_nii_has_both_legs() -> None:
+    assert any(out(k)["floors"]["effects"] for k in C15_OUT)
+    for k in C15_OUT:
+        assert [lg["leg"] for lg in out(k)["dynamic_nii"]["legs"]] == ["CLP", "UR"]
 
 
 def test_c15_the_models_carry_the_annex1_table_the_floors_and_the_thresholds_as_transcribed() -> None:
@@ -962,9 +786,7 @@ def test_c15_the_models_carry_the_annex1_table_the_floors_and_the_thresholds_as_
     assert [(g["shock"], g["gamma"]) for g in f["multipliers"]["prepayment_gamma"]] == list(zip(SHOCKS, GAMMA))
     assert [(g["shock"], g["u"]) for g in f["multipliers"]["term_deposit_u"]] == list(zip(SHOCKS, U))
     assert {c["category"]: (c["core_share_cap"], c["core_maturity_cap_years"]) for c in f["nmd_caps"]} == CAPS15
-    assert len(f["curve_models"]) == 2 and {c["curve"] for c in f["curve_models"]} == {"CLP", "UR"}
-    for m in f["nmd_models"]:
-        assert math.isclose(sum(t["weight"] for t in m["tranches"]), 1.0, abs_tol=1e-9)
+    assert {c["curve"] for c in f["curve_models"]} == {"CLP", "UR"}
 
 
 # --- the catalog rows ---------------------------------------------------------------------------------------------------
@@ -1082,7 +904,7 @@ def test_the_engine_contract_has_no_function_outside_the_table() -> None:
 
 def test_the_engine_contract_carries_the_dossier_goldens() -> None:
     text = API.read_text(encoding="utf-8")
-    for golden in ("0.417", "+41.7", "+25.4", "-1.6", "0.0028", "0.0417", "0.1667", "25.0", "0.0609", "0.298384", "29.447",
+    for golden in ("0.417", "+41.7", "+25.4", "-1.6", "0.0028", "0.0417", "0.1667", "25.0", "0.0609", "0.298384", "29.446",
                    "0.2", "6.0", "0.005143", "2.5"):
         assert golden in text, golden
     for cell in ("SRP31.92", "SRP31.96", "SRP31.90", "SRP31.119", "SRP31.125", "SRP31.129", "SRP31.93", "SRP31.121", "SRP31.126",
@@ -1127,7 +949,7 @@ def test_golden_diebold_li_decay_and_curvature_loading_recompute() -> None:
         return (1 - math.exp(-x)) / x - math.exp(-x)
     assert math.isclose(curvature(30), 0.298384, abs_tol=5e-7)
     best = max(range(1, 100000), key=lambda i: curvature(i / 1000))
-    assert math.isclose(best / 1000, 29.447, abs_tol=2e-3)     # the maximiser is 29.447 months, the 30 of the paper is rounded
+    assert math.isclose(best / 1000, 29.446, abs_tol=2e-3)     # the maximiser is 29.446 months, the 30 of the paper is rounded
     assert curvature(30) > curvature(25) and curvature(30) > curvature(40)
     assert math.isclose(curvature(best / 1000), 0.298426, abs_tol=5e-7)
 
@@ -1185,3 +1007,151 @@ def test_golden_annex1_totals_recompute() -> None:
     assert 16 / 100 > 0.15 and not (15 / 100 > 0.15)
     ratios = (6 / 100, 10 / 100, 6 / 40)
     assert (ratios[0] > 0.05, ratios[1] > 0.15, ratios[2] > 0.18) == (True, False, False)
+
+
+# --- the Opus review of U10-S (review-u10-s-2026-10-13.md): one test per finding and per decision --------------------------
+
+
+def _solve(a: list, b: list) -> list:
+    n = len(b)
+    m = [row[:] + [b[i]] for i, row in enumerate(a)]
+    for c in range(n):
+        piv = max(range(c, n), key=lambda r: abs(m[r][c]))
+        m[c], m[piv] = m[piv], m[c]
+        for r in range(n):
+            if r != c:
+                f = m[r][c] / m[c][c]
+                m[r] = [x - f * y for x, y in zip(m[r], m[c])]
+    return [m[i][n] / m[i][i] for i in range(n)]
+
+
+def _logit_fit(xs: list, ys: list) -> tuple[list, list]:
+    b = [0.0, 0.0, 0.0]
+    for _ in range(30):
+        g, h = [0.0] * 3, [[0.0] * 3 for _ in range(3)]
+        for x, y in zip(xs, ys):
+            p = 1 / (1 + math.exp(-sum(bi * xi for bi, xi in zip(b, x))))
+            w = p * (1 - p)
+            for i in range(3):
+                g[i] += (y - p) * x[i]
+                for j in range(3):
+                    h[i][j] += w * x[i] * x[j]
+        step = _solve(h, g)
+        b = [bi + si for bi, si in zip(b, step)]
+        if max(abs(si) for si in step) < 1e-10:
+            break
+    se = []
+    for i in range(3):
+        e = [1.0 if j == i else 0.0 for j in range(3)]
+        se.append(math.sqrt(_solve(h, e)[i]))
+    return b, se
+
+
+def test_b1_weighted_average_maturity_golden_is_2_3_and_one_tranche_of_five_years_is_2_5() -> None:
+    assert math.isclose(sum(w * m / 2 for w, m in zip([0.2, 0.3, 0.3, 0.2], [1, 3, 5, 10])), 2.3, abs_tol=1e-12)
+    assert 1.0 * 5 / 2 == 2.5
+    body = api_sections()["riskvalidation.irrbb.behavioural.weighted_average_maturity"]
+    assert "(0.2 + 0.9 + 1.5 + 2.0) / 2 = 2.3" in body and "weights `[0.2, 0.3, 0.3, 0.2]` on `[1, 3, 5, 10]` give `2.5`" not in body
+    for key in ("c14-models", "c15-models"):
+        assert sm.check_document(load(key)) == []
+
+
+def test_b2_eve_sum_of_parts_golden_is_green_under_the_default_tolerance_with_the_exact_whole() -> None:
+    cf = {3: 100.0, 8: -30.0, 15: -70.0}
+    rates = [0.02] * 19
+    whole = eve_of([cf.get(k, 0.0) for k in range(19)], rates)
+    parts = sum(eve_of([v if k == b else 0.0 for k in range(19)], rates) for b, v in cf.items())
+    assert abs(parts - whole) / abs(whole) < 1e-12
+    rounded = 12.828783
+    assert abs(parts - rounded) / abs(rounded) > 1e-9, "the rounded value would be red under the default tolerance"
+    assert abs(parts - rounded) / abs(rounded) < 1e-6
+    text = API.read_text(encoding="utf-8")
+    assert "12.8287834" in text and "`rel_tol = 1e-9`" in text and "2.9e-8" in text and "only with `rel_tol = 1e-6`" in text
+
+
+def test_m1_bootstrap_golden_is_pinned_to_multiples_of_the_coupon_period() -> None:
+    assert math.isclose(2 * math.log(1.02), 0.039605, abs_tol=5e-7)
+    assert math.isclose(12 * math.log(1 + 0.04 / 12), 0.039933, abs_tol=5e-7)
+    assert math.isclose(math.log(1 + 0.04 * 0.25) / 0.25, 0.039801, abs_tol=5e-7)
+    body = api_sections()["riskvalidation.irrbb.curves.bootstrap_zero_curve"]
+    assert "multiple of `1 / frequency`" in body and "tenors `0.5, 1, 2, 5, 10`" in body and "0.039933" in body
+    assert "at every tenor." not in body
+
+
+def test_m2_fit_prepayment_logit_states_its_design_and_recovers_within_three_standard_errors() -> None:
+    rng = random.Random(0)
+    n, truth = 20000, [-2.0, 20.0, 0.01]
+    xs, ys = [], []
+    for _ in range(n):
+        x = [1.0, rng.uniform(-0.10, 0.10), rng.uniform(0, 360)]
+        p = 1 / (1 + math.exp(-sum(t * v for t, v in zip(truth, x))))
+        xs.append(x)
+        ys.append(1.0 if rng.random() < p else 0.0)
+    b, se = _logit_fit(xs, ys)
+    assert 0.2 < se[1] < 0.6, se
+    assert all(abs(bi - t) <= 3 * s for bi, t, s in zip(b, truth, se)), (b, se)
+    body = api_sections()["riskvalidation.irrbb.behavioural.fit_prepayment_logit"]
+    for needle in ("Uniform(-0.10, 0.10)", "Uniform(0, 360)", "N = 20000", "3 of its own standard errors", "std_err"):
+        assert needle in body, needle
+
+
+def test_the_diebold_li_maximum_is_29_446_not_29_447() -> None:
+    def f(x: float) -> float:
+        return (1 - math.exp(-x)) / x - math.exp(-x)
+    lo, hi = 1.0, 3.0
+    for _ in range(200):          # golden-section search for the maximiser of the curvature loading
+        a, b = lo + (hi - lo) * 0.382, lo + (hi - lo) * 0.618
+        lo, hi = (lo, b) if f(a) > f(b) else (a, hi)
+    assert math.isclose(lo, 1.7932821, abs_tol=1e-6) and math.isclose(lo / 0.0609, 29.446, abs_tol=5e-4)
+    text = API.read_text(encoding="utf-8")
+    assert "29.447" not in text and "29.446" in text
+
+
+def test_the_minor_findings_are_in_the_contract_text() -> None:
+    text = API.read_text(encoding="utf-8")
+    assert "`0.25, 0.5, ..., 10.0` in steps of `0.25`, which contains `2.0`" in text          # the default tau grid
+    assert "the midpoint of `(0, 1/360]` is 0.0014" in text                                   # the overnight edge
+    assert "a tabled currency relabelled as an estimate" in text                              # shock_size
+    assert "with `m = 0` for the first month" in text and "at `0.04` in every month" in text   # simulate_nii
+    assert "worked example of RAN 21-13 Annex 1 Hoja 10" in text                              # cmf_annex1_goldens
+    assert "UNVERIFIED" in api_sections()["riskvalidation.irrbb.shocks.apply_floor"]
+    for key in C15_OUT:
+        rule = out(key)["floors"]["rule"]["en"]
+        assert "UNVERIFIED" in rule, "the floors.rule text must not state the UR pre-shock reading as fact"
+
+
+def test_d2_the_nmd_slotting_of_the_engine_contract_returns_the_document_fields() -> None:
+    body = api_sections()["riskvalidation.irrbb.slotting.nmd_split"]
+    for field in ("requested_core_share", "core_share_cap", "core_share_used", "requested_core_maturity_years",
+                  "core_maturity_cap_years", "core_maturity_used_years", "cap_applied"):
+        assert field in body, field
+    assert "share_flag" not in body and "capped: bool" not in body
+    assert (1 - min(0.6, 0.5)) * 100 == 50 and (1 - 0.6) * 100 == 40     # the contract's wholesale golden
+
+
+def test_d1_every_c14_document_carries_the_dynamic_nii_the_ear_evar_and_the_out_of_sample_blocks_and_c15_the_dynamic_nii() -> None:
+    for key in C14_OUT:
+        o = out(key)
+        assert [s["scenario"] for s in o["dynamic_nii"]["scenarios"]] == ["base", "parallel-up", "parallel-down"]
+        assert 12 <= o["dynamic_nii"]["horizon_months"] <= 36
+        assert [lv["level"] for lv in o["ear_evar"]["levels"]] == [0.95, 0.99]
+        assert o["ear_evar"]["n_paths"] > 1 and "seed" in o["ear_evar"] and o["ear_evar"]["monte_carlo_error"]["ear"] >= 0
+        assert o["dynamic_nii"]["balance_sheet_assumption"]["kind"] in ("constant", "growth")
+    for key in C15_OUT:
+        assert "ear_evar" not in out(key) and len(out(key)["dynamic_nii"]["legs"]) == 2
+
+
+def test_the_simulate_nii_and_ear_evar_goldens_of_the_contract_recompute() -> None:
+    asset = {"item_id": "a", "side": "asset", "balance": 100.0, "rate0": 0.05, "spread": 0.02, "beta": 1.0, "reprice_months": 0}
+    liab = {"item_id": "l", "side": "liability", "balance": 100.0, "rate0": 0.015, "spread": 0.0, "beta": 0.5, "reprice_months": 0}
+    assert math.isclose(sum(sm.simulate_nii([asset, liab], [0.03] * 12)), 3.5, abs_tol=1e-12)
+    assert math.isclose(sum(sm.simulate_nii([asset, liab], [0.04] * 12)), 4.0, abs_tol=1e-12)
+    fixed = {**asset, "reprice_months": 60, "rate0": 0.05}
+    assert math.isclose(sum(sm.simulate_nii([fixed], [0.03] * 12)), sum(sm.simulate_nii([fixed], [0.09] * 12)), abs_tol=1e-12)
+    q = 1 + 0.01 * 99                  # linear-interpolated quantile of 1..100 at 0.01
+    assert math.isclose(q, 1.99, abs_tol=1e-12) and math.isclose(60 - q, 58.01, abs_tol=1e-12)
+
+
+def test_f8_the_rows_fragment_says_the_api_version_bump_is_the_integrators() -> None:
+    assert "integrator" in ROWS.read_text(encoding="utf-8").split("-->")[0]
+    assert "check_contract_versions" in ROWS.read_text(encoding="utf-8").split("-->")[0]

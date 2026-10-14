@@ -2863,6 +2863,21 @@ export interface components {
             behaviour: "synthetic";
             notice: components["schemas"]["common-text"];
         };
+        /** @description The balance-sheet assumption of the projection: a constant balance sheet (maturing or repricing flows replaced by identical new ones, DIS70.5) or an annual growth. */
+        c14BsAssumption: {
+            /** @enum {string} */
+            kind: "constant" | "growth";
+            growth_annual: number;
+            description: components["schemas"]["c14Label"];
+        } & ({
+            /** @constant */
+            kind?: "constant";
+            /** @constant */
+            growth_annual?: 0;
+        } | {
+            /** @constant */
+            kind?: "growth";
+        });
         /** @description One of the 19 time buckets of SRP31.96 Table 3. */
         c14BucketDef: {
             /** @description Bucket of the 19 of SRP31.96 Table 3, 1 (overnight) to 19 (over 20 years). */
@@ -2873,7 +2888,102 @@ export interface components {
              * @enum {number}
              */
             midpoint_years: 0.0028 | 0.0417 | 0.1667 | 0.375 | 0.625 | 0.875 | 1.25 | 1.75 | 2.5 | 3.5 | 4.5 | 5.5 | 6.5 | 7.5 | 8.5 | 9.5 | 12.5 | 17.5 | 25;
-        };
+        } & ({
+            /** @constant */
+            bucket?: 1;
+            /** @constant */
+            midpoint_years?: 0.0028;
+        } | {
+            /** @constant */
+            bucket?: 2;
+            /** @constant */
+            midpoint_years?: 0.0417;
+        } | {
+            /** @constant */
+            bucket?: 3;
+            /** @constant */
+            midpoint_years?: 0.1667;
+        } | {
+            /** @constant */
+            bucket?: 4;
+            /** @constant */
+            midpoint_years?: 0.375;
+        } | {
+            /** @constant */
+            bucket?: 5;
+            /** @constant */
+            midpoint_years?: 0.625;
+        } | {
+            /** @constant */
+            bucket?: 6;
+            /** @constant */
+            midpoint_years?: 0.875;
+        } | {
+            /** @constant */
+            bucket?: 7;
+            /** @constant */
+            midpoint_years?: 1.25;
+        } | {
+            /** @constant */
+            bucket?: 8;
+            /** @constant */
+            midpoint_years?: 1.75;
+        } | {
+            /** @constant */
+            bucket?: 9;
+            /** @constant */
+            midpoint_years?: 2.5;
+        } | {
+            /** @constant */
+            bucket?: 10;
+            /** @constant */
+            midpoint_years?: 3.5;
+        } | {
+            /** @constant */
+            bucket?: 11;
+            /** @constant */
+            midpoint_years?: 4.5;
+        } | {
+            /** @constant */
+            bucket?: 12;
+            /** @constant */
+            midpoint_years?: 5.5;
+        } | {
+            /** @constant */
+            bucket?: 13;
+            /** @constant */
+            midpoint_years?: 6.5;
+        } | {
+            /** @constant */
+            bucket?: 14;
+            /** @constant */
+            midpoint_years?: 7.5;
+        } | {
+            /** @constant */
+            bucket?: 15;
+            /** @constant */
+            midpoint_years?: 8.5;
+        } | {
+            /** @constant */
+            bucket?: 16;
+            /** @constant */
+            midpoint_years?: 9.5;
+        } | {
+            /** @constant */
+            bucket?: 17;
+            /** @constant */
+            midpoint_years?: 12.5;
+        } | {
+            /** @constant */
+            bucket?: 18;
+            /** @constant */
+            midpoint_years?: 17.5;
+        } | {
+            /** @constant */
+            bucket?: 19;
+            /** @constant */
+            midpoint_years?: 25;
+        });
         /** @description Delta EVE with and without the behavioural NMD assumptions, always reported (dossier 05 D.7); difference = behavioural minus contractual. */
         c14Comparison: {
             /** @enum {string} */
@@ -2929,18 +3039,123 @@ export interface components {
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             equity_change_100bp_up: number;
         };
+        /** @description One item of the dynamic NII projection (the inputs of simulate_nii): a reset rate is spread + beta x r_t; reprice_months 0 reprices every month, k >= 1 keeps rate0 until month k and resets every k months. */
+        c14DynItem: {
+            item_id: string;
+            /** @enum {string} */
+            side: "asset" | "liability";
+            balance: number;
+            rate0: number;
+            spread: number;
+            beta: number;
+            reprice_months: number;
+        };
+        /** @description The projected NII under the base path or one parallel shock; delta_vs_base = base total minus this total (loss-positive). */
+        c14DynScenario: {
+            /** @enum {string} */
+            scenario: "base" | "parallel-up" | "parallel-down";
+            shock_bp: number;
+            /** @description Annual short rate of each projected month, after the floor. */
+            short_rate_path: number[];
+            /** @description NII of each projected month, money. */
+            monthly_nii: number[];
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            total: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            delta_vs_base: number;
+        };
+        /** @description base, parallel-up, parallel-down, in that order. */
+        c14DynScenarios: [
+            components["schemas"]["c14DynScenario"],
+            components["schemas"]["c14DynScenario"],
+            components["schemas"]["c14DynScenario"]
+        ];
+        /** @description Ladder rung 5 (dossier 05 D.6): the monthly NII over 12 to 36 months under the base path and the two parallel shocks of the 2024 calibration, run-off replaced under the stated balance-sheet assumption, deposit betas in the items. Every path and monthly NII has horizon_months values. */
+        c14DynamicNii: {
+            horizon_months: number;
+            balance_sheet_assumption: components["schemas"]["c14BsAssumption"];
+            items: components["schemas"]["c14DynItem"][];
+            scenarios: components["schemas"]["c14DynScenarios"];
+        };
+        /** @description Ladder rung 6 (dossier 05 D.5 and D.6): the distribution summary of NII and EVE under Hull-White one-factor or dynamic Nelson-Siegel scenario Monte Carlo, with the number of paths, the seed and the Monte Carlo standard error of EaR and EVaR. */
+        c14EarEvar: {
+            /** @enum {string} */
+            method: "hw1f" | "dns";
+            n_paths: number;
+            seed: number;
+            horizon_months: number;
+            parameters: {
+                name: string;
+                value: number;
+                unit: string;
+            }[];
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            base_nii: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            base_eve: number;
+            /** @description The 95 and 99 percent levels. */
+            levels: [
+                components["schemas"]["c14EarEvarLevel"],
+                components["schemas"]["c14EarEvarLevel"]
+            ];
+            monte_carlo_error: {
+                ear: number;
+                evar: number;
+            };
+        };
+        /** @description EaR and EVaR at one confidence level: ear = base NII minus the (1 - level) quantile of the NII paths, evar likewise for EVE (loss-positive; engine ear_evar). */
+        c14EarEvarLevel: {
+            level: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            nii_quantile: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            eve_quantile: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            ear: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            evar: number;
+        };
         /** @description C14 models: the 19 buckets, the 2024 and 2016 shock tables as data, the shock shapes, the NMD caps and multipliers, the replicating portfolios with their stability across windows, the deposit betas and the parameter-change flags. */
         c14Fit: {
-            /** @description ISO 4217 code of the money fields of this block. */
-            currency: string;
+            /**
+             * @description ISO 4217 code of the money fields of this block.
+             * @constant
+             */
+            currency: "USD";
             sign_convention: components["schemas"]["c14Sign"];
             units: components["schemas"]["c14Units"];
             bank: components["schemas"]["c14Bank"];
-            buckets: components["schemas"]["c14BucketDef"][];
-            shock_tables: components["schemas"]["c14ShockTable"][];
-            applied_sizes: components["schemas"]["c14ShockSize"][];
+            buckets: [
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"]
+            ];
+            shock_tables: [
+                components["schemas"]["c14ShockTable"],
+                components["schemas"]["c14ShockTable"]
+            ];
+            applied_sizes: [
+                components["schemas"]["c14ShockSize"],
+                components["schemas"]["c14ShockSize"]
+            ];
             shock_shape: components["schemas"]["c14ShockShape"];
-            nmd_caps: components["schemas"]["c14NmdCap"][];
+            nmd_caps: components["schemas"]["c14NmdCaps"];
             multipliers: components["schemas"]["c14Multipliers"];
             nmd_models: components["schemas"]["c14NmdModel"][];
             nmd_parameter_changes: components["schemas"]["c14ParamChange"][];
@@ -2957,7 +3172,102 @@ export interface components {
             midpoint_years: 0.0028 | 0.0417 | 0.1667 | 0.375 | 0.625 | 0.875 | 1.25 | 1.75 | 2.5 | 3.5 | 4.5 | 5.5 | 6.5 | 7.5 | 8.5 | 9.5 | 12.5 | 17.5 | 25;
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             amount: number;
-        };
+        } & ({
+            /** @constant */
+            bucket?: 1;
+            /** @constant */
+            midpoint_years?: 0.0028;
+        } | {
+            /** @constant */
+            bucket?: 2;
+            /** @constant */
+            midpoint_years?: 0.0417;
+        } | {
+            /** @constant */
+            bucket?: 3;
+            /** @constant */
+            midpoint_years?: 0.1667;
+        } | {
+            /** @constant */
+            bucket?: 4;
+            /** @constant */
+            midpoint_years?: 0.375;
+        } | {
+            /** @constant */
+            bucket?: 5;
+            /** @constant */
+            midpoint_years?: 0.625;
+        } | {
+            /** @constant */
+            bucket?: 6;
+            /** @constant */
+            midpoint_years?: 0.875;
+        } | {
+            /** @constant */
+            bucket?: 7;
+            /** @constant */
+            midpoint_years?: 1.25;
+        } | {
+            /** @constant */
+            bucket?: 8;
+            /** @constant */
+            midpoint_years?: 1.75;
+        } | {
+            /** @constant */
+            bucket?: 9;
+            /** @constant */
+            midpoint_years?: 2.5;
+        } | {
+            /** @constant */
+            bucket?: 10;
+            /** @constant */
+            midpoint_years?: 3.5;
+        } | {
+            /** @constant */
+            bucket?: 11;
+            /** @constant */
+            midpoint_years?: 4.5;
+        } | {
+            /** @constant */
+            bucket?: 12;
+            /** @constant */
+            midpoint_years?: 5.5;
+        } | {
+            /** @constant */
+            bucket?: 13;
+            /** @constant */
+            midpoint_years?: 6.5;
+        } | {
+            /** @constant */
+            bucket?: 14;
+            /** @constant */
+            midpoint_years?: 7.5;
+        } | {
+            /** @constant */
+            bucket?: 15;
+            /** @constant */
+            midpoint_years?: 8.5;
+        } | {
+            /** @constant */
+            bucket?: 16;
+            /** @constant */
+            midpoint_years?: 9.5;
+        } | {
+            /** @constant */
+            bucket?: 17;
+            /** @constant */
+            midpoint_years?: 12.5;
+        } | {
+            /** @constant */
+            bucket?: 18;
+            /** @constant */
+            midpoint_years?: 17.5;
+        } | {
+            /** @constant */
+            bucket?: 19;
+            /** @constant */
+            midpoint_years?: 25;
+        });
         /** @description SRP31.119 Table 5 prepayment multiplier of a shock. */
         c14Gamma: {
             /** @enum {string} */
@@ -3017,15 +3327,49 @@ export interface components {
         c14Ladder: {
             /** @enum {string} */
             nmd_assumption: "behavioural" | "contractual";
-            repricing_gap: components["schemas"]["c14GapRow"][];
+            repricing_gap: [
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"]
+            ];
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             delta_nii_gap_100bp_up: number;
             duration_gap: components["schemas"]["c14DurationGap"];
         };
         /** @description The scenario multipliers of the prepayment rate and the term-deposit redemption rate, in the order of the six shocks. */
         c14Multipliers: {
-            prepayment_gamma: components["schemas"]["c14Gamma"][];
-            term_deposit_u: components["schemas"]["c14UMult"][];
+            prepayment_gamma: [
+                components["schemas"]["c14Gamma"],
+                components["schemas"]["c14Gamma"],
+                components["schemas"]["c14Gamma"],
+                components["schemas"]["c14Gamma"],
+                components["schemas"]["c14Gamma"],
+                components["schemas"]["c14Gamma"]
+            ];
+            term_deposit_u: [
+                components["schemas"]["c14UMult"],
+                components["schemas"]["c14UMult"],
+                components["schemas"]["c14UMult"],
+                components["schemas"]["c14UMult"],
+                components["schemas"]["c14UMult"],
+                components["schemas"]["c14UMult"]
+            ];
             reference: string;
         };
         /** @description SRP31 Table 4 cap of a category. */
@@ -3037,6 +3381,12 @@ export interface components {
             core_maturity_cap_years: number;
             reference: string;
         };
+        /** @description The three SRP31 Table 4 caps, exactly the table's. */
+        c14NmdCaps: [
+            components["schemas"]["c14NmdCap"],
+            components["schemas"]["c14NmdCap"],
+            components["schemas"]["c14NmdCap"]
+        ];
         /** @description The static replicating portfolio of one NMD category at one valuation date (dossier 05 D.3). The weighted average maturity of a rolling tranche of maturity m is m / 2 (BCBS 368 footnote 38). A margin volatility the fit lacks is null with its reason. */
         c14NmdModel: {
             valuation_date: string;
@@ -3056,22 +3406,22 @@ export interface components {
             margin_volatility?: null;
             margin_volatility_reason?: components["schemas"]["c14Label"];
         });
-        /** @description A non-maturity deposit segment with its core share and core maturity beside the SRP31 Table 4 caps. A value above its cap passes only with the flag above-cap (an internal assumption beyond the standardised cap, the SVB lesson of dossier 05 D.7); a flag on an in-cap value fails. */
+        /** @description A non-maturity deposit segment: the requested core share and maturity, the SRP31 Table 4 cap, the value used and cap_applied (D2 of the U10 sizing). A request above its cap validates only with cap_applied true and the used value at the cap; a request within the caps has cap_applied false and the used value equal to the request (a producer check). The standardised EVE uses the used values. */
         c14NmdSegment: {
             /** @enum {string} */
             category: "retail-transactional" | "retail-non-transactional" | "wholesale";
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             balance: number;
             /** @description A share or an observed rate in [0, 1]. */
-            core_share: number;
+            requested_core_share: number;
             /** @description A share or an observed rate in [0, 1]. */
             core_share_cap: number;
-            /** @enum {string} */
-            core_share_flag: "within-cap" | "above-cap";
-            core_maturity_years: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            core_share_used: number;
+            requested_core_maturity_years: number;
             core_maturity_cap_years: number;
-            /** @enum {string} */
-            maturity_flag: "within-cap" | "above-cap";
+            core_maturity_used_years: number;
+            cap_applied: boolean;
             /** @enum {string} */
             source_kind: "regulatory-cap" | "fitted" | "synthetic-stated";
             source: string;
@@ -3082,12 +3432,12 @@ export interface components {
             core_share_cap?: 0.9;
             /** @constant */
             core_maturity_cap_years?: 5;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            core_maturity_used_years?: number;
             /** @constant */
-            core_share_flag?: "within-cap";
-            core_maturity_years?: number;
-            /** @constant */
-            maturity_flag?: "within-cap";
+            cap_applied?: false;
         } | {
             /** @constant */
             category?: "retail-transactional";
@@ -3095,12 +3445,13 @@ export interface components {
             core_share_cap?: 0.9;
             /** @constant */
             core_maturity_cap_years?: 5;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
             /** @constant */
-            core_share_flag?: "within-cap";
-            core_maturity_years?: number;
+            core_maturity_used_years?: 5;
             /** @constant */
-            maturity_flag?: "above-cap";
+            cap_applied?: true;
         } | {
             /** @constant */
             category?: "retail-transactional";
@@ -3108,12 +3459,13 @@ export interface components {
             core_share_cap?: 0.9;
             /** @constant */
             core_maturity_cap_years?: 5;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
             /** @constant */
-            core_share_flag?: "above-cap";
-            core_maturity_years?: number;
+            core_share_used?: 0.9;
+            core_maturity_used_years?: number;
             /** @constant */
-            maturity_flag?: "within-cap";
+            cap_applied?: true;
         } | {
             /** @constant */
             category?: "retail-transactional";
@@ -3121,12 +3473,14 @@ export interface components {
             core_share_cap?: 0.9;
             /** @constant */
             core_maturity_cap_years?: 5;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
             /** @constant */
-            core_share_flag?: "above-cap";
-            core_maturity_years?: number;
+            core_share_used?: 0.9;
             /** @constant */
-            maturity_flag?: "above-cap";
+            core_maturity_used_years?: 5;
+            /** @constant */
+            cap_applied?: true;
         } | {
             /** @constant */
             category?: "retail-non-transactional";
@@ -3134,12 +3488,12 @@ export interface components {
             core_share_cap?: 0.7;
             /** @constant */
             core_maturity_cap_years?: 4.5;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            core_maturity_used_years?: number;
             /** @constant */
-            core_share_flag?: "within-cap";
-            core_maturity_years?: number;
-            /** @constant */
-            maturity_flag?: "within-cap";
+            cap_applied?: false;
         } | {
             /** @constant */
             category?: "retail-non-transactional";
@@ -3147,12 +3501,13 @@ export interface components {
             core_share_cap?: 0.7;
             /** @constant */
             core_maturity_cap_years?: 4.5;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
             /** @constant */
-            core_share_flag?: "within-cap";
-            core_maturity_years?: number;
+            core_maturity_used_years?: 4.5;
             /** @constant */
-            maturity_flag?: "above-cap";
+            cap_applied?: true;
         } | {
             /** @constant */
             category?: "retail-non-transactional";
@@ -3160,12 +3515,13 @@ export interface components {
             core_share_cap?: 0.7;
             /** @constant */
             core_maturity_cap_years?: 4.5;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
             /** @constant */
-            core_share_flag?: "above-cap";
-            core_maturity_years?: number;
+            core_share_used?: 0.7;
+            core_maturity_used_years?: number;
             /** @constant */
-            maturity_flag?: "within-cap";
+            cap_applied?: true;
         } | {
             /** @constant */
             category?: "retail-non-transactional";
@@ -3173,12 +3529,14 @@ export interface components {
             core_share_cap?: 0.7;
             /** @constant */
             core_maturity_cap_years?: 4.5;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
             /** @constant */
-            core_share_flag?: "above-cap";
-            core_maturity_years?: number;
+            core_share_used?: 0.7;
             /** @constant */
-            maturity_flag?: "above-cap";
+            core_maturity_used_years?: 4.5;
+            /** @constant */
+            cap_applied?: true;
         } | {
             /** @constant */
             category?: "wholesale";
@@ -3186,12 +3544,12 @@ export interface components {
             core_share_cap?: 0.5;
             /** @constant */
             core_maturity_cap_years?: 4;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            core_maturity_used_years?: number;
             /** @constant */
-            core_share_flag?: "within-cap";
-            core_maturity_years?: number;
-            /** @constant */
-            maturity_flag?: "within-cap";
+            cap_applied?: false;
         } | {
             /** @constant */
             category?: "wholesale";
@@ -3199,12 +3557,13 @@ export interface components {
             core_share_cap?: 0.5;
             /** @constant */
             core_maturity_cap_years?: 4;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
             /** @constant */
-            core_share_flag?: "within-cap";
-            core_maturity_years?: number;
+            core_maturity_used_years?: 4;
             /** @constant */
-            maturity_flag?: "above-cap";
+            cap_applied?: true;
         } | {
             /** @constant */
             category?: "wholesale";
@@ -3212,12 +3571,13 @@ export interface components {
             core_share_cap?: 0.5;
             /** @constant */
             core_maturity_cap_years?: 4;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
             /** @constant */
-            core_share_flag?: "above-cap";
-            core_maturity_years?: number;
+            core_share_used?: 0.5;
+            core_maturity_used_years?: number;
             /** @constant */
-            maturity_flag?: "within-cap";
+            cap_applied?: true;
         } | {
             /** @constant */
             category?: "wholesale";
@@ -3225,20 +3585,51 @@ export interface components {
             core_share_cap?: 0.5;
             /** @constant */
             core_maturity_cap_years?: 4;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
             /** @constant */
-            core_share_flag?: "above-cap";
-            core_maturity_years?: number;
+            core_share_used?: 0.5;
             /** @constant */
-            maturity_flag?: "above-cap";
+            core_maturity_used_years?: 4;
+            /** @constant */
+            cap_applied?: true;
+        });
+        /** @description The out-of-sample row: the NII projection of this valuation date against the NII realised in the following period (the 2022 hiking cycle for 2021-Q4), read from call reports dated after the valuation date and used only here, never as an input. Not applicable (null with its reason) when no later period is read. */
+        c14OutOfSample: {
+            applicable: boolean;
+            projection_date: string;
+            realised_period_start: string | null;
+            realised_period_end: string | null;
+            projected_delta_nii: number | null;
+            realised_delta_nii: number | null;
+            relative_error: number | null;
+            reason: components["schemas"]["c14Label"] | null;
+        } & ({
+            /** @constant */
+            applicable?: true;
+            realised_period_start?: string;
+            realised_period_end?: string;
+            projected_delta_nii?: number;
+            realised_delta_nii?: number;
+            relative_error?: number;
+            reason?: null;
+        } | {
+            /** @constant */
+            applicable?: false;
+            realised_period_start?: null;
+            realised_period_end?: null;
+            projected_delta_nii?: null;
+            realised_delta_nii?: null;
+            relative_error?: null;
+            reason?: components["schemas"]["c14Label"];
         });
         /** @description The outlier test: the EVE risk measure against 15 percent of Tier 1 capital (SRP31.82 to SRP31.83). */
         c14Outlier: {
             /** @constant */
             threshold_share_tier1: 0.15;
-            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            /** @description Money in the `currency` of the enclosing block. */
             tier1: number;
-            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            /** @description Money in the `currency` of the enclosing block. */
             eve_risk_measure: number;
             ratio: number;
             breached: boolean;
@@ -3255,8 +3646,11 @@ export interface components {
             kind: "valuation-date";
             valuation_date: string;
             quarter: string;
-            /** @description ISO 4217 code of the money fields of this block. */
-            currency: string;
+            /**
+             * @description ISO 4217 code of the money fields of this block.
+             * @constant
+             */
+            currency: "USD";
             sign_convention: components["schemas"]["c14Sign"];
             units: components["schemas"]["c14Units"];
             bank: components["schemas"]["c14Bank"];
@@ -3265,10 +3659,34 @@ export interface components {
             assumptions: components["schemas"]["c14Assumptions"];
             nmd_segments: components["schemas"]["c14NmdSegment"][];
             balance_sheet: components["schemas"]["c14BalanceSheet"];
-            ladder: components["schemas"]["c14Ladder"][];
-            /** @description 2024 and 2016 calibrations, each with and without behavioural NMD. */
-            scenarios: components["schemas"]["c14Scenario"][];
-            behavioural_comparison: components["schemas"]["c14Comparison"][];
+            ladder: [
+                components["schemas"]["c14Ladder"],
+                components["schemas"]["c14Ladder"]
+            ];
+            /** @description 2024 and 2016 calibrations, each with and without behavioural NMD, in this order. */
+            scenarios: [
+                components["schemas"]["c14Scenario"],
+                components["schemas"]["c14Scenario"],
+                components["schemas"]["c14Scenario"],
+                components["schemas"]["c14Scenario"]
+            ];
+            dynamic_nii: components["schemas"]["c14DynamicNii"];
+            ear_evar: components["schemas"]["c14EarEvar"];
+            out_of_sample: components["schemas"]["c14OutOfSample"];
+            behavioural_comparison: [
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"]
+            ];
         };
         /** @description A change of a behavioural parameter between two valuation dates; flagged when it changed in a window that holds a limit breach (dossier 05 D.7: the SVB lesson). */
         c14ParamChange: {
@@ -3296,19 +3714,29 @@ export interface components {
             source: string;
             fields: string[];
         };
-        /** @description One calibration of the shock sizes under one NMD assumption: the six shocks in the order parallel-up, parallel-down, steepener, flattener, short-up, short-down, the EVE risk measure (the maximum over the six of the positive losses, SRP31.129) and its outlier test. */
+        /** @description nmd_treatment says what the behavioural flows use: the capped used values of nmd_segments (standardised-capped) or every NMD in the overnight bucket (contractual-overnight). One calibration of the shock sizes under one NMD assumption: the six shocks in the order parallel-up, parallel-down, steepener, flattener, short-up, short-down, the EVE risk measure (the maximum over the six of the positive losses, SRP31.129) and its outlier test. */
         c14Scenario: {
             /** @enum {string} */
             calibration: "2024" | "2016";
             /** @enum {string} */
             nmd_assumption: "behavioural" | "contractual";
+            /** @enum {string} */
+            nmd_treatment: "standardised-capped" | "contractual-overnight";
             shock_size: components["schemas"]["c14ShockSize"];
             /** @description Post-shock floor, not above zero (SRP31.93); null: none. */
             floor: number | null;
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             base_eve: number;
-            shocks: components["schemas"]["c14ShockResult"][];
-            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            /** @description The six shocks in the order of SHOCKS. */
+            shocks: [
+                components["schemas"]["c14ShockResult"],
+                components["schemas"]["c14ShockResult"],
+                components["schemas"]["c14ShockResult"],
+                components["schemas"]["c14ShockResult"],
+                components["schemas"]["c14ShockResult"],
+                components["schemas"]["c14ShockResult"]
+            ];
+            /** @description Money in the `currency` of the enclosing block. */
             eve_risk_measure: number;
             worst_shock: ("parallel-up" | "parallel-down" | "steepener" | "flattener" | "short-up" | "short-down") | null;
             outlier: components["schemas"]["c14Outlier"];
@@ -3368,7 +3796,7 @@ export interface components {
             long_form: "1 - exp(-t_k / x)";
             reference: string;
         };
-        /** @description The shock sizes applied to a currency, in basis points. A currency without an entry in the BCBS table (CLP is not in either) passes only labelled as a Contraste estimate with its method, never as a regulatory parameter (dossier 01 H.3). */
+        /** @description The shock sizes applied to a currency, in basis points. A tabled size is exactly the table's (SRP31.90 Table 2, d368 Annex 2 Table 1, RAN 21-13 Annex 1 Hoja 9); a currency without an entry in the BCBS table (CLP is in neither) passes only labelled as a Contraste estimate with its method, never as a regulatory parameter (dossier 01 H.3), and a tabled currency cannot be relabelled as an estimate. */
         c14ShockSize: {
             /** @description ISO 4217 code of the money fields of this block. */
             currency: string;
@@ -3382,27 +3810,579 @@ export interface components {
         } & ({
             /** @constant */
             origin?: "srp31-table-2024";
-            /** @enum {string} */
-            currency?: "ARS" | "AUD" | "BRL" | "CAD" | "CHF" | "CNY" | "EUR" | "GBP" | "HKD" | "IDR" | "INR" | "JPY" | "KRW" | "MXN" | "RUB" | "SAR" | "SEK" | "SGD" | "TRY" | "USD" | "ZAR";
+            /** @constant */
+            currency?: "ARS";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "AUD";
+            /** @constant */
+            parallel_bp?: 350;
+            /** @constant */
+            short_bp?: 425;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "BRL";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "CAD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 275;
+            /** @constant */
+            long_bp?: 175;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "CHF";
+            /** @constant */
+            parallel_bp?: 175;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "CNY";
+            /** @constant */
+            parallel_bp?: 225;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "EUR";
+            /** @constant */
+            parallel_bp?: 225;
+            /** @constant */
+            short_bp?: 350;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "GBP";
+            /** @constant */
+            parallel_bp?: 275;
+            /** @constant */
+            short_bp?: 425;
+            /** @constant */
+            long_bp?: 250;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "HKD";
+            /** @constant */
+            parallel_bp?: 225;
+            /** @constant */
+            short_bp?: 375;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "IDR";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "INR";
+            /** @constant */
+            parallel_bp?: 325;
+            /** @constant */
+            short_bp?: 475;
+            /** @constant */
+            long_bp?: 225;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "JPY";
+            /** @constant */
+            parallel_bp?: 100;
+            /** @constant */
+            short_bp?: 100;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "KRW";
+            /** @constant */
+            parallel_bp?: 225;
+            /** @constant */
+            short_bp?: 350;
+            /** @constant */
+            long_bp?: 225;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "MXN";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "RUB";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "SAR";
+            /** @constant */
+            parallel_bp?: 275;
+            /** @constant */
+            short_bp?: 375;
+            /** @constant */
+            long_bp?: 250;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "SEK";
+            /** @constant */
+            parallel_bp?: 275;
+            /** @constant */
+            short_bp?: 425;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "SGD";
+            /** @constant */
+            parallel_bp?: 175;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 225;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "TRY";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "USD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 225;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "ZAR";
+            /** @constant */
+            parallel_bp?: 325;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
             label?: null;
             method?: null;
         } | {
             /** @constant */
             origin?: "srp31-table-2016";
-            /** @enum {string} */
-            currency?: "ARS" | "AUD" | "BRL" | "CAD" | "CHF" | "CNY" | "EUR" | "GBP" | "HKD" | "IDR" | "INR" | "JPY" | "KRW" | "MXN" | "RUB" | "SAR" | "SEK" | "SGD" | "TRY" | "USD" | "ZAR";
+            /** @constant */
+            currency?: "ARS";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "AUD";
+            /** @constant */
+            parallel_bp?: 300;
+            /** @constant */
+            short_bp?: 450;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "BRL";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "CAD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "CHF";
+            /** @constant */
+            parallel_bp?: 100;
+            /** @constant */
+            short_bp?: 150;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "CNY";
+            /** @constant */
+            parallel_bp?: 250;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "EUR";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "GBP";
+            /** @constant */
+            parallel_bp?: 250;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "HKD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "IDR";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 350;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "INR";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "JPY";
+            /** @constant */
+            parallel_bp?: 100;
+            /** @constant */
+            short_bp?: 100;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "KRW";
+            /** @constant */
+            parallel_bp?: 300;
+            /** @constant */
+            short_bp?: 400;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "MXN";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "RUB";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "SAR";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "SEK";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "SGD";
+            /** @constant */
+            parallel_bp?: 150;
+            /** @constant */
+            short_bp?: 200;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "TRY";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "USD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "ZAR";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
             label?: null;
             method?: null;
         } | {
             /** @constant */
             origin?: "cmf-annex1";
-            /** @enum {string} */
-            currency?: "CLP" | "CLF";
+            /** @constant */
+            currency?: "CLP";
+            /** @constant */
+            parallel_bp?: 300;
+            /** @constant */
+            short_bp?: 400;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "cmf-annex1";
+            /** @constant */
+            currency?: "CLF";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 150;
             label?: null;
             method?: null;
         } | {
             /** @constant */
             origin?: "contraste-estimate";
+            currency?: unknown;
             label?: components["schemas"]["c14Label"];
             method?: string;
         });
@@ -3504,6 +4484,21 @@ export interface components {
             seed: number;
             calibration_source: string;
         };
+        /** @description The balance-sheet assumption of the projection: a constant balance sheet (maturing or repricing flows replaced by identical new ones, DIS70.5) or an annual growth. */
+        c15BsAssumption: {
+            /** @enum {string} */
+            kind: "constant" | "growth";
+            growth_annual: number;
+            description: components["schemas"]["c15Label"];
+        } & ({
+            /** @constant */
+            kind?: "constant";
+            /** @constant */
+            growth_annual?: 0;
+        } | {
+            /** @constant */
+            kind?: "growth";
+        });
         /** @description One of the 19 time buckets of SRP31.96 Table 3. */
         c15BucketDef: {
             /** @description Bucket of the 19 of SRP31.96 Table 3, 1 (overnight) to 19 (over 20 years). */
@@ -3514,7 +4509,102 @@ export interface components {
              * @enum {number}
              */
             midpoint_years: 0.0028 | 0.0417 | 0.1667 | 0.375 | 0.625 | 0.875 | 1.25 | 1.75 | 2.5 | 3.5 | 4.5 | 5.5 | 6.5 | 7.5 | 8.5 | 9.5 | 12.5 | 17.5 | 25;
-        };
+        } & ({
+            /** @constant */
+            bucket?: 1;
+            /** @constant */
+            midpoint_years?: 0.0028;
+        } | {
+            /** @constant */
+            bucket?: 2;
+            /** @constant */
+            midpoint_years?: 0.0417;
+        } | {
+            /** @constant */
+            bucket?: 3;
+            /** @constant */
+            midpoint_years?: 0.1667;
+        } | {
+            /** @constant */
+            bucket?: 4;
+            /** @constant */
+            midpoint_years?: 0.375;
+        } | {
+            /** @constant */
+            bucket?: 5;
+            /** @constant */
+            midpoint_years?: 0.625;
+        } | {
+            /** @constant */
+            bucket?: 6;
+            /** @constant */
+            midpoint_years?: 0.875;
+        } | {
+            /** @constant */
+            bucket?: 7;
+            /** @constant */
+            midpoint_years?: 1.25;
+        } | {
+            /** @constant */
+            bucket?: 8;
+            /** @constant */
+            midpoint_years?: 1.75;
+        } | {
+            /** @constant */
+            bucket?: 9;
+            /** @constant */
+            midpoint_years?: 2.5;
+        } | {
+            /** @constant */
+            bucket?: 10;
+            /** @constant */
+            midpoint_years?: 3.5;
+        } | {
+            /** @constant */
+            bucket?: 11;
+            /** @constant */
+            midpoint_years?: 4.5;
+        } | {
+            /** @constant */
+            bucket?: 12;
+            /** @constant */
+            midpoint_years?: 5.5;
+        } | {
+            /** @constant */
+            bucket?: 13;
+            /** @constant */
+            midpoint_years?: 6.5;
+        } | {
+            /** @constant */
+            bucket?: 14;
+            /** @constant */
+            midpoint_years?: 7.5;
+        } | {
+            /** @constant */
+            bucket?: 15;
+            /** @constant */
+            midpoint_years?: 8.5;
+        } | {
+            /** @constant */
+            bucket?: 16;
+            /** @constant */
+            midpoint_years?: 9.5;
+        } | {
+            /** @constant */
+            bucket?: 17;
+            /** @constant */
+            midpoint_years?: 12.5;
+        } | {
+            /** @constant */
+            bucket?: 18;
+            /** @constant */
+            midpoint_years?: 17.5;
+        } | {
+            /** @constant */
+            bucket?: 19;
+            /** @constant */
+            midpoint_years?: 25;
+        });
         /** @description Null when the variant applies no CPI surprise. */
         c15CpiScenario: {
             surprise_pp: number;
@@ -3577,13 +4667,67 @@ export interface components {
             source_kind: "regulatory-cap" | "fitted" | "synthetic-stated";
             source: string;
         };
+        /** @description One item of the dynamic NII projection (the inputs of simulate_nii): a reset rate is spread + beta x r_t; reprice_months 0 reprices every month, k >= 1 keeps rate0 until month k and resets every k months. */
+        c15DynItem: {
+            item_id: string;
+            /** @enum {string} */
+            side: "asset" | "liability";
+            balance: number;
+            rate0: number;
+            spread: number;
+            beta: number;
+            reprice_months: number;
+        };
+        /** @description The projected NII under the base path or one parallel shock; delta_vs_base = base total minus this total (loss-positive). */
+        c15DynScenario: {
+            /** @enum {string} */
+            scenario: "base" | "parallel-up" | "parallel-down";
+            shock_bp: number;
+            /** @description Annual short rate of each projected month, after the floor. */
+            short_rate_path: number[];
+            /** @description NII of each projected month, money. */
+            monthly_nii: number[];
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            total: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            delta_vs_base: number;
+        };
+        /** @description base, parallel-up, parallel-down, in that order. */
+        c15DynScenarios: [
+            components["schemas"]["c15DynScenario"],
+            components["schemas"]["c15DynScenario"],
+            components["schemas"]["c15DynScenario"]
+        ];
+        /** @description The dynamic NII of one leg; balances and NII are in the reporting currency (the UR leg converted at the UF value). */
+        c15DynamicLeg: {
+            /** @enum {string} */
+            leg: "CLP" | "UR";
+            items: components["schemas"]["c15DynItem"][];
+            scenarios: components["schemas"]["c15DynScenarios"];
+        };
+        /** @description Ladder rung 5 for the CLP and UR legs (dossier 05 D.6). The EaR and EVaR of C15 wait for the BCCh curves (owner prerequisite 7). */
+        c15DynamicNii: {
+            horizon_months: number;
+            balance_sheet_assumption: components["schemas"]["c15BsAssumption"];
+            legs: [
+                components["schemas"]["c15DynamicLeg"],
+                components["schemas"]["c15DynamicLeg"]
+            ];
+        };
         /** @description Annex 1 delta EVE: the maximum over the six shocks of the pair total (there is no other currency in this book). */
         c15EveMeasure: {
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             base_eve_clp: number;
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             base_eve_ur: number;
-            rows: components["schemas"]["c15EveRow"][];
+            rows: [
+                components["schemas"]["c15EveRow"],
+                components["schemas"]["c15EveRow"],
+                components["schemas"]["c15EveRow"],
+                components["schemas"]["c15EveRow"],
+                components["schemas"]["c15EveRow"],
+                components["schemas"]["c15EveRow"]
+            ];
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             delta_eve: number;
             worst_shock: ("parallel-up" | "parallel-down" | "steepener" | "flattener" | "short-up" | "short-down") | null;
@@ -3600,22 +4744,58 @@ export interface components {
         };
         /** @description C15 models: the 19 buckets, the CMF Annex 1 table, floors and thresholds as data, the offset share and the indexation rate, the BCCh curve fits, the Banco Andino calibration targets and the behavioural fits. */
         c15Fit: {
-            /** @description ISO 4217 code of the money fields of this block. */
-            reporting_currency: string;
+            /**
+             * @description ISO 4217 code of the money fields of this block.
+             * @constant
+             */
+            reporting_currency: "CLP";
             sign_convention: components["schemas"]["c15Sign"];
             units: components["schemas"]["c15Units"];
             bank: components["schemas"]["c15Bank"];
-            buckets: components["schemas"]["c15BucketDef"][];
-            annex1_table: components["schemas"]["c15TableRow"][];
-            eve_shock_sizes: components["schemas"]["c15ShockSize"][];
+            buckets: [
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"]
+            ];
+            annex1_table: [
+                components["schemas"]["c15TableRow"],
+                components["schemas"]["c15TableRow"],
+                components["schemas"]["c15TableRow"],
+                components["schemas"]["c15TableRow"],
+                components["schemas"]["c15TableRow"]
+            ];
+            eve_shock_sizes: [
+                components["schemas"]["c15ShockSize"],
+                components["schemas"]["c15ShockSize"]
+            ];
             floors: components["schemas"]["c15FloorRule"];
-            prioritised_thresholds: components["schemas"]["c15ThresholdRule"][];
+            prioritised_thresholds: [
+                components["schemas"]["c15ThresholdRule"],
+                components["schemas"]["c15ThresholdRule"],
+                components["schemas"]["c15ThresholdRule"]
+            ];
             /** @constant */
             offset_share: 0.5;
             /** @constant */
             indexation_rate: 0.025;
             multipliers: components["schemas"]["c15Multipliers"];
-            nmd_caps: components["schemas"]["c15NmdCap"][];
+            nmd_caps: components["schemas"]["c15NmdCaps"];
             curve_models: components["schemas"]["c15CurveModel"][];
             calibration_targets: components["schemas"]["c15Target"][];
             nmd_models: components["schemas"]["c15NmdModel"][];
@@ -3664,7 +4844,102 @@ export interface components {
             midpoint_years: 0.0028 | 0.0417 | 0.1667 | 0.375 | 0.625 | 0.875 | 1.25 | 1.75 | 2.5 | 3.5 | 4.5 | 5.5 | 6.5 | 7.5 | 8.5 | 9.5 | 12.5 | 17.5 | 25;
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             amount: number;
-        };
+        } & ({
+            /** @constant */
+            bucket?: 1;
+            /** @constant */
+            midpoint_years?: 0.0028;
+        } | {
+            /** @constant */
+            bucket?: 2;
+            /** @constant */
+            midpoint_years?: 0.0417;
+        } | {
+            /** @constant */
+            bucket?: 3;
+            /** @constant */
+            midpoint_years?: 0.1667;
+        } | {
+            /** @constant */
+            bucket?: 4;
+            /** @constant */
+            midpoint_years?: 0.375;
+        } | {
+            /** @constant */
+            bucket?: 5;
+            /** @constant */
+            midpoint_years?: 0.625;
+        } | {
+            /** @constant */
+            bucket?: 6;
+            /** @constant */
+            midpoint_years?: 0.875;
+        } | {
+            /** @constant */
+            bucket?: 7;
+            /** @constant */
+            midpoint_years?: 1.25;
+        } | {
+            /** @constant */
+            bucket?: 8;
+            /** @constant */
+            midpoint_years?: 1.75;
+        } | {
+            /** @constant */
+            bucket?: 9;
+            /** @constant */
+            midpoint_years?: 2.5;
+        } | {
+            /** @constant */
+            bucket?: 10;
+            /** @constant */
+            midpoint_years?: 3.5;
+        } | {
+            /** @constant */
+            bucket?: 11;
+            /** @constant */
+            midpoint_years?: 4.5;
+        } | {
+            /** @constant */
+            bucket?: 12;
+            /** @constant */
+            midpoint_years?: 5.5;
+        } | {
+            /** @constant */
+            bucket?: 13;
+            /** @constant */
+            midpoint_years?: 6.5;
+        } | {
+            /** @constant */
+            bucket?: 14;
+            /** @constant */
+            midpoint_years?: 7.5;
+        } | {
+            /** @constant */
+            bucket?: 15;
+            /** @constant */
+            midpoint_years?: 8.5;
+        } | {
+            /** @constant */
+            bucket?: 16;
+            /** @constant */
+            midpoint_years?: 9.5;
+        } | {
+            /** @constant */
+            bucket?: 17;
+            /** @constant */
+            midpoint_years?: 12.5;
+        } | {
+            /** @constant */
+            bucket?: 18;
+            /** @constant */
+            midpoint_years?: 17.5;
+        } | {
+            /** @constant */
+            bucket?: 19;
+            /** @constant */
+            midpoint_years?: 25;
+        });
         /** @description SRP31.119 Table 5 prepayment multiplier of a shock. */
         c15Gamma: {
             /** @enum {string} */
@@ -3744,8 +5019,22 @@ export interface components {
         };
         /** @description The scenario multipliers of the prepayment rate and the term-deposit redemption rate, in the order of the six shocks. */
         c15Multipliers: {
-            prepayment_gamma: components["schemas"]["c15Gamma"][];
-            term_deposit_u: components["schemas"]["c15UMult"][];
+            prepayment_gamma: [
+                components["schemas"]["c15Gamma"],
+                components["schemas"]["c15Gamma"],
+                components["schemas"]["c15Gamma"],
+                components["schemas"]["c15Gamma"],
+                components["schemas"]["c15Gamma"],
+                components["schemas"]["c15Gamma"]
+            ];
+            term_deposit_u: [
+                components["schemas"]["c15UMult"],
+                components["schemas"]["c15UMult"],
+                components["schemas"]["c15UMult"],
+                components["schemas"]["c15UMult"],
+                components["schemas"]["c15UMult"],
+                components["schemas"]["c15UMult"]
+            ];
             reference: string;
         };
         /** @description One leg under one parallel shock: delta NII = sum over the first six buckets of CF x (r0 - ri) x (1 - t_k). */
@@ -3759,7 +5048,10 @@ export interface components {
         };
         /** @description Annex 1 delta NII = the maximum over the two parallel shocks of the pair, plus the indexation charge. */
         c15NiiMeasure: {
-            rows: components["schemas"]["c15NiiRow"][];
+            rows: [
+                components["schemas"]["c15NiiRow"],
+                components["schemas"]["c15NiiRow"]
+            ];
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             max_pair: number;
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
@@ -3780,7 +5072,8 @@ export interface components {
         c15NiiSize: {
             /** @enum {string} */
             currency: "CLP" | "CLF";
-            parallel_bp: number;
+            /** @constant */
+            parallel_bp: 300;
             /** @constant */
             origin: "cmf-annex1";
         };
@@ -3793,6 +5086,12 @@ export interface components {
             core_maturity_cap_years: number;
             reference: string;
         };
+        /** @description The three SRP31 Table 4 caps, exactly the table's. */
+        c15NmdCaps: [
+            components["schemas"]["c15NmdCap"],
+            components["schemas"]["c15NmdCap"],
+            components["schemas"]["c15NmdCap"]
+        ];
         /** @description The static replicating portfolio of one NMD category at one valuation date (dossier 05 D.3). The weighted average maturity of a rolling tranche of maturity m is m / 2 (BCBS 368 footnote 38). A margin volatility the fit lacks is null with its reason. */
         c15NmdModel: {
             valuation_date: string;
@@ -3812,22 +5111,22 @@ export interface components {
             margin_volatility?: null;
             margin_volatility_reason?: components["schemas"]["c15Label"];
         });
-        /** @description A non-maturity deposit segment with its core share and core maturity beside the SRP31 Table 4 caps. A value above its cap passes only with the flag above-cap (an internal assumption beyond the standardised cap, the SVB lesson of dossier 05 D.7); a flag on an in-cap value fails. */
+        /** @description A non-maturity deposit segment: the requested core share and maturity, the SRP31 Table 4 cap, the value used and cap_applied (D2 of the U10 sizing). A request above its cap validates only with cap_applied true and the used value at the cap; a request within the caps has cap_applied false and the used value equal to the request (a producer check). The standardised EVE uses the used values. */
         c15NmdSegment: {
             /** @enum {string} */
             category: "retail-operational" | "retail-non-operational" | "wholesale";
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             balance: number;
             /** @description A share or an observed rate in [0, 1]. */
-            core_share: number;
+            requested_core_share: number;
             /** @description A share or an observed rate in [0, 1]. */
             core_share_cap: number;
-            /** @enum {string} */
-            core_share_flag: "within-cap" | "above-cap";
-            core_maturity_years: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            core_share_used: number;
+            requested_core_maturity_years: number;
             core_maturity_cap_years: number;
-            /** @enum {string} */
-            maturity_flag: "within-cap" | "above-cap";
+            core_maturity_used_years: number;
+            cap_applied: boolean;
             /** @enum {string} */
             source_kind: "regulatory-cap" | "fitted" | "synthetic-stated";
             source: string;
@@ -3838,12 +5137,12 @@ export interface components {
             core_share_cap?: 0.9;
             /** @constant */
             core_maturity_cap_years?: 5;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            core_maturity_used_years?: number;
             /** @constant */
-            core_share_flag?: "within-cap";
-            core_maturity_years?: number;
-            /** @constant */
-            maturity_flag?: "within-cap";
+            cap_applied?: false;
         } | {
             /** @constant */
             category?: "retail-operational";
@@ -3851,12 +5150,13 @@ export interface components {
             core_share_cap?: 0.9;
             /** @constant */
             core_maturity_cap_years?: 5;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
             /** @constant */
-            core_share_flag?: "within-cap";
-            core_maturity_years?: number;
+            core_maturity_used_years?: 5;
             /** @constant */
-            maturity_flag?: "above-cap";
+            cap_applied?: true;
         } | {
             /** @constant */
             category?: "retail-operational";
@@ -3864,12 +5164,13 @@ export interface components {
             core_share_cap?: 0.9;
             /** @constant */
             core_maturity_cap_years?: 5;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
             /** @constant */
-            core_share_flag?: "above-cap";
-            core_maturity_years?: number;
+            core_share_used?: 0.9;
+            core_maturity_used_years?: number;
             /** @constant */
-            maturity_flag?: "within-cap";
+            cap_applied?: true;
         } | {
             /** @constant */
             category?: "retail-operational";
@@ -3877,12 +5178,14 @@ export interface components {
             core_share_cap?: 0.9;
             /** @constant */
             core_maturity_cap_years?: 5;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
             /** @constant */
-            core_share_flag?: "above-cap";
-            core_maturity_years?: number;
+            core_share_used?: 0.9;
             /** @constant */
-            maturity_flag?: "above-cap";
+            core_maturity_used_years?: 5;
+            /** @constant */
+            cap_applied?: true;
         } | {
             /** @constant */
             category?: "retail-non-operational";
@@ -3890,12 +5193,12 @@ export interface components {
             core_share_cap?: 0.7;
             /** @constant */
             core_maturity_cap_years?: 4.5;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            core_maturity_used_years?: number;
             /** @constant */
-            core_share_flag?: "within-cap";
-            core_maturity_years?: number;
-            /** @constant */
-            maturity_flag?: "within-cap";
+            cap_applied?: false;
         } | {
             /** @constant */
             category?: "retail-non-operational";
@@ -3903,12 +5206,13 @@ export interface components {
             core_share_cap?: 0.7;
             /** @constant */
             core_maturity_cap_years?: 4.5;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
             /** @constant */
-            core_share_flag?: "within-cap";
-            core_maturity_years?: number;
+            core_maturity_used_years?: 4.5;
             /** @constant */
-            maturity_flag?: "above-cap";
+            cap_applied?: true;
         } | {
             /** @constant */
             category?: "retail-non-operational";
@@ -3916,12 +5220,13 @@ export interface components {
             core_share_cap?: 0.7;
             /** @constant */
             core_maturity_cap_years?: 4.5;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
             /** @constant */
-            core_share_flag?: "above-cap";
-            core_maturity_years?: number;
+            core_share_used?: 0.7;
+            core_maturity_used_years?: number;
             /** @constant */
-            maturity_flag?: "within-cap";
+            cap_applied?: true;
         } | {
             /** @constant */
             category?: "retail-non-operational";
@@ -3929,12 +5234,14 @@ export interface components {
             core_share_cap?: 0.7;
             /** @constant */
             core_maturity_cap_years?: 4.5;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
             /** @constant */
-            core_share_flag?: "above-cap";
-            core_maturity_years?: number;
+            core_share_used?: 0.7;
             /** @constant */
-            maturity_flag?: "above-cap";
+            core_maturity_used_years?: 4.5;
+            /** @constant */
+            cap_applied?: true;
         } | {
             /** @constant */
             category?: "wholesale";
@@ -3942,12 +5249,12 @@ export interface components {
             core_share_cap?: 0.5;
             /** @constant */
             core_maturity_cap_years?: 4;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            core_maturity_used_years?: number;
             /** @constant */
-            core_share_flag?: "within-cap";
-            core_maturity_years?: number;
-            /** @constant */
-            maturity_flag?: "within-cap";
+            cap_applied?: false;
         } | {
             /** @constant */
             category?: "wholesale";
@@ -3955,12 +5262,13 @@ export interface components {
             core_share_cap?: 0.5;
             /** @constant */
             core_maturity_cap_years?: 4;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
             /** @constant */
-            core_share_flag?: "within-cap";
-            core_maturity_years?: number;
+            core_maturity_used_years?: 4;
             /** @constant */
-            maturity_flag?: "above-cap";
+            cap_applied?: true;
         } | {
             /** @constant */
             category?: "wholesale";
@@ -3968,12 +5276,13 @@ export interface components {
             core_share_cap?: 0.5;
             /** @constant */
             core_maturity_cap_years?: 4;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
             /** @constant */
-            core_share_flag?: "above-cap";
-            core_maturity_years?: number;
+            core_share_used?: 0.5;
+            core_maturity_used_years?: number;
             /** @constant */
-            maturity_flag?: "within-cap";
+            cap_applied?: true;
         } | {
             /** @constant */
             category?: "wholesale";
@@ -3981,12 +5290,14 @@ export interface components {
             core_share_cap?: 0.5;
             /** @constant */
             core_maturity_cap_years?: 4;
-            core_share?: number;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
             /** @constant */
-            core_share_flag?: "above-cap";
-            core_maturity_years?: number;
+            core_share_used?: 0.5;
             /** @constant */
-            maturity_flag?: "above-cap";
+            core_maturity_used_years?: 4;
+            /** @constant */
+            cap_applied?: true;
         });
         /** @description The state of the CLP and CLF offset rule: on, off, or compared (both are in every pair; the rule applies in used). */
         c15Offset: {
@@ -4006,8 +5317,11 @@ export interface components {
             as_of: string;
             balance_sheet_month: string;
             curves_month: string;
-            /** @description ISO 4217 code of the money fields of this block. */
-            reporting_currency: string;
+            /**
+             * @description ISO 4217 code of the money fields of this block.
+             * @constant
+             */
+            reporting_currency: "CLP";
             sign_convention: components["schemas"]["c15Sign"];
             units: components["schemas"]["c15Units"];
             bank: components["schemas"]["c15Bank"];
@@ -4016,9 +5330,19 @@ export interface components {
             assumptions: components["schemas"]["c15Assumptions"];
             nmd_segments: components["schemas"]["c15NmdSegment"][];
             /** @description The CLP leg and the UR leg, in that order. */
-            legs: components["schemas"]["c15Leg"][] & (unknown & unknown);
-            eve_shock_sizes: components["schemas"]["c15ShockSize"][];
-            nii_shock_sizes: components["schemas"]["c15NiiSize"][];
+            legs: [
+                components["schemas"]["c15Leg"],
+                components["schemas"]["c15Leg"]
+            ];
+            eve_shock_sizes: [
+                components["schemas"]["c15ShockSize"],
+                components["schemas"]["c15ShockSize"]
+            ];
+            nii_shock_sizes: [
+                components["schemas"]["c15NiiSize"],
+                components["schemas"]["c15NiiSize"]
+            ];
+            dynamic_nii: components["schemas"]["c15DynamicNii"];
             floors: components["schemas"]["c15Floors"];
             offset_rule: components["schemas"]["c15Offset"];
             indexation_charge: components["schemas"]["c15Indexation"];
@@ -4058,7 +5382,7 @@ export interface components {
             source_kind: "regulatory-cap" | "fitted" | "synthetic-stated";
             source: string;
         };
-        /** @description The shock sizes applied to a currency, in basis points. A currency without an entry in the BCBS table (CLP is not in either) passes only labelled as a Contraste estimate with its method, never as a regulatory parameter (dossier 01 H.3). */
+        /** @description The shock sizes applied to a currency, in basis points. A tabled size is exactly the table's (SRP31.90 Table 2, d368 Annex 2 Table 1, RAN 21-13 Annex 1 Hoja 9); a currency without an entry in the BCBS table (CLP is in neither) passes only labelled as a Contraste estimate with its method, never as a regulatory parameter (dossier 01 H.3), and a tabled currency cannot be relabelled as an estimate. */
         c15ShockSize: {
             /** @description ISO 4217 code of the money fields of this block. */
             currency: string;
@@ -4072,27 +5396,579 @@ export interface components {
         } & ({
             /** @constant */
             origin?: "srp31-table-2024";
-            /** @enum {string} */
-            currency?: "ARS" | "AUD" | "BRL" | "CAD" | "CHF" | "CNY" | "EUR" | "GBP" | "HKD" | "IDR" | "INR" | "JPY" | "KRW" | "MXN" | "RUB" | "SAR" | "SEK" | "SGD" | "TRY" | "USD" | "ZAR";
+            /** @constant */
+            currency?: "ARS";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "AUD";
+            /** @constant */
+            parallel_bp?: 350;
+            /** @constant */
+            short_bp?: 425;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "BRL";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "CAD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 275;
+            /** @constant */
+            long_bp?: 175;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "CHF";
+            /** @constant */
+            parallel_bp?: 175;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "CNY";
+            /** @constant */
+            parallel_bp?: 225;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "EUR";
+            /** @constant */
+            parallel_bp?: 225;
+            /** @constant */
+            short_bp?: 350;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "GBP";
+            /** @constant */
+            parallel_bp?: 275;
+            /** @constant */
+            short_bp?: 425;
+            /** @constant */
+            long_bp?: 250;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "HKD";
+            /** @constant */
+            parallel_bp?: 225;
+            /** @constant */
+            short_bp?: 375;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "IDR";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "INR";
+            /** @constant */
+            parallel_bp?: 325;
+            /** @constant */
+            short_bp?: 475;
+            /** @constant */
+            long_bp?: 225;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "JPY";
+            /** @constant */
+            parallel_bp?: 100;
+            /** @constant */
+            short_bp?: 100;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "KRW";
+            /** @constant */
+            parallel_bp?: 225;
+            /** @constant */
+            short_bp?: 350;
+            /** @constant */
+            long_bp?: 225;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "MXN";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "RUB";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "SAR";
+            /** @constant */
+            parallel_bp?: 275;
+            /** @constant */
+            short_bp?: 375;
+            /** @constant */
+            long_bp?: 250;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "SEK";
+            /** @constant */
+            parallel_bp?: 275;
+            /** @constant */
+            short_bp?: 425;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "SGD";
+            /** @constant */
+            parallel_bp?: 175;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 225;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "TRY";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "USD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 225;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "ZAR";
+            /** @constant */
+            parallel_bp?: 325;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
             label?: null;
             method?: null;
         } | {
             /** @constant */
             origin?: "srp31-table-2016";
-            /** @enum {string} */
-            currency?: "ARS" | "AUD" | "BRL" | "CAD" | "CHF" | "CNY" | "EUR" | "GBP" | "HKD" | "IDR" | "INR" | "JPY" | "KRW" | "MXN" | "RUB" | "SAR" | "SEK" | "SGD" | "TRY" | "USD" | "ZAR";
+            /** @constant */
+            currency?: "ARS";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "AUD";
+            /** @constant */
+            parallel_bp?: 300;
+            /** @constant */
+            short_bp?: 450;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "BRL";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "CAD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "CHF";
+            /** @constant */
+            parallel_bp?: 100;
+            /** @constant */
+            short_bp?: 150;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "CNY";
+            /** @constant */
+            parallel_bp?: 250;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "EUR";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "GBP";
+            /** @constant */
+            parallel_bp?: 250;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "HKD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "IDR";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 350;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "INR";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "JPY";
+            /** @constant */
+            parallel_bp?: 100;
+            /** @constant */
+            short_bp?: 100;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "KRW";
+            /** @constant */
+            parallel_bp?: 300;
+            /** @constant */
+            short_bp?: 400;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "MXN";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "RUB";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "SAR";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "SEK";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "SGD";
+            /** @constant */
+            parallel_bp?: 150;
+            /** @constant */
+            short_bp?: 200;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "TRY";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "USD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "ZAR";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
             label?: null;
             method?: null;
         } | {
             /** @constant */
             origin?: "cmf-annex1";
-            /** @enum {string} */
-            currency?: "CLP" | "CLF";
+            /** @constant */
+            currency?: "CLP";
+            /** @constant */
+            parallel_bp?: 300;
+            /** @constant */
+            short_bp?: 400;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "cmf-annex1";
+            /** @constant */
+            currency?: "CLF";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 150;
             label?: null;
             method?: null;
         } | {
             /** @constant */
             origin?: "contraste-estimate";
+            currency?: unknown;
             label?: components["schemas"]["c15Label"];
             method?: string;
         });
@@ -4145,7 +6021,11 @@ export interface components {
             tier1: number;
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             net_interest_and_indexation_margin_12m: number;
-            tests: components["schemas"]["c15ThresholdTest"][];
+            tests: [
+                components["schemas"]["c15ThresholdTest"],
+                components["schemas"]["c15ThresholdTest"],
+                components["schemas"]["c15ThresholdTest"]
+            ];
             prioritised: boolean;
             reference: string;
         };
