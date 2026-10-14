@@ -213,7 +213,7 @@ export function RungsView({ sel }: { sel: C10Sel | null }) {
                       </>
                     ) : (
                       <>
-                        <td colSpan={4} className="ct-text" data-na="true">{`${na} (${r.reason ?? ''})`}</td>
+                        <td colSpan={4} className="ct-text" data-na="true">{na}</td>
                         <td className="ct-wide-only" />
                         <td className="ct-wide-only" />
                       </>
@@ -223,6 +223,14 @@ export function RungsView({ sel }: { sel: C10Sel | null }) {
               })}
             </tbody>
           </table>
+          {o.rungs
+            .filter((r) => !r.evaluated)
+            .map((r) => (
+              <p key={r.id} className="ct-note" data-state="unavailable" data-rung-reason={r.id}>
+                <strong>{pick(r.label, lang)}</strong>
+                {`: ${pick({ en: 'did not run, so it has no number. Why: ', es: 'no corrió, así que no tiene número. Motivo: ' }, lang)}${r.reason ?? ''}`}
+              </p>
+            ))}
           <C10TestsTable variant={sel.data.variant} only={(t) => t.test_id === 'portfolio.mc_convergence' || t.test_id === 'portfolio.crp_recursion_vs_mc'} />
         </ChartOverTable>
       </PlotCard>
@@ -343,6 +351,13 @@ export function ContributionsView({ sel }: { sel: C10Sel | null }) {
   );
 }
 
+/** The points without a recursion check, grouped by the reason the document gives, in order of first appearance. */
+function truthGaps(rows: Array<{ n_names: number; truth_ga: number | null; truth_reason: string | null }>): Array<[string, Array<{ n_names: number }>]> {
+  const groups = new Map<string, Array<{ n_names: number }>>();
+  for (const r of rows) if (r.truth_ga === null) groups.set(r.truth_reason ?? '', [...(groups.get(r.truth_reason ?? '') ?? []), r]);
+  return [...groups];
+}
+
 /** The granularity adjustment: per level for the illustrative portfolio, and against the number of names. */
 export function GranularityView({ sel }: { sel: C10Sel | null }) {
   const lang = useShellLang();
@@ -393,7 +408,7 @@ export function GranularityView({ sel }: { sel: C10Sel | null }) {
                   <td>{count(r.n_names, lang)}</td>
                   <td className="ct-wide-only">{formatNumber(r.hhi, lang, { digits: 3 })}</td>
                   <td>{p(r.ga, 4)}</td>
-                  <td data-na={r.truth_ga === null ? 'true' : undefined}>{r.truth_ga === null ? `${formatNumber(null, lang)} (${r.truth_reason ?? ''})` : p(r.truth_ga, 4)}</td>
+                  <td data-na={r.truth_ga === null ? 'true' : undefined} title={r.truth_ga === null ? (r.truth_reason ?? undefined) : undefined}>{r.truth_ga === null ? formatNumber(null, lang) : p(r.truth_ga, 4)}</td>
                 </tr>
               ))}
             </tbody>
@@ -420,6 +435,11 @@ export function GranularityView({ sel }: { sel: C10Sel | null }) {
               ))}
             </tbody>
           </table>
+          {truthGaps(rows).map(([reason, group]) => (
+            <p key={reason} className="ct-note" data-state="unavailable" data-names-reason={group.map((r) => r.n_names).join(',')}>
+              {`${group.map((r) => count(r.n_names, lang)).join(', ')} ${pick({ en: 'names, no recursion check. Why: ', es: 'nombres, sin verificación por recursión. Motivo: ' }, lang)}${reason}`}
+            </p>
+          ))}
           <p className="ct-note" data-ga="parameters">
             {pick(
               {
