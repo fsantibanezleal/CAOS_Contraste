@@ -10,7 +10,6 @@ export const CITATIONS: Citation[] = [
   // the single-factor model and the regulatory formula
   { id: 'vasicek2015', label: 'Vasicek 2015', citation: 'Vasicek, O. A. (2015). Finance, Economics and Mathematics. Wiley. Reprints "Probability of Loss on Loan Portfolio" (1987, chapter 17) and "Limiting Loan Loss Probability Distribution" (1991, chapter 18).', doi: '10.1002/9781119186229' },
   // portfolio loss, risk measures and capital allocation
-  { id: 'acerbitasche2002', label: 'Acerbi and Tasche 2002', citation: 'Acerbi, C. and Tasche, D. (2002). On the coherence of expected shortfall. Journal of Banking and Finance 26(7), 1487-1503.', doi: '10.1016/S0378-4266(02)00283-2' },
   { id: 'tasche2008euler', label: 'Tasche 2008', citation: 'Tasche, D. (2008). Capital allocation to business units and sub-portfolios: the Euler principle. arXiv 0708.2542 (v3, 2008-06-22).', url: 'https://arxiv.org/abs/0708.2542' },
   { id: 'tasche2009kernel', label: 'Tasche 2009b', citation: 'Tasche, D. (2009). Capital allocation for credit portfolios with kernel estimators. Quantitative Finance 9(5), 581-595.', doi: '10.1080/14697680802620599' },
   { id: 'emmertasche2005', label: 'Emmer and Tasche 2005', citation: 'Emmer, S. and Tasche, D. (2005). Calculating credit risk capital charges with the one-factor model. Journal of Risk 7(2), 85-101.', doi: '10.21314/jor.2005.110' },

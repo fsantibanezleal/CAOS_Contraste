@@ -15,6 +15,7 @@ import { C11_FIT, C11_OUTPUTS } from '../workbench/c11/descriptor';
 import { C13_FIT, C13_OUTPUTS } from '../workbench/c13/descriptor';
 import { C14_FIT, C14_OUTPUTS } from '../workbench/c14/descriptor';
 import { C15_FIT, C15_OUTPUTS } from '../workbench/c15/descriptor';
+import { C17_FIT, C17_OUTPUTS } from '../workbench/c17/descriptor';
 
 /** Every reader-facing string is bilingual at the source. */
 export type Text = components['schemas']['common-text'];
@@ -1270,11 +1271,14 @@ export const VARIANT_C11 = { ...VARIANT, outputs: C11_OUTPUTS, tests: 'json' as 
 export const VARIANT_C13 = { ...VARIANT, outputs: C13_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
 export const VARIANT_C14 = { ...VARIANT, outputs: C14_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
 export const VARIANT_C15 = { ...VARIANT, outputs: C15_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
+// the C17 variant schema narrows provenance.truth_status in an extra allOf branch (U12-S), as C10's does
+export const VARIANT_C17 = { ...VARIANT, outputs: C17_OUTPUTS, tests: 'json' as Kind, provenance: { object: { truth_status: 'string' } } as Kind } satisfies Record<keyof VariantArtifact, Kind>;
 export const MODELS_C10 = { ...MODELS, fit: C10_FIT, provenance: { object: { inputs: 'json' } } as Kind } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C11 = { ...MODELS, fit: C11_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C13 = { ...MODELS, fit: C13_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C14 = { ...MODELS, fit: C14_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C15 = { ...MODELS, fit: C15_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
+export const MODELS_C17 = { ...MODELS, fit: C17_FIT, provenance: { object: { truth_status: 'string' } } as Kind } satisfies Record<keyof ModelsArtifact, Kind>;
 
 /** The variant descriptor an artifact is read against: by its outputs' kind (C04, C05, C06, C07, C22) or C01's. */
 export function variantKind(doc: {
@@ -1297,6 +1301,7 @@ export function variantKind(doc: {
   | typeof VARIANT_C13
   | typeof VARIANT_C14
   | typeof VARIANT_C15
+  | typeof VARIANT_C17
   | typeof VARIANT_C22 {
   const kind = doc.outputs?.kind;
   if (kind === 'agency') return VARIANT_C04_AGENCY;
@@ -1313,6 +1318,7 @@ export function variantKind(doc: {
   if (kind === 'deficiency') return VARIANT_C13;
   if (kind === 'valuation-date') return VARIANT_C14;
   if (kind === 'annex1-variant') return VARIANT_C15;
+  if (kind === 'tail-index') return VARIANT_C17;
   return kind === 'sp-calibration' ? VARIANT_C05_SP : kind === 'ldp' ? VARIANT_C05_LDP : kind === 'validator' ? VARIANT_C22 : VARIANT;
 }
 
@@ -1320,7 +1326,7 @@ export function variantKind(doc: {
 export function modelsKind(doc: {
   case_id?: string;
   fit_id?: string;
-}): typeof MODELS | typeof MODELS_C04 | typeof MODELS_C05_SP | typeof MODELS_C05_LDP | typeof MODELS_C06 | typeof MODELS_C07 | typeof MODELS_C03 | typeof MODELS_C08 | typeof MODELS_C09 | typeof MODELS_C10 | typeof MODELS_C11 | typeof MODELS_C13 | typeof MODELS_C14 | typeof MODELS_C15 | typeof MODELS_C22 {
+}): typeof MODELS | typeof MODELS_C04 | typeof MODELS_C05_SP | typeof MODELS_C05_LDP | typeof MODELS_C06 | typeof MODELS_C07 | typeof MODELS_C03 | typeof MODELS_C08 | typeof MODELS_C09 | typeof MODELS_C10 | typeof MODELS_C11 | typeof MODELS_C13 | typeof MODELS_C14 | typeof MODELS_C15 | typeof MODELS_C17 | typeof MODELS_C22 {
   if (doc.case_id === 'C04') return MODELS_C04;
   if (doc.case_id === 'C05') return doc.fit_id === 'ldp' ? MODELS_C05_LDP : MODELS_C05_SP;
   if (doc.case_id === 'C06') return MODELS_C06;
@@ -1333,6 +1339,7 @@ export function modelsKind(doc: {
   if (doc.case_id === 'C13') return MODELS_C13;
   if (doc.case_id === 'C14') return MODELS_C14;
   if (doc.case_id === 'C15') return MODELS_C15;
+  if (doc.case_id === 'C17') return MODELS_C17;
   if (doc.case_id === 'C22') return MODELS_C22;
   return MODELS;
 }

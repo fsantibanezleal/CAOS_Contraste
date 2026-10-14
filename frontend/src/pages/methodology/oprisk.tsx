@@ -229,7 +229,7 @@ function Body() {
 
 export const methodologySection: MethodologySection = {
   id: 'oprisk',
-  group: 'loss',
+  group: 'capital',
   order: 210,
   title: { en: 'Operational risk', es: 'Riesgo operacional' },
   Body,

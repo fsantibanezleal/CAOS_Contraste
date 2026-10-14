@@ -28,7 +28,7 @@ describe('the IRRBB Methodology topic', () => {
 
   it('is registered with the area and kind the gate reads, in a group the page already has', () => {
     expect(REGISTERED_SECTIONS.map((s) => s.id)).toContain('irrbb');
-    expect(['models', 'tests', 'loss']).toContain(methodologySection.group);
+    expect(methodologySection.group).toBe('balance');
     expect(markup('en')).toContain('data-area="method"');
     expect(markup('en')).toContain('data-method-kind="classical"');
   });
