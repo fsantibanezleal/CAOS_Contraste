@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import importlib.metadata as md
 import json
+import re
 import sys
 import time
 from dataclasses import asdict
@@ -32,7 +33,20 @@ from ._case import C11, SOURCES
 from .constants import CASE_ID, SEED, WINDOWS
 from .forecast import Hyper
 
-ENGINE_PIN = "344ec9ac5d6c553541a6f8cfa2aa7347582b6dee"
+REQUIREMENTS = Path(__file__).resolve().parents[3] / "requirements.txt"
+
+
+def engine_pin(requirements: Path = REQUIREMENTS) -> str:
+    """The ref the pipeline pins the engine to (a release tag or a commit), read from data-pipeline/requirements.txt, so the
+    stamp and the cache key follow the pin and never a copy of it."""
+    for line in requirements.read_text(encoding="utf-8").splitlines():
+        m = re.match(r"^riskvalidation(?:\[[^\]]*\])?\s*@\s*git\+\S+?@(\S+)\s*$", line.strip())
+        if m:
+            return m.group(1)
+    raise RuntimeError(f"{requirements}: no riskvalidation pin")
+
+
+ENGINE_PIN = engine_pin()
 ENGINES = {"numpy", "scipy", "pandas", "statsmodels", "riskvalidation", "arch"}
 RUN_MS = 3_600_000.0
 DEFAULT_VARIANT = "rates-2022"
@@ -52,7 +66,8 @@ def _t(en: str, es: str) -> dict:
 
 def engine_version() -> str:
     try:
-        return f"{md.version('riskvalidation')}@{ENGINE_PIN[:7]}"
+        version = md.version("riskvalidation")
+        return version if ENGINE_PIN.startswith("v") else f"{version}@{ENGINE_PIN[:7]}"  # a tag is the release itself
     except md.PackageNotFoundError:
         return "not installed"
 
