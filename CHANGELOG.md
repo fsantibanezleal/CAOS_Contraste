@@ -3,6 +3,15 @@
 All notable changes to this product. Versions are X.XX.XXX (VERSION is the single source); every release is
 tagged.
 
+## [0.10.002], 2026-10-13
+
+The App is the leftmost tab again and the Introduction takes the full width of the page.
+
+- The shell is pinned exactly at 0.13.1: the header order is App, Introduction, Methodology, Implementation, Experiments,
+  Benchmark (0.13.0 had put the Introduction first when only the landing was to move to it); the site still lands on the
+  Introduction's executive view; every documentation route is full width, the Introduction included (it was capped at
+  1200 px while the other pages filled the screen).
+
 ## [0.10.001], 2026-10-13
 
 The built cases no longer read as served by a fixture, and no bar chart scrolls inside its drawing.
