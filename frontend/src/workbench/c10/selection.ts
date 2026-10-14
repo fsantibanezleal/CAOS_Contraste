@@ -128,12 +128,6 @@ export const VAR_METHOD_TEXT: Record<string, Bi> = {
 /** The ladder rung of the document by id. */
 export const rungOf = (o: C10Outputs, id: string): C10Rung | undefined => o.rungs.find((r) => r.id === id);
 
-/** The words for a rung: the document's own label, never the internal id. */
-export function rungLabel(o: C10Outputs | null, fit: C10Fit | null, id: string): Bi {
-  const r = o?.rungs.find((x) => x.id === id) ?? fit?.ladder.find((x) => x.id === id);
-  return r ? { en: r.label.en, es: r.label.es } : { en: id, es: id };
-}
-
 /** The measure of a rung at a level, or null when the rung did not run or has no such level. */
 export function measureOf(r: C10Rung | undefined, level: number): C10Measure | null {
   return r?.measures?.find((m) => m.level === level) ?? null;
@@ -174,12 +168,4 @@ export function defaultSel(data: CaseData | null): C10Sel | null {
   const rung = (rungs.find((r) => r.evaluated && r.estimator === 'monte-carlo') ?? rungs.find((r) => r.evaluated) ?? rungs[0])?.id ?? '';
   const cell = g ? (g.cells.find((c) => c.known_rho === g.generator.null_rho) ?? g.cells[0]) : undefined;
   return { data, rung, level: 0.999, estimator: 'maximum-likelihood', group: o?.portfolio.groups[0]?.id ?? '', cell: cell ? cellKey(cell) : '' };
-}
-
-/** A loan type's label as the manifest names the variant: the short title of its entry, else the document's label. */
-export function variantTitle(data: CaseData): Bi {
-  const o = outputsOf({ data });
-  const g = gridOf({ data });
-  const label = (o?.label ?? g?.label) as Bi | undefined;
-  return label ? { en: label.en, es: label.es } : { en: data.variant.variant_id, es: data.variant.variant_id };
 }
