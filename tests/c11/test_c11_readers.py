@@ -13,6 +13,7 @@ import pytest
 from pipeline.cases.c11 import portfolio as pf
 from pipeline.cases.c11 import readers
 from pipeline.io import contract as c1
+from pipeline.io import treasury
 
 DATA = Path(__file__).resolve().parent / "data"
 ROOT = Path(__file__).resolve().parents[2]
@@ -20,10 +21,10 @@ FRENCH_SIGNATURES = ("Mkt-RF,SMB,HML",)       # the header of the raw file; its 
 
 
 def test_treasury_reader_reads_the_ten_year_par_yield():
-    d, v, missing = readers.parse_treasury((DATA / "treasury-par-1995-excerpt.csv").read_text(encoding="utf-8"))
+    d, v, missing = treasury.parse_tenor((DATA / "treasury-par-1995-excerpt.csv").read_text(encoding="utf-8"))
     assert len(d) == 30 and not missing
     assert d[0] == dt.date(1995, 12, 29) and abs(v[0] - 0.0558) < 1e-12      # 5.58 percent in decimals
-    assert readers.parse_treasury('Date,"3 Mo"\n01/02/1990,7.83\n', "10 Yr") == ([], [], [])   # a tenor not quoted that year
+    assert treasury.parse_tenor('Date,"3 Mo"\n01/02/1990,7.83\n', "10 Yr") == ([], [], [])   # a tenor not quoted that year
 
 
 def test_h10_reader_marks_nd_as_missing_and_reads_two_digit_years():

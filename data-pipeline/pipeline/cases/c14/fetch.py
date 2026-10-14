@@ -18,10 +18,12 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+from ...io import treasury
+
 CERT = 24735
 BANK = "Silicon Valley Bank"
 FDIC_DIR = "fdic-financials"
-TREASURY_DIR = "treasury-par"
+TREASURY_DIR = treasury.TREASURY_DIR
 PROVENANCE = "provenance.json"
 FIRST_REPDTE = "20121231"
 LAST_REPDTE = "20221231"
@@ -53,8 +55,7 @@ def fdic_url(cert: int = CERT) -> str:
 
 
 def treasury_url(year: int) -> str:
-    return ("https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/"
-            f"{year}/all?type=daily_treasury_yield_curve&field_tdr_date_value={year}&_format=csv")
+    return treasury.url(year)
 
 
 def fdic_name(cert: int = CERT) -> str:
@@ -62,7 +63,7 @@ def fdic_name(cert: int = CERT) -> str:
 
 
 def treasury_name(year: int) -> str:
-    return f"daily-treasury-par-{year}.csv"
+    return treasury.file_name(year)
 
 
 def sha256_of(path: Path) -> str:
