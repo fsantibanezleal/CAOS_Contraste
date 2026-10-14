@@ -99,7 +99,7 @@ describe('the portfolio credit capital Methodology topic', () => {
 
   it('has no em-dash and no emoji', () => {
     const all = markup('en') + markup('es') + source;
-    expect(all).not.toMatch(/[—―]|[\u{1F000}-\u{1FAFF}]/u);
+    expect(all).not.toMatch(/[\u2014\u2015]|[\u{1F000}-\u{1FAFF}]/u);
   });
 });
 
