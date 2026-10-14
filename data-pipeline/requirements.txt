@@ -15,6 +15,7 @@ xgboost==3.4.1
 catboost==1.2.10
 shap==0.52.0
 pypdf==6.19.0
-# the engine: the validation tests, the regulatory calculators and the reference engines, pinned to its release tag
-# until its first PyPI release (the repository is private until then)
-riskvalidation @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation@v0.06.000
+# the engine: the validation tests, the regulatory calculators and the reference engines. C17 (U12-P) needs riskvalidation.oprisk, which
+# the engine releases after v0.06.000: pinned by the commit of CAOS_RiskValidation task/u12-oprisk (3665b51, after the Opus review
+# fixes) until the integrator tags the release, then by that tag (the repository is private until the first PyPI release)
+riskvalidation @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation.git@3665b51c50b064ea1247b04de964229c26aebff3
