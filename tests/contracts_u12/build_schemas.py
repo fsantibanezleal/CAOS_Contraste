@@ -88,6 +88,8 @@ CUR = {"const": "EUR", "description": "ISO 4217 code of the money fields of this
 UNIT = N("A share in [0, 1].", minimum=0, maximum=1)
 POS = N(exclusiveMinimum=0)
 MONEY = N("Money in EUR (the `currency` of the enclosing block).", minimum=0)
+XI = {"enum": [0.6, 0.8, 0.96, 1.1], "description": "A tail index of the SDD section 5 grid: 0.6, 0.8, 0.96 or 1.1."}
+GRID = [(5, 10000), (5, 20000), (10, 10000), (10, 20000)]
 LEVEL = {"const": 0.999, "description": "The quantile level of C17: the 99.9 percent annual loss quantile, as a decimal."}
 
 
@@ -208,6 +210,20 @@ LDCE_PERCENTILES = [(0.25, 27632), (0.5, 41916), (0.75, 82608), (0.95, 418400)]
 BIC_COEFFICIENTS = [(1e9, 0.12), (30e9, 0.15), (None, 0.18)]
 
 
+def cross() -> dict:
+    """Exactly the four cells of the grid, each once (maxItems 4 and one `contains` per cell: a duplicate leaves another missing)."""
+    arr = A(R("c17Cell"), 4, 4, "The grid in fixed order: 5 years then 10 years, each at collection threshold 10,000 then 20,000.")
+    arr["allOf"] = [{"contains": {"properties": {"years": {"const": y}, "collection_threshold_eur": {"const": t}},
+                                  "required": ["years", "collection_threshold_eur"]}} for y, t in GRID]
+    return arr
+
+
+def variants_array() -> dict:
+    arr = A(R("c17VariantTruth"), 4, 4, "One row per tail index in increasing order: 0.6, 0.8, 0.96, 1.1.")
+    arr["allOf"] = [{"contains": {"properties": {"tail_index": {"const": x}}, "required": ["tail_index"]}} for x in (0.6, 0.8, 0.96, 1.1)]
+    return arr
+
+
 def c17_defs() -> dict:
     d: dict = {}
     d["c17Quantiles"] = Ob({"p05": N(), "p25": N(), "median": N(), "p75": N(), "p95": N()},
@@ -235,7 +251,7 @@ def c17_defs() -> dict:
             "law": {"const": "gpd"},
             "location_eur": MONEY,
             "scale_eur": POS,
-            "tail_index": POS,
+            "tail_index": XI,
         }, "The generator's true severity: a generalised Pareto distribution with the tail index of the variant, starting at "
            "`location_eur` (the generator floor, no loss is generated below it). Threshold-stable: the loss above any higher "
            "collection threshold is again a GPD with the same tail index."),
@@ -247,7 +263,7 @@ def c17_defs() -> dict:
             "mc_check": Ob({
                 "n_years": Int(1), "seed": Int(0),
                 "value_eur": POS, "standard_error_eur": POS,
-                "agrees": {"type": "boolean", "description": "True when the Monte Carlo value is within 3 standard errors of the value."},
+                "agrees": {"const": True, "description": "A truth that fails its Monte Carlo check (the value within 3 standard errors) is not published."},
             }),
         }, "The true 99.9 percent quantile of the annual loss of the generating process (all generated losses at or above the "
            "generator floor, whatever the collection threshold): computed once by Panjer or FFT on a fine grid and checked by "
@@ -291,7 +307,7 @@ def c17_defs() -> dict:
         "caveat": TXT,
     }, "The BCBS 2008 LDCE calibration targets with their source and the derived-only label (SDD section 5).")
     d["c17CalibrationFit"] = Ob({
-        "tail_index": POS,
+        "tail_index": XI,
         "scale_eur": POS,
         "fitted_quantiles_eur": A(POS, 4, 4, "The generator's severity quantiles at the four LDCE percentiles, increasing."),
         "max_abs_log_error": N(minimum=0, description="Largest |ln(fitted / target)| over the four percentiles."),
@@ -368,31 +384,31 @@ def c17_defs() -> dict:
         "share_at_least_one": UNIT,
     }, "The fitted GPD tail index above one threshold across the replications; share_at_least_one is the share of fits with an "
        "infinite-mean tail index.")
-    d["c17SmaCell"] = one_of(Ob({
+    d["c17SmaCell"] = Ob({
         "currency": CUR,
-        "basis": E("bic-times-ilm", "bic-only"),
-        "reason": nullable(S(minLength=1), "Why capital is BIC only; null on the full basis."),
-        "discretion_applied": E("none", "bucket-1-ilm-one", "national-ilm-one", "transitional-bic-only"),
+        "basis": {"const": "bic-times-ilm"},
+        "discretion_applied": E("none", "bucket-1-ilm-one", "national-ilm-one"),
         "bucket": Int(1, 3),
         "bic_eur": MONEY,
-        "lc_eur": nullable(R("c17MoneyQuantiles"), "LC = 15 x the average annual loss over the available years (OPE25.8); null on the BIC-only basis."),
-        "ilm": nullable(R("c17IlmQuantiles"), "ILM = ln(e - 1 + (LC / BIC)^0.8) (OPE25.8); null on the BIC-only basis."),
+        "lc_eur": R("c17MoneyQuantiles"),
+        "ilm": R("c17IlmQuantiles"),
         "orc_eur": R("c17MoneyQuantiles"),
         "orc_over_true_quantile": R("c17RatioQuantiles"),
         "note": TXT,
     }, "The SMA capital of the synthetic bank on the same histories as the LDA of the cell, with the discretion applied as a "
-       "named field (OPE25.10, OPE25.11, OPE25.15). ORC = BIC x ILM (OPE25.2). The SMA is not calibrated to the 99.9 percent "
-       "quantile of any bank: the ratio to the true quantile is a comparison, not a claim of equivalence."),
-        {"basis": {"const": "bic-times-ilm"}, "reason": {"type": "null"},
-         "discretion_applied": E("none", "bucket-1-ilm-one", "national-ilm-one"),
-         "lc_eur": R("c17MoneyQuantiles"), "ilm": R("c17IlmQuantiles")},
-        {"basis": {"const": "bic-only"}, "reason": S(minLength=1), "discretion_applied": {"const": "transitional-bic-only"},
-         "lc_eur": {"type": "null"}, "ilm": {"type": "null"}})
-    d["c17SmaCell"]["if"] = {"properties": {"discretion_applied": {"const": "bucket-1-ilm-one"}}, "required": ["discretion_applied"]}
-    d["c17SmaCell"]["then"] = {"properties": {"bucket": {"const": 1}}}
+       "named field (OPE25.11). ORC = BIC x ILM (OPE25.2), LC = 15 x the average annual loss over the history (OPE25.8). A C17 "
+       "history is 5 or 10 years, so an ILM is always computable (OPE25.15: under 5 years capital is BIC only, a case of the engine "
+       "`sma_capital` that no C17 cell reaches). The SMA is not calibrated to the 99.9 percent quantile of any bank: the ratio to "
+       "the true quantile is a comparison, not a claim of equivalence.")
+    d["c17SmaCell"]["allOf"] = [
+        {"if": {"properties": {"discretion_applied": {"const": "bucket-1-ilm-one"}}, "required": ["discretion_applied"]},
+         "then": {"properties": {"bucket": {"const": 1}}}},
+        {"if": {"properties": {"discretion_applied": E("bucket-1-ilm-one", "national-ilm-one")}, "required": ["discretion_applied"]},
+         "then": {"properties": {"ilm": {"properties": {k: {"const": 1} for k in ("p05", "p25", "median", "p75", "p95")}}}}},
+    ]
     d["c17Cell"] = Ob({
         "id": S(minLength=1),
-        "years": Int(0, 10, "Years of recorded losses in each history (5 or 10 in the grid; under 5 the SMA is BIC only, OPE25.15)."),
+        "years": {"enum": [5, 10], "description": "Years of recorded losses in each history: 5 or 10 (the grid of SDD section 5)."},
         "collection_threshold_eur": {"enum": [10000, 20000], "description": "The collection threshold: losses below it are not recorded."},
         "currency": CUR,
         "replications": R("c17Replications"),
@@ -401,9 +417,6 @@ def c17_defs() -> dict:
         "threshold_stability": A(R("c17StabilityRow"), 1),
         "sma": R("c17SmaCell"),
     }, "One cell of the grid (years x collection threshold) of a tail-index variant, as replication summaries.")
-    d["c17Cell"]["if"] = {"properties": {"years": {"maximum": 4}}, "required": ["years"]}
-    d["c17Cell"]["then"] = {"properties": {"sma": {"properties": {"basis": {"const": "bic-only"}}}}}
-    d["c17Cell"]["else"] = {"properties": {"sma": {"properties": {"basis": {"const": "bic-times-ilm"}}}}}
 
     # --- the true aggregate loss distribution computed three ways
     d["c17Exceedance"] = Ob({
@@ -415,7 +428,8 @@ def c17_defs() -> dict:
         "quantile_999_eur": Ob({"monte_carlo": POS, "panjer": POS, "fft": POS, "sla": POS}),
     }, "P(annual loss > x) of the true distribution on one grid by Monte Carlo, Panjer and FFT, with the 99.9 percent quantile "
        "of each and of the single loss approximation (the marker).")
-    d["c17SmaResponseRow"] = Ob({"added_loss_eur": MONEY, "lc_eur": MONEY, "ilm": POS, "orc_eur": MONEY})
+    d["c17SmaResponseRow"] = Ob({"added_loss_eur": MONEY, "lc_eur": MONEY, "ilm": POS, "orc_eur": MONEY,
+                                "lda_capital_eur": N(exclusiveMinimum=0, description="The 99.9 percent LDA capital of the same history with the same loss added.")})
     d["c17SmaResponse"] = Ob({
         "currency": CUR, "cell_id": S(minLength=1), "seed": Int(0), "bic_eur": MONEY,
         "rows": A(R("c17SmaResponseRow"), 3),
@@ -429,6 +443,7 @@ def c17_defs() -> dict:
         "influence": N(description="(base capital - capital without the point) / base capital."),
     })
     d["c17ScenarioInfluence"] = Ob({
+        "prior_kind": {"const": "unrestricted-gamma-on-pareto-shape", "description": "The prior of the Bayesian credibility, stated on every result (decision D4): Gamma on the Pareto shape alpha = 1 / xi, unrestricted."},
         "currency": CUR, "cell_id": S(minLength=1), "seed": Int(0), "level": LEVEL,
         "method": E("pseudo-observations", "body-tail", "bayesian-credibility"),
         "base_capital_eur": POS,
@@ -439,13 +454,13 @@ def c17_defs() -> dict:
     d["c17Outputs"] = Ob({
         "kind": {"const": "tail-index"},
         "currency": CUR,
-        "tail_index": POS,
+        "tail_index": XI,
         "infinite_mean": {"type": "boolean", "description": "True exactly when the tail index is 1 or more: the mean is infinite, "
                                                            "no mean-based quantity is computed and the mean-corrected SLA is absent."},
         "truth": R("c17Truth"),
         "calibration": R("c17Calibration"),
         "bank": R("c17Bank"),
-        "cells": A(R("c17Cell"), 4, 4, "The grid in fixed order: 5 years then 10 years, each at collection threshold 10,000 then 20,000."),
+        "cells": cross(),
         "exceedance": R("c17Exceedance"),
         "sma_response": R("c17SmaResponse"),
         "scenario_influence": R("c17ScenarioInfluence"),
@@ -456,7 +471,7 @@ def c17_defs() -> dict:
     # --- the models document
     d["c17VariantTruth"] = one_of(Ob({
         "variant_id": S(minLength=1),
-        "tail_index": POS,
+        "tail_index": XI,
         "infinite_mean": B,
         "lambda_per_year": POS,
         "location_eur": MONEY,
@@ -525,13 +540,20 @@ def c17_defs() -> dict:
     }, "The OPE25 standardised approach as specified (dossier 01 section F), with its golden value.")
     d["c17ScenarioSpec"] = Ob({
         "methods": A(E("pseudo-observations", "body-tail", "bayesian-credibility"), 3, 3),
+        "prior": Ob({
+            "kind": {"const": "unrestricted-gamma-on-pareto-shape"},
+            "restricted": {"const": False},
+            "interval_level": {"const": 0.9},
+            "mapping": S(minLength=1),
+        }, "The Bayesian credibility prior (decision D4): a Gamma prior on the Pareto shape alpha = 1 / xi, its mean and 90 percent "
+           "interval taken from the scenario points; the paper's restriction to alpha above 1 is not used."),
         "reference": S(minLength=1),
     })
     d["c17Fit"] = Ob({
         "currency": CUR,
         "generator": R("c17Generator"),
         "calibration": R("c17Ldce"),
-        "variants": A(R("c17VariantTruth"), 4, 4, "One row per tail index in increasing order: 0.6, 0.8, 0.96, 1.1."),
+        "variants": variants_array(),
         "grid": R("c17Grid"),
         "ladder": A(R("c17Rung"), 6, 6),
         "aggregation": R("c17Aggregation"),

@@ -344,12 +344,7 @@
           "currency": "EUR",
           "bucket": 2,
           "bic_eur": 180000000.0,
-          "note": {
-            "en": "The SMA is not calibrated to the 99.9 percent quantile of any bank; the ratio is a comparison, not a claim of equivalence.",
-            "es": "El SMA no esta calibrado al cuantil 99,9 por ciento de ningun banco; la razon es una comparacion, no una equivalencia."
-          },
           "basis": "bic-times-ilm",
-          "reason": null,
           "discretion_applied": "none",
           "lc_eur": {
             "p05": 24940694,
@@ -378,6 +373,10 @@
             "median": 0.8288627670454546,
             "p75": 0.9374579943181818,
             "p95": 1.1527658977272728
+          },
+          "note": {
+            "en": "The SMA is not calibrated to the 99.9 percent quantile of any bank; the ratio is a comparison, not a claim of equivalence.",
+            "es": "El SMA no esta calibrado al cuantil 99,9 por ciento de ningun banco; la razon es una comparacion, no una equivalencia."
           }
         }
       },
@@ -565,12 +564,7 @@
           "currency": "EUR",
           "bucket": 2,
           "bic_eur": 180000000.0,
-          "note": {
-            "en": "The SMA is not calibrated to the 99.9 percent quantile of any bank; the ratio is a comparison, not a claim of equivalence.",
-            "es": "El SMA no esta calibrado al cuantil 99,9 por ciento de ningun banco; la razon es una comparacion, no una equivalencia."
-          },
           "basis": "bic-times-ilm",
-          "reason": null,
           "discretion_applied": "none",
           "lc_eur": {
             "p05": 23783462,
@@ -599,6 +593,10 @@
             "median": 0.8198232897727272,
             "p75": 0.9254523238636364,
             "p95": 1.1357138920454546
+          },
+          "note": {
+            "en": "The SMA is not calibrated to the 99.9 percent quantile of any bank; the ratio is a comparison, not a claim of equivalence.",
+            "es": "El SMA no esta calibrado al cuantil 99,9 por ciento de ningun banco; la razon es una comparacion, no una equivalencia."
           }
         }
       },
@@ -807,12 +805,7 @@
           "currency": "EUR",
           "bucket": 2,
           "bic_eur": 180000000.0,
-          "note": {
-            "en": "The SMA is not calibrated to the 99.9 percent quantile of any bank; the ratio is a comparison, not a claim of equivalence.",
-            "es": "El SMA no esta calibrado al cuantil 99,9 por ciento de ningun banco; la razon es una comparacion, no una equivalencia."
-          },
           "basis": "bic-times-ilm",
-          "reason": null,
           "discretion_applied": "none",
           "lc_eur": {
             "p05": 37013280,
@@ -841,6 +834,10 @@
             "median": 0.8288627670454546,
             "p75": 0.8978263409090909,
             "p95": 1.0219523977272726
+          },
+          "note": {
+            "en": "The SMA is not calibrated to the 99.9 percent quantile of any bank; the ratio is a comparison, not a claim of equivalence.",
+            "es": "El SMA no esta calibrado al cuantil 99,9 por ciento de ningun banco; la razon es una comparacion, no una equivalencia."
           }
         }
       },
@@ -1049,12 +1046,7 @@
           "currency": "EUR",
           "bucket": 2,
           "bic_eur": 180000000.0,
-          "note": {
-            "en": "The SMA is not calibrated to the 99.9 percent quantile of any bank; the ratio is a comparison, not a claim of equivalence.",
-            "es": "El SMA no esta calibrado al cuantil 99,9 por ciento de ningun banco; la razon es una comparacion, no una equivalencia."
-          },
           "basis": "bic-times-ilm",
-          "reason": null,
           "discretion_applied": "none",
           "lc_eur": {
             "p05": 35295888,
@@ -1083,6 +1075,10 @@
             "median": 0.8198232897727272,
             "p75": 0.8868678409090909,
             "p95": 1.0078418977272727
+          },
+          "note": {
+            "en": "The SMA is not calibrated to the 99.9 percent quantile of any bank; the ratio is a comparison, not a claim of equivalence.",
+            "es": "El SMA no esta calibrado al cuantil 99,9 por ciento de ningun banco; la razon es una comparacion, no una equivalencia."
           }
         }
       }
@@ -1178,35 +1174,41 @@
           "added_loss_eur": 0.0,
           "lc_eur": 77736000.0,
           "ilm": 0.8016049923,
-          "orc_eur": 144288899
+          "orc_eur": 144288899,
+          "lda_capital_eur": 170720000
         },
         {
           "added_loss_eur": 10000000.0,
           "lc_eur": 92736000.0,
           "ilm": 0.835756033,
-          "orc_eur": 150436086
+          "orc_eur": 150436086,
+          "lda_capital_eur": 171220000
         },
         {
           "added_loss_eur": 50000000.0,
           "lc_eur": 152736000.0,
           "ilm": 0.9536449561,
-          "orc_eur": 171656092
+          "orc_eur": 171656092,
+          "lda_capital_eur": 173220000
         },
         {
           "added_loss_eur": 200000000.0,
           "lc_eur": 377736000.0,
           "ilm": 1.260638719,
-          "orc_eur": 226914969
+          "orc_eur": 226914969,
+          "lda_capital_eur": 180720000
         },
         {
           "added_loss_eur": 1000000000.0,
           "lc_eur": 1577736000.0,
           "ilm": 2.0010023,
-          "orc_eur": 360180414
+          "orc_eur": 360180414,
+          "lda_capital_eur": 220720000
         }
       ]
     },
     "scenario_influence": {
+      "prior_kind": "unrestricted-gamma-on-pareto-shape",
       "currency": "EUR",
       "cell_id": "y10-h20000",
       "seed": 1000,

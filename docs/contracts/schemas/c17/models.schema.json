@@ -217,8 +217,13 @@
           "minLength": 1
         },
         "tail_index": {
-          "type": "number",
-          "exclusiveMinimum": 0
+          "enum": [
+            0.6,
+            0.8,
+            0.96,
+            1.1
+          ],
+          "description": "A tail index of the SDD section 5 grid: 0.6, 0.8, 0.96 or 1.1."
         },
         "infinite_mean": {
           "type": "boolean"
@@ -723,6 +728,7 @@
       "additionalProperties": false,
       "required": [
         "methods",
+        "prior",
         "reference"
       ],
       "properties": {
@@ -738,6 +744,32 @@
           },
           "minItems": 3,
           "maxItems": 3
+        },
+        "prior": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "restricted",
+            "interval_level",
+            "mapping"
+          ],
+          "properties": {
+            "kind": {
+              "const": "unrestricted-gamma-on-pareto-shape"
+            },
+            "restricted": {
+              "const": false
+            },
+            "interval_level": {
+              "const": 0.9
+            },
+            "mapping": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "description": "The Bayesian credibility prior (decision D4): a Gamma prior on the Pareto shape alpha = 1 / xi, its mean and 90 percent interval taken from the scenario points; the paper's restriction to alpha above 1 is not used."
         },
         "reference": {
           "type": "string",
@@ -777,7 +809,57 @@
           },
           "minItems": 4,
           "maxItems": 4,
-          "description": "One row per tail index in increasing order: 0.6, 0.8, 0.96, 1.1."
+          "description": "One row per tail index in increasing order: 0.6, 0.8, 0.96, 1.1.",
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "tail_index": {
+                    "const": 0.6
+                  }
+                },
+                "required": [
+                  "tail_index"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "tail_index": {
+                    "const": 0.8
+                  }
+                },
+                "required": [
+                  "tail_index"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "tail_index": {
+                    "const": 0.96
+                  }
+                },
+                "required": [
+                  "tail_index"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "tail_index": {
+                    "const": 1.1
+                  }
+                },
+                "required": [
+                  "tail_index"
+                ]
+              }
+            }
+          ]
         },
         "grid": {
           "$ref": "#/$defs/c17Grid"

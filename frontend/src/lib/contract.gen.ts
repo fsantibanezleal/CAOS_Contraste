@@ -2902,7 +2902,11 @@ export interface components {
         };
         /** @description The generator's scale fitted to the four LDCE percentiles at the variant's tail index (least squares on the log quantiles). */
         c17CalibrationFit: {
-            tail_index: number;
+            /**
+             * @description A tail index of the SDD section 5 grid: 0.6, 0.8, 0.96 or 1.1.
+             * @enum {unknown}
+             */
+            tail_index: 0.6 | 0.8 | 0.96 | 1.1;
             scale_eur: number;
             /** @description The generator's severity quantiles at the four LDCE percentiles, increasing. */
             fitted_quantiles_eur: number[];
@@ -2954,8 +2958,11 @@ export interface components {
         /** @description One cell of the grid (years x collection threshold) of a tail-index variant, as replication summaries. */
         c17Cell: {
             id: string;
-            /** @description Years of recorded losses in each history (5 or 10 in the grid; under 5 the SMA is BIC only, OPE25.15). */
-            years: number;
+            /**
+             * @description Years of recorded losses in each history: 5 or 10 (the grid of SDD section 5).
+             * @enum {unknown}
+             */
+            years: 5 | 10;
             /**
              * @description The collection threshold: losses below it are not recorded.
              * @enum {unknown}
@@ -3019,7 +3026,7 @@ export interface components {
             generator: components["schemas"]["c17Generator"];
             calibration: components["schemas"]["c17Ldce"];
             /** @description One row per tail index in increasing order: 0.6, 0.8, 0.96, 1.1. */
-            variants: components["schemas"]["c17VariantTruth"][];
+            variants: components["schemas"]["c17VariantTruth"][] & (unknown & unknown & unknown & unknown);
             grid: components["schemas"]["c17Grid"];
             ladder: components["schemas"]["c17Rung"][];
             aggregation: components["schemas"]["c17Aggregation"];
@@ -3172,14 +3179,18 @@ export interface components {
              * @constant
              */
             currency: "EUR";
-            tail_index: number;
+            /**
+             * @description A tail index of the SDD section 5 grid: 0.6, 0.8, 0.96 or 1.1.
+             * @enum {unknown}
+             */
+            tail_index: 0.6 | 0.8 | 0.96 | 1.1;
             /** @description True exactly when the tail index is 1 or more: the mean is infinite, no mean-based quantity is computed and the mean-corrected SLA is absent. */
             infinite_mean: boolean;
             truth: components["schemas"]["c17Truth"];
             calibration: components["schemas"]["c17Calibration"];
             bank: components["schemas"]["c17Bank"];
             /** @description The grid in fixed order: 5 years then 10 years, each at collection threshold 10,000 then 20,000. */
-            cells: components["schemas"]["c17Cell"][];
+            cells: components["schemas"]["c17Cell"][] & (unknown & unknown & unknown & unknown);
             exceedance: components["schemas"]["c17Exceedance"];
             sma_response: components["schemas"]["c17SmaResponse"];
             scenario_influence: components["schemas"]["c17ScenarioInfluence"];
@@ -3241,6 +3252,11 @@ export interface components {
         /** @description The 99.9 percent capital's sensitivity to each scenario point of one history (the scenario influence). */
         c17ScenarioInfluence: {
             /**
+             * @description The prior of the Bayesian credibility, stated on every result (decision D4): Gamma on the Pareto shape alpha = 1 / xi, unrestricted.
+             * @constant
+             */
+            prior_kind: "unrestricted-gamma-on-pareto-shape";
+            /**
              * @description ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR).
              * @constant
              */
@@ -3260,48 +3276,38 @@ export interface components {
         };
         c17ScenarioSpec: {
             methods: ("pseudo-observations" | "body-tail" | "bayesian-credibility")[];
+            /** @description The Bayesian credibility prior (decision D4): a Gamma prior on the Pareto shape alpha = 1 / xi, its mean and 90 percent interval taken from the scenario points; the paper's restriction to alpha above 1 is not used. */
+            prior: {
+                /** @constant */
+                kind: "unrestricted-gamma-on-pareto-shape";
+                /** @constant */
+                restricted: false;
+                /** @constant */
+                interval_level: 0.9;
+                mapping: string;
+            };
             reference: string;
         };
-        /** @description The SMA capital of the synthetic bank on the same histories as the LDA of the cell, with the discretion applied as a named field (OPE25.10, OPE25.11, OPE25.15). ORC = BIC x ILM (OPE25.2). The SMA is not calibrated to the 99.9 percent quantile of any bank: the ratio to the true quantile is a comparison, not a claim of equivalence. */
+        /** @description The SMA capital of the synthetic bank on the same histories as the LDA of the cell, with the discretion applied as a named field (OPE25.11). ORC = BIC x ILM (OPE25.2), LC = 15 x the average annual loss over the history (OPE25.8). A C17 history is 5 or 10 years, so an ILM is always computable (OPE25.15: under 5 years capital is BIC only, a case of the engine `sma_capital` that no C17 cell reaches). The SMA is not calibrated to the 99.9 percent quantile of any bank: the ratio to the true quantile is a comparison, not a claim of equivalence. */
         c17SmaCell: {
             /**
              * @description ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR).
              * @constant
              */
             currency: "EUR";
+            /** @constant */
+            basis: "bic-times-ilm";
             /** @enum {string} */
-            basis: "bic-times-ilm" | "bic-only";
-            /** @description Why capital is BIC only; null on the full basis. */
-            reason: string | null;
-            /** @enum {string} */
-            discretion_applied: "none" | "bucket-1-ilm-one" | "national-ilm-one" | "transitional-bic-only";
+            discretion_applied: "none" | "bucket-1-ilm-one" | "national-ilm-one";
             bucket: number;
             /** @description Money in EUR (the `currency` of the enclosing block). */
             bic_eur: number;
-            /** @description LC = 15 x the average annual loss over the available years (OPE25.8); null on the BIC-only basis. */
-            lc_eur: components["schemas"]["c17MoneyQuantiles"] | null;
-            /** @description ILM = ln(e - 1 + (LC / BIC)^0.8) (OPE25.8); null on the BIC-only basis. */
-            ilm: components["schemas"]["c17IlmQuantiles"] | null;
+            lc_eur: components["schemas"]["c17MoneyQuantiles"];
+            ilm: components["schemas"]["c17IlmQuantiles"];
             orc_eur: components["schemas"]["c17MoneyQuantiles"];
             orc_over_true_quantile: components["schemas"]["c17RatioQuantiles"];
             note: components["schemas"]["common-text"];
-        } & ({
-            /** @constant */
-            basis?: "bic-times-ilm";
-            reason?: null;
-            /** @enum {string} */
-            discretion_applied?: "none" | "bucket-1-ilm-one" | "national-ilm-one";
-            lc_eur?: components["schemas"]["c17MoneyQuantiles"];
-            ilm?: components["schemas"]["c17IlmQuantiles"];
-        } | {
-            /** @constant */
-            basis?: "bic-only";
-            reason?: string;
-            /** @constant */
-            discretion_applied?: "transitional-bic-only";
-            lc_eur?: null;
-            ilm?: null;
-        });
+        } & (unknown & unknown);
         /** @description The ILM and the capital of one history as a single large loss of growing size is added to its latest year. */
         c17SmaResponse: {
             /**
@@ -3323,6 +3329,8 @@ export interface components {
             ilm: number;
             /** @description Money in EUR (the `currency` of the enclosing block). */
             orc_eur: number;
+            /** @description The 99.9 percent LDA capital of the same history with the same loss added. */
+            lda_capital_eur: number;
         };
         /** @description The OPE25 standardised approach as specified (dossier 01 section F), with its golden value. */
         c17SmaSpec: {
@@ -3388,7 +3396,11 @@ export interface components {
                 /** @description Money in EUR (the `currency` of the enclosing block). */
                 location_eur: number;
                 scale_eur: number;
-                tail_index: number;
+                /**
+                 * @description A tail index of the SDD section 5 grid: 0.6, 0.8, 0.96 or 1.1.
+                 * @enum {unknown}
+                 */
+                tail_index: 0.6 | 0.8 | 0.96 | 1.1;
             };
             /** @description The true 99.9 percent quantile of the annual loss of the generating process (all generated losses at or above the generator floor, whatever the collection threshold): computed once by Panjer or FFT on a fine grid and checked by Monte Carlo. */
             annual_loss_quantile: {
@@ -3406,8 +3418,11 @@ export interface components {
                     seed: number;
                     value_eur: number;
                     standard_error_eur: number;
-                    /** @description True when the Monte Carlo value is within 3 standard errors of the value. */
-                    agrees: boolean;
+                    /**
+                     * @description A truth that fails its Monte Carlo check (the value within 3 standard errors) is not published.
+                     * @constant
+                     */
+                    agrees: true;
                 };
             };
             annual_loss_mean: {
@@ -3427,7 +3442,11 @@ export interface components {
         /** @description The true parameters and the true 99.9 percent annual loss quantile of one variant. */
         c17VariantTruth: {
             variant_id: string;
-            tail_index: number;
+            /**
+             * @description A tail index of the SDD section 5 grid: 0.6, 0.8, 0.96 or 1.1.
+             * @enum {unknown}
+             */
+            tail_index: 0.6 | 0.8 | 0.96 | 1.1;
             infinite_mean: boolean;
             lambda_per_year: number;
             /** @description Money in EUR (the `currency` of the enclosing block). */

@@ -282,7 +282,7 @@ def test_the_two_variant_fixtures_cover_both_sides_of_a_tail_index_of_one() -> N
 def test_the_infinite_mean_flag_follows_the_tail_index_exactly() -> None:
     """The flag is true exactly when the tail index is 1 or more. The finite fixture (mean present) holds only on the finite
     side, the infinite fixture (mean null with its reason) only on the infinite side."""
-    for xi in (0.3, 0.6, 0.99, 1.0, 1.1, 2.0):
+    for xi in (0.6, 0.8, 0.96, 1.1):
         for flag in (False, True):
             for path, finite_side in ((FINITE, True), (INFINITE, False)):
                 doc = load(path)
@@ -454,10 +454,11 @@ def test_the_sma_block_names_bi_bic_lc_ilm_and_the_discretion_applied() -> None:
     assert set(bank["business_indicator"]) == {"ildc_eur", "sc_eur", "fc_eur", "bi_eur"}
     for cell in o["cells"]:
         sma = cell["sma"]
-        assert {"basis", "reason", "discretion_applied", "bucket", "bic_eur", "lc_eur", "ilm", "orc_eur"} <= set(sma)
-        assert sma["discretion_applied"] in {"none", "bucket-1-ilm-one", "national-ilm-one", "transitional-bic-only"}
+        assert {"basis", "discretion_applied", "bucket", "bic_eur", "lc_eur", "ilm", "orc_eur"} <= set(sma)
+        assert "reason" not in sma
+        assert sma["discretion_applied"] in {"none", "bucket-1-ilm-one", "national-ilm-one"}
     doc = load(FINITE)
-    for key in ("discretion_applied", "basis", "bic_eur", "lc_eur", "ilm", "orc_eur", "bucket", "reason"):
+    for key in ("discretion_applied", "basis", "bic_eur", "lc_eur", "ilm", "orc_eur", "bucket"):
         bad = copy.deepcopy(doc)
         del bad["outputs"]["cells"][0]["sma"][key]
         assert cs.errors(VAR, bad) != [], f"sma without {key} validates"
@@ -495,50 +496,31 @@ def test_the_ilm_and_orc_percentiles_follow_the_lc_percentiles_through_the_monot
                 assert math.isclose(sma["orc_over_true_quantile"][key], sma["orc_eur"][key] / truth, rel_tol=1e-6)
 
 
-def test_the_sma_discretion_couples_with_the_bucket_and_the_basis() -> None:
+def test_the_sma_discretion_couples_with_the_bucket_and_sets_the_ilm_to_one() -> None:
     doc = load(FINITE)
     cell0 = doc["outputs"]["cells"][0]["sma"]
-    assert cell0["basis"] == "bic-times-ilm" and cell0["discretion_applied"] == "none" and cell0["reason"] is None
-    # bucket-1 discretion is for bucket 1 only, and sets ILM to 1 at every percentile
+    assert cell0["basis"] == "bic-times-ilm" and cell0["discretion_applied"] == "none"
+    # bucket-1 discretion is for bucket 1 only
     bad = copy.deepcopy(doc)
     bad["outputs"]["cells"][0]["sma"]["discretion_applied"] = "bucket-1-ilm-one"
     assert cs.errors(VAR, bad) != [], "bucket-1 discretion on a bucket-2 bank validates"
-    # a transitional BIC-only basis needs its reason and null LC and ILM
     bad = copy.deepcopy(doc)
     bad["outputs"]["cells"][0]["sma"]["basis"] = "bic-only"
-    assert cs.errors(VAR, bad) != []
-    bad = copy.deepcopy(doc)
-    bad["outputs"]["cells"][0]["sma"]["reason"] = "x"
-    assert cs.errors(VAR, bad) != [], "a reason on a full ILM basis validates"
+    assert cs.errors(VAR, bad) != [], "a BIC-only basis is not reachable in a 5 or 10 year cell"
     bad = copy.deepcopy(doc)
     bad["outputs"]["cells"][0]["sma"]["lc_eur"] = None
     assert cs.errors(VAR, bad) != [], "a full ILM basis without LC validates"
 
 
-def test_a_history_shorter_than_five_years_is_bic_only_with_its_reason() -> None:
-    """OPE25.10 and OPE25.15 (dossier 01 section F): under 5 years of loss data capital is BIC only."""
+def test_an_ilm_is_unreachable_on_fewer_than_five_years_in_any_c17_block() -> None:
+    """OPE25.10 and OPE25.15 (dossier 01 section F): under 5 years of loss data capital is BIC only. The C17 grid is 5 or 10
+    years, so a cell of any other length is refused whole; the BIC-only rule is the engine's (`sma_capital`)."""
     doc = load(FINITE)
-    cell = doc["outputs"]["cells"][0]
-    q = cell["sma"]["orc_eur"]
-    bic_eur = cell["sma"]["bic_eur"]
-    short = copy.deepcopy(doc)
-    c = short["outputs"]["cells"][0]
-    c["years"] = 4
-    c["sma"].update({"basis": "bic-only", "discretion_applied": "transitional-bic-only", "lc_eur": None, "ilm": None,
-                     "reason": "fewer than 5 years of loss data (OPE25.15): capital is the BIC only",
-                     "orc_eur": {k: bic_eur for k in q}})
-    short_ok = cs.errors(VAR, short)
-    assert short_ok == [], short_ok
-    # an ILM computed on 4 years of data is refused, and so is a BIC-only basis on 5 or more years
-    computed = copy.deepcopy(doc)
-    computed["outputs"]["cells"][0]["years"] = 4
-    assert cs.errors(VAR, computed) != [], "an ILM on 4 years of data validates"
-    long_bic_only = copy.deepcopy(short)
-    long_bic_only["outputs"]["cells"][0]["years"] = 5
-    assert cs.errors(VAR, long_bic_only) != [], "BIC-only on 5 years validates"
-    nine = copy.deepcopy(doc)
-    nine["outputs"]["cells"][0]["years"] = 0
-    assert cs.errors(VAR, nine) != []
+    for years in (0, 1, 3, 4, 7, 9, 11):
+        bad = copy.deepcopy(doc)
+        bad["outputs"]["cells"][0]["years"] = years
+        assert cs.errors(VAR, bad) != [], f"a cell of {years} years validates"
+    assert "BIC only" in section("sma", "sma_capital") and "OPE25.15" in section("sma", "sma_capital")
 
 
 def test_the_sma_response_curve_applies_the_ope25_formulas() -> None:
@@ -702,8 +684,9 @@ MODULES = {
                   "AnnualLossSample", "simulate_annual_losses", "mc_quantile", "quantile_from_pmf", "es_from_pmf",
                   "exceedance_from_pmf", "CompoundMoments", "compound_poisson_moments"],
     "sla": ["sla_var", "sla_var_poisson_gpd", "SlaResult", "sla_var_mean_corrected"],
-    "scenarios": ["ScenarioPoint", "scenario_pseudo_observations", "fit_tail_to_scenarios", "CredibilityFit",
-                  "credibility_gpd", "scenario_influence"],
+    "scenarios": ["ScenarioPoint", "scenario_pseudo_observations", "fit_tail_to_scenarios", "GammaPrior",
+                  "gamma_prior_from_mean_interval", "gamma_prior_from_scenarios", "CredibilityFit", "credibility_pareto",
+                  "scenario_influence"],
     "sma": ["ildc", "service_component", "financial_component", "business_indicator", "bic_bucket", "bic", "loss_component",
             "ilm", "SmaResult", "sma_capital"],
     "validation.oprisk": ["benchmark_reproduction", "threshold_stability", "capital_stability", "sma_ilm_response",
@@ -711,7 +694,7 @@ MODULES = {
 }
 TEST_FUNCTIONS = MODULES["validation.oprisk"]
 RESULT_TYPES = {"FrequencyFit", "SeverityFit", "SpliceFit", "TailProfile", "AnnualLossSample", "CompoundMoments", "SlaResult",
-                "ScenarioPoint", "CredibilityFit", "SmaResult"}
+                "ScenarioPoint", "GammaPrior", "CredibilityFit", "SmaResult"}
 
 
 def prefix_of(module: str) -> str:
@@ -790,8 +773,7 @@ def test_the_unverified_items_are_stated_unverified_never_decided() -> None:
     assert "UNVERIFIED" in body and "Bocker and Sprittulla" in body
     assert "ValueError" in body and "tail index" in body
     assert "UNVERIFIED" in section("sla", "SlaResult")
-    # the H labelling offset of Shevchenko's Table 2 and the SLA dollar figure of dossier 05 F.6 are stated, not hidden
-    assert re.search(r"offset", text) and "647" in text
+    assert "offset" not in text.lower(), "the Table 2 label offset was refuted by the review and is gone"
 
 
 # --- the golden values of the engine contract recompute here from the formulas ---------------------------------------
@@ -874,14 +856,39 @@ def test_golden_sla_closed_forms_recompute() -> None:
     assert "6124.555320" in text and "8124.555320" in text
 
 
-def test_the_dossier_sla_figure_is_reproduced_only_to_the_rounding_of_its_parameters() -> None:
-    """Dossier 05 F.6: xi about 0.96, beta about 22,350, lambda 41 give a 99.9 percent SLA VaR of about EUR 647 million. The
-    rounded parameters give 624.1 million; the 3.7 percent gap is the stated sensitivity to xi, UNVERIFIED."""
-    xi, beta, lam, u = 0.96, 22350.0, 41.0, 20000.0
-    var = u + beta / xi * ((lam / 0.001) ** xi - 1)
-    assert math.isclose(var, 624.132e6, rel_tol=1e-5)
-    assert 0.03 < 647e6 / var - 1 < 0.04
-    assert "624" in API.read_text(encoding="utf-8")
+def test_the_dossier_sla_figure_of_647_million_is_reproduced_by_the_log_excess_least_squares_fit() -> None:
+    """Dossier 05 F.6: a GPD for the excesses over EUR 20,000 fitted by least squares on the log of the excess quantiles to the four
+    LDCE median percentiles gives xi 0.96378, beta 22,349.4 and an SLA of EUR 647.1 million at lambda 41 and level 0.999;
+    rounding xi to 0.96 gives 624.1 million."""
+    u, ps, tgt = 20000.0, (0.25, 0.5, 0.75, 0.95), (27632.0, 41916.0, 82608.0, 418400.0)
+
+    def q(p: float, xi: float, b: float) -> float:
+        return u + b / xi * ((1 - p) ** (-xi) - 1)
+
+    def obj(xi: float, b: float) -> float:
+        return sum((math.log(q(p, xi, b) - u) - math.log(t - u)) ** 2 for p, t in zip(ps, tgt))
+
+    xi0, b0, sx, sb = 0.96, 22350.0, 0.2, 8000.0
+    for _ in range(80):
+        best = (1e18, xi0, b0)
+        for i in range(-20, 21):
+            for j in range(-20, 21):
+                xi, b = xi0 + sx * i / 20, b0 + sb * j / 20
+                if xi > 0.05 and b > 0 and obj(xi, b) < best[0]:
+                    best = (obj(xi, b), xi, b)
+        _, xi0, b0 = best
+        sx, sb = sx * 0.6, sb * 0.6
+    assert math.isclose(xi0, 0.96378, abs_tol=5e-5) and math.isclose(b0, 22349.4, abs_tol=0.5)
+    assert [round(q(p, xi0, b0)) for p in ps] == [27409, 42039, 85025, 412906]
+    sla = u + b0 / xi0 * ((41 / 0.001) ** xi0 - 1)
+    assert math.isclose(sla, 647.1e6, rel_tol=1e-3)
+    rounded = u + 22350.0 / 0.96 * ((41 / 0.001) ** 0.96 - 1)
+    assert math.isclose(rounded, 624.1e6, rel_tol=1e-3)
+    text = API.read_text(encoding="utf-8")
+    for needle in ("647.1 million", "0.96378", "22349.4", "624.1 million", "27409"):
+        assert needle in text, needle
+    for gone in ("not reproduced", "which unrounded fit gives 647 million is UNVERIFIED"):
+        assert gone not in text, gone
 
 
 def test_golden_object_level_values_recompute() -> None:
@@ -932,11 +939,10 @@ def test_golden_object_level_values_recompute() -> None:
 
 
 def test_golden_validation_statistics_recompute() -> None:
-    # benchmark_reproduction: a quantile inside the dossier's range [5849, 5850] has deviation 0, outside it the distance to the
-    # nearest end over the mid-point 5849.5; the metric is the largest deviation over its tolerance
-    ref = (5849.0 + 5850.0) / 2
-    dev = (5900.0 - 5850.0) / ref
-    assert math.isclose(dev, 0.008548, abs_tol=5e-7) and math.isclose(dev / 0.01, 0.854774, abs_tol=5e-7)
+    # benchmark_reproduction: the panjer and fft quantiles are inside the step-1 range [5849, 5850] (deviation 0); the Monte Carlo
+    # quantile is the continuous one, 5853.1 (Shevchenko Table 3 at step 0.0625 and Table 7), so its deviation is |q - 5853.1| / 5853.1
+    dev = abs(5900.0 - 5853.1) / 5853.1
+    assert math.isclose(dev, 0.008013, abs_tol=5e-7) and math.isclose(dev / 0.01, 0.801285, abs_tol=5e-7)
     # threshold_stability: the range of the fitted tail index over the profile, and the count of fits at or above 1
     xs = [0.90, 0.95, 1.00, 0.97]
     assert math.isclose(max(xs) - min(xs), 0.10, abs_tol=1e-12) and sum(x >= 1 for x in xs) == 1
@@ -957,5 +963,5 @@ def test_golden_validation_statistics_recompute() -> None:
     # scenario_influence: base 100, capital without each point [95, 100, 80]
     assert [round((100 - c) / 100, 12) for c in (95.0, 100.0, 80.0)] == [0.05, 0.0, 0.2]
     text = API.read_text(encoding="utf-8")
-    for golden in ("0.008548", "0.854774", "0.220648", "97.5", "112.5", "0.15"):
+    for golden in ("0.008013", "0.801285", "0.220648", "97.5", "112.5", "0.15"):
         assert golden in text, golden

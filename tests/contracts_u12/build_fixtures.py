@@ -195,15 +195,10 @@ def sma_cell(xi: float, years: int, thr: int, q999: float) -> dict:
     lc = {k: round(lc_mid * math.exp(Z[k] * sd)) for k in KEYS}
     ilms = {k: sig(ilm(lc[k], BIC), 10) for k in KEYS}
     orc = {k: round(BIC * ilms[k]) for k in KEYS}
-    base = {"currency": "EUR", "bucket": 2, "bic_eur": BIC,
+    return {"currency": "EUR", "bucket": 2, "bic_eur": BIC, "basis": "bic-times-ilm", "discretion_applied": "none",
+            "lc_eur": lc, "ilm": ilms, "orc_eur": orc, "orc_over_true_quantile": {k: orc[k] / q999 for k in KEYS},
             "note": txt("The SMA is not calibrated to the 99.9 percent quantile of any bank; the ratio is a comparison, not a claim of equivalence.",
                         "El SMA no esta calibrado al cuantil 99,9 por ciento de ningun banco; la razon es una comparacion, no una equivalencia.")}
-    if years < 5:
-        return base | {"basis": "bic-only", "reason": "fewer than 5 years of loss data (OPE25.15): capital is the BIC only",
-                       "discretion_applied": "transitional-bic-only", "lc_eur": None, "ilm": None,
-                       "orc_eur": {k: BIC for k in KEYS}, "orc_over_true_quantile": {k: BIC / q999 for k in KEYS}}
-    return base | {"basis": "bic-times-ilm", "reason": None, "discretion_applied": "none", "lc_eur": lc, "ilm": ilms, "orc_eur": orc,
-                   "orc_over_true_quantile": {k: orc[k] / q999 for k in KEYS}}
 
 
 VARIANT_SCALE = {xi: beta for xi, beta, _ in VARIANTS}
@@ -273,12 +268,13 @@ def exceedance_block(xi: float, beta: float, q999: float) -> dict:
             "quantile_999_eur": {"monte_carlo": q999 * 0.997, "panjer": q999, "fft": q999 * 1.0001, "sla": round(sla)}}
 
 
-def sma_response_block(cell_lc_mid: float) -> dict:
+def sma_response_block(cell_lc_mid: float, lda_base: float) -> dict:
     rows = []
     for added in (0.0, 1e7, 5e7, 2e8, 1e9):
         lc = cell_lc_mid + 1.5 * added  # one added loss in a 10-year window: LC = 15 x (sum + L) / 10
         i = sig(ilm(lc, BIC), 10)
-        rows.append({"added_loss_eur": added, "lc_eur": lc, "ilm": i, "orc_eur": round(BIC * i)})
+        rows.append({"added_loss_eur": added, "lc_eur": lc, "ilm": i, "orc_eur": round(BIC * i),
+                     "lda_capital_eur": round(lda_base + 0.05 * added)})
     return {"currency": "EUR", "cell_id": "y10-h20000", "seed": 1000, "bic_eur": BIC, "rows": rows}
 
 
@@ -293,7 +289,8 @@ def scenario_block(base: float) -> dict:
         scen.append({"scenario_id": sid, "label": txt(en, es), "kind": kind, "loss_eur": loss,
                      "exceedance_frequency_per_year": freq, "capital_without_eur": without,
                      "influence": round((base - without) / base, 9)})
-    return {"currency": "EUR", "cell_id": "y10-h20000", "seed": 1000, "level": 0.999, "method": "bayesian-credibility",
+    return {"prior_kind": "unrestricted-gamma-on-pareto-shape", "currency": "EUR", "cell_id": "y10-h20000", "seed": 1000, "level": 0.999,
+            "method": "bayesian-credibility",
             "base_capital_eur": base, "scenarios": scen, "reference": "Shevchenko and Wuthrich (2006), J. Operational Risk 1(3):3-26"}
 
 
@@ -306,7 +303,7 @@ def variant_doc(vidx: int) -> dict:
         "kind": "tail-index", "currency": "EUR", "tail_index": xi, "infinite_mean": xi >= 1,
         "truth": truth_block(xi, beta, q999), "calibration": calibration_block(xi, beta), "bank": bank_block(),
         "cells": cells, "exceedance": exceedance_block(xi, beta, q999),
-        "sma_response": sma_response_block(float(lc_mid)), "scenario_influence": scenario_block(float(base)),
+        "sma_response": sma_response_block(float(lc_mid), float(cells[3]["capital"]["lda_splice"]["capital_eur"]["median"])), "scenario_influence": scenario_block(float(base)),
     }
     tests = [test_row("oprisk.benchmark_reproduction", "lda-splice", NE),
              test_row("oprisk.threshold_stability", "lda-splice", NE),
@@ -378,6 +375,10 @@ def models_doc() -> dict:
                 "golden": {"bi_eur": 35e9, "bic_eur": 5.37e9, "reference": "OPE25.7 footnote 2"},
                 "reference": "dossier 01 section F (OPE25, in force 2023-01-01, published 2024-07-05)"},
         "scenarios": {"methods": ["pseudo-observations", "body-tail", "bayesian-credibility"],
+                      "prior": {"kind": "unrestricted-gamma-on-pareto-shape", "restricted": False, "interval_level": 0.9,
+                                "mapping": "GPD fitted to the scenario points by least squares on the log excess quantiles; alpha_s = 1 / xi_s is the "
+                                           "prior mean and the parametric-bootstrap 90 percent interval of alpha_s the expert interval; the Gamma "
+                                           "shape and rate solve the mean and the interval mass (decision D4)"},
                       "reference": "dossier 05 F.5; Shevchenko and Wuthrich (2006), J. Operational Risk 1(3):3-26"},
     }
     return {
