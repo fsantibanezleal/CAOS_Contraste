@@ -807,7 +807,7 @@ def test_the_rows_fragment_has_the_five_rows_in_the_catalog_columns() -> None:
     for r in data:
         assert len(r) == len(header), r[0]
         d = dict(zip(header, r))
-        assert d["version"] == "1.0.0"
+        assert d["version"] == ("1.1.0" if d["id"] == "engine-irrbb-api" else "1.0.0")
         assert d["status"] == "active"
         assert d["provider"].startswith("fixture:")
         assert (ROOT / d["schema file"]).is_file(), d["schema file"]
@@ -841,7 +841,7 @@ MODULES = {
                 "prioritised_bank"],
     "behavioural": ["replicating_portfolio", "weighted_average_maturity", "deposit_beta_passthrough", "prepayment_logit",
                     "fit_prepayment_logit"],
-    "simulation": ["simulate_nii", "hw1f_scenarios", "dns_scenarios", "ear_evar"],
+    "simulation": ["simulate_nii", "hw1f_scenarios", "dns_scenarios", "ear_evar", "ear_evar_mc_error"],
     "validation.irrbb": ["srp31_92_goldens", "cmf_annex1_goldens", "eve_sum_of_parts", "nmd_parameter_stability",
                          "eve_with_without_behavioural", "behavioural_change_at_breach", "nii_out_of_sample"],
 }
@@ -1135,7 +1135,7 @@ def test_d1_every_c14_document_carries_the_dynamic_nii_the_ear_evar_and_the_out_
         assert [s["scenario"] for s in o["dynamic_nii"]["scenarios"]] == ["base", "parallel-up", "parallel-down"]
         assert 12 <= o["dynamic_nii"]["horizon_months"] <= 36
         assert [lv["level"] for lv in o["ear_evar"]["levels"]] == [0.95, 0.99]
-        assert o["ear_evar"]["n_paths"] > 1 and "seed" in o["ear_evar"] and o["ear_evar"]["monte_carlo_error"]["ear"] >= 0
+        assert o["ear_evar"]["n_paths"] > 1 and "seed" in o["ear_evar"] and o["ear_evar"]["levels"][0]["ear_se"] >= 0
         assert o["dynamic_nii"]["balance_sheet_assumption"]["kind"] in ("constant", "growth")
     for key in C15_OUT:
         assert "ear_evar" not in out(key) and len(out(key)["dynamic_nii"]["legs"]) == 2
@@ -1155,3 +1155,97 @@ def test_the_simulate_nii_and_ear_evar_goldens_of_the_contract_recompute() -> No
 def test_f8_the_rows_fragment_says_the_api_version_bump_is_the_integrators() -> None:
     assert "integrator" in ROWS.read_text(encoding="utf-8").split("-->")[0]
     assert "check_contract_versions" in ROWS.read_text(encoding="utf-8").split("-->")[0]
+
+
+# --- follow-up after the engine review (review-u10-engine-2026-10-13.md): one test per amendment ---------------------------
+
+
+def _quantile(xs: list, p: float) -> float:
+    s = sorted(xs)
+    pos = p * (len(s) - 1)
+    lo = int(math.floor(pos))
+    hi = min(lo + 1, len(s) - 1)
+    return s[lo] + (pos - lo) * (s[hi] - s[lo])
+
+
+def _batch_means_se(paths: list, level: float, n_batches: int) -> float:
+    size = len(paths) // n_batches
+    qs = [_quantile(paths[i * size:(i + 1) * size], 1 - level) for i in range(n_batches)]
+    mean = sum(qs) / n_batches
+    sd = math.sqrt(sum((q - mean) ** 2 for q in qs) / (n_batches - 1))
+    return sd / math.sqrt(n_batches)
+
+
+def test_amend1_the_contract_has_the_monte_carlo_error_function_with_exact_and_closed_form_goldens() -> None:
+    key = "riskvalidation.irrbb.simulation.ear_evar_mc_error"
+    assert key in api_sections()
+    body = api_sections()[key]
+    for needle in ("batch means", "n_batches", "-> EarEvarMcError", "nii_quantile_se", "eve_quantile_se", "ear_se", "evar_se",
+                   "0.037332", "0.021132", "50.0"):
+        assert needle in body, needle
+    assert "ear_evar_mc_error" in API.read_text(encoding="utf-8").split("## How the documents use the engine")[1].split("## Tables")[0]
+    # the exact golden: 2 batches of 20, medians 10.5 and 110.5, SE = sd / sqrt(2) = (100 / sqrt(2)) / sqrt(2) = 50
+    paths = [float(i) for i in range(1, 21)] + [float(i) for i in range(101, 121)]
+    assert math.isclose(_batch_means_se(paths, 0.5, 2), 50.0, abs_tol=1e-12)
+    # the closed form for i.i.d. N(0, 1) paths: sqrt(p (1 - p) / P) / phi(z_p), P = 10000
+    from statistics import NormalDist
+    for level, want in ((0.99, 0.037332), (0.95, 0.021132)):
+        p = 1 - level
+        z = NormalDist().inv_cdf(p)
+        phi = math.exp(-z * z / 2) / math.sqrt(2 * math.pi)
+        assert math.isclose(math.sqrt(p * (1 - p) / 10000) / phi, want, abs_tol=5e-7)
+    # the batch estimator agrees with the closed form on a seeded normal sample (loose: 20 batches carry about 16 percent noise)
+    rng = random.Random(0)
+    sample = [rng.gauss(0, 1) for _ in range(100000)]
+    est = _batch_means_se(sample, 0.99, 20)
+    closed = math.sqrt(0.01 * 0.99 / 100000) / (math.exp(-(2.3263478740408408 ** 2) / 2) / math.sqrt(2 * math.pi))
+    assert 0.5 * closed < est < 1.5 * closed, (est, closed)
+
+
+@pytest.mark.parametrize("key", C14_OUT)
+def test_amend1_each_ear_evar_level_carries_its_monte_carlo_standard_errors(key: str) -> None:
+    ref, doc = ref_of(key), load(key)
+    ee = out(key)["ear_evar"]
+    assert "monte_carlo_error" not in ee and ee["mc_error_method"] == "batch-means" and ee["n_batches"] >= 2
+    for i, lv in enumerate(ee["levels"]):
+        assert lv["ear_se"] >= 0 and lv["evar_se"] >= 0
+        for f in ("ear_se", "evar_se"):
+            bad = copy.deepcopy(doc)
+            del bad["outputs"]["ear_evar"]["levels"][i][f]
+            assert cs.errors(ref, bad) != [], f"a level without {f} validates"
+            bad = copy.deepcopy(doc)
+            bad["outputs"]["ear_evar"]["levels"][i][f] = -1.0
+            assert cs.errors(ref, bad) != [], f"a negative {f} validates"
+    bad = copy.deepcopy(doc)
+    bad["outputs"]["ear_evar"]["n_batches"] = 1
+    assert cs.errors(ref, bad) != []
+    assert sm.check_document(doc) == []
+    zero = copy.deepcopy(doc)
+    zero["outputs"]["ear_evar"]["levels"][0]["ear_se"] = 1e12
+    assert sm.check_document(zero) != [], "a standard error larger than the quantile spread is refused"
+
+
+def test_amend2_eve_risk_measure_takes_exactly_the_six_shock_rows_and_refuses_a_transposed_matrix() -> None:
+    body = api_sections()["riskvalidation.irrbb.eve_nii.eve_risk_measure"]
+    assert "(6, C)" in body and "refuses" in body and "transposed" in body and "ValueError" in body
+    rows = [[3, -1], [2, 4], [-5, -2], [0, 0], [0, 0], [0, 0]]
+    assert max(max(0, sum(x for x in row if x > 0)) for row in rows) == 6
+    assert "[[3, -1], [2, 4], [-5, -2], [0, 0], [0, 0], [0, 0]]" in body and "[[3, -1], [2, 4], [-5, -2]]`" not in body
+    transposed = list(zip(*rows))
+    assert len(transposed) == 2 and len(transposed) != 6          # (C, S) = (2, 6): the first axis is not the six shocks
+    assert max(max(0, sum(x for x in row if x > 0)) for row in transposed) == 5   # the silent wrong number the refusal prevents
+
+
+def test_amend3_the_annex1_goldens_are_checked_at_the_printed_precision_of_hoja_10() -> None:
+    body = api_sections()["riskvalidation.validation.irrbb.cmf_annex1_goldens"]
+    assert "exact to `1e-12`, except the two Hoja 10 values" in body and "tolerance_printed" in body and "5e-4" in body and "5e-2" in body
+    assert "equality to `1e-12`, red otherwise" not in body
+    a = math.exp(-3.5 / 4)
+    assert abs(a - 0.417) > 1e-12 and abs(a - 0.417) <= 5e-4                    # 1.4e-4: exact to 1e-12 can never be met
+    assert abs(100 * a - 41.7) > 1e-12 and abs(100 * a - 41.7) <= 5e-2
+
+
+def test_amend_the_engine_contract_is_version_1_1_0_and_its_row_says_so() -> None:
+    assert "1.1.0" in API.read_text(encoding="utf-8").split("\n", 1)[0]
+    rows = [ln for ln in ROWS.read_text(encoding="utf-8").splitlines() if ln.startswith("| engine-irrbb-api")]
+    assert rows and rows[0].split(" | ")[1] == "1.1.0"
