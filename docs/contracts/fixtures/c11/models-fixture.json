@@ -1,0 +1,533 @@
+{
+ "schema": "contraste.models/v1",
+ "case_id": "C11",
+ "fit_id": "fixture-ladder",
+ "model": [
+  {
+   "id": "hs-250",
+   "family": "market-var-es",
+   "rung": "R1",
+   "title": {
+    "en": "Fixture model historical simulation 250 days",
+    "es": "Modelo de ejemplo historical simulation 250 days"
+   },
+   "short_title": {
+    "en": "hs-250",
+    "es": "hs-250"
+   },
+   "engine": "riskvalidation",
+   "engine_version": "fixture",
+   "licence": "MIT",
+   "calibration": null,
+   "parameters": {},
+   "checkpoint_sha256": null,
+   "details": {}
+  },
+  {
+   "id": "ewma-094",
+   "family": "market-var-es",
+   "rung": "R4",
+   "title": {
+    "en": "Fixture model EWMA lambda 0.94",
+    "es": "Modelo de ejemplo EWMA lambda 0.94"
+   },
+   "short_title": {
+    "en": "ewma-094",
+    "es": "ewma-094"
+   },
+   "engine": "riskvalidation",
+   "engine_version": "fixture",
+   "licence": "MIT",
+   "calibration": null,
+   "parameters": {},
+   "checkpoint_sha256": null,
+   "details": {}
+  },
+  {
+   "id": "evt-mf",
+   "family": "market-var-es",
+   "rung": "R7",
+   "title": {
+    "en": "Fixture model conditional EVT (McNeil and Frey)",
+    "es": "Modelo de ejemplo conditional EVT (McNeil and Frey)"
+   },
+   "short_title": {
+    "en": "evt-mf",
+    "es": "evt-mf"
+   },
+   "engine": "riskvalidation",
+   "engine_version": "fixture",
+   "licence": "MIT",
+   "calibration": null,
+   "parameters": {},
+   "checkpoint_sha256": null,
+   "details": {}
+  },
+  {
+   "id": "caviar-sav",
+   "family": "market-var-es",
+   "rung": "R8",
+   "title": {
+    "en": "Fixture model CAViaR symmetric absolute value",
+    "es": "Modelo de ejemplo CAViaR symmetric absolute value"
+   },
+   "short_title": {
+    "en": "caviar-sav",
+    "es": "caviar-sav"
+   },
+   "engine": "riskvalidation",
+   "engine_version": "fixture",
+   "licence": "MIT",
+   "calibration": null,
+   "parameters": {},
+   "checkpoint_sha256": null,
+   "details": {}
+  },
+  {
+   "id": "nn-fz",
+   "family": "market-var-es",
+   "rung": "R10",
+   "title": {
+    "en": "Fixture model quantile network on FZ0",
+    "es": "Modelo de ejemplo quantile network on FZ0"
+   },
+   "short_title": {
+    "en": "nn-fz",
+    "es": "nn-fz"
+   },
+   "engine": "riskvalidation",
+   "engine_version": "fixture",
+   "licence": "MIT",
+   "calibration": null,
+   "parameters": {},
+   "checkpoint_sha256": null,
+   "details": {}
+  }
+ ],
+ "fit": {
+  "sign_convention": {
+   "engine_convention": "return-negative",
+   "document_convention": "positive-loss",
+   "definition": {
+    "en": "The engine stores VaR and ES in the return convention (negative numbers at the tail level alpha); this document stores positive loss numbers, as decimals of the portfolio value.",
+    "es": "El motor guarda VaR y ES en la convencion de retornos (numeros negativos al nivel alfa); este documento guarda perdidas positivas, como decimales del valor de la cartera."
+   }
+  },
+  "levels": [
+   {
+    "alpha": 0.01
+   },
+   {
+    "alpha": 0.025
+   }
+  ],
+  "windows": [
+   {
+    "window_id": "equity-2007-09",
+    "asset_class": "equity",
+    "start_date": "2007-07-02",
+    "end_date": "2009-06-30",
+    "fixed_on": {
+     "start": "1995-01-01",
+     "end": "2003-12-31"
+    }
+   },
+   {
+    "window_id": "equity-2020",
+    "asset_class": "equity",
+    "start_date": "2020-02-03",
+    "end_date": "2020-06-30",
+    "fixed_on": {
+     "start": "1995-01-01",
+     "end": "2003-12-31"
+    }
+   },
+   {
+    "window_id": "rates-2022",
+    "asset_class": "rates",
+    "start_date": "2022-01-03",
+    "end_date": "2022-12-30",
+    "fixed_on": {
+     "start": "1995-01-01",
+     "end": "2003-12-31"
+    }
+   },
+   {
+    "window_id": "fx-2008",
+    "asset_class": "fx",
+    "start_date": "2008-07-01",
+    "end_date": "2009-06-30",
+    "fixed_on": {
+     "start": "1995-01-01",
+     "end": "2003-12-31"
+    }
+   },
+   {
+    "window_id": "mixed-2023",
+    "asset_class": "mixed",
+    "start_date": "2023-03-01",
+    "end_date": "2023-05-31",
+    "fixed_on": {
+     "start": "1995-01-01",
+     "end": "2003-12-31"
+    }
+   },
+   {
+    "window_id": "calm-2004-06",
+    "asset_class": "mixed",
+    "start_date": "2004-01-02",
+    "end_date": "2006-12-29",
+    "fixed_on": {
+     "start": "1995-01-01",
+     "end": "2003-12-31"
+    }
+   }
+  ],
+  "ladder": [
+   {
+    "model_id": "hs-250",
+    "rung": "R1",
+    "title": {
+     "en": "Historical simulation, 250 days",
+     "es": "Historical simulation, 250 days"
+    },
+    "family": "market-var-es",
+    "source": "historical simulation (textbook; Pritsker 2001)",
+    "status": "fitted",
+    "not_run_reason": null,
+    "innovation": "empirical",
+    "estimation_window_days": 250,
+    "refit_every_days": 1,
+    "forecasts_es": true,
+    "es_method": "empirical tail mean of the window",
+    "window_fits": [
+     {
+      "window_id": "rates-2022",
+      "n_refits": 255,
+      "n_convergence_failures": 0,
+      "parameters": []
+     }
+    ]
+   },
+   {
+    "model_id": "ewma-094",
+    "rung": "R4",
+    "title": {
+     "en": "EWMA, lambda 0.94",
+     "es": "EWMA, lambda 0.94"
+    },
+    "family": "market-var-es",
+    "source": "RiskMetrics Technical Document 1996, section 5.3.2",
+    "status": "fitted",
+    "not_run_reason": null,
+    "innovation": "normal",
+    "estimation_window_days": 1000,
+    "refit_every_days": 1,
+    "forecasts_es": true,
+    "es_method": "normal ES from the EWMA volatility",
+    "window_fits": [
+     {
+      "window_id": "rates-2022",
+      "n_refits": 255,
+      "n_convergence_failures": 0,
+      "parameters": [
+       {
+        "name": "lambda",
+        "min": 0.94,
+        "median": 0.94,
+        "max": 0.94,
+        "unit": "1"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "model_id": "evt-mf",
+    "rung": "R7",
+    "title": {
+     "en": "Conditional EVT (McNeil and Frey)",
+     "es": "Conditional EVT (McNeil and Frey)"
+    },
+    "family": "market-var-es",
+    "source": "McNeil and Frey 2000, J. Empirical Finance 7(3-4)",
+    "status": "fitted",
+    "not_run_reason": null,
+    "innovation": "gpd-tail",
+    "estimation_window_days": 1000,
+    "refit_every_days": 20,
+    "forecasts_es": true,
+    "es_method": "GPD tail ES, undefined for xi at or above 1",
+    "window_fits": [
+     {
+      "window_id": "rates-2022",
+      "n_refits": 13,
+      "n_convergence_failures": 0,
+      "parameters": [
+       {
+        "name": "xi",
+        "min": 0.05,
+        "median": 0.18,
+        "max": 1.04,
+        "unit": "1"
+       },
+       {
+        "name": "beta",
+        "min": 0.4,
+        "median": 0.62,
+        "max": 0.9,
+        "unit": "1"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "model_id": "caviar-sav",
+    "rung": "R8",
+    "title": {
+     "en": "CAViaR, symmetric absolute value",
+     "es": "CAViaR, symmetric absolute value"
+    },
+    "family": "market-var-es",
+    "source": "Engle and Manganelli 2004, JBES 22(4)",
+    "status": "fitted",
+    "not_run_reason": null,
+    "innovation": "none",
+    "estimation_window_days": 1000,
+    "refit_every_days": 20,
+    "forecasts_es": false,
+    "es_method": "none: CAViaR SAV forecasts the VaR only",
+    "window_fits": [
+     {
+      "window_id": "rates-2022",
+      "n_refits": 13,
+      "n_convergence_failures": 0,
+      "parameters": [
+       {
+        "name": "beta_1",
+        "min": -0.001,
+        "median": 0.0002,
+        "max": 0.001,
+        "unit": "1"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "model_id": "nn-fz",
+    "rung": "R10",
+    "title": {
+     "en": "Quantile network trained on FZ0 (challenger)",
+     "es": "Red de cuantiles entrenada con FZ0 (retador)"
+    },
+    "family": "market-var-es",
+    "source": "arXiv 2606.04576 (preprint; challenger only)",
+    "status": "challenger-not-run",
+    "not_run_reason": "challenger only: it must enter the 90 percent MCS on FZ0 out of sample, and the U8 bake does not train it",
+    "innovation": "none",
+    "estimation_window_days": null,
+    "refit_every_days": null,
+    "forecasts_es": true,
+    "es_method": "network output",
+    "window_fits": []
+   }
+  ],
+  "traffic_light": {
+   "window_days": 250,
+   "confidence": 0.99,
+   "reference": "MAR32.9 Table 1 (dossier 01 D.4); 12 CFR 217.204 Table 1 (dossier 05 B.4)",
+   "rows": [
+    {
+     "exceptions": 0,
+     "zone": "green",
+     "frtb_multiplier": 1.5,
+     "us_multiplier": 3.0,
+     "cumulative_probability_pct": 8.11
+    },
+    {
+     "exceptions": 1,
+     "zone": "green",
+     "frtb_multiplier": 1.5,
+     "us_multiplier": 3.0,
+     "cumulative_probability_pct": 28.58
+    },
+    {
+     "exceptions": 2,
+     "zone": "green",
+     "frtb_multiplier": 1.5,
+     "us_multiplier": 3.0,
+     "cumulative_probability_pct": 54.32
+    },
+    {
+     "exceptions": 3,
+     "zone": "green",
+     "frtb_multiplier": 1.5,
+     "us_multiplier": 3.0,
+     "cumulative_probability_pct": 75.81
+    },
+    {
+     "exceptions": 4,
+     "zone": "green",
+     "frtb_multiplier": 1.5,
+     "us_multiplier": 3.0,
+     "cumulative_probability_pct": 89.22
+    },
+    {
+     "exceptions": 5,
+     "zone": "amber",
+     "frtb_multiplier": 1.7,
+     "us_multiplier": 3.4,
+     "cumulative_probability_pct": 95.88
+    },
+    {
+     "exceptions": 6,
+     "zone": "amber",
+     "frtb_multiplier": 1.76,
+     "us_multiplier": 3.5,
+     "cumulative_probability_pct": 98.63
+    },
+    {
+     "exceptions": 7,
+     "zone": "amber",
+     "frtb_multiplier": 1.83,
+     "us_multiplier": 3.65,
+     "cumulative_probability_pct": 99.6
+    },
+    {
+     "exceptions": 8,
+     "zone": "amber",
+     "frtb_multiplier": 1.88,
+     "us_multiplier": 3.75,
+     "cumulative_probability_pct": 99.89
+    },
+    {
+     "exceptions": 9,
+     "zone": "amber",
+     "frtb_multiplier": 1.92,
+     "us_multiplier": 3.85,
+     "cumulative_probability_pct": 99.97
+    },
+    {
+     "exceptions": 10,
+     "zone": "red",
+     "frtb_multiplier": 2.0,
+     "us_multiplier": 4.0,
+     "cumulative_probability_pct": 99.99
+    }
+   ]
+  },
+  "es_reference": {
+   "statistic": "Z2",
+   "n_days": 250,
+   "alpha": 0.025,
+   "yellow": -0.7,
+   "red": -1.8,
+   "status": {
+    "en": "A published reference point (Acerbi and Szekely), not a regulatory threshold; each model's own simulated critical values are in the outputs.",
+    "es": "Un punto de referencia publicado (Acerbi y Szekely), no un umbral regulatorio; los valores criticos simulados de cada modelo estan en los resultados."
+   }
+  },
+  "scoring": {
+   "fz0_formula": "-(1/(alpha*e))*1{y<=v}*(v-y) + v/e + log(-e) - 1",
+   "tick_formula": "(alpha - 1{y<v})*(y - v)",
+   "hac_kernel": "bartlett",
+   "mcs_confidence": 0.9,
+   "mcs_statistic": "TR",
+   "selection_rule": {
+    "en": "Traditional back-tests (POF, conditional coverage, Z2) are eligibility gates; the champion is the lowest average FZ0 among the eligible; Diebold-Mariano and the model confidence set rank the ladder.",
+    "es": "Los back-tests tradicionales (POF, cobertura condicional, Z2) son compuertas de elegibilidad; el campeon es el menor FZ0 medio entre los elegibles; Diebold-Mariano y el conjunto de confianza de modelos ordenan la escalera."
+   }
+  },
+  "eligibility_gates": [
+   {
+    "test_id": "market.kupiec_pof",
+    "rule": {
+     "en": "Red at the 5 percent level in any window level: ineligible.",
+     "es": "Rojo al 5 por ciento en cualquier nivel: inelegible."
+    }
+   },
+   {
+    "test_id": "market.christoffersen_conditional_coverage",
+    "rule": {
+     "en": "Red at the 5 percent level: ineligible.",
+     "es": "Rojo al 5 por ciento: inelegible."
+    }
+   },
+   {
+    "test_id": "market.acerbi_szekely",
+    "rule": {
+     "en": "Red against the model's own simulated critical value: ineligible; not evaluated is not red.",
+     "es": "Rojo frente al valor critico simulado propio: inelegible; no evaluado no es rojo."
+    }
+   }
+  ],
+  "data_sources": [
+   {
+    "series_id": "french-daily",
+    "title": {
+     "en": "Kenneth French data library, daily factor and industry returns",
+     "es": "Biblioteca de datos de Kenneth French, retornos diarios de factores e industrias"
+    },
+    "source_class": "derived-only",
+    "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
+    "licence_note": {
+     "en": "Copyright Eugene F. Fama and Kenneth R. French; only derived results are committed (dossier 08 C.5).",
+     "es": "Copyright Eugene F. Fama y Kenneth R. French; solo se publican resultados derivados (dossier 08 C.5)."
+    }
+   },
+   {
+    "series_id": "treasury-par",
+    "title": {
+     "en": "US Treasury daily par yield curve",
+     "es": "Curva de rendimientos par diaria del Tesoro de EE. UU."
+    },
+    "source_class": "mirror-allowed",
+    "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/",
+    "licence_note": {
+     "en": "Work of US federal employees (17 U.S.C. 105; page statement UNVERIFIED, dossier 08 C.2).",
+     "es": "Obra de empleados federales de EE. UU. (17 U.S.C. 105; la declaracion de la pagina no esta verificada, dossier 08 C.2)."
+    }
+   },
+   {
+    "series_id": "h10-fx",
+    "title": {
+     "en": "Federal Reserve H.10 foreign exchange rates",
+     "es": "Tipos de cambio H.10 de la Reserva Federal"
+    },
+    "source_class": "mirror-allowed",
+    "url": "https://www.federalreserve.gov/releases/h10/",
+    "licence_note": {
+     "en": "Board publication under the Board's public-domain statement (dossier 08 C.8); start dates UNVERIFIED.",
+     "es": "Publicacion de la Junta bajo su declaracion de dominio publico (dossier 08 C.8); fechas de inicio no verificadas."
+    }
+   }
+  ]
+ },
+ "provenance": {
+  "truth_status": "real-outcomes",
+  "inputs": [
+   {
+    "source": "fixture-not-a-result",
+    "class": "fixture",
+    "files": []
+   }
+  ],
+  "licence_classes": {
+   "fixture-not-a-result": "fixture"
+  },
+  "generators": [
+   "fixture:u8-s-contracts"
+  ],
+  "seed": 0,
+  "code_version": "fixture",
+  "riskvalidation_version": null
+ },
+ "lane": {
+  "lane": "precompute",
+  "reasons": [
+   "fixture"
+  ]
+ }
+}
