@@ -1,0 +1,34 @@
+// The references of unit U10 (interest rate risk in the banking book: cases C14 and C15 and the Methodology section on
+// IRRBB). Every entry is transcribed from research dossier 05 (section D: D.1 to D.7 and the source list), dossier 01
+// (section H: H.1 to H.5) and dossier 03 (F.1 and F.2), where each DOI or URL was read at its primary source on
+// 2026-10-04; a source the dossier read only through a summary keeps its bibliographic record and nothing more. The shell
+// reports an entry without a DOI or URL. An id already in another file (cmfcncb) is not repeated here.
+import type { Citation } from '@fasl-work/caos-app-shell';
+
+export const CITATIONS: Citation[] = [
+  // the Basel standard and its disclosure
+  { id: 'srp31', label: 'Basel SRP31', citation: 'Basel Committee on Banking Supervision. The Basel Framework, SRP31: interest rate risk in the banking book (version in force 2026-01-01, published 2024-07-16).', url: 'https://www.bis.org/committees/bcbs/basel-framework/standard/srp/31/inforce/2026-01-01/published/2024-07-16' },
+  { id: 'dis70', label: 'Basel DIS70', citation: 'Basel Committee on Banking Supervision. The Basel Framework, DIS70: interest rate risk in the banking book disclosure (in force 2019-12-15).', url: 'https://www.bis.org/committees/bcbs/basel-framework/standard/dis/70/inforce/2019-12-15/published/2019-12-15' },
+  { id: 'bcbsd368', label: 'BCBS d368', citation: 'Basel Committee on Banking Supervision (2016). Interest rate risk in the banking book. Standards, April 2016.', url: 'https://www.bis.org/publications/201604-standards-interest-rate-risk-banking-book.pdf' },
+  { id: 'bcbsd578', label: 'BCBS d578', citation: 'Basel Committee on Banking Supervision (2024). Recalibration of shocks for interest rate risk in the banking book. Standards, July 2024.', url: 'https://www.bis.org/publications/202407-standards-recalibration-shocks-interest-rate-risk-banking-book.pdf' },
+  { id: 'eu2024856', label: 'Regulation (EU) 2024/856', citation: 'European Commission (2023). Commission Delegated Regulation (EU) 2024/856 of 1 December 2023, Official Journal of the European Union, 24 April 2024 (supervisory outlier test on net interest income: Articles 3, 4 and 5).', url: 'https://eur-lex.europa.eu/eli/reg_del/2024/856/oj/eng' },
+  // the behavioural models: prepayment and non-maturity deposits
+  { id: 'fuster2022', label: { en: 'Fuster, Lucca and Vickery 2022', es: 'Fuster, Lucca y Vickery 2022' }, citation: 'Fuster, A., Lucca, D. and Vickery, J. (2022). Mortgage-backed securities. Federal Reserve Bank of New York Staff Report 1001, February 2022.', url: 'https://www.newyorkfed.org/medialibrary/media/research/staff_reports/sr1001.pdf' },
+  { id: 'stanton1995', label: 'Stanton 1995', citation: 'Stanton, R. (1995). Rational prepayment and the valuation of mortgage-backed securities. Review of Financial Studies 8(3), 677-708.', doi: '10.1093/rfs/8.3.677' },
+  { id: 'schwartztorous1989', label: { en: 'Schwartz and Torous 1989', es: 'Schwartz y Torous 1989' }, citation: 'Schwartz, E. S. and Torous, W. N. (1989). Prepayment and the valuation of mortgage-backed securities. Journal of Finance 44(2), 375-392.', doi: '10.1111/j.1540-6261.1989.tb05062.x' },
+  { id: 'deng2000', label: { en: 'Deng, Quigley and Van Order 2000', es: 'Deng, Quigley y Van Order 2000' }, citation: 'Deng, Y., Quigley, J. M. and Van Order, R. (2000). Mortgage terminations, heterogeneity and the exercise of mortgage options. Econometrica 68(2), 275-307.', doi: '10.1111/1468-0262.00110' },
+  { id: 'jarrow1998', label: { en: 'Jarrow and van Deventer 1998', es: 'Jarrow y van Deventer 1998' }, citation: 'Jarrow, R. A. and van Deventer, D. R. (1998). The arbitrage-free valuation and hedging of demand deposits and credit card loans. Journal of Banking and Finance 22(3), 249-272.', doi: '10.1016/S0378-4266(97)00058-7' },
+  { id: 'kalkbrener2004', label: { en: 'Kalkbrener and Willing 2004', es: 'Kalkbrener y Willing 2004' }, citation: 'Kalkbrener, M. and Willing, J. (2004). Risk management of non-maturing liabilities. Journal of Banking and Finance 28(7), 1547-1568.', doi: '10.1016/S0378-4266(03)00131-6' },
+  { id: 'drechsler2021', label: { en: 'Drechsler, Savov and Schnabl 2021', es: 'Drechsler, Savov y Schnabl 2021' }, citation: 'Drechsler, I., Savov, A. and Schnabl, P. (2021). Banking on deposits: maturity transformation without interest rate risk. Journal of Finance 76(3), 1091-1143.', doi: '10.1111/jofi.13013' },
+  // curves and scenarios
+  { id: 'nelsonsiegel1987', label: { en: 'Nelson and Siegel 1987', es: 'Nelson y Siegel 1987' }, citation: 'Nelson, C. R. and Siegel, A. F. (1987). Parsimonious modeling of yield curves. Journal of Business 60(4), 473-489.', doi: '10.1086/296409' },
+  { id: 'svensson1994', label: 'Svensson 1994', citation: 'Svensson, L. E. O. (1994). Estimating and interpreting forward interest rates: Sweden 1992-1994. NBER Working Paper 4871.', doi: '10.3386/w4871' },
+  { id: 'dieboldli2006', label: { en: 'Diebold and Li 2006', es: 'Diebold y Li 2006' }, citation: 'Diebold, F. X. and Li, C. (2006). Forecasting the term structure of government bond yields. Journal of Econometrics 130(2), 337-364.', doi: '10.1016/j.jeconom.2005.03.005' },
+  { id: 'vasicek1977', label: 'Vasicek 1977', citation: 'Vasicek, O. (1977). An equilibrium characterization of the term structure. Journal of Financial Economics 5(2), 177-188.', doi: '10.1016/0304-405X(77)90016-2' },
+  { id: 'hagan2006', label: { en: 'Hagan and West 2006', es: 'Hagan y West 2006' }, citation: 'Hagan, P. S. and West, G. (2006). Interpolation methods for curve construction. Applied Mathematical Finance 13(2), 89-129.', doi: '10.1080/13504860500396032' },
+  // the lessons of the 2023 failure
+  { id: 'fedsvb2023', label: { en: 'Federal Reserve 2023', es: 'Reserva Federal 2023' }, citation: 'Board of Governors of the Federal Reserve System (2023). Review of the Federal Reserve\'s Supervision and Regulation of Silicon Valley Bank, 28 April 2023.', url: 'https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf' },
+  // Chile: the UF and the standard measure
+  { id: 'bcchuf', label: { en: 'BCCh note on the UF', es: 'Nota del BCCh sobre la UF' }, citation: 'Banco Central de Chile. Unidad de Fomento (UF). Methodology note, Estadísticas Monetarias y Financieras.', url: 'https://si3.bcentral.cl/estadisticas/Principal1/Metodologias/EMF/UF.pdf' },
+  { id: 'ran2113', label: { en: 'CMF RAN 21-13 Annex 1', es: 'CMF RAN 21-13 Anexo 1' }, citation: 'Comisión para el Mercado Financiero. Recopilación Actualizada de Normas, chapter 21-13, Anexo 1: Determinación de la exposición al riesgo de mercado en el libro de banca (Circular N° 2.270 of 2020-09-11 and N° 2.365 of 2025-07-08).', url: 'https://www.cmfchile.cl/portal/principal/623/articles-29808_doc_pdf.pdf' },
+];
