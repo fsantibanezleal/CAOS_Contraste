@@ -19,9 +19,9 @@ def approx(a, b, rel=1e-9, abs_=1e-6) -> bool:
     return bool(np.isclose(a, b, rtol=rel, atol=abs_))
 
 
-def test_the_engine_is_pinned_by_a_commit_of_its_irrbb_branch_or_by_the_release_tag() -> None:
+def test_the_engine_is_pinned_by_its_release_tag() -> None:
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
-    assert re.search(r"riskvalidation @ git\+https://github.com/fsantibanezleal/CAOS_RiskValidation\.git@(?:[0-9a-f]{40}|v\d+\.\d+\.\d+)\s*$", req, re.M)
+    assert re.search(r"^riskvalidation(?:\[market\])? @ git\+https://github\.com/fsantibanezleal/CAOS_RiskValidation(?:\.git)?@v\d+\.\d+\.\d+\s*$", req, re.M)
 
 
 def test_the_pinned_engine_reproduces_the_contract_goldens() -> None:

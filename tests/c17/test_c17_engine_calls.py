@@ -16,7 +16,7 @@ PKG = ROOT / "data-pipeline" / "pipeline" / "cases" / "c17"
 
 def test_the_pinned_engine_reproduces_the_contract_goldens():
     pin = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
-    assert re.search(r"^riskvalidation @ git\+https://github\.com/fsantibanezleal/CAOS_RiskValidation(\.git)?@[0-9a-f]{40}\s*$", pin, re.M), "pin the engine by commit"
+    assert re.search(r"^riskvalidation(?:\[market\])? @ git\+https://github\.com/fsantibanezleal/CAOS_RiskValidation(?:\.git)?@v\d+\.\d+\.\d+\s*$", pin, re.M), "pin the engine by its release tag"
     f = agg.discretise_severity("lognormal", (0.0, 2.0), 1.0, 6000)
     h = agg.panjer_recursion("poisson", (100.0,), f)
     assert agg.quantile_from_pmf(h, 1.0, 0.999) == 5849.0
