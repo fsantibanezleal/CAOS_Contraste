@@ -1,5 +1,6 @@
-// The six routes on the shared shell (ADR-0016, ADR-0057 as amended 2026-10-04, shell 0.13.0): the root lands on the
-// Introduction's executive view, /app is the workbench (old root links with ?case= are forwarded there), the five
+// The six routes on the shared shell (ADR-0016, ADR-0057 as amended 2026-10-04, shell 0.13.1), in the header order
+// App, Introduction, Methodology, Implementation, Experiments, Benchmark: the root lands on the Introduction's executive
+// view (the landing never moves the tabs), every documentation route is full width, /app is the workbench (old root links with ?case= are forwarded there), the five
 // documentation routes are DocPages. Identity, licence and visibility come from product.json (one source,
 // written by scripts/instantiate.py); the version is VERSION, injected at build.
 import { AppShell, CitationsProvider, Landing, STANDARD_ROUTES, type ShellConfig } from '@fasl-work/caos-app-shell';
