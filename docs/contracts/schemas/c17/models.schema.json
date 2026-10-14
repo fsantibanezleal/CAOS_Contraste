@@ -1,0 +1,888 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c17/models.schema.json",
+  "title": "C17 models",
+  "description": "Catalog row c17-models 1.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification).",
+  "allOf": [
+    {
+      "$ref": "../common/models-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C17"
+        },
+        "fit": {
+          "$ref": "#/$defs/c17Fit"
+        }
+      },
+      "required": [
+        "case_id",
+        "fit"
+      ]
+    },
+    {
+      "properties": {
+        "provenance": {
+          "properties": {
+            "truth_status": {
+              "const": "synthetic-known-truth"
+            }
+          }
+        }
+      },
+      "required": [
+        "provenance"
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c17Ldce": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "label",
+        "licence_class",
+        "source",
+        "threshold_eur",
+        "frequency",
+        "severity_percentiles",
+        "caveat"
+      ],
+      "properties": {
+        "currency": {
+          "const": "EUR",
+          "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
+        },
+        "label": {
+          "const": "derived-only"
+        },
+        "licence_class": {
+          "const": "derived-only"
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "title",
+            "url",
+            "date",
+            "table"
+          ],
+          "properties": {
+            "id": {
+              "const": "bcbs160"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "url": {
+              "const": "https://www.bis.org/publ/bcbs160.htm"
+            },
+            "date": {
+              "const": "2009-07-28"
+            },
+            "table": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "description": "BCBS, Results from the 2008 Loss Data Collection Exercise for Operational Risk (BCBS 160)."
+        },
+        "threshold_eur": {
+          "const": 20000,
+          "description": "The LDCE statistics are of losses of EUR 20,000 or more."
+        },
+        "frequency": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "per_eur_bn_assets",
+            "iqr_low",
+            "iqr_high",
+            "statistic"
+          ],
+          "properties": {
+            "per_eur_bn_assets": {
+              "const": 0.82
+            },
+            "iqr_low": {
+              "const": 0.36
+            },
+            "iqr_high": {
+              "const": 1.66
+            },
+            "statistic": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "description": "The median bank's frequency of losses of EUR 20,000 or more per year per EUR billion of consolidated assets."
+        },
+        "severity_percentiles": {
+          "type": "array",
+          "description": "Median across banks of each bank's percentile of the severity (losses of EUR 20,000 or more, Table ILD7), transcribed and locked: the four pairs, each once; the documents carry only the statistics the calibration uses, never a reproduction of the BCBS tables.",
+          "minItems": 4,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "p",
+              "loss_eur"
+            ],
+            "properties": {
+              "p": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 1
+              },
+              "loss_eur": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              }
+            },
+            "oneOf": [
+              {
+                "properties": {
+                  "p": {
+                    "const": 0.25
+                  },
+                  "loss_eur": {
+                    "const": 27632
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "p": {
+                    "const": 0.5
+                  },
+                  "loss_eur": {
+                    "const": 41916
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "p": {
+                    "const": 0.75
+                  },
+                  "loss_eur": {
+                    "const": 82608
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "p": {
+                    "const": 0.95
+                  },
+                  "loss_eur": {
+                    "const": 418400
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "caveat": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The BCBS 2008 LDCE calibration targets with their source and the derived-only label (SDD section 5)."
+    },
+    "c17VariantTruth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "variant_id",
+        "tail_index",
+        "infinite_mean",
+        "lambda_per_year",
+        "location_eur",
+        "scale_eur",
+        "true_quantile_999_eur",
+        "true_mean_eur",
+        "true_mean_reason"
+      ],
+      "properties": {
+        "variant_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tail_index": {
+          "enum": [
+            0.6,
+            0.8,
+            0.96,
+            1.1
+          ],
+          "description": "A tail index of the SDD section 5 grid: 0.6, 0.8, 0.96 or 1.1."
+        },
+        "infinite_mean": {
+          "type": "boolean"
+        },
+        "lambda_per_year": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "location_eur": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Money in EUR (the `currency` of the enclosing block)."
+        },
+        "scale_eur": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "true_quantile_999_eur": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "true_mean_eur": {
+          "anyOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "true_mean_reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The true parameters and the true 99.9 percent annual loss quantile of one variant.",
+      "oneOf": [
+        {
+          "properties": {
+            "infinite_mean": {
+              "const": false
+            },
+            "true_mean_eur": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "true_mean_reason": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "infinite_mean": {
+              "const": true
+            },
+            "true_mean_eur": {
+              "type": "null"
+            },
+            "true_mean_reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ],
+      "if": {
+        "properties": {
+          "tail_index": {
+            "minimum": 1
+          }
+        },
+        "required": [
+          "tail_index"
+        ]
+      },
+      "then": {
+        "properties": {
+          "infinite_mean": {
+            "const": true
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "infinite_mean": {
+            "const": false
+          }
+        }
+      }
+    },
+    "c17Generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "shaped_on",
+        "assets_eur_bn",
+        "frequency_law",
+        "severity_law",
+        "generator_floor_eur",
+        "notice"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "shaped_on": {
+          "const": "bcbs160-ldce-2008"
+        },
+        "assets_eur_bn": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "frequency_law": {
+          "const": "poisson"
+        },
+        "severity_law": {
+          "const": "gpd"
+        },
+        "generator_floor_eur": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Money in EUR (the `currency` of the enclosing block)."
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The generator of annual operational loss histories for a synthetic bank; its true annual loss distribution is known."
+    },
+    "c17Grid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "years",
+        "collection_thresholds_eur",
+        "n_replications_per_cell",
+        "seed_base",
+        "seed_stride"
+      ],
+      "properties": {
+        "years": {
+          "const": [
+            5,
+            10
+          ]
+        },
+        "collection_thresholds_eur": {
+          "const": [
+            10000,
+            20000
+          ]
+        },
+        "n_replications_per_cell": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "seed_base": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "seed_stride": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Cell k of variant v uses seed_first = seed_base + (4 v + k) x seed_stride."
+        }
+      }
+    },
+    "c17Rung": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rung_id",
+        "label",
+        "severity_law",
+        "truncated",
+        "aggregation",
+        "status",
+        "reference"
+      ],
+      "properties": {
+        "rung_id": {
+          "type": "string",
+          "enum": [
+            "lda-lognormal",
+            "lda-lognormal-truncated",
+            "lda-splice",
+            "sla",
+            "sla-mean-corrected",
+            "scenario"
+          ]
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "severity_law": {
+          "type": "string",
+          "enum": [
+            "lognormal",
+            "lognormal-truncated",
+            "lognormal-gpd-splice",
+            "gpd",
+            "none"
+          ]
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "aggregation": {
+          "type": "string",
+          "enum": [
+            "monte-carlo",
+            "panjer",
+            "fft",
+            "closed-form"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "UNVERIFIED"
+          ]
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A rung of the operational risk ladder of dossier 05.",
+      "oneOf": [
+        {
+          "properties": {
+            "rung_id": {
+              "type": "string",
+              "enum": [
+                "lda-lognormal",
+                "lda-lognormal-truncated",
+                "lda-splice",
+                "sla",
+                "scenario"
+              ]
+            },
+            "status": {
+              "const": "verified"
+            }
+          }
+        },
+        {
+          "properties": {
+            "rung_id": {
+              "const": "sla-mean-corrected"
+            },
+            "status": {
+              "const": "UNVERIFIED"
+            }
+          }
+        }
+      ]
+    },
+    "c17Aggregation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "level",
+        "panjer_step_eur",
+        "panjer_points",
+        "fft_points",
+        "fft_padding_factor",
+        "fft_tilt",
+        "mc_years_truth",
+        "mc_years_replication"
+      ],
+      "properties": {
+        "level": {
+          "const": 0.999,
+          "description": "The quantile level of C17: the 99.9 percent annual loss quantile, as a decimal."
+        },
+        "panjer_step_eur": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "panjer_points": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "fft_points": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "fft_padding_factor": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fft_tilt": {
+          "type": "number",
+          "minimum": 0
+        },
+        "mc_years_truth": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "mc_years_replication": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "description": "How the aggregate loss is computed: the Panjer grid, the FFT size and padding, and the Monte Carlo years."
+    },
+    "c17BicBucket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bucket",
+        "upper_eur",
+        "coefficient"
+      ],
+      "properties": {
+        "bucket": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "upper_eur": {
+          "anyOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "coefficient": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "c17Discretion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "description",
+        "reference"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "bucket-1-ilm-one",
+            "national-ilm-one",
+            "transitional-bic-only"
+          ]
+        },
+        "description": {
+          "$ref": "../common/text.schema.json"
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "c17SmaSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "buckets",
+        "loss_multiple",
+        "loss_window_years",
+        "minimum_years",
+        "ilm_exponent",
+        "rwa_factor",
+        "discretions",
+        "golden",
+        "reference"
+      ],
+      "properties": {
+        "currency": {
+          "const": "EUR",
+          "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
+        },
+        "buckets": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "description": "OPE25.7 Table 1, transcribed and locked: 12% to EUR 1bn, 15% from 1bn to 30bn, 18% above.",
+          "items": {
+            "$ref": "#/$defs/c17BicBucket",
+            "oneOf": [
+              {
+                "properties": {
+                  "bucket": {
+                    "const": 1
+                  },
+                  "upper_eur": {
+                    "const": 1000000000.0
+                  },
+                  "coefficient": {
+                    "const": 0.12
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "bucket": {
+                    "const": 2
+                  },
+                  "upper_eur": {
+                    "const": 30000000000.0
+                  },
+                  "coefficient": {
+                    "const": 0.15
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "bucket": {
+                    "const": 3
+                  },
+                  "upper_eur": {
+                    "const": null
+                  },
+                  "coefficient": {
+                    "const": 0.18
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "loss_multiple": {
+          "const": 15
+        },
+        "loss_window_years": {
+          "const": 10
+        },
+        "minimum_years": {
+          "const": 5
+        },
+        "ilm_exponent": {
+          "const": 0.8
+        },
+        "rwa_factor": {
+          "const": 12.5
+        },
+        "discretions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c17Discretion"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "golden": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "bi_eur",
+            "bic_eur",
+            "reference"
+          ],
+          "properties": {
+            "bi_eur": {
+              "const": 35000000000.0
+            },
+            "bic_eur": {
+              "const": 5370000000.0
+            },
+            "reference": {
+              "const": "OPE25.7 footnote 2"
+            }
+          }
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The OPE25 standardised approach as specified (dossier 01 section F), with its golden value."
+    },
+    "c17ScenarioSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "methods",
+        "prior",
+        "reference"
+      ],
+      "properties": {
+        "methods": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "pseudo-observations",
+              "body-tail",
+              "bayesian-credibility"
+            ]
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "prior": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "restricted",
+            "interval_level",
+            "mapping"
+          ],
+          "properties": {
+            "kind": {
+              "const": "unrestricted-gamma-on-pareto-shape"
+            },
+            "restricted": {
+              "const": false
+            },
+            "interval_level": {
+              "const": 0.9
+            },
+            "mapping": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "description": "The Bayesian credibility prior (decision D4): a Gamma prior on the Pareto shape alpha = 1 / xi, its mean and 90 percent interval taken from the scenario points; the paper's restriction to alpha above 1 is not used."
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "c17Fit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "generator",
+        "calibration",
+        "variants",
+        "grid",
+        "ladder",
+        "aggregation",
+        "sma",
+        "scenarios"
+      ],
+      "properties": {
+        "currency": {
+          "const": "EUR",
+          "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
+        },
+        "generator": {
+          "$ref": "#/$defs/c17Generator"
+        },
+        "calibration": {
+          "$ref": "#/$defs/c17Ldce"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c17VariantTruth"
+          },
+          "minItems": 4,
+          "maxItems": 4,
+          "description": "One row per tail index in increasing order: 0.6, 0.8, 0.96, 1.1.",
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "tail_index": {
+                    "const": 0.6
+                  }
+                },
+                "required": [
+                  "tail_index"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "tail_index": {
+                    "const": 0.8
+                  }
+                },
+                "required": [
+                  "tail_index"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "tail_index": {
+                    "const": 0.96
+                  }
+                },
+                "required": [
+                  "tail_index"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "tail_index": {
+                    "const": 1.1
+                  }
+                },
+                "required": [
+                  "tail_index"
+                ]
+              }
+            }
+          ]
+        },
+        "grid": {
+          "$ref": "#/$defs/c17Grid"
+        },
+        "ladder": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c17Rung"
+          },
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "aggregation": {
+          "$ref": "#/$defs/c17Aggregation"
+        },
+        "sma": {
+          "$ref": "#/$defs/c17SmaSpec"
+        },
+        "scenarios": {
+          "$ref": "#/$defs/c17ScenarioSpec"
+        }
+      },
+      "description": "C17 models: the generator, the LDCE calibration targets, the true parameters and quantile of every variant, the grid and its seeds, the ladder, the aggregation settings, the OPE25 specification and the scenario methods."
+    }
+  }
+}
