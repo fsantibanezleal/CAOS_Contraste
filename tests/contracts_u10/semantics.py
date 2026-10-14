@@ -10,7 +10,6 @@ Each function returns a list of messages, empty when the document conforms.
 from __future__ import annotations
 
 import math
-from typing import Any
 
 SHOCKS = ["parallel-up", "parallel-down", "steepener", "flattener", "short-up", "short-down"]
 MIDPOINTS = [0.0028, 0.0417, 0.1667, 0.375, 0.625, 0.875, 1.25, 1.75, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 12.5, 17.5, 25.0]

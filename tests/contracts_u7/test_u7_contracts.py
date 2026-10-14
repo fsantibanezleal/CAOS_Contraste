@@ -364,14 +364,30 @@ def test_the_grid_cells_are_consistent_with_their_generator_and_the_size_cell_si
 def test_planted_grid_inconsistencies_are_caught() -> None:
     o = out(GR)
     plants = []
-    a = copy.deepcopy(o); a["cells"][0]["role"] = "size"; plants.append(a)
-    a = copy.deepcopy(o); a["generator"]["null_rho"] = 0.123; plants.append(a)
-    a = copy.deepcopy(o); a["cells"][1]["n_valid"] += 1; plants.append(a)
-    a = copy.deepcopy(o); a["cells"][1]["estimators"][0]["bias"] += 0.01; plants.append(a)
-    a = copy.deepcopy(o); a["cells"][1]["estimators"][1]["rejection_se"] *= 2; plants.append(a)
-    a = copy.deepcopy(o); a["cells"][2]["series_length_years"] += 1; plants.append(a)
-    a = copy.deepcopy(o); a["cells"].pop(); plants.append(a)
-    a = copy.deepcopy(o); a["cells"][2]["estimators"][0]["rejection_ci_high"] = 1.0; plants.append(a)
+    a = copy.deepcopy(o)
+    a["cells"][0]["role"] = "size"
+    plants.append(a)
+    a = copy.deepcopy(o)
+    a["generator"]["null_rho"] = 0.123
+    plants.append(a)
+    a = copy.deepcopy(o)
+    a["cells"][1]["n_valid"] += 1
+    plants.append(a)
+    a = copy.deepcopy(o)
+    a["cells"][1]["estimators"][0]["bias"] += 0.01
+    plants.append(a)
+    a = copy.deepcopy(o)
+    a["cells"][1]["estimators"][1]["rejection_se"] *= 2
+    plants.append(a)
+    a = copy.deepcopy(o)
+    a["cells"][2]["series_length_years"] += 1
+    plants.append(a)
+    a = copy.deepcopy(o)
+    a["cells"].pop()
+    plants.append(a)
+    a = copy.deepcopy(o)
+    a["cells"][2]["estimators"][0]["rejection_ci_high"] = 1.0
+    plants.append(a)
     for plant in plants:
         assert cell_violations(plant) != []
 
@@ -669,11 +685,16 @@ def test_the_euler_contributions_sum_to_the_totals_within_their_stated_tolerance
 
 def test_planted_euler_violations_are_caught() -> None:
     o = lt()
-    a = copy.deepcopy(o); a["euler"][0]["levels"][0]["rows"][0]["rc_es"] *= 1.5
-    b = copy.deepcopy(o); b["euler"][0]["levels"][0]["rows"][1]["rc_var"] *= 0.5
-    c = copy.deepcopy(o); c["euler"][0]["levels"][0]["rows"].pop()
-    d = copy.deepcopy(o); d["euler"][0]["rung_method"] = "lhp-vasicek"
-    e = copy.deepcopy(o); e["euler"][0]["levels"][0]["rows"][0]["share_es"] += 0.1
+    a = copy.deepcopy(o)
+    a["euler"][0]["levels"][0]["rows"][0]["rc_es"] *= 1.5
+    b = copy.deepcopy(o)
+    b["euler"][0]["levels"][0]["rows"][1]["rc_var"] *= 0.5
+    c = copy.deepcopy(o)
+    c["euler"][0]["levels"][0]["rows"].pop()
+    d = copy.deepcopy(o)
+    d["euler"][0]["rung_method"] = "lhp-vasicek"
+    e = copy.deepcopy(o)
+    e["euler"][0]["levels"][0]["rows"][0]["share_es"] += 0.1
     for plant in (a, b, c, d, e):
         assert euler_violations(plant) != []
 
@@ -912,7 +933,8 @@ def test_golden_creditrisk_plus_pmf_by_direct_convolution_and_the_negative_binom
 
 def test_golden_asrf_contributions_sum_to_the_lhp_var_and_hhi_is_a_sum_of_squares() -> None:
     z = ND.inv_cdf(0.001)
-    cp = lambda pd, rho: ND.cdf((ND.inv_cdf(pd) - math.sqrt(rho) * z) / math.sqrt(1 - rho))
+    def cp(pd, rho):
+        return ND.cdf((ND.inv_cdf(pd) - math.sqrt(rho) * z) / math.sqrt(1 - rho))
     rc1, rc2 = 60.0 * 0.45 * cp(0.01, 0.15), 40.0 * 0.45 * cp(0.05, 0.15)
     assert math.isclose(rc1, 2.977148, abs_tol=5e-7) and math.isclose(rc2, 5.643106, abs_tol=5e-7)
     assert math.isclose(rc1 + rc2, 8.620255, abs_tol=5e-7)
@@ -936,7 +958,8 @@ def test_golden_gaussian_joint_default_probability_and_the_student_t_value_excee
     pd, rho = 0.01, 0.3
     x, lo, hi, steps = ND.inv_cdf(pd), -12.0, 12.0, 6000
     h = (hi - lo) / steps
-    f = lambda z: ND.pdf(z) * ND.cdf((x - math.sqrt(rho) * z) / math.sqrt(1 - rho)) ** 2
+    def f(z):
+        return ND.pdf(z) * ND.cdf((x - math.sqrt(rho) * z) / math.sqrt(1 - rho)) ** 2
     s = f(lo) + f(hi) + sum((4 if k % 2 else 2) * f(lo + k * h) for k in range(1, steps))
     gauss = s * h / 3
     assert math.isclose(gauss, 0.000556, abs_tol=5e-7)
@@ -953,7 +976,8 @@ def test_golden_method_of_moments_correlation_identity_recomputes() -> None:
 
     def e_p2(rho: float) -> float:
         h = (hi - lo) / steps
-        f = lambda z: ND.pdf(z) * ND.cdf((g - math.sqrt(rho) * z) / math.sqrt(1 - rho)) ** 2
+        def f(z):
+            return ND.pdf(z) * ND.cdf((g - math.sqrt(rho) * z) / math.sqrt(1 - rho)) ** 2
         return (f(lo) + f(hi) + sum((4 if k % 2 else 2) * f(lo + k * h) for k in range(1, steps))) * h / 3
 
     assert math.isclose(e_p2(0.026880), m2, abs_tol=5e-8)
