@@ -225,6 +225,3 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     controls,
   };
 }
-
-/** The registry's name for this hook is `useInstrument`; the old-style name stays for symmetry with the other cases. */
-export const useC10Instrument = useInstrument;
