@@ -1,5 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" role="img" aria-label="The people who decide and check models, and the four current approaches, each leaving a gap">
 <title>The people who decide and check models, and the four current approaches, each leaving a gap</title>
+<style>
+/* The roles handing the evidence over (6 s loop): a document is lifted at each role in turn, from management to the
+   inspectors, and the broken link between two roles blinks as it passes. The four approaches below are single states and stay
+   still. The labels never move. Reduced motion shows the final frame. */
+.st-doc { animation: st-lift 6s ease-in-out infinite; }
+.st-d2 { animation-delay: 0.6s; }
+.st-d3 { animation-delay: 1.2s; }
+.st-d4 { animation-delay: 1.8s; }
+.st-d5 { animation-delay: 2.4s; }
+.st-gap { animation: st-gap 6s linear infinite; }
+.st-g1 { animation-delay: 0.3s; }
+.st-g2 { animation-delay: 0.9s; }
+.st-g3 { animation-delay: 1.5s; }
+.st-g4 { animation-delay: 2.1s; }
+@keyframes st-lift { 0%, 20%, 100% { transform: none; } 6%, 14% { transform: translateY(-10px); } }
+@keyframes st-gap { 0% { opacity: 1; stroke-dashoffset: 0; } 8% { opacity: 0.25; } 16% { opacity: 1; } 20%, 100% { opacity: 1; stroke-dashoffset: -18; } }
+@media (prefers-reduced-motion: reduce) {
+  .st-doc, .st-gap { animation: none; opacity: 1; transform: none; stroke-dashoffset: 0; }
+}
+</style>
 <rect x="1" y="1" width="638" height="438" rx="12" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
 <circle cx="64" cy="44.5" r="12.1" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5"/>
 <path d="M 45.3 96 Q 45.3 58.6 64 58.6 Q 82.7 58.6 82.7 96 Z" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -28,20 +48,30 @@
 <text data-lang="en" x="576" y="150" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">inspectors</text>
 <text data-lang="es" x="576" y="150" text-anchor="middle" font-size="18" fill="var(--color-fg)" font-weight="600">inspectores</text>
 <rect x="34" y="170" width="572" height="14" rx="7" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
+<g class="st-doc st-d1">
 <rect x="55" y="164" width="18" height="26" rx="2" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
 <path d="M 60 173 L 68 173 M 60 179 L 68 179" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g class="st-doc st-d2">
 <rect x="183" y="164" width="18" height="26" rx="2" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
 <path d="M 188 173 L 196 173 M 188 179 L 196 179" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g class="st-doc st-d3">
 <rect x="311" y="164" width="18" height="26" rx="2" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
 <path d="M 316 173 L 324 173 M 316 179 L 324 179" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g class="st-doc st-d4">
 <rect x="439" y="164" width="18" height="26" rx="2" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
 <path d="M 444 173 L 452 173 M 444 179 L 452 179" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g class="st-doc st-d5">
 <rect x="567" y="164" width="18" height="26" rx="2" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
 <path d="M 572 173 L 580 173 M 572 179 L 580 179" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M 114 177 L 142 177" fill="none" stroke="var(--color-bad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 5"/>
-<path d="M 242 177 L 270 177" fill="none" stroke="var(--color-bad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 5"/>
-<path d="M 370 177 L 398 177" fill="none" stroke="var(--color-bad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 5"/>
-<path d="M 498 177 L 526 177" fill="none" stroke="var(--color-bad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 5"/>
+</g>
+<path d="M 114 177 L 142 177" fill="none" stroke="var(--color-bad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 5" class="st-gap st-g1"/>
+<path d="M 242 177 L 270 177" fill="none" stroke="var(--color-bad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 5" class="st-gap st-g2"/>
+<path d="M 370 177 L 398 177" fill="none" stroke="var(--color-bad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 5" class="st-gap st-g3"/>
+<path d="M 498 177 L 526 177" fill="none" stroke="var(--color-bad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 5" class="st-gap st-g4"/>
 <text data-lang="en" x="320" y="220" text-anchor="middle" font-size="18" fill="var(--color-bad)" font-weight="600">Each holds only part of the evidence</text>
 <text data-lang="es" x="320" y="220" text-anchor="middle" font-size="18" fill="var(--color-bad)" font-weight="600">Cada uno tiene solo parte de la evidencia</text>
 <rect x="12" y="238" width="140" height="190" rx="6" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>

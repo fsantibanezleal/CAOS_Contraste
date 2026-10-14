@@ -7,7 +7,9 @@
 // numbers the Impact group draws), the policy (the thresholds that turn p-values into lights, with their counts) and
 // the live scorer (one applicant of the holdout sample, with its scores). Chips carry the short labels the artifacts
 // declare, so every section fits the rail without scrolling at 1280x800 (ADR-0071 rule 6). The instrument holds one
-// row of six groups: Model, Validation, Impact, Findings, Variants, Context (CT-112).
+// row of six groups: Model, Validation, Impact, Findings, Variants, Context (CT-112). Focus mode (shell 0.14.0, ADR-0070): the
+// rail head's Focus button opens the open group of the selected case in the full viewport (?focus=1 beside ?case= and
+// ?view=); Escape or the exit button returns to the same case, group and sub-view.
 import {
   CaseWorkbench,
   ChipGroup,
@@ -112,8 +114,12 @@ function ApplicantReadout({ sel }: { sel: Selection | null }) {
   );
 }
 
-/** The cases whose rail leaves the variant's title out to fit 1280 x 800 (see the variant list below). */
-const DENSE_RAIL = new Set(['C04', 'C05', 'C22']);
+/**
+ * The cases whose rail leaves the variant's title out to fit 1280 x 800 (see the variant
+ * list below). The Focus button of shell 0.14.0 takes 37 px at the head of the rail, so C01 (in Spanish), C04, C07 and C22 each
+ * overflowed it by 10 to 39 px (ADR-0071 rule 6) until their variant note went to the Variants and Context groups.
+ */
+const DENSE_RAIL = new Set(['C01', 'C04', 'C05', 'C07', 'C22']);
 
 /** The live scores of the chosen applicant, from the committed points table and EBM export alone. */
 export function liveScores(sel: Selection | null) {
@@ -328,6 +334,7 @@ export function Workbench() {
     <CaseWorkbench
       caseId={selected ?? ''}
       source={prov}
+      focus
       cases={{
         cases,
         selectedId: selected ?? '',

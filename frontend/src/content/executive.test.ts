@@ -1,13 +1,22 @@
 // The executive view of Contraste (CAOS_MANAGE conventions/problem-context-first.md, BL-073, schema 2.0.0): its data is valid against
 // the shell's rules and its three illustrations meet the standard the shell's gate measures in the page.
 import { readFileSync } from 'node:fs';
-import { EXECUTIVE_SCHEMA_VERSION, FOUR_CS, validateExecutive } from '@fasl-work/caos-app-shell';
+import { EXECUTIVE_SCHEMA_VERSION, FLIP_LIMITS, FOUR_CS, validateExecutive } from '@fasl-work/caos-app-shell';
 import { describe, expect, it } from 'vitest';
 import executive from '../../../content/executive.json';
 
 const PUBLIC = new URL('../../public/', import.meta.url);
 const NAMES = ['pain', 'situation', 'proposal'] as const;
 const read = (name: (typeof NAMES)[number]) => readFileSync(new URL(executive.illustrations[name].file as string, PUBLIC), 'utf8');
+
+// the shell's own analysis of an animated drawing (gate G17); the file is not in the package exports, so it is loaded by path
+type Analysis = { animated: boolean; css: boolean; smil: boolean; reducedBlock: boolean; neutralises: boolean; seconds: number };
+const areas = (await import(new URL('../../node_modules/@fasl-work/caos-app-shell/gate/areas.mjs', import.meta.url).href)) as {
+  analyseSvgAnimation: (text: string) => Analysis;
+  animationFailures: (a: Analysis, name: string) => string[];
+};
+const words = (text: string): number => text.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
+type Bi = { en: string; es: string };
 
 const TOKEN = /^(none|currentColor|var\(--color-[a-z0-9-]+\))$/;
 
@@ -35,6 +44,75 @@ export function svgProblems(svg: string): string[] {
 
 /** The geometry of every rectangle, so two scenes can be compared for the setting they share. */
 const rects = (svg: string) => new Set([...svg.matchAll(/<rect x="([\d.-]+)" y="([\d.-]+)" width="([\d.-]+)" height="([\d.-]+)"/g)].map((m) => m.slice(1, 5).join(',')));
+
+/** The four flip groups of the executive view: each card's title and the text of its back (labels and values, counted as the gate counts the back). */
+function flipGroups(): Array<{ group: string; cards: Array<{ title: Bi; back: Bi }> }> {
+  const L = { cost: { en: 'Cost', es: 'Costo' }, measure: { en: 'Measure', es: 'Medida' }, decides: { en: 'Decides', es: 'Decide' }, needs: { en: 'Needs', es: 'Necesita' }, achieves: { en: 'Achieves', es: 'Logra' }, falls: { en: 'Falls short', es: 'No alcanza' }, source: { en: 'Source', es: 'Fuente' } };
+  const join = (...parts: Bi[]): Bi => ({ en: parts.map((p) => p.en).join(' '), es: parts.map((p) => p.es).join(' ') });
+  const e = executive as unknown as {
+    pain: { bearers: Array<{ who: Bi; cost: Bi; measure: Bi }> };
+    situation: { roles: Array<{ role: Bi; decides: Bi; needs: Bi }>; state_of_the_art: Array<{ approach: Bi; achieves: Bi; falls_short: Bi }> };
+    proposal: { four_cs: Array<{ c: Bi; applies: Bi }> };
+  };
+  const cite: Bi = { en: '[1]', es: '[1]' };
+  return [
+    { group: 'pain.bearers', cards: e.pain.bearers.map((b) => ({ title: b.who, back: join(L.cost, b.cost, L.measure, b.measure) })) },
+    { group: 'situation.roles', cards: e.situation.roles.map((r) => ({ title: r.role, back: join(L.decides, r.decides, L.needs, r.needs) })) },
+    { group: 'situation.state_of_the_art', cards: e.situation.state_of_the_art.map((a) => ({ title: a.approach, back: join(L.achieves, a.achieves, L.falls, a.falls_short, L.source, cite) })) },
+    { group: 'proposal.four_cs', cards: e.proposal.four_cs.map((c) => ({ title: c.c, back: c.applies })) },
+  ];
+}
+
+describe('the flip cards of the executive view (shell 0.14.0, G16)', () => {
+  it('has the four flip groups, bearers and roles with five cards each (a carousel)', () => {
+    const g = Object.fromEntries(flipGroups().map((x) => [x.group, x.cards.length]));
+    expect(g['pain.bearers']).toBe(5);
+    expect(g['situation.roles']).toBe(5);
+    expect(g['proposal.four_cs']).toBe(4);
+  });
+
+  it('every flip title is within 8 words in English and 10 in Spanish, and every back within 40 and 50', () => {
+    for (const { group, cards } of flipGroups()) {
+      cards.forEach((c, i) => {
+        expect(words(c.title.en), `${group}[${i}] title en: ${c.title.en}`).toBeLessThanOrEqual(FLIP_LIMITS.title.en);
+        expect(words(c.title.es), `${group}[${i}] title es: ${c.title.es}`).toBeLessThanOrEqual(FLIP_LIMITS.title.es);
+        expect(words(c.back.en), `${group}[${i}] back en`).toBeLessThanOrEqual(FLIP_LIMITS.back.en);
+        expect(words(c.back.es), `${group}[${i}] back es`).toBeLessThanOrEqual(FLIP_LIMITS.back.es);
+      });
+    }
+  });
+
+  it('each state-of-the-art card keeps a cited source and a Spanish title of its own', () => {
+    const sota = (executive as unknown as { situation: { state_of_the_art: Array<{ approach: Bi; source: string }> } }).situation.state_of_the_art;
+    expect(sota.length).toBeGreaterThanOrEqual(3);
+    for (const a of sota) {
+      expect((executive.sources as Array<{ id: string }>).some((s) => s.id === a.source), a.source).toBe(true);
+      expect(a.approach.es).not.toBe(a.approach.en);
+    }
+  });
+});
+
+describe('the animated illustrations (shell 0.14.0, G17)', () => {
+  it('each animated illustration carries its reduced-motion block, stops its CSS animation and plays at most ten seconds', () => {
+    for (const name of NAMES) expect(areas.animationFailures(areas.analyseSvgAnimation(read(name)), name), name).toEqual([]);
+  });
+
+  it('the pain, the situation and the proposal are animated: they explain a change, a flow and a before and after', () => {
+    for (const name of NAMES) expect(areas.analyseSvgAnimation(read(name)).animated, name).toBe(true);
+  });
+
+  it('adversarial: an animation with no reduced-motion block, or one that does not stop, is refused', () => {
+    const svg = read('pain');
+    const noBlock = svg.replace(/@media \(prefers-reduced-motion: reduce\)\s*\{[\s\S]*?\}\s*\}/, '');
+    expect(areas.animationFailures(areas.analyseSvgAnimation(noBlock), 'pain').join()).toMatch(/no @media/);
+    const keeps = svg.replace(/animation:\s*none/g, 'opacity: 1');
+    expect(areas.animationFailures(areas.analyseSvgAnimation(keeps), 'pain').join()).toMatch(/does not stop/);
+  });
+
+  it('the labels never move: no label carries a class', () => {
+    for (const name of NAMES) expect(read(name), name).not.toMatch(/<text[^>]*\sclass=/);
+  });
+});
 
 describe('the Contraste executive view', () => {
   it('the data is valid against the shell schema 2.0.0 and the 4 CS are present in order', () => {
