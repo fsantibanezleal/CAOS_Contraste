@@ -139,6 +139,18 @@ describe('the C10 instrument', () => {
     expect(markup).not.toMatch(/data-marker=/);
   });
 
+  it('a rung that defines no expected shortfall (the granularity adjustment) shows its reason, in the loss view and the rungs view, and draws no ES marker', () => {
+    const rung = rungOf(o, 'c5-granularity')!;
+    const reason = rung.measures!.find((m) => m.level === 0.999)!.es_reason as string;
+    expect(lossMarks(rung, 0.999, o.currency).map((m) => m.kind)).toEqual(['el', 'var']);
+    const loss = html(<LossView sel={{ ...sel, rung: 'c5-granularity' }} />);
+    expect(loss).toContain(escapeHtml(reason));
+    expect(loss).toMatch(/data-marker="es" data-na="true"/);
+    const rungs = html(<RungsView sel={sel} />);
+    expect(rungs).toContain(`data-es-reason="c5-granularity"`);
+    expect(rungs).toContain(escapeHtml(reason));
+  });
+
   it('the rungs view lists every rung with its measures and errors; the one that did not run shows its reason and no number', () => {
     const markup = html(<RungsView sel={sel} />);
     for (const r of o.rungs) {

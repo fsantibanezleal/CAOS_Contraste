@@ -204,7 +204,7 @@ export function RungsView({ sel }: { sel: C10Sel | null }) {
                       <>
                         <td>{fullMoney(m.el, lang)}</td>
                         <td>{fullMoney(m.var, lang)}</td>
-                        <td data-na={m.es === null ? 'true' : undefined}>{m.es === null ? `${na} (${m.es_reason ?? ''})` : fullMoney(m.es, lang)}</td>
+                        <td data-na={m.es === null ? 'true' : undefined}>{m.es === null ? na : fullMoney(m.es, lang)}</td>
                         <td>{m.var_se === null ? none : fullMoney(m.var_se, lang)}</td>
                         <td className="ct-wide-only">{m.es_se === null ? none : fullMoney(m.es_se, lang)}</td>
                         <td className="ct-text ct-wide-only">
@@ -223,6 +223,14 @@ export function RungsView({ sel }: { sel: C10Sel | null }) {
               })}
             </tbody>
           </table>
+          {o.rungs
+            .filter((r) => r.evaluated && measureOf(r, sel.level)?.es === null)
+            .map((r) => (
+              <p key={`es-${r.id}`} className="ct-note" data-state="unavailable" data-es-reason={r.id}>
+                <strong>{pick(r.label, lang)}</strong>
+                {`: ${pick({ en: 'no expected shortfall. Why: ', es: 'sin déficit esperado. Motivo: ' }, lang)}${measureOf(r, sel.level)?.es_reason ?? ''}`}
+              </p>
+            ))}
           {o.rungs
             .filter((r) => !r.evaluated)
             .map((r) => (
