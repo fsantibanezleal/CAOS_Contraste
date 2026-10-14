@@ -235,7 +235,7 @@ the ones the dossiers and `docs/frameworks/` record.
 | tests | pytest | 9.1.1 | the pipeline, contract, guard and adversarial tests | none recorded |
 | lint | ruff | 0.15.18 | lint of data-pipeline, tests, scripts and app | none recorded (0.17.0 is current and was not adopted) |
 | contracts | jsonschema | 4.26.0 | validates every document against its schema file | none recorded |
-| shell | @fasl-work/caos-app-shell | 0.12.0 | the shared app shell, pinned exactly (ADR-0078) | a hand-rolled shell, forbidden by ADR-0078 |
+| shell | @fasl-work/caos-app-shell | 0.13.1 | the shared app shell, pinned exactly (ADR-0078) | a hand-rolled shell, forbidden by ADR-0078 |
 | web | react | 19.3.0 | the UI | none: the shell requires it |
 | web | react-dom | 19.3.0 | the UI renderer | none: the shell requires it |
 | web | react-router | 8.4.0 | the six routes | none: the shell requires it |
