@@ -243,3 +243,51 @@ def spearman_zone(rho: float) -> str:
 
 def ks_zone(ks: float) -> str:
     return "green" if ks < 0.09 else "red" if ks > 0.12 else "amber"
+
+
+# --- age-weighted HS of Boudoukh, Richardson and Whitelaw (1998), pages 6 and 7 (review of the engine, B1) -----------------
+
+
+def brw_quantile_knots(returns: list[float], lam: float, window: int) -> tuple[list[float], list[float]]:
+    """The knots (levels, values) of the BRW quantile function, return convention. Weights w_i of the return observed i days
+    ago (returns[-1] is one day ago); sorted ascending, return j carries half its weight on each side: a knot at the level
+    C_j - w_j / 2 with the value r_j, and a knot at the cumulated weight C_j with the value halfway between r_j and r_(j+1)
+    (the last return has no such knot). Linear between knots, constant at r_1 below the first level and at r_N above the last."""
+    recent = returns[-window:][::-1]
+    w = age_weights(lam, window)
+    order = sorted(range(window), key=lambda i: recent[i])
+    xs, ws = [recent[i] for i in order], [w[i] for i in order]
+    levels, values, c = [], [], 0.0
+    for j in range(window):
+        levels.append(c + ws[j] / 2)
+        values.append(xs[j])
+        c += ws[j]
+        if j + 1 < window:
+            levels.append(c)
+            values.append((xs[j] + xs[j + 1]) / 2)
+    return levels, values
+
+
+def brw_var_es(returns: list[float], alpha: float, lam: float, window: int) -> tuple[float, float]:
+    """VaR = Q(alpha) and ES = (1/alpha) int_0^alpha Q(u) du (decision D-9) of the BRW quantile function."""
+    lv, vl = brw_quantile_knots(returns, lam, window)
+    if alpha <= lv[0]:
+        return vl[0], vl[0]
+    area, prev_l, prev_v = vl[0] * lv[0], lv[0], vl[0]
+    for l_, v_ in zip(lv[1:], vl[1:]):
+        if l_ >= alpha:
+            q = prev_v + (v_ - prev_v) * (alpha - prev_l) / (l_ - prev_l)
+            area += 0.5 * (prev_v + q) * (alpha - prev_l)
+            return q, area / alpha
+        area += 0.5 * (prev_v + v_) * (l_ - prev_l)
+        prev_l, prev_v = l_, v_
+    raise ValueError("alpha beyond the last knot")
+
+
+def brw_example(shift: int = 0) -> list[float]:
+    """The table of page 6: returns -3.3, -2.9, -2.7, -2.5, -2.4, -2.3 percent observed 3, 2, 65, 45, 5 and 30 days ago (plus
+    `shift` days for the second case), the other days of the 100-day window positive (they play no part in the lower tail)."""
+    r = [0.005] * 100
+    for pct, age in ((-3.3, 3), (-2.9, 2), (-2.7, 65), (-2.5, 45), (-2.4, 5), (-2.3, 30)):
+        r[100 - age - shift] = pct / 100
+    return r
