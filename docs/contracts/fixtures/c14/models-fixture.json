@@ -1,0 +1,1077 @@
+{
+  "schema": "contraste.models/v1",
+  "case_id": "C14",
+  "fit_id": "fixture-svb-2021-2022",
+  "model": [
+    {
+      "id": "irrbb-eve-standardised",
+      "family": "irrbb",
+      "rung": "standardised-eve",
+      "title": {
+        "en": "Fixture model irrbb-eve-standardised",
+        "es": "Modelo de ejemplo irrbb-eve-standardised"
+      },
+      "short_title": {
+        "en": "irrbb-eve-standardised",
+        "es": "irrbb-eve-standardised"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "details": {}
+    }
+  ],
+  "fit": {
+    "currency": "USD",
+    "sign_convention": {
+      "delta_eve": "positive-is-loss",
+      "delta_nii": "positive-is-loss",
+      "reference": "SRP31.129; dossier 01 H.4",
+      "statement": {
+        "en": "A positive delta EVE or delta NII is a loss; only losses are aggregated across currencies.",
+        "es": "Un delta EVE o delta NII positivo es una perdida; solo las perdidas se agregan entre monedas."
+      }
+    },
+    "units": {
+      "money_scale": "thousands",
+      "rate": "decimal",
+      "compounding": "continuous",
+      "shock": "basis-points",
+      "bucket_midpoint": "years",
+      "dates": "ISO-8601"
+    },
+    "bank": {
+      "name": "Silicon Valley Bank (fixture values)",
+      "cert": 24735,
+      "aggregates": "real",
+      "behaviour": "synthetic",
+      "notice": {
+        "en": "Fixture, not a result.",
+        "es": "Ejemplo, no es un resultado."
+      }
+    },
+    "buckets": [
+      {
+        "bucket": 1,
+        "label": {
+          "en": "Overnight",
+          "es": "A la vista"
+        },
+        "midpoint_years": 0.0028
+      },
+      {
+        "bucket": 2,
+        "label": {
+          "en": "O/N to 1M",
+          "es": "Hasta 1M"
+        },
+        "midpoint_years": 0.0417
+      },
+      {
+        "bucket": 3,
+        "label": {
+          "en": "1M to 3M",
+          "es": "1M a 3M"
+        },
+        "midpoint_years": 0.1667
+      },
+      {
+        "bucket": 4,
+        "label": {
+          "en": "3M to 6M",
+          "es": "3M a 6M"
+        },
+        "midpoint_years": 0.375
+      },
+      {
+        "bucket": 5,
+        "label": {
+          "en": "6M to 9M",
+          "es": "6M a 9M"
+        },
+        "midpoint_years": 0.625
+      },
+      {
+        "bucket": 6,
+        "label": {
+          "en": "9M to 1Y",
+          "es": "9M a 1A"
+        },
+        "midpoint_years": 0.875
+      },
+      {
+        "bucket": 7,
+        "label": {
+          "en": "1Y to 1.5Y",
+          "es": "1A a 1,5A"
+        },
+        "midpoint_years": 1.25
+      },
+      {
+        "bucket": 8,
+        "label": {
+          "en": "1.5Y to 2Y",
+          "es": "1,5A a 2A"
+        },
+        "midpoint_years": 1.75
+      },
+      {
+        "bucket": 9,
+        "label": {
+          "en": "2Y to 3Y",
+          "es": "2A a 3A"
+        },
+        "midpoint_years": 2.5
+      },
+      {
+        "bucket": 10,
+        "label": {
+          "en": "3Y to 4Y",
+          "es": "3A a 4A"
+        },
+        "midpoint_years": 3.5
+      },
+      {
+        "bucket": 11,
+        "label": {
+          "en": "4Y to 5Y",
+          "es": "4A a 5A"
+        },
+        "midpoint_years": 4.5
+      },
+      {
+        "bucket": 12,
+        "label": {
+          "en": "5Y to 6Y",
+          "es": "5A a 6A"
+        },
+        "midpoint_years": 5.5
+      },
+      {
+        "bucket": 13,
+        "label": {
+          "en": "6Y to 7Y",
+          "es": "6A a 7A"
+        },
+        "midpoint_years": 6.5
+      },
+      {
+        "bucket": 14,
+        "label": {
+          "en": "7Y to 8Y",
+          "es": "7A a 8A"
+        },
+        "midpoint_years": 7.5
+      },
+      {
+        "bucket": 15,
+        "label": {
+          "en": "8Y to 9Y",
+          "es": "8A a 9A"
+        },
+        "midpoint_years": 8.5
+      },
+      {
+        "bucket": 16,
+        "label": {
+          "en": "9Y to 10Y",
+          "es": "9A a 10A"
+        },
+        "midpoint_years": 9.5
+      },
+      {
+        "bucket": 17,
+        "label": {
+          "en": "10Y to 15Y",
+          "es": "10A a 15A"
+        },
+        "midpoint_years": 12.5
+      },
+      {
+        "bucket": 18,
+        "label": {
+          "en": "15Y to 20Y",
+          "es": "15A a 20A"
+        },
+        "midpoint_years": 17.5
+      },
+      {
+        "bucket": 19,
+        "label": {
+          "en": "Over 20Y",
+          "es": "Mas de 20A"
+        },
+        "midpoint_years": 25.0
+      }
+    ],
+    "shock_tables": [
+      {
+        "calibration": "2024",
+        "source": "SRP31.90 Table 2 (in force 2026-01-01; d578 recalibration, dossier 01 H.3)",
+        "data_window": "January 2000 to December 2023",
+        "percentile": "99.9th percentile of local rolling six-month average absolute changes",
+        "rounding_bp": 25,
+        "rows": [
+          {
+            "currency": "ARS",
+            "parallel_bp": 400,
+            "short_bp": 500,
+            "long_bp": 300
+          },
+          {
+            "currency": "AUD",
+            "parallel_bp": 350,
+            "short_bp": 425,
+            "long_bp": 300
+          },
+          {
+            "currency": "BRL",
+            "parallel_bp": 400,
+            "short_bp": 500,
+            "long_bp": 300
+          },
+          {
+            "currency": "CAD",
+            "parallel_bp": 200,
+            "short_bp": 275,
+            "long_bp": 175
+          },
+          {
+            "currency": "CHF",
+            "parallel_bp": 175,
+            "short_bp": 250,
+            "long_bp": 200
+          },
+          {
+            "currency": "CNY",
+            "parallel_bp": 225,
+            "short_bp": 300,
+            "long_bp": 150
+          },
+          {
+            "currency": "EUR",
+            "parallel_bp": 225,
+            "short_bp": 350,
+            "long_bp": 200
+          },
+          {
+            "currency": "GBP",
+            "parallel_bp": 275,
+            "short_bp": 425,
+            "long_bp": 250
+          },
+          {
+            "currency": "HKD",
+            "parallel_bp": 225,
+            "short_bp": 375,
+            "long_bp": 200
+          },
+          {
+            "currency": "IDR",
+            "parallel_bp": 400,
+            "short_bp": 500,
+            "long_bp": 300
+          },
+          {
+            "currency": "INR",
+            "parallel_bp": 325,
+            "short_bp": 475,
+            "long_bp": 225
+          },
+          {
+            "currency": "JPY",
+            "parallel_bp": 100,
+            "short_bp": 100,
+            "long_bp": 100
+          },
+          {
+            "currency": "KRW",
+            "parallel_bp": 225,
+            "short_bp": 350,
+            "long_bp": 225
+          },
+          {
+            "currency": "MXN",
+            "parallel_bp": 400,
+            "short_bp": 500,
+            "long_bp": 200
+          },
+          {
+            "currency": "RUB",
+            "parallel_bp": 400,
+            "short_bp": 500,
+            "long_bp": 300
+          },
+          {
+            "currency": "SAR",
+            "parallel_bp": 275,
+            "short_bp": 375,
+            "long_bp": 250
+          },
+          {
+            "currency": "SEK",
+            "parallel_bp": 275,
+            "short_bp": 425,
+            "long_bp": 200
+          },
+          {
+            "currency": "SGD",
+            "parallel_bp": 175,
+            "short_bp": 250,
+            "long_bp": 225
+          },
+          {
+            "currency": "TRY",
+            "parallel_bp": 400,
+            "short_bp": 500,
+            "long_bp": 300
+          },
+          {
+            "currency": "USD",
+            "parallel_bp": 200,
+            "short_bp": 300,
+            "long_bp": 225
+          },
+          {
+            "currency": "ZAR",
+            "parallel_bp": 325,
+            "short_bp": 500,
+            "long_bp": 300
+          }
+        ]
+      },
+      {
+        "calibration": "2016",
+        "source": "BCBS d368 Annex 2 Table 1 (dossier 01 H.3)",
+        "data_window": "2000 to 2015",
+        "percentile": "99th percentile of global factors",
+        "rounding_bp": 50,
+        "rows": [
+          {
+            "currency": "ARS",
+            "parallel_bp": 400,
+            "short_bp": 500,
+            "long_bp": 300
+          },
+          {
+            "currency": "AUD",
+            "parallel_bp": 300,
+            "short_bp": 450,
+            "long_bp": 200
+          },
+          {
+            "currency": "BRL",
+            "parallel_bp": 400,
+            "short_bp": 500,
+            "long_bp": 300
+          },
+          {
+            "currency": "CAD",
+            "parallel_bp": 200,
+            "short_bp": 300,
+            "long_bp": 150
+          },
+          {
+            "currency": "CHF",
+            "parallel_bp": 100,
+            "short_bp": 150,
+            "long_bp": 100
+          },
+          {
+            "currency": "CNY",
+            "parallel_bp": 250,
+            "short_bp": 300,
+            "long_bp": 150
+          },
+          {
+            "currency": "EUR",
+            "parallel_bp": 200,
+            "short_bp": 250,
+            "long_bp": 100
+          },
+          {
+            "currency": "GBP",
+            "parallel_bp": 250,
+            "short_bp": 300,
+            "long_bp": 150
+          },
+          {
+            "currency": "HKD",
+            "parallel_bp": 200,
+            "short_bp": 250,
+            "long_bp": 100
+          },
+          {
+            "currency": "IDR",
+            "parallel_bp": 400,
+            "short_bp": 500,
+            "long_bp": 350
+          },
+          {
+            "currency": "INR",
+            "parallel_bp": 400,
+            "short_bp": 500,
+            "long_bp": 300
+          },
+          {
+            "currency": "JPY",
+            "parallel_bp": 100,
+            "short_bp": 100,
+            "long_bp": 100
+          },
+          {
+            "currency": "KRW",
+            "parallel_bp": 300,
+            "short_bp": 400,
+            "long_bp": 200
+          },
+          {
+            "currency": "MXN",
+            "parallel_bp": 400,
+            "short_bp": 500,
+            "long_bp": 300
+          },
+          {
+            "currency": "RUB",
+            "parallel_bp": 400,
+            "short_bp": 500,
+            "long_bp": 300
+          },
+          {
+            "currency": "SAR",
+            "parallel_bp": 200,
+            "short_bp": 300,
+            "long_bp": 150
+          },
+          {
+            "currency": "SEK",
+            "parallel_bp": 200,
+            "short_bp": 300,
+            "long_bp": 150
+          },
+          {
+            "currency": "SGD",
+            "parallel_bp": 150,
+            "short_bp": 200,
+            "long_bp": 100
+          },
+          {
+            "currency": "TRY",
+            "parallel_bp": 400,
+            "short_bp": 500,
+            "long_bp": 300
+          },
+          {
+            "currency": "USD",
+            "parallel_bp": 200,
+            "short_bp": 300,
+            "long_bp": 150
+          },
+          {
+            "currency": "ZAR",
+            "parallel_bp": 400,
+            "short_bp": 500,
+            "long_bp": 300
+          }
+        ]
+      }
+    ],
+    "applied_sizes": [
+      {
+        "currency": "USD",
+        "parallel_bp": 200,
+        "short_bp": 300,
+        "long_bp": 225,
+        "origin": "srp31-table-2024",
+        "label": null,
+        "method": null
+      },
+      {
+        "currency": "USD",
+        "parallel_bp": 200,
+        "short_bp": 300,
+        "long_bp": 150,
+        "origin": "srp31-table-2016",
+        "label": null,
+        "method": null
+      }
+    ],
+    "shock_shape": {
+      "x": 4,
+      "steepener_short": -0.65,
+      "steepener_long": 0.9,
+      "flattener_short": 0.8,
+      "flattener_long": -0.6,
+      "short_form": "exp(-t_k / x)",
+      "long_form": "1 - exp(-t_k / x)",
+      "reference": "SRP31.91 to SRP31.92"
+    },
+    "nmd_caps": [
+      {
+        "category": "retail-transactional",
+        "core_share_cap": 0.9,
+        "core_maturity_cap_years": 5.0,
+        "reference": "SRP31 Table 4 (SRP31.107 to SRP31.112)"
+      },
+      {
+        "category": "retail-non-transactional",
+        "core_share_cap": 0.7,
+        "core_maturity_cap_years": 4.5,
+        "reference": "SRP31 Table 4 (SRP31.107 to SRP31.112)"
+      },
+      {
+        "category": "wholesale",
+        "core_share_cap": 0.5,
+        "core_maturity_cap_years": 4.0,
+        "reference": "SRP31 Table 4 (SRP31.107 to SRP31.112)"
+      }
+    ],
+    "multipliers": {
+      "prepayment_gamma": [
+        {
+          "shock": "parallel-up",
+          "gamma": 0.8
+        },
+        {
+          "shock": "parallel-down",
+          "gamma": 1.2
+        },
+        {
+          "shock": "steepener",
+          "gamma": 0.8
+        },
+        {
+          "shock": "flattener",
+          "gamma": 1.2
+        },
+        {
+          "shock": "short-up",
+          "gamma": 0.8
+        },
+        {
+          "shock": "short-down",
+          "gamma": 1.2
+        }
+      ],
+      "term_deposit_u": [
+        {
+          "shock": "parallel-up",
+          "u": 1.2
+        },
+        {
+          "shock": "parallel-down",
+          "u": 0.8
+        },
+        {
+          "shock": "steepener",
+          "u": 0.8
+        },
+        {
+          "shock": "flattener",
+          "u": 1.2
+        },
+        {
+          "shock": "short-up",
+          "u": 1.2
+        },
+        {
+          "shock": "short-down",
+          "u": 0.8
+        }
+      ],
+      "reference": "SRP31.119 Table 5 and SRP31.125 Table 6"
+    },
+    "nmd_models": [
+      {
+        "valuation_date": "2021-12-31",
+        "category": "wholesale",
+        "tranches": [
+          {
+            "maturity_years": 1.0,
+            "weight": 0.45
+          },
+          {
+            "maturity_years": 2.0,
+            "weight": 0.25
+          },
+          {
+            "maturity_years": 3.0,
+            "weight": 0.15
+          },
+          {
+            "maturity_years": 5.0,
+            "weight": 0.1
+          },
+          {
+            "maturity_years": 7.0,
+            "weight": 0.05
+          },
+          {
+            "maturity_years": 10.0,
+            "weight": 0.0
+          }
+        ],
+        "weights_sum": 1.0,
+        "weighted_average_maturity_years": 1.125,
+        "margin_volatility": null,
+        "margin_volatility_reason": {
+          "en": "The window holds too few margin observations for the fit.",
+          "es": "La ventana tiene muy pocas observaciones de margen para el ajuste."
+        },
+        "deposit_beta": {
+          "up": 0.3,
+          "down": 0.25,
+          "source_kind": "fitted",
+          "source": "fixture value standing for a fit"
+        },
+        "stability": [
+          {
+            "window_start": "2018-01-01",
+            "window_end": "2020-12-31",
+            "weights": [
+              0.45,
+              0.25,
+              0.15,
+              0.1,
+              0.05,
+              0.0
+            ],
+            "weighted_average_maturity_years": 1.125
+          },
+          {
+            "window_start": "2019-01-01",
+            "window_end": "2021-12-31",
+            "weights": [
+              0.47,
+              0.23,
+              0.15,
+              0.1,
+              0.05,
+              0.0
+            ],
+            "weighted_average_maturity_years": 1.115
+          }
+        ]
+      },
+      {
+        "valuation_date": "2021-12-31",
+        "category": "retail-transactional",
+        "tranches": [
+          {
+            "maturity_years": 1.0,
+            "weight": 0.1
+          },
+          {
+            "maturity_years": 2.0,
+            "weight": 0.15
+          },
+          {
+            "maturity_years": 3.0,
+            "weight": 0.2
+          },
+          {
+            "maturity_years": 5.0,
+            "weight": 0.35
+          },
+          {
+            "maturity_years": 7.0,
+            "weight": 0.15
+          },
+          {
+            "maturity_years": 10.0,
+            "weight": 0.05
+          }
+        ],
+        "weights_sum": 1.0,
+        "weighted_average_maturity_years": 2.15,
+        "margin_volatility": 0.0012,
+        "margin_volatility_reason": null,
+        "deposit_beta": {
+          "up": 0.3,
+          "down": 0.25,
+          "source_kind": "fitted",
+          "source": "fixture value standing for a fit"
+        },
+        "stability": [
+          {
+            "window_start": "2018-01-01",
+            "window_end": "2020-12-31",
+            "weights": [
+              0.1,
+              0.15,
+              0.2,
+              0.35,
+              0.15,
+              0.05
+            ],
+            "weighted_average_maturity_years": 2.15
+          },
+          {
+            "window_start": "2019-01-01",
+            "window_end": "2021-12-31",
+            "weights": [
+              0.12,
+              0.13,
+              0.2,
+              0.35,
+              0.15,
+              0.05
+            ],
+            "weighted_average_maturity_years": 2.14
+          }
+        ]
+      },
+      {
+        "valuation_date": "2021-12-31",
+        "category": "retail-non-transactional",
+        "tranches": [
+          {
+            "maturity_years": 1.0,
+            "weight": 0.2
+          },
+          {
+            "maturity_years": 2.0,
+            "weight": 0.2
+          },
+          {
+            "maturity_years": 3.0,
+            "weight": 0.25
+          },
+          {
+            "maturity_years": 5.0,
+            "weight": 0.25
+          },
+          {
+            "maturity_years": 7.0,
+            "weight": 0.1
+          },
+          {
+            "maturity_years": 10.0,
+            "weight": 0.0
+          }
+        ],
+        "weights_sum": 1.0,
+        "weighted_average_maturity_years": 1.65,
+        "margin_volatility": 0.0012,
+        "margin_volatility_reason": null,
+        "deposit_beta": {
+          "up": 0.3,
+          "down": 0.25,
+          "source_kind": "fitted",
+          "source": "fixture value standing for a fit"
+        },
+        "stability": [
+          {
+            "window_start": "2018-01-01",
+            "window_end": "2020-12-31",
+            "weights": [
+              0.2,
+              0.2,
+              0.25,
+              0.25,
+              0.1,
+              0.0
+            ],
+            "weighted_average_maturity_years": 1.65
+          },
+          {
+            "window_start": "2019-01-01",
+            "window_end": "2021-12-31",
+            "weights": [
+              0.22,
+              0.18,
+              0.25,
+              0.25,
+              0.1,
+              0.0
+            ],
+            "weighted_average_maturity_years": 1.64
+          }
+        ]
+      },
+      {
+        "valuation_date": "2022-12-31",
+        "category": "wholesale",
+        "tranches": [
+          {
+            "maturity_years": 1.0,
+            "weight": 0.45
+          },
+          {
+            "maturity_years": 2.0,
+            "weight": 0.25
+          },
+          {
+            "maturity_years": 3.0,
+            "weight": 0.15
+          },
+          {
+            "maturity_years": 5.0,
+            "weight": 0.1
+          },
+          {
+            "maturity_years": 7.0,
+            "weight": 0.05
+          },
+          {
+            "maturity_years": 10.0,
+            "weight": 0.0
+          }
+        ],
+        "weights_sum": 1.0,
+        "weighted_average_maturity_years": 1.125,
+        "margin_volatility": 0.0012,
+        "margin_volatility_reason": null,
+        "deposit_beta": {
+          "up": 0.45,
+          "down": 0.35,
+          "source_kind": "fitted",
+          "source": "fixture value standing for a fit"
+        },
+        "stability": [
+          {
+            "window_start": "2018-01-01",
+            "window_end": "2020-12-31",
+            "weights": [
+              0.45,
+              0.25,
+              0.15,
+              0.1,
+              0.05,
+              0.0
+            ],
+            "weighted_average_maturity_years": 1.125
+          },
+          {
+            "window_start": "2019-01-01",
+            "window_end": "2021-12-31",
+            "weights": [
+              0.47,
+              0.23,
+              0.15,
+              0.1,
+              0.05,
+              0.0
+            ],
+            "weighted_average_maturity_years": 1.115
+          }
+        ]
+      },
+      {
+        "valuation_date": "2022-12-31",
+        "category": "retail-transactional",
+        "tranches": [
+          {
+            "maturity_years": 1.0,
+            "weight": 0.1
+          },
+          {
+            "maturity_years": 2.0,
+            "weight": 0.15
+          },
+          {
+            "maturity_years": 3.0,
+            "weight": 0.2
+          },
+          {
+            "maturity_years": 5.0,
+            "weight": 0.35
+          },
+          {
+            "maturity_years": 7.0,
+            "weight": 0.15
+          },
+          {
+            "maturity_years": 10.0,
+            "weight": 0.05
+          }
+        ],
+        "weights_sum": 1.0,
+        "weighted_average_maturity_years": 2.15,
+        "margin_volatility": 0.0012,
+        "margin_volatility_reason": null,
+        "deposit_beta": {
+          "up": 0.45,
+          "down": 0.35,
+          "source_kind": "fitted",
+          "source": "fixture value standing for a fit"
+        },
+        "stability": [
+          {
+            "window_start": "2018-01-01",
+            "window_end": "2020-12-31",
+            "weights": [
+              0.1,
+              0.15,
+              0.2,
+              0.35,
+              0.15,
+              0.05
+            ],
+            "weighted_average_maturity_years": 2.15
+          },
+          {
+            "window_start": "2019-01-01",
+            "window_end": "2021-12-31",
+            "weights": [
+              0.12,
+              0.13,
+              0.2,
+              0.35,
+              0.15,
+              0.05
+            ],
+            "weighted_average_maturity_years": 2.14
+          }
+        ]
+      },
+      {
+        "valuation_date": "2022-12-31",
+        "category": "retail-non-transactional",
+        "tranches": [
+          {
+            "maturity_years": 1.0,
+            "weight": 0.2
+          },
+          {
+            "maturity_years": 2.0,
+            "weight": 0.2
+          },
+          {
+            "maturity_years": 3.0,
+            "weight": 0.25
+          },
+          {
+            "maturity_years": 5.0,
+            "weight": 0.25
+          },
+          {
+            "maturity_years": 7.0,
+            "weight": 0.1
+          },
+          {
+            "maturity_years": 10.0,
+            "weight": 0.0
+          }
+        ],
+        "weights_sum": 1.0,
+        "weighted_average_maturity_years": 1.65,
+        "margin_volatility": 0.0012,
+        "margin_volatility_reason": null,
+        "deposit_beta": {
+          "up": 0.45,
+          "down": 0.35,
+          "source_kind": "fitted",
+          "source": "fixture value standing for a fit"
+        },
+        "stability": [
+          {
+            "window_start": "2018-01-01",
+            "window_end": "2020-12-31",
+            "weights": [
+              0.2,
+              0.2,
+              0.25,
+              0.25,
+              0.1,
+              0.0
+            ],
+            "weighted_average_maturity_years": 1.65
+          },
+          {
+            "window_start": "2019-01-01",
+            "window_end": "2021-12-31",
+            "weights": [
+              0.22,
+              0.18,
+              0.25,
+              0.25,
+              0.1,
+              0.0
+            ],
+            "weighted_average_maturity_years": 1.64
+          }
+        ]
+      }
+    ],
+    "nmd_parameter_changes": [
+      {
+        "parameter": "core share, retail non-transactional",
+        "category": "retail-non-transactional",
+        "from_date": "2021-12-31",
+        "to_date": "2022-12-31",
+        "from_value": 0.65,
+        "to_value": 0.75,
+        "unit": "share",
+        "limit_breach_in_window": true,
+        "flagged": true,
+        "note": {
+          "en": "The core share rose in a window that holds a limit breach.",
+          "es": "La proporcion estable subio en una ventana con exceso de limite."
+        }
+      },
+      {
+        "parameter": "core maturity, wholesale",
+        "category": "wholesale",
+        "from_date": "2021-12-31",
+        "to_date": "2022-12-31",
+        "from_value": 3.0,
+        "to_value": 3.0,
+        "unit": "years",
+        "limit_breach_in_window": true,
+        "flagged": false,
+        "note": {
+          "en": "Unchanged.",
+          "es": "Sin cambio."
+        }
+      },
+      {
+        "parameter": "core share, wholesale",
+        "category": "wholesale",
+        "from_date": "2021-12-31",
+        "to_date": "2022-12-31",
+        "from_value": 0.35,
+        "to_value": 0.4,
+        "unit": "share",
+        "limit_breach_in_window": false,
+        "flagged": false,
+        "note": {
+          "en": "Changed in a window without a limit breach.",
+          "es": "Cambio en una ventana sin exceso de limite."
+        }
+      }
+    ],
+    "outlier": {
+      "threshold_share_tier1": 0.15,
+      "reference": "SRP31.82 to SRP31.83"
+    }
+  },
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u10-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

@@ -4396,6 +4396,3288 @@ export interface components {
             ks: components["schemas"]["c13ZoneCounts"];
         };
         /**
+         * C14 models
+         * @description Catalog row c14-models 1.0.0: the C14 models artifact (buckets, the 2024 and 2016 shock tables, shapes, NMD caps, multipliers, replicating portfolios, parameter-change flags).
+         */
+        "c14-models": components["schemas"]["common-models-envelope"] & {
+            /** @constant */
+            case_id: "C14";
+            fit: components["schemas"]["c14Fit"];
+        };
+        /**
+         * C14 valuation-date variant
+         * @description Catalog row c14-outputs 1.0.0: one valuation date of the IRRBB case on a USD balance sheet (outputs.kind valuation-date), real FDIC aggregates and synthetic behaviour.
+         */
+        "c14-variant-valuation-date": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C14";
+            outputs: components["schemas"]["c14Outputs"];
+        } & {
+            tests?: unknown;
+        };
+        /** @description A behavioural assumption as a named field: its value, its unit and where it comes from (the regulatory cap, a fit, or a stated synthetic value), so a view can show the result with and without it. */
+        c14Assumption: {
+            value: number;
+            unit: string;
+            /** @enum {string} */
+            source_kind: "regulatory-cap" | "fitted" | "synthetic-stated";
+            source: string;
+        };
+        /** @description The five behavioural assumptions. nmd_core_share and nmd_core_maturity_years are the balance-weighted averages of nmd_segments. */
+        c14Assumptions: {
+            nmd_core_share: components["schemas"]["c14Assumption"];
+            nmd_core_maturity_years: components["schemas"]["c14Assumption"];
+            prepayment_cpr: components["schemas"]["c14Assumption"];
+            term_deposit_redemption_rate: components["schemas"]["c14Assumption"];
+            deposit_beta: components["schemas"]["c14Assumption"];
+        };
+        /** @description The slotted balance sheet of the valuation date. */
+        c14BalanceSheet: {
+            as_of: string;
+            items: components["schemas"]["c14Item"][];
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            total_assets: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            total_liabilities: number;
+        };
+        /** @description The bank of the case (real FDIC aggregates, synthetic behaviour: SDD section 5). */
+        c14Bank: {
+            name: string;
+            cert: number;
+            /** @constant */
+            aggregates: "real";
+            /** @constant */
+            behaviour: "synthetic";
+            notice: components["schemas"]["common-text"];
+        };
+        /** @description The balance-sheet assumption of the projection: a constant balance sheet (maturing or repricing flows replaced by identical new ones, DIS70.5) or an annual growth. */
+        c14BsAssumption: {
+            /** @enum {string} */
+            kind: "constant" | "growth";
+            growth_annual: number;
+            description: components["schemas"]["c14Label"];
+        } & ({
+            /** @constant */
+            kind?: "constant";
+            /** @constant */
+            growth_annual?: 0;
+        } | {
+            /** @constant */
+            kind?: "growth";
+        });
+        /** @description One of the 19 time buckets of SRP31.96 Table 3. */
+        c14BucketDef: {
+            /** @description Bucket of the 19 of SRP31.96 Table 3, 1 (overnight) to 19 (over 20 years). */
+            bucket: number;
+            label: components["schemas"]["common-text"];
+            /**
+             * @description Bucket midpoint in years: one of the 19 of SRP31.96 Table 3.
+             * @enum {number}
+             */
+            midpoint_years: 0.0028 | 0.0417 | 0.1667 | 0.375 | 0.625 | 0.875 | 1.25 | 1.75 | 2.5 | 3.5 | 4.5 | 5.5 | 6.5 | 7.5 | 8.5 | 9.5 | 12.5 | 17.5 | 25;
+        } & ({
+            /** @constant */
+            bucket?: 1;
+            /** @constant */
+            midpoint_years?: 0.0028;
+        } | {
+            /** @constant */
+            bucket?: 2;
+            /** @constant */
+            midpoint_years?: 0.0417;
+        } | {
+            /** @constant */
+            bucket?: 3;
+            /** @constant */
+            midpoint_years?: 0.1667;
+        } | {
+            /** @constant */
+            bucket?: 4;
+            /** @constant */
+            midpoint_years?: 0.375;
+        } | {
+            /** @constant */
+            bucket?: 5;
+            /** @constant */
+            midpoint_years?: 0.625;
+        } | {
+            /** @constant */
+            bucket?: 6;
+            /** @constant */
+            midpoint_years?: 0.875;
+        } | {
+            /** @constant */
+            bucket?: 7;
+            /** @constant */
+            midpoint_years?: 1.25;
+        } | {
+            /** @constant */
+            bucket?: 8;
+            /** @constant */
+            midpoint_years?: 1.75;
+        } | {
+            /** @constant */
+            bucket?: 9;
+            /** @constant */
+            midpoint_years?: 2.5;
+        } | {
+            /** @constant */
+            bucket?: 10;
+            /** @constant */
+            midpoint_years?: 3.5;
+        } | {
+            /** @constant */
+            bucket?: 11;
+            /** @constant */
+            midpoint_years?: 4.5;
+        } | {
+            /** @constant */
+            bucket?: 12;
+            /** @constant */
+            midpoint_years?: 5.5;
+        } | {
+            /** @constant */
+            bucket?: 13;
+            /** @constant */
+            midpoint_years?: 6.5;
+        } | {
+            /** @constant */
+            bucket?: 14;
+            /** @constant */
+            midpoint_years?: 7.5;
+        } | {
+            /** @constant */
+            bucket?: 15;
+            /** @constant */
+            midpoint_years?: 8.5;
+        } | {
+            /** @constant */
+            bucket?: 16;
+            /** @constant */
+            midpoint_years?: 9.5;
+        } | {
+            /** @constant */
+            bucket?: 17;
+            /** @constant */
+            midpoint_years?: 12.5;
+        } | {
+            /** @constant */
+            bucket?: 18;
+            /** @constant */
+            midpoint_years?: 17.5;
+        } | {
+            /** @constant */
+            bucket?: 19;
+            /** @constant */
+            midpoint_years?: 25;
+        });
+        /** @description Delta EVE with and without the behavioural NMD assumptions, always reported (dossier 05 D.7); difference = behavioural minus contractual. */
+        c14Comparison: {
+            /** @enum {string} */
+            calibration: "2024" | "2016";
+            /** @enum {string} */
+            shock: "parallel-up" | "parallel-down" | "steepener" | "flattener" | "short-up" | "short-down";
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            delta_eve_behavioural: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            delta_eve_contractual: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            difference: number;
+        };
+        /** @description The US Treasury par yield curve of the valuation date, bootstrapped to continuously compounded zero rates and read at the 19 midpoints. Tenors the date lacks are listed, never filled silently (dossier 08 C.2). */
+        c14Curve: {
+            date: string;
+            source: string;
+            /** @constant */
+            observed_kind: "par-yield";
+            /** @constant */
+            compounding: "continuous";
+            interpolation: string;
+            missing_tenors: number[];
+            points: components["schemas"]["c14Point"][];
+            /** @description Zero rate at each bucket midpoint, bucket 1 first. */
+            zero_rates_at_midpoints: number[];
+        };
+        /** @description The call reports read for the valuation date. Never one dated after it: data_cutoff is the latest report date read and is on or before the valuation date (a producer test checks the dates; a false flag fails). */
+        c14Data: {
+            call_reports: components["schemas"]["c14Report"][];
+            data_cutoff: string;
+            /** @constant */
+            read_up_to_valuation_date: true;
+            rule: components["schemas"]["c14Label"];
+        };
+        /** @description Deposit beta (pass-through of the market rate to the client rate), asymmetric in the direction of the move. */
+        c14DepositBeta: {
+            up: number;
+            down: number;
+            /** @enum {string} */
+            source_kind: "regulatory-cap" | "fitted" | "synthetic-stated";
+            source: string;
+        };
+        /** @description Duration gap DGAP = D_A - (L / A) D_L and the first-order change in equity for +100 bp, -DGAP x A x 0.01 (dossier 05 D.2). */
+        c14DurationGap: {
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            asset_value: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            liability_value: number;
+            asset_duration_years: number;
+            liability_duration_years: number;
+            duration_gap_years: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            equity_change_100bp_up: number;
+        };
+        /** @description One item of the dynamic NII projection (the inputs of simulate_nii): a reset rate is spread + beta x r_t; reprice_months 0 reprices every month, k >= 1 keeps rate0 until month k and resets every k months. */
+        c14DynItem: {
+            item_id: string;
+            /** @enum {string} */
+            side: "asset" | "liability";
+            balance: number;
+            rate0: number;
+            spread: number;
+            beta: number;
+            reprice_months: number;
+        };
+        /** @description The projected NII under the base path or one parallel shock; delta_vs_base = base total minus this total (loss-positive). */
+        c14DynScenario: {
+            /** @enum {string} */
+            scenario: "base" | "parallel-up" | "parallel-down";
+            shock_bp: number;
+            /** @description Annual short rate of each projected month, after the floor. */
+            short_rate_path: number[];
+            /** @description NII of each projected month, money. */
+            monthly_nii: number[];
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            total: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            delta_vs_base: number;
+        };
+        /** @description base, parallel-up, parallel-down, in that order. */
+        c14DynScenarios: [
+            components["schemas"]["c14DynScenario"],
+            components["schemas"]["c14DynScenario"],
+            components["schemas"]["c14DynScenario"]
+        ];
+        /** @description Ladder rung 5 (dossier 05 D.6): the monthly NII over 12 to 36 months under the base path and the two parallel shocks of the 2024 calibration, run-off replaced under the stated balance-sheet assumption, deposit betas in the items. Every path and monthly NII has horizon_months values. */
+        c14DynamicNii: {
+            horizon_months: number;
+            balance_sheet_assumption: components["schemas"]["c14BsAssumption"];
+            items: components["schemas"]["c14DynItem"][];
+            scenarios: components["schemas"]["c14DynScenarios"];
+        };
+        /** @description Ladder rung 6 (dossier 05 D.5 and D.6): the distribution summary of NII and EVE under Hull-White one-factor or dynamic Nelson-Siegel scenario Monte Carlo, with the number of paths, the seed and the Monte Carlo standard error of EaR and EVaR. */
+        c14EarEvar: {
+            /** @enum {string} */
+            method: "hw1f" | "dns";
+            n_paths: number;
+            seed: number;
+            horizon_months: number;
+            parameters: {
+                name: string;
+                value: number;
+                unit: string;
+            }[];
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            base_nii: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            base_eve: number;
+            /** @description The 95 and 99 percent levels. */
+            levels: [
+                components["schemas"]["c14EarEvarLevel"],
+                components["schemas"]["c14EarEvarLevel"]
+            ];
+            monte_carlo_error: {
+                ear: number;
+                evar: number;
+            };
+        };
+        /** @description EaR and EVaR at one confidence level: ear = base NII minus the (1 - level) quantile of the NII paths, evar likewise for EVE (loss-positive; engine ear_evar). */
+        c14EarEvarLevel: {
+            level: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            nii_quantile: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            eve_quantile: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            ear: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            evar: number;
+        };
+        /** @description C14 models: the 19 buckets, the 2024 and 2016 shock tables as data, the shock shapes, the NMD caps and multipliers, the replicating portfolios with their stability across windows, the deposit betas and the parameter-change flags. */
+        c14Fit: {
+            /**
+             * @description ISO 4217 code of the money fields of this block.
+             * @constant
+             */
+            currency: "USD";
+            sign_convention: components["schemas"]["c14Sign"];
+            units: components["schemas"]["c14Units"];
+            bank: components["schemas"]["c14Bank"];
+            buckets: [
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"],
+                components["schemas"]["c14BucketDef"]
+            ];
+            shock_tables: [
+                components["schemas"]["c14ShockTable"],
+                components["schemas"]["c14ShockTable"]
+            ];
+            applied_sizes: [
+                components["schemas"]["c14ShockSize"],
+                components["schemas"]["c14ShockSize"]
+            ];
+            shock_shape: components["schemas"]["c14ShockShape"];
+            nmd_caps: components["schemas"]["c14NmdCaps"];
+            multipliers: components["schemas"]["c14Multipliers"];
+            nmd_models: components["schemas"]["c14NmdModel"][];
+            nmd_parameter_changes: components["schemas"]["c14ParamChange"][];
+            outlier: components["schemas"]["c14OutlierRule"];
+        };
+        /** @description A net notional repricing cash flow in one bucket (assets positive, liabilities negative). */
+        c14Flow: {
+            /** @description Bucket of the 19 of SRP31.96 Table 3, 1 (overnight) to 19 (over 20 years). */
+            bucket: number;
+            /**
+             * @description Bucket midpoint in years: one of the 19 of SRP31.96 Table 3.
+             * @enum {number}
+             */
+            midpoint_years: 0.0028 | 0.0417 | 0.1667 | 0.375 | 0.625 | 0.875 | 1.25 | 1.75 | 2.5 | 3.5 | 4.5 | 5.5 | 6.5 | 7.5 | 8.5 | 9.5 | 12.5 | 17.5 | 25;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            amount: number;
+        } & ({
+            /** @constant */
+            bucket?: 1;
+            /** @constant */
+            midpoint_years?: 0.0028;
+        } | {
+            /** @constant */
+            bucket?: 2;
+            /** @constant */
+            midpoint_years?: 0.0417;
+        } | {
+            /** @constant */
+            bucket?: 3;
+            /** @constant */
+            midpoint_years?: 0.1667;
+        } | {
+            /** @constant */
+            bucket?: 4;
+            /** @constant */
+            midpoint_years?: 0.375;
+        } | {
+            /** @constant */
+            bucket?: 5;
+            /** @constant */
+            midpoint_years?: 0.625;
+        } | {
+            /** @constant */
+            bucket?: 6;
+            /** @constant */
+            midpoint_years?: 0.875;
+        } | {
+            /** @constant */
+            bucket?: 7;
+            /** @constant */
+            midpoint_years?: 1.25;
+        } | {
+            /** @constant */
+            bucket?: 8;
+            /** @constant */
+            midpoint_years?: 1.75;
+        } | {
+            /** @constant */
+            bucket?: 9;
+            /** @constant */
+            midpoint_years?: 2.5;
+        } | {
+            /** @constant */
+            bucket?: 10;
+            /** @constant */
+            midpoint_years?: 3.5;
+        } | {
+            /** @constant */
+            bucket?: 11;
+            /** @constant */
+            midpoint_years?: 4.5;
+        } | {
+            /** @constant */
+            bucket?: 12;
+            /** @constant */
+            midpoint_years?: 5.5;
+        } | {
+            /** @constant */
+            bucket?: 13;
+            /** @constant */
+            midpoint_years?: 6.5;
+        } | {
+            /** @constant */
+            bucket?: 14;
+            /** @constant */
+            midpoint_years?: 7.5;
+        } | {
+            /** @constant */
+            bucket?: 15;
+            /** @constant */
+            midpoint_years?: 8.5;
+        } | {
+            /** @constant */
+            bucket?: 16;
+            /** @constant */
+            midpoint_years?: 9.5;
+        } | {
+            /** @constant */
+            bucket?: 17;
+            /** @constant */
+            midpoint_years?: 12.5;
+        } | {
+            /** @constant */
+            bucket?: 18;
+            /** @constant */
+            midpoint_years?: 17.5;
+        } | {
+            /** @constant */
+            bucket?: 19;
+            /** @constant */
+            midpoint_years?: 25;
+        });
+        /** @description SRP31.119 Table 5 prepayment multiplier of a shock. */
+        c14Gamma: {
+            /** @enum {string} */
+            shock: "parallel-up" | "parallel-down" | "steepener" | "flattener" | "short-up" | "short-down";
+            gamma: number;
+        };
+        /** @description Repricing gap of one bucket: assets, liabilities and their difference (dossier 05 D.1). */
+        c14GapRow: {
+            /** @description Bucket of the 19 of SRP31.96 Table 3, 1 (overnight) to 19 (over 20 years). */
+            bucket: number;
+            /**
+             * @description Bucket midpoint in years: one of the 19 of SRP31.96 Table 3.
+             * @enum {number}
+             */
+            midpoint_years: 0.0028 | 0.0417 | 0.1667 | 0.375 | 0.625 | 0.875 | 1.25 | 1.75 | 2.5 | 3.5 | 4.5 | 5.5 | 6.5 | 7.5 | 8.5 | 9.5 | 12.5 | 17.5 | 25;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            assets: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            liabilities: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            gap: number;
+        };
+        /** @description One balance-sheet item slotted into the buckets. A call-report item the FDIC financials lack has reported_amount null with its reason and the slotting assumption that replaces it, never a fabricated number; a reported item has no reason. cash_flows under behavioural and contractual (every NMD in the overnight bucket) are net notional flows. */
+        c14Item: {
+            item_id: string;
+            label: components["schemas"]["common-text"];
+            /** @enum {string} */
+            side: "asset" | "liability";
+            /** @enum {string} */
+            category: "cash" | "securities-htm" | "securities-afs" | "loans-fixed" | "loans-floating" | "other-assets" | "deposits-transactional" | "deposits-non-transactional" | "deposits-time" | "borrowings" | "other-liabilities";
+            /** @enum {string} */
+            behavioural_class: "none" | "nmd-retail-transactional" | "nmd-retail-non-transactional" | "nmd-wholesale" | "term-deposit" | "prepayable-loan";
+            /** @enum {string} */
+            repricing_type: "fixed" | "floating" | "non-maturity";
+            source_field: string;
+            reported_amount: number | null;
+            reason_missing: components["schemas"]["c14Label"] | null;
+            slotting_assumption: string;
+            amount: number;
+            cash_flows: {
+                behavioural: components["schemas"]["c14Flow"][];
+                contractual: components["schemas"]["c14Flow"][];
+            };
+        } & ({
+            reported_amount?: number;
+            reason_missing?: null;
+        } | {
+            reported_amount?: null;
+            reason_missing?: components["schemas"]["c14Label"];
+        });
+        /** @description A non-empty bilingual label (an empty string is not a label). */
+        c14Label: {
+            en: string;
+            es: string;
+        };
+        /** @description Rungs 1 and 2 of the IRRBB ladder under one NMD assumption. delta_nii_gap_100bp_up is loss-positive: -sum over t_k < 1 of G_k x 0.01 x (1 - t_k). */
+        c14Ladder: {
+            /** @enum {string} */
+            nmd_assumption: "behavioural" | "contractual";
+            repricing_gap: [
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"],
+                components["schemas"]["c14GapRow"]
+            ];
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            delta_nii_gap_100bp_up: number;
+            duration_gap: components["schemas"]["c14DurationGap"];
+        };
+        /** @description The scenario multipliers of the prepayment rate and the term-deposit redemption rate, in the order of the six shocks. */
+        c14Multipliers: {
+            prepayment_gamma: [
+                components["schemas"]["c14Gamma"],
+                components["schemas"]["c14Gamma"],
+                components["schemas"]["c14Gamma"],
+                components["schemas"]["c14Gamma"],
+                components["schemas"]["c14Gamma"],
+                components["schemas"]["c14Gamma"]
+            ];
+            term_deposit_u: [
+                components["schemas"]["c14UMult"],
+                components["schemas"]["c14UMult"],
+                components["schemas"]["c14UMult"],
+                components["schemas"]["c14UMult"],
+                components["schemas"]["c14UMult"],
+                components["schemas"]["c14UMult"]
+            ];
+            reference: string;
+        };
+        /** @description SRP31 Table 4 cap of a category. */
+        c14NmdCap: {
+            /** @enum {string} */
+            category: "retail-transactional" | "retail-non-transactional" | "wholesale";
+            /** @description A share or an observed rate in [0, 1]. */
+            core_share_cap: number;
+            core_maturity_cap_years: number;
+            reference: string;
+        };
+        /** @description The three SRP31 Table 4 caps, exactly the table's. */
+        c14NmdCaps: [
+            components["schemas"]["c14NmdCap"],
+            components["schemas"]["c14NmdCap"],
+            components["schemas"]["c14NmdCap"]
+        ];
+        /** @description The static replicating portfolio of one NMD category at one valuation date (dossier 05 D.3). The weighted average maturity of a rolling tranche of maturity m is m / 2 (BCBS 368 footnote 38). A margin volatility the fit lacks is null with its reason. */
+        c14NmdModel: {
+            valuation_date: string;
+            /** @enum {string} */
+            category: "retail-transactional" | "retail-non-transactional" | "wholesale";
+            tranches: components["schemas"]["c14Tranche"][];
+            weights_sum: number;
+            weighted_average_maturity_years: number;
+            margin_volatility: number | null;
+            margin_volatility_reason: components["schemas"]["c14Label"] | null;
+            deposit_beta: components["schemas"]["c14DepositBeta"];
+            stability: components["schemas"]["c14Window"][];
+        } & ({
+            margin_volatility?: number;
+            margin_volatility_reason?: null;
+        } | {
+            margin_volatility?: null;
+            margin_volatility_reason?: components["schemas"]["c14Label"];
+        });
+        /** @description A non-maturity deposit segment: the requested core share and maturity, the SRP31 Table 4 cap, the value used and cap_applied (D2 of the U10 sizing). A request above its cap validates only with cap_applied true and the used value at the cap; a request within the caps has cap_applied false and the used value equal to the request (a producer check). The standardised EVE uses the used values. */
+        c14NmdSegment: {
+            /** @enum {string} */
+            category: "retail-transactional" | "retail-non-transactional" | "wholesale";
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            balance: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            requested_core_share: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            core_share_cap: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            core_share_used: number;
+            requested_core_maturity_years: number;
+            core_maturity_cap_years: number;
+            core_maturity_used_years: number;
+            cap_applied: boolean;
+            /** @enum {string} */
+            source_kind: "regulatory-cap" | "fitted" | "synthetic-stated";
+            source: string;
+        } & ({
+            /** @constant */
+            category?: "retail-transactional";
+            /** @constant */
+            core_share_cap?: 0.9;
+            /** @constant */
+            core_maturity_cap_years?: 5;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            core_maturity_used_years?: number;
+            /** @constant */
+            cap_applied?: false;
+        } | {
+            /** @constant */
+            category?: "retail-transactional";
+            /** @constant */
+            core_share_cap?: 0.9;
+            /** @constant */
+            core_maturity_cap_years?: 5;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            /** @constant */
+            core_maturity_used_years?: 5;
+            /** @constant */
+            cap_applied?: true;
+        } | {
+            /** @constant */
+            category?: "retail-transactional";
+            /** @constant */
+            core_share_cap?: 0.9;
+            /** @constant */
+            core_maturity_cap_years?: 5;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            /** @constant */
+            core_share_used?: 0.9;
+            core_maturity_used_years?: number;
+            /** @constant */
+            cap_applied?: true;
+        } | {
+            /** @constant */
+            category?: "retail-transactional";
+            /** @constant */
+            core_share_cap?: 0.9;
+            /** @constant */
+            core_maturity_cap_years?: 5;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            /** @constant */
+            core_share_used?: 0.9;
+            /** @constant */
+            core_maturity_used_years?: 5;
+            /** @constant */
+            cap_applied?: true;
+        } | {
+            /** @constant */
+            category?: "retail-non-transactional";
+            /** @constant */
+            core_share_cap?: 0.7;
+            /** @constant */
+            core_maturity_cap_years?: 4.5;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            core_maturity_used_years?: number;
+            /** @constant */
+            cap_applied?: false;
+        } | {
+            /** @constant */
+            category?: "retail-non-transactional";
+            /** @constant */
+            core_share_cap?: 0.7;
+            /** @constant */
+            core_maturity_cap_years?: 4.5;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            /** @constant */
+            core_maturity_used_years?: 4.5;
+            /** @constant */
+            cap_applied?: true;
+        } | {
+            /** @constant */
+            category?: "retail-non-transactional";
+            /** @constant */
+            core_share_cap?: 0.7;
+            /** @constant */
+            core_maturity_cap_years?: 4.5;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            /** @constant */
+            core_share_used?: 0.7;
+            core_maturity_used_years?: number;
+            /** @constant */
+            cap_applied?: true;
+        } | {
+            /** @constant */
+            category?: "retail-non-transactional";
+            /** @constant */
+            core_share_cap?: 0.7;
+            /** @constant */
+            core_maturity_cap_years?: 4.5;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            /** @constant */
+            core_share_used?: 0.7;
+            /** @constant */
+            core_maturity_used_years?: 4.5;
+            /** @constant */
+            cap_applied?: true;
+        } | {
+            /** @constant */
+            category?: "wholesale";
+            /** @constant */
+            core_share_cap?: 0.5;
+            /** @constant */
+            core_maturity_cap_years?: 4;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            core_maturity_used_years?: number;
+            /** @constant */
+            cap_applied?: false;
+        } | {
+            /** @constant */
+            category?: "wholesale";
+            /** @constant */
+            core_share_cap?: 0.5;
+            /** @constant */
+            core_maturity_cap_years?: 4;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            /** @constant */
+            core_maturity_used_years?: 4;
+            /** @constant */
+            cap_applied?: true;
+        } | {
+            /** @constant */
+            category?: "wholesale";
+            /** @constant */
+            core_share_cap?: 0.5;
+            /** @constant */
+            core_maturity_cap_years?: 4;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            /** @constant */
+            core_share_used?: 0.5;
+            core_maturity_used_years?: number;
+            /** @constant */
+            cap_applied?: true;
+        } | {
+            /** @constant */
+            category?: "wholesale";
+            /** @constant */
+            core_share_cap?: 0.5;
+            /** @constant */
+            core_maturity_cap_years?: 4;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            /** @constant */
+            core_share_used?: 0.5;
+            /** @constant */
+            core_maturity_used_years?: 4;
+            /** @constant */
+            cap_applied?: true;
+        });
+        /** @description The out-of-sample row: the NII projection of this valuation date against the NII realised in the following period (the 2022 hiking cycle for 2021-Q4), read from call reports dated after the valuation date and used only here, never as an input. Not applicable (null with its reason) when no later period is read. */
+        c14OutOfSample: {
+            applicable: boolean;
+            projection_date: string;
+            realised_period_start: string | null;
+            realised_period_end: string | null;
+            projected_delta_nii: number | null;
+            realised_delta_nii: number | null;
+            relative_error: number | null;
+            reason: components["schemas"]["c14Label"] | null;
+        } & ({
+            /** @constant */
+            applicable?: true;
+            realised_period_start?: string;
+            realised_period_end?: string;
+            projected_delta_nii?: number;
+            realised_delta_nii?: number;
+            relative_error?: number;
+            reason?: null;
+        } | {
+            /** @constant */
+            applicable?: false;
+            realised_period_start?: null;
+            realised_period_end?: null;
+            projected_delta_nii?: null;
+            realised_delta_nii?: null;
+            relative_error?: null;
+            reason?: components["schemas"]["c14Label"];
+        });
+        /** @description The outlier test: the EVE risk measure against 15 percent of Tier 1 capital (SRP31.82 to SRP31.83). */
+        c14Outlier: {
+            /** @constant */
+            threshold_share_tier1: 0.15;
+            /** @description Money in the `currency` of the enclosing block. */
+            tier1: number;
+            /** @description Money in the `currency` of the enclosing block. */
+            eve_risk_measure: number;
+            ratio: number;
+            breached: boolean;
+            reference: string;
+        };
+        c14OutlierRule: {
+            /** @constant */
+            threshold_share_tier1: 0.15;
+            reference: string;
+        };
+        /** @description C14 valuation-date outputs (outputs.kind valuation-date): IRRBB on a USD balance sheet at one valuation date, the six shocks of SRP31.90 in two calibrations and with and without behavioural NMD. The variant is the valuation date (the call reports are dated); the calibration and the NMD assumption are rows inside it so a view toggles them on one balance sheet. */
+        c14Outputs: {
+            /** @constant */
+            kind: "valuation-date";
+            valuation_date: string;
+            quarter: string;
+            /**
+             * @description ISO 4217 code of the money fields of this block.
+             * @constant
+             */
+            currency: "USD";
+            sign_convention: components["schemas"]["c14Sign"];
+            units: components["schemas"]["c14Units"];
+            bank: components["schemas"]["c14Bank"];
+            data: components["schemas"]["c14Data"];
+            curve: components["schemas"]["c14Curve"];
+            assumptions: components["schemas"]["c14Assumptions"];
+            nmd_segments: components["schemas"]["c14NmdSegment"][];
+            balance_sheet: components["schemas"]["c14BalanceSheet"];
+            ladder: [
+                components["schemas"]["c14Ladder"],
+                components["schemas"]["c14Ladder"]
+            ];
+            /** @description 2024 and 2016 calibrations, each with and without behavioural NMD, in this order. */
+            scenarios: [
+                components["schemas"]["c14Scenario"],
+                components["schemas"]["c14Scenario"],
+                components["schemas"]["c14Scenario"],
+                components["schemas"]["c14Scenario"]
+            ];
+            dynamic_nii: components["schemas"]["c14DynamicNii"];
+            ear_evar: components["schemas"]["c14EarEvar"];
+            out_of_sample: components["schemas"]["c14OutOfSample"];
+            behavioural_comparison: [
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"],
+                components["schemas"]["c14Comparison"]
+            ];
+        };
+        /** @description A change of a behavioural parameter between two valuation dates; flagged when it changed in a window that holds a limit breach (dossier 05 D.7: the SVB lesson). */
+        c14ParamChange: {
+            parameter: string;
+            /** @enum {string} */
+            category: "retail-transactional" | "retail-non-transactional" | "wholesale";
+            from_date: string;
+            to_date: string;
+            from_value: number;
+            to_value: number;
+            unit: string;
+            limit_breach_in_window: boolean;
+            flagged: boolean;
+            note: components["schemas"]["common-text"];
+        };
+        /** @description One tenor of the curve: the observed par yield and the continuously compounded zero rate. */
+        c14Point: {
+            tenor_years: number;
+            observed_yield: number;
+            zero_rate: number;
+        };
+        /** @description One FDIC call-report quarter read for the case and the financials fields taken from it. */
+        c14Report: {
+            report_date: string;
+            source: string;
+            fields: string[];
+        };
+        /** @description nmd_treatment says what the behavioural flows use: the capped used values of nmd_segments (standardised-capped) or every NMD in the overnight bucket (contractual-overnight). One calibration of the shock sizes under one NMD assumption: the six shocks in the order parallel-up, parallel-down, steepener, flattener, short-up, short-down, the EVE risk measure (the maximum over the six of the positive losses, SRP31.129) and its outlier test. */
+        c14Scenario: {
+            /** @enum {string} */
+            calibration: "2024" | "2016";
+            /** @enum {string} */
+            nmd_assumption: "behavioural" | "contractual";
+            /** @enum {string} */
+            nmd_treatment: "standardised-capped" | "contractual-overnight";
+            shock_size: components["schemas"]["c14ShockSize"];
+            /** @description Post-shock floor, not above zero (SRP31.93); null: none. */
+            floor: number | null;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            base_eve: number;
+            /** @description The six shocks in the order of SHOCKS. */
+            shocks: [
+                components["schemas"]["c14ShockResult"],
+                components["schemas"]["c14ShockResult"],
+                components["schemas"]["c14ShockResult"],
+                components["schemas"]["c14ShockResult"],
+                components["schemas"]["c14ShockResult"],
+                components["schemas"]["c14ShockResult"]
+            ];
+            /** @description Money in the `currency` of the enclosing block. */
+            eve_risk_measure: number;
+            worst_shock: ("parallel-up" | "parallel-down" | "steepener" | "flattener" | "short-up" | "short-down") | null;
+            outlier: components["schemas"]["c14Outlier"];
+        };
+        /** @description The result of one prescribed shock: net_cash_flows are the scenario cash flows (the term-deposit redemption multiplier of SRP31.125 moves cash flows), eve = sum CF x exp(-R t), delta_eve = EVE_0 - EVE_i + KAO (positive is a loss). delta_nii exists for the two parallel shocks only (SRP31.90) and is null with its reason otherwise. */
+        c14ShockResult: {
+            /** @enum {string} */
+            shock: "parallel-up" | "parallel-down" | "steepener" | "flattener" | "short-up" | "short-down";
+            /** @description Shock in basis points at each bucket midpoint before the floor. */
+            shape_bp: number[];
+            /** @description Buckets where the post-shock floor binds. */
+            floor_bound_buckets: number[];
+            /** @description One value per bucket, bucket 1 first; net notional repricing cash flows, assets positive, liabilities negative. */
+            net_cash_flows: number[];
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            eve: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            kao: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            delta_eve: number;
+            delta_eve_share_tier1: number;
+            delta_nii: number | null;
+            delta_nii_reason: components["schemas"]["c14Label"] | null;
+        } & ({
+            /** @enum {string} */
+            shock?: "parallel-up" | "parallel-down";
+            delta_nii?: number;
+            delta_nii_reason?: null;
+        } | {
+            /** @enum {string} */
+            shock?: "steepener" | "flattener" | "short-up" | "short-down";
+            delta_nii?: null;
+            delta_nii_reason?: components["schemas"]["c14Label"];
+        });
+        c14ShockRow: {
+            /** @enum {string} */
+            currency: "ARS" | "AUD" | "BRL" | "CAD" | "CHF" | "CNY" | "EUR" | "GBP" | "HKD" | "IDR" | "INR" | "JPY" | "KRW" | "MXN" | "RUB" | "SAR" | "SEK" | "SGD" | "TRY" | "USD" | "ZAR";
+            parallel_bp: number;
+            short_bp: number;
+            long_bp: number;
+        };
+        /** @description The six shock shapes of SRP31.91 to SRP31.92 with x = 4. */
+        c14ShockShape: {
+            /** @constant */
+            x: 4;
+            /** @constant */
+            steepener_short: -0.65;
+            /** @constant */
+            steepener_long: 0.9;
+            /** @constant */
+            flattener_short: 0.8;
+            /** @constant */
+            flattener_long: -0.6;
+            /** @constant */
+            short_form: "exp(-t_k / x)";
+            /** @constant */
+            long_form: "1 - exp(-t_k / x)";
+            reference: string;
+        };
+        /** @description The shock sizes applied to a currency, in basis points. A tabled size is exactly the table's (SRP31.90 Table 2, d368 Annex 2 Table 1, RAN 21-13 Annex 1 Hoja 9); a currency without an entry in the BCBS table (CLP is in neither) passes only labelled as a Contraste estimate with its method, never as a regulatory parameter (dossier 01 H.3), and a tabled currency cannot be relabelled as an estimate. */
+        c14ShockSize: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            parallel_bp: number;
+            short_bp: number;
+            long_bp: number;
+            /** @enum {string} */
+            origin: "srp31-table-2024" | "srp31-table-2016" | "cmf-annex1" | "contraste-estimate";
+            label: components["schemas"]["c14Label"] | null;
+            method: string | null;
+        } & ({
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "ARS";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "AUD";
+            /** @constant */
+            parallel_bp?: 350;
+            /** @constant */
+            short_bp?: 425;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "BRL";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "CAD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 275;
+            /** @constant */
+            long_bp?: 175;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "CHF";
+            /** @constant */
+            parallel_bp?: 175;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "CNY";
+            /** @constant */
+            parallel_bp?: 225;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "EUR";
+            /** @constant */
+            parallel_bp?: 225;
+            /** @constant */
+            short_bp?: 350;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "GBP";
+            /** @constant */
+            parallel_bp?: 275;
+            /** @constant */
+            short_bp?: 425;
+            /** @constant */
+            long_bp?: 250;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "HKD";
+            /** @constant */
+            parallel_bp?: 225;
+            /** @constant */
+            short_bp?: 375;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "IDR";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "INR";
+            /** @constant */
+            parallel_bp?: 325;
+            /** @constant */
+            short_bp?: 475;
+            /** @constant */
+            long_bp?: 225;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "JPY";
+            /** @constant */
+            parallel_bp?: 100;
+            /** @constant */
+            short_bp?: 100;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "KRW";
+            /** @constant */
+            parallel_bp?: 225;
+            /** @constant */
+            short_bp?: 350;
+            /** @constant */
+            long_bp?: 225;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "MXN";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "RUB";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "SAR";
+            /** @constant */
+            parallel_bp?: 275;
+            /** @constant */
+            short_bp?: 375;
+            /** @constant */
+            long_bp?: 250;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "SEK";
+            /** @constant */
+            parallel_bp?: 275;
+            /** @constant */
+            short_bp?: 425;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "SGD";
+            /** @constant */
+            parallel_bp?: 175;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 225;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "TRY";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "USD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 225;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "ZAR";
+            /** @constant */
+            parallel_bp?: 325;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "ARS";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "AUD";
+            /** @constant */
+            parallel_bp?: 300;
+            /** @constant */
+            short_bp?: 450;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "BRL";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "CAD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "CHF";
+            /** @constant */
+            parallel_bp?: 100;
+            /** @constant */
+            short_bp?: 150;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "CNY";
+            /** @constant */
+            parallel_bp?: 250;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "EUR";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "GBP";
+            /** @constant */
+            parallel_bp?: 250;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "HKD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "IDR";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 350;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "INR";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "JPY";
+            /** @constant */
+            parallel_bp?: 100;
+            /** @constant */
+            short_bp?: 100;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "KRW";
+            /** @constant */
+            parallel_bp?: 300;
+            /** @constant */
+            short_bp?: 400;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "MXN";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "RUB";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "SAR";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "SEK";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "SGD";
+            /** @constant */
+            parallel_bp?: 150;
+            /** @constant */
+            short_bp?: 200;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "TRY";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "USD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "ZAR";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "cmf-annex1";
+            /** @constant */
+            currency?: "CLP";
+            /** @constant */
+            parallel_bp?: 300;
+            /** @constant */
+            short_bp?: 400;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "cmf-annex1";
+            /** @constant */
+            currency?: "CLF";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "contraste-estimate";
+            currency?: unknown;
+            label?: components["schemas"]["c14Label"];
+            method?: string;
+        });
+        /** @description A BCBS shock-size table transcribed as data, the 21 currencies in table order. */
+        c14ShockTable: {
+            /** @enum {string} */
+            calibration: "2024" | "2016";
+            source: string;
+            data_window: string;
+            percentile: string;
+            rounding_bp: number;
+            rows: components["schemas"]["c14ShockRow"][];
+        };
+        /** @description Sign convention, stated in the document: a positive delta EVE or delta NII is a loss (SRP31.129; dossier 01 H.4). */
+        c14Sign: {
+            /** @constant */
+            delta_eve: "positive-is-loss";
+            /** @constant */
+            delta_nii: "positive-is-loss";
+            reference: string;
+            statement: components["schemas"]["common-text"];
+        };
+        /** @description A rolling tranche of the replicating portfolio and its weight. */
+        c14Tranche: {
+            maturity_years: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            weight: number;
+        };
+        /** @description SRP31.125 Table 6 term-deposit early redemption multiplier of a shock. */
+        c14UMult: {
+            /** @enum {string} */
+            shock: "parallel-up" | "parallel-down" | "steepener" | "flattener" | "short-up" | "short-down";
+            u: number;
+        };
+        /** @description Units of every number: money in the stated scale of its currency, rates as decimals discounted continuously (SRP31.129), shocks in basis points, bucket midpoints in years, dates ISO. */
+        c14Units: {
+            /** @enum {string} */
+            money_scale: "units" | "thousands" | "millions";
+            /** @constant */
+            rate: "decimal";
+            /** @constant */
+            compounding: "continuous";
+            /** @constant */
+            shock: "basis-points";
+            /** @constant */
+            bucket_midpoint: "years";
+            /** @constant */
+            dates: "ISO-8601";
+        };
+        /** @description The weights re-estimated on one estimation window, in the order of the tranches (stability across windows). */
+        c14Window: {
+            window_start: string;
+            window_end: string;
+            weights: number[];
+            weighted_average_maturity_years: number;
+        };
+        /**
+         * C15 models
+         * @description Catalog row c15-models 1.0.0: the C15 models artifact (buckets, the CMF Annex 1 table, floors, thresholds, curve fits, calibration targets, behavioural fits).
+         */
+        "c15-models": components["schemas"]["common-models-envelope"] & {
+            /** @constant */
+            case_id: "C15";
+            fit: components["schemas"]["c15Fit"];
+        };
+        /**
+         * C15 annex1-variant variant
+         * @description Catalog row c15-outputs 1.0.0: one SDD variant of the IRRBB case on a CLP and UF balance sheet under RAN 21-13 Annex 1 (outputs.kind annex1-variant).
+         */
+        "c15-variant-annex1-variant": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C15";
+            outputs: components["schemas"]["c15Outputs"];
+        } & {
+            tests?: unknown;
+        };
+        /** @description A behavioural assumption as a named field: its value, its unit and where it comes from (the regulatory cap, a fit, or a stated synthetic value), so a view can show the result with and without it. */
+        c15Assumption: {
+            value: number;
+            unit: string;
+            /** @enum {string} */
+            source_kind: "regulatory-cap" | "fitted" | "synthetic-stated";
+            source: string;
+        };
+        /** @description The five behavioural assumptions. nmd_core_share and nmd_core_maturity_years are the balance-weighted averages of nmd_segments. */
+        c15Assumptions: {
+            nmd_core_share: components["schemas"]["c15Assumption"];
+            nmd_core_maturity_years: components["schemas"]["c15Assumption"];
+            prepayment_cpr: components["schemas"]["c15Assumption"];
+            term_deposit_redemption_rate: components["schemas"]["c15Assumption"];
+            deposit_beta: components["schemas"]["c15Assumption"];
+        };
+        /** @description The synthetic Banco Andino, calibrated to CMF aggregates (U5's calibration); fixtures say so. */
+        c15Bank: {
+            name: string;
+            /** @constant */
+            synthetic: true;
+            notice: components["schemas"]["common-text"];
+            seed: number;
+            calibration_source: string;
+        };
+        /** @description The balance-sheet assumption of the projection: a constant balance sheet (maturing or repricing flows replaced by identical new ones, DIS70.5) or an annual growth. */
+        c15BsAssumption: {
+            /** @enum {string} */
+            kind: "constant" | "growth";
+            growth_annual: number;
+            description: components["schemas"]["c15Label"];
+        } & ({
+            /** @constant */
+            kind?: "constant";
+            /** @constant */
+            growth_annual?: 0;
+        } | {
+            /** @constant */
+            kind?: "growth";
+        });
+        /** @description One of the 19 time buckets of SRP31.96 Table 3. */
+        c15BucketDef: {
+            /** @description Bucket of the 19 of SRP31.96 Table 3, 1 (overnight) to 19 (over 20 years). */
+            bucket: number;
+            label: components["schemas"]["common-text"];
+            /**
+             * @description Bucket midpoint in years: one of the 19 of SRP31.96 Table 3.
+             * @enum {number}
+             */
+            midpoint_years: 0.0028 | 0.0417 | 0.1667 | 0.375 | 0.625 | 0.875 | 1.25 | 1.75 | 2.5 | 3.5 | 4.5 | 5.5 | 6.5 | 7.5 | 8.5 | 9.5 | 12.5 | 17.5 | 25;
+        } & ({
+            /** @constant */
+            bucket?: 1;
+            /** @constant */
+            midpoint_years?: 0.0028;
+        } | {
+            /** @constant */
+            bucket?: 2;
+            /** @constant */
+            midpoint_years?: 0.0417;
+        } | {
+            /** @constant */
+            bucket?: 3;
+            /** @constant */
+            midpoint_years?: 0.1667;
+        } | {
+            /** @constant */
+            bucket?: 4;
+            /** @constant */
+            midpoint_years?: 0.375;
+        } | {
+            /** @constant */
+            bucket?: 5;
+            /** @constant */
+            midpoint_years?: 0.625;
+        } | {
+            /** @constant */
+            bucket?: 6;
+            /** @constant */
+            midpoint_years?: 0.875;
+        } | {
+            /** @constant */
+            bucket?: 7;
+            /** @constant */
+            midpoint_years?: 1.25;
+        } | {
+            /** @constant */
+            bucket?: 8;
+            /** @constant */
+            midpoint_years?: 1.75;
+        } | {
+            /** @constant */
+            bucket?: 9;
+            /** @constant */
+            midpoint_years?: 2.5;
+        } | {
+            /** @constant */
+            bucket?: 10;
+            /** @constant */
+            midpoint_years?: 3.5;
+        } | {
+            /** @constant */
+            bucket?: 11;
+            /** @constant */
+            midpoint_years?: 4.5;
+        } | {
+            /** @constant */
+            bucket?: 12;
+            /** @constant */
+            midpoint_years?: 5.5;
+        } | {
+            /** @constant */
+            bucket?: 13;
+            /** @constant */
+            midpoint_years?: 6.5;
+        } | {
+            /** @constant */
+            bucket?: 14;
+            /** @constant */
+            midpoint_years?: 7.5;
+        } | {
+            /** @constant */
+            bucket?: 15;
+            /** @constant */
+            midpoint_years?: 8.5;
+        } | {
+            /** @constant */
+            bucket?: 16;
+            /** @constant */
+            midpoint_years?: 9.5;
+        } | {
+            /** @constant */
+            bucket?: 17;
+            /** @constant */
+            midpoint_years?: 12.5;
+        } | {
+            /** @constant */
+            bucket?: 18;
+            /** @constant */
+            midpoint_years?: 17.5;
+        } | {
+            /** @constant */
+            bucket?: 19;
+            /** @constant */
+            midpoint_years?: 25;
+        });
+        /** @description Null when the variant applies no CPI surprise. */
+        c15CpiScenario: {
+            surprise_pp: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            effect: number;
+            formula: string;
+        } | null;
+        /** @description A BCCh F022 sovereign curve (CLP or UF) of the stated month, fitted to a zero curve and labelled as an adaptation: the attribution names the Banco Central de Chile as the owner of the source and the fit as Contraste's (BCCh terms, dossier 08 C.7). Required: the C15 bake waits for the BCCh account. */
+        c15Curve: {
+            /** @enum {string} */
+            curve: "CLP" | "UR";
+            month: string;
+            date: string;
+            source: string;
+            series_codes: string[];
+            attribution: string;
+            /** @constant */
+            observed_kind: "secondary-market-yield";
+            /** @constant */
+            compounding: "continuous";
+            fit: {
+                /** @enum {string} */
+                model: "nelson-siegel" | "svensson";
+                parameters: {
+                    name: string;
+                    value: number;
+                    unit: string;
+                }[];
+                rmse_bp: number;
+            };
+            points: components["schemas"]["c15Point"][];
+            /** @description Zero rate at each bucket midpoint, bucket 1 first. */
+            zero_rates_at_midpoints: number[];
+        };
+        /** @description The curve fit of one BCCh series family (labelled as an adaptation). */
+        c15CurveModel: {
+            /** @enum {string} */
+            curve: "CLP" | "UR";
+            month: string;
+            series_codes: string[];
+            /** @enum {string} */
+            model: "nelson-siegel" | "svensson";
+            parameters: {
+                name: string;
+                value: number;
+                unit: string;
+            }[];
+            rmse_bp: number;
+            attribution: string;
+        };
+        c15Curves: {
+            clp: components["schemas"]["c15Curve"];
+            ur: components["schemas"]["c15Curve"];
+        };
+        /** @description Deposit beta (pass-through of the market rate to the client rate), asymmetric in the direction of the move. */
+        c15DepositBeta: {
+            up: number;
+            down: number;
+            /** @enum {string} */
+            source_kind: "regulatory-cap" | "fitted" | "synthetic-stated";
+            source: string;
+        };
+        /** @description One item of the dynamic NII projection (the inputs of simulate_nii): a reset rate is spread + beta x r_t; reprice_months 0 reprices every month, k >= 1 keeps rate0 until month k and resets every k months. */
+        c15DynItem: {
+            item_id: string;
+            /** @enum {string} */
+            side: "asset" | "liability";
+            balance: number;
+            rate0: number;
+            spread: number;
+            beta: number;
+            reprice_months: number;
+        };
+        /** @description The projected NII under the base path or one parallel shock; delta_vs_base = base total minus this total (loss-positive). */
+        c15DynScenario: {
+            /** @enum {string} */
+            scenario: "base" | "parallel-up" | "parallel-down";
+            shock_bp: number;
+            /** @description Annual short rate of each projected month, after the floor. */
+            short_rate_path: number[];
+            /** @description NII of each projected month, money. */
+            monthly_nii: number[];
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            total: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            delta_vs_base: number;
+        };
+        /** @description base, parallel-up, parallel-down, in that order. */
+        c15DynScenarios: [
+            components["schemas"]["c15DynScenario"],
+            components["schemas"]["c15DynScenario"],
+            components["schemas"]["c15DynScenario"]
+        ];
+        /** @description The dynamic NII of one leg; balances and NII are in the reporting currency (the UR leg converted at the UF value). */
+        c15DynamicLeg: {
+            /** @enum {string} */
+            leg: "CLP" | "UR";
+            items: components["schemas"]["c15DynItem"][];
+            scenarios: components["schemas"]["c15DynScenarios"];
+        };
+        /** @description Ladder rung 5 for the CLP and UR legs (dossier 05 D.6). The EaR and EVaR of C15 wait for the BCCh curves (owner prerequisite 7). */
+        c15DynamicNii: {
+            horizon_months: number;
+            balance_sheet_assumption: components["schemas"]["c15BsAssumption"];
+            legs: [
+                components["schemas"]["c15DynamicLeg"],
+                components["schemas"]["c15DynamicLeg"]
+            ];
+        };
+        /** @description Annex 1 delta EVE: the maximum over the six shocks of the pair total (there is no other currency in this book). */
+        c15EveMeasure: {
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            base_eve_clp: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            base_eve_ur: number;
+            rows: [
+                components["schemas"]["c15EveRow"],
+                components["schemas"]["c15EveRow"],
+                components["schemas"]["c15EveRow"],
+                components["schemas"]["c15EveRow"],
+                components["schemas"]["c15EveRow"],
+                components["schemas"]["c15EveRow"]
+            ];
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            delta_eve: number;
+            worst_shock: ("parallel-up" | "parallel-down" | "steepener" | "flattener" | "short-up" | "short-down") | null;
+            delta_eve_share_tier1: number;
+        };
+        c15EveRow: {
+            /** @enum {string} */
+            shock: "parallel-up" | "parallel-down" | "steepener" | "flattener" | "short-up" | "short-down";
+            clp: components["schemas"]["c15LegEve"];
+            ur: components["schemas"]["c15LegEve"];
+            pair: components["schemas"]["c15Pair"];
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            total_delta_eve: number;
+        };
+        /** @description C15 models: the 19 buckets, the CMF Annex 1 table, floors and thresholds as data, the offset share and the indexation rate, the BCCh curve fits, the Banco Andino calibration targets and the behavioural fits. */
+        c15Fit: {
+            /**
+             * @description ISO 4217 code of the money fields of this block.
+             * @constant
+             */
+            reporting_currency: "CLP";
+            sign_convention: components["schemas"]["c15Sign"];
+            units: components["schemas"]["c15Units"];
+            bank: components["schemas"]["c15Bank"];
+            buckets: [
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"],
+                components["schemas"]["c15BucketDef"]
+            ];
+            annex1_table: [
+                components["schemas"]["c15TableRow"],
+                components["schemas"]["c15TableRow"],
+                components["schemas"]["c15TableRow"],
+                components["schemas"]["c15TableRow"],
+                components["schemas"]["c15TableRow"]
+            ];
+            eve_shock_sizes: [
+                components["schemas"]["c15ShockSize"],
+                components["schemas"]["c15ShockSize"]
+            ];
+            floors: components["schemas"]["c15FloorRule"];
+            prioritised_thresholds: [
+                components["schemas"]["c15ThresholdRule"],
+                components["schemas"]["c15ThresholdRule"],
+                components["schemas"]["c15ThresholdRule"]
+            ];
+            /** @constant */
+            offset_share: 0.5;
+            /** @constant */
+            indexation_rate: 0.025;
+            multipliers: components["schemas"]["c15Multipliers"];
+            nmd_caps: components["schemas"]["c15NmdCaps"];
+            curve_models: components["schemas"]["c15CurveModel"][];
+            calibration_targets: components["schemas"]["c15Target"][];
+            nmd_models: components["schemas"]["c15NmdModel"][];
+            prepayment: components["schemas"]["c15Prepayment"];
+        };
+        /** @description The effect of a binding post-shock floor on a leg's measure: with minus without. */
+        c15FloorEffect: {
+            /** @enum {string} */
+            leg: "CLP" | "UR";
+            /** @enum {string} */
+            measure: "delta-eve" | "delta-nii";
+            /** @enum {string} */
+            shock: "parallel-up" | "parallel-down" | "steepener" | "flattener" | "short-up" | "short-down";
+            buckets_floored: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            delta_with_floor: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            delta_without_floor: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            effect: number;
+        };
+        c15FloorRule: {
+            /** @constant */
+            ur_floor: -0.02;
+            /** @constant */
+            other_floor: 0;
+            reference: string;
+        };
+        /** @description Annex 1 post-shock floors: -2 percent for UR rates, 0 percent for other currencies (or the pre-shock rate if lower). */
+        c15Floors: {
+            /** @constant */
+            ur_floor: -0.02;
+            /** @constant */
+            other_floor: 0;
+            rule: components["schemas"]["c15Label"];
+            effects: components["schemas"]["c15FloorEffect"][];
+        };
+        /** @description A net notional repricing cash flow in one bucket (assets positive, liabilities negative). */
+        c15Flow: {
+            /** @description Bucket of the 19 of SRP31.96 Table 3, 1 (overnight) to 19 (over 20 years). */
+            bucket: number;
+            /**
+             * @description Bucket midpoint in years: one of the 19 of SRP31.96 Table 3.
+             * @enum {number}
+             */
+            midpoint_years: 0.0028 | 0.0417 | 0.1667 | 0.375 | 0.625 | 0.875 | 1.25 | 1.75 | 2.5 | 3.5 | 4.5 | 5.5 | 6.5 | 7.5 | 8.5 | 9.5 | 12.5 | 17.5 | 25;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            amount: number;
+        } & ({
+            /** @constant */
+            bucket?: 1;
+            /** @constant */
+            midpoint_years?: 0.0028;
+        } | {
+            /** @constant */
+            bucket?: 2;
+            /** @constant */
+            midpoint_years?: 0.0417;
+        } | {
+            /** @constant */
+            bucket?: 3;
+            /** @constant */
+            midpoint_years?: 0.1667;
+        } | {
+            /** @constant */
+            bucket?: 4;
+            /** @constant */
+            midpoint_years?: 0.375;
+        } | {
+            /** @constant */
+            bucket?: 5;
+            /** @constant */
+            midpoint_years?: 0.625;
+        } | {
+            /** @constant */
+            bucket?: 6;
+            /** @constant */
+            midpoint_years?: 0.875;
+        } | {
+            /** @constant */
+            bucket?: 7;
+            /** @constant */
+            midpoint_years?: 1.25;
+        } | {
+            /** @constant */
+            bucket?: 8;
+            /** @constant */
+            midpoint_years?: 1.75;
+        } | {
+            /** @constant */
+            bucket?: 9;
+            /** @constant */
+            midpoint_years?: 2.5;
+        } | {
+            /** @constant */
+            bucket?: 10;
+            /** @constant */
+            midpoint_years?: 3.5;
+        } | {
+            /** @constant */
+            bucket?: 11;
+            /** @constant */
+            midpoint_years?: 4.5;
+        } | {
+            /** @constant */
+            bucket?: 12;
+            /** @constant */
+            midpoint_years?: 5.5;
+        } | {
+            /** @constant */
+            bucket?: 13;
+            /** @constant */
+            midpoint_years?: 6.5;
+        } | {
+            /** @constant */
+            bucket?: 14;
+            /** @constant */
+            midpoint_years?: 7.5;
+        } | {
+            /** @constant */
+            bucket?: 15;
+            /** @constant */
+            midpoint_years?: 8.5;
+        } | {
+            /** @constant */
+            bucket?: 16;
+            /** @constant */
+            midpoint_years?: 9.5;
+        } | {
+            /** @constant */
+            bucket?: 17;
+            /** @constant */
+            midpoint_years?: 12.5;
+        } | {
+            /** @constant */
+            bucket?: 18;
+            /** @constant */
+            midpoint_years?: 17.5;
+        } | {
+            /** @constant */
+            bucket?: 19;
+            /** @constant */
+            midpoint_years?: 25;
+        });
+        /** @description SRP31.119 Table 5 prepayment multiplier of a shock. */
+        c15Gamma: {
+            /** @enum {string} */
+            shock: "parallel-up" | "parallel-down" | "steepener" | "flattener" | "short-up" | "short-down";
+            gamma: number;
+        };
+        /** @description The standardised indexation (reajustabilidad) charge: 2.5 percent of the absolute net UF position PN_UR (an implied 2.5 percent inflation surprise). pn_ur = net UF position x uf_value, assets positive. */
+        c15Indexation: {
+            /** @constant */
+            rate: 0.025;
+            net_position_uf_units: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            pn_ur: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            abs_pn_ur: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            charge: number;
+            formula: string;
+            note: components["schemas"]["common-text"];
+        };
+        /** @description One synthetic Banco Andino item in the currency of its leg, slotted into the buckets (the Annex 1 NMD caps applied). */
+        c15Item: {
+            item_id: string;
+            label: components["schemas"]["common-text"];
+            /** @enum {string} */
+            side: "asset" | "liability";
+            /** @enum {string} */
+            category: "cash" | "securities" | "loans-fixed" | "loans-floating" | "loans-uf" | "deposits-nmd" | "deposits-time" | "borrowings" | "other";
+            /** @enum {string} */
+            behavioural_class: "none" | "nmd-retail-operational" | "nmd-retail-non-operational" | "nmd-wholesale" | "term-deposit" | "prepayable-loan";
+            source: string;
+            amount: number;
+            cash_flows: components["schemas"]["c15Flow"][];
+        };
+        /** @description A non-empty bilingual label (an empty string is not a label). */
+        c15Label: {
+            en: string;
+            es: string;
+        };
+        /** @description One leg of the banking book in the currency of the leg (CLF for the UR leg): net_position = assets minus liabilities. The CLP leg is in CLP and the UR leg is in CLF. */
+        c15Leg: {
+            /** @enum {string} */
+            leg: "CLP" | "UR";
+            /** @enum {string} */
+            currency: "CLP" | "CLF";
+            items: components["schemas"]["c15Item"][];
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            assets_total: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            liabilities_total: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            net_position: number;
+        } & ({
+            /** @constant */
+            leg?: "CLP";
+            /** @constant */
+            currency?: "CLP";
+        } | {
+            /** @constant */
+            leg?: "UR";
+            /** @constant */
+            currency?: "CLF";
+        });
+        /** @description One leg under one shock, in the reporting currency (the UR leg converted at the UF value). */
+        c15LegEve: {
+            /** @description Shock in basis points at each bucket midpoint before the floor. */
+            shape_bp: number[];
+            floor_bound_buckets: number[];
+            /** @description One value per bucket, bucket 1 first; net notional repricing cash flows, assets positive, liabilities negative. */
+            net_cash_flows: number[];
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            eve: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            kao: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            delta_eve: number;
+        };
+        /** @description The scenario multipliers of the prepayment rate and the term-deposit redemption rate, in the order of the six shocks. */
+        c15Multipliers: {
+            prepayment_gamma: [
+                components["schemas"]["c15Gamma"],
+                components["schemas"]["c15Gamma"],
+                components["schemas"]["c15Gamma"],
+                components["schemas"]["c15Gamma"],
+                components["schemas"]["c15Gamma"],
+                components["schemas"]["c15Gamma"]
+            ];
+            term_deposit_u: [
+                components["schemas"]["c15UMult"],
+                components["schemas"]["c15UMult"],
+                components["schemas"]["c15UMult"],
+                components["schemas"]["c15UMult"],
+                components["schemas"]["c15UMult"],
+                components["schemas"]["c15UMult"]
+            ];
+            reference: string;
+        };
+        /** @description One leg under one parallel shock: delta NII = sum over the first six buckets of CF x (r0 - ri) x (1 - t_k). */
+        c15NiiLeg: {
+            shock_bp: number;
+            /** @description Net repricing cash flows of the buckets with t_k < 1, in the reporting currency. */
+            cash_flows: number[];
+            floor_bound_buckets: number[];
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            delta_nii: number;
+        };
+        /** @description Annex 1 delta NII = the maximum over the two parallel shocks of the pair, plus the indexation charge. */
+        c15NiiMeasure: {
+            rows: [
+                components["schemas"]["c15NiiRow"],
+                components["schemas"]["c15NiiRow"]
+            ];
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            max_pair: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            indexation_charge: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            delta_nii: number;
+            worst_shock: ("parallel-up" | "parallel-down") | null;
+            delta_nii_share_tier1: number;
+        };
+        c15NiiRow: {
+            /** @enum {string} */
+            shock: "parallel-up" | "parallel-down";
+            clp: components["schemas"]["c15NiiLeg"];
+            ur: components["schemas"]["c15NiiLeg"];
+            pair: components["schemas"]["c15Pair"];
+        };
+        /** @description The delta NII shock of Annex 1 Hoja 9: one parallel size, 300 bp for CLP and CLF. */
+        c15NiiSize: {
+            /** @enum {string} */
+            currency: "CLP" | "CLF";
+            /** @constant */
+            parallel_bp: 300;
+            /** @constant */
+            origin: "cmf-annex1";
+        };
+        /** @description SRP31 Table 4 cap of a category. */
+        c15NmdCap: {
+            /** @enum {string} */
+            category: "retail-operational" | "retail-non-operational" | "wholesale";
+            /** @description A share or an observed rate in [0, 1]. */
+            core_share_cap: number;
+            core_maturity_cap_years: number;
+            reference: string;
+        };
+        /** @description The three SRP31 Table 4 caps, exactly the table's. */
+        c15NmdCaps: [
+            components["schemas"]["c15NmdCap"],
+            components["schemas"]["c15NmdCap"],
+            components["schemas"]["c15NmdCap"]
+        ];
+        /** @description The static replicating portfolio of one NMD category at one valuation date (dossier 05 D.3). The weighted average maturity of a rolling tranche of maturity m is m / 2 (BCBS 368 footnote 38). A margin volatility the fit lacks is null with its reason. */
+        c15NmdModel: {
+            valuation_date: string;
+            /** @enum {string} */
+            category: "retail-operational" | "retail-non-operational" | "wholesale";
+            tranches: components["schemas"]["c15Tranche"][];
+            weights_sum: number;
+            weighted_average_maturity_years: number;
+            margin_volatility: number | null;
+            margin_volatility_reason: components["schemas"]["c15Label"] | null;
+            deposit_beta: components["schemas"]["c15DepositBeta"];
+            stability: components["schemas"]["c15Window"][];
+        } & ({
+            margin_volatility?: number;
+            margin_volatility_reason?: null;
+        } | {
+            margin_volatility?: null;
+            margin_volatility_reason?: components["schemas"]["c15Label"];
+        });
+        /** @description A non-maturity deposit segment: the requested core share and maturity, the SRP31 Table 4 cap, the value used and cap_applied (D2 of the U10 sizing). A request above its cap validates only with cap_applied true and the used value at the cap; a request within the caps has cap_applied false and the used value equal to the request (a producer check). The standardised EVE uses the used values. */
+        c15NmdSegment: {
+            /** @enum {string} */
+            category: "retail-operational" | "retail-non-operational" | "wholesale";
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            balance: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            requested_core_share: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            core_share_cap: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            core_share_used: number;
+            requested_core_maturity_years: number;
+            core_maturity_cap_years: number;
+            core_maturity_used_years: number;
+            cap_applied: boolean;
+            /** @enum {string} */
+            source_kind: "regulatory-cap" | "fitted" | "synthetic-stated";
+            source: string;
+        } & ({
+            /** @constant */
+            category?: "retail-operational";
+            /** @constant */
+            core_share_cap?: 0.9;
+            /** @constant */
+            core_maturity_cap_years?: 5;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            core_maturity_used_years?: number;
+            /** @constant */
+            cap_applied?: false;
+        } | {
+            /** @constant */
+            category?: "retail-operational";
+            /** @constant */
+            core_share_cap?: 0.9;
+            /** @constant */
+            core_maturity_cap_years?: 5;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            /** @constant */
+            core_maturity_used_years?: 5;
+            /** @constant */
+            cap_applied?: true;
+        } | {
+            /** @constant */
+            category?: "retail-operational";
+            /** @constant */
+            core_share_cap?: 0.9;
+            /** @constant */
+            core_maturity_cap_years?: 5;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            /** @constant */
+            core_share_used?: 0.9;
+            core_maturity_used_years?: number;
+            /** @constant */
+            cap_applied?: true;
+        } | {
+            /** @constant */
+            category?: "retail-operational";
+            /** @constant */
+            core_share_cap?: 0.9;
+            /** @constant */
+            core_maturity_cap_years?: 5;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            /** @constant */
+            core_share_used?: 0.9;
+            /** @constant */
+            core_maturity_used_years?: 5;
+            /** @constant */
+            cap_applied?: true;
+        } | {
+            /** @constant */
+            category?: "retail-non-operational";
+            /** @constant */
+            core_share_cap?: 0.7;
+            /** @constant */
+            core_maturity_cap_years?: 4.5;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            core_maturity_used_years?: number;
+            /** @constant */
+            cap_applied?: false;
+        } | {
+            /** @constant */
+            category?: "retail-non-operational";
+            /** @constant */
+            core_share_cap?: 0.7;
+            /** @constant */
+            core_maturity_cap_years?: 4.5;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            /** @constant */
+            core_maturity_used_years?: 4.5;
+            /** @constant */
+            cap_applied?: true;
+        } | {
+            /** @constant */
+            category?: "retail-non-operational";
+            /** @constant */
+            core_share_cap?: 0.7;
+            /** @constant */
+            core_maturity_cap_years?: 4.5;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            /** @constant */
+            core_share_used?: 0.7;
+            core_maturity_used_years?: number;
+            /** @constant */
+            cap_applied?: true;
+        } | {
+            /** @constant */
+            category?: "retail-non-operational";
+            /** @constant */
+            core_share_cap?: 0.7;
+            /** @constant */
+            core_maturity_cap_years?: 4.5;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            /** @constant */
+            core_share_used?: 0.7;
+            /** @constant */
+            core_maturity_used_years?: 4.5;
+            /** @constant */
+            cap_applied?: true;
+        } | {
+            /** @constant */
+            category?: "wholesale";
+            /** @constant */
+            core_share_cap?: 0.5;
+            /** @constant */
+            core_maturity_cap_years?: 4;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            core_maturity_used_years?: number;
+            /** @constant */
+            cap_applied?: false;
+        } | {
+            /** @constant */
+            category?: "wholesale";
+            /** @constant */
+            core_share_cap?: 0.5;
+            /** @constant */
+            core_maturity_cap_years?: 4;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            core_share_used?: number;
+            /** @constant */
+            core_maturity_used_years?: 4;
+            /** @constant */
+            cap_applied?: true;
+        } | {
+            /** @constant */
+            category?: "wholesale";
+            /** @constant */
+            core_share_cap?: 0.5;
+            /** @constant */
+            core_maturity_cap_years?: 4;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            /** @constant */
+            core_share_used?: 0.5;
+            core_maturity_used_years?: number;
+            /** @constant */
+            cap_applied?: true;
+        } | {
+            /** @constant */
+            category?: "wholesale";
+            /** @constant */
+            core_share_cap?: 0.5;
+            /** @constant */
+            core_maturity_cap_years?: 4;
+            requested_core_share?: number;
+            requested_core_maturity_years?: number;
+            /** @constant */
+            core_share_used?: 0.5;
+            /** @constant */
+            core_maturity_used_years?: 4;
+            /** @constant */
+            cap_applied?: true;
+        });
+        /** @description The state of the CLP and CLF offset rule: on, off, or compared (both are in every pair; the rule applies in used). */
+        c15Offset: {
+            /** @enum {string} */
+            state: "on" | "off" | "compared";
+            /** @constant */
+            share: 0.5;
+            applies_to: ("CLP" | "CLF")[];
+            rule: components["schemas"]["c15Label"];
+            reference: string;
+        };
+        /** @description C15 annex1-variant outputs (outputs.kind annex1-variant): IRRBB on a CLP and UF balance sheet under RAN 21-13 Annex 1 for one SDD variant, balance sheet and curves as of one stated month. Money is in the reporting currency CLP; the UR leg is converted at the stated UF value. */
+        c15Outputs: {
+            /** @constant */
+            kind: "annex1-variant";
+            variant: components["schemas"]["c15Variant"];
+            as_of: string;
+            balance_sheet_month: string;
+            curves_month: string;
+            /**
+             * @description ISO 4217 code of the money fields of this block.
+             * @constant
+             */
+            reporting_currency: "CLP";
+            sign_convention: components["schemas"]["c15Sign"];
+            units: components["schemas"]["c15Units"];
+            bank: components["schemas"]["c15Bank"];
+            ur_currency: components["schemas"]["c15Ur"];
+            curves: components["schemas"]["c15Curves"];
+            assumptions: components["schemas"]["c15Assumptions"];
+            nmd_segments: components["schemas"]["c15NmdSegment"][];
+            /** @description The CLP leg and the UR leg, in that order. */
+            legs: [
+                components["schemas"]["c15Leg"],
+                components["schemas"]["c15Leg"]
+            ];
+            eve_shock_sizes: [
+                components["schemas"]["c15ShockSize"],
+                components["schemas"]["c15ShockSize"]
+            ];
+            nii_shock_sizes: [
+                components["schemas"]["c15NiiSize"],
+                components["schemas"]["c15NiiSize"]
+            ];
+            dynamic_nii: components["schemas"]["c15DynamicNii"];
+            floors: components["schemas"]["c15Floors"];
+            offset_rule: components["schemas"]["c15Offset"];
+            indexation_charge: components["schemas"]["c15Indexation"];
+            cpi_scenario: components["schemas"]["c15CpiScenario"];
+            eve: components["schemas"]["c15EveMeasure"];
+            nii: components["schemas"]["c15NiiMeasure"];
+            thresholds: components["schemas"]["c15Thresholds"];
+        };
+        /** @description The CLP and CLF pair. with_offset applies the 50 percent offsetting rule when the two have opposite signs; without_offset is the sum of the positive parts; used is the one the offset_rule state selects. */
+        c15Pair: {
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            delta_clp: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            delta_ur: number;
+            opposite_signs: boolean;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            with_offset: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            without_offset: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            used: number;
+        };
+        /** @description One tenor: the observed BCCh yield and the fitted continuously compounded zero rate. */
+        c15Point: {
+            tenor_years: number;
+            observed_yield: number;
+            zero_rate: number;
+        };
+        /** @description The base prepayment behaviour (CPR, or a PSA multiple of the 100 percent PSA curve). */
+        c15Prepayment: {
+            /** @enum {string} */
+            model: "cpr-constant" | "psa";
+            /** @description A share or an observed rate in [0, 1]. */
+            cpr_base: number;
+            psa_percent: number | null;
+            /** @enum {string} */
+            source_kind: "regulatory-cap" | "fitted" | "synthetic-stated";
+            source: string;
+        };
+        /** @description The shock sizes applied to a currency, in basis points. A tabled size is exactly the table's (SRP31.90 Table 2, d368 Annex 2 Table 1, RAN 21-13 Annex 1 Hoja 9); a currency without an entry in the BCBS table (CLP is in neither) passes only labelled as a Contraste estimate with its method, never as a regulatory parameter (dossier 01 H.3), and a tabled currency cannot be relabelled as an estimate. */
+        c15ShockSize: {
+            /** @description ISO 4217 code of the money fields of this block. */
+            currency: string;
+            parallel_bp: number;
+            short_bp: number;
+            long_bp: number;
+            /** @enum {string} */
+            origin: "srp31-table-2024" | "srp31-table-2016" | "cmf-annex1" | "contraste-estimate";
+            label: components["schemas"]["c15Label"] | null;
+            method: string | null;
+        } & ({
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "ARS";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "AUD";
+            /** @constant */
+            parallel_bp?: 350;
+            /** @constant */
+            short_bp?: 425;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "BRL";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "CAD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 275;
+            /** @constant */
+            long_bp?: 175;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "CHF";
+            /** @constant */
+            parallel_bp?: 175;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "CNY";
+            /** @constant */
+            parallel_bp?: 225;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "EUR";
+            /** @constant */
+            parallel_bp?: 225;
+            /** @constant */
+            short_bp?: 350;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "GBP";
+            /** @constant */
+            parallel_bp?: 275;
+            /** @constant */
+            short_bp?: 425;
+            /** @constant */
+            long_bp?: 250;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "HKD";
+            /** @constant */
+            parallel_bp?: 225;
+            /** @constant */
+            short_bp?: 375;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "IDR";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "INR";
+            /** @constant */
+            parallel_bp?: 325;
+            /** @constant */
+            short_bp?: 475;
+            /** @constant */
+            long_bp?: 225;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "JPY";
+            /** @constant */
+            parallel_bp?: 100;
+            /** @constant */
+            short_bp?: 100;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "KRW";
+            /** @constant */
+            parallel_bp?: 225;
+            /** @constant */
+            short_bp?: 350;
+            /** @constant */
+            long_bp?: 225;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "MXN";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "RUB";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "SAR";
+            /** @constant */
+            parallel_bp?: 275;
+            /** @constant */
+            short_bp?: 375;
+            /** @constant */
+            long_bp?: 250;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "SEK";
+            /** @constant */
+            parallel_bp?: 275;
+            /** @constant */
+            short_bp?: 425;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "SGD";
+            /** @constant */
+            parallel_bp?: 175;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 225;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "TRY";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "USD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 225;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2024";
+            /** @constant */
+            currency?: "ZAR";
+            /** @constant */
+            parallel_bp?: 325;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "ARS";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "AUD";
+            /** @constant */
+            parallel_bp?: 300;
+            /** @constant */
+            short_bp?: 450;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "BRL";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "CAD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "CHF";
+            /** @constant */
+            parallel_bp?: 100;
+            /** @constant */
+            short_bp?: 150;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "CNY";
+            /** @constant */
+            parallel_bp?: 250;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "EUR";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "GBP";
+            /** @constant */
+            parallel_bp?: 250;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "HKD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "IDR";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 350;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "INR";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "JPY";
+            /** @constant */
+            parallel_bp?: 100;
+            /** @constant */
+            short_bp?: 100;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "KRW";
+            /** @constant */
+            parallel_bp?: 300;
+            /** @constant */
+            short_bp?: 400;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "MXN";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "RUB";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "SAR";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "SEK";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "SGD";
+            /** @constant */
+            parallel_bp?: 150;
+            /** @constant */
+            short_bp?: 200;
+            /** @constant */
+            long_bp?: 100;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "TRY";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "USD";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 300;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "srp31-table-2016";
+            /** @constant */
+            currency?: "ZAR";
+            /** @constant */
+            parallel_bp?: 400;
+            /** @constant */
+            short_bp?: 500;
+            /** @constant */
+            long_bp?: 300;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "cmf-annex1";
+            /** @constant */
+            currency?: "CLP";
+            /** @constant */
+            parallel_bp?: 300;
+            /** @constant */
+            short_bp?: 400;
+            /** @constant */
+            long_bp?: 200;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "cmf-annex1";
+            /** @constant */
+            currency?: "CLF";
+            /** @constant */
+            parallel_bp?: 200;
+            /** @constant */
+            short_bp?: 250;
+            /** @constant */
+            long_bp?: 150;
+            label?: null;
+            method?: null;
+        } | {
+            /** @constant */
+            origin?: "contraste-estimate";
+            currency?: unknown;
+            label?: components["schemas"]["c15Label"];
+            method?: string;
+        });
+        /** @description Sign convention, stated in the document: a positive delta EVE or delta NII is a loss (SRP31.129; dossier 01 H.4). */
+        c15Sign: {
+            /** @constant */
+            delta_eve: "positive-is-loss";
+            /** @constant */
+            delta_nii: "positive-is-loss";
+            reference: string;
+            statement: components["schemas"]["common-text"];
+        };
+        /** @description A row of the Annex 1 Hoja 9 shock table; '-' in the source is null. */
+        c15TableRow: {
+            /** @enum {string} */
+            basket: "canasta-1" | "canasta-2" | "CLP" | "UR-nii" | "UR-eve";
+            parallel_bp: number;
+            short_bp: number | null;
+            long_bp: number | null;
+        };
+        c15Target: {
+            metric: string;
+            unit: string;
+            target: number;
+            achieved: number;
+            source: string;
+            as_of: string;
+        };
+        c15ThresholdRule: {
+            /** @enum {string} */
+            id: "nii-tier1" | "eve-tier1" | "nii-margin";
+            threshold: number;
+            base: string;
+        };
+        /** @description One prioritised-bank test of Annex 1: delta NII over Tier 1 (5 percent), delta EVE over Tier 1 (15 percent), delta NII over the 12-month net interest and indexation margin (18 percent). */
+        c15ThresholdTest: {
+            /** @enum {string} */
+            id: "nii-tier1" | "eve-tier1" | "nii-margin";
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            measure: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            base: number;
+            ratio: number;
+            threshold: number;
+            breached: boolean;
+        };
+        /** @description The banco priorizado tests; prioritised is true when any test is breached. */
+        c15Thresholds: {
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            tier1: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            net_interest_and_indexation_margin_12m: number;
+            tests: [
+                components["schemas"]["c15ThresholdTest"],
+                components["schemas"]["c15ThresholdTest"],
+                components["schemas"]["c15ThresholdTest"]
+            ];
+            prioritised: boolean;
+            reference: string;
+        };
+        /** @description A rolling tranche of the replicating portfolio and its weight. */
+        c15Tranche: {
+            maturity_years: number;
+            /** @description A share or an observed rate in [0, 1]. */
+            weight: number;
+        };
+        /** @description SRP31.125 Table 6 term-deposit early redemption multiplier of a shock. */
+        c15UMult: {
+            /** @enum {string} */
+            shock: "parallel-up" | "parallel-down" | "steepener" | "flattener" | "short-up" | "short-down";
+            u: number;
+        };
+        /** @description Units of every number: money in the stated scale of its currency, rates as decimals discounted continuously (SRP31.129), shocks in basis points, bucket midpoints in years, dates ISO. */
+        c15Units: {
+            /** @enum {string} */
+            money_scale: "units" | "thousands" | "millions";
+            /** @constant */
+            rate: "decimal";
+            /** @constant */
+            compounding: "continuous";
+            /** @constant */
+            shock: "basis-points";
+            /** @constant */
+            bucket_midpoint: "years";
+            /** @constant */
+            dates: "ISO-8601";
+        };
+        /** @description The UR currency of RAN 21-13 Annex 1: all CLP-indexed flows are treated as one currency (CLF, UF-indexed). UF amounts are CLF; uf_value is the CLP value of one UF on uf_date. */
+        c15Ur: {
+            /** @constant */
+            label: "UR";
+            /** @constant */
+            code: "CLF";
+            /** @constant */
+            treated_as_one_currency: true;
+            definition: components["schemas"]["common-text"];
+            uf_value: number;
+            /** @constant */
+            uf_value_currency: "CLP";
+            uf_date: string;
+            uf_source: string;
+        };
+        /** @description The SDD variant of the case (section 5): one document per variant. */
+        c15Variant: {
+            /** @enum {string} */
+            id: "long-uf" | "short-uf" | "cpi-surprise" | "clp-steepener" | "offset-on-off" | "floors-active";
+            label: components["schemas"]["common-text"];
+            description: components["schemas"]["common-text"];
+            parameters: {
+                name: string;
+                value: number;
+                unit: string;
+            }[];
+        };
+        /** @description The weights re-estimated on one estimation window, in the order of the tranches (stability across windows). */
+        c15Window: {
+            window_start: string;
+            window_end: string;
+            weights: number[];
+            weighted_average_maturity_years: number;
+        };
+        /**
          * C17 models
          * @description Catalog row c17-models 1.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification).
          */
@@ -5869,7 +9151,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c03-models"] | components["schemas"]["c03-variant-vintage-cohort"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c08-models"] | components["schemas"]["c08-variant-default-cohort"] | components["schemas"]["c09-models"] | components["schemas"]["c09-variant-acceleration-level"] | components["schemas"]["c10-models"] | components["schemas"]["c10-variant-correlation-grid"] | components["schemas"]["c10-variant-loan-type"] | components["schemas"]["c11-models"] | components["schemas"]["c11-variant-window"] | components["schemas"]["c13-models"] | components["schemas"]["c13-variant-deficiency"] | components["schemas"]["c17-models"] | components["schemas"]["c17-variant-tail-index"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
+                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c03-models"] | components["schemas"]["c03-variant-vintage-cohort"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c08-models"] | components["schemas"]["c08-variant-default-cohort"] | components["schemas"]["c09-models"] | components["schemas"]["c09-variant-acceleration-level"] | components["schemas"]["c10-models"] | components["schemas"]["c10-variant-correlation-grid"] | components["schemas"]["c10-variant-loan-type"] | components["schemas"]["c11-models"] | components["schemas"]["c11-variant-window"] | components["schemas"]["c13-models"] | components["schemas"]["c13-variant-deficiency"] | components["schemas"]["c14-models"] | components["schemas"]["c14-variant-valuation-date"] | components["schemas"]["c15-models"] | components["schemas"]["c15-variant-annex1-variant"] | components["schemas"]["c17-models"] | components["schemas"]["c17-variant-tail-index"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
                 };
             };
             404: components["responses"]["NotFound"];

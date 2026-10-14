@@ -1,0 +1,2887 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c14/models.schema.json",
+  "title": "C14 models",
+  "description": "Catalog row c14-models 1.0.0: the C14 models artifact (buckets, the 2024 and 2016 shock tables, shapes, NMD caps, multipliers, replicating portfolios, parameter-change flags).",
+  "allOf": [
+    {
+      "$ref": "../common/models-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C14"
+        },
+        "fit": {
+          "$ref": "#/$defs/c14Fit"
+        }
+      },
+      "required": [
+        "case_id",
+        "fit"
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c14Label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "en",
+        "es"
+      ],
+      "properties": {
+        "en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "es": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A non-empty bilingual label (an empty string is not a label)."
+    },
+    "c14Sign": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "delta_eve",
+        "delta_nii",
+        "reference",
+        "statement"
+      ],
+      "properties": {
+        "delta_eve": {
+          "const": "positive-is-loss"
+        },
+        "delta_nii": {
+          "const": "positive-is-loss"
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "statement": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "Sign convention, stated in the document: a positive delta EVE or delta NII is a loss (SRP31.129; dossier 01 H.4)."
+    },
+    "c14Units": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "money_scale",
+        "rate",
+        "compounding",
+        "shock",
+        "bucket_midpoint",
+        "dates"
+      ],
+      "properties": {
+        "money_scale": {
+          "type": "string",
+          "enum": [
+            "units",
+            "thousands",
+            "millions"
+          ]
+        },
+        "rate": {
+          "const": "decimal"
+        },
+        "compounding": {
+          "const": "continuous"
+        },
+        "shock": {
+          "const": "basis-points"
+        },
+        "bucket_midpoint": {
+          "const": "years"
+        },
+        "dates": {
+          "const": "ISO-8601"
+        }
+      },
+      "description": "Units of every number: money in the stated scale of its currency, rates as decimals discounted continuously (SRP31.129), shocks in basis points, bucket midpoints in years, dates ISO."
+    },
+    "c14ShockSize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "parallel_bp",
+        "short_bp",
+        "long_bp",
+        "origin",
+        "label",
+        "method"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "parallel_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "short_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "long_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "srp31-table-2024",
+            "srp31-table-2016",
+            "cmf-annex1",
+            "contraste-estimate"
+          ]
+        },
+        "label": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c14Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "method": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The shock sizes applied to a currency, in basis points. A tabled size is exactly the table's (SRP31.90 Table 2, d368 Annex 2 Table 1, RAN 21-13 Annex 1 Hoja 9); a currency without an entry in the BCBS table (CLP is in neither) passes only labelled as a Contraste estimate with its method, never as a regulatory parameter (dossier 01 H.3), and a tabled currency cannot be relabelled as an estimate.",
+      "oneOf": [
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "ARS"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "AUD"
+            },
+            "parallel_bp": {
+              "const": 350
+            },
+            "short_bp": {
+              "const": 425
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "BRL"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "CAD"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 275
+            },
+            "long_bp": {
+              "const": 175
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "CHF"
+            },
+            "parallel_bp": {
+              "const": 175
+            },
+            "short_bp": {
+              "const": 250
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "CNY"
+            },
+            "parallel_bp": {
+              "const": 225
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "EUR"
+            },
+            "parallel_bp": {
+              "const": 225
+            },
+            "short_bp": {
+              "const": 350
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "GBP"
+            },
+            "parallel_bp": {
+              "const": 275
+            },
+            "short_bp": {
+              "const": 425
+            },
+            "long_bp": {
+              "const": 250
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "HKD"
+            },
+            "parallel_bp": {
+              "const": 225
+            },
+            "short_bp": {
+              "const": 375
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "IDR"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "parallel_bp": {
+              "const": 325
+            },
+            "short_bp": {
+              "const": 475
+            },
+            "long_bp": {
+              "const": 225
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "JPY"
+            },
+            "parallel_bp": {
+              "const": 100
+            },
+            "short_bp": {
+              "const": 100
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "KRW"
+            },
+            "parallel_bp": {
+              "const": 225
+            },
+            "short_bp": {
+              "const": 350
+            },
+            "long_bp": {
+              "const": 225
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "MXN"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "RUB"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "SAR"
+            },
+            "parallel_bp": {
+              "const": 275
+            },
+            "short_bp": {
+              "const": 375
+            },
+            "long_bp": {
+              "const": 250
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "SEK"
+            },
+            "parallel_bp": {
+              "const": 275
+            },
+            "short_bp": {
+              "const": 425
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "SGD"
+            },
+            "parallel_bp": {
+              "const": 175
+            },
+            "short_bp": {
+              "const": 250
+            },
+            "long_bp": {
+              "const": 225
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "TRY"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "USD"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 225
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "ZAR"
+            },
+            "parallel_bp": {
+              "const": 325
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "ARS"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "AUD"
+            },
+            "parallel_bp": {
+              "const": 300
+            },
+            "short_bp": {
+              "const": 450
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "BRL"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "CAD"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "CHF"
+            },
+            "parallel_bp": {
+              "const": 100
+            },
+            "short_bp": {
+              "const": 150
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "CNY"
+            },
+            "parallel_bp": {
+              "const": 250
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "EUR"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 250
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "GBP"
+            },
+            "parallel_bp": {
+              "const": 250
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "HKD"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 250
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "IDR"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 350
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "JPY"
+            },
+            "parallel_bp": {
+              "const": 100
+            },
+            "short_bp": {
+              "const": 100
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "KRW"
+            },
+            "parallel_bp": {
+              "const": 300
+            },
+            "short_bp": {
+              "const": 400
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "MXN"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "RUB"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "SAR"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "SEK"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "SGD"
+            },
+            "parallel_bp": {
+              "const": 150
+            },
+            "short_bp": {
+              "const": 200
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "TRY"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "USD"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "ZAR"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "cmf-annex1"
+            },
+            "currency": {
+              "const": "CLP"
+            },
+            "parallel_bp": {
+              "const": 300
+            },
+            "short_bp": {
+              "const": 400
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "cmf-annex1"
+            },
+            "currency": {
+              "const": "CLF"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 250
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "contraste-estimate"
+            },
+            "currency": {
+              "not": {
+                "enum": [
+                  "ARS",
+                  "AUD",
+                  "BRL",
+                  "CAD",
+                  "CHF",
+                  "CNY",
+                  "EUR",
+                  "GBP",
+                  "HKD",
+                  "IDR",
+                  "INR",
+                  "JPY",
+                  "KRW",
+                  "MXN",
+                  "RUB",
+                  "SAR",
+                  "SEK",
+                  "SGD",
+                  "TRY",
+                  "USD",
+                  "ZAR"
+                ]
+              }
+            },
+            "label": {
+              "$ref": "#/$defs/c14Label"
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "c14Tranche": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maturity_years",
+        "weight"
+      ],
+      "properties": {
+        "maturity_years": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        }
+      },
+      "description": "A rolling tranche of the replicating portfolio and its weight."
+    },
+    "c14Window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "window_start",
+        "window_end",
+        "weights",
+        "weighted_average_maturity_years"
+      ],
+      "properties": {
+        "window_start": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "window_end": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "weights": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          },
+          "minItems": 1
+        },
+        "weighted_average_maturity_years": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "The weights re-estimated on one estimation window, in the order of the tranches (stability across windows)."
+    },
+    "c14DepositBeta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "up",
+        "down",
+        "source_kind",
+        "source"
+      ],
+      "properties": {
+        "up": {
+          "type": "number",
+          "minimum": 0
+        },
+        "down": {
+          "type": "number",
+          "minimum": 0
+        },
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "regulatory-cap",
+            "fitted",
+            "synthetic-stated"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "Deposit beta (pass-through of the market rate to the client rate), asymmetric in the direction of the move."
+    },
+    "c14NmdModel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "valuation_date",
+        "category",
+        "tranches",
+        "weights_sum",
+        "weighted_average_maturity_years",
+        "margin_volatility",
+        "margin_volatility_reason",
+        "deposit_beta",
+        "stability"
+      ],
+      "properties": {
+        "valuation_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "retail-transactional",
+            "retail-non-transactional",
+            "wholesale"
+          ]
+        },
+        "tranches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c14Tranche"
+          },
+          "minItems": 1
+        },
+        "weights_sum": {
+          "type": "number"
+        },
+        "weighted_average_maturity_years": {
+          "type": "number",
+          "minimum": 0
+        },
+        "margin_volatility": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "margin_volatility_reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c14Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "deposit_beta": {
+          "$ref": "#/$defs/c14DepositBeta"
+        },
+        "stability": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c14Window"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "The static replicating portfolio of one NMD category at one valuation date (dossier 05 D.3). The weighted average maturity of a rolling tranche of maturity m is m / 2 (BCBS 368 footnote 38). A margin volatility the fit lacks is null with its reason.",
+      "oneOf": [
+        {
+          "properties": {
+            "margin_volatility": {
+              "type": "number"
+            },
+            "margin_volatility_reason": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "margin_volatility": {
+              "type": "null"
+            },
+            "margin_volatility_reason": {
+              "$ref": "#/$defs/c14Label"
+            }
+          }
+        }
+      ]
+    },
+    "c14BucketDef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bucket",
+        "label",
+        "midpoint_years"
+      ],
+      "properties": {
+        "bucket": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 19,
+          "description": "Bucket of the 19 of SRP31.96 Table 3, 1 (overnight) to 19 (over 20 years)."
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "midpoint_years": {
+          "type": "number",
+          "enum": [
+            0.0028,
+            0.0417,
+            0.1667,
+            0.375,
+            0.625,
+            0.875,
+            1.25,
+            1.75,
+            2.5,
+            3.5,
+            4.5,
+            5.5,
+            6.5,
+            7.5,
+            8.5,
+            9.5,
+            12.5,
+            17.5,
+            25.0
+          ],
+          "description": "Bucket midpoint in years: one of the 19 of SRP31.96 Table 3."
+        }
+      },
+      "description": "One of the 19 time buckets of SRP31.96 Table 3.",
+      "oneOf": [
+        {
+          "properties": {
+            "bucket": {
+              "const": 1
+            },
+            "midpoint_years": {
+              "const": 0.0028
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 2
+            },
+            "midpoint_years": {
+              "const": 0.0417
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 3
+            },
+            "midpoint_years": {
+              "const": 0.1667
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 4
+            },
+            "midpoint_years": {
+              "const": 0.375
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 5
+            },
+            "midpoint_years": {
+              "const": 0.625
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 6
+            },
+            "midpoint_years": {
+              "const": 0.875
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 7
+            },
+            "midpoint_years": {
+              "const": 1.25
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 8
+            },
+            "midpoint_years": {
+              "const": 1.75
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 9
+            },
+            "midpoint_years": {
+              "const": 2.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 10
+            },
+            "midpoint_years": {
+              "const": 3.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 11
+            },
+            "midpoint_years": {
+              "const": 4.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 12
+            },
+            "midpoint_years": {
+              "const": 5.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 13
+            },
+            "midpoint_years": {
+              "const": 6.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 14
+            },
+            "midpoint_years": {
+              "const": 7.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 15
+            },
+            "midpoint_years": {
+              "const": 8.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 16
+            },
+            "midpoint_years": {
+              "const": 9.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 17
+            },
+            "midpoint_years": {
+              "const": 12.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 18
+            },
+            "midpoint_years": {
+              "const": 17.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 19
+            },
+            "midpoint_years": {
+              "const": 25.0
+            }
+          }
+        }
+      ]
+    },
+    "c14NmdCap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "core_share_cap",
+        "core_maturity_cap_years",
+        "reference"
+      ],
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "retail-transactional",
+            "retail-non-transactional",
+            "wholesale"
+          ]
+        },
+        "core_share_cap": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "core_maturity_cap_years": {
+          "type": "number",
+          "minimum": 0
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "SRP31 Table 4 cap of a category."
+    },
+    "c14Gamma": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shock",
+        "gamma"
+      ],
+      "properties": {
+        "shock": {
+          "type": "string",
+          "enum": [
+            "parallel-up",
+            "parallel-down",
+            "steepener",
+            "flattener",
+            "short-up",
+            "short-down"
+          ]
+        },
+        "gamma": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "SRP31.119 Table 5 prepayment multiplier of a shock."
+    },
+    "c14UMult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shock",
+        "u"
+      ],
+      "properties": {
+        "shock": {
+          "type": "string",
+          "enum": [
+            "parallel-up",
+            "parallel-down",
+            "steepener",
+            "flattener",
+            "short-up",
+            "short-down"
+          ]
+        },
+        "u": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "SRP31.125 Table 6 term-deposit early redemption multiplier of a shock."
+    },
+    "c14Multipliers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "prepayment_gamma",
+        "term_deposit_u",
+        "reference"
+      ],
+      "properties": {
+        "prepayment_gamma": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c14Gamma",
+              "properties": {
+                "shock": {
+                  "const": "parallel-up"
+                },
+                "gamma": {
+                  "const": 0.8
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14Gamma",
+              "properties": {
+                "shock": {
+                  "const": "parallel-down"
+                },
+                "gamma": {
+                  "const": 1.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14Gamma",
+              "properties": {
+                "shock": {
+                  "const": "steepener"
+                },
+                "gamma": {
+                  "const": 0.8
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14Gamma",
+              "properties": {
+                "shock": {
+                  "const": "flattener"
+                },
+                "gamma": {
+                  "const": 1.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14Gamma",
+              "properties": {
+                "shock": {
+                  "const": "short-up"
+                },
+                "gamma": {
+                  "const": 0.8
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14Gamma",
+              "properties": {
+                "shock": {
+                  "const": "short-down"
+                },
+                "gamma": {
+                  "const": 1.2
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "term_deposit_u": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c14UMult",
+              "properties": {
+                "shock": {
+                  "const": "parallel-up"
+                },
+                "u": {
+                  "const": 1.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14UMult",
+              "properties": {
+                "shock": {
+                  "const": "parallel-down"
+                },
+                "u": {
+                  "const": 0.8
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14UMult",
+              "properties": {
+                "shock": {
+                  "const": "steepener"
+                },
+                "u": {
+                  "const": 0.8
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14UMult",
+              "properties": {
+                "shock": {
+                  "const": "flattener"
+                },
+                "u": {
+                  "const": 1.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14UMult",
+              "properties": {
+                "shock": {
+                  "const": "short-up"
+                },
+                "u": {
+                  "const": 1.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14UMult",
+              "properties": {
+                "shock": {
+                  "const": "short-down"
+                },
+                "u": {
+                  "const": 0.8
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The scenario multipliers of the prepayment rate and the term-deposit redemption rate, in the order of the six shocks."
+    },
+    "c14NmdCaps": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/c14NmdCap",
+          "properties": {
+            "category": {
+              "const": "retail-transactional"
+            },
+            "core_share_cap": {
+              "const": 0.9
+            },
+            "core_maturity_cap_years": {
+              "const": 5.0
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/c14NmdCap",
+          "properties": {
+            "category": {
+              "const": "retail-non-transactional"
+            },
+            "core_share_cap": {
+              "const": 0.7
+            },
+            "core_maturity_cap_years": {
+              "const": 4.5
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/c14NmdCap",
+          "properties": {
+            "category": {
+              "const": "wholesale"
+            },
+            "core_share_cap": {
+              "const": 0.5
+            },
+            "core_maturity_cap_years": {
+              "const": 4.0
+            }
+          }
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3,
+      "description": "The three SRP31 Table 4 caps, exactly the table's."
+    },
+    "c14Bank": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "cert",
+        "aggregates",
+        "behaviour",
+        "notice"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cert": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "aggregates": {
+          "const": "real"
+        },
+        "behaviour": {
+          "const": "synthetic"
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The bank of the case (real FDIC aggregates, synthetic behaviour: SDD section 5)."
+    },
+    "c14ShockRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "parallel_bp",
+        "short_bp",
+        "long_bp"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "enum": [
+            "ARS",
+            "AUD",
+            "BRL",
+            "CAD",
+            "CHF",
+            "CNY",
+            "EUR",
+            "GBP",
+            "HKD",
+            "IDR",
+            "INR",
+            "JPY",
+            "KRW",
+            "MXN",
+            "RUB",
+            "SAR",
+            "SEK",
+            "SGD",
+            "TRY",
+            "USD",
+            "ZAR"
+          ]
+        },
+        "parallel_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "short_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "long_bp": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "c14ShockTable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "calibration",
+        "source",
+        "data_window",
+        "percentile",
+        "rounding_bp",
+        "rows"
+      ],
+      "properties": {
+        "calibration": {
+          "type": "string",
+          "enum": [
+            "2024",
+            "2016"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "data_window": {
+          "type": "string",
+          "minLength": 1
+        },
+        "percentile": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rounding_bp": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c14ShockRow"
+          },
+          "minItems": 21,
+          "maxItems": 21
+        }
+      },
+      "description": "A BCBS shock-size table transcribed as data, the 21 currencies in table order."
+    },
+    "c14ShockShape": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "steepener_short",
+        "steepener_long",
+        "flattener_short",
+        "flattener_long",
+        "short_form",
+        "long_form",
+        "reference"
+      ],
+      "properties": {
+        "x": {
+          "const": 4
+        },
+        "steepener_short": {
+          "const": -0.65
+        },
+        "steepener_long": {
+          "const": 0.9
+        },
+        "flattener_short": {
+          "const": 0.8
+        },
+        "flattener_long": {
+          "const": -0.6
+        },
+        "short_form": {
+          "const": "exp(-t_k / x)"
+        },
+        "long_form": {
+          "const": "1 - exp(-t_k / x)"
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The six shock shapes of SRP31.91 to SRP31.92 with x = 4."
+    },
+    "c14OutlierRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "threshold_share_tier1",
+        "reference"
+      ],
+      "properties": {
+        "threshold_share_tier1": {
+          "const": 0.15
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "c14ParamChange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parameter",
+        "category",
+        "from_date",
+        "to_date",
+        "from_value",
+        "to_value",
+        "unit",
+        "limit_breach_in_window",
+        "flagged",
+        "note"
+      ],
+      "properties": {
+        "parameter": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "retail-transactional",
+            "retail-non-transactional",
+            "wholesale"
+          ]
+        },
+        "from_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "to_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "from_value": {
+          "type": "number"
+        },
+        "to_value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "limit_breach_in_window": {
+          "type": "boolean"
+        },
+        "flagged": {
+          "type": "boolean"
+        },
+        "note": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A change of a behavioural parameter between two valuation dates; flagged when it changed in a window that holds a limit breach (dossier 05 D.7: the SVB lesson)."
+    },
+    "c14Fit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "sign_convention",
+        "units",
+        "bank",
+        "buckets",
+        "shock_tables",
+        "applied_sizes",
+        "shock_shape",
+        "nmd_caps",
+        "multipliers",
+        "nmd_models",
+        "nmd_parameter_changes",
+        "outlier"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block.",
+          "const": "USD"
+        },
+        "sign_convention": {
+          "$ref": "#/$defs/c14Sign"
+        },
+        "units": {
+          "$ref": "#/$defs/c14Units"
+        },
+        "bank": {
+          "$ref": "#/$defs/c14Bank"
+        },
+        "buckets": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 1
+                },
+                "midpoint_years": {
+                  "const": 0.0028
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 2
+                },
+                "midpoint_years": {
+                  "const": 0.0417
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 3
+                },
+                "midpoint_years": {
+                  "const": 0.1667
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 4
+                },
+                "midpoint_years": {
+                  "const": 0.375
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 5
+                },
+                "midpoint_years": {
+                  "const": 0.625
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 6
+                },
+                "midpoint_years": {
+                  "const": 0.875
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 7
+                },
+                "midpoint_years": {
+                  "const": 1.25
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 8
+                },
+                "midpoint_years": {
+                  "const": 1.75
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 9
+                },
+                "midpoint_years": {
+                  "const": 2.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 10
+                },
+                "midpoint_years": {
+                  "const": 3.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 11
+                },
+                "midpoint_years": {
+                  "const": 4.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 12
+                },
+                "midpoint_years": {
+                  "const": 5.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 13
+                },
+                "midpoint_years": {
+                  "const": 6.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 14
+                },
+                "midpoint_years": {
+                  "const": 7.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 15
+                },
+                "midpoint_years": {
+                  "const": 8.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 16
+                },
+                "midpoint_years": {
+                  "const": 9.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 17
+                },
+                "midpoint_years": {
+                  "const": 12.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 18
+                },
+                "midpoint_years": {
+                  "const": 17.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 19
+                },
+                "midpoint_years": {
+                  "const": 25.0
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 19,
+          "maxItems": 19
+        },
+        "shock_tables": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c14ShockTable",
+              "properties": {
+                "calibration": {
+                  "const": "2024"
+                },
+                "rounding_bp": {
+                  "const": 25
+                },
+                "rows": {
+                  "const": [
+                    {
+                      "currency": "ARS",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "AUD",
+                      "parallel_bp": 350,
+                      "short_bp": 425,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "BRL",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "CAD",
+                      "parallel_bp": 200,
+                      "short_bp": 275,
+                      "long_bp": 175
+                    },
+                    {
+                      "currency": "CHF",
+                      "parallel_bp": 175,
+                      "short_bp": 250,
+                      "long_bp": 200
+                    },
+                    {
+                      "currency": "CNY",
+                      "parallel_bp": 225,
+                      "short_bp": 300,
+                      "long_bp": 150
+                    },
+                    {
+                      "currency": "EUR",
+                      "parallel_bp": 225,
+                      "short_bp": 350,
+                      "long_bp": 200
+                    },
+                    {
+                      "currency": "GBP",
+                      "parallel_bp": 275,
+                      "short_bp": 425,
+                      "long_bp": 250
+                    },
+                    {
+                      "currency": "HKD",
+                      "parallel_bp": 225,
+                      "short_bp": 375,
+                      "long_bp": 200
+                    },
+                    {
+                      "currency": "IDR",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "INR",
+                      "parallel_bp": 325,
+                      "short_bp": 475,
+                      "long_bp": 225
+                    },
+                    {
+                      "currency": "JPY",
+                      "parallel_bp": 100,
+                      "short_bp": 100,
+                      "long_bp": 100
+                    },
+                    {
+                      "currency": "KRW",
+                      "parallel_bp": 225,
+                      "short_bp": 350,
+                      "long_bp": 225
+                    },
+                    {
+                      "currency": "MXN",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 200
+                    },
+                    {
+                      "currency": "RUB",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "SAR",
+                      "parallel_bp": 275,
+                      "short_bp": 375,
+                      "long_bp": 250
+                    },
+                    {
+                      "currency": "SEK",
+                      "parallel_bp": 275,
+                      "short_bp": 425,
+                      "long_bp": 200
+                    },
+                    {
+                      "currency": "SGD",
+                      "parallel_bp": 175,
+                      "short_bp": 250,
+                      "long_bp": 225
+                    },
+                    {
+                      "currency": "TRY",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "USD",
+                      "parallel_bp": 200,
+                      "short_bp": 300,
+                      "long_bp": 225
+                    },
+                    {
+                      "currency": "ZAR",
+                      "parallel_bp": 325,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14ShockTable",
+              "properties": {
+                "calibration": {
+                  "const": "2016"
+                },
+                "rounding_bp": {
+                  "const": 50
+                },
+                "rows": {
+                  "const": [
+                    {
+                      "currency": "ARS",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "AUD",
+                      "parallel_bp": 300,
+                      "short_bp": 450,
+                      "long_bp": 200
+                    },
+                    {
+                      "currency": "BRL",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "CAD",
+                      "parallel_bp": 200,
+                      "short_bp": 300,
+                      "long_bp": 150
+                    },
+                    {
+                      "currency": "CHF",
+                      "parallel_bp": 100,
+                      "short_bp": 150,
+                      "long_bp": 100
+                    },
+                    {
+                      "currency": "CNY",
+                      "parallel_bp": 250,
+                      "short_bp": 300,
+                      "long_bp": 150
+                    },
+                    {
+                      "currency": "EUR",
+                      "parallel_bp": 200,
+                      "short_bp": 250,
+                      "long_bp": 100
+                    },
+                    {
+                      "currency": "GBP",
+                      "parallel_bp": 250,
+                      "short_bp": 300,
+                      "long_bp": 150
+                    },
+                    {
+                      "currency": "HKD",
+                      "parallel_bp": 200,
+                      "short_bp": 250,
+                      "long_bp": 100
+                    },
+                    {
+                      "currency": "IDR",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 350
+                    },
+                    {
+                      "currency": "INR",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "JPY",
+                      "parallel_bp": 100,
+                      "short_bp": 100,
+                      "long_bp": 100
+                    },
+                    {
+                      "currency": "KRW",
+                      "parallel_bp": 300,
+                      "short_bp": 400,
+                      "long_bp": 200
+                    },
+                    {
+                      "currency": "MXN",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "RUB",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "SAR",
+                      "parallel_bp": 200,
+                      "short_bp": 300,
+                      "long_bp": 150
+                    },
+                    {
+                      "currency": "SEK",
+                      "parallel_bp": 200,
+                      "short_bp": 300,
+                      "long_bp": 150
+                    },
+                    {
+                      "currency": "SGD",
+                      "parallel_bp": 150,
+                      "short_bp": 200,
+                      "long_bp": 100
+                    },
+                    {
+                      "currency": "TRY",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    },
+                    {
+                      "currency": "USD",
+                      "parallel_bp": 200,
+                      "short_bp": 300,
+                      "long_bp": 150
+                    },
+                    {
+                      "currency": "ZAR",
+                      "parallel_bp": 400,
+                      "short_bp": 500,
+                      "long_bp": 300
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "applied_sizes": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c14ShockSize",
+              "properties": {
+                "origin": {
+                  "const": "srp31-table-2024"
+                },
+                "currency": {
+                  "const": "USD"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c14ShockSize",
+              "properties": {
+                "origin": {
+                  "const": "srp31-table-2016"
+                },
+                "currency": {
+                  "const": "USD"
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "shock_shape": {
+          "$ref": "#/$defs/c14ShockShape"
+        },
+        "nmd_caps": {
+          "$ref": "#/$defs/c14NmdCaps"
+        },
+        "multipliers": {
+          "$ref": "#/$defs/c14Multipliers"
+        },
+        "nmd_models": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c14NmdModel"
+          },
+          "minItems": 1
+        },
+        "nmd_parameter_changes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c14ParamChange"
+          },
+          "minItems": 1
+        },
+        "outlier": {
+          "$ref": "#/$defs/c14OutlierRule"
+        }
+      },
+      "description": "C14 models: the 19 buckets, the 2024 and 2016 shock tables as data, the shock shapes, the NMD caps and multipliers, the replicating portfolios with their stability across windows, the deposit betas and the parameter-change flags."
+    }
+  }
+}
