@@ -10,10 +10,8 @@ the Board's page, builds the inputs and orders the answers.
 The case page is ``docs/cases/C10.md`` and the design ``docs/design/features/c10/``; requirements CT-1101 to CT-1112 hold it.
 The heavy modules load when the case bakes, never at discovery.
 
-Registration. ``pipeline/cases/__init__.py`` discovers a case by a module-level ``CASE``. This package exposes ``CASE_C10`` and not
-``CASE``: the registry, the index, the readiness, the planned-case list and the case-count tests are the integrator's files
-(unit U7 sizing, "Integrator and merge order"), and a ``CASE`` here would break them on this branch alone. The integration commit adds
-the line ``CASE = CASE_C10`` below; until then the bake runs as ``python -m pipeline.cases.c10.bake`` from ``data-pipeline/``.
+Registration. ``pipeline/cases/__init__.py`` discovers a case by a module-level ``CASE``; ``CASE_C10`` kept the case out of the
+registry on its own branch, and the 0.11.000 integration registers it with ``CASE = CASE_C10``.
 """
 from __future__ import annotations
 
@@ -44,3 +42,4 @@ class C10:
 
 
 CASE_C10 = C10()
+CASE = CASE_C10
