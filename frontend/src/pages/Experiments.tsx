@@ -205,13 +205,13 @@ function Metrics() {
 const FAMILY: Record<string, { id: string; label: BiText }> = {
   'credit-scoring': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Scoring de crédito y PD' } },
   'ratings-calibration': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Scoring de crédito y PD' } },
-  provisions: { id: 'provisions', label: { en: 'Provisions', es: 'Provisiones' } },
-  'lgd-ead': { id: 'loss', label: { en: 'Loss severity and exposure', es: 'Severidad de pérdida y exposición' } },
+  provisions: { id: 'credit-losses', label: { en: 'Credit losses: provisions, severity and exposure', es: 'Pérdidas de crédito: provisiones, severidad y exposición' } },
+  'lgd-ead': { id: 'credit-losses', label: { en: 'Credit losses: provisions, severity and exposure', es: 'Pérdidas de crédito: provisiones, severidad y exposición' } },
   validator: { id: 'validator', label: { en: 'Validating the validator', es: 'Validar al validador' } },
   'portfolio-capital': { id: 'capital', label: { en: 'Capital models', es: 'Modelos de capital' } },
   operational: { id: 'capital', label: { en: 'Capital models', es: 'Modelos de capital' } },
-  'market-ccr': { id: 'market', label: { en: 'Market risk', es: 'Riesgo de mercado' } },
-  'balance-sheet': { id: 'balance', label: { en: 'The balance sheet', es: 'El balance' } },
+  'market-ccr': { id: 'market-balance', label: { en: 'Market and balance-sheet risk', es: 'Riesgo de mercado y de balance' } },
+  'balance-sheet': { id: 'market-balance', label: { en: 'Market and balance-sheet risk', es: 'Riesgo de mercado y de balance' } },
 };
 
 /** The case tabs grouped by the question family of their category; the order of the families is the order of the first case. */
