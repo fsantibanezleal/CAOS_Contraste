@@ -25,16 +25,15 @@ describe('the Experiments case tabs are grouped by the question family', () => {
     const by = Object.fromEntries(groups.map((g) => [pick(g.label, 'en'), g.tabs.map((t) => t.id)]));
     expect(by).toEqual({
       'Credit scoring and PD': ['c01', 'c03', 'c04', 'c05'],
-      Provisions: ['c06', 'c07'],
-      'Loss severity and exposure': ['c08', 'c09'],
+      'Credit losses: provisions, severity and exposure': ['c06', 'c07', 'c08', 'c09'],
       'Validating the validator': ['c22'],
     });
     for (const g of groups) expect(pick(g.label, 'es').length).toBeGreaterThan(0);
   });
   it('keeps a case of a category without a family in a group of its own, titled by its category', () => {
-    const g = groupCases([{ id: 'c10', label: 'C10', content: null }]);
+    const g = groupCases([{ id: 'c18', label: 'C18', content: null }]);
     expect(g).toHaveLength(1);
-    expect(pick(g[0].label, 'en')).toBe('Portfolio capital');
+    expect(pick(g[0].label, 'en')).toBe('Capital and stress testing');
   });
 });
 
