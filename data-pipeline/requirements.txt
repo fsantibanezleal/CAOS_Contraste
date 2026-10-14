@@ -15,6 +15,6 @@ xgboost==3.4.1
 catboost==1.2.10
 shap==0.52.0
 pypdf==6.19.0
-# the engine: the validation tests, the regulatory calculators and the reference engines, pinned to its release tag
-# until its first PyPI release (the repository is private until then)
-riskvalidation @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation@v0.06.000
+# the engine: the validation tests, the regulatory calculators and the reference engines, pinned by the commit of its IRRBB branch
+# (task/u10-irrbb) until the release tag carries riskvalidation.irrbb; the repository is private until its first PyPI release
+riskvalidation @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation.git@ed224f313c6613e1da69c82543c9d8057df8d5c1
