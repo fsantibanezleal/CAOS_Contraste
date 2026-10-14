@@ -1,4 +1,4 @@
-# Engine IRRBB API contract: `engine-irrbb-api` 1.0.0
+# Engine IRRBB API contract: `engine-irrbb-api` 1.1.0
 
 Owner: U10-S (unit sizing `plans/contraste/units/U10-sizing.md`, CAOS_MANAGE). Implemented by U10-E in `riskvalidation.irrbb` and
 `riskvalidation.validation.irrbb` (repository CAOS_RiskValidation); called by the C14 and C15 bakes (U10-P1, U10-P2). The tests of
@@ -15,6 +15,8 @@ The engine computes; it states no compliance claim. Nothing here is a Basel, EBA
 cite; policy parameters (thresholds, floors a supervisor may choose, light parameters) are supplied by the caller or stated by the
 function. Every constant and table below is transcribed from the dossier named on its line; an item the dossier marks UNVERIFIED, or
 that this contract reads in a way the dossier does not settle, is marked UNVERIFIED here and is not silently decided (list at the end).
+
+Version history: 1.0.0, the first contract; 1.1.0 (additive, after the engine review `review-u10-engine-2026-10-13.md`): the function `simulation.ear_evar_mc_error`, the six-row shape of `eve_risk_measure` and its refusal of a transposed matrix, and the printed precision of the two Hoja 10 values in `cmf_annex1_goldens`. No signature of 1.0.0 changed.
 
 ## Conventions (all functions)
 
@@ -52,7 +54,7 @@ that this contract reads in a way the dossier does not settle, is marked UNVERIF
 | C14 `ladder`; `scenarios[].shocks[]`, `eve_risk_measure`, `outlier`, `behavioural_comparison` | `eve_nii.repricing_gap`, `delta_nii_gap`, `duration_gap`, `eve`, `delta_eve`, `eve_risk_measure`, `delta_nii`, `outlier_test` |
 | C15 `eve`, `nii`, `offset_rule`, `indexation_charge`, `cpi_scenario`, `thresholds`, `floors` | `eve_nii.cmf_pair`, `annex1_delta_nii`, `annex1_delta_eve`, `indexation_charge`, `prioritised_bank`, `shocks.apply_floor` |
 | C14 and C15 models `nmd_models`, `nmd_parameter_changes`, `prepayment` | `behavioural.replicating_portfolio`, `weighted_average_maturity`, `deposit_beta_passthrough`, `prepayment_logit`, `fit_prepayment_logit` |
-| C14 `outputs.dynamic_nii`, `ear_evar`, `out_of_sample`; C15 `outputs.dynamic_nii` (rungs 5 and 6, decision D1 of the U10 sizing; C15's EaR and EVaR wait for the BCCh curves) | `simulation.simulate_nii`, `hw1f_scenarios`, `dns_scenarios`, `ear_evar`, `validation.irrbb.nii_out_of_sample` |
+| C14 `outputs.dynamic_nii`, `ear_evar`, `out_of_sample`; C15 `outputs.dynamic_nii` (rungs 5 and 6, decision D1 of the U10 sizing; C15's EaR and EVaR wait for the BCCh curves) | `simulation.simulate_nii`, `hw1f_scenarios`, `dns_scenarios`, `ear_evar`, `ear_evar_mc_error` (the `ear_se` and `evar_se` of each level), `validation.irrbb.nii_out_of_sample` |
 | C14 and C15 `tests` | `riskvalidation.validation.irrbb.*` (rows of `common/test-result`) |
 
 ## Tables as data
@@ -522,9 +524,9 @@ def delta_eve(cf_base: np.ndarray, cf_shock: np.ndarray, rates_base: np.ndarray,
 def eve_risk_measure(delta_eve_by_shock_currency: np.ndarray) -> float: ...
 ```
 
-- Units: (S, C) money in one reporting currency, shocks in the order of `SHOCKS`, one column per currency with material exposure (more than 5 percent of banking-book assets or liabilities, SRP31.129); the result `max over i of max(0, sum over c with delta > 0 of delta_ic)`.
-- Invariants: nonnegative; a gain in one currency never offsets a loss in another; one column gives `max(0, max_i delta_i)`.
-- Golden: rows `[[3, -1], [2, 4], [-5, -2]]` give per-shock positive sums `3, 6, 0`, so the measure is `6`.
+- Units: (6, C) money in one reporting currency, exactly the six SRP31 shock rows (`S = 6`) in the order of `SHOCKS`, one column per currency with material exposure (more than 5 percent of banking-book assets or liabilities, SRP31.129); the result `max over i of max(0, sum over c with delta > 0 of delta_ic)`.
+- Invariants: nonnegative; a gain in one currency never offsets a loss in another; one column gives `max(0, max_i delta_i)`. A matrix whose first axis is not 6 raises `ValueError`, which refuses a transposed `(C, 6)` matrix instead of returning a different number silently (a `(6, 3)` matrix and its transpose otherwise give two different measures).
+- Golden: rows `[[3, -1], [2, 4], [-5, -2], [0, 0], [0, 0], [0, 0]]` (six shocks, two currencies) give per-shock positive sums `3, 6, 0, 0, 0, 0`, so the measure is `6`; the transposed `(2, 6)` matrix raises `ValueError`.
 
 ### `riskvalidation.irrbb.eve_nii.delta_nii`
 
@@ -766,6 +768,24 @@ def ear_evar(nii_paths: np.ndarray, eve_paths: np.ndarray, base_nii: float, base
 - Invariants: monotone in `level`; all-equal paths give `base - path`; `P >= 2` (otherwise `ValueError`).
 - Golden: `nii_paths = [1, 2, ..., 100]`, `base_nii = 60`, `level = 0.99`: the first percentile is `1.99`, so `ear = 58.01`.
 
+### `riskvalidation.irrbb.simulation.ear_evar_mc_error`
+
+```python
+@dataclass(frozen=True)
+class EarEvarMcError:
+    level: float
+    nii_quantile_se: float
+    eve_quantile_se: float
+    ear_se: float
+    evar_se: float
+
+def ear_evar_mc_error(nii_paths: np.ndarray, eve_paths: np.ndarray, level: float = 0.99, n_batches: int = 20) -> EarEvarMcError: ...
+```
+
+- Units: `nii_paths` (P,) and `eve_paths` (P,) money in the order the paths were simulated (the seeded order), `level` in (0, 1), `n_batches >= 2` with `P >= 2 n_batches`; the result is the Monte Carlo standard error, in money, of the `(1 - level)` quantile of each path set. The method is batch means: the first `n_batches * (P // n_batches)` paths are cut into `n_batches` contiguous batches, the `(1 - level)` quantile (linear interpolation, as `ear_evar`) is taken in each batch, and the standard error is `sd(batch quantiles, ddof=1) / sqrt(n_batches)`. The base NII and EVE are constants, so `ear_se = nii_quantile_se` and `evar_se = eve_quantile_se`. The C14 bake writes `ear_se` and `evar_se` of each level of `ear_evar.levels` from this function and `n_batches` and `mc_error_method = "batch-means"` beside them.
+- Invariants: deterministic; nonnegative; paths that are all equal give `0`; linear in the scale of the paths (multiplying the paths by `k > 0` multiplies every standard error by `k`) and unchanged by adding a constant; `P < 2 n_batches` or `n_batches < 2` raises `ValueError`; it consumes the same paths as `ear_evar` and no randomness.
+- Golden: exact, with `n_batches = 2` and `level = 0.5`: `nii_paths = [1, 2, ..., 20, 101, 102, ..., 120]` has batch medians `10.5` and `110.5`, so the standard error is `(100 / sqrt(2)) / sqrt(2) = 50.0`. Closed form, for the check of the estimator: for independent `N(0, sigma^2)` paths the asymptotic standard error of the empirical `p`-quantile is `sigma sqrt(p (1 - p) / P) / phi(z_p)`; for `sigma = 1`, `P = 10000` it is `0.037332` at `level = 0.99` (`p = 0.01`) and `0.021132` at `level = 0.95`. On a seeded `N(0, 1)` sample of `P = 100000` and 20 batches the batch estimate lies within 50 percent of the closed form (20 batches carry about 16 percent of relative noise).
+
 ## Module `riskvalidation/validation/irrbb.py`
 
 The IRRBB validation tests (dossier 05 D.7 and the IRRBB ladder acceptance; SDD section 4). Each returns one `TestResult` that validates against `common/test-result`.
@@ -789,7 +809,7 @@ def cmf_annex1_goldens() -> TestResult: ...
 
 - Units: none; reproduces the Annex 1 formulas (dossier 03 F.2): the `cmf_pair` table on both signs (eight cases), the Hoja 9 table through `shock_table("cmf-annex1")`, the indexation charge (`indexation_charge(-200) = 5`) the `annex1_delta_eve` golden (pairs `[30, 20, 0, 4, 35, 32.5]`) and the worked example of RAN 21-13 Annex 1 Hoja 10 (`alpha_short(3.5) = 0.417` and `41.7` bp for a 100 bp short shock, dossier 03 G3), which `srp31_92_goldens` also reproduces.
 - Test id: `test_id = "irrbb.cmf_annex1_goldens"`. `statistic` is the number of failed cases; `p_value` is `None`.
-- Light: green when every case is exact (floating-point equality to `1e-12`), red otherwise.
+- Light: green when every case is exact to `1e-12`, except the two Hoja 10 values (`alpha_short(3.5) = 0.417` and `41.7` bp), which are checked at their printed precision (`5e-4` and `5e-2`, as `srp31_92_goldens`: the exact `0.416862` is `1.4e-4` from `0.417`, so no implementation meets `1e-12` there), red otherwise. `extras["thresholds"]` and the policy version state both: `{"tolerance": 1e-12, "tolerance_printed": {"alpha_short": 5e-4, "bp": 5e-2}}`.
 - Golden: green with `statistic = 0` at the engine release.
 
 ### `riskvalidation.validation.irrbb.eve_sum_of_parts`
