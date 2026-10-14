@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+import c14_support  # noqa: F401  (puts the contract test folders on the path)
 import contract_schemas as cs
 import semantics
 

@@ -11,7 +11,7 @@ import c14_docs as d
 import contract_schemas as cs
 import pytest
 import semantics
-from conftest import SEED, SMALL_PATHS, data_root, requires_raw
+from c14_support import SEED, SMALL_PATHS, data_root, requires_raw
 
 from pipeline.cases.c14 import assumptions, fdic, treasury
 

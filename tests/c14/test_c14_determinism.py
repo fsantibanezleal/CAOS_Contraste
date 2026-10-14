@@ -4,7 +4,7 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-from conftest import SEED, SMALL_PATHS, data_root, requires_raw
+from c14_support import SEED, SMALL_PATHS, data_root, requires_raw
 
 from pipeline.io.formats import write_json
 
