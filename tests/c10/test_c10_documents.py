@@ -3,6 +3,7 @@ and name the Board's page; the small bake validates the same way."""
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from c10_invariants import DERIVED, ROOT, hash_findings, label_findings, schema_findings, violations
@@ -72,4 +73,5 @@ def test_the_provenance_pins_the_board_page_and_the_truth_statuses() -> None:
     for vid in ("grid-22", "grid-40"):
         prov = load(DERIVED / "C10" / f"{vid}.json")["provenance"]
         assert prov["truth_status"] == "synthetic-known-truth" and prov["inputs"] == [] and prov["generators"] == [P.GENERATOR]
-    assert (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8").count("riskvalidation @ git+") == 1
+    req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
+    assert len(re.findall(r"^riskvalidation(?:\[market\])? @ git\+https://github\.com/fsantibanezleal/CAOS_RiskValidation(?:\.git)?@v\d+\.\d+\.\d+\s*$", req, re.M)) == 1               # one engine line, pinned to its release tag

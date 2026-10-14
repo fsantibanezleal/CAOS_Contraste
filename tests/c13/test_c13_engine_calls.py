@@ -17,7 +17,7 @@ from riskvalidation.validation import market as val
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 
-def test_the_pin_is_the_market_branch_commit_with_its_extra() -> None:
+def test_the_pin_carries_the_market_extra() -> None:
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
     m = re.search(r"^riskvalidation\[market\] @ git\+https://github\.com/fsantibanezleal/CAOS_RiskValidation(?:\.git)?@([0-9a-f]{40}|v\d+\.\d+\.\d+)$",
                   req, re.MULTILINE)
