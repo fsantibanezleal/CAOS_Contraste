@@ -2584,20 +2584,22 @@
           "nii_quantile": 1968693.75,
           "eve_quantile": -16050899.282418,
           "ear": 148181.25,
-          "evar": 1459172.662038
+          "evar": 1459172.662038,
+          "ear_se": 1481.8125,
+          "evar_se": 14591.72662
         },
         {
           "level": 0.99,
           "nii_quantile": 1905187.5,
           "eve_quantile": -16780485.613437,
           "ear": 211687.5,
-          "evar": 2188758.993057
+          "evar": 2188758.993057,
+          "ear_se": 2116.875,
+          "evar_se": 21887.589931
         }
       ],
-      "monte_carlo_error": {
-        "ear": 1481.8125,
-        "evar": 14591.72662
-      }
+      "mc_error_method": "batch-means",
+      "n_batches": 20
     },
     "out_of_sample": {
       "applicable": false,

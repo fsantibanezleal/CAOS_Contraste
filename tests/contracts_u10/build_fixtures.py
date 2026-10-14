@@ -391,11 +391,12 @@ def c14_outputs(quarter: str) -> tuple[dict, dict]:
     lv = []
     for level, fn, fe in ((0.95, 0.07, 0.10), (0.99, 0.10, 0.15)):
         nq, eq = r(base_nii - fn * abs(base_nii)), r(base_eve24 - fe * abs(base_eve24))
-        lv.append({"level": level, "nii_quantile": nq, "eve_quantile": eq, "ear": r(base_nii - nq), "evar": r(base_eve24 - eq)})
+        lv.append({"level": level, "nii_quantile": nq, "eve_quantile": eq, "ear": r(base_nii - nq), "evar": r(base_eve24 - eq),
+                   "ear_se": r(abs(base_nii - nq) * 0.01), "evar_se": r(abs(base_eve24 - eq) * 0.01)})
     ear_evar = {"method": "hw1f", "n_paths": 10000, "seed": 0, "horizon_months": 12,
                 "parameters": [{"name": "a", "value": 0.1, "unit": "per year"}, {"name": "sigma", "value": 0.01, "unit": "per year"}],
                 "base_nii": base_nii, "base_eve": base_eve24, "levels": lv,
-                "monte_carlo_error": {"ear": r(abs(lv[0]["ear"]) * 0.01), "evar": r(abs(lv[0]["evar"]) * 0.01)}}
+                "mc_error_method": "batch-means", "n_batches": 20}
     if quarter == "2021-Q4":
         proj = dyn["scenarios"][1]["delta_vs_base"]
         real = r(proj * 1.12)
