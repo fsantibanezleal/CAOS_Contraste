@@ -21,7 +21,7 @@ from . import assumptions as asm
 from . import fits, slotting
 from .fdic import Report, realised_nii, report_at
 from .slotting import Item, t
-from .treasury import ParCurve, curve_as_of
+from ...io.treasury import ParCurve, curve_as_of
 
 MID = rv_slotting.bucket_grid().midpoints
 SHOCKS = shocks.SHOCKS

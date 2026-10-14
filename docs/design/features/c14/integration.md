@@ -11,7 +11,7 @@ readiness and the catalog as out of scope). None of it changes a C14 document.
 3. Rebuild the index and the readiness: `python data-pipeline/run.py index` and `python data-pipeline/run.py readiness`, then update the
    count tests that name the built cases (`tests/test_registry.py`, `tests/test_readiness.py`, `tests/contracts/test_documents.py`):
    the case is discovered by its `CASE` object (`cases/c14/__init__.py`), so C14 is built as soon as the package is merged.
-4. Move `cases/c14/treasury.py` to `pipeline/io/treasury.py` when the C11 bake (U8-P1) needs the same reader (sizing reservation R2).
+4. Done (task/treasury-io): the Treasury reader moved from `cases/c14/treasury.py` and `cases/c11/readers.py` to the shared `pipeline/io/treasury.py` (sizing reservation R2); `tests/test_io_treasury.py` proves both views identical to the replaced readers on every year file.
 5. Contract amendments to consider (each is a question for the contract owner, none blocks the documents): an `observation_date` in
    `c14Curve` for a valuation date that is not a business day; per-shock prepayment flows in `net_cash_flows` (SRP31.119); a floor
    that can be the maturity-dependent one of SRP31.93; the `ear_se` below `|ear|` rule of `check_c14`, which refuses a statistically
