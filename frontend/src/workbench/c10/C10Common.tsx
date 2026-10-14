@@ -32,8 +32,7 @@ export function IllustrativeNotice({ notice }: { notice: Bi }) {
   const lang = useShellLang();
   return (
     <p className="ct-note" data-portfolio="illustrative">
-      <strong>{pick({ en: 'Illustrative portfolio. ', es: 'Cartera ilustrativa. ' }, lang)}</strong>
-      {pick(notice, lang)}
+      <strong>{pick(notice, lang)}</strong>
     </p>
   );
 }
