@@ -17,4 +17,5 @@ shap==0.52.0
 pypdf==6.19.0
 # the engine: the validation tests, the regulatory calculators and the reference engines, pinned to its release tag
 # until its first PyPI release (the repository is private until then)
-riskvalidation @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation@v0.06.000
+# U8-P1: pinned by the commit of origin/task/u8-market (344ec9a) with its `market` extra until the integrator tags the engine release
+riskvalidation[market] @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation@344ec9ac5d6c553541a6f8cfa2aa7347582b6dee
