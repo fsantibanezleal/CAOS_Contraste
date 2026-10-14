@@ -260,6 +260,9 @@ def check_c14(doc: dict) -> list[str]:
     for lv in ee["levels"]:
         rep.need(close(lv["ear"], ee["base_nii"] - lv["nii_quantile"]), f"ear at {lv['level']} is not base_nii - the NII quantile")
         rep.need(close(lv["evar"], ee["base_eve"] - lv["eve_quantile"]), f"evar at {lv['level']} is not base_eve - the EVE quantile")
+    for lv in ee["levels"]:
+        rep.need(lv["ear_se"] >= 0 and (lv["ear"] == 0 or lv["ear_se"] < abs(lv["ear"])), f"ear_se at {lv['level']} is not below |ear|")
+        rep.need(lv["evar_se"] >= 0 and (lv["evar"] == 0 or lv["evar_se"] < abs(lv["evar"])), f"evar_se at {lv['level']} is not below |evar|")
     l95, l99 = ee["levels"]
     rep.need(l99["ear"] >= l95["ear"] and l99["evar"] >= l95["evar"], "EaR or EVaR at 99 percent is below the 95 percent value")
     oos = o["out_of_sample"]

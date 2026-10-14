@@ -3208,7 +3208,9 @@
         "nii_quantile",
         "eve_quantile",
         "ear",
-        "evar"
+        "evar",
+        "ear_se",
+        "evar_se"
       ],
       "properties": {
         "level": {
@@ -3231,6 +3233,16 @@
         "evar": {
           "type": "number",
           "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+        },
+        "ear_se": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Monte Carlo standard error of ear, money (engine ear_evar_mc_error)."
+        },
+        "evar_se": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Monte Carlo standard error of evar, money (engine ear_evar_mc_error)."
         }
       },
       "description": "EaR and EVaR at one confidence level: ear = base NII minus the (1 - level) quantile of the NII paths, evar likewise for EVE (loss-positive; engine ear_evar)."
@@ -3247,7 +3259,8 @@
         "base_nii",
         "base_eve",
         "levels",
-        "monte_carlo_error"
+        "mc_error_method",
+        "n_batches"
       ],
       "properties": {
         "method": {
@@ -3327,26 +3340,15 @@
           "maxItems": 2,
           "description": "The 95 and 99 percent levels."
         },
-        "monte_carlo_error": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "ear",
-            "evar"
-          ],
-          "properties": {
-            "ear": {
-              "type": "number",
-              "minimum": 0
-            },
-            "evar": {
-              "type": "number",
-              "minimum": 0
-            }
-          }
+        "mc_error_method": {
+          "const": "batch-means"
+        },
+        "n_batches": {
+          "type": "integer",
+          "minimum": 2
         }
       },
-      "description": "Ladder rung 6 (dossier 05 D.5 and D.6): the distribution summary of NII and EVE under Hull-White one-factor or dynamic Nelson-Siegel scenario Monte Carlo, with the number of paths, the seed and the Monte Carlo standard error of EaR and EVaR."
+      "description": "Ladder rung 6 (dossier 05 D.5 and D.6): the distribution summary of NII and EVE under Hull-White one-factor or dynamic Nelson-Siegel scenario Monte Carlo, with the number of paths, the seed and, at each level, the Monte Carlo standard error of EaR and EVaR by batch means over n_batches contiguous batches of paths."
     },
     "c14OutOfSample": {
       "type": "object",

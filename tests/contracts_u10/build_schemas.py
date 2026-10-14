@@ -424,15 +424,17 @@ def c14_defs() -> dict:
        "monthly NII has horizon_months values.")
     d["c14EarEvarLevel"] = Ob({
         "level": N(exclusiveMinimum=0, exclusiveMaximum=1), "nii_quantile": MONEY, "eve_quantile": MONEY, "ear": MONEY, "evar": MONEY,
+        "ear_se": N("Monte Carlo standard error of ear, money (engine ear_evar_mc_error).", minimum=0),
+        "evar_se": N("Monte Carlo standard error of evar, money (engine ear_evar_mc_error).", minimum=0),
     }, "EaR and EVaR at one confidence level: ear = base NII minus the (1 - level) quantile of the NII paths, evar likewise for EVE "
        "(loss-positive; engine ear_evar).")
     d["c14EarEvar"] = Ob({
         "method": E("hw1f", "dns"), "n_paths": Int(2), "seed": Int(0), "horizon_months": Int(12, 36),
         "parameters": A(NAME_MAP, 1), "base_nii": MONEY, "base_eve": MONEY,
         "levels": ordered([pin("c14EarEvarLevel", level=0.95), pin("c14EarEvarLevel", level=0.99)], "The 95 and 99 percent levels."),
-        "monte_carlo_error": Ob({"ear": N(minimum=0), "evar": N(minimum=0)}),
+        "mc_error_method": C("batch-means"), "n_batches": Int(2),
     }, "Ladder rung 6 (dossier 05 D.5 and D.6): the distribution summary of NII and EVE under Hull-White one-factor or dynamic "
-       "Nelson-Siegel scenario Monte Carlo, with the number of paths, the seed and the Monte Carlo standard error of EaR and EVaR.")
+       "Nelson-Siegel scenario Monte Carlo, with the number of paths, the seed and, at each level, the Monte Carlo standard error of EaR and EVaR by batch means over n_batches contiguous batches of paths.")
     d["c14OutOfSample"] = one_of(Ob({
         "applicable": B, "projection_date": DATE, "realised_period_start": nullable(DATE), "realised_period_end": nullable(DATE),
         "projected_delta_nii": nullable(MONEY), "realised_delta_nii": nullable(MONEY), "relative_error": nullable(N(minimum=0)),

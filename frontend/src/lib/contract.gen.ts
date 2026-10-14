@@ -4664,7 +4664,7 @@ export interface components {
             items: components["schemas"]["c14DynItem"][];
             scenarios: components["schemas"]["c14DynScenarios"];
         };
-        /** @description Ladder rung 6 (dossier 05 D.5 and D.6): the distribution summary of NII and EVE under Hull-White one-factor or dynamic Nelson-Siegel scenario Monte Carlo, with the number of paths, the seed and the Monte Carlo standard error of EaR and EVaR. */
+        /** @description Ladder rung 6 (dossier 05 D.5 and D.6): the distribution summary of NII and EVE under Hull-White one-factor or dynamic Nelson-Siegel scenario Monte Carlo, with the number of paths, the seed and, at each level, the Monte Carlo standard error of EaR and EVaR by batch means over n_batches contiguous batches of paths. */
         c14EarEvar: {
             /** @enum {string} */
             method: "hw1f" | "dns";
@@ -4685,10 +4685,9 @@ export interface components {
                 components["schemas"]["c14EarEvarLevel"],
                 components["schemas"]["c14EarEvarLevel"]
             ];
-            monte_carlo_error: {
-                ear: number;
-                evar: number;
-            };
+            /** @constant */
+            mc_error_method: "batch-means";
+            n_batches: number;
         };
         /** @description EaR and EVaR at one confidence level: ear = base NII minus the (1 - level) quantile of the NII paths, evar likewise for EVE (loss-positive; engine ear_evar). */
         c14EarEvarLevel: {
@@ -4701,6 +4700,10 @@ export interface components {
             ear: number;
             /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
             evar: number;
+            /** @description Monte Carlo standard error of ear, money (engine ear_evar_mc_error). */
+            ear_se: number;
+            /** @description Monte Carlo standard error of evar, money (engine ear_evar_mc_error). */
+            evar_se: number;
         };
         /** @description C14 models: the 19 buckets, the 2024 and 2016 shock tables as data, the shock shapes, the NMD caps and multipliers, the replicating portfolios with their stability across windows, the deposit betas and the parameter-change flags. */
         c14Fit: {
