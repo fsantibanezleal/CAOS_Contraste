@@ -363,8 +363,13 @@
               "exclusiveMinimum": 0
             },
             "tail_index": {
-              "type": "number",
-              "exclusiveMinimum": 0
+              "enum": [
+                0.6,
+                0.8,
+                0.96,
+                1.1
+              ],
+              "description": "A tail index of the SDD section 5 grid: 0.6, 0.8, 0.96 or 1.1."
             }
           },
           "description": "The generator's true severity: a generalised Pareto distribution with the tail index of the variant, starting at `location_eur` (the generator floor, no loss is generated below it). Threshold-stable: the loss above any higher collection threshold is again a GPD with the same tail index."
@@ -427,8 +432,8 @@
                   "exclusiveMinimum": 0
                 },
                 "agrees": {
-                  "type": "boolean",
-                  "description": "True when the Monte Carlo value is within 3 standard errors of the value."
+                  "const": true,
+                  "description": "A truth that fails its Monte Carlo check (the value within 3 standard errors) is not published."
                 }
               }
             }
@@ -670,8 +675,13 @@
       ],
       "properties": {
         "tail_index": {
-          "type": "number",
-          "exclusiveMinimum": 0
+          "enum": [
+            0.6,
+            0.8,
+            0.96,
+            1.1
+          ],
+          "description": "A tail index of the SDD section 5 grid: 0.6, 0.8, 0.96 or 1.1."
         },
         "scale_eur": {
           "type": "number",
@@ -1145,7 +1155,6 @@
       "required": [
         "currency",
         "basis",
-        "reason",
         "discretion_applied",
         "bucket",
         "bic_eur",
@@ -1161,31 +1170,14 @@
           "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
         },
         "basis": {
-          "type": "string",
-          "enum": [
-            "bic-times-ilm",
-            "bic-only"
-          ]
-        },
-        "reason": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Why capital is BIC only; null on the full basis."
+          "const": "bic-times-ilm"
         },
         "discretion_applied": {
           "type": "string",
           "enum": [
             "none",
             "bucket-1-ilm-one",
-            "national-ilm-one",
-            "transitional-bic-only"
+            "national-ilm-one"
           ]
         },
         "bucket": {
@@ -1199,26 +1191,10 @@
           "description": "Money in EUR (the `currency` of the enclosing block)."
         },
         "lc_eur": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/c17MoneyQuantiles"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "LC = 15 x the average annual loss over the available years (OPE25.8); null on the BIC-only basis."
+          "$ref": "#/$defs/c17MoneyQuantiles"
         },
         "ilm": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/c17IlmQuantiles"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "ILM = ln(e - 1 + (LC / BIC)^0.8) (OPE25.8); null on the BIC-only basis."
+          "$ref": "#/$defs/c17IlmQuantiles"
         },
         "orc_eur": {
           "$ref": "#/$defs/c17MoneyQuantiles"
@@ -1230,70 +1206,67 @@
           "$ref": "../common/text.schema.json"
         }
       },
-      "description": "The SMA capital of the synthetic bank on the same histories as the LDA of the cell, with the discretion applied as a named field (OPE25.10, OPE25.11, OPE25.15). ORC = BIC x ILM (OPE25.2). The SMA is not calibrated to the 99.9 percent quantile of any bank: the ratio to the true quantile is a comparison, not a claim of equivalence.",
-      "oneOf": [
+      "description": "The SMA capital of the synthetic bank on the same histories as the LDA of the cell, with the discretion applied as a named field (OPE25.11). ORC = BIC x ILM (OPE25.2), LC = 15 x the average annual loss over the history (OPE25.8). A C17 history is 5 or 10 years, so an ILM is always computable (OPE25.15: under 5 years capital is BIC only, a case of the engine `sma_capital` that no C17 cell reaches). The SMA is not calibrated to the 99.9 percent quantile of any bank: the ratio to the true quantile is a comparison, not a claim of equivalence.",
+      "allOf": [
         {
-          "properties": {
-            "basis": {
-              "const": "bic-times-ilm"
+          "if": {
+            "properties": {
+              "discretion_applied": {
+                "const": "bucket-1-ilm-one"
+              }
             },
-            "reason": {
-              "type": "null"
-            },
-            "discretion_applied": {
-              "type": "string",
-              "enum": [
-                "none",
-                "bucket-1-ilm-one",
-                "national-ilm-one"
-              ]
-            },
-            "lc_eur": {
-              "$ref": "#/$defs/c17MoneyQuantiles"
-            },
-            "ilm": {
-              "$ref": "#/$defs/c17IlmQuantiles"
+            "required": [
+              "discretion_applied"
+            ]
+          },
+          "then": {
+            "properties": {
+              "bucket": {
+                "const": 1
+              }
             }
           }
         },
         {
-          "properties": {
-            "basis": {
-              "const": "bic-only"
+          "if": {
+            "properties": {
+              "discretion_applied": {
+                "type": "string",
+                "enum": [
+                  "bucket-1-ilm-one",
+                  "national-ilm-one"
+                ]
+              }
             },
-            "reason": {
-              "type": "string",
-              "minLength": 1
-            },
-            "discretion_applied": {
-              "const": "transitional-bic-only"
-            },
-            "lc_eur": {
-              "type": "null"
-            },
-            "ilm": {
-              "type": "null"
+            "required": [
+              "discretion_applied"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ilm": {
+                "properties": {
+                  "p05": {
+                    "const": 1
+                  },
+                  "p25": {
+                    "const": 1
+                  },
+                  "median": {
+                    "const": 1
+                  },
+                  "p75": {
+                    "const": 1
+                  },
+                  "p95": {
+                    "const": 1
+                  }
+                }
+              }
             }
           }
         }
-      ],
-      "if": {
-        "properties": {
-          "discretion_applied": {
-            "const": "bucket-1-ilm-one"
-          }
-        },
-        "required": [
-          "discretion_applied"
-        ]
-      },
-      "then": {
-        "properties": {
-          "bucket": {
-            "const": 1
-          }
-        }
-      }
+      ]
     },
     "c17Cell": {
       "type": "object",
@@ -1315,10 +1288,11 @@
           "minLength": 1
         },
         "years": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 10,
-          "description": "Years of recorded losses in each history (5 or 10 in the grid; under 5 the SMA is BIC only, OPE25.15)."
+          "enum": [
+            5,
+            10
+          ],
+          "description": "Years of recorded losses in each history: 5 or 10 (the grid of SDD section 5)."
         },
         "collection_threshold_eur": {
           "enum": [
@@ -1351,39 +1325,7 @@
           "$ref": "#/$defs/c17SmaCell"
         }
       },
-      "description": "One cell of the grid (years x collection threshold) of a tail-index variant, as replication summaries.",
-      "if": {
-        "properties": {
-          "years": {
-            "maximum": 4
-          }
-        },
-        "required": [
-          "years"
-        ]
-      },
-      "then": {
-        "properties": {
-          "sma": {
-            "properties": {
-              "basis": {
-                "const": "bic-only"
-              }
-            }
-          }
-        }
-      },
-      "else": {
-        "properties": {
-          "sma": {
-            "properties": {
-              "basis": {
-                "const": "bic-times-ilm"
-              }
-            }
-          }
-        }
-      }
+      "description": "One cell of the grid (years x collection threshold) of a tail-index variant, as replication summaries."
     },
     "c17Exceedance": {
       "type": "object",
@@ -1535,7 +1477,8 @@
         "added_loss_eur",
         "lc_eur",
         "ilm",
-        "orc_eur"
+        "orc_eur",
+        "lda_capital_eur"
       ],
       "properties": {
         "added_loss_eur": {
@@ -1556,6 +1499,11 @@
           "type": "number",
           "minimum": 0,
           "description": "Money in EUR (the `currency` of the enclosing block)."
+        },
+        "lda_capital_eur": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "The 99.9 percent LDA capital of the same history with the same loss added."
         }
       }
     },
@@ -1647,6 +1595,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "prior_kind",
         "currency",
         "cell_id",
         "seed",
@@ -1657,6 +1606,10 @@
         "reference"
       ],
       "properties": {
+        "prior_kind": {
+          "const": "unrestricted-gamma-on-pareto-shape",
+          "description": "The prior of the Bayesian credibility, stated on every result (decision D4): Gamma on the Pareto shape alpha = 1 / xi, unrestricted."
+        },
         "currency": {
           "const": "EUR",
           "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
@@ -1724,8 +1677,13 @@
           "description": "ISO 4217 code of the money fields of this block: C17 is in EUR throughout (the LDCE calibration is in EUR)."
         },
         "tail_index": {
-          "type": "number",
-          "exclusiveMinimum": 0
+          "enum": [
+            0.6,
+            0.8,
+            0.96,
+            1.1
+          ],
+          "description": "A tail index of the SDD section 5 grid: 0.6, 0.8, 0.96 or 1.1."
         },
         "infinite_mean": {
           "type": "boolean",
@@ -1747,7 +1705,73 @@
           },
           "minItems": 4,
           "maxItems": 4,
-          "description": "The grid in fixed order: 5 years then 10 years, each at collection threshold 10,000 then 20,000."
+          "description": "The grid in fixed order: 5 years then 10 years, each at collection threshold 10,000 then 20,000.",
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "years": {
+                    "const": 5
+                  },
+                  "collection_threshold_eur": {
+                    "const": 10000
+                  }
+                },
+                "required": [
+                  "years",
+                  "collection_threshold_eur"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "years": {
+                    "const": 5
+                  },
+                  "collection_threshold_eur": {
+                    "const": 20000
+                  }
+                },
+                "required": [
+                  "years",
+                  "collection_threshold_eur"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "years": {
+                    "const": 10
+                  },
+                  "collection_threshold_eur": {
+                    "const": 10000
+                  }
+                },
+                "required": [
+                  "years",
+                  "collection_threshold_eur"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "years": {
+                    "const": 10
+                  },
+                  "collection_threshold_eur": {
+                    "const": 20000
+                  }
+                },
+                "required": [
+                  "years",
+                  "collection_threshold_eur"
+                ]
+              }
+            }
+          ]
         },
         "exceedance": {
           "$ref": "#/$defs/c17Exceedance"

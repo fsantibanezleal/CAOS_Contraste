@@ -251,13 +251,13 @@ def tail_index_profile(losses: np.ndarray, thresholds: np.ndarray, min_exceedanc
 The compound annual loss `Z = sum_{i=1..N} X_i` (dossier 05 F.2) by Monte Carlo, Panjer recursion and FFT, and the quantities read from it (dossier 05 F.3, Shevchenko 2010 sections 5 and 6).
 Panjer recursion (Panjer 1981) with a discretised severity `f_j = P(X = j Delta)` and a frequency of the `(a, b, 0)` class, `p_n = (a + b / n) p_{n-1}`:
 `h_n = 1 / (1 - a f_0) sum_{j=1..n} (a + b j / n) f_j h_{n-j}`, `h_0 = sum_k f_0^k p_k` (Shevchenko Theorem 5.2, eq. 36; Table 1 for `a`, `b`, `h_0`).
-**Benchmark** (Shevchenko Example 9.4 and Table 2, quoted in dossier 05 F.3): Poisson(100) with LN(0, 2) severity has `E[Z] = 738.9056`, `Var[Z] = 298095.7987`, skewness `40.3428`; Panjer with the
-central-difference discretisation of step 1 gives `H_5849 = 0.998999329`, "the 99.9% quantile is about 5849 to 5850".
-Reproduced here by an independent recomputation (the product test `test_golden_panjer_benchmark_reproduces_h_of_dossier_05`): with `f_0 = F(0.5)`, `f_j = F(j + 0.5) - F(j - 0.5)` and zero-based indices, the cumulative sum
-`sum_{n <= 5847} h_n = 0.998999329180`, which is the table's value 0.998999329 to nine decimals, and `sum_{n <= 5849} h_n = 0.999000217026`, so the smallest zero-based index with a cumulative sum of at least 0.999 is 5849 and
-the quantile is 5849 in loss units (step 1). The table labels the 0.998999329 as `H_5849`: an **offset of two** against the zero-based index of the recursion above. The offset is UNVERIFIED (the primary text was not
-re-read: dossier 05 quotes the table through its secondary reading), so the contract states the benchmark in both forms and does not pick a convention: the engine must reproduce `0.998999329` as the cumulative sum through zero-based
-index 5847 to `5e-10`, and a 99.9 percent quantile of 5849 (the dossier's range 5849 to 5850 holds).
+**Benchmark** (Shevchenko Example 9.4 and Tables 2 to 4, quoted in dossier 05 F.3 and re-read in the primary text, arXiv 1008.1108, for the review of this contract): Poisson(100) with LN(0, 2) severity has
+`E[Z] = 738.9056`, `Var[Z] = 298095.7987`, skewness `40.3428`. Panjer with the central-difference discretisation of step 1 (`f_0 = F(0.5)`, `f_j = F(j + 0.5) - F(j - 0.5)`, zero-based indices, eq. 37) gives, in Shevchenko
+Table 2 (verified, p. 37) and in an independent recomputation (the product test `test_m1_the_benchmark_indices_are_those_of_shevchenko_table_2`), `H_5847 = 0.998999329` (0.998999329180), `H_5848 = 0.998999773` and
+`H_5849 = 0.999000217` (0.999000217026): the index of the table is the zero-based index of the recursion (the table's `n`), and the smallest index with `H_n >= 0.999` is 5849, so the 99.9 percent quantile at step 1 is 5849 (Table 3).
+Dossier 05 F.3 printed the row-5847 value against the label 5849 (an erratum, corrected there); the contract carries the table's values. The forward bound of Table 4 (eq. 38, `f_j = F(j + 1) - F(j)`) gives
+`H^U_5811 = 0.998999719 < 0.999 <= H^U_5812 = 0.999000163`, so its quantile is 5812 (the paper's text says 5811; if the engine adds the bounds as goldens, the table rows rule). The Monte Carlo estimate is of the continuous quantile,
+5853.1 (Table 3 at step 0.0625 gives 5853.06; Table 7: `H(5853.1) = 0.9990000`), not of the discretised 5849 to 5850.
 
 ### `riskvalidation.oprisk.aggregate.panjer_coefficients`
 
@@ -287,7 +287,7 @@ def discretise_severity(law: str, params: Sequence[float], step: float, n_points
 - Units: `step` EUR per grid cell; `n_points >= 2`; the result `(n_points,)` masses `f_j` for the loss `j * step`. `method` in `{"central", "forward", "backward"}`: central `f_0 = F(step / 2)`, `f_j = F((j + 1/2) step) - F((j - 1/2) step)`
   (the benchmark's); forward `f_j = F((j + 1) step) - F(j step)` (an upper bound); backward `f_0 = 0`, `f_j = F(j step) - F((j - 1) step)` (a lower bound).
 - Invariants: every `f_j >= 0`; the sum is at most 1 and the missing mass `1 - sum` is the tail beyond the grid (the caller reads it; the function never renormalises).
-- Golden: LN(0, 2), `step = 1`, central: `f_0 = 0.364456`, `f_1 = 0.215872`, `f_2 = 0.096248`.
+- Golden: LN(0, 2), `step = 1`, central: `f_0 = 0.364456`, `f_1 = 0.215872`, `f_2 = 0.096248` (Shevchenko Table 2: 0.364455845, 0.215872117, 0.096248034); forward: the cumulative sums of Poisson(100) are `0.998999719` at zero-based index 5811 and `0.999000163` at 5812 (Table 4 rows).
 
 ### `riskvalidation.oprisk.aggregate.panjer_recursion`
 
@@ -298,7 +298,7 @@ def panjer_recursion(law: str, params: Sequence[float], f: np.ndarray) -> np.nda
 - Units: `law`, `params` the frequency; `f` `(G,)` the discretised severity; the result `(G,)` the probabilities `h_n = P(Z = n * step)`, `n = 0 .. G - 1` (the step is the caller's).
 - Invariants: `h_0 = panjer_h0(law, params, f[0])`; the recursion above for `n >= 1`; the sum of `h` is at most 1; `ValueError` when `a f_0 = 1` or the law is not in the `(a, b, 0)` class.
 - Golden: Poisson(2) with `f = [0.5, 0.5, 0, ...]` (a severity of 0 or 1 with equal probability thins the count): `Z` is Poisson(1), `h = [0.367879, 0.367879, 0.183940, ...]`. The benchmark: Poisson(100), LN(0, 2), `step = 1`, `G >= 5850`:
-  `sum_{n <= 5847} h_n = 0.998999329180`, `sum_{n <= 5849} h_n = 0.999000217026` (tolerance `5e-10`); see the benchmark paragraph above.
+  `H_5847 = sum_{n <= 5847} h_n = 0.998999329180`, `H_5848 = 0.998999773241`, `H_5849 = 0.999000217026` (Shevchenko Table 2, tolerance `5e-10`); see the benchmark paragraph above.
 
 ### `riskvalidation.oprisk.aggregate.fft_aggregate`
 
@@ -360,12 +360,15 @@ def quantile_from_pmf(h: np.ndarray, step: float, level: float) -> float: ...
 ### `riskvalidation.oprisk.aggregate.es_from_pmf`
 
 ```python
-def es_from_pmf(h: np.ndarray, step: float, level: float) -> float: ...
+def es_from_pmf(h: np.ndarray, step: float, level: float, max_missing_share: float = 1e-3) -> float: ...
 ```
 
-- Units: as `quantile_from_pmf`; the expected shortfall `ES = (E[Z; Z > q] + q (P(Z <= q) - level)) / (1 - level)` with `q = quantile_from_pmf(h, step, level)`.
-- Invariants: at least the VaR; equal to the VaR for a point mass; `ValueError` as `quantile_from_pmf`.
-- Golden: `h = [0.5, 0.3, 0.2]`, `step = 10`, `level = 0.75`: `q = 10`, `E[Z; Z > q] = 4`, `ES = (4 + 10 (0.8 - 0.75)) / 0.25 = 18.0`.
+- Units: as `quantile_from_pmf`; the expected shortfall `ES = (E[Z; Z > q] + q (P(Z <= q) - level)) / (1 - level)` with `q = quantile_from_pmf(h, step, level)`; `max_missing_share` a share of the tail `1 - level`.
+- Invariants: **the grid must carry the tail: `ValueError` when the mass beyond the grid, `1 - sum(h)`, exceeds `max_missing_share * (1 - level)`** (default `1e-3 * (1 - level)`), because an expected shortfall read off a grid that ends before the tail is too small
+  and can fall below its own VaR; the expected shortfall does not exist for a severity with a tail index of 1 or more (the compound loss then has an infinite mean) and is never computed for it: the guard refuses such a grid at any size, since its missing mass never falls below the tolerance
+  as the grid grows, and the C17 bake writes the ES as null with the reason `infinite mean`. When it returns, `ES >= VaR` and `ES` equals the VaR for a point mass; `ValueError` as `quantile_from_pmf` otherwise.
+- Golden: `h = [0.5, 0.3, 0.2]`, `step = 10`, `level = 0.75`: `q = 10`, `E[Z; Z > q] = 4`, `ES = (4 + 10 (0.8 - 0.75)) / 0.25 = 18.0`. The benchmark pmf on a grid of 6000 points (`step = 1`, `level = 0.999`) **raises `ValueError`**: its missing mass is
+  `0.000936`, far above the tolerance `1e-6`, and the grid-only reading would give `ES = 377.8`, below the VaR 5849. A Pareto-type tail with tail index 1.1 gives a finite grid-only ES that grows with the grid (818.6 at 4000 points, 1073.6 at 8000 in the review's check), the infinite true value.
 
 ### `riskvalidation.oprisk.aggregate.exceedance_from_pmf`
 
@@ -422,9 +425,9 @@ def sla_var_poisson_gpd(lam: float, xi: float, beta: float, level: float, locati
 
 - Units: `lam` losses per year, `xi > 0` the tail index (decimal), `beta` EUR, `location` EUR; the result EUR: `location + beta / xi ((lam / (1 - level))^xi - 1)` (dossier 05 F.4: it scales like `lam^xi`).
 - Invariants: equals `sla_var(lam, "gpd", (xi, beta, location), level)`; `ValueError` for `xi <= 0` or `beta <= 0`.
-- Golden: `lam = 10`, `xi = 0.5`, `beta = 100`, `level = 0.99`: `200 (31.622777 - 1) = 6124.555320`. Dossier 05 F.6 states that `xi` about 0.96, `beta` about 22,350 and `lam = 41` (0.82 x 50) give a 99.9 percent SLA of
-  "about EUR 647 million"; the rounded parameters give `20000 + 22350 / 0.96 ((41 / 0.001)^0.96 - 1) = 624.1 million` (location 20,000, level 0.999), 3.7 percent below the dossier's figure. The gap is the sensitivity of the SLA to `xi`
-  that dossier 05 F.6 itself warns of (the fitted parameters are rounded in the dossier); which unrounded fit gives 647 million is UNVERIFIED and is no golden of this contract.
+- Golden: `lam = 10`, `xi = 0.5`, `beta = 100`, `level = 0.99`: `200 (31.622777 - 1) = 6124.555320`. Dossier 05 F.6 (reproduced, review of this contract and decision D5): a GPD for the excesses over EUR 20,000 fitted by least squares on the log of the excess
+  quantiles to the four LDCE median percentiles gives `xi = 0.96378` and `beta = 22349.4`, with the fitted quantiles 27409 / 42039 / 85025 / 412906, and at `lam = 41` (0.82 x 50), `location = 20000`, `level = 0.999` an SLA of **647.1 million** (the dossier's EUR 647 million).
+  Rounding `xi` to 0.96 and `beta` to 22,350 gives 624.1 million: that is the sensitivity of the SLA to `xi` that dossier 05 F.6 warns of, not a different result.
 
 ### `riskvalidation.oprisk.sla.SlaResult`
 
@@ -489,40 +492,82 @@ def scenario_pseudo_observations(points: Sequence[ScenarioPoint], n_years: float
 def fit_tail_to_scenarios(points: Sequence[ScenarioPoint], threshold: float, frequency_above_threshold: float) -> SeverityFit: ...
 ```
 
-- Units: `threshold` EUR; `frequency_above_threshold` losses per year above `threshold`; each point implies `P(X > loss | X > threshold) = exceedance_frequency / frequency_above_threshold`; the result is a `"gpd"` `SeverityFit` with location `threshold` (method (ii)), fitted
-  by least squares on the log of the conditional exceedance probability.
-- Invariants: at least two points with distinct losses (`ValueError` otherwise); exact when the points lie on a GPD (the fit then has zero residual); `ValueError` when a point's conditional probability is not in (0, 1).
+- Units: `threshold` EUR; `frequency_above_threshold` losses per year above `threshold`; each point implies `P(X > loss | X > threshold) = exceedance_frequency / frequency_above_threshold`, i.e. the conditional quantile level `p = 1 - exceedance_frequency / frequency_above_threshold`;
+  the result is a `"gpd"` `SeverityFit` with location `threshold` (method (ii)), fitted by least squares on the log excess quantiles: it minimises `sum_s (ln(q_model(p_s) - threshold) - ln(loss_s - threshold))^2`, the objective with which dossier 05 F.6 fits the LDCE percentiles.
+- Invariants: at least two points with distinct losses (`ValueError` otherwise); exact when the points lie on a GPD (the fit then has zero residual); `ValueError` when a point's conditional probability is not in (0, 1) or a loss is not above `threshold`.
 - Golden: `gpd (0.5, 100, 0)` has the tail function `(1 + x / 200)^(-2)`; the points `x = 200` (`S = 0.25`) and `x = 1800` (`S = 0.01`) with `threshold = 0` and `frequency_above_threshold = 10` (so `exceedance_frequency = 2.5` and `0.1`) give `xi = 0.5`, `beta = 100`.
+
+### `riskvalidation.oprisk.scenarios.GammaPrior`
+
+```python
+@dataclass(frozen=True)
+class GammaPrior:
+    shape: float
+    rate: float
+    mean: float
+    interval: tuple[float, float]
+    interval_level: float
+    kind: str
+```
+
+- Units: a Gamma prior on the Pareto shape `alpha = 1 / xi` (dimensionless; `xi` the tail index); `shape` and `rate` the Gamma shape and rate (`mean = shape / rate`); `interval` the expert interval of `alpha`; `interval_level` its probability mass; `kind` the string `"unrestricted-gamma-on-pareto-shape"`.
+- Invariants: frozen; `mean = shape / rate`; `kind` is always `"unrestricted-gamma-on-pareto-shape"` and the C17 documents repeat it (decision D4: Shevchenko and Wuthrich (2006) restrict the prior to `alpha` above 1, a finite mean, which would exclude the true value of the tail index 1.1 variant, `alpha = 0.909`; this contract uses the unrestricted prior and states it on every result).
+
+### `riskvalidation.oprisk.scenarios.gamma_prior_from_mean_interval`
+
+```python
+def gamma_prior_from_mean_interval(mean: float, lower: float, upper: float, interval_level: float = 0.9) -> GammaPrior: ...
+```
+
+- Units: `mean`, `lower`, `upper` are values of `alpha` with `0 < lower < mean < upper`; the Gamma `(shape, rate = shape / mean)` whose probability of `[lower, upper]` is `interval_level` (Shevchenko and Wuthrich 2006, section 4.3: the prior from an expert's mean and interval probability), found by bracketed root finding on the shape.
+- Invariants: `ValueError` when `mean` is not inside the interval or no shape in `[1e-3, 1e6]` gives the mass; `GammaPrior.mean == mean` to `1e-12`.
+- Golden: `mean = 1`, `lower = -ln 0.95 = 0.051293`, `upper = -ln 0.05 = 2.995732`, `interval_level = 0.9`: `shape = 1`, `rate = 1` (the exponential: its mass between its 5th and 95th percentiles is 0.9), to `1e-6`.
+
+### `riskvalidation.oprisk.scenarios.gamma_prior_from_scenarios`
+
+```python
+def gamma_prior_from_scenarios(points: Sequence[ScenarioPoint], threshold: float, frequency_above_threshold: float, basis_years: float,
+                               n_bootstrap: int = 1000, seed: int = 0, interval_level: float = 0.9) -> GammaPrior: ...
+```
+
+- Units: the mapping of the C17 scenario points to the expert input of Shevchenko and Wuthrich (decision D4): (1) `fit_tail_to_scenarios` gives a GPD (least squares on the log quantiles, as dossier 05 F.6 does for the LDCE percentiles) with tail index `xi_s`, and `alpha_s = 1 / xi_s` is the prior mean; (2) a parametric bootstrap gives the expert
+  interval: each exceedance frequency is redrawn as `k / basis_years` with `k` Poisson with mean `exceedance_frequency * basis_years` (a count of 0 is replaced by 0.5), the GPD is refitted, and the 5th and 95th percentiles of `alpha` over `n_bootstrap` replications (`numpy.random.Generator(PCG64(seed))`) form the interval
+  of mass `interval_level` (90 percent); (3) `gamma_prior_from_mean_interval` solves the Gamma shape and rate. `basis_years` is the number of years of experience each scenario frequency is worth (a policy parameter of the caller; the contract fixes the mechanism, not its value).
+- Invariants: deterministic for the same `seed`; `mean = alpha_s`; the interval contains `alpha_s`; a larger `basis_years` gives a narrower interval and a larger Gamma shape; `ValueError` as `fit_tail_to_scenarios` and `gamma_prior_from_mean_interval`. The prior is never truncated to `alpha` above 1.
 
 ### `riskvalidation.oprisk.scenarios.CredibilityFit`
 
 ```python
 @dataclass(frozen=True)
 class CredibilityFit:
+    prior: GammaPrior
+    posterior_shape: float
+    posterior_rate: float
+    alpha_mean: float
+    alpha_mle: float | None
+    credibility_weight: float
     xi: float
     beta: float
     location: float
-    std_errors: tuple[float, float]
-    prior: SeverityFit
-    prior_weight: float
+    infinite_mean: bool
     n: int
-    credibility_weight: float
 ```
 
-- Units: `xi` decimal, `beta` and `location` EUR; `prior` the scenario-implied tail (`fit_tail_to_scenarios`); `prior_weight` `kappa` the number of pseudo-observations the scenarios count for; `credibility_weight = n / (n + kappa)`.
-- Invariants: frozen; `std_errors` from the inverse Hessian of the posterior at the mode.
+- Units: `alpha_mean` the posterior mean of the Pareto shape (dimensionless); `alpha_mle = n / sum ln(x_i / L)` or `None` when `n = 0`; `credibility_weight = w = sum ln(x_i / L) / (sum ln(x_i / L) + rate)` (Shevchenko and Wuthrich eq. 25); `xi = 1 / alpha_mean`, `beta = xi L`, `location = L` EUR, the GPD that is
+  the one-parameter Pareto with shape `alpha_mean` above the threshold `L`; `infinite_mean` is `alpha_mean <= 1` (a tail index of 1 or more); `n` the number of excesses.
+- Invariants: frozen; `alpha_mean = w alpha_mle + (1 - w) prior.mean`.
 
-### `riskvalidation.oprisk.scenarios.credibility_gpd`
+### `riskvalidation.oprisk.scenarios.credibility_pareto`
 
 ```python
-def credibility_gpd(prior: SeverityFit, prior_weight: float, losses: np.ndarray, threshold: float) -> CredibilityFit: ...
+def credibility_pareto(prior: GammaPrior, losses: np.ndarray, threshold: float) -> CredibilityFit: ...
 ```
 
-- Units: `losses` `(N,)` EUR above `threshold`, the data of the tail; `prior_weight >= 0`. **Decision D1 (U12-S, to confirm):** dossier 05 F.5 names the method (scenarios as the prior of the GPD parameters, updated with internal data) and gives no formula, so this contract fixes a concrete prior:
-  the scenarios count as `kappa` pseudo-observations drawn from the scenario-implied GPD `theta_0`, and the posterior mode maximises `sum_i ln g_theta(y_i) + kappa E_{theta_0}[ln g_theta(Y)]` over `theta = (xi, beta)` (`y_i` the excesses over `threshold`, `g` the GPD density).
-  A different prior form is a new major version of this contract.
-- Invariants: `kappa = 0` returns the maximum likelihood fit of the excesses; `N = 0` with `kappa > 0` returns `theta_0` exactly (the cross-entropy `E_{theta_0}[ln g_theta]` is maximised at `theta_0`, Gibbs' inequality); the posterior moves monotonically from the maximum likelihood fit
-  to `theta_0` as `kappa` grows; `ValueError` for `kappa < 0` or `prior` that is not a `"gpd"` fit.
+- Units: `losses` `(N,)` EUR, each at or above `threshold` `L` (the tail data); the one-parameter Pareto `f(x | alpha) = (alpha / L) (x / L)^(-alpha - 1)` for `x >= L` with the Gamma(`shape`, `rate`) prior on `alpha` has the Gamma posterior (Shevchenko and Wuthrich 2006, section 3.3,
+  eqs. 21 to 25): shape `shape + N`, rate `rate + sum ln(x_i / L)` (eq. 24), posterior mean `(shape + N) / (rate + sum ln(x_i / L))`, the credibility weighting of the maximum likelihood estimate `N / sum ln(x_i / L)` and the prior mean (eq. 25).
+- Invariants: `N = 0` returns the prior (`alpha_mean = prior.mean`, `credibility_weight = 0`, `alpha_mle = None`); as `N` grows `credibility_weight` tends to 1 and `alpha_mean` to the maximum likelihood estimate; the prior is unrestricted, so `alpha_mean` may be 1 or below and then `infinite_mean` is true and no
+  mean-based number follows (`sla_var_mean_corrected` raises); `ValueError` when a loss is below `threshold`, or `sum ln(x_i / L) = 0` with `N > 0` (all losses equal to `L`).
+- Golden: prior Gamma(shape 2, rate 1) (mean 2), `L = 1`, `losses = [e, e, e]` (`sum ln(x / L) = 3`): posterior Gamma(5, 4), `alpha_mean = 1.25 = 0.75 x 1 + 0.25 x 2` with `w = 0.75` and `alpha_mle = 1`, posterior standard deviation `sqrt(5) / 4 = 0.559017`, `xi = 0.8`, `beta = 0.8`, `location = 1`, `infinite_mean = False`.
 
 ### `riskvalidation.oprisk.scenarios.scenario_influence`
 
@@ -551,7 +596,7 @@ def ildc(ii: np.ndarray, ie: np.ndarray, iea: np.ndarray, di: np.ndarray) -> flo
 ```
 
 - Units: each input `(3,)` EUR for the years `t, t-1, t-2`; `ILDC = min(mean(|ii - ie|), 0.0225 * mean(iea)) + mean(di)` (OPE25.5); the absolute value is taken year by year.
-- Golden: `ii = [10, 10, 10]`, `ie = [2, 2, 2]`, `di = [1, 1, 1]`: with `iea = [100, 100, 100]`, `ILDC = min(8, 2.25) + 1 = 3.25`; with `iea = [1000, 1000, 1000]`, `ILDC = min(8, 22.5) + 1 = 9.0`. Year by year: `ii = [10, 2, 10]`, `ie = [2, 10, 2]` gives `mean |ii - ie| = 8` (the netted value would be 4.667).
+- Golden: `ii = [10, 10, 10]`, `ie = [2, 2, 2]`, `di = [1, 1, 1]`: with `iea = [100, 100, 100]`, `ILDC = min(8, 2.25) + 1 = 3.25`; with `iea = [1000, 1000, 1000]`, `ILDC = min(8, 22.5) + 1 = 9.0`. Year by year: `ii = [10, 2, 10]`, `ie = [2, 10, 2]` gives `mean |ii - ie| = 8` (the netted value, the absolute value of the difference of the two averages, would be 2.667).
 
 ### `riskvalidation.oprisk.sma.service_component`
 
@@ -651,7 +696,7 @@ def sma_capital(bi: float, annual_losses: np.ndarray, bucket1_uses_losses: bool 
 - Units: `bi` EUR; `annual_losses` `(Y,)` as `loss_component`. Order of the rules: (1) **fewer than `minimum_years` years of loss data: capital is the BIC only** (OPE25.10, OPE25.15), `basis = "bic-only"`, no LC and no ILM, a reason, discretion `transitional-bic-only`; never an ILM computed on too little
   data (the missing-data behavior of the unit); (2) `national_ilm_one`: `ILM = 1`, discretion `national-ilm-one` (OPE25.11, disclosure stays the caller's); (3) bucket 1 and not `bucket1_uses_losses`: `ILM = 1`, discretion `bucket-1-ilm-one` (OPE25.11); (4) otherwise `ILM = ilm(LC, BIC)`, discretion `none`.
   In (2) and (3) `loss_component` is still computed and reported. `ORC = BIC x ILM` (OPE25.2).
-- Invariants: `orc = bic` in the BIC-only basis and whenever `ilm == 1`; `rwa = 12.5 orc`; `ValueError` for a negative `bi`.
+- Invariants: `orc = bic` in the BIC-only basis and whenever `ilm == 1`; `rwa = 12.5 orc`; `ValueError` for a negative `bi` and **for `minimum_years < 5`**: 5 years is the transitional minimum of OPE25.15, so an ILM on fewer than 5 years is unreachable through this function (a national discretion would be a different, explicit function).
 - Golden: `bi = 35e9` with ten annual losses of `5.37e9 / 15 = 358e6`: `BIC = 5.37e9`, `LC = 5.37e9`, `ILM = 1`, `ORC = 5.37e9`, `RWA = 67.125e9`. `bi = 1.4e9` (bucket 2, `BIC = 0.18e9`) with 3 annual losses: `basis = "bic-only"`, `ORC = 0.18e9`, a reason.
   `bi = 0.5e9` (bucket 1, `BIC = 0.06e9`): `ILM = 1`, discretion `bucket-1-ilm-one`, `ORC = 0.06e9`; with `bucket1_uses_losses = True` the ILM is computed.
 
@@ -669,11 +714,11 @@ def benchmark_reproduction(moments: tuple[float, float, float], quantiles: Mappi
 
 - Units: `moments = (mean, variance, skewness)` of the compound Poisson(100) with LN(0, 2) annual loss, computed by the engine; `quantiles` maps `"monte-carlo"`, `"panjer"` and `"fft"` to the 99.9 percent quantile in loss units found by that method (step 1); tolerances are relative decimals.
   `test_id = "oprisk.benchmark_reproduction"`. `h0`: the engine reproduces Shevchenko's benchmark (dossier 05 F.3): `E[Z] = 738.9056`, `Var[Z] = 298095.7987`, skewness `40.3428`, and a 99.9 percent quantile in the range 5849 to 5850.
-- Invariants: a moment's deviation is `|value - reference| / reference`; a quantile's deviation is 0 inside `[5849, 5850]` and otherwise the distance to the nearest end over `5849.5`; `metric = max(moment deviations / moment_rel_tol, quantile deviations / quantile_rel_tol)`, `statistic` equals `metric`;
+- Invariants: a moment's deviation is `|value - reference| / reference`; a `panjer` or `fft` quantile's deviation is 0 inside `[5849, 5850]` (the step-1 discretised quantile) and otherwise the distance to the nearest end over `5849.5`; a `monte-carlo` quantile estimates the continuous quantile, so its deviation is `|q - 5853.1| / 5853.1` (Shevchenko Table 3 at step 0.0625 gives 5853.06 and Table 7 gives `H(5853.1) = 0.9990000`); `metric = max(moment deviations / moment_rel_tol, quantile deviations / quantile_rel_tol)`, `statistic` equals `metric`;
   `extras["max_quantile_rel_dev"]` is the largest quantile deviation and `extras["deviations"]` lists every deviation by name; a missing method in `quantiles` gives `not_evaluated`.
 - Light: green when `metric <= 1`, amber when `metric <= 2`, red above.
 - Golden: `moments = (738.9056, 298095.7987, 40.3428)`, `quantiles = {"panjer": 5849.0, "fft": 5850.0, "monte-carlo": 5900.0}`, `moment_rel_tol = 1e-6`, `quantile_rel_tol = 0.01`: the moment and the Panjer and FFT deviations are 0, the Monte Carlo deviation is
-  `50 / 5849.5 = 0.008548`, `metric = 0.854774`, `light = "green"`, `extras["max_quantile_rel_dev"] = 0.008548`.
+  `46.9 / 5853.1 = 0.008013`, `metric = 0.801285`, `light = "green"`, `extras["max_quantile_rel_dev"] = 0.008013`.
 
 ### `riskvalidation.validation.oprisk.threshold_stability`
 
@@ -733,10 +778,10 @@ def scenario_influence(influences: np.ndarray, model_id: str | None = None, infl
 | Value | Where | Source |
 |---|---|---|
 | `E[Z] = 738.9056`, `Var[Z] = 298095.7987`, skewness `40.3428` for Poisson(100) with LN(0, 2) | `compound_poisson_moments`, `benchmark_reproduction` | dossier 05 F.3 (Shevchenko Example 9.4), recomputed from `100 e^2`, `100 e^8`, `e^6 / 10` |
-| `H = 0.998999329` (Table 2 label `H_5849`), 99.9 percent quantile about 5849 to 5850, step 1 | `panjer_recursion`, `quantile_from_pmf`, `benchmark_reproduction` | dossier 05 F.3 (Shevchenko Table 2); recomputed as the cumulative sum through zero-based index 5847; the label offset of two is UNVERIFIED |
+| `H_5847 = 0.998999329`, `H_5848 = 0.998999773`, `H_5849 = 0.999000217`, 99.9 percent quantile 5849 at step 1 (Monte Carlo reference 5853.1) | `panjer_recursion`, `quantile_from_pmf`, `benchmark_reproduction` | Shevchenko Tables 2 to 4 and 7 (arXiv 1008.1108, verified); recomputed by the Panjer recursion; dossier 05 F.3 labelled the first value H_5849 (erratum) |
 | Panjer `h_0` of Poisson, negative binomial and binomial; `(a, b)` of each | `panjer_h0`, `panjer_coefficients` | dossier 05 F.3 (Shevchenko Table 1); worked instances recomputed from the formulas |
 | BIC `5.37e9` at BI `35e9` | `bic` | dossier 01 section F, OPE25.7 footnote 2 |
 | ILM `1` when LC equals BIC | `ilm`, `sma_capital` | dossier 01 section F, OPE25.9 |
 | BIC-only under 5 years of loss data | `sma_capital` | dossier 01 section F, OPE25.10 and OPE25.15 |
-| Poisson-GPD closed-form SLA `6124.555320` (worked instance); mean-corrected `8124.555320` (UNVERIFIED form) | `sla_var_poisson_gpd`, `sla_var_mean_corrected` | dossier 05 F.4, hand-computed; the dossier's EUR 647 million is not reproduced from its rounded parameters (624 million), UNVERIFIED |
+| Poisson-GPD closed-form SLA `6124.555320` (worked instance); EUR 647.1 million at xi 0.96378, beta 22349.4, lambda 41 (rounding xi to 0.96 gives 624.1 million); mean-corrected `8124.555320` (UNVERIFIED form) | `sla_var_poisson_gpd`, `sla_var_mean_corrected` | dossier 05 F.4 and F.6, hand-computed and reproduced by the log excess least squares fit |
 | LDCE percentiles 27,632 / 41,916 / 82,608 / 418,400 and frequency 0.82 | the C17 calibration targets (documents, not functions) | dossier 05 F.6 (BCBS 160, Table ILD7), derived-only |
