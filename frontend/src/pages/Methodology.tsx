@@ -344,6 +344,15 @@ export function Methodology() {
           ...(registered('loss', lang).length > 0
             ? [{ id: 'loss', label: t('Loss severity and exposure', 'Severidad de pérdida y exposición'), tabs: registered('loss', lang) }]
             : []),
+          ...(registered('capital', lang).length > 0
+            ? [{ id: 'capital', label: t('Capital models', 'Modelos de capital'), tabs: registered('capital', lang) }]
+            : []),
+          ...(registered('market', lang).length > 0
+            ? [{ id: 'market', label: t('Market risk', 'Riesgo de mercado'), tabs: registered('market', lang) }]
+            : []),
+          ...(registered('balance', lang).length > 0
+            ? [{ id: 'balance', label: t('The balance sheet', 'El balance'), tabs: registered('balance', lang) }]
+            : []),
         ]}
       />
     </DocPage>

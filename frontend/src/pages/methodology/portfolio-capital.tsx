@@ -241,7 +241,7 @@ function Body() {
 
 export const methodologySection: MethodologySection = {
   id: 'portfolio-capital',
-  group: 'loss',
+  group: 'capital',
   order: 120,
   title: { en: 'Portfolio credit capital', es: 'Capital de crédito de cartera' },
   Body,

@@ -314,7 +314,7 @@ function Body() {
 
 export const methodologySection: MethodologySection = {
   id: 'irrbb',
-  group: 'tests',
+  group: 'balance',
   order: 120,
   title: { en: 'Interest rate risk (IRRBB)', es: 'Riesgo de tasa (IRRBB)' },
   Body,
