@@ -38,8 +38,8 @@ function FitFigure() {
         <circle key={`e${u}`} className="dg-fill-warn" cx={x(u)} cy={Math.min(y(u), base - 7)} r={6} />
       ))}
       <text className="dg-axis-label" x={W / 2} y={base + 30} textAnchor="middle">{t('yearly loss rate', 'tasa de pérdida anual')}</text>
-      <text className="dg-note" x={x(0.55)} y={base - 70} textAnchor="start">{t('evaluation years: where the fit said', 'años de evaluación: dónde dijo el ajuste')}</text>
-      <text className="dg-note" x={x(0.55)} y={base - 54} textAnchor="start">{t('they should fall', 'que deberían caer')}</text>
+      <text className="dg-note" x={x(0.55)} y={base - 70} textAnchor="start">{t('evaluation years', 'años de evaluación')}</text>
+      <text className="dg-note" x={x(0.55)} y={base - 54} textAnchor="start">{t('in the tail', 'en la cola')}</text>
       <text className="dg-note" x={W - 8} y={H - 6} textAnchor="end">{t('Illustrative schematic, not a result', 'Esquema ilustrativo, no un resultado')}</text>
     </svg>
   );
