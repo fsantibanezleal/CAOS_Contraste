@@ -174,7 +174,7 @@
    },
    {
     "window_id": "calm-2004-06",
-    "asset_class": "equity",
+    "asset_class": "mixed",
     "start_date": "2004-01-02",
     "end_date": "2006-12-29",
     "fixed_on": {

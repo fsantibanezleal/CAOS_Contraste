@@ -271,9 +271,6 @@
                 "asset_class": {
                   "type": "string",
                   "enum": [
-                    "equity",
-                    "rates",
-                    "fx",
                     "mixed"
                   ]
                 },

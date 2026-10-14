@@ -361,3 +361,20 @@ def test_f16_the_es_below_var_test_calls_a_check() -> None:
     body = src[src.index("def test_es_below_var_is_caught"):]
     body = body[: body.index("\n\n\n")]
     assert "c11_variant_violations" in body
+
+
+# --- D4: the calm window is the control window, asset class mixed ------------------------------------------------
+
+
+@pytest.mark.parametrize("cls", ["equity", "rates", "fx"])
+def test_d4_a_calm_window_of_another_class_is_refused_in_the_models_and_the_variant(cls: str) -> None:
+    m = load(C11M)
+    calm = next(w for w in m["fit"]["windows"] if w["window_id"] == "calm-2004-06")
+    assert calm["asset_class"] == "mixed"
+    calm["asset_class"] = cls
+    assert cs.errors(C11M, m) != []
+    v = load(C11)
+    v["outputs"]["window"].update({"window_id": "calm-2004-06", "asset_class": cls, "start_date": "2004-01-02", "end_date": "2006-12-29"})
+    assert cs.errors(C11, v) != []
+    v["outputs"]["window"]["asset_class"] = "mixed"
+    assert cs.errors(C11, v) == []
