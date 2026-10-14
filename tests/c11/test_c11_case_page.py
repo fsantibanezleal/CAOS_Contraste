@@ -1,4 +1,4 @@
-"""CT-1115: the case page states its data, its derived-only rule and its limits, and its results are the committed documents'."""
+"""CT-615: the case page states its data, its derived-only rule and its limits, and its results are the committed documents'."""
 from __future__ import annotations
 
 from pathlib import Path
