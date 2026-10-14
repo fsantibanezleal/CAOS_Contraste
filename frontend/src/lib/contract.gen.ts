@@ -3319,7 +3319,7 @@ export interface components {
             /** @constant */
             window_id?: "calm-2004-06";
             /** @enum {string} */
-            asset_class?: "equity" | "rates" | "fx" | "mixed";
+            asset_class?: "mixed";
             /** @constant */
             start_date?: "2004-01-02";
             /** @constant */
@@ -3383,7 +3383,7 @@ export interface components {
             /** @constant */
             window_id?: "calm-2004-06";
             /** @enum {string} */
-            asset_class?: "equity" | "rates" | "fx" | "mixed";
+            asset_class?: "mixed";
             /** @constant */
             start_date?: "2004-01-02";
             /** @constant */

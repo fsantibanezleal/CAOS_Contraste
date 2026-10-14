@@ -14716,9 +14716,6 @@
                   "asset_class": {
                     "type": "string",
                     "enum": [
-                      "equity",
-                      "rates",
-                      "fx",
                       "mixed"
                     ]
                   },
@@ -14884,9 +14881,6 @@
                   "asset_class": {
                     "type": "string",
                     "enum": [
-                      "equity",
-                      "rates",
-                      "fx",
                       "mixed"
                     ]
                   },

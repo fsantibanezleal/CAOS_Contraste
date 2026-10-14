@@ -126,7 +126,7 @@ WINDOW_TABLE = [  # window_id, asset classes allowed, start, end
     ("rates-2022", ("rates",), "2022-01-03", "2022-12-30"),
     ("fx-2008", ("fx",), "2008-07-01", "2009-06-30"),
     ("mixed-2023", ("mixed",), "2023-03-01", "2023-05-31"),
-    ("calm-2004-06", ("equity", "rates", "fx", "mixed"), "2004-01-02", "2006-12-29"),  # the class of the calm window is not decided
+    ("calm-2004-06", ("mixed",), "2004-01-02", "2006-12-29"),  # decision D4: the control window, mixed
 ]
 WINDOW_IDS = [w[0] for w in WINDOW_TABLE]
 
