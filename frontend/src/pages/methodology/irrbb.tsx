@@ -51,7 +51,7 @@ function ShapesFigure() {
       <text className="dg-edge-label" x={x(25) - 4} y={y(90) + 16} textAnchor="end">{t('steepener', 'empinamiento')}</text>
       <text className="dg-edge-label" x={x(25) - 4} y={y(-60) - 8} textAnchor="end">{t('flattener', 'aplanamiento')}</text>
       <text className="dg-axis-label" x={W / 2} y={H - 24} textAnchor="middle">{t('bucket midpoint t_k, years (x = 4)', 'punto medio del tramo t_k, años (x = 4)')}</text>
-      <text className="dg-axis-label" x={8} y={20} textAnchor="start">{t('shift, bp', 'desplazamiento, pb')}</text>
+      <text className="dg-axis-label" x={W - 8} y={14} textAnchor="end">{t('shift, bp', 'desplazamiento, pb')}</text>
       <text className="dg-note" x={W - 8} y={H - 6} textAnchor="end">{t('Illustrative schematic, not a result', 'Esquema ilustrativo, no un resultado')}</text>
     </svg>
   );
@@ -75,7 +75,7 @@ function CapsFigure() {
           <rect className="dg-fill-accent" x={x(0)} y={r.y} width={x(100) - x(0)} height={26} opacity={0.25} />
           <rect className="dg-fill-accent" x={x(0)} y={r.y} width={x(r.share) - x(0)} height={26} />
           <text className="dg-bar-label" x={x(r.share) - 6} y={r.y + 17} textAnchor="end">{`${r.share} %`}</text>
-          <text className="dg-note" x={x(0)} y={r.y + 42} textAnchor="start">{t(`average maturity of the core at most ${r.years} years; the rest is overnight`, `plazo promedio de la parte estable hasta ${r.years} años; el resto va a la vista`)}</text>
+          <text className="dg-note" x={8} y={r.y + 42} textAnchor="start">{t(`core maturity at most ${r.years} years; the rest overnight`, `plazo estable hasta ${r.years} años; el resto a la vista`)}</text>
         </g>
       ))}
       <text className="dg-axis-label" x={x(50)} y={H - 40} textAnchor="middle">{t('core share of the balance, cap', 'parte estable del saldo, tope')}</text>
@@ -143,18 +143,18 @@ function AnnexFigure() {
   const t = useT();
   return (
     <svg className="ct-docfig" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={t('How the Chilean standard measure of net interest income is built: the CLP leg and the UF-indexed UR leg are combined with a 50 percent offset when their signs are opposite, the larger of the two parallel shocks is taken, and the indexation charge of 2.5 percent of the absolute net UF position is added apart to give delta NII', 'Cómo se construye la medida estándar chilena de margen financiero neto: el tramo CLP y el tramo UR indexado a UF se combinan con una compensación de 50 por ciento cuando sus signos son opuestos, se toma el mayor de los dos choques paralelos, y el cargo por reajustabilidad de 2,5 por ciento de la posición neta en UF en valor absoluto se suma aparte para dar el delta NII')}>
-      <Box x={8} y={14} w={128} h={56} title={t('CLP leg', 'Tramo CLP')} sub={t('delta NII in CLP', 'delta NII en CLP')} />
-      <Box x={8} y={100} w={128} h={56} title={t('UR leg', 'Tramo UR')} sub={t('UF-indexed, in CLF', 'indexado a UF, en CLF')} />
-      <Box x={176} y={57} w={128} h={56} tone="accent" title={t('Pair CLP and CLF', 'Par CLP y CLF')} sub={t('50 % offset if signs differ', '50 % de compensación si difieren')} />
-      <Box x={344} y={14} w={128} h={56} title={t('Larger parallel shock', 'Mayor choque paralelo')} sub={t('up or down, 300 bp', 'al alza o a la baja, 300 pb')} />
-      <Box x={176} y={150} w={128} h={56} title={t('Indexation charge', 'Cargo por reajustabilidad')} sub={t('2.5 % of |net UF position|', '2,5 % de |posición neta UF|')} />
-      <Box x={344} y={186} w={128} h={56} tone="good" title={t('Delta NII', 'Delta NII')} sub={t('rate result + charge', 'resultado de tasa + cargo')} />
-      <line className="dg-edge" x1={136} y1={42} x2={176} y2={76} />
-      <line className="dg-edge" x1={136} y1={128} x2={176} y2={96} />
-      <line className="dg-edge" x1={304} y1={85} x2={344} y2={50} />
-      <line className="dg-edge" x1={408} y1={70} x2={408} y2={186} />
-      <line className="dg-edge" x1={72} y1={156} x2={176} y2={178} />
-      <line className="dg-edge" x1={304} y1={178} x2={344} y2={214} />
+      <Box x={8} y={14} w={124} h={56} title={t('CLP leg', 'Tramo CLP')} sub={t('delta NII in CLP', 'delta NII en CLP')} />
+      <Box x={8} y={100} w={124} h={56} title={t('UR leg', 'Tramo UR')} sub={t('UF-indexed, in CLF', 'indexado a UF, en CLF')} />
+      <Box x={170} y={57} w={140} h={56} tone="accent" title={t('Pair CLP and CLF', 'Par CLP y CLF')} sub={t('50 % offset if signs differ', '50 % si difieren los signos')} />
+      <Box x={338} y={14} w={134} h={56} title={t('Larger parallel', 'Mayor paralelo')} sub={t('shock, 300 bp', 'choque, 300 pb')} />
+      <Box x={170} y={150} w={140} h={56} title={t('Indexation charge', 'Cargo reajustabilidad')} sub={t('2.5 % of |net UF|', '2,5 % de |UF neta|')} />
+      <Box x={338} y={186} w={134} h={56} tone="good" title={t('Delta NII', 'Delta NII')} sub={t('rate result + charge', 'tasa + cargo')} />
+      <line className="dg-edge" x1={132} y1={42} x2={170} y2={76} />
+      <line className="dg-edge" x1={132} y1={128} x2={170} y2={96} />
+      <line className="dg-edge" x1={310} y1={85} x2={338} y2={50} />
+      <line className="dg-edge" x1={405} y1={70} x2={405} y2={186} />
+      <line className="dg-edge" x1={70} y1={156} x2={170} y2={178} />
+      <line className="dg-edge" x1={310} y1={178} x2={338} y2={214} />
       <text className="dg-note" x={W - 8} y={H - 6} textAnchor="end">{t('Illustrative schematic, not a result', 'Esquema ilustrativo, no un resultado')}</text>
     </svg>
   );
