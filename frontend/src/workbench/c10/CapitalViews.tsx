@@ -9,7 +9,7 @@ import { ChartOverTable, alignTo, unionX } from '../c06/format';
 import { Pending } from '../Pending';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { C10TestsTable, IllustrativeNotice } from './C10Common';
-import { fullMoney, moneyAxis, moneyText } from './format';
+import { fullMoney, moneyAxis } from './format';
 import {
   ESTIMATOR_KIND_TEXT, EULER_METHOD_TEXT, VAR_METHOD_TEXT, eulerLevelOf, eulerOf, groupLabel, levelBi, measureOf, outputsOf, rungOf, text,
   type C10Rung, type C10Sel,
@@ -29,12 +29,15 @@ export function lossMarks(rung: C10Rung | undefined, level: number, currency: st
   if (!rung || !rung.evaluated || !m) return [];
   const both = (build: (lang: 'en' | 'es') => string): Bi => ({ en: build('en'), es: build('es') });
   const lv = levelBi(level);
-  const err = (lang: 'en' | 'es', se: number | null) => (se === null ? '' : ` ± ${moneyText(se, currency, lang)}`);
+  // one unit for the three markers, chosen by the largest, so 0.14 m and 0.87 m and 1.04 m read side by side
+  const { div, unit } = moneyAxis(Math.max(m.el, m.var, m.es ?? 0), currency);
+  const amount = (v: number, lang: 'en' | 'es') => `${formatNumber(v / div, lang, { digits: 4 })} ${unit[lang]}`;
+  const err = (lang: 'en' | 'es', se: number | null) => (se === null ? '' : ` ± ${formatNumber(se / div, lang, { digits: 3 })}`);
   const marks: LossMark[] = [
-    { kind: 'el', x: m.el, label: both((l) => `${l === 'en' ? 'EL' : 'PE'} ${moneyText(m.el, currency, l)}`) },
-    { kind: 'var', x: m.var, label: both((l) => `VaR ${lv[l]} ${moneyText(m.var, currency, l)}${err(l, m.var_se)}`) },
+    { kind: 'el', x: m.el, label: both((l) => `${l === 'en' ? 'EL' : 'PE'} ${amount(m.el, l)}`) },
+    { kind: 'var', x: m.var, label: both((l) => `VaR ${lv[l]} ${amount(m.var, l)}${err(l, m.var_se)}`) },
   ];
-  if (m.es !== null) marks.push({ kind: 'es', x: m.es, label: both((l) => `ES ${lv[l]} ${moneyText(m.es as number, currency, l)}${err(l, m.es_se)}`) });
+  if (m.es !== null) marks.push({ kind: 'es', x: m.es, label: both((l) => `ES ${lv[l]} ${amount(m.es as number, l)}${err(l, m.es_se)}`) });
   return marks;
 }
 
@@ -181,11 +184,10 @@ export function RungsView({ sel }: { sel: C10Sel | null }) {
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Rung', es: 'Escalón' }, lang)}</th>
-                <th className="ct-text ct-wide-only">{pick({ en: 'Estimator', es: 'Estimador' }, lang)}</th>
                 <th>{pick({ en: `EL, ${ccy}`, es: `PE, ${ccy}` }, lang)}</th>
                 <th>{pick({ en: `VaR, ${ccy}`, es: `VaR, ${ccy}` }, lang)}</th>
                 <th>{pick({ en: `ES, ${ccy}`, es: `ES, ${ccy}` }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Error of the VaR', es: 'Error del VaR' }, lang)}</th>
+                <th>{pick({ en: 'Error of the VaR', es: 'Error del VaR' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Error of the ES', es: 'Error del ES' }, lang)}</th>
                 <th className="ct-text ct-wide-only">{pick({ en: 'Scenarios and diagnostics', es: 'Escenarios y diagnósticos' }, lang)}</th>
               </tr>
@@ -194,23 +196,27 @@ export function RungsView({ sel }: { sel: C10Sel | null }) {
               {o.rungs.map((r) => {
                 const m = measureOf(r, sel.level);
                 const na = formatNumber(null, lang);
+                const none = pick({ en: 'none', es: 'ninguno' }, lang);
                 return (
                   <tr key={r.id} data-rung={r.id} data-evaluated={String(r.evaluated)} className={r.id === sel.rung ? 'ct-current' : undefined}>
                     <td className="ct-text">{pick(r.label, lang)}</td>
-                    <td className="ct-text ct-wide-only">{pick(text(ESTIMATOR_KIND_TEXT, r.estimator), lang)}</td>
                     {r.evaluated && m ? (
                       <>
                         <td>{fullMoney(m.el, lang)}</td>
                         <td>{fullMoney(m.var, lang)}</td>
                         <td data-na={m.es === null ? 'true' : undefined}>{m.es === null ? `${na} (${m.es_reason ?? ''})` : fullMoney(m.es, lang)}</td>
-                        <td className="ct-wide-only">{m.var_se === null ? pick({ en: 'none', es: 'ninguno' }, lang) : fullMoney(m.var_se, lang)}</td>
-                        <td className="ct-wide-only">{m.es_se === null ? pick({ en: 'none', es: 'ninguno' }, lang) : fullMoney(m.es_se, lang)}</td>
+                        <td>{m.var_se === null ? none : fullMoney(m.var_se, lang)}</td>
+                        <td className="ct-wide-only">{m.es_se === null ? none : fullMoney(m.es_se, lang)}</td>
                         <td className="ct-text ct-wide-only">
-                          {[r.simulation ? `${count(r.simulation.n_scenarios, lang)} ${pick({ en: 'scenarios', es: 'escenarios' }, lang)}` : null, ...r.diagnostics.map((x) => `${x.name} ${formatNumber(x.value, lang, { digits: 4 })} ${x.unit}`)].filter(Boolean).join('; ') || pick({ en: 'analytic', es: 'analítico' }, lang)}
+                          {[pick(text(ESTIMATOR_KIND_TEXT, r.estimator), lang), r.simulation ? `${count(r.simulation.n_scenarios, lang)} ${pick({ en: 'scenarios', es: 'escenarios' }, lang)}` : null, ...r.diagnostics.map((x) => `${x.name} ${formatNumber(x.value, lang, { digits: 4 })} ${x.unit}`)].filter(Boolean).join('; ')}
                         </td>
                       </>
                     ) : (
-                      <td colSpan={6} className="ct-text" data-na="true">{`${na} (${r.reason ?? ''})`}</td>
+                      <>
+                        <td colSpan={4} className="ct-text" data-na="true">{`${na} (${r.reason ?? ''})`}</td>
+                        <td className="ct-wide-only" />
+                        <td className="ct-wide-only" />
+                      </>
                     )}
                   </tr>
                 );
@@ -372,6 +378,26 @@ export function GranularityView({ sel }: { sel: C10Sel | null }) {
             />
           }
         >
+          <table className="caos-table ct-wrap-head" data-table="c10-ga-names">
+            <thead>
+              <tr>
+                <th>{pick({ en: 'Names', es: 'Nombres' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Concentration index', es: 'Índice de concentración' }, lang)}</th>
+                <th>{pick({ en: 'Adjustment', es: 'Ajuste' }, lang)}</th>
+                <th>{pick({ en: 'CreditRisk+ recursion', es: 'Recursión de CreditRisk+' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.n_names} data-names={r.n_names}>
+                  <td>{count(r.n_names, lang)}</td>
+                  <td className="ct-wide-only">{formatNumber(r.hhi, lang, { digits: 3 })}</td>
+                  <td>{p(r.ga, 4)}</td>
+                  <td data-na={r.truth_ga === null ? 'true' : undefined}>{r.truth_ga === null ? `${formatNumber(null, lang)} (${r.truth_reason ?? ''})` : p(r.truth_ga, 4)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           <table className="caos-table ct-wrap-head" data-table="c10-ga-levels">
             <thead>
               <tr>
@@ -403,26 +429,6 @@ export function GranularityView({ sel }: { sel: C10Sel | null }) {
               lang,
             )}
           </p>
-          <table className="caos-table ct-wrap-head" data-table="c10-ga-names">
-            <thead>
-              <tr>
-                <th>{pick({ en: 'Names', es: 'Nombres' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Concentration index', es: 'Índice de concentración' }, lang)}</th>
-                <th>{pick({ en: 'Adjustment', es: 'Ajuste' }, lang)}</th>
-                <th>{pick({ en: 'CreditRisk+ recursion', es: 'Recursión de CreditRisk+' }, lang)}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.n_names} data-names={r.n_names}>
-                  <td>{count(r.n_names, lang)}</td>
-                  <td className="ct-wide-only">{formatNumber(r.hhi, lang, { digits: 3 })}</td>
-                  <td>{p(r.ga, 4)}</td>
-                  <td data-na={r.truth_ga === null ? 'true' : undefined}>{r.truth_ga === null ? `${formatNumber(null, lang)} (${r.truth_reason ?? ''})` : p(r.truth_ga, 4)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>

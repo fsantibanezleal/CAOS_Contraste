@@ -9,7 +9,7 @@ import { ChartOverTable, alignTo, unionX } from '../c06/format';
 import { Pending } from '../Pending';
 import { useCard } from '../c03/U6Shared';
 import { C10TestsTable } from './C10Common';
-import { ESTIMATOR_TEXT, INTERVAL_TEXT, IRB_CLASS_TEXT, REGIME_TEXT, levelBi, outputsOf, text, type C10Sel } from './selection';
+import { ESTIMATOR_SHORT, ESTIMATOR_TEXT, INTERVAL_TEXT, IRB_CLASS_TEXT, REGIME_TEXT, levelBi, outputsOf, text, type C10Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 const NA = (lang: 'en' | 'es') => formatNumber(null, lang);
@@ -127,7 +127,7 @@ export function CorrelationView({ sel }: { sel: C10Sel | null }) {
     { id: 'maximum-likelihood', pd: ml.pd, rho: ml.rho, method: ml.interval_method, extra: pick({ en: `log-likelihood ${formatNumber(ml.log_likelihood, 'en', { digits: 4 })}, ${ml.converged ? 'converged' : 'did not converge'}`, es: `log-verosimilitud ${formatNumber(ml.log_likelihood, 'es', { digits: 4 })}, ${ml.converged ? 'convergió' : 'no convergió'}` }, lang) },
     { id: 'moments', pd: mo.pd, rho: mo.rho, method: mo.interval_method, extra: pick({ en: `${count(mo.n_bootstrap, 'en')} bootstrap samples`, es: `${count(mo.n_bootstrap, 'es')} muestras bootstrap` }, lang) },
   ];
-  const marks = rows.map((r) => ({ x: r.rho.estimate, label: { en: `${text(ESTIMATOR_TEXT, r.id).en} ${formatNumber(r.rho.estimate, 'en', { percent: true, decimals: 1 })}`, es: `${text(ESTIMATOR_TEXT, r.id).es} ${formatNumber(r.rho.estimate, 'es', { percent: true, decimals: 1 })}` } }));
+  const marks = rows.map((r) => ({ x: r.rho.estimate, label: { en: `${text(ESTIMATOR_SHORT, r.id).en} ${formatNumber(r.rho.estimate, 'en', { percent: true, decimals: 1 })}`, es: `${text(ESTIMATOR_SHORT, r.id).es} ${formatNumber(r.rho.estimate, 'es', { percent: true, decimals: 1 })}` } }));
   return (
     <ViewsRow>
       <PlotCard
