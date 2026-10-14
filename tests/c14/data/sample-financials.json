@@ -1,0 +1,56 @@
+{
+ "meta": {
+  "total": 4,
+  "note": "a trimmed sample of the real BankFind financials file, for the reader tests"
+ },
+ "data": [
+  {
+   "data": {
+    "CERT": 24735,
+    "REPDTE": "20210930",
+    "ASSET": 188327020,
+    "LIAB": 174926861,
+    "DEP": 172286882,
+    "NIM": 2272945,
+    "RBCT1J": 13138444
+   },
+   "score": 0
+  },
+  {
+   "data": {
+    "CERT": 24735,
+    "REPDTE": "20211231",
+    "ASSET": 208581000,
+    "LIAB": 193786000,
+    "DEP": 191431000,
+    "NIM": 3226000,
+    "RBCT1J": 14622000
+   },
+   "score": 0
+  },
+  {
+   "data": {
+    "CERT": 24735,
+    "REPDTE": "20220331",
+    "ASSET": 217804000,
+    "LIAB": 203233000,
+    "DEP": 200414000,
+    "NIM": 1099000,
+    "RBCT1J": 15124000
+   },
+   "score": 0
+  },
+  {
+   "data": {
+    "CERT": 24735,
+    "REPDTE": "20221231",
+    "ASSET": 209026000,
+    "LIAB": 193570000,
+    "DEP": 175378000,
+    "NIM": 4584000,
+    "RBCT1J": 16995000
+   },
+   "score": 0
+  }
+ ]
+}
