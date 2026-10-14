@@ -9,7 +9,7 @@ A market risk function must defend its VaR and ES: which model is eligible, whic
 score, whether the exceedances cluster, and how the answer changes between a calm year and a crisis. C11 bakes that chain on
 public daily series and validates it the way a model risk function would. It stands on the engine contract
 `engine-market-api` 1.0.0 (`docs/contracts/engine/market-api.md`), implemented by `riskvalidation.market` and
-`riskvalidation.validation.market` (the branch `task/u8-market`, pinned by its commit until the integrator tags the release),
+`riskvalidation.validation.market` (release v0.07.000, with the `market` extra),
 and produces the `c11-outputs` and `c11-models` documents (`docs/contracts/schemas/c11/`) as their real producer.
 
 ## The data and the windows (CT-1101 to CT-1103)
