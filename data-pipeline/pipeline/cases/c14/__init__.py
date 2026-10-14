@@ -1,7 +1,7 @@
 """C14, IRRBB: the six standardised shocks on the USD balance sheet of the bank that failed in March 2023 (unit U10-P1).
 
 The case package (see ``docs/cases/C14.md`` and ``docs/design/features/c14/``): ``fetch`` (the raw FDIC and Treasury files and their
-provenance), ``fdic`` and ``treasury`` (the readers and the dating rule), ``bands`` and ``slotting`` (the call-report bands over the 19
+provenance), ``fdic`` (the reader and the dating rule; the Treasury reader is the shared ``pipeline.io.treasury``), ``bands`` and ``slotting`` (the call-report bands over the 19
 buckets, the items), ``assumptions`` (the named behavioural assumptions), ``fits`` (the replicating portfolio, the deposit betas and the
 volatility, on the history up to the date), ``variant`` (one valuation date through ``riskvalidation.irrbb``), ``models`` (the models
 document), ``bake`` (the documents, the checksums and the manifest) and ``page`` (the results block of the case page).
