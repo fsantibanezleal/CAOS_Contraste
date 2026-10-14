@@ -1,0 +1,2794 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c15/models.schema.json",
+  "title": "C15 models",
+  "description": "Catalog row c15-models 1.0.0: the C15 models artifact (buckets, the CMF Annex 1 table, floors, thresholds, curve fits, calibration targets, behavioural fits).",
+  "allOf": [
+    {
+      "$ref": "../common/models-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C15"
+        },
+        "fit": {
+          "$ref": "#/$defs/c15Fit"
+        }
+      },
+      "required": [
+        "case_id",
+        "fit"
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c15Label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "en",
+        "es"
+      ],
+      "properties": {
+        "en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "es": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A non-empty bilingual label (an empty string is not a label)."
+    },
+    "c15Sign": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "delta_eve",
+        "delta_nii",
+        "reference",
+        "statement"
+      ],
+      "properties": {
+        "delta_eve": {
+          "const": "positive-is-loss"
+        },
+        "delta_nii": {
+          "const": "positive-is-loss"
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "statement": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "Sign convention, stated in the document: a positive delta EVE or delta NII is a loss (SRP31.129; dossier 01 H.4)."
+    },
+    "c15Units": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "money_scale",
+        "rate",
+        "compounding",
+        "shock",
+        "bucket_midpoint",
+        "dates"
+      ],
+      "properties": {
+        "money_scale": {
+          "type": "string",
+          "enum": [
+            "units",
+            "thousands",
+            "millions"
+          ]
+        },
+        "rate": {
+          "const": "decimal"
+        },
+        "compounding": {
+          "const": "continuous"
+        },
+        "shock": {
+          "const": "basis-points"
+        },
+        "bucket_midpoint": {
+          "const": "years"
+        },
+        "dates": {
+          "const": "ISO-8601"
+        }
+      },
+      "description": "Units of every number: money in the stated scale of its currency, rates as decimals discounted continuously (SRP31.129), shocks in basis points, bucket midpoints in years, dates ISO."
+    },
+    "c15ShockSize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "parallel_bp",
+        "short_bp",
+        "long_bp",
+        "origin",
+        "label",
+        "method"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block."
+        },
+        "parallel_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "short_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "long_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "srp31-table-2024",
+            "srp31-table-2016",
+            "cmf-annex1",
+            "contraste-estimate"
+          ]
+        },
+        "label": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c15Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "method": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The shock sizes applied to a currency, in basis points. A tabled size is exactly the table's (SRP31.90 Table 2, d368 Annex 2 Table 1, RAN 21-13 Annex 1 Hoja 9); a currency without an entry in the BCBS table (CLP is in neither) passes only labelled as a Contraste estimate with its method, never as a regulatory parameter (dossier 01 H.3), and a tabled currency cannot be relabelled as an estimate.",
+      "oneOf": [
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "ARS"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "AUD"
+            },
+            "parallel_bp": {
+              "const": 350
+            },
+            "short_bp": {
+              "const": 425
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "BRL"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "CAD"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 275
+            },
+            "long_bp": {
+              "const": 175
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "CHF"
+            },
+            "parallel_bp": {
+              "const": 175
+            },
+            "short_bp": {
+              "const": 250
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "CNY"
+            },
+            "parallel_bp": {
+              "const": 225
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "EUR"
+            },
+            "parallel_bp": {
+              "const": 225
+            },
+            "short_bp": {
+              "const": 350
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "GBP"
+            },
+            "parallel_bp": {
+              "const": 275
+            },
+            "short_bp": {
+              "const": 425
+            },
+            "long_bp": {
+              "const": 250
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "HKD"
+            },
+            "parallel_bp": {
+              "const": 225
+            },
+            "short_bp": {
+              "const": 375
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "IDR"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "parallel_bp": {
+              "const": 325
+            },
+            "short_bp": {
+              "const": 475
+            },
+            "long_bp": {
+              "const": 225
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "JPY"
+            },
+            "parallel_bp": {
+              "const": 100
+            },
+            "short_bp": {
+              "const": 100
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "KRW"
+            },
+            "parallel_bp": {
+              "const": 225
+            },
+            "short_bp": {
+              "const": 350
+            },
+            "long_bp": {
+              "const": 225
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "MXN"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "RUB"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "SAR"
+            },
+            "parallel_bp": {
+              "const": 275
+            },
+            "short_bp": {
+              "const": 375
+            },
+            "long_bp": {
+              "const": 250
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "SEK"
+            },
+            "parallel_bp": {
+              "const": 275
+            },
+            "short_bp": {
+              "const": 425
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "SGD"
+            },
+            "parallel_bp": {
+              "const": 175
+            },
+            "short_bp": {
+              "const": 250
+            },
+            "long_bp": {
+              "const": 225
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "TRY"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "USD"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 225
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2024"
+            },
+            "currency": {
+              "const": "ZAR"
+            },
+            "parallel_bp": {
+              "const": 325
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "ARS"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "AUD"
+            },
+            "parallel_bp": {
+              "const": 300
+            },
+            "short_bp": {
+              "const": 450
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "BRL"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "CAD"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "CHF"
+            },
+            "parallel_bp": {
+              "const": 100
+            },
+            "short_bp": {
+              "const": 150
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "CNY"
+            },
+            "parallel_bp": {
+              "const": 250
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "EUR"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 250
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "GBP"
+            },
+            "parallel_bp": {
+              "const": 250
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "HKD"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 250
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "IDR"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 350
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "INR"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "JPY"
+            },
+            "parallel_bp": {
+              "const": 100
+            },
+            "short_bp": {
+              "const": 100
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "KRW"
+            },
+            "parallel_bp": {
+              "const": 300
+            },
+            "short_bp": {
+              "const": 400
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "MXN"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "RUB"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "SAR"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "SEK"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "SGD"
+            },
+            "parallel_bp": {
+              "const": 150
+            },
+            "short_bp": {
+              "const": 200
+            },
+            "long_bp": {
+              "const": 100
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "TRY"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "USD"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 300
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "srp31-table-2016"
+            },
+            "currency": {
+              "const": "ZAR"
+            },
+            "parallel_bp": {
+              "const": 400
+            },
+            "short_bp": {
+              "const": 500
+            },
+            "long_bp": {
+              "const": 300
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "cmf-annex1"
+            },
+            "currency": {
+              "const": "CLP"
+            },
+            "parallel_bp": {
+              "const": 300
+            },
+            "short_bp": {
+              "const": 400
+            },
+            "long_bp": {
+              "const": 200
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "cmf-annex1"
+            },
+            "currency": {
+              "const": "CLF"
+            },
+            "parallel_bp": {
+              "const": 200
+            },
+            "short_bp": {
+              "const": 250
+            },
+            "long_bp": {
+              "const": 150
+            },
+            "label": {
+              "type": "null"
+            },
+            "method": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "origin": {
+              "const": "contraste-estimate"
+            },
+            "currency": {
+              "not": {
+                "enum": [
+                  "ARS",
+                  "AUD",
+                  "BRL",
+                  "CAD",
+                  "CHF",
+                  "CNY",
+                  "EUR",
+                  "GBP",
+                  "HKD",
+                  "IDR",
+                  "INR",
+                  "JPY",
+                  "KRW",
+                  "MXN",
+                  "RUB",
+                  "SAR",
+                  "SEK",
+                  "SGD",
+                  "TRY",
+                  "USD",
+                  "ZAR"
+                ]
+              }
+            },
+            "label": {
+              "$ref": "#/$defs/c15Label"
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "c15Tranche": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maturity_years",
+        "weight"
+      ],
+      "properties": {
+        "maturity_years": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        }
+      },
+      "description": "A rolling tranche of the replicating portfolio and its weight."
+    },
+    "c15Window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "window_start",
+        "window_end",
+        "weights",
+        "weighted_average_maturity_years"
+      ],
+      "properties": {
+        "window_start": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "window_end": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "weights": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or an observed rate in [0, 1]."
+          },
+          "minItems": 1
+        },
+        "weighted_average_maturity_years": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "The weights re-estimated on one estimation window, in the order of the tranches (stability across windows)."
+    },
+    "c15DepositBeta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "up",
+        "down",
+        "source_kind",
+        "source"
+      ],
+      "properties": {
+        "up": {
+          "type": "number",
+          "minimum": 0
+        },
+        "down": {
+          "type": "number",
+          "minimum": 0
+        },
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "regulatory-cap",
+            "fitted",
+            "synthetic-stated"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "Deposit beta (pass-through of the market rate to the client rate), asymmetric in the direction of the move."
+    },
+    "c15NmdModel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "valuation_date",
+        "category",
+        "tranches",
+        "weights_sum",
+        "weighted_average_maturity_years",
+        "margin_volatility",
+        "margin_volatility_reason",
+        "deposit_beta",
+        "stability"
+      ],
+      "properties": {
+        "valuation_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "retail-operational",
+            "retail-non-operational",
+            "wholesale"
+          ]
+        },
+        "tranches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c15Tranche"
+          },
+          "minItems": 1
+        },
+        "weights_sum": {
+          "type": "number"
+        },
+        "weighted_average_maturity_years": {
+          "type": "number",
+          "minimum": 0
+        },
+        "margin_volatility": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "margin_volatility_reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c15Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "deposit_beta": {
+          "$ref": "#/$defs/c15DepositBeta"
+        },
+        "stability": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c15Window"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "The static replicating portfolio of one NMD category at one valuation date (dossier 05 D.3). The weighted average maturity of a rolling tranche of maturity m is m / 2 (BCBS 368 footnote 38). A margin volatility the fit lacks is null with its reason.",
+      "oneOf": [
+        {
+          "properties": {
+            "margin_volatility": {
+              "type": "number"
+            },
+            "margin_volatility_reason": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "margin_volatility": {
+              "type": "null"
+            },
+            "margin_volatility_reason": {
+              "$ref": "#/$defs/c15Label"
+            }
+          }
+        }
+      ]
+    },
+    "c15BucketDef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bucket",
+        "label",
+        "midpoint_years"
+      ],
+      "properties": {
+        "bucket": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 19,
+          "description": "Bucket of the 19 of SRP31.96 Table 3, 1 (overnight) to 19 (over 20 years)."
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "midpoint_years": {
+          "type": "number",
+          "enum": [
+            0.0028,
+            0.0417,
+            0.1667,
+            0.375,
+            0.625,
+            0.875,
+            1.25,
+            1.75,
+            2.5,
+            3.5,
+            4.5,
+            5.5,
+            6.5,
+            7.5,
+            8.5,
+            9.5,
+            12.5,
+            17.5,
+            25.0
+          ],
+          "description": "Bucket midpoint in years: one of the 19 of SRP31.96 Table 3."
+        }
+      },
+      "description": "One of the 19 time buckets of SRP31.96 Table 3.",
+      "oneOf": [
+        {
+          "properties": {
+            "bucket": {
+              "const": 1
+            },
+            "midpoint_years": {
+              "const": 0.0028
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 2
+            },
+            "midpoint_years": {
+              "const": 0.0417
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 3
+            },
+            "midpoint_years": {
+              "const": 0.1667
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 4
+            },
+            "midpoint_years": {
+              "const": 0.375
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 5
+            },
+            "midpoint_years": {
+              "const": 0.625
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 6
+            },
+            "midpoint_years": {
+              "const": 0.875
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 7
+            },
+            "midpoint_years": {
+              "const": 1.25
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 8
+            },
+            "midpoint_years": {
+              "const": 1.75
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 9
+            },
+            "midpoint_years": {
+              "const": 2.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 10
+            },
+            "midpoint_years": {
+              "const": 3.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 11
+            },
+            "midpoint_years": {
+              "const": 4.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 12
+            },
+            "midpoint_years": {
+              "const": 5.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 13
+            },
+            "midpoint_years": {
+              "const": 6.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 14
+            },
+            "midpoint_years": {
+              "const": 7.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 15
+            },
+            "midpoint_years": {
+              "const": 8.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 16
+            },
+            "midpoint_years": {
+              "const": 9.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 17
+            },
+            "midpoint_years": {
+              "const": 12.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 18
+            },
+            "midpoint_years": {
+              "const": 17.5
+            }
+          }
+        },
+        {
+          "properties": {
+            "bucket": {
+              "const": 19
+            },
+            "midpoint_years": {
+              "const": 25.0
+            }
+          }
+        }
+      ]
+    },
+    "c15NmdCap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "core_share_cap",
+        "core_maturity_cap_years",
+        "reference"
+      ],
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "retail-operational",
+            "retail-non-operational",
+            "wholesale"
+          ]
+        },
+        "core_share_cap": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "core_maturity_cap_years": {
+          "type": "number",
+          "minimum": 0
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "SRP31 Table 4 cap of a category."
+    },
+    "c15Gamma": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shock",
+        "gamma"
+      ],
+      "properties": {
+        "shock": {
+          "type": "string",
+          "enum": [
+            "parallel-up",
+            "parallel-down",
+            "steepener",
+            "flattener",
+            "short-up",
+            "short-down"
+          ]
+        },
+        "gamma": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "SRP31.119 Table 5 prepayment multiplier of a shock."
+    },
+    "c15UMult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shock",
+        "u"
+      ],
+      "properties": {
+        "shock": {
+          "type": "string",
+          "enum": [
+            "parallel-up",
+            "parallel-down",
+            "steepener",
+            "flattener",
+            "short-up",
+            "short-down"
+          ]
+        },
+        "u": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "SRP31.125 Table 6 term-deposit early redemption multiplier of a shock."
+    },
+    "c15Multipliers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "prepayment_gamma",
+        "term_deposit_u",
+        "reference"
+      ],
+      "properties": {
+        "prepayment_gamma": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c15Gamma",
+              "properties": {
+                "shock": {
+                  "const": "parallel-up"
+                },
+                "gamma": {
+                  "const": 0.8
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15Gamma",
+              "properties": {
+                "shock": {
+                  "const": "parallel-down"
+                },
+                "gamma": {
+                  "const": 1.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15Gamma",
+              "properties": {
+                "shock": {
+                  "const": "steepener"
+                },
+                "gamma": {
+                  "const": 0.8
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15Gamma",
+              "properties": {
+                "shock": {
+                  "const": "flattener"
+                },
+                "gamma": {
+                  "const": 1.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15Gamma",
+              "properties": {
+                "shock": {
+                  "const": "short-up"
+                },
+                "gamma": {
+                  "const": 0.8
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15Gamma",
+              "properties": {
+                "shock": {
+                  "const": "short-down"
+                },
+                "gamma": {
+                  "const": 1.2
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "term_deposit_u": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c15UMult",
+              "properties": {
+                "shock": {
+                  "const": "parallel-up"
+                },
+                "u": {
+                  "const": 1.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15UMult",
+              "properties": {
+                "shock": {
+                  "const": "parallel-down"
+                },
+                "u": {
+                  "const": 0.8
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15UMult",
+              "properties": {
+                "shock": {
+                  "const": "steepener"
+                },
+                "u": {
+                  "const": 0.8
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15UMult",
+              "properties": {
+                "shock": {
+                  "const": "flattener"
+                },
+                "u": {
+                  "const": 1.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15UMult",
+              "properties": {
+                "shock": {
+                  "const": "short-up"
+                },
+                "u": {
+                  "const": 1.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15UMult",
+              "properties": {
+                "shock": {
+                  "const": "short-down"
+                },
+                "u": {
+                  "const": 0.8
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The scenario multipliers of the prepayment rate and the term-deposit redemption rate, in the order of the six shocks."
+    },
+    "c15NmdCaps": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/c15NmdCap",
+          "properties": {
+            "category": {
+              "const": "retail-operational"
+            },
+            "core_share_cap": {
+              "const": 0.9
+            },
+            "core_maturity_cap_years": {
+              "const": 5.0
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/c15NmdCap",
+          "properties": {
+            "category": {
+              "const": "retail-non-operational"
+            },
+            "core_share_cap": {
+              "const": 0.7
+            },
+            "core_maturity_cap_years": {
+              "const": 4.5
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/c15NmdCap",
+          "properties": {
+            "category": {
+              "const": "wholesale"
+            },
+            "core_share_cap": {
+              "const": 0.5
+            },
+            "core_maturity_cap_years": {
+              "const": 4.0
+            }
+          }
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3,
+      "description": "The three SRP31 Table 4 caps, exactly the table's."
+    },
+    "c15Bank": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "synthetic",
+        "notice",
+        "seed",
+        "calibration_source"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "synthetic": {
+          "const": true
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "calibration_source": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The synthetic Banco Andino, calibrated to CMF aggregates (U5's calibration); fixtures say so."
+    },
+    "c15TableRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "basket",
+        "parallel_bp",
+        "short_bp",
+        "long_bp"
+      ],
+      "properties": {
+        "basket": {
+          "type": "string",
+          "enum": [
+            "canasta-1",
+            "canasta-2",
+            "CLP",
+            "UR-nii",
+            "UR-eve"
+          ]
+        },
+        "parallel_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "short_bp": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "long_bp": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "A row of the Annex 1 Hoja 9 shock table; '-' in the source is null."
+    },
+    "c15FloorRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ur_floor",
+        "other_floor",
+        "reference"
+      ],
+      "properties": {
+        "ur_floor": {
+          "const": -0.02
+        },
+        "other_floor": {
+          "const": 0.0
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "c15ThresholdRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "threshold",
+        "base"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "nii-tier1",
+            "eve-tier1",
+            "nii-margin"
+          ]
+        },
+        "threshold": {
+          "type": "number",
+          "minimum": 0
+        },
+        "base": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "c15CurveModel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "curve",
+        "month",
+        "series_codes",
+        "model",
+        "parameters",
+        "rmse_bp",
+        "attribution"
+      ],
+      "properties": {
+        "curve": {
+          "type": "string",
+          "enum": [
+            "CLP",
+            "UR"
+          ]
+        },
+        "month": {
+          "type": "string",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
+        },
+        "series_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "model": {
+          "type": "string",
+          "enum": [
+            "nelson-siegel",
+            "svensson"
+          ]
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "value",
+              "unit"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "rmse_bp": {
+          "type": "number",
+          "minimum": 0
+        },
+        "attribution": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The curve fit of one BCCh series family (labelled as an adaptation)."
+    },
+    "c15Target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric",
+        "unit",
+        "target",
+        "achieved",
+        "source",
+        "as_of"
+      ],
+      "properties": {
+        "metric": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target": {
+          "type": "number"
+        },
+        "achieved": {
+          "type": "number"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "as_of": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        }
+      }
+    },
+    "c15Prepayment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model",
+        "cpr_base",
+        "psa_percent",
+        "source_kind",
+        "source"
+      ],
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": [
+            "cpr-constant",
+            "psa"
+          ]
+        },
+        "cpr_base": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "psa_percent": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "regulatory-cap",
+            "fitted",
+            "synthetic-stated"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The base prepayment behaviour (CPR, or a PSA multiple of the 100 percent PSA curve)."
+    },
+    "c15Fit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reporting_currency",
+        "sign_convention",
+        "units",
+        "bank",
+        "buckets",
+        "annex1_table",
+        "eve_shock_sizes",
+        "floors",
+        "prioritised_thresholds",
+        "offset_share",
+        "indexation_rate",
+        "multipliers",
+        "nmd_caps",
+        "curve_models",
+        "calibration_targets",
+        "nmd_models",
+        "prepayment"
+      ],
+      "properties": {
+        "reporting_currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this block.",
+          "const": "CLP"
+        },
+        "sign_convention": {
+          "$ref": "#/$defs/c15Sign"
+        },
+        "units": {
+          "$ref": "#/$defs/c15Units"
+        },
+        "bank": {
+          "$ref": "#/$defs/c15Bank"
+        },
+        "buckets": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 1
+                },
+                "midpoint_years": {
+                  "const": 0.0028
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 2
+                },
+                "midpoint_years": {
+                  "const": 0.0417
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 3
+                },
+                "midpoint_years": {
+                  "const": 0.1667
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 4
+                },
+                "midpoint_years": {
+                  "const": 0.375
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 5
+                },
+                "midpoint_years": {
+                  "const": 0.625
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 6
+                },
+                "midpoint_years": {
+                  "const": 0.875
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 7
+                },
+                "midpoint_years": {
+                  "const": 1.25
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 8
+                },
+                "midpoint_years": {
+                  "const": 1.75
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 9
+                },
+                "midpoint_years": {
+                  "const": 2.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 10
+                },
+                "midpoint_years": {
+                  "const": 3.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 11
+                },
+                "midpoint_years": {
+                  "const": 4.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 12
+                },
+                "midpoint_years": {
+                  "const": 5.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 13
+                },
+                "midpoint_years": {
+                  "const": 6.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 14
+                },
+                "midpoint_years": {
+                  "const": 7.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 15
+                },
+                "midpoint_years": {
+                  "const": 8.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 16
+                },
+                "midpoint_years": {
+                  "const": 9.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 17
+                },
+                "midpoint_years": {
+                  "const": 12.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 18
+                },
+                "midpoint_years": {
+                  "const": 17.5
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15BucketDef",
+              "properties": {
+                "bucket": {
+                  "const": 19
+                },
+                "midpoint_years": {
+                  "const": 25.0
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 19,
+          "maxItems": 19
+        },
+        "annex1_table": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c15TableRow",
+              "properties": {
+                "basket": {
+                  "const": "canasta-1"
+                },
+                "parallel_bp": {
+                  "const": 200
+                },
+                "short_bp": {
+                  "const": 300
+                },
+                "long_bp": {
+                  "const": 150
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15TableRow",
+              "properties": {
+                "basket": {
+                  "const": "canasta-2"
+                },
+                "parallel_bp": {
+                  "const": 400
+                },
+                "short_bp": {
+                  "const": 500
+                },
+                "long_bp": {
+                  "const": 300
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15TableRow",
+              "properties": {
+                "basket": {
+                  "const": "CLP"
+                },
+                "parallel_bp": {
+                  "const": 300
+                },
+                "short_bp": {
+                  "const": 400
+                },
+                "long_bp": {
+                  "const": 200
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15TableRow",
+              "properties": {
+                "basket": {
+                  "const": "UR-nii"
+                },
+                "parallel_bp": {
+                  "const": 300
+                },
+                "short_bp": {
+                  "const": null
+                },
+                "long_bp": {
+                  "const": null
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15TableRow",
+              "properties": {
+                "basket": {
+                  "const": "UR-eve"
+                },
+                "parallel_bp": {
+                  "const": 200
+                },
+                "short_bp": {
+                  "const": 250
+                },
+                "long_bp": {
+                  "const": 150
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 5,
+          "maxItems": 5
+        },
+        "eve_shock_sizes": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c15ShockSize",
+              "properties": {
+                "currency": {
+                  "const": "CLP"
+                },
+                "origin": {
+                  "const": "cmf-annex1"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15ShockSize",
+              "properties": {
+                "currency": {
+                  "const": "CLF"
+                },
+                "origin": {
+                  "const": "cmf-annex1"
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "floors": {
+          "$ref": "#/$defs/c15FloorRule"
+        },
+        "prioritised_thresholds": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c15ThresholdRule",
+              "properties": {
+                "id": {
+                  "const": "nii-tier1"
+                },
+                "threshold": {
+                  "const": 0.05
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15ThresholdRule",
+              "properties": {
+                "id": {
+                  "const": "eve-tier1"
+                },
+                "threshold": {
+                  "const": 0.15
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c15ThresholdRule",
+              "properties": {
+                "id": {
+                  "const": "nii-margin"
+                },
+                "threshold": {
+                  "const": 0.18
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "offset_share": {
+          "const": 0.5
+        },
+        "indexation_rate": {
+          "const": 0.025
+        },
+        "multipliers": {
+          "$ref": "#/$defs/c15Multipliers"
+        },
+        "nmd_caps": {
+          "$ref": "#/$defs/c15NmdCaps"
+        },
+        "curve_models": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c15CurveModel"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "calibration_targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c15Target"
+          },
+          "minItems": 1
+        },
+        "nmd_models": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c15NmdModel"
+          },
+          "minItems": 1
+        },
+        "prepayment": {
+          "$ref": "#/$defs/c15Prepayment"
+        }
+      },
+      "description": "C15 models: the 19 buckets, the CMF Annex 1 table, floors and thresholds as data, the offset share and the indexation rate, the BCCh curve fits, the Banco Andino calibration targets and the behavioural fits."
+    }
+  }
+}
