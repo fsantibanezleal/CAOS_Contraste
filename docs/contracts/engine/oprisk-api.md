@@ -365,10 +365,10 @@ def es_from_pmf(h: np.ndarray, step: float, level: float, max_missing_share: flo
 
 - Units: as `quantile_from_pmf`; the expected shortfall `ES = (E[Z; Z > q] + q (P(Z <= q) - level)) / (1 - level)` with `q = quantile_from_pmf(h, step, level)`; `max_missing_share` a share of the tail `1 - level`.
 - Invariants: **the grid must carry the tail: `ValueError` when the mass beyond the grid, `1 - sum(h)`, exceeds `max_missing_share * (1 - level)`** (default `1e-3 * (1 - level)`), because an expected shortfall read off a grid that ends before the tail is too small
-  and can fall below its own VaR; the expected shortfall does not exist for a severity with a tail index of 1 or more (the compound loss then has an infinite mean) and is never computed for it: the guard refuses such a grid at any size, since its missing mass never falls below the tolerance
-  as the grid grows, and the C17 bake writes the ES as null with the reason `infinite mean`. When it returns, `ES >= VaR` and `ES` equals the VaR for a point mass; `ValueError` as `quantile_from_pmf` otherwise.
+  and can fall below its own VaR; the guard is not a test of the severity: the mass beyond any grid of a proper distribution falls to 0 as the grid end grows, so a coarse grid of an infinite-mean tail passes it (GPD(1.1, 100, 0) with Poisson(10), step 1e6 and 32768 points has missing mass 1.66e-7, below the tolerance, and gives a finite ES of 3.17e7).
+  The expected shortfall does not exist for a severity with a tail index of 1 or more (the compound loss then has an infinite mean). A finite ES or mean is therefore **never computed for a severity without a finite mean (tail index 1 or more), and that is checked on the severity before the ES**: the caller (the C17 bake) gates on `severity_moment(law, params, 1)` being finite, and writes the ES as null with the reason `infinite mean` otherwise. No new function is needed. When it returns, `ES >= VaR` and `ES` equals the VaR for a point mass; `ValueError` as `quantile_from_pmf` otherwise.
 - Golden: `h = [0.5, 0.3, 0.2]`, `step = 10`, `level = 0.75`: `q = 10`, `E[Z; Z > q] = 4`, `ES = (4 + 10 (0.8 - 0.75)) / 0.25 = 18.0`. The benchmark pmf on a grid of 6000 points (`step = 1`, `level = 0.999`) **raises `ValueError`**: its missing mass is
-  `0.000936`, far above the tolerance `1e-6`, and the grid-only reading would give `ES = 377.8`, below the VaR 5849. A Pareto-type tail with tail index 1.1 gives a finite grid-only ES that grows with the grid (818.6 at 4000 points, 1073.6 at 8000 in the review's check), the infinite true value.
+  `0.000936`, far above the tolerance `1e-6`, and the grid-only reading would give `ES = 377.8`, below the VaR 5849. A Pareto-type tail with tail index 1.1 gives a finite grid-only ES that grows with the grid (818.6 at 4000 points, 1073.6 at 8000 in the review of U12-S), and the coarse grid above passes the guard (the engine review of U12-E): only the severity check refuses it.
 
 ### `riskvalidation.oprisk.aggregate.exceedance_from_pmf`
 
@@ -533,7 +533,9 @@ def gamma_prior_from_scenarios(points: Sequence[ScenarioPoint], threshold: float
 - Units: the mapping of the C17 scenario points to the expert input of Shevchenko and Wuthrich (decision D4): (1) `fit_tail_to_scenarios` gives a GPD (least squares on the log quantiles, as dossier 05 F.6 does for the LDCE percentiles) with tail index `xi_s`, and `alpha_s = 1 / xi_s` is the prior mean; (2) a parametric bootstrap gives the expert
   interval: each exceedance frequency is redrawn as `k / basis_years` with `k` Poisson with mean `exceedance_frequency * basis_years` (a count of 0 is replaced by 0.5), the GPD is refitted, and the 5th and 95th percentiles of `alpha` over `n_bootstrap` replications (`numpy.random.Generator(PCG64(seed))`) form the interval
   of mass `interval_level` (90 percent); (3) `gamma_prior_from_mean_interval` solves the Gamma shape and rate. `basis_years` is the number of years of experience each scenario frequency is worth (a policy parameter of the caller; the contract fixes the mechanism, not its value).
-- Invariants: deterministic for the same `seed`; `mean = alpha_s`; the interval contains `alpha_s`; a larger `basis_years` gives a narrower interval and a larger Gamma shape; `ValueError` as `fit_tail_to_scenarios` and `gamma_prior_from_mean_interval`. The prior is never truncated to `alpha` above 1.
+- Invariants: deterministic for the same `seed`; `mean = alpha_s`; precondition `exceedance_frequency * basis_years >= 1` for every point (otherwise most redraws are the replaced count 0.5 and the interval is not a statistic); a larger `basis_years` gives a narrower interval and a larger Gamma shape. **A bootstrap refit that reaches the
+  search bound of the least squares (the tail index at its lower bound 1e-3, i.e. `alpha = 1000`, or at its upper bound) is a stated failure, never a statistic**: the function raises `ValueError` naming the bound (an interval end of `1000` is the bound, not an estimate), and raises ValueError when the interval does not contain `alpha_s`. The C17 bake then writes the scenario rung as null with its reason
+  (the `scenario` member of a cell is null with its reason, `c17OptionalCapital`), or the test as `not_evaluated`; `ValueError` as `fit_tail_to_scenarios` and `gamma_prior_from_mean_interval` otherwise. The prior is never truncated to `alpha` above 1.
 
 ### `riskvalidation.oprisk.scenarios.CredibilityFit`
 
@@ -708,11 +710,11 @@ Each returns one `TestResult`. These tests are descriptive: `p_value`, `alpha_am
 ### `riskvalidation.validation.oprisk.benchmark_reproduction`
 
 ```python
-def benchmark_reproduction(moments: tuple[float, float, float], quantiles: Mapping[str, float], moment_rel_tol: float,
-                           quantile_rel_tol: float, model_id: str | None = None) -> TestResult: ...
+def benchmark_reproduction(moments: tuple[float, float, float], quantiles: Mapping[str, float], moment_rel_tol: float = 1e-5,
+                           quantile_rel_tol: float = 0.01, model_id: str | None = None) -> TestResult: ...
 ```
 
-- Units: `moments = (mean, variance, skewness)` of the compound Poisson(100) with LN(0, 2) annual loss, computed by the engine; `quantiles` maps `"monte-carlo"`, `"panjer"` and `"fft"` to the 99.9 percent quantile in loss units found by that method (step 1); tolerances are relative decimals.
+- Units: `moments = (mean, variance, skewness)` of the compound Poisson(100) with LN(0, 2) annual loss, computed by the engine; `quantiles` maps `"monte-carlo"`, `"panjer"` and `"fft"` to the 99.9 percent quantile in loss units found by that method (step 1); tolerances are relative decimals; `moment_rel_tol` is **at least 1e-5** when the moments come from the engine: the reference skewness 40.3428 is `e^6 / 10 = 40.342879` cut to four decimals, a relative error of 1.97e-6, so the engine's exact moments read `amber` (metric 1.966876) at `moment_rel_tol = 1e-6` and `green` (metric 0.196688) at the default 1e-5.
   `test_id = "oprisk.benchmark_reproduction"`. `h0`: the engine reproduces Shevchenko's benchmark (dossier 05 F.3): `E[Z] = 738.9056`, `Var[Z] = 298095.7987`, skewness `40.3428`, and a 99.9 percent quantile in the range 5849 to 5850.
 - Invariants: a moment's deviation is `|value - reference| / reference`; a `panjer` or `fft` quantile's deviation is 0 inside `[5849, 5850]` (the step-1 discretised quantile) and otherwise the distance to the nearest end over `5849.5`; a `monte-carlo` quantile estimates the continuous quantile, so its deviation is `|q - 5853.1| / 5853.1` (Shevchenko Table 3 at step 0.0625 gives 5853.06 and Table 7 gives `H(5853.1) = 0.9990000`); `metric = max(moment deviations / moment_rel_tol, quantile deviations / quantile_rel_tol)`, `statistic` equals `metric`;
   `extras["max_quantile_rel_dev"]` is the largest quantile deviation and `extras["deviations"]` lists every deviation by name; a missing method in `quantiles` gives `not_evaluated`.
