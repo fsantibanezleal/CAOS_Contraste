@@ -95,6 +95,24 @@ def test_provenance_passes_when_true_and_fails_when_not(tmp_path):
     assert "the manifest names sources ['uci-taiwan'], the artifacts read ['fannie-mae-sflp', 'uci-taiwan']" in res.stdout
 
 
+def test_provenance_accepts_a_constructed_input_and_refuses_data_passed_off_as_one(tmp_path):
+    """C10's illustrative portfolio (engine-portfolio-api, Conventions): a constructed input of class illustrative, with no
+    file to pin and no data source for the manifest to name; a registered data source can never claim that class."""
+    good = [{"source": "uci-taiwan", "class": "mirror-allowed", "files": [{"name": "t.zip", "sha256": "a" * 64}]},
+            {"source": "illustrative-portfolio", "class": "illustrative", "files": []}]
+    ok = _provenance_tree(tmp_path / "ok", inputs=good, sources=["uci-taiwan"])
+    assert _run("check_provenance.py", ok).returncode == 0, _run("check_provenance.py", ok).stdout
+    posing = [{"source": "uci-taiwan", "class": "illustrative", "files": []}]
+    bad = _provenance_tree(tmp_path / "bad", inputs=posing, sources=["uci-taiwan"])
+    res = _run("check_provenance.py", bad)
+    assert res.returncode == 1
+    assert "input uci-taiwan is recorded illustrative, the registry says mirror-allowed" in res.stdout
+    with_files = [{"source": "illustrative-portfolio", "class": "illustrative", "files": [{"name": "p.csv", "sha256": "d" * 64}]}]
+    res = _run("check_provenance.py", _provenance_tree(tmp_path / "files", inputs=with_files, sources=[]))
+    assert res.returncode == 1
+    assert "input illustrative-portfolio is constructed and names files" in res.stdout
+
+
 def test_licence_guard_catches_a_forbidden_or_unverified_requirement(tmp_path, monkeypatch):
     sys.path.insert(0, str(SCRIPTS))
     import check_licences as cl
