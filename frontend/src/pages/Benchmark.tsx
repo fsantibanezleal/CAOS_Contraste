@@ -13,7 +13,8 @@ import { C04Benchmark } from './C04Sections';
 import { C05BenchmarkSection } from './C05Sections';
 import { C22BenchmarkSection } from './C22Sections';
 import { NoTranslateRefs } from './NoTranslateRefs';
-import { U6BenchmarkSection, U6_BENCHMARK_CASES } from './U6Sections';
+import { Table, U6BenchmarkSection, U6_BENCHMARK_CASES } from './U6Sections';
+import { W2BenchmarkSection, W2_BENCHMARK_CASES } from './Wave2Sections';
 
 function Comparison({ v, title }: { v: VariantArtifact; title: string }) {
   const lang = useShellLang();
@@ -188,16 +189,33 @@ function Robustness({ manifest }: { manifest: CaseManifest }) {
   );
 }
 
-const HAS_OWN_BENCHMARK = new Set(['C04', 'C05', 'C22']);
-/** Cases with no champion-against-challenger comparison (the provisions cases C06 and C07 compare regimes, in the App): no section here, their data still appears under Provenance. */
-const NO_BENCHMARK = new Set(['C06', 'C07']);
+export const HAS_OWN_BENCHMARK = new Set(['C04', 'C05', 'C22']);
+const IRRBB_REASON: { en: string; es: string } = {
+  en: 'An IRRBB measure is a regulatory calculation under prescribed shocks, so there is no champion to rank against challengers; the case is compared in the App with and without the behavioural assumptions.',
+  es: 'Una medida de IRRBB es un cálculo regulatorio bajo shocks prescritos, así que no hay un campeón que ordenar frente a retadores; el caso se compara en la App con y sin los supuestos conductuales.',
+};
+/** Cases with no champion-against-challenger comparison, each with the reason the page states: no section here, their data still appears under Provenance. */
+export const NO_BENCHMARK: Record<string, { en: string; es: string }> = {
+  C06: {
+    en: 'The provisions cases compare regimes (CMF B-1, IFRS 9, BdE Annex 9), not a champion with challengers; the regime comparison is in the App.',
+    es: 'Los casos de provisiones comparan regímenes (CMF B-1, IFRS 9, Anejo 9 del BdE), no un campeón con retadores; la comparación de regímenes está en la App.',
+  },
+  C07: {
+    en: 'The provisions cases compare regimes (CMF B-1, IFRS 9, BdE Annex 9), not a champion with challengers; the regime comparison is in the App.',
+    es: 'Los casos de provisiones comparan regímenes (CMF B-1, IFRS 9, Anejo 9 del BdE), no un campeón con retadores; la comparación de regímenes está en la App.',
+  },
+  C14: IRRBB_REASON,
+  C15: IRRBB_REASON,
+};
 
 export function Benchmark() {
   const t = useT();
+  const lang = useShellLang();
   const all = useArtifact((s) => loadAllManifests(s), []);
   const manifests = all.state === 'ready' ? all.data.manifests : [];
-  const shown = manifests.filter((m) => !NO_BENCHMARK.has(m.case_id));
-  const comparable = shown.filter((m) => !HAS_OWN_BENCHMARK.has(m.case_id) && !U6_BENCHMARK_CASES.has(m.case_id));
+  const shown = manifests.filter((m) => !(m.case_id in NO_BENCHMARK));
+  const excluded = manifests.filter((m) => m.case_id in NO_BENCHMARK);
+  const comparable = shown.filter((m) => !HAS_OWN_BENCHMARK.has(m.case_id) && !U6_BENCHMARK_CASES.has(m.case_id) && !W2_BENCHMARK_CASES.has(m.case_id));
   return (
     <DocPage
       wide
@@ -231,9 +249,14 @@ export function Benchmark() {
             title={{ en: `${m.case_id}: ${m.title.en}`, es: `${m.case_id}: ${m.title.es}` }}
             noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos comprometidos.' }}
           >
-            {m.case_id === 'C04' ? <C04Benchmark manifest={m} /> : m.case_id === 'C05' ? <C05BenchmarkSection manifest={m} /> : m.case_id === 'C22' ? <C22BenchmarkSection manifest={m} /> : U6_BENCHMARK_CASES.has(m.case_id) ? <U6BenchmarkSection manifest={m} /> : <CaseBenchmark manifest={m} />}
+            {m.case_id === 'C04' ? <C04Benchmark manifest={m} /> : m.case_id === 'C05' ? <C05BenchmarkSection manifest={m} /> : m.case_id === 'C22' ? <C22BenchmarkSection manifest={m} /> : U6_BENCHMARK_CASES.has(m.case_id) ? <U6BenchmarkSection manifest={m} /> : W2_BENCHMARK_CASES.has(m.case_id) ? <W2BenchmarkSection manifest={m} /> : <CaseBenchmark manifest={m} />}
           </DocSection>
         ))}
+      {all.state === 'ready' && excluded.length > 0 && (
+        <DocSection area="comparison" title={{ en: 'Cases with no champion-against-challenger comparison', es: 'Casos sin comparación de campeón contra retadores' }} noRefsReason={{ en: 'States why a case is not compared here.', es: 'Declara por qué un caso no se compara aquí.' }}>
+          <Table head={[t('Case', 'Caso'), t('Why it is not compared here', 'Por qué no se compara aquí')]} rows={excluded.map((m) => [`${m.case_id}: ${pick(m.title, lang)}`, pick(NO_BENCHMARK[m.case_id], lang)])} wide={2} />
+        </DocSection>
+      )}
       {all.state === 'ready' && comparable.length > 0 && (
         <DocSection area="robustness" title={{ en: 'Robustness to perturbed data', es: 'Robustez ante datos perturbados' }} noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos comprometidos.' }}>
           {comparable.map((m) => (
