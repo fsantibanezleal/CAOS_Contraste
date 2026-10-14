@@ -7,7 +7,8 @@ import type { BiText } from '@fasl-work/caos-app-shell';
 import type { ReactElement } from 'react';
 
 /** The top-level groups of the Methodology page that a registered section may join. */
-export const METHODOLOGY_GROUPS = ['models', 'tests', 'loss'] as const;
+// grouped by the question family, as the App and Experiments group their cases (wave 2 integration, 2026-10-14)
+export const METHODOLOGY_GROUPS = ['models', 'tests', 'loss', 'capital', 'market', 'balance'] as const;
 export type MethodologyGroup = (typeof METHODOLOGY_GROUPS)[number];
 
 export interface MethodologySection {

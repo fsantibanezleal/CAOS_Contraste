@@ -271,7 +271,7 @@ function Body() {
 
 export const methodologySection: MethodologySection = {
   id: 'market',
-  group: 'tests',
+  group: 'market',
   order: 120,
   title: { en: 'Market risk', es: 'Riesgo de mercado' },
   Body,
