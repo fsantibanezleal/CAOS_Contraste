@@ -9,7 +9,7 @@ import { ChartOverTable, alignTo, unionX } from '../c06/format';
 import { Pending } from '../Pending';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { C10TestsTable, IllustrativeNotice } from './C10Common';
-import { fullMoney, moneyAxis } from './format';
+import { barMin, fullMoney, moneyAxis } from './format';
 import {
   ESTIMATOR_KIND_TEXT, EULER_METHOD_TEXT, VAR_METHOD_TEXT, eulerLevelOf, eulerOf, groupLabel, levelBi, measureOf, outputsOf, rungOf, text,
   type C10Rung, type C10Sel,
@@ -177,7 +177,7 @@ export function RungsView({ sel }: { sel: C10Sel | null }) {
       >
         <IllustrativeNotice notice={o.portfolio.notice} />
         <ChartOverTable
-          chartMin={`${data.length * 1.5 + 3}rem`}
+          chartMin={barMin(data.length)}
           chart={<BarChart title={{ en: `VaR at ${lv.en} by rung`, es: `VaR al ${lv.es} por escalón` }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: `VaR (${unit.en})`, es: `VaR (${unit.es})` }, format: { decimals: div > 1 ? 2 : 0 } }} />}
         >
           <table className="caos-table ct-wrap-head" data-table="c10-rungs">
@@ -292,7 +292,7 @@ export function ContributionsView({ sel }: { sel: C10Sel | null }) {
           </p>
         )}
         <ChartOverTable
-          chartMin={`${data.length * 1.5 + 3}rem`}
+          chartMin={barMin(data.length)}
           chart={<BarChart title={{ en: `Share of the VaR and of the ES at ${lv.en}`, es: `Parte del VaR y del ES al ${lv.es}` }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: 'Share of the total', es: 'Parte del total' }, format: { percent: true, decimals: 0 } }} />}
         >
           <table className="caos-table ct-wrap-head" data-table="c10-euler" data-euler={block.rung_method}>

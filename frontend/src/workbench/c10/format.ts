@@ -23,3 +23,9 @@ export function moneyAxis(max: number, currency: string): { div: number; unit: B
 
 /** A rate as a percent with the decimals its place can hold. */
 export const pctText = (v: number | null | undefined, lang: Lang, decimals = 2): string => formatNumber(v, lang, { percent: true, decimals });
+
+/**
+ * The height a horizontal bar chart needs for `rows` rows so it never scrolls inside its drawing: about 1.5 rem a row
+ * plus 3 rem for the axis at a desktop width, and more on a phone where a long label wraps to two lines, so 2.2 rem a row.
+ */
+export const barMin = (rows: number): string => `${Math.round((rows * 2.2 + 3) * 10) / 10}rem`;

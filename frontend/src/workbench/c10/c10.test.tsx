@@ -12,6 +12,7 @@ import type { ModelsArtifact, VariantArtifact } from '../../lib/contract.types';
 import { RAW_AMOUNT, cards, escapeHtml, fixtureData, html, setLang } from '../c03/u6-testkit';
 import { useInstrument } from './instrument';
 import { defaultSel, eulerOf, gridOf, outputsOf, rungOf, type C10Sel } from './selection';
+import { barMin } from './format';
 import { C10ContextView, C10FindingsView, C10VariantsTable, EstimatorReadout, GroupReadout, LevelReadout, RungReadout, CellReadout } from './C10Common';
 import { BacktestView, CorrelationView, FittedView, IrbView } from './FitViews';
 import { ContributionsView, GranularityView, LossView, RungsView, lossMarks } from './CapitalViews';
@@ -165,6 +166,15 @@ describe('the C10 instrument', () => {
     const mc = rungOf(o, 'c2-gaussian-1f')!.measures!.find((x) => x.level === 0.999)!;
     expect(markup).toContain(formatNumber(mc.var_se as number, 'en', { decimals: 0 }));
     expect(markup).not.toMatch(/NaN|undefined/);
+  });
+
+  it('every horizontal bar chart is given the height its rows need, so none scrolls inside its drawing (2.2 rem a row and 3 rem, for a label that wraps on a phone)', () => {
+    expect(barMin(8)).toBe('20.6rem');
+    expect(html(<RungsView sel={sel} />)).toContain('min-height:20.6rem');
+    expect(html(<BacktestView sel={sel} />)).toContain(`min-height:${barMin(6)}`);
+    expect(html(<LadderView sel={sel} />)).toContain('min-height:20.6rem');
+    expect(html(<ContributionsView sel={{ ...sel, rung: 'c2-gaussian-1f' }} />)).toContain(`min-height:${barMin(6)}`);
+    expect(html(<PortfolioView sel={sel} />)).toContain(`min-height:${barMin(3)}`);
   });
 
   it('the tests of the engine sit under the view they belong to; one that did not run shows its reason and no number', () => {

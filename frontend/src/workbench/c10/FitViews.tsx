@@ -7,6 +7,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { ChartOverTable, alignTo, unionX } from '../c06/format';
 import { Pending } from '../Pending';
+import { barMin } from './format';
 import { useCard } from '../c03/U6Shared';
 import { C10TestsTable } from './C10Common';
 import { ESTIMATOR_SHORT, ESTIMATOR_TEXT, INTERVAL_TEXT, IRB_CLASS_TEXT, REGIME_TEXT, levelBi, outputsOf, text, type C10Sel } from './selection';
@@ -220,7 +221,7 @@ export function BacktestView({ sel }: { sel: C10Sel | null }) {
         }}
       >
         <ChartOverTable
-          chartMin={`${data.length * 1.5 + 3}rem`}
+          chartMin={barMin(data.length)}
           chart={<BarChart title={{ en: 'Evaluation years above each fitted quantile', es: 'Años de evaluación sobre cada cuantil ajustado' }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: 'Number of years', es: 'Número de años' }, format: { digits: 3 } }} />}
         >
           <table className="caos-table ct-wrap-head" data-table="c10-backtest">

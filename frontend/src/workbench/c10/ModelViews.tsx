@@ -5,6 +5,7 @@
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
+import { barMin } from './format';
 import { useCard } from '../c03/U6Shared';
 import { IllustrativeNotice } from './C10Common';
 import { ESTIMATOR_KIND_TEXT, ESTIMATOR_TEXT, INTERVAL_TEXT, IRB_CLASS_TEXT, METHOD_TEXT, SECTOR_TEXT, fitOf, outputsOf, text, type C10Sel } from './selection';
@@ -30,7 +31,7 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
         }}
       >
         <ChartOverTable
-          chartMin={`${data.length * 1.5 + 3}rem`}
+          chartMin={barMin(data.length)}
           chart={<BarChart title={{ en: 'Monte Carlo scenarios by rung', es: 'Escenarios de Monte Carlo por escalón' }} height="fill" orientation="horizontal" data={data} axis={{ label: { en: 'Scenarios', es: 'Escenarios' }, format: { decimals: 0 } }} />}
         >
           <table className="caos-table ct-wrap-head" data-table="c10-ladder">
@@ -88,7 +89,7 @@ export function PortfolioView({ sel }: { sel: C10Sel | null }) {
       >
         <IllustrativeNotice notice={spec.notice} />
         <ChartOverTable
-          chartMin={`${spec.groups.length * 1.5 + 3}rem`}
+          chartMin={barMin(spec.groups.length)}
           chart={
             <BarChart
               title={{ en: 'Probability of default by group', es: 'Probabilidad de incumplimiento por grupo' }}
