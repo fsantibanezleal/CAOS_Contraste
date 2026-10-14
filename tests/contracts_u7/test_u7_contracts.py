@@ -1374,3 +1374,62 @@ def test_m9_minor_a_monte_carlo_rung_spec_has_its_scenarios_and_an_analytic_one_
     assert cs.errors(MD, set_at(doc, ("fit", "ladder", mc, "n_scenarios"), None)) != []
     assert cs.errors(MD, set_at(doc, ("fit", "ladder", an, "n_scenarios"), 1000)) != []
     assert models_violations(doc["fit"]) == []
+
+
+# =====================================================================================================================
+# Amendments after the engine review (review-u7-engine-2026-10-13.md): five wording and formula corrections
+# =====================================================================================================================
+
+
+def test_engine_review_1_the_multi_factor_idiosyncratic_scale_uses_the_factor_covariance() -> None:
+    text = api_text()
+    assert "sqrt(1 - beta_i' beta_i)" not in text
+    assert text.count("sqrt(1 - beta_i' Sigma beta_i)") >= 2, "Gaussian and Student-t asset returns"
+    assert "beta_i' Sigma beta_i < 1" in section("portfolio", "Portfolio")
+    # the review's measurement: with correlated factors the old scale breaks the marginal PD
+    sigma = [[1.0, 0.5], [0.5, 1.0]]
+    beta = [0.5, 0.5]
+    quad = sum(beta[i] * sigma[i][j] * beta[j] for i in range(2) for j in range(2))
+    assert quad > sum(b * b for b in beta), "beta' Sigma beta exceeds beta' beta when factors correlate"
+    var_a = quad + (1 - quad)           # variance of A_i with the corrected scale: exactly 1
+    var_old = quad + (1 - sum(b * b for b in beta))
+    assert math.isclose(var_a, 1.0) and var_old > 1.0, "the old scale gives Var(A) > 1, so the marginal PD is not PD"
+
+
+def test_engine_review_2_measures_from_sample_has_no_standard_error_for_a_short_sample() -> None:
+    body = section("portfolio", "measures_from_sample")
+    assert "None" in body and "fewer than" in body and "10" in body and "n_batches" in body
+    assert "var_se` and `es_se` are None" in body
+
+
+def test_engine_review_3_a_finite_portfolio_var_sits_above_the_lhp_var() -> None:
+    text = api_text()
+    assert "sits below it" not in text and "expected to sit below the LHP" not in text
+    assert "above the LHP" in section("portfolio", "lhp_measures")
+    assert "above the LHP" in section("validation.portfolio", "mc_convergence")
+    # the granularity adjustment is nonnegative: the finite-n VaR is the LHP VaR plus it
+    for lv in lt()["granularity"]["levels"]:
+        assert lv["ga"] > 0
+
+
+def test_engine_review_4_pmf_panjer_is_not_promised_to_go_negative() -> None:
+    body = section("creditrisk_plus", "pmf_panjer")
+    assert "may return negative entries" not in body and "returned as computed" not in body
+    assert "2.8e-11" in body and "four" in body
+    assert "negative_entries" in section("validation.portfolio", "crp_recursion_vs_mc")
+
+
+def test_engine_review_5_importance_sampling_normalises_by_the_scenario_count() -> None:
+    body = section("importance", "weighted_var_es")
+    assert "sum(weights) / S" not in body and "normalised weight" not in body
+    assert "divided by `S`" in body and "never by the realised weight sum" in body
+    assert "never by the realised weight sum" in section("importance", "importance_sample_gaussian")
+    # why: for a rare tail the realised weight sum is itself random and biased the tail upward by about 70 percent in the review;
+    # the unbiased tail probability is sum(w 1{L > x}) / S. Unit weights give both forms the same answer, a tilted sample does not.
+    losses = [0.0, 1.0, 2.0, 3.0]
+    w = [1.0, 1.0, 1.0, 1.0]
+    assert sum(wi for li, wi in zip(losses, w) if li > 1.0) / len(w) == 0.5
+    w2 = [0.2, 0.2, 2.0, 2.0]   # a tilted sample with mean weight 1.1
+    by_s = sum(wi for li, wi in zip(losses, w2) if li > 1.0) / len(w2)
+    by_sum = sum(wi for li, wi in zip(losses, w2) if li > 1.0) / sum(w2)
+    assert not math.isclose(by_s, by_sum) and math.isclose(by_s, 1.0)
