@@ -27,6 +27,11 @@ export const TEST_TEXT: Record<string, Bi> = {
   'portfolio.correlation_size_power': { en: 'Size and power of the correlation estimate', es: 'Tamaño y potencia de la estimación de la correlación' },
 };
 
+const TRUTH_TEXT: Record<string, Bi> = {
+  'real-outcomes': { en: 'Real outcomes', es: 'Resultados reales' },
+  'synthetic-known-truth': { en: 'Synthetic, with a known truth', es: 'Sintético, con una verdad conocida' },
+};
+
 /** The illustrative portfolio's label and notice: printed on every view that draws from it. */
 export function IllustrativeNotice({ notice }: { notice: Bi }) {
   const lang = useShellLang();
@@ -234,7 +239,7 @@ export function C10ContextView({ sel, children }: { sel: C10Sel | null; children
             <dt>{pick({ en: 'Evaluation window', es: 'Ventana de evaluación' }, lang)}</dt>
             <dd data-window="evaluation">{`${o.windows.evaluation.first_year} ${to} ${o.windows.evaluation.last_year} (${count(o.windows.evaluation.n_years, lang)} ${pick({ en: 'years', es: 'años' }, lang)})`}</dd>
             <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>
-            <dd>{v.provenance.truth_status}</dd>
+            <dd data-truth-status={v.provenance.truth_status}>{pick(text(TRUTH_TEXT, v.provenance.truth_status), lang)}</dd>
           </dl>
         ) : null}
         {g ? (
@@ -244,7 +249,7 @@ export function C10ContextView({ sel, children }: { sel: C10Sel | null; children
             <dt>{pick({ en: 'Size and power', es: 'Tamaño y potencia' }, lang)}</dt>
             <dd>{pick(g.size_power_definition, lang)}</dd>
             <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>
-            <dd>{v.provenance.truth_status}</dd>
+            <dd data-truth-status={v.provenance.truth_status}>{pick(text(TRUTH_TEXT, v.provenance.truth_status), lang)}</dd>
           </dl>
         ) : null}
       </PlotCard>
