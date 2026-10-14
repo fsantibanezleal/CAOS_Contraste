@@ -28,9 +28,9 @@ const PARTS: Array<[string, () => ReactElement]> = [
 describe('the market risk Methodology topic', () => {
   afterEach(() => setLang('en'));
 
-  it('is registered in the tests group with the area and kind the gate reads, and holds one honest callout', () => {
+  it('is registered in the market group with the area and kind the gate reads, and holds one honest callout', () => {
     expect(REGISTERED_SECTIONS.map((s) => s.id)).toContain('market');
-    expect(methodologySection.group).toBe('tests');
+    expect(methodologySection.group).toBe('market');
     const m = render(<Body />, 'en');
     expect(m).toContain('data-area="method"');
     expect(m).toContain('data-method-kind="classical"');

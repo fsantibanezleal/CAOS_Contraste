@@ -33,9 +33,9 @@ const part = (name: string) => {
 describe('the portfolio credit capital Methodology topic', () => {
   afterEach(() => setLang('en'));
 
-  it('is registered in the loss group with the area and kind the gate reads', () => {
+  it('is registered in the capital group with the area and kind the gate reads', () => {
     expect(REGISTERED_SECTIONS.map((s) => s.id)).toContain('portfolio-capital');
-    expect(methodologySection.group).toBe('loss');
+    expect(methodologySection.group).toBe('capital');
     expect(markup('en')).toContain('data-area="method"');
     expect(markup('en')).toContain('data-method-kind="classical"');
   });

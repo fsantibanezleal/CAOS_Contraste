@@ -31,7 +31,8 @@ describe('the Methodology registry', () => {
   const Body = () => null as never;
   const section = (over: Record<string, unknown> = {}) => ({ id: 's1', group: 'tests', order: 10, title: { en: 'T', es: 'T' }, Body, ...over });
   it('starts from the two existing groups and registers sections by group, ordered', () => {
-    expect(METHODOLOGY_GROUPS).toEqual(['models', 'tests', 'loss']);
+    // grouped by the question family since the wave 2 integration (2026-10-14), at most six top-level groups
+    expect(METHODOLOGY_GROUPS).toEqual(['models', 'tests', 'loss', 'capital', 'market', 'balance']);
     expect(Array.isArray(REGISTERED_SECTIONS)).toBe(true);
     const got = collectSections({ './methodology/b.tsx': { methodologySection: section({ id: 'b', order: 20 }) }, './methodology/a.tsx': { methodologySection: section({ id: 'a', order: 10 }) } }, METHODOLOGY_GROUPS);
     expect(got.map((s) => s.id)).toEqual(['a', 'b']);
