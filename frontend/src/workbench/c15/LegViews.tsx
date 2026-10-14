@@ -180,12 +180,12 @@ export function PositionsView({ sel }: { sel: C15Sel | null }) {
               ))}
             </tbody>
           </table>
-          <p className="ct-note">{pick({ en: `Amounts in millions or thousands as the document states (${unit}); the UF leg in CLF. One UF is worth ${cell(o.ur_currency.uf_value, 'en')} CLP on ${o.ur_currency.uf_date}.`, es: `Montos en la escala que declara el documento (${unit}); el tramo UF en CLF. Una UF vale ${cell(o.ur_currency.uf_value, 'es')} CLP el ${o.ur_currency.uf_date}.` }, lang)}</p>
+          <p className="ct-note">{pick({ en: `Amounts of the CLP leg in ${unit} and of the UF leg in ${pick(scaleUnit({ ...doc, currency: 'CLF' }), 'en')}. One UF is worth ${cell(o.ur_currency.uf_value, 'en')} CLP on ${o.ur_currency.uf_date}.`, es: `Montos del tramo CLP en ${unit} y del tramo UF en ${pick(scaleUnit({ ...doc, currency: 'CLF' }), 'es')}. Una UF vale ${cell(o.ur_currency.uf_value, 'es')} CLP el ${o.ur_currency.uf_date}.` }, lang)}</p>
           {leg ? (
             <table className="caos-table ct-wrap-head" data-table="leg-items">
               <thead>
                 <tr>
-                  <th className="ct-text">{pick({ en: `Items of the ${text(LEG_TEXT, leg.leg).en.toLowerCase()}`, es: `Partidas del ${text(LEG_TEXT, leg.leg).es.toLowerCase()}` }, lang)}</th>
+                  <th className="ct-text">{pick({ en: `Items of the leg: ${text(LEG_SHORT, leg.leg).en}`, es: `Partidas del tramo: ${text(LEG_SHORT, leg.leg).es}` }, lang)}</th>
                   <th className="ct-text ct-wide-only">{pick({ en: 'Category', es: 'Categoría' }, lang)}</th>
                   <th className="ct-text ct-wide-only">{pick({ en: 'Side', es: 'Lado' }, lang)}</th>
                   <th>{pick({ en: `Amount (${leg.currency})`, es: `Monto (${leg.currency})` }, lang)}</th>
@@ -231,7 +231,7 @@ export function DynamicLegView({ sel }: { sel: C15Sel | null }) {
     <ViewsRow>
       <PlotCard
         fill
-        title={{ en: `The dynamic NII: ${text(LEG_TEXT, leg.leg).en.toLowerCase()}`, es: `El NII dinámico: ${text(LEG_TEXT, leg.leg).es.toLowerCase()}` }}
+        title={{ en: `The dynamic NII: ${text(LEG_SHORT, leg.leg).en} leg`, es: `El NII dinámico: tramo ${text(LEG_SHORT, leg.leg).es}` }}
         {...card}
         note={{
           en: `${o.sign_convention.statement.en} Month by month under the base path and the two parallel shocks${converted ? '; balances and NII of the UF leg are converted at the UF value' : ''}. The EaR and EVaR of C15 wait for the BCCh curves.`,
