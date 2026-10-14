@@ -171,16 +171,16 @@
     },
     "assumptions": {
       "nmd_core_share": {
-        "value": 0.525806452,
+        "value": 0.519354839,
         "unit": "share",
         "source_kind": "fitted",
-        "source": "balance-weighted average of nmd_segments"
+        "source": "balance-weighted average of the used values of nmd_segments"
       },
       "nmd_core_maturity_years": {
         "value": 3.451612903,
         "unit": "years",
         "source_kind": "fitted",
-        "source": "balance-weighted average of nmd_segments"
+        "source": "balance-weighted average of the used values of nmd_segments"
       },
       "prepayment_cpr": {
         "value": 0.04,
@@ -205,36 +205,39 @@
       {
         "category": "wholesale",
         "balance": 110000000.0,
-        "core_share": 0.4,
+        "requested_core_share": 0.4,
         "core_share_cap": 0.5,
-        "core_share_flag": "within-cap",
-        "core_maturity_years": 3.0,
+        "core_share_used": 0.4,
+        "requested_core_maturity_years": 3.0,
         "core_maturity_cap_years": 4.0,
-        "maturity_flag": "within-cap",
+        "core_maturity_used_years": 3.0,
+        "cap_applied": false,
         "source_kind": "synthetic-stated",
         "source": "fixture value, synthetic behaviour stated"
       },
       {
         "category": "retail-transactional",
         "balance": 25000000.0,
-        "core_share": 0.9,
+        "requested_core_share": 0.9,
         "core_share_cap": 0.9,
-        "core_share_flag": "within-cap",
-        "core_maturity_years": 5.0,
+        "core_share_used": 0.9,
+        "requested_core_maturity_years": 5.0,
         "core_maturity_cap_years": 5.0,
-        "maturity_flag": "within-cap",
+        "core_maturity_used_years": 5.0,
+        "cap_applied": false,
         "source_kind": "regulatory-cap",
         "source": "SRP31 Table 4 cap taken as the assumption"
       },
       {
         "category": "retail-non-transactional",
         "balance": 20000000.0,
-        "core_share": 0.75,
+        "requested_core_share": 0.75,
         "core_share_cap": 0.7,
-        "core_share_flag": "above-cap",
-        "core_maturity_years": 4.0,
+        "core_share_used": 0.7,
+        "requested_core_maturity_years": 4.0,
         "core_maturity_cap_years": 4.5,
-        "maturity_flag": "within-cap",
+        "core_maturity_used_years": 4.0,
+        "cap_applied": true,
         "source_kind": "fitted",
         "source": "fixture value standing for a fitted replicating portfolio"
       }
@@ -579,17 +582,17 @@
               {
                 "bucket": 1,
                 "midpoint_years": 0.0028,
-                "amount": -5000000.0
+                "amount": -6000000.0
               },
               {
                 "bucket": 10,
                 "midpoint_years": 3.5,
-                "amount": -7500000.0
+                "amount": -7000000.0
               },
               {
                 "bucket": 11,
                 "midpoint_years": 4.5,
-                "amount": -7500000.0
+                "amount": -7000000.0
               }
             ],
             "contractual": [
@@ -687,8 +690,8 @@
             "bucket": 1,
             "midpoint_years": 0.0028,
             "assets": 8000000.0,
-            "liabilities": 73500000.0,
-            "gap": -65500000.0
+            "liabilities": 74500000.0,
+            "gap": -66500000.0
           },
           {
             "bucket": 2,
@@ -750,15 +753,15 @@
             "bucket": 10,
             "midpoint_years": 3.5,
             "assets": 0.0,
-            "liabilities": 29500000.0,
-            "gap": -29500000.0
+            "liabilities": 29000000.0,
+            "gap": -29000000.0
           },
           {
             "bucket": 11,
             "midpoint_years": 4.5,
             "assets": 15000000.0,
-            "liabilities": 18750000.0,
-            "gap": -3750000.0
+            "liabilities": 18250000.0,
+            "gap": -3250000.0
           },
           {
             "bucket": 12,
@@ -817,14 +820,14 @@
             "gap": 0.0
           }
         ],
-        "delta_nii_gap_100bp_up": 510256.0,
+        "delta_nii_gap_100bp_up": 520228.0,
         "duration_gap": {
           "asset_value": 149424586.809713,
-          "liability_value": 163865386.884732,
+          "liability_value": 164016313.430094,
           "asset_duration_years": 4.087399098,
-          "liability_duration_years": 1.789115352,
-          "duration_gap_years": 2.125378753,
-          "equity_change_100bp_up": -3175838.420029
+          "liability_duration_years": 1.766829038,
+          "duration_gap_years": 2.148034289,
+          "equity_change_100bp_up": -3209691.361071
         }
       },
       {
@@ -979,6 +982,7 @@
       {
         "calibration": "2024",
         "nmd_assumption": "behavioural",
+        "nmd_treatment": "standardised-capped",
         "shock_size": {
           "currency": "USD",
           "parallel_bp": 200,
@@ -989,7 +993,7 @@
           "method": null
         },
         "floor": 0.0,
-        "base_eve": -14440800.075018,
+        "base_eve": -14591726.62038,
         "shocks": [
           {
             "shock": "parallel-up",
@@ -1016,7 +1020,7 @@
             ],
             "floor_bound_buckets": [],
             "net_cash_flows": [
-              -66220000.0,
+              -67220000.0,
               0.0,
               20000000.0,
               -11280000.0,
@@ -1025,8 +1029,8 @@
               6000000.0,
               10000000.0,
               6000000.0,
-              -29500000.0,
-              -3750000.0,
+              -29000000.0,
+              -3250000.0,
               -11250000.0,
               30000000.0,
               0.0,
@@ -1036,11 +1040,11 @@
               0.0,
               0.0
             ],
-            "eve": -20176927.06187,
+            "eve": -20392886.55328,
             "kao": 0.0,
-            "delta_eve": 5736126.986852,
-            "delta_eve_share_tier1": 0.104664300463,
-            "delta_nii": 1020512.0,
+            "delta_eve": 5801159.932899,
+            "delta_eve_share_tier1": 0.105433461759,
+            "delta_nii": 1040456.0,
             "delta_nii_reason": null
           },
           {
@@ -1068,7 +1072,7 @@
             ],
             "floor_bound_buckets": [],
             "net_cash_flows": [
-              -65980000.0,
+              -66980000.0,
               0.0,
               20000000.0,
               -11520000.0,
@@ -1077,8 +1081,8 @@
               6000000.0,
               10000000.0,
               6000000.0,
-              -29500000.0,
-              -3750000.0,
+              -29000000.0,
+              -3250000.0,
               -11250000.0,
               30000000.0,
               0.0,
@@ -1088,11 +1092,11 @@
               0.0,
               0.0
             ],
-            "eve": -7363630.264955,
+            "eve": -7444027.25397,
             "kao": 2500.0,
-            "delta_eve": -7074669.810064,
-            "delta_eve_share_tier1": -0.129088035947,
-            "delta_nii": -1020512.0,
+            "delta_eve": -7145199.36641,
+            "delta_eve_share_tier1": -0.129860771444,
+            "delta_nii": -1040456.0,
             "delta_nii_reason": null
           },
           {
@@ -1120,7 +1124,7 @@
             ],
             "floor_bound_buckets": [],
             "net_cash_flows": [
-              -65980000.0,
+              -66980000.0,
               0.0,
               20000000.0,
               -11520000.0,
@@ -1129,8 +1133,8 @@
               6000000.0,
               10000000.0,
               6000000.0,
-              -29500000.0,
-              -3750000.0,
+              -29000000.0,
+              -3250000.0,
               -11250000.0,
               30000000.0,
               0.0,
@@ -1140,10 +1144,10 @@
               0.0,
               0.0
             ],
-            "eve": -19494543.342368,
+            "eve": -19664604.601331,
             "kao": 0.0,
-            "delta_eve": 5053743.26735,
-            "delta_eve_share_tier1": 0.092213178859,
+            "delta_eve": 5072877.98095,
+            "delta_eve_share_tier1": 0.092197266202,
             "delta_nii": null,
             "delta_nii_reason": {
               "en": "Delta NII is reported for the two parallel shocks only (SRP31.90).",
@@ -1175,7 +1179,7 @@
             ],
             "floor_bound_buckets": [],
             "net_cash_flows": [
-              -66220000.0,
+              -67220000.0,
               0.0,
               20000000.0,
               -11280000.0,
@@ -1184,8 +1188,8 @@
               6000000.0,
               10000000.0,
               6000000.0,
-              -29500000.0,
-              -3750000.0,
+              -29000000.0,
+              -3250000.0,
               -11250000.0,
               30000000.0,
               0.0,
@@ -1195,10 +1199,10 @@
               0.0,
               0.0
             ],
-            "eve": -10810395.476933,
+            "eve": -10961975.312242,
             "kao": 0.0,
-            "delta_eve": -3630404.598085,
-            "delta_eve_share_tier1": -0.066242215091,
+            "delta_eve": -3629751.308138,
+            "delta_eve_share_tier1": -0.065969090694,
             "delta_nii": null,
             "delta_nii_reason": {
               "en": "Delta NII is reported for the two parallel shocks only (SRP31.90).",
@@ -1230,7 +1234,7 @@
             ],
             "floor_bound_buckets": [],
             "net_cash_flows": [
-              -66220000.0,
+              -67220000.0,
               0.0,
               20000000.0,
               -11280000.0,
@@ -1239,8 +1243,8 @@
               6000000.0,
               10000000.0,
               6000000.0,
-              -29500000.0,
-              -3750000.0,
+              -29000000.0,
+              -3250000.0,
               -11250000.0,
               30000000.0,
               0.0,
@@ -1250,10 +1254,10 @@
               0.0,
               0.0
             ],
-            "eve": -15134417.909388,
+            "eve": -15321641.280982,
             "kao": 0.0,
-            "delta_eve": 693617.83437,
-            "delta_eve_share_tier1": 0.012656104997,
+            "delta_eve": 729914.660602,
+            "delta_eve_share_tier1": 0.0132658693,
             "delta_nii": null,
             "delta_nii_reason": {
               "en": "Delta NII is reported for the two parallel shocks only (SRP31.90).",
@@ -1285,7 +1289,7 @@
             ],
             "floor_bound_buckets": [],
             "net_cash_flows": [
-              -65980000.0,
+              -66980000.0,
               0.0,
               20000000.0,
               -11520000.0,
@@ -1294,8 +1298,8 @@
               6000000.0,
               10000000.0,
               6000000.0,
-              -29500000.0,
-              -3750000.0,
+              -29000000.0,
+              -3250000.0,
               -11250000.0,
               30000000.0,
               0.0,
@@ -1305,10 +1309,10 @@
               0.0,
               0.0
             ],
-            "eve": -13766616.868848,
+            "eve": -13879617.751636,
             "kao": 1200.0,
-            "delta_eve": -672983.20617,
-            "delta_eve_share_tier1": -0.01227959504,
+            "delta_eve": -710908.868745,
+            "delta_eve_share_tier1": -0.012920447616,
             "delta_nii": null,
             "delta_nii_reason": {
               "en": "Delta NII is reported for the two parallel shocks only (SRP31.90).",
@@ -1316,13 +1320,13 @@
             }
           }
         ],
-        "eve_risk_measure": 5736126.986852,
+        "eve_risk_measure": 5801159.932899,
         "worst_shock": "parallel-up",
         "outlier": {
           "threshold_share_tier1": 0.15,
-          "tier1": 54805000.0,
-          "eve_risk_measure": 5736126.986852,
-          "ratio": 0.1046643,
+          "tier1": 55022000.0,
+          "eve_risk_measure": 5801159.932899,
+          "ratio": 0.105433462,
           "breached": false,
           "reference": "SRP31.82 to SRP31.83 (15 percent of Tier 1)"
         }
@@ -1330,6 +1334,7 @@
       {
         "calibration": "2024",
         "nmd_assumption": "contractual",
+        "nmd_treatment": "contractual-overnight",
         "shock_size": {
           "currency": "USD",
           "parallel_bp": 200,
@@ -1390,7 +1395,7 @@
             "eve": -36718519.756991,
             "kao": 0.0,
             "delta_eve": 10705477.237508,
-            "delta_eve_share_tier1": 0.195337601268,
+            "delta_eve_share_tier1": 0.194567213796,
             "delta_nii": 2645948.0,
             "delta_nii_reason": null
           },
@@ -1442,7 +1447,7 @@
             "eve": -13555972.926388,
             "kao": 2500.0,
             "delta_eve": -12454569.593094,
-            "delta_eve_share_tier1": -0.227252433046,
+            "delta_eve_share_tier1": -0.226356177403,
             "delta_nii": -2645948.0,
             "delta_nii_reason": null
           },
@@ -1494,7 +1499,7 @@
             "eve": -32348029.663918,
             "kao": 0.0,
             "delta_eve": 6334987.144436,
-            "delta_eve_share_tier1": 0.115591408529,
+            "delta_eve_share_tier1": 0.115135530232,
             "delta_nii": null,
             "delta_nii_reason": {
               "en": "Delta NII is reported for the two parallel shocks only (SRP31.90).",
@@ -1549,7 +1554,7 @@
             "eve": -22593123.465875,
             "kao": 0.0,
             "delta_eve": -3419919.053608,
-            "delta_eve_share_tier1": -0.062401588425,
+            "delta_eve_share_tier1": -0.062155484236,
             "delta_nii": null,
             "delta_nii_reason": {
               "en": "Delta NII is reported for the two parallel shocks only (SRP31.90).",
@@ -1604,7 +1609,7 @@
             "eve": -29608587.627156,
             "kao": 0.0,
             "delta_eve": 3595545.107673,
-            "delta_eve_share_tier1": 0.065606151039,
+            "delta_eve_share_tier1": 0.065347408449,
             "delta_nii": null,
             "delta_nii_reason": {
               "en": "Delta NII is reported for the two parallel shocks only (SRP31.90).",
@@ -1659,7 +1664,7 @@
             "eve": -22310476.25468,
             "kao": 1200.0,
             "delta_eve": -3701366.264803,
-            "delta_eve_share_tier1": -0.067537017878,
+            "delta_eve_share_tier1": -0.067270660187,
             "delta_nii": null,
             "delta_nii_reason": {
               "en": "Delta NII is reported for the two parallel shocks only (SRP31.90).",
@@ -1671,9 +1676,9 @@
         "worst_shock": "parallel-up",
         "outlier": {
           "threshold_share_tier1": 0.15,
-          "tier1": 54805000.0,
+          "tier1": 55022000.0,
           "eve_risk_measure": 10705477.237508,
-          "ratio": 0.195337601,
+          "ratio": 0.194567214,
           "breached": true,
           "reference": "SRP31.82 to SRP31.83 (15 percent of Tier 1)"
         }
@@ -1681,6 +1686,7 @@
       {
         "calibration": "2016",
         "nmd_assumption": "behavioural",
+        "nmd_treatment": "standardised-capped",
         "shock_size": {
           "currency": "USD",
           "parallel_bp": 200,
@@ -1691,7 +1697,7 @@
           "method": null
         },
         "floor": 0.0,
-        "base_eve": -14440800.075018,
+        "base_eve": -14591726.62038,
         "shocks": [
           {
             "shock": "parallel-up",
@@ -1718,7 +1724,7 @@
             ],
             "floor_bound_buckets": [],
             "net_cash_flows": [
-              -66220000.0,
+              -67220000.0,
               0.0,
               20000000.0,
               -11280000.0,
@@ -1727,8 +1733,8 @@
               6000000.0,
               10000000.0,
               6000000.0,
-              -29500000.0,
-              -3750000.0,
+              -29000000.0,
+              -3250000.0,
               -11250000.0,
               30000000.0,
               0.0,
@@ -1738,11 +1744,11 @@
               0.0,
               0.0
             ],
-            "eve": -20176927.06187,
+            "eve": -20392886.55328,
             "kao": 0.0,
-            "delta_eve": 5736126.986852,
-            "delta_eve_share_tier1": 0.104664300463,
-            "delta_nii": 1020512.0,
+            "delta_eve": 5801159.932899,
+            "delta_eve_share_tier1": 0.105433461759,
+            "delta_nii": 1040456.0,
             "delta_nii_reason": null
           },
           {
@@ -1770,7 +1776,7 @@
             ],
             "floor_bound_buckets": [],
             "net_cash_flows": [
-              -65980000.0,
+              -66980000.0,
               0.0,
               20000000.0,
               -11520000.0,
@@ -1779,8 +1785,8 @@
               6000000.0,
               10000000.0,
               6000000.0,
-              -29500000.0,
-              -3750000.0,
+              -29000000.0,
+              -3250000.0,
               -11250000.0,
               30000000.0,
               0.0,
@@ -1790,11 +1796,11 @@
               0.0,
               0.0
             ],
-            "eve": -7363630.264955,
+            "eve": -7444027.25397,
             "kao": 2500.0,
-            "delta_eve": -7074669.810064,
-            "delta_eve_share_tier1": -0.129088035947,
-            "delta_nii": -1020512.0,
+            "delta_eve": -7145199.36641,
+            "delta_eve_share_tier1": -0.129860771444,
+            "delta_nii": -1040456.0,
             "delta_nii_reason": null
           },
           {
@@ -1822,7 +1828,7 @@
             ],
             "floor_bound_buckets": [],
             "net_cash_flows": [
-              -65980000.0,
+              -66980000.0,
               0.0,
               20000000.0,
               -11520000.0,
@@ -1831,8 +1837,8 @@
               6000000.0,
               10000000.0,
               6000000.0,
-              -29500000.0,
-              -3750000.0,
+              -29000000.0,
+              -3250000.0,
               -11250000.0,
               30000000.0,
               0.0,
@@ -1842,10 +1848,10 @@
               0.0,
               0.0
             ],
-            "eve": -17787062.581022,
+            "eve": -17942848.50809,
             "kao": 0.0,
-            "delta_eve": 3346262.506004,
-            "delta_eve_share_tier1": 0.061057613466,
+            "delta_eve": 3351121.887709,
+            "delta_eve_share_tier1": 0.060905126817,
             "delta_nii": null,
             "delta_nii_reason": {
               "en": "Delta NII is reported for the two parallel shocks only (SRP31.90).",
@@ -1877,7 +1883,7 @@
             ],
             "floor_bound_buckets": [],
             "net_cash_flows": [
-              -66220000.0,
+              -67220000.0,
               0.0,
               20000000.0,
               -11280000.0,
@@ -1886,8 +1892,8 @@
               6000000.0,
               10000000.0,
               6000000.0,
-              -29500000.0,
-              -3750000.0,
+              -29000000.0,
+              -3250000.0,
               -11250000.0,
               30000000.0,
               0.0,
@@ -1897,10 +1903,10 @@
               0.0,
               0.0
             ],
-            "eve": -12269511.751477,
+            "eve": -12430708.023828,
             "kao": 0.0,
-            "delta_eve": -2171288.323541,
-            "delta_eve_share_tier1": -0.039618434879,
+            "delta_eve": -2161018.596552,
+            "delta_eve_share_tier1": -0.039275536995,
             "delta_nii": null,
             "delta_nii_reason": {
               "en": "Delta NII is reported for the two parallel shocks only (SRP31.90).",
@@ -1932,7 +1938,7 @@
             ],
             "floor_bound_buckets": [],
             "net_cash_flows": [
-              -66220000.0,
+              -67220000.0,
               0.0,
               20000000.0,
               -11280000.0,
@@ -1941,8 +1947,8 @@
               6000000.0,
               10000000.0,
               6000000.0,
-              -29500000.0,
-              -3750000.0,
+              -29000000.0,
+              -3250000.0,
               -11250000.0,
               30000000.0,
               0.0,
@@ -1952,10 +1958,10 @@
               0.0,
               0.0
             ],
-            "eve": -15134417.909388,
+            "eve": -15321641.280982,
             "kao": 0.0,
-            "delta_eve": 693617.83437,
-            "delta_eve_share_tier1": 0.012656104997,
+            "delta_eve": 729914.660602,
+            "delta_eve_share_tier1": 0.0132658693,
             "delta_nii": null,
             "delta_nii_reason": {
               "en": "Delta NII is reported for the two parallel shocks only (SRP31.90).",
@@ -1987,7 +1993,7 @@
             ],
             "floor_bound_buckets": [],
             "net_cash_flows": [
-              -65980000.0,
+              -66980000.0,
               0.0,
               20000000.0,
               -11520000.0,
@@ -1996,8 +2002,8 @@
               6000000.0,
               10000000.0,
               6000000.0,
-              -29500000.0,
-              -3750000.0,
+              -29000000.0,
+              -3250000.0,
               -11250000.0,
               30000000.0,
               0.0,
@@ -2007,10 +2013,10 @@
               0.0,
               0.0
             ],
-            "eve": -13766616.868848,
+            "eve": -13879617.751636,
             "kao": 1200.0,
-            "delta_eve": -672983.20617,
-            "delta_eve_share_tier1": -0.01227959504,
+            "delta_eve": -710908.868745,
+            "delta_eve_share_tier1": -0.012920447616,
             "delta_nii": null,
             "delta_nii_reason": {
               "en": "Delta NII is reported for the two parallel shocks only (SRP31.90).",
@@ -2018,13 +2024,13 @@
             }
           }
         ],
-        "eve_risk_measure": 5736126.986852,
+        "eve_risk_measure": 5801159.932899,
         "worst_shock": "parallel-up",
         "outlier": {
           "threshold_share_tier1": 0.15,
-          "tier1": 54805000.0,
-          "eve_risk_measure": 5736126.986852,
-          "ratio": 0.1046643,
+          "tier1": 55022000.0,
+          "eve_risk_measure": 5801159.932899,
+          "ratio": 0.105433462,
           "breached": false,
           "reference": "SRP31.82 to SRP31.83 (15 percent of Tier 1)"
         }
@@ -2032,6 +2038,7 @@
       {
         "calibration": "2016",
         "nmd_assumption": "contractual",
+        "nmd_treatment": "contractual-overnight",
         "shock_size": {
           "currency": "USD",
           "parallel_bp": 200,
@@ -2092,7 +2099,7 @@
             "eve": -36718519.756991,
             "kao": 0.0,
             "delta_eve": 10705477.237508,
-            "delta_eve_share_tier1": 0.195337601268,
+            "delta_eve_share_tier1": 0.194567213796,
             "delta_nii": 2645948.0,
             "delta_nii_reason": null
           },
@@ -2144,7 +2151,7 @@
             "eve": -13555972.926388,
             "kao": 2500.0,
             "delta_eve": -12454569.593094,
-            "delta_eve_share_tier1": -0.227252433046,
+            "delta_eve_share_tier1": -0.226356177403,
             "delta_nii": -2645948.0,
             "delta_nii_reason": null
           },
@@ -2196,7 +2203,7 @@
             "eve": -29581687.304064,
             "kao": 0.0,
             "delta_eve": 3568644.784581,
-            "delta_eve_share_tier1": 0.065115314015,
+            "delta_eve_share_tier1": 0.064858507226,
             "delta_nii": null,
             "delta_nii_reason": {
               "en": "Delta NII is reported for the two parallel shocks only (SRP31.90).",
@@ -2251,7 +2258,7 @@
             "eve": -24767819.138661,
             "kao": 0.0,
             "delta_eve": -1245223.380822,
-            "delta_eve_share_tier1": -0.022720981312,
+            "delta_eve_share_tier1": -0.022631372557,
             "delta_nii": null,
             "delta_nii_reason": {
               "en": "Delta NII is reported for the two parallel shocks only (SRP31.90).",
@@ -2306,7 +2313,7 @@
             "eve": -29608587.627156,
             "kao": 0.0,
             "delta_eve": 3595545.107673,
-            "delta_eve_share_tier1": 0.065606151039,
+            "delta_eve_share_tier1": 0.065347408449,
             "delta_nii": null,
             "delta_nii_reason": {
               "en": "Delta NII is reported for the two parallel shocks only (SRP31.90).",
@@ -2361,7 +2368,7 @@
             "eve": -22310476.25468,
             "kao": 1200.0,
             "delta_eve": -3701366.264803,
-            "delta_eve_share_tier1": -0.067537017878,
+            "delta_eve_share_tier1": -0.067270660187,
             "delta_nii": null,
             "delta_nii_reason": {
               "en": "Delta NII is reported for the two parallel shocks only (SRP31.90).",
@@ -2373,98 +2380,322 @@
         "worst_shock": "parallel-up",
         "outlier": {
           "threshold_share_tier1": 0.15,
-          "tier1": 54805000.0,
+          "tier1": 55022000.0,
           "eve_risk_measure": 10705477.237508,
-          "ratio": 0.195337601,
+          "ratio": 0.194567214,
           "breached": true,
           "reference": "SRP31.82 to SRP31.83 (15 percent of Tier 1)"
         }
       }
     ],
+    "dynamic_nii": {
+      "horizon_months": 12,
+      "balance_sheet_assumption": {
+        "kind": "constant",
+        "growth_annual": 0,
+        "description": {
+          "en": "Constant balance sheet: maturing and repricing flows are replaced by identical new ones.",
+          "es": "Balance constante: los flujos que vencen o reprecian se reemplazan por otros identicos."
+        }
+      },
+      "items": [
+        {
+          "item_id": "D1",
+          "side": "asset",
+          "balance": 35000000.0,
+          "rate0": 0.0615,
+          "spread": 0.02,
+          "beta": 1.0,
+          "reprice_months": 0
+        },
+        {
+          "item_id": "D2",
+          "side": "asset",
+          "balance": 115000000.0,
+          "rate0": 0.03,
+          "spread": 0.03,
+          "beta": 1.0,
+          "reprice_months": 60
+        },
+        {
+          "item_id": "D3",
+          "side": "asset",
+          "balance": 8000000.0,
+          "rate0": 0.0415,
+          "spread": 0.0,
+          "beta": 1.0,
+          "reprice_months": 0
+        },
+        {
+          "item_id": "D4",
+          "side": "liability",
+          "balance": 155000000.0,
+          "rate0": 0.018675,
+          "spread": 0.0,
+          "beta": 0.45,
+          "reprice_months": 0
+        },
+        {
+          "item_id": "D5",
+          "side": "liability",
+          "balance": 12000000.0,
+          "rate0": 0.0415,
+          "spread": 0.0,
+          "beta": 1.0,
+          "reprice_months": 6
+        },
+        {
+          "item_id": "D6",
+          "side": "liability",
+          "balance": 10000000.0,
+          "rate0": 0.0425,
+          "spread": 0.001,
+          "beta": 1.0,
+          "reprice_months": 12
+        }
+      ],
+      "scenarios": [
+        {
+          "scenario": "base",
+          "shock_bp": 0.0,
+          "short_rate_path": [
+            0.0415,
+            0.0415,
+            0.0415,
+            0.0415,
+            0.0415,
+            0.0415,
+            0.0415,
+            0.0415,
+            0.0415,
+            0.0415,
+            0.0415,
+            0.0415
+          ],
+          "monthly_nii": [
+            176406.25,
+            176406.25,
+            176406.25,
+            176406.25,
+            176406.25,
+            176406.25,
+            176406.25,
+            176406.25,
+            176406.25,
+            176406.25,
+            176406.25,
+            176406.25
+          ],
+          "total": 2116875.0,
+          "delta_vs_base": 0.0
+        },
+        {
+          "scenario": "parallel-up",
+          "shock_bp": 200,
+          "short_rate_path": [
+            0.0615,
+            0.0615,
+            0.0615,
+            0.0615,
+            0.0615,
+            0.0615,
+            0.0615,
+            0.0615,
+            0.0615,
+            0.0615,
+            0.0615,
+            0.0615
+          ],
+          "monthly_nii": [
+            131822.916667,
+            131822.916667,
+            131822.916667,
+            131822.916667,
+            131822.916667,
+            131822.916667,
+            111822.916667,
+            111822.916667,
+            111822.916667,
+            111822.916667,
+            111822.916667,
+            111822.916667
+          ],
+          "total": 1461875.0,
+          "delta_vs_base": 655000.0
+        },
+        {
+          "scenario": "parallel-down",
+          "shock_bp": -200,
+          "short_rate_path": [
+            0.0215,
+            0.0215,
+            0.0215,
+            0.0215,
+            0.0215,
+            0.0215,
+            0.0215,
+            0.0215,
+            0.0215,
+            0.0215,
+            0.0215,
+            0.0215
+          ],
+          "monthly_nii": [
+            220989.583333,
+            220989.583333,
+            220989.583333,
+            220989.583333,
+            220989.583333,
+            220989.583333,
+            240989.583333,
+            240989.583333,
+            240989.583333,
+            240989.583333,
+            240989.583333,
+            240989.583333
+          ],
+          "total": 2771875.0,
+          "delta_vs_base": -655000.0
+        }
+      ]
+    },
+    "ear_evar": {
+      "method": "hw1f",
+      "n_paths": 10000,
+      "seed": 0,
+      "horizon_months": 12,
+      "parameters": [
+        {
+          "name": "a",
+          "value": 0.1,
+          "unit": "per year"
+        },
+        {
+          "name": "sigma",
+          "value": 0.01,
+          "unit": "per year"
+        }
+      ],
+      "base_nii": 2116875.0,
+      "base_eve": -14591726.62038,
+      "levels": [
+        {
+          "level": 0.95,
+          "nii_quantile": 1968693.75,
+          "eve_quantile": -16050899.282418,
+          "ear": 148181.25,
+          "evar": 1459172.662038
+        },
+        {
+          "level": 0.99,
+          "nii_quantile": 1905187.5,
+          "eve_quantile": -16780485.613437,
+          "ear": 211687.5,
+          "evar": 2188758.993057
+        }
+      ],
+      "monte_carlo_error": {
+        "ear": 1481.8125,
+        "evar": 14591.72662
+      }
+    },
+    "out_of_sample": {
+      "applicable": false,
+      "projection_date": "2022-12-31",
+      "realised_period_start": null,
+      "realised_period_end": null,
+      "projected_delta_nii": null,
+      "realised_delta_nii": null,
+      "relative_error": null,
+      "reason": {
+        "en": "No call report dated after this valuation date is read, so no realised period exists.",
+        "es": "No se lee ningun reporte posterior a esta fecha de valoracion, asi que no hay periodo realizado."
+      }
+    },
     "behavioural_comparison": [
       {
         "calibration": "2024",
         "shock": "parallel-up",
-        "delta_eve_behavioural": 5736126.986852,
+        "delta_eve_behavioural": 5801159.932899,
         "delta_eve_contractual": 10705477.237508,
-        "difference": -4969350.250656
+        "difference": -4904317.304609
       },
       {
         "calibration": "2024",
         "shock": "parallel-down",
-        "delta_eve_behavioural": -7074669.810064,
+        "delta_eve_behavioural": -7145199.36641,
         "delta_eve_contractual": -12454569.593094,
-        "difference": 5379899.78303
+        "difference": 5309370.226684
       },
       {
         "calibration": "2024",
         "shock": "steepener",
-        "delta_eve_behavioural": 5053743.26735,
+        "delta_eve_behavioural": 5072877.98095,
         "delta_eve_contractual": 6334987.144436,
-        "difference": -1281243.877086
+        "difference": -1262109.163486
       },
       {
         "calibration": "2024",
         "shock": "flattener",
-        "delta_eve_behavioural": -3630404.598085,
+        "delta_eve_behavioural": -3629751.308138,
         "delta_eve_contractual": -3419919.053608,
-        "difference": -210485.544477
+        "difference": -209832.25453
       },
       {
         "calibration": "2024",
         "shock": "short-up",
-        "delta_eve_behavioural": 693617.83437,
+        "delta_eve_behavioural": 729914.660602,
         "delta_eve_contractual": 3595545.107673,
-        "difference": -2901927.273303
+        "difference": -2865630.447071
       },
       {
         "calibration": "2024",
         "shock": "short-down",
-        "delta_eve_behavioural": -672983.20617,
+        "delta_eve_behavioural": -710908.868745,
         "delta_eve_contractual": -3701366.264803,
-        "difference": 3028383.058633
+        "difference": 2990457.396058
       },
       {
         "calibration": "2016",
         "shock": "parallel-up",
-        "delta_eve_behavioural": 5736126.986852,
+        "delta_eve_behavioural": 5801159.932899,
         "delta_eve_contractual": 10705477.237508,
-        "difference": -4969350.250656
+        "difference": -4904317.304609
       },
       {
         "calibration": "2016",
         "shock": "parallel-down",
-        "delta_eve_behavioural": -7074669.810064,
+        "delta_eve_behavioural": -7145199.36641,
         "delta_eve_contractual": -12454569.593094,
-        "difference": 5379899.78303
+        "difference": 5309370.226684
       },
       {
         "calibration": "2016",
         "shock": "steepener",
-        "delta_eve_behavioural": 3346262.506004,
+        "delta_eve_behavioural": 3351121.887709,
         "delta_eve_contractual": 3568644.784581,
-        "difference": -222382.278577
+        "difference": -217522.896872
       },
       {
         "calibration": "2016",
         "shock": "flattener",
-        "delta_eve_behavioural": -2171288.323541,
+        "delta_eve_behavioural": -2161018.596552,
         "delta_eve_contractual": -1245223.380822,
-        "difference": -926064.942719
+        "difference": -915795.21573
       },
       {
         "calibration": "2016",
         "shock": "short-up",
-        "delta_eve_behavioural": 693617.83437,
+        "delta_eve_behavioural": 729914.660602,
         "delta_eve_contractual": 3595545.107673,
-        "difference": -2901927.273303
+        "difference": -2865630.447071
       },
       {
         "calibration": "2016",
         "shock": "short-down",
-        "delta_eve_behavioural": -672983.20617,
+        "delta_eve_behavioural": -710908.868745,
         "delta_eve_contractual": -3701366.264803,
-        "difference": 3028383.058633
+        "difference": 2990457.396058
       }
     ]
   },
@@ -2512,7 +2743,7 @@
   ],
   "impact": {
     "eve_risk_measure_behavioural": {
-      "value": 5736126.986852,
+      "value": 5801159.932899,
       "unit": "USD thousands",
       "label": {
         "en": "EVE risk measure, 2024 shocks, behavioural NMD",

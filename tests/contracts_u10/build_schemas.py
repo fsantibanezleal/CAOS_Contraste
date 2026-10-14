@@ -143,6 +143,40 @@ def reachable(root: str, defs: dict) -> dict:
     return {k: seen[k] for k in defs if k in seen}
 
 
+T2024 = {  # dossier 01 H.3, SRP31.90 Table 2 (in force 2026-01-01)
+    "parallel": [400, 350, 400, 200, 175, 225, 225, 275, 225, 400, 325, 100, 225, 400, 400, 275, 275, 175, 400, 200, 325],
+    "short": [500, 425, 500, 275, 250, 300, 350, 425, 375, 500, 475, 100, 350, 500, 500, 375, 425, 250, 500, 300, 500],
+    "long": [300, 300, 300, 175, 200, 150, 200, 250, 200, 300, 225, 100, 225, 200, 300, 250, 200, 225, 300, 225, 300],
+}
+T2016 = {  # dossier 01 H.3, d368 Annex 2 Table 1
+    "parallel": [400, 300, 400, 200, 100, 250, 200, 250, 200, 400, 400, 100, 300, 400, 400, 200, 200, 150, 400, 200, 400],
+    "short": [500, 450, 500, 300, 150, 300, 250, 300, 250, 500, 500, 100, 400, 500, 500, 300, 300, 200, 500, 300, 500],
+    "long": [300, 200, 300, 150, 100, 150, 100, 150, 100, 350, 300, 100, 200, 300, 300, 150, 150, 100, 300, 150, 300],
+}
+GAMMA = [0.8, 1.2, 0.8, 1.2, 0.8, 1.2]   # SRP31.119 Table 5, in the order of SHOCKS
+UMULT = [1.2, 0.8, 0.8, 1.2, 1.2, 0.8]   # SRP31.125 Table 6, in the order of SHOCKS
+CMF_TABLE = [("canasta-1", 200, 300, 150), ("canasta-2", 400, 500, 300), ("CLP", 300, 400, 200), ("UR-nii", 300, None, None),
+             ("UR-eve", 200, 250, 150)]
+
+
+def pin(name: str, **consts) -> dict:
+    """An element of an ordered array: the def with some properties fixed to constants."""
+    return {"$ref": f"#/$defs/{name}", "properties": {k: {"const": v} for k, v in consts.items()}}
+
+
+def ordered(items: list, desc: str | None = None) -> dict:
+    """An array of exactly these elements in this order (prefixItems, nothing beyond)."""
+    d: dict = {"type": "array", "prefixItems": items, "items": False, "minItems": len(items), "maxItems": len(items)}
+    if desc:
+        d["description"] = desc
+    return d
+
+
+def with_pairs(ob: dict) -> dict:
+    """Pins the pairing of a ``bucket`` with its SRP31.96 Table 3 midpoint (a bucket with another bucket's midpoint fails)."""
+    return one_of(ob, *[{"bucket": C(k + 1), "midpoint_years": C(m)} for k, m in enumerate(MIDPOINTS)])
+
+
 def write(case: str, name: str, doc: dict) -> None:
     path = SCHEMAS / case.lower() / name
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -211,44 +245,56 @@ def common(p: str, cats: list, ndigits_note: str) -> dict:
         "deposit_beta": R(p + "Assumption"),
     }, "The five behavioural assumptions. nmd_core_share and nmd_core_maturity_years are the balance-weighted averages of "
        "nmd_segments.")
-    d[p + "Flow"] = Ob({"bucket": BUCKET, "midpoint_years": MID, "amount": MONEY},
-                       "A net notional repricing cash flow in one bucket (assets positive, liabilities negative).")
+    d[p + "Flow"] = with_pairs(Ob({"bucket": BUCKET, "midpoint_years": MID, "amount": MONEY},
+                                  "A net notional repricing cash flow in one bucket (assets positive, liabilities negative)."))
     alts = []
     for name, share_cap, mat_cap in cats:
         for sflag in ("within-cap", "above-cap"):
             for mflag in ("within-cap", "above-cap"):
+                applied = sflag == "above-cap" or mflag == "above-cap"
                 alts.append({
                     "category": C(name), "core_share_cap": C(share_cap), "core_maturity_cap_years": C(mat_cap),
-                    "core_share": N(minimum=0, maximum=share_cap) if sflag == "within-cap"
+                    "requested_core_share": N(minimum=0, maximum=share_cap) if sflag == "within-cap"
                     else N(exclusiveMinimum=share_cap, maximum=1),
-                    "core_share_flag": C(sflag),
-                    "core_maturity_years": N(minimum=0, maximum=mat_cap) if mflag == "within-cap" else N(exclusiveMinimum=mat_cap),
-                    "maturity_flag": C(mflag),
+                    "requested_core_maturity_years": N(minimum=0, maximum=mat_cap) if mflag == "within-cap"
+                    else N(exclusiveMinimum=mat_cap),
+                    "core_share_used": N(minimum=0, maximum=share_cap) if sflag == "within-cap" else C(share_cap),
+                    "core_maturity_used_years": N(minimum=0, maximum=mat_cap) if mflag == "within-cap" else C(mat_cap),
+                    "cap_applied": C(applied),
                 })
     d[p + "NmdSegment"] = one_of(Ob({
         "category": E(*[c[0] for c in cats]),
         "balance": MONEY,
-        "core_share": UNIT, "core_share_cap": UNIT, "core_share_flag": E("within-cap", "above-cap"),
-        "core_maturity_years": N(minimum=0), "core_maturity_cap_years": N(minimum=0),
-        "maturity_flag": E("within-cap", "above-cap"),
+        "requested_core_share": UNIT, "core_share_cap": UNIT, "core_share_used": UNIT,
+        "requested_core_maturity_years": N(minimum=0), "core_maturity_cap_years": N(minimum=0),
+        "core_maturity_used_years": N(minimum=0),
+        "cap_applied": B,
         "source_kind": SOURCE_KIND, "source": S(minLength=1),
-    }, "A non-maturity deposit segment with its core share and core maturity beside the SRP31 Table 4 caps. A value above its "
-       "cap passes only with the flag above-cap (an internal assumption beyond the standardised cap, the SVB lesson of "
-       "dossier 05 D.7); a flag on an in-cap value fails."), *alts)
+    }, "A non-maturity deposit segment: the requested core share and maturity, the SRP31 Table 4 cap, the value used and "
+       "cap_applied (D2 of the U10 sizing). A request above its cap validates only with cap_applied true and the used value "
+       "at the cap; a request within the caps has cap_applied false and the used value equal to the request (a producer check). "
+       "The standardised EVE uses the used values."), *alts)
     sizes = []
-    for table in ("srp31-table-2024", "srp31-table-2016"):
-        sizes.append({"origin": C(table), "currency": E(*CCY21), "label": {"type": "null"}, "method": {"type": "null"}})
-    sizes.append({"origin": C("cmf-annex1"), "currency": E("CLP", "CLF"), "label": {"type": "null"}, "method": {"type": "null"}})
-    sizes.append({"origin": C("contraste-estimate"), "label": R(p + "Label"), "method": S(minLength=1)})
+    for origin, table in (("srp31-table-2024", T2024), ("srp31-table-2016", T2016)):
+        for i, ccy in enumerate(CCY21):
+            sizes.append({"origin": C(origin), "currency": C(ccy), "parallel_bp": C(table["parallel"][i]),
+                          "short_bp": C(table["short"][i]), "long_bp": C(table["long"][i]),
+                          "label": {"type": "null"}, "method": {"type": "null"}})
+    for ccy, (par, sh, lg) in (("CLP", (300, 400, 200)), ("CLF", (200, 250, 150))):
+        sizes.append({"origin": C("cmf-annex1"), "currency": C(ccy), "parallel_bp": C(par), "short_bp": C(sh), "long_bp": C(lg),
+                      "label": {"type": "null"}, "method": {"type": "null"}})
+    sizes.append({"origin": C("contraste-estimate"), "currency": {"not": {"enum": CCY21}},
+                  "label": R(p + "Label"), "method": S(minLength=1)})
     d[p + "ShockSize"] = one_of(Ob({
         "currency": CUR, "parallel_bp": N(minimum=0), "short_bp": N(minimum=0), "long_bp": N(minimum=0),
         "origin": E("srp31-table-2024", "srp31-table-2016", "cmf-annex1", "contraste-estimate"),
         "label": nullable(R(p + "Label")), "method": nullable(S(minLength=1)),
-    }, "The shock sizes applied to a currency, in basis points. A currency without an entry in the BCBS table (CLP is not in "
-       "either) passes only labelled as a Contraste estimate with its method, never as a regulatory parameter (dossier 01 H.3)."),
-        *sizes)
+    }, "The shock sizes applied to a currency, in basis points. A tabled size is exactly the table's (SRP31.90 Table 2, d368 "
+       "Annex 2 Table 1, RAN 21-13 Annex 1 Hoja 9); a currency without an entry in the BCBS table (CLP is in neither) passes "
+       "only labelled as a Contraste estimate with its method, never as a regulatory parameter (dossier 01 H.3), and a tabled "
+       "currency cannot be relabelled as an estimate."), *sizes)
     d[p + "Outlier"] = Ob({
-        "threshold_share_tier1": C(0.15), "tier1": MONEY, "eve_risk_measure": MONEY, "ratio": N(minimum=0), "breached": B,
+        "threshold_share_tier1": C(0.15), "tier1": N("Money in the `currency` of the enclosing block.", exclusiveMinimum=0), "eve_risk_measure": N("Money in the `currency` of the enclosing block.", minimum=0), "ratio": N(minimum=0), "breached": B,
         "reference": S(minLength=1),
     }, "The outlier test: the EVE risk measure against 15 percent of Tier 1 capital (SRP31.82 to SRP31.83).")
     d[p + "Tranche"] = Ob({"maturity_years": N(exclusiveMinimum=0), "weight": UNIT},
@@ -270,8 +316,8 @@ def common(p: str, cats: list, ndigits_note: str) -> dict:
     one_of(d[p + "NmdModel"],
            {"margin_volatility": {"type": "number"}, "margin_volatility_reason": {"type": "null"}},
            {"margin_volatility": {"type": "null"}, "margin_volatility_reason": R(p + "Label")})
-    d[p + "BucketDef"] = Ob({"bucket": BUCKET, "label": TXT, "midpoint_years": MID},
-                            "One of the 19 time buckets of SRP31.96 Table 3.")
+    d[p + "BucketDef"] = with_pairs(Ob({"bucket": BUCKET, "label": TXT, "midpoint_years": MID},
+                                       "One of the 19 time buckets of SRP31.96 Table 3."))
     d[p + "NmdCap"] = Ob({
         "category": E(*[c[0] for c in cats]), "core_share_cap": UNIT, "core_maturity_cap_years": N(minimum=0),
         "reference": S(minLength=1),
@@ -279,8 +325,28 @@ def common(p: str, cats: list, ndigits_note: str) -> dict:
     d[p + "Gamma"] = Ob({"shock": SHOCK, "gamma": N(minimum=0)}, "SRP31.119 Table 5 prepayment multiplier of a shock.")
     d[p + "UMult"] = Ob({"shock": SHOCK, "u": N(minimum=0)}, "SRP31.125 Table 6 term-deposit early redemption multiplier of a shock.")
     d[p + "Multipliers"] = Ob({
-        "prepayment_gamma": A(R(p + "Gamma"), 6, 6), "term_deposit_u": A(R(p + "UMult"), 6, 6), "reference": S(minLength=1),
+        "prepayment_gamma": ordered([pin(p + "Gamma", shock=sh, gamma=g) for sh, g in zip(SHOCKS, GAMMA)]),
+        "term_deposit_u": ordered([pin(p + "UMult", shock=sh, u=u) for sh, u in zip(SHOCKS, UMULT)]), "reference": S(minLength=1),
     }, "The scenario multipliers of the prepayment rate and the term-deposit redemption rate, in the order of the six shocks.")
+    d[p + "NmdCaps"] = ordered([pin(p + "NmdCap", category=c, core_share_cap=a, core_maturity_cap_years=b) for c, a, b in cats],
+                               "The three SRP31 Table 4 caps, exactly the table's.")
+    d[p + "DynItem"] = Ob({
+        "item_id": S(minLength=1), "side": E("asset", "liability"), "balance": N(minimum=0), "rate0": N(), "spread": N(),
+        "beta": N(minimum=0), "reprice_months": Int(0),
+    }, "One item of the dynamic NII projection (the inputs of simulate_nii): a reset rate is spread + beta x r_t; reprice_months 0 "
+       "reprices every month, k >= 1 keeps rate0 until month k and resets every k months.")
+    d[p + "DynScenario"] = Ob({
+        "scenario": E("base", "parallel-up", "parallel-down"), "shock_bp": N(),
+        "short_rate_path": A(N(), 12, 36, "Annual short rate of each projected month, after the floor."),
+        "monthly_nii": A(N(), 12, 36, "NII of each projected month, money."), "total": MONEY, "delta_vs_base": MONEY,
+    }, "The projected NII under the base path or one parallel shock; delta_vs_base = base total minus this total (loss-positive).")
+    d[p + "DynScenarios"] = ordered([pin(p + "DynScenario", scenario=sc) for sc in ("base", "parallel-up", "parallel-down")],
+                                    "base, parallel-up, parallel-down, in that order.")
+    d[p + "BsAssumption"] = one_of(Ob({
+        "kind": E("constant", "growth"), "growth_annual": N(), "description": R(p + "Label"),
+    }, "The balance-sheet assumption of the projection: a constant balance sheet (maturing or repricing flows replaced by "
+       "identical new ones, DIS70.5) or an annual growth."),
+        {"kind": C("constant"), "growth_annual": C(0)}, {"kind": C("growth")})
     return d
 
 
@@ -334,7 +400,7 @@ def c14_defs() -> dict:
     }, "Duration gap DGAP = D_A - (L / A) D_L and the first-order change in equity for +100 bp, -DGAP x A x 0.01 (dossier 05 D.2).")
     d["c14Ladder"] = Ob({
         "nmd_assumption": E("behavioural", "contractual"),
-        "repricing_gap": A(R("c14GapRow"), 19, 19), "delta_nii_gap_100bp_up": MONEY, "duration_gap": R("c14DurationGap"),
+        "repricing_gap": ordered([pin("c14GapRow", bucket=k + 1, midpoint_years=m) for k, m in enumerate(MIDPOINTS)]), "delta_nii_gap_100bp_up": MONEY, "duration_gap": R("c14DurationGap"),
     }, "Rungs 1 and 2 of the IRRBB ladder under one NMD assumption. delta_nii_gap_100bp_up is loss-positive: "
        "-sum over t_k < 1 of G_k x 0.01 x (1 - t_k).")
     d["c14ShockResult"] = one_of(Ob({
@@ -350,12 +416,45 @@ def c14_defs() -> dict:
         {"shock": E("parallel-up", "parallel-down"), "delta_nii": {"type": "number"}, "delta_nii_reason": {"type": "null"}},
         {"shock": E("steepener", "flattener", "short-up", "short-down"), "delta_nii": {"type": "null"},
          "delta_nii_reason": R("c14Label")})
+    d["c14DynamicNii"] = Ob({
+        "horizon_months": Int(12, 36), "balance_sheet_assumption": R("c14BsAssumption"), "items": A(R("c14DynItem"), 1),
+        "scenarios": R("c14DynScenarios"),
+    }, "Ladder rung 5 (dossier 05 D.6): the monthly NII over 12 to 36 months under the base path and the two parallel shocks of the "
+       "2024 calibration, run-off replaced under the stated balance-sheet assumption, deposit betas in the items. Every path and "
+       "monthly NII has horizon_months values.")
+    d["c14EarEvarLevel"] = Ob({
+        "level": N(exclusiveMinimum=0, exclusiveMaximum=1), "nii_quantile": MONEY, "eve_quantile": MONEY, "ear": MONEY, "evar": MONEY,
+    }, "EaR and EVaR at one confidence level: ear = base NII minus the (1 - level) quantile of the NII paths, evar likewise for EVE "
+       "(loss-positive; engine ear_evar).")
+    d["c14EarEvar"] = Ob({
+        "method": E("hw1f", "dns"), "n_paths": Int(2), "seed": Int(0), "horizon_months": Int(12, 36),
+        "parameters": A(NAME_MAP, 1), "base_nii": MONEY, "base_eve": MONEY,
+        "levels": ordered([pin("c14EarEvarLevel", level=0.95), pin("c14EarEvarLevel", level=0.99)], "The 95 and 99 percent levels."),
+        "monte_carlo_error": Ob({"ear": N(minimum=0), "evar": N(minimum=0)}),
+    }, "Ladder rung 6 (dossier 05 D.5 and D.6): the distribution summary of NII and EVE under Hull-White one-factor or dynamic "
+       "Nelson-Siegel scenario Monte Carlo, with the number of paths, the seed and the Monte Carlo standard error of EaR and EVaR.")
+    d["c14OutOfSample"] = one_of(Ob({
+        "applicable": B, "projection_date": DATE, "realised_period_start": nullable(DATE), "realised_period_end": nullable(DATE),
+        "projected_delta_nii": nullable(MONEY), "realised_delta_nii": nullable(MONEY), "relative_error": nullable(N(minimum=0)),
+        "reason": nullable(R("c14Label")),
+    }, "The out-of-sample row: the NII projection of this valuation date against the NII realised in the following period (the 2022 "
+       "hiking cycle for 2021-Q4), read from call reports dated after the valuation date and used only here, never as an input. "
+       "Not applicable (null with its reason) when no later period is read."),
+        {"applicable": C(True), "realised_period_start": {"type": "string"}, "realised_period_end": {"type": "string"},
+         "projected_delta_nii": {"type": "number"}, "realised_delta_nii": {"type": "number"}, "relative_error": {"type": "number"},
+         "reason": {"type": "null"}},
+        {"applicable": C(False), "realised_period_start": {"type": "null"}, "realised_period_end": {"type": "null"},
+         "projected_delta_nii": {"type": "null"}, "realised_delta_nii": {"type": "null"}, "relative_error": {"type": "null"},
+         "reason": R("c14Label")})
     d["c14Scenario"] = Ob({
         "calibration": E("2024", "2016"), "nmd_assumption": E("behavioural", "contractual"),
+        "nmd_treatment": E("standardised-capped", "contractual-overnight"),
         "shock_size": R("c14ShockSize"), "floor": nullable(N(maximum=0), "Post-shock floor, not above zero (SRP31.93); null: none."),
-        "base_eve": MONEY, "shocks": A(R("c14ShockResult"), 6, 6),
-        "eve_risk_measure": MONEY, "worst_shock": nullable(SHOCK), "outlier": R("c14Outlier"),
-    }, "One calibration of the shock sizes under one NMD assumption: the six shocks in the order parallel-up, parallel-down, "
+        "base_eve": MONEY,
+        "shocks": ordered([pin("c14ShockResult", shock=sh) for sh in SHOCKS], "The six shocks in the order of SHOCKS."),
+        "eve_risk_measure": N("Money in the `currency` of the enclosing block.", minimum=0), "worst_shock": nullable(SHOCK), "outlier": R("c14Outlier"),
+    }, "nmd_treatment says what the behavioural flows use: the capped used values of nmd_segments (standardised-capped) or every NMD in "
+       "the overnight bucket (contractual-overnight). One calibration of the shock sizes under one NMD assumption: the six shocks in the order parallel-up, parallel-down, "
        "steepener, flattener, short-up, short-down, the EVE risk measure (the maximum over the six of the positive losses, "
        "SRP31.129) and its outlier test.")
     d["c14Comparison"] = Ob({
@@ -364,12 +463,20 @@ def c14_defs() -> dict:
     }, "Delta EVE with and without the behavioural NMD assumptions, always reported (dossier 05 D.7); difference = behavioural "
        "minus contractual.")
     d["c14Outputs"] = Ob({
-        "kind": C("valuation-date"), "valuation_date": DATE, "quarter": S(pattern=r"^\d{4}-Q[1-4]$"), "currency": CUR,
+        "kind": C("valuation-date"), "valuation_date": DATE, "quarter": S(pattern=r"^\d{4}-Q[1-4]$"), "currency": {**CUR, "const": "USD"},
         "sign_convention": R("c14Sign"), "units": R("c14Units"), "bank": R("c14Bank"), "data": R("c14Data"),
         "curve": R("c14Curve"), "assumptions": R("c14Assumptions"), "nmd_segments": A(R("c14NmdSegment"), 1),
-        "balance_sheet": R("c14BalanceSheet"), "ladder": A(R("c14Ladder"), 2, 2),
-        "scenarios": A(R("c14Scenario"), 4, 4, "2024 and 2016 calibrations, each with and without behavioural NMD."),
-        "behavioural_comparison": A(R("c14Comparison"), 12, 12),
+        "balance_sheet": R("c14BalanceSheet"),
+        "ladder": ordered([pin("c14Ladder", nmd_assumption="behavioural"), pin("c14Ladder", nmd_assumption="contractual")]),
+        "scenarios": ordered([
+            {"$ref": "#/$defs/c14Scenario", "properties": {
+                "calibration": C(cal), "nmd_assumption": C(nmd), "nmd_treatment": C(treat),
+                "shock_size": {"properties": {"origin": C(org), "currency": C("USD")}, "required": ["origin", "currency"]}}}
+            for cal, org in (("2024", "srp31-table-2024"), ("2016", "srp31-table-2016"))
+            for nmd, treat in (("behavioural", "standardised-capped"), ("contractual", "contractual-overnight"))],
+            "2024 and 2016 calibrations, each with and without behavioural NMD, in this order."),
+        "dynamic_nii": R("c14DynamicNii"), "ear_evar": R("c14EarEvar"), "out_of_sample": R("c14OutOfSample"),
+        "behavioural_comparison": ordered([pin("c14Comparison", calibration=cal, shock=sh) for cal in ("2024", "2016") for sh in SHOCKS]),
     }, "C14 valuation-date outputs (outputs.kind valuation-date): IRRBB on a USD balance sheet at one valuation date, the six "
        "shocks of SRP31.90 in two calibrations and with and without behavioural NMD. The variant is the valuation date (the "
        "call reports are dated); the calibration and the NMD assumption are rows inside it so a view toggles them on one "
@@ -391,10 +498,16 @@ def c14_defs() -> dict:
     }, "A change of a behavioural parameter between two valuation dates; flagged when it changed in a window that holds a limit "
        "breach (dossier 05 D.7: the SVB lesson).")
     d["c14Fit"] = Ob({
-        "currency": CUR, "sign_convention": R("c14Sign"), "units": R("c14Units"), "bank": R("c14Bank"),
-        "buckets": A(R("c14BucketDef"), 19, 19), "shock_tables": A(R("c14ShockTable"), 2, 2),
-        "applied_sizes": A(R("c14ShockSize"), 2, 2), "shock_shape": R("c14ShockShape"),
-        "nmd_caps": A(R("c14NmdCap"), 3, 3), "multipliers": R("c14Multipliers"),
+        "currency": {**CUR, "const": "USD"}, "sign_convention": R("c14Sign"), "units": R("c14Units"), "bank": R("c14Bank"),
+        "buckets": ordered([pin("c14BucketDef", bucket=k + 1, midpoint_years=m) for k, m in enumerate(MIDPOINTS)]),
+        "shock_tables": ordered([
+            {"$ref": "#/$defs/c14ShockTable", "properties": {"calibration": C(cal), "rounding_bp": C(rb), "rows": C([
+                {"currency": c, "parallel_bp": t["parallel"][i], "short_bp": t["short"][i], "long_bp": t["long"][i]}
+                for i, c in enumerate(CCY21)])}}
+            for cal, rb, t in (("2024", 25, T2024), ("2016", 50, T2016))]),
+        "applied_sizes": ordered([pin("c14ShockSize", origin="srp31-table-2024", currency="USD"),
+                                  pin("c14ShockSize", origin="srp31-table-2016", currency="USD")]), "shock_shape": R("c14ShockShape"),
+        "nmd_caps": R("c14NmdCaps"), "multipliers": R("c14Multipliers"),
         "nmd_models": A(R("c14NmdModel"), 1), "nmd_parameter_changes": A(R("c14ParamChange"), 1),
         "outlier": R("c14OutlierRule"),
     }, "C14 models: the 19 buckets, the 2024 and 2016 shock tables as data, the shock shapes, the NMD caps and multipliers, "
@@ -445,7 +558,7 @@ def c15_defs() -> dict:
     }, "One leg of the banking book in the currency of the leg (CLF for the UR leg): net_position = assets minus liabilities. "
        "The CLP leg is in CLP and the UR leg is in CLF."),
         {"leg": C("CLP"), "currency": C("CLP")}, {"leg": C("UR"), "currency": C("CLF")})
-    d["c15NiiSize"] = Ob({"currency": E("CLP", "CLF"), "parallel_bp": N(minimum=0), "origin": C("cmf-annex1")},
+    d["c15NiiSize"] = Ob({"currency": E("CLP", "CLF"), "parallel_bp": C(300), "origin": C("cmf-annex1")},
                          "The delta NII shock of Annex 1 Hoja 9: one parallel size, 300 bp for CLP and CLF.")
     d["c15LegEve"] = Ob({
         "shape_bp": A(N(), 19, 19, "Shock in basis points at each bucket midpoint before the floor."),
@@ -460,7 +573,7 @@ def c15_defs() -> dict:
         "shock": SHOCK, "clp": R("c15LegEve"), "ur": R("c15LegEve"), "pair": R("c15Pair"), "total_delta_eve": MONEY,
     })
     d["c15EveMeasure"] = Ob({
-        "base_eve_clp": MONEY, "base_eve_ur": MONEY, "rows": A(R("c15EveRow"), 6, 6),
+        "base_eve_clp": MONEY, "base_eve_ur": MONEY, "rows": ordered([pin("c15EveRow", shock=sh) for sh in SHOCKS]),
         "delta_eve": MONEY, "worst_shock": nullable(SHOCK), "delta_eve_share_tier1": N(),
     }, "Annex 1 delta EVE: the maximum over the six shocks of the pair total (there is no other currency in this book).")
     d["c15NiiLeg"] = Ob({
@@ -471,7 +584,7 @@ def c15_defs() -> dict:
         "shock": E("parallel-up", "parallel-down"), "clp": R("c15NiiLeg"), "ur": R("c15NiiLeg"), "pair": R("c15Pair"),
     })
     d["c15NiiMeasure"] = Ob({
-        "rows": A(R("c15NiiRow"), 2, 2), "max_pair": MONEY, "indexation_charge": MONEY, "delta_nii": MONEY,
+        "rows": ordered([pin("c15NiiRow", shock="parallel-up"), pin("c15NiiRow", shock="parallel-down")]), "max_pair": MONEY, "indexation_charge": MONEY, "delta_nii": MONEY,
         "worst_shock": nullable(E("parallel-up", "parallel-down")), "delta_nii_share_tier1": N(),
     }, "Annex 1 delta NII = the maximum over the two parallel shocks of the pair, plus the indexation charge.")
     d["c15FloorEffect"] = Ob({
@@ -500,15 +613,24 @@ def c15_defs() -> dict:
     }, "One prioritised-bank test of Annex 1: delta NII over Tier 1 (5 percent), delta EVE over Tier 1 (15 percent), delta NII over "
        "the 12-month net interest and indexation margin (18 percent).")
     d["c15Thresholds"] = Ob({
-        "tier1": MONEY, "net_interest_and_indexation_margin_12m": MONEY, "tests": A(R("c15ThresholdTest"), 3, 3),
+        "tier1": MONEY, "net_interest_and_indexation_margin_12m": MONEY, "tests": ordered([pin("c15ThresholdTest", id=i, threshold=t) for i, t in (("nii-tier1", 0.05), ("eve-tier1", 0.15), ("nii-margin", 0.18))]),
         "prioritised": B, "reference": S(minLength=1),
     }, "The banco priorizado tests; prioritised is true when any test is breached.")
+    d["c15DynamicLeg"] = Ob({"leg": E("CLP", "UR"), "items": A(R("c15DynItem"), 1), "scenarios": R("c15DynScenarios")},
+                            "The dynamic NII of one leg; balances and NII are in the reporting currency (the UR leg converted at the UF value).")
+    d["c15DynamicNii"] = Ob({
+        "horizon_months": Int(12, 36), "balance_sheet_assumption": R("c15BsAssumption"),
+        "legs": ordered([pin("c15DynamicLeg", leg="CLP"), pin("c15DynamicLeg", leg="UR")]),
+    }, "Ladder rung 5 for the CLP and UR legs (dossier 05 D.6). The EaR and EVaR of C15 wait for the BCCh curves (owner prerequisite 7).")
     d["c15Outputs"] = Ob({
         "kind": C("annex1-variant"), "variant": R("c15Variant"), "as_of": DATE, "balance_sheet_month": MONTH,
-        "curves_month": MONTH, "reporting_currency": CUR,
+        "curves_month": MONTH, "reporting_currency": {**CUR, "const": "CLP"},
         "sign_convention": R("c15Sign"), "units": R("c15Units"), "bank": R("c15Bank"), "ur_currency": R("c15Ur"),
         "curves": R("c15Curves"), "assumptions": R("c15Assumptions"), "nmd_segments": A(R("c15NmdSegment"), 1),
-        "legs": {**A(R("c15Leg"), 2, 2, "The CLP leg and the UR leg, in that order."), "allOf": [{"contains": {"properties": {"leg": C("CLP")}, "required": ["leg"]}}, {"contains": {"properties": {"leg": C("UR")}, "required": ["leg"]}}]}, "eve_shock_sizes": A(R("c15ShockSize"), 2, 2), "nii_shock_sizes": A(R("c15NiiSize"), 2, 2),
+        "legs": ordered([pin("c15Leg", leg="CLP"), pin("c15Leg", leg="UR")], "The CLP leg and the UR leg, in that order."),
+        "eve_shock_sizes": ordered([pin("c15ShockSize", currency="CLP", origin="cmf-annex1"), pin("c15ShockSize", currency="CLF", origin="cmf-annex1")]),
+        "nii_shock_sizes": ordered([pin("c15NiiSize", currency="CLP"), pin("c15NiiSize", currency="CLF")]),
+        "dynamic_nii": R("c15DynamicNii"),
         "floors": R("c15Floors"), "offset_rule": R("c15Offset"), "indexation_charge": R("c15Indexation"),
         "cpi_scenario": R("c15CpiScenario"), "eve": R("c15EveMeasure"), "nii": R("c15NiiMeasure"), "thresholds": R("c15Thresholds"),
     }, "C15 annex1-variant outputs (outputs.kind annex1-variant): IRRBB on a CLP and UF balance sheet under RAN 21-13 Annex 1 for "
@@ -533,11 +655,13 @@ def c15_defs() -> dict:
         "source_kind": SOURCE_KIND, "source": S(minLength=1),
     }, "The base prepayment behaviour (CPR, or a PSA multiple of the 100 percent PSA curve).")
     d["c15Fit"] = Ob({
-        "reporting_currency": CUR, "sign_convention": R("c15Sign"), "units": R("c15Units"), "bank": R("c15Bank"),
-        "buckets": A(R("c15BucketDef"), 19, 19), "annex1_table": A(R("c15TableRow"), 5, 5),
-        "eve_shock_sizes": A(R("c15ShockSize"), 2, 2), "floors": R("c15FloorRule"),
-        "prioritised_thresholds": A(R("c15ThresholdRule"), 3, 3), "offset_share": C(0.5), "indexation_rate": C(0.025),
-        "multipliers": R("c15Multipliers"), "nmd_caps": A(R("c15NmdCap"), 3, 3),
+        "reporting_currency": {**CUR, "const": "CLP"}, "sign_convention": R("c15Sign"), "units": R("c15Units"), "bank": R("c15Bank"),
+        "buckets": ordered([pin("c15BucketDef", bucket=k + 1, midpoint_years=m) for k, m in enumerate(MIDPOINTS)]),
+        "annex1_table": ordered([{"$ref": "#/$defs/c15TableRow", "properties": {"basket": C(b), "parallel_bp": C(pa), "short_bp": C(sh), "long_bp": C(lg)}}
+                                 for b, pa, sh, lg in CMF_TABLE]),
+        "eve_shock_sizes": ordered([pin("c15ShockSize", currency="CLP", origin="cmf-annex1"), pin("c15ShockSize", currency="CLF", origin="cmf-annex1")]), "floors": R("c15FloorRule"),
+        "prioritised_thresholds": ordered([pin("c15ThresholdRule", id=i, threshold=t) for i, t in (("nii-tier1", 0.05), ("eve-tier1", 0.15), ("nii-margin", 0.18))]), "offset_share": C(0.5), "indexation_rate": C(0.025),
+        "multipliers": R("c15Multipliers"), "nmd_caps": R("c15NmdCaps"),
         "curve_models": A(R("c15CurveModel"), 2, 2), "calibration_targets": A(R("c15Target"), 1),
         "nmd_models": A(R("c15NmdModel"), 1), "prepayment": R("c15Prepayment"),
     }, "C15 models: the 19 buckets, the CMF Annex 1 table, floors and thresholds as data, the offset share and the indexation "

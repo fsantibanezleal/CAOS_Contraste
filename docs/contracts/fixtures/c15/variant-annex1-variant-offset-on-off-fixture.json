@@ -237,13 +237,13 @@
         "value": 0.8,
         "unit": "share",
         "source_kind": "synthetic-stated",
-        "source": "balance-weighted average of nmd_segments"
+        "source": "balance-weighted average of the used values of nmd_segments"
       },
       "nmd_core_maturity_years": {
         "value": 4.5,
         "unit": "years",
         "source_kind": "synthetic-stated",
-        "source": "balance-weighted average of nmd_segments"
+        "source": "balance-weighted average of the used values of nmd_segments"
       },
       "prepayment_cpr": {
         "value": 0.06,
@@ -268,12 +268,13 @@
       {
         "category": "retail-operational",
         "balance": 1000000.0,
-        "core_share": 0.8,
+        "requested_core_share": 0.8,
         "core_share_cap": 0.9,
-        "core_share_flag": "within-cap",
-        "core_maturity_years": 4.5,
+        "core_share_used": 0.8,
+        "requested_core_maturity_years": 4.5,
         "core_maturity_cap_years": 5.0,
-        "maturity_flag": "within-cap",
+        "core_maturity_used_years": 4.5,
+        "cap_applied": false,
         "source_kind": "synthetic-stated",
         "source": "fixture value, synthetic behaviour stated"
       }
@@ -536,12 +537,315 @@
         "origin": "cmf-annex1"
       }
     ],
+    "dynamic_nii": {
+      "horizon_months": 12,
+      "balance_sheet_assumption": {
+        "kind": "constant",
+        "growth_annual": 0,
+        "description": {
+          "en": "Constant balance sheet: maturing and repricing flows are replaced by identical new ones.",
+          "es": "Balance constante: los flujos que vencen o reprecian se reemplazan por otros identicos."
+        }
+      },
+      "legs": [
+        {
+          "leg": "CLP",
+          "items": [
+            {
+              "item_id": "CLP-D1",
+              "side": "asset",
+              "balance": 840000.0,
+              "rate0": 0.048215363,
+              "spread": 0.02,
+              "beta": 1.0,
+              "reprice_months": 0
+            },
+            {
+              "item_id": "CLP-D2",
+              "side": "asset",
+              "balance": 1260000.0,
+              "rate0": 0.04,
+              "spread": 0.04,
+              "beta": 1.0,
+              "reprice_months": 60
+            },
+            {
+              "item_id": "CLP-D3",
+              "side": "liability",
+              "balance": 1800000.0,
+              "rate0": 0.011286145,
+              "spread": 0.0,
+              "beta": 0.4,
+              "reprice_months": 0
+            },
+            {
+              "item_id": "CLP-D4",
+              "side": "liability",
+              "balance": 1800000.0,
+              "rate0": 0.028215363,
+              "spread": 0.0,
+              "beta": 1.0,
+              "reprice_months": 12
+            }
+          ],
+          "scenarios": [
+            {
+              "scenario": "base",
+              "shock_bp": 0.0,
+              "short_rate_path": [
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363
+              ],
+              "monthly_nii": [
+                1649.84918,
+                1649.84918,
+                1649.84918,
+                1649.84918,
+                1649.84918,
+                1649.84918,
+                1649.84918,
+                1649.84918,
+                1649.84918,
+                1649.84918,
+                1649.84918,
+                1649.84918
+              ],
+              "total": 19798.19016,
+              "delta_vs_base": 0.0
+            },
+            {
+              "scenario": "parallel-up",
+              "shock_bp": 300,
+              "short_rate_path": [
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363
+              ],
+              "monthly_nii": [
+                1949.84918,
+                1949.84918,
+                1949.84918,
+                1949.84918,
+                1949.84918,
+                1949.84918,
+                1949.84918,
+                1949.84918,
+                1949.84918,
+                1949.84918,
+                1949.84918,
+                1949.84918
+              ],
+              "total": 23398.19016,
+              "delta_vs_base": -3600.0
+            },
+            {
+              "scenario": "parallel-down",
+              "shock_bp": -300,
+              "short_rate_path": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "monthly_nii": [
+                1367.69555,
+                1367.69555,
+                1367.69555,
+                1367.69555,
+                1367.69555,
+                1367.69555,
+                1367.69555,
+                1367.69555,
+                1367.69555,
+                1367.69555,
+                1367.69555,
+                1367.69555
+              ],
+              "total": 16412.3466,
+              "delta_vs_base": 3385.84356
+            }
+          ]
+        },
+        {
+          "leg": "UR",
+          "items": [
+            {
+              "item_id": "UR-D1",
+              "side": "asset",
+              "balance": 546000.0,
+              "rate0": 0.024227477,
+              "spread": 0.02,
+              "beta": 1.0,
+              "reprice_months": 0
+            },
+            {
+              "item_id": "UR-D2",
+              "side": "asset",
+              "balance": 819000.0,
+              "rate0": 0.04,
+              "spread": 0.04,
+              "beta": 1.0,
+              "reprice_months": 60
+            },
+            {
+              "item_id": "UR-D3",
+              "side": "liability",
+              "balance": 117000.0,
+              "rate0": 0.000845495,
+              "spread": 0.0,
+              "beta": 0.2,
+              "reprice_months": 0
+            },
+            {
+              "item_id": "UR-D4",
+              "side": "liability",
+              "balance": 117000.0,
+              "rate0": 0.004227477,
+              "spread": 0.0,
+              "beta": 1.0,
+              "reprice_months": 12
+            }
+          ],
+          "scenarios": [
+            {
+              "scenario": "base",
+              "shock_bp": 0.0,
+              "short_rate_path": [
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477
+              ],
+              "monthly_nii": [
+                3782.888723,
+                3782.888723,
+                3782.888723,
+                3782.888723,
+                3782.888723,
+                3782.888723,
+                3782.888723,
+                3782.888723,
+                3782.888723,
+                3782.888723,
+                3782.888723,
+                3782.888723
+              ],
+              "total": 45394.664671,
+              "delta_vs_base": 0.0
+            },
+            {
+              "scenario": "parallel-up",
+              "shock_bp": 300,
+              "short_rate_path": [
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477
+              ],
+              "monthly_nii": [
+                5089.388723,
+                5089.388723,
+                5089.388723,
+                5089.388723,
+                5089.388723,
+                5089.388723,
+                5089.388723,
+                5089.388723,
+                5089.388723,
+                5089.388723,
+                5089.388723,
+                5089.388723
+              ],
+              "total": 61072.664671,
+              "delta_vs_base": -15678.0
+            },
+            {
+              "scenario": "parallel-down",
+              "shock_bp": -300,
+              "short_rate_path": [
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02
+              ],
+              "monthly_nii": [
+                2727.782099,
+                2727.782099,
+                2727.782099,
+                2727.782099,
+                2727.782099,
+                2727.782099,
+                2727.782099,
+                2727.782099,
+                2727.782099,
+                2727.782099,
+                2727.782099,
+                2727.782099
+              ],
+              "total": 32733.385191,
+              "delta_vs_base": 12661.27948
+            }
+          ]
+        }
+      ]
+    },
     "floors": {
       "ur_floor": -0.02,
       "other_floor": 0.0,
       "rule": {
-        "en": "Post-shock rates are floored at -2 percent for UR and at 0 percent for CLP, or at the pre-shock rate if lower.",
-        "es": "Las tasas post choque tienen piso de -2 por ciento para UR y 0 por ciento para CLP, o la tasa previa si es menor."
+        "en": "Post-shock rates are floored at -2 percent for UR and at 0 percent for CLP. The fixture also keeps a rate that is already below its floor at its pre-shock value, for both floors; whether Annex 1 applies that clause to the UR floor is UNVERIFIED.",
+        "es": "Las tasas post choque tienen piso de -2 por ciento para UR y 0 por ciento para CLP. El ejemplo tambien mantiene en su valor previo una tasa que ya esta bajo su piso, en ambos pisos; que el Anexo 1 aplique esa clausula al piso UR no esta verificado."
       },
       "effects": [
         {

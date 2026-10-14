@@ -11,23 +11,11 @@ import json
 import math
 from pathlib import Path
 
-from build_schemas import CCY21, MIDPOINTS, SHOCKS
+from build_schemas import CCY21, GAMMA, MIDPOINTS, SHOCKS, T2016, T2024, UMULT
 
 ROOT = Path(__file__).resolve().parents[2]
 FIX = ROOT / "docs" / "contracts" / "fixtures"
 
-T2024 = {  # dossier 01 H.3, SRP31.90 Table 2
-    "parallel": [400, 350, 400, 200, 175, 225, 225, 275, 225, 400, 325, 100, 225, 400, 400, 275, 275, 175, 400, 200, 325],
-    "short": [500, 425, 500, 275, 250, 300, 350, 425, 375, 500, 475, 100, 350, 500, 500, 375, 425, 250, 500, 300, 500],
-    "long": [300, 300, 300, 175, 200, 150, 200, 250, 200, 300, 225, 100, 225, 200, 300, 250, 200, 225, 300, 225, 300],
-}
-T2016 = {  # dossier 01 H.3, d368 Annex 2 Table 1
-    "parallel": [400, 300, 400, 200, 100, 250, 200, 250, 200, 400, 400, 100, 300, 400, 400, 200, 200, 150, 400, 200, 400],
-    "short": [500, 450, 500, 300, 150, 300, 250, 300, 250, 500, 500, 100, 400, 500, 500, 300, 300, 200, 500, 300, 500],
-    "long": [300, 200, 300, 150, 100, 150, 100, 150, 100, 350, 300, 100, 200, 300, 300, 150, 150, 100, 300, 150, 300],
-}
-GAMMA = [0.8, 1.2, 0.8, 1.2, 0.8, 1.2]
-UMULT = [1.2, 0.8, 0.8, 1.2, 1.2, 0.8]
 BUCKET_LABELS = ["Overnight", "O/N to 1M", "1M to 3M", "3M to 6M", "6M to 9M", "9M to 1Y", "1Y to 1.5Y", "1.5Y to 2Y", "2Y to 3Y",
                  "3Y to 4Y", "4Y to 5Y", "5Y to 6Y", "6Y to 7Y", "7Y to 8Y", "8Y to 9Y", "9Y to 10Y", "10Y to 15Y", "15Y to 20Y",
                  "Over 20Y"]
@@ -91,6 +79,35 @@ def two_point(amount: float, target: float) -> list[tuple[int, float]]:
             w = (hi - target) / (hi - lo)
             return [(i + 1, amount * w), (i + 2, amount * (1 - w))]
     raise ValueError(target)
+
+
+def reset_rate(it: dict, path: list[float], m: int) -> float:
+    """Rate of an item in the projected month m (0-based): the engine contract's simulate_nii."""
+    k = it["reprice_months"]
+    if k == 0:
+        return it["spread"] + it["beta"] * path[m]
+    if m < k:
+        return it["rate0"]
+    return it["spread"] + it["beta"] * path[(m // k) * k]
+
+
+def simulate_nii(items: list[dict], path: list[float], growth: float = 0.0) -> list[float]:
+    return [sum((1 if it["side"] == "asset" else -1) * it["balance"] * (1 + growth) ** (m / 12) * reset_rate(it, path, m) / 12
+                for it in items) for m in range(len(path))]
+
+
+def dyn_block(items: list[dict], r_short: float, par_bp: float, floor: float, horizon: int) -> list[dict]:
+    """The three scenarios of a dynamic NII block: base (flat short rate), parallel-up and parallel-down."""
+    out, base_total = [], None
+    for name, bp in (("base", 0.0), ("parallel-up", par_bp), ("parallel-down", -par_bp)):
+        x = post(r_short, bp, floor)
+        path = [r(x, 9)] * horizon
+        monthly = simulate_nii(items, path)
+        total = sum(monthly)
+        base_total = total if base_total is None else base_total
+        out.append({"scenario": name, "shock_bp": bp, "short_rate_path": path, "monthly_nii": [r(v) for v in monthly],
+                    "total": r(total), "delta_vs_base": r(base_total - total)})
+    return out
 
 
 def fixture_envelope(truth: str = "synthetic-calibrated") -> dict:
@@ -208,15 +225,15 @@ def c14_outputs(quarter: str) -> tuple[dict, dict]:
     s = sp["scale"]
     r0 = [r(interp(sp["par"], t), 9) for t in MIDPOINTS]
     seg_balance = {"wholesale": 110e6 * s, "rt": 25e6 * s, "rnt": 20e6 * s}
-    segments = []
+    segments, used = [], {}
     for k in ("wholesale", "rt", "rnt"):
         share, mat, kind = sp["seg"][k]
         cs, cm = SEG_CAP[k]
+        used[k] = (min(share, cs), min(mat, cm))
         segments.append({
-            "category": SEG_CAT[k], "balance": r(seg_balance[k]), "core_share": share, "core_share_cap": cs,
-            "core_share_flag": "above-cap" if share > cs else "within-cap", "core_maturity_years": mat,
-            "core_maturity_cap_years": cm, "maturity_flag": "above-cap" if mat > cm else "within-cap",
-            "source_kind": kind,
+            "category": SEG_CAT[k], "balance": r(seg_balance[k]), "requested_core_share": share, "core_share_cap": cs,
+            "core_share_used": used[k][0], "requested_core_maturity_years": mat, "core_maturity_cap_years": cm,
+            "core_maturity_used_years": used[k][1], "cap_applied": share > cs or mat > cm, "source_kind": kind,
             "source": {"regulatory-cap": "SRP31 Table 4 cap taken as the assumption",
                        "fitted": "fixture value standing for a fitted replicating portfolio",
                        "synthetic-stated": "fixture value, synthetic behaviour stated"}[kind],
@@ -246,7 +263,7 @@ def c14_outputs(quarter: str) -> tuple[dict, dict]:
                 ("L3", "rnt", "Retail non-transactional deposits", "Depositos minoristas no transaccionales",
                  "deposits-non-transactional", False)]
     for iid, k, en, es, cat, rep in nmd_defs:
-        share, mat, _ = sp["seg"][k]
+        share, mat = used[k]
         cf_b = nmd_flows(seg_balance[k], share, mat, True)
         cf_c = nmd_flows(seg_balance[k], share, mat, False)
         add(iid, en, es, "liability", cat, SEG_CLASS[k], "non-maturity", f"deposits-{k}", seg_balance[k], cf_b, reported=rep,
@@ -260,11 +277,11 @@ def c14_outputs(quarter: str) -> tuple[dict, dict]:
         [fl(6, -4e6 * s), fl(12, -6e6 * s)])
     td_amount = 12e6 * s
     total_nmd = sum(seg_balance.values())
-    wavg_share = sum(seg_balance[k] * sp["seg"][k][0] for k in seg_balance) / total_nmd
-    wavg_mat = sum(seg_balance[k] * sp["seg"][k][1] for k in seg_balance) / total_nmd
+    wavg_share = sum(seg_balance[k] * used[k][0] for k in seg_balance) / total_nmd
+    wavg_mat = sum(seg_balance[k] * used[k][1] for k in seg_balance) / total_nmd
     assumptions = {
-        "nmd_core_share": assumption(wavg_share, "share", "fitted", "balance-weighted average of nmd_segments"),
-        "nmd_core_maturity_years": assumption(wavg_mat, "years", "fitted", "balance-weighted average of nmd_segments"),
+        "nmd_core_share": assumption(wavg_share, "share", "fitted", "balance-weighted average of the used values of nmd_segments"),
+        "nmd_core_maturity_years": assumption(wavg_mat, "years", "fitted", "balance-weighted average of the used values of nmd_segments"),
         "prepayment_cpr": assumption(sp["cpr"], "per year", "synthetic-stated",
                                      "fixture value; no item of this fixture carries the prepayable-loan class"),
         "term_deposit_redemption_rate": assumption(sp["tdrr"], "share of the term deposit", "synthetic-stated", "fixture value"),
@@ -306,7 +323,9 @@ def c14_outputs(quarter: str) -> tuple[dict, dict]:
                 shocks.append(row)
             measure = max([0.0] + [x["_raw"] for x in shocks])
             measures[(cal, n)] = measure
-            scenarios.append({"calibration": cal, "nmd_assumption": n, "shock_size": size, "floor": sp["floor"],
+            scenarios.append({"calibration": cal, "nmd_assumption": n,
+                              "nmd_treatment": "standardised-capped" if n == "behavioural" else "contractual-overnight",
+                              "shock_size": size, "floor": sp["floor"],
                               "base_eve": r(base_eve), "shocks": shocks, "eve_risk_measure": r(measure),
                               "worst_shock": max(shocks, key=lambda x: x["_raw"])["shock"] if measure > 0 else None,
                               "outlier": None})
@@ -351,6 +370,43 @@ def c14_outputs(quarter: str) -> tuple[dict, dict]:
                              "equity_change_100bp_up": r(-dgap * pv_a * 0.01)},
         })
     pts = [{"tenor_years": r(t, 6), "observed_yield": y, "zero_rate": y} for t, y in sp["par"]]
+    r1 = r0[1]
+    dyn_items = [
+        {"item_id": "D1", "side": "asset", "balance": r(35e6 * s), "rate0": r(r1 + 0.02, 9), "spread": 0.02, "beta": 1.0, "reprice_months": 0},
+        {"item_id": "D2", "side": "asset", "balance": r(115e6 * s), "rate0": 0.03, "spread": 0.03, "beta": 1.0, "reprice_months": 60},
+        {"item_id": "D3", "side": "asset", "balance": r(8e6 * s), "rate0": r(r1, 9), "spread": 0.0, "beta": 1.0, "reprice_months": 0},
+        {"item_id": "D4", "side": "liability", "balance": r(155e6 * s), "rate0": r(sp["beta"] * r1, 9), "spread": 0.0,
+         "beta": sp["beta"], "reprice_months": 0},
+        {"item_id": "D5", "side": "liability", "balance": r(12e6 * s), "rate0": r(r1, 9), "spread": 0.0, "beta": 1.0, "reprice_months": 6},
+        {"item_id": "D6", "side": "liability", "balance": r(10e6 * s), "rate0": r(r1 + 0.001, 9), "spread": 0.001, "beta": 1.0,
+         "reprice_months": 12},
+    ]
+    dyn = {"horizon_months": 12,
+           "balance_sheet_assumption": {"kind": "constant", "growth_annual": 0,
+                                        "description": txt("Constant balance sheet: maturing and repricing flows are replaced by identical new ones.",
+                                                           "Balance constante: los flujos que vencen o reprecian se reemplazan por otros identicos.")},
+           "items": dyn_items, "scenarios": dyn_block(dyn_items, r1, 200, sp["floor"], 12)}
+    base_nii = dyn["scenarios"][0]["total"]
+    base_eve24 = next(x for x in scenarios if x["calibration"] == "2024" and x["nmd_assumption"] == "behavioural")["base_eve"]
+    lv = []
+    for level, fn, fe in ((0.95, 0.07, 0.10), (0.99, 0.10, 0.15)):
+        nq, eq = r(base_nii - fn * abs(base_nii)), r(base_eve24 - fe * abs(base_eve24))
+        lv.append({"level": level, "nii_quantile": nq, "eve_quantile": eq, "ear": r(base_nii - nq), "evar": r(base_eve24 - eq)})
+    ear_evar = {"method": "hw1f", "n_paths": 10000, "seed": 0, "horizon_months": 12,
+                "parameters": [{"name": "a", "value": 0.1, "unit": "per year"}, {"name": "sigma", "value": 0.01, "unit": "per year"}],
+                "base_nii": base_nii, "base_eve": base_eve24, "levels": lv,
+                "monte_carlo_error": {"ear": r(abs(lv[0]["ear"]) * 0.01), "evar": r(abs(lv[0]["evar"]) * 0.01)}}
+    if quarter == "2021-Q4":
+        proj = dyn["scenarios"][1]["delta_vs_base"]
+        real = r(proj * 1.12)
+        oos = {"applicable": True, "projection_date": sp["date"], "realised_period_start": "2022-01-01",
+               "realised_period_end": "2022-12-31", "projected_delta_nii": proj, "realised_delta_nii": real,
+               "relative_error": r(abs(proj - real) / abs(real), 9), "reason": None}
+    else:
+        oos = {"applicable": False, "projection_date": sp["date"], "realised_period_start": None, "realised_period_end": None,
+               "projected_delta_nii": None, "realised_delta_nii": None, "relative_error": None,
+               "reason": txt("No call report dated after this valuation date is read, so no realised period exists.",
+                             "No se lee ningun reporte posterior a esta fecha de valoracion, asi que no hay periodo realizado.")}
     outputs = {
         "kind": "valuation-date", "valuation_date": sp["date"], "quarter": quarter, "currency": "USD",
         "sign_convention": sign_convention(), "units": units("thousands"),
@@ -370,7 +426,8 @@ def c14_outputs(quarter: str) -> tuple[dict, dict]:
         "balance_sheet": {"as_of": sp["date"], "items": items,
                           "total_assets": r(sum(i["amount"] for i in items if i["side"] == "asset")),
                           "total_liabilities": r(sum(i["amount"] for i in items if i["side"] == "liability"))},
-        "ladder": ladder, "scenarios": scenarios, "behavioural_comparison": comparison,
+        "ladder": ladder, "scenarios": scenarios, "dynamic_nii": dyn, "ear_evar": ear_evar, "out_of_sample": oos,
+        "behavioural_comparison": comparison,
     }
     sc24b = next(x for x in scenarios if x["calibration"] == "2024" and x["nmd_assumption"] == "behavioural")
     sc24c = next(x for x in scenarios if x["calibration"] == "2024" and x["nmd_assumption"] == "contractual")
@@ -496,7 +553,7 @@ C15_VARIANTS = {
                           clp_liabs=[("deposits-time", [(11, 1000e3), (13, 1000e3)]), ("borrowings", [(14, 600e3)])],
                           nmd=1000e3, ur_assets=[("loans-uf", [(11, 6.0), (13, 9.0), (15, 9.0), (16, 8.0)]), ("securities", [(9, 3.0)])],
                           ur_liabs=[("deposits-time", [(4, 3.0), (7, 3.0)])]),
-    "cpi-surprise": dict(state="on", cpi=2.5, label=("CPI surprise +2.5 pp", "Sorpresa de IPC +2,5 pp"),
+    "cpi-surprise": dict(state="on", cpi=2.5, nmd_req=0.95, label=("CPI surprise +2.5 pp", "Sorpresa de IPC +2,5 pp"),
                          desc=("The long UF book under a 2.5 percentage point inflation surprise.",
                                "El libro largo en UF ante una sorpresa de inflacion de 2,5 puntos porcentuales."),
                          clp_assets=[("loans-floating", [(3, 800e3), (4, 900e3), (5, 800e3)]), ("loans-fixed", [(7, 400e3), (9, 400e3), (11, 400e3)]),
@@ -531,12 +588,15 @@ def c15_outputs(vid: str) -> dict:
     rates = {"CLP": c15_curve("CLP")["zero_rates_at_midpoints"], "UR": c15_curve("UR")["zero_rates_at_midpoints"]}
     floors = {"CLP": 0.0, "UR": -0.02}
     # segments: one retail-operational NMD segment on the CLP leg
-    seg = {"category": "retail-operational", "balance": r(sp["nmd"]), "core_share": 0.80, "core_share_cap": 0.9,
-           "core_share_flag": "within-cap", "core_maturity_years": 4.5, "core_maturity_cap_years": 5.0, "maturity_flag": "within-cap",
+    req = sp.get("nmd_req", 0.80)
+    share_used = min(req, 0.9)
+    seg = {"category": "retail-operational", "balance": r(sp["nmd"]), "requested_core_share": req, "core_share_cap": 0.9,
+           "core_share_used": share_used, "requested_core_maturity_years": 4.5, "core_maturity_cap_years": 5.0,
+           "core_maturity_used_years": 4.5, "cap_applied": req > 0.9,
            "source_kind": "synthetic-stated", "source": "fixture value, synthetic behaviour stated"}
     assumptions = {
-        "nmd_core_share": assumption(0.80, "share", "synthetic-stated", "balance-weighted average of nmd_segments"),
-        "nmd_core_maturity_years": assumption(4.5, "years", "synthetic-stated", "balance-weighted average of nmd_segments"),
+        "nmd_core_share": assumption(share_used, "share", "synthetic-stated", "balance-weighted average of the used values of nmd_segments"),
+        "nmd_core_maturity_years": assumption(4.5, "years", "synthetic-stated", "balance-weighted average of the used values of nmd_segments"),
         "prepayment_cpr": assumption(0.06, "per year", "synthetic-stated", "fixture value; no item carries the prepayable-loan class"),
         "term_deposit_redemption_rate": assumption(0.05, "share of the term deposit", "synthetic-stated", "fixture value"),
         "deposit_beta": assumption(0.40, "pass-through", "synthetic-stated", "fixture value"),
@@ -561,7 +621,7 @@ def c15_outputs(vid: str) -> dict:
         for cat, flows in liabs:
             push("liability", cat, "term-deposit" if cat == "deposits-time" else "none", flows, "synthetic, calibrated to CMF aggregates (fixture)")
         if leg == "CLP":
-            cf = merge_flows(nmd_flows(sp["nmd"], 0.80, 4.5, True))
+            cf = merge_flows(nmd_flows(sp["nmd"], share_used, 4.5, True))
             items.append({"item_id": "CLP-NMD", "label": txt("CLP current accounts", "Cuentas corrientes en CLP"), "side": "liability",
                           "category": "deposits-nmd", "behavioural_class": "nmd-retail-operational",
                           "source": "synthetic, calibrated to CMF aggregates (fixture)", "amount": r(sp["nmd"]), "cash_flows": cf})
@@ -643,6 +703,24 @@ def c15_outputs(vid: str) -> dict:
     cpi = None
     if sp["cpi"] is not None:
         cpi = {"surprise_pp": sp["cpi"], "effect": r(-pn * sp["cpi"] / 100), "formula": "effect = -pn_ur x surprise_pp / 100 (loss-positive)"}
+    dyn_legs = []
+    for leg_name, leg in (("CLP", legs[0]), ("UR", legs[1])):
+        conv = UF_VALUE if leg_name == "UR" else 1.0
+        a_tot, l_tot = leg["assets_total"] * conv, leg["liabilities_total"] * conv
+        r1 = rates[leg_name][1]
+        beta = 0.4 if leg_name == "CLP" else 0.2
+        its = [
+            {"item_id": f"{leg_name}-D1", "side": "asset", "balance": r(0.4 * a_tot), "rate0": r(r1 + 0.02, 9), "spread": 0.02, "beta": 1.0, "reprice_months": 0},
+            {"item_id": f"{leg_name}-D2", "side": "asset", "balance": r(0.6 * a_tot), "rate0": 0.04, "spread": 0.04, "beta": 1.0, "reprice_months": 60},
+            {"item_id": f"{leg_name}-D3", "side": "liability", "balance": r(0.5 * l_tot), "rate0": r(beta * r1, 9), "spread": 0.0, "beta": beta, "reprice_months": 0},
+            {"item_id": f"{leg_name}-D4", "side": "liability", "balance": r(0.5 * l_tot), "rate0": r(r1, 9), "spread": 0.0, "beta": 1.0, "reprice_months": 12},
+        ]
+        dyn_legs.append({"leg": leg_name, "items": its, "scenarios": dyn_block(its, r1, 300, floors[leg_name], 12)})
+    dyn15 = {"horizon_months": 12,
+             "balance_sheet_assumption": {"kind": "constant", "growth_annual": 0,
+                                          "description": txt("Constant balance sheet: maturing and repricing flows are replaced by identical new ones.",
+                                                             "Balance constante: los flujos que vencen o reprecian se reemplazan por otros identicos.")},
+             "legs": dyn_legs}
     outputs = {
         "kind": "annex1-variant",
         "variant": {"id": vid, "label": txt(*sp["label"]), "description": txt(*sp["desc"]),
@@ -659,10 +737,10 @@ def c15_outputs(vid: str) -> dict:
                         "uf_value": UF_VALUE, "uf_value_currency": "CLP", "uf_date": "2026-06-30",
                         "uf_source": "fixture value, not the BCCh UF"},
         "curves": {"clp": c15_curve("CLP"), "ur": c15_curve("UR")}, "assumptions": assumptions, "nmd_segments": [seg],
-        "legs": legs, "eve_shock_sizes": eve_sizes, "nii_shock_sizes": nii_sizes,
+        "legs": legs, "eve_shock_sizes": eve_sizes, "nii_shock_sizes": nii_sizes, "dynamic_nii": dyn15,
         "floors": {"ur_floor": -0.02, "other_floor": 0.0,
-                   "rule": txt("Post-shock rates are floored at -2 percent for UR and at 0 percent for CLP, or at the pre-shock rate if lower.",
-                               "Las tasas post choque tienen piso de -2 por ciento para UR y 0 por ciento para CLP, o la tasa previa si es menor."),
+                   "rule": txt("Post-shock rates are floored at -2 percent for UR and at 0 percent for CLP. The fixture also keeps a rate that is already below its floor at its pre-shock value, for both floors; whether Annex 1 applies that clause to the UR floor is UNVERIFIED.",
+                               "Las tasas post choque tienen piso de -2 por ciento para UR y 0 por ciento para CLP. El ejemplo tambien mantiene en su valor previo una tasa que ya esta bajo su piso, en ambos pisos; que el Anexo 1 aplique esa clausula al piso UR no esta verificado."),
                    "effects": floor_effects},
         "offset_rule": {"state": state, "share": 0.5, "applies_to": ["CLP", "CLF"],
                         "rule": txt("When delta CLP and delta CLF have opposite signs, half of the CLP is offset against the CLF (or the reverse), floored at zero.",
@@ -735,7 +813,7 @@ def c15_models() -> dict:
                 "margin_volatility": 0.0011, "margin_volatility_reason": None,
                 "deposit_beta": {"up": 0.40, "down": 0.30, "source_kind": "synthetic-stated", "source": "fixture value"},
                 "stability": [{"window_start": "2021-01-01", "window_end": "2025-12-31", "weights": [0.2, 0.3, 0.3, 0.2],
-                               "weighted_average_maturity_years": 2.5}]}],
+                               "weighted_average_maturity_years": 2.3}]}],
             "prepayment": {"model": "psa", "cpr_base": 0.06, "psa_percent": 100.0, "source_kind": "synthetic-stated",
                            "source": "fixture value: the 100 percent PSA curve"},
         },
