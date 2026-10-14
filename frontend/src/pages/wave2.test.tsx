@@ -37,17 +37,16 @@ describe('the Experiments case tabs are grouped by the question family, six new 
   });
   it('joins portfolio capital and operational risk, names market risk and the balance sheet, in both languages', () => {
     const by = (lang: 'en' | 'es') => Object.fromEntries(groups.map((g) => [pick(g.label, lang), g.tabs.map((t) => t.id)]));
-    expect(by('en')).toMatchObject({ 'Capital models': ['c10', 'c17'], 'Market risk': ['c11', 'c13'], 'The balance sheet': ['c14', 'c15'] });
-    expect(by('es')).toMatchObject({ 'Modelos de capital': ['c10', 'c17'], 'Riesgo de mercado': ['c11', 'c13'], 'El balance': ['c14', 'c15'] });
+    expect(by('en')).toMatchObject({ 'Capital models': ['c10', 'c17'], 'Market and balance-sheet risk': ['c11', 'c13', 'c14', 'c15'] });
+    expect(by('es')).toMatchObject({ 'Modelos de capital': ['c10', 'c17'], 'Riesgo de mercado y de balance': ['c11', 'c13', 'c14', 'c15'] });
     expect(groups.find((g) => g.id === 'capital')).toBeDefined();
-    expect(groups.find((g) => g.id === 'market')).toBeDefined();
-    expect(groups.find((g) => g.id === 'balance')).toBeDefined();
+    expect(groups.find((g) => g.id === 'market-balance')).toBeDefined();
+    expect(groups.length + 1).toBeLessThanOrEqual(6);
   });
   it('keeps the existing families as they were', () => {
     const by = Object.fromEntries(groups.map((g) => [pick(g.label, 'en'), g.tabs.map((t) => t.id)]));
     expect(by['Credit scoring and PD']).toEqual(['c01', 'c03', 'c04', 'c05']);
-    expect(by.Provisions).toEqual(['c06', 'c07']);
-    expect(by['Loss severity and exposure']).toEqual(['c08', 'c09']);
+    expect(by['Credit losses: provisions, severity and exposure']).toEqual(['c06', 'c07', 'c08', 'c09']);
     expect(by['Validating the validator']).toEqual(['c22']);
   });
 });
