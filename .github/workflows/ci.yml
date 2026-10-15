@@ -87,14 +87,19 @@ jobs:
       - name: Base-integrity guards (the regressions this archetype forbids)
         run: |
           fail=0
-          # a real .env must never be tracked (only .env.example)
-          if git ls-files | grep -qE '(^|/)\.env(\..+)?$' && ! git ls-files | grep -qx '.env.example'; then
-            echo "::error::a real .env is tracked (only .env.example may be)"; fail=1; fi
+          # the tracked paths, read once. `git ls-files | grep -q` failed at random under pipefail: grep -q exits on its first
+          # match, git ls-files dies of SIGPIPE and the pipeline reports 141, so a test (and its negation) flipped run to run.
+          # Every test below reads the list from a here-string: no pipe, no early-closing reader.
+          files="$(git ls-files)"
+          # a real .env must never be tracked; an example file (.env.example, frontend/.env.example) may be
+          envs="$(grep -E '(^|/)\.env(\..+)?$' <<<"$files" | grep -vE '(^|/)\.env(\..+)?\.example$' || true)"
+          if [ -n "$envs" ]; then
+            echo "::error::a real .env is tracked (only an .env.example may be): $(tr '\n' ' ' <<<"$envs")"; fail=1; fi
           # venvs, native binaries and heavy model blobs must never be tracked
-          if git ls-files | grep -qiE '(^|/)\.?venv|\.(dll|so|dylib|pt|pth)$'; then
+          if grep -qiE '(^|/)\.?venv|\.(dll|so|dylib|pt|pth)$' <<<"$files"; then
             echo "::error::a venv or native/heavy binary is tracked"; fail=1; fi
           # raw or heavy data must never be tracked; commit only compact derived artifacts under data/derived/
-          if git ls-files | grep -qiE '\.(parquet|h5|hdf5|nc|mat|npy)$'; then
+          if grep -qiE '\.(parquet|h5|hdf5|nc|mat|npy)$' <<<"$files"; then
             echo "::error::raw or heavy data tracked; commit only compact derived artifacts (data/derived/)"; fail=1; fi
           # no leaked local machine paths in tracked sources
           if git grep -nE '[A-Z]:\\_(Repos|worktrees|Temp)|[A-Z]:/_(Repos|worktrees|Temp)' -- . ':!.github' >/dev/null 2>&1; then

@@ -258,3 +258,85 @@ def test_web_baseline_requires_the_stylesheet_of_every_shell_entry_it_imports(tm
     plain = _web_tree(tmp_path / "c", "0.8.0", ".my-row { color: red; }\n")
     _put(plain, "frontend/src/main.tsx", f"import {{ AppShell }} from '{shell}';\nimport '{shell}/styles.css';\n")
     assert _run("check_web_baseline.py", str(plain)).returncode == 0
+
+
+# ---- the CI base-integrity guard step (`.github/workflows/ci.yml`, job `guards`), run as GitHub runs it
+
+
+def _ci_guard_script() -> str:
+    """The `run: |` block of the base-integrity guard step, dedented: the very script CI runs."""
+    lines = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8").splitlines()
+    start = next(i for i, x in enumerate(lines) if x.strip().startswith("- name: Base-integrity guards"))
+    assert lines[start + 1].strip() == "run: |", lines[start + 1]
+    indent, body = None, []
+    for x in lines[start + 2:]:
+        if not x.strip():
+            body.append("")
+            continue
+        lead = len(x) - len(x.lstrip())
+        indent = lead if indent is None else indent
+        if lead < indent:
+            break
+        body.append(x[indent:])
+    return "\n".join(body) + "\n"
+
+
+def _bash() -> str | None:
+    """Git's bash on Windows (the `bash` on PATH there is often WSL's, which cannot read a Windows path), else the PATH's."""
+    if sys.platform == "win32":
+        git = shutil.which("git")
+        if git:
+            for cand in (Path(git).resolve().parents[1] / "bin" / "bash.exe", Path(git).resolve().parents[2] / "bin" / "bash.exe"):
+                if cand.exists():
+                    return str(cand)
+        return None
+    return shutil.which("bash")
+
+
+NEEDS_BASH = pytest.mark.skipif(_bash() is None, reason="the CI guard step is a bash script and no bash was found")
+
+
+def _guard_run(tmp: Path, files: list[str]) -> subprocess.CompletedProcess:
+    tree = tmp / "tree"
+    for rel in files:
+        _put(tree, rel, "x\n")
+    subprocess.run(["git", "init", "-q"], cwd=tree, check=True)
+    subprocess.run(["git", "add", "-A"], cwd=tree, check=True)
+    script = tmp / "guard.sh"
+    script.write_bytes(_ci_guard_script().encode("utf-8"))
+    # the workflow's default shell: `bash -eo pipefail {0}`
+    return subprocess.run([_bash(), "-eo", "pipefail", str(script)], cwd=tree, capture_output=True, text=True)
+
+
+@NEEDS_BASH
+@pytest.mark.parametrize(
+    ("files", "error"),
+    [
+        ([".env.example", "README.md"], None),
+        (["frontend/.env.example", "README.md"], None),
+        ([".env", ".env.example", "README.md"], "a real .env is tracked"),
+        (["frontend/.env.local", ".env.example"], "a real .env is tracked"),
+        ([".env.example", "models/weights.pt"], "a venv or native/heavy binary is tracked"),
+        ([".env.example", "data/raw/table.parquet"], "raw or heavy data tracked"),
+    ],
+)
+def test_ci_guard_step_judges_the_tracked_files(tmp_path, files, error):
+    res = _guard_run(tmp_path, files)
+    out = res.stdout + res.stderr
+    if error is None:
+        assert res.returncode == 0 and "guards: OK" in res.stdout, out
+    else:
+        assert res.returncode == 1 and error in res.stdout, out
+
+
+@NEEDS_BASH
+def test_ci_guard_step_is_stable_on_a_large_clean_tree(tmp_path):
+    # `git ls-files | grep -q` under pipefail failed at random: grep -q exits on its first match, git ls-files dies of SIGPIPE,
+    # the pipeline reports 141 and `! git ls-files | grep -qx .env.example` turned true. The step reads the list once now.
+    files = [".env.example"] + [f"src/part{i // 500}/file{i}.txt" for i in range(6000)]
+    first = _guard_run(tmp_path, files)
+    assert first.returncode == 0, first.stdout + first.stderr
+    script, tree = tmp_path / "guard.sh", tmp_path / "tree"
+    for _ in range(15):
+        res = subprocess.run([_bash(), "-eo", "pipefail", str(script)], cwd=tree, capture_output=True, text=True)
+        assert res.returncode == 0, res.stdout + res.stderr
