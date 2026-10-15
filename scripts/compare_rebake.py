@@ -3,7 +3,9 @@
 
 For every JSON document of data/derived/<CASE>/ the working tree is compared with the committed one (git HEAD, or the
 revision given by --rev), ignoring only the version stamps: provenance.code_version, provenance.riskvalidation_version
-and every engine_version. Any other difference, a document only on one side or a length change is a finding.
+and every engine_version. The document's own size, recorded by the lane gate as `trace_bytes` (a field, or a lane reason
+"trace_bytes N > LIMIT"), follows the stamps' length: it may change by exactly the byte change of the document's stamps
+and by nothing else. Any other difference, a document only on one side or a length change is a finding.
 
 Standard library only; exit 1 on any finding, 2 on a usage error.
 Usage: python scripts/compare_rebake.py C13 C14 [--rev HEAD] [--root <repo>]
@@ -12,16 +14,35 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
 
 STAMPS = {("provenance", "code_version"), ("provenance", "riskvalidation_version")}
+TRACE = re.compile(r"^trace_bytes (\d+) > (\d+)$")
 
 
-def diff(a, b, path: tuple = ()) -> list[str]:
+def stamp_bytes(doc, path: tuple = ()) -> int:
+    """The UTF-8 bytes the version stamps take in a document (their values only)."""
+    if isinstance(doc, dict):
+        return sum(len(json.dumps(v, ensure_ascii=False).encode("utf-8")) if ((path + (k,))[-2:] in STAMPS or k == "engine_version")
+                   else stamp_bytes(v, path + (k,)) for k, v in doc.items())
+    if isinstance(doc, list):
+        return sum(stamp_bytes(v, path + (i,)) for i, v in enumerate(doc))
+    return 0
+
+
+def diff(a, b, path: tuple = (), size_delta: int = 0) -> list[str]:
     if path[-2:] in STAMPS or (path and path[-1] == "engine_version"):
         return []
+    # the document's own size: it moves with the stamps' length, and only by that
+    if path and path[-1] == "trace_bytes" and isinstance(a, int) and isinstance(b, int) and b - a == size_delta:
+        return []
+    if isinstance(a, str) and isinstance(b, str) and TRACE.match(a) and TRACE.match(b):
+        (na, la), (nb, lb) = TRACE.match(a).groups(), TRACE.match(b).groups()
+        if la == lb and int(nb) - int(na) == size_delta:
+            return []
     where = "/".join(map(str, path)) or "(document)"
     if isinstance(a, dict) and isinstance(b, dict):
         out: list[str] = []
@@ -30,14 +51,14 @@ def diff(a, b, path: tuple = ()) -> list[str]:
                 if (path + (k,))[-2:] not in STAMPS and k != "engine_version":
                     out.append(f"{'/'.join(map(str, path + (k,)))} is on one side only")
                 continue
-            out += diff(a[k], b[k], path + (k,))
+            out += diff(a[k], b[k], path + (k,), size_delta)
         return out
     if isinstance(a, list) and isinstance(b, list):
         if len(a) != len(b):
             return [f"{where} has {len(a)} items committed and {len(b)} re-baked"]
         out = []
         for i, (x, y) in enumerate(zip(a, b)):
-            out += diff(x, y, path + (i,))
+            out += diff(x, y, path + (i,), size_delta)
         return out
     return [] if a == b else [f"{where}: {a!r} committed, {b!r} re-baked"[:240]]
 
@@ -72,7 +93,8 @@ def main(argv: list[str] | None = None) -> int:
             if old is None or new is None:
                 findings.append(f"{rel}: {'new, not committed' if old is None else 'committed, not re-baked'}")
                 continue
-            findings += [f"{rel}: {d}" for d in diff(json.loads(old), json.loads(new))]
+            before, after = json.loads(old), json.loads(new)
+            findings += [f"{rel}: {d}" for d in diff(before, after, size_delta=stamp_bytes(after) - stamp_bytes(before))]
     if findings:
         print("REBAKE CHANGED MORE THAN ITS STAMPS:")
         for f in findings:

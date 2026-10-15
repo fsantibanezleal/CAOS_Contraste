@@ -66,3 +66,28 @@ def test_a_lost_document_fails(tmp_path):
     (r / "data" / "derived" / "C99" / "v.json").unlink()
     res = _run(r)
     assert res.returncode == 1 and "data/derived/C99/v.json: committed, not re-baked" in res.stdout
+
+
+def test_the_documents_own_size_may_move_by_the_stamps_byte_change_and_by_nothing_else(tmp_path):
+    """The lane gate records the document's size (`trace_bytes`); a shorter engine stamp shrinks it by exactly the bytes it lost."""
+    doc = json.loads(json.dumps(DOC))
+    doc["provenance"]["riskvalidation_version"] = "0.6.0@344ec9a"
+    doc["model"][0]["engine_version"] = "0.6.0@344ec9a"
+    doc["lane"] = {"reasons": ["pure python", "trace_bytes 1000 > 262144"], "trace_bytes": 1000}
+    r = tmp_path / "repo"
+    (r / "data" / "derived" / "C99").mkdir(parents=True)
+    (r / "data" / "derived" / "C99" / "v.json").write_text(json.dumps(doc), encoding="utf-8")
+    for cmd in (["init", "-q"], ["add", "-A"], ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "c"]):
+        subprocess.run(["git", "-C", str(r), *cmd], check=True)
+    rebaked = json.loads(json.dumps(doc))
+    rebaked["provenance"]["riskvalidation_version"] = "0.7.0"          # 8 bytes shorter
+    rebaked["model"][0]["engine_version"] = "0.7.0"                     # 8 bytes shorter
+    rebaked["lane"] = {"reasons": ["pure python", "trace_bytes 984 > 262144"], "trace_bytes": 984}
+    _write(r, rebaked)
+    assert _run(r).returncode == 0, _run(r).stdout
+    rebaked["lane"] = {"reasons": ["pure python", "trace_bytes 990 > 262144"], "trace_bytes": 990}
+    _write(r, rebaked)
+    res = _run(r)
+    assert res.returncode == 1
+    assert "lane/reasons/1: 'trace_bytes 1000 > 262144' committed, 'trace_bytes 990 > 262144' re-baked" in res.stdout
+    assert "lane/trace_bytes: 1000 committed, 990 re-baked" in res.stdout
