@@ -3,7 +3,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { CaseIndex, CaseManifest, TestRow, VariantArtifact } from './contract.types';
-import { COMMITTED, regulatoryReference, thresholdLabel, toleranceOf } from './policy';
+import { COMMITTED, ownPolicyEvaluated, regulatoryReference, thresholdLabel, toleranceOf } from './policy';
 
 const derived = new URL('../../../data/derived/', import.meta.url);
 const read = <T>(rel: string): T => JSON.parse(readFileSync(new URL(rel, derived), 'utf8')) as T;
@@ -24,9 +24,10 @@ describe('threshold labels', () => {
           if (t.alpha_amber !== null) {
             // a p-value threshold; the acceptance band of a row lit without a p-value (the lifetime PD backtest); or the
             // tolerance of a row lit by a tolerance on its metric, whose p-value is informative (the C09 CCF bias)
-            const kind = toleranceOf(t) !== null ? 'tolerance' : t.p_value === null ? 'band' : 'p';
-            const en = { tolerance: /^Policy tolerance, not regulatory/, band: /^Policy acceptance band, not regulatory/, p: /^Policy threshold, not regulatory/ }[kind];
-            const es = { tolerance: /^Tolerancia de política, no regulatoria/, band: /^Banda de aceptación de política, no regulatoria/, p: /^Umbral de política, no regulatorio/ }[kind];
+            // or the own policy of a test family (C11's market back-tests), which the rail does not move
+            const kind = toleranceOf(t) !== null ? 'tolerance' : ownPolicyEvaluated(t) ? 'own' : t.p_value === null ? 'band' : 'p';
+            const en = { tolerance: /^Policy tolerance, not regulatory/, band: /^Policy acceptance band, not regulatory/, own: /^Policy threshold of its test family, not regulatory/, p: /^Policy threshold, not regulatory/ }[kind];
+            const es = { tolerance: /^Tolerancia de política, no regulatoria/, band: /^Banda de aceptación de política, no regulatoria/, own: /^Umbral de política de su familia de pruebas, no regulatorio/, p: /^Umbral de política, no regulatorio/ }[kind];
             expect(label.en).toMatch(en);
             expect(label.en).toContain(t.policy_version);
             expect(label.es).toMatch(es);
