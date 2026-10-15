@@ -3,6 +3,15 @@
 All notable changes to this product. Versions are X.XX.XXX (VERSION is the single source); every release is
 tagged.
 
+## [0.11.002], 2026-10-15
+
+Shell 0.15.0. No case, artifact or contract changes.
+
+- Shell 0.15.0 (pinned exactly, lock file included). Its gate gains G19: in every measured state, a short value (a number,
+  a percentage, an amount or a figure with its unit) must not break inside a segment; a break right after a hyphen, a dash
+  or a slash is a normal line break. Contraste's full gate passes on it with no G19 failure.
+- The index and the readiness restamped for 0.11.002.
+
 ## [0.11.001], 2026-10-15
 
 Shell 0.14.3 and the CI base-integrity guard. No case, artifact or contract changes.
