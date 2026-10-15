@@ -42,6 +42,14 @@ EXPECTED = {
 VARIANTS = {k: v for k, v in EXPECTED.items() if "variant" in k}
 KINDS = {C11: "window", C13: "deficiency"}
 ROW_IDS = ["c11-outputs", "c11-models", "c13-outputs", "c13-models", "engine-market-api"]
+
+
+def catalog_rows(ids):
+    """The catalog rows of these contract ids, header first (the unit's rows fragment was merged by the integrator at 0.11.000)."""
+    catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
+    lines = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0].splitlines()
+    head = [ln for ln in lines if ln.startswith("| id | version")]
+    return head + ["|---|"] + [ln for ln in lines if ln.startswith("| ") and ln.split("|")[1].strip() in ids]
 WINDOWS = ["equity-2007-09", "equity-2020", "rates-2022", "fx-2008", "mixed-2023", "calm-2004-06"]
 DEFICIENCIES = ["none", "missing-basis", "stale-volatility", "wrong-correlation", "omitted-factor", "time-misalignment"]
 
@@ -889,7 +897,7 @@ def row_cells(line: str) -> list[str]:
 def test_the_rows_fragment_has_the_five_rows_in_the_catalog_columns() -> None:
     catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
     header = next(row_cells(ln) for ln in catalog.splitlines() if ln.startswith("| id | version"))
-    lines = [ln for ln in ROWS.read_text(encoding="utf-8").splitlines() if ln.startswith("|")]
+    lines = [ln for ln in catalog_rows(ROW_IDS) if ln.startswith("|")]
     rows_ = [row_cells(ln) for ln in lines]
     assert rows_[0] == header
     data = [r for r in rows_[1:] if not all(set(c) <= set(":- ") for c in r)]
@@ -898,7 +906,7 @@ def test_the_rows_fragment_has_the_five_rows_in_the_catalog_columns() -> None:
         assert len(r) == len(header), r[0]
         dd = dict(zip(header, r))
         assert dd["version"] == "1.0.0"
-        assert dd["status"] == "active"
+        assert dd["status"] == "real"                        # the integrator set real when the bakes landed (0.11.000)
         assert dd["provider"].startswith("fixture:")
         assert (ROOT / dd["schema file"]).is_file(), dd["schema file"]
         assert (ROOT / dd["provider"].removeprefix("fixture:")).is_file(), dd["provider"]
@@ -912,11 +920,16 @@ def test_the_rows_fragment_has_the_five_rows_in_the_catalog_columns() -> None:
 
 
 def test_the_changes_fragment_is_bullets_only() -> None:
-    lines = [ln for ln in CHANGES.read_text(encoding="utf-8").splitlines() if ln.strip()]
-    assert lines and lines[0].startswith("- ")
-    for ln in lines:
+    # merged by the integrator into the 0.11.000 entry of the CHANGELOG (fragments.py changelog refuses anything but bullets)
+    assert not CHANGES.exists()
+    entry = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8").split("## [0.11.000]", 1)[1].split("\n## [", 1)[0]
+    lines = [ln for ln in entry.splitlines()[1:] if ln.strip()]
+    bullets = lines[1:]                                       # the first line is the entry's summary sentence
+    assert bullets and bullets[0].startswith("- ")
+    for ln in bullets:
         assert ln.startswith("- ") or ln.startswith("  "), ln
         assert not ln.startswith("#")
+    assert "C11" in entry and "C13" in entry
 
 
 # --- the engine market API contract ---------------------------------------------------------------------------------

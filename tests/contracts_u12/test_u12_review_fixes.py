@@ -331,7 +331,8 @@ def test_semantic_the_models_variants_match_the_truth_rules() -> None:
 
 
 def test_semantic_layer_is_named_in_the_rows_fragment_as_the_gate_of_the_bake() -> None:
-    rows = (ROOT / "docs" / "contracts" / "rows" / "U12.md").read_text(encoding="utf-8")
+    catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")   # the U12 rows, merged at 0.11.000
+    rows = "\n".join(ln for ln in catalog.splitlines() if ln.startswith(("| c17-", "| engine-oprisk-api")))
     assert "semantic_findings" in rows
 
 

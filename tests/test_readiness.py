@@ -134,7 +134,7 @@ def test_a_built_case_with_its_manifest_removed_is_partial_with_its_path(repo):
     e = row(compute(repo), "case-manifest")
     assert e["state"] == "partial"
     assert e["missing"] == sorted(["manifests/C04.json"] + [f"manifests/{c}.json" for c in PLANNED])
-    assert e["reason"] == fill(template("a manifest the index lists is absent"), n=14, total=22)
+    assert e["reason"] == fill(template("a manifest the index lists is absent"), n=9, total=22)
 
 
 def test_an_absent_artifact_is_partial_for_its_case_rows(repo):

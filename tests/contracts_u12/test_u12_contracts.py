@@ -29,6 +29,14 @@ SCHEMAS = ROOT / "docs" / "contracts" / "schemas"
 API = ROOT / "docs" / "contracts" / "engine" / "oprisk-api.md"
 ROWS = ROOT / "docs" / "contracts" / "rows" / "U12.md"
 
+
+def catalog_rows(ids):
+    """The catalog rows of these contract ids, header first (the unit's rows fragment was merged by the integrator at 0.11.000)."""
+    catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
+    lines = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0].splitlines()
+    head = [ln for ln in lines if ln.startswith("| id | version")]
+    return head + ["|---|"] + [ln for ln in lines if ln.startswith("| ") and ln.split("|")[1].strip() in ids]
+
 VAR = "c17/variant-tail-index"
 MOD = "c17/models"
 FINITE = FIXTURES / "variant-tail-index-fixture.json"
@@ -650,7 +658,7 @@ ROW_IDS = ["c17-outputs", "c17-models", "engine-oprisk-api"]
 def test_the_rows_fragment_has_the_three_rows_in_the_catalog_columns() -> None:
     catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
     header = next(row_cells(ln) for ln in catalog.splitlines() if ln.startswith("| id | version"))
-    lines = [ln for ln in ROWS.read_text(encoding="utf-8").splitlines() if ln.startswith("|")]
+    lines = [ln for ln in catalog_rows(ROW_IDS) if ln.startswith("|")]
     rows = [row_cells(ln) for ln in lines]
     assert rows[0] == header
     data = [r for r in rows[1:] if not all(set(c) <= set(":- ") for c in r)]
@@ -659,7 +667,7 @@ def test_the_rows_fragment_has_the_three_rows_in_the_catalog_columns() -> None:
         assert len(r) == len(header), r[0]
         d = dict(zip(header, r))
         assert d["version"] == "1.0.0"
-        assert d["status"] == "active"
+        assert d["status"] == "real"                         # the integrator set real when the bake landed (0.11.000)
         assert d["provider"].startswith("fixture:")
         assert (ROOT / d["schema file"]).is_file(), d["schema file"]
         assert (ROOT / d["example"]).is_file(), d["example"]
@@ -670,8 +678,9 @@ def test_the_rows_fragment_has_the_three_rows_in_the_catalog_columns() -> None:
                 assert (ROOT / path).is_file(), path
                 if name:
                     assert f"def {name}(" in (ROOT / path).read_text(encoding="utf-8"), t
-    cat_ids = {row_cells(ln)[0] for ln in catalog.splitlines() if ln.startswith("| ")}
-    assert not set(ROW_IDS) & cat_ids, "the integrator merges these rows; the unit does not edit the catalog"
+    contracts = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0]
+    cat_ids = [row_cells(ln)[0] for ln in contracts.splitlines() if ln.startswith("| ")]
+    assert all(cat_ids.count(i) == 1 for i in ROW_IDS), "the integrator merged these rows once each (0.11.000)"
 
 
 # --- the engine operational risk API contract -----------------------------------------------------------------------

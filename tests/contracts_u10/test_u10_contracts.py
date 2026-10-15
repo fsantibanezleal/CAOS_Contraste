@@ -50,6 +50,14 @@ FILES = {
 KINDS = {C14: "valuation-date", C15: "annex1-variant"}
 ROW_IDS = ["c14-outputs", "c14-models", "c15-outputs", "c15-models", "engine-irrbb-api"]
 
+
+def catalog_rows(ids):
+    """The catalog rows of these contract ids, header first (the unit's rows fragment was merged by the integrator at 0.11.000)."""
+    catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
+    lines = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0].splitlines()
+    head = [ln for ln in lines if ln.startswith("| id | version")]
+    return head + ["|---|"] + [ln for ln in lines if ln.startswith("| ") and ln.split("|")[1].strip() in ids]
+
 # --- the dossier values, typed here again (dossier 01 H.2 to H.4, dossier 03 F.2, dossier 05 D) -------------------------
 
 SHOCKS = ["parallel-up", "parallel-down", "steepener", "flattener", "short-up", "short-down"]
@@ -799,7 +807,7 @@ def row_cells(line: str) -> list[str]:
 def test_the_rows_fragment_has_the_five_rows_in_the_catalog_columns() -> None:
     catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
     header = next(row_cells(ln) for ln in catalog.splitlines() if ln.startswith("| id | version"))
-    lines = [ln for ln in ROWS.read_text(encoding="utf-8").splitlines() if ln.startswith("|")]
+    lines = [ln for ln in catalog_rows(ROW_IDS) if ln.startswith("|")]
     rows = [row_cells(ln) for ln in lines]
     assert rows[0] == header
     data = [r for r in rows[1:] if not all(set(c) <= set(":- ") for c in r)]
@@ -808,12 +816,13 @@ def test_the_rows_fragment_has_the_five_rows_in_the_catalog_columns() -> None:
         assert len(r) == len(header), r[0]
         d = dict(zip(header, r))
         assert d["version"] == ("1.1.0" if d["id"] == "engine-irrbb-api" else "1.0.0")
-        assert d["status"] == "active"
+        # C14 and the engine are built (real at 0.11.000); C15 waits for the BCCh account on its fixture (active)
+        assert d["status"] == ("active" if d["id"].startswith("c15-") else "real")
         assert d["provider"].startswith("fixture:")
         assert (ROOT / d["schema file"]).is_file(), d["schema file"]
         assert (ROOT / d["provider"].removeprefix("fixture:")).is_file(), d["provider"]
         assert (ROOT / d["example"]).is_file(), d["example"]
-        assert "U10-S" in d["owner"]
+        assert ("U10-S" in d["owner"]) if d["id"].startswith("c15-") else ("c14" in d["owner"] or "CAOS_RiskValidation" in d["owner"])
         for cell in (d["producer test"], d["consumer test"]):
             for t in cell.split(","):
                 path, _, name = t.strip().partition("::")
@@ -823,9 +832,11 @@ def test_the_rows_fragment_has_the_five_rows_in_the_catalog_columns() -> None:
 
 
 def test_the_rows_fragment_carries_no_row_already_in_the_catalog() -> None:
+    # merged at 0.11.000: each row is in the Contracts table exactly once
     catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
-    ids = {ln.split("|")[1].strip() for ln in catalog.splitlines() if ln.startswith("| ")}
-    assert not (ids & set(ROW_IDS))
+    contracts = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0]
+    ids = [ln.split("|")[1].strip() for ln in contracts.splitlines() if ln.startswith("| ")]
+    assert all(ids.count(i) == 1 for i in ROW_IDS), [i for i in ROW_IDS if ids.count(i) != 1]
 
 
 # --- the engine IRRBB API contract --------------------------------------------------------------------------------------
@@ -1153,8 +1164,12 @@ def test_the_simulate_nii_and_ear_evar_goldens_of_the_contract_recompute() -> No
 
 
 def test_f8_the_rows_fragment_says_the_api_version_bump_is_the_integrators() -> None:
-    assert "integrator" in ROWS.read_text(encoding="utf-8").split("-->")[0]
-    assert "check_contract_versions" in ROWS.read_text(encoding="utf-8").split("-->")[0]
+    # the integrator bumped the api contract when it merged the fragments (0.11.000), with its History entry naming U10-S
+    catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
+    contracts = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0]
+    assert any(ln.startswith("| api | 4.0.0 |") for ln in contracts.splitlines())
+    history = catalog.split("## History", 1)[1]
+    assert any(ln.startswith("| api | 4.0.0 |") and "U10-S" in ln for ln in history.splitlines())
 
 
 # --- follow-up after the engine review (review-u10-engine-2026-10-13.md): one test per amendment ---------------------------
@@ -1247,5 +1262,7 @@ def test_amend3_the_annex1_goldens_are_checked_at_the_printed_precision_of_hoja_
 
 def test_amend_the_engine_contract_is_version_1_1_0_and_its_row_says_so() -> None:
     assert "1.1.0" in API.read_text(encoding="utf-8").split("\n", 1)[0]
-    rows = [ln for ln in ROWS.read_text(encoding="utf-8").splitlines() if ln.startswith("| engine-irrbb-api")]
+    rows = [ln for ln in catalog_rows(["engine-irrbb-api"]) if ln.startswith("| engine-irrbb-api")]
     assert rows and rows[0].split(" | ")[1] == "1.1.0"
+    history = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8").split("## History", 1)[1]
+    assert any(ln.startswith("| engine-irrbb-api | 1.1.0 |") for ln in history.splitlines())
