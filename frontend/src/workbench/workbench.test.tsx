@@ -171,8 +171,8 @@ describe('Focus mode of the App (shell 0.14.0, ADR-0070)', () => {
     expect(gate).toContain("'--require-focus'");
   });
 
-  it('the shell is pinned to exactly 0.14.0', () => {
+  it('the shell is pinned to exactly 0.14.1 (its Focus control on the case select row keeps the rails from scrolling)', () => {
     const pkg = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8'));
-    expect(pkg.dependencies['@fasl-work/caos-app-shell']).toBe('0.14.0');
+    expect(pkg.dependencies['@fasl-work/caos-app-shell']).toBe('0.14.1');
   });
 });
