@@ -4,6 +4,7 @@ and skip without them. A document that is absent is a declared state (503 with t
 empty body), an unknown case is a 404."""
 from __future__ import annotations
 
+import json
 import shutil
 import sys
 from pathlib import Path
@@ -16,6 +17,9 @@ sys.path.insert(0, str(ROOT))
 from app.services import content  # noqa: E402
 
 DERIVED = ROOT / "data" / "derived"
+# the cases the pipeline declares planned (no manifest yet); every other case of the index is built and served. Counted, not
+# written: the literals 4 and 18 of 0.05.000 went stale while the module skipped without fastapi
+PLANNED = {c["case_id"] for c in json.loads((ROOT / "data-pipeline" / "config" / "planned_cases.json").read_text(encoding="utf-8"))}
 
 
 def test_serves_the_index_every_built_manifest_and_every_artifact_it_names():
@@ -33,7 +37,7 @@ def test_serves_the_index_every_built_manifest_and_every_artifact_it_names():
         for rel in paths:
             assert content.load_artifact(rel) is not None, rel
         served += 1
-    assert served == 4
+    assert served == len(index["cases"]) - len(PLANNED)
 
 
 def test_reads_both_forms_of_a_manifest():
@@ -74,7 +78,7 @@ def test_readiness_is_served_with_the_api_row_available(real):
     api = next(e for e in doc["contracts"] if e["id"] == "api")
     assert (api["state"], api["provenance"], api["reason"]) == ("available", "real", None)
     cm = next(e for e in doc["contracts"] if e["id"] == "case-manifest")
-    assert cm["state"] == "partial" and len(cm["missing"]) == 18
+    assert cm["state"] == "partial" and sorted(cm["missing"]) == sorted(f"manifests/{c}.json" for c in PLANNED)
 
 
 def test_a_planned_case_answers_503_with_the_declared_state_never_an_empty_body(real):
