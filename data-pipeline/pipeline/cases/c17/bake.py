@@ -232,8 +232,8 @@ def bake_case(seed: int, paths: Any, data_root: Path | None, scale: float, title
         sums.append(_sum(paths.root, rel))
         _log(f"variant {vid}: {e['bytes']:,} bytes")
         text = docs.T(f"Tail index {v.tail_index:g}" + (": no finite mean" if v.infinite_mean else ""),
-                      f"Índice de cola {v.tail_index:g}" + (": sin media finita" if v.infinite_mean else ""))
-        entries.append({"role": "variant", "variant_id": vid, "title": text, "short_title": docs.T(f"xi {v.tail_index:g}", f"xi {v.tail_index:g}"),
+                      f"Índice de cola {docs.es_num(v.tail_index, 'g')}" + (": sin media finita" if v.infinite_mean else ""))
+        entries.append({"role": "variant", "variant_id": vid, "title": text, "short_title": docs.T(f"xi {v.tail_index:g}", f"xi {docs.es_num(v.tail_index, 'g')}"),
                         "regime": text, "truth_status": "synthetic-known-truth", "models_ref": MODELS_REL, **e})
     (Path(paths.root) / SUMS_REL).write_text("\n".join(sums) + "\n", encoding="utf-8", newline="\n")
     ranges = expectations.check(CASE_ID, EXPECT, built["values"])
