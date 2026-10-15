@@ -1264,21 +1264,21 @@ export const MODELS_C08 = { ...MODELS, fit: C08_FIT } satisfies Record<keyof Mod
 export const MODELS_C09 = { ...MODELS, fit: C09_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C06 = { ...MODELS, fit: C06_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C07 = { ...MODELS, fit: C07_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
-// --- wave 2 batch 2 (U7, U8, U10, U12 views): the C10 schemas narrow provenance (U7-W), the others open their tests ----
-export const VARIANT_C10_LOAN_TYPE = { ...VARIANT, outputs: C10_OUTPUTS_LOAN_TYPE, tests: 'json' as Kind, provenance: { object: { truth_status: 'string', inputs: 'json' } } as Kind } satisfies Record<keyof VariantArtifact, Kind>;
-export const VARIANT_C10_GRID = { ...VARIANT, outputs: C10_OUTPUTS_GRID, tests: 'json' as Kind, provenance: { object: { truth_status: 'string' } } as Kind } satisfies Record<keyof VariantArtifact, Kind>;
+// --- wave 2 batch 2 (U7, U8, U10, U12 views): the C10 and C17 schemas narrow provenance.truth_status in an allOf branch; their
+// documents carry the full provenance block, so the descriptor declares all of it; the others open their tests ----
+export const VARIANT_C10_LOAN_TYPE = { ...VARIANT, outputs: C10_OUTPUTS_LOAN_TYPE, tests: 'json' as Kind, provenance: { object: PROVENANCE } } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C10_GRID = { ...VARIANT, outputs: C10_OUTPUTS_GRID, tests: 'json' as Kind, provenance: { object: PROVENANCE } } satisfies Record<keyof VariantArtifact, Kind>;
 export const VARIANT_C11 = { ...VARIANT, outputs: C11_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
 export const VARIANT_C13 = { ...VARIANT, outputs: C13_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
 export const VARIANT_C14 = { ...VARIANT, outputs: C14_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
 export const VARIANT_C15 = { ...VARIANT, outputs: C15_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
-// the C17 variant schema narrows provenance.truth_status in an extra allOf branch (U12-S), as C10's does
-export const VARIANT_C17 = { ...VARIANT, outputs: C17_OUTPUTS, tests: 'json' as Kind, provenance: { object: { truth_status: 'string' } } as Kind } satisfies Record<keyof VariantArtifact, Kind>;
-export const MODELS_C10 = { ...MODELS, fit: C10_FIT, provenance: { object: { inputs: 'json' } } as Kind } satisfies Record<keyof ModelsArtifact, Kind>;
+export const VARIANT_C17 = { ...VARIANT, outputs: C17_OUTPUTS, tests: 'json' as Kind, provenance: { object: PROVENANCE } } satisfies Record<keyof VariantArtifact, Kind>;
+export const MODELS_C10 = { ...MODELS, fit: C10_FIT, provenance: { object: PROVENANCE } } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C11 = { ...MODELS, fit: C11_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C13 = { ...MODELS, fit: C13_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C14 = { ...MODELS, fit: C14_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C15 = { ...MODELS, fit: C15_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
-export const MODELS_C17 = { ...MODELS, fit: C17_FIT, provenance: { object: { truth_status: 'string' } } as Kind } satisfies Record<keyof ModelsArtifact, Kind>;
+export const MODELS_C17 = { ...MODELS, fit: C17_FIT, provenance: { object: PROVENANCE } } satisfies Record<keyof ModelsArtifact, Kind>;
 
 /** The variant descriptor an artifact is read against: by its outputs' kind (C04, C05, C06, C07, C22) or C01's. */
 export function variantKind(doc: {

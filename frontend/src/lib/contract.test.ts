@@ -375,7 +375,7 @@ type Shape =
   | { k: 'any' };
 type Ctx = { doc: Json; id: string };
 type Ref = { node: Json; ctx: Ctx };
-type Facets = { props: Record<string, Ref>; addl?: Ref; patterns: Ref[]; items?: Ref; prefix: Ref[]; types: Set<string>; options: Ref[] };
+type Facets = { props: Record<string, Ref[]>; addl?: Ref; patterns: Ref[]; items?: Ref; prefix: Ref[]; types: Set<string>; options: Ref[] };
 
 const schemaByUrl = new Map([...schemaDocs.values()].map((d) => [d.$id as string, d]));
 function follow(ref: string, ctx: Ctx): Ref {
@@ -398,7 +398,8 @@ function collect(node: unknown, ctx: Ctx, acc: Facets): void {
     collect(t.node, t.ctx, acc);
   }
   for (const member of (n.allOf ?? []) as unknown[]) collect(member, ctx, acc);
-  for (const [k, v] of Object.entries((n.properties ?? {}) as Json)) acc.props[k] = { node: v as Json, ctx }; // a later (more specific) member overrides
+  // every allOf member that names a property is kept; propShape narrows by a constraint-only member, else the later replaces
+  for (const [k, v] of Object.entries((n.properties ?? {}) as Json)) (acc.props[k] ??= []).push({ node: v as Json, ctx });
   if (n.additionalProperties && typeof n.additionalProperties === 'object') acc.addl = { node: n.additionalProperties as Json, ctx };
   for (const v of Object.values((n.patternProperties ?? {}) as Json)) acc.patterns.push({ node: v as Json, ctx });
   for (const v of (n.prefixItems ?? []) as Json[]) acc.prefix.push({ node: v, ctx });
@@ -409,6 +410,29 @@ function collect(node: unknown, ctx: Ctx, acc: Facets): void {
   for (const v of (n.enum ?? []) as unknown[]) acc.types.add(jsType(v));
   for (const o of [...((n.oneOf ?? []) as Json[]), ...((n.anyOf ?? []) as Json[])]) acc.options.push({ node: o, ctx });
 }
+
+/** A constraint-only allOf member: it narrows the fields of a shape another member defines (no type, $ref, allOf, oneOf,
+ * anyOf, const or enum of its own), as C10's and C17's `provenance` branch that pins `truth_status` beside the common block. */
+const SHAPING = ['type', '$ref', 'allOf', 'oneOf', 'anyOf', 'const', 'enum'];
+const constraintOnly = (node: unknown): boolean =>
+  typeof node === 'object' && node !== null && !SHAPING.some((k) => k in (node as Json));
+
+/** Narrow `a` by a constraint-only member's shape `b`: objects keep every key of both (narrowed key by key), an unconstrained
+ * part never erases a constrained one, and anything else takes the narrower `b`. */
+function narrow(a: Shape, b: Shape): Shape {
+  if (b.k === 'any') return a;
+  if (a.k === 'object' && b.k === 'object') {
+    const keys: Record<string, Shape> = { ...a.keys };
+    for (const [k, s] of Object.entries(b.keys)) keys[k] = k in keys ? narrow(keys[k], s) : s;
+    return { k: 'object', keys };
+  }
+  return b;
+}
+
+/** A property every allOf member may name: a constraint-only member narrows the shape so far, any other later member (a
+ * full shape, as C01's outputs `$ref` over the common variant) replaces it. */
+const propShape = (refs: Ref[]): Shape =>
+  refs.slice(1).reduce((s, r) => (constraintOnly(r.node) ? narrow(s, shapeOf(r.node, r.ctx)) : shapeOf(r.node, r.ctx)), shapeOf(refs[0].node, refs[0].ctx));
 
 /** The element shape of an array: its `items`, else the shape the `prefixItems` (a tuple) share, else a union of them. */
 function itemShape(acc: Facets): Shape {
@@ -432,14 +456,14 @@ function shapeOf(node: unknown, ctx: Ctx): Shape {
     for (const t of types) {
       if (t === 'object') {
         const keys = Object.keys(acc.props);
-        if (keys.length) parts.push({ k: 'object', keys: Object.fromEntries(keys.map((k) => [k, shapeOf(acc.props[k].node, acc.props[k].ctx)])) });
+        if (keys.length) parts.push({ k: 'object', keys: Object.fromEntries(keys.map((k) => [k, propShape(acc.props[k])])) });
         else if (acc.addl) parts.push({ k: 'map', value: shapeOf(acc.addl.node, acc.addl.ctx) });
         else if (acc.patterns.length) parts.push({ k: 'map', value: shapeOf(acc.patterns[0].node, acc.patterns[0].ctx) });
         else parts.push({ k: 'any' });
       } else if (t === 'array') parts.push({ k: 'array', item: itemShape(acc) });
       else if (t === 'string' || t === 'number' || t === 'integer' || t === 'boolean') parts.push({ k: 'prim', name: t });
     }
-    if (!types.length && Object.keys(acc.props).length) parts.push({ k: 'object', keys: Object.fromEntries(Object.entries(acc.props).map(([k, r]) => [k, shapeOf(r.node, r.ctx)])) });
+    if (!types.length && Object.keys(acc.props).length) parts.push({ k: 'object', keys: Object.fromEntries(Object.entries(acc.props).map(([k, r]) => [k, propShape(r)])) });
     core = parts.length === 1 ? parts[0] : parts.length > 1 ? { k: 'union', options: parts } : { k: 'any' };
   }
   return nullable ? { k: 'nullable', inner: core } : core;
