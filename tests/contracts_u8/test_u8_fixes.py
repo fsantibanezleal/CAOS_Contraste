@@ -60,7 +60,8 @@ def test_d1_the_superseded_1995_2006_span_appears_nowhere() -> None:
         texts.append((ROOT / "docs" / "contracts" / "fixtures" / ref.split("/")[0] / EXPECTED[ref].name).read_text(encoding="utf-8"))
     for p in (ROOT / "docs" / "contracts" / "schemas" / "c11").glob("*.json"):
         texts.append(p.read_text(encoding="utf-8"))
-    texts.append((ROOT / "docs" / "contracts" / "rows" / "U8.md").read_text(encoding="utf-8"))
+    catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")   # the U8 rows, merged at 0.11.000
+    texts.append("\n".join(ln for ln in catalog.splitlines() if ln.startswith(("| c11-", "| c13-", "| engine-market-api"))))
     for t in texts:
         assert "1995-2006" not in t and "1995 to 2006" not in t
         assert not re.search(r'"fixed_on":\s*\{[^}]*2006-12-29', t, flags=re.S)

@@ -39,6 +39,14 @@ EXPECTED = {
 VARIANTS = {k: v for k, v in EXPECTED.items() if "variant" in k}
 KINDS = {LT: "loan-type", GR: "correlation-grid"}
 ROW_IDS = ["c10-outputs", "c10-outputs-grid", "c10-models", "engine-portfolio-api"]
+
+
+def catalog_rows(ids):
+    """The catalog rows of these contract ids, header first (the unit's rows fragment was merged by the integrator at 0.11.000)."""
+    catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
+    lines = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0].splitlines()
+    head = [ln for ln in lines if ln.startswith("| id | version")]
+    return head + ["|---|"] + [ln for ln in lines if ln.startswith("| ") and ln.split("|")[1].strip() in ids]
 OTHER_CASES = ("c03", "c08", "c09")
 
 RUNG_IDS = ["c1-lhp", "c2-gaussian-1f", "c2-gaussian-mf", "c3-student-t", "c4-creditrisk-plus", "c5-granularity",
@@ -747,8 +755,7 @@ def row_cells(line: str) -> list[str]:
 def test_the_rows_fragment_has_the_four_rows_in_the_catalog_columns() -> None:
     catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
     header = next(row_cells(ln) for ln in catalog.splitlines() if ln.startswith("| id | version"))
-    text = ROWS.read_text(encoding="utf-8")
-    lines = [ln for ln in text.split("## Version history", 1)[0].splitlines() if ln.startswith("|")]
+    lines = [ln for ln in catalog_rows(ROW_IDS) if ln.startswith("|")]
     rows = [row_cells(ln) for ln in lines]
     assert rows[0] == header
     data = [r for r in rows[1:] if not all(set(c) <= set(":- ") for c in r)]
@@ -757,7 +764,7 @@ def test_the_rows_fragment_has_the_four_rows_in_the_catalog_columns() -> None:
         assert len(r) == len(header), r[0]
         d = dict(zip(header, r))
         assert d["version"] == "1.0.0"
-        assert d["status"] == "active"                       # the integrator sets real when the bake lands
+        assert d["status"] == "real"                         # the integrator set real when the bake landed (0.11.000)
         assert d["provider"].startswith("fixture:")
         assert (ROOT / d["schema file"]).is_file(), d["schema file"]
         assert (ROOT / d["provider"].removeprefix("fixture:")).is_file(), d["provider"]
@@ -768,9 +775,11 @@ def test_the_rows_fragment_has_the_four_rows_in_the_catalog_columns() -> None:
                 assert (ROOT / path).is_file(), path
                 if name:
                     assert f"def {name}(" in (ROOT / path).read_text(encoding="utf-8"), t
-    history = [row_cells(ln)[:2] for ln in text.split("## Version history", 1)[1].splitlines() if ln.startswith("| c") or ln.startswith("| e")]
+    # the fragment's version history, merged into the catalog's History at 0.11.000
+    hist_text = catalog.split("## History", 1)[1]
+    history = [row_cells(ln)[:2] for ln in hist_text.splitlines() if ln.startswith("| ") and row_cells(ln)[0] in ROW_IDS]
     assert history == [[rid, "1.0.0"] for rid in ROW_IDS]
-    assert "| api | 4.0.0 |" in text.split("## Version history", 1)[1]
+    assert "| api | 4.0.0 |" in hist_text
     schemas = {dict(zip(header, r))["schema file"] for r in data}
     for ref in EXPECTED:
         assert f"docs/contracts/schemas/{ref}.schema.json" in schemas
@@ -1192,8 +1201,11 @@ def test_m3_violations_is_empty_on_every_fixture_and_a_bake_can_call_it_on_a_fil
 def test_m3_the_contract_and_the_rows_tell_the_bake_to_run_the_checks_on_every_document() -> None:
     text = api_text()
     assert "c10_checks.violations" in text and "data/derived/C10" in text
-    rows = ROWS.read_text(encoding="utf-8")
-    assert "c10_checks" in rows and "tests/c10/" in rows
+    # the rows (merged at 0.11.000) name the bake's own document test, which runs the C10 checks on every committed document
+    rows = "\n".join(catalog_rows(ROW_IDS))
+    assert "tests/c10/test_c10_documents.py" in rows
+    assert "c10_invariants" in (ROOT / "tests" / "c10" / "test_c10_documents.py").read_text(encoding="utf-8")
+    assert "c10_checks" in (ROOT / "tests" / "c10" / "c10_invariants.py").read_text(encoding="utf-8")
 
 
 def plant_table() -> list[tuple[str, str, Any]]:
