@@ -920,9 +920,10 @@ def test_the_rows_fragment_has_the_five_rows_in_the_catalog_columns() -> None:
 
 
 def test_the_changes_fragment_is_bullets_only() -> None:
-    # merged by the integrator into the 0.11.000 entry of the CHANGELOG (fragments.py changelog refuses anything but bullets)
+    # merged by the integrator into the CHANGELOG entry of its release (fragments.py changelog refuses anything but bullets)
     assert not CHANGES.exists()
-    entry = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8").split("## [0.11.000]", 1)[1].split("\n## [", 1)[0]
+    entries = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8").split("\n## [")[1:]
+    entry = next(e for e in entries if "C11" in e and "C13" in e)
     lines = [ln for ln in entry.splitlines()[1:] if ln.strip()]
     bullets = lines[1:]                                       # the first line is the entry's summary sentence
     assert bullets and bullets[0].startswith("- ")

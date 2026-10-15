@@ -680,7 +680,7 @@ def test_the_rows_fragment_has_the_three_rows_in_the_catalog_columns() -> None:
                     assert f"def {name}(" in (ROOT / path).read_text(encoding="utf-8"), t
     contracts = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0]
     cat_ids = [row_cells(ln)[0] for ln in contracts.splitlines() if ln.startswith("| ")]
-    assert all(cat_ids.count(i) == 1 for i in ROW_IDS), "the integrator merged these rows once each (0.11.000)"
+    assert all(cat_ids.count(i) == 1 for i in ROW_IDS), "the integrator merged these rows once each"
 
 
 # --- the engine operational risk API contract -----------------------------------------------------------------------
