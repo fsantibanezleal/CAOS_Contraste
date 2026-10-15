@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "compare_rebake.py"
-DOC = {"provenance": {"code_version": "0.10.001", "riskvalidation_version": "0.6.0", "seed": 42},
+DOC = {"provenance": {"code_version": "stamp-before", "riskvalidation_version": "0.6.0", "seed": 42},
        "model": [{"engine_version": "0.6.0", "name": "rung"}], "outputs": {"var": [1.5, 2.25], "n": 3}}
 
 
@@ -32,7 +32,7 @@ def _write(r: Path, doc: dict, name: str = "v.json") -> None:
 def test_only_the_stamps_moved_passes(tmp_path):
     r = _repo(tmp_path)
     doc = json.loads(json.dumps(DOC))
-    doc["provenance"].update(code_version="0.11.000", riskvalidation_version="0.7.0")
+    doc["provenance"].update(code_version="stamp-after", riskvalidation_version="0.7.0")
     doc["model"][0]["engine_version"] = "0.7.0"
     _write(r, doc)
     res = _run(r)

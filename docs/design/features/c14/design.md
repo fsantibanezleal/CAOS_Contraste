@@ -28,7 +28,7 @@ test row is a `riskvalidation` call (ADR-0069); `tests/contracts_u10/semantics.p
 `C14/vd-2021-q4.json`, `vd-2022-q2.json`, `vd-2022-q4.json` (`c14-outputs`, one per valuation date, four scenarios each: the 2024
 and the 2016 calibrations, with and without behavioural NMD), `C14/models-svb-2021-2022.json` (`c14-models`: the shock tables, the
 caps, the multipliers, the replicating-portfolio fits with their stability windows, the parameter changes), `C14/SHA256SUMS.txt`,
-`C14/raw-sources.txt` and `manifests/C14.json`. The case page is `docs/cases/C14.md`.
+`C14/raw-sources.txt` and `data/derived/manifests/C14.json`. The case page is `docs/cases/C14.md`.
 
 ## Limits
 

@@ -3,8 +3,7 @@
 Requirements: [`requirements.md`](requirements.md). Parent: [`../../SDD.md`](../../SDD.md) sections 4 and 5. The case page, with the
 generator, the known truth and the result read from the committed documents, is [`../../../cases/C17.md`](../../../cases/C17.md);
 the contracts are `docs/contracts/schemas/c17/` (`c17-models`, `c17-outputs`) and the engine contract is
-`docs/contracts/engine/oprisk-api.md` (`engine-oprisk-api` 1.0.0, `riskvalidation.oprisk` pinned by the commit of the engine branch
-`task/u12-oprisk` until the engine release is tagged).
+`docs/contracts/engine/oprisk-api.md` (`engine-oprisk-api` 1.0.0, `riskvalidation.oprisk` pinned to the release v0.07.000).
 
 ## The question
 

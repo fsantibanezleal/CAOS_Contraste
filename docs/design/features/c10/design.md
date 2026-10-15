@@ -3,8 +3,8 @@
 Requirements: [`requirements.md`](requirements.md). Parent: [`../../SDD.md`](../../SDD.md) sections 4 and 5. The case page, with the
 executive brief, the data, the fitted distributions, the ladder and the simulator read from the committed documents, is
 [`../../../cases/C10.md`](../../../cases/C10.md); the contracts are `docs/contracts/schemas/c10/` (`c10-models`, `c10-outputs`,
-`c10-outputs-grid`) and the engine contract is `docs/contracts/engine/portfolio-api.md` (`riskvalidation.portfolio`, pinned by commit
-502652b of `task/u7-portfolio` until the integrator tags the release).
+`c10-outputs-grid`) and the engine contract is `docs/contracts/engine/portfolio-api.md` (`riskvalidation.portfolio`, pinned to the
+release v0.07.000).
 
 ## The question
 

@@ -5,8 +5,8 @@ Status: live
 EARS (Mavin et al., RE'09, doi:10.1109/RE.2009.9). Every requirement names the gate that fails when it is violated. The
 bake is `data-pipeline/pipeline/cases/c10/`; the documents are `data/derived/C10/` (contracts `c10-outputs`, `c10-outputs-grid`
 and `c10-models` 1.0.0, the producer side); the methods are `riskvalidation.portfolio` and `riskvalidation.validation.portfolio`
-(engine contract `engine-portfolio-api` 1.0.0, the consumer side, pinned by commit 502652b of `task/u7-portfolio` until the
-integrator tags the release). The design is [`design.md`](design.md); the adversarial checks are [`validation.md`](validation.md).
+(engine contract `engine-portfolio-api` 1.0.0, the consumer side, pinned to the release
+v0.07.000). The design is [`design.md`](design.md); the adversarial checks are [`validation.md`](validation.md).
 
 | ID | Requirement | Gate |
 |---|---|---|
