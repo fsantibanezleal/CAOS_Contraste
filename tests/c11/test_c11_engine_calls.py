@@ -1,4 +1,4 @@
-"""CT-1106, CT-1107: every number is the pinned engine; the product defines none of its functions; fits are deterministic."""
+"""CT-606, CT-607: every number is the pinned engine; the product defines none of its functions; fits are deterministic."""
 from __future__ import annotations
 
 import ast
@@ -8,6 +8,7 @@ import pkgutil
 from pathlib import Path
 
 import numpy as np
+import pytest
 from riskvalidation.market import caviar, evt, garch, gas_fz, historical, parametric, scoring
 from riskvalidation.validation import market as rv_val
 
@@ -107,3 +108,21 @@ def test_adversarial_the_product_defines_no_engine_function():
     # the scan can fail: a planted definition and a planted import are found
     defs, mods = defined_and_imported("import arch\nfrom scipy import stats\ndef fz0_loss(y, v, e, a):\n    return 0\n")
     assert "fz0_loss" in (defs & engine) and "arch" in mods
+
+
+def test_the_engine_pin_and_stamp_follow_the_requirements_file(tmp_path):
+    """The bake reads the engine ref from data-pipeline/requirements.txt (never a copy): a release tag stamps the plain version,
+    a commit stamps version@commit, and a file without the pin is an error."""
+    from pipeline.cases.c11 import bake as b
+
+    req = tmp_path / "requirements.txt"
+    req.write_text("numpy==2.4.6\nriskvalidation[market] @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation@v1.2.3\n",
+                   encoding="utf-8")
+    assert b.engine_pin(req) == "v1.2.3"
+    req.write_text("riskvalidation @ git+https://github.com/x/CAOS_RiskValidation.git@344ec9ac5d6c553541a6f8cfa2aa7347582b6dee\n",
+                   encoding="utf-8")
+    assert b.engine_pin(req) == "344ec9ac5d6c553541a6f8cfa2aa7347582b6dee"
+    req.write_text("numpy==2.4.6\n", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="no riskvalidation pin"):
+        b.engine_pin(req)
+    assert b.ENGINE_PIN == b.engine_pin()

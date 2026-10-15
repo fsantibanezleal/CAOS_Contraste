@@ -9,10 +9,10 @@ A market risk function must defend its VaR and ES: which model is eligible, whic
 score, whether the exceedances cluster, and how the answer changes between a calm year and a crisis. C11 bakes that chain on
 public daily series and validates it the way a model risk function would. It stands on the engine contract
 `engine-market-api` 1.0.0 (`docs/contracts/engine/market-api.md`), implemented by `riskvalidation.market` and
-`riskvalidation.validation.market` (the branch `task/u8-market`, pinned by its commit until the integrator tags the release),
+`riskvalidation.validation.market` (release v0.07.000, with the `market` extra),
 and produces the `c11-outputs` and `c11-models` documents (`docs/contracts/schemas/c11/`) as their real producer.
 
-## The data and the windows (CT-1101 to CT-1103)
+## The data and the windows (CT-601 to CT-603)
 
 Three public daily series: the US equity market from the Kenneth French daily factors (excess return plus the risk-free rate;
 derived-only), the 10-year US Treasury par yield and the euro in US dollars from the Federal Reserve H.10. Six windows with the
@@ -25,7 +25,7 @@ modified duration of a 10-year par bond at the previous day's yield times the yi
 The calendar of a book is the days on which every component is observed; the others are skipped and counted, never filled,
 and the return after a skipped day is taken between the two observed days from the components' levels.
 
-## The rolling scheme and the ladder (CT-1104, CT-1107)
+## The rolling scheme and the ladder (CT-604, CT-607)
 
 For the forecast day at position `i`, every model sees `y[i - w:i]` and no more (`forecast.run_model`). The ladder is
 dossier 05's rungs 1 to 9 (R10 is a challenger that is not trained): historical simulation (250 and 500 days), age-weighted
@@ -37,7 +37,7 @@ parameters are kept and the filter runs over the current window. A fit that fail
 GARCH family uses the unconverged first fit when it has no other); a day without a usable forecast holds the previous day's
 and is counted (both are in the models document).
 
-## The hyperparameters (CT-1105)
+## The hyperparameters (CT-605)
 
 Fixed once on 1995-01-01 to 2003-12-31 by `hyper.select` (the span ends before the calm window, which is itself a test
 window): the estimation window (500, 750, 1,000 days), the EWMA decay (0.94, 0.97, 0.99), the age-weight decay (0.98, 0.99)
@@ -46,7 +46,7 @@ equity market and the 10-year bond, both tail levels, on every fifth forecast da
 and cannot carry a window inside the span, so the FX leg is not part of the selection. The numbers of CAViaR and GAS starts and
 the refit frequencies are set by the compute budget and not tuned.
 
-## Tests, eligibility and comparison (CT-1108 to CT-1111)
+## Tests, eligibility and comparison (CT-608 to CT-611)
 
 Per model and level: Kupiec, Christoffersen independence and conditional coverage, the duration test, the dynamic quantile
 test and the Acerbi-Szekely Z2 test. The Basel traffic light is the engine's zone over every rolling 250 days at 99 percent,
@@ -61,7 +61,7 @@ its own, so one null serves the whole ladder; it reproduces each model's VaR and
 assumption: a heavier true tail makes the critical values too narrow. The Du-Escanciano and McNeil-Frey tests are in the engine
 and need a probability integral transform or a volatility path that not every rung has; C11 does not run them.
 
-## Documents, determinism and the expected ranges (CT-1112 to CT-1114)
+## Documents, determinism and the expected ranges (CT-612 to CT-614)
 
 Every array is rounded to the nine significant digits the writer keeps before any score is taken, so each score recomputes
 from the committed arrays (the producer checks do). Every seed is the one in the hyperparameters; the forecasts are cached under a

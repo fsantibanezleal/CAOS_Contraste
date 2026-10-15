@@ -1,5 +1,5 @@
 """The generated blocks of ``docs/cases/C11.md``: results per window, the exceedance matrix, the selection of the hyperparameters, the
-raw files read and the hash of each committed document (CT-1115). Everything is read from the committed documents and the
+raw files read and the hash of each committed document (CT-615). Everything is read from the committed documents and the
 evidence files of ``docs/design/features/c11``; the test compares the page's blocks with ``blocks``, so the page cannot drift.
 
     python data-pipeline/pipeline/cases/c11/page.py

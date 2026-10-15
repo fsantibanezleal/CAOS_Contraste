@@ -1,4 +1,4 @@
-"""CT-1108 to CT-1114: the documents of a bake of a small size (the first 30 forecast days of each window, a cheap part of the
+"""CT-608 to CT-614: the documents of a bake of a small size (the first 30 forecast days of each window, a cheap part of the
 ladder, few draws): they validate, pass the producer checks, are listed in the manifest, and are the same for the same seed.
 The committed documents of the real bake run through the same checks (``test_committed_documents_...``)."""
 from __future__ import annotations

@@ -1,4 +1,4 @@
-"""CT-1103: the six windows, their dates (D2), the portfolios (D4) and the returns of a book."""
+"""CT-603: the six windows, their dates (D2), the portfolios (D4) and the returns of a book."""
 from __future__ import annotations
 
 import numpy as np

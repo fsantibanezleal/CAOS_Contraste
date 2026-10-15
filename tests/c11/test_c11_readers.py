@@ -1,4 +1,4 @@
-"""CT-1101, CT-1102, CT-1114: the readers of the three public series, the skipped-day rule and the derived-only rule."""
+"""CT-601, CT-602, CT-614: the readers of the three public series, the skipped-day rule and the derived-only rule."""
 from __future__ import annotations
 
 import datetime as dt
