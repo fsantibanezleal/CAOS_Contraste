@@ -117,9 +117,10 @@ function ApplicantReadout({ sel }: { sel: Selection | null }) {
 /**
  * The cases whose rail leaves the variant's title out to fit 1280 x 800 (see the variant
  * list below). The Focus button of shell 0.14.0 takes 37 px at the head of the rail, so C01 (in Spanish), C04, C07 and C22 each
- * overflowed it by 10 to 39 px (ADR-0071 rule 6) until their variant note went to the Variants and Context groups.
+ * overflowed it by 10 to 39 px (ADR-0071 rule 6) until their variant note went to the Variants and Context groups. Shell 0.14.1 put
+ * the button beside the case select; C10's five loan types and two grids still overflowed by 2 px at 1280 x 800 in English.
  */
-const DENSE_RAIL = new Set(['C01', 'C04', 'C05', 'C07', 'C22']);
+const DENSE_RAIL = new Set(['C01', 'C04', 'C05', 'C07', 'C10', 'C22']);
 
 /** The live scores of the chosen applicant, from the committed points table and EBM export alone. */
 export function liveScores(sel: Selection | null) {

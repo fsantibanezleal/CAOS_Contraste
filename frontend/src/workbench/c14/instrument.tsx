@@ -106,7 +106,11 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     label: { en: 'Deposit category', es: 'Categoría de depósitos' },
     content: (
       <>
-        <RailSelect id="c14-segment" label={{ en: 'Deposit category', es: 'Categoría de depósitos' }} options={categories.map((c) => ({ id: c, label: text(CATEGORY_TEXT, c) }))} value={sel.category} onChange={setCategory} />
+        {/* a choice only when there is one to make: the bank's call reports give one deposit category, which the readout names
+            (a one-option select is a control that changes nothing, gate G9) */}
+        {categories.length > 1 && (
+          <RailSelect id="c14-segment" label={{ en: 'Deposit category', es: 'Categoría de depósitos' }} options={categories.map((c) => ({ id: c, label: text(CATEGORY_TEXT, c) }))} value={sel.category} onChange={setCategory} />
+        )}
         <SegmentReadout sel={sel} />
       </>
     ),
