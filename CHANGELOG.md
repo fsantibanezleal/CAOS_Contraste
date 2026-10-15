@@ -17,6 +17,13 @@ Shell 0.14.3 and the CI base-integrity guard. No case, artifact or contract chan
   `.env.example` was tracked; any `.env` other than an `.example` file fails now. `tests/test_guards.py` runs the step
   itself on planted trees.
 - The index and the readiness restamped for 0.11.001 (`pipeline.pipeline index`, `pipeline.pipeline readiness`).
+- Two test modules that skip on a device without their tools were stale behind the skip. Both run and pass now.
+  - `tests/test_dormant_api.py` (it needs fastapi and httpx) still asserted 4 built cases and 18 missing manifests, the
+    figures of 0.05.000. It now derives both from `data-pipeline/config/planned_cases.json`.
+  - `tests/adversarial/test_adv_gate.py` (it needs a built site and a Playwright browser) planted its page wider than
+    the viewport in the root `index.html` only. The build materialises one page per route, and the gate loads `/app`
+    and the documentation routes from theirs, so the plant reached nothing: the planted run passed 318 states. It now
+    plants every route's page.
 ## [0.11.000], 2026-10-15
 
 Wave 2 batch 2: five new cases built on public data or a known truth, C10 (portfolio credit capital on the Federal Reserve charge-off rates), C11 (market VaR and ES back-testing across 2008, 2020, 2022 and 2023), C13 (FRTB desk eligibility with planted model deficiencies), C14 (IRRBB, six shocks on the balance sheet of the bank that failed in 2023) and C17 (operational risk, LDA against SMA); 14 of 22 cases built. The engine is riskvalidation 0.7.0, the shell 0.14.2 (flip cards, the card carousel, animated illustrations, Focus mode for the App).
