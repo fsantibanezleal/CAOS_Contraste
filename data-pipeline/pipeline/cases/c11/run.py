@@ -1,6 +1,6 @@
 """The command line of the C11 bake: ``fetch`` the raw series, ``select`` the hyperparameters, ``bake`` the documents.
 
-    python data-pipeline/pipeline/cases/c11/run.py fetch  --data-root E:/_Datos/contraste
+    python data-pipeline/pipeline/cases/c11/run.py fetch  --data-root <data root>/contraste
     python data-pipeline/pipeline/cases/c11/run.py bake   --data-root <data root>/contraste --cache <temp root>/c11-cache --workers 6 [--output <sandbox>]
 
 The bake writes ``data/derived/C11/`` and ``data/derived/manifests/C11.json`` (or the same layout under ``--output``) and is the

@@ -17,7 +17,7 @@ SMALL_PATHS = 2000
 
 
 def data_root() -> Path | None:
-    for cand in (os.environ.get("CONTRASTE_DATA"), "E:/_Datos/contraste"):
+    for cand in (os.environ.get("CONTRASTE_DATA"),):   # the device data root by role; never a drive written here
         if cand and (Path(cand) / "raw" / "fdic-financials").exists() and (Path(cand) / "raw" / "treasury-par").exists():
             return Path(cand)
     return None

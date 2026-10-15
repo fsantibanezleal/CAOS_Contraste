@@ -21,7 +21,7 @@ VALUATION_DATES = ("2021-12-31", "2022-06-30", "2022-12-31")
 
 
 def _raw_root() -> Path | None:
-    for cand in (os.environ.get("CONTRASTE_DATA"), "E:/_Datos/contraste"):
+    for cand in (os.environ.get("CONTRASTE_DATA"),):   # the device data root by role; never a drive written here
         if cand and (Path(cand) / "raw" / "treasury-par" / "daily-treasury-par-1990.csv").exists():
             return Path(cand)
     return None

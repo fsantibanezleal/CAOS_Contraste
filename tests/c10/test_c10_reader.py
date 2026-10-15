@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import re
 from pathlib import Path
 
@@ -11,7 +12,8 @@ from conftest import SAMPLE
 from pipeline.cases.c10 import documents as docs
 from pipeline.cases.c10 import fed
 
-RAW_PAGE = Path("E:/_Datos/contraste/raw/fed-chargeoff/chgallsa.htm")
+# the saved Board page in the device data root ($CONTRASTE_DATA, the data root by role; never a drive written here)
+RAW_PAGE = Path(os.environ.get("CONTRASTE_DATA") or "/nonexistent") / "raw" / "fed-chargeoff" / "chgallsa.htm"
 
 
 def test_the_reader_names_columns_by_header_id_and_keeps_missing_quarters_missing(table, raw) -> None:
