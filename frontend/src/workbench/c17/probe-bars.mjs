@@ -3,7 +3,7 @@
 // its own drawing (a `.caos-bars` box whose content is taller than the box). The gate measures the same thing at its own
 // sizes; this probe walks every state of the new case on purpose, so a bar chart in a sub-tab nobody opens cannot hide.
 // Usage (from frontend/, with the built site served, e.g. `npm run preview -- --port 4177`):
-//   PLAYWRIGHT_BROWSERS_PATH=E:/_Temp/ms-playwright node src/workbench/c17/probe-bars.mjs --url http://localhost:4177 [--size 1280x800] [--case C17]
+//   PLAYWRIGHT_BROWSERS_PATH=<temp root>/ms-playwright node src/workbench/c17/probe-bars.mjs --url http://localhost:4177 [--size 1280x800] [--case C17]
 // Exit code 0: no bar chart scrolls and at least one was visited in every state that draws one; 1: one scrolls or none was found.
 import { chromium } from 'playwright';
 
