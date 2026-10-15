@@ -66,7 +66,7 @@ appropriate use in decisions (the impact view and the findings record).
 
 ## Executive brief
 
-The executive view of the Introduction is data, kept apart from this document: one file frames the industry problem of defending internal risk models before supervisors, in five sections, with its illustrations and the linked source of every figure, in English and Spanish. It is valid against the shell's `executive.schema.json` 2.0.0, is general and never tied to a client, and is rendered by the shell's `ExecutiveView` as the first view of the Introduction. The standard is CAOS_MANAGE `conventions/problem-context-first.md`.
+The executive view of the Introduction is data, kept apart from this document: one file frames the industry problem of defending internal risk models before supervisors, in five sections, with its illustrations and the linked source of every figure, in English and Spanish. It is valid against the shell's `executive.schema.json` 2.0.0, is general and never tied to a client, and is rendered by the shell's `ExecutiveView` first on the Introduction, with the shell's flip cards, carousels and animated illustrations under their rules of use (shell 0.14). The standard is CAOS_MANAGE `conventions/problem-context-first.md`.
 
 Data file: `content/executive.json`
 
@@ -229,13 +229,13 @@ the ones the dossiers and `docs/frameworks/` record.
 | models | catboost | 1.2.10 | the gradient-boosted LGD challenger of case C08 (U6 sizing technology matrix) | lightgbm on the same features |
 | models | shap | 0.52.0 | reason codes and explanation stability of the boosted rung | none recorded (0.53.0 is current and was not adopted) |
 | data | pypdf | 6.19.0 | reading the published tables of the papers (Tasche, Pluto and Tasche, BCBS WP14) | none recorded (6.20.0 is current and was not adopted) |
-| engine | riskvalidation | v0.06.000 | the validation tests, regulatory calculators and generators (git tag until its first PyPI release) | none: no toolkit implements the ECB tests as specified |
+| engine | riskvalidation | v0.07.000 | the validation tests, regulatory calculators and generators (git tag until its first PyPI release) | none: no toolkit implements the ECB tests as specified |
 | models (optional) | torch | 2.14.1 | CPU runtime of the TabPFN extra, outside the default install | none recorded |
 | models (optional) | tabpfn | 9.1.0 | the TabPFN challenger of the small cases, weights under the Prior Labs License | none recorded |
 | tests | pytest | 9.1.1 | the pipeline, contract, guard and adversarial tests | none recorded |
 | lint | ruff | 0.15.18 | lint of data-pipeline, tests, scripts and app | none recorded (0.17.0 is current and was not adopted) |
 | contracts | jsonschema | 4.26.0 | validates every document against its schema file | none recorded |
-| shell | @fasl-work/caos-app-shell | 0.13.1 | the shared app shell, pinned exactly (ADR-0078) | a hand-rolled shell, forbidden by ADR-0078 |
+| shell | @fasl-work/caos-app-shell | 0.14.2 | the shared app shell, pinned exactly (ADR-0078) | a hand-rolled shell, forbidden by ADR-0078 |
 | web | react | 19.3.0 | the UI | none: the shell requires it |
 | web | react-dom | 19.3.0 | the UI renderer | none: the shell requires it |
 | web | react-router | 8.4.0 | the six routes | none: the shell requires it |
@@ -413,7 +413,7 @@ the architecture modal:
   says: scores, grades, term structures, curves), **Validation** (the battery: every `TestResult` with its light,
   statistic, H0, reference and policy), **Impact** (capital, provisions, liquidity, IRRBB, decisions), **Findings**
   (severity S1 to S4, evidence, the opinion), **Variants** (the case's variants side by side), **Context** (what the
-  case is, its data and licence, its limits). Each view carries its lane badge; nothing is cross-case.
+  case is, its data and licence, its limits). Each view carries its lane badge; nothing is cross-case. Since shell 0.14.0 the App offers Focus mode (`CaseWorkbench`'s `focus`, ADR-0070): a Focus button in the rail head opens the open group of the selected case in the full viewport (`?focus=1` beside `?case=` and `?view=`), and Escape or the exit button returns to the same case, group and sub-view; the measured gate runs with `--require-focus` and visits Focus mode for every case (G18).
 - **Introduction**: the problem, who it serves, the three lenses, the honest scope, the overview diagram.
 - **Methodology**: one sub-tab per family (credit scoring, rating and calibration, lifetime PD and IFRS 9, LGD/EAD,
   portfolio capital, market, CCR, IRRBB, liquidity, op risk, aggregation and stress, ML validation, the test

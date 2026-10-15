@@ -1,0 +1,1417 @@
+{
+  "schema": "contraste.case/v1",
+  "case_id": "C17",
+  "variant_id": "fixture-xi-0-8",
+  "model": [
+    {
+      "id": "lda-splice",
+      "family": "oprisk",
+      "rung": "lda-splice",
+      "title": {
+        "en": "Fixture model lda-splice",
+        "es": "Modelo de ejemplo lda-splice"
+      },
+      "short_title": {
+        "en": "lda-splice",
+        "es": "lda-splice"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    },
+    {
+      "id": "sma",
+      "family": "oprisk",
+      "rung": "sma",
+      "title": {
+        "en": "Fixture model sma",
+        "es": "Modelo de ejemplo sma"
+      },
+      "short_title": {
+        "en": "sma",
+        "es": "sma"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    }
+  ],
+  "outputs": {
+    "kind": "tail-index",
+    "currency": "EUR",
+    "tail_index": 0.8,
+    "infinite_mean": false,
+    "truth": {
+      "label": "synthetic-known-truth",
+      "currency": "EUR",
+      "frequency": {
+        "law": "poisson",
+        "lambda_per_year": 62.9,
+        "counted_above_eur": 10000.0
+      },
+      "severity": {
+        "law": "gpd",
+        "location_eur": 10000.0,
+        "scale_eur": 19600.0,
+        "tail_index": 0.8
+      },
+      "annual_loss_quantile": {
+        "level": 0.999,
+        "value_eur": 176000000.0,
+        "method": "panjer",
+        "grid_step_eur": 1000.0,
+        "mc_check": {
+          "n_years": 10000000,
+          "seed": 7,
+          "value_eur": 175472000.0,
+          "standard_error_eur": 704000.0,
+          "agrees": true
+        }
+      },
+      "annual_loss_mean": {
+        "value_eur": 6793200,
+        "reason": null
+      },
+      "notice": {
+        "en": "Fixture, not a result. The truth is the annual loss of every loss the generator draws at or above its floor, whatever the collection threshold.",
+        "es": "Ejemplo, no es un resultado. La verdad es la perdida anual de toda perdida que el generador simula sobre su piso, cualquiera sea el umbral de recoleccion."
+      }
+    },
+    "calibration": {
+      "targets": {
+        "currency": "EUR",
+        "label": "derived-only",
+        "licence_class": "derived-only",
+        "source": {
+          "id": "bcbs160",
+          "title": "Results from the 2008 Loss Data Collection Exercise for Operational Risk",
+          "url": "https://www.bis.org/publ/bcbs160.htm",
+          "date": "2009-07-28",
+          "table": "ILD7"
+        },
+        "threshold_eur": 20000,
+        "frequency": {
+          "per_eur_bn_assets": 0.82,
+          "iqr_low": 0.36,
+          "iqr_high": 1.66,
+          "statistic": "median across banks of the losses of EUR 20,000 or more per year per EUR billion of consolidated assets"
+        },
+        "severity_percentiles": [
+          {
+            "p": 0.25,
+            "loss_eur": 27632
+          },
+          {
+            "p": 0.5,
+            "loss_eur": 41916
+          },
+          {
+            "p": 0.75,
+            "loss_eur": 82608
+          },
+          {
+            "p": 0.95,
+            "loss_eur": 418400
+          }
+        ],
+        "caveat": {
+          "en": "Medians of per-bank percentiles are not the percentiles of any one bank; the statistics calibrate a synthetic bank and describe no real one.",
+          "es": "Las medianas de percentiles por banco no son los percentiles de ningun banco; las estadisticas calibran un banco sintetico y no describen a uno real."
+        }
+      },
+      "fit": {
+        "tail_index": 0.8,
+        "scale_eur": 19600.0,
+        "fitted_quantiles_eur": [
+          28928,
+          45568,
+          90084,
+          364503
+        ],
+        "max_abs_log_error": 0.137903,
+        "method": "least squares on the log quantiles, scale only (fixture values)"
+      }
+    },
+    "bank": {
+      "currency": "EUR",
+      "synthetic": true,
+      "label": {
+        "en": "Synthetic bank of EUR 50 billion in assets",
+        "es": "Banco sintetico de EUR 50 mil millones en activos"
+      },
+      "assets_eur": 50000000000.0,
+      "business_indicator": {
+        "ildc_eur": 800000000.0,
+        "sc_eur": 500000000.0,
+        "fc_eur": 100000000.0,
+        "bi_eur": 1400000000.0
+      },
+      "bic_eur": 180000000.0,
+      "bucket": 2,
+      "notice": {
+        "en": "Fixture, not a result. The business indicator is stated, synthetic and describes no real bank.",
+        "es": "Ejemplo, no es un resultado. El indicador de negocio es declarado, sintetico y no describe a un banco real."
+      }
+    },
+    "cells": [
+      {
+        "id": "y5-h10000",
+        "years": 5,
+        "collection_threshold_eur": 10000,
+        "currency": "EUR",
+        "replications": {
+          "seed_first": 5000,
+          "n_replications": 1000,
+          "n_failed": 8,
+          "n_losses_median": 314
+        },
+        "capital": {
+          "lda_lognormal": {
+            "aggregation": "monte-carlo",
+            "status": "verified",
+            "n_defined": 992,
+            "capital_eur": {
+              "p05": 32688161,
+              "p25": 62021245,
+              "median": 96800000,
+              "p75": 151081133,
+              "p95": 286655459
+            },
+            "ratio_to_truth": {
+              "p05": 0.1857281875,
+              "p25": 0.3523934375,
+              "median": 0.55,
+              "p75": 0.8584155284090909,
+              "p95": 1.6287241988636363
+            },
+            "share_underestimating": 0.8175,
+            "iqr_over_truth": 0.5060220909090909,
+            "log_sd": 0.66
+          },
+          "lda_lognormal_truncated": {
+            "aggregation": "panjer",
+            "status": "verified",
+            "n_defined": 992,
+            "capital_eur": {
+              "p05": 47546418,
+              "p25": 90212721,
+              "median": 140800000,
+              "p75": 219754374,
+              "p95": 416953398
+            },
+            "ratio_to_truth": {
+              "p05": 0.2701501022727273,
+              "p25": 0.5125722784090909,
+              "median": 0.8,
+              "p75": 1.2486043977272727,
+              "p95": 2.3690533977272725
+            },
+            "share_underestimating": 0.6324,
+            "iqr_over_truth": 0.7360321193181818,
+            "log_sd": 0.66
+          },
+          "lda_splice": {
+            "aggregation": "fft",
+            "status": "verified",
+            "n_defined": 992,
+            "capital_eur": {
+              "p05": 57650032,
+              "p25": 109382923,
+              "median": 170720000,
+              "p75": 266452173,
+              "p95": 505555987
+            },
+            "ratio_to_truth": {
+              "p05": 0.327557,
+              "p25": 0.6214938806818182,
+              "median": 0.97,
+              "p75": 1.5139328011363635,
+              "p95": 2.872477198863636
+            },
+            "share_underestimating": 0.5184,
+            "iqr_over_truth": 0.8924389204545454,
+            "log_sd": 0.66
+          },
+          "sla": {
+            "aggregation": "closed-form",
+            "status": "verified",
+            "n_defined": 992,
+            "capital_eur": {
+              "p05": 53489719,
+              "p25": 101489311,
+              "median": 158400000,
+              "p75": 247223680,
+              "p95": 469072560
+            },
+            "ratio_to_truth": {
+              "p05": 0.30391885795454543,
+              "p25": 0.5766438125,
+              "median": 0.9,
+              "p75": 1.40468,
+              "p95": 2.665185
+            },
+            "share_underestimating": 0.5634,
+            "iqr_over_truth": 0.8280361875,
+            "log_sd": 0.66
+          },
+          "sla_mean_corrected": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "UNVERIFIED",
+              "n_defined": 862,
+              "capital_eur": {
+                "p05": 58838692,
+                "p25": 111638241,
+                "median": 174240000,
+                "p75": 271946030,
+                "p95": 515979816
+              },
+              "ratio_to_truth": {
+                "p05": 0.33431075,
+                "p25": 0.6343081875,
+                "median": 0.99,
+                "p75": 1.5451478977272728,
+                "p95": 2.9317035
+              },
+              "share_underestimating": 0.5061,
+              "iqr_over_truth": 0.9108397102272727,
+              "log_sd": 0.66
+            },
+            "reason": null
+          },
+          "scenario": {
+            "summary": null,
+            "reason": "fixture: the scenario combination is evaluated on the 10-year cells only"
+          }
+        },
+        "aggregation_agreement": {
+          "max_rel_diff_panjer_fft": 2.1e-06,
+          "n_compared": 992
+        },
+        "threshold_stability": [
+          {
+            "threshold_eur": 10000.0,
+            "n_exceedances_median": 314.5,
+            "n_fits": 988,
+            "tail_index": {
+              "p05": 0.673,
+              "median": 0.84,
+              "p95": 1.007
+            },
+            "share_at_least_one": 0.0575
+          },
+          {
+            "threshold_eur": 20000.0,
+            "n_exceedances_median": 205.0,
+            "n_fits": 988,
+            "tail_index": {
+              "p05": 0.6132,
+              "median": 0.82,
+              "p95": 1.0268
+            },
+            "share_at_least_one": 0.0761
+          },
+          {
+            "threshold_eur": 40000.0,
+            "n_exceedances_median": 115.8,
+            "n_fits": 988,
+            "tail_index": {
+              "p05": 0.5348,
+              "median": 0.81,
+              "p95": 1.0852
+            },
+            "share_at_least_one": 0.128
+          },
+          {
+            "threshold_eur": 80000.0,
+            "n_exceedances_median": 58.2,
+            "n_fits": 988,
+            "tail_index": {
+              "p05": 0.4168,
+              "median": 0.805,
+              "p95": 1.1932
+            },
+            "share_at_least_one": 0.2043
+          }
+        ],
+        "sma": {
+          "currency": "EUR",
+          "bucket": 2,
+          "bic_eur": 180000000.0,
+          "basis": "bic-times-ilm",
+          "discretion_applied": "none",
+          "lc_eur": {
+            "p05": 24940694,
+            "p25": 50158539,
+            "median": 81518400,
+            "p75": 132484911,
+            "p95": 266442047
+          },
+          "ilm": {
+            "p05": 0.6544152569,
+            "p25": 0.7314439704,
+            "median": 0.8104435954,
+            "p75": 0.9166255945,
+            "p95": 1.127148877
+          },
+          "orc_eur": {
+            "p05": 117794746,
+            "p25": 131659915,
+            "median": 145879847,
+            "p75": 164992607,
+            "p95": 202886798
+          },
+          "orc_over_true_quantile": {
+            "p05": 0.6692883295454546,
+            "p25": 0.7480676988636363,
+            "median": 0.8288627670454546,
+            "p75": 0.9374579943181818,
+            "p95": 1.1527658977272728
+          },
+          "note": {
+            "en": "The SMA is not calibrated to the 99.9 percent quantile of any bank; the ratio is a comparison, not a claim of equivalence.",
+            "es": "El SMA no esta calibrado al cuantil 99,9 por ciento de ningun banco; la razon es una comparacion, no una equivalencia."
+          }
+        }
+      },
+      {
+        "id": "y5-h20000",
+        "years": 5,
+        "collection_threshold_eur": 20000,
+        "currency": "EUR",
+        "replications": {
+          "seed_first": 6000,
+          "n_replications": 1000,
+          "n_failed": 12,
+          "n_losses_median": 205
+        },
+        "capital": {
+          "lda_lognormal": {
+            "aggregation": "monte-carlo",
+            "status": "verified",
+            "n_defined": 988,
+            "capital_eur": {
+              "p05": 24926479,
+              "p25": 50422680,
+              "median": 82280000,
+              "p75": 134264948,
+              "p95": 271598659
+            },
+            "ratio_to_truth": {
+              "p05": 0.14162772159090908,
+              "p25": 0.2864925,
+              "median": 0.4675,
+              "p75": 0.7628690227272727,
+              "p95": 1.5431741988636363
+            },
+            "share_underestimating": 0.8525,
+            "iqr_over_truth": 0.4763765227272727,
+            "log_sd": 0.726
+          },
+          "lda_lognormal_truncated": {
+            "aggregation": "panjer",
+            "status": "verified",
+            "n_defined": 988,
+            "capital_eur": {
+              "p05": 42654938,
+              "p25": 86284799,
+              "median": 140800000,
+              "p75": 229758197,
+              "p95": 464767758
+            },
+            "ratio_to_truth": {
+              "p05": 0.24235760227272726,
+              "p25": 0.49025453977272726,
+              "median": 0.8,
+              "p75": 1.3054443011363637,
+              "p95": 2.6407258977272727
+            },
+            "share_underestimating": 0.6207,
+            "iqr_over_truth": 0.8151897613636364,
+            "log_sd": 0.726
+          },
+          "lda_splice": {
+            "aggregation": "fft",
+            "status": "verified",
+            "n_defined": 988,
+            "capital_eur": {
+              "p05": 51719112,
+              "p25": 104620319,
+              "median": 170720000,
+              "p75": 278581811,
+              "p95": 563530915
+            },
+            "ratio_to_truth": {
+              "p05": 0.2938585909090909,
+              "p25": 0.5944336306818182,
+              "median": 0.97,
+              "p75": 1.5828511988636365,
+              "p95": 3.2018801988636363
+            },
+            "share_underestimating": 0.5167,
+            "iqr_over_truth": 0.9884175681818181,
+            "log_sd": 0.726
+          },
+          "sla": {
+            "aggregation": "closed-form",
+            "status": "verified",
+            "n_defined": 988,
+            "capital_eur": {
+              "p05": 47986805,
+              "p25": 97070399,
+              "median": 158400000,
+              "p75": 258477965,
+              "p95": 522863739
+            },
+            "ratio_to_truth": {
+              "p05": 0.27265230113636363,
+              "p25": 0.5515363579545455,
+              "median": 0.9,
+              "p75": 1.4686248011363636,
+              "p95": 2.9708166988636364
+            },
+            "share_underestimating": 0.5577,
+            "iqr_over_truth": 0.9170884431818181,
+            "log_sd": 0.726
+          },
+          "sla_mean_corrected": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "UNVERIFIED",
+              "n_defined": 858,
+              "capital_eur": {
+                "p05": 52785485,
+                "p25": 106777438,
+                "median": 174240000,
+                "p75": 284325765,
+                "p95": 575150101
+              },
+              "ratio_to_truth": {
+                "p05": 0.2999175284090909,
+                "p25": 0.6066899886363636,
+                "median": 0.99,
+                "p75": 1.6154873011363637,
+                "p95": 3.2678983011363636
+              },
+              "share_underestimating": 0.5055,
+              "iqr_over_truth": 1.0087973125,
+              "log_sd": 0.726
+            },
+            "reason": null
+          },
+          "scenario": {
+            "summary": null,
+            "reason": "fixture: the scenario combination is evaluated on the 10-year cells only"
+          }
+        },
+        "aggregation_agreement": {
+          "max_rel_diff_panjer_fft": 2.1e-06,
+          "n_compared": 988
+        },
+        "threshold_stability": [
+          {
+            "threshold_eur": 20000.0,
+            "n_exceedances_median": 205.0,
+            "n_fits": 988,
+            "tail_index": {
+              "p05": 0.6332,
+              "median": 0.84,
+              "p95": 1.0468
+            },
+            "share_at_least_one": 0.1016
+          },
+          {
+            "threshold_eur": 40000.0,
+            "n_exceedances_median": 115.8,
+            "n_fits": 988,
+            "tail_index": {
+              "p05": 0.5448,
+              "median": 0.82,
+              "p95": 1.0952
+            },
+            "share_at_least_one": 0.141
+          },
+          {
+            "threshold_eur": 80000.0,
+            "n_exceedances_median": 58.2,
+            "n_fits": 988,
+            "tail_index": {
+              "p05": 0.4218,
+              "median": 0.81,
+              "p95": 1.1982
+            },
+            "share_at_least_one": 0.2104
+          },
+          {
+            "threshold_eur": 160000.0,
+            "n_exceedances_median": 27.0,
+            "n_fits": 988,
+            "tail_index": {
+              "p05": 0.2355,
+              "median": 0.805,
+              "p95": 1.3745
+            },
+            "share_at_least_one": 0.2867
+          }
+        ],
+        "sma": {
+          "currency": "EUR",
+          "bucket": 2,
+          "bic_eur": 180000000.0,
+          "basis": "bic-times-ilm",
+          "discretion_applied": "none",
+          "lc_eur": {
+            "p05": 23783462,
+            "p25": 47831216,
+            "median": 77736000,
+            "p75": 126337699,
+            "p95": 254079312
+          },
+          "ilm": {
+            "p05": 0.6504193273,
+            "p25": 0.7249658027,
+            "median": 0.8016049923,
+            "p75": 0.9048867145,
+            "p95": 1.110475807
+          },
+          "orc_eur": {
+            "p05": 117075479,
+            "p25": 130493844,
+            "median": 144288899,
+            "p75": 162879609,
+            "p95": 199885645
+          },
+          "orc_over_true_quantile": {
+            "p05": 0.6652015852272727,
+            "p25": 0.7414422954545454,
+            "median": 0.8198232897727272,
+            "p75": 0.9254523238636364,
+            "p95": 1.1357138920454546
+          },
+          "note": {
+            "en": "The SMA is not calibrated to the 99.9 percent quantile of any bank; the ratio is a comparison, not a claim of equivalence.",
+            "es": "El SMA no esta calibrado al cuantil 99,9 por ciento de ningun banco; la razon es una comparacion, no una equivalencia."
+          }
+        }
+      },
+      {
+        "id": "y10-h10000",
+        "years": 10,
+        "collection_threshold_eur": 10000,
+        "currency": "EUR",
+        "replications": {
+          "seed_first": 7000,
+          "n_replications": 1000,
+          "n_failed": 16,
+          "n_losses_median": 629
+        },
+        "capital": {
+          "lda_lognormal": {
+            "aggregation": "monte-carlo",
+            "status": "verified",
+            "n_defined": 984,
+            "capital_eur": {
+              "p05": 48510924,
+              "p25": 72919565,
+              "median": 96800000,
+              "p75": 128501039,
+              "p95": 193157325
+            },
+            "ratio_to_truth": {
+              "p05": 0.27563025,
+              "p25": 0.4143157102272727,
+              "median": 0.55,
+              "p75": 0.7301195397727273,
+              "p95": 1.0974848011363636
+            },
+            "share_underestimating": 0.9227,
+            "iqr_over_truth": 0.31580382954545455,
+            "log_sd": 0.42
+          },
+          "lda_lognormal_truncated": {
+            "aggregation": "panjer",
+            "status": "verified",
+            "n_defined": 984,
+            "capital_eur": {
+              "p05": 70561343,
+              "p25": 106064823,
+              "median": 140800000,
+              "p75": 186910610,
+              "p95": 280956104
+            },
+            "ratio_to_truth": {
+              "p05": 0.4009167215909091,
+              "p25": 0.6026410397727273,
+              "median": 0.8,
+              "p75": 1.0619921022727272,
+              "p95": 1.5963415
+            },
+            "share_underestimating": 0.7024,
+            "iqr_over_truth": 0.4593510625,
+            "log_sd": 0.42
+          },
+          "lda_splice": {
+            "aggregation": "fft",
+            "status": "verified",
+            "n_defined": 984,
+            "capital_eur": {
+              "p05": 85555628,
+              "p25": 128603598,
+              "median": 170720000,
+              "p75": 226629110,
+              "p95": 340659282
+            },
+            "ratio_to_truth": {
+              "p05": 0.4861115227272727,
+              "p25": 0.7307022613636364,
+              "median": 0.97,
+              "p75": 1.2876653977272727,
+              "p95": 1.9355641022727272
+            },
+            "share_underestimating": 0.5289,
+            "iqr_over_truth": 0.5569631363636364,
+            "log_sd": 0.42
+          },
+          "sla": {
+            "aggregation": "closed-form",
+            "status": "verified",
+            "n_defined": 984,
+            "capital_eur": {
+              "p05": 79381511,
+              "p25": 119322926,
+              "median": 158400000,
+              "p75": 210274434,
+              "p95": 316075619
+            },
+            "ratio_to_truth": {
+              "p05": 0.4510313125,
+              "p25": 0.6779711704545455,
+              "median": 0.9,
+              "p75": 1.1947411022727272,
+              "p95": 1.7958841988636363
+            },
+            "share_underestimating": 0.599,
+            "iqr_over_truth": 0.5167699318181819,
+            "log_sd": 0.42
+          },
+          "sla_mean_corrected": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "UNVERIFIED",
+              "n_defined": 854,
+              "capital_eur": {
+                "p05": 87319661,
+                "p25": 131255219,
+                "median": 174240000,
+                "p75": 231301875,
+                "p95": 347683178
+              },
+              "ratio_to_truth": {
+                "p05": 0.4961344375,
+                "p25": 0.7457682897727272,
+                "median": 0.99,
+                "p75": 1.3142151988636364,
+                "p95": 1.9754726022727274
+              },
+              "share_underestimating": 0.5095,
+              "iqr_over_truth": 0.5684469090909091,
+              "log_sd": 0.42
+            },
+            "reason": null
+          },
+          "scenario": {
+            "summary": {
+              "aggregation": "panjer",
+              "status": "verified",
+              "n_defined": 984,
+              "capital_eur": {
+                "p05": 89965712,
+                "p25": 135232648,
+                "median": 179520000,
+                "p75": 238311022,
+                "p95": 358219030
+              },
+              "ratio_to_truth": {
+                "p05": 0.5111688181818181,
+                "p25": 0.7683673181818181,
+                "median": 1.02,
+                "p75": 1.3540398977272727,
+                "p95": 2.035335397727273
+              },
+              "share_underestimating": 0.4812,
+              "iqr_over_truth": 0.5856725795454546,
+              "log_sd": 0.42
+            },
+            "reason": null
+          }
+        },
+        "aggregation_agreement": {
+          "max_rel_diff_panjer_fft": 2.1e-06,
+          "n_compared": 984
+        },
+        "threshold_stability": [
+          {
+            "threshold_eur": 10000.0,
+            "n_exceedances_median": 629.0,
+            "n_fits": 988,
+            "tail_index": {
+              "p05": 0.7219,
+              "median": 0.84,
+              "p95": 0.9581
+            },
+            "share_at_least_one": 0.0129
+          },
+          {
+            "threshold_eur": 20000.0,
+            "n_exceedances_median": 410.0,
+            "n_fits": 988,
+            "tail_index": {
+              "p05": 0.6738,
+              "median": 0.82,
+              "p95": 0.9662
+            },
+            "share_at_least_one": 0.0214
+          },
+          {
+            "threshold_eur": 40000.0,
+            "n_exceedances_median": 231.5,
+            "n_fits": 988,
+            "tail_index": {
+              "p05": 0.6154,
+              "median": 0.81,
+              "p95": 1.0046
+            },
+            "share_at_least_one": 0.0541
+          },
+          {
+            "threshold_eur": 80000.0,
+            "n_exceedances_median": 116.4,
+            "n_fits": 988,
+            "tail_index": {
+              "p05": 0.5305,
+              "median": 0.805,
+              "p95": 1.0795
+            },
+            "share_at_least_one": 0.1213
+          }
+        ],
+        "sma": {
+          "currency": "EUR",
+          "bucket": 2,
+          "bic_eur": 180000000.0,
+          "basis": "bic-times-ilm",
+          "discretion_applied": "none",
+          "lc_eur": {
+            "p05": 37013280,
+            "p25": 58972354,
+            "median": 81518400,
+            "p75": 112684149,
+            "p95": 179536901
+          },
+          "ilm": {
+            "p05": 0.6933591741,
+            "p25": 0.7551008089,
+            "median": 0.8104435954,
+            "p75": 0.8778746437,
+            "p95": 0.999242342
+          },
+          "orc_eur": {
+            "p05": 124804651,
+            "p25": 135918146,
+            "median": 145879847,
+            "p75": 158017436,
+            "p95": 179863622
+          },
+          "orc_over_true_quantile": {
+            "p05": 0.7091173352272727,
+            "p25": 0.7722621931818182,
+            "median": 0.8288627670454546,
+            "p75": 0.8978263409090909,
+            "p95": 1.0219523977272726
+          },
+          "note": {
+            "en": "The SMA is not calibrated to the 99.9 percent quantile of any bank; the ratio is a comparison, not a claim of equivalence.",
+            "es": "El SMA no esta calibrado al cuantil 99,9 por ciento de ningun banco; la razon es una comparacion, no una equivalencia."
+          }
+        }
+      },
+      {
+        "id": "y10-h20000",
+        "years": 10,
+        "collection_threshold_eur": 20000,
+        "currency": "EUR",
+        "replications": {
+          "seed_first": 8000,
+          "n_replications": 1000,
+          "n_failed": 20,
+          "n_losses_median": 410
+        },
+        "capital": {
+          "lda_lognormal": {
+            "aggregation": "monte-carlo",
+            "status": "verified",
+            "n_defined": 980,
+            "capital_eur": {
+              "p05": 38481756,
+              "p25": 60250392,
+              "median": 82280000,
+              "p75": 112364389,
+              "p95": 175927479
+            },
+            "ratio_to_truth": {
+              "p05": 0.2186463409090909,
+              "p25": 0.3423317727272727,
+              "median": 0.4675,
+              "p75": 0.6384340284090909,
+              "p95": 0.9995879488636363
+            },
+            "share_underestimating": 0.9501,
+            "iqr_over_truth": 0.2961022556818182,
+            "log_sd": 0.462
+          },
+          "lda_lognormal_truncated": {
+            "aggregation": "panjer",
+            "status": "verified",
+            "n_defined": 980,
+            "capital_eur": {
+              "p05": 65851134,
+              "p25": 103102273,
+              "median": 140800000,
+              "p75": 192281302,
+              "p95": 301052365
+            },
+            "ratio_to_truth": {
+              "p05": 0.37415417045454546,
+              "p25": 0.5858083693181818,
+              "median": 0.8,
+              "p75": 1.0925073977272728,
+              "p95": 1.7105248011363636
+            },
+            "share_underestimating": 0.6855,
+            "iqr_over_truth": 0.5066990284090909,
+            "log_sd": 0.462
+          },
+          "lda_splice": {
+            "aggregation": "fft",
+            "status": "verified",
+            "n_defined": 980,
+            "capital_eur": {
+              "p05": 79844500,
+              "p25": 125011506,
+              "median": 170720000,
+              "p75": 233141093,
+              "p95": 365026006
+            },
+            "ratio_to_truth": {
+              "p05": 0.4536619318181818,
+              "p25": 0.7102926477272727,
+              "median": 0.97,
+              "p75": 1.3246653011363636,
+              "p95": 2.074011397727273
+            },
+            "share_underestimating": 0.5263,
+            "iqr_over_truth": 0.6143726534090909,
+            "log_sd": 0.462
+          },
+          "sla": {
+            "aggregation": "closed-form",
+            "status": "verified",
+            "n_defined": 980,
+            "capital_eur": {
+              "p05": 74082525,
+              "p25": 115990058,
+              "median": 158400000,
+              "p75": 216316478,
+              "p95": 338683910
+            },
+            "ratio_to_truth": {
+              "p05": 0.4209234375,
+              "p25": 0.6590344204545454,
+              "median": 0.9,
+              "p75": 1.2290708977272726,
+              "p95": 1.9243403977272728
+            },
+            "share_underestimating": 0.5902,
+            "iqr_over_truth": 0.5700364772727273,
+            "log_sd": 0.462
+          },
+          "sla_mean_corrected": {
+            "summary": {
+              "aggregation": "closed-form",
+              "status": "UNVERIFIED",
+              "n_defined": 850,
+              "capital_eur": {
+                "p05": 81490777,
+                "p25": 127589063,
+                "median": 174240000,
+                "p75": 237948110,
+                "p95": 372552312
+              },
+              "ratio_to_truth": {
+                "p05": 0.4630157784090909,
+                "p25": 0.7249378579545455,
+                "median": 0.99,
+                "p75": 1.3519778977272727,
+                "p95": 2.1167745
+              },
+              "share_underestimating": 0.5087,
+              "iqr_over_truth": 0.6270400397727273,
+              "log_sd": 0.462
+            },
+            "reason": null
+          },
+          "scenario": {
+            "summary": {
+              "aggregation": "panjer",
+              "status": "verified",
+              "n_defined": 980,
+              "capital_eur": {
+                "p05": 83960195,
+                "p25": 131455400,
+                "median": 179520000,
+                "p75": 245158672,
+                "p95": 383841779
+              },
+              "ratio_to_truth": {
+                "p05": 0.4770465625,
+                "p25": 0.7469056818181818,
+                "median": 1.02,
+                "p75": 1.392947,
+                "p95": 2.1809191988636365
+              },
+              "share_underestimating": 0.4829,
+              "iqr_over_truth": 0.6460413181818182,
+              "log_sd": 0.462
+            },
+            "reason": null
+          }
+        },
+        "aggregation_agreement": {
+          "max_rel_diff_panjer_fft": 2.1e-06,
+          "n_compared": 980
+        },
+        "threshold_stability": [
+          {
+            "threshold_eur": 20000.0,
+            "n_exceedances_median": 410.0,
+            "n_fits": 988,
+            "tail_index": {
+              "p05": 0.6938,
+              "median": 0.84,
+              "p95": 0.9862
+            },
+            "share_at_least_one": 0.0359
+          },
+          {
+            "threshold_eur": 40000.0,
+            "n_exceedances_median": 231.5,
+            "n_fits": 988,
+            "tail_index": {
+              "p05": 0.6254,
+              "median": 0.82,
+              "p95": 1.0146
+            },
+            "share_at_least_one": 0.0641
+          },
+          {
+            "threshold_eur": 80000.0,
+            "n_exceedances_median": 116.4,
+            "n_fits": 988,
+            "tail_index": {
+              "p05": 0.5355,
+              "median": 0.81,
+              "p95": 1.0845
+            },
+            "share_at_least_one": 0.1274
+          },
+          {
+            "threshold_eur": 160000.0,
+            "n_exceedances_median": 54.1,
+            "n_fits": 988,
+            "tail_index": {
+              "p05": 0.4023,
+              "median": 0.805,
+              "p95": 1.2077
+            },
+            "share_at_least_one": 0.2129
+          }
+        ],
+        "sma": {
+          "currency": "EUR",
+          "bucket": 2,
+          "bic_eur": 180000000.0,
+          "basis": "bic-times-ilm",
+          "discretion_applied": "none",
+          "lc_eur": {
+            "p05": 35295888,
+            "p25": 56236076,
+            "median": 77736000,
+            "p75": 107455679,
+            "p95": 171206507
+          },
+          "ilm": {
+            "p05": 0.6880851609,
+            "p25": 0.7478967303,
+            "median": 0.8016049923,
+            "p75": 0.8671596674,
+            "p95": 0.9854454105
+          },
+          "orc_eur": {
+            "p05": 123855329,
+            "p25": 134621411,
+            "median": 144288899,
+            "p75": 156088740,
+            "p95": 177380174
+          },
+          "orc_over_true_quantile": {
+            "p05": 0.7037234602272727,
+            "p25": 0.7648943806818181,
+            "median": 0.8198232897727272,
+            "p75": 0.8868678409090909,
+            "p95": 1.0078418977272727
+          },
+          "note": {
+            "en": "The SMA is not calibrated to the 99.9 percent quantile of any bank; the ratio is a comparison, not a claim of equivalence.",
+            "es": "El SMA no esta calibrado al cuantil 99,9 por ciento de ningun banco; la razon es una comparacion, no una equivalencia."
+          }
+        }
+      }
+    ],
+    "exceedance": {
+      "currency": "EUR",
+      "grid_eur": [
+        10000.0,
+        31622.8,
+        100000.0,
+        316228.0,
+        1000000.0,
+        3162280.0,
+        10000000.0,
+        31622800.0,
+        100000000.0,
+        316228000.0,
+        1000000000.0,
+        3162280000.0,
+        10000000000.0
+      ],
+      "monte_carlo": {
+        "n_years": 10000000,
+        "seed": 7,
+        "exceedance": [
+          1.0,
+          1.0,
+          1.0,
+          0.9147797,
+          0.4518896,
+          0.1343022,
+          0.0337452,
+          0.008117,
+          0.0019316,
+          0.0004584,
+          0.0001087,
+          2.58e-05,
+          6.1e-06
+        ]
+      },
+      "panjer": {
+        "step_eur": 1000.0,
+        "exceedance": [
+          1.0,
+          1.0,
+          0.9998942,
+          0.9120436,
+          0.450538,
+          0.1339005,
+          0.0336443,
+          0.0080927,
+          0.0019258,
+          0.0004571,
+          0.0001084,
+          2.57e-05,
+          6.1e-06
+        ]
+      },
+      "fft": {
+        "n_points": 1048576,
+        "padding_factor": 2,
+        "tilt": 0.0,
+        "exceedance": [
+          1.0,
+          1.0,
+          0.9998942,
+          0.9120436,
+          0.450538,
+          0.1339005,
+          0.0336443,
+          0.0080927,
+          0.0019258,
+          0.0004571,
+          0.0001084,
+          2.57e-05,
+          6.1e-06
+        ]
+      },
+      "quantile_999_eur": {
+        "monte_carlo": 175472000.0,
+        "panjer": 176000000.0,
+        "fft": 176017600.0,
+        "sla": 169063305
+      }
+    },
+    "sma_response": {
+      "currency": "EUR",
+      "cell_id": "y10-h20000",
+      "seed": 1000,
+      "bic_eur": 180000000.0,
+      "rows": [
+        {
+          "added_loss_eur": 0.0,
+          "lc_eur": 77736000.0,
+          "ilm": 0.8016049923,
+          "orc_eur": 144288899,
+          "lda_capital_eur": 170720000
+        },
+        {
+          "added_loss_eur": 10000000.0,
+          "lc_eur": 92736000.0,
+          "ilm": 0.835756033,
+          "orc_eur": 150436086,
+          "lda_capital_eur": 171220000
+        },
+        {
+          "added_loss_eur": 50000000.0,
+          "lc_eur": 152736000.0,
+          "ilm": 0.9536449561,
+          "orc_eur": 171656092,
+          "lda_capital_eur": 173220000
+        },
+        {
+          "added_loss_eur": 200000000.0,
+          "lc_eur": 377736000.0,
+          "ilm": 1.260638719,
+          "orc_eur": 226914969,
+          "lda_capital_eur": 180720000
+        },
+        {
+          "added_loss_eur": 1000000000.0,
+          "lc_eur": 1577736000.0,
+          "ilm": 2.0010023,
+          "orc_eur": 360180414,
+          "lda_capital_eur": 220720000
+        }
+      ]
+    },
+    "scenario_influence": {
+      "prior_kind": "unrestricted-gamma-on-pareto-shape",
+      "currency": "EUR",
+      "cell_id": "y10-h20000",
+      "seed": 1000,
+      "level": 0.999,
+      "method": "bayesian-credibility",
+      "base_capital_eur": 179520000.0,
+      "scenarios": [
+        {
+          "scenario_id": "S1",
+          "label": {
+            "en": "Cyber outage of the core platform",
+            "es": "Caida informatica de la plataforma central"
+          },
+          "kind": "percentile",
+          "loss_eur": 80000000.0,
+          "exceedance_frequency_per_year": 0.1,
+          "capital_without_eur": 157977600,
+          "influence": 0.12
+        },
+        {
+          "scenario_id": "S2",
+          "label": {
+            "en": "Large external fraud",
+            "es": "Fraude externo grande"
+          },
+          "kind": "individual",
+          "loss_eur": 25000000.0,
+          "exceedance_frequency_per_year": 0.5,
+          "capital_without_eur": 170544000,
+          "influence": 0.05
+        },
+        {
+          "scenario_id": "S3",
+          "label": {
+            "en": "Mis-selling litigation",
+            "es": "Litigio por venta indebida"
+          },
+          "kind": "percentile",
+          "loss_eur": 150000000.0,
+          "exceedance_frequency_per_year": 0.05,
+          "capital_without_eur": 179520000,
+          "influence": 0.0
+        },
+        {
+          "scenario_id": "S4",
+          "label": {
+            "en": "Settlement error",
+            "es": "Error de liquidacion"
+          },
+          "kind": "individual",
+          "loss_eur": 10000000.0,
+          "exceedance_frequency_per_year": 1.0,
+          "capital_without_eur": 184905600,
+          "influence": -0.03
+        }
+      ],
+      "reference": "Shevchenko and Wuthrich (2006), J. Operational Risk 1(3):3-26"
+    }
+  },
+  "tests": [
+    {
+      "test_id": "oprisk.benchmark_reproduction",
+      "model_id": "lda-splice",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "oprisk.threshold_stability",
+      "model_id": "lda-splice",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "oprisk.capital_stability",
+      "model_id": "lda-splice",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "oprisk.sma_ilm_response",
+      "model_id": "sma",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "oprisk.scenario_influence",
+      "model_id": "scenario",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    }
+  ],
+  "impact": {
+    "lda_capital_999": {
+      "value": 170720000.0,
+      "unit": "EUR",
+      "label": {
+        "en": "LDA 99.9 percent capital (median over histories)",
+        "es": "Capital LDA al 99,9 por ciento (mediana)"
+      }
+    },
+    "sma_orc": {
+      "value": 144288899.0,
+      "unit": "EUR",
+      "label": {
+        "en": "SMA operational risk capital (median)",
+        "es": "Capital por riesgo operacional SMA (mediana)"
+      }
+    }
+  },
+  "findings": [],
+  "provenance": {
+    "truth_status": "synthetic-known-truth",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u12-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

@@ -1,0 +1,206 @@
+{
+ "schema": "contraste.models/v1",
+ "case_id": "C13",
+ "fit_id": "fixture-generator",
+ "model": [
+  {
+   "id": "desk-risk-model",
+   "family": "market-var-es",
+   "rung": "R0",
+   "title": {
+    "en": "Fixture model desk risk model",
+    "es": "Modelo de ejemplo desk risk model"
+   },
+   "short_title": {
+    "en": "desk-risk-model",
+    "es": "desk-risk-model"
+   },
+   "engine": "riskvalidation",
+   "engine_version": "fixture",
+   "licence": "MIT",
+   "calibration": null,
+   "parameters": {},
+   "checkpoint_sha256": null,
+   "details": {}
+  }
+ ],
+ "fit": {
+  "sign_convention": {
+   "engine_convention": "return-negative",
+   "document_convention": "positive-loss",
+   "definition": {
+    "en": "The engine stores VaR and ES in the return convention (negative numbers at the tail level alpha); this document stores positive loss numbers, as decimals of the portfolio value.",
+    "es": "El motor guarda VaR y ES en la convencion de retornos (numeros negativos al nivel alfa); este documento guarda perdidas positivas, como decimales del valor de la cartera."
+   }
+  },
+  "generator": {
+   "name": "fixture desk generator",
+   "true_risk_model": {
+    "en": "Two normal risk factors with loadings 0.006 and 0.004 and an instrument basis; the risk model is exact when nothing is planted.",
+    "es": "Dos factores de riesgo normales con cargas 0.006 y 0.004 y una base del instrumento; el modelo de riesgo es exacto cuando no se planta nada."
+   },
+   "parameters": [
+    {
+     "name": "loading_1",
+     "value": 0.006,
+     "unit": "decimal-per-sd"
+    },
+    {
+     "name": "loading_2",
+     "value": 0.004,
+     "unit": "decimal-per-sd"
+    }
+   ],
+   "pnl_unit": "decimal-of-desk-notional",
+   "window_days": 250,
+   "seed_rule": "seed_base+replication_index",
+   "notice": {
+    "en": "Synthetic: the truth is known. Fixture parameters, not results.",
+    "es": "Sintetico: la verdad es conocida. Parametros de ejemplo, no resultados."
+   }
+  },
+  "deficiencies": [
+   {
+    "deficiency_id": "none",
+    "planted": false,
+    "mechanism": {
+     "en": "No deficiency: the risk model is exact (the size of the test).",
+     "es": "Sin deficiencia: el modelo de riesgo es exacto (el tamano del test)."
+    },
+    "parameters": [],
+    "intended_to_fail": "none"
+   },
+   {
+    "deficiency_id": "missing-basis",
+    "planted": true,
+    "mechanism": {
+     "en": "The risk model omits the basis between instrument and factor.",
+     "es": "El modelo de riesgo omite la base entre instrumento y factor."
+    },
+    "parameters": [
+     {
+      "name": "basis_sd_share",
+      "value": 0.65,
+      "unit": "share-of-hpl-sd"
+     }
+    ],
+    "intended_to_fail": "spearman"
+   },
+   {
+    "deficiency_id": "stale-volatility",
+    "planted": true,
+    "mechanism": {
+     "en": "The risk model uses a volatility that lags the true one.",
+     "es": "El modelo de riesgo usa una volatilidad rezagada respecto de la verdadera."
+    },
+    "parameters": [
+     {
+      "name": "vol_lag_days",
+      "value": 20.0,
+      "unit": "days"
+     }
+    ],
+    "intended_to_fail": "ks"
+   },
+   {
+    "deficiency_id": "wrong-correlation",
+    "planted": true,
+    "mechanism": {
+     "en": "The risk model uses a wrong correlation between the factors.",
+     "es": "El modelo de riesgo usa una correlacion erronea entre los factores."
+    },
+    "parameters": [
+     {
+      "name": "correlation_error",
+      "value": 0.3,
+      "unit": "correlation-points"
+     }
+    ],
+    "intended_to_fail": "either"
+   },
+   {
+    "deficiency_id": "omitted-factor",
+    "planted": true,
+    "mechanism": {
+     "en": "The risk model leaves out a risk factor the desk is exposed to.",
+     "es": "El modelo de riesgo omite un factor de riesgo al que la mesa esta expuesta."
+    },
+    "parameters": [
+     {
+      "name": "omitted_loading_share",
+      "value": 0.3,
+      "unit": "share-of-hpl-sd"
+     }
+    ],
+    "intended_to_fail": "spearman"
+   },
+   {
+    "deficiency_id": "time-misalignment",
+    "planted": true,
+    "mechanism": {
+     "en": "The risk-theoretical P&L is dated one day off the hypothetical P&L.",
+     "es": "El P&L teorico por riesgo esta fechado un dia desfasado del P&L hipotetico."
+    },
+    "parameters": [
+     {
+      "name": "lag_days",
+      "value": 1.0,
+      "unit": "days"
+     }
+    ],
+    "intended_to_fail": "spearman"
+   }
+  ],
+  "pla_thresholds": {
+   "spearman_green": 0.8,
+   "spearman_red": 0.7,
+   "ks_green": 0.09,
+   "ks_red": 0.12,
+   "ecdf_step": 0.004,
+   "window_days": 250,
+   "reference": "MAR32.42"
+  },
+  "desk_limits": [
+   {
+    "alpha": 0.025,
+    "limit_exceptions": 30,
+    "reference": "MAR32.18 to MAR32.19"
+   },
+   {
+    "alpha": 0.01,
+    "limit_exceptions": 12,
+    "reference": "MAR32.18 to MAR32.19"
+   }
+  ],
+  "replication_plan": {
+   "n_replications": 1000,
+   "seed_base": 13000,
+   "seed_rule": "seed_base+replication_index"
+  }
+ },
+ "provenance": {
+  "truth_status": "synthetic-known-truth",
+  "inputs": [
+   {
+    "source": "fixture-not-a-result",
+    "class": "fixture",
+    "files": []
+   }
+  ],
+  "licence_classes": {
+   "fixture-not-a-result": "fixture"
+  },
+  "generators": [
+   "fixture:u8-s-contracts"
+  ],
+  "seed": 0,
+  "code_version": "fixture",
+  "riskvalidation_version": null
+ },
+ "lane": {
+  "lane": "precompute",
+  "reasons": [
+   "fixture"
+  ]
+ }
+}

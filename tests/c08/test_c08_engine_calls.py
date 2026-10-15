@@ -34,7 +34,8 @@ def test_the_pin_is_the_released_engine():
     tag = re.search(r"CAOS_RiskValidation@v(\d+)\.(\d+)\.(\d+)", req)
     assert tag, "the engine is pinned to its release tag"
     released = ".".join(str(int(x)) for x in tag.groups())  # the tag v0.06.000 is the release 0.6.0 of the package
-    assert released == "0.6.0" and md.version("riskvalidation") == released
+    assert tuple(int(x) for x in tag.groups()) >= (0, 6, 0)          # lgd_ead arrived in 0.6.0; a later release keeps it
+    assert md.version("riskvalidation") == released
 
 
 def test_the_engine_golden_values_reproduce_through_the_pin():

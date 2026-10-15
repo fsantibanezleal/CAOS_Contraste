@@ -16,7 +16,7 @@ from riskvalidation.validation import lgd_ead as val
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 
-def test_the_pin_is_riskvalidation_0_6_0() -> None:
+def test_the_pin_is_the_released_engine() -> None:
     from importlib.metadata import version
 
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
