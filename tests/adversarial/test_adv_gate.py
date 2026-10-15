@@ -48,10 +48,14 @@ def test_ct106_ct211_ct217_ct310_ct413_a_workbench_wider_than_the_viewport_fails
     site = _site(tmp_path)
     ok = _gate(site)
     assert ok.returncode == 0, (ok.stdout + ok.stderr)[-2500:]
-    page = site / "frontend" / "dist" / "index.html"
-    html = page.read_text(encoding="utf-8")
-    assert "</head>" in html
-    page.write_text(html.replace("</head>", "<style>html,body{min-width:2400px !important}</style></head>", 1), encoding="utf-8")
+    # every route's own page: the build materialises one index.html per route (scripts/materialize-routes.mjs), and the
+    # gate loads /app and the documentation routes from theirs, so a plant in the root page alone never reaches them
+    pages = sorted((site / "frontend" / "dist").rglob("index.html"))
+    assert (site / "frontend" / "dist" / "app" / "index.html") in pages, pages
+    for page in pages:
+        html = page.read_text(encoding="utf-8")
+        assert "</head>" in html, page
+        page.write_text(html.replace("</head>", "<style>html,body{min-width:2400px !important}</style></head>", 1), encoding="utf-8")
     bad = _gate(site)
     out = bad.stdout + bad.stderr
     assert bad.returncode == 1 and "FAIL" in out, out[-2500:]
