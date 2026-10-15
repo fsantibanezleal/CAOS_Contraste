@@ -3,6 +3,20 @@
 All notable changes to this product. Versions are X.XX.XXX (VERSION is the single source); every release is
 tagged.
 
+## [0.11.001], 2026-10-15
+
+Shell 0.14.3 and the CI base-integrity guard. No case, artifact or contract changes.
+
+- Shell 0.14.3 (pinned exactly, lock file included). In Focus mode the stage label no longer covers the open group's
+  controls. The live 0.11.000 showed it on C10 at 1280 x 800: "Portfolio credit capital: ASRF, Vasicek fit, copula MC"
+  wrapped to two lines over the sub-tab row (Fitted distribution, Correlation, Back-test, Against IRB). The rail inside
+  Focus no longer shows the Focus button. The shell's gate G18 fails both defects now.
+- The CI base-integrity guard reads `git ls-files` once and runs every test on a here-string. Under `bash -eo pipefail`,
+  `git ls-files | grep -q` failed at random: grep exits on its first match, git ls-files dies of SIGPIPE and the pipeline
+  reports 141. That made the guard report a tracked `.env` once on main. A real `.env` used to pass whenever a root
+  `.env.example` was tracked; any `.env` other than an `.example` file fails now. `tests/test_guards.py` runs the step
+  itself on planted trees.
+- The index and the readiness restamped for 0.11.001 (`pipeline.pipeline index`, `pipeline.pipeline readiness`).
 ## [0.11.000], 2026-10-15
 
 Wave 2 batch 2: five new cases built on public data or a known truth, C10 (portfolio credit capital on the Federal Reserve charge-off rates), C11 (market VaR and ES back-testing across 2008, 2020, 2022 and 2023), C13 (FRTB desk eligibility with planted model deficiencies), C14 (IRRBB, six shocks on the balance sheet of the bank that failed in 2023) and C17 (operational risk, LDA against SMA); 14 of 22 cases built. The engine is riskvalidation 0.7.0, the shell 0.14.2 (flip cards, the card carousel, animated illustrations, Focus mode for the App).
