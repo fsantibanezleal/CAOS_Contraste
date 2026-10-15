@@ -1,0 +1,10 @@
+source: fed-chargeoff
+url: https://www.federalreserve.gov/releases/chargeoff/chgallsa.htm
+file: chgallsa.htm
+bytes: 131057
+sha256: eee388f9681023ccc130542af90966abef657217c1a151bfb0c51d9e8588fa11
+retrieved: 2026-10-13
+as_of: 2026-08-25 (the page's 'Last update')
+window_sha256: af9d1e59aed95c88857b6521b9b4a8407c5d006bb9633f8dc293a03320ea4f16
+window: quarters 1985Q1 to 2012Q4, five series
+licence: information on the Board's website is in the public domain and may be copied and distributed without permission

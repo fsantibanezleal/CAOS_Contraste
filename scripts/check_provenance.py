@@ -9,7 +9,10 @@ readiness declares absent, a planned case, has none to check, and any other abse
      (mirror-allowed or derived-only);
   3. every input file hash is the one the licence manifest pins for that source;
   4. the manifest's ``sources`` are exactly the artifacts' inputs, so the Context view cannot list a source the
-     artifacts did not read, or omit one they did.
+     artifacts did not read, or omit one they did;
+  5. a constructed input (class ``illustrative``: C10's portfolio, built in the bake and never a bank's, engine-portfolio-api
+     Conventions) is not a source of the registry, which holds third-party data only; it names no file, its licence class
+     is stated, and it is not a data source of the manifest. A registry source can never claim that class.
 
 Standard library only; exit 1 on any finding. Usage: python scripts/check_provenance.py [repo_root]
 """
@@ -25,6 +28,7 @@ REGISTRY = ROOT / "data-pipeline" / "config" / "sources.json"
 LICENCE_MANIFEST = ROOT / "data" / "sources" / "manifest.json"
 TRUTH = {"real-outcomes", "synthetic-known-truth", "synthetic-calibrated", "published-answer"}
 PUBLISHABLE = {"mirror-allowed", "derived-only"}
+CONSTRUCTED = {"illustrative"}
 
 
 def read(path: Path) -> dict:
@@ -82,12 +86,19 @@ def main() -> int:
                 findings.append(f"{where}: derives from no source and no generator")
             for inp in prov.get("inputs", []):
                 sid = inp.get("source")
-                read_sources.add(sid)
+                if inp.get("class") in CONSTRUCTED and sid not in reg:
+                    if inp.get("files"):
+                        findings.append(f"{where}: input {sid} is constructed and names files")
+                    if (prov.get("licence_classes") or {}).get(sid) != inp.get("class"):
+                        findings.append(f"{where}: licence_classes does not state {sid} as {inp.get('class')}")
+                    continue
                 if sid not in reg:
                     findings.append(f"{where}: input {sid!r} is not in the source registry")
                     continue
                 if inp.get("class") != reg[sid]:
                     findings.append(f"{where}: input {sid} is recorded {inp.get('class')}, the registry says {reg[sid]}")
+                    continue
+                read_sources.add(sid)
                 if reg[sid] not in PUBLISHABLE:
                     findings.append(f"{where}: input {sid} is {reg[sid]}; the artifact may not be published")
                 if (prov.get("licence_classes") or {}).get(sid) != reg[sid]:

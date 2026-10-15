@@ -3,7 +3,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { CaseIndex, CaseManifest, EbmExport, ModelsArtifact, ScorecardDetails, VariantArtifact } from '../lib/contract.types';
-import { bandEvaluated, COMMITTED, relight, thresholdLabel } from '../lib/policy';
+import { bandEvaluated, COMMITTED, lightUnder, ownPolicyEvaluated, relight, thresholdLabel } from '../lib/policy';
 import { ebmLogit, scoreScorecard } from './scorer';
 
 const derived = new URL('../../../data/derived/', import.meta.url);
@@ -59,7 +59,14 @@ describe('the live policy reproduces every committed light under the committed a
         const evaluated = variant.tests.filter((t) => t.alpha_amber !== null);
         if (variant.tests.some((t) => t.p_value !== null)) expect(evaluated.length).toBeGreaterThan(0);
         for (const t of variant.tests) {
-          if (t.alpha_amber !== null) {
+          if (t.alpha_amber !== null && ownPolicyEvaluated(t)) {
+            // a test family's own policy (C11's market back-tests): never the engine's default policy, its levels named in
+            // policy_version, and the committed light reproduced under them
+            expect(t.policy_version.startsWith('riskvalidation-default')).toBe(false);
+            expect(t.policy_version).toContain(`alpha_amber=${t.alpha_amber}`);
+            expect(t.policy_version).toContain(`alpha_red=${t.alpha_red}`);
+            expect(lightUnder(t, { amber: t.alpha_amber, red: t.alpha_red as number })).toBe(t.light);
+          } else if (t.alpha_amber !== null) {
             expect(t.alpha_amber).toBe(COMMITTED.amber);
             expect(t.alpha_red).toBe(COMMITTED.red);
           }
@@ -68,6 +75,18 @@ describe('the live policy reproduces every committed light under the committed a
       });
     }
   }
+  it('a row under the own policy of its test family keeps its committed light whatever the rail says, and says so', () => {
+    const row = { alpha_amber: 0.1, alpha_red: 0.05, light: 'amber', p_value: 0.07, extras: {},
+      policy_version: 'contraste-market-battery-1.0.0; alpha_amber=0.1; alpha_red=0.05' } as never;
+    expect(ownPolicyEvaluated(row)).toBe(true);
+    expect(relight(row, COMMITTED)).toBe('amber');
+    expect(relight(row, { amber: 0.01, red: 0.001 })).toBe('amber');
+    expect(lightUnder(row, COMMITTED)).toBe('green');
+    expect(thresholdLabel(row, COMMITTED).en).toContain('the policy rail does not change it');
+    const product = { ...(row as object), alpha_amber: 0.05, alpha_red: 0.01, light: 'green' } as never;
+    expect(ownPolicyEvaluated(product)).toBe(false);
+    expect(relight(product, { amber: 0.1, red: 0.05 })).toBe('amber');
+  });
   it('a stricter red threshold can only turn lights red, never green', () => {
     const row = { alpha_amber: 0.05, alpha_red: 0.01, light: 'amber', p_value: 0.02 } as never;
     expect(relight(row, { amber: 0.05, red: 0.03 })).toBe('red');

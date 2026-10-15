@@ -1,0 +1,813 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c13/variant-deficiency.schema.json",
+  "title": "C13 deficiency variant",
+  "description": "Catalog row c13-outputs 1.0.0: one planted model deficiency of the FRTB desk eligibility case (outputs.kind deficiency), on a generator whose truth is known.",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C13"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c13Outputs",
+          "properties": {
+            "kind": {
+              "const": "deficiency"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "if": {
+              "properties": {
+                "light": {
+                  "const": "not_evaluated"
+                }
+              },
+              "required": [
+                "light"
+              ]
+            },
+            "then": {
+              "properties": {
+                "statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c13SignConvention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "engine_convention",
+        "document_convention",
+        "definition"
+      ],
+      "properties": {
+        "engine_convention": {
+          "const": "return-negative"
+        },
+        "document_convention": {
+          "const": "positive-loss"
+        },
+        "definition": {
+          "allOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "properties": {
+                "en": {
+                  "minLength": 1
+                },
+                "es": {
+                  "minLength": 1
+                }
+              }
+            }
+          ]
+        }
+      },
+      "description": "The sign convention, a required field of every C13 document (dossier 05 A.0): the engine stores the return convention (VaR and ES negative at the tail level alpha 0.01 or 0.025, needed by the FZ0 loss) and the document stores positive loss numbers, the conversion made once at the reporting layer. The definition states both in words."
+    },
+    "c13Known": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deficiency_id",
+        "planted",
+        "mechanism",
+        "parameters",
+        "intended_to_fail"
+      ],
+      "properties": {
+        "deficiency_id": {
+          "type": "string",
+          "enum": [
+            "none",
+            "missing-basis",
+            "stale-volatility",
+            "wrong-correlation",
+            "omitted-factor",
+            "time-misalignment"
+          ]
+        },
+        "planted": {
+          "type": "boolean"
+        },
+        "mechanism": {
+          "$ref": "../common/text.schema.json"
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "value",
+              "unit"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "The planted severity, with units."
+        },
+        "intended_to_fail": {
+          "type": "string",
+          "enum": [
+            "none",
+            "spearman",
+            "ks",
+            "either"
+          ]
+        }
+      },
+      "description": "The deficiency the generator planted in the desk's risk model: the known truth of the case, a required field.",
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "deficiency_id": {
+                  "const": "none"
+                },
+                "planted": {
+                  "const": false
+                },
+                "intended_to_fail": {
+                  "const": "none"
+                }
+              }
+            },
+            {
+              "properties": {
+                "deficiency_id": {
+                  "type": "string",
+                  "enum": [
+                    "missing-basis",
+                    "stale-volatility",
+                    "wrong-correlation",
+                    "omitted-factor",
+                    "time-misalignment"
+                  ]
+                },
+                "planted": {
+                  "const": true
+                },
+                "intended_to_fail": {
+                  "type": "string",
+                  "enum": [
+                    "spearman",
+                    "ks",
+                    "either"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c13Generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "n_risk_factors",
+        "pnl_unit",
+        "window_days",
+        "n_replications",
+        "seed_base",
+        "seed_rule",
+        "notice"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "n_risk_factors": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "pnl_unit": {
+          "const": "decimal-of-desk-notional"
+        },
+        "window_days": {
+          "const": 250
+        },
+        "n_replications": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "seed_base": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "seed_rule": {
+          "const": "seed_base+replication_index"
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The desk P&L generator with a known risk model; synthetic, labelled so on every view."
+    },
+    "c13PnlSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "series",
+        "mean",
+        "sd",
+        "skewness",
+        "excess_kurtosis",
+        "min",
+        "max"
+      ],
+      "properties": {
+        "series": {
+          "type": "string",
+          "enum": [
+            "HPL",
+            "RTPL"
+          ]
+        },
+        "mean": {
+          "type": "number"
+        },
+        "sd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "skewness": {
+          "type": "number"
+        },
+        "excess_kurtosis": {
+          "type": "number"
+        },
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        }
+      },
+      "description": "A summary of the desk's hypothetical (HPL) or risk-theoretical (RTPL) P&L, median across replications, decimals of the notional."
+    },
+    "c13Dist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mean",
+        "sd",
+        "q05",
+        "q50",
+        "q95",
+        "min",
+        "max"
+      ],
+      "properties": {
+        "mean": {
+          "type": "number"
+        },
+        "sd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "q05": {
+          "type": "number"
+        },
+        "q50": {
+          "type": "number"
+        },
+        "q95": {
+          "type": "number"
+        },
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        }
+      },
+      "description": "The distribution of a statistic across the replications."
+    },
+    "c13ZoneCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "green",
+        "amber",
+        "red"
+      ],
+      "properties": {
+        "green": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "amber": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "red": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "c13Zones": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "n",
+        "overall",
+        "spearman",
+        "ks"
+      ],
+      "properties": {
+        "n": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "overall": {
+          "$ref": "#/$defs/c13ZoneCounts"
+        },
+        "spearman": {
+          "$ref": "#/$defs/c13ZoneCounts"
+        },
+        "ks": {
+          "$ref": "#/$defs/c13ZoneCounts"
+        }
+      },
+      "description": "The PLA zone counts across replications: of the joint MAR32.42 zone, of the Spearman statistic alone and of the KS statistic alone."
+    },
+    "c13PlaThresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "spearman_green",
+        "spearman_red",
+        "ks_green",
+        "ks_red",
+        "ecdf_step",
+        "window_days",
+        "reference"
+      ],
+      "properties": {
+        "spearman_green": {
+          "const": 0.8
+        },
+        "spearman_red": {
+          "const": 0.7
+        },
+        "ks_green": {
+          "const": 0.09
+        },
+        "ks_red": {
+          "const": 0.12
+        },
+        "ecdf_step": {
+          "const": 0.004
+        },
+        "window_days": {
+          "const": 250
+        },
+        "reference": {
+          "const": "MAR32.42"
+        }
+      },
+      "description": "The zone boundaries of MAR32.42 and the ECDF step of MAR32.39 to 41 (dossier 01 D.4), transcribed."
+    },
+    "c13Pla": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "thresholds",
+        "spearman",
+        "ks",
+        "zones"
+      ],
+      "properties": {
+        "thresholds": {
+          "$ref": "#/$defs/c13PlaThresholds"
+        },
+        "spearman": {
+          "$ref": "#/$defs/c13Dist"
+        },
+        "ks": {
+          "$ref": "#/$defs/c13Dist"
+        },
+        "zones": {
+          "$ref": "#/$defs/c13Zones"
+        }
+      }
+    },
+    "c13Example": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "replication_index",
+        "seed",
+        "hpl",
+        "rtpl",
+        "spearman",
+        "ks",
+        "zone"
+      ],
+      "properties": {
+        "replication_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hpl": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 250,
+          "maxItems": 250,
+          "description": "250 daily HPL values, decimals of the notional."
+        },
+        "rtpl": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 250,
+          "maxItems": 250,
+          "description": "250 daily RTPL values, decimals of the notional."
+        },
+        "spearman": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "ks": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "zone": {
+          "type": "string",
+          "enum": [
+            "green",
+            "amber",
+            "red"
+          ]
+        }
+      },
+      "description": "One replication kept whole, for the rank scatter and the two ECDFs with the KS gap."
+    },
+    "c13DeskLevel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alpha",
+        "basis",
+        "limit_exceptions",
+        "n_days",
+        "exceptions",
+        "n_within_limit",
+        "n_over_limit",
+        "share_over_limit"
+      ],
+      "properties": {
+        "alpha": {
+          "type": "number",
+          "enum": [
+            0.01,
+            0.025
+          ]
+        },
+        "basis": {
+          "type": "string",
+          "enum": [
+            "APL",
+            "HPL"
+          ]
+        },
+        "limit_exceptions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_days": {
+          "const": 250
+        },
+        "exceptions": {
+          "$ref": "#/$defs/c13Dist"
+        },
+        "n_within_limit": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_over_limit": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "share_over_limit": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        }
+      },
+      "description": "Desk back-testing at one level (MAR32.18 to 19): the exception count over 250 days against the limit (more than 12 at 99 percent or 30 at 97.5 percent moves the desk to the standardised approach).",
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "alpha": {
+                  "const": 0.01
+                },
+                "limit_exceptions": {
+                  "const": 12
+                }
+              }
+            },
+            {
+              "properties": {
+                "alpha": {
+                  "const": 0.025
+                },
+                "limit_exceptions": {
+                  "const": 30
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "c13Detection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "rule",
+        "n_replications",
+        "n_amber_or_red",
+        "n_red",
+        "share_amber_or_red",
+        "share_red",
+        "mc_se",
+        "ci_low",
+        "ci_high",
+        "by_test",
+        "intended_test_flagged"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": [
+            "size",
+            "power"
+          ]
+        },
+        "rule": {
+          "$ref": "../common/text.schema.json"
+        },
+        "n_replications": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "n_amber_or_red": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_red": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "share_amber_or_red": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "share_red": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "mc_se": {
+          "type": "number",
+          "minimum": 0,
+          "description": "The Monte Carlo standard error of share_amber_or_red."
+        },
+        "ci_low": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "ci_high": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or an observed rate in [0, 1]."
+        },
+        "by_test": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "spearman_flagged",
+            "ks_flagged",
+            "desk_backtest_flagged"
+          ],
+          "properties": {
+            "spearman_flagged": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "ks_flagged": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "desk_backtest_flagged": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "intended_test_flagged": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Replications where the intended test flagged the desk; null when none was planted."
+        }
+      },
+      "description": "The rate at which the PLA catches the planted deficiency: its power; with no deficiency planted it is the false-alarm rate, the size."
+    },
+    "c13Outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "known_deficiency",
+        "sign_convention",
+        "generator",
+        "pnl_summary",
+        "pla",
+        "example",
+        "desk_backtest",
+        "detection"
+      ],
+      "properties": {
+        "kind": {
+          "const": "deficiency"
+        },
+        "known_deficiency": {
+          "$ref": "#/$defs/c13Known"
+        },
+        "sign_convention": {
+          "$ref": "#/$defs/c13SignConvention"
+        },
+        "generator": {
+          "$ref": "#/$defs/c13Generator"
+        },
+        "pnl_summary": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c13PnlSummary"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "pla": {
+          "$ref": "#/$defs/c13Pla"
+        },
+        "example": {
+          "$ref": "#/$defs/c13Example"
+        },
+        "desk_backtest": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c13DeskLevel"
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "allOf": [
+            {
+              "prefixItems": [
+                {
+                  "properties": {
+                    "alpha": {
+                      "const": 0.025
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "alpha": {
+                      "const": 0.01
+                    }
+                  }
+                }
+              ],
+              "minItems": 2,
+              "maxItems": 2
+            }
+          ]
+        },
+        "detection": {
+          "$ref": "#/$defs/c13Detection"
+        }
+      },
+      "description": "The C13 deficiency document: the PLA and desk back-test of a desk whose model has one known planted deficiency.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "known_deficiency": {
+                "properties": {
+                  "deficiency_id": {
+                    "const": "none"
+                  }
+                },
+                "required": [
+                  "deficiency_id"
+                ]
+              }
+            },
+            "required": [
+              "known_deficiency"
+            ]
+          },
+          "then": {
+            "properties": {
+              "detection": {
+                "properties": {
+                  "role": {
+                    "const": "size"
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "detection": {
+                "properties": {
+                  "role": {
+                    "const": "power"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,518 @@
+{
+  "schema": "contraste.models/v1",
+  "case_id": "C15",
+  "fit_id": "fixture-banco-andino-2026-06",
+  "model": [
+    {
+      "id": "irrbb-annex1",
+      "family": "irrbb",
+      "rung": "cmf-annex1",
+      "title": {
+        "en": "Fixture model irrbb-annex1",
+        "es": "Modelo de ejemplo irrbb-annex1"
+      },
+      "short_title": {
+        "en": "irrbb-annex1",
+        "es": "irrbb-annex1"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "details": {}
+    }
+  ],
+  "fit": {
+    "reporting_currency": "CLP",
+    "sign_convention": {
+      "delta_eve": "positive-is-loss",
+      "delta_nii": "positive-is-loss",
+      "reference": "SRP31.129; dossier 01 H.4",
+      "statement": {
+        "en": "A positive delta EVE or delta NII is a loss; only losses are aggregated across currencies.",
+        "es": "Un delta EVE o delta NII positivo es una perdida; solo las perdidas se agregan entre monedas."
+      }
+    },
+    "units": {
+      "money_scale": "millions",
+      "rate": "decimal",
+      "compounding": "continuous",
+      "shock": "basis-points",
+      "bucket_midpoint": "years",
+      "dates": "ISO-8601"
+    },
+    "bank": {
+      "name": "Banco Andino",
+      "synthetic": true,
+      "notice": {
+        "en": "Synthetic bank calibrated to public aggregates; fixture values.",
+        "es": "Banco sintetico calibrado a agregados publicos; valores de ejemplo."
+      },
+      "seed": 0,
+      "calibration_source": "fixture, not a CMF figure"
+    },
+    "buckets": [
+      {
+        "bucket": 1,
+        "label": {
+          "en": "Overnight",
+          "es": "A la vista"
+        },
+        "midpoint_years": 0.0028
+      },
+      {
+        "bucket": 2,
+        "label": {
+          "en": "O/N to 1M",
+          "es": "Hasta 1M"
+        },
+        "midpoint_years": 0.0417
+      },
+      {
+        "bucket": 3,
+        "label": {
+          "en": "1M to 3M",
+          "es": "1M a 3M"
+        },
+        "midpoint_years": 0.1667
+      },
+      {
+        "bucket": 4,
+        "label": {
+          "en": "3M to 6M",
+          "es": "3M a 6M"
+        },
+        "midpoint_years": 0.375
+      },
+      {
+        "bucket": 5,
+        "label": {
+          "en": "6M to 9M",
+          "es": "6M a 9M"
+        },
+        "midpoint_years": 0.625
+      },
+      {
+        "bucket": 6,
+        "label": {
+          "en": "9M to 1Y",
+          "es": "9M a 1A"
+        },
+        "midpoint_years": 0.875
+      },
+      {
+        "bucket": 7,
+        "label": {
+          "en": "1Y to 1.5Y",
+          "es": "1A a 1,5A"
+        },
+        "midpoint_years": 1.25
+      },
+      {
+        "bucket": 8,
+        "label": {
+          "en": "1.5Y to 2Y",
+          "es": "1,5A a 2A"
+        },
+        "midpoint_years": 1.75
+      },
+      {
+        "bucket": 9,
+        "label": {
+          "en": "2Y to 3Y",
+          "es": "2A a 3A"
+        },
+        "midpoint_years": 2.5
+      },
+      {
+        "bucket": 10,
+        "label": {
+          "en": "3Y to 4Y",
+          "es": "3A a 4A"
+        },
+        "midpoint_years": 3.5
+      },
+      {
+        "bucket": 11,
+        "label": {
+          "en": "4Y to 5Y",
+          "es": "4A a 5A"
+        },
+        "midpoint_years": 4.5
+      },
+      {
+        "bucket": 12,
+        "label": {
+          "en": "5Y to 6Y",
+          "es": "5A a 6A"
+        },
+        "midpoint_years": 5.5
+      },
+      {
+        "bucket": 13,
+        "label": {
+          "en": "6Y to 7Y",
+          "es": "6A a 7A"
+        },
+        "midpoint_years": 6.5
+      },
+      {
+        "bucket": 14,
+        "label": {
+          "en": "7Y to 8Y",
+          "es": "7A a 8A"
+        },
+        "midpoint_years": 7.5
+      },
+      {
+        "bucket": 15,
+        "label": {
+          "en": "8Y to 9Y",
+          "es": "8A a 9A"
+        },
+        "midpoint_years": 8.5
+      },
+      {
+        "bucket": 16,
+        "label": {
+          "en": "9Y to 10Y",
+          "es": "9A a 10A"
+        },
+        "midpoint_years": 9.5
+      },
+      {
+        "bucket": 17,
+        "label": {
+          "en": "10Y to 15Y",
+          "es": "10A a 15A"
+        },
+        "midpoint_years": 12.5
+      },
+      {
+        "bucket": 18,
+        "label": {
+          "en": "15Y to 20Y",
+          "es": "15A a 20A"
+        },
+        "midpoint_years": 17.5
+      },
+      {
+        "bucket": 19,
+        "label": {
+          "en": "Over 20Y",
+          "es": "Mas de 20A"
+        },
+        "midpoint_years": 25.0
+      }
+    ],
+    "annex1_table": [
+      {
+        "basket": "canasta-1",
+        "parallel_bp": 200,
+        "short_bp": 300,
+        "long_bp": 150
+      },
+      {
+        "basket": "canasta-2",
+        "parallel_bp": 400,
+        "short_bp": 500,
+        "long_bp": 300
+      },
+      {
+        "basket": "CLP",
+        "parallel_bp": 300,
+        "short_bp": 400,
+        "long_bp": 200
+      },
+      {
+        "basket": "UR-nii",
+        "parallel_bp": 300,
+        "short_bp": null,
+        "long_bp": null
+      },
+      {
+        "basket": "UR-eve",
+        "parallel_bp": 200,
+        "short_bp": 250,
+        "long_bp": 150
+      }
+    ],
+    "eve_shock_sizes": [
+      {
+        "currency": "CLP",
+        "parallel_bp": 300,
+        "short_bp": 400,
+        "long_bp": 200,
+        "origin": "cmf-annex1",
+        "label": null,
+        "method": null
+      },
+      {
+        "currency": "CLF",
+        "parallel_bp": 200,
+        "short_bp": 250,
+        "long_bp": 150,
+        "origin": "cmf-annex1",
+        "label": null,
+        "method": null
+      }
+    ],
+    "floors": {
+      "ur_floor": -0.02,
+      "other_floor": 0.0,
+      "reference": "RAN 21-13 Annex 1 Hoja 9 (dossier 03 F.2)"
+    },
+    "prioritised_thresholds": [
+      {
+        "id": "nii-tier1",
+        "threshold": 0.05,
+        "base": "Tier 1 capital"
+      },
+      {
+        "id": "eve-tier1",
+        "threshold": 0.15,
+        "base": "Tier 1 capital"
+      },
+      {
+        "id": "nii-margin",
+        "threshold": 0.18,
+        "base": "12-month cumulative net interest and indexation margin"
+      }
+    ],
+    "offset_share": 0.5,
+    "indexation_rate": 0.025,
+    "multipliers": {
+      "prepayment_gamma": [
+        {
+          "shock": "parallel-up",
+          "gamma": 0.8
+        },
+        {
+          "shock": "parallel-down",
+          "gamma": 1.2
+        },
+        {
+          "shock": "steepener",
+          "gamma": 0.8
+        },
+        {
+          "shock": "flattener",
+          "gamma": 1.2
+        },
+        {
+          "shock": "short-up",
+          "gamma": 0.8
+        },
+        {
+          "shock": "short-down",
+          "gamma": 1.2
+        }
+      ],
+      "term_deposit_u": [
+        {
+          "shock": "parallel-up",
+          "u": 1.2
+        },
+        {
+          "shock": "parallel-down",
+          "u": 0.8
+        },
+        {
+          "shock": "steepener",
+          "u": 0.8
+        },
+        {
+          "shock": "flattener",
+          "u": 1.2
+        },
+        {
+          "shock": "short-up",
+          "u": 1.2
+        },
+        {
+          "shock": "short-down",
+          "u": 0.8
+        }
+      ],
+      "reference": "RAN 21-13 Annex 1 (dossier 03 F.2)"
+    },
+    "nmd_caps": [
+      {
+        "category": "retail-operational",
+        "core_share_cap": 0.9,
+        "core_maturity_cap_years": 5.0,
+        "reference": "RAN 21-13 Annex 1 (dossier 03 F.2)"
+      },
+      {
+        "category": "retail-non-operational",
+        "core_share_cap": 0.7,
+        "core_maturity_cap_years": 4.5,
+        "reference": "RAN 21-13 Annex 1 (dossier 03 F.2)"
+      },
+      {
+        "category": "wholesale",
+        "core_share_cap": 0.5,
+        "core_maturity_cap_years": 4.0,
+        "reference": "RAN 21-13 Annex 1 (dossier 03 F.2)"
+      }
+    ],
+    "curve_models": [
+      {
+        "curve": "CLP",
+        "month": "2026-06",
+        "series_codes": [
+          "F022.BCLP.TIS.AN05.NO.Z.D"
+        ],
+        "model": "nelson-siegel",
+        "parameters": [
+          {
+            "name": "beta0",
+            "value": 0.048,
+            "unit": "decimal"
+          },
+          {
+            "name": "beta1",
+            "value": -0.02,
+            "unit": "decimal"
+          },
+          {
+            "name": "beta2",
+            "value": 0.006,
+            "unit": "decimal"
+          },
+          {
+            "name": "tau",
+            "value": 2.5,
+            "unit": "years"
+          }
+        ],
+        "rmse_bp": 0.0,
+        "attribution": "Source: Banco Central de Chile (BDE), series F022.BCLP.TIS.AN05.NO.Z.D. The fitted zero curve is an adaptation by Contraste and is its sole responsibility (BCCh terms). Fixture, not a result."
+      },
+      {
+        "curve": "UR",
+        "month": "2026-06",
+        "series_codes": [
+          "F022.BUF.TIS.AN02.UF.Z.D",
+          "F022.BUF.TIS.AN10.UF.Z.D"
+        ],
+        "model": "nelson-siegel",
+        "parameters": [
+          {
+            "name": "beta0",
+            "value": 0.022,
+            "unit": "decimal"
+          },
+          {
+            "name": "beta1",
+            "value": -0.018,
+            "unit": "decimal"
+          },
+          {
+            "name": "beta2",
+            "value": 0.004,
+            "unit": "decimal"
+          },
+          {
+            "name": "tau",
+            "value": 2.0,
+            "unit": "years"
+          }
+        ],
+        "rmse_bp": 0.0,
+        "attribution": "Source: Banco Central de Chile (BDE), series F022.BUF.TIS.AN02.UF.Z.D, F022.BUF.TIS.AN10.UF.Z.D. The fitted zero curve is an adaptation by Contraste and is its sole responsibility (BCCh terms). Fixture, not a result."
+      }
+    ],
+    "calibration_targets": [
+      {
+        "metric": "UF share of loans",
+        "unit": "share",
+        "target": 0.6,
+        "achieved": 0.58,
+        "source": "fixture value, not a CMF figure",
+        "as_of": "2026-06-30"
+      }
+    ],
+    "nmd_models": [
+      {
+        "valuation_date": "2026-06-30",
+        "category": "retail-operational",
+        "tranches": [
+          {
+            "maturity_years": 1.0,
+            "weight": 0.2
+          },
+          {
+            "maturity_years": 3.0,
+            "weight": 0.3
+          },
+          {
+            "maturity_years": 5.0,
+            "weight": 0.3
+          },
+          {
+            "maturity_years": 10.0,
+            "weight": 0.2
+          }
+        ],
+        "weights_sum": 1.0,
+        "weighted_average_maturity_years": 2.3,
+        "margin_volatility": 0.0011,
+        "margin_volatility_reason": null,
+        "deposit_beta": {
+          "up": 0.4,
+          "down": 0.3,
+          "source_kind": "synthetic-stated",
+          "source": "fixture value"
+        },
+        "stability": [
+          {
+            "window_start": "2021-01-01",
+            "window_end": "2025-12-31",
+            "weights": [
+              0.2,
+              0.3,
+              0.3,
+              0.2
+            ],
+            "weighted_average_maturity_years": 2.3
+          }
+        ]
+      }
+    ],
+    "prepayment": {
+      "model": "psa",
+      "cpr_base": 0.06,
+      "psa_percent": 100.0,
+      "source_kind": "synthetic-stated",
+      "source": "fixture value: the 100 percent PSA curve"
+    }
+  },
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u10-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

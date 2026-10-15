@@ -1,0 +1,1817 @@
+{
+  "schema": "contraste.case/v1",
+  "case_id": "C10",
+  "variant_id": "fixture-residential",
+  "model": [
+    {
+      "id": "m-lhp",
+      "family": "portfolio-credit-capital",
+      "rung": "C1",
+      "title": {
+        "en": "Fixture model m-lhp",
+        "es": "Modelo de ejemplo m-lhp"
+      },
+      "short_title": {
+        "en": "m-lhp",
+        "es": "m-lhp"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "BSD-3-Clause",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    },
+    {
+      "id": "m-gaussian-1f",
+      "family": "portfolio-credit-capital",
+      "rung": "C2",
+      "title": {
+        "en": "Fixture model m-gaussian-1f",
+        "es": "Modelo de ejemplo m-gaussian-1f"
+      },
+      "short_title": {
+        "en": "m-gaussian-1f",
+        "es": "m-gaussian-1f"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "BSD-3-Clause",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    },
+    {
+      "id": "m-student-t",
+      "family": "portfolio-credit-capital",
+      "rung": "C3",
+      "title": {
+        "en": "Fixture model m-student-t",
+        "es": "Modelo de ejemplo m-student-t"
+      },
+      "short_title": {
+        "en": "m-student-t",
+        "es": "m-student-t"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "BSD-3-Clause",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    }
+  ],
+  "outputs": {
+    "kind": "loan-type",
+    "loan_type": "residential",
+    "label": {
+      "en": "Residential real estate",
+      "es": "Credito hipotecario residencial"
+    },
+    "currency": "USD",
+    "loss_rate_definition": {
+      "en": "Net charge-off rate, annualised, decimal per year; the annual rate is the mean of the four quarterly rates. Fixture values, not the Federal Reserve's.",
+      "es": "Tasa de castigo neta anualizada, decimal por ano; la tasa anual es el promedio de las cuatro tasas trimestrales. Valores de ejemplo, no los de la Reserva Federal."
+    },
+    "windows": {
+      "fit": {
+        "first_year": 1985,
+        "last_year": 2006,
+        "n_years": 22
+      },
+      "evaluation": {
+        "first_year": 2007,
+        "last_year": 2012,
+        "n_years": 6
+      }
+    },
+    "data_status": {
+      "source": "federal-reserve-chargeoff-release",
+      "table": "chgallsa",
+      "series": "fixture: the column of the loan type is set by the bake",
+      "seasonal_adjustment": "SA",
+      "bank_scope": "all-banks",
+      "files_as_of": "2026-08-25",
+      "quarters_expected": 112,
+      "missing_quarters": [
+        {
+          "quarter": "1990Q3",
+          "reason": "fixture: the quarter is absent from the table"
+        }
+      ],
+      "notice": {
+        "en": "Fixture, not a result. Round numbers for the contract.",
+        "es": "Ejemplo, no es un resultado. Numeros redondos para el contrato."
+      }
+    },
+    "annual_rates": [
+      {
+        "year": 1985,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.002,
+        "reason": null,
+        "fitted_cdf": 0.430806274,
+        "implied_factor": 0.174321826,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 1986,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.0024,
+        "reason": null,
+        "fitted_cdf": 0.522035671,
+        "implied_factor": -0.055263353,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 1987,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.0028,
+        "reason": null,
+        "fitted_cdf": 0.599672478,
+        "implied_factor": -0.252499444,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 1988,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.003,
+        "reason": null,
+        "fitted_cdf": 0.633726145,
+        "implied_factor": -0.341738481,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 1989,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.0034,
+        "reason": null,
+        "fitted_cdf": 0.693291154,
+        "implied_factor": -0.505200966,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 1990,
+        "window": "fit",
+        "n_quarters": 3,
+        "loss_rate": null,
+        "reason": "fixture: the quarter 1990Q3 is absent from the table; the annual rate is null, never interpolated",
+        "fitted_cdf": null,
+        "implied_factor": null,
+        "exceeds_99": null,
+        "exceeds_999": null
+      },
+      {
+        "year": 1991,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.0052,
+        "reason": null,
+        "fitted_cdf": 0.859067689,
+        "implied_factor": -1.076140058,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 1992,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.005,
+        "reason": null,
+        "fitted_cdf": 0.846691044,
+        "implied_factor": -1.022344429,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 1993,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.0042,
+        "reason": null,
+        "fitted_cdf": 0.784050534,
+        "implied_factor": -0.785946327,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 1994,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.0034,
+        "reason": null,
+        "fitted_cdf": 0.693291154,
+        "implied_factor": -0.505200966,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 1995,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.003,
+        "reason": null,
+        "fitted_cdf": 0.633726145,
+        "implied_factor": -0.341738481,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 1996,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.0028,
+        "reason": null,
+        "fitted_cdf": 0.599672478,
+        "implied_factor": -0.252499444,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 1997,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.0026,
+        "reason": null,
+        "fitted_cdf": 0.562500598,
+        "implied_factor": -0.157312203,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 1998,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.0024,
+        "reason": null,
+        "fitted_cdf": 0.522035671,
+        "implied_factor": -0.055263353,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 1999,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.0022,
+        "reason": null,
+        "fitted_cdf": 0.478151724,
+        "implied_factor": 0.054792911,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 2000,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.0024,
+        "reason": null,
+        "fitted_cdf": 0.522035671,
+        "implied_factor": -0.055263353,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 2001,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.003,
+        "reason": null,
+        "fitted_cdf": 0.633726145,
+        "implied_factor": -0.341738481,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 2002,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.0036,
+        "reason": null,
+        "fitted_cdf": 0.719224461,
+        "implied_factor": -0.580539173,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 2003,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.0036,
+        "reason": null,
+        "fitted_cdf": 0.719224461,
+        "implied_factor": -0.580539173,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 2004,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.003,
+        "reason": null,
+        "fitted_cdf": 0.633726145,
+        "implied_factor": -0.341738481,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 2005,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.0026,
+        "reason": null,
+        "fitted_cdf": 0.562500598,
+        "implied_factor": -0.157312203,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 2006,
+        "window": "fit",
+        "n_quarters": 4,
+        "loss_rate": 0.0028,
+        "reason": null,
+        "fitted_cdf": 0.599672478,
+        "implied_factor": -0.252499444,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 2007,
+        "window": "evaluation",
+        "n_quarters": 4,
+        "loss_rate": 0.0045,
+        "reason": null,
+        "fitted_cdf": 0.810289166,
+        "implied_factor": -0.878962391,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 2008,
+        "window": "evaluation",
+        "n_quarters": 4,
+        "loss_rate": 0.0085,
+        "reason": null,
+        "fitted_cdf": 0.961712096,
+        "implied_factor": -1.770909165,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 2009,
+        "window": "evaluation",
+        "n_quarters": 4,
+        "loss_rate": 0.016,
+        "reason": null,
+        "fitted_cdf": 0.996832792,
+        "implied_factor": -2.729948769,
+        "exceeds_99": true,
+        "exceeds_999": false
+      },
+      {
+        "year": 2010,
+        "window": "evaluation",
+        "n_quarters": 4,
+        "loss_rate": 0.023,
+        "reason": null,
+        "fitted_cdf": 0.999549552,
+        "implied_factor": -3.319776277,
+        "exceeds_99": true,
+        "exceeds_999": true
+      },
+      {
+        "year": 2011,
+        "window": "evaluation",
+        "n_quarters": 4,
+        "loss_rate": 0.012,
+        "reason": null,
+        "fitted_cdf": 0.988808227,
+        "implied_factor": -2.283795604,
+        "exceeds_99": false,
+        "exceeds_999": false
+      },
+      {
+        "year": 2012,
+        "window": "evaluation",
+        "n_quarters": 4,
+        "loss_rate": 0.008,
+        "reason": null,
+        "fitted_cdf": 0.95381324,
+        "implied_factor": -1.683008115,
+        "exceeds_99": false,
+        "exceeds_999": false
+      }
+    ],
+    "fit": {
+      "n_years_used": 21,
+      "maximum_likelihood": {
+        "pd": {
+          "estimate": 0.003,
+          "ci_low": 0.0025,
+          "ci_high": 0.0036
+        },
+        "rho": {
+          "estimate": 0.06,
+          "ci_low": 0.02,
+          "ci_high": 0.1
+        },
+        "log_likelihood": 95.4,
+        "converged": true,
+        "interval_method": "profile-likelihood",
+        "level": 0.95
+      },
+      "moments": {
+        "pd": {
+          "estimate": 0.003,
+          "ci_low": 0.0026,
+          "ci_high": 0.0035
+        },
+        "rho": {
+          "estimate": 0.055,
+          "ci_low": 0.02,
+          "ci_high": 0.11
+        },
+        "interval_method": "parametric-bootstrap",
+        "n_bootstrap": 200,
+        "level": 0.95
+      }
+    },
+    "profile_likelihood": {
+      "level": 0.95,
+      "rho": [
+        0.02,
+        0.04,
+        0.06,
+        0.08,
+        0.1,
+        0.12,
+        0.14,
+        0.16,
+        0.18,
+        0.2,
+        0.22,
+        0.24,
+        0.26,
+        0.28,
+        0.3
+      ],
+      "log_likelihood": [
+        93.47927059,
+        94.919817647,
+        95.4,
+        94.919817647,
+        93.47927059,
+        91.078358827,
+        87.717082359,
+        83.395441185,
+        78.113435307,
+        71.871064723,
+        64.668329434,
+        56.50522944,
+        47.381764741,
+        37.297935337,
+        26.253741228
+      ],
+      "pd_at_rho": [
+        0.00296,
+        0.00298,
+        0.003,
+        0.00302,
+        0.00304,
+        0.00306,
+        0.00308,
+        0.0031,
+        0.00312,
+        0.00314,
+        0.00316,
+        0.00318,
+        0.0032,
+        0.00322,
+        0.00324
+      ],
+      "max_log_likelihood": 95.4,
+      "cutoff": 93.47927059
+    },
+    "fitted_distribution": {
+      "pd": 0.003,
+      "rho": 0.06,
+      "curve": {
+        "x": [
+          0.0005,
+          0.001,
+          0.002,
+          0.003,
+          0.004,
+          0.006,
+          0.008,
+          0.012,
+          0.016,
+          0.024,
+          0.032
+        ],
+        "pdf": [
+          173.783883529,
+          280.541050029,
+          245.299792483,
+          162.800631539,
+          102.810761759,
+          41.228637401,
+          17.478063006,
+          3.725580541,
+          0.949999302,
+          0.08900261,
+          0.011540424
+        ],
+        "cdf": [
+          0.035419397,
+          0.155357876,
+          0.430806274,
+          0.633726145,
+          0.764414732,
+          0.898742134,
+          0.95381324,
+          0.988808227,
+          0.996832792,
+          0.999651963,
+          0.999949178
+        ]
+      },
+      "quantiles": [
+        {
+          "level": 0.5,
+          "value": 0.002297603
+        },
+        {
+          "level": 0.9,
+          "value": 0.006030718
+        },
+        {
+          "level": 0.95,
+          "value": 0.007791143
+        },
+        {
+          "level": 0.99,
+          "value": 0.012339884
+        },
+        {
+          "level": 0.999,
+          "value": 0.02001755
+        }
+      ]
+    },
+    "backtest": {
+      "n_years_evaluated": 6,
+      "rows": [
+        {
+          "level": 0.95,
+          "fitted_quantile": 0.007791143,
+          "expected_exceedances": 0.3,
+          "observed_exceedances": 5,
+          "years_exceeding": [
+            2008,
+            2009,
+            2010,
+            2011,
+            2012
+          ],
+          "p_value_upper": 1.797e-06,
+          "light": "red"
+        },
+        {
+          "level": 0.99,
+          "fitted_quantile": 0.012339884,
+          "expected_exceedances": 0.06,
+          "observed_exceedances": 2,
+          "years_exceeding": [
+            2009,
+            2010
+          ],
+          "p_value_upper": 0.001460448,
+          "light": "red"
+        },
+        {
+          "level": 0.999,
+          "fitted_quantile": 0.02001755,
+          "expected_exceedances": 0.006,
+          "observed_exceedances": 1,
+          "years_exceeding": [
+            2010
+          ],
+          "p_value_upper": 0.00598502,
+          "light": "red"
+        }
+      ]
+    },
+    "irb_reference": {
+      "regime": "basel3",
+      "asset_class": "residential_mortgage",
+      "reference": "CRE31.14",
+      "pd": 0.003,
+      "lgd": 0.45,
+      "maturity": null,
+      "maturity_adjustment": null,
+      "irb_correlation": 0.15,
+      "fitted_correlation": 0.06,
+      "k_irb": 0.01946795,
+      "ec_lhp_fitted": 0.007657897,
+      "ratio_fitted_to_irb": 0.393359218
+    },
+    "portfolio": {
+      "label": "illustrative",
+      "notice": {
+        "en": "Illustrative portfolio: constructed for the contract, never a bank's.",
+        "es": "Cartera ilustrativa: construida para el contrato, nunca la de un banco."
+      },
+      "currency": "USD",
+      "n_names": 1060,
+      "total_ead": 100000000.0,
+      "groups": [
+        {
+          "id": "g-large",
+          "label": {
+            "en": "Large names",
+            "es": "Nombres grandes"
+          },
+          "n_names": 10,
+          "ead_each": 4000000.0,
+          "pd": 0.0015,
+          "lgd": 0.45,
+          "loading": 0.22,
+          "sector": "prime"
+        },
+        {
+          "id": "g-mid",
+          "label": {
+            "en": "Mid-size names",
+            "es": "Nombres medianos"
+          },
+          "n_names": 50,
+          "ead_each": 600000.0,
+          "pd": 0.003,
+          "lgd": 0.45,
+          "loading": 0.25,
+          "sector": "prime"
+        },
+        {
+          "id": "g-small",
+          "label": {
+            "en": "Small names",
+            "es": "Nombres pequenos"
+          },
+          "n_names": 1000,
+          "ead_each": 30000.0,
+          "pd": 0.005,
+          "lgd": 0.45,
+          "loading": 0.3,
+          "sector": "near-prime"
+        }
+      ],
+      "lgd_mean": 0.45,
+      "lgd_gamma": 0.25,
+      "levels": [
+        0.99,
+        0.999
+      ],
+      "horizon_years": 1,
+      "calibration": {
+        "pd": 0.003,
+        "rho": 0.06,
+        "source": "fit-maximum-likelihood"
+      },
+      "hhi": 0.01789,
+      "effective_names": 55.897149245,
+      "largest_share": 0.04
+    },
+    "rungs": [
+      {
+        "id": "c1-lhp",
+        "rung": "C1",
+        "method": "lhp-vasicek",
+        "label": {
+          "en": "Large homogeneous portfolio (Vasicek)",
+          "es": "Cartera homogenea grande (Vasicek)"
+        },
+        "currency": "USD",
+        "estimator": "analytic",
+        "evaluated": true,
+        "reason": null,
+        "parameters": [
+          {
+            "name": "pd",
+            "value": 0.003,
+            "unit": "decimal"
+          },
+          {
+            "name": "rho",
+            "value": 0.06,
+            "unit": "-"
+          },
+          {
+            "name": "lgd",
+            "value": 0.45,
+            "unit": "decimal"
+          }
+        ],
+        "diagnostics": [],
+        "simulation": null,
+        "measures": [
+          {
+            "level": 0.99,
+            "el": 135000.0,
+            "var": 555294.77,
+            "es": 703546.62,
+            "es_reason": null,
+            "ec": 420294.77,
+            "var_se": null,
+            "es_se": null
+          },
+          {
+            "level": 0.999,
+            "el": 135000.0,
+            "var": 900789.75,
+            "es": 1076049.88,
+            "es_reason": null,
+            "ec": 765789.75,
+            "var_se": null,
+            "es_se": null
+          }
+        ],
+        "distribution": {
+          "currency": "USD",
+          "loss": [
+            22500.0,
+            45000.0,
+            90000.0,
+            135000.0,
+            180000.0,
+            270000.0,
+            360000.0,
+            540000.0,
+            720000.0,
+            1080000.0,
+            1440000.0
+          ],
+          "cdf": [
+            0.035419397,
+            0.155357876,
+            0.430806274,
+            0.633726145,
+            0.764414732,
+            0.898742134,
+            0.95381324,
+            0.988808227,
+            0.996832792,
+            0.999651963,
+            0.999949178
+          ],
+          "density": [
+            3.861864e-06,
+            6.234246e-06,
+            5.451106e-06,
+            3.617792e-06,
+            2.284684e-06,
+            9.16192e-07,
+            3.88401e-07,
+            8.2791e-08,
+            2.1111e-08,
+            1.978e-09,
+            2.56e-10
+          ]
+        }
+      },
+      {
+        "id": "c2-gaussian-1f",
+        "rung": "C2",
+        "method": "gaussian-copula-one-factor",
+        "label": {
+          "en": "Gaussian copula, one factor",
+          "es": "Copula gaussiana, un factor"
+        },
+        "currency": "USD",
+        "estimator": "monte-carlo",
+        "evaluated": true,
+        "reason": null,
+        "parameters": [
+          {
+            "name": "rho",
+            "value": 0.06,
+            "unit": "-"
+          },
+          {
+            "name": "lgd",
+            "value": 0.45,
+            "unit": "decimal"
+          }
+        ],
+        "diagnostics": [],
+        "simulation": {
+          "n_scenarios": 1000000,
+          "seed": 4001,
+          "chunk_size": 100000
+        },
+        "measures": [
+          {
+            "level": 0.99,
+            "el": 135000.0,
+            "var": 538635.93,
+            "es": 682440.22,
+            "es_reason": null,
+            "ec": 403635.93,
+            "var_se": 2154.54,
+            "es_se": 3412.2
+          },
+          {
+            "level": 0.999,
+            "el": 135000.0,
+            "var": 873766.06,
+            "es": 1043768.39,
+            "es_reason": null,
+            "ec": 738766.06,
+            "var_se": 3495.06,
+            "es_se": 5218.84
+          }
+        ],
+        "distribution": {
+          "currency": "USD",
+          "loss": [
+            22500.0,
+            45000.0,
+            90000.0,
+            135000.0,
+            180000.0,
+            270000.0,
+            360000.0,
+            540000.0,
+            720000.0,
+            1080000.0,
+            1440000.0
+          ],
+          "cdf": [
+            0.038151481,
+            0.164069147,
+            0.445816711,
+            0.648520787,
+            0.776774977,
+            0.906086449,
+            0.957924303,
+            0.990102449,
+            0.997267332,
+            0.999711796,
+            0.999959348
+          ],
+          "density": [
+            4.113128e-06,
+            6.477068e-06,
+            5.498882e-06,
+            3.577179e-06,
+            2.223789e-06,
+            8.69983e-07,
+            3.61611e-07,
+            7.4687e-08,
+            1.8563e-08,
+            1.668e-09,
+            2.09e-10
+          ]
+        }
+      },
+      {
+        "id": "c2-gaussian-mf",
+        "rung": "C2",
+        "method": "gaussian-copula-multi-factor",
+        "label": {
+          "en": "Gaussian copula, sector factors",
+          "es": "Copula gaussiana, factores sectoriales"
+        },
+        "currency": "USD",
+        "estimator": "monte-carlo",
+        "evaluated": true,
+        "reason": null,
+        "parameters": [
+          {
+            "name": "n_factors",
+            "value": 2,
+            "unit": "-"
+          },
+          {
+            "name": "lgd",
+            "value": 0.45,
+            "unit": "decimal"
+          }
+        ],
+        "diagnostics": [],
+        "simulation": {
+          "n_scenarios": 1000000,
+          "seed": 4001,
+          "chunk_size": 100000
+        },
+        "measures": [
+          {
+            "level": 0.99,
+            "el": 135000.0,
+            "var": 566400.67,
+            "es": 717617.55,
+            "es_reason": null,
+            "ec": 431400.67,
+            "var_se": 2265.6,
+            "es_se": 3588.09
+          },
+          {
+            "level": 0.999,
+            "el": 135000.0,
+            "var": 918805.54,
+            "es": 1097570.88,
+            "es_reason": null,
+            "ec": 783805.54,
+            "var_se": 3675.22,
+            "es_se": 5487.85
+          }
+        ],
+        "distribution": {
+          "currency": "USD",
+          "loss": [
+            22500.0,
+            45000.0,
+            90000.0,
+            135000.0,
+            180000.0,
+            270000.0,
+            360000.0,
+            540000.0,
+            720000.0,
+            1080000.0,
+            1440000.0
+          ],
+          "cdf": [
+            0.03373388,
+            0.149872364,
+            0.421121809,
+            0.624022522,
+            0.756202433,
+            0.893762491,
+            0.950980467,
+            0.987893142,
+            0.996519059,
+            0.999607265,
+            0.999941361
+          ],
+          "density": [
+            3.704808e-06,
+            6.077434e-06,
+            5.416158e-06,
+            3.641339e-06,
+            2.323004e-06,
+            9.46538e-07,
+            4.06398e-07,
+            8.8405e-08,
+            2.2917e-08,
+            2.206e-09,
+            2.93e-10
+          ]
+        }
+      },
+      {
+        "id": "c3-student-t",
+        "rung": "C3",
+        "method": "student-t-copula",
+        "label": {
+          "en": "Student-t copula",
+          "es": "Copula t de Student"
+        },
+        "currency": "USD",
+        "estimator": "monte-carlo",
+        "evaluated": true,
+        "reason": null,
+        "parameters": [
+          {
+            "name": "nu",
+            "value": 5,
+            "unit": "-"
+          },
+          {
+            "name": "rho",
+            "value": 0.06,
+            "unit": "-"
+          }
+        ],
+        "diagnostics": [],
+        "simulation": {
+          "n_scenarios": 1000000,
+          "seed": 4001,
+          "chunk_size": 100000
+        },
+        "measures": [
+          {
+            "level": 0.99,
+            "el": 135000.0,
+            "var": 749647.95,
+            "es": 1090497.26,
+            "es_reason": null,
+            "ec": 614647.95,
+            "var_se": 4497.89,
+            "es_se": 8723.98
+          },
+          {
+            "level": 0.999,
+            "el": 135000.0,
+            "var": 1216066.16,
+            "es": 1667877.32,
+            "es_reason": null,
+            "ec": 1081066.16,
+            "var_se": 7296.4,
+            "es_se": 13343.02
+          }
+        ],
+        "distribution": {
+          "currency": "USD",
+          "loss": [
+            22500.0,
+            45000.0,
+            90000.0,
+            135000.0,
+            180000.0,
+            270000.0,
+            360000.0,
+            540000.0,
+            720000.0,
+            1080000.0,
+            1440000.0
+          ],
+          "cdf": [
+            0.016296653,
+            0.086559362,
+            0.293227288,
+            0.483198821,
+            0.627646229,
+            0.805701336,
+            0.895637293,
+            0.966835372,
+            0.988241211,
+            0.998121755,
+            0.999624495
+          ],
+          "density": [
+            1.969067e-06,
+            4.022446e-06,
+            4.646485e-06,
+            3.722711e-06,
+            2.724622e-06,
+            1.376915e-06,
+            7.01403e-07,
+            2.00319e-07,
+            6.471e-08,
+            8.908e-09,
+            1.589e-09
+          ]
+        }
+      },
+      {
+        "id": "c4-creditrisk-plus",
+        "rung": "C4",
+        "method": "creditrisk-plus",
+        "label": {
+          "en": "CreditRisk+ (stable recursion)",
+          "es": "CreditRisk+ (recursion estable)"
+        },
+        "currency": "USD",
+        "estimator": "analytic",
+        "evaluated": true,
+        "reason": null,
+        "parameters": [
+          {
+            "name": "sigma2",
+            "value": 0.5,
+            "unit": "-"
+          },
+          {
+            "name": "loss_unit",
+            "value": 10000.0,
+            "unit": "USD"
+          }
+        ],
+        "diagnostics": [],
+        "simulation": null,
+        "measures": [
+          {
+            "level": 0.99,
+            "el": 135000.0,
+            "var": 583059.51,
+            "es": 759830.35,
+            "es_reason": null,
+            "ec": 448059.51,
+            "var_se": null,
+            "es_se": null
+          },
+          {
+            "level": 0.999,
+            "el": 135000.0,
+            "var": 945829.24,
+            "es": 1162133.87,
+            "es_reason": null,
+            "ec": 810829.24,
+            "var_se": null,
+            "es_se": null
+          }
+        ],
+        "distribution": {
+          "currency": "USD",
+          "loss": [
+            22500.0,
+            45000.0,
+            90000.0,
+            135000.0,
+            180000.0,
+            270000.0,
+            360000.0,
+            540000.0,
+            720000.0,
+            1080000.0,
+            1440000.0
+          ],
+          "cdf": [
+            0.0313902,
+            0.142093485,
+            0.407064046,
+            0.609711839,
+            0.743939276,
+            0.886179354,
+            0.946598696,
+            0.986441835,
+            0.996011271,
+            0.999532472,
+            0.999927913
+          ],
+          "density": [
+            3.483702e-06,
+            5.849742e-06,
+            5.359665e-06,
+            3.671673e-06,
+            2.377144e-06,
+            9.91299e-07,
+            4.33539e-07,
+            9.7129e-08,
+            2.5788e-08,
+            2.581e-09,
+            3.54e-10
+          ]
+        }
+      },
+      {
+        "id": "c5-granularity",
+        "rung": "C5",
+        "method": "granularity-adjustment",
+        "label": {
+          "en": "Granularity adjustment",
+          "es": "Ajuste por granularidad"
+        },
+        "currency": "USD",
+        "estimator": "analytic",
+        "evaluated": true,
+        "reason": null,
+        "parameters": [
+          {
+            "name": "xi",
+            "value": 0.25,
+            "unit": "-"
+          },
+          {
+            "name": "gamma",
+            "value": 0.25,
+            "unit": "-"
+          },
+          {
+            "name": "q",
+            "value": 0.999,
+            "unit": "decimal"
+          }
+        ],
+        "diagnostics": [],
+        "simulation": null,
+        "measures": [
+          {
+            "level": 0.99,
+            "el": 135000.0,
+            "var": 612542.77,
+            "es": null,
+            "es_reason": "the granularity adjustment is a quantile add-on and defines no expected shortfall",
+            "ec": 477542.77,
+            "var_se": null,
+            "es_se": null
+          },
+          {
+            "level": 0.999,
+            "el": 135000.0,
+            "var": 1043909.75,
+            "es": null,
+            "es_reason": "the granularity adjustment is a quantile add-on and defines no expected shortfall",
+            "ec": 908909.75,
+            "var_se": null,
+            "es_se": null
+          }
+        ],
+        "distribution": {
+          "currency": "USD",
+          "loss": [
+            22500.0,
+            45000.0,
+            90000.0,
+            135000.0,
+            180000.0,
+            270000.0,
+            360000.0,
+            540000.0,
+            720000.0,
+            1080000.0,
+            1440000.0
+          ],
+          "cdf": [
+            0.035419397,
+            0.155357876,
+            0.430806274,
+            0.633726145,
+            0.764414732,
+            0.898742134,
+            0.95381324,
+            0.988808227,
+            0.996832792,
+            0.999651963,
+            0.999949178
+          ],
+          "density": [
+            3.861864e-06,
+            6.234246e-06,
+            5.451106e-06,
+            3.617792e-06,
+            2.284684e-06,
+            9.16192e-07,
+            3.88401e-07,
+            8.2791e-08,
+            2.1111e-08,
+            1.978e-09,
+            2.56e-10
+          ]
+        }
+      },
+      {
+        "id": "c6-is-gaussian",
+        "rung": "C6",
+        "method": "importance-sampling",
+        "label": {
+          "en": "Importance sampling, Gaussian copula",
+          "es": "Muestreo por importancia, copula gaussiana"
+        },
+        "currency": "USD",
+        "estimator": "monte-carlo",
+        "evaluated": true,
+        "reason": null,
+        "parameters": [
+          {
+            "name": "theta",
+            "value": 0.35,
+            "unit": "-"
+          },
+          {
+            "name": "factor_shift",
+            "value": -1.2,
+            "unit": "-"
+          }
+        ],
+        "diagnostics": [
+          {
+            "name": "variance_ratio_vs_plain_mc",
+            "value": 38.4,
+            "unit": "ratio"
+          },
+          {
+            "name": "effective_sample_share",
+            "value": 0.12,
+            "unit": "share"
+          }
+        ],
+        "simulation": {
+          "n_scenarios": 100000,
+          "seed": 4001,
+          "chunk_size": 100000
+        },
+        "measures": [
+          {
+            "level": 0.99,
+            "el": 135000.0,
+            "var": 538635.93,
+            "es": 682440.22,
+            "es_reason": null,
+            "ec": 403635.93,
+            "var_se": 269.32,
+            "es_se": 409.46
+          },
+          {
+            "level": 0.999,
+            "el": 135000.0,
+            "var": 873766.06,
+            "es": 1043768.39,
+            "es_reason": null,
+            "ec": 738766.06,
+            "var_se": 436.88,
+            "es_se": 626.26
+          }
+        ],
+        "distribution": {
+          "currency": "USD",
+          "loss": [
+            22500.0,
+            45000.0,
+            90000.0,
+            135000.0,
+            180000.0,
+            270000.0,
+            360000.0,
+            540000.0,
+            720000.0,
+            1080000.0,
+            1440000.0
+          ],
+          "cdf": [
+            0.038151481,
+            0.164069147,
+            0.445816711,
+            0.648520787,
+            0.776774977,
+            0.906086449,
+            0.957924303,
+            0.990102449,
+            0.997267332,
+            0.999711796,
+            0.999959348
+          ],
+          "density": [
+            4.113128e-06,
+            6.477068e-06,
+            5.498882e-06,
+            3.577179e-06,
+            2.223789e-06,
+            8.69983e-07,
+            3.61611e-07,
+            7.4687e-08,
+            1.8563e-08,
+            1.668e-09,
+            2.09e-10
+          ]
+        }
+      },
+      {
+        "id": "c6-is-student-t",
+        "rung": "C6",
+        "method": "importance-sampling",
+        "label": {
+          "en": "Importance sampling, Student-t copula",
+          "es": "Muestreo por importancia, copula t"
+        },
+        "currency": "USD",
+        "estimator": "none",
+        "evaluated": false,
+        "reason": "the exponential twist of dossier 04 H.7 is derived for the normal copula; no Student-t twist is specified, so the rung did not run and no number stands in for it",
+        "parameters": [],
+        "diagnostics": [],
+        "simulation": null,
+        "measures": null,
+        "distribution": null
+      }
+    ],
+    "granularity": {
+      "currency": "USD",
+      "xi": 0.25,
+      "gamma": 0.25,
+      "k_source": "irb-regulatory-correlation",
+      "k_star": 0.019467949736,
+      "delta_reference": 4.83,
+      "delta_reference_source": "Gordy and Lutkebohmert (2013), eq. 15 and p. 46 (dossier 04 H.5)",
+      "levels": [
+        {
+          "q": 0.99,
+          "alpha_q": 9.735541689,
+          "delta": 2.856848106,
+          "ga": 0.00057248,
+          "ga_money": 57248.0
+        },
+        {
+          "q": 0.999,
+          "alpha_q": 17.505777032,
+          "delta": 4.833601258,
+          "ga": 0.0014312,
+          "ga_money": 143120.0
+        }
+      ],
+      "by_n_names_level": 0.999,
+      "by_n_names": [
+        {
+          "n_names": 10,
+          "hhi": 0.1,
+          "ga": 0.008,
+          "truth_ga": 0.00744,
+          "truth_reason": null
+        },
+        {
+          "n_names": 20,
+          "hhi": 0.05,
+          "ga": 0.004,
+          "truth_ga": 0.00372,
+          "truth_reason": null
+        },
+        {
+          "n_names": 50,
+          "hhi": 0.02,
+          "ga": 0.0016,
+          "truth_ga": 0.001488,
+          "truth_reason": null
+        },
+        {
+          "n_names": 100,
+          "hhi": 0.01,
+          "ga": 0.0008,
+          "truth_ga": 0.000744,
+          "truth_reason": null
+        },
+        {
+          "n_names": 200,
+          "hhi": 0.005,
+          "ga": 0.0004,
+          "truth_ga": 0.000372,
+          "truth_reason": null
+        },
+        {
+          "n_names": 500,
+          "hhi": 0.002,
+          "ga": 0.00016,
+          "truth_ga": null,
+          "truth_reason": "fixture: the CreditRisk+ recursion was not run beyond 200 names"
+        },
+        {
+          "n_names": 1000,
+          "hhi": 0.001,
+          "ga": 8e-05,
+          "truth_ga": null,
+          "truth_reason": "fixture: the CreditRisk+ recursion was not run beyond 200 names"
+        }
+      ]
+    },
+    "euler": [
+      {
+        "rung_method": "gaussian-copula-one-factor",
+        "currency": "USD",
+        "levels": [
+          {
+            "level": 0.99,
+            "var_total": 538635.93,
+            "es_total": 682440.22,
+            "var_sum_tolerance": 0.01,
+            "es_sum_tolerance": 1e-06,
+            "var_method": "kernel",
+            "es_method": "tail-sample",
+            "rows": [
+              {
+                "group_id": "g-large",
+                "ead": 40000000.0,
+                "rc_var": 86181.75,
+                "rc_es": 116014.84,
+                "share_var": 0.160000002,
+                "share_es": 0.170000004
+              },
+              {
+                "group_id": "g-mid",
+                "ead": 30000000.0,
+                "rc_var": 150818.06,
+                "rc_es": 191083.26,
+                "share_var": 0.279999999,
+                "share_es": 0.279999998
+              },
+              {
+                "group_id": "g-small",
+                "ead": 30000000.0,
+                "rc_var": 302842.67,
+                "rc_es": 375342.12,
+                "share_var": 0.562240009,
+                "share_es": 0.549999999
+              }
+            ],
+            "anchor": {
+              "method": "asrf-asymptotic",
+              "asrf_var": 547262.19,
+              "rows": [
+                {
+                  "group_id": "g-large",
+                  "rc_var": 120502.6
+                },
+                {
+                  "group_id": "g-mid",
+                  "rc_var": 166588.43
+                },
+                {
+                  "group_id": "g-small",
+                  "rc_var": 260171.16
+                }
+              ]
+            },
+            "anchor_reason": null
+          },
+          {
+            "level": 0.999,
+            "var_total": 873766.06,
+            "es_total": 1043768.39,
+            "var_sum_tolerance": 0.01,
+            "es_sum_tolerance": 1e-06,
+            "var_method": "kernel",
+            "es_method": "tail-sample",
+            "rows": [
+              {
+                "group_id": "g-large",
+                "ead": 40000000.0,
+                "rc_var": 131064.91,
+                "rc_es": 167002.94,
+                "share_var": 0.150000001,
+                "share_es": 0.159999998
+              },
+              {
+                "group_id": "g-mid",
+                "ead": 30000000.0,
+                "rc_var": 235916.84,
+                "rc_es": 281817.47,
+                "share_var": 0.270000004,
+                "share_es": 0.270000005
+              },
+              {
+                "group_id": "g-small",
+                "ead": 30000000.0,
+                "rc_var": 508811.45,
+                "rc_es": 594947.98,
+                "share_var": 0.582319998,
+                "share_es": 0.569999998
+              }
+            ],
+            "anchor": {
+              "method": "asrf-asymptotic",
+              "asrf_var": 882964.25,
+              "rows": [
+                {
+                  "group_id": "g-large",
+                  "rc_var": 203333.43
+                },
+                {
+                  "group_id": "g-mid",
+                  "rc_var": 270236.92
+                },
+                {
+                  "group_id": "g-small",
+                  "rc_var": 409393.9
+                }
+              ]
+            },
+            "anchor_reason": null
+          }
+        ]
+      },
+      {
+        "rung_method": "student-t-copula",
+        "currency": "USD",
+        "levels": [
+          {
+            "level": 0.99,
+            "var_total": 749647.95,
+            "es_total": 1090497.26,
+            "var_sum_tolerance": 0.01,
+            "es_sum_tolerance": 1e-06,
+            "var_method": "kernel",
+            "es_method": "tail-sample",
+            "rows": [
+              {
+                "group_id": "g-large",
+                "ead": 40000000.0,
+                "rc_var": 134936.63,
+                "rc_es": 207194.48,
+                "share_var": 0.179999999,
+                "share_es": 0.190000001
+              },
+              {
+                "group_id": "g-mid",
+                "ead": 30000000.0,
+                "rc_var": 209901.43,
+                "rc_es": 305339.23,
+                "share_var": 0.280000005,
+                "share_es": 0.279999997
+              },
+              {
+                "group_id": "g-small",
+                "ead": 30000000.0,
+                "rc_var": 406429.13,
+                "rc_es": 577963.55,
+                "share_var": 0.542159997,
+                "share_es": 0.530000002
+              }
+            ],
+            "anchor": null,
+            "anchor_reason": "the asymptotic one-factor contribution is a Gaussian one-factor result; no closed form is specified for this rung"
+          },
+          {
+            "level": 0.999,
+            "var_total": 1216066.16,
+            "es_total": 1667877.32,
+            "var_sum_tolerance": 0.01,
+            "es_sum_tolerance": 1e-06,
+            "var_method": "kernel",
+            "es_method": "tail-sample",
+            "rows": [
+              {
+                "group_id": "g-large",
+                "ead": 40000000.0,
+                "rc_var": 231052.57,
+                "rc_es": 333575.46,
+                "share_var": 0.19,
+                "share_es": 0.199999998
+              },
+              {
+                "group_id": "g-mid",
+                "ead": 30000000.0,
+                "rc_var": 328337.86,
+                "rc_es": 450326.88,
+                "share_var": 0.269999997,
+                "share_es": 0.270000002
+              },
+              {
+                "group_id": "g-small",
+                "ead": 30000000.0,
+                "rc_var": 659302.43,
+                "rc_es": 883974.98,
+                "share_var": 0.542160001,
+                "share_es": 0.53
+              }
+            ],
+            "anchor": null,
+            "anchor_reason": "the asymptotic one-factor contribution is a Gaussian one-factor result; no closed form is specified for this rung"
+          }
+        ]
+      }
+    ]
+  },
+  "tests": [
+    {
+      "test_id": "portfolio.tail_backtest",
+      "model_id": "m-lhp",
+      "segment": null,
+      "statistic": 2.0,
+      "p_value": 0.001460448,
+      "metric": 0.06,
+      "h0": "the evaluation years fall above the fitted quantile at the expected rate",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": 0.05,
+      "alpha_red": 0.01,
+      "light": "red",
+      "n": 6,
+      "n_events": 2,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture row with round numbers, not a result",
+      "extras": {
+        "primary_level": 0.99,
+        "thresholds": {}
+      }
+    },
+    {
+      "test_id": "portfolio.mc_convergence",
+      "model_id": "m-gaussian-1f",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "portfolio.euler_additivity",
+      "model_id": "m-gaussian-1f",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": 0.00232,
+      "h0": "the Euler contributions add up to the total",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": 0.05,
+      "alpha_red": 0.01,
+      "light": "green",
+      "n": 3,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture row with round numbers, not a result",
+      "extras": {
+        "thresholds": {
+          "tolerance": 0.01
+        }
+      }
+    },
+    {
+      "test_id": "portfolio.crp_recursion_vs_mc",
+      "model_id": "m-lhp",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    }
+  ],
+  "impact": {
+    "ec_lhp_999_share": {
+      "value": 0.007657897,
+      "unit": "share of EAD",
+      "label": {
+        "en": "LHP capital at 99.9% with the fitted correlation",
+        "es": "Capital LHP al 99,9% con la correlacion ajustada"
+      }
+    },
+    "ec_ratio_fitted_to_irb": {
+      "value": 0.393359218,
+      "unit": "ratio",
+      "label": {
+        "en": "Fitted capital over IRB capital",
+        "es": "Capital ajustado sobre capital IRB"
+      }
+    }
+  },
+  "findings": [
+    {
+      "id": "f-c10-tail",
+      "severity": "S2",
+      "status": "open",
+      "evidence": [
+        "portfolio.tail_backtest"
+      ],
+      "title": {
+        "en": "Fixture finding: two evaluation years above the fitted 99% quantile",
+        "es": "Hallazgo de ejemplo: dos anos de evaluacion sobre el cuantil 99% ajustado"
+      }
+    }
+  ],
+  "provenance": {
+    "truth_status": "real-outcomes",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      },
+      {
+        "source": "illustrative-portfolio",
+        "class": "illustrative",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture",
+      "illustrative-portfolio": "illustrative"
+    },
+    "generators": [
+      "fixture:u7-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}
