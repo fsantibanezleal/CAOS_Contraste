@@ -2814,6 +2814,327 @@
           "retrieved": "2026-10-06"
         }
       ]
+    },
+    "fdic-bankfind": {
+      "name": "FDIC BankFind Suite (failures, financials)",
+      "publisher": "Federal Deposit Insurance Corporation",
+      "landing": "https://api.fdic.gov/banks/docs",
+      "class": "mirror-allowed",
+      "licence": "no licence sentence found; US agency (UNVERIFIED)",
+      "attribution": "Federal Deposit Insurance Corporation, BankFind Suite",
+      "access": "API, no key",
+      "files": [
+        {
+          "name": "financials-cert24735-20121231-20221231.json",
+          "url": "https://api.fdic.gov/banks/financials?filters=CERT%3A24735%20AND%20REPDTE%3A%5B20121231%20TO%2020221231%5D&fields=CERT%2CREPDTE%2CNAME%2CASSET%2CLIAB%2CEQ%2CRBCT1J%2CDEP%2CDEPDOM%2CDEPFOR%2CDEPNIDOM%2CDEPIDOM%2CDEPNIFOR%2CDEPIFOR%2CDEPINS%2CDEPUNA%2CDEPSMAMT%2CDEPSMB%2CDEPLGAMT%2CDEPLGB%2CNTRTIME%2CCD3LES%2CCD3T12%2CCD1T3%2CCDOV3%2CCD3LESS%2CCD3T12S%2CCD1T3S%2CCDOV3S%2CCHBAL%2CFREPO%2CFREPP%2CSC%2CSCRDEBT%2CSCAF%2CSCAA%2CSCHA%2CSCHF%2CSCNM3LES%2CSCNM3T12%2CSCNM1T3%2CSCNM3T5%2CSCNM5T15%2CSCNMOV15%2CSCPT3LES%2CSCPT3T12%2CSCPT1T3%2CSCPT3T5%2CSCPT5T15%2CSCPTOV15%2CSCO3YLES%2CSCOOV3Y%2CLNLSGR%2CLNLSNET%2CLNATRES%2CLNRS3LES%2CLNRS3T12%2CLNRS1T3%2CLNRS3T5%2CLNRS5T15%2CLNRSOV15%2CLNOT3LES%2CLNOT3T12%2CLNOT1T3%2CLNOT3T5%2CLNOT5T15%2CLNOTOV15%2COTHBFHLB%2COTHBFH1L%2COTBFH1T3%2COTBFH3T5%2COTBFHOV5%2COTHBRF%2COTBOT1L%2COTBOT1T3%2COTBOT3T5%2COTBOTOV5%2CSUBND%2CINTINC%2CEINTEXP%2CNIM%2CEDEP%2CISC%2CILNDOM%2CICHBAL%2CIFREPO%2CEFREPP&sort_by=REPDTE&sort_order=ASC&limit=100",
+          "bytes": 59831,
+          "sha256": "03b036abc5ffb89dc2c685d57ad76b4479bd3808e59957df6e219076044f41e4",
+          "retrieved": "2026-10-14"
+        }
+      ]
+    },
+    "treasury-par-curve": {
+      "name": "US Treasury daily par yield curve",
+      "publisher": "U.S. Department of the Treasury",
+      "landing": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/",
+      "class": "mirror-allowed",
+      "licence": "no licence sentence found; 17 U.S.C. 105 (page statement UNVERIFIED)",
+      "attribution": "U.S. Department of the Treasury, Daily Treasury Par Yield Curve Rates",
+      "access": "csv endpoint (browser user agent)",
+      "files": [
+        {
+          "name": "daily-treasury-par-1990.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/1990/all?type=daily_treasury_yield_curve&field_tdr_date_value=1990&_format=csv",
+          "bytes": 14069,
+          "sha256": "d8d5e4bb7ae2f13ccf03a7f50537723a4a5a37e2ebe85da3e32f53328c411d18",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-1991.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/1991/all?type=daily_treasury_yield_curve&field_tdr_date_value=1991&_format=csv",
+          "bytes": 14069,
+          "sha256": "d52d81bd96f5e02d8b7a74384d568eaafe36c2a067272e0840c5ea4022c1d4d4",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-1992.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/1992/all?type=daily_treasury_yield_curve&field_tdr_date_value=1992&_format=csv",
+          "bytes": 14125,
+          "sha256": "13fb485ff7085d1c8afb70b3bb6fd7fe7c728f7b672a9c1844d7e9e6d26827f9",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-1993.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/1993/all?type=daily_treasury_yield_curve&field_tdr_date_value=1993&_format=csv",
+          "bytes": 14575,
+          "sha256": "c5482e2e88fa8256eb513600c44fbcb8bd317e061a840a429676f4d1330cea3d",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-1994.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/1994/all?type=daily_treasury_yield_curve&field_tdr_date_value=1994&_format=csv",
+          "bytes": 15266,
+          "sha256": "cea2fce245f7a1be83395a82c4f56e146d2074909255930226551170bf25de18",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-1995.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/1995/all?type=daily_treasury_yield_curve&field_tdr_date_value=1995&_format=csv",
+          "bytes": 15327,
+          "sha256": "5815b05e0575a6220d84666346c56bc1fa39d0a4212b89bf0f50a3c09579de15",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-1996.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/1996/all?type=daily_treasury_yield_curve&field_tdr_date_value=1996&_format=csv",
+          "bytes": 15449,
+          "sha256": "656992cb54c922745bb7ccf11a57a3dd5fe2f1653f7d8127d04d25f3e3aaa674",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-1997.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/1997/all?type=daily_treasury_yield_curve&field_tdr_date_value=1997&_format=csv",
+          "bytes": 15327,
+          "sha256": "3653e22f12846593dc6e0d95a7518acfc2d2f6dd89ec83cc82e2ebeb4586b833",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-1998.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/1998/all?type=daily_treasury_yield_curve&field_tdr_date_value=1998&_format=csv",
+          "bytes": 15327,
+          "sha256": "3861b3be824744c1c6c616224fd1b87054dfcf2e8106c7551a589b5fedeb7f4a",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-1999.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/1999/all?type=daily_treasury_yield_curve&field_tdr_date_value=1999&_format=csv",
+          "bytes": 15388,
+          "sha256": "36bff57ac81eb582c68e57479c0ad4fbc4ee090e9028886d49b7f1ce434a5aea",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2000.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2000/all?type=daily_treasury_yield_curve&field_tdr_date_value=2000&_format=csv",
+          "bytes": 15388,
+          "sha256": "a8cde4c7a757ac74f7b6257d3778db73a215483002317e19ee9e3f3c524a8a24",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2001.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2001/all?type=daily_treasury_yield_curve&field_tdr_date_value=2001&_format=csv",
+          "bytes": 15872,
+          "sha256": "bc48181de2b452d19b159bc12354653f64ce3b119d7072dbf4aa92fa6998799c",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2002.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2002/all?type=daily_treasury_yield_curve&field_tdr_date_value=2002&_format=csv",
+          "bytes": 15712,
+          "sha256": "33f84b7c6f50bf3ea0ca4703cb51c8d469bbb93dad92f181d42132b7e2359bf7",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2003.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2003/all?type=daily_treasury_yield_curve&field_tdr_date_value=2003&_format=csv",
+          "bytes": 15326,
+          "sha256": "0c255188cf596e5bc42a4e00b9a60649df01fb95a58a3382d7586da83e5cc0e0",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2004.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2004/all?type=daily_treasury_yield_curve&field_tdr_date_value=2004&_format=csv",
+          "bytes": 15326,
+          "sha256": "0f0561773c7a3220fe1eded9a7ba0645790e9239fd3cf569158171fedf2dc969",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2005.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2005/all?type=daily_treasury_yield_curve&field_tdr_date_value=2005&_format=csv",
+          "bytes": 15326,
+          "sha256": "ecf2ab3d1ca1b6ee8e916fee90474028c2d1221b8d236131621ad58020db0552",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2006.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2006/all?type=daily_treasury_yield_curve&field_tdr_date_value=2006&_format=csv",
+          "bytes": 16480,
+          "sha256": "cdbdcd8b32735caa453e00280232ff70c7012c055b7daf7b8cf1d9aaa8c66bfe",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2007.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2007/all?type=daily_treasury_yield_curve&field_tdr_date_value=2007&_format=csv",
+          "bytes": 16650,
+          "sha256": "297f6be4059a605b1ec0f266eb7b8467c3d40504a0dd53341746223276e6e6d8",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2008.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2008/all?type=daily_treasury_yield_curve&field_tdr_date_value=2008&_format=csv",
+          "bytes": 16638,
+          "sha256": "686db01584dd45f67addc243ee0c42339d491171a0e947c8f88ecac78ee0e9ea",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2009.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2009/all?type=daily_treasury_yield_curve&field_tdr_date_value=2009&_format=csv",
+          "bytes": 16584,
+          "sha256": "3c9294cfa71136e1d5330b09a00bf996ecf86c865d593d7ee954d11984a5bdb1",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2010.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2010/all?type=daily_treasury_yield_curve&field_tdr_date_value=2010&_format=csv",
+          "bytes": 16672,
+          "sha256": "f973bd3988989d3e408655cbc7fed89faefbaa8a1c111ec313241fb47fc75e2d",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2011.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2011/all?type=daily_treasury_yield_curve&field_tdr_date_value=2011&_format=csv",
+          "bytes": 16584,
+          "sha256": "224eaf29d6fe7cbccc746c7a8c845f189cf91424bab43f46ca386a74e98d81f7",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2012.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2012/all?type=daily_treasury_yield_curve&field_tdr_date_value=2012&_format=csv",
+          "bytes": 16584,
+          "sha256": "9c889b6e3cb87f40f3760bddb69f05f7525800ac480ef5712b2cf318765fa184",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2013.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2013/all?type=daily_treasury_yield_curve&field_tdr_date_value=2013&_format=csv",
+          "bytes": 16584,
+          "sha256": "1e1a98426d9274afcc68467962f9238104db775b8765e48f45ac7488b33ff338",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2014.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2014/all?type=daily_treasury_yield_curve&field_tdr_date_value=2014&_format=csv",
+          "bytes": 16584,
+          "sha256": "8d560698e03e4c0d8d22ff8be7f5f7c5c0d472b1e33a22b6a75373a57e84aa0f",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2015.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2015/all?type=daily_treasury_yield_curve&field_tdr_date_value=2015&_format=csv",
+          "bytes": 16650,
+          "sha256": "b7665d1ce46d6ed6d08fbda34aae1831de38e274e3c7caed81904042aac9b5bc",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2016.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2016/all?type=daily_treasury_yield_curve&field_tdr_date_value=2016&_format=csv",
+          "bytes": 16584,
+          "sha256": "b4d0a8d86e2734bc64d84d9a9824434d841737621582daeac58f13c7129f325c",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2017.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2017/all?type=daily_treasury_yield_curve&field_tdr_date_value=2017&_format=csv",
+          "bytes": 16584,
+          "sha256": "56074da7c32103a28cf4ba2bdf5eaa12f98fd49852047aef1a6eb16e64bd6e83",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2018.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2018/all?type=daily_treasury_yield_curve&field_tdr_date_value=2018&_format=csv",
+          "bytes": 16978,
+          "sha256": "e8375524a7a8d3e8091bbe7690d0378b9365be09efff5b18b8eefddc25f718d3",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2019.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2019/all?type=daily_treasury_yield_curve&field_tdr_date_value=2019&_format=csv",
+          "bytes": 17841,
+          "sha256": "83fc47c17325e222c45fd3a1eb26c69ae01f62d33b793030b4b8b350ca0a290b",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2020.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2020/all?type=daily_treasury_yield_curve&field_tdr_date_value=2020&_format=csv",
+          "bytes": 17912,
+          "sha256": "edcf1c8be9622f3cd92eb7de1847aefc3977e2118e2ff9af67f46614a5c306a7",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2021.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2021/all?type=daily_treasury_yield_curve&field_tdr_date_value=2021&_format=csv",
+          "bytes": 17912,
+          "sha256": "1be57e49c63a99f6002431a1030c8fbe539b71066c3eaf14f9f58ddc34492cea",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2022.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2022/all?type=daily_treasury_yield_curve&field_tdr_date_value=2022&_format=csv",
+          "bytes": 18226,
+          "sha256": "c33cb2758e5e34c2c23b7ab759d18681091860f3f9e5960112859f64f31cd814",
+          "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2023.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2023/all?type=daily_treasury_yield_curve&field_tdr_date_value=2023&_format=csv",
+          "bytes": 19098,
+          "sha256": "edb7f3904e11dcaa502cdcc03ad9b1b16c893802d166ce9bc5fa1118251249d4",
+          "retrieved": "2026-10-14"
+        }
+      ]
+    },
+    "fed-chargeoff": {
+      "name": "Federal Reserve charge-off and delinquency rates",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "landing": "https://www.federalreserve.gov/releases/chargeoff/",
+      "class": "mirror-allowed",
+      "licence": "information on Board's website is in the public domain and may be copied and distributed without permission",
+      "attribution": "Board of Governors of the Federal Reserve System, Charge-off and Delinquency Rates on Loans and Leases at Commercial Banks",
+      "access": "web page (the release's full table)",
+      "files": [
+        {
+          "name": "chgallsa.htm",
+          "url": "https://www.federalreserve.gov/releases/chargeoff/chgallsa.htm",
+          "bytes": 131057,
+          "sha256": "eee388f9681023ccc130542af90966abef657217c1a151bfb0c51d9e8588fa11",
+          "retrieved": "2026-10-13"
+        }
+      ]
+    },
+    "french-data-library": {
+      "name": "Kenneth R. French data library",
+      "publisher": "E. Fama and K. French",
+      "landing": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
+      "class": "derived-only",
+      "licence": "Copyright Eugene F. Fama and Kenneth R. French; licence UNVERIFIED",
+      "attribution": "Kenneth R. French Data Library",
+      "access": "direct download",
+      "files": [
+        {
+          "name": "F-F_Research_Data_Factors_daily_CSV.zip",
+          "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/F-F_Research_Data_Factors_daily_CSV.zip",
+          "bytes": 178184,
+          "sha256": "2f29e22546069914890a712680a6f81f3680ebc3543b52864484d209ca13a7db",
+          "retrieved": "2026-10-14"
+        }
+      ]
+    },
+    "fred-public-domain": {
+      "name": "FRED, public-domain series (H.15, H.8, H.10)",
+      "publisher": "Federal Reserve Bank of St. Louis / source agency",
+      "landing": "https://fred.stlouisfed.org/legal/",
+      "class": "mirror-allowed",
+      "licence": "Public Domain: Citation Requested",
+      "attribution": "Federal Reserve Bank of St. Louis, FRED; original source as named per series",
+      "access": "API key",
+      "files": [
+        {
+          "name": "dat00_eu.htm",
+          "url": "https://www.federalreserve.gov/releases/h10/hist/dat00_eu.htm",
+          "bytes": 1130599,
+          "sha256": "dd1593ec02e2d88310055d476469b7aefa086a62aded5860c0e95956c7abcdc8",
+          "retrieved": "2026-10-14"
+        }
+      ]
     }
   }
 }

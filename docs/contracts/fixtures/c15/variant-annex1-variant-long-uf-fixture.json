@@ -1,0 +1,1858 @@
+{
+  "schema": "contraste.case/v1",
+  "case_id": "C15",
+  "variant_id": "fixture-long-uf",
+  "model": [
+    {
+      "id": "irrbb-annex1",
+      "family": "irrbb",
+      "rung": "cmf-annex1",
+      "title": {
+        "en": "Fixture model irrbb-annex1",
+        "es": "Modelo de ejemplo irrbb-annex1"
+      },
+      "short_title": {
+        "en": "irrbb-annex1",
+        "es": "irrbb-annex1"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    }
+  ],
+  "outputs": {
+    "kind": "annex1-variant",
+    "variant": {
+      "id": "long-uf",
+      "label": {
+        "en": "Long UF",
+        "es": "UF largo"
+      },
+      "description": {
+        "en": "A net long UF book funded partly in CLP.",
+        "es": "Libro con posicion neta larga en UF financiada en parte en CLP."
+      },
+      "parameters": [
+        {
+          "name": "net_uf_position",
+          "value": 16.0,
+          "unit": "millions CLF"
+        }
+      ]
+    },
+    "as_of": "2026-06-30",
+    "balance_sheet_month": "2026-06",
+    "curves_month": "2026-06",
+    "reporting_currency": "CLP",
+    "sign_convention": {
+      "delta_eve": "positive-is-loss",
+      "delta_nii": "positive-is-loss",
+      "reference": "SRP31.129; dossier 01 H.4",
+      "statement": {
+        "en": "A positive delta EVE or delta NII is a loss; only losses are aggregated across currencies.",
+        "es": "Un delta EVE o delta NII positivo es una perdida; solo las perdidas se agregan entre monedas."
+      }
+    },
+    "units": {
+      "money_scale": "millions",
+      "rate": "decimal",
+      "compounding": "continuous",
+      "shock": "basis-points",
+      "bucket_midpoint": "years",
+      "dates": "ISO-8601"
+    },
+    "bank": {
+      "name": "Banco Andino",
+      "synthetic": true,
+      "notice": {
+        "en": "Synthetic bank calibrated to public aggregates; fixture values.",
+        "es": "Banco sintetico calibrado a agregados publicos; valores de ejemplo."
+      },
+      "seed": 0,
+      "calibration_source": "fixture, not a CMF figure"
+    },
+    "ur_currency": {
+      "label": "UR",
+      "code": "CLF",
+      "treated_as_one_currency": true,
+      "definition": {
+        "en": "All CLP-indexed (UF) flows are treated as one currency, UR (RAN 21-13 Annex 1).",
+        "es": "Todos los flujos reajustables (UF) se tratan como una sola moneda, UR (RAN 21-13 Anexo 1)."
+      },
+      "uf_value": 39000.0,
+      "uf_value_currency": "CLP",
+      "uf_date": "2026-06-30",
+      "uf_source": "fixture value, not the BCCh UF"
+    },
+    "curves": {
+      "clp": {
+        "curve": "CLP",
+        "month": "2026-06",
+        "date": "2026-06-30",
+        "source": "fixture: BCCh BDE F022 sovereign yields (values are fixtures)",
+        "series_codes": [
+          "F022.BCLP.TIS.AN05.NO.Z.D"
+        ],
+        "attribution": "Source: Banco Central de Chile (BDE), series F022.BCLP.TIS.AN05.NO.Z.D. The fitted zero curve is an adaptation by Contraste and is its sole responsibility (BCCh terms). Fixture, not a result.",
+        "observed_kind": "secondary-market-yield",
+        "compounding": "continuous",
+        "fit": {
+          "model": "nelson-siegel",
+          "parameters": [
+            {
+              "name": "beta0",
+              "value": 0.048,
+              "unit": "decimal"
+            },
+            {
+              "name": "beta1",
+              "value": -0.02,
+              "unit": "decimal"
+            },
+            {
+              "name": "beta2",
+              "value": 0.006,
+              "unit": "decimal"
+            },
+            {
+              "name": "tau",
+              "value": 2.5,
+              "unit": "years"
+            }
+          ],
+          "rmse_bp": 0.0
+        },
+        "points": [
+          {
+            "tenor_years": 5.0,
+            "observed_yield": 0.041135335,
+            "zero_rate": 0.041135335
+          },
+          {
+            "tenor_years": 10.0,
+            "observed_yield": 0.044454211,
+            "zero_rate": 0.044454211
+          }
+        ],
+        "zero_rates_at_midpoints": [
+          0.028014553,
+          0.028215363,
+          0.028843589,
+          0.029835163,
+          0.030940039,
+          0.031959395,
+          0.033343675,
+          0.034952194,
+          0.036943036,
+          0.038986388,
+          0.040516087,
+          0.041676656,
+          0.042569678,
+          0.043266951,
+          0.043819533,
+          0.044263983,
+          0.045178439,
+          0.045996352,
+          0.046599791
+        ]
+      },
+      "ur": {
+        "curve": "UR",
+        "month": "2026-06",
+        "date": "2026-06-30",
+        "source": "fixture: BCCh BDE F022 sovereign yields (values are fixtures)",
+        "series_codes": [
+          "F022.BUF.TIS.AN02.UF.Z.D",
+          "F022.BUF.TIS.AN10.UF.Z.D"
+        ],
+        "attribution": "Source: Banco Central de Chile (BDE), series F022.BUF.TIS.AN02.UF.Z.D, F022.BUF.TIS.AN10.UF.Z.D. The fitted zero curve is an adaptation by Contraste and is its sole responsibility (BCCh terms). Fixture, not a result.",
+        "observed_kind": "secondary-market-yield",
+        "compounding": "continuous",
+        "fit": {
+          "model": "nelson-siegel",
+          "parameters": [
+            {
+              "name": "beta0",
+              "value": 0.022,
+              "unit": "decimal"
+            },
+            {
+              "name": "beta1",
+              "value": -0.018,
+              "unit": "decimal"
+            },
+            {
+              "name": "beta2",
+              "value": 0.004,
+              "unit": "decimal"
+            },
+            {
+              "name": "tau",
+              "value": 2.0,
+              "unit": "years"
+            }
+          ],
+          "rmse_bp": 0.0
+        },
+        "points": [
+          {
+            "tenor_years": 2.0,
+            "observed_yield": 0.011678794,
+            "zero_rate": 0.011678794
+          },
+          {
+            "tenor_years": 10.0,
+            "observed_yield": 0.019191914,
+            "zero_rate": 0.019191914
+          }
+        ],
+        "zero_rates_at_midpoints": [
+          0.004015392,
+          0.004227477,
+          0.004887456,
+          0.005918058,
+          0.007049918,
+          0.008078159,
+          0.00944881,
+          0.011002344,
+          0.012862835,
+          0.014695096,
+          0.016011998,
+          0.01697883,
+          0.017704238,
+          0.018260395,
+          0.018695813,
+          0.019043525,
+          0.019756602,
+          0.02039962,
+          0.020879989
+        ]
+      }
+    },
+    "assumptions": {
+      "nmd_core_share": {
+        "value": 0.8,
+        "unit": "share",
+        "source_kind": "synthetic-stated",
+        "source": "balance-weighted average of the used values of nmd_segments"
+      },
+      "nmd_core_maturity_years": {
+        "value": 4.5,
+        "unit": "years",
+        "source_kind": "synthetic-stated",
+        "source": "balance-weighted average of the used values of nmd_segments"
+      },
+      "prepayment_cpr": {
+        "value": 0.06,
+        "unit": "per year",
+        "source_kind": "synthetic-stated",
+        "source": "fixture value; no item carries the prepayable-loan class"
+      },
+      "term_deposit_redemption_rate": {
+        "value": 0.05,
+        "unit": "share of the term deposit",
+        "source_kind": "synthetic-stated",
+        "source": "fixture value"
+      },
+      "deposit_beta": {
+        "value": 0.4,
+        "unit": "pass-through",
+        "source_kind": "synthetic-stated",
+        "source": "fixture value"
+      }
+    },
+    "nmd_segments": [
+      {
+        "category": "retail-operational",
+        "balance": 2200000.0,
+        "requested_core_share": 0.8,
+        "core_share_cap": 0.9,
+        "core_share_used": 0.8,
+        "requested_core_maturity_years": 4.5,
+        "core_maturity_cap_years": 5.0,
+        "core_maturity_used_years": 4.5,
+        "cap_applied": false,
+        "source_kind": "synthetic-stated",
+        "source": "fixture value, synthetic behaviour stated"
+      }
+    ],
+    "legs": [
+      {
+        "leg": "CLP",
+        "currency": "CLP",
+        "items": [
+          {
+            "item_id": "CLP1",
+            "label": {
+              "en": "CLP loans-floating",
+              "es": "CLP loans-floating"
+            },
+            "side": "asset",
+            "category": "loans-floating",
+            "behavioural_class": "none",
+            "source": "synthetic, calibrated to CMF aggregates (fixture)",
+            "amount": 2500000.0,
+            "cash_flows": [
+              {
+                "bucket": 3,
+                "midpoint_years": 0.1667,
+                "amount": 800000.0
+              },
+              {
+                "bucket": 4,
+                "midpoint_years": 0.375,
+                "amount": 900000.0
+              },
+              {
+                "bucket": 5,
+                "midpoint_years": 0.625,
+                "amount": 800000.0
+              }
+            ]
+          },
+          {
+            "item_id": "CLP2",
+            "label": {
+              "en": "CLP loans-fixed",
+              "es": "CLP loans-fixed"
+            },
+            "side": "asset",
+            "category": "loans-fixed",
+            "behavioural_class": "none",
+            "source": "synthetic, calibrated to CMF aggregates (fixture)",
+            "amount": 1200000.0,
+            "cash_flows": [
+              {
+                "bucket": 7,
+                "midpoint_years": 1.25,
+                "amount": 400000.0
+              },
+              {
+                "bucket": 9,
+                "midpoint_years": 2.5,
+                "amount": 400000.0
+              },
+              {
+                "bucket": 11,
+                "midpoint_years": 4.5,
+                "amount": 400000.0
+              }
+            ]
+          },
+          {
+            "item_id": "CLP3",
+            "label": {
+              "en": "CLP securities",
+              "es": "CLP securities"
+            },
+            "side": "asset",
+            "category": "securities",
+            "behavioural_class": "none",
+            "source": "synthetic, calibrated to CMF aggregates (fixture)",
+            "amount": 1000000.0,
+            "cash_flows": [
+              {
+                "bucket": 10,
+                "midpoint_years": 3.5,
+                "amount": 500000.0
+              },
+              {
+                "bucket": 13,
+                "midpoint_years": 6.5,
+                "amount": 500000.0
+              }
+            ]
+          },
+          {
+            "item_id": "CLP4",
+            "label": {
+              "en": "CLP cash",
+              "es": "CLP cash"
+            },
+            "side": "asset",
+            "category": "cash",
+            "behavioural_class": "none",
+            "source": "synthetic, calibrated to CMF aggregates (fixture)",
+            "amount": 400000.0,
+            "cash_flows": [
+              {
+                "bucket": 1,
+                "midpoint_years": 0.0028,
+                "amount": 400000.0
+              }
+            ]
+          },
+          {
+            "item_id": "CLP5",
+            "label": {
+              "en": "CLP deposits-time",
+              "es": "CLP deposits-time"
+            },
+            "side": "liability",
+            "category": "deposits-time",
+            "behavioural_class": "term-deposit",
+            "source": "synthetic, calibrated to CMF aggregates (fixture)",
+            "amount": 2500000.0,
+            "cash_flows": [
+              {
+                "bucket": 3,
+                "midpoint_years": 0.1667,
+                "amount": -1500000.0
+              },
+              {
+                "bucket": 4,
+                "midpoint_years": 0.375,
+                "amount": -1000000.0
+              }
+            ]
+          },
+          {
+            "item_id": "CLP6",
+            "label": {
+              "en": "CLP borrowings",
+              "es": "CLP borrowings"
+            },
+            "side": "liability",
+            "category": "borrowings",
+            "behavioural_class": "none",
+            "source": "synthetic, calibrated to CMF aggregates (fixture)",
+            "amount": 800000.0,
+            "cash_flows": [
+              {
+                "bucket": 6,
+                "midpoint_years": 0.875,
+                "amount": -300000.0
+              },
+              {
+                "bucket": 12,
+                "midpoint_years": 5.5,
+                "amount": -500000.0
+              }
+            ]
+          },
+          {
+            "item_id": "CLP-NMD",
+            "label": {
+              "en": "CLP current accounts",
+              "es": "Cuentas corrientes en CLP"
+            },
+            "side": "liability",
+            "category": "deposits-nmd",
+            "behavioural_class": "nmd-retail-operational",
+            "source": "synthetic, calibrated to CMF aggregates (fixture)",
+            "amount": 2200000.0,
+            "cash_flows": [
+              {
+                "bucket": 1,
+                "midpoint_years": 0.0028,
+                "amount": -440000.0
+              },
+              {
+                "bucket": 11,
+                "midpoint_years": 4.5,
+                "amount": -1760000.0
+              }
+            ]
+          }
+        ],
+        "assets_total": 5100000.0,
+        "liabilities_total": 5500000.0,
+        "net_position": -400000.0
+      },
+      {
+        "leg": "UR",
+        "currency": "CLF",
+        "items": [
+          {
+            "item_id": "UR1",
+            "label": {
+              "en": "UR loans-uf",
+              "es": "UR loans-uf"
+            },
+            "side": "asset",
+            "category": "loans-uf",
+            "behavioural_class": "none",
+            "source": "synthetic, calibrated to CMF aggregates (fixture)",
+            "amount": 30.0,
+            "cash_flows": [
+              {
+                "bucket": 11,
+                "midpoint_years": 4.5,
+                "amount": 5.0
+              },
+              {
+                "bucket": 13,
+                "midpoint_years": 6.5,
+                "amount": 8.0
+              },
+              {
+                "bucket": 15,
+                "midpoint_years": 8.5,
+                "amount": 9.0
+              },
+              {
+                "bucket": 16,
+                "midpoint_years": 9.5,
+                "amount": 8.0
+              }
+            ]
+          },
+          {
+            "item_id": "UR2",
+            "label": {
+              "en": "UR securities",
+              "es": "UR securities"
+            },
+            "side": "asset",
+            "category": "securities",
+            "behavioural_class": "none",
+            "source": "synthetic, calibrated to CMF aggregates (fixture)",
+            "amount": 4.0,
+            "cash_flows": [
+              {
+                "bucket": 9,
+                "midpoint_years": 2.5,
+                "amount": 2.0
+              },
+              {
+                "bucket": 12,
+                "midpoint_years": 5.5,
+                "amount": 2.0
+              }
+            ]
+          },
+          {
+            "item_id": "UR3",
+            "label": {
+              "en": "UR deposits-time",
+              "es": "UR deposits-time"
+            },
+            "side": "liability",
+            "category": "deposits-time",
+            "behavioural_class": "term-deposit",
+            "source": "synthetic, calibrated to CMF aggregates (fixture)",
+            "amount": 10.0,
+            "cash_flows": [
+              {
+                "bucket": 4,
+                "midpoint_years": 0.375,
+                "amount": -4.0
+              },
+              {
+                "bucket": 7,
+                "midpoint_years": 1.25,
+                "amount": -6.0
+              }
+            ]
+          },
+          {
+            "item_id": "UR4",
+            "label": {
+              "en": "UR borrowings",
+              "es": "UR borrowings"
+            },
+            "side": "liability",
+            "category": "borrowings",
+            "behavioural_class": "none",
+            "source": "synthetic, calibrated to CMF aggregates (fixture)",
+            "amount": 8.0,
+            "cash_flows": [
+              {
+                "bucket": 13,
+                "midpoint_years": 6.5,
+                "amount": -8.0
+              }
+            ]
+          }
+        ],
+        "assets_total": 34.0,
+        "liabilities_total": 18.0,
+        "net_position": 16.0
+      }
+    ],
+    "eve_shock_sizes": [
+      {
+        "currency": "CLP",
+        "parallel_bp": 300,
+        "short_bp": 400,
+        "long_bp": 200,
+        "origin": "cmf-annex1",
+        "label": null,
+        "method": null
+      },
+      {
+        "currency": "CLF",
+        "parallel_bp": 200,
+        "short_bp": 250,
+        "long_bp": 150,
+        "origin": "cmf-annex1",
+        "label": null,
+        "method": null
+      }
+    ],
+    "nii_shock_sizes": [
+      {
+        "currency": "CLP",
+        "parallel_bp": 300,
+        "origin": "cmf-annex1"
+      },
+      {
+        "currency": "CLF",
+        "parallel_bp": 300,
+        "origin": "cmf-annex1"
+      }
+    ],
+    "dynamic_nii": {
+      "horizon_months": 12,
+      "balance_sheet_assumption": {
+        "kind": "constant",
+        "growth_annual": 0,
+        "description": {
+          "en": "Constant balance sheet: maturing and repricing flows are replaced by identical new ones.",
+          "es": "Balance constante: los flujos que vencen o reprecian se reemplazan por otros identicos."
+        }
+      },
+      "legs": [
+        {
+          "leg": "CLP",
+          "items": [
+            {
+              "item_id": "CLP-D1",
+              "side": "asset",
+              "balance": 2040000.0,
+              "rate0": 0.048215363,
+              "spread": 0.02,
+              "beta": 1.0,
+              "reprice_months": 0
+            },
+            {
+              "item_id": "CLP-D2",
+              "side": "asset",
+              "balance": 3060000.0,
+              "rate0": 0.04,
+              "spread": 0.04,
+              "beta": 1.0,
+              "reprice_months": 60
+            },
+            {
+              "item_id": "CLP-D3",
+              "side": "liability",
+              "balance": 2750000.0,
+              "rate0": 0.011286145,
+              "spread": 0.0,
+              "beta": 0.4,
+              "reprice_months": 0
+            },
+            {
+              "item_id": "CLP-D4",
+              "side": "liability",
+              "balance": 2750000.0,
+              "rate0": 0.028215363,
+              "spread": 0.0,
+              "beta": 1.0,
+              "reprice_months": 12
+            }
+          ],
+          "scenarios": [
+            {
+              "scenario": "base",
+              "shock_bp": 0.0,
+              "short_rate_path": [
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363,
+                0.028215363
+              ],
+              "monthly_nii": [
+                9344.182747,
+                9344.182747,
+                9344.182747,
+                9344.182747,
+                9344.182747,
+                9344.182747,
+                9344.182747,
+                9344.182747,
+                9344.182747,
+                9344.182747,
+                9344.182747,
+                9344.182747
+              ],
+              "total": 112130.19297,
+              "delta_vs_base": 0.0
+            },
+            {
+              "scenario": "parallel-up",
+              "shock_bp": 300,
+              "short_rate_path": [
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363,
+                0.058215363
+              ],
+              "monthly_nii": [
+                11694.182747,
+                11694.182747,
+                11694.182747,
+                11694.182747,
+                11694.182747,
+                11694.182747,
+                11694.182747,
+                11694.182747,
+                11694.182747,
+                11694.182747,
+                11694.182747,
+                11694.182747
+              ],
+              "total": 140330.19297,
+              "delta_vs_base": -28200.0
+            },
+            {
+              "scenario": "parallel-down",
+              "shock_bp": -300,
+              "short_rate_path": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "monthly_nii": [
+                7133.979312,
+                7133.979312,
+                7133.979312,
+                7133.979312,
+                7133.979312,
+                7133.979312,
+                7133.979312,
+                7133.979312,
+                7133.979312,
+                7133.979312,
+                7133.979312,
+                7133.979312
+              ],
+              "total": 85607.75175,
+              "delta_vs_base": 26522.44122
+            }
+          ]
+        },
+        {
+          "leg": "UR",
+          "items": [
+            {
+              "item_id": "UR-D1",
+              "side": "asset",
+              "balance": 530400.0,
+              "rate0": 0.024227477,
+              "spread": 0.02,
+              "beta": 1.0,
+              "reprice_months": 0
+            },
+            {
+              "item_id": "UR-D2",
+              "side": "asset",
+              "balance": 795600.0,
+              "rate0": 0.04,
+              "spread": 0.04,
+              "beta": 1.0,
+              "reprice_months": 60
+            },
+            {
+              "item_id": "UR-D3",
+              "side": "liability",
+              "balance": 351000.0,
+              "rate0": 0.000845495,
+              "spread": 0.0,
+              "beta": 0.2,
+              "reprice_months": 0
+            },
+            {
+              "item_id": "UR-D4",
+              "side": "liability",
+              "balance": 351000.0,
+              "rate0": 0.004227477,
+              "spread": 0.0,
+              "beta": 1.0,
+              "reprice_months": 12
+            }
+          ],
+          "scenarios": [
+            {
+              "scenario": "base",
+              "shock_bp": 0.0,
+              "short_rate_path": [
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477,
+                0.004227477
+              ],
+              "monthly_nii": [
+                3574.470041,
+                3574.470041,
+                3574.470041,
+                3574.470041,
+                3574.470041,
+                3574.470041,
+                3574.470041,
+                3574.470041,
+                3574.470041,
+                3574.470041,
+                3574.470041,
+                3574.470041
+              ],
+              "total": 42893.640488,
+              "delta_vs_base": 0.0
+            },
+            {
+              "scenario": "parallel-up",
+              "shock_bp": 300,
+              "short_rate_path": [
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477,
+                0.034227477
+              ],
+              "monthly_nii": [
+                4724.970041,
+                4724.970041,
+                4724.970041,
+                4724.970041,
+                4724.970041,
+                4724.970041,
+                4724.970041,
+                4724.970041,
+                4724.970041,
+                4724.970041,
+                4724.970041,
+                4724.970041
+              ],
+              "total": 56699.640488,
+              "delta_vs_base": -13806.0
+            },
+            {
+              "scenario": "parallel-down",
+              "shock_bp": -300,
+              "short_rate_path": [
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02,
+                -0.02
+              ],
+              "monthly_nii": [
+                2645.346298,
+                2645.346298,
+                2645.346298,
+                2645.346298,
+                2645.346298,
+                2645.346298,
+                2645.346298,
+                2645.346298,
+                2645.346298,
+                2645.346298,
+                2645.346298,
+                2645.346298
+              ],
+              "total": 31744.155573,
+              "delta_vs_base": 11149.484915
+            }
+          ]
+        }
+      ]
+    },
+    "floors": {
+      "ur_floor": -0.02,
+      "other_floor": 0.0,
+      "rule": {
+        "en": "Post-shock rates are floored at -2 percent for UR and at 0 percent for CLP. The fixture also keeps a rate that is already below its floor at its pre-shock value, for both floors; whether Annex 1 applies that clause to the UR floor is UNVERIFIED.",
+        "es": "Las tasas post choque tienen piso de -2 por ciento para UR y 0 por ciento para CLP. El ejemplo tambien mantiene en su valor previo una tasa que ya esta bajo su piso, en ambos pisos; que el Anexo 1 aplique esa clausula al piso UR no esta verificado."
+      },
+      "effects": [
+        {
+          "leg": "CLP",
+          "measure": "delta-eve",
+          "shock": "parallel-down",
+          "buckets_floored": 4,
+          "delta_with_floor": 59518.066125,
+          "delta_without_floor": 59659.424681,
+          "effect": -141.358556
+        },
+        {
+          "leg": "CLP",
+          "measure": "delta-eve",
+          "shock": "short-down",
+          "buckets_floored": 6,
+          "delta_with_floor": 7888.700407,
+          "delta_without_floor": 7658.578194,
+          "effect": 230.122213
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-eve",
+          "shock": "short-down",
+          "buckets_floored": 2,
+          "delta_with_floor": -18662.31897,
+          "delta_without_floor": -18662.31897,
+          "effect": 0.0
+        },
+        {
+          "leg": "CLP",
+          "measure": "delta-nii",
+          "shock": "parallel-down",
+          "buckets_floored": 4,
+          "delta_with_floor": -11931.896077,
+          "delta_without_floor": -12695.94,
+          "effect": 764.043923
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-nii",
+          "shock": "parallel-down",
+          "buckets_floored": 6,
+          "delta_with_floor": -2527.010655,
+          "delta_without_floor": -2925.0,
+          "effect": 397.989345
+        }
+      ]
+    },
+    "offset_rule": {
+      "state": "on",
+      "share": 0.5,
+      "applies_to": [
+        "CLP",
+        "CLF"
+      ],
+      "rule": {
+        "en": "When delta CLP and delta CLF have opposite signs, half of the CLP is offset against the CLF (or the reverse), floored at zero.",
+        "es": "Si los deltas CLP y CLF tienen signos opuestos, se compensa la mitad del CLP contra el CLF (o al reves), con piso en cero."
+      },
+      "reference": "RAN 21-13 Annex 1 Hojas 10 to 12 (dossier 03 F.2)"
+    },
+    "indexation_charge": {
+      "rate": 0.025,
+      "net_position_uf_units": 16.0,
+      "pn_ur": 624000.0,
+      "abs_pn_ur": 624000.0,
+      "charge": 15600.0,
+      "formula": "charge = 0.025 x |PN_UR|, PN_UR = net UF position x UF value",
+      "note": {
+        "en": "The standardised indexation (reajustabilidad) charge, an implied 2.5 percent inflation surprise.",
+        "es": "El cargo estandar por reajustabilidad, equivalente a una sorpresa de inflacion de 2,5 por ciento."
+      }
+    },
+    "cpi_scenario": null,
+    "eve": {
+      "base_eve_clp": -309737.159569,
+      "base_eve_ur": 500908.25921,
+      "rows": [
+        {
+          "shock": "parallel-up",
+          "clp": {
+            "shape_bp": [
+              300,
+              300,
+              300,
+              300,
+              300,
+              300,
+              300,
+              300,
+              300,
+              300,
+              300,
+              300,
+              300,
+              300,
+              300,
+              300,
+              300,
+              300,
+              300
+            ],
+            "floor_bound_buckets": [],
+            "net_cash_flows": [
+              -40000.0,
+              0.0,
+              -700000.0,
+              -100000.0,
+              800000.0,
+              -300000.0,
+              400000.0,
+              0.0,
+              400000.0,
+              500000.0,
+              -1360000.0,
+              -500000.0,
+              500000.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "eve": -259699.404324,
+            "kao": 0.0,
+            "delta_eve": -50037.755245
+          },
+          "ur": {
+            "shape_bp": [
+              200,
+              200,
+              200,
+              200,
+              200,
+              200,
+              200,
+              200,
+              200,
+              200,
+              200,
+              200,
+              200,
+              200,
+              200,
+              200,
+              200,
+              200,
+              200
+            ],
+            "floor_bound_buckets": [],
+            "net_cash_flows": [
+              0.0,
+              0.0,
+              0.0,
+              -156000.0,
+              0.0,
+              0.0,
+              -234000.0,
+              0.0,
+              78000.0,
+              0.0,
+              195000.0,
+              78000.0,
+              0.0,
+              0.0,
+              351000.0,
+              312000.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "eve": 389214.974,
+            "kao": 0.0,
+            "delta_eve": 111693.28521
+          },
+          "pair": {
+            "delta_clp": -50037.755245,
+            "delta_ur": 111693.28521,
+            "opposite_signs": true,
+            "with_offset": 86674.407587,
+            "without_offset": 111693.28521,
+            "used": 86674.407587
+          },
+          "total_delta_eve": 86674.407587
+        },
+        {
+          "shock": "parallel-down",
+          "clp": {
+            "shape_bp": [
+              -300,
+              -300,
+              -300,
+              -300,
+              -300,
+              -300,
+              -300,
+              -300,
+              -300,
+              -300,
+              -300,
+              -300,
+              -300,
+              -300,
+              -300,
+              -300,
+              -300,
+              -300,
+              -300
+            ],
+            "floor_bound_buckets": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "net_cash_flows": [
+              -40000.0,
+              0.0,
+              -700000.0,
+              -100000.0,
+              800000.0,
+              -300000.0,
+              400000.0,
+              0.0,
+              400000.0,
+              500000.0,
+              -1360000.0,
+              -500000.0,
+              500000.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "eve": -369255.225693,
+            "kao": 0.0,
+            "delta_eve": 59518.066125
+          },
+          "ur": {
+            "shape_bp": [
+              -200,
+              -200,
+              -200,
+              -200,
+              -200,
+              -200,
+              -200,
+              -200,
+              -200,
+              -200,
+              -200,
+              -200,
+              -200,
+              -200,
+              -200,
+              -200,
+              -200,
+              -200,
+              -200
+            ],
+            "floor_bound_buckets": [],
+            "net_cash_flows": [
+              0.0,
+              0.0,
+              0.0,
+              -156000.0,
+              0.0,
+              0.0,
+              -234000.0,
+              0.0,
+              78000.0,
+              0.0,
+              195000.0,
+              78000.0,
+              0.0,
+              0.0,
+              351000.0,
+              312000.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "eve": 633070.171626,
+            "kao": 0.0,
+            "delta_eve": -132161.912416
+          },
+          "pair": {
+            "delta_clp": 59518.066125,
+            "delta_ur": -132161.912416,
+            "opposite_signs": true,
+            "with_offset": 0.0,
+            "without_offset": 59518.066125,
+            "used": 0.0
+          },
+          "total_delta_eve": 0.0
+        },
+        {
+          "shock": "steepener",
+          "clp": {
+            "shape_bp": [
+              -259.692107775,
+              -255.436826867,
+              -242.039844115,
+              -220.624559007,
+              -196.351944015,
+              -173.549932423,
+              -141.910876737,
+              -104.085351628,
+              -55.515028548,
+              -3.419288659,
+              37.152914362,
+              68.750577846,
+              93.35886291,
+              112.523814588,
+              127.449493963,
+              139.073624747,
+              160.667749206,
+              174.461217413,
+              179.15060018
+            ],
+            "floor_bound_buckets": [],
+            "net_cash_flows": [
+              -40000.0,
+              0.0,
+              -700000.0,
+              -100000.0,
+              800000.0,
+              -300000.0,
+              400000.0,
+              0.0,
+              400000.0,
+              500000.0,
+              -1360000.0,
+              -500000.0,
+              500000.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "eve": -284447.067824,
+            "kao": 0.0,
+            "delta_eve": -25290.091744
+          },
+          "ur": {
+            "shape_bp": [
+              -162.29182287,
+              -159.414672711,
+              -150.356485509,
+              -135.876832511,
+              -119.465234874,
+              -104.047965672,
+              -82.655649612,
+              -57.080436612,
+              -24.240274984,
+              10.983549146,
+              38.415890961,
+              59.780220248,
+              76.418776627,
+              89.376897364,
+              99.468691941,
+              107.32818946,
+              121.928762247,
+              131.255027683,
+              134.425689894
+            ],
+            "floor_bound_buckets": [],
+            "net_cash_flows": [
+              0.0,
+              0.0,
+              0.0,
+              -156000.0,
+              0.0,
+              0.0,
+              -234000.0,
+              0.0,
+              78000.0,
+              0.0,
+              195000.0,
+              78000.0,
+              0.0,
+              0.0,
+              351000.0,
+              312000.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "eve": 443248.656295,
+            "kao": 0.0,
+            "delta_eve": 57659.602915
+          },
+          "pair": {
+            "delta_clp": -25290.091744,
+            "delta_ur": 57659.602915,
+            "opposite_signs": true,
+            "with_offset": 45014.557043,
+            "without_offset": 57659.602915,
+            "used": 45014.557043
+          },
+          "total_delta_eve": 45014.557043
+        },
+        {
+          "shock": "flattener",
+          "clp": {
+            "shape_bp": [
+              319.692107775,
+              315.436826867,
+              302.039844115,
+              280.624559007,
+              256.351944015,
+              233.549932423,
+              201.910876737,
+              164.085351628,
+              115.515028548,
+              63.419288659,
+              22.847085638,
+              -8.750577846,
+              -33.35886291,
+              -52.523814588,
+              -67.449493963,
+              -79.073624747,
+              -100.667749206,
+              -114.461217413,
+              -119.15060018
+            ],
+            "floor_bound_buckets": [],
+            "net_cash_flows": [
+              -40000.0,
+              0.0,
+              -700000.0,
+              -100000.0,
+              800000.0,
+              -300000.0,
+              400000.0,
+              0.0,
+              400000.0,
+              500000.0,
+              -1360000.0,
+              -500000.0,
+              500000.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "eve": -323305.547748,
+            "kao": 0.0,
+            "delta_eve": 13568.38818
+          },
+          "ur": {
+            "shape_bp": [
+              199.797071033,
+              196.992454072,
+              188.16262453,
+              174.0480048,
+              158.050144919,
+              143.02154637,
+              122.168532395,
+              97.238072664,
+              65.225814271,
+              30.889985707,
+              4.149215534,
+              -16.676517217,
+              -32.895614191,
+              -45.527059615,
+              -55.364439203,
+              -63.025798129,
+              -77.258289249,
+              -86.34943875,
+              -89.4401683
+            ],
+            "floor_bound_buckets": [],
+            "net_cash_flows": [
+              0.0,
+              0.0,
+              0.0,
+              -156000.0,
+              0.0,
+              0.0,
+              -234000.0,
+              0.0,
+              78000.0,
+              0.0,
+              195000.0,
+              78000.0,
+              0.0,
+              0.0,
+              351000.0,
+              312000.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "eve": 535013.292506,
+            "kao": 0.0,
+            "delta_eve": -34105.033296
+          },
+          "pair": {
+            "delta_clp": 13568.38818,
+            "delta_ur": -34105.033296,
+            "opposite_signs": true,
+            "with_offset": 0.0,
+            "without_offset": 13568.38818,
+            "used": 0.0
+          },
+          "total_delta_eve": 0.0
+        },
+        {
+          "shock": "short-up",
+          "clp": {
+            "shape_bp": [
+              399.720097977,
+              395.851660788,
+              383.672585559,
+              364.204144552,
+              342.138130923,
+              321.409029476,
+              292.646251579,
+              258.259410571,
+              214.104571408,
+              166.744807871,
+              129.860986943,
+              101.135838322,
+              78.764670082,
+              61.341986738,
+              47.773187307,
+              37.205795684,
+              17.574773449,
+              5.035256897,
+              0.772181654
+            ],
+            "floor_bound_buckets": [],
+            "net_cash_flows": [
+              -40000.0,
+              0.0,
+              -700000.0,
+              -100000.0,
+              800000.0,
+              -300000.0,
+              400000.0,
+              0.0,
+              400000.0,
+              500000.0,
+              -1360000.0,
+              -500000.0,
+              500000.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "eve": -303060.460864,
+            "kao": 0.0,
+            "delta_eve": -6676.698705
+          },
+          "ur": {
+            "shape_bp": [
+              249.825061236,
+              247.407287993,
+              239.795365974,
+              227.627590345,
+              213.836331827,
+              200.880643422,
+              182.903907237,
+              161.412131607,
+              133.81535713,
+              104.21550492,
+              81.16311684,
+              63.209898951,
+              49.227918801,
+              38.338741711,
+              29.858242067,
+              23.253622303,
+              10.984233406,
+              3.147035561,
+              0.482613534
+            ],
+            "floor_bound_buckets": [],
+            "net_cash_flows": [
+              0.0,
+              0.0,
+              0.0,
+              -156000.0,
+              0.0,
+              0.0,
+              -234000.0,
+              0.0,
+              78000.0,
+              0.0,
+              195000.0,
+              78000.0,
+              0.0,
+              0.0,
+              351000.0,
+              312000.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "eve": 482846.140109,
+            "kao": 0.0,
+            "delta_eve": 18062.119101
+          },
+          "pair": {
+            "delta_clp": -6676.698705,
+            "delta_ur": 18062.119101,
+            "opposite_signs": true,
+            "with_offset": 14723.769749,
+            "without_offset": 18062.119101,
+            "used": 14723.769749
+          },
+          "total_delta_eve": 14723.769749
+        },
+        {
+          "shock": "short-down",
+          "clp": {
+            "shape_bp": [
+              -399.720097977,
+              -395.851660788,
+              -383.672585559,
+              -364.204144552,
+              -342.138130923,
+              -321.409029476,
+              -292.646251579,
+              -258.259410571,
+              -214.104571408,
+              -166.744807871,
+              -129.860986943,
+              -101.135838322,
+              -78.764670082,
+              -61.341986738,
+              -47.773187307,
+              -37.205795684,
+              -17.574773449,
+              -5.035256897,
+              -0.772181654
+            ],
+            "floor_bound_buckets": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ],
+            "net_cash_flows": [
+              -40000.0,
+              0.0,
+              -700000.0,
+              -100000.0,
+              800000.0,
+              -300000.0,
+              400000.0,
+              0.0,
+              400000.0,
+              500000.0,
+              -1360000.0,
+              -500000.0,
+              500000.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "eve": -317625.859976,
+            "kao": 0.0,
+            "delta_eve": 7888.700407
+          },
+          "ur": {
+            "shape_bp": [
+              -249.825061236,
+              -247.407287993,
+              -239.795365974,
+              -227.627590345,
+              -213.836331827,
+              -200.880643422,
+              -182.903907237,
+              -161.412131607,
+              -133.81535713,
+              -104.21550492,
+              -81.16311684,
+              -63.209898951,
+              -49.227918801,
+              -38.338741711,
+              -29.858242067,
+              -23.253622303,
+              -10.984233406,
+              -3.147035561,
+              -0.482613534
+            ],
+            "floor_bound_buckets": [
+              1,
+              2
+            ],
+            "net_cash_flows": [
+              0.0,
+              0.0,
+              0.0,
+              -156000.0,
+              0.0,
+              0.0,
+              -234000.0,
+              0.0,
+              78000.0,
+              0.0,
+              195000.0,
+              78000.0,
+              0.0,
+              0.0,
+              351000.0,
+              312000.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "eve": 519570.57818,
+            "kao": 0.0,
+            "delta_eve": -18662.31897
+          },
+          "pair": {
+            "delta_clp": 7888.700407,
+            "delta_ur": -18662.31897,
+            "opposite_signs": true,
+            "with_offset": 0.0,
+            "without_offset": 7888.700407,
+            "used": 0.0
+          },
+          "total_delta_eve": 0.0
+        }
+      ],
+      "delta_eve": 86674.407587,
+      "worst_shock": "parallel-up",
+      "delta_eve_share_tier1": 0.099970482
+    },
+    "nii": {
+      "rows": [
+        {
+          "shock": "parallel-up",
+          "clp": {
+            "shock_bp": 300.0,
+            "cash_flows": [
+              -40000.0,
+              0.0,
+              -700000.0,
+              -100000.0,
+              800000.0,
+              -300000.0
+            ],
+            "floor_bound_buckets": [],
+            "delta_nii": 12695.94
+          },
+          "ur": {
+            "shock_bp": 300.0,
+            "cash_flows": [
+              0.0,
+              0.0,
+              0.0,
+              -156000.0,
+              0.0,
+              0.0
+            ],
+            "floor_bound_buckets": [],
+            "delta_nii": 2925.0
+          },
+          "pair": {
+            "delta_clp": 12695.94,
+            "delta_ur": 2925.0,
+            "opposite_signs": false,
+            "with_offset": 15620.94,
+            "without_offset": 15620.94,
+            "used": 15620.94
+          }
+        },
+        {
+          "shock": "parallel-down",
+          "clp": {
+            "shock_bp": -300.0,
+            "cash_flows": [
+              -40000.0,
+              0.0,
+              -700000.0,
+              -100000.0,
+              800000.0,
+              -300000.0
+            ],
+            "floor_bound_buckets": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "delta_nii": -11931.896077
+          },
+          "ur": {
+            "shock_bp": -300.0,
+            "cash_flows": [
+              0.0,
+              0.0,
+              0.0,
+              -156000.0,
+              0.0,
+              0.0
+            ],
+            "floor_bound_buckets": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ],
+            "delta_nii": -2527.010655
+          },
+          "pair": {
+            "delta_clp": -11931.896077,
+            "delta_ur": -2527.010655,
+            "opposite_signs": false,
+            "with_offset": 0.0,
+            "without_offset": 0,
+            "used": 0.0
+          }
+        }
+      ],
+      "max_pair": 15620.94,
+      "indexation_charge": 15600.0,
+      "delta_nii": 31220.94,
+      "worst_shock": "parallel-up",
+      "delta_nii_share_tier1": 0.036010311
+    },
+    "thresholds": {
+      "tier1": 867000.0,
+      "net_interest_and_indexation_margin_12m": 260000.0,
+      "tests": [
+        {
+          "id": "nii-tier1",
+          "measure": 31220.94,
+          "base": 867000.0,
+          "ratio": 0.036010311,
+          "threshold": 0.05,
+          "breached": false
+        },
+        {
+          "id": "eve-tier1",
+          "measure": 86674.407587,
+          "base": 867000.0,
+          "ratio": 0.099970482,
+          "threshold": 0.15,
+          "breached": false
+        },
+        {
+          "id": "nii-margin",
+          "measure": 31220.94,
+          "base": 260000.0,
+          "ratio": 0.120080538,
+          "threshold": 0.18,
+          "breached": false
+        }
+      ],
+      "prioritised": false,
+      "reference": "RAN 21-13 Annex 1 (banco priorizado, dossier 03 F.2)"
+    }
+  },
+  "tests": [
+    {
+      "test_id": "irrbb.cmf_annex1_goldens",
+      "model_id": "irrbb-annex1",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    }
+  ],
+  "impact": {
+    "delta_eve": {
+      "value": 86674.407587,
+      "unit": "CLP millions",
+      "label": {
+        "en": "Delta EVE, Annex 1",
+        "es": "Delta EVE, Anexo 1"
+      }
+    },
+    "delta_nii": {
+      "value": 31220.94,
+      "unit": "CLP millions",
+      "label": {
+        "en": "Delta NII with the indexation charge",
+        "es": "Delta NII con el cargo por reajustabilidad"
+      }
+    }
+  },
+  "findings": [],
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u10-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

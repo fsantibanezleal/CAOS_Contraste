@@ -15,6 +15,7 @@ import { C05ExperimentsSection } from './C05Sections';
 import { C22ExperimentsSection } from './C22Sections';
 import { NoTranslateRefs } from './NoTranslateRefs';
 import { U6ExperimentsSection, U6_CASES } from './U6Sections';
+import { W2ExperimentsSection, W2_CASES } from './Wave2Sections';
 
 function CaseVariants({ manifest }: { manifest: CaseManifest }) {
   const lang = useShellLang();
@@ -109,7 +110,7 @@ function CaseTopic({ m }: { m: CaseManifest }) {
     >
       <P en={m.question.en} es={m.question.es} />
       <CaseFacts m={m} />
-      {U6_CASES.has(m.case_id) ? (
+      {U6_CASES.has(m.case_id) || W2_CASES.has(m.case_id) ? (
         <P
           en="Each variant of this case is the same question asked of different data, and the table below reads one headline row per variant from its artifact, in the measures this case declares; a number the artifact leaves out is said to be not available, with its reason, in the App."
           es="Cada variante de este caso es la misma pregunta hecha a datos distintos, y la tabla de abajo lee una fila de resultados por variante desde su artefacto, en las medidas que declara este caso; un número que el artefacto omite se dice no disponible, con su razón, en la App."
@@ -120,7 +121,7 @@ function CaseTopic({ m }: { m: CaseManifest }) {
         es="Cada variante de un caso es la misma pregunta hecha a datos distintos, y las tablas y gráficos de abajo se leen de sus artefactos: el número de registros, la tasa de incumplimiento, la discriminación del campeón y del mejor retador, y la luz de política de sus pruebas de calibración y estabilidad bajo los umbrales comprometidos. Una variante que perturba los datos tiene un efecto conocido, y una prueba sana debe detectarlo o no, según declara el caso."
       />
       )}
-      {m.case_id === 'C04' ? <C04Experiments manifest={m} /> : m.case_id === 'C05' ? <C05ExperimentsSection manifest={m} /> : m.case_id === 'C22' ? <C22ExperimentsSection manifest={m} /> : U6_CASES.has(m.case_id) ? <U6ExperimentsSection manifest={m} /> : <CaseVariants manifest={m} />}
+      {m.case_id === 'C04' ? <C04Experiments manifest={m} /> : m.case_id === 'C05' ? <C05ExperimentsSection manifest={m} /> : m.case_id === 'C22' ? <C22ExperimentsSection manifest={m} /> : U6_CASES.has(m.case_id) ? <U6ExperimentsSection manifest={m} /> : W2_CASES.has(m.case_id) ? <W2ExperimentsSection manifest={m} /> : <CaseVariants manifest={m} />}
     </DocSection>
   );
 }
@@ -204,9 +205,13 @@ function Metrics() {
 const FAMILY: Record<string, { id: string; label: BiText }> = {
   'credit-scoring': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Scoring de crédito y PD' } },
   'ratings-calibration': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Scoring de crédito y PD' } },
-  provisions: { id: 'provisions', label: { en: 'Provisions', es: 'Provisiones' } },
-  'lgd-ead': { id: 'loss', label: { en: 'Loss severity and exposure', es: 'Severidad de pérdida y exposición' } },
+  provisions: { id: 'credit-losses', label: { en: 'Credit losses: provisions, severity and exposure', es: 'Pérdidas de crédito: provisiones, severidad y exposición' } },
+  'lgd-ead': { id: 'credit-losses', label: { en: 'Credit losses: provisions, severity and exposure', es: 'Pérdidas de crédito: provisiones, severidad y exposición' } },
   validator: { id: 'validator', label: { en: 'Validating the validator', es: 'Validar al validador' } },
+  'portfolio-capital': { id: 'capital', label: { en: 'Capital models', es: 'Modelos de capital' } },
+  operational: { id: 'capital', label: { en: 'Capital models', es: 'Modelos de capital' } },
+  'market-ccr': { id: 'market-balance', label: { en: 'Market and balance-sheet risk', es: 'Riesgo de mercado y de balance' } },
+  'balance-sheet': { id: 'market-balance', label: { en: 'Market and balance-sheet risk', es: 'Riesgo de mercado y de balance' } },
 };
 
 /** The case tabs grouped by the question family of their category; the order of the families is the order of the first case. */

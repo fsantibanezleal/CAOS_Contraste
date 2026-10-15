@@ -1,0 +1,253 @@
+{
+  "schema": "contraste.case/v1",
+  "case_id": "C10",
+  "variant_id": "fixture-grid-22",
+  "model": [
+    {
+      "id": "m-lhp",
+      "family": "portfolio-credit-capital",
+      "rung": "C1",
+      "title": {
+        "en": "Fixture model m-lhp",
+        "es": "Modelo de ejemplo m-lhp"
+      },
+      "short_title": {
+        "en": "m-lhp",
+        "es": "m-lhp"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "BSD-3-Clause",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    }
+  ],
+  "outputs": {
+    "kind": "correlation-grid",
+    "label": {
+      "en": "Correlation grid, 22 years",
+      "es": "Grilla de correlaciones, 22 anos"
+    },
+    "generator": {
+      "name": "vasicek-lhp-simulator",
+      "shaped_on": "yearly default fractions of a large homogeneous portfolio with one systematic factor (dossier 04 C.4)",
+      "known_pd": 0.02,
+      "rho_grid": [
+        0.04,
+        0.08,
+        0.12,
+        0.16
+      ],
+      "series_length_years": 22,
+      "n_replications": 1000,
+      "null_rho": 0.12,
+      "alpha": 0.05,
+      "seed": 7001,
+      "notice": {
+        "en": "Fixture, not a result. Round numbers for the contract.",
+        "es": "Ejemplo, no es un resultado. Numeros redondos para el contrato."
+      }
+    },
+    "size_power_definition": {
+      "en": "Size is the rate at which H0: rho = null_rho is rejected when the known correlation equals null_rho; power is the same rate at any other known correlation.",
+      "es": "El tamano es la tasa de rechazo de H0: rho = null_rho cuando la correlacion conocida es null_rho; la potencia es la misma tasa con otra correlacion conocida."
+    },
+    "cells": [
+      {
+        "known_rho": 0.04,
+        "series_length_years": 22,
+        "n_replications": 1000,
+        "n_valid": 996,
+        "n_failed": 4,
+        "role": "power",
+        "estimators": [
+          {
+            "estimator": "maximum-likelihood",
+            "mean_estimate": 0.043,
+            "bias": 0.003,
+            "rmse": 0.03,
+            "coverage": 0.94,
+            "rejection_rate": 0.62,
+            "rejection_se": 0.015380058,
+            "rejection_ci_low": 0.589449024,
+            "rejection_ci_high": 0.64962888
+          },
+          {
+            "estimator": "moments",
+            "mean_estimate": 0.047,
+            "bias": 0.007,
+            "rmse": 0.036,
+            "coverage": 0.91,
+            "rejection_rate": 0.48,
+            "rejection_se": 0.015830427,
+            "rejection_ci_low": 0.449109341,
+            "rejection_ci_high": 0.511044341
+          }
+        ]
+      },
+      {
+        "known_rho": 0.08,
+        "series_length_years": 22,
+        "n_replications": 1000,
+        "n_valid": 994,
+        "n_failed": 6,
+        "role": "power",
+        "estimators": [
+          {
+            "estimator": "maximum-likelihood",
+            "mean_estimate": 0.083,
+            "bias": 0.003,
+            "rmse": 0.034,
+            "coverage": 0.93,
+            "rejection_rate": 0.17,
+            "rejection_se": 0.011914349,
+            "rejection_ci_low": 0.147929122,
+            "rejection_ci_high": 0.194611725
+          },
+          {
+            "estimator": "moments",
+            "mean_estimate": 0.088,
+            "bias": 0.008,
+            "rmse": 0.041,
+            "coverage": 0.9,
+            "rejection_rate": 0.14,
+            "rejection_se": 0.01100576,
+            "rejection_ci_low": 0.119812022,
+            "rejection_ci_high": 0.162959811
+          }
+        ]
+      },
+      {
+        "known_rho": 0.12,
+        "series_length_years": 22,
+        "n_replications": 1000,
+        "n_valid": 991,
+        "n_failed": 9,
+        "role": "size",
+        "estimators": [
+          {
+            "estimator": "maximum-likelihood",
+            "mean_estimate": 0.124,
+            "bias": 0.004,
+            "rmse": 0.04,
+            "coverage": 0.94,
+            "rejection_rate": 0.054,
+            "rejection_se": 0.007179689,
+            "rejection_ci_low": 0.041572245,
+            "rejection_ci_high": 0.069872104
+          },
+          {
+            "estimator": "moments",
+            "mean_estimate": 0.131,
+            "bias": 0.011,
+            "rmse": 0.049,
+            "coverage": 0.9,
+            "rejection_rate": 0.061,
+            "rejection_se": 0.007602578,
+            "rejection_ci_low": 0.047726866,
+            "rejection_ci_high": 0.077663424
+          }
+        ]
+      },
+      {
+        "known_rho": 0.16,
+        "series_length_years": 22,
+        "n_replications": 1000,
+        "n_valid": 989,
+        "n_failed": 11,
+        "role": "power",
+        "estimators": [
+          {
+            "estimator": "maximum-likelihood",
+            "mean_estimate": 0.163,
+            "bias": 0.003,
+            "rmse": 0.047,
+            "coverage": 0.93,
+            "rejection_rate": 0.21,
+            "rejection_se": 0.012951648,
+            "rejection_ci_low": 0.185761613,
+            "rejection_ci_high": 0.236482498
+          },
+          {
+            "estimator": "moments",
+            "mean_estimate": 0.171,
+            "bias": 0.011,
+            "rmse": 0.056,
+            "coverage": 0.89,
+            "rejection_rate": 0.17,
+            "rejection_se": 0.011944428,
+            "rejection_ci_low": 0.147876646,
+            "rejection_ci_high": 0.194676997
+          }
+        ]
+      }
+    ]
+  },
+  "tests": [
+    {
+      "test_id": "portfolio.correlation_size_power",
+      "model_id": "m-lhp",
+      "segment": null,
+      "statistic": 0.577763,
+      "p_value": 0.563424,
+      "metric": 0.054,
+      "h0": "the rejection rate at the null correlation equals the nominal level",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": 0.05,
+      "alpha_red": 0.01,
+      "light": "green",
+      "n": 991,
+      "n_events": 54,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture row with round numbers, not a result",
+      "extras": {
+        "role": "size",
+        "known_rho": 0.12,
+        "estimator": "maximum-likelihood",
+        "thresholds": {
+          "power_green": 0.8,
+          "power_amber": 0.5
+        }
+      }
+    }
+  ],
+  "impact": {
+    "size_ml": {
+      "value": 0.054,
+      "unit": "rate",
+      "label": {
+        "en": "Size of the maximum-likelihood test",
+        "es": "Tamano del test de maxima verosimilitud"
+      }
+    }
+  },
+  "findings": [],
+  "provenance": {
+    "truth_status": "synthetic-known-truth",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u7-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

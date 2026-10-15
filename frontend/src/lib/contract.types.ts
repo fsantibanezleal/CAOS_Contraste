@@ -10,6 +10,12 @@ import { C07_FIT, C07_OUTPUTS } from '../workbench/c07/descriptor';
 import { C03_FIT, C03_OUTPUTS } from '../workbench/c03/descriptor';
 import { C08_FIT, C08_OUTPUTS } from '../workbench/c08/descriptor';
 import { C09_FIT, C09_OUTPUTS } from '../workbench/c09/descriptor';
+import { C10_FIT, C10_OUTPUTS_GRID, C10_OUTPUTS_LOAN_TYPE } from '../workbench/c10/descriptor';
+import { C11_FIT, C11_OUTPUTS } from '../workbench/c11/descriptor';
+import { C13_FIT, C13_OUTPUTS } from '../workbench/c13/descriptor';
+import { C14_FIT, C14_OUTPUTS } from '../workbench/c14/descriptor';
+import { C15_FIT, C15_OUTPUTS } from '../workbench/c15/descriptor';
+import { C17_FIT, C17_OUTPUTS } from '../workbench/c17/descriptor';
 
 /** Every reader-facing string is bilingual at the source. */
 export type Text = components['schemas']['common-text'];
@@ -1258,6 +1264,21 @@ export const MODELS_C08 = { ...MODELS, fit: C08_FIT } satisfies Record<keyof Mod
 export const MODELS_C09 = { ...MODELS, fit: C09_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C06 = { ...MODELS, fit: C06_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C07 = { ...MODELS, fit: C07_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
+// --- wave 2 batch 2 (U7, U8, U10, U12 views): the C10 and C17 schemas narrow provenance.truth_status in an allOf branch; their
+// documents carry the full provenance block, so the descriptor declares all of it; the others open their tests ----
+export const VARIANT_C10_LOAN_TYPE = { ...VARIANT, outputs: C10_OUTPUTS_LOAN_TYPE, tests: 'json' as Kind, provenance: { object: PROVENANCE } } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C10_GRID = { ...VARIANT, outputs: C10_OUTPUTS_GRID, tests: 'json' as Kind, provenance: { object: PROVENANCE } } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C11 = { ...VARIANT, outputs: C11_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C13 = { ...VARIANT, outputs: C13_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C14 = { ...VARIANT, outputs: C14_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C15 = { ...VARIANT, outputs: C15_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C17 = { ...VARIANT, outputs: C17_OUTPUTS, tests: 'json' as Kind, provenance: { object: PROVENANCE } } satisfies Record<keyof VariantArtifact, Kind>;
+export const MODELS_C10 = { ...MODELS, fit: C10_FIT, provenance: { object: PROVENANCE } } satisfies Record<keyof ModelsArtifact, Kind>;
+export const MODELS_C11 = { ...MODELS, fit: C11_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
+export const MODELS_C13 = { ...MODELS, fit: C13_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
+export const MODELS_C14 = { ...MODELS, fit: C14_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
+export const MODELS_C15 = { ...MODELS, fit: C15_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
+export const MODELS_C17 = { ...MODELS, fit: C17_FIT, provenance: { object: PROVENANCE } } satisfies Record<keyof ModelsArtifact, Kind>;
 
 /** The variant descriptor an artifact is read against: by its outputs' kind (C04, C05, C06, C07, C22) or C01's. */
 export function variantKind(doc: {
@@ -1274,6 +1295,13 @@ export function variantKind(doc: {
   | typeof VARIANT_C03
   | typeof VARIANT_C08
   | typeof VARIANT_C09
+  | typeof VARIANT_C10_LOAN_TYPE
+  | typeof VARIANT_C10_GRID
+  | typeof VARIANT_C11
+  | typeof VARIANT_C13
+  | typeof VARIANT_C14
+  | typeof VARIANT_C15
+  | typeof VARIANT_C17
   | typeof VARIANT_C22 {
   const kind = doc.outputs?.kind;
   if (kind === 'agency') return VARIANT_C04_AGENCY;
@@ -1284,6 +1312,13 @@ export function variantKind(doc: {
   if (kind === 'vintage-cohort') return VARIANT_C03;
   if (kind === 'default-cohort') return VARIANT_C08;
   if (kind === 'acceleration-level') return VARIANT_C09;
+  if (kind === 'loan-type') return VARIANT_C10_LOAN_TYPE;
+  if (kind === 'correlation-grid') return VARIANT_C10_GRID;
+  if (kind === 'window') return VARIANT_C11;
+  if (kind === 'deficiency') return VARIANT_C13;
+  if (kind === 'valuation-date') return VARIANT_C14;
+  if (kind === 'annex1-variant') return VARIANT_C15;
+  if (kind === 'tail-index') return VARIANT_C17;
   return kind === 'sp-calibration' ? VARIANT_C05_SP : kind === 'ldp' ? VARIANT_C05_LDP : kind === 'validator' ? VARIANT_C22 : VARIANT;
 }
 
@@ -1291,7 +1326,7 @@ export function variantKind(doc: {
 export function modelsKind(doc: {
   case_id?: string;
   fit_id?: string;
-}): typeof MODELS | typeof MODELS_C04 | typeof MODELS_C05_SP | typeof MODELS_C05_LDP | typeof MODELS_C06 | typeof MODELS_C07 | typeof MODELS_C03 | typeof MODELS_C08 | typeof MODELS_C09 | typeof MODELS_C22 {
+}): typeof MODELS | typeof MODELS_C04 | typeof MODELS_C05_SP | typeof MODELS_C05_LDP | typeof MODELS_C06 | typeof MODELS_C07 | typeof MODELS_C03 | typeof MODELS_C08 | typeof MODELS_C09 | typeof MODELS_C10 | typeof MODELS_C11 | typeof MODELS_C13 | typeof MODELS_C14 | typeof MODELS_C15 | typeof MODELS_C17 | typeof MODELS_C22 {
   if (doc.case_id === 'C04') return MODELS_C04;
   if (doc.case_id === 'C05') return doc.fit_id === 'ldp' ? MODELS_C05_LDP : MODELS_C05_SP;
   if (doc.case_id === 'C06') return MODELS_C06;
@@ -1299,6 +1334,12 @@ export function modelsKind(doc: {
   if (doc.case_id === 'C03') return MODELS_C03;
   if (doc.case_id === 'C08') return MODELS_C08;
   if (doc.case_id === 'C09') return MODELS_C09;
+  if (doc.case_id === 'C10') return MODELS_C10;
+  if (doc.case_id === 'C11') return MODELS_C11;
+  if (doc.case_id === 'C13') return MODELS_C13;
+  if (doc.case_id === 'C14') return MODELS_C14;
+  if (doc.case_id === 'C15') return MODELS_C15;
+  if (doc.case_id === 'C17') return MODELS_C17;
   if (doc.case_id === 'C22') return MODELS_C22;
   return MODELS;
 }

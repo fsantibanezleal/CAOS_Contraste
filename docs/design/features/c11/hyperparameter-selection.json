@@ -1,0 +1,83 @@
+{
+ "grid": {
+  "age_weight_lambda": {
+   "candidates": [
+    {
+     "score": -14.356366718441537,
+     "value": 0.98
+    },
+    {
+     "score": -14.555763048066618,
+     "value": 0.99
+    }
+   ],
+   "model": "awhs"
+  },
+  "estimation_window_days": {
+   "candidates": [
+    {
+     "score": -15.102724750915927,
+     "value": 500
+    },
+    {
+     "score": -15.170203490565967,
+     "value": 750
+    },
+    {
+     "score": -15.182494480827463,
+     "value": 1000
+    }
+   ],
+   "model": "garch-t"
+  },
+  "evt_threshold_fraction": {
+   "candidates": [
+    {
+     "score": -16.117236789345643,
+     "value": 0.05
+    },
+    {
+     "score": -16.11441352039474,
+     "value": 0.1
+    },
+    {
+     "score": -16.109803827068717,
+     "value": 0.15
+    }
+   ],
+   "model": "evt-mf"
+  },
+  "ewma_lambda": {
+   "candidates": [
+    {
+     "score": -14.804243770639905,
+     "value": 0.94
+    },
+    {
+     "score": -14.8092266147615,
+     "value": 0.97
+    },
+    {
+     "score": -14.530402352399323,
+     "value": 0.99
+    }
+   ],
+   "model": "ewma"
+  }
+ },
+ "selected": {
+  "age_weight_lambda": 0.99,
+  "estimation_window_days": 1000,
+  "evt_threshold_fraction": 0.05,
+  "ewma_lambda": 0.97
+ },
+ "series": [
+  "equity",
+  "rates"
+ ],
+ "span": [
+  "1995-01-01",
+  "2003-12-31"
+ ],
+ "stride": 5
+}

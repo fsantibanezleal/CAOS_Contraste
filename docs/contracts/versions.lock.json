@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "3.0.0",
+    "version": "4.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "8e3ab236787655cca20a7a491c7b624909775631da70f55d505fae20ebd7d2a0"
+    "sha256": "77f43567fa00135d91f0e223998ba080c313149683a79e50df000cd28fbff5db"
   },
   "readiness": {
     "version": "1.0.0",
@@ -183,5 +183,90 @@
     "version": "1.0.0",
     "schema": "docs/contracts/engine/lgd-ead-api.md",
     "sha256": "b218449ea32c4686c382da0bcb422da866281a70bba99a470bd86b627d87921a"
+  },
+  "c14-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c14/variant-valuation-date.schema.json",
+    "sha256": "a38314f7edfd743c1af8816592dd3aaaa389a26550c8da289ccceb867639a03e"
+  },
+  "c14-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c14/models.schema.json",
+    "sha256": "cecd8f4c9d3083d92862ef81a532f8f47f57eced8c87e02ebe93e7bd3d5172ca"
+  },
+  "c15-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c15/variant-annex1-variant.schema.json",
+    "sha256": "53bbdeec9a69885d496b3b8eba61fd6ed7b913172c8f189938c8cdd456b04dfd"
+  },
+  "c15-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c15/models.schema.json",
+    "sha256": "ea27f46a9d24d6f03e2685c6e90cb159620d77e474034de9cf4ea2d77a87eea2"
+  },
+  "engine-irrbb-api": {
+    "version": "1.1.0",
+    "schema": "docs/contracts/engine/irrbb-api.md",
+    "sha256": "60e36cb79dcc1c24ffd6a8ba355276af7c91581ea0697dd4fd7fc85e2e5e6e26"
+  },
+  "c17-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c17/variant-tail-index.schema.json",
+    "sha256": "fd7b13681ad5322cde2d065e0fd385c4120acabc0139a36faaed7f03f8db6f6f"
+  },
+  "c17-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c17/models.schema.json",
+    "sha256": "44d7b9377413eaa4c2afdce97b6027860f3f61ff4bb6dffbf479d0cade495d27"
+  },
+  "engine-oprisk-api": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/engine/oprisk-api.md",
+    "sha256": "20c15099d5871d95a8ee9552a659494300e8e867ee2c6fe9e7fa0bb42ea0ed37"
+  },
+  "c10-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c10/variant-loan-type.schema.json",
+    "sha256": "b8cc2eb822e9493037aa5d92cbd1b718e232fe7ec4a28392391ebc82e942273d"
+  },
+  "c10-outputs-grid": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c10/variant-correlation-grid.schema.json",
+    "sha256": "7a9c2b03b8f9dfb00dfe05c881548e0d2b8034acfad2756dfe6e68c7c270ceeb"
+  },
+  "c10-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c10/models.schema.json",
+    "sha256": "2683c26b67ca79c94b1e08e6ff6091de50612009cff4c0b95f9c00a3f03351fe"
+  },
+  "engine-portfolio-api": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/engine/portfolio-api.md",
+    "sha256": "573446ba124f06b12747a12efc64e53861d3dfde024aaf3b56449b526f9f138a"
+  },
+  "c11-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c11/variant-window.schema.json",
+    "sha256": "d92095203c20e8939fccdae165cdc3fe8db6e432911cc5f37b317dfa0242c6e6"
+  },
+  "c11-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c11/models.schema.json",
+    "sha256": "4aeb37448b9f0845d61361f1281aebfa149764e8d13753911a8bbfcee3d78bb0"
+  },
+  "c13-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c13/variant-deficiency.schema.json",
+    "sha256": "e80fa3801a0a3f86315ac9980cd326f01820a06556b38c53b05f2395f04ae6a8"
+  },
+  "c13-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c13/models.schema.json",
+    "sha256": "8eb4188dfc8d7f2fadd5f98e8b249c37bba0931ffa9b787b90888628dfbce5e8"
+  },
+  "engine-market-api": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/engine/market-api.md",
+    "sha256": "f3ccfb534c825d7ef38bade60a0be0a5aa5bdcb48dd2ceeb391c39b78922c6a5"
   }
 }

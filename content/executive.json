@@ -383,8 +383,8 @@
     "state_of_the_art": [
       {
         "approach": {
-          "en": "In-house validation teams running a standard battery of tests",
-          "es": "Equipos internos de validación que aplican una batería estándar de pruebas"
+          "en": "In-house validation teams running standard test batteries",
+          "es": "Equipos internos de validación con una batería estándar de pruebas"
         },
         "achieves": {
           "en": "An independent opinion on each model, in line with supervisory principles.",
@@ -413,8 +413,8 @@
       },
       {
         "approach": {
-          "en": "Published supervisory guides that name the tests and the thresholds expected",
-          "es": "Guías supervisoras publicadas que nombran las pruebas y los umbrales esperados"
+          "en": "Supervisory guides naming expected tests and thresholds",
+          "es": "Guías supervisoras que nombran pruebas y umbrales esperados"
         },
         "achieves": {
           "en": "A shared language of tests, reporting and quantitative thresholds.",

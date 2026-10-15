@@ -1,0 +1,342 @@
+{
+  "schema": "contraste.models/v1",
+  "case_id": "C17",
+  "fit_id": "fixture-generator",
+  "model": [
+    {
+      "id": "lda-splice",
+      "family": "oprisk",
+      "rung": "lda-splice",
+      "title": {
+        "en": "Fixture model lda-splice",
+        "es": "Modelo de ejemplo lda-splice"
+      },
+      "short_title": {
+        "en": "lda-splice",
+        "es": "lda-splice"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "details": {}
+    },
+    {
+      "id": "sma",
+      "family": "oprisk",
+      "rung": "sma",
+      "title": {
+        "en": "Fixture model sma",
+        "es": "Modelo de ejemplo sma"
+      },
+      "short_title": {
+        "en": "sma",
+        "es": "sma"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "details": {}
+    }
+  ],
+  "fit": {
+    "currency": "EUR",
+    "generator": {
+      "name": "operational-loss-history-generator",
+      "shaped_on": "bcbs160-ldce-2008",
+      "assets_eur_bn": 50.0,
+      "frequency_law": "poisson",
+      "severity_law": "gpd",
+      "generator_floor_eur": 10000.0,
+      "notice": {
+        "en": "Fixture, not a result. A synthetic bank whose annual loss distribution is known by construction.",
+        "es": "Ejemplo, no es un resultado. Un banco sintetico cuya distribucion de perdida anual se conoce por construccion."
+      }
+    },
+    "calibration": {
+      "currency": "EUR",
+      "label": "derived-only",
+      "licence_class": "derived-only",
+      "source": {
+        "id": "bcbs160",
+        "title": "Results from the 2008 Loss Data Collection Exercise for Operational Risk",
+        "url": "https://www.bis.org/publ/bcbs160.htm",
+        "date": "2009-07-28",
+        "table": "ILD7"
+      },
+      "threshold_eur": 20000,
+      "frequency": {
+        "per_eur_bn_assets": 0.82,
+        "iqr_low": 0.36,
+        "iqr_high": 1.66,
+        "statistic": "median across banks of the losses of EUR 20,000 or more per year per EUR billion of consolidated assets"
+      },
+      "severity_percentiles": [
+        {
+          "p": 0.25,
+          "loss_eur": 27632
+        },
+        {
+          "p": 0.5,
+          "loss_eur": 41916
+        },
+        {
+          "p": 0.75,
+          "loss_eur": 82608
+        },
+        {
+          "p": 0.95,
+          "loss_eur": 418400
+        }
+      ],
+      "caveat": {
+        "en": "Medians of per-bank percentiles are not the percentiles of any one bank; the statistics calibrate a synthetic bank and describe no real one.",
+        "es": "Las medianas de percentiles por banco no son los percentiles de ningun banco; las estadisticas calibran un banco sintetico y no describen a uno real."
+      }
+    },
+    "variants": [
+      {
+        "variant_id": "fixture-xi-0-6",
+        "tail_index": 0.6,
+        "infinite_mean": false,
+        "lambda_per_year": 78.8,
+        "location_eur": 10000.0,
+        "scale_eur": 12500.0,
+        "true_quantile_999_eur": 60000000.0,
+        "true_mean_eur": 3250500,
+        "true_mean_reason": null
+      },
+      {
+        "variant_id": "fixture-xi-0-8",
+        "tail_index": 0.8,
+        "infinite_mean": false,
+        "lambda_per_year": 62.9,
+        "location_eur": 10000.0,
+        "scale_eur": 19600.0,
+        "true_quantile_999_eur": 176000000.0,
+        "true_mean_eur": 6793200,
+        "true_mean_reason": null
+      },
+      {
+        "variant_id": "fixture-xi-0-96",
+        "tail_index": 0.96,
+        "infinite_mean": false,
+        "lambda_per_year": 58.2,
+        "location_eur": 10000.0,
+        "scale_eur": 24000.0,
+        "true_quantile_999_eur": 590000000.0,
+        "true_mean_eur": 35502000,
+        "true_mean_reason": null
+      },
+      {
+        "variant_id": "fixture-xi-1-1",
+        "tail_index": 1.1,
+        "infinite_mean": true,
+        "lambda_per_year": 94.5,
+        "location_eur": 10000.0,
+        "scale_eur": 7300.0,
+        "true_quantile_999_eur": 1650000000.0,
+        "true_mean_eur": null,
+        "true_mean_reason": "the tail index is 1 or more: the severity has an infinite mean, so the annual loss has no mean"
+      }
+    ],
+    "grid": {
+      "years": [
+        5,
+        10
+      ],
+      "collection_thresholds_eur": [
+        10000,
+        20000
+      ],
+      "n_replications_per_cell": 1000,
+      "seed_base": 1000,
+      "seed_stride": 1000
+    },
+    "ladder": [
+      {
+        "rung_id": "lda-lognormal",
+        "label": {
+          "en": "Poisson-lognormal LDA ignoring the collection threshold",
+          "es": "El LDA Poisson-lognormal que ignora el umbral"
+        },
+        "severity_law": "lognormal",
+        "truncated": false,
+        "aggregation": "monte-carlo",
+        "status": "verified",
+        "reference": "dossier 05 F.2, rung 1"
+      },
+      {
+        "rung_id": "lda-lognormal-truncated",
+        "label": {
+          "en": "Truncated lognormal above the threshold, frequency rescaled",
+          "es": "Lognormal truncada sobre el umbral"
+        },
+        "severity_law": "lognormal-truncated",
+        "truncated": true,
+        "aggregation": "panjer",
+        "status": "verified",
+        "reference": "dossier 05 F.2, rung 2; Mignola and Ugoccioni (2007)"
+      },
+      {
+        "rung_id": "lda-splice",
+        "label": {
+          "en": "Lognormal body and GPD tail splice",
+          "es": "Empalme de cuerpo lognormal y cola GPD"
+        },
+        "severity_law": "lognormal-gpd-splice",
+        "truncated": true,
+        "aggregation": "fft",
+        "status": "verified",
+        "reference": "dossier 05 F.2, rung 3"
+      },
+      {
+        "rung_id": "sla",
+        "label": {
+          "en": "Single loss approximation",
+          "es": "Aproximacion de una perdida"
+        },
+        "severity_law": "gpd",
+        "truncated": true,
+        "aggregation": "closed-form",
+        "status": "verified",
+        "reference": "dossier 05 F.4, Shevchenko eq. 70"
+      },
+      {
+        "rung_id": "sla-mean-corrected",
+        "label": {
+          "en": "Single loss approximation with the mean correction",
+          "es": "Aproximacion de una perdida con correccion por media"
+        },
+        "severity_law": "gpd",
+        "truncated": true,
+        "aggregation": "closed-form",
+        "status": "UNVERIFIED",
+        "reference": "dossier 05 F.4: the form is not checked against Bocker and Sprittulla (2006) or Degen (2010)"
+      },
+      {
+        "rung_id": "scenario",
+        "label": {
+          "en": "Scenario combination by Bayesian credibility",
+          "es": "Combinacion de escenarios por credibilidad bayesiana"
+        },
+        "severity_law": "gpd",
+        "truncated": true,
+        "aggregation": "panjer",
+        "status": "verified",
+        "reference": "dossier 05 F.5, Shevchenko and Wuthrich (2006)"
+      }
+    ],
+    "aggregation": {
+      "level": 0.999,
+      "panjer_step_eur": 1000.0,
+      "panjer_points": 400000,
+      "fft_points": 1048576,
+      "fft_padding_factor": 2,
+      "fft_tilt": 0.0,
+      "mc_years_truth": 10000000,
+      "mc_years_replication": 1000000
+    },
+    "sma": {
+      "currency": "EUR",
+      "buckets": [
+        {
+          "bucket": 1,
+          "upper_eur": 1000000000.0,
+          "coefficient": 0.12
+        },
+        {
+          "bucket": 2,
+          "upper_eur": 30000000000.0,
+          "coefficient": 0.15
+        },
+        {
+          "bucket": 3,
+          "upper_eur": null,
+          "coefficient": 0.18
+        }
+      ],
+      "loss_multiple": 15,
+      "loss_window_years": 10,
+      "minimum_years": 5,
+      "ilm_exponent": 0.8,
+      "rwa_factor": 12.5,
+      "discretions": [
+        {
+          "id": "bucket-1-ilm-one",
+          "description": {
+            "en": "Bucket 1 banks have ILM = 1 unless national discretion includes their losses.",
+            "es": "Los bancos del tramo 1 tienen ILM = 1 salvo que la discrecion nacional incluya sus perdidas."
+          },
+          "reference": "OPE25.11"
+        },
+        {
+          "id": "national-ilm-one",
+          "description": {
+            "en": "Supervisors may set ILM = 1 for every bank of the jurisdiction; disclosure stays.",
+            "es": "Los supervisores pueden fijar ILM = 1 para todos los bancos de la jurisdiccion; la divulgacion se mantiene."
+          },
+          "reference": "OPE25.11"
+        },
+        {
+          "id": "transitional-bic-only",
+          "description": {
+            "en": "Under 5 years of loss data (10 are required, 5 are the transitional minimum) capital is the BIC only.",
+            "es": "Con menos de 5 anos de datos de perdida (se piden 10, 5 es el minimo transitorio) el capital es solo el BIC."
+          },
+          "reference": "OPE25.10, OPE25.15"
+        }
+      ],
+      "golden": {
+        "bi_eur": 35000000000.0,
+        "bic_eur": 5370000000.0,
+        "reference": "OPE25.7 footnote 2"
+      },
+      "reference": "dossier 01 section F (OPE25, in force 2023-01-01, published 2024-07-05)"
+    },
+    "scenarios": {
+      "methods": [
+        "pseudo-observations",
+        "body-tail",
+        "bayesian-credibility"
+      ],
+      "prior": {
+        "kind": "unrestricted-gamma-on-pareto-shape",
+        "restricted": false,
+        "interval_level": 0.9,
+        "mapping": "GPD fitted to the scenario points by least squares on the log excess quantiles; alpha_s = 1 / xi_s is the prior mean and the parametric-bootstrap 90 percent interval of alpha_s the expert interval; the Gamma shape and rate solve the mean and the interval mass (decision D4)"
+      },
+      "reference": "dossier 05 F.5; Shevchenko and Wuthrich (2006), J. Operational Risk 1(3):3-26"
+    }
+  },
+  "provenance": {
+    "truth_status": "synthetic-known-truth",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u12-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}
