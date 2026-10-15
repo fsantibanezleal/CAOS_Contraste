@@ -35,15 +35,32 @@ export function evaluated(row: TestRow): boolean {
  * them without a p-value (the IFRS 9 lifetime PD backtest's Vasicek band, provisions API contract). The policy rail
  * does not move such a light; it stays the committed one. */
 export function bandEvaluated(row: TestRow): boolean {
-  return row.alpha_amber !== null && row.alpha_red !== null && row.light !== 'error' && row.p_value === null;
+  return row.alpha_amber !== null && row.alpha_red !== null && row.light !== 'error' && row.p_value === null && !ownPolicyEvaluated(row);
 }
 
-export function relight(row: TestRow, alphas: PolicyAlphas): Light {
+/** True when a row was lit under its test family's own policy, not the product's: its alphas differ from COMMITTED and
+ * its policy_version names them (C11's market back-tests: Kupiec, Christoffersen and duration amber below 0.10
+ * and red below 0.05, Acerbi-Szekely amber below 0.05 and red below 0.0001, the reviewed engine-market-api levels on which
+ * C11's eligibility gates are defined). The policy rail does not move such a light; it stays the committed one. */
+export function ownPolicyEvaluated(row: TestRow): boolean {
+  return (
+    row.alpha_amber !== null && row.alpha_red !== null && row.light !== 'error' && toleranceOf(row) === null &&
+    (row.alpha_amber !== COMMITTED.amber || row.alpha_red !== COMMITTED.red) && /alpha_amber=/.test(row.policy_version)
+  ); // a row the family could not evaluate (an undefined ES) is one too: it keeps its committed not_evaluated
+}
+
+/** The light of an evaluated p-value row under the given alphas: red if p < red, amber if p < amber, green otherwise. */
+export function lightUnder(row: TestRow, alphas: PolicyAlphas): Light {
   if (!evaluated(row)) return row.light;
   const p = row.p_value as number;
   if (!Number.isFinite(p)) return 'not_evaluated';
   if (p < alphas.red) return 'red';
   return p < alphas.amber ? 'amber' : 'green';
+}
+
+/** The light a row shows under the rail's alphas: re-computed for a row of the product policy, the committed one otherwise. */
+export function relight(row: TestRow, alphas: PolicyAlphas): Light {
+  return ownPolicyEvaluated(row) ? row.light : lightUnder(row, alphas);
 }
 
 /** A regulatory paragraph a row carries for its threshold, if any (none does today: no regulation fixes them). */
@@ -63,6 +80,11 @@ export function thresholdLabel(row: TestRow, alphas: PolicyAlphas): Text {
       es: `Tolerancia de política, no regulatoria: la luz compara la métrica con una tolerancia de ${String(tol).replace('.', ',')} (${row.policy_version}); el control de política no la cambia`,
     };
   }
+  if (ownPolicyEvaluated(row))
+    return {
+      en: `Policy threshold of its test family, not regulatory: amber below ${row.alpha_amber}, red below ${row.alpha_red} (${row.policy_version}); the policy rail does not change it`,
+      es: `Umbral de política de su familia de pruebas, no regulatorio: ámbar bajo ${String(row.alpha_amber).replace('.', ',')}, rojo bajo ${String(row.alpha_red).replace('.', ',')} (${row.policy_version}); el control de política no lo cambia`,
+    };
   if (bandEvaluated(row))
     return {
       en: `Policy acceptance band, not regulatory: amber outside the ${row.alpha_amber} band, red outside the ${row.alpha_red} band (${row.policy_version}); the policy rail does not change it`,

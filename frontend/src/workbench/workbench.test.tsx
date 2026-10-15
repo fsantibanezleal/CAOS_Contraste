@@ -152,3 +152,27 @@ describe("why a feature left the scorecard, in the page's language (gate G11)", 
     expect(droppedReason('something else', 'es')).toBe('something else');
   });
 });
+
+describe('Focus mode of the App (shell 0.14.0, ADR-0070)', () => {
+  it('the App renders the Focus control of CaseWorkbench', () => {
+    const markup = html(<Workbench />);
+    expect(markup).toContain('data-focus-enter');
+    expect(markup).toContain('Open this case in focus mode');
+  });
+
+  it('CaseWorkbench is given focus, beside the case deep link', () => {
+    const src = readFileSync(new URL('./Workbench.tsx', import.meta.url), 'utf8');
+    expect(src).toMatch(/<CaseWorkbench[\s\S]*\bfocus\b[\s\S]*\/>/);
+    expect(src).toMatch(/deepLink: true/);
+  });
+
+  it('the gate script passes --require-focus, so an App without the control fails', () => {
+    const gate = readFileSync(new URL('../../scripts/gate.mjs', import.meta.url), 'utf8');
+    expect(gate).toContain("'--require-focus'");
+  });
+
+  it('the shell is pinned to exactly 0.14.2 (0.14.1: the Focus control on the case select row keeps the rails from scrolling; 0.14.2: the cause shares stay whole at phone width)', () => {
+    const pkg = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8'));
+    expect(pkg.dependencies['@fasl-work/caos-app-shell']).toBe('0.14.2');
+  });
+});

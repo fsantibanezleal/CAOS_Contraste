@@ -1,5 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" role="img" aria-label="Reproducible, measured evidence passes each handover, findings close and the capital held is the planned one">
 <title>Reproducible, measured evidence passes each handover, findings close and the capital held is the planned one</title>
+<style>
+/* The proposal, as a before and after (8 s loop): the tests are run against a planted truth (the lens sweeps the evidence), the
+   evidence passes each handover with its check, the finding closes, and the extra capital held (the red blocks, the state the
+   pain drew) is released to the planned level (the dashed blocks). The labels never move. Reduced motion shows the final frame. */
+.pr-lens { animation: pr-lens 8s ease-in-out infinite; }
+.pr-doc1 { animation: pr-doc1 8s ease-out infinite; }
+.pr-doc2 { animation: pr-doc2 8s ease-out infinite; }
+.pr-ok1 { animation: pr-ok1 8s ease-out infinite; }
+.pr-ok2 { animation: pr-ok2 8s ease-out infinite; }
+.pr-ok3 { animation: pr-ok3 8s ease-out infinite; }
+.pr-before { animation: pr-before 8s ease-in-out infinite; }
+.pr-after { animation: pr-after 8s ease-in-out infinite; }
+@keyframes pr-lens { 0%, 100% { transform: translate(0, 0); } 12% { transform: translate(0, -26px); } 26% { transform: translate(0, 18px); } 36%, 90% { transform: translate(0, 0); } }
+@keyframes pr-doc1 { 0% { opacity: 0; transform: translateX(-34px); } 6% { opacity: 1; transform: translateX(-34px); } 20%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes pr-ok1 { 0%, 20% { opacity: 0; transform: scale(0.4); } 28%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+@keyframes pr-doc2 { 0%, 30% { opacity: 0; transform: translateX(-34px); } 36% { opacity: 1; transform: translateX(-34px); } 50%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes pr-ok2 { 0%, 50% { opacity: 0; transform: scale(0.4); } 58%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+@keyframes pr-ok3 { 0%, 60% { opacity: 0; transform: scale(0.4); } 68%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+@keyframes pr-before { 0%, 66% { opacity: 1; } 80%, 90% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes pr-after { 0%, 66% { opacity: 0; } 80%, 90% { opacity: 1; } 100% { opacity: 0; } }
+.pr-ok1, .pr-ok2, .pr-ok3 { transform-box: fill-box; transform-origin: center; }
+@media (prefers-reduced-motion: reduce) {
+  .pr-lens, .pr-doc1, .pr-doc2, .pr-ok1, .pr-ok2, .pr-ok3, .pr-after { animation: none; opacity: 1; transform: none; }
+  .pr-before { animation: none; opacity: 0; }
+}
+</style>
 <rect x="1" y="1" width="638" height="438" rx="12" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
 <rect x="2" y="330" width="636" height="108" rx="0" fill="var(--color-surface-2)" stroke="none" stroke-width="1.5"/>
 <path d="M 2 330 L 638 330" fill="none" stroke="var(--color-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -37,8 +63,10 @@
 <path d="M 345 201 L 375 201" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <rect x="329" y="216" width="10" height="10" rx="2" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
 <path d="M 345 221 L 375 221" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<g class="pr-lens">
 <circle cx="317" cy="200" r="14" fill="none" stroke="var(--color-fg)" stroke-width="2.5"/>
 <path d="M 327 210 L 337 222" fill="none" stroke="var(--color-fg)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
 <rect x="249" y="238" width="142" height="10" rx="2" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
 <path d="M 468 178 L 535 146 L 602 178 Z" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <rect x="468" y="178" width="134" height="8" rx="1" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
@@ -49,10 +77,14 @@
 <rect x="464" y="240" width="142" height="12" rx="2" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
 <rect x="464" y="252" width="142" height="8" rx="2" fill="var(--color-surface-2)" stroke="var(--color-border)" stroke-width="1.5"/>
 <circle cx="535" cy="166" r="7" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5"/>
+<g class="pr-doc1">
 <rect x="203" y="186" width="18" height="24" rx="2" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
 <path d="M 207 194 L 217 194 M 207 199 L 217 199 M 207 204 L 213 204" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g class="pr-doc2">
 <rect x="418" y="186" width="18" height="24" rx="2" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
 <path d="M 422 194 L 432 194 M 422 199 L 432 199 M 422 204 L 428 204" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
 <rect x="470" y="402" width="40" height="18" rx="3" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5"/>
 <rect x="514" y="402" width="40" height="18" rx="3" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5"/>
 <rect x="558" y="402" width="40" height="18" rx="3" fill="var(--color-accent-soft)" stroke="var(--color-border)" stroke-width="1.5"/>
@@ -62,13 +94,26 @@
 <rect x="24" y="372" width="92" height="46" rx="3" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5"/>
 <path d="M 36 386 L 104 386 M 36 398 L 104 398 M 36 410 L 84 410" fill="none" stroke="var(--color-fg-faint)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M 190 200 L 229 200" fill="none" stroke="var(--color-good)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M 223 193 L 233 200 L 223 207" fill="none" stroke="var(--color-good)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<g class="pr-ok1">
 <circle cx="212" cy="224" r="11" fill="var(--color-good)" stroke="var(--color-border)" stroke-width="1.5"/><path d="M 207 224 L 211 228 L 218 219" fill="none" stroke="var(--color-surface)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
 <path d="M 405 200 L 444 200" fill="none" stroke="var(--color-good)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M 438 193 L 448 200 L 438 207" fill="none" stroke="var(--color-good)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<g class="pr-ok2">
 <circle cx="427" cy="224" r="11" fill="var(--color-good)" stroke="var(--color-border)" stroke-width="1.5"/><path d="M 422 224 L 426 228 L 433 219" fill="none" stroke="var(--color-surface)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g class="pr-ok3">
 <circle cx="575" cy="143" r="11" fill="var(--color-good)" stroke="var(--color-border)" stroke-width="1.5"/><path d="M 570 143 L 574 147 L 581 138" fill="none" stroke="var(--color-surface)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g class="pr-before">
+<rect x="492" y="362" width="40" height="18" rx="3" fill="var(--color-bad)" stroke="var(--color-border)" stroke-width="1.5"/>
+<rect x="536" y="362" width="40" height="18" rx="3" fill="var(--color-bad)" stroke="var(--color-border)" stroke-width="1.5"/>
+<rect x="514" y="342" width="40" height="18" rx="3" fill="var(--color-bad)" stroke="var(--color-border)" stroke-width="1.5"/>
+</g>
+<g class="pr-after">
 <rect x="492" y="362" width="40" height="18" rx="3" fill="var(--color-surface)" stroke="var(--color-good)" stroke-width="1.5" stroke-dasharray="4 4"/>
 <rect x="536" y="362" width="40" height="18" rx="3" fill="var(--color-surface)" stroke="var(--color-good)" stroke-width="1.5" stroke-dasharray="4 4"/>
 <rect x="514" y="342" width="40" height="18" rx="3" fill="var(--color-surface)" stroke="var(--color-good)" stroke-width="1.5" stroke-dasharray="4 4"/>
+</g>
 <text data-lang="en" x="212" y="304" text-anchor="middle" font-size="18" fill="var(--color-good)" font-weight="600">Same results rerun</text>
 <text data-lang="es" x="212" y="304" text-anchor="middle" font-size="18" fill="var(--color-good)" font-weight="600">Mismos resultados repetidos</text>
 <text data-lang="en" x="535" y="304" text-anchor="middle" font-size="18" fill="var(--color-good)" font-weight="600">Findings closed</text>

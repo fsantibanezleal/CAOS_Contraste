@@ -22,11 +22,11 @@ export const U6_CASES = new Set(['C03', 'C06', 'C07', 'C08', 'C09']);
 /** The cases with a rung comparison for the Benchmark (the provisions cases compare regimes, in the App). */
 export const U6_BENCHMARK_CASES = new Set(['C03', 'C08', 'C09']);
 
-const num = (v: number | null | undefined, lang: Lang, decimals = 3) => formatNumber(v, lang, { decimals });
-const pct = (v: number | null | undefined, lang: Lang, decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
+export const num = (v: number | null | undefined, lang: Lang, decimals = 3) => formatNumber(v, lang, { decimals });
+export const pct = (v: number | null | undefined, lang: Lang, decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
 
 /** An amount for a table cell: scaled to billions or millions with its unit, never an eleven-digit number. */
-function money(v: number | null | undefined, currency: string, lang: Lang): string {
+export function money(v: number | null | undefined, currency: string, lang: Lang): string {
   const c = compactMoney(v, currency);
   return c.value === null ? formatNumber(null, lang) : `${formatNumber(c.value, lang, c.format)} ${pick(c.unit, lang)}`;
 }
@@ -43,7 +43,7 @@ function wmean(items: Array<{ v: number | null | undefined; w: number }>): numbe
   return w > 0 ? s / w : null;
 }
 
-function Table({ head, rows, wide = 1 }: { head: string[]; rows: Cell[][]; wide?: number }) {
+export function Table({ head, rows, wide = 1 }: { head: string[]; rows: Cell[][]; wide?: number }) {
   return (
     <table className="caos-table" data-state="ready">
       <thead>
@@ -70,11 +70,11 @@ function Table({ head, rows, wide = 1 }: { head: string[]; rows: Cell[][]; wide?
   );
 }
 
-function useVariants(manifest: CaseManifest) {
+export function useVariants(manifest: CaseManifest) {
   return useArtifact<VariantArtifact<unknown>[]>((s) => loadAllVariants(manifest, s) as never, [manifest.case_id]);
 }
 
-function Loading() {
+export function Loading() {
   const t = useT();
   return <p className="caos-pending" data-state="loading">{t('Loading the variants', 'Cargando las variantes')}</p>;
 }
