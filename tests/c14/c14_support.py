@@ -16,11 +16,19 @@ SEED = 42
 SMALL_PATHS = 2000
 
 
-def data_root() -> Path | None:
+def _find_data_root() -> Path | None:
     for cand in (os.environ.get("CONTRASTE_DATA"),):   # the device data root by role; never a drive written here
         if cand and (Path(cand) / "raw" / "fdic-financials").exists() and (Path(cand) / "raw" / "treasury-par").exists():
             return Path(cand)
     return None
+
+
+# resolved once, at import: the suite's sandbox fixture (tests/conftest.py) removes CONTRASTE_DATA from every test's environment
+_DATA_ROOT = _find_data_root()
+
+
+def data_root() -> Path | None:
+    return _DATA_ROOT
 
 
 requires_raw = pytest.mark.skipif(data_root() is None, reason="the raw FDIC and Treasury files are not in the device data root")
