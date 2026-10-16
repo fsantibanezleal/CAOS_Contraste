@@ -7,7 +7,7 @@ import { UPlotChart, type UPlotChartProps } from '@fasl-work/caos-app-shell/char
 import { ChartOverTable } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { LEG_SHORT, SHOCK_TEXT, axisOf, moneyDoc, outputsOf, scaleUnit, text, type C15Sel } from './selection';
+import { LEG_SHORT, SHOCK_TEXT, moneyDoc, outputsOf, scaleUnit, text, type C15Sel } from './selection';
 
 const cell = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 const SHARE = (v: number | null | undefined, lang: 'en' | 'es') => formatNumber(v, lang, { percent: true, decimals: 2 });
@@ -26,13 +26,14 @@ export function FloorsView({ sel }: { sel: C15Sel | null }) {
   const f = o.floors;
   const doc = moneyDoc(o);
   const unit = pick(scaleUnit(doc), lang);
-  const axis = axisOf(doc, f.effects.map((e) => e.effect));
-  const rowLabel = (e: (typeof f.effects)[number]): BiText => {
-    const leg = text(LEG_SHORT, e.leg);
-    const shock = text(SHOCK_TEXT, e.shock);
-    const measure = text(MEASURE_TEXT, e.measure);
+  const distLabel = (x: (typeof f.distances)[number]): BiText => {
+    const leg = text(LEG_SHORT, x.leg);
+    const shock = text(SHOCK_TEXT, x.shock);
+    const measure = text(MEASURE_TEXT, x.measure);
     return { en: `${leg.en}, ${measure.en}, ${shock.en.toLowerCase()}`, es: `${leg.es}, ${measure.es}, ${shock.es.toLowerCase()}` };
   };
+  const lowest = f.distances.reduce((m, x) => (x.distance_bp < m.distance_bp ? x : m), f.distances[0]);
+  const nBind = f.distances.filter((x) => x.binds).length;
   return (
     <ViewsRow>
       <PlotCard
@@ -40,24 +41,20 @@ export function FloorsView({ sel }: { sel: C15Sel | null }) {
         title={{ en: 'The post-shock floors', es: 'Los pisos posteriores al choque' }}
         {...card}
         note={{
-          en: 'After a shock the rate of each bucket cannot fall below its floor: -2 percent for the UR rates and 0 percent for the others, or the pre-shock rate if that is lower. Each row is a leg, a measure and a shock where the floor binds; the effect is the measure with the floor minus the measure without it.',
-          es: 'Después de un choque la tasa de cada tramo no puede caer bajo su piso: -2 por ciento para las tasas UR y 0 por ciento para las demás, o la tasa previa al choque si es menor. Cada fila es un tramo, una medida y un choque donde el piso rige; el efecto es la medida con el piso menos la medida sin él.',
+          en: 'After a shock the rate of each bucket cannot fall below its floor: -2 percent for the UR rates and 0 percent for the others, or the pre-shock rate if that is lower. Each bar is the distance of a leg and a shock to its floor: the lowest post-shock rate minus the floor, in basis points. The floor is the zero line; a bar at or below it is a floor that binds, and its effect on the measure is in the table.',
+          es: 'Después de un choque la tasa de cada tramo no puede caer bajo su piso: -2 por ciento para las tasas UR y 0 por ciento para las demás, o la tasa previa al choque si es menor. Cada barra es la distancia de un tramo y un choque a su piso: la tasa más baja posterior al choque menos el piso, en puntos base. El piso es la línea cero; una barra en cero o bajo él es un piso que rige, y su efecto sobre la medida está en la tabla.',
         }}
       >
         <ChartOverTable
-          chartMin={`${Math.min(Math.max(f.effects.length, 2), 24) * 1.5 + 3}rem`}
+          chartMin={`${Math.min(Math.max(f.distances.length, 2), 24) * 1.5 + 3}rem`}
           chart={
-            f.effects.length === 0 ? (
-              <p className="caos-pending" data-state="unavailable">{pick({ en: 'No floor binds in this variant: the measures with and without the floor are the same.', es: 'En esta variante ningún piso rige: las medidas con y sin piso son las mismas.' }, lang)}</p>
-            ) : (
-              <BarChart
-                title={{ en: 'Effect of the floor on each measure', es: 'Efecto del piso en cada medida' }}
-                height="fill"
-                orientation="horizontal"
-                data={f.effects.map((e) => ({ id: `${e.leg}-${e.measure}-${e.shock}`, label: rowLabel(e), value: e.effect / axis.div, tone: e.effect > 0 ? ('bad' as const) : ('good' as const) }))}
-                axis={{ label: { en: 'Measure with the floor minus without it', es: 'Medida con el piso menos sin él' }, unit: axis.unit, format: { digits: 4 } }}
-              />
-            )
+            <BarChart
+              title={{ en: 'Distance of each leg and shock to its floor', es: 'Distancia de cada tramo y choque a su piso' }}
+              height="fill"
+              orientation="horizontal"
+              data={f.distances.map((x) => ({ id: `${x.leg}-${x.measure}-${x.shock}`, label: distLabel(x), value: x.distance_bp, tone: x.binds ? ('bad' as const) : ('accent' as const) }))}
+              axis={{ label: { en: 'Lowest post-shock rate minus the floor (the floor is zero)', es: 'Tasa más baja posterior al choque menos el piso (el piso es cero)' }, unit: { en: 'bp', es: 'pb' }, format: { digits: 4 } }}
+            />
           }
         >
           <dl className="ct-defs" data-table="floor-rule">
@@ -68,6 +65,37 @@ export function FloorsView({ sel }: { sel: C15Sel | null }) {
             <dt>{pick({ en: 'Rule', es: 'Regla' }, lang)}</dt>
             <dd>{pick(f.rule, lang)}</dd>
           </dl>
+          <p data-block="floor-closest" data-binding={nBind}>
+            {pick({ en: `Closest to a floor: ${text(LEG_SHORT, lowest.leg).en}, ${text(MEASURE_TEXT, lowest.measure).en}, ${text(SHOCK_TEXT, lowest.shock).en.toLowerCase()}, bucket ${lowest.bucket}, ${formatNumber(lowest.distance_bp, 'en', { digits: 4 })} bp ${lowest.binds ? 'past' : 'above'} the floor. Floors that bind: ${nBind} of ${f.distances.length}.`, es: `Más cerca de un piso: ${text(LEG_SHORT, lowest.leg).es}, ${text(MEASURE_TEXT, lowest.measure).es}, ${text(SHOCK_TEXT, lowest.shock).es.toLowerCase()}, tramo ${lowest.bucket}, ${formatNumber(lowest.distance_bp, 'es', { digits: 4 })} pb ${lowest.binds ? 'bajo' : 'sobre'} el piso. Pisos que rigen: ${nBind} de ${f.distances.length}.` }, lang)}
+          </p>
+          <table className="caos-table ct-wrap-head" data-table="floor-distances">
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Leg', es: 'Tramo' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Measure', es: 'Medida' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Shock', es: 'Choque' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Bucket', es: 'Tramo temporal' }, lang)}</th>
+                <th>{pick({ en: 'Lowest rate', es: 'Tasa más baja' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Floor', es: 'Piso' }, lang)}</th>
+                <th>{pick({ en: 'Distance (bp)', es: 'Distancia (pb)' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Binds', es: 'Rige' }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {f.distances.map((x) => (
+                <tr key={`${x.leg}-${x.measure}-${x.shock}`} data-leg={x.leg} data-measure={x.measure} data-shock={x.shock} data-binds={x.binds}>
+                  <td className="ct-text">{pick(text(LEG_SHORT, x.leg), lang)}</td>
+                  <td className="ct-text">{pick(text(MEASURE_TEXT, x.measure), lang)}</td>
+                  <td className="ct-text">{pick(text(SHOCK_TEXT, x.shock), lang)}</td>
+                  <td className="ct-wide-only">{x.bucket}</td>
+                  <td>{SHARE(x.lowest_rate, lang)}</td>
+                  <td className="ct-wide-only">{SHARE(x.floor, lang)}</td>
+                  <td>{formatNumber(x.distance_bp, lang, { digits: 4 })}</td>
+                  <td className="ct-text">{pick(x.binds ? { en: 'Yes', es: 'Sí' } : { en: 'No', es: 'No' }, lang)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           <table className="caos-table ct-wrap-head" data-table="floor-effects">
             <thead>
               <tr>

@@ -405,6 +405,26 @@ def check_c15(doc: dict) -> list[str]:
             rep.need(close(e["delta_with_floor"], res["delta_nii"]), "a floor effect's delta_with_floor is not the leg's delta NII")
             rep.need(close(e["delta_without_floor"], sum(base[e["leg"]][k] * (-res["shock_bp"] / 1e4) * (1 - MIDPOINTS[k]) for k in range(6))), "a floor effect's delta_without_floor does not recompute")
         rep.need(e["buckets_floored"] == len(res["floor_bound_buckets"]), "buckets_floored differs from the leg's floor_bound_buckets")
+    # the distances to the floors: per leg and shock the lowest unfloored post-shock rate, its bucket, the distance, and where a floor binds
+    dist = o["floors"]["distances"]
+    want_keys = [(leg, m, sh["shock"]) for leg in ("CLP", "UR") for m, rows in (("delta-eve", o["eve"]["rows"]), ("delta-nii", o["nii"]["rows"])) for sh in rows]
+    rep.need([(d["leg"], d["measure"], d["shock"]) for d in dist] == want_keys, "floors.distances are not one row per leg, measure and shock in order")
+    for d in dist:
+        key = "clp" if d["leg"] == "CLP" else "ur"
+        row = next((r for r in (o["eve"]["rows"] if d["measure"] == "delta-eve" else o["nii"]["rows"]) if r["shock"] == d["shock"]), None)
+        if row is None:
+            continue
+        n = 19 if d["measure"] == "delta-eve" else 6
+        shape = row[key]["shape_bp"] if d["measure"] == "delta-eve" else [row[key]["shock_bp"]] * 19
+        free = [rates[d["leg"]][k] + shape[k] / 1e4 for k in range(n)]
+        k = min(range(n), key=lambda i: (free[i], i))
+        tag = f"floors.distances/{d['leg']}/{d['measure']}/{d['shock']}"
+        rep.need(close(d["lowest_rate"], free[k], rel=0, tol=1e-8) and d["bucket"] == k + 1, f"{tag}: the lowest rate or its bucket does not recompute")
+        rep.need(close(d["floor"], floors[d["leg"]], rel=0, tol=1e-12), f"{tag}: the floor is not the leg's floor")
+        rep.need(close(d["distance_bp"], (d["lowest_rate"] - d["floor"]) * 1e4, rel=0, tol=1e-4), f"{tag}: distance_bp is not (lowest_rate - floor) x 10 000")
+        rep.need(d["binds"] == (d["distance_bp"] <= 0), f"{tag}: binds does not hold exactly when the distance is at most zero")
+    rep.need(bool(o["floors"]["effects"]) == any(d["binds"] for d in dist), "floors.effects is not non-empty exactly when a distance binds")
+    rep.need(o["calibration_month"] <= o["balance_sheet_month"], "calibration_month is after the balance sheet month")
     dn = o["dynamic_nii"]
     for dl in dn["legs"]:
         name = dl["leg"]

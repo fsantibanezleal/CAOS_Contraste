@@ -595,9 +595,18 @@ def c15_defs() -> dict:
         "leg": E("CLP", "UR"), "measure": E("delta-eve", "delta-nii"), "shock": SHOCK, "buckets_floored": Int(1),
         "delta_with_floor": MONEY, "delta_without_floor": MONEY, "effect": MONEY,
     }, "The effect of a binding post-shock floor on a leg's measure: with minus without.")
+    d["c15FloorDistance"] = Ob({
+        "leg": E("CLP", "UR"), "measure": E("delta-eve", "delta-nii"), "shock": SHOCK, "lowest_rate": N(), "bucket": Int(1, 19), "floor": N(),
+        "distance_bp": N(), "binds": B,
+    }, "The lowest post-shock rate of a leg under one shock (over the 19 bucket midpoints for the delta EVE, the first six for the delta NII), the "
+       "bucket where it is, the floor of the leg and the distance between them in basis points (lowest_rate minus floor, times 10 000); binds is true "
+       "exactly when the distance is at most zero. The rates are those of the engine's shocked curves before the floor is applied.")
     d["c15Floors"] = Ob({
         "ur_floor": C(-0.02), "other_floor": C(0.0), "rule": R("c15Label"), "effects": A(R("c15FloorEffect")),
-    }, "Annex 1 post-shock floors: -2 percent for UR rates, 0 percent for other currencies (or the pre-shock rate if lower).")
+        "distances": A(R("c15FloorDistance"), 16, 16, "One row per leg (CLP then UR) and per shock the floors apply to: the six delta EVE shocks "
+                       "in the order of SHOCKS, then parallel-up and parallel-down for the delta NII. effects is non-empty exactly when a row binds."),
+    }, "Annex 1 post-shock floors: -2 percent for UR rates, 0 percent for other currencies (or the pre-shock rate if lower), where each leg stands "
+       "against them (distances) and the effect of every floor that binds (effects).")
     d["c15Offset"] = Ob({
         "state": E("on", "off", "compared"), "share": C(0.5), "applies_to": A(E("CLP", "CLF"), 2, 2), "rule": R("c15Label"),
         "reference": S(minLength=1),
@@ -642,7 +651,7 @@ def c15_defs() -> dict:
         "legs": ordered([pin("c15DynamicLeg", leg="CLP"), pin("c15DynamicLeg", leg="UR")]),
     }, "Ladder rung 5 for the CLP and UR legs (dossier 05 D.6). The EaR and EVaR of each leg are in ear_evar.")
     d["c15Outputs"] = Ob({
-        "kind": C("annex1-variant"), "variant": R("c15Variant"), "as_of": DATE, "balance_sheet_month": MONTH,
+        "kind": C("annex1-variant"), "variant": R("c15Variant"), "as_of": DATE, "balance_sheet_month": MONTH, "calibration_month": MONTH,
         "curves_month": MONTH, "reporting_currency": {**CUR, "const": "CLP"},
         "sign_convention": R("c15Sign"), "units": R("c15Units"), "bank": R("c15Bank"), "ur_currency": R("c15Ur"),
         "curves": R("c15Curves"), "assumptions": R("c15Assumptions"), "nmd_segments": A(R("c15NmdSegment"), 1),
@@ -698,7 +707,7 @@ def main() -> None:
                   "Catalog row c14-models 1.0.0: the C14 models artifact (buckets, the 2024 and 2016 shock tables, shapes, NMD "
                   "caps, multipliers, replicating portfolios, parameter-change flags).", "c14Fit", d14)
     variant_schema("C15", "variant-annex1-variant", "annex1-variant", "C15 annex1-variant variant",
-                   "Catalog row c15-outputs 1.1.0: one SDD variant of the IRRBB case on a CLP and UF balance sheet under RAN "
+                   "Catalog row c15-outputs 2.0.0: one SDD variant of the IRRBB case on a CLP and UF balance sheet under RAN "
                    "21-13 Annex 1 (outputs.kind annex1-variant).", "c15Outputs", d15)
     models_schema("C15", "C15 models",
                   "Catalog row c15-models 1.0.0: the C15 models artifact (buckets, the CMF Annex 1 table, floors, thresholds, "

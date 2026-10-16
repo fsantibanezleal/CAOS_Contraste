@@ -85,6 +85,30 @@ def test_the_floors_are_applied_and_the_distance_to_them_is_stated() -> None:
         assert bool(f["effects"]) == bool(bound or [b for r in o["nii"]["rows"] for k in ("clp", "ur") for b in r[k]["floor_bound_buckets"]])
 
 
+def test_the_floor_distances_and_the_calibration_month_are_stated_from_the_engine_curves() -> None:
+    import numpy as np
+    from riskvalidation.irrbb import shocks
+
+    for vid in VARIANT_IDS:
+        o = d.variant(vid)["outputs"]
+        f = o["floors"]
+        assert len(f["distances"]) == 16 and [x["leg"] for x in f["distances"]] == ["CLP"] * 8 + ["UR"] * 8
+        for x in f["distances"]:
+            key = "clp" if x["leg"] == "CLP" else "ur"
+            r0 = np.array(o["curves"][key]["zero_rates_at_midpoints"])
+            rows = o["eve"]["rows"] if x["measure"] == "delta-eve" else o["nii"]["rows"]
+            row = next(r for r in rows if r["shock"] == x["shock"])
+            shape = np.array(row[key]["shape_bp"]) if x["measure"] == "delta-eve" else np.full(19, row[key]["shock_bp"])
+            free = shocks.apply_floor(r0, shape, None)[: 19 if x["measure"] == "delta-eve" else 6]      # the engine's shocked curve, before the floor
+            k = int(np.argmin(free))
+            floor = f["other_floor"] if x["leg"] == "CLP" else f["ur_floor"]
+            assert x["bucket"] == k + 1 and x["lowest_rate"] == pytest.approx(float(free[k]), abs=1e-12) and x["floor"] == floor
+            assert x["distance_bp"] == pytest.approx((float(free[k]) - floor) * 1e4, abs=1e-6) and x["binds"] == (x["distance_bp"] <= 0)
+        assert bool(f["effects"]) == any(x["binds"] for x in f["distances"])
+        assert o["calibration_month"] == "2026-08" and o["calibration_month"] <= o["balance_sheet_month"] == "2026-09"
+        assert min(x["distance_bp"] for x in f["distances"]) == pytest.approx(_distance_bp(o), abs=1e-6)
+
+
 def test_the_indexation_charge_and_the_cpi_surprise_are_the_stated_formulas_on_the_engine_values() -> None:
     from riskvalidation.irrbb import eve_nii
 

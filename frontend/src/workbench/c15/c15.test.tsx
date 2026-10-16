@@ -240,6 +240,12 @@ describe('the C15 instrument', () => {
     const none = clone();
     delete (none.outputs as unknown as Record<string, unknown>).ear_evar;
     expect(conform(none.outputs, C15_OUTPUTS).length).toBeGreaterThan(0);
+    const noDist = clone();
+    delete (noDist.outputs.floors as unknown as Record<string, unknown>).distances;
+    expect(conform(noDist.outputs, C15_OUTPUTS).length).toBeGreaterThan(0);
+    const noMonth = clone();
+    delete (noMonth.outputs as unknown as Record<string, unknown>).calibration_month;
+    expect(conform(noMonth.outputs, C15_OUTPUTS).length).toBeGreaterThan(0);
   });
 
   it('the floors give the rule, the two floors and the effect on each leg and shock where one binds', () => {
@@ -254,6 +260,32 @@ describe('the C15 instrument', () => {
       expect(markup).toContain(cell(e.delta_without_floor));
       expect(markup).toContain(formatNumber(e.effect, 'en', { decimals: 0 }));
     }
+  });
+
+  it('the floors draw the distance of every leg and shock to its floor, with the binding rows marked and the closest one named', () => {
+    const markup = html(<FloorsView sel={sel} />);
+    expect(o.floors.distances).toHaveLength(16);
+    for (const x of o.floors.distances) {
+      expect(markup).toContain(`data-leg="${x.leg}" data-measure="${x.measure}" data-shock="${x.shock}" data-binds="${x.binds}"`);
+      expect(markup).toContain(formatNumber(x.distance_bp, 'en', { digits: 4 }));
+    }
+    const nBind = o.floors.distances.filter((x) => x.binds).length;
+    expect(nBind).toBeGreaterThan(0);
+    expect(markup).toContain(`data-binding="${nBind}"`);
+    expect(markup).toContain('data-table="floor-distances"');
+    expect(markup).toContain('Each bar is the distance of a leg and a shock to its floor');
+    expect(html(<FloorsView sel={null} />)).toContain('data-state="loading"');
+  });
+
+  it('a variant where no floor binds still draws the distances and says how far the closest one is', () => {
+    const odd = clone();
+    odd.outputs.floors.effects = [];
+    odd.outputs.floors.distances = odd.outputs.floors.distances.map((x) => ({ ...x, binds: false, distance_bp: Math.abs(x.distance_bp) + 20 }));
+    const markup = html(<FloorsView sel={selOf(odd)} />);
+    expect(markup).not.toContain('No floor binds in this variant');
+    expect(markup).toContain('Each bar is the distance of a leg and a shock to its floor');
+    expect(markup).toContain('data-binding="0"');
+    expect(markup).toContain('above the floor');
   });
 
   it('the prioritised-bank thresholds are lines: 5, 15 and 18 percent, each test with its ratio and whether it fired', () => {
@@ -355,6 +387,10 @@ describe('the C15 instrument', () => {
     expect(eve).toContain(escapeHtml(o.sign_convention.statement.es));
     expect(html(<NiiView sel={sel} />)).toContain('reajustabilidad');
     expect(html(<IndexationView sel={sel} />)).toContain(formatNumber(null, 'es'));
+    const floors = html(<FloorsView sel={sel} />);
+    expect(floors).toContain('Cada barra es la distancia de un tramo y un choque a su piso');
+    expect(floors).toContain('Pisos que rigen');
+    expect(floors).not.toContain('Lowest rate');
     const ear = html(<EarEvarLegView sel={sel} />);
     expect(ear).toContain('Ganancias en riesgo y valor económico en riesgo');
     expect(ear).toContain('Hull-White de un factor');

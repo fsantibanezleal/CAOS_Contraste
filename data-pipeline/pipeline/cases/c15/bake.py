@@ -57,8 +57,8 @@ EXPECT: dict[str, tuple[float, float]] = {
 _T0 = time.perf_counter()
 REGIME = t("Real Banco Central de Chile F022 curves of the valuation date; synthetic bank calibrated to CMF aggregates; behaviour synthetic, stated "
            "in the document.",
-           "Curvas F022 reales del Banco Central de Chile a la fecha de valoracion; banco sintetico calibrado a agregados de la CMF; comportamiento "
-           "sintetico, declarado en el documento.")
+           "Curvas F022 reales del Banco Central de Chile a la fecha de valoración; banco sintético calibrado a agregados de la CMF; comportamiento "
+           "sintético, declarado en el documento.")
 
 
 def _log(msg: str) -> None:
@@ -203,12 +203,16 @@ def build(seed: int, data_root: Path | str | None, *, only: tuple[str, ...] | No
     return Built(models_doc, docs, values, raw_sources, contract, sel)
 
 
-def _check_and_write(root: Path, rel: str, doc: dict[str, Any]) -> dict[str, Any]:
-    """Schema, then the semantic checks (D3 of the U10 sizing), then the write; any finding refuses the document."""
+def _check(rel: str, doc: dict[str, Any]) -> None:
+    """Schema, then the semantic checks (D3 of the U10 sizing); any finding refuses the document."""
     validate_document(f"data/derived/{rel}", doc)
     found = _semantics().check_document(doc)
     if found:
         raise ValueError(f"{rel}: check_document refuses the document: {found[:5]}")
+
+
+def _check_and_write(root: Path, rel: str, doc: dict[str, Any]) -> dict[str, Any]:
+    _check(rel, doc)
     return write_artifact(root, rel, doc, exact=EXACT, engines=ENGINES, run_ms=RUN_MS)
 
 
@@ -230,6 +234,8 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None) -> dict[str, 
     built = build(seed, data_root)
     root = Path(paths.root)
     entries, sums = [], []
+    for rel, doc in ((MODELS_REL, built.models), *((f"{CASE_ID}/{vid}.json", d) for vid, d in built.variants.items())):
+        _check(rel, doc)                                    # nothing is written until every document has passed its checks
     e = _check_and_write(root, MODELS_REL, built.models)
     sums.append(_sum(root, MODELS_REL))
     entries.append({"role": "models", "variant_id": f"models-{FIT_ID}", "truth_status": "synthetic-calibrated",

@@ -37,9 +37,13 @@ def models_document(book: Book, sel: c15_curves.Selection, fits: dict[str, c15_c
             "weights_sum": float(sum(rep["weights"])), "weighted_average_maturity_years": rep["weighted_average_maturity_years"],
             "margin_volatility": None,
             "margin_volatility_reason": t("The synthetic bank has no history of client rates to estimate the margin of the replicating portfolio from; "
-                                          "the portfolio is a stated synthetic assumption.",
-                                          "El banco sintetico no tiene historia de tasas a clientes para estimar el margen de la cartera replicante; "
-                                          "la cartera es un supuesto sintetico declarado."),
+                                          "the portfolio is a stated synthetic assumption. It is built from the requested core maturity, which stands above the Table 4 cap for "
+                                          "retail-operational and wholesale deposits: the standardised treatment of the variant documents uses the capped values "
+                                          "(core_share_used and core_maturity_used_years of nmd_segments), not these weights.",
+                                          "El banco sintético no tiene historia de tasas a clientes para estimar el margen de la cartera replicante; "
+                                          "la cartera es un supuesto sintético declarado. Se construye con el plazo estable solicitado, que supera el tope de la Tabla 4 en los "
+                                          "depósitos retail operacionales y mayoristas: el tratamiento estándar de los documentos de variante usa los valores con tope "
+                                          "(core_share_used y core_maturity_used_years de nmd_segments), no estos pesos."),
             "deposit_beta": {"up": asm.DEPOSIT_BETA, "down": asm.DEPOSIT_BETA, "source_kind": "synthetic-stated",
                              "source": asm.REGISTRY["deposit_beta"].source},
             "stability": [{"window_start": sel.first, "window_end": vd, "weights": rep["weights"],
