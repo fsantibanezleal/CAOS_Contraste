@@ -126,6 +126,23 @@ def test_the_dynamic_nii_carries_both_legs_under_the_base_and_the_two_parallel_s
         assert any(i["side"] == "liability" and i["beta"] == pytest.approx(beta) for i in clp["items"])
 
 
+def test_the_ear_evar_of_each_leg_carries_the_engine_monte_carlo_errors() -> None:
+    for vid in VARIANT_IDS:
+        o = d.variant(vid)["outputs"]
+        assert [e["leg"] for e in o["ear_evar"]] == ["CLP", "UR"]
+        for e, dl in zip(o["ear_evar"], o["dynamic_nii"]["legs"]):
+            assert e["method"] == "hw1f" and e["n_paths"] >= 100000 and e["seed"] == 42 and e["n_batches"] == 20
+            assert e["mc_error_method"] == "batch-means" and e["horizon_months"] == o["dynamic_nii"]["horizon_months"]
+            assert e["base_nii"] == pytest.approx(dl["scenarios"][0]["total"], rel=1e-9)
+            assert e["base_eve"] == pytest.approx(o["eve"]["base_eve_clp" if e["leg"] == "CLP" else "base_eve_ur"], rel=1e-9)
+            assert {p["name"] for p in e["parameters"]} == {"a", "sigma"} and [lv["level"] for lv in e["levels"]] == [0.95, 0.99]
+            for lv in e["levels"]:
+                assert 0 < lv["ear_se"] < abs(lv["ear"]) and 0 < lv["evar_se"] < abs(lv["evar"])
+                assert lv["ear"] == pytest.approx(e["base_nii"] - lv["nii_quantile"], abs=1e-3)
+                assert lv["evar"] == pytest.approx(e["base_eve"] - lv["eve_quantile"], abs=1e-3)
+            assert e["levels"][1]["ear"] >= e["levels"][0]["ear"] and e["levels"][1]["evar"] >= e["levels"][0]["evar"]
+
+
 SCAN = ("data/derived/C15", "data/derived/manifests/C15.json", "docs/cases/C15.md", "docs/design/features/c15", "tests/c15", "data/sources/manifest.json",
         "data-pipeline/pipeline/io/bcch.py", "data-pipeline/pipeline/cases/c15", "changes/U10-P2.md")
 URL_CREDENTIAL = re.compile(r"[?&](user|pass|password)=", re.I)

@@ -167,3 +167,15 @@ def test_adversarial_an_edited_results_block_is_found() -> None:
     first = next(ch for ch in block if ch.isdigit())
     edited = block.replace(first, str((int(first) + 1) % 10), 1)
     assert edited.strip("\n") != page.results_block(variants, d.models()).strip("\n")
+
+
+def test_adversarial_a_monte_carlo_error_or_a_quantile_not_from_the_engine_is_refused() -> None:
+    doc = d.mutated(d.variant(LONG))
+    doc["outputs"]["ear_evar"][1]["levels"][0]["ear_se"] = 1e12
+    assert any("ear_se" in f for f in semantics.check_document(doc))
+    doc = d.mutated(d.variant(LONG))
+    doc["outputs"]["ear_evar"][0]["levels"][1]["evar"] += 1.0
+    assert any("evar at 0.99" in f for f in semantics.check_document(doc))
+    doc = d.mutated(d.variant(LONG))
+    doc["outputs"]["ear_evar"].pop()
+    assert cs.errors(cs.schema_for_document(d.C15 / "x.json", doc), doc)

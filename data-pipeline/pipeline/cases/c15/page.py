@@ -197,6 +197,16 @@ def results_block(variants: dict[str, dict[str, Any]], models: dict[str, Any]) -
             b, u, d = leg["scenarios"]
             w(f"| {v} | {leg['leg']} | {m(b['total'])} | {m(u['total'])} | {m(d['total'])} | {m(-u['delta_vs_base'])} | {m(-d['delta_vs_base'])} |")
     w("")
+    w("### EaR and EVaR, 12 months, Hull-White one factor (CLP million, positive is a loss)")
+    w("")
+    w("| Variant | Leg | Paths | Seed | EaR 95 (error) | EaR 99 (error) | EVaR 95 (error) | EVaR 99 (error) |")
+    w("|---|---|---:|---:|---:|---:|---:|---:|")
+    for v in ids:
+        for e in o[v]["ear_evar"]:
+            a, b = e["levels"]
+            w(f"| {v} | {e['leg']} | {e['n_paths']:,} | {e['seed']} | {m(a['ear'])} ({m(a['ear_se'])}) | {m(b['ear'])} ({m(b['ear_se'])}) | "
+              f"{m(a['evar'])} ({m(a['evar_se'])}) | {m(b['evar'])} ({m(b['evar_se'])}) |")
+    w("")
     w("### Deposit assumptions and their caps")
     w("")
     w("| Category | Balance (CLP million) | Requested share | Used share | Requested maturity (years) | Used maturity (years) | Cap applied |")

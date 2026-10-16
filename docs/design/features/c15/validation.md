@@ -19,3 +19,4 @@ Adversarial checks: what was planted, and the gate that must refuse it. Each gat
 | CT-1512 | A monthly NII of the dynamic block is edited; the semantic check must refuse it. | `tests/c15/test_adversarial_c15.py::test_adversarial_an_edited_dynamic_nii_is_refused` |
 | CT-1513 | The seed is changed; the book must differ, so the determinism test is not vacuous. | `tests/c15/test_adversarial_c15.py::test_adversarial_another_seed_changes_the_book` |
 | CT-1514 | A figure of the results block is edited; the page check must fail. | `tests/c15/test_adversarial_c15.py::test_adversarial_an_edited_results_block_is_found` |
+| CT-1515 | A Monte Carlo error is set far above its measure, an EVaR is shifted by one unit and a leg is removed; the semantic check and the schema must refuse them. | `tests/c15/test_adversarial_c15.py::test_adversarial_a_monte_carlo_error_or_a_quantile_not_from_the_engine_is_refused` |

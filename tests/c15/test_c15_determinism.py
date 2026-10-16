@@ -30,8 +30,8 @@ def test_two_bakes_with_the_same_seed_write_the_same_bytes(tmp_path: Path, monke
 
     monkeypatch.setattr(socket, "create_connection", no_network)
     monkeypatch.setattr(socket.socket, "connect", no_network)
-    a = bake.build(SEED, data_root())
-    b = bake.build(SEED, data_root())
+    a = bake.build(SEED, data_root(), n_paths=2000)
+    b = bake.build(SEED, data_root(), n_paths=2000)
     ha, hb = written(tmp_path / "a", a), written(tmp_path / "b", b)
     assert ha == hb and len(ha) == 8            # six variants, the models document, the raw-source record
     assert a.contract == b.contract and a.values == b.values
