@@ -24620,7 +24620,7 @@
       },
       "c15-variant-annex1-variant": {
         "title": "C15 annex1-variant variant",
-        "description": "Catalog row c15-outputs 1.0.0: one SDD variant of the IRRBB case on a CLP and UF balance sheet under RAN 21-13 Annex 1 (outputs.kind annex1-variant).",
+        "description": "Catalog row c15-outputs 1.1.0: one SDD variant of the IRRBB case on a CLP and UF balance sheet under RAN 21-13 Annex 1 (outputs.kind annex1-variant).",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-variant-envelope"
@@ -25205,7 +25205,7 @@
             "description": "Zero rate at each bucket midpoint, bucket 1 first."
           }
         },
-        "description": "A BCCh F022 sovereign curve (CLP or UF) of the stated month, fitted to a zero curve and labelled as an adaptation: the attribution names the Banco Central de Chile as the owner of the source and the fit as Contraste's (BCCh terms, dossier 08 C.7). Required: the C15 bake waits for the BCCh account."
+        "description": "A BCCh F022 sovereign curve (CLP or UF) of the stated month, fitted to a zero curve and labelled as an adaptation: the attribution names the Banco Central de Chile as the owner of the source and the fit as Contraste's (BCCh terms, dossier 08 C.7). A currency with fewer than four published secondary-market tenors (the engine's Nelson-Siegel fit needs four points) takes the Banco Central's monetary policy rate (F022.TPM.TIN.D001.NO.Z.D, the overnight rate) as an extra point at 1/360 year; it is a policy rate and not a yield, it is listed in series_codes, and the source says so. Only the CLP curve has such an anchor."
       },
       "c15CurveModel": {
         "type": "object",
@@ -25531,7 +25531,165 @@
             "maxItems": 2
           }
         },
-        "description": "Ladder rung 5 for the CLP and UR legs (dossier 05 D.6). The EaR and EVaR of C15 wait for the BCCh curves (owner prerequisite 7)."
+        "description": "Ladder rung 5 for the CLP and UR legs (dossier 05 D.6). The EaR and EVaR of each leg are in ear_evar."
+      },
+      "c15EarEvar": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "leg",
+          "method",
+          "n_paths",
+          "seed",
+          "horizon_months",
+          "parameters",
+          "base_nii",
+          "base_eve",
+          "levels",
+          "mc_error_method",
+          "n_batches"
+        ],
+        "properties": {
+          "leg": {
+            "type": "string",
+            "enum": [
+              "CLP",
+              "UR"
+            ]
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "hw1f",
+              "dns"
+            ]
+          },
+          "n_paths": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "seed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "horizon_months": {
+            "type": "integer",
+            "minimum": 12,
+            "maximum": 36
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "value",
+                "unit"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                },
+                "unit": {
+                  "type": "string"
+                }
+              }
+            },
+            "minItems": 1
+          },
+          "base_nii": {
+            "type": "number",
+            "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+          },
+          "base_eve": {
+            "type": "number",
+            "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+          },
+          "levels": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "$ref": "#/components/schemas/c15EarEvarLevel",
+                "properties": {
+                  "level": {
+                    "const": 0.95
+                  }
+                }
+              },
+              {
+                "$ref": "#/components/schemas/c15EarEvarLevel",
+                "properties": {
+                  "level": {
+                    "const": 0.99
+                  }
+                }
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "The 95 and 99 percent levels."
+          },
+          "mc_error_method": {
+            "const": "batch-means"
+          },
+          "n_batches": {
+            "type": "integer",
+            "minimum": 2
+          }
+        },
+        "description": "Ladder rung 6 (dossier 05 D.5 and D.6) for one leg: the distribution summary of the leg's NII and EVE under Hull-White one-factor or dynamic Nelson-Siegel scenario Monte Carlo, in the reporting currency (the UR leg converted at the UF value), with the number of paths, the seed and, at each level, the Monte Carlo standard error of EaR and EVaR by batch means over n_batches contiguous batches. base_nii is the base total of the leg's dynamic NII and base_eve the leg's base EVE."
+      },
+      "c15EarEvarLevel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "level",
+          "nii_quantile",
+          "eve_quantile",
+          "ear",
+          "evar",
+          "ear_se",
+          "evar_se"
+        ],
+        "properties": {
+          "level": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "nii_quantile": {
+            "type": "number",
+            "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+          },
+          "eve_quantile": {
+            "type": "number",
+            "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+          },
+          "ear": {
+            "type": "number",
+            "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+          },
+          "evar": {
+            "type": "number",
+            "description": "Money in the `currency` (C15: the `reporting_currency`) of the enclosing block."
+          },
+          "ear_se": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Monte Carlo standard error of ear, money (engine ear_evar_mc_error)."
+          },
+          "evar_se": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Monte Carlo standard error of evar, money (engine ear_evar_mc_error)."
+          }
+        },
+        "description": "EaR and EVaR at one confidence level: ear = base NII minus the (1 - level) quantile of the NII paths, evar likewise for EVE (loss-positive; engine ear_evar)."
       },
       "c15EveMeasure": {
         "type": "object",
@@ -27816,6 +27974,7 @@
           "eve_shock_sizes",
           "nii_shock_sizes",
           "dynamic_nii",
+          "ear_evar",
           "floors",
           "offset_rule",
           "indexation_charge",
@@ -27955,6 +28114,31 @@
           },
           "dynamic_nii": {
             "$ref": "#/components/schemas/c15DynamicNii"
+          },
+          "ear_evar": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "$ref": "#/components/schemas/c15EarEvar",
+                "properties": {
+                  "leg": {
+                    "const": "CLP"
+                  }
+                }
+              },
+              {
+                "$ref": "#/components/schemas/c15EarEvar",
+                "properties": {
+                  "leg": {
+                    "const": "UR"
+                  }
+                }
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "The EaR and EVaR of the CLP leg and the UR leg, in that order."
           },
           "floors": {
             "$ref": "#/components/schemas/c15Floors"
