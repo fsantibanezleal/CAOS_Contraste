@@ -195,9 +195,9 @@
     "sha256": "cecd8f4c9d3083d92862ef81a532f8f47f57eced8c87e02ebe93e7bd3d5172ca"
   },
   "c15-outputs": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "schema": "docs/contracts/schemas/c15/variant-annex1-variant.schema.json",
-    "sha256": "53bbdeec9a69885d496b3b8eba61fd6ed7b913172c8f189938c8cdd456b04dfd"
+    "sha256": "5f38e4d5f43a72df11d7872cb910382dc2a812fb625c5fad567fb98bca4e6391"
   },
   "c15-models": {
     "version": "1.0.0",

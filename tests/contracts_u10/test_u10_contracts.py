@@ -586,6 +586,15 @@ def _plants() -> list[tuple[str, str, Callable[[dict], None]]]:
     A(("EaR not base minus quantile", "c14-2022-q4", lambda d: d["outputs"]["ear_evar"]["levels"][0].update({"ear": 1.0})))
     A(("EaR 99 below 95", "c14-2022-q4", lambda d: d["outputs"]["ear_evar"].update({"levels": [d["outputs"]["ear_evar"]["levels"][1], d["outputs"]["ear_evar"]["levels"][0]]})))
     A(("EaR levels with a third level", "c14-2022-q4", lambda d: d["outputs"]["ear_evar"]["levels"].append(copy.deepcopy(d["outputs"]["ear_evar"]["levels"][0]))))
+    for leg_i in (0, 1):
+        A((f"c15 EaR of leg {leg_i} not base minus quantile", "c15-long-uf", lambda d, i=leg_i: d["outputs"]["ear_evar"][i]["levels"][0].update({"ear": 1.0})))
+        A((f"c15 EVaR of leg {leg_i} not base minus quantile", "c15-offset-on-off", lambda d, i=leg_i: d["outputs"]["ear_evar"][i]["levels"][1].update({"evar": 1.0})))
+        A((f"c15 EaR base NII of leg {leg_i} is not the dynamic NII base", "c15-cpi-surprise", lambda d, i=leg_i: d["outputs"]["ear_evar"][i].update({"base_nii": 5.0})))
+    A(("c15 ear_evar horizon differs from the dynamic NII", "c15-long-uf", lambda d: d["outputs"]["ear_evar"][0].update({"horizon_months": 24})))
+    A(("c15 ear_evar removed", "c15-long-uf", lambda d: d["outputs"].pop("ear_evar")))
+    A(("c15 ear_evar with one leg only", "c15-long-uf", lambda d: d["outputs"]["ear_evar"].pop()))
+    A(("c15 ear_evar legs swapped", "c15-long-uf", lambda d: d["outputs"]["ear_evar"].reverse()))
+    A(("c15 ear_se above |ear|", "c15-long-uf", lambda d: d["outputs"]["ear_evar"][1]["levels"][0].update({"ear_se": 1e12})))
     A(("out-of-sample period inside the data window", "c14-2021-q4", _c14_set(o14 + ("out_of_sample", "realised_period_start"), "2021-06-01")))
     A(("out-of-sample relative error changed", "c14-2021-q4", _c14_set(o14 + ("out_of_sample", "relative_error"), 0.9)))
     A(("out-of-sample not applicable without a reason", "c14-2022-q4", _c14_set(o14 + ("out_of_sample", "reason"), None)))
@@ -815,7 +824,7 @@ def test_the_rows_fragment_has_the_five_rows_in_the_catalog_columns() -> None:
     for r in data:
         assert len(r) == len(header), r[0]
         d = dict(zip(header, r))
-        assert d["version"] == ("1.1.0" if d["id"] == "engine-irrbb-api" else "1.0.0")
+        assert d["version"] == ("1.1.0" if d["id"] in ("engine-irrbb-api", "c15-outputs") else "1.0.0")
         # C14 and the engine are built (real at 0.11.000); C15 waits for the BCCh account on its fixture (active)
         assert d["status"] == ("active" if d["id"].startswith("c15-") else "real")
         assert d["provider"].startswith("fixture:")
@@ -1149,7 +1158,10 @@ def test_d1_every_c14_document_carries_the_dynamic_nii_the_ear_evar_and_the_out_
         assert o["ear_evar"]["n_paths"] > 1 and "seed" in o["ear_evar"] and o["ear_evar"]["levels"][0]["ear_se"] >= 0
         assert o["dynamic_nii"]["balance_sheet_assumption"]["kind"] in ("constant", "growth")
     for key in C15_OUT:
-        assert "ear_evar" not in out(key) and len(out(key)["dynamic_nii"]["legs"]) == 2
+        o = out(key)
+        assert len(o["dynamic_nii"]["legs"]) == 2 and [e["leg"] for e in o["ear_evar"]] == ["CLP", "UR"]       # c15-outputs 1.1.0
+        for e in o["ear_evar"]:
+            assert [lv["level"] for lv in e["levels"]] == [0.95, 0.99] and e["mc_error_method"] == "batch-means" and e["levels"][0]["ear_se"] >= 0
 
 
 def test_the_simulate_nii_and_ear_evar_goldens_of_the_contract_recompute() -> None:

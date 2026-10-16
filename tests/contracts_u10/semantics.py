@@ -146,6 +146,22 @@ def check_dynamic(block: dict, r_short: float, par_bp: float, floor: float | Non
                  f"{where}: no liability item carries the deposit beta of the assumptions")
 
 
+def check_ear_evar(ee: dict, base_nii: float, base_eve: float, horizon: int, rep: Report, where: str) -> None:
+    """One EaR and EVaR block (ladder rung 6): its bases are the dynamic NII's base total and the base EVE, its horizon the dynamic NII's,
+    ear and evar are base minus the quantile, and the Monte Carlo errors are present and below the measure."""
+    rep.need(close(ee["base_nii"], base_nii), f"{where} ear_evar base_nii is not the base total of the dynamic NII")
+    rep.need(close(ee["base_eve"], base_eve), f"{where} ear_evar base_eve is not the base EVE")
+    rep.need(ee["horizon_months"] == horizon, f"{where} ear_evar horizon differs from the dynamic NII's")
+    for lv in ee["levels"]:
+        rep.need(close(lv["ear"], ee["base_nii"] - lv["nii_quantile"]), f"{where} ear at {lv['level']} is not base_nii - the NII quantile")
+        rep.need(close(lv["evar"], ee["base_eve"] - lv["eve_quantile"]), f"{where} evar at {lv['level']} is not base_eve - the EVE quantile")
+    for lv in ee["levels"]:
+        rep.need(lv["ear_se"] >= 0 and (lv["ear"] == 0 or lv["ear_se"] < abs(lv["ear"])), f"{where} ear_se at {lv['level']} is not below |ear|")
+        rep.need(lv["evar_se"] >= 0 and (lv["evar"] == 0 or lv["evar_se"] < abs(lv["evar"])), f"{where} evar_se at {lv['level']} is not below |evar|")
+    l95, l99 = ee["levels"]
+    rep.need(l99["ear"] >= l95["ear"] and l99["evar"] >= l95["evar"], f"{where} EaR or EVaR at 99 percent is below the 95 percent value")
+
+
 # ------------------------------------------------------------------------------------------------ C14
 
 
@@ -251,19 +267,8 @@ def check_c14(doc: dict) -> list[str]:
     sc0 = o["scenarios"][0]
     par = sc0["shock_size"]["parallel_bp"]
     check_dynamic(o["dynamic_nii"], r0[1], par, sc0["floor"], rep, "c14 dynamic_nii", o["assumptions"]["deposit_beta"]["value"])
-    ee = o["ear_evar"]
     base_nii = o["dynamic_nii"]["scenarios"][0]["total"]
-    rep.need(close(ee["base_nii"], base_nii), "ear_evar base_nii is not the base total of the dynamic NII")
-    rep.need(close(ee["base_eve"], sc0["base_eve"]), "ear_evar base_eve is not the base EVE of the first scenario")
-    rep.need(ee["horizon_months"] == o["dynamic_nii"]["horizon_months"], "ear_evar horizon differs from the dynamic NII's")
-    for lv in ee["levels"]:
-        rep.need(close(lv["ear"], ee["base_nii"] - lv["nii_quantile"]), f"ear at {lv['level']} is not base_nii - the NII quantile")
-        rep.need(close(lv["evar"], ee["base_eve"] - lv["eve_quantile"]), f"evar at {lv['level']} is not base_eve - the EVE quantile")
-    for lv in ee["levels"]:
-        rep.need(lv["ear_se"] >= 0 and (lv["ear"] == 0 or lv["ear_se"] < abs(lv["ear"])), f"ear_se at {lv['level']} is not below |ear|")
-        rep.need(lv["evar_se"] >= 0 and (lv["evar"] == 0 or lv["evar_se"] < abs(lv["evar"])), f"evar_se at {lv['level']} is not below |evar|")
-    l95, l99 = ee["levels"]
-    rep.need(l99["ear"] >= l95["ear"] and l99["evar"] >= l95["evar"], "EaR or EVaR at 99 percent is below the 95 percent value")
+    check_ear_evar(o["ear_evar"], base_nii, sc0["base_eve"], o["dynamic_nii"]["horizon_months"], rep, "c14")
     oos = o["out_of_sample"]
     if oos["applicable"]:
         rep.need(close(oos["projected_delta_nii"], o["dynamic_nii"]["scenarios"][1]["delta_vs_base"]), "out_of_sample projected_delta_nii is not the parallel-up delta of the dynamic NII")
@@ -404,6 +409,13 @@ def check_c15(doc: dict) -> list[str]:
     for dl in dn["legs"]:
         name = dl["leg"]
         check_dynamic({**dn, "items": dl["items"], "scenarios": dl["scenarios"]}, rates[name][1], 300, floors[name], rep, f"c15 dynamic_nii/{name}")
+    ears = {e["leg"]: e for e in o["ear_evar"]}
+    rep.need(sorted(ears) == ["CLP", "UR"] and len(o["ear_evar"]) == 2, "c15 ear_evar is not one block per leg")
+    for dl in dn["legs"]:
+        name = dl["leg"]
+        if name in ears:
+            check_ear_evar(ears[name], dl["scenarios"][0]["total"], o["eve"]["base_eve_clp" if name == "CLP" else "base_eve_ur"],
+                           dn["horizon_months"], rep, f"c15 ear_evar/{name}")
     return list(rep)
 
 

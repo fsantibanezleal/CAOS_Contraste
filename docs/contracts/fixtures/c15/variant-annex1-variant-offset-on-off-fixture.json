@@ -840,6 +840,94 @@
         }
       ]
     },
+    "ear_evar": [
+      {
+        "leg": "CLP",
+        "method": "hw1f",
+        "n_paths": 10000,
+        "seed": 0,
+        "horizon_months": 12,
+        "parameters": [
+          {
+            "name": "a",
+            "value": 0.1,
+            "unit": "per year"
+          },
+          {
+            "name": "sigma",
+            "value": 0.01,
+            "unit": "per year"
+          }
+        ],
+        "base_nii": 19798.19016,
+        "base_eve": -830743.264761,
+        "levels": [
+          {
+            "level": 0.95,
+            "nii_quantile": 18412.316849,
+            "eve_quantile": -913817.591237,
+            "ear": 1385.873311,
+            "evar": 83074.326476,
+            "ear_se": 13.858733,
+            "evar_se": 830.743265
+          },
+          {
+            "level": 0.99,
+            "nii_quantile": 17818.371144,
+            "eve_quantile": -955354.754475,
+            "ear": 1979.819016,
+            "evar": 124611.489714,
+            "ear_se": 19.79819,
+            "evar_se": 1246.114897
+          }
+        ],
+        "mc_error_method": "batch-means",
+        "n_batches": 20
+      },
+      {
+        "leg": "UR",
+        "method": "hw1f",
+        "n_paths": 10000,
+        "seed": 0,
+        "horizon_months": 12,
+        "parameters": [
+          {
+            "name": "a",
+            "value": 0.1,
+            "unit": "per year"
+          },
+          {
+            "name": "sigma",
+            "value": 0.01,
+            "unit": "per year"
+          }
+        ],
+        "base_nii": 45394.664671,
+        "base_eve": 971302.03141,
+        "levels": [
+          {
+            "level": 0.95,
+            "nii_quantile": 42217.038144,
+            "eve_quantile": 874171.828269,
+            "ear": 3177.626527,
+            "evar": 97130.203141,
+            "ear_se": 31.776265,
+            "evar_se": 971.302031
+          },
+          {
+            "level": 0.99,
+            "nii_quantile": 40855.198204,
+            "eve_quantile": 825606.726698,
+            "ear": 4539.466467,
+            "evar": 145695.304712,
+            "ear_se": 45.394665,
+            "evar_se": 1456.953047
+          }
+        ],
+        "mc_error_method": "batch-means",
+        "n_batches": 20
+      }
+    ],
     "floors": {
       "ur_floor": -0.02,
       "other_floor": 0.0,

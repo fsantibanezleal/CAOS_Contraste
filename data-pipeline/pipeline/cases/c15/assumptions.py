@@ -52,6 +52,13 @@ TERM_DEPOSIT_REDEMPTION_RATE = 0.05
 DEPOSIT_BETA = 0.40
 JITTER = 0.15
 HORIZON_MONTHS = 12
+#: the Hull-White one-factor scenarios of the EaR and EVaR: mean reversion and volatility per leg (synthetic; no rate history of a month is
+#: long enough to fit them, and nothing dated after the valuation date may be read)
+HW1F_A = 0.10
+HW1F_SIGMA = {"CLP": 0.0100, "UR": 0.0060}
+LEVELS = (0.95, 0.99)
+N_PATHS = 100_000
+N_BATCHES = 20
 #: months between resets of the dynamic NII items by kind (synthetic)
 REPRICE_MONTHS = {"floating": 3, "time": 6, "fixed": 120}
 #: margins over the short rate or the curve of the dynamic NII items (synthetic, per annum)
@@ -91,6 +98,13 @@ REGISTRY: dict[str, Assumption] = {
         "Months between resets of the dynamic NII items (synthetic): 3 for floating items, 6 for term deposits, beyond the horizon for fixed "
         "items; margins over the short rate or the curve are stated per kind (synthetic). The UR leg carries the real rate only: the "
         "indexation income is outside the dynamic NII, which understates the net interest and indexation margin of the thresholds."),
+    "hw1f_a": Assumption(HW1F_A, "per year", "synthetic-stated",
+        "Mean reversion of the Hull-White one-factor scenarios of the EaR and EVaR, stated by Contraste (synthetic)."),
+    "hw1f_sigma": Assumption(HW1F_SIGMA, "per year", "synthetic-stated",
+        "Annual volatility of the short rate of each leg in the Hull-White one-factor scenarios (1.00 percent for the pesos leg, 0.60 percent for the "
+        "UF leg), stated by Contraste (synthetic): the Banco Central's yields are read only up to the valuation date, and the days of the month "
+        "before it are too few to estimate a volatility. The EaR is the base NII less the (1 - level) quantile of the 12-month NII of the paths; "
+        "the EVE of a path is the base flows under a parallel shift equal to the change of its short rate over the horizon."),
 }
 #: the kind each assumption must have
 EXPECTED_KIND = {k: v.source_kind for k, v in REGISTRY.items()}

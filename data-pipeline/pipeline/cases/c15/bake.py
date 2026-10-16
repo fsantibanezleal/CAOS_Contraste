@@ -97,6 +97,8 @@ def _model_summaries(ev: str) -> list[dict[str, Any]]:
             {"offset_share": (0.5, "share"), "indexation_rate": (0.025, "share of |PN_UR|"), "ur_floor": (vt.UR_FLOOR, "rate"),
              "other_floor": (vt.OTHER_FLOOR, "rate"), "nii_shock_bp": (vt.NII_BP, "bp")}),
         rec("irrbb-curves-nelson-siegel", "curve-fit", "Nelson-Siegel zero curves", "Curvas cero Nelson-Siegel", {"coupon_frequency": (2.0, "per year")}),
+        rec("irrbb-ear-evar-hw1f", "ear-evar", "EaR and EVaR, Hull-White one factor", "EaR y EVaR, Hull-White un factor",
+            {"a": (asm.HW1F_A, "per year"), "n_paths": (float(asm.N_PATHS), "paths")}),
         rec("irrbb-dynamic-nii", "dynamic-nii", "Dynamic NII, constant balance sheet", "NII dinamico, balance constante",
             {"horizon_months": (float(asm.HORIZON_MONTHS), "months")}),
     ]
@@ -145,7 +147,7 @@ def _contract_summaries(b: bk.Book, fits: dict[str, cv.CurveFit], vd: str) -> di
     return {"bcch-bde": _merge(reports[0].summary(), reports[1].summary()), "_book": bs.summary()}
 
 
-def build(seed: int, data_root: Path | str | None, *, only: tuple[str, ...] | None = None) -> Built:
+def build(seed: int, data_root: Path | str | None, *, only: tuple[str, ...] | None = None, n_paths: int | None = None) -> Built:
     """Every document of the case in memory."""
     if data_root is None:
         raise FileNotFoundError("C15 reads the raw BCCh files of the device data root: pass --data-root or set CONTRASTE_DATA")
@@ -173,7 +175,7 @@ def build(seed: int, data_root: Path | str | None, *, only: tuple[str, ...] | No
             continue
         b = bk.build_book(seed, bk.SPECS[vid], uf)
         first_book = first_book or b
-        res = vt.bake_variant(vid, b, fits, sel, uf_source, calibration_source, {})
+        res = vt.bake_variant(vid, b, fits, sel, uf_source, calibration_source, {}, seed, n_paths)
         d = res.document
         docs[vid] = build_artifact(case_id=CASE_ID, variant_id=vid, model=_model_summaries(ev), outputs=d["outputs"], tests=d["tests"],
                                    impact=d["impact"], findings=d["findings"], lineage=lineage, lane=lane)

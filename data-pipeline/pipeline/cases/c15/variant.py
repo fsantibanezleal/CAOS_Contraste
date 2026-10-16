@@ -129,7 +129,7 @@ def _bound(r0: np.ndarray, shape: np.ndarray, floor: float, n: int = 19) -> list
 
 
 def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel: c15_curves.Selection, uf_source: str,
-                 calibration_source: str, raw_urls: dict[str, str]) -> VariantResult:
+                 calibration_source: str, raw_urls: dict[str, str], seed: int = 42, n_paths: int | None = None) -> VariantResult:
     spec, uf = book.spec, book.uf_value
     if spec.id != vid:
         raise ValueError(f"{vid}: the book is the one of {spec.id}")
@@ -267,6 +267,28 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
                    "Balance constante: los flujos que vencen o reprecian se reemplazan por otros identicos. El tramo UR lleva solo la tasa real "
                    "(saldos en millones de CLP al valor de la UF); el ingreso por reajuste queda fuera.")},
                "legs": dyn_legs}
+    n_paths = asm.N_PATHS if n_paths is None else n_paths
+    ear_legs = []
+    for dl in dyn_legs:                     # rung 6: EaR and EVaR of each leg under Hull-White one-factor scenarios
+        n = dl["leg"]
+        pts = fits[n].block["points"]
+        paths = simulation.hw1f_scenarios(np.array([p["zero_rate"] for p in pts]), np.array([p["tenor_years"] for p in pts]), asm.HW1F_A,
+                                          asm.HW1F_SIGMA[n], asm.HORIZON_MONTHS, n_paths, seed)
+        arrs = _arrays(dl["items"])
+        nii_p = np.array([simulation.simulate_nii(*arrs, q[:asm.HORIZON_MONTHS], 0.0).total for q in paths])
+        eve_p = np.array([eve_nii.eve(base[n], shocks.apply_floor(r0[n], np.full(19, (q[-1] - q[0]) * 1e4), floors[n]), MID) for q in paths])
+        b_nii, b_eve = dl["scenarios"][0]["total"], base_eve[n]
+        levels = []
+        for lv in asm.LEVELS:
+            got = simulation.ear_evar(nii_p, eve_p, b_nii, b_eve, lv)
+            err = simulation.ear_evar_mc_error(nii_p, eve_p, lv, asm.N_BATCHES)
+            levels.append({"level": lv, "nii_quantile": float(b_nii - got.ear), "eve_quantile": float(b_eve - got.evar), "ear": float(got.ear),
+                           "evar": float(got.evar), "ear_se": float(err.ear_se), "evar_se": float(err.evar_se)})
+        ear_legs.append({"leg": n, "method": "hw1f", "n_paths": n_paths, "seed": seed, "horizon_months": asm.HORIZON_MONTHS,
+                         "parameters": [{"name": "a", "value": asm.HW1F_A, "unit": "per year"},
+                                        {"name": "sigma", "value": asm.HW1F_SIGMA[n], "unit": "per year"}],
+                         "base_nii": float(b_nii), "base_eve": float(b_eve), "levels": levels, "mc_error_method": "batch-means",
+                         "n_batches": asm.N_BATCHES})
     margin_12m = float(sum(leg["scenarios"][0]["total"] for leg in dyn_legs))
 
     # ---- the prioritised-bank tests (engine: prioritised_bank)
@@ -303,7 +325,7 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
         "eve_shock_sizes": [_size(sizes["CLP"]), _size(sizes["UR"])],
         "nii_shock_sizes": [{"currency": "CLP", "parallel_bp": int(table["CLP"][0]), "origin": "cmf-annex1"},
                             {"currency": "CLF", "parallel_bp": int(table["UR-nii"][0]), "origin": "cmf-annex1"}],
-        "dynamic_nii": dynamic, "floors": floors_block,
+        "dynamic_nii": dynamic, "ear_evar": ear_legs, "floors": floors_block,
         "offset_rule": {"state": spec.offset_state, "share": 0.5, "applies_to": ["CLP", "CLF"], "rule": OFFSET_RULE,
                         "reference": "RAN 21-13 Annex 1 Hojas 10 to 12 (dossier 03 F.2)"},
         "indexation_charge": indexation, "cpi_scenario": cpi, "eve": eve_block, "nii": nii_block, "thresholds": thresholds}

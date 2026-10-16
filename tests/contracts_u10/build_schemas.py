@@ -544,7 +544,9 @@ def c15_defs() -> dict:
         "points": A(R("c15Point"), 1), "zero_rates_at_midpoints": A(N(), 19, 19, "Zero rate at each bucket midpoint, bucket 1 first."),
     }, "A BCCh F022 sovereign curve (CLP or UF) of the stated month, fitted to a zero curve and labelled as an adaptation: the "
        "attribution names the Banco Central de Chile as the owner of the source and the fit as Contraste's (BCCh terms, dossier "
-       "08 C.7). Required: the C15 bake waits for the BCCh account.")
+       "08 C.7). A currency with fewer than four published secondary-market tenors (the engine's Nelson-Siegel fit needs four points) takes "
+       "the Banco Central's monetary policy rate (F022.TPM.TIN.D001.NO.Z.D, the overnight rate) as an extra point at 1/360 year; it is a "
+       "policy rate and not a yield, it is listed in series_codes, and the source says so. Only the CLP curve has such an anchor.")
     d["c15Curves"] = Ob({"clp": R("c15Curve"), "ur": R("c15Curve")})
     d["c15Item"] = Ob({
         "item_id": S(minLength=1), "label": TXT, "side": E("asset", "liability"),
@@ -620,10 +622,25 @@ def c15_defs() -> dict:
     }, "The banco priorizado tests; prioritised is true when any test is breached.")
     d["c15DynamicLeg"] = Ob({"leg": E("CLP", "UR"), "items": A(R("c15DynItem"), 1), "scenarios": R("c15DynScenarios")},
                             "The dynamic NII of one leg; balances and NII are in the reporting currency (the UR leg converted at the UF value).")
+    d["c15EarEvarLevel"] = Ob({
+        "level": N(exclusiveMinimum=0, exclusiveMaximum=1), "nii_quantile": MONEY, "eve_quantile": MONEY, "ear": MONEY, "evar": MONEY,
+        "ear_se": N("Monte Carlo standard error of ear, money (engine ear_evar_mc_error).", minimum=0),
+        "evar_se": N("Monte Carlo standard error of evar, money (engine ear_evar_mc_error).", minimum=0),
+    }, "EaR and EVaR at one confidence level: ear = base NII minus the (1 - level) quantile of the NII paths, evar likewise for EVE "
+       "(loss-positive; engine ear_evar).")
+    d["c15EarEvar"] = Ob({
+        "leg": E("CLP", "UR"), "method": E("hw1f", "dns"), "n_paths": Int(2), "seed": Int(0), "horizon_months": Int(12, 36),
+        "parameters": A(NAME_MAP, 1), "base_nii": MONEY, "base_eve": MONEY,
+        "levels": ordered([pin("c15EarEvarLevel", level=0.95), pin("c15EarEvarLevel", level=0.99)], "The 95 and 99 percent levels."),
+        "mc_error_method": C("batch-means"), "n_batches": Int(2),
+    }, "Ladder rung 6 (dossier 05 D.5 and D.6) for one leg: the distribution summary of the leg's NII and EVE under Hull-White one-factor "
+       "or dynamic Nelson-Siegel scenario Monte Carlo, in the reporting currency (the UR leg converted at the UF value), with the number of "
+       "paths, the seed and, at each level, the Monte Carlo standard error of EaR and EVaR by batch means over n_batches contiguous batches. "
+       "base_nii is the base total of the leg's dynamic NII and base_eve the leg's base EVE.")
     d["c15DynamicNii"] = Ob({
         "horizon_months": Int(12, 36), "balance_sheet_assumption": R("c15BsAssumption"),
         "legs": ordered([pin("c15DynamicLeg", leg="CLP"), pin("c15DynamicLeg", leg="UR")]),
-    }, "Ladder rung 5 for the CLP and UR legs (dossier 05 D.6). The EaR and EVaR of C15 wait for the BCCh curves (owner prerequisite 7).")
+    }, "Ladder rung 5 for the CLP and UR legs (dossier 05 D.6). The EaR and EVaR of each leg are in ear_evar.")
     d["c15Outputs"] = Ob({
         "kind": C("annex1-variant"), "variant": R("c15Variant"), "as_of": DATE, "balance_sheet_month": MONTH,
         "curves_month": MONTH, "reporting_currency": {**CUR, "const": "CLP"},
@@ -633,6 +650,7 @@ def c15_defs() -> dict:
         "eve_shock_sizes": ordered([pin("c15ShockSize", currency="CLP", origin="cmf-annex1"), pin("c15ShockSize", currency="CLF", origin="cmf-annex1")]),
         "nii_shock_sizes": ordered([pin("c15NiiSize", currency="CLP"), pin("c15NiiSize", currency="CLF")]),
         "dynamic_nii": R("c15DynamicNii"),
+        "ear_evar": ordered([pin("c15EarEvar", leg="CLP"), pin("c15EarEvar", leg="UR")], "The EaR and EVaR of the CLP leg and the UR leg, in that order."),
         "floors": R("c15Floors"), "offset_rule": R("c15Offset"), "indexation_charge": R("c15Indexation"),
         "cpi_scenario": R("c15CpiScenario"), "eve": R("c15EveMeasure"), "nii": R("c15NiiMeasure"), "thresholds": R("c15Thresholds"),
     }, "C15 annex1-variant outputs (outputs.kind annex1-variant): IRRBB on a CLP and UF balance sheet under RAN 21-13 Annex 1 for "
@@ -680,7 +698,7 @@ def main() -> None:
                   "Catalog row c14-models 1.0.0: the C14 models artifact (buckets, the 2024 and 2016 shock tables, shapes, NMD "
                   "caps, multipliers, replicating portfolios, parameter-change flags).", "c14Fit", d14)
     variant_schema("C15", "variant-annex1-variant", "annex1-variant", "C15 annex1-variant variant",
-                   "Catalog row c15-outputs 1.0.0: one SDD variant of the IRRBB case on a CLP and UF balance sheet under RAN "
+                   "Catalog row c15-outputs 1.1.0: one SDD variant of the IRRBB case on a CLP and UF balance sheet under RAN "
                    "21-13 Annex 1 (outputs.kind annex1-variant).", "c15Outputs", d15)
     models_schema("C15", "C15 models",
                   "Catalog row c15-models 1.0.0: the C15 models artifact (buckets, the CMF Annex 1 table, floors, thresholds, "

@@ -167,3 +167,29 @@ def test_every_number_of_a_document_equals_the_engine_call_on_its_inputs() -> No
         # the impact block is not an exact block: its numbers carry nine significant digits
         assert doc["impact"]["delta_eve"]["value"] == pytest.approx(doc["outputs"]["eve"]["delta_eve"], rel=1e-8)
         assert doc["impact"]["delta_nii"]["value"] == pytest.approx(doc["outputs"]["nii"]["delta_nii"], rel=1e-8)
+
+
+def test_the_ear_evar_of_a_document_equals_the_engine_call_on_its_inputs() -> None:
+    """Rung 6 recomputed with the engine from the parameters, the seed and the curve the document carries (one variant: 100 000 paths a leg)."""
+    o = d.variant("long-uf")["outputs"]
+    uf = o["ur_currency"]["uf_value"]
+    for e, key, name in zip(o["ear_evar"], ("clp", "ur"), ("CLP", "UR")):
+        pts = o["curves"][key]["points"]
+        par = {p["name"]: p["value"] for p in e["parameters"]}
+        floor = o["floors"]["other_floor"] if name == "CLP" else o["floors"]["ur_floor"]
+        r0 = np.array(o["curves"][key]["zero_rates_at_midpoints"])
+        paths = simulation.hw1f_scenarios(np.array([p["zero_rate"] for p in pts]), np.array([p["tenor_years"] for p in pts]), par["a"], par["sigma"],
+                                          e["horizon_months"], e["n_paths"], e["seed"])
+        leg = next(x for x in o["dynamic_nii"]["legs"] if x["leg"] == name)
+        its = leg["items"]
+        arrs = (np.array([i["balance"] for i in its]), np.array([1 if i["side"] == "asset" else -1 for i in its]), np.array([i["rate0"] for i in its]),
+                np.array([i["spread"] for i in its]), np.array([i["beta"] for i in its]), np.array([i["reprice_months"] for i in its]))
+        nii_p = np.array([simulation.simulate_nii(*arrs, q[:e["horizon_months"]], 0.0).total for q in paths])
+        conv = uf if name == "UR" else 1.0
+        base = sum(dense(f["cash_flows"]) * conv for x in o["legs"] if x["leg"] == name for f in x["items"])
+        eve_p = np.array([eve_nii.eve(base, shocks.apply_floor(r0, np.full(19, (q[-1] - q[0]) * 1e4), floor), MID) for q in paths])
+        for lv in e["levels"]:
+            got = simulation.ear_evar(nii_p, eve_p, e["base_nii"], e["base_eve"], lv["level"])
+            err = simulation.ear_evar_mc_error(nii_p, eve_p, lv["level"], e["n_batches"])
+            assert approx(lv["ear"], got.ear) and approx(lv["evar"], got.evar), (name, lv["level"])
+            assert approx(lv["ear_se"], err.ear_se) and approx(lv["evar_se"], err.evar_se), (name, lv["level"])
