@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "4.0.0",
+    "version": "4.1.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "77f43567fa00135d91f0e223998ba080c313149683a79e50df000cd28fbff5db"
+    "sha256": "78f9a10684b46c2fc0195e8fdcb099a1336c4ab23c52ab9f799f05ff5954952f"
   },
   "readiness": {
     "version": "1.0.0",

@@ -2,8 +2,7 @@
 // The rail is split in three sections (Shock, Offset, Leg; ADR-0071 rule 6), each with its control and a live read-out;
 // the groups are the validator's questions: how large is the loss on each leg and with or without the 50 percent offset,
 // how the indexation risk of a UF book adds to the rate risk, and where the floors bind and whether the bank is
-// prioritised, with the variants as the Variants view and the Context view. C15 stays on its fixtures until owner
-// prerequisite 7 (the BCCh account) is met. The workbench calls this hook on every case and uses it when the case is C15.
+// prioritised, with the variants as the Variants view and the Context view. The workbench calls this hook on every case and uses it when the case is C15.
 import { ChipGroup, SubTabs, pick, useShellLang, type BiText, type RailSection } from '@fasl-work/caos-app-shell';
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import type { CaseData } from '../../api/artifacts';
@@ -11,7 +10,7 @@ import { provenanceOf } from '../model';
 import { RailSelect } from '../c06/RailSelect';
 import { C15ContextView, C15FindingsView, C15VariantsView, LegReadout, OffsetReadout, ShockReadout } from './C15Common';
 import { FloorsView, ThresholdsView } from './FloorViews';
-import { DynamicLegView, EveByLegView, PositionsView } from './LegViews';
+import { DynamicLegView, EarEvarLegView, EveByLegView, PositionsView } from './LegViews';
 import { IndexationView, NiiView } from './RateViews';
 import { LEG_SHORT, LEG_TEXT, OFFSET_LONG, OFFSET_TEXT, SHOCK_ORDER, SHOCK_TEXT, defaultSel, outputsOf, text, type C15Sel, type LegId, type OffsetChoice, type ShockId } from './selection';
 
@@ -102,6 +101,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       { id: 'eve', label: { en: 'Delta EVE by leg', es: 'Delta EVE por tramo' }, content: <EveByLegView sel={sel} /> },
       { id: 'positions', label: { en: 'Positions', es: 'Posiciones' }, content: <PositionsView sel={sel} /> },
       { id: 'dynamic', label: { en: 'Dynamic NII', es: 'NII dinámico' }, content: <DynamicLegView sel={sel} /> },
+      { id: 'ear-evar', label: { en: 'EaR and EVaR', es: 'EaR y EVaR' }, content: <EarEvarLegView sel={sel} /> },
     ],
     { en: 'Views of the legs', es: 'Vistas de los tramos' },
     'c15-legs',

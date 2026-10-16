@@ -6040,7 +6040,7 @@ export interface components {
         };
         /**
          * C15 annex1-variant variant
-         * @description Catalog row c15-outputs 1.0.0: one SDD variant of the IRRBB case on a CLP and UF balance sheet under RAN 21-13 Annex 1 (outputs.kind annex1-variant).
+         * @description Catalog row c15-outputs 1.1.0: one SDD variant of the IRRBB case on a CLP and UF balance sheet under RAN 21-13 Annex 1 (outputs.kind annex1-variant).
          */
         "c15-variant-annex1-variant": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -6202,7 +6202,7 @@ export interface components {
             effect: number;
             formula: string;
         } | null;
-        /** @description A BCCh F022 sovereign curve (CLP or UF) of the stated month, fitted to a zero curve and labelled as an adaptation: the attribution names the Banco Central de Chile as the owner of the source and the fit as Contraste's (BCCh terms, dossier 08 C.7). Required: the C15 bake waits for the BCCh account. */
+        /** @description A BCCh F022 sovereign curve (CLP or UF) of the stated month, fitted to a zero curve and labelled as an adaptation: the attribution names the Banco Central de Chile as the owner of the source and the fit as Contraste's (BCCh terms, dossier 08 C.7). A currency with fewer than four published secondary-market tenors (the engine's Nelson-Siegel fit needs four points) takes the Banco Central's monetary policy rate (F022.TPM.TIN.D001.NO.Z.D, the overnight rate) as an extra point at 1/360 year; it is a policy rate and not a yield, it is listed in series_codes, and the source says so. Only the CLP curve has such an anchor. */
         c15Curve: {
             /** @enum {string} */
             curve: "CLP" | "UR";
@@ -6295,7 +6295,7 @@ export interface components {
             items: components["schemas"]["c15DynItem"][];
             scenarios: components["schemas"]["c15DynScenarios"];
         };
-        /** @description Ladder rung 5 for the CLP and UR legs (dossier 05 D.6). The EaR and EVaR of C15 wait for the BCCh curves (owner prerequisite 7). */
+        /** @description Ladder rung 5 for the CLP and UR legs (dossier 05 D.6). The EaR and EVaR of each leg are in ear_evar. */
         c15DynamicNii: {
             horizon_months: number;
             balance_sheet_assumption: components["schemas"]["c15BsAssumption"];
@@ -6303,6 +6303,49 @@ export interface components {
                 components["schemas"]["c15DynamicLeg"],
                 components["schemas"]["c15DynamicLeg"]
             ];
+        };
+        /** @description Ladder rung 6 (dossier 05 D.5 and D.6) for one leg: the distribution summary of the leg's NII and EVE under Hull-White one-factor or dynamic Nelson-Siegel scenario Monte Carlo, in the reporting currency (the UR leg converted at the UF value), with the number of paths, the seed and, at each level, the Monte Carlo standard error of EaR and EVaR by batch means over n_batches contiguous batches. base_nii is the base total of the leg's dynamic NII and base_eve the leg's base EVE. */
+        c15EarEvar: {
+            /** @enum {string} */
+            leg: "CLP" | "UR";
+            /** @enum {string} */
+            method: "hw1f" | "dns";
+            n_paths: number;
+            seed: number;
+            horizon_months: number;
+            parameters: {
+                name: string;
+                value: number;
+                unit: string;
+            }[];
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            base_nii: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            base_eve: number;
+            /** @description The 95 and 99 percent levels. */
+            levels: [
+                components["schemas"]["c15EarEvarLevel"],
+                components["schemas"]["c15EarEvarLevel"]
+            ];
+            /** @constant */
+            mc_error_method: "batch-means";
+            n_batches: number;
+        };
+        /** @description EaR and EVaR at one confidence level: ear = base NII minus the (1 - level) quantile of the NII paths, evar likewise for EVE (loss-positive; engine ear_evar). */
+        c15EarEvarLevel: {
+            level: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            nii_quantile: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            eve_quantile: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            ear: number;
+            /** @description Money in the `currency` (C15: the `reporting_currency`) of the enclosing block. */
+            evar: number;
+            /** @description Monte Carlo standard error of ear, money (engine ear_evar_mc_error). */
+            ear_se: number;
+            /** @description Monte Carlo standard error of evar, money (engine ear_evar_mc_error). */
+            evar_se: number;
         };
         /** @description Annex 1 delta EVE: the maximum over the six shocks of the pair total (there is no other currency in this book). */
         c15EveMeasure: {
@@ -6933,6 +6976,11 @@ export interface components {
                 components["schemas"]["c15NiiSize"]
             ];
             dynamic_nii: components["schemas"]["c15DynamicNii"];
+            /** @description The EaR and EVaR of the CLP leg and the UR leg, in that order. */
+            ear_evar: [
+                components["schemas"]["c15EarEvar"],
+                components["schemas"]["c15EarEvar"]
+            ];
             floors: components["schemas"]["c15Floors"];
             offset_rule: components["schemas"]["c15Offset"];
             indexation_charge: components["schemas"]["c15Indexation"];

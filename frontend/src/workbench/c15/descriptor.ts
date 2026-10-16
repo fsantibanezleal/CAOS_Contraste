@@ -152,6 +152,35 @@ const DYNAMIC_NII: Kind = { object: {
   legs: { array: DYNAMIC_LEG },
 } };
 
+const EAR_EVAR_LEVEL: Kind = { object: {
+  level: 'number',
+  nii_quantile: 'number',
+  eve_quantile: 'number',
+  ear: 'number',
+  evar: 'number',
+  ear_se: 'number',
+  evar_se: 'number',
+} };
+
+// c15-outputs 1.1.0: one EaR and EVaR block per leg, shaped like C14's, in the reporting currency
+const EAR_EVAR: Kind = { object: {
+  leg: 'string',
+  method: 'string',
+  n_paths: 'integer',
+  seed: 'integer',
+  horizon_months: 'integer',
+  parameters: { array: { object: {
+    name: 'string',
+    value: 'number',
+    unit: 'string',
+  } } },
+  base_nii: 'number',
+  base_eve: 'number',
+  levels: { array: EAR_EVAR_LEVEL },
+  mc_error_method: 'string',
+  n_batches: 'integer',
+} };
+
 const LABEL: Kind = 'text';
 
 const FLOOR_EFFECT: Kind = { object: {
@@ -357,6 +386,7 @@ export const C15_OUTPUTS = { object: {
   eve_shock_sizes: { array: SHOCK_SIZE },
   nii_shock_sizes: { array: NII_SIZE },
   dynamic_nii: DYNAMIC_NII,
+  ear_evar: { array: EAR_EVAR },
   floors: FLOORS,
   offset_rule: OFFSET,
   indexation_charge: INDEXATION,
