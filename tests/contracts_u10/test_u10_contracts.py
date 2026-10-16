@@ -826,12 +826,12 @@ def test_the_rows_fragment_has_the_five_rows_in_the_catalog_columns() -> None:
         d = dict(zip(header, r))
         assert d["version"] == ("1.1.0" if d["id"] in ("engine-irrbb-api", "c15-outputs") else "1.0.0")
         # C14 and the engine are built (real at 0.11.000); C15 waits for the BCCh account on its fixture (active)
-        assert d["status"] == ("active" if d["id"].startswith("c15-") else "real")
+        assert d["status"] == "real"  # C15 is built since 0.12.000, so every U10 row is real
         assert d["provider"].startswith("fixture:")
         assert (ROOT / d["schema file"]).is_file(), d["schema file"]
         assert (ROOT / d["provider"].removeprefix("fixture:")).is_file(), d["provider"]
         assert (ROOT / d["example"]).is_file(), d["example"]
-        assert ("U10-S" in d["owner"]) if d["id"].startswith("c15-") else ("c14" in d["owner"] or "CAOS_RiskValidation" in d["owner"])
+        assert "c14" in d["owner"] or "c15" in d["owner"] or "CAOS_RiskValidation" in d["owner"]  # every producer is real since 0.12.000
         for cell in (d["producer test"], d["consumer test"]):
             for t in cell.split(","):
                 path, _, name = t.strip().partition("::")
