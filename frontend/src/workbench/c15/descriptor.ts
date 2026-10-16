@@ -1,5 +1,5 @@
 // The run-time descriptors of the C15 documents (outputs of a annex1-variant variant, and the fit of the models
-// artifact), one key per key of the c15-outputs and c15-models 1.0.0 schemas; contract.test.ts reads every committed
+// artifact), one key per key of the c15-outputs 2.0.0 and c15-models 1.0.0 schemas; contract.test.ts reads every committed
 // document and the schema files against them in both directions. `satisfies` ties the top-level keys to the generated
 // types, so a key added to a schema and not here fails `tsc`. Kept beside the instrument that reads them;
 // contract.types.ts composes the variant and models descriptors from these (`variantKind`, `modelsKind`), the
@@ -193,11 +193,24 @@ const FLOOR_EFFECT: Kind = { object: {
   effect: 'number',
 } };
 
+// c15-outputs 2.0.0: where each leg stands against its floor under each shock, from the engine's shocked curves
+const FLOOR_DISTANCE: Kind = { object: {
+  leg: 'string',
+  measure: 'string',
+  shock: 'string',
+  lowest_rate: 'number',
+  bucket: 'integer',
+  floor: 'number',
+  distance_bp: 'number',
+  binds: 'boolean',
+} };
+
 const FLOORS: Kind = { object: {
   ur_floor: 'number',
   other_floor: 'integer',
   rule: LABEL,
   effects: { array: FLOOR_EFFECT },
+  distances: { array: FLOOR_DISTANCE },
 } };
 
 const OFFSET: Kind = { object: {
@@ -373,6 +386,7 @@ export const C15_OUTPUTS = { object: {
   variant: VARIANT,
   as_of: 'string',
   balance_sheet_month: 'string',
+  calibration_month: 'string',
   curves_month: 'string',
   reporting_currency: 'string',
   sign_convention: SIGN,

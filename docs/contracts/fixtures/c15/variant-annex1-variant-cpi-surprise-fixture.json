@@ -45,6 +45,7 @@
     },
     "as_of": "2026-06-30",
     "balance_sheet_month": "2026-06",
+    "calibration_month": "2026-05",
     "curves_month": "2026-06",
     "reporting_currency": "CLP",
     "sign_convention": {
@@ -1048,6 +1049,168 @@
           "delta_with_floor": -2527.010655,
           "delta_without_floor": -2925.0,
           "effect": 397.989345
+        }
+      ],
+      "distances": [
+        {
+          "leg": "CLP",
+          "measure": "delta-eve",
+          "shock": "parallel-up",
+          "lowest_rate": 0.058014553,
+          "bucket": 1,
+          "floor": 0.0,
+          "distance_bp": 580.14553,
+          "binds": false
+        },
+        {
+          "leg": "CLP",
+          "measure": "delta-eve",
+          "shock": "parallel-down",
+          "lowest_rate": -0.001985447,
+          "bucket": 1,
+          "floor": 0.0,
+          "distance_bp": -19.85447,
+          "binds": true
+        },
+        {
+          "leg": "CLP",
+          "measure": "delta-eve",
+          "shock": "steepener",
+          "lowest_rate": 0.002045342,
+          "bucket": 1,
+          "floor": 0.0,
+          "distance_bp": 20.453422,
+          "binds": false
+        },
+        {
+          "leg": "CLP",
+          "measure": "delta-eve",
+          "shock": "flattener",
+          "lowest_rate": 0.03455023,
+          "bucket": 18,
+          "floor": 0.0,
+          "distance_bp": 345.502303,
+          "binds": false
+        },
+        {
+          "leg": "CLP",
+          "measure": "delta-eve",
+          "shock": "short-up",
+          "lowest_rate": 0.046499878,
+          "bucket": 18,
+          "floor": 0.0,
+          "distance_bp": 464.998777,
+          "binds": false
+        },
+        {
+          "leg": "CLP",
+          "measure": "delta-eve",
+          "shock": "short-down",
+          "lowest_rate": -0.011957457,
+          "bucket": 1,
+          "floor": 0.0,
+          "distance_bp": -119.574568,
+          "binds": true
+        },
+        {
+          "leg": "CLP",
+          "measure": "delta-nii",
+          "shock": "parallel-up",
+          "lowest_rate": 0.058014553,
+          "bucket": 1,
+          "floor": 0.0,
+          "distance_bp": 580.14553,
+          "binds": false
+        },
+        {
+          "leg": "CLP",
+          "measure": "delta-nii",
+          "shock": "parallel-down",
+          "lowest_rate": -0.001985447,
+          "bucket": 1,
+          "floor": 0.0,
+          "distance_bp": -19.85447,
+          "binds": true
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-eve",
+          "shock": "parallel-up",
+          "lowest_rate": 0.024015392,
+          "bucket": 1,
+          "floor": -0.02,
+          "distance_bp": 440.15392,
+          "binds": false
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-eve",
+          "shock": "parallel-down",
+          "lowest_rate": -0.015984608,
+          "bucket": 1,
+          "floor": -0.02,
+          "distance_bp": 40.15392,
+          "binds": false
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-eve",
+          "shock": "steepener",
+          "lowest_rate": -0.01221379,
+          "bucket": 1,
+          "floor": -0.02,
+          "distance_bp": 77.862097,
+          "binds": false
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-eve",
+          "shock": "flattener",
+          "lowest_rate": 0.011764676,
+          "bucket": 18,
+          "floor": -0.02,
+          "distance_bp": 317.646761,
+          "binds": false
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-eve",
+          "shock": "short-up",
+          "lowest_rate": 0.020714324,
+          "bucket": 18,
+          "floor": -0.02,
+          "distance_bp": 407.143236,
+          "binds": false
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-eve",
+          "shock": "short-down",
+          "lowest_rate": -0.020967114,
+          "bucket": 1,
+          "floor": -0.02,
+          "distance_bp": -9.671141,
+          "binds": true
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-nii",
+          "shock": "parallel-up",
+          "lowest_rate": 0.034015392,
+          "bucket": 1,
+          "floor": -0.02,
+          "distance_bp": 540.15392,
+          "binds": false
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-nii",
+          "shock": "parallel-down",
+          "lowest_rate": -0.025984608,
+          "bucket": 1,
+          "floor": -0.02,
+          "distance_bp": -59.84608,
+          "binds": true
         }
       ]
     },

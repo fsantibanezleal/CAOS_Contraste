@@ -169,16 +169,16 @@ def test_every_number_of_a_document_equals_the_engine_call_on_its_inputs() -> No
         assert doc["impact"]["delta_nii"]["value"] == pytest.approx(doc["outputs"]["nii"]["delta_nii"], rel=1e-8)
 
 
-def test_the_ear_evar_of_a_document_equals_the_engine_call_on_its_inputs() -> None:
-    """Rung 6 recomputed with the engine from the parameters, the seed and the curve the document carries (one variant: 100 000 paths a leg)."""
-    o = d.variant("long-uf")["outputs"]
+@pytest.mark.parametrize("vid", VARIANT_IDS)
+def test_the_ear_evar_of_a_document_equals_the_engine_call_on_its_inputs(vid: str) -> None:
+    """Rung 6 recomputed with the engine from the parameters, the seed and the curve of the base NII (the zero rates at the bucket midpoints) (every variant: 100 000 paths a leg)."""
+    o = d.variant(vid)["outputs"]
     uf = o["ur_currency"]["uf_value"]
     for e, key, name in zip(o["ear_evar"], ("clp", "ur"), ("CLP", "UR")):
-        pts = o["curves"][key]["points"]
         par = {p["name"]: p["value"] for p in e["parameters"]}
         floor = o["floors"]["other_floor"] if name == "CLP" else o["floors"]["ur_floor"]
         r0 = np.array(o["curves"][key]["zero_rates_at_midpoints"])
-        paths = simulation.hw1f_scenarios(np.array([p["zero_rate"] for p in pts]), np.array([p["tenor_years"] for p in pts]), par["a"], par["sigma"],
+        paths = simulation.hw1f_scenarios(r0, MID, par["a"], par["sigma"],
                                           e["horizon_months"], e["n_paths"], e["seed"])
         leg = next(x for x in o["dynamic_nii"]["legs"] if x["leg"] == name)
         its = leg["items"]

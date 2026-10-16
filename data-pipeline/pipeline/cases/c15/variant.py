@@ -19,6 +19,7 @@ from riskvalidation.validation import irrbb as rv_val
 
 from . import assumptions as asm
 from . import curves as c15_curves
+from . import targets
 from .book import MID, Book, Item, t
 
 SHOCKS = shocks.SHOCKS
@@ -32,9 +33,14 @@ CONV_NOTE = "UR amounts are CLF (UF) millions in the legs and CLP millions where
 
 SIGN = {"delta_eve": "positive-is-loss", "delta_nii": "positive-is-loss", "reference": "SRP31.129; dossier 01 H.4",
         "statement": t("A positive delta EVE or delta NII is a loss; only losses are aggregated across currencies.",
-                       "Un delta EVE o delta NII positivo es una perdida; solo las perdidas se agregan entre monedas.")}
+                       "Un delta EVE o delta NII positivo es una pérdida; solo las perdidas se agregan entre monedas.")}
 UNITS = {"money_scale": "millions", "rate": "decimal", "compounding": "continuous", "shock": "basis-points", "bucket_midpoint": "years",
          "dates": "ISO-8601"}
+
+
+def es(x: float, nd: int = 1) -> str:
+    """A number in a Spanish document string: the decimal comma."""
+    return f"{x:.{nd}f}".replace(".", ",")
 
 
 def bank_block(seed: int, calibration_source: str) -> dict[str, Any]:
@@ -42,10 +48,10 @@ def bank_block(seed: int, calibration_source: str) -> dict[str, Any]:
             "notice": t("Banco Andino is a synthetic bank. Its balance-sheet aggregates are calibrated to the CMF system aggregates of August 2026; "
                         "the UF share, the repricing profile of each item, the deposit split and every behavioural assumption are synthetic and "
                         "stated in the document. The curves are real: the Banco Central de Chile F022 yields of the valuation date.",
-                        "Banco Andino es un banco sintetico. Los agregados de su balance estan calibrados a los agregados del sistema de la CMF de "
-                        "agosto de 2026; la proporcion en UF, el perfil de reprecio de cada partida, la separacion de depositos y todo supuesto de "
-                        "comportamiento son sinteticos y estan declarados en el documento. Las curvas son reales: los rendimientos F022 del Banco "
-                        "Central de Chile de la fecha de valoracion.")}
+                        "Banco Andino es un banco sintético. Los agregados de su balance estan calibrados a los agregados del sistema de la CMF de "
+                        "agosto de 2026; la proporcion en UF, el perfil de reprecio de cada partida, la separacion de depósitos y todo supuesto de "
+                        "comportamiento son sintéticos y estan declarados en el documento. Las curvas son reales: los rendimientos F022 del Banco "
+                        "Central de Chile de la fecha de valoración.")}
 
 
 UR_BLOCK = {"label": "UR", "code": "CLF", "treated_as_one_currency": True,
@@ -208,29 +214,31 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
                 without = float(eve_nii.delta_nii(base[n], r0[n], free, MID))
                 effects.append({"leg": n, "measure": "delta-nii", "shock": row["shock"], "buckets_floored": len(bound),
                                 "delta_with_floor": row[key]["delta_nii"], "delta_without_floor": without, "effect": row[key]["delta_nii"] - without})
-    dist, where = np.inf, ""
+    # the distance of each leg and shock to its floor: the lowest post-shock rate of the engine's shocked curve (before the floor) and its bucket
+    distances: list[dict[str, Any]] = []
     for n, key in (("CLP", "clp"), ("UR", "ur")):
-        for row in eve_rows:
-            free = shocks.apply_floor(r0[n], np.array(row[key]["shape_bp"]), None)
-            gap = float(np.min(free - floors[n])) * 1e4
-            if gap < dist:
-                dist, where = gap, f"{n}, delta EVE, {row['shock']}"
-        for row in nii_rows:
-            free = shocks.apply_floor(r0[n], np.full(19, row[key]["shock_bp"]), None)[:6]
-            gap = float(np.min(free - floors[n])) * 1e4
-            if gap < dist:
-                dist, where = gap, f"{n}, delta NII, {row['shock']}"
-    n_bound = len(effects)
+        for measure, rows, m_buckets in (("delta-eve", eve_rows, 19), ("delta-nii", nii_rows, 6)):
+            for row in rows:
+                shape = np.array(row[key]["shape_bp"]) if measure == "delta-eve" else np.full(19, row[key]["shock_bp"])
+                free = shocks.apply_floor(r0[n], shape, None)[:m_buckets]
+                k = int(np.argmin(free))
+                gap = (float(free[k]) - floors[n]) * 1e4
+                distances.append({"leg": n, "measure": measure, "shock": row["shock"], "lowest_rate": float(free[k]), "bucket": k + 1,
+                                  "floor": floors[n], "distance_bp": gap, "binds": bool(gap <= 0.0)})
+    low = min(distances, key=lambda d: d["distance_bp"])
+    dist = low["distance_bp"]
+    where = f"{low['leg']}, {'delta EVE' if low['measure'] == 'delta-eve' else 'delta NII'}, {low['shock']}"
+    n_bound = sum(1 for d in distances if d["binds"])
     floors_block = {
-        "ur_floor": UR_FLOOR, "other_floor": OTHER_FLOOR, "effects": effects,
+        "ur_floor": UR_FLOOR, "other_floor": OTHER_FLOOR, "effects": effects, "distances": distances,
         "rule": t("Post-shock rates are floored at -2 percent for UR and at 0 percent for CLP (RAN 21-13 Annex 1); the engine's apply_floor also keeps "
                   "a rate that is already below its floor at its pre-shock value, a reading that is UNVERIFIED for the UR floor. The smallest distance "
                   f"between a post-shock rate and its floor is {dist:.2f} bp ({where}); the floors bind in {n_bound} shock and leg combination"
                   f"{'' if n_bound == 1 else 's'}.",
                   "Las tasas posteriores al choque tienen piso de -2 por ciento para la UR y 0 por ciento para el CLP (RAN 21-13 Anexo 1); apply_floor "
-                  "del motor tambien mantiene en su valor previo una tasa que ya esta bajo su piso, lectura que no esta verificada para el piso UR. "
-                  f"La menor distancia entre una tasa posterior al choque y su piso es {dist:.2f} pb ({where}); los pisos actuan en {n_bound} "
-                  f"combinacion{'' if n_bound == 1 else 'es'} de choque y tramo.")}
+                  "del motor también mantiene en su valor previo una tasa que ya está bajo su piso, lectura que no está verificada para el piso UR. "
+                  f"La menor distancia entre una tasa posterior al choque y su piso es {es(dist, 2)} pb ({where}); los pisos actúan en {n_bound} "
+                  f"combinación{'' if n_bound == 1 else 'es'} de choque y tramo.")}
 
     # ---- the indexation charge and the CPI surprise
     ic = float(eve_nii.indexation_charge(pn_ur))
@@ -238,7 +246,7 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
                   "formula": "charge = 0.025 x |PN_UR|, PN_UR = net UF position x UF value",
                   "note": t("The standardised indexation (reajustabilidad) charge, an implied 2.5 percent inflation surprise on the net UF position, "
                             "added once to the largest pair of the delta NII.",
-                            "El cargo estandar por reajustabilidad, equivalente a una sorpresa de inflacion de 2,5 por ciento sobre la posicion neta en "
+                            "El cargo estándar por reajustabilidad, equivalente a una sorpresa de inflación de 2,5 por ciento sobre la posición neta en "
                             "UF, se suma una vez al mayor par del delta NII.")}
     cpi = None
     if spec.cpi_surprise_pp is not None:
@@ -271,8 +279,7 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
     ear_legs = []
     for dl in dyn_legs:                     # rung 6: EaR and EVaR of each leg under Hull-White one-factor scenarios
         n = dl["leg"]
-        pts = fits[n].block["points"]
-        paths = simulation.hw1f_scenarios(np.array([p["zero_rate"] for p in pts]), np.array([p["tenor_years"] for p in pts]), asm.HW1F_A,
+        paths = simulation.hw1f_scenarios(r0[n], MID, asm.HW1F_A,
                                           asm.HW1F_SIGMA[n], asm.HORIZON_MONTHS, n_paths, seed)
         arrs = _arrays(dl["items"])
         nii_p = np.array([simulation.simulate_nii(*arrs, q[:asm.HORIZON_MONTHS], 0.0).total for q in paths])
@@ -315,7 +322,7 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
     outputs = {
         "kind": "annex1-variant",
         "variant": {"id": spec.id, "label": spec.label, "description": spec.description, "parameters": parameters},
-        "as_of": vd, "balance_sheet_month": sel.month, "curves_month": sel.month, "reporting_currency": "CLP", "sign_convention": SIGN, "units": UNITS,
+        "as_of": vd, "balance_sheet_month": sel.month, "calibration_month": targets.AS_OF[:7], "curves_month": sel.month, "reporting_currency": "CLP", "sign_convention": SIGN, "units": UNITS,
         "bank": bank_block(book.seed, calibration_source),
         "ur_currency": {**UR_BLOCK, "uf_value": float(uf), "uf_value_currency": "CLP", "uf_date": vd, "uf_source": uf_source},
         "curves": {"clp": fits["CLP"].block, "ur": fits["UR"].block},
@@ -359,25 +366,25 @@ def _findings(o: dict[str, Any], th: dict[str, Any], dist: float, where: str, ef
     out = [{"id": "F1", "severity": sev, "status": "open", "evidence": ["design:annex1-prioritised-bank-tests"], "title": t(
         f"Delta EVE is {e['ratio'] * 100:.1f} percent of Tier 1 (threshold 15 percent) and delta NII with the indexation charge is "
         f"{n['ratio'] * 100:.1f} percent (threshold 5 percent); the bank is {'prioritised' if th['prioritised'] else 'not prioritised'} under the Annex 1 tests.",
-        f"El delta EVE es {e['ratio'] * 100:.1f} por ciento del Tier 1 (umbral 15 por ciento) y el delta NII con el cargo por reajustabilidad es "
-        f"{n['ratio'] * 100:.1f} por ciento (umbral 5 por ciento); el banco {'es priorizado' if th['prioritised'] else 'no es priorizado'} segun los tests del Anexo 1.")}]
+        f"El delta EVE es {es(e['ratio'] * 100)} por ciento del Tier 1 (umbral 15 por ciento) y el delta NII con el cargo por reajustabilidad es "
+        f"{es(n['ratio'] * 100)} por ciento (umbral 5 por ciento); el banco {'es priorizado' if th['prioritised'] else 'no es priorizado'} según los tests del Anexo 1.")}]
     ic, d_nii = o["indexation_charge"]["charge"], o["nii"]["delta_nii"]
     out.append({"id": "F2", "severity": "S3", "status": "open", "evidence": ["design:indexation-charge-is-a-standard-add-on"], "title": t(
         f"The standard indexation charge is {ic / d_nii * 100:.0f} percent of the delta NII: it depends on the size of the net UF position, not on the rate "
         "shock, and no hedge is modelled.",
-        f"El cargo estandar por reajustabilidad es {ic / d_nii * 100:.0f} por ciento del delta NII: depende del tamano de la posicion neta en UF y no "
+        f"El cargo estándar por reajustabilidad es {es(ic / d_nii * 100, 0)} por ciento del delta NII: depende del tamaño de la posición neta en UF y no "
         "del choque de tasas, y no se modela ninguna cobertura.")})
     if effects:
         out.append({"id": "F3", "severity": "S3", "status": "open", "evidence": ["irrbb.cmf_annex1_goldens"], "title": t(
             f"The post-shock floors bind in {len(effects)} combinations of shock and leg and change the measures; the smallest distance to a floor elsewhere is "
             f"{dist:.1f} bp.",
-            f"Los pisos posteriores al choque actuan en {len(effects)} combinaciones de choque y tramo y modifican las medidas; la menor distancia a un piso "
-            f"en el resto es {dist:.1f} pb.")})
+            f"Los pisos posteriores al choque actúan en {len(effects)} combinaciones de choque y tramo y modifican las medidas; la menor distancia a un piso "
+            f"en el resto es {es(dist)} pb.")})
     else:
         out.append({"id": "F3", "severity": "S4", "status": "open", "evidence": ["irrbb.cmf_annex1_goldens"], "title": t(
             f"No post-shock floor binds on the curves of the valuation date: the smallest distance to a floor is {dist:.1f} bp ({where}); the floors would "
             "matter only at lower rates.",
-            f"Ningun piso posterior al choque actua sobre las curvas de la fecha de valoracion: la menor distancia a un piso es {dist:.1f} pb ({where}); los "
+            f"Ningún piso posterior al choque actua sobre las curvas de la fecha de valoración: la menor distancia a un piso es {es(dist)} pb ({where}); los "
             "pisos importarian solo con tasas mas bajas.")})
     out.append({"id": "F4", "severity": "S3", "status": "open", "evidence": ["design:clp-curve-fourth-point"], "title": t(
         "The pesos curve has three published tenors and the engine's Nelson-Siegel fit needs four: the monetary policy rate is its overnight point, a "

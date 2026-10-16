@@ -31,20 +31,10 @@ def _ids(variants: dict[str, dict[str, Any]]) -> list[str]:
 
 
 def distance(o: dict[str, Any]) -> tuple[float, str]:
-    """The smallest distance, in bp, between a post-shock rate and its floor, and where it is, from the curve and the shapes of the document."""
-    floors = {"clp": o["floors"]["other_floor"], "ur": o["floors"]["ur_floor"]}
-    best, where = float("inf"), ""
-    for key in ("clp", "ur"):
-        r0 = o["curves"][key]["zero_rates_at_midpoints"]
-        for row in o["eve"]["rows"]:
-            gap = min((r0[k] + row[key]["shape_bp"][k] / 1e4 - floors[key]) * 1e4 for k in range(19))
-            if gap < best:
-                best, where = gap, f"the {key.upper()} delta EVE under {row['shock']}"
-        for row in o["nii"]["rows"]:
-            gap = min((r0[k] + row[key]["shock_bp"] / 1e4 - floors[key]) * 1e4 for k in range(6))
-            if gap < best:
-                best, where = gap, f"the {key.upper()} delta NII under {row['shock']}"
-    return best, where
+    """The smallest distance, in bp, between a post-shock rate and its floor, and where it is, from the distances stated in the document."""
+    low = min(o["floors"]["distances"], key=lambda x: x["distance_bp"])
+    what = "delta EVE" if low["measure"] == "delta-eve" else "delta NII"
+    return low["distance_bp"], f"the {low['leg']} {what} under {low['shock']}"
 
 
 def distance_bp(o: dict[str, Any]) -> float:
@@ -188,7 +178,7 @@ def results_block(variants: dict[str, dict[str, Any]], models: dict[str, Any]) -
         effect = "n/a" if cpi is None else m(cpi["effect"])
         w(f"| {v} | {m(ic['pn_ur'])} | {m(ic['charge'])} | {pct(ic['charge'] / x['nii']['delta_nii'], 0)} percent | {surprise} | {effect} |")
     w("")
-    w("### Dynamic NII, 12 months, constant balance sheet (CLP million)")
+    w("### Dynamic NII, 12 months, constant balance sheet (CLP million; the change columns are the NII of the shocked path minus the base, so a negative change is a loss of NII)")
     w("")
     w("| Variant | Leg | Base | Parallel up (+300 bp) | Parallel down (-300 bp) | Change for up | Change for down |")
     w("|---|---|---:|---:|---:|---:|---:|")
