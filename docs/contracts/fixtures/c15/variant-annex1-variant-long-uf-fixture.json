@@ -45,6 +45,7 @@
     },
     "as_of": "2026-06-30",
     "balance_sheet_month": "2026-06",
+    "calibration_month": "2026-05",
     "curves_month": "2026-06",
     "reporting_currency": "CLP",
     "sign_convention": {
@@ -908,6 +909,94 @@
         }
       ]
     },
+    "ear_evar": [
+      {
+        "leg": "CLP",
+        "method": "hw1f",
+        "n_paths": 10000,
+        "seed": 0,
+        "horizon_months": 12,
+        "parameters": [
+          {
+            "name": "a",
+            "value": 0.1,
+            "unit": "per year"
+          },
+          {
+            "name": "sigma",
+            "value": 0.01,
+            "unit": "per year"
+          }
+        ],
+        "base_nii": 112130.19297,
+        "base_eve": -309737.159569,
+        "levels": [
+          {
+            "level": 0.95,
+            "nii_quantile": 104281.079462,
+            "eve_quantile": -340710.875525,
+            "ear": 7849.113508,
+            "evar": 30973.715956,
+            "ear_se": 78.491135,
+            "evar_se": 309.73716
+          },
+          {
+            "level": 0.99,
+            "nii_quantile": 100917.173673,
+            "eve_quantile": -356197.733504,
+            "ear": 11213.019297,
+            "evar": 46460.573935,
+            "ear_se": 112.130193,
+            "evar_se": 464.605739
+          }
+        ],
+        "mc_error_method": "batch-means",
+        "n_batches": 20
+      },
+      {
+        "leg": "UR",
+        "method": "hw1f",
+        "n_paths": 10000,
+        "seed": 0,
+        "horizon_months": 12,
+        "parameters": [
+          {
+            "name": "a",
+            "value": 0.1,
+            "unit": "per year"
+          },
+          {
+            "name": "sigma",
+            "value": 0.01,
+            "unit": "per year"
+          }
+        ],
+        "base_nii": 42893.640488,
+        "base_eve": 500908.25921,
+        "levels": [
+          {
+            "level": 0.95,
+            "nii_quantile": 39891.085654,
+            "eve_quantile": 450817.433289,
+            "ear": 3002.554834,
+            "evar": 50090.825921,
+            "ear_se": 30.025548,
+            "evar_se": 500.908259
+          },
+          {
+            "level": 0.99,
+            "nii_quantile": 38604.276439,
+            "eve_quantile": 425772.020328,
+            "ear": 4289.364049,
+            "evar": 75136.238882,
+            "ear_se": 42.89364,
+            "evar_se": 751.362389
+          }
+        ],
+        "mc_error_method": "batch-means",
+        "n_batches": 20
+      }
+    ],
     "floors": {
       "ur_floor": -0.02,
       "other_floor": 0.0,
@@ -960,6 +1049,168 @@
           "delta_with_floor": -2527.010655,
           "delta_without_floor": -2925.0,
           "effect": 397.989345
+        }
+      ],
+      "distances": [
+        {
+          "leg": "CLP",
+          "measure": "delta-eve",
+          "shock": "parallel-up",
+          "lowest_rate": 0.058014553,
+          "bucket": 1,
+          "floor": 0.0,
+          "distance_bp": 580.14553,
+          "binds": false
+        },
+        {
+          "leg": "CLP",
+          "measure": "delta-eve",
+          "shock": "parallel-down",
+          "lowest_rate": -0.001985447,
+          "bucket": 1,
+          "floor": 0.0,
+          "distance_bp": -19.85447,
+          "binds": true
+        },
+        {
+          "leg": "CLP",
+          "measure": "delta-eve",
+          "shock": "steepener",
+          "lowest_rate": 0.002045342,
+          "bucket": 1,
+          "floor": 0.0,
+          "distance_bp": 20.453422,
+          "binds": false
+        },
+        {
+          "leg": "CLP",
+          "measure": "delta-eve",
+          "shock": "flattener",
+          "lowest_rate": 0.03455023,
+          "bucket": 18,
+          "floor": 0.0,
+          "distance_bp": 345.502303,
+          "binds": false
+        },
+        {
+          "leg": "CLP",
+          "measure": "delta-eve",
+          "shock": "short-up",
+          "lowest_rate": 0.046499878,
+          "bucket": 18,
+          "floor": 0.0,
+          "distance_bp": 464.998777,
+          "binds": false
+        },
+        {
+          "leg": "CLP",
+          "measure": "delta-eve",
+          "shock": "short-down",
+          "lowest_rate": -0.011957457,
+          "bucket": 1,
+          "floor": 0.0,
+          "distance_bp": -119.574568,
+          "binds": true
+        },
+        {
+          "leg": "CLP",
+          "measure": "delta-nii",
+          "shock": "parallel-up",
+          "lowest_rate": 0.058014553,
+          "bucket": 1,
+          "floor": 0.0,
+          "distance_bp": 580.14553,
+          "binds": false
+        },
+        {
+          "leg": "CLP",
+          "measure": "delta-nii",
+          "shock": "parallel-down",
+          "lowest_rate": -0.001985447,
+          "bucket": 1,
+          "floor": 0.0,
+          "distance_bp": -19.85447,
+          "binds": true
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-eve",
+          "shock": "parallel-up",
+          "lowest_rate": 0.024015392,
+          "bucket": 1,
+          "floor": -0.02,
+          "distance_bp": 440.15392,
+          "binds": false
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-eve",
+          "shock": "parallel-down",
+          "lowest_rate": -0.015984608,
+          "bucket": 1,
+          "floor": -0.02,
+          "distance_bp": 40.15392,
+          "binds": false
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-eve",
+          "shock": "steepener",
+          "lowest_rate": -0.01221379,
+          "bucket": 1,
+          "floor": -0.02,
+          "distance_bp": 77.862097,
+          "binds": false
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-eve",
+          "shock": "flattener",
+          "lowest_rate": 0.011764676,
+          "bucket": 18,
+          "floor": -0.02,
+          "distance_bp": 317.646761,
+          "binds": false
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-eve",
+          "shock": "short-up",
+          "lowest_rate": 0.020714324,
+          "bucket": 18,
+          "floor": -0.02,
+          "distance_bp": 407.143236,
+          "binds": false
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-eve",
+          "shock": "short-down",
+          "lowest_rate": -0.020967114,
+          "bucket": 1,
+          "floor": -0.02,
+          "distance_bp": -9.671141,
+          "binds": true
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-nii",
+          "shock": "parallel-up",
+          "lowest_rate": 0.034015392,
+          "bucket": 1,
+          "floor": -0.02,
+          "distance_bp": 540.15392,
+          "binds": false
+        },
+        {
+          "leg": "UR",
+          "measure": "delta-nii",
+          "shock": "parallel-down",
+          "lowest_rate": -0.025984608,
+          "bucket": 1,
+          "floor": -0.02,
+          "distance_bp": -59.84608,
+          "binds": true
         }
       ]
     },

@@ -1,8 +1,9 @@
 // C15's Legs group: the two legs of the Banco Andino book apart (the CLP leg and the UF-indexed UR leg), the delta EVE of
 // each under the six shocks with the 50 percent CLP and CLF offset shown on and off, the positions of the legs in their
 // own currencies, and the dynamic NII of each leg. Money is in the reporting currency (CLP) except where a position is
-// in its own currency (CLF for the UR leg); the document's scale says in what unit. Everything is a fixture until the BCCh
-// account exists, and the notice says so.
+// in its own currency (CLF for the UR leg); the document's scale says in what unit. The EaR and EVaR of each leg are the last view
+// (c15-outputs 1.1.0).
+import { Fragment } from 'react';
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
@@ -234,8 +235,8 @@ export function DynamicLegView({ sel }: { sel: C15Sel | null }) {
         title={{ en: `The dynamic NII: ${text(LEG_SHORT, leg.leg).en} leg`, es: `El NII dinámico: tramo ${text(LEG_SHORT, leg.leg).es}` }}
         {...card}
         note={{
-          en: `${o.sign_convention.statement.en} Month by month under the base path and the two parallel shocks${converted ? '; balances and NII of the UF leg are converted at the UF value' : ''}. The EaR and EVaR of C15 wait for the BCCh curves.`,
-          es: `${o.sign_convention.statement.es} Mes a mes bajo la trayectoria base y los dos choques paralelos${converted ? '; los saldos y el NII del tramo UF se convierten al valor de la UF' : ''}. El EaR y el EVaR de C15 esperan las curvas del BCCh.`,
+          en: `${o.sign_convention.statement.en} Month by month under the base path and the two parallel shocks${converted ? '; balances and NII of the UF leg are converted at the UF value' : ''}.`,
+          es: `${o.sign_convention.statement.es} Mes a mes bajo la trayectoria base y los dos choques paralelos${converted ? '; los saldos y el NII del tramo UF se convierten al valor de la UF' : ''}.`,
         }}
       >
         <ChartOverTable
@@ -304,3 +305,104 @@ export function DynamicLegView({ sel }: { sel: C15Sel | null }) {
 }
 
 export { pairTotal };
+
+const METHOD_TEXT: Record<string, BiText> = {
+  hw1f: { en: 'Hull-White one-factor', es: 'Hull-White de un factor' },
+  dns: { en: 'dynamic Nelson-Siegel', es: 'Nelson-Siegel dinámico' },
+};
+
+/** EaR and EVaR of the leg in focus at 95 and 99 percent from scenario Monte Carlo, with the method, the parameters, the paths, the seed and the error. */
+export function EarEvarLegView({ sel }: { sel: C15Sel | null }) {
+  const lang = useShellLang();
+  const card = useCard(sel?.data.variant);
+  const o = outputsOf(sel);
+  if (!sel || !o) return <Pending />;
+  const e = o.ear_evar?.find((x) => x.leg === sel.leg);
+  if (!e) {
+    return <UnavailableCard sel={sel} title={{ en: 'Earnings at risk and economic value at risk', es: 'Ganancias en riesgo y valor económico en riesgo' }} reason={{ en: 'Not available: this document has no EaR and EVaR for this leg.', es: 'No disponible: este documento no trae EaR ni EVaR para este tramo.' }} />;
+  }
+  const doc = moneyDoc(o);
+  const axis = axisOf(doc, e.levels.flatMap((l) => [l.ear, l.evar]));
+  const unit = pick(scaleUnit(doc), lang);
+  const pctLevel = (l: number) => formatNumber(l, lang, { percent: true, decimals: 0 });
+  const bars = e.levels.flatMap((l) => [
+    { id: `ear-${l.level}`, label: { en: `EaR ${pctLevel(l.level)}`, es: `EaR ${pctLevel(l.level)}` }, value: l.ear / axis.div, tone: 'warn' as const },
+    { id: `evar-${l.level}`, label: { en: `EVaR ${pctLevel(l.level)}`, es: `EVaR ${pctLevel(l.level)}` }, value: l.evar / axis.div, tone: 'bad' as const },
+  ]);
+  const converted = e.leg === 'UR';
+  return (
+    <ViewsRow>
+      <PlotCard
+        fill
+        title={{ en: `Earnings at risk and economic value at risk: ${text(LEG_SHORT, e.leg).en} leg`, es: `Ganancias en riesgo y valor económico en riesgo: tramo ${text(LEG_SHORT, e.leg).es}` }}
+        {...card}
+        note={{
+          en: `${o.sign_convention.statement.en} EaR is the base NII of the leg minus the lower quantile of its simulated NII; EVaR is the same for the EVE. Both come from short-rate scenarios drawn by the method named below and carry the Monte Carlo error of the number of paths${converted ? '; the UF leg is converted at the UF value' : ''}.`,
+          es: `${o.sign_convention.statement.es} El EaR es el NII base del tramo menos el cuantil inferior de su NII simulado; el EVaR es lo mismo para el EVE. Ambos vienen de escenarios de tasa corta generados por el método nombrado abajo y llevan el error de Monte Carlo del número de trayectorias${converted ? '; el tramo UF se convierte al valor de la UF' : ''}.`,
+        }}
+      >
+        <ChartOverTable
+          chartMin="13rem"
+          chart={
+            <BarChart
+              title={{ en: 'EaR and EVaR by confidence level', es: 'EaR y EVaR por nivel de confianza' }}
+              height="fill"
+              orientation="vertical"
+              data={bars}
+              axis={{ label: { en: 'Loss at the confidence level', es: 'Pérdida al nivel de confianza' }, unit: axis.unit, format: { digits: 4 } }}
+            />
+          }
+        >
+          <table className="caos-table ct-wrap-head" data-table="ear-evar" data-leg={e.leg}>
+            <thead>
+              <tr>
+                <th className="ct-text">{pick({ en: 'Confidence level', es: 'Nivel de confianza' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: `NII quantile (${unit})`, es: `Cuantil del NII (${unit})` }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: `EVE quantile (${unit})`, es: `Cuantil del EVE (${unit})` }, lang)}</th>
+                <th>{pick({ en: `EaR (${unit})`, es: `EaR (${unit})` }, lang)}</th>
+                <th>{pick({ en: `EVaR (${unit})`, es: `EVaR (${unit})` }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: `EaR Monte Carlo error (${unit})`, es: `Error de Monte Carlo del EaR (${unit})` }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: `EVaR Monte Carlo error (${unit})`, es: `Error de Monte Carlo del EVaR (${unit})` }, lang)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {e.levels.map((l) => (
+                <tr key={l.level} data-level={l.level}>
+                  <td className="ct-text">{pctLevel(l.level)}</td>
+                  <td className="ct-wide-only">{cell(l.nii_quantile, lang)}</td>
+                  <td className="ct-wide-only">{cell(l.eve_quantile, lang)}</td>
+                  <td>{cell(l.ear, lang)}</td>
+                  <td>{cell(l.evar, lang)}</td>
+                  <td className="ct-wide-only" data-ear-se={l.ear_se}>{cell(l.ear_se, lang)}</td>
+                  <td className="ct-wide-only" data-evar-se={l.evar_se}>{cell(l.evar_se, lang)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <dl className="ct-defs" data-table="ear-evar-method">
+            <dt>{pick({ en: 'Scenario method', es: 'Método de escenarios' }, lang)}</dt>
+            <dd>{pick(METHOD_TEXT[e.method] ?? { en: e.method, es: e.method }, lang)}</dd>
+            {e.parameters.map((p) => (
+              <Fragment key={p.name}>
+                <dt>{pick({ en: 'Parameter', es: 'Parámetro' }, lang)}</dt>
+                <dd data-parameter={p.name}>{`${p.name} = ${formatNumber(p.value, lang, { digits: 4 })} (${lang === 'es' && p.unit === 'per year' ? 'por año' : p.unit})`}</dd>
+              </Fragment>
+            ))}
+            <dt>{pick({ en: 'Paths', es: 'Trayectorias' }, lang)}</dt>
+            <dd>{formatNumber(e.n_paths, lang, { decimals: 0 })}</dd>
+            <dt>{pick({ en: 'Seed', es: 'Semilla' }, lang)}</dt>
+            <dd data-seed={e.seed}>{e.seed}</dd>
+            <dt>{pick({ en: 'Horizon', es: 'Horizonte' }, lang)}</dt>
+            <dd>{`${e.horizon_months} ${pick({ en: 'months', es: 'meses' }, lang)}`}</dd>
+            <dt>{pick({ en: `Base NII (${unit})`, es: `NII base (${unit})` }, lang)}</dt>
+            <dd>{cell(e.base_nii, lang)}</dd>
+            <dt>{pick({ en: `Base EVE (${unit})`, es: `EVE base (${unit})` }, lang)}</dt>
+            <dd>{cell(e.base_eve, lang)}</dd>
+            <dt>{pick({ en: 'Monte Carlo error', es: 'Error de Monte Carlo' }, lang)}</dt>
+            <dd data-mc-method={e.mc_error_method}>{pick({ en: `batch means over ${e.n_batches} batches of the paths, per level in the table`, es: `medias por lotes sobre ${e.n_batches} lotes de las trayectorias, por nivel en la tabla` }, lang)}</dd>
+          </dl>
+        </ChartOverTable>
+      </PlotCard>
+    </ViewsRow>
+  );
+}
