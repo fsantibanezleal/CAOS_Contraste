@@ -584,6 +584,21 @@ def c15_curve(kind: str) -> dict:
     }
 
 
+def floor_distances(eve_rows: list, nii_rows: list, rates: dict, floors: dict) -> list:
+    """Per leg and shock: the lowest post-shock rate before the floor, its bucket, the floor and the distance in bp."""
+    out = []
+    for leg, key in (("CLP", "clp"), ("UR", "ur")):
+        for measure, rows, n in (("delta-eve", eve_rows, 19), ("delta-nii", nii_rows, 6)):
+            for row in rows:
+                shape = row[key]["shape_bp"] if measure == "delta-eve" else [row[key]["shock_bp"]] * 19
+                free = [rates[leg][k] + shape[k] / 1e4 for k in range(n)]
+                k = min(range(n), key=lambda i: (free[i], i))
+                dist = (free[k] - floors[leg]) * 1e4
+                out.append({"leg": leg, "measure": measure, "shock": row["shock"], "lowest_rate": r(free[k], 9), "bucket": k + 1,
+                            "floor": floors[leg], "distance_bp": r(dist, 6), "binds": dist <= 0})
+    return out
+
+
 def c15_outputs(vid: str) -> dict:
     sp = C15_VARIANTS[vid]
     rates = {"CLP": c15_curve("CLP")["zero_rates_at_midpoints"], "UR": c15_curve("UR")["zero_rates_at_midpoints"]}
@@ -737,7 +752,7 @@ def c15_outputs(vid: str) -> dict:
         "kind": "annex1-variant",
         "variant": {"id": vid, "label": txt(*sp["label"]), "description": txt(*sp["desc"]),
                     "parameters": [{"name": "net_uf_position", "value": r(pn_uf, 6), "unit": "millions CLF"}]},
-        "as_of": "2026-06-30", "balance_sheet_month": "2026-06", "curves_month": "2026-06", "reporting_currency": "CLP",
+        "as_of": "2026-06-30", "balance_sheet_month": "2026-06", "calibration_month": "2026-05", "curves_month": "2026-06", "reporting_currency": "CLP",
         "sign_convention": sign_convention(), "units": units("millions"),
         "bank": {"name": "Banco Andino", "synthetic": True,
                  "notice": txt("Synthetic bank calibrated to public aggregates; fixture values.",
@@ -753,7 +768,7 @@ def c15_outputs(vid: str) -> dict:
         "floors": {"ur_floor": -0.02, "other_floor": 0.0,
                    "rule": txt("Post-shock rates are floored at -2 percent for UR and at 0 percent for CLP. The fixture also keeps a rate that is already below its floor at its pre-shock value, for both floors; whether Annex 1 applies that clause to the UR floor is UNVERIFIED.",
                                "Las tasas post choque tienen piso de -2 por ciento para UR y 0 por ciento para CLP. El ejemplo tambien mantiene en su valor previo una tasa que ya esta bajo su piso, en ambos pisos; que el Anexo 1 aplique esa clausula al piso UR no esta verificado."),
-                   "effects": floor_effects},
+                   "effects": floor_effects, "distances": floor_distances(eve_rows, nii_rows, rates, floors)},
         "offset_rule": {"state": state, "share": 0.5, "applies_to": ["CLP", "CLF"],
                         "rule": txt("When delta CLP and delta CLF have opposite signs, half of the CLP is offset against the CLF (or the reverse), floored at zero.",
                                     "Si los deltas CLP y CLF tienen signos opuestos, se compensa la mitad del CLP contra el CLF (o al reves), con piso en cero."),

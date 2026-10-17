@@ -45,3 +45,19 @@ def mutated(doc: dict[str, Any]) -> dict[str, Any]:
 
 def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def differences(a: Any, b: Any, path: str = "", rel: float = 1e-12, abs_tol: float = 1e-9) -> list[str]:
+    """The places where two documents differ: a number beyond ``rel`` (and ``abs_tol``), any other value, a key or a length."""
+    if isinstance(a, dict) and isinstance(b, dict):
+        out = [f"{path}: keys differ {sorted(set(a) ^ set(b))}"] if set(a) != set(b) else []
+        for k in sorted(set(a) & set(b)):
+            out += differences(a[k], b[k], f"{path}/{k}", rel, abs_tol)
+        return out
+    if isinstance(a, list) and isinstance(b, list):
+        if len(a) != len(b):
+            return [f"{path}: length {len(a)} against {len(b)}"]
+        return [x for i, (u, v) in enumerate(zip(a, b)) for x in differences(u, v, f"{path}[{i}]", rel, abs_tol)]
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)) and not isinstance(a, bool) and not isinstance(b, bool):
+        return [] if abs(a - b) <= max(abs_tol, rel * max(abs(a), abs(b))) else [f"{path}: {a} against {b}"]
+    return [] if a == b else [f"{path}: {a!r} against {b!r}"]

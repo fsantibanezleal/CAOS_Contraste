@@ -220,6 +220,17 @@ def _http(url: str) -> bytes:
         return resp.read()
 
 
+def guarded(send: Transport, function: str, user: str, password: str, **params: str) -> bytes:
+    """One request through the transport: a transport error is reduced to its type (its message can carry the URL, which holds the credentials)
+    and a refused answer is never returned."""
+    try:
+        body = send(request_url(function, user=user, password=password, **params))
+    except Exception as exc:  # noqa: BLE001
+        raise BcchError(f"the request {function} failed: {type(exc).__name__}") from None
+    parse_answer(body)
+    return body
+
+
 def fetch(data_root: str | Path, series_ids: Sequence[str], first: str, last: str, *, user: str, password: str, today: str | None = None,
           transport: Transport | None = None, sleep: Callable[[float], None] = time.sleep, clock: Callable[[], float] = time.monotonic,
           search: bool = True) -> list[dict[str, Any]]:
@@ -240,11 +251,7 @@ def fetch(data_root: str | Path, series_ids: Sequence[str], first: str, last: st
             if wait > 0:
                 sleep(wait)
         state["last"] = clock()
-        try:
-            body = send(request_url(function, user=user, password=password, **params))
-        except Exception as exc:  # noqa: BLE001  (the message of a transport error can carry the URL, so only its type is kept)
-            raise BcchError(f"the request {function} failed: {type(exc).__name__}") from None
-        parse_answer(body)                                  # a refused answer is never written as a raw file
+        body = guarded(send, function, user, password, **params)
         return body, request_url(function, **params)
 
     rows: list[dict[str, Any]] = []
@@ -309,7 +316,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     user, password = credentials_from_env()
     codes = args.series
     if not codes:
-        body = _http(request_url("SearchSeries", user=user, password=password, frequency="DAILY"))
+        body = guarded(_http, "SearchSeries", user, password, frequency="DAILY")
         found = [y.series_id for y in yield_series(parse_search(body))]
         codes = [*found, *EXTRA_SERIES]
         time.sleep(MIN_INTERVAL)

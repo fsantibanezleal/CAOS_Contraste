@@ -60,31 +60,31 @@ def _spec(vid: str, en: str, es: str, d_en: str, d_es: str, cpi: float | None = 
 SPECS: dict[str, VariantSpec] = {s.id: s for s in (
     _spec("long-uf", "Long UF", "UF largo",
           "A net long UF book: UF assets exceed UF funding by 30 percent of Tier 1, the difference funded in pesos.",
-          "Libro con posicion neta larga en UF: los activos en UF superan el fondeo en UF en 30 por ciento del Tier 1, financiado en pesos.",
+          "Libro con posición neta larga en UF: los activos en UF superan el fondeo en UF en 30 por ciento del Tier 1, financiado en pesos.",
           net_uf_share_tier1=0.30),
     _spec("short-uf", "Short UF", "UF corto",
           "A net short UF book: UF funding exceeds UF assets by 30 percent of Tier 1, so an indexation surprise is a loss.",
-          "Libro con posicion neta corta en UF: el fondeo en UF supera los activos en UF en 30 por ciento del Tier 1.",
+          "Libro con posición neta corta en UF: el fondeo en UF supera los activos en UF en 30 por ciento del Tier 1.",
           net_uf_share_tier1=-0.30),
     _spec("cpi-surprise", "CPI surprise +2.5 pp", "Sorpresa de IPC +2,5 pp",
           "The long UF book under a 2.5 percentage point inflation surprise on its net UF position.",
-          "El libro largo en UF ante una sorpresa de inflacion de 2,5 puntos porcentuales sobre su posicion neta en UF.",
+          "El libro largo en UF ante una sorpresa de inflación de 2,5 puntos porcentuales sobre su posición neta en UF.",
           cpi=2.5, net_uf_share_tier1=0.30),
     _spec("clp-steepener", "CLP steepener", "Empinamiento CLP",
           "A near-flat UF position and a CLP book with 35 percent of its fixed loans and securities moved to the long end, so the "
           "long-end rise of the steepener acts on it.",
-          "Posicion en UF casi plana y libro en pesos con 35 por ciento de sus creditos fijos y valores en el tramo largo, de modo que el alza "
+          "Posicion en UF casi plana y libro en pesos con 35 por ciento de sus créditos fijos y valores en el tramo largo, de modo que el alza "
           "del tramo largo del empinamiento actua sobre el.",
           net_uf_share_tier1=0.05, clp_long_asset_share=0.35),
-    _spec("offset-on-off", "CLP/CLF offset on and off", "Compensacion CLP/CLF activada y desactivada",
+    _spec("offset-on-off", "CLP/CLF offset on and off", "Compensación CLP/CLF activada y desactivada",
           "A long UF book funded in long CLP bonds (twice the maturity), so the two legs move in opposite directions and the 50 percent "
           "offset can be read on and off.",
           "Libro largo en UF fondeado con bonos largos en pesos (el doble de plazo): los dos tramos se mueven en sentido contrario y la "
-          "compensacion de 50 por ciento se lee activada y desactivada.",
+          "compensación de 50 por ciento se lee activada y desactivada.",
           offset="compared", net_uf_share_tier1=0.30, clp_bond_years_scale=2.0),
     _spec("floors-active", "Floors active", "Pisos activos",
           "A near-flat UF position with 70 percent of the UF commercial loans floating, the book most exposed to the UR post-shock floor.",
-          "Posicion en UF casi plana con 70 por ciento de los creditos comerciales en UF a tasa variable: el libro mas expuesto al piso "
+          "Posicion en UF casi plana con 70 por ciento de los créditos comerciales en UF a tasa variable: el libro mas expuesto al piso "
           "posterior al choque de la UR.",
           net_uf_share_tier1=0.05, ur_floating_share=0.70),
 )}
@@ -312,32 +312,32 @@ def build_book(seed: int, spec: VariantSpec, uf_value: float) -> Book:
     lw = p["clp_long_asset_share"]
     fl = p["ur_floating_share"]
     # ---- assets, CLP
-    add("CLP", "CLP-CASH", "CLP cash and Central Bank deposits", "Caja y depositos en el Banco Central en pesos", "asset", "cash", "none",
+    add("CLP", "CLP-CASH", "CLP cash and Central Bank deposits", "Caja y depósitos en el Banco Central en pesos", "asset", "cash", "none",
         f"synthetic: {asm.CASH_SHARE_OF_ASSETS:.0%} of total assets (assumption); overnight", cash, "overnight", {"kind": "floating", "margin": "cash"})
     add("CLP", "CLP-IBK", "CLP loans to banks", "Adeudado por bancos en pesos", "asset", "loans-floating", "none",
         f"{cmf}: Adeudado por Bancos; {syn}", ibk, "one_month", {"kind": "floating", "margin": "interbank"})
     com_clp = com * (1.0 - uf["commercial"])
-    add("CLP", "CLP-COM-F", "CLP commercial loans, floating", "Creditos comerciales en pesos, tasa variable", "asset", "loans-floating", "none",
+    add("CLP", "CLP-COM-F", "CLP commercial loans, floating", "Créditos comerciales en pesos, tasa variable", "asset", "loans-floating", "none",
         f"{cmf}: Comercial, scaled with the C07 book; {syn}; floating share {asm.COMMERCIAL_FLOATING_SHARE:.0%} synthetic",
         com_clp * asm.COMMERCIAL_FLOATING_SHARE, "reprice_3m", {"kind": "floating", "margin": "commercial_floating"})
-    add("CLP", "CLP-COM-X", "CLP commercial loans, fixed", "Creditos comerciales en pesos, tasa fija", "asset", "loans-fixed", "none",
+    add("CLP", "CLP-COM-X", "CLP commercial loans, fixed", "Créditos comerciales en pesos, tasa fija", "asset", "loans-fixed", "none",
         f"{cmf}: Comercial, scaled with the C07 book; {syn}", com_clp * (1.0 - asm.COMMERCIAL_FLOATING_SHARE), "com_fixed",
         {"kind": "fixed", "margin": "commercial_fixed"}, long_share=lw)
-    add("CLP", "CLP-CON", "CLP consumer loans", "Creditos de consumo en pesos", "asset", "loans-fixed", "none",
+    add("CLP", "CLP-CON", "CLP consumer loans", "Créditos de consumo en pesos", "asset", "loans-fixed", "none",
         f"{cmf}: Consumo, scaled with the C07 book; {syn}", con, "consumer", {"kind": "fixed", "margin": "consumer"})
-    add("CLP", "CLP-MTG", "CLP residential mortgages", "Creditos hipotecarios en pesos", "asset", "loans-fixed", "prepayable-loan",
+    add("CLP", "CLP-MTG", "CLP residential mortgages", "Créditos hipotecarios en pesos", "asset", "loans-fixed", "prepayable-loan",
         f"{cmf}: Vivienda, scaled with the C07 book; {syn}", mtg * (1.0 - uf["mortgage"]), "mortgage_clp", {"kind": "fixed", "margin": "mortgage"})
     add("CLP", "CLP-SEC", "CLP debt securities", "Instrumentos de deuda en pesos", "asset", "securities", "none",
         f"{cmf}: Instrumentos financieros de deuda; {syn}", sec * (1.0 - uf["securities"]), "securities_clp",
         {"kind": "fixed", "margin": "securities"}, long_share=lw)
     # ---- assets, UR
     com_uf = com * uf["commercial"]
-    add("UR", "UR-COM-F", "UF commercial loans, floating", "Creditos comerciales en UF, tasa variable", "asset", "loans-uf", "none",
+    add("UR", "UR-COM-F", "UF commercial loans, floating", "Créditos comerciales en UF, tasa variable", "asset", "loans-uf", "none",
         f"{cmf}: Comercial, scaled with the C07 book; {syn}; floating share is a variant parameter", com_uf * fl, "reprice_3m",
         {"kind": "floating", "margin": "commercial_floating"})
-    add("UR", "UR-COM", "UF commercial loans", "Creditos comerciales en UF", "asset", "loans-uf", "none",
+    add("UR", "UR-COM", "UF commercial loans", "Créditos comerciales en UF", "asset", "loans-uf", "none",
         f"{cmf}: Comercial, scaled with the C07 book; {syn}", com_uf * (1.0 - fl), "com_uf", {"kind": "fixed", "margin": "commercial_fixed"})
-    add("UR", "UR-MTG", "UF residential mortgages", "Creditos hipotecarios en UF", "asset", "loans-uf", "prepayable-loan",
+    add("UR", "UR-MTG", "UF residential mortgages", "Créditos hipotecarios en UF", "asset", "loans-uf", "prepayable-loan",
         f"{cmf}: Vivienda, scaled with the C07 book; {syn}", mtg * uf["mortgage"], "mortgage_uf", {"kind": "fixed", "margin": "mortgage"})
     add("UR", "UR-SEC", "UF debt securities", "Instrumentos de deuda en UF", "asset", "securities", "none",
         f"{cmf}: Instrumentos financieros de deuda; {syn}", sec * uf["securities"], "securities_uf", {"kind": "fixed", "margin": "securities"})
@@ -349,8 +349,8 @@ def build_book(seed: int, spec: VariantSpec, uf_value: float) -> Book:
         s = rv_slotting.nmd_split(balance, cat, req.share, req.maturity, enforce_caps=True, grid=GRID)
         code = {"retail-operational": "RO", "retail-non-operational": "RN", "wholesale": "W"}[cat]
         legs["CLP"].items.append(Item(
-            f"CLP-NMD-{code}", t(f"CLP non-maturity deposits, {cat}", f"Depositos a la vista en pesos, {cat}"), "liability", "deposits-nmd",
-            asm.CATEGORY_CLASS[cat], f"{cmf}: Depositos totales, split synthetic (assumptions.deposit_split); core share and maturity requested "
+            f"CLP-NMD-{code}", t(f"CLP non-maturity deposits, {cat}", f"Depósitos a la vista en pesos, {cat}"), "liability", "deposits-nmd",
+            asm.CATEGORY_CLASS[cat], f"{cmf}: Depósitos totales, split synthetic (assumptions.deposit_split); core share and maturity requested "
             "synthetic, capped by SRP31 Table 4", float(balance), -np.asarray(s.flows, dtype=float), {"kind": "nmd", "margin": None}))
         segments.append({"category": cat, "balance": float(balance), "requested_core_share": float(s.requested_core_share),
                          "core_share_cap": float(s.core_share_cap), "core_share_used": float(s.core_share_used),
@@ -358,15 +358,15 @@ def build_book(seed: int, spec: VariantSpec, uf_value: float) -> Book:
                          "core_maturity_cap_years": float(s.core_maturity_cap_years), "core_maturity_used_years": float(s.core_maturity_used_years),
                          "cap_applied": bool(s.cap_applied), "source_kind": "synthetic-stated",
                          "source": "request stated by Contraste (synthetic); the used value is min(request, SRP31 Table 4 cap)"})
-    add("CLP", "CLP-TD", "CLP term deposits", "Depositos a plazo en pesos", "liability", "deposits-time", "term-deposit",
-        f"{cmf}: Depositos totales, split synthetic (assumptions.deposit_split); {syn}", td * (1.0 - uf["time_deposits"]), "td_clp",
+    add("CLP", "CLP-TD", "CLP term deposits", "Depósitos a plazo en pesos", "liability", "deposits-time", "term-deposit",
+        f"{cmf}: Depósitos totales, split synthetic (assumptions.deposit_split); {syn}", td * (1.0 - uf["time_deposits"]), "td_clp",
         {"kind": "time", "margin": "time_deposit"})
     add("CLP", "CLP-BND", "CLP bonds and other borrowings", "Bonos y otros financiamientos en pesos", "liability", "borrowings", "none",
         f"synthetic: the balancing item of the book (assets less deposits less Tier 1 proxy), {syn}", clp_bonds, "bond_clp",
         {"kind": "fixed", "margin": "bond"}, years_scale=p["clp_bond_years_scale"])
     # ---- liabilities, UR
-    add("UR", "UR-TD", "UF term deposits", "Depositos a plazo en UF", "liability", "deposits-time", "term-deposit",
-        f"{cmf}: Depositos totales, split synthetic (assumptions.deposit_split); {syn}", uf_td, "td_uf", {"kind": "time", "margin": "time_deposit"})
+    add("UR", "UR-TD", "UF term deposits", "Depósitos a plazo en UF", "liability", "deposits-time", "term-deposit",
+        f"{cmf}: Depósitos totales, split synthetic (assumptions.deposit_split); {syn}", uf_td, "td_uf", {"kind": "time", "margin": "time_deposit"})
     add("UR", "UR-BND", "UF bonds", "Bonos en UF", "liability", "borrowings", "none",
         f"synthetic: the UF borrowings solved so that the net UF position is the variant's share of Tier 1, {syn}", uf_bonds, "bond_uf",
         {"kind": "fixed", "margin": "bond"})
