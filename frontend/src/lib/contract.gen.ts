@@ -6040,7 +6040,7 @@ export interface components {
         };
         /**
          * C15 annex1-variant variant
-         * @description Catalog row c15-outputs 1.1.0: one SDD variant of the IRRBB case on a CLP and UF balance sheet under RAN 21-13 Annex 1 (outputs.kind annex1-variant).
+         * @description Catalog row c15-outputs 2.0.0: one SDD variant of the IRRBB case on a CLP and UF balance sheet under RAN 21-13 Annex 1 (outputs.kind annex1-variant).
          */
         "c15-variant-annex1-variant": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -6434,6 +6434,20 @@ export interface components {
             nmd_models: components["schemas"]["c15NmdModel"][];
             prepayment: components["schemas"]["c15Prepayment"];
         };
+        /** @description The lowest post-shock rate of a leg under one shock (over the 19 bucket midpoints for the delta EVE, the first six for the delta NII), the bucket where it is, the floor of the leg and the distance between them in basis points (lowest_rate minus floor, times 10 000); binds is true exactly when the distance is at most zero. The rates are those of the engine's shocked curves before the floor is applied. */
+        c15FloorDistance: {
+            /** @enum {string} */
+            leg: "CLP" | "UR";
+            /** @enum {string} */
+            measure: "delta-eve" | "delta-nii";
+            /** @enum {string} */
+            shock: "parallel-up" | "parallel-down" | "steepener" | "flattener" | "short-up" | "short-down";
+            lowest_rate: number;
+            bucket: number;
+            floor: number;
+            distance_bp: number;
+            binds: boolean;
+        };
         /** @description The effect of a binding post-shock floor on a leg's measure: with minus without. */
         c15FloorEffect: {
             /** @enum {string} */
@@ -6457,7 +6471,7 @@ export interface components {
             other_floor: 0;
             reference: string;
         };
-        /** @description Annex 1 post-shock floors: -2 percent for UR rates, 0 percent for other currencies (or the pre-shock rate if lower). */
+        /** @description Annex 1 post-shock floors: -2 percent for UR rates, 0 percent for other currencies (or the pre-shock rate if lower), where each leg stands against them (distances) and the effect of every floor that binds (effects). */
         c15Floors: {
             /** @constant */
             ur_floor: -0.02;
@@ -6465,6 +6479,8 @@ export interface components {
             other_floor: 0;
             rule: components["schemas"]["c15Label"];
             effects: components["schemas"]["c15FloorEffect"][];
+            /** @description One row per leg (CLP then UR) and per shock the floors apply to: the six delta EVE shocks in the order of SHOCKS, then parallel-up and parallel-down for the delta NII. effects is non-empty exactly when a row binds. */
+            distances: components["schemas"]["c15FloorDistance"][];
         };
         /** @description A net notional repricing cash flow in one bucket (assets positive, liabilities negative). */
         c15Flow: {
@@ -6949,6 +6965,7 @@ export interface components {
             variant: components["schemas"]["c15Variant"];
             as_of: string;
             balance_sheet_month: string;
+            calibration_month: string;
             curves_month: string;
             /**
              * @description ISO 4217 code of the money fields of this block.

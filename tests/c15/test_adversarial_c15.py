@@ -169,7 +169,7 @@ def test_adversarial_an_edited_results_block_is_found() -> None:
     assert edited.strip("\n") != page.results_block(variants, d.models()).strip("\n")
 
 
-def test_adversarial_a_monte_carlo_error_or_a_quantile_not_from_the_engine_is_refused() -> None:
+def test_adversarial_an_error_above_its_measure_a_shifted_quantile_and_a_missing_leg_are_refused() -> None:
     doc = d.mutated(d.variant(LONG))
     doc["outputs"]["ear_evar"][1]["levels"][0]["ear_se"] = 1e12
     assert any("ear_se" in f for f in semantics.check_document(doc))
@@ -179,3 +179,22 @@ def test_adversarial_a_monte_carlo_error_or_a_quantile_not_from_the_engine_is_re
     doc = d.mutated(d.variant(LONG))
     doc["outputs"]["ear_evar"].pop()
     assert cs.errors(cs.schema_for_document(d.C15 / "x.json", doc), doc)
+
+
+def test_adversarial_a_changed_number_or_key_is_found_by_the_bake_comparison() -> None:
+    a = d.variant(LONG)["outputs"]
+    assert d.differences(a, d.mutated(a)) == []
+    b = d.mutated(a)
+    b["eve"]["rows"][0]["clp"]["eve"] += 1.0
+    assert any("/eve/rows[0]/clp/eve" in x for x in d.differences(a, b))
+    del b["nii"]["max_pair"]
+    assert any("keys differ" in x for x in d.differences(a, b))
+
+
+def test_adversarial_a_floor_distance_or_the_calibration_month_that_does_not_recompute_is_refused() -> None:
+    for edit in (lambda o: o["floors"]["distances"][3].update({"distance_bp": 1.0}), lambda o: o["floors"]["distances"][3].update({"lowest_rate": 0.5}),
+                 lambda o: o["floors"]["distances"][3].update({"bucket": 19}), lambda o: o["floors"]["distances"][0].update({"binds": True}),
+                 lambda o: o["floors"]["distances"].pop(), lambda o: o.update({"calibration_month": "2026-12"})):
+        doc = d.mutated(d.variant(LONG))
+        edit(doc["outputs"])
+        assert d.problems(doc) != []

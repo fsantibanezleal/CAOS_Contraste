@@ -11,7 +11,6 @@ the catalog, the planned-cases list, the registry count tests, CHANGELOG.md and 
    `docs/cases/README.md` changes from planned to built.
 3. `data-pipeline/config/sources.json` names the source `bcch-bde` with `fetch: null`; the unit fetches with `python -m pipeline.io.bcch fetch`
    (which needs `BCCH_USER` and `BCCH_PASSWORD`), so no fetch specification is added there.
-4. Contract questions for the contract owner (none blocks the documents): the EaR and EVaR block of `c15-outputs` and the anchored pesos curve
-   (see `design.md`, open questions 1 and 2).
+4. Contract: `c15-outputs` is 2.0.0 and `api` 5.0.0 (major, by the ADR-0080 floor): `ear_evar` per leg, `floors.distances` and `calibration_month` are required. The open questions of the first round are closed (the policy-rate anchor is named in the curve description).
 5. `content/executive.json` and the views (`frontend/src/workbench/c15/`) are the views unit's; the documents validate against the same schemas the
    fixtures do.
