@@ -584,6 +584,21 @@ def c15_curve(kind: str) -> dict:
     }
 
 
+def floor_distances(eve_rows: list, nii_rows: list, rates: dict, floors: dict) -> list:
+    """Per leg and shock: the lowest post-shock rate before the floor, its bucket, the floor and the distance in bp."""
+    out = []
+    for leg, key in (("CLP", "clp"), ("UR", "ur")):
+        for measure, rows, n in (("delta-eve", eve_rows, 19), ("delta-nii", nii_rows, 6)):
+            for row in rows:
+                shape = row[key]["shape_bp"] if measure == "delta-eve" else [row[key]["shock_bp"]] * 19
+                free = [rates[leg][k] + shape[k] / 1e4 for k in range(n)]
+                k = min(range(n), key=lambda i: (free[i], i))
+                dist = (free[k] - floors[leg]) * 1e4
+                out.append({"leg": leg, "measure": measure, "shock": row["shock"], "lowest_rate": r(free[k], 9), "bucket": k + 1,
+                            "floor": floors[leg], "distance_bp": r(dist, 6), "binds": dist <= 0})
+    return out
+
+
 def c15_outputs(vid: str) -> dict:
     sp = C15_VARIANTS[vid]
     rates = {"CLP": c15_curve("CLP")["zero_rates_at_midpoints"], "UR": c15_curve("UR")["zero_rates_at_midpoints"]}
@@ -717,6 +732,17 @@ def c15_outputs(vid: str) -> dict:
             {"item_id": f"{leg_name}-D4", "side": "liability", "balance": r(0.5 * l_tot), "rate0": r(r1, 9), "spread": 0.0, "beta": 1.0, "reprice_months": 12},
         ]
         dyn_legs.append({"leg": leg_name, "items": its, "scenarios": dyn_block(its, r1, 300, floors[leg_name], 12)})
+    ear15 = []
+    for dl in dyn_legs:
+        b_nii, b_eve = dl["scenarios"][0]["total"], base_eve["CLP" if dl["leg"] == "CLP" else "UR"]
+        lv = []
+        for level, fn, fe in ((0.95, 0.07, 0.10), (0.99, 0.10, 0.15)):
+            nq, eq = r(b_nii - fn * abs(b_nii)), r(b_eve - fe * abs(b_eve))
+            lv.append({"level": level, "nii_quantile": nq, "eve_quantile": eq, "ear": r(b_nii - nq), "evar": r(b_eve - eq),
+                       "ear_se": r(abs(b_nii - nq) * 0.01), "evar_se": r(abs(b_eve - eq) * 0.01)})
+        ear15.append({"leg": dl["leg"], "method": "hw1f", "n_paths": 10000, "seed": 0, "horizon_months": 12,
+                      "parameters": [{"name": "a", "value": 0.1, "unit": "per year"}, {"name": "sigma", "value": 0.01, "unit": "per year"}],
+                      "base_nii": b_nii, "base_eve": r(b_eve), "levels": lv, "mc_error_method": "batch-means", "n_batches": 20})
     dyn15 = {"horizon_months": 12,
              "balance_sheet_assumption": {"kind": "constant", "growth_annual": 0,
                                           "description": txt("Constant balance sheet: maturing and repricing flows are replaced by identical new ones.",
@@ -726,7 +752,7 @@ def c15_outputs(vid: str) -> dict:
         "kind": "annex1-variant",
         "variant": {"id": vid, "label": txt(*sp["label"]), "description": txt(*sp["desc"]),
                     "parameters": [{"name": "net_uf_position", "value": r(pn_uf, 6), "unit": "millions CLF"}]},
-        "as_of": "2026-06-30", "balance_sheet_month": "2026-06", "curves_month": "2026-06", "reporting_currency": "CLP",
+        "as_of": "2026-06-30", "balance_sheet_month": "2026-06", "calibration_month": "2026-05", "curves_month": "2026-06", "reporting_currency": "CLP",
         "sign_convention": sign_convention(), "units": units("millions"),
         "bank": {"name": "Banco Andino", "synthetic": True,
                  "notice": txt("Synthetic bank calibrated to public aggregates; fixture values.",
@@ -738,11 +764,11 @@ def c15_outputs(vid: str) -> dict:
                         "uf_value": UF_VALUE, "uf_value_currency": "CLP", "uf_date": "2026-06-30",
                         "uf_source": "fixture value, not the BCCh UF"},
         "curves": {"clp": c15_curve("CLP"), "ur": c15_curve("UR")}, "assumptions": assumptions, "nmd_segments": [seg],
-        "legs": legs, "eve_shock_sizes": eve_sizes, "nii_shock_sizes": nii_sizes, "dynamic_nii": dyn15,
+        "legs": legs, "eve_shock_sizes": eve_sizes, "nii_shock_sizes": nii_sizes, "dynamic_nii": dyn15, "ear_evar": ear15,
         "floors": {"ur_floor": -0.02, "other_floor": 0.0,
                    "rule": txt("Post-shock rates are floored at -2 percent for UR and at 0 percent for CLP. The fixture also keeps a rate that is already below its floor at its pre-shock value, for both floors; whether Annex 1 applies that clause to the UR floor is UNVERIFIED.",
                                "Las tasas post choque tienen piso de -2 por ciento para UR y 0 por ciento para CLP. El ejemplo tambien mantiene en su valor previo una tasa que ya esta bajo su piso, en ambos pisos; que el Anexo 1 aplique esa clausula al piso UR no esta verificado."),
-                   "effects": floor_effects},
+                   "effects": floor_effects, "distances": floor_distances(eve_rows, nii_rows, rates, floors)},
         "offset_rule": {"state": state, "share": 0.5, "applies_to": ["CLP", "CLF"],
                         "rule": txt("When delta CLP and delta CLF have opposite signs, half of the CLP is offset against the CLF (or the reverse), floored at zero.",
                                     "Si los deltas CLP y CLF tienen signos opuestos, se compensa la mitad del CLP contra el CLF (o al reves), con piso en cero."),

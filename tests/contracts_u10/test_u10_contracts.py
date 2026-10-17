@@ -530,6 +530,27 @@ def _c14_set(path: tuple, value: Any) -> Callable[[dict], None]:
     return f
 
 
+def _c15_nii_without_charge(d: dict) -> None:
+    """A delta NII that is the largest pair alone, with its share, its thresholds and their flags made consistent."""
+    o = d["outputs"]
+    n = o["nii"]
+    n["delta_nii"] = n["max_pair"]
+    n["delta_nii_share_tier1"] = n["delta_nii"] / o["thresholds"]["tier1"]
+    for t in o["thresholds"]["tests"]:
+        if t["id"] in ("nii-tier1", "nii-margin"):
+            t["measure"] = n["delta_nii"]
+            t["ratio"] = t["measure"] / t["base"]
+            t["breached"] = t["ratio"] > t["threshold"]
+    o["thresholds"]["prioritised"] = any(t["breached"] for t in o["thresholds"]["tests"])
+
+
+def _c15_base_nii_shifted(d: dict) -> None:
+    e = d["outputs"]["ear_evar"][0]
+    e["base_nii"] += 1000.0
+    for lv in e["levels"]:
+        lv["ear"] += 1000.0
+
+
 def _plants() -> list[tuple[str, str, Callable[[dict], None]]]:
     o14 = ("outputs",)
     sc0 = o14 + ("scenarios", 0)
@@ -586,6 +607,29 @@ def _plants() -> list[tuple[str, str, Callable[[dict], None]]]:
     A(("EaR not base minus quantile", "c14-2022-q4", lambda d: d["outputs"]["ear_evar"]["levels"][0].update({"ear": 1.0})))
     A(("EaR 99 below 95", "c14-2022-q4", lambda d: d["outputs"]["ear_evar"].update({"levels": [d["outputs"]["ear_evar"]["levels"][1], d["outputs"]["ear_evar"]["levels"][0]]})))
     A(("EaR levels with a third level", "c14-2022-q4", lambda d: d["outputs"]["ear_evar"]["levels"].append(copy.deepcopy(d["outputs"]["ear_evar"]["levels"][0]))))
+    for leg_i in (0, 1):
+        A((f"c15 EaR of leg {leg_i} not base minus quantile", "c15-long-uf", lambda d, i=leg_i: d["outputs"]["ear_evar"][i]["levels"][0].update({"ear": 1.0})))
+        A((f"c15 EVaR of leg {leg_i} not base minus quantile", "c15-offset-on-off", lambda d, i=leg_i: d["outputs"]["ear_evar"][i]["levels"][1].update({"evar": 1.0})))
+        A((f"c15 EaR base NII of leg {leg_i} is not the dynamic NII base", "c15-cpi-surprise", lambda d, i=leg_i: d["outputs"]["ear_evar"][i].update({"base_nii": 5.0})))
+    A(("c15 ear_evar horizon differs from the dynamic NII", "c15-long-uf", lambda d: d["outputs"]["ear_evar"][0].update({"horizon_months": 24})))
+    A(("c15 ear_evar removed", "c15-long-uf", lambda d: d["outputs"].pop("ear_evar")))
+    A(("c15 ear_evar with one leg only", "c15-long-uf", lambda d: d["outputs"]["ear_evar"].pop()))
+    A(("c15 ear_evar legs swapped", "c15-long-uf", lambda d: d["outputs"]["ear_evar"].reverse()))
+    A(("c15 ear_se above |ear|", "c15-long-uf", lambda d: d["outputs"]["ear_evar"][1]["levels"][0].update({"ear_se": 1e12})))
+    A(("c15 delta NII without the indexation charge, totals and thresholds consistent", "c15-long-uf", _c15_nii_without_charge))
+    A(("c15 EaR moved by 5 percent, nothing else", "c15-long-uf", lambda d: d["outputs"]["ear_evar"][1]["levels"][0].update({"ear": d["outputs"]["ear_evar"][1]["levels"][0]["ear"] * 1.05})))
+    A(("c15 base NII and EaR shifted together", "c15-long-uf", _c15_base_nii_shifted))
+    A(("c15 distance changed", "c15-long-uf", lambda d: d["outputs"]["floors"]["distances"][3].update({"distance_bp": 1.0})))
+    A(("c15 lowest rate changed", "c15-long-uf", lambda d: d["outputs"]["floors"]["distances"][8].update({"lowest_rate": 0.5})))
+    A(("c15 lowest rate bucket changed", "c15-long-uf", lambda d: d["outputs"]["floors"]["distances"][2].update({"bucket": 19})))
+    A(("c15 binds on a positive distance", "c15-long-uf", lambda d: d["outputs"]["floors"]["distances"][0].update({"binds": True})))
+    A(("c15 distances with a row missing", "c15-long-uf", lambda d: d["outputs"]["floors"]["distances"].pop()))
+    A(("c15 distances out of order", "c15-long-uf", lambda d: d["outputs"]["floors"]["distances"].reverse()))
+    A(("c15 distances removed", "c15-long-uf", lambda d: d["outputs"]["floors"].pop("distances")))
+    A(("c15 calibration month after the balance sheet month", "c15-long-uf", lambda d: d["outputs"].update({"calibration_month": "2026-12"})))
+    A(("c15 calibration month removed", "c15-long-uf", lambda d: d["outputs"].pop("calibration_month")))
+    A(("c15 a floor effect without a binding distance", "c15-long-uf", lambda d: d["outputs"]["floors"]["effects"].append(
+        {"leg": "CLP", "measure": "delta-eve", "shock": "parallel-down", "buckets_floored": 1, "delta_with_floor": 1.0, "delta_without_floor": 0.0, "effect": 1.0})))
     A(("out-of-sample period inside the data window", "c14-2021-q4", _c14_set(o14 + ("out_of_sample", "realised_period_start"), "2021-06-01")))
     A(("out-of-sample relative error changed", "c14-2021-q4", _c14_set(o14 + ("out_of_sample", "relative_error"), 0.9)))
     A(("out-of-sample not applicable without a reason", "c14-2022-q4", _c14_set(o14 + ("out_of_sample", "reason"), None)))
@@ -815,14 +859,14 @@ def test_the_rows_fragment_has_the_five_rows_in_the_catalog_columns() -> None:
     for r in data:
         assert len(r) == len(header), r[0]
         d = dict(zip(header, r))
-        assert d["version"] == ("1.1.0" if d["id"] == "engine-irrbb-api" else "1.0.0")
+        assert d["version"] == {"engine-irrbb-api": "1.1.0", "c15-outputs": "2.0.0"}.get(d["id"], "1.0.0")
         # C14 and the engine are built (real at 0.11.000); C15 waits for the BCCh account on its fixture (active)
-        assert d["status"] == ("active" if d["id"].startswith("c15-") else "real")
+        assert d["status"] == "real"  # C15 is built since 0.12.000, so every U10 row is real
         assert d["provider"].startswith("fixture:")
         assert (ROOT / d["schema file"]).is_file(), d["schema file"]
         assert (ROOT / d["provider"].removeprefix("fixture:")).is_file(), d["provider"]
         assert (ROOT / d["example"]).is_file(), d["example"]
-        assert ("U10-S" in d["owner"]) if d["id"].startswith("c15-") else ("c14" in d["owner"] or "CAOS_RiskValidation" in d["owner"])
+        assert "c14" in d["owner"] or "c15" in d["owner"] or "CAOS_RiskValidation" in d["owner"]  # every producer is real since 0.12.000
         for cell in (d["producer test"], d["consumer test"]):
             for t in cell.split(","):
                 path, _, name = t.strip().partition("::")
@@ -1149,7 +1193,10 @@ def test_d1_every_c14_document_carries_the_dynamic_nii_the_ear_evar_and_the_out_
         assert o["ear_evar"]["n_paths"] > 1 and "seed" in o["ear_evar"] and o["ear_evar"]["levels"][0]["ear_se"] >= 0
         assert o["dynamic_nii"]["balance_sheet_assumption"]["kind"] in ("constant", "growth")
     for key in C15_OUT:
-        assert "ear_evar" not in out(key) and len(out(key)["dynamic_nii"]["legs"]) == 2
+        o = out(key)
+        assert len(o["dynamic_nii"]["legs"]) == 2 and [e["leg"] for e in o["ear_evar"]] == ["CLP", "UR"]       # c15-outputs 1.1.0
+        for e in o["ear_evar"]:
+            assert [lv["level"] for lv in e["levels"]] == [0.95, 0.99] and e["mc_error_method"] == "batch-means" and e["levels"][0]["ear_se"] >= 0
 
 
 def test_the_simulate_nii_and_ear_evar_goldens_of_the_contract_recompute() -> None:
@@ -1167,7 +1214,7 @@ def test_f8_the_rows_fragment_says_the_api_version_bump_is_the_integrators() -> 
     # the integrator bumped the api contract when it merged the fragments (0.11.000), with its History entry naming U10-S
     catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
     contracts = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0]
-    assert any(ln.startswith("| api | 4.0.0 |") for ln in contracts.splitlines())
+    assert any(ln.startswith("| api | 5.") for ln in contracts.splitlines())       # 5.0.0 since c15-outputs 2.0.0 (U10-P2c)
     history = catalog.split("## History", 1)[1]
     assert any(ln.startswith("| api | 4.0.0 |") and "U10-S" in ln for ln in history.splitlines())
 
