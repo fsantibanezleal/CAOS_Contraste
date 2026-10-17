@@ -1,0 +1,102 @@
+{
+  "Codigo": 0,
+  "Descripcion": "Success",
+  "Series": {
+    "descripEsp": "Unidad de fomento (UF)",
+    "descripIng": "Unit of account (UF)",
+    "seriesId": "F073.UFF.PRE.Z.D",
+    "Obs": [
+      {
+        "indexDateString": "01-09-2026",
+        "value": "40875.09",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "02-09-2026",
+        "value": "40876.41",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "03-09-2026",
+        "value": "40877.73",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "04-09-2026",
+        "value": "40879.04",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "05-09-2026",
+        "value": "40880.36",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "06-09-2026",
+        "value": "40881.68",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "07-09-2026",
+        "value": "40883",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "08-09-2026",
+        "value": "40884.32",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "09-09-2026",
+        "value": "40885.63",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "10-09-2026",
+        "value": "40893.78",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "11-09-2026",
+        "value": "40901.94",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "12-09-2026",
+        "value": "40910.1",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "13-09-2026",
+        "value": "40918.25",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "14-09-2026",
+        "value": "40926.41",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "15-09-2026",
+        "value": "40934.58",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "16-09-2026",
+        "value": "40942.74",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "17-09-2026",
+        "value": "40950.9",
+        "statusCode": "OK"
+      },
+      {
+        "indexDateString": "18-09-2026",
+        "value": "40959.07",
+        "statusCode": "OK"
+      }
+    ]
+  },
+  "SeriesInfos": []
+}

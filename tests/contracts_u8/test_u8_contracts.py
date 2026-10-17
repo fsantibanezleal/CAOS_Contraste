@@ -923,7 +923,8 @@ def test_the_changes_fragment_is_bullets_only() -> None:
     # merged by the integrator into the CHANGELOG entry of its release (fragments.py changelog refuses anything but bullets)
     assert not CHANGES.exists()
     entries = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8").split("\n## [")[1:]
-    entry = next(e for e in entries if "C11" in e and "C13" in e)
+    # the entry that holds the unit's own bullets (a later entry may name C11 and C13 too: 0.12.000 lists the built cases)
+    entry = next(e for e in entries if any(ln.startswith("- U8") for ln in e.splitlines()))
     lines = [ln for ln in entry.splitlines()[1:] if ln.strip()]
     bullets = lines[1:]                                       # the first line is the entry's summary sentence
     assert bullets and bullets[0].startswith("- ")

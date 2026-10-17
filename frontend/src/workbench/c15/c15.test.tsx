@@ -13,7 +13,7 @@ import { C15_FIT, C15_OUTPUTS } from './descriptor';
 import { useC15Instrument } from './instrument';
 import { amount, defaultSel, moneyDoc, outputsOf, worst, type C15Sel } from './selection';
 import { C15ContextView, C15FindingsView, C15VariantsTable, LegReadout, OffsetReadout, ShockReadout } from './C15Common';
-import { DynamicLegView, EveByLegView, PositionsView } from './LegViews';
+import { DynamicLegView, EarEvarLegView, EveByLegView, PositionsView } from './LegViews';
 import { IndexationView, NiiView } from './RateViews';
 import { FloorsView, ThresholdsView, thresholdsChart } from './FloorViews';
 
@@ -35,7 +35,7 @@ const NA = formatNumber(null, 'en');
 const clone = () => structuredClone(longUf) as VariantArtifact<Outputs>;
 
 const VIEWS: Array<[string, (p: { sel: C15Sel | null }) => ReactElement]> = [
-  ['Delta EVE by leg', EveByLegView], ['Positions', PositionsView], ['Dynamic NII', DynamicLegView],
+  ['Delta EVE by leg', EveByLegView], ['Positions', PositionsView], ['Dynamic NII', DynamicLegView], ['EaR and EVaR', EarEvarLegView],
   ['Delta NII', NiiView], ['Indexation', IndexationView], ['Floors', FloorsView], ['Thresholds', ThresholdsView],
   ['Findings', C15FindingsView], ['Context', C15ContextView],
 ];
@@ -197,6 +197,57 @@ describe('the C15 instrument', () => {
     expect(markup).not.toContain(`data-item="${o.dynamic_nii.legs[0].items[0].item_id}"`);
   });
 
+  it('the EaR and EVaR of the leg in focus give both levels with their Monte Carlo errors, the method, the parameters, the paths and the seed', () => {
+    for (const leg of ['CLP', 'UR'] as const) {
+      const e = o.ear_evar.find((x) => x.leg === leg)!;
+      const markup = html(<EarEvarLegView sel={{ ...sel, leg }} />);
+      expect(markup).toContain(`data-leg="${leg}"`);
+      for (const l of e.levels) {
+        expect(markup).toContain(`data-level="${l.level}"`);
+        expect(markup).toContain(`data-ear-se="${l.ear_se}"`);
+        expect(markup).toContain(`data-evar-se="${l.evar_se}"`);
+        expect(markup).toContain(cell(l.ear));
+        expect(markup).toContain(cell(l.evar));
+      }
+      for (const p of e.parameters) expect(markup).toContain(`data-parameter="${p.name}"`);
+      expect(markup).toContain(`data-seed="${e.seed}"`);
+      expect(markup).toContain(`data-mc-method="${e.mc_error_method}"`);
+      expect(markup).toContain('Hull-White one-factor');
+      expect(markup).toContain(cell(e.base_nii));
+      expect(markup).toContain(cell(e.base_eve));
+    }
+    expect(html(<EarEvarLegView sel={{ ...sel, leg: 'UR' }} />)).toContain('converted at the UF value');
+    expect(html(<EarEvarLegView sel={{ ...sel, leg: 'CLP' }} />)).not.toContain('converted at the UF value');
+    expect(html(<DynamicLegView sel={{ ...sel, leg: 'UR' }} />)).not.toContain('wait for the BCCh');
+  });
+
+  it('a document without the EaR and EVaR of a leg says not available with the reason and shows no number', () => {
+    const odd = clone();
+    (odd.outputs as unknown as { ear_evar: unknown[] }).ear_evar = odd.outputs.ear_evar.filter((x) => x.leg !== 'UR');
+    const markup = html(<EarEvarLegView sel={selOf(odd, { leg: 'UR' })} />);
+    expect(markup).toContain('Not available: this document has no EaR and EVaR for this leg.');
+    expect(markup).not.toContain('data-table="ear-evar"');
+    expect(html(<EarEvarLegView sel={selOf(odd, { leg: 'CLP' })} />)).toContain('data-table="ear-evar"');
+  });
+
+  it('refuses a document whose EaR and EVaR block lacks a key or carries one the web does not declare', () => {
+    const lacks = clone();
+    delete (lacks.outputs.ear_evar[0] as unknown as Record<string, unknown>).n_batches;
+    expect(conform(lacks.outputs, C15_OUTPUTS).length).toBeGreaterThan(0);
+    const extra = clone();
+    (extra.outputs.ear_evar[1].levels[0] as unknown as Record<string, unknown>).planted = 1;
+    expect(conform(extra.outputs, C15_OUTPUTS).length).toBeGreaterThan(0);
+    const none = clone();
+    delete (none.outputs as unknown as Record<string, unknown>).ear_evar;
+    expect(conform(none.outputs, C15_OUTPUTS).length).toBeGreaterThan(0);
+    const noDist = clone();
+    delete (noDist.outputs.floors as unknown as Record<string, unknown>).distances;
+    expect(conform(noDist.outputs, C15_OUTPUTS).length).toBeGreaterThan(0);
+    const noMonth = clone();
+    delete (noMonth.outputs as unknown as Record<string, unknown>).calibration_month;
+    expect(conform(noMonth.outputs, C15_OUTPUTS).length).toBeGreaterThan(0);
+  });
+
   it('the floors give the rule, the two floors and the effect on each leg and shock where one binds', () => {
     const markup = html(<FloorsView sel={sel} />);
     expect(markup).toContain(escapeHtml(o.floors.rule.en));
@@ -209,6 +260,32 @@ describe('the C15 instrument', () => {
       expect(markup).toContain(cell(e.delta_without_floor));
       expect(markup).toContain(formatNumber(e.effect, 'en', { decimals: 0 }));
     }
+  });
+
+  it('the floors draw the distance of every leg and shock to its floor, with the binding rows marked and the closest one named', () => {
+    const markup = html(<FloorsView sel={sel} />);
+    expect(o.floors.distances).toHaveLength(16);
+    for (const x of o.floors.distances) {
+      expect(markup).toContain(`data-leg="${x.leg}" data-measure="${x.measure}" data-shock="${x.shock}" data-binds="${x.binds}"`);
+      expect(markup).toContain(formatNumber(x.distance_bp, 'en', { digits: 4 }));
+    }
+    const nBind = o.floors.distances.filter((x) => x.binds).length;
+    expect(nBind).toBeGreaterThan(0);
+    expect(markup).toContain(`data-binding="${nBind}"`);
+    expect(markup).toContain('data-table="floor-distances"');
+    expect(markup).toContain('Each bar is the distance of a leg and a shock to its floor');
+    expect(html(<FloorsView sel={null} />)).toContain('data-state="loading"');
+  });
+
+  it('a variant where no floor binds still draws the distances and says how far the closest one is', () => {
+    const odd = clone();
+    odd.outputs.floors.effects = [];
+    odd.outputs.floors.distances = odd.outputs.floors.distances.map((x) => ({ ...x, binds: false, distance_bp: Math.abs(x.distance_bp) + 20 }));
+    const markup = html(<FloorsView sel={selOf(odd)} />);
+    expect(markup).not.toContain('No floor binds in this variant');
+    expect(markup).toContain('Each bar is the distance of a leg and a shock to its floor');
+    expect(markup).toContain('data-binding="0"');
+    expect(markup).toContain('above the floor');
   });
 
   it('the prioritised-bank thresholds are lines: 5, 15 and 18 percent, each test with its ratio and whether it fired', () => {
@@ -310,6 +387,14 @@ describe('the C15 instrument', () => {
     expect(eve).toContain(escapeHtml(o.sign_convention.statement.es));
     expect(html(<NiiView sel={sel} />)).toContain('reajustabilidad');
     expect(html(<IndexationView sel={sel} />)).toContain(formatNumber(null, 'es'));
+    const floors = html(<FloorsView sel={sel} />);
+    expect(floors).toContain('Cada barra es la distancia de un tramo y un choque a su piso');
+    expect(floors).toContain('Pisos que rigen');
+    expect(floors).not.toContain('Lowest rate');
+    const ear = html(<EarEvarLegView sel={sel} />);
+    expect(ear).toContain('Ganancias en riesgo y valor económico en riesgo');
+    expect(ear).toContain('Hull-White de un factor');
+    expect(ear).not.toContain('Confidence level');
   });
 });
 
