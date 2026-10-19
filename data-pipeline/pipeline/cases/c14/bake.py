@@ -27,7 +27,8 @@ from ...io import treasury
 from ...io.formats import write_json
 from ...stages.export import write_artifact
 from . import assumptions as asm
-from . import fdic, fetch, models
+from . import fetch, models
+from ...io import fdic
 from . import variant as vt
 from .slotting import build_items, t
 
