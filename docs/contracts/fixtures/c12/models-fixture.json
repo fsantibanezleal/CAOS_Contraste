@@ -1,0 +1,280 @@
+{
+  "schema": "contraste.models/v1",
+  "case_id": "C12",
+  "fit_id": "fixture-hw1f-2018-2019",
+  "model": [
+    {
+      "id": "hw1f-exposure",
+      "family": "ccr",
+      "rung": "hw1f",
+      "title": {
+        "en": "Fixture model hw1f-exposure",
+        "es": "Modelo de ejemplo hw1f-exposure"
+      },
+      "short_title": {
+        "en": "hw1f-exposure",
+        "es": "hw1f-exposure"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "details": {}
+    }
+  ],
+  "fit": {
+    "estimator": "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)",
+    "calibrations": [
+      {
+        "backtest_date": "2018-12-31",
+        "model": "hw1f",
+        "estimator": "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)",
+        "proxy_tenor_years": 0.25,
+        "sample_start": "2015-01-02",
+        "sample_end": "2018-12-28",
+        "n_obs": 750,
+        "history_years": 3.0,
+        "a": 0.07,
+        "sigma": 0.0105,
+        "a_se": 0.02,
+        "sigma_se": 0.0005,
+        "fit_to_curve": "phi(t) = f(0,t) + sigma^2 (1 - exp(-a t))^2 / (2 a^2), the QuantLib 1.44 fitting parameter"
+      },
+      {
+        "backtest_date": "2019-12-31",
+        "model": "hw1f",
+        "estimator": "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)",
+        "proxy_tenor_years": 0.25,
+        "sample_start": "2016-01-02",
+        "sample_end": "2019-12-30",
+        "n_obs": 750,
+        "history_years": 3.0,
+        "a": 0.08,
+        "sigma": 0.011,
+        "a_se": 0.02,
+        "sigma_se": 0.0005,
+        "fit_to_curve": "phi(t) = f(0,t) + sigma^2 (1 - exp(-a t))^2 / (2 a^2), the QuantLib 1.44 fitting parameter"
+      }
+    ],
+    "min_history_years": 3,
+    "closed_forms_source": "QuantLib 1.44: hullwhite.hpp, hullwhite.cpp, jamshidianswaptionengine.cpp",
+    "closed_forms_status": "formulas transcribed from the engine source; the journal derivations are UNVERIFIED as papers",
+    "credit_curve": {
+      "base": "US Treasury HQM corporate spot curve minus the Treasury zero curve of the same date",
+      "label": "proxy",
+      "derivation": {
+        "en": "HQM spot minus the Treasury zero at the same maturity; an AAA to A market average.",
+        "es": "Spot HQM menos el cero del Tesoro al mismo plazo; un promedio de mercado AAA a A."
+      },
+      "source_url": "https://home.treasury.gov/data/treasury-coupon-issues-and-corporate-bond-yield-curve/corporate-bond-yield-curve",
+      "licence_class": "mirror-allowed with citation",
+      "licence_basis": {
+        "en": "FRED tags the series Public Domain: Citation Requested; the Treasury-side sentence is UNVERIFIED.",
+        "es": "FRED etiqueta la serie como dominio publico con cita; la frase del Tesoro no esta verificada."
+      },
+      "synthetic_spread": {
+        "value": 0.012,
+        "unit": "decimal per year",
+        "label": "convention"
+      }
+    },
+    "girr_parameters": {
+      "paragraph": "MAR21.42 to MAR21.50, MAR21.99",
+      "in_force_date": "2023-01-01",
+      "tenors_years": [
+        0.25,
+        0.5,
+        1,
+        2,
+        3,
+        5,
+        10,
+        15,
+        20,
+        30
+      ],
+      "risk_weights": [
+        0.017,
+        0.017,
+        0.016,
+        0.013,
+        0.012,
+        0.011,
+        0.011,
+        0.011,
+        0.011,
+        0.011
+      ],
+      "correlation_percent": [
+        [
+          100.0,
+          97.0,
+          91.4,
+          81.1,
+          71.9,
+          56.6,
+          40.0,
+          40.0,
+          40.0,
+          40.0
+        ],
+        [
+          97.0,
+          100.0,
+          97.0,
+          91.4,
+          86.1,
+          76.3,
+          56.6,
+          41.9,
+          40.0,
+          40.0
+        ],
+        [
+          91.4,
+          97.0,
+          100.0,
+          97.0,
+          94.2,
+          88.7,
+          76.3,
+          65.7,
+          56.6,
+          41.9
+        ],
+        [
+          81.1,
+          91.4,
+          97.0,
+          100.0,
+          98.5,
+          95.6,
+          88.7,
+          82.3,
+          76.3,
+          65.7
+        ],
+        [
+          71.9,
+          86.1,
+          94.2,
+          98.5,
+          100.0,
+          98.0,
+          93.2,
+          88.7,
+          84.4,
+          76.3
+        ],
+        [
+          56.6,
+          76.3,
+          88.7,
+          95.6,
+          98.0,
+          100.0,
+          97.0,
+          94.2,
+          91.4,
+          86.1
+        ],
+        [
+          40.0,
+          56.6,
+          76.3,
+          88.7,
+          93.2,
+          97.0,
+          100.0,
+          98.5,
+          97.0,
+          94.2
+        ],
+        [
+          40.0,
+          41.9,
+          65.7,
+          82.3,
+          88.7,
+          94.2,
+          98.5,
+          100.0,
+          99.0,
+          97.0
+        ],
+        [
+          40.0,
+          40.0,
+          56.6,
+          76.3,
+          84.4,
+          91.4,
+          97.0,
+          99.0,
+          100.0,
+          98.5
+        ],
+        [
+          40.0,
+          40.0,
+          41.9,
+          65.7,
+          76.3,
+          86.1,
+          94.2,
+          97.0,
+          98.5,
+          100.0
+        ]
+      ],
+      "same_tenor_other_curve": 0.999,
+      "gamma_between_buckets": 0.5,
+      "curvature_shock": 0.017,
+      "sqrt2_divisor": 1.4142135623730951,
+      "sqrt2_applies_to": "USD, a specified currency (MAR21.44 footnote 12)",
+      "vega": {
+        "liquidity_horizon_days": 60,
+        "risk_weight": 1.0,
+        "correlation_alpha": 0.01,
+        "footnote_24_formula": "not transcribed (UNVERIFIED)"
+      }
+    },
+    "limits": [
+      {
+        "en": "Andersen, Pykhtin and Sokol timelines are not modelled.",
+        "es": "No se modelan las cronologias de APS."
+      },
+      {
+        "en": "The Hull-White journal derivations are UNVERIFIED as papers.",
+        "es": "Las derivaciones originales no estan verificadas."
+      }
+    ]
+  },
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u9-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

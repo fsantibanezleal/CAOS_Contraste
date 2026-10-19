@@ -1,0 +1,2629 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c12/variant-swap-exposure.schema.json",
+  "title": "C12 variant (swap exposure, CVA and SA-CCR)",
+  "description": "One variant of case C12 (swap exposure, CVA and SA-CCR): the six SDD variants share this schema and are told apart by outputs.variant. Every object is closed and nothing is optional; a block a variant does not run is null.",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C12"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c12Outputs",
+          "properties": {
+            "kind": {
+              "const": "swap-exposure"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "if": {
+              "properties": {
+                "light": {
+                  "const": "not_evaluated"
+                }
+              },
+              "required": [
+                "light"
+              ]
+            },
+            "then": {
+              "properties": {
+                "statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "properties": {
+              "test_id": {
+                "pattern": "^ccr\\."
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c12Sign": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ee",
+        "ene",
+        "cva",
+        "dva",
+        "statement"
+      ],
+      "properties": {
+        "ee": {
+          "const": "positive-exposure-to-the-counterparty"
+        },
+        "ene": {
+          "const": "bank-own-exposure-reported-positive"
+        },
+        "cva": {
+          "const": "positive-is-cost"
+        },
+        "dva": {
+          "const": "positive-is-benefit"
+        },
+        "statement": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "Sign convention, stated in the document: EE is the positive exposure to the counterparty, ENE the bank's own, CVA a positive cost and DVA a positive benefit."
+    },
+    "c12Units": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "money",
+        "rate",
+        "compounding",
+        "time",
+        "mpor",
+        "dates"
+      ],
+      "properties": {
+        "money": {
+          "const": "amount with its ISO 4217 currency code, USD in this case"
+        },
+        "rate": {
+          "const": "decimal"
+        },
+        "compounding": {
+          "const": "continuous"
+        },
+        "time": {
+          "const": "years-from-the-valuation-date"
+        },
+        "mpor": {
+          "const": "business-days"
+        },
+        "dates": {
+          "const": "ISO-8601"
+        }
+      },
+      "description": "Units of every number: money in USD with its currency code, rates as decimals discounted continuously, times in years from the valuation date, the margin period of risk in business days, dates ISO."
+    },
+    "c12Money": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "amount",
+        "currency"
+      ],
+      "properties": {
+        "amount": {
+          "type": "number"
+        },
+        "currency": {
+          "const": "USD"
+        }
+      },
+      "description": "An amount of money with its currency code."
+    },
+    "c12MoneySe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "amount",
+        "currency",
+        "mc_se"
+      ],
+      "properties": {
+        "amount": {
+          "type": "number"
+        },
+        "currency": {
+          "const": "USD"
+        },
+        "mc_se": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "An amount of money with its currency code and its Monte Carlo standard error."
+    },
+    "c12Profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "values",
+        "mc_se"
+      ],
+      "properties": {
+        "currency": {
+          "const": "USD"
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "description": "One value per point of the time grid."
+        },
+        "mc_se": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0
+          },
+          "minItems": 2,
+          "description": "The Monte Carlo standard error of each value."
+        }
+      },
+      "description": "A money profile on the time grid with its Monte Carlo standard errors (same length as the grid: a producer check)."
+    },
+    "c12Convention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit",
+        "label"
+      ],
+      "properties": {
+        "value": {
+          "type": [
+            "number",
+            "string",
+            "array"
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "const": "convention"
+        }
+      },
+      "description": "A named parameter of the synthetic book or of a method (decision D6): its value, its unit and the label \"convention\". A parameter without the label fails."
+    },
+    "c12NamedParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "notionals",
+        "maturities_years",
+        "sides",
+        "netting_set_members",
+        "single_swap_member",
+        "fixed_rate_rule",
+        "csa_threshold",
+        "csa_minimum_transfer_amount",
+        "csa_independent_amount",
+        "mpor_business_days_short",
+        "mpor_business_days_long",
+        "counterparty_spread",
+        "counterparty_lgd",
+        "bank_spread",
+        "bank_lgd",
+        "pfe_quantile",
+        "path_count",
+        "seed",
+        "wwr_b_grid",
+        "im_quantile",
+        "im_horizon_days",
+        "im_regression_order",
+        "ba_cva_sector",
+        "ba_cva_rating",
+        "stress_window_start",
+        "stress_window_end",
+        "backtest_window_start"
+      ],
+      "properties": {
+        "notionals": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "maturities_years": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "sides": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "netting_set_members": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "single_swap_member": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "fixed_rate_rule": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "csa_threshold": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "csa_minimum_transfer_amount": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "csa_independent_amount": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "mpor_business_days_short": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "mpor_business_days_long": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "counterparty_spread": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "counterparty_lgd": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "bank_spread": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "bank_lgd": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "pfe_quantile": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "path_count": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "seed": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "wwr_b_grid": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "im_quantile": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "im_horizon_days": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "im_regression_order": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "ba_cva_sector": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "ba_cva_rating": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "stress_window_start": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "stress_window_end": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "backtest_window_start": {
+          "$ref": "#/$defs/c12Convention"
+        }
+      },
+      "description": "Every named parameter, required, each with its value and the label convention."
+    },
+    "c12Trade": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trade_id",
+        "notional",
+        "fixed_rate",
+        "side",
+        "start_years",
+        "maturity_years",
+        "fixed_frequency_per_year",
+        "floating_leg",
+        "label"
+      ],
+      "properties": {
+        "trade_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notional": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "fixed_rate": {
+          "type": "number"
+        },
+        "side": {
+          "type": "string",
+          "enum": [
+            "payer",
+            "receiver"
+          ]
+        },
+        "start_years": {
+          "type": "number",
+          "minimum": 0
+        },
+        "maturity_years": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "fixed_frequency_per_year": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "floating_leg": {
+          "const": "USD floating leg on the single curve of the case"
+        },
+        "label": {
+          "const": "convention"
+        }
+      },
+      "description": "One fixed-for-floating USD interest rate swap: payer pays the fixed rate. Its terms are conventions."
+    },
+    "c12Book": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "netting_set_id",
+        "currency",
+        "trades"
+      ],
+      "properties": {
+        "netting_set_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "currency": {
+          "const": "USD"
+        },
+        "trades": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c12Trade"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "The synthetic book of the variant: one swap for the single-swap variant and at least two for the netting set."
+    },
+    "c12CurvePoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenor_years",
+        "par_yield",
+        "zero_rate"
+      ],
+      "properties": {
+        "tenor_years": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "par_yield": {
+          "type": "number"
+        },
+        "zero_rate": {
+          "type": "number"
+        }
+      },
+      "description": "One tenor of the curve: the source par yield (decimal) and the continuously compounded zero rate."
+    },
+    "c12Curve": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "curve_date",
+        "source",
+        "licence_class",
+        "par_yield_unit",
+        "zero_compounding",
+        "points",
+        "tenors_present",
+        "tenors_absent",
+        "interpolated_silently"
+      ],
+      "properties": {
+        "curve_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "source": {
+          "const": "US Treasury daily par yield curve (home.treasury.gov)"
+        },
+        "licence_class": {
+          "const": "mirror-allowed"
+        },
+        "par_yield_unit": {
+          "const": "decimal, bond-equivalent"
+        },
+        "zero_compounding": {
+          "const": "continuous"
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c12CurvePoint"
+          },
+          "minItems": 1
+        },
+        "tenors_present": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "minItems": 1
+        },
+        "tenors_absent": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "interpolated_silently": {
+          "const": false
+        }
+      },
+      "description": "The curve of the curve date. A Treasury tenor absent on that date is absent from the curve and listed in tenors_absent, with the tenors present stated, never interpolated silently."
+    },
+    "c12Calibration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "backtest_date",
+        "model",
+        "estimator",
+        "proxy_tenor_years",
+        "sample_start",
+        "sample_end",
+        "n_obs",
+        "history_years",
+        "a",
+        "sigma",
+        "a_se",
+        "sigma_se",
+        "fit_to_curve"
+      ],
+      "properties": {
+        "backtest_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "model": {
+          "const": "hw1f"
+        },
+        "estimator": {
+          "const": "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)"
+        },
+        "proxy_tenor_years": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "sample_start": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "sample_end": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "n_obs": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "history_years": {
+          "type": "number",
+          "minimum": 3,
+          "description": "At least three years of history (CRE53.51)."
+        },
+        "a": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "sigma": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "a_se": {
+          "type": "number",
+          "minimum": 0
+        },
+        "sigma_se": {
+          "type": "number",
+          "minimum": 0
+        },
+        "fit_to_curve": {
+          "const": "phi(t) = f(0,t) + sigma^2 (1 - exp(-a t))^2 / (2 a^2), the QuantLib 1.44 fitting parameter"
+        }
+      },
+      "description": "The Hull-White one-factor calibration at one backtest date: a and sigma from the history only, the fit to the curve of the date by phi(t). The sample window ends strictly before the backtest date (no look-ahead: a producer check)."
+    },
+    "c12Exposure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "basis",
+        "time_grid_years",
+        "ee",
+        "ee_discounted",
+        "ene",
+        "ene_discounted",
+        "pfe_quantile",
+        "pfe",
+        "effective_ee",
+        "epe",
+        "eepe",
+        "eepe_horizon_years",
+        "measure_note"
+      ],
+      "properties": {
+        "basis": {
+          "type": "string",
+          "enum": [
+            "uncollateralised",
+            "collateralised-vm",
+            "collateralised-vm-im"
+          ]
+        },
+        "time_grid_years": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "minItems": 2
+        },
+        "ee": {
+          "$ref": "#/$defs/c12Profile"
+        },
+        "ee_discounted": {
+          "$ref": "#/$defs/c12Profile"
+        },
+        "ene": {
+          "$ref": "#/$defs/c12Profile"
+        },
+        "ene_discounted": {
+          "$ref": "#/$defs/c12Profile"
+        },
+        "pfe_quantile": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "pfe": {
+          "$ref": "#/$defs/c12Profile"
+        },
+        "effective_ee": {
+          "$ref": "#/$defs/c12Profile"
+        },
+        "epe": {
+          "$ref": "#/$defs/c12MoneySe"
+        },
+        "eepe": {
+          "$ref": "#/$defs/c12MoneySe"
+        },
+        "eepe_horizon_years": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "measure_note": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The exposure measures of the variant on the time grid, each with its Monte Carlo error: EE and ENE undiscounted (Basel style, dossier 05 C.1) and discounted under the numeraire (the CVA input), the PFE at the stated quantile, the effective EE (running maximum, CRE53.12) and EEPE (CRE53.13) over the first year or to maturity."
+    },
+    "c12NettingBenefit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "per_trade_ee",
+        "sum_of_single_trade_ee",
+        "netted_ee",
+        "benefit"
+      ],
+      "properties": {
+        "per_trade_ee": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "trade_id",
+              "ee"
+            ],
+            "properties": {
+              "trade_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "ee": {
+                "$ref": "#/$defs/c12Profile"
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "sum_of_single_trade_ee": {
+          "$ref": "#/$defs/c12Profile"
+        },
+        "netted_ee": {
+          "$ref": "#/$defs/c12Profile"
+        },
+        "benefit": {
+          "$ref": "#/$defs/c12Profile"
+        }
+      },
+      "description": "The netting benefit: the netting-set EE is at most the sum of the single-trade EE; the benefit is their difference."
+    },
+    "c12Csa": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "threshold",
+        "minimum_transfer_amount",
+        "independent_amount",
+        "mpor_business_days",
+        "remargining_days",
+        "closeout",
+        "floor_reference"
+      ],
+      "properties": {
+        "threshold": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "minimum_transfer_amount": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "independent_amount": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "mpor_business_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "remargining_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "closeout": {
+          "const": "sticky-date close-out grid (ORE, R3)"
+        },
+        "floor_reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The CSA terms of the variant (ORE credit support amount and delivery amount equations, R3)."
+    },
+    "c12Collateral": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "csa",
+        "uncollateralised_ee",
+        "collateral_balance",
+        "limit"
+      ],
+      "properties": {
+        "csa": {
+          "$ref": "#/$defs/c12Csa"
+        },
+        "uncollateralised_ee": {
+          "$ref": "#/$defs/c12Profile"
+        },
+        "collateral_balance": {
+          "$ref": "#/$defs/c12Profile"
+        },
+        "limit": {
+          "$ref": "#/$defs/c12Label"
+        }
+      },
+      "description": "The variation-margin variant: the CSA terms, the uncollateralised EE on the same axis and the mean collateral balance. The limit states what the close-out model leaves out (the Andersen, Pykhtin and Sokol timelines)."
+    },
+    "c12Label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "en",
+        "es"
+      ],
+      "properties": {
+        "en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "es": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A non-empty bilingual label."
+    },
+    "c12Im": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "labelled",
+        "simm_used",
+        "quantile",
+        "alpha",
+        "horizon_days",
+        "mpor_days",
+        "regression_order",
+        "dim",
+        "ee_vm_only",
+        "limit"
+      ],
+      "properties": {
+        "method": {
+          "const": "ORE dynamic initial margin by regression (R2)"
+        },
+        "labelled": {
+          "const": "regression proxy, not SIMM"
+        },
+        "simm_used": {
+          "const": false
+        },
+        "quantile": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "alpha": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "horizon_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "mpor_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "regression_order": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dim": {
+          "$ref": "#/$defs/c12Profile"
+        },
+        "ee_vm_only": {
+          "$ref": "#/$defs/c12Profile"
+        },
+        "limit": {
+          "$ref": "#/$defs/c12Label"
+        }
+      },
+      "description": "Initial margin as a separate balance: DIM(t) = alpha S(t) sqrt(horizon / MPoR) applied as max(exposure - DIM, 0). Labelled a regression proxy, never SIMM (SIMM is not used: its public notice restricts use to a participant's own transactions)."
+    },
+    "c12CvaBucket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "t_start",
+        "t_end",
+        "spread",
+        "survival",
+        "pd_counterparty",
+        "pd_bank",
+        "epe_discounted",
+        "ene_discounted",
+        "cva_term",
+        "dva_term"
+      ],
+      "properties": {
+        "t_start": {
+          "type": "number",
+          "minimum": 0
+        },
+        "t_end": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "spread": {
+          "type": "number",
+          "minimum": 0
+        },
+        "survival": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "pd_counterparty": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "pd_bank": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "epe_discounted": {
+          "type": "number",
+          "minimum": 0
+        },
+        "ene_discounted": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cva_term": {
+          "type": "number",
+          "minimum": 0
+        },
+        "dva_term": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "One time bucket of the discretised CVA: PD x LGD x discounted EPE (dossier 05 C.2)."
+    },
+    "c12Cva": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "credit_curve_source",
+        "credit_curve_label",
+        "survival_formula",
+        "lgd",
+        "bank_lgd",
+        "buckets",
+        "cva",
+        "dva",
+        "bcva"
+      ],
+      "properties": {
+        "credit_curve_source": {
+          "type": "string",
+          "enum": [
+            "hqm-minus-treasury",
+            "synthetic-flat"
+          ]
+        },
+        "credit_curve_label": {
+          "const": "proxy: an AAA to A market spread, a floor for lower ratings (R10)"
+        },
+        "survival_formula": {
+          "const": "S(t) = exp(-s t / LGD)"
+        },
+        "lgd": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "bank_lgd": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "buckets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c12CvaBucket"
+          },
+          "minItems": 1
+        },
+        "cva": {
+          "$ref": "#/$defs/c12MoneySe"
+        },
+        "dva": {
+          "$ref": "#/$defs/c12MoneySe"
+        },
+        "bcva": {
+          "$ref": "#/$defs/c12Money"
+        }
+      },
+      "description": "CVA and DVA by the discretised formula, with the bucket terms so a view or a test recomputes them from the EE."
+    },
+    "c12WwrPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "b",
+        "cva",
+        "independent",
+        "a_calibration_max_error"
+      ],
+      "properties": {
+        "b": {
+          "type": "number"
+        },
+        "cva": {
+          "$ref": "#/$defs/c12MoneySe"
+        },
+        "independent": {
+          "type": "boolean"
+        },
+        "a_calibration_max_error": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "CVA at one value of the dependence parameter b, with the largest calibration error of the survival constraint; independent is true at b = 0 only."
+    },
+    "c12Wwr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model",
+        "b_unit",
+        "b_grid",
+        "sweep",
+        "independent_cva",
+        "ore_limit"
+      ],
+      "properties": {
+        "model": {
+          "const": "Hull and White (2012) hazard rate on the portfolio value, h(t) = exp(a(t) + b w(t))"
+        },
+        "b_unit": {
+          "const": "per USD million of portfolio value"
+        },
+        "b_grid": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3
+        },
+        "sweep": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c12WwrPoint"
+          },
+          "minItems": 3
+        },
+        "independent_cva": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "ore_limit": {
+          "$ref": "#/$defs/c12Label"
+        }
+      },
+      "description": "The wrong-way risk variant (B1): CVA over the grid of b, a(t) calibrated sequentially on the simulated paths to the survival curve. b = 0 equals the independent CVA exactly. ORE's wrong-way example is a different model, so this variant has no ORE reconciliation and says so."
+    },
+    "c12SaTrade": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trade_id",
+        "hedging_set",
+        "start_years",
+        "end_years",
+        "notional",
+        "supervisory_duration",
+        "adjusted_notional",
+        "delta",
+        "maturity_factor",
+        "bucket",
+        "effective_notional"
+      ],
+      "properties": {
+        "trade_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hedging_set": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "start_years": {
+          "type": "number",
+          "minimum": 0
+        },
+        "end_years": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "notional": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "supervisory_duration": {
+          "type": "number",
+          "minimum": 0
+        },
+        "adjusted_notional": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "delta": {
+          "type": "string",
+          "enum": [
+            "1",
+            "-1"
+          ]
+        },
+        "maturity_factor": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "bucket": {
+          "type": "string",
+          "enum": [
+            "B1",
+            "B2",
+            "B3"
+          ]
+        },
+        "effective_notional": {
+          "type": "number"
+        }
+      },
+      "description": "The CRE52 intermediates of one trade: supervisory duration (CRE52.34), adjusted notional, supervisory delta, maturity factor (CRE52.48 to CRE52.52), the maturity bucket of its end date (CRE52.57) and the effective notional d x delta x MF."
+    },
+    "c12SaHedgingSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hedging_set",
+        "d_b1",
+        "d_b2",
+        "d_b3",
+        "offset",
+        "effective_notional",
+        "supervisory_factor",
+        "addon"
+      ],
+      "properties": {
+        "hedging_set": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "d_b1": {
+          "type": "number"
+        },
+        "d_b2": {
+          "type": "number"
+        },
+        "d_b3": {
+          "type": "number"
+        },
+        "offset": {
+          "type": "boolean"
+        },
+        "effective_notional": {
+          "type": "number",
+          "minimum": 0
+        },
+        "supervisory_factor": {
+          "const": 0.005
+        },
+        "addon": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "An interest rate hedging set (one per currency): the bucket effective notionals D(B1) to D(B3), the offset or no-offset formula of CRE52.57, the effective notional EN and AddOn = SF x EN."
+    },
+    "c12SaAddOns": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "interest_rate",
+        "fx",
+        "credit",
+        "equity",
+        "commodity"
+      ],
+      "properties": {
+        "interest_rate": {
+          "type": "number",
+          "minimum": 0
+        },
+        "fx": {
+          "type": "number",
+          "minimum": 0
+        },
+        "credit": {
+          "type": "number",
+          "minimum": 0
+        },
+        "equity": {
+          "type": "number",
+          "minimum": 0
+        },
+        "commodity": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "The add-on by asset class (CRE52.24 to CRE52.25)."
+    },
+    "c12SaCcr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paragraph",
+        "in_force_date",
+        "margined",
+        "v",
+        "c",
+        "th",
+        "mta",
+        "nica",
+        "mpor_business_days",
+        "rc",
+        "trades",
+        "hedging_sets",
+        "addon_by_class",
+        "addon_aggregate",
+        "multiplier_floor",
+        "multiplier",
+        "pfe",
+        "alpha",
+        "ead"
+      ],
+      "properties": {
+        "paragraph": {
+          "const": "CRE52"
+        },
+        "in_force_date": {
+          "const": "2023-01-01"
+        },
+        "margined": {
+          "type": "boolean"
+        },
+        "v": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "c": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "th": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "mta": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "nica": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "mpor_business_days": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rc": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "trades": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c12SaTrade"
+          },
+          "minItems": 1
+        },
+        "hedging_sets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c12SaHedgingSet"
+          },
+          "minItems": 1
+        },
+        "addon_by_class": {
+          "$ref": "#/$defs/c12SaAddOns"
+        },
+        "addon_aggregate": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "multiplier_floor": {
+          "const": 0.05
+        },
+        "multiplier": {
+          "type": "number",
+          "minimum": 0.05,
+          "maximum": 1
+        },
+        "pfe": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "alpha": {
+          "const": 1.4
+        },
+        "ead": {
+          "$ref": "#/$defs/c12Money"
+        }
+      },
+      "description": "The SA-CCR block (CRE52): the trade inputs and every intermediate value, RC, the hedging sets with buckets B1 to B3, the effective notionals, the add-ons, the multiplier and EAD = 1.4 (RC + PFE), so a live port is checked step by step."
+    },
+    "c12BaCvaCounterparty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "counterparty_id",
+        "sector",
+        "rating_class",
+        "risk_weight",
+        "ead",
+        "m_years",
+        "discount_factor",
+        "scva"
+      ],
+      "properties": {
+        "counterparty_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sector": {
+          "type": "string",
+          "enum": [
+            "sovereigns-central-banks-mdbs",
+            "local-government-public",
+            "financials",
+            "basic-materials-energy-industrials",
+            "consumer-transport-administrative",
+            "technology-telecoms",
+            "health-care-utilities-professional",
+            "other"
+          ]
+        },
+        "rating_class": {
+          "type": "string",
+          "enum": [
+            "investment-grade",
+            "high-yield-or-not-rated"
+          ]
+        },
+        "risk_weight": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "ead": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "m_years": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "discount_factor": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "scva": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "One counterparty of the BA-CVA reduced approach (MAR50.14 to MAR50.16 Table 1)."
+    },
+    "c12BaCva": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paragraph",
+        "in_force_date",
+        "imm_bank",
+        "ds",
+        "rho",
+        "alpha",
+        "counterparties",
+        "k_reduced",
+        "capital",
+        "limit"
+      ],
+      "properties": {
+        "paragraph": {
+          "const": "MAR50.14 to MAR50.16"
+        },
+        "in_force_date": {
+          "const": "2023-01-01"
+        },
+        "imm_bank": {
+          "const": false
+        },
+        "ds": {
+          "const": 0.65
+        },
+        "rho": {
+          "const": 0.5
+        },
+        "alpha": {
+          "const": 1.4
+        },
+        "counterparties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c12BaCvaCounterparty"
+          },
+          "minItems": 1
+        },
+        "k_reduced": {
+          "type": "number",
+          "minimum": 0
+        },
+        "capital": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "limit": {
+          "$ref": "#/$defs/c12Label"
+        }
+      },
+      "description": "The BA-CVA reduced block: sector, rating, EAD, M, DF, SCVA, K_reduced and the capital DS x K_reduced. No official numeric example is verified (B8); the limit says so."
+    },
+    "c12StressedEpe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "window_start",
+        "window_end",
+        "label",
+        "effective_epe",
+        "hqm_spread_start",
+        "hqm_spread_peak",
+        "spread_rose",
+        "paragraph"
+      ],
+      "properties": {
+        "window_start": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "window_end": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "label": {
+          "const": "convention"
+        },
+        "effective_epe": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "hqm_spread_start": {
+          "type": "number",
+          "minimum": 0
+        },
+        "hqm_spread_peak": {
+          "type": "number",
+          "minimum": 0
+        },
+        "spread_rose": {
+          "type": "boolean"
+        },
+        "paragraph": {
+          "const": "CRE53.7 and CRE53.51"
+        }
+      },
+      "description": "The stressed Effective EPE (B9): a named three-year window containing a stress period, and the HQM spread rising in it (B10)."
+    },
+    "c12Regulatory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alpha",
+        "alpha_paragraph",
+        "effective_maturity_years",
+        "alpha_times_eepe",
+        "sa_ccr_ead",
+        "sa_ccr_over_alpha_eepe",
+        "stressed"
+      ],
+      "properties": {
+        "alpha": {
+          "const": 1.4
+        },
+        "alpha_paragraph": {
+          "const": "CRE53.14"
+        },
+        "effective_maturity_years": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 5
+        },
+        "alpha_times_eepe": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "sa_ccr_ead": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "sa_ccr_over_alpha_eepe": {
+          "type": "number",
+          "minimum": 0
+        },
+        "stressed": {
+          "$ref": "#/$defs/c12StressedEpe"
+        }
+      },
+      "description": "The regulatory measures beside the modelled ones: alpha times EEPE (CRE53.11) against the SA-CCR EAD, the effective maturity M of CRE53.20 (capped at 5 years) and the stressed Effective EPE."
+    },
+    "c12GirrScenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scenario",
+        "k_b"
+      ],
+      "properties": {
+        "scenario": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "k_b": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "The bucket charge under one correlation scenario (MAR21.6)."
+    },
+    "c12GirrCharge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paragraph",
+        "in_force_date",
+        "currency",
+        "sqrt2_division",
+        "sqrt2_label",
+        "sensitivities_per_bp",
+        "weighted_sensitivities",
+        "scenarios",
+        "delta_charge",
+        "delta_charge_undivided"
+      ],
+      "properties": {
+        "paragraph": {
+          "const": "MAR21.42 to MAR21.50"
+        },
+        "in_force_date": {
+          "const": "2023-01-01"
+        },
+        "currency": {
+          "const": "USD"
+        },
+        "sqrt2_division": {
+          "const": true
+        },
+        "sqrt2_label": {
+          "const": "convention"
+        },
+        "sensitivities_per_bp": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 10,
+          "maxItems": 10
+        },
+        "weighted_sensitivities": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 10,
+          "maxItems": 10
+        },
+        "scenarios": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c12GirrScenario"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "delta_charge": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "delta_charge_undivided": {
+          "$ref": "#/$defs/c12Money"
+        }
+      },
+      "description": "The FRTB SA GIRR delta charge of the same book (single USD bucket): the PV01 per tenor, the weighted sensitivities with the MAR21.44 division by sqrt(2) (a named convention) and the charge, the maximum over the three correlation scenarios, with the undivided charge beside it."
+    },
+    "c12Pit": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "exclusiveMaximum": 1,
+      "description": "A PIT value in (0, 1) by the (i + 1) / (N + 2) rule."
+    },
+    "c12Exceedance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "quantile",
+        "count",
+        "expected"
+      ],
+      "properties": {
+        "quantile": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "expected": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "The exceedances of the PFE at one quantile (a secondary row, BCBS 185 paragraph 27)."
+    },
+    "c12BacktestHorizon": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "horizon",
+        "n",
+        "pits",
+        "exceedances",
+        "w2",
+        "critical_iid",
+        "critical_simulated",
+        "effective_sample_size",
+        "reject_at_5pct"
+      ],
+      "properties": {
+        "horizon": {
+          "type": "string",
+          "enum": [
+            "10bd",
+            "20bd",
+            "1m",
+            "3m",
+            "6m",
+            "12m"
+          ]
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "pits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c12Pit"
+          },
+          "minItems": 2
+        },
+        "exceedances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c12Exceedance"
+          },
+          "minItems": 2
+        },
+        "w2": {
+          "type": "number",
+          "minimum": 0
+        },
+        "critical_iid": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "p05",
+            "p01"
+          ],
+          "properties": {
+            "p05": {
+              "const": 2.492
+            },
+            "p01": {
+              "const": 3.88
+            }
+          }
+        },
+        "critical_simulated": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "p05",
+            "p01"
+          ],
+          "properties": {
+            "p05": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "p01": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          }
+        },
+        "effective_sample_size": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "reject_at_5pct": {
+          "type": "boolean"
+        }
+      },
+      "description": "The PIT backtest at one horizon: the PITs, the Anderson-Darling W^2 against the critical values simulated under the model itself (same dates, overlapping horizons) with the iid table values beside them, the effective sample size and several PFE percentiles (BCBS 185 paragraph 31)."
+    },
+    "c12BacktestHorizons": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/c12BacktestHorizon",
+          "properties": {
+            "horizon": {
+              "const": "10bd"
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/c12BacktestHorizon",
+          "properties": {
+            "horizon": {
+              "const": "20bd"
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/c12BacktestHorizon",
+          "properties": {
+            "horizon": {
+              "const": "1m"
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/c12BacktestHorizon",
+          "properties": {
+            "horizon": {
+              "const": "3m"
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/c12BacktestHorizon",
+          "properties": {
+            "horizon": {
+              "const": "6m"
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/c12BacktestHorizon",
+          "properties": {
+            "horizon": {
+              "const": "12m"
+            }
+          }
+        }
+      ],
+      "items": false,
+      "minItems": 6,
+      "maxItems": 6,
+      "description": "The six horizons in order: 10 and 20 business days, 1, 3, 6 and 12 months."
+    },
+    "c12SubWindowResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "horizon",
+        "n",
+        "w2"
+      ],
+      "properties": {
+        "horizon": {
+          "type": "string",
+          "enum": [
+            "10bd",
+            "20bd",
+            "1m",
+            "3m",
+            "6m",
+            "12m"
+          ]
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "w2": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "W^2 of one horizon in a sub-window."
+    },
+    "c12SubWindow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "window",
+        "start",
+        "end",
+        "results"
+      ],
+      "properties": {
+        "window": {
+          "type": "string",
+          "enum": [
+            "before-2008",
+            "2008-2019",
+            "from-2020"
+          ]
+        },
+        "start": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "end": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c12SubWindowResult"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "One reporting sub-window of the backtest (D7)."
+    },
+    "c12Backtest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "window_start",
+        "window_end",
+        "dates",
+        "calibration_rule",
+        "pit_rule",
+        "statistic",
+        "paths_per_date",
+        "book_horizons",
+        "risk_factor",
+        "sub_windows"
+      ],
+      "properties": {
+        "window_start": {
+          "type": "string",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
+        },
+        "window_end": {
+          "type": "string",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
+        },
+        "dates": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "minItems": 3
+        },
+        "calibration_rule": {
+          "const": "each initialisation date is calibrated on data up to that date only"
+        },
+        "pit_rule": {
+          "const": "(i + 1) / (N + 2)"
+        },
+        "statistic": {
+          "const": "Anderson-Darling W^2"
+        },
+        "paths_per_date": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "book_horizons": {
+          "$ref": "#/$defs/c12BacktestHorizons"
+        },
+        "risk_factor": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "proxy_tenor_years",
+            "horizons"
+          ],
+          "properties": {
+            "proxy_tenor_years": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "horizons": {
+              "$ref": "#/$defs/c12BacktestHorizons"
+            }
+          }
+        },
+        "sub_windows": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c12SubWindow",
+              "properties": {
+                "window": {
+                  "const": "before-2008"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c12SubWindow",
+              "properties": {
+                "window": {
+                  "const": "2008-2019"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c12SubWindow",
+              "properties": {
+                "window": {
+                  "const": "from-2020"
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "before 2008, 2008 to 2019, from 2020, in that order."
+        }
+      },
+      "description": "The PIT-based exposure backtest (B5): the book revalued on the realised curves, and the risk factor (the short-rate proxy) backtested as well (BCBS 185 paragraph 20)."
+    },
+    "c12SensitivityCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case",
+        "a",
+        "sigma",
+        "eepe",
+        "pfe_peak"
+      ],
+      "properties": {
+        "case": {
+          "type": "string",
+          "enum": [
+            "base",
+            "a-plus-1se",
+            "a-minus-1se",
+            "sigma-plus-1se",
+            "sigma-minus-1se"
+          ]
+        },
+        "a": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "sigma": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "eepe": {
+          "$ref": "#/$defs/c12Money"
+        },
+        "pfe_peak": {
+          "$ref": "#/$defs/c12Money"
+        }
+      },
+      "description": "EE and PFE under the base calibration and with a and sigma moved by one standard error (B6)."
+    },
+    "c12OreReconciliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "ore_version",
+        "platform",
+        "run_seconds",
+        "ore_ee",
+        "agreement",
+        "all_within_two_se",
+        "reason"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "reconciled",
+            "not-applicable"
+          ]
+        },
+        "ore_version": {
+          "anyOf": [
+            {
+              "const": "1.8.17.0"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "platform": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_seconds": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ore_ee": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c12Profile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "agreement": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "t",
+                  "difference",
+                  "combined_se",
+                  "within_two_se"
+                ],
+                "properties": {
+                  "t": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "difference": {
+                    "type": "number"
+                  },
+                  "combined_se": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "within_two_se": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "minItems": 2
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "all_within_two_se": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c12Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The reconciliation of the Python EE profile against ORE 1.8.17.0 on the same curve and model parameters (ADR-0069: the bake's), with the agreement at every grid point; or not-applicable with its reason.",
+      "oneOf": [
+        {
+          "properties": {
+            "status": {
+              "const": "reconciled"
+            },
+            "ore_version": {
+              "const": "1.8.17.0"
+            },
+            "platform": {
+              "type": "string"
+            },
+            "run_seconds": {
+              "type": "number"
+            },
+            "ore_ee": {
+              "$ref": "#/$defs/c12Profile"
+            },
+            "agreement": {
+              "type": "array"
+            },
+            "all_within_two_se": {
+              "type": "boolean"
+            },
+            "reason": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "status": {
+              "const": "not-applicable"
+            },
+            "ore_version": {
+              "type": "null"
+            },
+            "platform": {
+              "type": "null"
+            },
+            "run_seconds": {
+              "type": "null"
+            },
+            "ore_ee": {
+              "type": "null"
+            },
+            "agreement": {
+              "type": "null"
+            },
+            "all_within_two_se": {
+              "type": "null"
+            },
+            "reason": {
+              "$ref": "#/$defs/c12Label"
+            }
+          }
+        }
+      ]
+    },
+    "c12Outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "variant",
+        "sign_convention",
+        "units",
+        "named_parameters",
+        "book",
+        "curve",
+        "calibration_used",
+        "exposure",
+        "netting_benefit",
+        "collateral",
+        "initial_margin",
+        "cva_dva",
+        "wrong_way_risk",
+        "sa_ccr",
+        "ba_cva",
+        "regulatory_comparison",
+        "girr",
+        "backtest",
+        "calibration_sensitivity",
+        "ore_reconciliation"
+      ],
+      "properties": {
+        "kind": {
+          "const": "swap-exposure"
+        },
+        "variant": {
+          "type": "string",
+          "enum": [
+            "single-swap",
+            "netting-set",
+            "csa-mpor-10d",
+            "csa-mpor-20d",
+            "with-im",
+            "wrong-way-risk"
+          ]
+        },
+        "sign_convention": {
+          "$ref": "#/$defs/c12Sign"
+        },
+        "units": {
+          "$ref": "#/$defs/c12Units"
+        },
+        "named_parameters": {
+          "$ref": "#/$defs/c12NamedParameters"
+        },
+        "book": {
+          "$ref": "#/$defs/c12Book"
+        },
+        "curve": {
+          "$ref": "#/$defs/c12Curve"
+        },
+        "calibration_used": {
+          "$ref": "#/$defs/c12Calibration"
+        },
+        "exposure": {
+          "$ref": "#/$defs/c12Exposure"
+        },
+        "netting_benefit": {
+          "$ref": "#/$defs/c12NettingBenefit"
+        },
+        "collateral": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c12Collateral"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "initial_margin": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c12Im"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cva_dva": {
+          "$ref": "#/$defs/c12Cva"
+        },
+        "wrong_way_risk": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c12Wwr"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sa_ccr": {
+          "$ref": "#/$defs/c12SaCcr"
+        },
+        "ba_cva": {
+          "$ref": "#/$defs/c12BaCva"
+        },
+        "regulatory_comparison": {
+          "$ref": "#/$defs/c12Regulatory"
+        },
+        "girr": {
+          "$ref": "#/$defs/c12GirrCharge"
+        },
+        "backtest": {
+          "$ref": "#/$defs/c12Backtest"
+        },
+        "calibration_sensitivity": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c12SensitivityCase"
+          },
+          "minItems": 5,
+          "maxItems": 5
+        },
+        "ore_reconciliation": {
+          "$ref": "#/$defs/c12OreReconciliation"
+        }
+      },
+      "description": "The outputs of one C12 variant: the book, the curve, the calibration, the exposure measures, CVA and DVA, the regulatory measures, the backtest and the ORE reconciliation.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "variant": {
+                "const": "single-swap"
+              }
+            },
+            "required": [
+              "variant"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "const": "single-swap"
+              },
+              "exposure": {
+                "type": "object",
+                "properties": {
+                  "basis": {
+                    "const": "uncollateralised"
+                  }
+                },
+                "required": [
+                  "basis"
+                ]
+              },
+              "book": {
+                "type": "object",
+                "properties": {
+                  "trades": {
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                },
+                "required": [
+                  "trades"
+                ]
+              },
+              "collateral": {
+                "type": "null"
+              },
+              "initial_margin": {
+                "type": "null"
+              },
+              "wrong_way_risk": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "variant": {
+                "const": "netting-set"
+              }
+            },
+            "required": [
+              "variant"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "const": "netting-set"
+              },
+              "exposure": {
+                "type": "object",
+                "properties": {
+                  "basis": {
+                    "const": "uncollateralised"
+                  }
+                },
+                "required": [
+                  "basis"
+                ]
+              },
+              "book": {
+                "type": "object",
+                "properties": {
+                  "trades": {
+                    "minItems": 2
+                  }
+                },
+                "required": [
+                  "trades"
+                ]
+              },
+              "collateral": {
+                "type": "null"
+              },
+              "initial_margin": {
+                "type": "null"
+              },
+              "wrong_way_risk": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "variant": {
+                "const": "csa-mpor-10d"
+              }
+            },
+            "required": [
+              "variant"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "const": "csa-mpor-10d"
+              },
+              "exposure": {
+                "type": "object",
+                "properties": {
+                  "basis": {
+                    "const": "collateralised-vm"
+                  }
+                },
+                "required": [
+                  "basis"
+                ]
+              },
+              "book": {
+                "type": "object",
+                "properties": {
+                  "trades": {
+                    "minItems": 2
+                  }
+                },
+                "required": [
+                  "trades"
+                ]
+              },
+              "collateral": {
+                "type": "object",
+                "properties": {
+                  "csa": {
+                    "type": "object",
+                    "properties": {
+                      "mpor_business_days": {
+                        "const": 10
+                      }
+                    },
+                    "required": [
+                      "mpor_business_days"
+                    ]
+                  }
+                },
+                "required": [
+                  "csa"
+                ]
+              },
+              "initial_margin": {
+                "type": "null"
+              },
+              "wrong_way_risk": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "variant": {
+                "const": "csa-mpor-20d"
+              }
+            },
+            "required": [
+              "variant"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "const": "csa-mpor-20d"
+              },
+              "exposure": {
+                "type": "object",
+                "properties": {
+                  "basis": {
+                    "const": "collateralised-vm"
+                  }
+                },
+                "required": [
+                  "basis"
+                ]
+              },
+              "book": {
+                "type": "object",
+                "properties": {
+                  "trades": {
+                    "minItems": 2
+                  }
+                },
+                "required": [
+                  "trades"
+                ]
+              },
+              "collateral": {
+                "type": "object",
+                "properties": {
+                  "csa": {
+                    "type": "object",
+                    "properties": {
+                      "mpor_business_days": {
+                        "const": 20
+                      }
+                    },
+                    "required": [
+                      "mpor_business_days"
+                    ]
+                  }
+                },
+                "required": [
+                  "csa"
+                ]
+              },
+              "initial_margin": {
+                "type": "null"
+              },
+              "wrong_way_risk": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "variant": {
+                "const": "with-im"
+              }
+            },
+            "required": [
+              "variant"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "const": "with-im"
+              },
+              "exposure": {
+                "type": "object",
+                "properties": {
+                  "basis": {
+                    "const": "collateralised-vm-im"
+                  }
+                },
+                "required": [
+                  "basis"
+                ]
+              },
+              "book": {
+                "type": "object",
+                "properties": {
+                  "trades": {
+                    "minItems": 2
+                  }
+                },
+                "required": [
+                  "trades"
+                ]
+              },
+              "collateral": {
+                "type": "object",
+                "properties": {
+                  "csa": {
+                    "type": "object",
+                    "properties": {
+                      "mpor_business_days": {
+                        "const": 10
+                      }
+                    },
+                    "required": [
+                      "mpor_business_days"
+                    ]
+                  }
+                },
+                "required": [
+                  "csa"
+                ]
+              },
+              "initial_margin": {
+                "$ref": "#/$defs/c12Im"
+              },
+              "wrong_way_risk": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "variant": {
+                "const": "wrong-way-risk"
+              }
+            },
+            "required": [
+              "variant"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "const": "wrong-way-risk"
+              },
+              "exposure": {
+                "type": "object",
+                "properties": {
+                  "basis": {
+                    "const": "uncollateralised"
+                  }
+                },
+                "required": [
+                  "basis"
+                ]
+              },
+              "book": {
+                "type": "object",
+                "properties": {
+                  "trades": {
+                    "minItems": 2
+                  }
+                },
+                "required": [
+                  "trades"
+                ]
+              },
+              "collateral": {
+                "type": "null"
+              },
+              "initial_margin": {
+                "type": "null"
+              },
+              "wrong_way_risk": {
+                "$ref": "#/$defs/c12Wwr"
+              },
+              "ore_reconciliation": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "not-applicable"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
