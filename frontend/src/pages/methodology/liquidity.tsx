@@ -45,11 +45,11 @@ function LadderFigure() {
       <path className="dg-curve-faint" d={path(grid.map((d) => [x(d), y(cbc)]))} fill="none" />
       <path className="dg-curve-2" d={path(grid.map((d) => [x(d), y(out(d))]))} fill="none" strokeDasharray="5 3" />
       <path className="dg-curve" d={path(grid.map((d) => [x(d), y(cbc - out(d))]))} fill="none" />
-      <line className="dg-marker" x1={x(sday)} y1={y(0.5)} x2={x(sday)} y2={y(-0.2)} />
-      <text className="dg-marker-label" x={x(sday) - 4} y={y(0.5) - 4} textAnchor="end">{t(`survival day ${sday}`, `día de supervivencia ${sday}`)}</text>
+      <line className="dg-marker" x1={x(sday)} y1={y(0.58)} x2={x(sday)} y2={y(-0.2)} />
+      <text className="dg-marker-label" x={x(sday) - 4} y={y(0.58) - 4} textAnchor="end">{t(`survival day ${sday}`, `día de supervivencia ${sday}`)}</text>
       <text className="dg-edge-label" x={x(2) + 2} y={y(cbc) - 6} textAnchor="start">{t('liquid assets after haircuts', 'activos líquidos tras recortes')}</text>
-      <text className="dg-edge-label" x={x(125) - 4} y={y(out(125)) - 6} textAnchor="end">{t('cumulative net outflow', 'salida neta acumulada')}</text>
-      <text className="dg-edge-label" x={x(125) - 4} y={y(cbc - out(125)) + 16} textAnchor="end">{t('net liquidity position', 'posición neta de liquidez')}</text>
+      <text className="dg-edge-label" x={x(125) - 4} y={y(out(125)) + 16} textAnchor="end">{t('cumulative net outflow', 'salida neta acumulada')}</text>
+      <text className="dg-edge-label" x={x(125) - 4} y={y(cbc - out(125)) - 8} textAnchor="end">{t('net liquidity position', 'posición neta de liquidez')}</text>
       <text className="dg-axis-label" x={W / 2} y={H - 24} textAnchor="middle">{t('day of the ladder', 'día de la escalera')}</text>
       <text className="dg-axis-label" x={W - 8} y={14} textAnchor="end">{t('share of the balance', 'parte del saldo')}</text>
       <text className="dg-note" x={W - 8} y={H - 6} textAnchor="end">{t('Illustrative schematic, not a result', 'Esquema ilustrativo, no un resultado')}</text>
@@ -74,15 +74,15 @@ function RunSpeedsFigure() {
   const t = useT();
   // share in [0, 1] to x in [176, 440]; row i to y
   const x = (s: number) => 176 + s * 264;
-  const row = (i: number) => 18 + i * 25;
+  const row = (i: number) => 12 + i * 23;
   return (
     <svg className="ct-docfig" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={t('Nine horizontal bars for the deposit outflow of the rows of BCBS Table A.1, SVB 85 percent in 2 days, First Republic 57 percent in 90 days, SVB UK 30 percent in 1 day, Credit Suisse 21 percent in 90 days, Signature 20 percent in 1 day, Icesave 20 percent in 75 days, Northern Rock 20 percent in 4 days, WaMu 10 percent in 10 days and IndyMac 8 percent in 14 days, and a band for the LCR deposit outflow rates of 3 to 40 percent over 30 days', 'Nueve barras horizontales con la salida de depósitos de las filas de la Tabla A.1 del BCBS, SVB 85 por ciento en 2 días, First Republic 57 por ciento en 90 días, SVB UK 30 por ciento en 1 día, Credit Suisse 21 por ciento en 90 días, Signature 20 por ciento en 1 día, Icesave 20 por ciento en 75 días, Northern Rock 20 por ciento en 4 días, WaMu 10 por ciento en 10 días e IndyMac 8 por ciento en 14 días, y una banda con las tasas de salida de depósitos del LCR de 3 a 40 por ciento a 30 días')}>
       <line className="dg-axis" x1={x(0)} y1={10} x2={x(0)} y2={row(9) + 14} />
       {TABLE_A1.map((r, i) => (
         <g key={r.bank}>
           <text className="dg-edge-label" x={8} y={row(i) + 13} textAnchor="start">{`${r.bank} ${r.year}, ${r.days} ${r.days === 1 ? t('day', 'día') : t('days', 'días')}`}</text>
-          <rect className={r.year === 2023 ? 'dg-fill-accent' : 'dg-fill-warn'} x={x(0)} y={row(i)} width={x(r.share) - x(0)} height={17} />
-          <text className="dg-note" x={x(r.share) + 4} y={row(i) + 13} textAnchor="start">{`${r.share * 100} %`}</text>
+          <rect className={r.year === 2023 ? 'dg-fill-accent' : 'dg-fill-warn'} x={x(0)} y={row(i)} width={x(r.share) - x(0)} height={16} />
+          <text className="dg-note" x={x(r.share) + 4} y={row(i) + 13} textAnchor="start">{`${Math.round(r.share * 100)} %`}</text>
         </g>
       ))}
       <text className="dg-edge-label" x={8} y={row(9) + 13} textAnchor="start">{t('LCR rates, 30 days', 'Tasas del LCR, 30 días')}</text>
@@ -161,7 +161,7 @@ function SpeedsPart() {
       />
       <Equation
         tex={String.raw`F(n) = 1 - (1 - q)^{n}, \qquad F(125) = 1 - (1 - 0.00103258)^{125} \approx 12.11\%, \qquad q = 1 - (1 - F)^{1/n}`}
-        caption={<T en={<>Daily compounding (dossier 05, E.1; addendum L1.3): q the daily rate on relevant days, n the number of relevant days and F(n) the cumulative share that has left, so 0.103258 percent per day for 125 days gives 12.11 percent, the note&apos;s own Table 2.2 figure. The last form inverts the first to give the daily rate that a cumulative outflow F over n days implies (recomputed here, not a dossier value): it is how an observed run is put on the same footing as a LiST rate.</>} es={<>Composición diaria (dossier 05, E.1; anexo L1.3): q la tasa diaria en días relevantes, n el número de días relevantes y F(n) la parte acumulada que ha salido, de modo que 0,103258 por ciento diario durante 125 días da 12,11 por ciento, la cifra de la Tabla 2.2 de la propia nota. La última forma invierte la primera para dar la tasa diaria que implica una salida acumulada F en n días (recalculada aquí, no un valor del dossier): así se pone una corrida observada en el mismo plano que una tasa de LiST.</>} />}
+        caption={<T en={<>Daily compounding (dossier 05, E.1; addendum <Ref>L1.3</Ref>): q the daily rate on relevant days, n the number of relevant days and F(n) the cumulative share that has left, so 0.103258 percent per day for 125 days gives 12.11 percent, the note&apos;s own Table <Ref>2.2</Ref> figure. The last form inverts the first to give the daily rate that a cumulative outflow F over n days implies (recomputed here, not a dossier value): it is how an observed run is put on the same footing as a LiST rate.</>} es={<>Composición diaria (dossier 05, E.1; anexo <Ref>L1.3</Ref>): q la tasa diaria en días relevantes, n el número de días relevantes y F(n) la parte acumulada que ha salido, de modo que 0,103258 por ciento diario durante 125 días da 12,11 por ciento, la cifra de la Tabla <Ref>2.2</Ref> de la propia nota. La última forma invierte la primera para dar la tasa diaria que implica una salida acumulada F en n días (recalculada aquí, no un valor del dossier): así se pone una corrida observada en el mismo plano que una tasa de LiST.</>} />}
       />
       <P
         en={<>Deposits with a contractual maturity roll off only in part, at a rate applied to each flow when it matures, not to the stock: stable retail 18 and 27 percent, other retail 39 and 48, operational 37 and 50, non-operational deposits of non-financial corporates and others 52 and 76 percent in the Adverse and Extreme cases, and 100 percent for credit institutions and other financial customers <Cite id="ecblist" />. The note&apos;s six-month figures of 52 and 76 percent are right only for flows that mature inside the horizon, and the rolled-over remainder stays beyond it. The LiST rates are defined on the 2019 TARGET2 calendar, so the ladder of C16 runs on a stated US business-day calendar from 2022-12-31, a named convention of the case, and every cumulative LiST figure says on which calendar it stands. Collateral calls on a downgrade have no numeric parameter in the note, which leaves them a labelled scenario input.</>}
