@@ -1,0 +1,4380 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c16/variant-scenario.schema.json",
+  "title": "C16 scenario variant",
+  "description": "Catalog row c16-outputs 1.0.0: one of the five scenario variants of the liquidity stress case (LCR standard run-off, LiST adverse, LiST extreme, 2023 fast run, HTM losses in CBC) at 2022-12-31 (outputs.kind scenario).",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C16"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c16Outputs",
+          "properties": {
+            "kind": {
+              "const": "scenario"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "if": {
+              "properties": {
+                "light": {
+                  "const": "not_evaluated"
+                }
+              },
+              "required": [
+                "light"
+              ]
+            },
+            "then": {
+              "properties": {
+                "statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "properties": {
+              "test_id": {
+                "type": "string",
+                "pattern": "^liq\\."
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "impact": {
+          "required": [
+            "lcr",
+            "survival_days"
+          ]
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c16Label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "en",
+        "es"
+      ],
+      "properties": {
+        "en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "es": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A non-empty bilingual label (an empty string is not a label)."
+    },
+    "c16Units": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "money_scale",
+        "rate",
+        "horizon",
+        "dates"
+      ],
+      "properties": {
+        "money_scale": {
+          "const": "thousands"
+        },
+        "rate": {
+          "const": "decimal-per-day"
+        },
+        "horizon": {
+          "const": "days"
+        },
+        "dates": {
+          "const": "ISO-8601"
+        }
+      },
+      "description": "Units of every number: money in USD thousands as the FDIC call report gives it, rates as decimals per relevant day, horizons in days, dates ISO."
+    },
+    "c16Bank": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "cert",
+        "aggregates",
+        "behaviour",
+        "deposits",
+        "notice"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cert": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "aggregates": {
+          "const": "real"
+        },
+        "behaviour": {
+          "const": "synthetic"
+        },
+        "deposits": {
+          "const": "synthetic"
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The bank of the case: real FDIC call-report aggregates used as public aggregates only, with synthetic behaviour and synthetic deposits from the depositor generator (SDD section 5: real event, synthetic deposits). The case does not represent the bank."
+    },
+    "c16Survival": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "day",
+        "horizon_days"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "day",
+            "survives-horizon"
+          ]
+        },
+        "day": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "horizon_days": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "description": "The survival period: the first day on which the NLP turns negative (a number of days), or \"survives the horizon\" with the horizon and no number (05 E.1, U11 sizing). The day is at most the horizon.",
+      "oneOf": [
+        {
+          "properties": {
+            "kind": {
+              "const": "day"
+            },
+            "day": {
+              "type": "integer"
+            }
+          }
+        },
+        {
+          "properties": {
+            "kind": {
+              "const": "survives-horizon"
+            },
+            "day": {
+              "type": "null"
+            }
+          }
+        }
+      ]
+    },
+    "c16Anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "source",
+        "outflow_share",
+        "days",
+        "implied_daily_rate",
+        "forecast_claim"
+      ],
+      "properties": {
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "outflow_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "implied_daily_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "forecast_claim": {
+          "const": false
+        }
+      },
+      "description": "The SVB observation as a labelled anchor row (Q4): the Table A.1 outflow share and days with the daily rate they imply, 1 - (1 - share)^(1 / days); never a forecast."
+    },
+    "c16Scalar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit",
+        "status",
+        "basis"
+      ],
+      "properties": {
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "const": "convention"
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A named scalar parameter: its value, its unit and the label \"convention\" (never \"regulatory\"); the basis says where the proposed value comes from (Q14: proposed by U11-S, approved by the main session)."
+    },
+    "c16Grid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "values",
+        "unit",
+        "status",
+        "basis"
+      ],
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "const": "convention"
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A named grid: its values in increasing order, its unit and the label \"convention\"."
+    },
+    "c16MappingRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "basis",
+        "role",
+        "lcr_category",
+        "list_class",
+        "label"
+      ],
+      "properties": {
+        "basis": {
+          "type": "string",
+          "enum": [
+            "insured",
+            "uninsured"
+          ]
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "central",
+            "band"
+          ]
+        },
+        "lcr_category": {
+          "type": "string",
+          "enum": [
+            "retail_stable",
+            "retail_less_stable",
+            "operational",
+            "non_financial_corporate",
+            "other_legal_entity"
+          ]
+        },
+        "list_class": {
+          "type": "string",
+          "enum": [
+            "stable-retail",
+            "other-retail",
+            "operational",
+            "non-operational-credit-institutions",
+            "non-operational-other-financial",
+            "non-operational-non-financial-corporates",
+            "non-operational-others"
+          ]
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "One mapping of a call-report deposit balance (insured or uninsured, DEPINS and DEPUNA) to an LCR category and a LiST class."
+    },
+    "c16DepositMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "rows",
+        "sensitivity_band",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "const": "convention"
+        },
+        "rows": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c16MappingRow",
+              "properties": {
+                "basis": {
+                  "const": "insured"
+                },
+                "role": {
+                  "const": "central"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16MappingRow",
+              "properties": {
+                "basis": {
+                  "const": "uninsured"
+                },
+                "role": {
+                  "const": "central"
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "The central mapping: insured to a retail class, uninsured to one class."
+        },
+        "sensitivity_band": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16MappingRow",
+            "properties": {
+              "basis": {
+                "const": "uninsured"
+              },
+              "role": {
+                "const": "band"
+              }
+            }
+          },
+          "minItems": 3,
+          "description": "The classes the uninsured balance may plausibly belong to (Q13): operational, non-financial corporate, other legal entity; the LCR variant reports its ratio under each."
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The deposit-category mapping with its sensitivity band (Q13): the call report carries no customer type, so every mapping is an assumption and a convention."
+    },
+    "c16VariantRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "variant",
+        "scenario_family",
+        "phase",
+        "parameter_set",
+        "horizon_days",
+        "axis"
+      ],
+      "properties": {
+        "variant": {
+          "type": "string",
+          "enum": [
+            "lcr-standard",
+            "list-adverse",
+            "list-extreme",
+            "fast-run",
+            "htm-losses"
+          ]
+        },
+        "scenario_family": {
+          "type": "string",
+          "enum": [
+            "idiosyncratic",
+            "market-wide",
+            "combined"
+          ]
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "acute",
+            "protracted",
+            "lcr-30-day"
+          ]
+        },
+        "parameter_set": {
+          "type": "string",
+          "enum": [
+            "basel-lcr",
+            "list-adverse",
+            "list-extreme",
+            "fast-run"
+          ]
+        },
+        "horizon_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "axis": {
+          "type": "string",
+          "enum": [
+            "relevant-days",
+            "calendar-days"
+          ]
+        }
+      },
+      "description": "The scenario family, phase, parameter set and horizon of one variant (dossier 05 E.2 and E.5); the LCR variant's phase is lcr-30-day, the 30-calendar-day stress of LCR20.2, and no other variant takes it."
+    },
+    "c16VariantScenarios": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "rows",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "const": "convention"
+        },
+        "rows": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c16VariantRow",
+              "properties": {
+                "variant": {
+                  "const": "lcr-standard"
+                },
+                "phase": {
+                  "const": "lcr-30-day"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16VariantRow",
+              "properties": {
+                "variant": {
+                  "const": "list-adverse"
+                },
+                "phase": {
+                  "type": "string",
+                  "enum": [
+                    "acute",
+                    "protracted"
+                  ]
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16VariantRow",
+              "properties": {
+                "variant": {
+                  "const": "list-extreme"
+                },
+                "phase": {
+                  "type": "string",
+                  "enum": [
+                    "acute",
+                    "protracted"
+                  ]
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16VariantRow",
+              "properties": {
+                "variant": {
+                  "const": "fast-run"
+                },
+                "phase": {
+                  "type": "string",
+                  "enum": [
+                    "acute",
+                    "protracted"
+                  ]
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16VariantRow",
+              "properties": {
+                "variant": {
+                  "const": "htm-losses"
+                },
+                "phase": {
+                  "type": "string",
+                  "enum": [
+                    "acute",
+                    "protracted"
+                  ]
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 5,
+          "maxItems": 5
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The mapping of each variant to a scenario family and phase (Q14), in the order of the five scenario variants."
+    },
+    "c16DayCalendar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "kind",
+        "first_day",
+        "excluded_weekdays",
+        "holidays",
+        "holiday_rule",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "const": "convention"
+        },
+        "kind": {
+          "const": "us-business-days"
+        },
+        "first_day": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "excluded_weekdays": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "saturday",
+              "sunday"
+            ]
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "holidays": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          }
+        },
+        "holiday_rule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The ladder's day calendar (A2): US business days from the day after the valuation date. The LiST rates are defined on the 2019 TARGET2 relevant-day calendar, so every LiST cumulative figure says which calendar it is on."
+    },
+    "c16SecurityRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "class_id",
+        "fed_category",
+        "duration_bucket",
+        "margin",
+        "haircut",
+        "haircut_low",
+        "haircut_high",
+        "rule",
+        "source"
+      ],
+      "properties": {
+        "class_id": {
+          "type": "string",
+          "enum": [
+            "cash-and-balances",
+            "treasury",
+            "mortgage-backed",
+            "other-agency",
+            "municipal",
+            "other-debt"
+          ]
+        },
+        "fed_category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "duration_bucket": {
+          "type": "string",
+          "enum": [
+            "0-1",
+            ">1-3",
+            ">3-5",
+            ">5-10",
+            ">10",
+            "none"
+          ]
+        },
+        "margin": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A share or a rate in [0, 1]."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "haircut": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "haircut_low": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "haircut_high": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "rule": {
+          "type": "string",
+          "enum": [
+            "nominal-value",
+            "central-bank-framework",
+            "lcr-haircut-hqla",
+            "fifty-percent-fallback",
+            "ecb-equity-table",
+            "ecb-non-equity-hqla"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The central bank framework row a securities class takes (A3, A4): the Federal Reserve discount window margin in force on 2023-03-10, the duration bucket a convention, the haircut 1 - margin and its sensitivity band; a class the framework does not cover has a null margin and the fallback rule (LCR haircut if HQLA, else 50 percent)."
+    },
+    "c16SecurityMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "rows",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "const": "convention"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16SecurityRow"
+          },
+          "minItems": 1
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The securities classes of the CBC with their haircut rows (A3, A4)."
+    },
+    "c16Point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "day",
+        "cumulative_share"
+      ],
+      "properties": {
+        "day": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "cumulative_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        }
+      }
+    },
+    "c16Monetisation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "points",
+        "sensitivity_band",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "const": "convention"
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16Point"
+          },
+          "minItems": 1
+        },
+        "sensitivity_band": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "points"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "points": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/c16Point"
+                },
+                "minItems": 1
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The monetisation schedule of the CBC (Q6): the cumulative share of its liquidity value usable by day, with its band."
+    },
+    "c16CalibrationRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "rule",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "const": "convention"
+        },
+        "rule": {
+          "type": "string",
+          "enum": [
+            "maximum-implied-daily-rate",
+            "median-implied-daily-rate",
+            "mean-implied-daily-rate"
+          ]
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "How the fast-run daily rate is taken from the implied daily rates of the pre-2023 Table A.1 rows (the dossiers give no method)."
+    },
+    "c16CliffDays": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "near",
+        "far",
+        "day_basis",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "const": "convention"
+        },
+        "near": {
+          "const": 30
+        },
+        "far": {
+          "const": 35
+        },
+        "day_basis": {
+          "type": "string",
+          "enum": [
+            "relevant-days",
+            "calendar-days"
+          ]
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The two days of the cliff diagnostic (NLP(35) - NLP(30)) / TA (05 E.1); whether they count calendar or relevant days is UNVERIFIED in the LiST note, so the basis is a convention."
+    },
+    "c16Conventions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deposit_category_mapping",
+        "variant_scenarios",
+        "day_calendar",
+        "cbc_securities_mapping",
+        "monetisation_schedule",
+        "fast_run_calibration_rule",
+        "cliff_days",
+        "contractual_bucket_edges_days",
+        "event_horizon_days",
+        "uninsured_share_grid",
+        "htm_loss_multiple_grid",
+        "runoff_multiplier_grid",
+        "reverse_target_days",
+        "list_compounding_tolerance",
+        "monotonicity_tolerance_days",
+        "nlp_identity_tolerance",
+        "cliff_amber_threshold",
+        "cliff_red_threshold",
+        "scoring_ratio_green",
+        "scoring_ratio_amber",
+        "generator_truth_se_green",
+        "generator_truth_se_red",
+        "htm_revaluation_green",
+        "htm_revaluation_amber",
+        "round_trip_tolerance_days",
+        "cbc_haircut_band"
+      ],
+      "properties": {
+        "deposit_category_mapping": {
+          "$ref": "#/$defs/c16DepositMapping"
+        },
+        "variant_scenarios": {
+          "$ref": "#/$defs/c16VariantScenarios"
+        },
+        "day_calendar": {
+          "$ref": "#/$defs/c16DayCalendar"
+        },
+        "cbc_securities_mapping": {
+          "$ref": "#/$defs/c16SecurityMapping"
+        },
+        "monetisation_schedule": {
+          "$ref": "#/$defs/c16Monetisation"
+        },
+        "fast_run_calibration_rule": {
+          "$ref": "#/$defs/c16CalibrationRule"
+        },
+        "cliff_days": {
+          "$ref": "#/$defs/c16CliffDays"
+        },
+        "contractual_bucket_edges_days": {
+          "$ref": "#/$defs/c16Grid"
+        },
+        "event_horizon_days": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "uninsured_share_grid": {
+          "$ref": "#/$defs/c16Grid"
+        },
+        "htm_loss_multiple_grid": {
+          "$ref": "#/$defs/c16Grid"
+        },
+        "runoff_multiplier_grid": {
+          "$ref": "#/$defs/c16Grid"
+        },
+        "reverse_target_days": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "list_compounding_tolerance": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "monotonicity_tolerance_days": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "nlp_identity_tolerance": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "cliff_amber_threshold": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "cliff_red_threshold": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "scoring_ratio_green": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "scoring_ratio_amber": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "generator_truth_se_green": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "generator_truth_se_red": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "htm_revaluation_green": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "htm_revaluation_amber": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "round_trip_tolerance_days": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "cbc_haircut_band": {
+          "$ref": "#/$defs/c16Scalar"
+        }
+      },
+      "description": "Every named parameter of the case (Q13, Q14): the deposit mapping with its band, the variant scenarios, the day calendar, the CBC haircut rows and monetisation schedule, the calibration rule, the cliff days, the grids, the reverse-stress target, the tolerances and the lights of the tests. Each carries the label \"convention\"; none is a regulatory threshold. The same in every document of one bake."
+    },
+    "c16Variant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "description",
+        "scenario_family",
+        "phase",
+        "parameter_set",
+        "horizon_days",
+        "axis"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "lcr-standard",
+            "list-adverse",
+            "list-extreme",
+            "fast-run",
+            "htm-losses"
+          ]
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "description": {
+          "$ref": "../common/text.schema.json"
+        },
+        "scenario_family": {
+          "type": "string",
+          "enum": [
+            "idiosyncratic",
+            "market-wide",
+            "combined"
+          ]
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "acute",
+            "protracted",
+            "lcr-30-day"
+          ]
+        },
+        "parameter_set": {
+          "type": "string",
+          "enum": [
+            "basel-lcr",
+            "list-adverse",
+            "list-extreme",
+            "fast-run"
+          ]
+        },
+        "horizon_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "axis": {
+          "type": "string",
+          "enum": [
+            "relevant-days",
+            "calendar-days"
+          ]
+        }
+      },
+      "description": "The variant of the SDD (section 5), with its scenario family, phase, parameter set and horizon (the conventions' variant_scenarios row of the same variant)."
+    },
+    "c16Report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "report_date",
+        "source",
+        "fields"
+      ],
+      "properties": {
+        "report_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ASSET",
+              "CERT",
+              "CHBAL",
+              "DEP",
+              "DEPDOM",
+              "DEPFOR",
+              "DEPINS",
+              "DEPLGAMT",
+              "DEPSMAMT",
+              "DEPUNA",
+              "EQ",
+              "FREPO",
+              "FREPP",
+              "LIAB",
+              "LNLSNET",
+              "NAME",
+              "OTHBFHLB",
+              "RBCT1J",
+              "REPDTE",
+              "SC",
+              "SCAA",
+              "SCAF",
+              "SCAGE",
+              "SCASPNAF",
+              "SCASPNHA",
+              "SCASPNSUM",
+              "SCCMOT",
+              "SCCOL",
+              "SCDOMO",
+              "SCEQFV",
+              "SCFORD",
+              "SCGTY",
+              "SCHA",
+              "SCHF",
+              "SCHTMRES",
+              "SCMTGBK",
+              "SCMUNI",
+              "SCPLEDGE",
+              "SCRDEBT",
+              "SCSPN",
+              "SCUS",
+              "SCUST"
+            ]
+          },
+          "minItems": 1
+        }
+      },
+      "description": "One FDIC call-report quarter read for the case and the financials fields taken from it."
+    },
+    "c16Data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "call_reports",
+        "data_cutoff",
+        "read_up_to_valuation_date",
+        "rule"
+      ],
+      "properties": {
+        "call_reports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16Report"
+          },
+          "minItems": 1
+        },
+        "data_cutoff": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "read_up_to_valuation_date": {
+          "const": true
+        },
+        "rule": {
+          "$ref": "#/$defs/c16Label"
+        }
+      },
+      "description": "The call reports read for the valuation date. Never one dated after it: data_cutoff is the latest report date read and is on or before the valuation date (a producer check; a false flag fails)."
+    },
+    "c16Series": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "series_id",
+        "label",
+        "unit",
+        "points"
+      ],
+      "properties": {
+        "series_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "date",
+              "value"
+            ],
+            "properties": {
+              "date": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              "value": {
+                "type": "number"
+              }
+            }
+          },
+          "minItems": 1
+        }
+      },
+      "description": "One H.8 weekly series with its unit."
+    },
+    "c16Aggregate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "series"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "series": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16Series"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "The Federal Reserve H.8 aggregate deposit record of the run weeks (large and small banks)."
+    },
+    "c16Item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_id",
+        "label",
+        "side",
+        "category",
+        "source_field",
+        "reported_amount",
+        "reason_missing",
+        "assumption",
+        "amount",
+        "liquidity_class",
+        "residual_days",
+        "insured",
+        "fair_value"
+      ],
+      "properties": {
+        "item_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "side": {
+          "type": "string",
+          "enum": [
+            "asset",
+            "liability"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "cash",
+            "reverse-repo",
+            "securities-htm",
+            "securities-afs",
+            "loans",
+            "other-assets",
+            "deposits-insured",
+            "deposits-uninsured",
+            "deposits-foreign-office",
+            "repo-borrowings",
+            "fhlb-advances",
+            "other-liabilities",
+            "equity"
+          ]
+        },
+        "source_field": {
+          "type": "string",
+          "enum": [
+            "ASSET",
+            "CERT",
+            "CHBAL",
+            "DEP",
+            "DEPDOM",
+            "DEPFOR",
+            "DEPINS",
+            "DEPLGAMT",
+            "DEPSMAMT",
+            "DEPUNA",
+            "EQ",
+            "FREPO",
+            "FREPP",
+            "LIAB",
+            "LNLSNET",
+            "NAME",
+            "OTHBFHLB",
+            "RBCT1J",
+            "REPDTE",
+            "SC",
+            "SCAA",
+            "SCAF",
+            "SCAGE",
+            "SCASPNAF",
+            "SCASPNHA",
+            "SCASPNSUM",
+            "SCCMOT",
+            "SCCOL",
+            "SCDOMO",
+            "SCEQFV",
+            "SCFORD",
+            "SCGTY",
+            "SCHA",
+            "SCHF",
+            "SCHTMRES",
+            "SCMTGBK",
+            "SCMUNI",
+            "SCPLEDGE",
+            "SCRDEBT",
+            "SCSPN",
+            "SCUS",
+            "SCUST"
+          ]
+        },
+        "reported_amount": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason_missing": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "assumption": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "liquidity_class": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "level_1",
+                "level_2a",
+                "level_2b",
+                "non_hqla"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "residual_days": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "insured": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fair_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "One balance-sheet item taken from the call report, with the family fields liquidity_class, residual_days, insured and fair_value (null where they do not apply). A call-report item the FDIC financials lack has reported_amount null with its reason and the assumption that replaces it, never a fabricated number; a reported item has no reason.",
+      "oneOf": [
+        {
+          "properties": {
+            "reported_amount": {
+              "type": "number"
+            },
+            "reason_missing": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "reported_amount": {
+              "type": "null"
+            },
+            "reason_missing": {
+              "$ref": "#/$defs/c16Label"
+            }
+          }
+        }
+      ]
+    },
+    "c16Deposits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dep",
+        "depdom",
+        "depuna",
+        "depins",
+        "depsmamt",
+        "deplgamt",
+        "denominators",
+        "uninsured_share_of_dep",
+        "uninsured_share_of_depdom",
+        "size_threshold"
+      ],
+      "properties": {
+        "dep": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "depdom": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "depuna": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "depins": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "depsmamt": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "deplgamt": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "denominators": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "insured_uninsured",
+            "total"
+          ],
+          "properties": {
+            "insured_uninsured": {
+              "const": "DEPDOM"
+            },
+            "total": {
+              "const": "DEP"
+            }
+          }
+        },
+        "uninsured_share_of_dep": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "uninsured_share_of_depdom": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "size_threshold": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "unit",
+            "source"
+          ],
+          "properties": {
+            "value": {
+              "const": 250000
+            },
+            "unit": {
+              "const": "USD"
+            },
+            "source": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      },
+      "description": "The deposit fields (A5): DEPUNA and DEPINS cover domestic offices and their matching denominator is DEPDOM, while DEP includes foreign offices; both denominators are stated wherever the uninsured share appears. DEPSMAMT and DEPLGAMT are on the 250,000 USD threshold at 2022-12-31 by the FDIC's own definition. The FDIC names no call-report schedule or line."
+    },
+    "c16Assumption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assumption_id",
+        "statement",
+        "behaviour",
+        "applies_to"
+      ],
+      "properties": {
+        "assumption_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "statement": {
+          "$ref": "../common/text.schema.json"
+        },
+        "behaviour": {
+          "const": "synthetic"
+        },
+        "applies_to": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "One assumption of the case, stated as synthetic behaviour on real aggregates."
+    },
+    "c16BalanceSheet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "as_of",
+        "items",
+        "total_assets",
+        "deposits",
+        "assumptions"
+      ],
+      "properties": {
+        "as_of": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16Item"
+          },
+          "minItems": 1
+        },
+        "total_assets": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "deposits": {
+          "$ref": "#/$defs/c16Deposits"
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16Assumption"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "The balance sheet at the valuation date with its call-report source items and every assumption stated as synthetic behaviour."
+    },
+    "c16RunoffParam": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "source_kind",
+        "source"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "transcribed-list-2019",
+            "transcribed-basel-lcr",
+            "calibrated-pre-2023",
+            "convention",
+            "synthetic-stated",
+            "scenario-input"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A run-off parameter with its unit and its source: a transcribed LiST 2019 or Basel value, a pre-2023 calibration, a stated synthetic value or a convention."
+    },
+    "c16Segment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "segment",
+        "list_class",
+        "mechanism",
+        "opening_balance",
+        "parameters",
+        "daily_rates",
+        "cumulative_outflow_share",
+        "outflows"
+      ],
+      "properties": {
+        "segment": {
+          "type": "string",
+          "enum": [
+            "retail-insured",
+            "retail-uninsured",
+            "operational",
+            "non-operational-corporate",
+            "financial"
+          ]
+        },
+        "list_class": {
+          "type": "string",
+          "enum": [
+            "stable-retail",
+            "other-retail",
+            "operational",
+            "non-operational-credit-institutions",
+            "non-operational-other-financial",
+            "non-operational-non-financial-corporates",
+            "non-operational-others"
+          ]
+        },
+        "mechanism": {
+          "type": "string",
+          "enum": [
+            "open-maturity-compounding",
+            "contractual-maturity-rolloff",
+            "full-runoff",
+            "constant-stock"
+          ]
+        },
+        "opening_balance": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16RunoffParam"
+          },
+          "minItems": 1
+        },
+        "daily_rates": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "A share or a rate in [0, 1]."
+              },
+              "minItems": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cumulative_outflow_share": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or a rate in [0, 1]."
+          },
+          "minItems": 1
+        },
+        "outflows": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+          },
+          "minItems": 1
+        }
+      },
+      "description": "The run-off curve of one deposit segment over the ladder: the opening balance, the daily rates (open-maturity compounding only), the cumulative outflow share and the outflow of each day. For compounding, cumulative = 1 - prod(1 - q_d) (05 E.1).",
+      "oneOf": [
+        {
+          "properties": {
+            "mechanism": {
+              "const": "open-maturity-compounding"
+            },
+            "daily_rates": {
+              "type": "array"
+            }
+          }
+        },
+        {
+          "properties": {
+            "mechanism": {
+              "type": "string",
+              "enum": [
+                "contractual-maturity-rolloff",
+                "full-runoff",
+                "constant-stock"
+              ]
+            },
+            "daily_rates": {
+              "type": "null"
+            }
+          }
+        }
+      ]
+    },
+    "c16Flow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component_id",
+        "kind",
+        "source_kind",
+        "source",
+        "amounts"
+      ],
+      "properties": {
+        "component_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "committed-line-drawdown",
+            "collateral-call",
+            "secured-funding-maturity",
+            "derivative-payable",
+            "other-contractual-outflow",
+            "inflow-secured-lending",
+            "inflow-loans",
+            "inflow-other"
+          ]
+        },
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "transcribed-list-2019",
+            "transcribed-basel-lcr",
+            "calibrated-pre-2023",
+            "convention",
+            "synthetic-stated",
+            "scenario-input"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "amounts": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+          },
+          "minItems": 1
+        }
+      },
+      "description": "A non-deposit outflow or an inflow of the ladder by day; a collateral call has no numeric LiST parameter and is a labelled scenario input (A1)."
+    },
+    "c16CbcStack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "class_id",
+        "liquidity_value"
+      ],
+      "properties": {
+        "class_id": {
+          "type": "string",
+          "enum": [
+            "cash-and-balances",
+            "treasury",
+            "mortgage-backed",
+            "other-agency",
+            "municipal",
+            "other-debt"
+          ]
+        },
+        "liquidity_value": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+          },
+          "minItems": 1
+        }
+      },
+      "description": "The liquidity value of one CBC class available on each day of the ladder."
+    },
+    "c16Ladder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "axis",
+        "day_index",
+        "dates",
+        "segments",
+        "other_outflows",
+        "inflows",
+        "total_outflows",
+        "total_inflows",
+        "cbc_stack",
+        "cbc_total",
+        "cumulative_net_outflow",
+        "nlp"
+      ],
+      "properties": {
+        "axis": {
+          "type": "string",
+          "enum": [
+            "relevant-days",
+            "calendar-days"
+          ]
+        },
+        "day_index": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 1
+        },
+        "dates": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "minItems": 1
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16Segment"
+          },
+          "minItems": 1
+        },
+        "other_outflows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16Flow"
+          }
+        },
+        "inflows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16Flow"
+          }
+        },
+        "total_outflows": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+          },
+          "minItems": 1
+        },
+        "total_inflows": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+          },
+          "minItems": 1
+        },
+        "cbc_stack": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16CbcStack"
+          },
+          "minItems": 1
+        },
+        "cbc_total": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+          },
+          "minItems": 1
+        },
+        "cumulative_net_outflow": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+          },
+          "minItems": 1
+        },
+        "nlp": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+          },
+          "minItems": 1
+        }
+      },
+      "description": "The daily ladder, columnar: every array has one value per day of the horizon. NLP(t) = CBC(t) minus the sum over s up to t of the outflows O(s) minus the inflows I(s) (05 E.1)."
+    },
+    "c16Cliff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "near_day",
+        "far_day",
+        "nlp_near",
+        "nlp_far",
+        "total_assets",
+        "value"
+      ],
+      "properties": {
+        "near_day": {
+          "const": 30
+        },
+        "far_day": {
+          "const": 35
+        },
+        "nlp_near": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "nlp_far": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "total_assets": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "value": {
+          "type": "number"
+        }
+      },
+      "description": "The cliff effect (NLP(35) - NLP(30)) / TA, a diagnostic of LCR window optimisation (05 E.1)."
+    },
+    "c16Path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ladder",
+        "survival",
+        "minimum_nlp",
+        "cliff",
+        "cliff_reason"
+      ],
+      "properties": {
+        "ladder": {
+          "$ref": "#/$defs/c16Ladder"
+        },
+        "survival": {
+          "$ref": "#/$defs/c16Survival"
+        },
+        "minimum_nlp": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "day"
+          ],
+          "properties": {
+            "value": {
+              "type": "number",
+              "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+            },
+            "day": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "cliff": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Cliff"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cliff_reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The daily path of a variant: the ladder, the survival period, the minimum NLP and the cliff diagnostic (null with its reason when the horizon is shorter than 35 days).",
+      "oneOf": [
+        {
+          "properties": {
+            "cliff": {
+              "type": "object"
+            },
+            "cliff_reason": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "cliff": {
+              "type": "null"
+            },
+            "cliff_reason": {
+              "$ref": "#/$defs/c16Label"
+            }
+          }
+        }
+      ]
+    },
+    "c16CbcClass": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "class_id",
+        "label",
+        "source_fields",
+        "carrying_value",
+        "fair_value",
+        "value_used",
+        "encumbered",
+        "haircut",
+        "liquidity_value"
+      ],
+      "properties": {
+        "class_id": {
+          "type": "string",
+          "enum": [
+            "cash-and-balances",
+            "treasury",
+            "mortgage-backed",
+            "other-agency",
+            "municipal",
+            "other-debt"
+          ]
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "source_fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ASSET",
+              "CERT",
+              "CHBAL",
+              "DEP",
+              "DEPDOM",
+              "DEPFOR",
+              "DEPINS",
+              "DEPLGAMT",
+              "DEPSMAMT",
+              "DEPUNA",
+              "EQ",
+              "FREPO",
+              "FREPP",
+              "LIAB",
+              "LNLSNET",
+              "NAME",
+              "OTHBFHLB",
+              "RBCT1J",
+              "REPDTE",
+              "SC",
+              "SCAA",
+              "SCAF",
+              "SCAGE",
+              "SCASPNAF",
+              "SCASPNHA",
+              "SCASPNSUM",
+              "SCCMOT",
+              "SCCOL",
+              "SCDOMO",
+              "SCEQFV",
+              "SCFORD",
+              "SCGTY",
+              "SCHA",
+              "SCHF",
+              "SCHTMRES",
+              "SCMTGBK",
+              "SCMUNI",
+              "SCPLEDGE",
+              "SCRDEBT",
+              "SCSPN",
+              "SCUS",
+              "SCUST"
+            ]
+          },
+          "minItems": 1
+        },
+        "carrying_value": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "fair_value": {
+          "anyOf": [
+            {
+              "type": "number",
+              "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "value_used": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "encumbered": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "haircut": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "rule"
+          ],
+          "properties": {
+            "value": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A share or a rate in [0, 1]."
+            },
+            "rule": {
+              "type": "string",
+              "enum": [
+                "nominal-value",
+                "central-bank-framework",
+                "lcr-haircut-hqla",
+                "fifty-percent-fallback",
+                "ecb-equity-table",
+                "ecb-non-equity-hqla"
+              ]
+            }
+          }
+        },
+        "liquidity_value": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        }
+      },
+      "description": "One class of the CBC: liquidity value = (value used minus the encumbered part) x (1 - haircut), the haircut returned with its rule label (05 E.1 l.238; the Federal Reserve margins of A4)."
+    },
+    "c16Cbc": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "as_of",
+        "htm_valuation_basis",
+        "haircut_framework",
+        "classes",
+        "pledged",
+        "total_liquidity_value"
+      ],
+      "properties": {
+        "as_of": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "htm_valuation_basis": {
+          "type": "string",
+          "enum": [
+            "amortised-cost",
+            "fair-value"
+          ]
+        },
+        "haircut_framework": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "central_bank",
+            "effective_from",
+            "effective_to",
+            "source"
+          ],
+          "properties": {
+            "label": {
+              "$ref": "../common/text.schema.json"
+            },
+            "central_bank": {
+              "const": "Federal Reserve discount window"
+            },
+            "effective_from": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "effective_to": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "source": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "classes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16CbcClass"
+          },
+          "minItems": 1
+        },
+        "pledged": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "field",
+            "amount",
+            "share_of_securities"
+          ],
+          "properties": {
+            "field": {
+              "const": "SCPLEDGE"
+            },
+            "amount": {
+              "type": "number",
+              "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+            },
+            "share_of_securities": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A share or a rate in [0, 1]."
+            }
+          }
+        },
+        "total_liquidity_value": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        }
+      },
+      "description": "The counterbalancing capacity at the valuation date: the securities split by type at the carrying values the FDIC reports, pledged securities encumbered (LiST para 63), and the held-to-maturity book at amortised cost, or at fair value in the HTM variant."
+    },
+    "c16LcrOutflowRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "balance",
+        "rate",
+        "amount",
+        "reference"
+      ],
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "retail_stable_insurance_criteria",
+            "retail_stable",
+            "retail_less_stable",
+            "retail_term_gt_30d",
+            "small_business_stable",
+            "small_business_less_stable",
+            "operational",
+            "operational_insured_portion",
+            "cooperative_network",
+            "non_financial_corporate",
+            "non_financial_corporate_fully_insured",
+            "other_legal_entity",
+            "secured_central_bank",
+            "secured_level1",
+            "secured_level2a",
+            "secured_sovereign_mdb_pse",
+            "secured_level2b_rmbs",
+            "secured_other_level2b",
+            "secured_other",
+            "non_level1_collateral_valuation",
+            "undrawn_retail_small_business",
+            "undrawn_credit_non_financial_corporate",
+            "undrawn_liquidity_non_financial_corporate",
+            "undrawn_credit_supervised_bank",
+            "undrawn_liquidity_supervised_bank",
+            "undrawn_credit_other_fi",
+            "undrawn_liquidity_other_fi",
+            "undrawn_other_legal_entity",
+            "net_derivative_outflow",
+            "other_contractual_outflow",
+            "trade_finance"
+          ]
+        },
+        "balance": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "amount": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "One LCR outflow category (a key of LCR_OUTFLOW_RATES, or trade_finance): the balance, its rate (the table rate; trade finance a caller-supplied rate within 0 to 0.05) and the amount, with the Basel paragraph."
+    },
+    "c16LcrInflowRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "balance",
+        "rate",
+        "amount",
+        "reference"
+      ],
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "secured_lending_level1",
+            "secured_lending_level2a",
+            "secured_lending_level2b_rmbs",
+            "secured_lending_other_level2b",
+            "secured_lending_other",
+            "margin_lending_other_collateral",
+            "facilities_granted_to_bank",
+            "operational_deposits_at_other_institutions",
+            "retail_and_nonfinancial_wholesale",
+            "financial_institutions_and_central_banks",
+            "net_derivative_inflow"
+          ]
+        },
+        "balance": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "amount": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "One LCR inflow category (a key of LCR_INFLOW_RATES): the balance, its table rate and the amount, with the Basel paragraph."
+    },
+    "c16MappingSensitivity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mapping_id",
+        "lcr_category",
+        "uninsured_outflow",
+        "total_outflows",
+        "inflows_counted",
+        "net_outflows",
+        "ratio"
+      ],
+      "properties": {
+        "mapping_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lcr_category": {
+          "type": "string",
+          "enum": [
+            "retail_stable",
+            "retail_less_stable",
+            "operational",
+            "non_financial_corporate",
+            "other_legal_entity"
+          ]
+        },
+        "uninsured_outflow": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "total_outflows": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "inflows_counted": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "net_outflows": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "ratio": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "The LCR under one mapping of the uninsured balance (Q13): the outflow of the uninsured balance under that category, the total outflows, the counted inflows, the net outflows and the ratio recomputable from them and the HQLA."
+    },
+    "c16Hqla": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "l1",
+        "l2a",
+        "l2b",
+        "adjusted_l1",
+        "adjusted_l2a",
+        "adjusted_l2b",
+        "adj_15",
+        "adj_40",
+        "hqla",
+        "l2_share",
+        "l2b_share",
+        "caps"
+      ],
+      "properties": {
+        "l1": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "l2a": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "l2b": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "adjusted_l1": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "adjusted_l2a": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "adjusted_l2b": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "adj_15": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "adj_40": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "hqla": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "l2_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "l2b_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "caps": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "l2_cap",
+            "l2b_cap"
+          ],
+          "properties": {
+            "l2_cap": {
+              "const": 0.4
+            },
+            "l2b_cap": {
+              "const": 0.15
+            }
+          }
+        }
+      },
+      "description": "HQLA by level after the caps: HQLA = L1 + L2A + L2B - Adj15 - Adj40 (LCR30.38) with the adjustments of LCR30.39."
+    },
+    "c16Lcr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "reported_or_regulatory",
+        "statement",
+        "hqla",
+        "outflows",
+        "total_outflows",
+        "inflows",
+        "total_inflows",
+        "inflow_cap",
+        "inflows_counted",
+        "net_outflows",
+        "ratio",
+        "mapping_sensitivity",
+        "below_100_note"
+      ],
+      "properties": {
+        "label": {
+          "const": "basel-formula-on-call-report-aggregates"
+        },
+        "reported_or_regulatory": {
+          "const": false
+        },
+        "statement": {
+          "$ref": "../common/text.schema.json"
+        },
+        "hqla": {
+          "$ref": "#/$defs/c16Hqla"
+        },
+        "outflows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16LcrOutflowRow"
+          },
+          "minItems": 1
+        },
+        "total_outflows": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "inflows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16LcrInflowRow"
+          }
+        },
+        "total_inflows": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "inflow_cap": {
+          "const": 0.75
+        },
+        "inflows_counted": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "net_outflows": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "ratio": {
+          "type": "number",
+          "minimum": 0
+        },
+        "mapping_sensitivity": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16MappingSensitivity"
+          },
+          "minItems": 3
+        },
+        "below_100_note": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The LCR block: a Basel formula applied to call-report aggregates with stated assumptions, never the bank's reported or regulatory LCR (the label and the false flag are required). Inflows counted are at most 75 percent of outflows (LCR40.1) and Level 2B at most 15 percent of HQLA. A ratio below 100 percent under stress is not a breach (01 J.3)."
+    },
+    "c16Revaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "engine_ref",
+        "curve_source",
+        "curve_date",
+        "model_fair_value",
+        "reported_fair_value",
+        "difference",
+        "relative_difference",
+        "reason"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "evaluated",
+            "not_evaluated"
+          ]
+        },
+        "engine_ref": {
+          "const": "engine-irrbb-api"
+        },
+        "curve_source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "curve_date": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "model_fair_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reported_fair_value": {
+          "type": "number"
+        },
+        "difference": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "relative_difference": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The HTM revaluation validation row (Q11): the book revalued from its maturity profile under the Treasury curve through the engine's irrbb curves, against the reported fair value; null with its reason when the revaluation did not run.",
+      "oneOf": [
+        {
+          "properties": {
+            "status": {
+              "const": "evaluated"
+            },
+            "curve_date": {
+              "type": "string"
+            },
+            "model_fair_value": {
+              "type": "number"
+            },
+            "difference": {
+              "type": "number"
+            },
+            "relative_difference": {
+              "type": "number"
+            },
+            "reason": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "status": {
+              "const": "not_evaluated"
+            },
+            "curve_date": {
+              "type": "null"
+            },
+            "model_fair_value": {
+              "type": "null"
+            },
+            "difference": {
+              "type": "null"
+            },
+            "relative_difference": {
+              "type": "null"
+            },
+            "reason": {
+              "$ref": "#/$defs/c16Label"
+            }
+          }
+        }
+      ]
+    },
+    "c16Htm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reported",
+        "application",
+        "cbc_without_loss",
+        "cbc_with_loss",
+        "cbc_removed",
+        "btfp_par",
+        "revaluation"
+      ],
+      "properties": {
+        "reported": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "htm_amortised_cost",
+            "htm_fair_value",
+            "htm_unrealised",
+            "afs_amortised_cost",
+            "afs_fair_value",
+            "afs_unrealised"
+          ],
+          "properties": {
+            "htm_amortised_cost": {
+              "type": "number",
+              "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+            },
+            "htm_fair_value": {
+              "type": "number",
+              "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+            },
+            "htm_unrealised": {
+              "type": "number",
+              "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+            },
+            "afs_amortised_cost": {
+              "type": "number",
+              "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+            },
+            "afs_fair_value": {
+              "type": "number",
+              "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+            },
+            "afs_unrealised": {
+              "type": "number",
+              "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+            }
+          }
+        },
+        "application": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "method",
+            "statement"
+          ],
+          "properties": {
+            "method": {
+              "type": "string",
+              "enum": [
+                "whole-book",
+                "pro-rata-by-type"
+              ]
+            },
+            "statement": {
+              "$ref": "../common/text.schema.json"
+            }
+          }
+        },
+        "cbc_without_loss": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "cbc_with_loss": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "cbc_removed": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "btfp_par": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "announced",
+            "cbc_at_par",
+            "uplift"
+          ],
+          "properties": {
+            "label": {
+              "$ref": "../common/text.schema.json"
+            },
+            "announced": {
+              "const": "2023-03-12"
+            },
+            "cbc_at_par": {
+              "type": "number",
+              "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+            },
+            "uplift": {
+              "type": "number",
+              "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+            }
+          }
+        },
+        "revaluation": {
+          "$ref": "#/$defs/c16Revaluation"
+        }
+      },
+      "description": "The HTM losses in the CBC: the reported amortised cost and fair value (SCHA, SCHF, SCAA, SCAF), the loss applied to the book as a whole or pro rata by type (never a reported by-type loss), the CBC with and without it, the labelled counterfactual under the Bank Term Funding Program's par valuation (announced after the run) and the revaluation validation row."
+    },
+    "c16Denominator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "denominator_amount",
+        "realised_amount",
+        "realised_share",
+        "source",
+        "modelled_share",
+        "compared_at",
+        "shortfall",
+        "ratio",
+        "light"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "board-stated-share",
+            "call-report-dep"
+          ]
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "denominator_amount": {
+          "anyOf": [
+            {
+              "type": "number",
+              "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "realised_amount": {
+          "anyOf": [
+            {
+              "type": "number",
+              "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "realised_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "modelled_share": {
+          "type": "number",
+          "minimum": 0
+        },
+        "compared_at": {
+          "type": "string",
+          "enum": [
+            "event-horizon",
+            "model-horizon"
+          ]
+        },
+        "shortfall": {
+          "type": "number"
+        },
+        "ratio": {
+          "type": "number",
+          "minimum": 0
+        },
+        "light": {
+          "type": "string",
+          "enum": [
+            "green",
+            "amber",
+            "red"
+          ]
+        }
+      },
+      "description": "The realised outflow against one denominator, and the model's share compared with it: shortfall = realised minus modelled, ratio = modelled over realised, the light by the conventions scoring_ratio_green and scoring_ratio_amber."
+    },
+    "c16Modelled": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "horizon_days",
+        "amount",
+        "share_of_model_base"
+      ],
+      "properties": {
+        "horizon_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "amount": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "share_of_model_base": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        }
+      },
+      "description": "The model's cumulative outflow at a horizon and its share of the model's deposit base."
+    },
+    "c16ModelledOutflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "at_event_horizon",
+        "at_event_horizon_reason",
+        "at_model_horizon"
+      ],
+      "properties": {
+        "at_event_horizon": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Modelled"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "at_event_horizon_reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "at_model_horizon": {
+          "$ref": "#/$defs/c16Modelled"
+        }
+      },
+      "description": "The model's cumulative outflow at the event horizon (null with its reason for the LCR, which defines a 30-day aggregate and no daily path) and at the model's own horizon.",
+      "oneOf": [
+        {
+          "properties": {
+            "at_event_horizon": {
+              "type": "object"
+            },
+            "at_event_horizon_reason": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "at_event_horizon": {
+              "type": "null"
+            },
+            "at_event_horizon_reason": {
+              "$ref": "#/$defs/c16Label"
+            }
+          }
+        }
+      ]
+    },
+    "c16A1Score": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "row_id",
+        "bank",
+        "year",
+        "horizon_days",
+        "observed_share",
+        "modelled_share",
+        "error",
+        "role",
+        "reason"
+      ],
+      "properties": {
+        "row_id": {
+          "type": "string",
+          "enum": [
+            "svb-2023",
+            "first-republic-2023",
+            "svb-uk-2023",
+            "credit-suisse-2023",
+            "signature-2023",
+            "icesave-2008",
+            "northern-rock-2007",
+            "wamu-2008",
+            "indymac-2008"
+          ]
+        },
+        "bank": {
+          "type": "string",
+          "minLength": 1
+        },
+        "year": {
+          "type": "integer",
+          "minimum": 1900
+        },
+        "horizon_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "observed_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "modelled_share": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "calibration",
+            "scored",
+            "reference"
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "A Table A.1 row against the model's cumulative outflow at the row's horizon; the role says whether the fast run was calibrated on it (pre-2023), scored on it (2023) or only shows it as a reference point. A row whose horizon is beyond the model's ladder (or a variant without a daily path) has a null share with its reason.",
+      "oneOf": [
+        {
+          "properties": {
+            "modelled_share": {
+              "type": "number"
+            },
+            "error": {
+              "type": "number"
+            },
+            "reason": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "modelled_share": {
+              "type": "null"
+            },
+            "error": {
+              "type": "null"
+            },
+            "reason": {
+              "$ref": "#/$defs/c16Label"
+            }
+          }
+        }
+      ]
+    },
+    "c16Scoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event",
+        "model_deposit_base",
+        "modelled_outflow",
+        "denominators",
+        "svb_anchor",
+        "table_a1_scoring"
+      ],
+      "properties": {
+        "event": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "event_date",
+            "horizon_days",
+            "source"
+          ],
+          "properties": {
+            "label": {
+              "$ref": "../common/text.schema.json"
+            },
+            "event_date": {
+              "const": "2023-03-10"
+            },
+            "horizon_days": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "source": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "model_deposit_base": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "modelled_outflow": {
+          "$ref": "#/$defs/c16ModelledOutflow"
+        },
+        "denominators": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c16Denominator",
+              "properties": {
+                "id": {
+                  "const": "board-stated-share"
+                },
+                "denominator_amount": {
+                  "type": "null"
+                },
+                "realised_amount": {
+                  "type": "null"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16Denominator",
+              "properties": {
+                "id": {
+                  "const": "call-report-dep"
+                },
+                "denominator_amount": {
+                  "type": "number"
+                },
+                "realised_amount": {
+                  "type": "number"
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "The two denominators of the realised outflow (Q4): the Board's roughly 85 percent of the deposit base, and over 40 plus 100 billion USD against the call report's DEP."
+        },
+        "svb_anchor": {
+          "$ref": "#/$defs/c16Anchor",
+          "properties": {
+            "outflow_share": {
+              "const": 0.85
+            },
+            "days": {
+              "const": 2
+            }
+          }
+        },
+        "table_a1_scoring": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c16A1Score",
+              "properties": {
+                "row_id": {
+                  "const": "svb-2023"
+                },
+                "bank": {
+                  "const": "SVB"
+                },
+                "year": {
+                  "const": 2023
+                },
+                "horizon_days": {
+                  "const": 2
+                },
+                "observed_share": {
+                  "const": 0.85
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16A1Score",
+              "properties": {
+                "row_id": {
+                  "const": "first-republic-2023"
+                },
+                "bank": {
+                  "const": "First Republic"
+                },
+                "year": {
+                  "const": 2023
+                },
+                "horizon_days": {
+                  "const": 90
+                },
+                "observed_share": {
+                  "const": 0.57
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16A1Score",
+              "properties": {
+                "row_id": {
+                  "const": "svb-uk-2023"
+                },
+                "bank": {
+                  "const": "SVB UK"
+                },
+                "year": {
+                  "const": 2023
+                },
+                "horizon_days": {
+                  "const": 1
+                },
+                "observed_share": {
+                  "const": 0.3
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16A1Score",
+              "properties": {
+                "row_id": {
+                  "const": "credit-suisse-2023"
+                },
+                "bank": {
+                  "const": "Credit Suisse"
+                },
+                "year": {
+                  "const": 2023
+                },
+                "horizon_days": {
+                  "const": 90
+                },
+                "observed_share": {
+                  "const": 0.21
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16A1Score",
+              "properties": {
+                "row_id": {
+                  "const": "signature-2023"
+                },
+                "bank": {
+                  "const": "Signature"
+                },
+                "year": {
+                  "const": 2023
+                },
+                "horizon_days": {
+                  "const": 1
+                },
+                "observed_share": {
+                  "const": 0.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16A1Score",
+              "properties": {
+                "row_id": {
+                  "const": "icesave-2008"
+                },
+                "bank": {
+                  "const": "Icesave"
+                },
+                "year": {
+                  "const": 2008
+                },
+                "horizon_days": {
+                  "const": 75
+                },
+                "observed_share": {
+                  "const": 0.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16A1Score",
+              "properties": {
+                "row_id": {
+                  "const": "northern-rock-2007"
+                },
+                "bank": {
+                  "const": "Northern Rock"
+                },
+                "year": {
+                  "const": 2007
+                },
+                "horizon_days": {
+                  "const": 4
+                },
+                "observed_share": {
+                  "const": 0.2
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16A1Score",
+              "properties": {
+                "row_id": {
+                  "const": "wamu-2008"
+                },
+                "bank": {
+                  "const": "WaMu"
+                },
+                "year": {
+                  "const": 2008
+                },
+                "horizon_days": {
+                  "const": 10
+                },
+                "observed_share": {
+                  "const": 0.1
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16A1Score",
+              "properties": {
+                "row_id": {
+                  "const": "indymac-2008"
+                },
+                "bank": {
+                  "const": "IndyMac"
+                },
+                "year": {
+                  "const": 2008
+                },
+                "horizon_days": {
+                  "const": 14
+                },
+                "observed_share": {
+                  "const": 0.08
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 9,
+          "maxItems": 9
+        }
+      },
+      "description": "The March 2023 scoring block: the model's cumulative outflow against the realised outflow with both denominators, the SVB observation as a labelled anchor row and the Table A.1 rows. Calibrated on pre-2023 data and scored on 2023 (Q4)."
+    },
+    "c16TimePoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "as_of",
+        "report_date",
+        "deposits",
+        "htm_unrealised_loss",
+        "cbc_amortised_basis",
+        "cbc_fair_value_basis",
+        "survival",
+        "lcr_ratio"
+      ],
+      "properties": {
+        "as_of": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "report_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "deposits": {
+          "$ref": "#/$defs/c16Deposits"
+        },
+        "htm_unrealised_loss": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "cbc_amortised_basis": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "cbc_fair_value_basis": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "survival": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Survival"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lcr_ratio": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "One earlier call-report date of the time block (Q7): the deposits, the HTM unrealised loss, the CBC on both bases and the survival period as the HTM losses grew (null where the variant defines no daily path)."
+    },
+    "c16ContractualBucket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from_day",
+        "to_day",
+        "inflows",
+        "outflows",
+        "gap",
+        "cumulative_gap"
+      ],
+      "properties": {
+        "from_day": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "to_day": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "inflows": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "outflows": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "gap": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "cumulative_gap": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        }
+      },
+      "description": "One contractual maturity bucket: from_day exclusive to to_day inclusive (null: open-ended), gap = inflows - outflows."
+    },
+    "c16ContractualLadder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "buckets",
+        "reference"
+      ],
+      "properties": {
+        "buckets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16ContractualBucket"
+          },
+          "minItems": 1
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The static contractual maturity ladder with gaps and cumulative gaps (05 E.5 rung 1; the SRP50 contractual maturity mismatch tool, 01 G.3), on the buckets of the conventions' contractual_bucket_edges_days."
+    },
+    "c16ShareSensitivity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "share",
+        "survival"
+      ],
+      "properties": {
+        "share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "survival": {
+          "$ref": "#/$defs/c16Survival"
+        }
+      },
+      "description": "The survival period when the uninsured share of the domestic deposits is `share` (05 E.5 rung 4)."
+    },
+    "c16HtmSensitivity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "multiple",
+        "unrealised_loss",
+        "cbc",
+        "survival"
+      ],
+      "properties": {
+        "multiple": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unrealised_loss": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "cbc": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "survival": {
+          "$ref": "#/$defs/c16Survival"
+        }
+      },
+      "description": "The HTM unrealised loss at `multiple` times the reported loss (05 E.5 rung 4, l.278): the loss, the CBC under it and the survival period; 1 is the reported loss and 0 no loss."
+    },
+    "c16Sensitivities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uninsured_share",
+        "uninsured_share_reason",
+        "htm_loss",
+        "htm_loss_reason"
+      ],
+      "properties": {
+        "uninsured_share": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/c16ShareSensitivity"
+              },
+              "minItems": 2
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "uninsured_share_reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "htm_loss": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/c16HtmSensitivity"
+              },
+              "minItems": 2
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "htm_loss_reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The two sensitivities the survival-horizon views draw: the survival period against the uninsured share, ordered as the conventions' uninsured_share_grid, and the survival period and CBC against the HTM unrealised-loss multiple, ordered as the htm_loss_multiple_grid. Each is null with its reason where the variant has no daily path (the LCR)."
+    },
+    "c16Outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "valuation_date",
+        "currency",
+        "units",
+        "bank",
+        "variant",
+        "conventions",
+        "data",
+        "aggregate_record",
+        "aggregate_record_reason",
+        "balance_sheet",
+        "cbc",
+        "contractual_ladder",
+        "path",
+        "path_reason",
+        "lcr",
+        "lcr_reason",
+        "htm",
+        "htm_reason",
+        "scoring",
+        "sensitivities",
+        "time_block"
+      ],
+      "properties": {
+        "kind": {
+          "const": "scenario"
+        },
+        "valuation_date": {
+          "const": "2022-12-31"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this document.",
+          "const": "USD"
+        },
+        "units": {
+          "$ref": "#/$defs/c16Units"
+        },
+        "bank": {
+          "$ref": "#/$defs/c16Bank"
+        },
+        "variant": {
+          "$ref": "#/$defs/c16Variant"
+        },
+        "conventions": {
+          "$ref": "#/$defs/c16Conventions"
+        },
+        "data": {
+          "$ref": "#/$defs/c16Data"
+        },
+        "aggregate_record": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Aggregate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "aggregate_record_reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "balance_sheet": {
+          "$ref": "#/$defs/c16BalanceSheet"
+        },
+        "cbc": {
+          "$ref": "#/$defs/c16Cbc"
+        },
+        "contractual_ladder": {
+          "$ref": "#/$defs/c16ContractualLadder"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Path"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "path_reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lcr": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Lcr"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lcr_reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "htm": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Htm"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "htm_reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scoring": {
+          "$ref": "#/$defs/c16Scoring"
+        },
+        "sensitivities": {
+          "$ref": "#/$defs/c16Sensitivities"
+        },
+        "time_block": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c16TimePoint",
+              "properties": {
+                "as_of": {
+                  "const": "2021-12-31"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16TimePoint",
+              "properties": {
+                "as_of": {
+                  "const": "2022-06-30"
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "The 2021-12-31 and 2022-06-30 call-report dates, in this order."
+        }
+      },
+      "description": "C16 scenario outputs (outputs.kind scenario): one of the five scenario variants of the liquidity stress case at the last call report before the run, 2022-12-31, with the time block for two earlier dates. Money is in USD thousands. A Basel formula on call-report aggregates with synthetic behaviour and synthetic deposits: nothing here is the bank's reported or regulatory figure, certifies a model or claims compliance.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "variant": {
+                "properties": {
+                  "id": {
+                    "const": "lcr-standard"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            },
+            "required": [
+              "variant"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "properties": {
+                  "id": {
+                    "const": "lcr-standard"
+                  },
+                  "parameter_set": {
+                    "const": "basel-lcr"
+                  },
+                  "phase": {
+                    "const": "lcr-30-day"
+                  },
+                  "axis": {
+                    "const": "calendar-days"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              },
+              "sensitivities": {
+                "properties": {
+                  "uninsured_share": {
+                    "type": "null"
+                  },
+                  "uninsured_share_reason": {
+                    "$ref": "#/$defs/c16Label"
+                  },
+                  "htm_loss": {
+                    "type": "null"
+                  },
+                  "htm_loss_reason": {
+                    "$ref": "#/$defs/c16Label"
+                  }
+                }
+              },
+              "path": {
+                "type": "null"
+              },
+              "path_reason": {
+                "$ref": "#/$defs/c16Label"
+              },
+              "lcr": {
+                "$ref": "#/$defs/c16Lcr"
+              },
+              "lcr_reason": {
+                "type": "null"
+              },
+              "htm": {
+                "type": "null"
+              },
+              "htm_reason": {
+                "$ref": "#/$defs/c16Label"
+              },
+              "cbc": {
+                "properties": {
+                  "htm_valuation_basis": {
+                    "const": "amortised-cost"
+                  }
+                },
+                "required": [
+                  "htm_valuation_basis"
+                ]
+              },
+              "scoring": {
+                "properties": {
+                  "modelled_outflow": {
+                    "properties": {
+                      "at_event_horizon": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "variant": {
+                "properties": {
+                  "id": {
+                    "const": "list-adverse"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            },
+            "required": [
+              "variant"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "properties": {
+                  "id": {
+                    "const": "list-adverse"
+                  },
+                  "parameter_set": {
+                    "const": "list-adverse"
+                  },
+                  "phase": {
+                    "type": "string",
+                    "enum": [
+                      "acute",
+                      "protracted"
+                    ]
+                  },
+                  "axis": {
+                    "const": "relevant-days"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              },
+              "sensitivities": {
+                "properties": {
+                  "uninsured_share": {
+                    "type": "array"
+                  },
+                  "uninsured_share_reason": {
+                    "type": "null"
+                  },
+                  "htm_loss": {
+                    "type": "array"
+                  },
+                  "htm_loss_reason": {
+                    "type": "null"
+                  }
+                }
+              },
+              "path": {
+                "$ref": "#/$defs/c16Path"
+              },
+              "path_reason": {
+                "type": "null"
+              },
+              "lcr": {
+                "type": "null"
+              },
+              "lcr_reason": {
+                "$ref": "#/$defs/c16Label"
+              },
+              "htm": {
+                "type": "null"
+              },
+              "htm_reason": {
+                "$ref": "#/$defs/c16Label"
+              },
+              "cbc": {
+                "properties": {
+                  "htm_valuation_basis": {
+                    "const": "amortised-cost"
+                  }
+                },
+                "required": [
+                  "htm_valuation_basis"
+                ]
+              },
+              "scoring": {
+                "properties": {
+                  "modelled_outflow": {
+                    "properties": {
+                      "at_event_horizon": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "variant": {
+                "properties": {
+                  "id": {
+                    "const": "list-extreme"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            },
+            "required": [
+              "variant"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "properties": {
+                  "id": {
+                    "const": "list-extreme"
+                  },
+                  "parameter_set": {
+                    "const": "list-extreme"
+                  },
+                  "phase": {
+                    "type": "string",
+                    "enum": [
+                      "acute",
+                      "protracted"
+                    ]
+                  },
+                  "axis": {
+                    "const": "relevant-days"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              },
+              "sensitivities": {
+                "properties": {
+                  "uninsured_share": {
+                    "type": "array"
+                  },
+                  "uninsured_share_reason": {
+                    "type": "null"
+                  },
+                  "htm_loss": {
+                    "type": "array"
+                  },
+                  "htm_loss_reason": {
+                    "type": "null"
+                  }
+                }
+              },
+              "path": {
+                "$ref": "#/$defs/c16Path"
+              },
+              "path_reason": {
+                "type": "null"
+              },
+              "lcr": {
+                "type": "null"
+              },
+              "lcr_reason": {
+                "$ref": "#/$defs/c16Label"
+              },
+              "htm": {
+                "type": "null"
+              },
+              "htm_reason": {
+                "$ref": "#/$defs/c16Label"
+              },
+              "cbc": {
+                "properties": {
+                  "htm_valuation_basis": {
+                    "const": "amortised-cost"
+                  }
+                },
+                "required": [
+                  "htm_valuation_basis"
+                ]
+              },
+              "scoring": {
+                "properties": {
+                  "modelled_outflow": {
+                    "properties": {
+                      "at_event_horizon": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "variant": {
+                "properties": {
+                  "id": {
+                    "const": "fast-run"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            },
+            "required": [
+              "variant"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "properties": {
+                  "id": {
+                    "const": "fast-run"
+                  },
+                  "parameter_set": {
+                    "const": "fast-run"
+                  },
+                  "phase": {
+                    "type": "string",
+                    "enum": [
+                      "acute",
+                      "protracted"
+                    ]
+                  },
+                  "axis": {
+                    "const": "relevant-days"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              },
+              "sensitivities": {
+                "properties": {
+                  "uninsured_share": {
+                    "type": "array"
+                  },
+                  "uninsured_share_reason": {
+                    "type": "null"
+                  },
+                  "htm_loss": {
+                    "type": "array"
+                  },
+                  "htm_loss_reason": {
+                    "type": "null"
+                  }
+                }
+              },
+              "path": {
+                "$ref": "#/$defs/c16Path"
+              },
+              "path_reason": {
+                "type": "null"
+              },
+              "lcr": {
+                "type": "null"
+              },
+              "lcr_reason": {
+                "$ref": "#/$defs/c16Label"
+              },
+              "htm": {
+                "type": "null"
+              },
+              "htm_reason": {
+                "$ref": "#/$defs/c16Label"
+              },
+              "cbc": {
+                "properties": {
+                  "htm_valuation_basis": {
+                    "const": "amortised-cost"
+                  }
+                },
+                "required": [
+                  "htm_valuation_basis"
+                ]
+              },
+              "scoring": {
+                "properties": {
+                  "modelled_outflow": {
+                    "properties": {
+                      "at_event_horizon": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "variant": {
+                "properties": {
+                  "id": {
+                    "const": "htm-losses"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            },
+            "required": [
+              "variant"
+            ]
+          },
+          "then": {
+            "properties": {
+              "variant": {
+                "properties": {
+                  "id": {
+                    "const": "htm-losses"
+                  },
+                  "parameter_set": {
+                    "type": "string",
+                    "enum": [
+                      "list-adverse",
+                      "list-extreme",
+                      "fast-run"
+                    ]
+                  },
+                  "phase": {
+                    "type": "string",
+                    "enum": [
+                      "acute",
+                      "protracted"
+                    ]
+                  },
+                  "axis": {
+                    "const": "relevant-days"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              },
+              "sensitivities": {
+                "properties": {
+                  "uninsured_share": {
+                    "type": "array"
+                  },
+                  "uninsured_share_reason": {
+                    "type": "null"
+                  },
+                  "htm_loss": {
+                    "type": "array"
+                  },
+                  "htm_loss_reason": {
+                    "type": "null"
+                  }
+                }
+              },
+              "path": {
+                "$ref": "#/$defs/c16Path"
+              },
+              "path_reason": {
+                "type": "null"
+              },
+              "lcr": {
+                "type": "null"
+              },
+              "lcr_reason": {
+                "$ref": "#/$defs/c16Label"
+              },
+              "htm": {
+                "$ref": "#/$defs/c16Htm"
+              },
+              "htm_reason": {
+                "type": "null"
+              },
+              "cbc": {
+                "properties": {
+                  "htm_valuation_basis": {
+                    "const": "fair-value"
+                  }
+                },
+                "required": [
+                  "htm_valuation_basis"
+                ]
+              },
+              "scoring": {
+                "properties": {
+                  "modelled_outflow": {
+                    "properties": {
+                      "at_event_horizon": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

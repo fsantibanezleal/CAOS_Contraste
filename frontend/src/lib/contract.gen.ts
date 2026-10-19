@@ -7746,6 +7746,1211 @@ export interface components {
             weighted_average_maturity_years: number;
         };
         /**
+         * C16 models
+         * @description Catalog row c16-models 1.0.0: the C16 models artifact (the run-off parameter sets with their sources, the pre-2023 calibration, the generator parameters and truth, the named parameters).
+         */
+        "c16-models": components["schemas"]["common-models-envelope"] & {
+            /** @constant */
+            case_id: "C16";
+            fit: components["schemas"]["c16Fit"];
+        };
+        /**
+         * C16 reverse-stress variant
+         * @description Catalog row c16-outputs-reverse 1.0.0: the reverse liquidity stress of the liquidity case, per base scenario (outputs.kind reverse-stress).
+         */
+        "c16-variant-reverse": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C16";
+            outputs: components["schemas"]["c16ReverseOutputs"];
+        } & {
+            tests?: unknown;
+        } & {
+            tests?: unknown;
+        } & {
+            impact?: unknown;
+        };
+        /**
+         * C16 scenario variant
+         * @description Catalog row c16-outputs 1.0.0: one of the five scenario variants of the liquidity stress case (LCR standard run-off, LiST adverse, LiST extreme, 2023 fast run, HTM losses in CBC) at 2022-12-31 (outputs.kind scenario).
+         */
+        "c16-variant-scenario": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C16";
+            outputs: components["schemas"]["c16Outputs"];
+        } & {
+            tests?: unknown;
+        } & {
+            tests?: unknown;
+        } & {
+            impact?: unknown;
+        };
+        /** @description A Table A.1 row: the deposit outflow share over the number of days. */
+        c16A1Row: {
+            /** @enum {string} */
+            row_id: "svb-2023" | "first-republic-2023" | "svb-uk-2023" | "credit-suisse-2023" | "signature-2023" | "icesave-2008" | "northern-rock-2007" | "wamu-2008" | "indymac-2008";
+            bank: string;
+            year: number;
+            /** @description A share or a rate in [0, 1]. */
+            outflow_share: number;
+            days: number;
+        };
+        /** @description A Table A.1 row against the model's cumulative outflow at the row's horizon; the role says whether the fast run was calibrated on it (pre-2023), scored on it (2023) or only shows it as a reference point. A row whose horizon is beyond the model's ladder (or a variant without a daily path) has a null share with its reason. */
+        c16A1Score: {
+            /** @enum {string} */
+            row_id: "svb-2023" | "first-republic-2023" | "svb-uk-2023" | "credit-suisse-2023" | "signature-2023" | "icesave-2008" | "northern-rock-2007" | "wamu-2008" | "indymac-2008";
+            bank: string;
+            year: number;
+            horizon_days: number;
+            /** @description A share or a rate in [0, 1]. */
+            observed_share: number;
+            modelled_share: number | null;
+            error: number | null;
+            /** @enum {string} */
+            role: "calibration" | "scored" | "reference";
+            reason: components["schemas"]["c16Label"] | null;
+        } & ({
+            modelled_share?: number;
+            error?: number;
+            reason?: null;
+        } | {
+            modelled_share?: null;
+            error?: null;
+            reason?: components["schemas"]["c16Label"];
+        });
+        /** @description The Federal Reserve H.8 aggregate deposit record of the run weeks (large and small banks). */
+        c16Aggregate: {
+            source: string;
+            series: components["schemas"]["c16Series"][];
+        };
+        /** @description The SVB observation as a labelled anchor row (Q4): the Table A.1 outflow share and days with the daily rate they imply, 1 - (1 - share)^(1 / days); never a forecast. */
+        c16Anchor: {
+            label: components["schemas"]["common-text"];
+            source: string;
+            /** @description A share or a rate in [0, 1]. */
+            outflow_share: number;
+            days: number;
+            /** @description A share or a rate in [0, 1]. */
+            implied_daily_rate: number;
+            /** @constant */
+            forecast_claim: false;
+        };
+        /** @description One assumption of the case, stated as synthetic behaviour on real aggregates. */
+        c16Assumption: {
+            assumption_id: string;
+            statement: components["schemas"]["common-text"];
+            /** @constant */
+            behaviour: "synthetic";
+            applies_to: string;
+        };
+        /** @description The balance sheet at the valuation date with its call-report source items and every assumption stated as synthetic behaviour. */
+        c16BalanceSheet: {
+            as_of: string;
+            items: components["schemas"]["c16Item"][];
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            total_assets: number;
+            deposits: components["schemas"]["c16Deposits"];
+            assumptions: components["schemas"]["c16Assumption"][];
+        };
+        /** @description The bank of the case: real FDIC call-report aggregates used as public aggregates only, with synthetic behaviour and synthetic deposits from the depositor generator (SDD section 5: real event, synthetic deposits). The case does not represent the bank. */
+        c16Bank: {
+            name: string;
+            cert: number;
+            /** @constant */
+            aggregates: "real";
+            /** @constant */
+            behaviour: "synthetic";
+            /** @constant */
+            deposits: "synthetic";
+            notice: components["schemas"]["common-text"];
+        };
+        /** @description The pre-2023 calibration of the fast run (Q4): the daily rate taken from the pre-2023 Table A.1 rows by the calibration rule, never from the 2023 rows, which are scored; the SVB observation is a labelled anchor, not a forecast. */
+        c16Calibration: {
+            split: {
+                calibrated_on: [
+                    "icesave-2008",
+                    "northern-rock-2007",
+                    "wamu-2008",
+                    "indymac-2008"
+                ];
+                scored_on: [
+                    "svb-2023",
+                    "first-republic-2023",
+                    "svb-uk-2023",
+                    "credit-suisse-2023",
+                    "signature-2023"
+                ];
+            };
+            implied_daily_rates: [
+                components["schemas"]["c16ImpliedRate"],
+                components["schemas"]["c16ImpliedRate"],
+                components["schemas"]["c16ImpliedRate"],
+                components["schemas"]["c16ImpliedRate"]
+            ];
+            fitted_daily_rate: {
+                /** @description A share or a rate in [0, 1]. */
+                value: number;
+                /** @constant */
+                unit: "decimal-per-day";
+                /** @constant */
+                source_kind: "calibrated-pre-2023";
+                source: string;
+            };
+            anchor: components["schemas"]["c16Anchor"];
+            statement: components["schemas"]["common-text"];
+        };
+        /** @description How the fast-run daily rate is taken from the implied daily rates of the pre-2023 Table A.1 rows (the dossiers give no method). */
+        c16CalibrationRule: {
+            /** @constant */
+            status: "convention";
+            /** @enum {string} */
+            rule: "maximum-implied-daily-rate" | "median-implied-daily-rate" | "mean-implied-daily-rate";
+            basis: components["schemas"]["common-text"];
+        };
+        /** @description The counterbalancing capacity at the valuation date: the securities split by type at the carrying values the FDIC reports, pledged securities encumbered (LiST para 63), and the held-to-maturity book at amortised cost, or at fair value in the HTM variant. */
+        c16Cbc: {
+            as_of: string;
+            /** @enum {string} */
+            htm_valuation_basis: "amortised-cost" | "fair-value";
+            haircut_framework: {
+                label: components["schemas"]["common-text"];
+                /** @constant */
+                central_bank: "Federal Reserve discount window";
+                effective_from: string;
+                effective_to: string;
+                source: string;
+            };
+            classes: components["schemas"]["c16CbcClass"][];
+            pledged: {
+                /** @constant */
+                field: "SCPLEDGE";
+                /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+                amount: number;
+                /** @description A share or a rate in [0, 1]. */
+                share_of_securities: number;
+            };
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            total_liquidity_value: number;
+        };
+        /** @description One class of the CBC: liquidity value = (value used minus the encumbered part) x (1 - haircut), the haircut returned with its rule label (05 E.1 l.238; the Federal Reserve margins of A4). */
+        c16CbcClass: {
+            /** @enum {string} */
+            class_id: "cash-and-balances" | "treasury" | "mortgage-backed" | "other-agency" | "municipal" | "other-debt";
+            label: components["schemas"]["common-text"];
+            source_fields: ("ASSET" | "CERT" | "CHBAL" | "DEP" | "DEPDOM" | "DEPFOR" | "DEPINS" | "DEPLGAMT" | "DEPSMAMT" | "DEPUNA" | "EQ" | "FREPO" | "FREPP" | "LIAB" | "LNLSNET" | "NAME" | "OTHBFHLB" | "RBCT1J" | "REPDTE" | "SC" | "SCAA" | "SCAF" | "SCAGE" | "SCASPNAF" | "SCASPNHA" | "SCASPNSUM" | "SCCMOT" | "SCCOL" | "SCDOMO" | "SCEQFV" | "SCFORD" | "SCGTY" | "SCHA" | "SCHF" | "SCHTMRES" | "SCMTGBK" | "SCMUNI" | "SCPLEDGE" | "SCRDEBT" | "SCSPN" | "SCUS" | "SCUST")[];
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            carrying_value: number;
+            fair_value: number | null;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            value_used: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            encumbered: number;
+            haircut: {
+                /** @description A share or a rate in [0, 1]. */
+                value: number;
+                /** @enum {string} */
+                rule: "nominal-value" | "central-bank-framework" | "lcr-haircut-hqla" | "fifty-percent-fallback" | "ecb-equity-table" | "ecb-non-equity-hqla";
+            };
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            liquidity_value: number;
+        };
+        /** @description The liquidity value of one CBC class available on each day of the ladder. */
+        c16CbcStack: {
+            /** @enum {string} */
+            class_id: "cash-and-balances" | "treasury" | "mortgage-backed" | "other-agency" | "municipal" | "other-debt";
+            liquidity_value: number[];
+        };
+        /** @description The cliff effect (NLP(35) - NLP(30)) / TA, a diagnostic of LCR window optimisation (05 E.1). */
+        c16Cliff: {
+            /** @constant */
+            near_day: 30;
+            /** @constant */
+            far_day: 35;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            nlp_near: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            nlp_far: number;
+            total_assets: number;
+            value: number;
+        };
+        /** @description The two days of the cliff diagnostic (NLP(35) - NLP(30)) / TA (05 E.1); whether they count calendar or relevant days is UNVERIFIED in the LiST note, so the basis is a convention. */
+        c16CliffDays: {
+            /** @constant */
+            status: "convention";
+            /** @constant */
+            near: 30;
+            /** @constant */
+            far: 35;
+            /** @enum {string} */
+            day_basis: "relevant-days" | "calendar-days";
+            basis: components["schemas"]["common-text"];
+        };
+        /** @description One contractual maturity bucket: from_day exclusive to to_day inclusive (null: open-ended), gap = inflows - outflows. */
+        c16ContractualBucket: {
+            from_day: number;
+            to_day: number | null;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            inflows: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            outflows: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            gap: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            cumulative_gap: number;
+        };
+        /** @description The static contractual maturity ladder with gaps and cumulative gaps (05 E.5 rung 1; the SRP50 contractual maturity mismatch tool, 01 G.3), on the buckets of the conventions' contractual_bucket_edges_days. */
+        c16ContractualLadder: {
+            buckets: components["schemas"]["c16ContractualBucket"][];
+            reference: string;
+        };
+        /** @description Every named parameter of the case (Q13, Q14): the deposit mapping with its band, the variant scenarios, the day calendar, the CBC haircut rows and monetisation schedule, the calibration rule, the cliff days, the grids, the reverse-stress target, the tolerances and the lights of the tests. Each carries the label "convention"; none is a regulatory threshold. The same in every document of one bake. */
+        c16Conventions: {
+            deposit_category_mapping: components["schemas"]["c16DepositMapping"];
+            variant_scenarios: components["schemas"]["c16VariantScenarios"];
+            day_calendar: components["schemas"]["c16DayCalendar"];
+            cbc_securities_mapping: components["schemas"]["c16SecurityMapping"];
+            monetisation_schedule: components["schemas"]["c16Monetisation"];
+            fast_run_calibration_rule: components["schemas"]["c16CalibrationRule"];
+            cliff_days: components["schemas"]["c16CliffDays"];
+            contractual_bucket_edges_days: components["schemas"]["c16Grid"];
+            event_horizon_days: components["schemas"]["c16Scalar"];
+            uninsured_share_grid: components["schemas"]["c16Grid"];
+            htm_loss_multiple_grid: components["schemas"]["c16Grid"];
+            runoff_multiplier_grid: components["schemas"]["c16Grid"];
+            reverse_target_days: components["schemas"]["c16Scalar"];
+            list_compounding_tolerance: components["schemas"]["c16Scalar"];
+            monotonicity_tolerance_days: components["schemas"]["c16Scalar"];
+            nlp_identity_tolerance: components["schemas"]["c16Scalar"];
+            cliff_amber_threshold: components["schemas"]["c16Scalar"];
+            cliff_red_threshold: components["schemas"]["c16Scalar"];
+            scoring_ratio_green: components["schemas"]["c16Scalar"];
+            scoring_ratio_amber: components["schemas"]["c16Scalar"];
+            generator_truth_se_green: components["schemas"]["c16Scalar"];
+            generator_truth_se_red: components["schemas"]["c16Scalar"];
+            htm_revaluation_green: components["schemas"]["c16Scalar"];
+            htm_revaluation_amber: components["schemas"]["c16Scalar"];
+            round_trip_tolerance_days: components["schemas"]["c16Scalar"];
+            cbc_haircut_band: components["schemas"]["c16Scalar"];
+        };
+        /** @description One point of SP(m): the run-off multiplier and the survival period under it. */
+        c16CurvePoint: {
+            multiplier: number;
+            survival: components["schemas"]["c16Survival"];
+        };
+        /** @description The call reports read for the valuation date. Never one dated after it: data_cutoff is the latest report date read and is on or before the valuation date (a producer check; a false flag fails). */
+        c16Data: {
+            call_reports: components["schemas"]["c16Report"][];
+            data_cutoff: string;
+            /** @constant */
+            read_up_to_valuation_date: true;
+            rule: components["schemas"]["c16Label"];
+        };
+        /** @description The ladder's day calendar (A2): US business days from the day after the valuation date. The LiST rates are defined on the 2019 TARGET2 relevant-day calendar, so every LiST cumulative figure says which calendar it is on. */
+        c16DayCalendar: {
+            /** @constant */
+            status: "convention";
+            /** @constant */
+            kind: "us-business-days";
+            first_day: string;
+            excluded_weekdays: ("saturday" | "sunday")[];
+            holidays: string[];
+            holiday_rule: string;
+            basis: components["schemas"]["common-text"];
+        };
+        /** @description The realised outflow against one denominator, and the model's share compared with it: shortfall = realised minus modelled, ratio = modelled over realised, the light by the conventions scoring_ratio_green and scoring_ratio_amber. */
+        c16Denominator: {
+            /** @enum {string} */
+            id: "board-stated-share" | "call-report-dep";
+            label: components["schemas"]["common-text"];
+            denominator_amount: number | null;
+            realised_amount: number | null;
+            /** @description A share or a rate in [0, 1]. */
+            realised_share: number;
+            source: string;
+            modelled_share: number;
+            /** @enum {string} */
+            compared_at: "event-horizon" | "model-horizon";
+            shortfall: number;
+            ratio: number;
+            /** @enum {string} */
+            light: "green" | "amber" | "red";
+        };
+        /** @description The deposit-category mapping with its sensitivity band (Q13): the call report carries no customer type, so every mapping is an assumption and a convention. */
+        c16DepositMapping: {
+            /** @constant */
+            status: "convention";
+            /** @description The central mapping: insured to a retail class, uninsured to one class. */
+            rows: [
+                components["schemas"]["c16MappingRow"],
+                components["schemas"]["c16MappingRow"]
+            ];
+            /** @description The classes the uninsured balance may plausibly belong to (Q13): operational, non-financial corporate, other legal entity; the LCR variant reports its ratio under each. */
+            sensitivity_band: components["schemas"]["c16MappingRow"][];
+            basis: components["schemas"]["common-text"];
+        };
+        /** @description The deposit fields (A5): DEPUNA and DEPINS cover domestic offices and their matching denominator is DEPDOM, while DEP includes foreign offices; both denominators are stated wherever the uninsured share appears. DEPSMAMT and DEPLGAMT are on the 250,000 USD threshold at 2022-12-31 by the FDIC's own definition. The FDIC names no call-report schedule or line. */
+        c16Deposits: {
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            dep: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            depdom: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            depuna: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            depins: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            depsmamt: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            deplgamt: number;
+            denominators: {
+                /** @constant */
+                insured_uninsured: "DEPDOM";
+                /** @constant */
+                total: "DEP";
+            };
+            /** @description A share or a rate in [0, 1]. */
+            uninsured_share_of_dep: number;
+            /** @description A share or a rate in [0, 1]. */
+            uninsured_share_of_depdom: number;
+            size_threshold: {
+                /** @constant */
+                value: 250000;
+                /** @constant */
+                unit: "USD";
+                source: string;
+            };
+        };
+        /** @description A committed-facility daily drawdown rate on the undrawn stock for three months (N paras 119 to 126). */
+        c16DrawdownRow: {
+            item: string;
+            adverse: number;
+            extreme: number;
+        };
+        /** @description C16 models: the run-off parameter sets with their sources (the LiST 2019 tables as data, Table A.1 as data), the pre-2023 calibration, the generator's parameters and truth, the named parameters (conventions) and the licence class of every source. */
+        c16Fit: {
+            /**
+             * @description ISO 4217 code of the money fields of this document.
+             * @constant
+             */
+            currency: "USD";
+            units: components["schemas"]["c16Units"];
+            bank: components["schemas"]["c16Bank"];
+            conventions: components["schemas"]["c16Conventions"];
+            parameter_sets: [
+                components["schemas"]["c16ParameterSet"],
+                components["schemas"]["c16ParameterSet"],
+                components["schemas"]["c16ParameterSet"],
+                components["schemas"]["c16ParameterSet"]
+            ];
+            list_parameters: components["schemas"]["c16ListParameters"];
+            list_goldens: [
+                components["schemas"]["c16Golden"],
+                components["schemas"]["c16Golden"],
+                components["schemas"]["c16Golden"],
+                components["schemas"]["c16Golden"],
+                components["schemas"]["c16Golden"]
+            ];
+            table_a1: components["schemas"]["c16TableA1"];
+            calibration: components["schemas"]["c16Calibration"];
+            generator: components["schemas"]["c16Generator"];
+            sources: components["schemas"]["c16SourceNote"][];
+        };
+        /** @description A non-deposit outflow or an inflow of the ladder by day; a collateral call has no numeric LiST parameter and is a labelled scenario input (A1). */
+        c16Flow: {
+            component_id: string;
+            /** @enum {string} */
+            kind: "committed-line-drawdown" | "collateral-call" | "secured-funding-maturity" | "derivative-payable" | "other-contractual-outflow" | "inflow-secured-lending" | "inflow-loans" | "inflow-other";
+            /** @enum {string} */
+            source_kind: "transcribed-list-2019" | "transcribed-basel-lcr" | "calibrated-pre-2023" | "convention" | "synthetic-stated" | "scenario-input";
+            source: string;
+            amounts: number[];
+        };
+        /** @description The depositor generator with known truth (08 G.2): its configuration, the exact outflow rate by segment and horizon, and the verification that a large draw reproduces the truth within Monte Carlo error. */
+        c16Generator: {
+            config: {
+                /** @constant */
+                truth_status: "synthetic-known-truth";
+                seed: number;
+                n_depositors: number;
+                horizon_days: number;
+                segments: components["schemas"]["c16GeneratorSegment"][];
+            };
+            truth: {
+                /** @enum {string} */
+                segment: "retail-insured" | "retail-uninsured" | "operational" | "non-operational-corporate" | "financial";
+                horizon_days: number;
+                /** @description A share or a rate in [0, 1]. */
+                true_outflow_rate: number;
+            }[];
+            verification: {
+                n_draws: number;
+                max_abs_error: number;
+                mc_standard_error: number;
+                within_error: boolean;
+            };
+        };
+        /** @description One depositor segment of the generator: its share of the call-report deposits and the withdrawal hazard in the calm and the stress state, with the transition probabilities per day. */
+        c16GeneratorSegment: {
+            /** @enum {string} */
+            segment: "retail-insured" | "retail-uninsured" | "operational" | "non-operational-corporate" | "financial";
+            /** @description A share or a rate in [0, 1]. */
+            share_of_deposits: number;
+            /** @description A share or a rate in [0, 1]. */
+            calm_daily_hazard: number;
+            /** @description A share or a rate in [0, 1]. */
+            stress_daily_hazard: number;
+            /** @description A share or a rate in [0, 1]. */
+            p_enter_stress: number;
+            /** @description A share or a rate in [0, 1]. */
+            p_exit_stress: number;
+            basis: components["schemas"]["common-text"];
+        };
+        /** @description A compounding golden: 1 - (1 - q)^n, labelled whether the dossier prints it or this contract recomputed it. */
+        c16Golden: {
+            id: string;
+            /** @description A share or a rate in [0, 1]. */
+            daily_rate: number;
+            days: number;
+            /** @description A share or a rate in [0, 1]. */
+            cumulative_outflow: number;
+            /** @enum {string} */
+            label: "dossier-05-line-237" | "recomputed";
+        };
+        /** @description A named grid: its values in increasing order, its unit and the label "convention". */
+        c16Grid: {
+            values: number[];
+            unit: string;
+            /** @constant */
+            status: "convention";
+            basis: components["schemas"]["common-text"];
+        };
+        /** @description HQLA by level after the caps: HQLA = L1 + L2A + L2B - Adj15 - Adj40 (LCR30.38) with the adjustments of LCR30.39. */
+        c16Hqla: {
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            l1: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            l2a: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            l2b: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            adjusted_l1: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            adjusted_l2a: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            adjusted_l2b: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            adj_15: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            adj_40: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            hqla: number;
+            /** @description A share or a rate in [0, 1]. */
+            l2_share: number;
+            /** @description A share or a rate in [0, 1]. */
+            l2b_share: number;
+            caps: {
+                /** @constant */
+                l2_cap: 0.4;
+                /** @constant */
+                l2b_cap: 0.15;
+            };
+        };
+        /** @description The HTM losses in the CBC: the reported amortised cost and fair value (SCHA, SCHF, SCAA, SCAF), the loss applied to the book as a whole or pro rata by type (never a reported by-type loss), the CBC with and without it, the labelled counterfactual under the Bank Term Funding Program's par valuation (announced after the run) and the revaluation validation row. */
+        c16Htm: {
+            reported: {
+                /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+                htm_amortised_cost: number;
+                /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+                htm_fair_value: number;
+                /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+                htm_unrealised: number;
+                /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+                afs_amortised_cost: number;
+                /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+                afs_fair_value: number;
+                /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+                afs_unrealised: number;
+            };
+            application: {
+                /** @enum {string} */
+                method: "whole-book" | "pro-rata-by-type";
+                statement: components["schemas"]["common-text"];
+            };
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            cbc_without_loss: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            cbc_with_loss: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            cbc_removed: number;
+            btfp_par: {
+                label: components["schemas"]["common-text"];
+                /** @constant */
+                announced: "2023-03-12";
+                /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+                cbc_at_par: number;
+                /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+                uplift: number;
+            };
+            revaluation: components["schemas"]["c16Revaluation"];
+        };
+        /** @description The HTM unrealised loss at `multiple` times the reported loss (05 E.5 rung 4, l.278): the loss, the CBC under it and the survival period; 1 is the reported loss and 0 no loss. */
+        c16HtmSensitivity: {
+            multiple: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            unrealised_loss: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            cbc: number;
+            survival: components["schemas"]["c16Survival"];
+        };
+        /** @description The daily rate a Table A.1 row implies, 1 - (1 - share)^(1 / days). */
+        c16ImpliedRate: {
+            /** @enum {string} */
+            row_id: "svb-2023" | "first-republic-2023" | "svb-uk-2023" | "credit-suisse-2023" | "signature-2023" | "icesave-2008" | "northern-rock-2007" | "wamu-2008" | "indymac-2008";
+            /** @description A share or a rate in [0, 1]. */
+            implied_daily_rate: number;
+        };
+        /** @description One balance-sheet item taken from the call report, with the family fields liquidity_class, residual_days, insured and fair_value (null where they do not apply). A call-report item the FDIC financials lack has reported_amount null with its reason and the assumption that replaces it, never a fabricated number; a reported item has no reason. */
+        c16Item: {
+            item_id: string;
+            label: components["schemas"]["common-text"];
+            /** @enum {string} */
+            side: "asset" | "liability";
+            /** @enum {string} */
+            category: "cash" | "reverse-repo" | "securities-htm" | "securities-afs" | "loans" | "other-assets" | "deposits-insured" | "deposits-uninsured" | "deposits-foreign-office" | "repo-borrowings" | "fhlb-advances" | "other-liabilities" | "equity";
+            /** @enum {string} */
+            source_field: "ASSET" | "CERT" | "CHBAL" | "DEP" | "DEPDOM" | "DEPFOR" | "DEPINS" | "DEPLGAMT" | "DEPSMAMT" | "DEPUNA" | "EQ" | "FREPO" | "FREPP" | "LIAB" | "LNLSNET" | "NAME" | "OTHBFHLB" | "RBCT1J" | "REPDTE" | "SC" | "SCAA" | "SCAF" | "SCAGE" | "SCASPNAF" | "SCASPNHA" | "SCASPNSUM" | "SCCMOT" | "SCCOL" | "SCDOMO" | "SCEQFV" | "SCFORD" | "SCGTY" | "SCHA" | "SCHF" | "SCHTMRES" | "SCMTGBK" | "SCMUNI" | "SCPLEDGE" | "SCRDEBT" | "SCSPN" | "SCUS" | "SCUST";
+            reported_amount: number | null;
+            reason_missing: components["schemas"]["c16Label"] | null;
+            assumption: string;
+            amount: number;
+            liquidity_class: ("level_1" | "level_2a" | "level_2b" | "non_hqla") | null;
+            residual_days: number | null;
+            insured: boolean | null;
+            fair_value: number | null;
+        } & ({
+            reported_amount?: number;
+            reason_missing?: null;
+        } | {
+            reported_amount?: null;
+            reason_missing?: components["schemas"]["c16Label"];
+        });
+        /** @description A non-empty bilingual label (an empty string is not a label). */
+        c16Label: {
+            en: string;
+            es: string;
+        };
+        /** @description The daily ladder, columnar: every array has one value per day of the horizon. NLP(t) = CBC(t) minus the sum over s up to t of the outflows O(s) minus the inflows I(s) (05 E.1). */
+        c16Ladder: {
+            /** @enum {string} */
+            axis: "relevant-days" | "calendar-days";
+            day_index: number[];
+            dates: string[];
+            segments: components["schemas"]["c16Segment"][];
+            other_outflows: components["schemas"]["c16Flow"][];
+            inflows: components["schemas"]["c16Flow"][];
+            total_outflows: number[];
+            total_inflows: number[];
+            cbc_stack: components["schemas"]["c16CbcStack"][];
+            cbc_total: number[];
+            cumulative_net_outflow: number[];
+            nlp: number[];
+        };
+        /** @description The LCR block: a Basel formula applied to call-report aggregates with stated assumptions, never the bank's reported or regulatory LCR (the label and the false flag are required). Inflows counted are at most 75 percent of outflows (LCR40.1) and Level 2B at most 15 percent of HQLA. A ratio below 100 percent under stress is not a breach (01 J.3). */
+        c16Lcr: {
+            /** @constant */
+            label: "basel-formula-on-call-report-aggregates";
+            /** @constant */
+            reported_or_regulatory: false;
+            statement: components["schemas"]["common-text"];
+            hqla: components["schemas"]["c16Hqla"];
+            outflows: components["schemas"]["c16LcrOutflowRow"][];
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            total_outflows: number;
+            inflows: components["schemas"]["c16LcrInflowRow"][];
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            total_inflows: number;
+            /** @constant */
+            inflow_cap: 0.75;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            inflows_counted: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            net_outflows: number;
+            ratio: number;
+            mapping_sensitivity: components["schemas"]["c16MappingSensitivity"][];
+            below_100_note: components["schemas"]["common-text"];
+        };
+        /** @description One LCR inflow category (a key of LCR_INFLOW_RATES): the balance, its table rate and the amount, with the Basel paragraph. */
+        c16LcrInflowRow: {
+            /** @enum {string} */
+            category: "secured_lending_level1" | "secured_lending_level2a" | "secured_lending_level2b_rmbs" | "secured_lending_other_level2b" | "secured_lending_other" | "margin_lending_other_collateral" | "facilities_granted_to_bank" | "operational_deposits_at_other_institutions" | "retail_and_nonfinancial_wholesale" | "financial_institutions_and_central_banks" | "net_derivative_inflow";
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            balance: number;
+            /** @description A share or a rate in [0, 1]. */
+            rate: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            amount: number;
+            reference: string;
+        };
+        /** @description One LCR outflow category (a key of LCR_OUTFLOW_RATES, or trade_finance): the balance, its rate (the table rate; trade finance a caller-supplied rate within 0 to 0.05) and the amount, with the Basel paragraph. */
+        c16LcrOutflowRow: {
+            /** @enum {string} */
+            category: "retail_stable_insurance_criteria" | "retail_stable" | "retail_less_stable" | "retail_term_gt_30d" | "small_business_stable" | "small_business_less_stable" | "operational" | "operational_insured_portion" | "cooperative_network" | "non_financial_corporate" | "non_financial_corporate_fully_insured" | "other_legal_entity" | "secured_central_bank" | "secured_level1" | "secured_level2a" | "secured_sovereign_mdb_pse" | "secured_level2b_rmbs" | "secured_other_level2b" | "secured_other" | "non_level1_collateral_valuation" | "undrawn_retail_small_business" | "undrawn_credit_non_financial_corporate" | "undrawn_liquidity_non_financial_corporate" | "undrawn_credit_supervised_bank" | "undrawn_liquidity_supervised_bank" | "undrawn_credit_other_fi" | "undrawn_liquidity_other_fi" | "undrawn_other_legal_entity" | "net_derivative_outflow" | "other_contractual_outflow" | "trade_finance";
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            balance: number;
+            /** @description A share or a rate in [0, 1]. */
+            rate: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            amount: number;
+            reference: string;
+        };
+        /** @description The ECB LiST 2019 parameters as transcribed data (U11 research addendum L1; the rates are the note's own, on the 2019 TARGET2 relevant-day calendar): Table 3.2 for the contractual items, Table 3.3 for the open-maturity daily rates, the drawdown rates of the committed facilities. Collateral calls have no numeric parameter and are a scenario input. */
+        c16ListParameters: {
+            source: string;
+            attribution: string;
+            contractual_outflows: [
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"]
+            ];
+            open_maturity_daily: [
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"]
+            ];
+            contractual_inflows: [
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"],
+                components["schemas"]["c16ListRow"]
+            ];
+            committed_drawdown: [
+                components["schemas"]["c16DrawdownRow"],
+                components["schemas"]["c16DrawdownRow"]
+            ];
+            /** @constant */
+            relevant_days_six_months: 125;
+            /** @constant */
+            relevant_days_three_months: 63;
+            calendar_note: components["schemas"]["common-text"];
+            results_annex: components["schemas"]["c16ResultsAnnex"];
+        };
+        /** @description A LiST 2019 rate row (Baseline, Adverse, Extreme): a roll-off rate on a maturing flow or a daily compounding rate on the stock, as decimals. */
+        c16ListRow: {
+            item: string;
+            baseline: number;
+            adverse: number;
+            extreme: number;
+        };
+        /** @description One mapping of a call-report deposit balance (insured or uninsured, DEPINS and DEPUNA) to an LCR category and a LiST class. */
+        c16MappingRow: {
+            /** @enum {string} */
+            basis: "insured" | "uninsured";
+            /** @enum {string} */
+            role: "central" | "band";
+            /** @enum {string} */
+            lcr_category: "retail_stable" | "retail_less_stable" | "operational" | "non_financial_corporate" | "other_legal_entity";
+            /** @enum {string} */
+            list_class: "stable-retail" | "other-retail" | "operational" | "non-operational-credit-institutions" | "non-operational-other-financial" | "non-operational-non-financial-corporates" | "non-operational-others";
+            label: components["schemas"]["common-text"];
+        };
+        /** @description The LCR under one mapping of the uninsured balance (Q13): the outflow of the uninsured balance under that category, the total outflows, the counted inflows, the net outflows and the ratio recomputable from them and the HQLA. */
+        c16MappingSensitivity: {
+            mapping_id: string;
+            /** @enum {string} */
+            lcr_category: "retail_stable" | "retail_less_stable" | "operational" | "non_financial_corporate" | "other_legal_entity";
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            uninsured_outflow: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            total_outflows: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            inflows_counted: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            net_outflows: number;
+            ratio: number;
+        };
+        /** @description The model's cumulative outflow at a horizon and its share of the model's deposit base. */
+        c16Modelled: {
+            horizon_days: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            amount: number;
+            /** @description A share or a rate in [0, 1]. */
+            share_of_model_base: number;
+        };
+        /** @description The model's cumulative outflow at the event horizon (null with its reason for the LCR, which defines a 30-day aggregate and no daily path) and at the model's own horizon. */
+        c16ModelledOutflow: {
+            at_event_horizon: components["schemas"]["c16Modelled"] | null;
+            at_event_horizon_reason: components["schemas"]["c16Label"] | null;
+            at_model_horizon: components["schemas"]["c16Modelled"];
+        } & ({
+            at_event_horizon?: Record<string, never>;
+            at_event_horizon_reason?: null;
+        } | {
+            at_event_horizon?: null;
+            at_event_horizon_reason?: components["schemas"]["c16Label"];
+        });
+        /** @description The monetisation schedule of the CBC (Q6): the cumulative share of its liquidity value usable by day, with its band. */
+        c16Monetisation: {
+            /** @constant */
+            status: "convention";
+            points: components["schemas"]["c16Point"][];
+            sensitivity_band: {
+                id: string;
+                points: components["schemas"]["c16Point"][];
+            }[];
+            basis: components["schemas"]["common-text"];
+        };
+        /** @description C16 scenario outputs (outputs.kind scenario): one of the five scenario variants of the liquidity stress case at the last call report before the run, 2022-12-31, with the time block for two earlier dates. Money is in USD thousands. A Basel formula on call-report aggregates with synthetic behaviour and synthetic deposits: nothing here is the bank's reported or regulatory figure, certifies a model or claims compliance. */
+        c16Outputs: {
+            /** @constant */
+            kind: "scenario";
+            /** @constant */
+            valuation_date: "2022-12-31";
+            /**
+             * @description ISO 4217 code of the money fields of this document.
+             * @constant
+             */
+            currency: "USD";
+            units: components["schemas"]["c16Units"];
+            bank: components["schemas"]["c16Bank"];
+            variant: components["schemas"]["c16Variant"];
+            conventions: components["schemas"]["c16Conventions"];
+            data: components["schemas"]["c16Data"];
+            aggregate_record: components["schemas"]["c16Aggregate"] | null;
+            aggregate_record_reason: components["schemas"]["c16Label"] | null;
+            balance_sheet: components["schemas"]["c16BalanceSheet"];
+            cbc: components["schemas"]["c16Cbc"];
+            contractual_ladder: components["schemas"]["c16ContractualLadder"];
+            path: components["schemas"]["c16Path"] | null;
+            path_reason: components["schemas"]["c16Label"] | null;
+            lcr: components["schemas"]["c16Lcr"] | null;
+            lcr_reason: components["schemas"]["c16Label"] | null;
+            htm: components["schemas"]["c16Htm"] | null;
+            htm_reason: components["schemas"]["c16Label"] | null;
+            scoring: components["schemas"]["c16Scoring"];
+            sensitivities: components["schemas"]["c16Sensitivities"];
+            /** @description The 2021-12-31 and 2022-06-30 call-report dates, in this order. */
+            time_block: [
+                components["schemas"]["c16TimePoint"],
+                components["schemas"]["c16TimePoint"]
+            ];
+        } & (unknown & unknown & unknown & unknown & unknown);
+        /** @description One run-off parameter set and where it comes from. */
+        c16ParameterSet: {
+            /** @enum {string} */
+            set_id: "basel-lcr" | "list-adverse" | "list-extreme" | "fast-run";
+            source: string;
+            /** @enum {string} */
+            source_kind: "transcribed-list-2019" | "transcribed-basel-lcr" | "calibrated-pre-2023" | "convention" | "synthetic-stated" | "scenario-input";
+        };
+        /** @description The daily path of a variant: the ladder, the survival period, the minimum NLP and the cliff diagnostic (null with its reason when the horizon is shorter than 35 days). */
+        c16Path: {
+            ladder: components["schemas"]["c16Ladder"];
+            survival: components["schemas"]["c16Survival"];
+            minimum_nlp: {
+                /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+                value: number;
+                day: number;
+            };
+            cliff: components["schemas"]["c16Cliff"] | null;
+            cliff_reason: components["schemas"]["c16Label"] | null;
+        } & ({
+            cliff?: Record<string, never>;
+            cliff_reason?: null;
+        } | {
+            cliff?: null;
+            cliff_reason?: components["schemas"]["c16Label"];
+        });
+        c16Point: {
+            day: number;
+            /** @description A share or a rate in [0, 1]. */
+            cumulative_share: number;
+        };
+        /** @description One FDIC call-report quarter read for the case and the financials fields taken from it. */
+        c16Report: {
+            report_date: string;
+            source: string;
+            fields: ("ASSET" | "CERT" | "CHBAL" | "DEP" | "DEPDOM" | "DEPFOR" | "DEPINS" | "DEPLGAMT" | "DEPSMAMT" | "DEPUNA" | "EQ" | "FREPO" | "FREPP" | "LIAB" | "LNLSNET" | "NAME" | "OTHBFHLB" | "RBCT1J" | "REPDTE" | "SC" | "SCAA" | "SCAF" | "SCAGE" | "SCASPNAF" | "SCASPNHA" | "SCASPNSUM" | "SCCMOT" | "SCCOL" | "SCDOMO" | "SCEQFV" | "SCFORD" | "SCGTY" | "SCHA" | "SCHF" | "SCHTMRES" | "SCMTGBK" | "SCMUNI" | "SCPLEDGE" | "SCRDEBT" | "SCSPN" | "SCUS" | "SCUST")[];
+        };
+        /** @description The LiST 2019 results annex as constants (the markers of the survival views): 103 banks and the median reported survival period under the Adverse (176 days) and the Extreme (122 days) shock; annex slide 9 gives the bank count and slide 15 the medians (addendum L1; dossier 05 E.1 line 240). Reference points, not model results. */
+        c16ResultsAnnex: {
+            /** @constant */
+            n_banks: 103;
+            median_survival_days: {
+                /** @constant */
+                adverse: 176;
+                /** @constant */
+                extreme: 122;
+            };
+            /** @constant */
+            unit: "days";
+            sources: {
+                /** @constant */
+                annex: "ECB LiST 2019 results annex";
+                /** @constant */
+                n_banks_slide: 9;
+                median_slides: [
+                    15
+                ];
+                /** @constant */
+                dossier: "dossier 05 E.1 line 240";
+            };
+            statement: components["schemas"]["common-text"];
+        };
+        /** @description The HTM revaluation validation row (Q11): the book revalued from its maturity profile under the Treasury curve through the engine's irrbb curves, against the reported fair value; null with its reason when the revaluation did not run. */
+        c16Revaluation: {
+            /** @enum {string} */
+            status: "evaluated" | "not_evaluated";
+            /** @constant */
+            engine_ref: "engine-irrbb-api";
+            curve_source: string;
+            curve_date: string | null;
+            model_fair_value: number | null;
+            reported_fair_value: number;
+            difference: number | null;
+            relative_difference: number | null;
+            reason: components["schemas"]["c16Label"] | null;
+        } & ({
+            /** @constant */
+            status?: "evaluated";
+            curve_date?: string;
+            model_fair_value?: number;
+            difference?: number;
+            relative_difference?: number;
+            reason?: null;
+        } | {
+            /** @constant */
+            status?: "not_evaluated";
+            curve_date?: null;
+            model_fair_value?: null;
+            difference?: null;
+            relative_difference?: null;
+            reason?: components["schemas"]["c16Label"];
+        });
+        /** @description The reverse stress of one base scenario (Q9): the multiplier applied to every segment's daily rate, capped so that each rate stays below 1 (max_multiplier = 1 / max_rate_below_one), the SP(m) curve and the solved multiplier. */
+        c16ReverseBase: {
+            /** @enum {string} */
+            base_id: "list-adverse" | "list-extreme" | "fast-run";
+            /** @enum {string} */
+            parameter_set: "list-adverse" | "list-extreme" | "fast-run";
+            label: components["schemas"]["common-text"];
+            base_survival: components["schemas"]["c16Survival"];
+            /** @description The largest daily rate of the base scenario that is below 1 (a rate already at 1 stays at 1). */
+            max_rate_below_one: number;
+            max_multiplier: number;
+            curve: components["schemas"]["c16CurvePoint"][];
+            solved: components["schemas"]["c16Solved"];
+        };
+        /** @description C16 reverse-stress outputs (outputs.kind reverse-stress): the run-off multiplier at which the survival period falls to the target, per base scenario (LiST Adverse, LiST Extreme, the fast run). */
+        c16ReverseOutputs: {
+            /** @constant */
+            kind: "reverse-stress";
+            /** @constant */
+            valuation_date: "2022-12-31";
+            /**
+             * @description ISO 4217 code of the money fields of this document.
+             * @constant
+             */
+            currency: "USD";
+            units: components["schemas"]["c16Units"];
+            bank: components["schemas"]["c16Bank"];
+            conventions: components["schemas"]["c16Conventions"];
+            target: {
+                days: number;
+                statement: components["schemas"]["common-text"];
+            };
+            cap_rule: {
+                /** @constant */
+                each_rate_below_one: true;
+                statement: components["schemas"]["common-text"];
+            };
+            bases: [
+                components["schemas"]["c16ReverseBase"],
+                components["schemas"]["c16ReverseBase"],
+                components["schemas"]["c16ReverseBase"]
+            ];
+        };
+        /** @description A run-off parameter with its unit and its source: a transcribed LiST 2019 or Basel value, a pre-2023 calibration, a stated synthetic value or a convention. */
+        c16RunoffParam: {
+            name: string;
+            value: number;
+            unit: string;
+            /** @enum {string} */
+            source_kind: "transcribed-list-2019" | "transcribed-basel-lcr" | "calibrated-pre-2023" | "convention" | "synthetic-stated" | "scenario-input";
+            source: string;
+        };
+        /** @description A named scalar parameter: its value, its unit and the label "convention" (never "regulatory"); the basis says where the proposed value comes from (Q14: proposed by U11-S, approved by the main session). */
+        c16Scalar: {
+            value: number;
+            unit: string;
+            /** @constant */
+            status: "convention";
+            basis: components["schemas"]["common-text"];
+        };
+        /** @description The March 2023 scoring block: the model's cumulative outflow against the realised outflow with both denominators, the SVB observation as a labelled anchor row and the Table A.1 rows. Calibrated on pre-2023 data and scored on 2023 (Q4). */
+        c16Scoring: {
+            event: {
+                label: components["schemas"]["common-text"];
+                /** @constant */
+                event_date: "2023-03-10";
+                horizon_days: number;
+                source: string;
+            };
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            model_deposit_base: number;
+            modelled_outflow: components["schemas"]["c16ModelledOutflow"];
+            /** @description The two denominators of the realised outflow (Q4): the Board's roughly 85 percent of the deposit base, and over 40 plus 100 billion USD against the call report's DEP. */
+            denominators: [
+                components["schemas"]["c16Denominator"],
+                components["schemas"]["c16Denominator"]
+            ];
+            svb_anchor: components["schemas"]["c16Anchor"];
+            table_a1_scoring: [
+                components["schemas"]["c16A1Score"],
+                components["schemas"]["c16A1Score"],
+                components["schemas"]["c16A1Score"],
+                components["schemas"]["c16A1Score"],
+                components["schemas"]["c16A1Score"],
+                components["schemas"]["c16A1Score"],
+                components["schemas"]["c16A1Score"],
+                components["schemas"]["c16A1Score"],
+                components["schemas"]["c16A1Score"]
+            ];
+        };
+        /** @description The securities classes of the CBC with their haircut rows (A3, A4). */
+        c16SecurityMapping: {
+            /** @constant */
+            status: "convention";
+            rows: components["schemas"]["c16SecurityRow"][];
+            basis: components["schemas"]["common-text"];
+        };
+        /** @description The central bank framework row a securities class takes (A3, A4): the Federal Reserve discount window margin in force on 2023-03-10, the duration bucket a convention, the haircut 1 - margin and its sensitivity band; a class the framework does not cover has a null margin and the fallback rule (LCR haircut if HQLA, else 50 percent). */
+        c16SecurityRow: {
+            /** @enum {string} */
+            class_id: "cash-and-balances" | "treasury" | "mortgage-backed" | "other-agency" | "municipal" | "other-debt";
+            fed_category: string;
+            /** @enum {string} */
+            duration_bucket: "0-1" | ">1-3" | ">3-5" | ">5-10" | ">10" | "none";
+            margin: number | null;
+            /** @description A share or a rate in [0, 1]. */
+            haircut: number;
+            /** @description A share or a rate in [0, 1]. */
+            haircut_low: number;
+            /** @description A share or a rate in [0, 1]. */
+            haircut_high: number;
+            /** @enum {string} */
+            rule: "nominal-value" | "central-bank-framework" | "lcr-haircut-hqla" | "fifty-percent-fallback" | "ecb-equity-table" | "ecb-non-equity-hqla";
+            source: string;
+        };
+        /** @description The run-off curve of one deposit segment over the ladder: the opening balance, the daily rates (open-maturity compounding only), the cumulative outflow share and the outflow of each day. For compounding, cumulative = 1 - prod(1 - q_d) (05 E.1). */
+        c16Segment: {
+            /** @enum {string} */
+            segment: "retail-insured" | "retail-uninsured" | "operational" | "non-operational-corporate" | "financial";
+            /** @enum {string} */
+            list_class: "stable-retail" | "other-retail" | "operational" | "non-operational-credit-institutions" | "non-operational-other-financial" | "non-operational-non-financial-corporates" | "non-operational-others";
+            /** @enum {string} */
+            mechanism: "open-maturity-compounding" | "contractual-maturity-rolloff" | "full-runoff" | "constant-stock";
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            opening_balance: number;
+            parameters: components["schemas"]["c16RunoffParam"][];
+            daily_rates: number[] | null;
+            cumulative_outflow_share: number[];
+            outflows: number[];
+        } & ({
+            /** @constant */
+            mechanism?: "open-maturity-compounding";
+            daily_rates?: unknown[];
+        } | {
+            /** @enum {string} */
+            mechanism?: "contractual-maturity-rolloff" | "full-runoff" | "constant-stock";
+            daily_rates?: null;
+        });
+        /** @description The two sensitivities the survival-horizon views draw: the survival period against the uninsured share, ordered as the conventions' uninsured_share_grid, and the survival period and CBC against the HTM unrealised-loss multiple, ordered as the htm_loss_multiple_grid. Each is null with its reason where the variant has no daily path (the LCR). */
+        c16Sensitivities: {
+            uninsured_share: components["schemas"]["c16ShareSensitivity"][] | null;
+            uninsured_share_reason: components["schemas"]["c16Label"] | null;
+            htm_loss: components["schemas"]["c16HtmSensitivity"][] | null;
+            htm_loss_reason: components["schemas"]["c16Label"] | null;
+        };
+        /** @description One H.8 weekly series with its unit. */
+        c16Series: {
+            series_id: string;
+            label: components["schemas"]["common-text"];
+            unit: string;
+            points: {
+                date: string;
+                value: number;
+            }[];
+        };
+        /** @description The survival period when the uninsured share of the domestic deposits is `share` (05 E.5 rung 4). */
+        c16ShareSensitivity: {
+            /** @description A share or a rate in [0, 1]. */
+            share: number;
+            survival: components["schemas"]["c16Survival"];
+        };
+        /** @description The solved multiplier: the smallest m at which the survival period first falls to the target (05 E.5 rung 5), by bracketing on the monotone SP(m), with the round trip (the survival period at m returns the target); a target that is not bracketed is refused with the reason. */
+        c16Solved: {
+            /** @enum {string} */
+            status: "solved" | "refused";
+            multiplier: number | null;
+            survival_at_multiplier: number | null;
+            target_days: number;
+            round_trip_error: number | null;
+            refusal_reason: components["schemas"]["c16Label"] | null;
+        } & ({
+            /** @constant */
+            status?: "solved";
+            multiplier?: number;
+            survival_at_multiplier?: number;
+            round_trip_error?: number;
+            refusal_reason?: null;
+        } | {
+            /** @constant */
+            status?: "refused";
+            multiplier?: null;
+            survival_at_multiplier?: null;
+            round_trip_error?: null;
+            refusal_reason?: components["schemas"]["c16Label"];
+        });
+        /** @description The licence class of a source with the basis of the reading (A6): a reading of the publisher's notice, not legal advice. */
+        c16SourceNote: {
+            source_id: string;
+            publisher: string;
+            /** @enum {string} */
+            licence_class: "mirror-allowed" | "derived-only" | "link-only" | "unusable";
+            /** @enum {string} */
+            licence_basis: "notice-read" | "unverified";
+            statement: components["schemas"]["common-text"];
+        };
+        /** @description The survival period: the first day on which the NLP turns negative (a number of days), or "survives the horizon" with the horizon and no number (05 E.1, U11 sizing). The day is at most the horizon. */
+        c16Survival: {
+            /** @enum {string} */
+            kind: "day" | "survives-horizon";
+            day: number | null;
+            horizon_days: number;
+        } & ({
+            /** @constant */
+            kind?: "day";
+            day?: number;
+        } | {
+            /** @constant */
+            kind?: "survives-horizon";
+            day?: null;
+        });
+        /** @description BCBS d555 Box A Table A.1 transcribed as data (one table, within the BIS limited-extract terms, addendum L2.1; footnote (a): SVB outflows include the expected outflows of management for 10 March, First Republic excludes 30 bn USD placed by banks). */
+        c16TableA1: {
+            source: string;
+            attribution: string;
+            rows: [
+                components["schemas"]["c16A1Row"],
+                components["schemas"]["c16A1Row"],
+                components["schemas"]["c16A1Row"],
+                components["schemas"]["c16A1Row"],
+                components["schemas"]["c16A1Row"],
+                components["schemas"]["c16A1Row"],
+                components["schemas"]["c16A1Row"],
+                components["schemas"]["c16A1Row"],
+                components["schemas"]["c16A1Row"]
+            ];
+            lcr_range: {
+                /** @constant */
+                label: "LCR deposit outflow rates";
+                /** @constant */
+                low: 0.03;
+                /** @constant */
+                high: 0.4;
+                /** @constant */
+                days: 30;
+            };
+        };
+        /** @description One earlier call-report date of the time block (Q7): the deposits, the HTM unrealised loss, the CBC on both bases and the survival period as the HTM losses grew (null where the variant defines no daily path). */
+        c16TimePoint: {
+            as_of: string;
+            report_date: string;
+            deposits: components["schemas"]["c16Deposits"];
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            htm_unrealised_loss: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            cbc_amortised_basis: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            cbc_fair_value_basis: number;
+            survival: components["schemas"]["c16Survival"] | null;
+            lcr_ratio: number | null;
+        };
+        /** @description Units of every number: money in USD thousands as the FDIC call report gives it, rates as decimals per relevant day, horizons in days, dates ISO. */
+        c16Units: {
+            /** @constant */
+            money_scale: "thousands";
+            /** @constant */
+            rate: "decimal-per-day";
+            /** @constant */
+            horizon: "days";
+            /** @constant */
+            dates: "ISO-8601";
+        };
+        /** @description The variant of the SDD (section 5), with its scenario family, phase, parameter set and horizon (the conventions' variant_scenarios row of the same variant). */
+        c16Variant: {
+            /** @enum {string} */
+            id: "lcr-standard" | "list-adverse" | "list-extreme" | "fast-run" | "htm-losses";
+            label: components["schemas"]["common-text"];
+            description: components["schemas"]["common-text"];
+            /** @enum {string} */
+            scenario_family: "idiosyncratic" | "market-wide" | "combined";
+            /** @enum {string} */
+            phase: "acute" | "protracted" | "lcr-30-day";
+            /** @enum {string} */
+            parameter_set: "basel-lcr" | "list-adverse" | "list-extreme" | "fast-run";
+            horizon_days: number;
+            /** @enum {string} */
+            axis: "relevant-days" | "calendar-days";
+        };
+        /** @description The scenario family, phase, parameter set and horizon of one variant (dossier 05 E.2 and E.5); the LCR variant's phase is lcr-30-day, the 30-calendar-day stress of LCR20.2, and no other variant takes it. */
+        c16VariantRow: {
+            /** @enum {string} */
+            variant: "lcr-standard" | "list-adverse" | "list-extreme" | "fast-run" | "htm-losses";
+            /** @enum {string} */
+            scenario_family: "idiosyncratic" | "market-wide" | "combined";
+            /** @enum {string} */
+            phase: "acute" | "protracted" | "lcr-30-day";
+            /** @enum {string} */
+            parameter_set: "basel-lcr" | "list-adverse" | "list-extreme" | "fast-run";
+            horizon_days: number;
+            /** @enum {string} */
+            axis: "relevant-days" | "calendar-days";
+        };
+        /** @description The mapping of each variant to a scenario family and phase (Q14), in the order of the five scenario variants. */
+        c16VariantScenarios: {
+            /** @constant */
+            status: "convention";
+            rows: [
+                components["schemas"]["c16VariantRow"],
+                components["schemas"]["c16VariantRow"],
+                components["schemas"]["c16VariantRow"],
+                components["schemas"]["c16VariantRow"],
+                components["schemas"]["c16VariantRow"]
+            ];
+            basis: components["schemas"]["common-text"];
+        };
+        /**
          * C17 models
          * @description Catalog row c17-models 1.0.0: the C17 models artifact (generator, LDCE calibration targets, true parameters of every variant, grid, ladder, aggregation, OPE25 specification).
          */
@@ -9219,7 +10424,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c03-models"] | components["schemas"]["c03-variant-vintage-cohort"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c08-models"] | components["schemas"]["c08-variant-default-cohort"] | components["schemas"]["c09-models"] | components["schemas"]["c09-variant-acceleration-level"] | components["schemas"]["c10-models"] | components["schemas"]["c10-variant-correlation-grid"] | components["schemas"]["c10-variant-loan-type"] | components["schemas"]["c11-models"] | components["schemas"]["c11-variant-window"] | components["schemas"]["c13-models"] | components["schemas"]["c13-variant-deficiency"] | components["schemas"]["c14-models"] | components["schemas"]["c14-variant-valuation-date"] | components["schemas"]["c15-models"] | components["schemas"]["c15-variant-annex1-variant"] | components["schemas"]["c17-models"] | components["schemas"]["c17-variant-tail-index"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
+                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c03-models"] | components["schemas"]["c03-variant-vintage-cohort"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c08-models"] | components["schemas"]["c08-variant-default-cohort"] | components["schemas"]["c09-models"] | components["schemas"]["c09-variant-acceleration-level"] | components["schemas"]["c10-models"] | components["schemas"]["c10-variant-correlation-grid"] | components["schemas"]["c10-variant-loan-type"] | components["schemas"]["c11-models"] | components["schemas"]["c11-variant-window"] | components["schemas"]["c13-models"] | components["schemas"]["c13-variant-deficiency"] | components["schemas"]["c14-models"] | components["schemas"]["c14-variant-valuation-date"] | components["schemas"]["c15-models"] | components["schemas"]["c15-variant-annex1-variant"] | components["schemas"]["c16-models"] | components["schemas"]["c16-variant-reverse"] | components["schemas"]["c16-variant-scenario"] | components["schemas"]["c17-models"] | components["schemas"]["c17-variant-tail-index"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
                 };
             };
             404: components["responses"]["NotFound"];
