@@ -4113,724 +4113,6 @@ export interface components {
             end_date?: "2006-12-29";
         });
         /**
-         * C12 models (HW1F calibration per backtest date)
-         * @description The C12 models document: the Hull-White one-factor calibration per backtest date with its sample window, the counterparty curve, the transcribed GIRR parameters and the stated limits.
-         */
-        "c12-models": components["schemas"]["common-models-envelope"] & {
-            /** @constant */
-            case_id: "C12";
-            fit: components["schemas"]["c12Fit"];
-        };
-        /**
-         * C12 variant (swap exposure, CVA and SA-CCR)
-         * @description One variant of case C12 (swap exposure, CVA and SA-CCR): the six SDD variants share this schema and are told apart by outputs.variant. Every object is closed and nothing is optional; a block a variant does not run is null.
-         */
-        "c12-variant-swap-exposure": components["schemas"]["common-variant-envelope"] & {
-            /** @constant */
-            case_id: "C12";
-            outputs: components["schemas"]["c12Outputs"];
-        } & {
-            tests?: unknown;
-        } & {
-            tests?: unknown;
-        };
-        /** @description The BA-CVA reduced block: sector, rating, EAD, M, DF, SCVA, K_reduced and the capital DS x K_reduced. No official numeric example is verified (B8); the limit says so. */
-        c12BaCva: {
-            /** @constant */
-            paragraph: "MAR50.14 to MAR50.16";
-            /** @constant */
-            in_force_date: "2023-01-01";
-            /** @constant */
-            imm_bank: false;
-            /** @constant */
-            ds: 0.65;
-            /** @constant */
-            rho: 0.5;
-            /** @constant */
-            alpha: 1.4;
-            counterparties: components["schemas"]["c12BaCvaCounterparty"][];
-            k_reduced: number;
-            capital: components["schemas"]["c12Money"];
-            limit: components["schemas"]["c12Label"];
-        };
-        /** @description One counterparty of the BA-CVA reduced approach (MAR50.14 to MAR50.16 Table 1). */
-        c12BaCvaCounterparty: {
-            counterparty_id: string;
-            /** @enum {string} */
-            sector: "sovereigns-central-banks-mdbs" | "local-government-public" | "financials" | "basic-materials-energy-industrials" | "consumer-transport-administrative" | "technology-telecoms" | "health-care-utilities-professional" | "other";
-            /** @enum {string} */
-            rating_class: "investment-grade" | "high-yield-or-not-rated";
-            risk_weight: number;
-            ead: components["schemas"]["c12Money"];
-            m_years: number;
-            discount_factor: number;
-            scva: number;
-        };
-        /** @description The PIT-based exposure backtest (B5): the book revalued on the realised curves, and the risk factor (the short-rate proxy) backtested as well (BCBS 185 paragraph 20). */
-        c12Backtest: {
-            window_start: string;
-            window_end: string;
-            dates: string[];
-            /** @constant */
-            calibration_rule: "each initialisation date is calibrated on data up to that date only";
-            /** @constant */
-            pit_rule: "(i + 1) / (N + 2)";
-            /** @constant */
-            statistic: "Anderson-Darling W^2";
-            paths_per_date: number;
-            book_horizons: components["schemas"]["c12BacktestHorizons"];
-            risk_factor: {
-                proxy_tenor_years: number;
-                horizons: components["schemas"]["c12BacktestHorizons"];
-            };
-            /** @description before 2008, 2008 to 2019, from 2020, in that order. */
-            sub_windows: [
-                components["schemas"]["c12SubWindow"],
-                components["schemas"]["c12SubWindow"],
-                components["schemas"]["c12SubWindow"]
-            ];
-        };
-        /** @description The PIT backtest at one horizon: the PITs, the Anderson-Darling W^2 against the critical values simulated under the model itself (same dates, overlapping horizons) with the iid table values beside them, the effective sample size and several PFE percentiles (BCBS 185 paragraph 31). */
-        c12BacktestHorizon: {
-            /** @enum {string} */
-            horizon: "10bd" | "20bd" | "1m" | "3m" | "6m" | "12m";
-            n: number;
-            pits: components["schemas"]["c12Pit"][];
-            exceedances: components["schemas"]["c12Exceedance"][];
-            w2: number;
-            critical_iid: {
-                /** @constant */
-                p05: 2.492;
-                /** @constant */
-                p01: 3.88;
-            };
-            critical_simulated: {
-                p05: number;
-                p01: number;
-            };
-            effective_sample_size: number;
-            reject_at_5pct: boolean;
-        };
-        /** @description The six horizons in order: 10 and 20 business days, 1, 3, 6 and 12 months. */
-        c12BacktestHorizons: [
-            components["schemas"]["c12BacktestHorizon"],
-            components["schemas"]["c12BacktestHorizon"],
-            components["schemas"]["c12BacktestHorizon"],
-            components["schemas"]["c12BacktestHorizon"],
-            components["schemas"]["c12BacktestHorizon"],
-            components["schemas"]["c12BacktestHorizon"]
-        ];
-        /** @description The synthetic book of the variant: one swap for the single-swap variant and at least two for the netting set. */
-        c12Book: {
-            netting_set_id: string;
-            /** @constant */
-            currency: "USD";
-            trades: components["schemas"]["c12Trade"][];
-        };
-        /** @description The Hull-White one-factor calibration at one backtest date: a and sigma from the history only, the fit to the curve of the date by phi(t). The sample window ends strictly before the backtest date (no look-ahead: a producer check). */
-        c12Calibration: {
-            backtest_date: string;
-            /** @constant */
-            model: "hw1f";
-            /** @constant */
-            estimator: "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)";
-            proxy_tenor_years: number;
-            sample_start: string;
-            sample_end: string;
-            n_obs: number;
-            /** @description At least three years of history (CRE53.51). */
-            history_years: number;
-            a: number;
-            sigma: number;
-            a_se: number;
-            sigma_se: number;
-            /** @constant */
-            fit_to_curve: "phi(t) = f(0,t) + sigma^2 (1 - exp(-a t))^2 / (2 a^2), the QuantLib 1.44 fitting parameter";
-        };
-        /** @description The variation-margin variant: the CSA terms, the uncollateralised EE on the same axis and the mean collateral balance. The limit states what the close-out model leaves out (the Andersen, Pykhtin and Sokol timelines). */
-        c12Collateral: {
-            csa: components["schemas"]["c12Csa"];
-            uncollateralised_ee: components["schemas"]["c12NonNegProfile"];
-            collateral_balance: components["schemas"]["c12Profile"];
-            limit: components["schemas"]["c12Label"];
-        };
-        /** @description A named parameter of the synthetic book or of a method (decision D6): its value, its unit and the label "convention". A parameter without the label fails. */
-        c12Convention: {
-            value: number | string | unknown[];
-            unit: string;
-            /** @constant */
-            label: "convention";
-        };
-        /** @description The counterparty curve (B10): a derived AAA to A market spread, labelled a proxy; the synthetic spread stays for the BA-CVA rating and the sensitivity rows. */
-        c12CreditCurve: {
-            /** @constant */
-            base: "US Treasury HQM corporate spot curve minus the Treasury zero curve of the same date";
-            /** @constant */
-            label: "proxy";
-            derivation: components["schemas"]["c12Label"];
-            source_url: string;
-            /** @constant */
-            licence_class: "mirror-allowed with citation";
-            licence_basis: components["schemas"]["c12Label"];
-            /** @constant */
-            negative_spread_rule: "a negative HQM-minus-Treasury spread is set to zero and counted, never carried as a negative spread";
-            synthetic_spread: components["schemas"]["c12Convention"];
-        };
-        /** @description The CSA terms of the variant (ORE credit support amount and delivery amount equations, R3). */
-        c12Csa: {
-            threshold: components["schemas"]["c12Money"];
-            minimum_transfer_amount: components["schemas"]["c12Money"];
-            independent_amount: components["schemas"]["c12Money"];
-            mpor_business_days: number;
-            remargining_days: number;
-            /** @constant */
-            closeout: "sticky-date close-out grid (ORE, R3)";
-            floor_reference: string;
-        };
-        /** @description The curve of the curve date. A Treasury tenor absent on that date is absent from the curve and listed in tenors_absent, with the tenors present stated, never interpolated silently. */
-        c12Curve: {
-            curve_date: string;
-            /** @constant */
-            source: "US Treasury daily par yield curve (home.treasury.gov)";
-            /** @constant */
-            licence_class: "mirror-allowed";
-            /** @constant */
-            par_yield_unit: "decimal, bond-equivalent";
-            /** @constant */
-            zero_compounding: "continuous";
-            points: components["schemas"]["c12CurvePoint"][];
-            tenors_present: number[];
-            tenors_absent: number[];
-            /** @constant */
-            interpolated_silently: false;
-        };
-        /** @description One tenor of the curve: the source par yield (decimal) and the continuously compounded zero rate. */
-        c12CurvePoint: {
-            tenor_years: number;
-            par_yield: number;
-            zero_rate: number;
-        };
-        /** @description CVA and DVA by the discretised formula, with the bucket terms so a view or a test recomputes them from the EE. */
-        c12Cva: {
-            /** @enum {string} */
-            credit_curve_source: "hqm-minus-treasury" | "synthetic-flat";
-            /** @constant */
-            credit_curve_label: "proxy: an AAA to A market spread, a floor for lower ratings (R10)";
-            /** @constant */
-            survival_formula: "S(t) = exp(-s t / LGD)";
-            /** @constant */
-            negative_spread_rule: "a negative HQM-minus-Treasury spread is set to zero and counted in spreads_floored_at_zero";
-            spreads_floored_at_zero: number;
-            lgd: number;
-            bank_lgd: number;
-            buckets: components["schemas"]["c12CvaBucket"][];
-            cva: components["schemas"]["c12MoneySe"];
-            dva: components["schemas"]["c12MoneySe"];
-            bcva: components["schemas"]["c12Money"];
-        };
-        /** @description One time bucket of the discretised CVA: PD x LGD x discounted EPE (dossier 05 C.2). */
-        c12CvaBucket: {
-            t_start: number;
-            t_end: number;
-            spread: number;
-            survival: number;
-            pd_counterparty: number;
-            pd_bank: number;
-            epe_discounted: number;
-            ene_discounted: number;
-            cva_term: number;
-            dva_term: number;
-        };
-        /** @description The exceedances of the PFE at one quantile (a secondary row, BCBS 185 paragraph 27). */
-        c12Exceedance: {
-            quantile: number;
-            count: number;
-            expected: number;
-        };
-        /** @description The exposure measures of the variant on the time grid, each with its Monte Carlo error: EE and ENE undiscounted (Basel style, dossier 05 C.1) and discounted under the numeraire (the CVA input), the PFE at the stated quantile, the effective EE (running maximum, CRE53.12) and EEPE (CRE53.13) over the first year or to maturity. */
-        c12Exposure: {
-            /** @enum {string} */
-            basis: "uncollateralised" | "collateralised-vm" | "collateralised-vm-im";
-            time_grid_years: number[];
-            ee: components["schemas"]["c12NonNegProfile"];
-            ee_discounted: components["schemas"]["c12NonNegProfile"];
-            ene: components["schemas"]["c12NonNegProfile"];
-            ene_discounted: components["schemas"]["c12NonNegProfile"];
-            pfe_quantile: number;
-            pfe: components["schemas"]["c12NonNegProfile"];
-            effective_ee: components["schemas"]["c12NonNegProfile"];
-            epe: components["schemas"]["c12MoneySe"];
-            eepe: components["schemas"]["c12MoneySe"];
-            eepe_horizon_years: number;
-            measure_note: components["schemas"]["common-text"];
-        };
-        /** @description The HW1F calibration per backtest date with its sample window (which ends before the date), the counterparty curve, the GIRR parameters and the stated limits of the case. The calibration dates are unique and increasing. */
-        c12Fit: {
-            /** @constant */
-            estimator: "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)";
-            calibrations: components["schemas"]["c12Calibration"][];
-            /** @constant */
-            min_history_years: 3;
-            /** @constant */
-            closed_forms_source: "QuantLib 1.44: hullwhite.hpp, hullwhite.cpp, jamshidianswaptionengine.cpp";
-            /** @constant */
-            closed_forms_status: "formulas transcribed from the engine source; the journal derivations are UNVERIFIED as papers";
-            credit_curve: components["schemas"]["c12CreditCurve"];
-            girr_parameters: components["schemas"]["c12GirrParameters"];
-            limits: components["schemas"]["c12Label"][];
-        };
-        /** @description The FRTB SA GIRR delta charge of the same book (single USD bucket): the sensitivities s_k per tenor as MAR21.19 defines them, the weighted sensitivities with the MAR21.44 division by sqrt(2) (a named convention) and the charge, the maximum over the three correlation scenarios, with the undivided charge beside it. */
-        c12GirrCharge: {
-            /** @constant */
-            paragraph: "MAR21.42 to MAR21.50";
-            /** @constant */
-            in_force_date: "2023-01-01";
-            /** @constant */
-            currency: "USD";
-            /** @constant */
-            sqrt2_division: true;
-            /** @constant */
-            sqrt2_label: "convention";
-            /** @description s_k = (V(r + 0.0001) - V(r)) / 0.0001 at each GIRR tenor, in USD per unit of rate: the change in value for a 1 basis point shift divided by 0.0001 (MAR21.19), not the PV01 per basis point. The weighted sensitivity is RW_k s_k / sqrt(2). */
-            sensitivities: number[];
-            weighted_sensitivities: number[];
-            scenarios: components["schemas"]["c12GirrScenario"][];
-            delta_charge: components["schemas"]["c12Money"];
-            delta_charge_undivided: components["schemas"]["c12Money"];
-        };
-        /** @description The GIRR parameters of the addendum's R7, transcribed. A swap book has no vega, so the vega formula of footnote 24 is not needed and not transcribed. */
-        c12GirrParameters: {
-            /** @constant */
-            paragraph: "MAR21.42 to MAR21.50, MAR21.99";
-            /** @constant */
-            in_force_date: "2023-01-01";
-            /** @description The ten GIRR delta tenors of MAR21.8. */
-            tenors_years: [
-                0.25,
-                0.5,
-                1,
-                2,
-                3,
-                5,
-                10,
-                15,
-                20,
-                30
-            ];
-            /** @description MAR21.42 Table 1, in the order of the tenors. */
-            risk_weights: [
-                0.017,
-                0.017,
-                0.016,
-                0.013,
-                0.012,
-                0.011,
-                0.011,
-                0.011,
-                0.011,
-                0.011
-            ];
-            /** @description MAR21.46 Table 2 (percent): the table is the primary value, the formula max(exp(-0.03 |Tk - Tl| / min(Tk, Tl)), 40%) a reconstructed check. */
-            correlation_percent: number[][];
-            /** @constant */
-            same_tenor_other_curve: 0.999;
-            /** @constant */
-            gamma_between_buckets: 0.5;
-            /** @constant */
-            curvature_shock: 0.017;
-            /** @constant */
-            sqrt2_divisor: 1.4142135623730951;
-            /** @constant */
-            sqrt2_applies_to: "USD, a specified currency (MAR21.44 footnote 12)";
-            vega: {
-                /** @constant */
-                liquidity_horizon_days: 60;
-                /** @constant */
-                risk_weight: 1;
-                /** @constant */
-                correlation_alpha: 0.01;
-                /** @constant */
-                footnote_24_formula: "not transcribed (UNVERIFIED)";
-            };
-        };
-        /** @description The bucket charge under one correlation scenario (MAR21.6). */
-        c12GirrScenario: {
-            /** @enum {string} */
-            scenario: "low" | "medium" | "high";
-            k_b: number;
-        };
-        /** @description Initial margin as a separate balance: DIM(t) = alpha S(t) sqrt(horizon / MPoR) applied as max(exposure - DIM, 0), alpha the normal quantile of `quantile`, the horizon and the MPoR in calendar days as ORE computes horizonCalendarDays / mporCalendarDays (10 business days are 14 calendar days, 20 are 28). Labelled a regression proxy, never SIMM (SIMM is not used: its public notice restricts use to a participant's own transactions). */
-        c12Im: {
-            /** @constant */
-            method: "ORE dynamic initial margin by regression (R2)";
-            /** @constant */
-            labelled: "regression proxy, not SIMM";
-            /** @constant */
-            simm_used: false;
-            quantile: number;
-            alpha: number;
-            horizon_calendar_days: number;
-            mpor_calendar_days: number;
-            regression_order: number;
-            dim: components["schemas"]["c12NonNegProfile"];
-            ee_vm_only: components["schemas"]["c12NonNegProfile"];
-            limit: components["schemas"]["c12Label"];
-        };
-        /** @description A non-empty bilingual label. */
-        c12Label: {
-            en: string;
-            es: string;
-        };
-        /** @description An amount of money with its currency code. */
-        c12Money: {
-            amount: number;
-            /** @constant */
-            currency: "USD";
-        };
-        /** @description An amount of money with its currency code and its Monte Carlo standard error. */
-        c12MoneySe: {
-            amount: number;
-            /** @constant */
-            currency: "USD";
-            mc_se: number;
-        };
-        /** @description Every named parameter, required, each with its value and the label convention. */
-        c12NamedParameters: {
-            notionals: components["schemas"]["c12Convention"];
-            maturities_years: components["schemas"]["c12Convention"];
-            sides: components["schemas"]["c12Convention"];
-            netting_set_members: components["schemas"]["c12Convention"];
-            single_swap_member: components["schemas"]["c12Convention"];
-            fixed_rate_rule: components["schemas"]["c12Convention"];
-            csa_threshold: components["schemas"]["c12Convention"];
-            csa_minimum_transfer_amount: components["schemas"]["c12Convention"];
-            csa_independent_amount: components["schemas"]["c12Convention"];
-            mpor_business_days_short: components["schemas"]["c12Convention"];
-            mpor_business_days_long: components["schemas"]["c12Convention"];
-            counterparty_spread: components["schemas"]["c12Convention"];
-            counterparty_lgd: components["schemas"]["c12Convention"];
-            bank_spread: components["schemas"]["c12Convention"];
-            bank_lgd: components["schemas"]["c12Convention"];
-            pfe_quantile: components["schemas"]["c12Convention"];
-            path_count: components["schemas"]["c12Convention"];
-            seed: components["schemas"]["c12Convention"];
-            time_grid_years: components["schemas"]["c12Convention"];
-            wwr_b_grid: components["schemas"]["c12Convention"];
-            im_quantile: components["schemas"]["c12Convention"];
-            im_horizon_calendar_days: components["schemas"]["c12Convention"];
-            im_mpor_calendar_days: components["schemas"]["c12Convention"];
-            im_regression_order: components["schemas"]["c12Convention"];
-            ba_cva_sector: components["schemas"]["c12Convention"];
-            ba_cva_rating: components["schemas"]["c12Convention"];
-            stress_window_start: components["schemas"]["c12Convention"];
-            stress_window_end: components["schemas"]["c12Convention"];
-            backtest_window_start: components["schemas"]["c12Convention"];
-            backtest_paths_per_date: components["schemas"]["c12Convention"];
-            backtest_simulated_critical_count: components["schemas"]["c12Convention"];
-            reconciliation_se_threshold: components["schemas"]["c12Convention"];
-            ee_check_k_se: components["schemas"]["c12Convention"];
-        };
-        /** @description The netting benefit: the netting-set EE is at most the sum of the single-trade EE; the benefit is their difference. */
-        c12NettingBenefit: {
-            per_trade_ee: {
-                trade_id: string;
-                ee: components["schemas"]["c12NonNegProfile"];
-            }[];
-            sum_of_single_trade_ee: components["schemas"]["c12NonNegProfile"];
-            netted_ee: components["schemas"]["c12NonNegProfile"];
-            benefit: components["schemas"]["c12NonNegProfile"];
-        };
-        /** @description A non-negative money profile (an EE, ENE, PFE, effective EE or DIM) on the time grid with its Monte Carlo standard errors (same length as the grid: a producer check). */
-        c12NonNegProfile: {
-            /** @constant */
-            currency: "USD";
-            /** @description One non-negative value per point of the time grid. */
-            values: number[];
-            /** @description The Monte Carlo standard error of each value. */
-            mc_se: number[];
-        };
-        /** @description The reconciliation of the Python measures against ORE 1.8.17.0 on the same curve and model parameters (ADR-0069: the bake's): the EE profile at every grid point, the EEPE and the CVA recomputed from the ORE profiles, and for the initial-margin variant the DIM profile, each with its agreement. Every variant but the wrong-way one is reconciled (S2); the wrong-way one is not-applicable with its reason. An ORE run that fails stops the bake: a variant is never published as not-applicable because ORE failed. */
-        c12OreReconciliation: {
-            /** @enum {string} */
-            status: "reconciled" | "not-applicable";
-            ore_version: "1.8.17.0" | null;
-            platform: string | null;
-            run_seconds: number | null;
-            ore_ee: components["schemas"]["c12NonNegProfile"] | null;
-            ore_ee_discounted: components["schemas"]["c12NonNegProfile"] | null;
-            ore_eepe: components["schemas"]["c12Money"] | null;
-            ore_cva: components["schemas"]["c12Money"] | null;
-            ore_dim: components["schemas"]["c12NonNegProfile"] | null;
-            agreement: components["schemas"]["c12PointAgreement"][] | null;
-            eepe_agreement: components["schemas"]["c12ScalarAgreement"] | null;
-            cva_agreement: components["schemas"]["c12ScalarAgreement"] | null;
-            dim_agreement: components["schemas"]["c12PointAgreement"][] | null;
-            all_within_two_se: boolean | null;
-            reason: components["schemas"]["c12Label"] | null;
-        } & ({
-            /** @constant */
-            status?: "reconciled";
-            /** @constant */
-            ore_version?: "1.8.17.0";
-            platform?: string;
-            run_seconds?: number;
-            ore_ee?: components["schemas"]["c12NonNegProfile"];
-            ore_ee_discounted?: components["schemas"]["c12NonNegProfile"];
-            ore_eepe?: components["schemas"]["c12Money"];
-            ore_cva?: components["schemas"]["c12Money"];
-            agreement?: unknown[];
-            eepe_agreement?: components["schemas"]["c12ScalarAgreement"];
-            cva_agreement?: components["schemas"]["c12ScalarAgreement"];
-            all_within_two_se?: boolean;
-            reason?: null;
-        } | {
-            /** @constant */
-            status?: "not-applicable";
-            ore_version?: null;
-            platform?: null;
-            run_seconds?: null;
-            ore_ee?: null;
-            ore_ee_discounted?: null;
-            ore_eepe?: null;
-            ore_cva?: null;
-            ore_dim?: null;
-            agreement?: null;
-            eepe_agreement?: null;
-            cva_agreement?: null;
-            dim_agreement?: null;
-            all_within_two_se?: null;
-            reason?: components["schemas"]["c12Label"];
-        });
-        /** @description The outputs of one C12 variant: the book, the curve, the calibration, the exposure measures, CVA and DVA, the regulatory measures, the backtest and the ORE reconciliation. */
-        c12Outputs: {
-            /** @constant */
-            kind: "swap-exposure";
-            /** @enum {string} */
-            variant: "single-swap" | "netting-set" | "csa-mpor-10d" | "csa-mpor-20d" | "with-im" | "wrong-way-risk";
-            sign_convention: components["schemas"]["c12Sign"];
-            units: components["schemas"]["c12Units"];
-            named_parameters: components["schemas"]["c12NamedParameters"];
-            book: components["schemas"]["c12Book"];
-            curve: components["schemas"]["c12Curve"];
-            calibration_used: components["schemas"]["c12Calibration"];
-            exposure: components["schemas"]["c12Exposure"];
-            netting_benefit: components["schemas"]["c12NettingBenefit"];
-            collateral: components["schemas"]["c12Collateral"] | null;
-            initial_margin: components["schemas"]["c12Im"] | null;
-            cva_dva: components["schemas"]["c12Cva"];
-            wrong_way_risk: components["schemas"]["c12Wwr"] | null;
-            sa_ccr: components["schemas"]["c12SaCcr"];
-            ba_cva: components["schemas"]["c12BaCva"];
-            regulatory_comparison: components["schemas"]["c12Regulatory"];
-            girr: components["schemas"]["c12GirrCharge"];
-            backtest: components["schemas"]["c12Backtest"];
-            calibration_sensitivity: components["schemas"]["c12SensitivityCase"][];
-            ore_reconciliation: components["schemas"]["c12OreReconciliation"];
-        } & (unknown & unknown & unknown & unknown & unknown & unknown);
-        /** @description A PIT value in (0, 1) by the (i + 1) / (N + 2) rule. */
-        c12Pit: number;
-        /** @description The agreement at one grid point: the difference ORE minus Python, the combined Monte Carlo standard error and whether the difference is within two of them. */
-        c12PointAgreement: {
-            t: number;
-            difference: number;
-            combined_se: number;
-            within_two_se: boolean;
-        };
-        /** @description A money profile on the time grid with its Monte Carlo standard errors (same length as the grid: a producer check). */
-        c12Profile: {
-            /** @constant */
-            currency: "USD";
-            /** @description One value per point of the time grid. */
-            values: number[];
-            /** @description The Monte Carlo standard error of each value. */
-            mc_se: number[];
-        };
-        /** @description The regulatory measures beside the modelled ones: alpha times EEPE (CRE53.11) against the SA-CCR EAD, the effective maturity M of CRE53.20 (capped at 5 years) and the stressed Effective EPE. */
-        c12Regulatory: {
-            /** @constant */
-            alpha: 1.4;
-            /** @constant */
-            alpha_paragraph: "CRE53.14";
-            effective_maturity_years: number;
-            alpha_times_eepe: components["schemas"]["c12Money"];
-            sa_ccr_ead: components["schemas"]["c12Money"];
-            sa_ccr_over_alpha_eepe: number;
-            stressed: components["schemas"]["c12StressedEpe"];
-        };
-        /** @description The add-on by asset class (CRE52.24 to CRE52.25). */
-        c12SaAddOns: {
-            interest_rate: number;
-            fx: number;
-            credit: number;
-            equity: number;
-            commodity: number;
-        };
-        /** @description The SA-CCR block (CRE52): the trade inputs and every intermediate value, RC, the hedging sets with buckets B1 to B3, the effective notionals, the add-ons, the multiplier and EAD = 1.4 (RC + PFE), so a live port is checked step by step. */
-        c12SaCcr: {
-            /** @constant */
-            paragraph: "CRE52";
-            /** @constant */
-            in_force_date: "2023-01-01";
-            margined: boolean;
-            v: components["schemas"]["c12Money"];
-            c: components["schemas"]["c12Money"];
-            th: components["schemas"]["c12Money"];
-            mta: components["schemas"]["c12Money"];
-            nica: components["schemas"]["c12Money"];
-            mpor_business_days: number | null;
-            rc: components["schemas"]["c12Money"];
-            trades: components["schemas"]["c12SaTrade"][];
-            hedging_sets: components["schemas"]["c12SaHedgingSet"][];
-            addon_by_class: components["schemas"]["c12SaAddOns"];
-            addon_aggregate: components["schemas"]["c12Money"];
-            /** @constant */
-            multiplier_floor: 0.05;
-            multiplier: number;
-            pfe: components["schemas"]["c12Money"];
-            /** @constant */
-            alpha: 1.4;
-            ead: components["schemas"]["c12Money"];
-        };
-        /** @description An interest rate hedging set (one per currency): the bucket effective notionals D(B1) to D(B3), the offset or no-offset formula of CRE52.57, the effective notional EN and AddOn = SF x EN. */
-        c12SaHedgingSet: {
-            hedging_set: string;
-            d_b1: number;
-            d_b2: number;
-            d_b3: number;
-            offset: boolean;
-            effective_notional: number;
-            /** @constant */
-            supervisory_factor: 0.005;
-            addon: number;
-        };
-        /** @description The CRE52 intermediates of one trade: supervisory duration (CRE52.34), adjusted notional, supervisory delta, maturity factor (CRE52.48 to CRE52.52), the maturity bucket of its end date (CRE52.57) and the effective notional d x delta x MF. */
-        c12SaTrade: {
-            trade_id: string;
-            hedging_set: string;
-            start_years: number;
-            end_years: number;
-            notional: components["schemas"]["c12Money"];
-            supervisory_duration: number;
-            adjusted_notional: components["schemas"]["c12Money"];
-            /** @enum {number} */
-            delta: 1 | -1;
-            maturity_factor: number;
-            /** @enum {string} */
-            bucket: "B1" | "B2" | "B3";
-            effective_notional: number;
-        };
-        /** @description The agreement of one scalar (EEPE or CVA): the Python value, the ORE value, their difference (ORE minus Python), the combined standard error and the two-standard-error flag. */
-        c12ScalarAgreement: {
-            python: number;
-            ore: number;
-            difference: number;
-            combined_se: number;
-            within_two_se: boolean;
-        };
-        /** @description EE and PFE (the profiles and their summaries) under the base calibration and with a and sigma moved by one standard error (B6). */
-        c12SensitivityCase: {
-            /** @enum {string} */
-            case: "base" | "a-plus-1se" | "a-minus-1se" | "sigma-plus-1se" | "sigma-minus-1se";
-            a: number;
-            sigma: number;
-            eepe: components["schemas"]["c12Money"];
-            pfe_peak: components["schemas"]["c12Money"];
-            ee: components["schemas"]["c12NonNegProfile"];
-            pfe: components["schemas"]["c12NonNegProfile"];
-        };
-        /** @description Sign convention, stated in the document: EE is the positive exposure to the counterparty, ENE the bank's own, CVA a positive cost and DVA a positive benefit. */
-        c12Sign: {
-            /** @constant */
-            ee: "positive-exposure-to-the-counterparty";
-            /** @constant */
-            ene: "bank-own-exposure-reported-positive";
-            /** @constant */
-            cva: "positive-is-cost";
-            /** @constant */
-            dva: "positive-is-benefit";
-            statement: components["schemas"]["common-text"];
-        };
-        /** @description The stressed Effective EPE (B9): a named three-year window containing a stress period, and the HQM spread rising in it (B10). */
-        c12StressedEpe: {
-            window_start: string;
-            window_end: string;
-            /** @constant */
-            label: "convention";
-            effective_epe: components["schemas"]["c12Money"];
-            hqm_spread_start: number;
-            hqm_spread_peak: number;
-            spread_rose: boolean;
-            /** @constant */
-            paragraph: "CRE53.7 and CRE53.51";
-        };
-        /** @description One reporting sub-window of the backtest (D7). */
-        c12SubWindow: {
-            /** @enum {string} */
-            window: "before-2008" | "2008-2019" | "from-2020";
-            start: string;
-            end: string;
-            results: components["schemas"]["c12SubWindowResult"][];
-        };
-        /** @description W^2 of one horizon in a sub-window. */
-        c12SubWindowResult: {
-            /** @enum {string} */
-            horizon: "10bd" | "20bd" | "1m" | "3m" | "6m" | "12m";
-            n: number;
-            w2: number;
-        };
-        /** @description One fixed-for-floating USD interest rate swap: payer pays the fixed rate. Its terms are conventions. */
-        c12Trade: {
-            trade_id: string;
-            notional: components["schemas"]["c12Money"];
-            fixed_rate: number;
-            /** @enum {string} */
-            side: "payer" | "receiver";
-            start_years: number;
-            maturity_years: number;
-            fixed_frequency_per_year: number;
-            /** @constant */
-            floating_leg: "USD floating leg on the single curve of the case";
-            /** @constant */
-            label: "convention";
-        };
-        /** @description Units of every number: money in USD with its currency code, rates as decimals discounted continuously, times in years from the valuation date, the margin period of risk in business days, dates ISO. */
-        c12Units: {
-            /** @constant */
-            money: "amount with its ISO 4217 currency code, USD in this case";
-            /** @constant */
-            rate: "decimal";
-            /** @constant */
-            compounding: "continuous";
-            /** @constant */
-            time: "years-from-the-valuation-date";
-            /** @constant */
-            mpor: "business-days";
-            /** @constant */
-            dates: "ISO-8601";
-        };
-        /** @description The wrong-way risk variant (B1): CVA over the grid of b, a(t) calibrated sequentially on the simulated paths to the survival curve. b = 0 equals the independent CVA exactly. ORE's wrong-way example is a different model, so this variant has no ORE reconciliation and says so. */
-        c12Wwr: {
-            /** @constant */
-            model: "Hull and White (2012) hazard rate on the portfolio value, h(t) = exp(a(t) + b w(t))";
-            /** @constant */
-            b_unit: "per USD million of portfolio value";
-            b_grid: number[];
-            /** @description The largest portfolio value of the simulated paths, in USD million. */
-            w_max_usd_million: number;
-            /** @description max |b| of the grid times w_max_usd_million: the largest exponent b w the grid reaches on this book, so the reader sees whether the sweep moves the hazard. */
-            largest_b_w: number;
-            sweep: components["schemas"]["c12WwrPoint"][];
-            independent_cva: components["schemas"]["c12Money"];
-            ore_limit: components["schemas"]["c12Label"];
-        };
-        /** @description CVA at one value of the dependence parameter b, with the largest calibration error of the survival constraint; independent is true at b = 0 only. */
-        c12WwrPoint: {
-            b: number;
-            cva: components["schemas"]["c12MoneySe"];
-            independent: boolean;
-            a_calibration_max_error: number;
-        };
-        /**
          * C13 models
          * @description Catalog row c13-models 1.0.0: the C13 models artifact (generator, the six planted deficiencies, the PLA thresholds, the desk limits).
          */
@@ -9122,6 +8404,1582 @@ export interface components {
             true_mean_reason?: string;
         });
         /**
+         * C18 models
+         * @description Catalog row c18-models 1.0.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank anchors, scenario sources, capital engine rules, named parameters).
+         */
+        "c18-models": components["schemas"]["common-models-envelope"] & {
+            /** @constant */
+            case_id: "C18";
+            fit: components["schemas"]["c18Fit"];
+        } & {
+            provenance: {
+                /** @constant */
+                truth_status?: "synthetic-calibrated";
+            };
+        };
+        /**
+         * C18 t-copula aggregation variant
+         * @description Catalog row c18-outputs-aggregation 1.0.0: the t-copula aggregation variant (outputs.kind aggregation), the band over the nu set at the Rosenberg and Schuermann matrix and under the market-credit 0.8 stress.
+         */
+        "c18-variant-aggregation": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C18";
+            outputs: components["schemas"]["c18AggOutputs"];
+        } & {
+            tests?: unknown;
+        } & {
+            provenance: {
+                /** @constant */
+                truth_status?: "synthetic-calibrated";
+            };
+        } & {
+            impact?: unknown;
+        } & {
+            tests?: unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown;
+        };
+        /**
+         * C18 reverse stress variant
+         * @description Catalog row c18-outputs-reverse 1.0.0: the reverse stress variant (outputs.kind reverse), the minimum Mahalanobis distance scenario that takes CET1 to the Chilean legal minimum stack.
+         */
+        "c18-variant-reverse": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C18";
+            outputs: components["schemas"]["c18RevOutputs"];
+        } & {
+            tests?: unknown;
+        } & {
+            provenance: {
+                /** @constant */
+                truth_status?: "synthetic-calibrated";
+            };
+        } & {
+            impact?: unknown;
+        } & {
+            tests?: unknown;
+        };
+        /**
+         * C18 scenario variant
+         * @description Catalog row c18-outputs 1.0.0: one scenario of the ICAAP and IAPE capital aggregation case (outputs.kind scenario): baseline, EBA 2025 adverse, Fed 2026 severely adverse or NGFS delayed transition, on the synthetic Banco Andino.
+         */
+        "c18-variant-scenario": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C18";
+            outputs: components["schemas"]["c18Outputs"];
+        } & {
+            tests?: unknown;
+        } & {
+            provenance: {
+                /** @constant */
+                truth_status?: "synthetic-calibrated";
+            };
+        } & {
+            impact?: unknown;
+        } & {
+            tests?: unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown;
+        };
+        c18Action: {
+            id: string;
+            description: components["schemas"]["common-text"];
+            /** @constant */
+            label: "case assumption";
+            /** @description The effect on CET1 of each of T+1 to T+3, in CLP millions, not cumulated. */
+            cet1_effect_clp_m: number[];
+        };
+        /** @description C18 outputs of the t-copula aggregation variant. */
+        c18AggOutputs: {
+            /** @constant */
+            kind: "aggregation";
+            /** @constant */
+            currency: "CLP";
+            units: components["schemas"]["c18Units"];
+            bank: components["schemas"]["c18Env"];
+            /**
+             * @description The t-copula variant runs the baseline scenario (decision Q12).
+             * @constant
+             */
+            scenario_id: "baseline";
+            aggregation: components["schemas"]["c18Aggregation"];
+            correlation_stress: components["schemas"]["c18CorrStress"];
+            /** @description Gaussian against t over the nu set, at the base matrix. */
+            copula_sensitivity: components["schemas"]["c18SensRow"][];
+            rosenberg_schuermann: components["schemas"]["c18RsReference"];
+        };
+        c18AggParams: {
+            ladder: {
+                /** @enum {string} */
+                method: "lower-bound" | "simple-sum" | "variance-covariance" | "gaussian-copula" | "t-copula" | "worst-case";
+                engine_function: string;
+            }[];
+            n_draws: number;
+            seed: number;
+            chunk_size: number;
+            /**
+             * @description One horizon for every marginal: one year (decision Q5).
+             * @constant
+             */
+            horizon_years: 1;
+            /**
+             * @description One confidence level for every marginal: 99.9 percent, as a decimal (decision Q5).
+             * @constant
+             */
+            confidence_level: 0.999;
+            /**
+             * @description Capital of a risk and of an aggregate is EC = VaR(0.999, 1 year) less the expected loss, EC_q = VaR_q(L) - EL (dossier 04 l.652-653, BCBS 2005 explanatory note section 4.4); the expected loss is additive, so the simple sum of the marginals equals the comonotonic total. A marginal whose severity has an infinite mean has no expected loss: its EC is the VaR alone, labelled (dossier 05 l.482).
+             * @constant
+             */
+            capital_basis: "economic-capital-var-less-el";
+            /** @description The rule that maps a uniform draw through a marginal sample. */
+            marginal_interpolation: string;
+        };
+        /** @description The aggregation block: the simple sum as the headline, the band with the model risk measures beside it, the Euler allocation and the diversification (both information), one horizon and one confidence level, the source and scaling of every marginal. */
+        c18Aggregation: {
+            /**
+             * @description Capital of a risk and of an aggregate is EC = VaR(0.999, 1 year) less the expected loss, EC_q = VaR_q(L) - EL (dossier 04 l.652-653, BCBS 2005 explanatory note section 4.4); the expected loss is additive, so the simple sum of the marginals equals the comonotonic total. A marginal whose severity has an infinite mean has no expected loss: its EC is the VaR alone, labelled (dossier 05 l.482).
+             * @constant
+             */
+            capital_basis: "economic-capital-var-less-el";
+            /**
+             * @description One horizon for every marginal: one year (decision Q5).
+             * @constant
+             */
+            horizon_years: 1;
+            /**
+             * @description One confidence level for every marginal: 99.9 percent, as a decimal (decision Q5).
+             * @constant
+             */
+            confidence_level: 0.999;
+            correlation: components["schemas"]["c18NamedMatrix"];
+            nu_set: components["schemas"]["c18NamedSet"];
+            /** @description The four marginals in the order credit, market, irrbb, operational. */
+            marginals: components["schemas"]["c18Marginal"][] & (unknown & unknown & unknown & unknown);
+            headline: {
+                /**
+                 * @description The headline capital of C18 is the simple sum (IAPE, 03 l.185-190; ECB, 01 l.846).
+                 * @constant
+                 */
+                method: "simple-sum";
+                /** @description Money in CLP millions, not below zero. */
+                capital_clp_m: number;
+                label: components["schemas"]["common-text"];
+            };
+            band: components["schemas"]["c18Band"];
+            model_risk: components["schemas"]["c18ModelRisk"];
+            euler: components["schemas"]["c18Euler"];
+            diversification: components["schemas"]["c18Diversification"];
+        };
+        /** @description The bank anchors (decision Q4). */
+        c18Anchors: {
+            /** @description RWA = the C15 Tier 1 proxy over the CET1 ratio anchor (decision Q4). */
+            rwa_basis: {
+                /** @description Money in CLP millions, not below zero. */
+                tier1_proxy_clp_m: number;
+                /** @description The 11.0 percent anchor of the 20-F (03 l.1324), as a ratio. */
+                cet1_ratio_anchor: number;
+                /** @description Money in CLP millions, not below zero. */
+                rwa_total_clp_m: number;
+            };
+            /** @description The 20-F RWA mix as ratios only (credit 70.8, market 17.1, operational 12.0 percent, 03 l.1307-1328). */
+            rwa_mix: {
+                credit: number;
+                market: number;
+                operational: number;
+            };
+            /** @description The Chilean capital stack as ratios (03 l.913-920): 4.5, 2.5, 0.5 or 1, 0 to 1.5 percent, the Pillar 2 requirement. */
+            chilean_stack: {
+                /** @constant */
+                cet1_min: 0.045;
+                /** @constant */
+                c_ccob: 0.025;
+                c_ccyb: number;
+                c_dsib: number;
+                /** @description Pillar 2 requirement over RWA; the cap is 4 percent of RWA (03 l.253). */
+                p2r: number;
+                /** @constant */
+                p2_cap: 0.04;
+            };
+            /** @description The loan book by class from the C07 targets. */
+            loan_exposures: {
+                /** @enum {string} */
+                banco_andino_class: "commercial" | "consumer" | "mortgage";
+                /** @description Money in CLP millions, not below zero. */
+                exposure_clp_m: number;
+                share: number;
+            }[] & (unknown & unknown & unknown);
+            source: components["schemas"]["common-text"];
+            /**
+             * @description The Santander Chile 20-F is derived-only until the filer's own rights are read: ratios only (decision Q4, E5).
+             * @constant
+             */
+            licence_class: "derived-only";
+            /** @constant */
+            ratios_only: true;
+        };
+        /** @description The IAPE Annex 3 summary (12 numbered rows with their sub-rows by 4 columns) as the CMF prints it. */
+        c18Annex3: {
+            /** @constant */
+            entity: "Banco Andino";
+            /** @description An ISO date. */
+            report_date: string;
+            /** @enum {string} */
+            consolidation: "local" | "global-consolidated";
+            /**
+             * @description The form states thousand pesos; the document states millions throughout, as the other C18 blocks do.
+             * @constant
+             */
+            money_unit: "CLP millions";
+            /** @description The 34 rows of the summary, each once (F7). */
+            rows: components["schemas"]["c18Annex3Row"][] & (unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown);
+        };
+        /** @description A row of the Annex 3 summary: column A percent of RWA, B the amount (CLP millions), C the legal requirement, D the internal measurement. */
+        c18Annex3Row: {
+            /** @enum {string} */
+            row_id: "1" | "1.1" | "1.2" | "1.3" | "2" | "2.T2" | "2.AT1" | "2.CET1" | "3" | "4" | "4.1" | "4.1.1" | "4.1.2" | "4.2" | "4.3" | "4.4" | "4.4.1" | "4.4.2" | "4.4.3" | "4.5" | "4.6" | "4.7" | "4.8" | "5" | "6" | "7" | "7.1" | "7.2" | "8" | "9" | "10.1" | "10.2" | "11" | "12";
+            /** @description The row label as the CMF prints it (Annex 3, Circular 2.365). */
+            label_cmf: string;
+            a: components["schemas"]["c18Cell"];
+            b: components["schemas"]["c18Cell"];
+            c: components["schemas"]["c18Cell"];
+            d: components["schemas"]["c18Cell"];
+        };
+        /** @description How the scaling is derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, in one currency. */
+        c18AssetDerivation: {
+            /** @constant */
+            kind: "asset-ratio";
+            /** @description Banco Andino total assets, CLP millions, from the C15 and C07 balance sheet. */
+            banco_andino_assets_clp_m: number;
+            /** @description The stated assets of the C17 synthetic bank, EUR millions (C17 models-generator generator.assets_eur_bn times 1000). */
+            c17_bank_assets_eur_m: number;
+            /** @constant */
+            converted_at: "operational_conversion_rate";
+        };
+        /** @description The out-of-time back-cast of the satellites. */
+        c18Backcast: {
+            /** @description The out-of-time window, 2020 Q1 to 2025 Q4 (decision Q8). */
+            window: {
+                /** @constant */
+                start: "2020-03-31";
+                /** @constant */
+                end: "2025-12-31";
+            };
+            /** @description One back-cast per Fed loan type: the satellite fitted to 2019, predicted against realised. */
+            per_loan_type: ({
+                /** @enum {string} */
+                fed_loan_type: "commercial-industrial" | "commercial-real-estate" | "residential" | "credit-cards" | "other-consumer";
+                /** @enum {string} */
+                series_id: "CI" | "RECI" | "RERES" | "CONCC" | "CONOTH";
+                /** @enum {string} */
+                link: "probit" | "logit" | "identity";
+                fit_window: {
+                    /** @description A quarter end between 1985-03-31 and 2019-12-31: the satellites are fitted on 1985-2019 only. */
+                    start: string;
+                    /** @description A quarter end between 1985-03-31 and 2019-12-31: the satellites are fitted on 1985-2019 only. */
+                    end: string;
+                };
+                quarters: {
+                    /** @description A quarter end as an ISO date. */
+                    quarter_end: string;
+                    /** @description A net charge-off rate as a decimal. Signed: net recoveries make a rate zero or negative (the Board's table holds both). */
+                    predicted: number;
+                    /** @description A net charge-off rate as a decimal. Signed: net recoveries make a rate zero or negative (the Board's table holds both). */
+                    realised: number;
+                }[];
+                metrics: {
+                    rmse: number;
+                    /** @description A net charge-off rate as a decimal. Signed: net recoveries make a rate zero or negative (the Board's table holds both). */
+                    peak_predicted: number;
+                    /** @description A quarter end as an ISO date. */
+                    peak_predicted_quarter: string;
+                    /** @description A net charge-off rate as a decimal. Signed: net recoveries make a rate zero or negative (the Board's table holds both). */
+                    peak_realised: number;
+                    /** @description A quarter end as an ISO date. */
+                    peak_realised_quarter: string;
+                    peak_timing_error_quarters: number;
+                };
+            } & ({
+                /** @constant */
+                fed_loan_type?: "commercial-industrial";
+                /** @constant */
+                series_id?: "CI";
+                /** @enum {string} */
+                link?: "probit" | "logit";
+                fit_window?: {
+                    /** @constant */
+                    start?: "1985-03-31";
+                };
+            } | {
+                /** @constant */
+                fed_loan_type?: "commercial-real-estate";
+                /** @constant */
+                series_id?: "RECI";
+                /** @constant */
+                link?: "identity";
+                fit_window?: {
+                    /** @constant */
+                    start?: "1991-03-31";
+                };
+            } | {
+                /** @constant */
+                fed_loan_type?: "residential";
+                /** @constant */
+                series_id?: "RERES";
+                /** @constant */
+                link?: "identity";
+                fit_window?: {
+                    /** @constant */
+                    start?: "1991-03-31";
+                };
+            } | {
+                /** @constant */
+                fed_loan_type?: "credit-cards";
+                /** @constant */
+                series_id?: "CONCC";
+                /** @enum {string} */
+                link?: "probit" | "logit";
+                fit_window?: {
+                    /** @constant */
+                    start?: "1985-03-31";
+                };
+            } | {
+                /** @constant */
+                fed_loan_type?: "other-consumer";
+                /** @constant */
+                series_id?: "CONOTH";
+                /** @enum {string} */
+                link?: "probit" | "logit";
+                fit_window?: {
+                    /** @constant */
+                    start?: "1985-03-31";
+                };
+            }))[] & (unknown & unknown & unknown & unknown & unknown);
+            /** @description 2026 Q1 and Q2 as a rate-only descriptive row: no macro actuals, no forecast claim (decision Q8). */
+            descriptive_2026: {
+                /** @enum {string} */
+                quarter_end: "2026-03-31" | "2026-06-30";
+                /** @description The realised charge-off rate of each Fed loan type. */
+                realised_rates: {
+                    /** @enum {string} */
+                    fed_loan_type: "commercial-industrial" | "commercial-real-estate" | "residential" | "credit-cards" | "other-consumer";
+                    /** @description A net charge-off rate as a decimal. Signed: net recoveries make a rate zero or negative (the Board's table holds both). */
+                    rate: number;
+                }[] & (unknown & unknown & unknown & unknown & unknown);
+                /** @constant */
+                label: "rate-only-descriptive";
+                /** @constant */
+                forecast_claim: false;
+            }[];
+            statement: components["schemas"]["common-text"];
+        };
+        /** @description The band: the lower bound, the simple sum, variance-covariance, Gaussian, t at every nu of the set, the worst case (decision Q12). The comonotonic total equals the simple sum under the EC basis and is not a seventh row. */
+        c18Band: components["schemas"]["c18BandRow"][] & (unknown & unknown & unknown & unknown & unknown & unknown);
+        /** @description One rung of the dependence-uncertainty band (decision Q12). Only the simple sum is the headline capital; every other row is information. */
+        c18BandRow: {
+            /** @enum {string} */
+            method: "lower-bound" | "simple-sum" | "variance-covariance" | "gaussian-copula" | "t-copula" | "worst-case";
+            /** @description Degrees of freedom: set for a t copula row, null otherwise. */
+            nu: number | null;
+            /** @description Money in CLP millions. Signed on the lower-bound row only: the best VaR less the sum of the expected losses can be negative (Table 4 of the authors' paper, d = 56); every other row is not below zero. */
+            capital_clp_m: number;
+            /** @description DF = capital of the row over the simple sum of the marginals; signed on the lower-bound row only. */
+            diversification_factor: number;
+            /** @enum {string} */
+            status: "headline-capital" | "information-not-capital";
+            label: components["schemas"]["common-text"];
+            /**
+             * @description One horizon for every marginal: one year (decision Q5).
+             * @constant
+             */
+            horizon_years: 1;
+            /**
+             * @description One confidence level for every marginal: 99.9 percent, as a decimal (decision Q5).
+             * @constant
+             */
+            confidence_level: 0.999;
+            mc_se_clp_m: number | null;
+        } & (unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown);
+        /** @description The C17 generator parameter set the operational marginal is recomputed from (decision Q5): the variant of the C17 models-generator document (docs/contracts/schemas/c17/models.schema.json), its tail index and whether its severity has an infinite mean (xi of 1 or more). */
+        c18C17Set: {
+            /** @constant */
+            document: "C17 models-generator";
+            /** @enum {string} */
+            variant_id: "xi-0-6" | "xi-0-8" | "xi-0-96" | "xi-1-1";
+            /** @description The GPD tail index xi of the severity of the variant. */
+            tail_index: number;
+            infinite_mean: boolean;
+            /** @description The stated assets of the C17 synthetic bank, EUR billions. */
+            assets_eur_bn: number;
+        };
+        /** @description One row of a capital-planning table: the available funds as a share of RWA, the estimated need, the available funds. */
+        c18CapRow: {
+            /** @description A ratio as a decimal. */
+            pct_of_rwa: number;
+            /** @description The estimated need; null on a tier row where the form asks for none. */
+            need_clp_m: number | null;
+            /** @description Money in CLP millions. */
+            available_clp_m: number;
+        };
+        /** @description Banco Andino at the jump-off: RWA (the C15 Tier 1 proxy over the 11.0 percent anchor, split by the 20-F mix) and the capital stock. */
+        c18CapStart: {
+            /** @description Money in CLP millions, not below zero. */
+            rwa_clp_m: number;
+            rwa_by_risk: {
+                /** @description Money in CLP millions, not below zero. */
+                credit: number;
+                /** @description Money in CLP millions, not below zero. */
+                market: number;
+                /** @description Money in CLP millions, not below zero. */
+                operational: number;
+            };
+            /** @description Money in CLP millions, not below zero. */
+            cet1_clp_m: number;
+            /** @description Money in CLP millions, not below zero. */
+            at1_clp_m: number;
+            /** @description Money in CLP millions, not below zero. */
+            t2_clp_m: number;
+            /** @description Money in CLP millions, not below zero. */
+            pe_clp_m: number;
+            cet1_ratio: number;
+            pe_ratio: number;
+            basis: components["schemas"]["common-text"];
+        };
+        c18CapitalEngine: {
+            /** @constant */
+            balance_sheet: "static";
+            /** @constant */
+            horizon_years: 3;
+            /** @description The EBA rules the capital projection applies, by paragraph (F6 of the addendum). */
+            rules: components["schemas"]["c18Rule"][];
+            /** @description The product convention of cases/c06/macro.py: a path reverts linearly to the baseline over this many quarters after its published horizon. */
+            reversion_quarters: number;
+        };
+        c18CapitalPlan: {
+            /** @description The three cases of the IAPE (03 l.152-169, B.4). */
+            cases: components["schemas"]["c18PlanCase"][] & (unknown & unknown & unknown);
+            mitigation: components["schemas"]["c18Mitigation"];
+            /** @description Sheet 3, table C: sources of capital the bank counts usable under stress; empty when the bank counts none. */
+            alternative_sources: {
+                year: number;
+                source: string;
+                /** @description Money in CLP millions, not below zero. */
+                amount_clp_m: number;
+                /** @constant */
+                label: "case assumption";
+            }[];
+        };
+        /** @description A cell of the Annex 3 summary: a value, or why there is none (RI is an immaterial risk, no debera llenarse under the standardised method). */
+        c18Cell: {
+            value: number | null;
+            /** @enum {string} */
+            status: "value" | "RI" | "not-to-be-filled" | "not-applicable";
+        } & ({
+            /** @constant */
+            status?: "value";
+            value?: number;
+        } | {
+            /** @enum {string} */
+            status?: "RI" | "not-to-be-filled" | "not-applicable";
+            value?: null;
+        });
+        c18ClassMap: {
+            /** @enum {string} */
+            banco_andino_class: "commercial" | "consumer" | "mortgage";
+            fed_loan_types: ("commercial-industrial" | "commercial-real-estate" | "residential" | "credit-cards" | "other-consumer")[];
+            weights: number[];
+            /**
+             * @description The satellites are fitted on United States charge-off rates and applied to Banco Andino: a US-calibrated adaptation (decision Q6).
+             * @constant
+             */
+            label: "us-calibrated-adaptation";
+            basis: components["schemas"]["common-text"];
+        };
+        /** @description The projection of one Banco Andino class as the weighted mix of the Fed loan types it maps from (decision Q6). */
+        c18ClassProjection: {
+            /** @enum {string} */
+            banco_andino_class: "commercial" | "consumer" | "mortgage";
+            maps_from: ("commercial-industrial" | "commercial-real-estate" | "residential" | "credit-cards" | "other-consumer")[];
+            weights: number[];
+            /** @description Money in CLP millions, not below zero. */
+            exposure_clp_m: number;
+            /**
+             * @description The satellites are fitted on United States charge-off rates and applied to Banco Andino: a US-calibrated adaptation (decision Q6).
+             * @constant
+             */
+            label: "us-calibrated-adaptation";
+            quarters: {
+                /** @description A quarter end as an ISO date. */
+                quarter_end: string;
+                /** @description Annualised loss rate of the class as a decimal, signed like the rates it mixes. */
+                rate: number;
+            }[];
+        };
+        c18Coef: {
+            name: string;
+            estimate: number;
+            std_error: number;
+            /** @enum {string} */
+            expected_sign: "positive" | "negative" | "none";
+        };
+        /** @description The same aggregation under the stressed correlation matrix. */
+        c18CorrStress: {
+            pair: {
+                /** @constant */
+                a: "market";
+                /** @constant */
+                b: "credit";
+                /**
+                 * @description The market-credit correlation raised to 0.8, the upper end of the published ranges (05 l.378).
+                 * @constant
+                 */
+                value: 0.8;
+            };
+            aggregation: components["schemas"]["c18Aggregation"];
+        };
+        /** @description The asset scaling of the C17 generator frequency, derived at bake time; the contract fixes no number. */
+        c18DerivedAssets: {
+            /** @constant */
+            name: "asset_scaling";
+            value: number;
+            /** @constant */
+            unit: "Banco Andino assets over the assets of the C17 bank";
+            /**
+             * @description Every named parameter is a convention or an assumption of the case, never a regulatory value.
+             * @enum {string}
+             */
+            label: "convention" | "case assumption";
+            basis: components["schemas"]["common-text"];
+            derivation: components["schemas"]["c18AssetDerivation"];
+        };
+        /** @description The EUR to CLP rate of the as-of date, derived at bake time from a stated public source; the contract fixes no number. */
+        c18DerivedFx: {
+            /** @constant */
+            name: "operational_conversion_rate";
+            value: number;
+            /** @constant */
+            unit: "CLP per EUR";
+            /**
+             * @description Every named parameter is a convention or an assumption of the case, never a regulatory value.
+             * @enum {string}
+             */
+            label: "convention" | "case assumption";
+            basis: components["schemas"]["common-text"];
+            derivation: components["schemas"]["c18FxDerivation"];
+        };
+        /** @description The diversification, information for the validator and never a capital claim. */
+        c18Diversification: {
+            /**
+             * @description A diversified or allocated figure is information for the validator and never a capital claim (dossier 05 l.519).
+             * @constant
+             */
+            status: "information-not-capital";
+            label: components["schemas"]["common-text"];
+            reference_row: components["schemas"]["c18Ref"];
+            /** @description DF = rho(L) / sum rho(L_i) of the reference row. */
+            factor: number;
+            /** @description 1 - DF. */
+            benefit: number;
+            /** @description One Euler diversification benefit per risk. */
+            euler_benefit_by_risk: {
+                /** @enum {string} */
+                risk: "credit" | "market" | "irrbb" | "operational";
+                /** @description 1 - rho(L_i | L) / rho(L_i), on ES contributions. */
+                benefit: number;
+            }[] & (unknown & unknown & unknown & unknown);
+        };
+        /** @description The synthetic bank, labelled. */
+        c18Env: {
+            /** @constant */
+            name: "Banco Andino";
+            /** @constant */
+            synthetic: true;
+            notice: components["schemas"]["common-text"];
+            /** @description An ISO date. */
+            as_of: string;
+        };
+        /** @description The Euler allocation of the aggregate ES, information for the validator and never a capital claim. */
+        c18Euler: {
+            /**
+             * @description A diversified or allocated figure is information for the validator and never a capital claim (dossier 05 l.519).
+             * @constant
+             */
+            status: "information-not-capital";
+            label: components["schemas"]["common-text"];
+            /** @constant */
+            risk_measure: "es";
+            /**
+             * @description One confidence level for every marginal: 99.9 percent, as a decimal (decision Q5).
+             * @constant
+             */
+            level: 0.999;
+            /**
+             * @description One horizon for every marginal: one year (decision Q5).
+             * @constant
+             */
+            horizon_years: 1;
+            copula: {
+                /** @enum {string} */
+                family: "gaussian" | "t";
+                nu: number | null;
+            };
+            /** @description Money in CLP millions, not below zero. */
+            es_total_clp_m: number;
+            /** @description ES contributions E[L_i | L >= VaR], one row per risk, in the order of the marginals. */
+            allocation: {
+                /** @enum {string} */
+                risk: "credit" | "market" | "irrbb" | "operational";
+                /** @description Money in CLP millions, not below zero. */
+                contribution_clp_m: number;
+                share: number;
+            }[] & (unknown & unknown & unknown & unknown);
+            additivity: {
+                /** @description Money in CLP millions, not below zero. */
+                sum_clp_m: number;
+                relative_error: number;
+                tolerance: number;
+            };
+        };
+        c18Factor: {
+            /** @enum {string} */
+            id: "real_gdp_growth" | "unemployment_rate" | "cpi_inflation" | "treasury_3m" | "treasury_5y" | "treasury_10y" | "mortgage_rate" | "prime_rate";
+            label: components["schemas"]["common-text"];
+            unit: string;
+            sd: number;
+        };
+        c18FactorSpace: {
+            window: components["schemas"]["c18FitWindow"];
+            factors: components["schemas"]["c18Factor"][];
+            covariance: number[][];
+            /**
+             * @description The satellites are fitted on United States charge-off rates and applied to Banco Andino: a US-calibrated adaptation (decision Q6).
+             * @constant
+             */
+            label: "us-calibrated-adaptation";
+        };
+        /** @description C18 models: the satellite fits, the factor space, the aggregation parameters, the bank anchors, the scenario sources, the capital engine rules and the named parameters. */
+        c18Fit: {
+            /** @constant */
+            currency: "CLP";
+            units: components["schemas"]["c18Units"];
+            bank: components["schemas"]["c18Env"];
+            /** @description One satellite per Fed loan type. */
+            satellites: components["schemas"]["c18SatFit"][] & (unknown & unknown & unknown & unknown & unknown);
+            /** @description One mapping per Banco Andino class. */
+            class_mapping: components["schemas"]["c18ClassMap"][] & (unknown & unknown & unknown);
+            factor_space: components["schemas"]["c18FactorSpace"];
+            aggregation: components["schemas"]["c18AggParams"];
+            named_parameters: components["schemas"]["c18NamedParameters"];
+            bank_anchors: components["schemas"]["c18Anchors"];
+            /** @description One source per marginal (decision Q5). */
+            marginal_sources: components["schemas"]["c18MarginalSource"][] & (unknown & unknown & unknown & unknown);
+            scenario_sources: components["schemas"]["c18ScenarioSource"][];
+            capital_engine: components["schemas"]["c18CapitalEngine"];
+        };
+        /** @description A fit window: ISO quarter ends from 1985 to 2019. A window that reaches 2020 or later does not match. */
+        c18FitWindow: {
+            /** @description A quarter end between 1985-03-31 and 2019-12-31: the satellites are fitted on 1985-2019 only. */
+            start: string;
+            /** @description A quarter end between 1985-03-31 and 2019-12-31: the satellites are fitted on 1985-2019 only. */
+            end: string;
+        };
+        /** @description How the rate is derived at bake time: the observed EUR to CLP rate of the as-of date. */
+        c18FxDerivation: {
+            /** @constant */
+            kind: "observed-exchange-rate";
+            /** @constant */
+            pair: "EUR/CLP";
+            /** @description An ISO date. */
+            observation_date: string;
+            /**
+             * @description The stated public source of the rate; the series id the bake reads is recorded in source_series (not named here: UNVERIFIED).
+             * @constant
+             */
+            source: "Banco Central de Chile, Base de Datos Estadisticos, daily exchange rate of the euro in Chilean pesos";
+            /** @constant */
+            source_url: "https://si3.bcentral.cl/Siete/es/Siete/API";
+            /** @description The BDE series id the bake read. */
+            source_series: string;
+        };
+        /** @description The headline CET1 path as loss-only depletion, with the PPNR row labelled. */
+        c18Headline: {
+            /**
+             * @description CET1 at the jump-off less the cumulative stressed losses, no invented revenue (decision Q10).
+             * @constant
+             */
+            method: "loss-only-depletion";
+            statement: components["schemas"]["common-text"];
+            /** @description The headline CET1 path, T+1 to T+3. */
+            rows: {
+                /** @description Year of the three-year planning horizon (T+1 to T+3, RAN 21-13 section II.5.3). */
+                year: number;
+                /** @description A quarter end as an ISO date. */
+                period_end: string;
+                /** @description Money in CLP millions. */
+                cet1_start_clp_m: number;
+                /** @description Money in CLP millions, not below zero. */
+                cumulative_loss_clp_m: number;
+                /** @description Money in CLP millions. */
+                cet1_clp_m: number;
+                /** @description Money in CLP millions, not below zero. */
+                rwa_clp_m: number;
+                /** @description A ratio as a decimal. */
+                cet1_ratio: number;
+            }[] & (unknown & unknown & unknown);
+            ppnr: {
+                /**
+                 * @description A labelled row with revenue: not the headline.
+                 * @constant
+                 */
+                label: "ppnr-labelled-row";
+                statement: components["schemas"]["common-text"];
+                /** @constant */
+                nii_source: "c15-dynamic-nii";
+                fee_ratio: components["schemas"]["c18Named"];
+                cost_ratio: components["schemas"]["c18Named"];
+                /** @description PPNR = (NII + fee income) (1 - cost ratio), fee income = fee ratio x NII; CET1 adds the cumulated PPNR to the loss-only path. */
+                rows: {
+                    /** @description Year of the three-year planning horizon (T+1 to T+3, RAN 21-13 section II.5.3). */
+                    year: number;
+                    /** @description A quarter end as an ISO date. */
+                    period_end: string;
+                    /** @description Money in CLP millions. */
+                    nii_clp_m: number;
+                    /** @description Money in CLP millions. */
+                    fee_income_clp_m: number;
+                    /** @description Money in CLP millions, not below zero. */
+                    operating_cost_clp_m: number;
+                    /** @description Money in CLP millions. */
+                    ppnr_clp_m: number;
+                    /** @description Money in CLP millions. */
+                    cet1_with_ppnr_clp_m: number;
+                    /** @description A ratio as a decimal. */
+                    cet1_ratio_with_ppnr: number;
+                }[] & (unknown & unknown & unknown);
+            };
+        };
+        c18Losses: {
+            /** @description The losses of the scenario by risk and year (T+1 to T+3), in CLP millions. */
+            scenario_losses: components["schemas"]["c18YearLoss"][] & (unknown & unknown & unknown);
+            basis: components["schemas"]["common-text"];
+        };
+        /** @description One marginal at one horizon and one confidence level (decision Q5): its expected loss, VaR, ES and EC = VaR - EL (or the VaR alone when the expected loss is undefined), its source and its scaling. */
+        c18Marginal: ({
+            /** @enum {string} */
+            risk: "credit" | "market" | "irrbb" | "operational";
+            /**
+             * @description One horizon for every marginal: one year (decision Q5).
+             * @constant
+             */
+            horizon_years: 1;
+            /**
+             * @description One confidence level for every marginal: 99.9 percent, as a decimal (decision Q5).
+             * @constant
+             */
+            confidence_level: 0.999;
+            /** @description The expected loss; null exactly when the severity has an infinite mean (el_status undefined). */
+            el_clp_m: number | null;
+            /** @enum {string} */
+            el_status: "finite" | "undefined (infinite mean)";
+            /** @description Money in CLP millions, not below zero. */
+            var_clp_m: number;
+            /** @description Money in CLP millions, not below zero. */
+            es_clp_m: number;
+            /** @description Money in CLP millions, not below zero. */
+            ec_clp_m: number;
+            /** @enum {string} */
+            ec_basis: "var-less-el" | "var-alone-infinite-mean";
+            /** @description The label of an EC that is the VaR alone (an infinite-mean severity); null on the EC = VaR - EL basis. */
+            ec_label: components["schemas"]["common-text"] | null;
+            /** @description The Monte Carlo standard error of the VaR; null where the marginal is analytic. */
+            var_se_clp_m: number | null;
+            /** @enum {string} */
+            producer: "credit-grouped-copula-c07-segments" | "market-c11-mixed-portfolio-scaled-to-market-rwa" | "irrbb-engine-simulation-c15-curve-and-book" | "operational-oprisk-aggregate-c17-parameters-scaled";
+            /** @description The committed documents or engine calls the marginal is computed from. */
+            source_documents: string[];
+            /** @description How the source was scaled to Banco Andino: a statement and every scaling parameter named with its label. */
+            scaling: {
+                statement: components["schemas"]["common-text"];
+                parameters: (components["schemas"]["c18Named"] | components["schemas"]["c18MarketScaling"] | components["schemas"]["c18DerivedFx"] | components["schemas"]["c18DerivedAssets"])[];
+            };
+        } & (unknown & unknown)) & ({
+            /** @constant */
+            risk?: "credit";
+            /** @constant */
+            producer?: "credit-grouped-copula-c07-segments";
+        } | {
+            /** @constant */
+            risk?: "market";
+            /** @constant */
+            producer?: "market-c11-mixed-portfolio-scaled-to-market-rwa";
+            scaling?: {
+                parameters?: unknown & unknown;
+            };
+        } | {
+            /** @constant */
+            risk?: "irrbb";
+            /** @constant */
+            producer?: "irrbb-engine-simulation-c15-curve-and-book";
+        } | {
+            /** @constant */
+            risk?: "operational";
+            /** @constant */
+            producer?: "operational-oprisk-aggregate-c17-parameters-scaled";
+            scaling?: {
+                parameters?: unknown & unknown;
+            };
+        });
+        c18MarginalSource: {
+            /** @enum {string} */
+            risk: "credit" | "market" | "irrbb" | "operational";
+            /** @enum {string} */
+            producer: "credit-grouped-copula-c07-segments" | "market-c11-mixed-portfolio-scaled-to-market-rwa" | "irrbb-engine-simulation-c15-curve-and-book" | "operational-oprisk-aggregate-c17-parameters-scaled";
+            description: components["schemas"]["common-text"];
+            documents: string[];
+            /** @description Operational only: the C17 parameter set; null for the other risks. */
+            c17_parameter_set: components["schemas"]["c18C17Set"] | null;
+        } & ({
+            /** @constant */
+            risk?: "credit";
+            /** @constant */
+            producer?: "credit-grouped-copula-c07-segments";
+            c17_parameter_set?: null;
+        } | {
+            /** @constant */
+            risk?: "market";
+            /** @constant */
+            producer?: "market-c11-mixed-portfolio-scaled-to-market-rwa";
+            c17_parameter_set?: null;
+        } | {
+            /** @constant */
+            risk?: "irrbb";
+            /** @constant */
+            producer?: "irrbb-engine-simulation-c15-curve-and-book";
+            c17_parameter_set?: null;
+        } | {
+            /** @constant */
+            risk?: "operational";
+            /** @constant */
+            producer?: "operational-oprisk-aggregate-c17-parameters-scaled";
+            c17_parameter_set?: components["schemas"]["c18C17Set"];
+        });
+        /** @description The market marginal's conversion from C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 and the square root of 250, both named conventions (W4), and the combined multiplier. */
+        c18MarketScaling: {
+            /** @constant */
+            name: "market_horizon_scaling";
+            /** @description The combined multiplier: the level factor times the horizon factor. */
+            value: number;
+            unit: string;
+            /** @constant */
+            label: "convention";
+            basis: components["schemas"]["common-text"];
+            /**
+             * @description C11's mixed-portfolio measure is at 99 percent (docs/contracts/schemas/c11/models.schema.json).
+             * @constant
+             */
+            source_confidence_level: 0.99;
+            /**
+             * @description C11's measure is a one-day measure.
+             * @constant
+             */
+            source_horizon_days: 1;
+            /** @constant */
+            trading_days_per_year: 250;
+            level_factor: components["schemas"]["c18NamedConvention"];
+            horizon_factor: components["schemas"]["c18NamedConvention"];
+        };
+        /** @description The mitigation actions of the stress with mitigation; row 10.2 of the Annex 3 is N/A when the stress leads to none. */
+        c18Mitigation: {
+            applies: boolean;
+            reason: components["schemas"]["common-text"] | null;
+            actions: components["schemas"]["c18Action"][];
+        } & ({
+            /** @constant */
+            applies?: true;
+            reason?: null;
+            actions?: unknown;
+        } | {
+            /** @constant */
+            applies?: false;
+            reason?: components["schemas"]["common-text"];
+            actions?: unknown;
+        });
+        /** @description The model risk measures beside the band, sensitivity information and never a capital figure (06 l.699-704). */
+        c18ModelRisk: {
+            /**
+             * @description A diversified or allocated figure is information for the validator and never a capital claim (dossier 05 l.519).
+             * @constant
+             */
+            status: "information-not-capital";
+            label: components["schemas"]["common-text"];
+            /**
+             * @description The set of aggregation models is the rows of the band (dossier 06 l.692-698).
+             * @constant
+             */
+            set_of_models: "band-rows";
+            reference_model: components["schemas"]["c18Ref"];
+            barrieu_scandolo: {
+                /** @description Money in CLP millions, not below zero. */
+                rho_x0_clp_m: number;
+                /** @description Money in CLP millions, not below zero. */
+                rho_max_clp_m: number;
+                /** @description Money in CLP millions. */
+                rho_min_clp_m: number;
+                /** @description AM = max rho / rho(X0) - 1 (06 l.692-698). */
+                am: number;
+                /** @description RM = (max rho - rho(X0)) / (max rho - min rho), in [0, 1]. */
+                rm: number;
+            };
+            /** @description The worst case by reweighting the baseline sample, m = exp(theta V) / E[exp(theta V)], theta set so that the entropy budget binds (06 l.684-691). */
+            glasserman_xu: {
+                quantity: components["schemas"]["common-text"];
+                relative_entropy_budget: number;
+                theta: number;
+                /** @description Money in CLP millions, not below zero. */
+                baseline_clp_m: number;
+                /** @description Money in CLP millions, not below zero. */
+                worst_case_clp_m: number;
+            };
+        };
+        /** @description A named parameter: a required name, value and unit, the label convention or case assumption, and the basis it was taken from. */
+        c18Named: {
+            name: string;
+            value: number;
+            unit: string;
+            /**
+             * @description Every named parameter is a convention or an assumption of the case, never a regulatory value.
+             * @enum {string}
+             */
+            label: "convention" | "case assumption";
+            basis: components["schemas"]["common-text"];
+        };
+        /** @description A named parameter that is a convention by definition (the market level and horizon factors). */
+        c18NamedConvention: {
+            name: string;
+            value: number;
+            unit: string;
+            /** @constant */
+            label: "convention";
+            basis: components["schemas"]["common-text"];
+        };
+        /** @description A named inter-risk correlation matrix with the same label rule; symmetry, the unit diagonal and positive semi-definiteness are checked by semantics.py (the engine's check_correlation). */
+        c18NamedMatrix: {
+            name: string;
+            /**
+             * @description The row and column order of the matrix: credit, market, irrbb, operational.
+             * @constant
+             */
+            order: [
+                "credit",
+                "market",
+                "irrbb",
+                "operational"
+            ];
+            matrix: number[][];
+            /** @constant */
+            unit: "correlation";
+            /**
+             * @description Every named parameter is a convention or an assumption of the case, never a regulatory value.
+             * @enum {string}
+             */
+            label: "convention" | "case assumption";
+            basis: components["schemas"]["common-text"];
+        };
+        /** @description Every named parameter of the case with its value, unit and label (convention or case assumption). */
+        c18NamedParameters: {
+            nu_set: components["schemas"]["c18NamedSet"];
+            correlation_matrix_base: components["schemas"]["c18NamedMatrix"];
+            correlation_matrix_stress: components["schemas"]["c18NamedMatrix"];
+            ppnr_fee_ratio: components["schemas"]["c18Named"];
+            ppnr_cost_ratio: components["schemas"]["c18Named"];
+            c_p2: components["schemas"]["c18Named"];
+            c_d: components["schemas"]["c18Named"];
+            operational_conversion_rate: components["schemas"]["c18DerivedFx"];
+            asset_scaling: components["schemas"]["c18DerivedAssets"];
+            market_rwa_share: components["schemas"]["c18Named"];
+            market_horizon_scaling: components["schemas"]["c18MarketScaling"];
+            reverse_p2_cet1: components["schemas"]["c18Named"];
+        };
+        /** @description A named parameter that is a set of values (the nu set), with the same label rule. */
+        c18NamedSet: {
+            name: string;
+            values: number[];
+            unit: string;
+            /**
+             * @description Every named parameter is a convention or an assumption of the case, never a regulatory value.
+             * @enum {string}
+             */
+            label: "convention" | "case assumption";
+            basis: components["schemas"]["common-text"];
+        };
+        /** @description The internal capital target (objetivo interno) with its components; c_P2 and c_d are labelled assumptions of the case. */
+        c18Oi: {
+            /** @constant */
+            formula: "OI >= 8% + c_DSIB + c_P2 + c_CCoB + c_CCyB + c_d, as percent of RWA (RAN 21-13 section I; 03 l.152-169)";
+            /** @constant */
+            horizon_years: 3;
+            /** @constant */
+            min_pe: 0.08;
+            c_dsib: number;
+            c_p2: components["schemas"]["c18Named"];
+            /** @constant */
+            c_ccob: 0.025;
+            c_ccyb: number;
+            c_d: components["schemas"]["c18Named"];
+            /** @description A ratio as a decimal. */
+            oi: number;
+        };
+        /** @description C18 outputs of one scenario variant. */
+        c18Outputs: {
+            /** @constant */
+            kind: "scenario";
+            /** @constant */
+            currency: "CLP";
+            units: components["schemas"]["c18Units"];
+            bank: components["schemas"]["c18Env"];
+            capital_start: components["schemas"]["c18CapStart"];
+            scenario: components["schemas"]["c18Scenario"];
+            satellites: components["schemas"]["c18Satellites"];
+            losses: components["schemas"]["c18Losses"];
+            internal_capital_target: components["schemas"]["c18Oi"];
+            capital_plan: components["schemas"]["c18CapitalPlan"];
+            p2g_proxy: components["schemas"]["c18P2g"];
+            annex3: components["schemas"]["c18Annex3"];
+            headline_cet1: components["schemas"]["c18Headline"];
+            severity: components["schemas"]["c18Severity"];
+            backcast: components["schemas"]["c18Backcast"];
+            aggregation: components["schemas"]["c18Aggregation"];
+        };
+        /** @description The P2G proxy as a share of RWA, labelled a Contraste approximation. */
+        c18P2g: {
+            /**
+             * @description The proxy is a Contraste approximation consistent with FAQ 24; the CMF calibration grid is not public.
+             * @constant
+             */
+            label: "contraste-approximation";
+            /** @constant */
+            formula: "max over t of [(CET1/RWA)_0 - (CET1/RWA)_t severe] less the usable buffers and mitigation, floored at zero (03 l.1001-1005, FAQ 24)";
+            /** @description A ratio as a decimal. */
+            peak_depletion: number;
+            /** @description Year of the three-year planning horizon (T+1 to T+3, RAN 21-13 section II.5.3). */
+            peak_year: number;
+            usable_buffers_and_mitigation: number;
+            value: number;
+            statement: components["schemas"]["common-text"];
+            /** @constant */
+            cmf_calibration_public: false;
+        };
+        /** @description One scenario path as used: the source path, its vintage and its transposition onto the Banco Andino jump-off. */
+        c18Path: {
+            /** @description The variable as the source names it (the NGFS variables carry the NiGEM names exactly). */
+            variable: string;
+            unit: string;
+            /** @enum {string} */
+            maps_to_regressor: "real_gdp_growth" | "unemployment_rate" | "cpi_inflation" | "treasury_3m" | "treasury_5y" | "treasury_10y" | "mortgage_rate" | "prime_rate";
+            /** @enum {string} */
+            frequency: "quarterly" | "annual";
+            /** @description An ISO date. */
+            vintage_date: string;
+            level_rule: {
+                /** @enum {string} */
+                kind: "level" | "baseline-plus-deviation" | "baseline-times-percent-deviation";
+                /** @description The baseline levels a deviation path is added to or multiplied with (NGFS scenario runs hold deviations from the Baseline run, F8). */
+                baseline: components["schemas"]["c18PathPoint"][] | null;
+            } & ({
+                /** @constant */
+                kind?: "level";
+                baseline?: null;
+            } | {
+                /** @constant */
+                kind?: "baseline-plus-deviation";
+                baseline?: components["schemas"]["c18PathPoint"][];
+            } | {
+                /** @constant */
+                kind?: "baseline-times-percent-deviation";
+                baseline?: components["schemas"]["c18PathPoint"][];
+            });
+            /** @description The published path as the source states it (the deviation for a deviation path). */
+            source: components["schemas"]["c18PathPoint"][];
+            /** @description The level path the transposition starts from: the source for a level path, baseline plus deviation or baseline times (1 + deviation / 100) otherwise. */
+            levels: components["schemas"]["c18PathPoint"][];
+            /** @description The transposition of the shape of the path onto the last observed value (decision Q6; the engine form of cases/c06/macro.py). */
+            transposition: {
+                /** @constant */
+                label: "transposed-onto-banco-andino-jump-off";
+                /** @constant */
+                rule: "shape-onto-last-observed-then-revert-to-baseline";
+                source_jump_off: components["schemas"]["c18QPoint"];
+                target: components["schemas"]["c18QPoint"];
+                /** @enum {string} */
+                reversion: "to-baseline-after-published-horizon" | "none-within-horizon";
+            };
+            /** @description The 12 quarters used, the three-year horizon, in the unit of the regressor the path maps to (a level path of a level regressor; the annual growth of a GDP level path). */
+            transposed: components["schemas"]["c18QPoint"][];
+        };
+        c18PathPoint: {
+            /** @description An ISO date. */
+            date: string;
+            value: number;
+        };
+        c18PlanCase: {
+            /** @enum {string} */
+            case: "base" | "stress-without-mitigation" | "stress-with-mitigation";
+            /** @description T+1 to T+3. */
+            years: components["schemas"]["c18PlanYear"][] & (unknown & unknown & unknown);
+        } & (unknown & unknown & unknown);
+        /** @description One year of one case of the capital plan, as the three tables of sheet 3 of the IAPE Annex 3: percent of RWA, estimated need, available funds. */
+        c18PlanYear: {
+            /** @description Year of the three-year planning horizon (T+1 to T+3, RAN 21-13 section II.5.3). */
+            year: number;
+            /** @description A quarter end as an ISO date. */
+            period_end: string;
+            /** @description Money in CLP millions, not below zero. */
+            rwa_clp_m: number;
+            cet1: components["schemas"]["c18CapRow"];
+            at1: components["schemas"]["c18CapRow"];
+            t2: components["schemas"]["c18CapRow"];
+            pe: components["schemas"]["c18CapRow"];
+            requirement: {
+                /** @enum {string} */
+                basis: "internal-target" | "legal-minimum";
+                /** @description A ratio as a decimal. */
+                pct_of_rwa: number;
+            };
+            /** @description A ratio as a decimal. */
+            headroom_pct_of_rwa: number;
+            /** @description Money in CLP millions, not below zero. */
+            deficit_clp_m: number;
+        };
+        /** @description The window where the NGFS policy shock acts: 2031 to 2033 for the delayed transition (F8 of the research addendum), transposed onto the jump-off. */
+        c18PolicyWindow: {
+            start_year: number;
+            end_year: number;
+            label: components["schemas"]["common-text"];
+        };
+        c18QPoint: {
+            /** @description A quarter end as an ISO date. */
+            date: string;
+            value: number;
+        };
+        /** @description A reference to a row of the band: its method and, for a t copula, its degrees of freedom. */
+        c18Ref: {
+            /** @enum {string} */
+            method: "lower-bound" | "simple-sum" | "variance-covariance" | "gaussian-copula" | "t-copula" | "worst-case";
+            nu: number | null;
+        };
+        c18Regressor: {
+            /** @enum {string} */
+            name: "real_gdp_growth" | "unemployment_rate" | "cpi_inflation" | "treasury_3m" | "treasury_5y" | "treasury_10y" | "mortgage_rate" | "prime_rate";
+            lag: number;
+            source_series: string;
+            /**
+             * @description Agency series only (decision Q7): the BBB corporate yield and the third-party index levels are not read.
+             * @constant
+             */
+            licence_class: "agency";
+        };
+        c18RevFactor: {
+            /** @enum {string} */
+            id: "real_gdp_growth" | "unemployment_rate" | "cpi_inflation" | "treasury_3m" | "treasury_5y" | "treasury_10y" | "mortgage_rate" | "prime_rate";
+            label: components["schemas"]["common-text"];
+            unit: string;
+            sd: number;
+        };
+        /** @description C18 outputs of the reverse stress variant. */
+        c18RevOutputs: {
+            /** @constant */
+            kind: "reverse";
+            /** @constant */
+            currency: "CLP";
+            units: components["schemas"]["c18Units"];
+            bank: components["schemas"]["c18Env"];
+            /** @description The failure point: CET1 at the Chilean legal minimum stack at the end of the planning horizon (decision Q11). */
+            failure_point: {
+                /**
+                 * @description The formal statement is Contraste's, not regulatory text (01 l.891-894; 05 l.412).
+                 * @constant
+                 */
+                label: "contraste-formulation-not-regulatory";
+                definition: components["schemas"]["common-text"];
+                stack: components["schemas"]["c18Stack"];
+                /** @description A ratio as a decimal. */
+                cet1_ratio_start: number;
+                /** @description Money in CLP millions, not below zero. */
+                rwa_clp_m: number;
+                /** @constant */
+                horizon_years: 3;
+            };
+            /** @description The standardised satellite regressors with their covariance from the 1985-2019 window (decision Q11). */
+            factor_space: {
+                window: {
+                    /** @description A quarter end between 1985-03-31 and 2019-12-31: the satellites are fitted on 1985-2019 only. */
+                    start: string;
+                    /** @description A quarter end between 1985-03-31 and 2019-12-31: the satellites are fitted on 1985-2019 only. */
+                    end: string;
+                };
+                factors: components["schemas"]["c18RevFactor"][];
+                covariance: number[][];
+                /**
+                 * @description The satellites are fitted on United States charge-off rates and applied to Banco Andino: a US-calibrated adaptation (decision Q6).
+                 * @constant
+                 */
+                label: "us-calibrated-adaptation";
+            };
+            loss_model: {
+                /** @enum {string} */
+                kind: "linear" | "nonlinear";
+                /** @description The loss per unit of each factor deviation for a linear loss; null for a nonlinear one. */
+                gradient_clp_m_per_unit: number[] | null;
+                description: components["schemas"]["common-text"];
+            } & ({
+                /** @constant */
+                kind?: "linear";
+                gradient_clp_m_per_unit?: number[];
+            } | {
+                /** @constant */
+                kind?: "nonlinear";
+                gradient_clp_m_per_unit?: null;
+            });
+            solution: components["schemas"]["c18Solution"];
+            /** @description At least three starts: no closer point is found from any of them (H.7). */
+            starts: {
+                start_id: string;
+                converged: boolean;
+                distance: number;
+                /** @description Money in CLP millions, not below zero. */
+                loss_clp_m: number;
+            }[];
+        };
+        /** @description The Rosenberg and Schuermann reference. */
+        c18RsReference: {
+            /**
+             * @description Reported beside the result as a reference, never as a gate (05 l.360, l.484).
+             * @constant
+             */
+            role: "reference-not-a-gate";
+            /** @description The benchmark risk weights of a typical large bank (05 l.360): market 4.1, credit 26.4, operational 69.5 percent. */
+            weights: {
+                /** @constant */
+                market: 0.041;
+                /** @constant */
+                credit: 0.264;
+                /** @constant */
+                operational: 0.695;
+            };
+            /** @description The normal copula of the benchmark: market-credit 0.5 and market and credit with operational 0.2 (05 l.360). */
+            correlations: {
+                /** @constant */
+                market_credit: 0.5;
+                /** @constant */
+                market_operational: 0.2;
+                /** @constant */
+                credit_operational: 0.2;
+            };
+            /** @description The additive approximation typically overestimates risk by about 30 to 40 percent (05 l.360). */
+            published_additive_overestimate: {
+                /** @constant */
+                low: 0.3;
+                /** @constant */
+                high: 0.4;
+            };
+            /** @description Simple sum over the Gaussian copula row, less one, for this bank. */
+            case_additive_overestimate: number;
+            within_published_range: boolean;
+        };
+        c18Rule: {
+            /** @constant */
+            source: "EBA 2025 EU-wide stress test, Methodological Note, 2025-01-20";
+            paragraph: string;
+            page: number;
+            statement: string;
+        };
+        /** @description One satellite: g(DR_t) = alpha + sum phi_k g(DR_(t-k)) + sum beta_l' X_(t-l) + e, fitted by OLS (04 l.785-795); g is the probit for C&I, credit cards and other consumer, and the identity for RECI and RERES, whose windows hold non-positive quarters (the linear form of the Federal Reserve's own PD regression, 05 l.399). The window ends in 2019 at the latest and starts at the first quarter the Board publishes. */
+        c18SatFit: {
+            model_id: string;
+            /** @enum {string} */
+            fed_loan_type: "commercial-industrial" | "commercial-real-estate" | "residential" | "credit-cards" | "other-consumer";
+            /** @enum {string} */
+            series_id: "CI" | "RECI" | "RERES" | "CONCC" | "CONOTH";
+            /** @enum {string} */
+            link: "probit" | "logit" | "identity";
+            sample_window: components["schemas"]["c18FitWindow"];
+            /** @description The number of quarters of the fit window whose rate is zero or negative (net recoveries): a probit or logit fit needs none, the identity link takes them as they are. */
+            non_positive_quarters_in_window: number;
+            ar_order: number;
+            n_obs: number;
+            regressors: components["schemas"]["c18Regressor"][];
+            coefficients: components["schemas"]["c18Coef"][];
+            fit_statistics: {
+                r_squared: number;
+                residual_sd: number;
+            };
+            /** @constant */
+            estimation: "ols-numpy-with-standard-errors";
+        } & ({
+            /** @constant */
+            fed_loan_type?: "commercial-industrial";
+            /** @constant */
+            series_id?: "CI";
+            /** @enum {string} */
+            link?: "probit" | "logit";
+            sample_window?: {
+                /** @constant */
+                start?: "1985-03-31";
+            };
+            /** @constant */
+            non_positive_quarters_in_window?: 0;
+        } | {
+            /** @constant */
+            fed_loan_type?: "commercial-real-estate";
+            /** @constant */
+            series_id?: "RECI";
+            /** @constant */
+            link?: "identity";
+            sample_window?: {
+                /** @constant */
+                start?: "1991-03-31";
+            };
+        } | {
+            /** @constant */
+            fed_loan_type?: "residential";
+            /** @constant */
+            series_id?: "RERES";
+            /** @constant */
+            link?: "identity";
+            sample_window?: {
+                /** @constant */
+                start?: "1991-03-31";
+            };
+        } | {
+            /** @constant */
+            fed_loan_type?: "credit-cards";
+            /** @constant */
+            series_id?: "CONCC";
+            /** @enum {string} */
+            link?: "probit" | "logit";
+            sample_window?: {
+                /** @constant */
+                start?: "1985-03-31";
+            };
+            /** @constant */
+            non_positive_quarters_in_window?: 0;
+        } | {
+            /** @constant */
+            fed_loan_type?: "other-consumer";
+            /** @constant */
+            series_id?: "CONOTH";
+            /** @enum {string} */
+            link?: "probit" | "logit";
+            sample_window?: {
+                /** @constant */
+                start?: "1985-03-31";
+            };
+            /** @constant */
+            non_positive_quarters_in_window?: 0;
+        });
+        /** @description The projection of one Fed loan type over the 12 quarters of the horizon. On the probit link the rate is in (0, 1); on the identity link (RECI and RERES) it is signed and may be non-positive, read as net recoveries. */
+        c18SatProjection: {
+            /** @enum {string} */
+            fed_loan_type: "commercial-industrial" | "commercial-real-estate" | "residential" | "credit-cards" | "other-consumer";
+            /** @enum {string} */
+            series_id: "CI" | "RECI" | "RERES" | "CONCC" | "CONOTH";
+            model_id: string;
+            /** @enum {string} */
+            link: "probit" | "logit" | "identity";
+            quarters: {
+                /** @description A quarter end as an ISO date. */
+                quarter_end: string;
+                /** @description A net charge-off rate as a decimal. Signed: net recoveries make a rate zero or negative (the Board's table holds both). */
+                rate: number;
+                /** @description g(rate): the probit or logit of the rate; the rate itself on the identity link. */
+                link_value: number;
+            }[];
+        } & ({
+            /** @constant */
+            fed_loan_type?: "commercial-industrial";
+            /** @constant */
+            series_id?: "CI";
+            /** @enum {string} */
+            link?: "probit" | "logit";
+            quarters?: unknown;
+        } | {
+            /** @constant */
+            fed_loan_type?: "commercial-real-estate";
+            /** @constant */
+            series_id?: "RECI";
+            /** @constant */
+            link?: "identity";
+        } | {
+            /** @constant */
+            fed_loan_type?: "residential";
+            /** @constant */
+            series_id?: "RERES";
+            /** @constant */
+            link?: "identity";
+        } | {
+            /** @constant */
+            fed_loan_type?: "credit-cards";
+            /** @constant */
+            series_id?: "CONCC";
+            /** @enum {string} */
+            link?: "probit" | "logit";
+            quarters?: unknown;
+        } | {
+            /** @constant */
+            fed_loan_type?: "other-consumer";
+            /** @constant */
+            series_id?: "CONOTH";
+            /** @enum {string} */
+            link?: "probit" | "logit";
+            quarters?: unknown;
+        });
+        c18Satellites: {
+            /** @description One projection per Fed loan type. */
+            fed_loan_types: components["schemas"]["c18SatProjection"][] & (unknown & unknown & unknown & unknown & unknown);
+            /** @description One projection per Banco Andino class. */
+            banco_andino_classes: components["schemas"]["c18ClassProjection"][] & (unknown & unknown & unknown);
+        };
+        /** @description The scenario as used, with its source, its vintage and its label as a US-calibrated adaptation. */
+        c18Scenario: {
+            /** @enum {string} */
+            scenario_id: "baseline" | "eba-2025-adverse" | "fed-2026-severely-adverse" | "ngfs-delayed-transition";
+            title: components["schemas"]["common-text"];
+            /** @enum {string} */
+            provider: "fed" | "eba-esrb" | "ngfs";
+            source_document: string;
+            source_url: string;
+            /** @description An ISO date. */
+            vintage_date: string;
+            /**
+             * @description The satellites are fitted on United States charge-off rates and applied to Banco Andino: a US-calibrated adaptation (decision Q6).
+             * @constant
+             */
+            adaptation_label: "us-calibrated-adaptation";
+            adaptation_statement: components["schemas"]["common-text"];
+            paths: components["schemas"]["c18Path"][];
+            /** @description NGFS only: the three years in which the policy shock acts, transposed onto the jump-off (decision Q9, E2). */
+            policy_shock_window: components["schemas"]["c18PolicyWindow"] | null;
+        } & (unknown & unknown & unknown & unknown);
+        c18ScenarioSource: {
+            /** @enum {string} */
+            scenario_id: "baseline" | "eba-2025-adverse" | "fed-2026-severely-adverse" | "ngfs-delayed-transition";
+            /** @enum {string} */
+            provider: "fed" | "eba-esrb" | "ngfs";
+            document: string;
+            url: string;
+            /** @description An ISO date. */
+            vintage_date: string;
+            /** @enum {string} */
+            licence_class: "mirror-allowed" | "derived-only";
+            /** @description NGFS only: the NiGEM variables read, named exactly; empty for the other sources. */
+            variables: {
+                name: string;
+                unit: string;
+            }[];
+        };
+        c18SensRow: {
+            nu: number;
+            /** @description Money in CLP millions, not below zero. */
+            gaussian_capital_clp_m: number;
+            /** @description Money in CLP millions, not below zero. */
+            t_capital_clp_m: number;
+            relative_difference: number;
+        };
+        /** @description The severity of each path against history (dossier 05 l.422; sizing view U13-W): the path peak, the global financial crisis peak with its quarters and source, their ratio and whether the path is a stress. */
+        c18Severity: {
+            /** @description The history the severity of each path is read against: 2008 to 2009 (05 l.422), peaks read by the bake from the Board's historic table. */
+            reference_episode: {
+                /** @constant */
+                name: "global-financial-crisis";
+                /** @description A quarter end as an ISO date. */
+                start: string;
+                /** @description A quarter end as an ISO date. */
+                end: string;
+                source: components["schemas"]["common-text"];
+            };
+            /** @description The amber threshold of stress.scenario_severity: a stress path is at least this share of the historical peak (a policy parameter). */
+            minimum_ratio: number;
+            /** @description One row per scenario path variable, in the order of scenario.paths. */
+            rows: {
+                /** @description The scenario path variable, as named in scenario.paths. */
+                variable: string;
+                /** @enum {string} */
+                maps_to_regressor: "real_gdp_growth" | "unemployment_rate" | "cpi_inflation" | "treasury_3m" | "treasury_5y" | "treasury_10y" | "mortgage_rate" | "prime_rate";
+                unit: string;
+                /** @description max over the transposed quarters of the absolute deviation from the jump-off value (the target). */
+                path_peak_deviation: number;
+                /** @description A quarter end as an ISO date. */
+                path_peak_quarter: string;
+                /** @description The same deviation in the reference episode. */
+                history_peak_deviation: number;
+                history_window: {
+                    /** @description A quarter end as an ISO date. */
+                    start: string;
+                    /** @description A quarter end as an ISO date. */
+                    end: string;
+                };
+                history_source: components["schemas"]["common-text"];
+                /** @description path_peak_deviation / history_peak_deviation. */
+                ratio: number;
+                is_stress: boolean;
+            }[];
+        };
+        /** @description The most plausible scenario that reaches the failure point and the loss at it. */
+        c18Solution: {
+            /** @enum {string} */
+            method: "closed-form-linear" | "scipy-optimize";
+            z_star: number[];
+            x_star: number[];
+            mahalanobis_distance: number;
+            plausibility: {
+                chi_square_df: number;
+                tail_probability: number;
+            };
+            /** @description Money in CLP millions, not below zero. */
+            loss_at_z_star_clp_m: number;
+            /** @description Money in CLP millions, not below zero. */
+            loss_threshold_clp_m: number;
+            relative_gap: number;
+            tolerance: number;
+        };
+        c18Stack: {
+            /** @constant */
+            cet1_min: 0.045;
+            /** @constant */
+            c_ccob: 0.025;
+            c_ccyb: number;
+            c_dsib: number;
+            p2_cet1: components["schemas"]["c18Named"];
+            /** @description A ratio as a decimal. */
+            total: number;
+            /**
+             * @description CET1/RWA >= 4.5% + 2.5% + RCC + c_DSIB + the CET1 share of c_P2 (RAN 21-13; 03 l.911-920).
+             * @constant
+             */
+            basis: "chilean-legal-minimum-stack";
+        };
+        /** @description The units of the document: money in CLP millions, ratios as decimals, quarters as ISO dates of the quarter end. */
+        c18Units: {
+            /** @constant */
+            money: "CLP millions";
+            /** @constant */
+            ratio: "decimal";
+            /** @constant */
+            dates: "ISO date; quarters as the date of the quarter end";
+        };
+        c18YearLoss: {
+            /** @description Year of the three-year planning horizon (T+1 to T+3, RAN 21-13 section II.5.3). */
+            year: number;
+            /** @description A quarter end as an ISO date. */
+            period_end: string;
+            /** @description Money in CLP millions, not below zero. */
+            credit: number;
+            /** @description Money in CLP millions, not below zero. */
+            market: number;
+            /** @description Money in CLP millions, not below zero. */
+            irrbb: number;
+            /** @description Money in CLP millions, not below zero. */
+            operational: number;
+            /** @description Money in CLP millions, not below zero. */
+            total: number;
+        };
+        /**
          * C22 models
          * @description Catalog row c22-models 1.0.0: the C22 models artifact with the exact-probability parity points.
          */
@@ -9778,151 +10636,6 @@ export interface components {
             x: number[];
             y: number[];
         };
-        /**
-         * Regulatory calculators
-         * @description The official worked examples (the five CRE99 SA-CCR netting sets from their trades, the RBC20.13 output floor) and the invariant cases (BA-CVA, the FRTB SBM aggregation with its cross-bucket fallback, the liquidity-horizon cascade) of the regulatory calculators run through the engine, the output-floor phase-in, the parameter tables and a CRE20 lookup grid, each with its paragraph and in-force date. The live ports of the regulation page are held to this document at 1e-9 relative.
-         */
-        "regulatory-calculators": {
-            /** @constant */
-            schema: "contraste.regulatory/v1";
-            /** @constant */
-            case_id: "REGULATORY";
-            document_id: string;
-            engine: components["schemas"]["regulatoryEngine"];
-            units: components["schemas"]["regulatoryUnits"];
-            official_examples: components["schemas"]["regulatoryEntry"][];
-            invariant_cases: components["schemas"]["regulatoryEntry"][];
-            output_floor_phase_in: components["schemas"]["regulatoryPhaseIn"][];
-            parameter_tables: components["schemas"]["regulatoryParameterTable"][];
-            cre20_grid: components["schemas"]["regulatoryGridRow"][];
-            provenance: components["schemas"]["common-provenance"];
-            lane: components["schemas"]["common-lane-block"];
-        };
-        /** @description The engine release that produced the outputs. */
-        regulatoryEngine: {
-            /** @constant */
-            name: "riskvalidation";
-            version: string;
-        };
-        /** @description A calculator entry of the regulation page: the trades (for an SA-CCR example), the inputs, the engine's outputs, the values the framework publishes, the paragraph and the in-force date of the chapter. The live ports are held to it at 1e-9 relative. */
-        regulatoryEntry: {
-            id: string;
-            /** @enum {string} */
-            calculator: "standardised-credit-risk-weights" | "output-floor" | "sa-ccr" | "ba-cva" | "frtb-sbm" | "frtb-liquidity-cascade";
-            title: components["schemas"]["common-text"];
-            /** @enum {string} */
-            kind: "official-example" | "invariant";
-            /** @description The paragraph (or the first paragraph of a range) of the rule. */
-            paragraph: string;
-            paragraph_range: string;
-            in_force_date: string;
-            published_date: string;
-            source: string;
-            trades: components["schemas"]["regulatoryTrade"][];
-            inputs: components["schemas"]["regulatoryValue"][];
-            outputs: components["schemas"]["regulatoryValue"][];
-            published: components["schemas"]["regulatoryPublished"][];
-            statement: components["schemas"]["common-text"] | null;
-            holds: boolean | null;
-            /** @constant */
-            tolerance_relative: 1e-9;
-        } & ({
-            /** @constant */
-            kind?: "official-example";
-            published?: unknown;
-            statement?: null;
-            holds?: null;
-        } | {
-            /** @constant */
-            kind?: "invariant";
-            published?: unknown;
-            statement?: components["schemas"]["common-text"];
-            /** @constant */
-            holds?: true;
-        });
-        /** @description One cell of the CRE20 lookup grid, keyed as the engine's standardised.lookup(exposure_class, key, short_term, cash_flow_dependent, counterparty_weight): the risk weight as a decimal, the band as the table prints it, the table, its paragraph and the in-force date of the chapter. For an LTV band the key is a representative LTV (the upper edge, or 1.5 above 1.0 and 1.0 above 0.8). */
-        regulatoryGridRow: {
-            /** @enum {string} */
-            exposure_class: "sovereign" | "eca" | "bank-ecra" | "bank-scra" | "corporate" | "retail" | "equity" | "residential-re" | "commercial-re" | "defaulted" | "ccf" | "currency-mismatch";
-            /** @enum {string} */
-            key: "AAA to AA-" | "A+ to A-" | "BBB+ to BBB-" | "BB+ to B-" | "below B-" | "unrated" | "BB+ to BB-" | "below BB-" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "A" | "B" | "C" | "investment-grade-unrated" | "sme-unrated" | "regulatory-retail-sme" | "regulatory" | "transactor" | "other" | "equity" | "speculative-unlisted" | "legislated-programme" | "subordinated-debt" | "0.5" | "0.6" | "0.8" | "0.9" | "1.0" | "1.5" | "provision-below-20pct" | "provision-at-least-20pct" | "residential-non-cash-flow-dependent" | "multiplier" | "cap" | "direct-credit-substitute" | "repo" | "securities-lending" | "forward-purchase" | "nif-ruf" | "transaction-related-contingent" | "commitment" | "trade-letter-of-credit" | "unconditionally-cancellable";
-            band: string;
-            short_term: boolean;
-            cash_flow_dependent: boolean;
-            counterparty_weight: number | null;
-            risk_weight: number;
-            table: string;
-            paragraph: string;
-            in_force_date: string;
-        };
-        /** @description One parameter of a regulatory table: the row key, the parameter's name, its value and its unit. */
-        regulatoryParameterRow: {
-            key: string;
-            parameter: string;
-            value: number;
-            unit: string;
-        };
-        /** @description A parameter table the live ports display (CRE52.72 Table 2, MAR50.16 Table 1, MAR33.4 Table 1, MAR33.12 Table 2), with its paragraph and the in-force date of the chapter. */
-        regulatoryParameterTable: {
-            /** @enum {string} */
-            id: "cre52-72-table-2" | "mar50-16-table-1" | "mar33-12-table-2" | "mar33-4-table-1";
-            title: components["schemas"]["common-text"];
-            /** @enum {string} */
-            calculator: "standardised-credit-risk-weights" | "output-floor" | "sa-ccr" | "ba-cva" | "frtb-sbm" | "frtb-liquidity-cascade";
-            table: string;
-            paragraph: string;
-            in_force_date: string;
-            source: string;
-            rows: components["schemas"]["regulatoryParameterRow"][];
-        };
-        /** @description One row of the output-floor phase-in (RBC90.1 Table 1): the year, the date it applies from and the floor factor. */
-        regulatoryPhaseIn: {
-            year: number;
-            effective_from: string;
-            factor: number;
-            /** @constant */
-            table: "RBC90.1 Table 1";
-            /** @constant */
-            paragraph: "RBC90.1";
-            in_force_date: string;
-        };
-        /** @description A value the framework publishes for a worked example (for example the EAD after rounding to an integer, or the multiplier to three decimals); it must equal the recomputed output rounded as stated. */
-        regulatoryPublished: {
-            name: string;
-            value: number;
-            unit: string;
-            /** @enum {string} */
-            rounding: "nearest integer" | "3 decimal places" | "4 decimal places" | "none";
-            paragraph: string;
-        };
-        /** @description One trade of a worked example with its contractual terms as values (strings for currency, position and option type), transcribed from the CRE99 table with its paragraph. */
-        regulatoryTrade: {
-            trade_id: string;
-            nature: string;
-            paragraph: string;
-            terms: components["schemas"]["regulatoryValue"][];
-        };
-        /** @description Units of every number, per value. */
-        regulatoryUnits: {
-            /** @constant */
-            money: "as stated per value (USD thousands for CRE99, index points for RBC20.13)";
-            /** @constant */
-            rate: "decimal";
-            /** @constant */
-            dates: "ISO-8601";
-        };
-        /** @description One named value: an input or an output, with its unit, the paragraph it comes from and its basis: transcribed from a source line, recomputed from the inputs by the engine's formulas, or constructed by the fixture for an invariant. */
-        regulatoryValue: {
-            name: string;
-            symbol: string;
-            /** @description A number, a string (a currency, a position, an option type, an entity) or an array of numbers (a vector or a matrix in row-major order). */
-            value: number | string | number[];
-            unit: string;
-            /** @enum {string} */
-            basis: "transcribed" | "recomputed" | "constructed";
-            /** @description The paragraph this value comes from, for example CRE52.23. */
-            paragraph: string;
-        };
         sourceRecord: {
             id: string;
             name: string;
@@ -10082,7 +10795,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c03-models"] | components["schemas"]["c03-variant-vintage-cohort"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c08-models"] | components["schemas"]["c08-variant-default-cohort"] | components["schemas"]["c09-models"] | components["schemas"]["c09-variant-acceleration-level"] | components["schemas"]["c10-models"] | components["schemas"]["c10-variant-correlation-grid"] | components["schemas"]["c10-variant-loan-type"] | components["schemas"]["c11-models"] | components["schemas"]["c11-variant-window"] | components["schemas"]["c12-models"] | components["schemas"]["c12-variant-swap-exposure"] | components["schemas"]["c13-models"] | components["schemas"]["c13-variant-deficiency"] | components["schemas"]["c14-models"] | components["schemas"]["c14-variant-valuation-date"] | components["schemas"]["c15-models"] | components["schemas"]["c15-variant-annex1-variant"] | components["schemas"]["c17-models"] | components["schemas"]["c17-variant-tail-index"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
+                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c03-models"] | components["schemas"]["c03-variant-vintage-cohort"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c08-models"] | components["schemas"]["c08-variant-default-cohort"] | components["schemas"]["c09-models"] | components["schemas"]["c09-variant-acceleration-level"] | components["schemas"]["c10-models"] | components["schemas"]["c10-variant-correlation-grid"] | components["schemas"]["c10-variant-loan-type"] | components["schemas"]["c11-models"] | components["schemas"]["c11-variant-window"] | components["schemas"]["c13-models"] | components["schemas"]["c13-variant-deficiency"] | components["schemas"]["c14-models"] | components["schemas"]["c14-variant-valuation-date"] | components["schemas"]["c15-models"] | components["schemas"]["c15-variant-annex1-variant"] | components["schemas"]["c17-models"] | components["schemas"]["c17-variant-tail-index"] | components["schemas"]["c18-models"] | components["schemas"]["c18-variant-aggregation"] | components["schemas"]["c18-variant-reverse"] | components["schemas"]["c18-variant-scenario"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
                 };
             };
             404: components["responses"]["NotFound"];

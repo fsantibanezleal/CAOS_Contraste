@@ -1,0 +1,2098 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c18/variant-aggregation.schema.json",
+  "title": "C18 t-copula aggregation variant",
+  "description": "Catalog row c18-outputs-aggregation 1.0.0: the t-copula aggregation variant (outputs.kind aggregation), the band over the nu set at the Rosenberg and Schuermann matrix and under the market-credit 0.8 stress.",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C18"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c18AggOutputs",
+          "properties": {
+            "kind": {
+              "const": "aggregation"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "if": {
+              "properties": {
+                "light": {
+                  "const": "not_evaluated"
+                }
+              },
+              "required": [
+                "light"
+              ]
+            },
+            "then": {
+              "properties": {
+                "statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "provenance": {
+          "properties": {
+            "truth_status": {
+              "const": "synthetic-calibrated"
+            }
+          }
+        }
+      },
+      "required": [
+        "provenance"
+      ]
+    },
+    {
+      "properties": {
+        "impact": {
+          "required": [
+            "capital_simple_sum",
+            "cet1_ratio_end_stress",
+            "oi_headroom_min",
+            "p2g_proxy"
+          ]
+        }
+      }
+    },
+    {
+      "properties": {
+        "tests": {
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "aggregation.simple_sum_and_variance_covariance"
+                  }
+                },
+                "required": [
+                  "test_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "aggregation.copula_choice_sensitivity"
+                  }
+                },
+                "required": [
+                  "test_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "aggregation.worst_case_bracket"
+                  }
+                },
+                "required": [
+                  "test_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "aggregation.correlation_stress"
+                  }
+                },
+                "required": [
+                  "test_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "aggregation.diversification_sign"
+                  }
+                },
+                "required": [
+                  "test_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "aggregation.horizon_confidence_consistency"
+                  }
+                },
+                "required": [
+                  "test_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "aggregation.elliptical_mc_agreement"
+                  }
+                },
+                "required": [
+                  "test_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "aggregation.rosenberg_schuermann_reference"
+                  }
+                },
+                "required": [
+                  "test_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "portfolio.euler_additivity"
+                  }
+                },
+                "required": [
+                  "test_id"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c18Named": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "enum": [
+            "convention",
+            "case assumption"
+          ],
+          "description": "Every named parameter is a convention or an assumption of the case, never a regulatory value."
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A named parameter: a required name, value and unit, the label convention or case assumption, and the basis it was taken from."
+    },
+    "c18NamedSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "values",
+        "unit",
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "enum": [
+            "convention",
+            "case assumption"
+          ],
+          "description": "Every named parameter is a convention or an assumption of the case, never a regulatory value."
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A named parameter that is a set of values (the nu set), with the same label rule."
+    },
+    "c18NamedMatrix": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "order",
+        "matrix",
+        "unit",
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "order": {
+          "type": "array",
+          "const": [
+            "credit",
+            "market",
+            "irrbb",
+            "operational"
+          ],
+          "description": "The row and column order of the matrix: credit, market, irrbb, operational."
+        },
+        "matrix": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            },
+            "minItems": 4,
+            "maxItems": 4
+          },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "unit": {
+          "const": "correlation"
+        },
+        "label": {
+          "type": "string",
+          "enum": [
+            "convention",
+            "case assumption"
+          ],
+          "description": "Every named parameter is a convention or an assumption of the case, never a regulatory value."
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A named inter-risk correlation matrix with the same label rule; symmetry, the unit diagonal and positive semi-definiteness are checked by semantics.py (the engine's check_correlation)."
+    },
+    "c18NamedConvention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "const": "convention"
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A named parameter that is a convention by definition (the market level and horizon factors)."
+    },
+    "c18MarketScaling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "label",
+        "basis",
+        "source_confidence_level",
+        "source_horizon_days",
+        "trading_days_per_year",
+        "level_factor",
+        "horizon_factor"
+      ],
+      "properties": {
+        "name": {
+          "const": "market_horizon_scaling"
+        },
+        "value": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "The combined multiplier: the level factor times the horizon factor."
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "const": "convention"
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        },
+        "source_confidence_level": {
+          "const": 0.99,
+          "description": "C11's mixed-portfolio measure is at 99 percent (docs/contracts/schemas/c11/models.schema.json)."
+        },
+        "source_horizon_days": {
+          "const": 1,
+          "description": "C11's measure is a one-day measure."
+        },
+        "trading_days_per_year": {
+          "const": 250
+        },
+        "level_factor": {
+          "$ref": "#/$defs/c18NamedConvention"
+        },
+        "horizon_factor": {
+          "$ref": "#/$defs/c18NamedConvention"
+        }
+      },
+      "description": "The market marginal's conversion from C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 and the square root of 250, both named conventions (W4), and the combined multiplier."
+    },
+    "c18FxDerivation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "pair",
+        "observation_date",
+        "source",
+        "source_url",
+        "source_series"
+      ],
+      "properties": {
+        "kind": {
+          "const": "observed-exchange-rate"
+        },
+        "pair": {
+          "const": "EUR/CLP"
+        },
+        "observation_date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
+          "description": "An ISO date."
+        },
+        "source": {
+          "const": "Banco Central de Chile, Base de Datos Estadisticos, daily exchange rate of the euro in Chilean pesos",
+          "description": "The stated public source of the rate; the series id the bake reads is recorded in source_series (not named here: UNVERIFIED)."
+        },
+        "source_url": {
+          "const": "https://si3.bcentral.cl/Siete/es/Siete/API"
+        },
+        "source_series": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The BDE series id the bake read."
+        }
+      },
+      "description": "How the rate is derived at bake time: the observed EUR to CLP rate of the as-of date."
+    },
+    "c18AssetDerivation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "banco_andino_assets_clp_m",
+        "c17_bank_assets_eur_m",
+        "converted_at"
+      ],
+      "properties": {
+        "kind": {
+          "const": "asset-ratio"
+        },
+        "banco_andino_assets_clp_m": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Banco Andino total assets, CLP millions, from the C15 and C07 balance sheet."
+        },
+        "c17_bank_assets_eur_m": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "The stated assets of the C17 synthetic bank, EUR millions (C17 models-generator generator.assets_eur_bn times 1000)."
+        },
+        "converted_at": {
+          "const": "operational_conversion_rate"
+        }
+      },
+      "description": "How the scaling is derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, in one currency."
+    },
+    "c18DerivedFx": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "label",
+        "basis",
+        "derivation"
+      ],
+      "properties": {
+        "name": {
+          "const": "operational_conversion_rate"
+        },
+        "value": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "unit": {
+          "const": "CLP per EUR"
+        },
+        "label": {
+          "type": "string",
+          "enum": [
+            "convention",
+            "case assumption"
+          ],
+          "description": "Every named parameter is a convention or an assumption of the case, never a regulatory value."
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        },
+        "derivation": {
+          "$ref": "#/$defs/c18FxDerivation"
+        }
+      },
+      "description": "The EUR to CLP rate of the as-of date, derived at bake time from a stated public source; the contract fixes no number."
+    },
+    "c18DerivedAssets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "label",
+        "basis",
+        "derivation"
+      ],
+      "properties": {
+        "name": {
+          "const": "asset_scaling"
+        },
+        "value": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "unit": {
+          "const": "Banco Andino assets over the assets of the C17 bank"
+        },
+        "label": {
+          "type": "string",
+          "enum": [
+            "convention",
+            "case assumption"
+          ],
+          "description": "Every named parameter is a convention or an assumption of the case, never a regulatory value."
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        },
+        "derivation": {
+          "$ref": "#/$defs/c18AssetDerivation"
+        }
+      },
+      "description": "The asset scaling of the C17 generator frequency, derived at bake time; the contract fixes no number."
+    },
+    "c18Ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "nu"
+      ],
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "lower-bound",
+            "simple-sum",
+            "variance-covariance",
+            "gaussian-copula",
+            "t-copula",
+            "worst-case"
+          ]
+        },
+        "nu": {
+          "anyOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 2
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "A reference to a row of the band: its method and, for a t copula, its degrees of freedom."
+    },
+    "c18Marginal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "risk",
+        "horizon_years",
+        "confidence_level",
+        "el_clp_m",
+        "el_status",
+        "var_clp_m",
+        "es_clp_m",
+        "ec_clp_m",
+        "ec_basis",
+        "ec_label",
+        "var_se_clp_m",
+        "producer",
+        "source_documents",
+        "scaling"
+      ],
+      "properties": {
+        "risk": {
+          "type": "string",
+          "enum": [
+            "credit",
+            "market",
+            "irrbb",
+            "operational"
+          ]
+        },
+        "horizon_years": {
+          "const": 1,
+          "description": "One horizon for every marginal: one year (decision Q5)."
+        },
+        "confidence_level": {
+          "const": 0.999,
+          "description": "One confidence level for every marginal: 99.9 percent, as a decimal (decision Q5)."
+        },
+        "el_clp_m": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "description": "Money in CLP millions, not below zero."
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The expected loss; null exactly when the severity has an infinite mean (el_status undefined)."
+        },
+        "el_status": {
+          "type": "string",
+          "enum": [
+            "finite",
+            "undefined (infinite mean)"
+          ]
+        },
+        "var_clp_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Money in CLP millions, not below zero."
+        },
+        "es_clp_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Money in CLP millions, not below zero."
+        },
+        "ec_clp_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Money in CLP millions, not below zero."
+        },
+        "ec_basis": {
+          "type": "string",
+          "enum": [
+            "var-less-el",
+            "var-alone-infinite-mean"
+          ]
+        },
+        "ec_label": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The label of an EC that is the VaR alone (an infinite-mean severity); null on the EC = VaR - EL basis."
+        },
+        "var_se_clp_m": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The Monte Carlo standard error of the VaR; null where the marginal is analytic."
+        },
+        "producer": {
+          "type": "string",
+          "enum": [
+            "credit-grouped-copula-c07-segments",
+            "market-c11-mixed-portfolio-scaled-to-market-rwa",
+            "irrbb-engine-simulation-c15-curve-and-book",
+            "operational-oprisk-aggregate-c17-parameters-scaled"
+          ]
+        },
+        "source_documents": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "description": "The committed documents or engine calls the marginal is computed from."
+        },
+        "scaling": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "statement",
+            "parameters"
+          ],
+          "properties": {
+            "statement": {
+              "$ref": "../common/text.schema.json"
+            },
+            "parameters": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/c18Named"
+                  },
+                  {
+                    "$ref": "#/$defs/c18MarketScaling"
+                  },
+                  {
+                    "$ref": "#/$defs/c18DerivedFx"
+                  },
+                  {
+                    "$ref": "#/$defs/c18DerivedAssets"
+                  }
+                ]
+              }
+            }
+          },
+          "description": "How the source was scaled to Banco Andino: a statement and every scaling parameter named with its label."
+        }
+      },
+      "description": "One marginal at one horizon and one confidence level (decision Q5): its expected loss, VaR, ES and EC = VaR - EL (or the VaR alone when the expected loss is undefined), its source and its scaling.",
+      "oneOf": [
+        {
+          "properties": {
+            "risk": {
+              "const": "credit"
+            },
+            "producer": {
+              "const": "credit-grouped-copula-c07-segments"
+            }
+          }
+        },
+        {
+          "properties": {
+            "risk": {
+              "const": "market"
+            },
+            "producer": {
+              "const": "market-c11-mixed-portfolio-scaled-to-market-rwa"
+            },
+            "scaling": {
+              "properties": {
+                "parameters": {
+                  "allOf": [
+                    {
+                      "contains": {
+                        "properties": {
+                          "name": {
+                            "const": "market_rwa_share"
+                          }
+                        },
+                        "required": [
+                          "name"
+                        ]
+                      }
+                    },
+                    {
+                      "contains": {
+                        "properties": {
+                          "name": {
+                            "const": "market_horizon_scaling"
+                          }
+                        },
+                        "required": [
+                          "name"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "risk": {
+              "const": "irrbb"
+            },
+            "producer": {
+              "const": "irrbb-engine-simulation-c15-curve-and-book"
+            }
+          }
+        },
+        {
+          "properties": {
+            "risk": {
+              "const": "operational"
+            },
+            "producer": {
+              "const": "operational-oprisk-aggregate-c17-parameters-scaled"
+            },
+            "scaling": {
+              "properties": {
+                "parameters": {
+                  "allOf": [
+                    {
+                      "contains": {
+                        "properties": {
+                          "name": {
+                            "const": "asset_scaling"
+                          }
+                        },
+                        "required": [
+                          "name"
+                        ]
+                      }
+                    },
+                    {
+                      "contains": {
+                        "properties": {
+                          "name": {
+                            "const": "operational_conversion_rate"
+                          }
+                        },
+                        "required": [
+                          "name"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "el_status": {
+                "const": "finite"
+              }
+            },
+            "required": [
+              "el_status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "el_clp_m": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Money in CLP millions, not below zero."
+              },
+              "ec_basis": {
+                "const": "var-less-el"
+              },
+              "ec_label": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "el_status": {
+                "const": "undefined (infinite mean)"
+              }
+            },
+            "required": [
+              "el_status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "risk": {
+                "const": "operational"
+              },
+              "el_clp_m": {
+                "type": "null"
+              },
+              "ec_basis": {
+                "const": "var-alone-infinite-mean"
+              },
+              "ec_label": {
+                "$ref": "../common/text.schema.json"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "c18BandRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "nu",
+        "capital_clp_m",
+        "diversification_factor",
+        "status",
+        "label",
+        "horizon_years",
+        "confidence_level",
+        "mc_se_clp_m"
+      ],
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "lower-bound",
+            "simple-sum",
+            "variance-covariance",
+            "gaussian-copula",
+            "t-copula",
+            "worst-case"
+          ]
+        },
+        "nu": {
+          "anyOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 2
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Degrees of freedom: set for a t copula row, null otherwise."
+        },
+        "capital_clp_m": {
+          "type": "number",
+          "description": "Money in CLP millions. Signed on the lower-bound row only: the best VaR less the sum of the expected losses can be negative (Table 4 of the authors' paper, d = 56); every other row is not below zero."
+        },
+        "diversification_factor": {
+          "type": "number",
+          "description": "DF = capital of the row over the simple sum of the marginals; signed on the lower-bound row only."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "headline-capital",
+            "information-not-capital"
+          ]
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "horizon_years": {
+          "const": 1,
+          "description": "One horizon for every marginal: one year (decision Q5)."
+        },
+        "confidence_level": {
+          "const": 0.999,
+          "description": "One confidence level for every marginal: 99.9 percent, as a decimal (decision Q5)."
+        },
+        "mc_se_clp_m": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "One rung of the dependence-uncertainty band (decision Q12). Only the simple sum is the headline capital; every other row is information.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "simple-sum"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "headline-capital"
+              },
+              "nu": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "status": {
+                "const": "information-not-capital",
+                "description": "A diversified or allocated figure is information for the validator and never a capital claim (dossier 05 l.519)."
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "t-copula"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          },
+          "then": {
+            "properties": {
+              "nu": {
+                "type": "number",
+                "exclusiveMinimum": 2
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "lower-bound"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          },
+          "then": {
+            "properties": {
+              "nu": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "variance-covariance"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          },
+          "then": {
+            "properties": {
+              "nu": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "gaussian-copula"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          },
+          "then": {
+            "properties": {
+              "nu": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "worst-case"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          },
+          "then": {
+            "properties": {
+              "nu": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "simple-sum"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          },
+          "then": {
+            "properties": {
+              "capital_clp_m": {
+                "minimum": 0
+              },
+              "diversification_factor": {
+                "minimum": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "variance-covariance"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          },
+          "then": {
+            "properties": {
+              "capital_clp_m": {
+                "minimum": 0
+              },
+              "diversification_factor": {
+                "minimum": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "gaussian-copula"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          },
+          "then": {
+            "properties": {
+              "capital_clp_m": {
+                "minimum": 0
+              },
+              "diversification_factor": {
+                "minimum": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "t-copula"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          },
+          "then": {
+            "properties": {
+              "capital_clp_m": {
+                "minimum": 0
+              },
+              "diversification_factor": {
+                "minimum": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "worst-case"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          },
+          "then": {
+            "properties": {
+              "capital_clp_m": {
+                "minimum": 0
+              },
+              "diversification_factor": {
+                "minimum": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "c18Band": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/c18BandRow"
+      },
+      "minItems": 6,
+      "maxItems": 12,
+      "description": "The band: the lower bound, the simple sum, variance-covariance, Gaussian, t at every nu of the set, the worst case (decision Q12). The comonotonic total equals the simple sum under the EC basis and is not a seventh row.",
+      "allOf": [
+        {
+          "contains": {
+            "properties": {
+              "method": {
+                "const": "lower-bound"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "method": {
+                "const": "simple-sum"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "method": {
+                "const": "variance-covariance"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "method": {
+                "const": "gaussian-copula"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "method": {
+                "const": "t-copula"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "method": {
+                "const": "worst-case"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          }
+        }
+      ]
+    },
+    "c18ModelRisk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "label",
+        "set_of_models",
+        "reference_model",
+        "barrieu_scandolo",
+        "glasserman_xu"
+      ],
+      "properties": {
+        "status": {
+          "const": "information-not-capital",
+          "description": "A diversified or allocated figure is information for the validator and never a capital claim (dossier 05 l.519)."
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "set_of_models": {
+          "const": "band-rows",
+          "description": "The set of aggregation models is the rows of the band (dossier 06 l.692-698)."
+        },
+        "reference_model": {
+          "$ref": "#/$defs/c18Ref"
+        },
+        "barrieu_scandolo": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rho_x0_clp_m",
+            "rho_max_clp_m",
+            "rho_min_clp_m",
+            "am",
+            "rm"
+          ],
+          "properties": {
+            "rho_x0_clp_m": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Money in CLP millions, not below zero."
+            },
+            "rho_max_clp_m": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Money in CLP millions, not below zero."
+            },
+            "rho_min_clp_m": {
+              "type": "number",
+              "description": "Money in CLP millions."
+            },
+            "am": {
+              "type": "number",
+              "description": "AM = max rho / rho(X0) - 1 (06 l.692-698)."
+            },
+            "rm": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "RM = (max rho - rho(X0)) / (max rho - min rho), in [0, 1]."
+            }
+          }
+        },
+        "glasserman_xu": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "quantity",
+            "relative_entropy_budget",
+            "theta",
+            "baseline_clp_m",
+            "worst_case_clp_m"
+          ],
+          "properties": {
+            "quantity": {
+              "$ref": "../common/text.schema.json"
+            },
+            "relative_entropy_budget": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "theta": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "baseline_clp_m": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Money in CLP millions, not below zero."
+            },
+            "worst_case_clp_m": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Money in CLP millions, not below zero."
+            }
+          },
+          "description": "The worst case by reweighting the baseline sample, m = exp(theta V) / E[exp(theta V)], theta set so that the entropy budget binds (06 l.684-691)."
+        }
+      },
+      "description": "The model risk measures beside the band, sensitivity information and never a capital figure (06 l.699-704)."
+    },
+    "c18Euler": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "label",
+        "risk_measure",
+        "level",
+        "horizon_years",
+        "copula",
+        "es_total_clp_m",
+        "allocation",
+        "additivity"
+      ],
+      "properties": {
+        "status": {
+          "const": "information-not-capital",
+          "description": "A diversified or allocated figure is information for the validator and never a capital claim (dossier 05 l.519)."
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "risk_measure": {
+          "const": "es"
+        },
+        "level": {
+          "const": 0.999,
+          "description": "One confidence level for every marginal: 99.9 percent, as a decimal (decision Q5)."
+        },
+        "horizon_years": {
+          "const": 1,
+          "description": "One horizon for every marginal: one year (decision Q5)."
+        },
+        "copula": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "family",
+            "nu"
+          ],
+          "properties": {
+            "family": {
+              "type": "string",
+              "enum": [
+                "gaussian",
+                "t"
+              ]
+            },
+            "nu": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "exclusiveMinimum": 2
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "es_total_clp_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Money in CLP millions, not below zero."
+        },
+        "allocation": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "risk",
+              "contribution_clp_m",
+              "share"
+            ],
+            "properties": {
+              "risk": {
+                "type": "string",
+                "enum": [
+                  "credit",
+                  "market",
+                  "irrbb",
+                  "operational"
+                ]
+              },
+              "contribution_clp_m": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Money in CLP millions, not below zero."
+              },
+              "share": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          },
+          "minItems": 4,
+          "maxItems": 4,
+          "description": "ES contributions E[L_i | L >= VaR], one row per risk, in the order of the marginals.",
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "risk": {
+                    "const": "credit"
+                  }
+                },
+                "required": [
+                  "risk"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "risk": {
+                    "const": "market"
+                  }
+                },
+                "required": [
+                  "risk"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "risk": {
+                    "const": "irrbb"
+                  }
+                },
+                "required": [
+                  "risk"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "risk": {
+                    "const": "operational"
+                  }
+                },
+                "required": [
+                  "risk"
+                ]
+              }
+            }
+          ]
+        },
+        "additivity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sum_clp_m",
+            "relative_error",
+            "tolerance"
+          ],
+          "properties": {
+            "sum_clp_m": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Money in CLP millions, not below zero."
+            },
+            "relative_error": {
+              "type": "number",
+              "minimum": 0
+            },
+            "tolerance": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          }
+        }
+      },
+      "description": "The Euler allocation of the aggregate ES, information for the validator and never a capital claim."
+    },
+    "c18Diversification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "label",
+        "reference_row",
+        "factor",
+        "benefit",
+        "euler_benefit_by_risk"
+      ],
+      "properties": {
+        "status": {
+          "const": "information-not-capital",
+          "description": "A diversified or allocated figure is information for the validator and never a capital claim (dossier 05 l.519)."
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "reference_row": {
+          "$ref": "#/$defs/c18Ref"
+        },
+        "factor": {
+          "type": "number",
+          "minimum": 0,
+          "description": "DF = rho(L) / sum rho(L_i) of the reference row."
+        },
+        "benefit": {
+          "type": "number",
+          "description": "1 - DF."
+        },
+        "euler_benefit_by_risk": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "risk",
+              "benefit"
+            ],
+            "properties": {
+              "risk": {
+                "type": "string",
+                "enum": [
+                  "credit",
+                  "market",
+                  "irrbb",
+                  "operational"
+                ]
+              },
+              "benefit": {
+                "type": "number",
+                "description": "1 - rho(L_i | L) / rho(L_i), on ES contributions."
+              }
+            }
+          },
+          "minItems": 4,
+          "maxItems": 4,
+          "description": "One Euler diversification benefit per risk.",
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "risk": {
+                    "const": "credit"
+                  }
+                },
+                "required": [
+                  "risk"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "risk": {
+                    "const": "market"
+                  }
+                },
+                "required": [
+                  "risk"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "risk": {
+                    "const": "irrbb"
+                  }
+                },
+                "required": [
+                  "risk"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "risk": {
+                    "const": "operational"
+                  }
+                },
+                "required": [
+                  "risk"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "description": "The diversification, information for the validator and never a capital claim."
+    },
+    "c18Aggregation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capital_basis",
+        "horizon_years",
+        "confidence_level",
+        "correlation",
+        "nu_set",
+        "marginals",
+        "headline",
+        "band",
+        "model_risk",
+        "euler",
+        "diversification"
+      ],
+      "properties": {
+        "capital_basis": {
+          "const": "economic-capital-var-less-el",
+          "description": "Capital of a risk and of an aggregate is EC = VaR(0.999, 1 year) less the expected loss, EC_q = VaR_q(L) - EL (dossier 04 l.652-653, BCBS 2005 explanatory note section 4.4); the expected loss is additive, so the simple sum of the marginals equals the comonotonic total. A marginal whose severity has an infinite mean has no expected loss: its EC is the VaR alone, labelled (dossier 05 l.482)."
+        },
+        "horizon_years": {
+          "const": 1,
+          "description": "One horizon for every marginal: one year (decision Q5)."
+        },
+        "confidence_level": {
+          "const": 0.999,
+          "description": "One confidence level for every marginal: 99.9 percent, as a decimal (decision Q5)."
+        },
+        "correlation": {
+          "$ref": "#/$defs/c18NamedMatrix"
+        },
+        "nu_set": {
+          "$ref": "#/$defs/c18NamedSet"
+        },
+        "marginals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c18Marginal"
+          },
+          "minItems": 4,
+          "maxItems": 4,
+          "description": "The four marginals in the order credit, market, irrbb, operational.",
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "risk": {
+                    "const": "credit"
+                  }
+                },
+                "required": [
+                  "risk"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "risk": {
+                    "const": "market"
+                  }
+                },
+                "required": [
+                  "risk"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "risk": {
+                    "const": "irrbb"
+                  }
+                },
+                "required": [
+                  "risk"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "risk": {
+                    "const": "operational"
+                  }
+                },
+                "required": [
+                  "risk"
+                ]
+              }
+            }
+          ]
+        },
+        "headline": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "method",
+            "capital_clp_m",
+            "label"
+          ],
+          "properties": {
+            "method": {
+              "const": "simple-sum",
+              "description": "The headline capital of C18 is the simple sum (IAPE, 03 l.185-190; ECB, 01 l.846)."
+            },
+            "capital_clp_m": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Money in CLP millions, not below zero."
+            },
+            "label": {
+              "$ref": "../common/text.schema.json"
+            }
+          }
+        },
+        "band": {
+          "$ref": "#/$defs/c18Band"
+        },
+        "model_risk": {
+          "$ref": "#/$defs/c18ModelRisk"
+        },
+        "euler": {
+          "$ref": "#/$defs/c18Euler"
+        },
+        "diversification": {
+          "$ref": "#/$defs/c18Diversification"
+        }
+      },
+      "description": "The aggregation block: the simple sum as the headline, the band with the model risk measures beside it, the Euler allocation and the diversification (both information), one horizon and one confidence level, the source and scaling of every marginal."
+    },
+    "c18Env": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "synthetic",
+        "notice",
+        "as_of"
+      ],
+      "properties": {
+        "name": {
+          "const": "Banco Andino"
+        },
+        "synthetic": {
+          "const": true
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        },
+        "as_of": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
+          "description": "An ISO date."
+        }
+      },
+      "description": "The synthetic bank, labelled."
+    },
+    "c18Units": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "money",
+        "ratio",
+        "dates"
+      ],
+      "properties": {
+        "money": {
+          "const": "CLP millions"
+        },
+        "ratio": {
+          "const": "decimal"
+        },
+        "dates": {
+          "const": "ISO date; quarters as the date of the quarter end"
+        }
+      },
+      "description": "The units of the document: money in CLP millions, ratios as decimals, quarters as ISO dates of the quarter end."
+    },
+    "c18SensRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nu",
+        "gaussian_capital_clp_m",
+        "t_capital_clp_m",
+        "relative_difference"
+      ],
+      "properties": {
+        "nu": {
+          "type": "number",
+          "exclusiveMinimum": 2
+        },
+        "gaussian_capital_clp_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Money in CLP millions, not below zero."
+        },
+        "t_capital_clp_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Money in CLP millions, not below zero."
+        },
+        "relative_difference": {
+          "type": "number"
+        }
+      }
+    },
+    "c18CorrStress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pair",
+        "aggregation"
+      ],
+      "properties": {
+        "pair": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "a",
+            "b",
+            "value"
+          ],
+          "properties": {
+            "a": {
+              "const": "market"
+            },
+            "b": {
+              "const": "credit"
+            },
+            "value": {
+              "const": 0.8,
+              "description": "The market-credit correlation raised to 0.8, the upper end of the published ranges (05 l.378)."
+            }
+          }
+        },
+        "aggregation": {
+          "$ref": "#/$defs/c18Aggregation"
+        }
+      },
+      "description": "The same aggregation under the stressed correlation matrix."
+    },
+    "c18RsReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "weights",
+        "correlations",
+        "published_additive_overestimate",
+        "case_additive_overestimate",
+        "within_published_range"
+      ],
+      "properties": {
+        "role": {
+          "const": "reference-not-a-gate",
+          "description": "Reported beside the result as a reference, never as a gate (05 l.360, l.484)."
+        },
+        "weights": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "market",
+            "credit",
+            "operational"
+          ],
+          "properties": {
+            "market": {
+              "const": 0.041
+            },
+            "credit": {
+              "const": 0.264
+            },
+            "operational": {
+              "const": 0.695
+            }
+          },
+          "description": "The benchmark risk weights of a typical large bank (05 l.360): market 4.1, credit 26.4, operational 69.5 percent."
+        },
+        "correlations": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "market_credit",
+            "market_operational",
+            "credit_operational"
+          ],
+          "properties": {
+            "market_credit": {
+              "const": 0.5
+            },
+            "market_operational": {
+              "const": 0.2
+            },
+            "credit_operational": {
+              "const": 0.2
+            }
+          },
+          "description": "The normal copula of the benchmark: market-credit 0.5 and market and credit with operational 0.2 (05 l.360)."
+        },
+        "published_additive_overestimate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "low",
+            "high"
+          ],
+          "properties": {
+            "low": {
+              "const": 0.3
+            },
+            "high": {
+              "const": 0.4
+            }
+          },
+          "description": "The additive approximation typically overestimates risk by about 30 to 40 percent (05 l.360)."
+        },
+        "case_additive_overestimate": {
+          "type": "number",
+          "description": "Simple sum over the Gaussian copula row, less one, for this bank."
+        },
+        "within_published_range": {
+          "type": "boolean"
+        }
+      },
+      "description": "The Rosenberg and Schuermann reference."
+    },
+    "c18AggOutputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "currency",
+        "units",
+        "bank",
+        "scenario_id",
+        "aggregation",
+        "correlation_stress",
+        "copula_sensitivity",
+        "rosenberg_schuermann"
+      ],
+      "properties": {
+        "kind": {
+          "const": "aggregation"
+        },
+        "currency": {
+          "const": "CLP"
+        },
+        "units": {
+          "$ref": "#/$defs/c18Units"
+        },
+        "bank": {
+          "$ref": "#/$defs/c18Env"
+        },
+        "scenario_id": {
+          "const": "baseline",
+          "description": "The t-copula variant runs the baseline scenario (decision Q12)."
+        },
+        "aggregation": {
+          "$ref": "#/$defs/c18Aggregation"
+        },
+        "correlation_stress": {
+          "$ref": "#/$defs/c18CorrStress"
+        },
+        "copula_sensitivity": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c18SensRow"
+          },
+          "minItems": 1,
+          "description": "Gaussian against t over the nu set, at the base matrix."
+        },
+        "rosenberg_schuermann": {
+          "$ref": "#/$defs/c18RsReference"
+        }
+      },
+      "description": "C18 outputs of the t-copula aggregation variant."
+    }
+  }
+}
