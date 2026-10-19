@@ -18387,7 +18387,7 @@
             "$ref": "#/components/schemas/c12Csa"
           },
           "uncollateralised_ee": {
-            "$ref": "#/components/schemas/c12Profile"
+            "$ref": "#/components/schemas/c12NonNegProfile"
           },
           "collateral_balance": {
             "$ref": "#/components/schemas/c12Profile"
@@ -18434,6 +18434,7 @@
           "source_url",
           "licence_class",
           "licence_basis",
+          "negative_spread_rule",
           "synthetic_spread"
         ],
         "properties": {
@@ -18455,6 +18456,9 @@
           },
           "licence_basis": {
             "$ref": "#/components/schemas/c12Label"
+          },
+          "negative_spread_rule": {
+            "const": "a negative HQM-minus-Treasury spread is set to zero and counted, never carried as a negative spread"
           },
           "synthetic_spread": {
             "$ref": "#/components/schemas/c12Convention"
@@ -18486,7 +18490,7 @@
           },
           "mpor_business_days": {
             "type": "integer",
-            "minimum": 1
+            "minimum": 10
           },
           "remargining_days": {
             "type": "integer",
@@ -18590,6 +18594,8 @@
           "credit_curve_source",
           "credit_curve_label",
           "survival_formula",
+          "negative_spread_rule",
+          "spreads_floored_at_zero",
           "lgd",
           "bank_lgd",
           "buckets",
@@ -18610,6 +18616,13 @@
           },
           "survival_formula": {
             "const": "S(t) = exp(-s t / LGD)"
+          },
+          "negative_spread_rule": {
+            "const": "a negative HQM-minus-Treasury spread is set to zero and counted in spreads_floored_at_zero"
+          },
+          "spreads_floored_at_zero": {
+            "type": "integer",
+            "minimum": 0
           },
           "lgd": {
             "type": "number",
@@ -18763,16 +18776,16 @@
             "minItems": 2
           },
           "ee": {
-            "$ref": "#/components/schemas/c12Profile"
+            "$ref": "#/components/schemas/c12NonNegProfile"
           },
           "ee_discounted": {
-            "$ref": "#/components/schemas/c12Profile"
+            "$ref": "#/components/schemas/c12NonNegProfile"
           },
           "ene": {
-            "$ref": "#/components/schemas/c12Profile"
+            "$ref": "#/components/schemas/c12NonNegProfile"
           },
           "ene_discounted": {
-            "$ref": "#/components/schemas/c12Profile"
+            "$ref": "#/components/schemas/c12NonNegProfile"
           },
           "pfe_quantile": {
             "type": "number",
@@ -18780,10 +18793,10 @@
             "exclusiveMaximum": 1
           },
           "pfe": {
-            "$ref": "#/components/schemas/c12Profile"
+            "$ref": "#/components/schemas/c12NonNegProfile"
           },
           "effective_ee": {
-            "$ref": "#/components/schemas/c12Profile"
+            "$ref": "#/components/schemas/c12NonNegProfile"
           },
           "epe": {
             "$ref": "#/components/schemas/c12MoneySe"
@@ -18860,7 +18873,7 @@
           "currency",
           "sqrt2_division",
           "sqrt2_label",
-          "sensitivities_per_bp",
+          "sensitivities",
           "weighted_sensitivities",
           "scenarios",
           "delta_charge",
@@ -18882,13 +18895,14 @@
           "sqrt2_label": {
             "const": "convention"
           },
-          "sensitivities_per_bp": {
+          "sensitivities": {
             "type": "array",
             "items": {
               "type": "number"
             },
             "minItems": 10,
-            "maxItems": 10
+            "maxItems": 10,
+            "description": "s_k = (V(r + 0.0001) - V(r)) / 0.0001 at each GIRR tenor, in USD per unit of rate: the change in value for a 1 basis point shift divided by 0.0001 (MAR21.19), not the PV01 per basis point. The weighted sensitivity is RW_k s_k / sqrt(2)."
           },
           "weighted_sensitivities": {
             "type": "array",
@@ -18913,7 +18927,7 @@
             "$ref": "#/components/schemas/c12Money"
           }
         },
-        "description": "The FRTB SA GIRR delta charge of the same book (single USD bucket): the PV01 per tenor, the weighted sensitivities with the MAR21.44 division by sqrt(2) (a named convention) and the charge, the maximum over the three correlation scenarios, with the undivided charge beside it."
+        "description": "The FRTB SA GIRR delta charge of the same book (single USD bucket): the sensitivities s_k per tenor as MAR21.19 defines them, the weighted sensitivities with the MAR21.44 division by sqrt(2) (a named convention) and the charge, the maximum over the three correlation scenarios, with the undivided charge beside it."
       },
       "c12GirrParameters": {
         "type": "object",
@@ -19106,8 +19120,8 @@
           "simm_used",
           "quantile",
           "alpha",
-          "horizon_days",
-          "mpor_days",
+          "horizon_calendar_days",
+          "mpor_calendar_days",
           "regression_order",
           "dim",
           "ee_vm_only",
@@ -19132,11 +19146,11 @@
             "type": "number",
             "exclusiveMinimum": 0
           },
-          "horizon_days": {
+          "horizon_calendar_days": {
             "type": "integer",
             "minimum": 1
           },
-          "mpor_days": {
+          "mpor_calendar_days": {
             "type": "integer",
             "minimum": 1
           },
@@ -19145,16 +19159,16 @@
             "minimum": 0
           },
           "dim": {
-            "$ref": "#/components/schemas/c12Profile"
+            "$ref": "#/components/schemas/c12NonNegProfile"
           },
           "ee_vm_only": {
-            "$ref": "#/components/schemas/c12Profile"
+            "$ref": "#/components/schemas/c12NonNegProfile"
           },
           "limit": {
             "$ref": "#/components/schemas/c12Label"
           }
         },
-        "description": "Initial margin as a separate balance: DIM(t) = alpha S(t) sqrt(horizon / MPoR) applied as max(exposure - DIM, 0). Labelled a regression proxy, never SIMM (SIMM is not used: its public notice restricts use to a participant's own transactions)."
+        "description": "Initial margin as a separate balance: DIM(t) = alpha S(t) sqrt(horizon / MPoR) applied as max(exposure - DIM, 0), alpha the normal quantile of `quantile`, the horizon and the MPoR in calendar days as ORE computes horizonCalendarDays / mporCalendarDays (10 business days are 14 calendar days, 20 are 28). Labelled a regression proxy, never SIMM (SIMM is not used: its public notice restricts use to a participant's own transactions)."
       },
       "c12Label": {
         "type": "object",
@@ -19236,15 +19250,21 @@
           "pfe_quantile",
           "path_count",
           "seed",
+          "time_grid_years",
           "wwr_b_grid",
           "im_quantile",
-          "im_horizon_days",
+          "im_horizon_calendar_days",
+          "im_mpor_calendar_days",
           "im_regression_order",
           "ba_cva_sector",
           "ba_cva_rating",
           "stress_window_start",
           "stress_window_end",
-          "backtest_window_start"
+          "backtest_window_start",
+          "backtest_paths_per_date",
+          "backtest_simulated_critical_count",
+          "reconciliation_se_threshold",
+          "ee_check_k_se"
         ],
         "properties": {
           "notionals": {
@@ -19301,13 +19321,19 @@
           "seed": {
             "$ref": "#/components/schemas/c12Convention"
           },
+          "time_grid_years": {
+            "$ref": "#/components/schemas/c12Convention"
+          },
           "wwr_b_grid": {
             "$ref": "#/components/schemas/c12Convention"
           },
           "im_quantile": {
             "$ref": "#/components/schemas/c12Convention"
           },
-          "im_horizon_days": {
+          "im_horizon_calendar_days": {
+            "$ref": "#/components/schemas/c12Convention"
+          },
+          "im_mpor_calendar_days": {
             "$ref": "#/components/schemas/c12Convention"
           },
           "im_regression_order": {
@@ -19326,6 +19352,18 @@
             "$ref": "#/components/schemas/c12Convention"
           },
           "backtest_window_start": {
+            "$ref": "#/components/schemas/c12Convention"
+          },
+          "backtest_paths_per_date": {
+            "$ref": "#/components/schemas/c12Convention"
+          },
+          "backtest_simulated_critical_count": {
+            "$ref": "#/components/schemas/c12Convention"
+          },
+          "reconciliation_se_threshold": {
+            "$ref": "#/components/schemas/c12Convention"
+          },
+          "ee_check_k_se": {
             "$ref": "#/components/schemas/c12Convention"
           }
         },
@@ -19356,23 +19394,56 @@
                   "minLength": 1
                 },
                 "ee": {
-                  "$ref": "#/components/schemas/c12Profile"
+                  "$ref": "#/components/schemas/c12NonNegProfile"
                 }
               }
             },
             "minItems": 1
           },
           "sum_of_single_trade_ee": {
-            "$ref": "#/components/schemas/c12Profile"
+            "$ref": "#/components/schemas/c12NonNegProfile"
           },
           "netted_ee": {
-            "$ref": "#/components/schemas/c12Profile"
+            "$ref": "#/components/schemas/c12NonNegProfile"
           },
           "benefit": {
-            "$ref": "#/components/schemas/c12Profile"
+            "$ref": "#/components/schemas/c12NonNegProfile"
           }
         },
         "description": "The netting benefit: the netting-set EE is at most the sum of the single-trade EE; the benefit is their difference."
+      },
+      "c12NonNegProfile": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "currency",
+          "values",
+          "mc_se"
+        ],
+        "properties": {
+          "currency": {
+            "const": "USD"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 0
+            },
+            "minItems": 2,
+            "description": "One non-negative value per point of the time grid."
+          },
+          "mc_se": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 0
+            },
+            "minItems": 2,
+            "description": "The Monte Carlo standard error of each value."
+          }
+        },
+        "description": "A non-negative money profile (an EE, ENE, PFE, effective EE or DIM) on the time grid with its Monte Carlo standard errors (same length as the grid: a producer check)."
       },
       "c12OreReconciliation": {
         "type": "object",
@@ -19383,7 +19454,14 @@
           "platform",
           "run_seconds",
           "ore_ee",
+          "ore_ee_discounted",
+          "ore_eepe",
+          "ore_cva",
+          "ore_dim",
           "agreement",
+          "eepe_agreement",
+          "cva_agreement",
+          "dim_agreement",
           "all_within_two_se",
           "reason"
         ],
@@ -19430,7 +19508,47 @@
           "ore_ee": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/c12Profile"
+                "$ref": "#/components/schemas/c12NonNegProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ore_ee_discounted": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c12NonNegProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ore_eepe": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c12Money"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ore_cva": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c12Money"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ore_dim": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c12NonNegProfile"
               },
               {
                 "type": "null"
@@ -19442,30 +19560,41 @@
               {
                 "type": "array",
                 "items": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "t",
-                    "difference",
-                    "combined_se",
-                    "within_two_se"
-                  ],
-                  "properties": {
-                    "t": {
-                      "type": "number",
-                      "exclusiveMinimum": 0
-                    },
-                    "difference": {
-                      "type": "number"
-                    },
-                    "combined_se": {
-                      "type": "number",
-                      "minimum": 0
-                    },
-                    "within_two_se": {
-                      "type": "boolean"
-                    }
-                  }
+                  "$ref": "#/components/schemas/c12PointAgreement"
+                },
+                "minItems": 2
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "eepe_agreement": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c12ScalarAgreement"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cva_agreement": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c12ScalarAgreement"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dim_agreement": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/c12PointAgreement"
                 },
                 "minItems": 2
               },
@@ -19495,7 +19624,7 @@
             ]
           }
         },
-        "description": "The reconciliation of the Python EE profile against ORE 1.8.17.0 on the same curve and model parameters (ADR-0069: the bake's), with the agreement at every grid point; or not-applicable with its reason.",
+        "description": "The reconciliation of the Python measures against ORE 1.8.17.0 on the same curve and model parameters (ADR-0069: the bake's): the EE profile at every grid point, the EEPE and the CVA recomputed from the ORE profiles, and for the initial-margin variant the DIM profile, each with its agreement. Every variant but the wrong-way one is reconciled (S2); the wrong-way one is not-applicable with its reason. An ORE run that fails stops the bake: a variant is never published as not-applicable because ORE failed.",
         "oneOf": [
           {
             "properties": {
@@ -19512,10 +19641,25 @@
                 "type": "number"
               },
               "ore_ee": {
-                "$ref": "#/components/schemas/c12Profile"
+                "$ref": "#/components/schemas/c12NonNegProfile"
+              },
+              "ore_ee_discounted": {
+                "$ref": "#/components/schemas/c12NonNegProfile"
+              },
+              "ore_eepe": {
+                "$ref": "#/components/schemas/c12Money"
+              },
+              "ore_cva": {
+                "$ref": "#/components/schemas/c12Money"
               },
               "agreement": {
                 "type": "array"
+              },
+              "eepe_agreement": {
+                "$ref": "#/components/schemas/c12ScalarAgreement"
+              },
+              "cva_agreement": {
+                "$ref": "#/components/schemas/c12ScalarAgreement"
               },
               "all_within_two_se": {
                 "type": "boolean"
@@ -19542,7 +19686,28 @@
               "ore_ee": {
                 "type": "null"
               },
+              "ore_ee_discounted": {
+                "type": "null"
+              },
+              "ore_eepe": {
+                "type": "null"
+              },
+              "ore_cva": {
+                "type": "null"
+              },
+              "ore_dim": {
+                "type": "null"
+              },
               "agreement": {
+                "type": "null"
+              },
+              "eepe_agreement": {
+                "type": "null"
+              },
+              "cva_agreement": {
+                "type": "null"
+              },
+              "dim_agreement": {
                 "type": "null"
               },
               "all_within_two_se": {
@@ -19724,11 +19889,43 @@
                 "collateral": {
                   "type": "null"
                 },
+                "sa_ccr": {
+                  "type": "object",
+                  "properties": {
+                    "margined": {
+                      "const": false
+                    },
+                    "mpor_business_days": {
+                      "const": null
+                    }
+                  },
+                  "required": [
+                    "margined",
+                    "mpor_business_days"
+                  ]
+                },
                 "initial_margin": {
                   "type": "null"
                 },
                 "wrong_way_risk": {
                   "type": "null"
+                },
+                "ore_reconciliation": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "reconciled"
+                    },
+                    "ore_dim": {
+                      "type": "null"
+                    },
+                    "dim_agreement": {
+                      "type": "null"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
                 }
               }
             }
@@ -19774,11 +19971,43 @@
                 "collateral": {
                   "type": "null"
                 },
+                "sa_ccr": {
+                  "type": "object",
+                  "properties": {
+                    "margined": {
+                      "const": false
+                    },
+                    "mpor_business_days": {
+                      "const": null
+                    }
+                  },
+                  "required": [
+                    "margined",
+                    "mpor_business_days"
+                  ]
+                },
                 "initial_margin": {
                   "type": "null"
                 },
                 "wrong_way_risk": {
                   "type": "null"
+                },
+                "ore_reconciliation": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "reconciled"
+                    },
+                    "ore_dim": {
+                      "type": "null"
+                    },
+                    "dim_agreement": {
+                      "type": "null"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
                 }
               }
             }
@@ -19840,11 +20069,43 @@
                     "csa"
                   ]
                 },
+                "sa_ccr": {
+                  "type": "object",
+                  "properties": {
+                    "margined": {
+                      "const": true
+                    },
+                    "mpor_business_days": {
+                      "const": 10
+                    }
+                  },
+                  "required": [
+                    "margined",
+                    "mpor_business_days"
+                  ]
+                },
                 "initial_margin": {
                   "type": "null"
                 },
                 "wrong_way_risk": {
                   "type": "null"
+                },
+                "ore_reconciliation": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "reconciled"
+                    },
+                    "ore_dim": {
+                      "type": "null"
+                    },
+                    "dim_agreement": {
+                      "type": "null"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
                 }
               }
             }
@@ -19906,11 +20167,43 @@
                     "csa"
                   ]
                 },
+                "sa_ccr": {
+                  "type": "object",
+                  "properties": {
+                    "margined": {
+                      "const": true
+                    },
+                    "mpor_business_days": {
+                      "const": 20
+                    }
+                  },
+                  "required": [
+                    "margined",
+                    "mpor_business_days"
+                  ]
+                },
                 "initial_margin": {
                   "type": "null"
                 },
                 "wrong_way_risk": {
                   "type": "null"
+                },
+                "ore_reconciliation": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "reconciled"
+                    },
+                    "ore_dim": {
+                      "type": "null"
+                    },
+                    "dim_agreement": {
+                      "type": "null"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
                 }
               }
             }
@@ -19972,11 +20265,45 @@
                     "csa"
                   ]
                 },
+                "sa_ccr": {
+                  "type": "object",
+                  "properties": {
+                    "margined": {
+                      "const": true
+                    },
+                    "mpor_business_days": {
+                      "const": 10
+                    }
+                  },
+                  "required": [
+                    "margined",
+                    "mpor_business_days"
+                  ]
+                },
                 "initial_margin": {
                   "$ref": "#/components/schemas/c12Im"
                 },
                 "wrong_way_risk": {
                   "type": "null"
+                },
+                "ore_reconciliation": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "reconciled"
+                    },
+                    "ore_dim": {
+                      "$ref": "#/components/schemas/c12NonNegProfile"
+                    },
+                    "dim_agreement": {
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "ore_dim",
+                    "dim_agreement"
+                  ]
                 }
               }
             }
@@ -20022,6 +20349,21 @@
                 "collateral": {
                   "type": "null"
                 },
+                "sa_ccr": {
+                  "type": "object",
+                  "properties": {
+                    "margined": {
+                      "const": false
+                    },
+                    "mpor_business_days": {
+                      "const": null
+                    }
+                  },
+                  "required": [
+                    "margined",
+                    "mpor_business_days"
+                  ]
+                },
                 "initial_margin": {
                   "type": "null"
                 },
@@ -20049,6 +20391,33 @@
         "exclusiveMinimum": 0,
         "exclusiveMaximum": 1,
         "description": "A PIT value in (0, 1) by the (i + 1) / (N + 2) rule."
+      },
+      "c12PointAgreement": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "t",
+          "difference",
+          "combined_se",
+          "within_two_se"
+        ],
+        "properties": {
+          "t": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "difference": {
+            "type": "number"
+          },
+          "combined_se": {
+            "type": "number",
+            "minimum": 0
+          },
+          "within_two_se": {
+            "type": "boolean"
+          }
+        },
+        "description": "The agreement at one grid point: the difference ORE minus Python, the combined Monte Carlo standard error and whether the difference is within two of them."
       },
       "c12Profile": {
         "type": "object",
@@ -20103,7 +20472,7 @@
           },
           "effective_maturity_years": {
             "type": "number",
-            "exclusiveMinimum": 0,
+            "minimum": 1,
             "maximum": 5
           },
           "alpha_times_eepe": {
@@ -20209,7 +20578,7 @@
             "anyOf": [
               {
                 "type": "integer",
-                "minimum": 1
+                "minimum": 10
               },
               {
                 "type": "null"
@@ -20347,10 +20716,10 @@
             "$ref": "#/components/schemas/c12Money"
           },
           "delta": {
-            "type": "string",
+            "type": "number",
             "enum": [
-              "1",
-              "-1"
+              1,
+              -1
             ]
           },
           "maturity_factor": {
@@ -20371,6 +20740,36 @@
         },
         "description": "The CRE52 intermediates of one trade: supervisory duration (CRE52.34), adjusted notional, supervisory delta, maturity factor (CRE52.48 to CRE52.52), the maturity bucket of its end date (CRE52.57) and the effective notional d x delta x MF."
       },
+      "c12ScalarAgreement": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "python",
+          "ore",
+          "difference",
+          "combined_se",
+          "within_two_se"
+        ],
+        "properties": {
+          "python": {
+            "type": "number"
+          },
+          "ore": {
+            "type": "number"
+          },
+          "difference": {
+            "type": "number"
+          },
+          "combined_se": {
+            "type": "number",
+            "minimum": 0
+          },
+          "within_two_se": {
+            "type": "boolean"
+          }
+        },
+        "description": "The agreement of one scalar (EEPE or CVA): the Python value, the ORE value, their difference (ORE minus Python), the combined standard error and the two-standard-error flag."
+      },
       "c12SensitivityCase": {
         "type": "object",
         "additionalProperties": false,
@@ -20379,7 +20778,9 @@
           "a",
           "sigma",
           "eepe",
-          "pfe_peak"
+          "pfe_peak",
+          "ee",
+          "pfe"
         ],
         "properties": {
           "case": {
@@ -20405,9 +20806,15 @@
           },
           "pfe_peak": {
             "$ref": "#/components/schemas/c12Money"
+          },
+          "ee": {
+            "$ref": "#/components/schemas/c12NonNegProfile"
+          },
+          "pfe": {
+            "$ref": "#/components/schemas/c12NonNegProfile"
           }
         },
-        "description": "EE and PFE under the base calibration and with a and sigma moved by one standard error (B6)."
+        "description": "EE and PFE (the profiles and their summaries) under the base calibration and with a and sigma moved by one standard error (B6)."
       },
       "c12Sign": {
         "type": "object",
@@ -20644,6 +21051,8 @@
           "model",
           "b_unit",
           "b_grid",
+          "w_max_usd_million",
+          "largest_b_w",
           "sweep",
           "independent_cva",
           "ore_limit"
@@ -20661,6 +21070,16 @@
               "type": "number"
             },
             "minItems": 3
+          },
+          "w_max_usd_million": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "The largest portfolio value of the simulated paths, in USD million."
+          },
+          "largest_b_w": {
+            "type": "number",
+            "minimum": 0,
+            "description": "max |b| of the grid times w_max_usd_million: the largest exponent b w the grid reaches on this book, so the reader sees whether the sweep moves the hazard."
           },
           "sweep": {
             "type": "array",
@@ -37982,7 +38401,7 @@
       },
       "regulatory-calculators": {
         "title": "Regulatory calculators",
-        "description": "The official worked examples and the invariant cases of the regulatory calculators run through the engine (the five CRE99 SA-CCR netting sets, the RBC20.13 output floor, BA-CVA, the FRTB SBM aggregation, the liquidity-horizon cascade) and a CRE20 lookup grid, each with its paragraph and in-force date. The live ports of the regulation page are held to this document at 1e-9 relative.",
+        "description": "The official worked examples (the five CRE99 SA-CCR netting sets from their trades, the RBC20.13 output floor) and the invariant cases (BA-CVA, the FRTB SBM aggregation with its cross-bucket fallback, the liquidity-horizon cascade) of the regulatory calculators run through the engine, the output-floor phase-in, the parameter tables and a CRE20 lookup grid, each with its paragraph and in-force date. The live ports of the regulation page are held to this document at 1e-9 relative.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -37993,6 +38412,8 @@
           "units",
           "official_examples",
           "invariant_cases",
+          "output_floor_phase_in",
+          "parameter_tables",
           "cre20_grid",
           "provenance",
           "lane"
@@ -38026,7 +38447,23 @@
             "items": {
               "$ref": "#/components/schemas/regulatoryEntry"
             },
-            "minItems": 3
+            "minItems": 7
+          },
+          "output_floor_phase_in": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/regulatoryPhaseIn"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "parameter_tables": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/regulatoryParameterTable"
+            },
+            "minItems": 4,
+            "maxItems": 4
           },
           "cre20_grid": {
             "type": "array",
@@ -38074,6 +38511,7 @@
           "in_force_date",
           "published_date",
           "source",
+          "trades",
           "inputs",
           "outputs",
           "published",
@@ -38109,7 +38547,7 @@
           },
           "paragraph": {
             "type": "string",
-            "pattern": "^(CRE|RBC|MAR)\\d+(\\.\\d+)?",
+            "pattern": "^(CRE|RBC|MAR)\\d+(\\.\\d+)?$",
             "description": "The paragraph (or the first paragraph of a range) of the rule."
           },
           "paragraph_range": {
@@ -38127,6 +38565,12 @@
           "source": {
             "type": "string",
             "minLength": 1
+          },
+          "trades": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/regulatoryTrade"
+            }
           },
           "inputs": {
             "type": "array",
@@ -38172,7 +38616,7 @@
             "const": 1e-9
           }
         },
-        "description": "A calculator entry of the regulation page: the inputs, the engine's outputs, the values the framework publishes, the paragraph and the in-force date of the chapter. The live ports are held to it at 1e-9 relative.",
+        "description": "A calculator entry of the regulation page: the trades (for an SA-CCR example), the inputs, the engine's outputs, the values the framework publishes, the paragraph and the in-force date of the chapter. The live ports are held to it at 1e-9 relative.",
         "oneOf": [
           {
             "properties": {
@@ -38214,6 +38658,10 @@
         "required": [
           "exposure_class",
           "key",
+          "band",
+          "short_term",
+          "cash_flow_dependent",
+          "counterparty_weight",
           "risk_weight",
           "table",
           "paragraph",
@@ -38222,11 +38670,95 @@
         "properties": {
           "exposure_class": {
             "type": "string",
-            "minLength": 1
+            "enum": [
+              "sovereign",
+              "eca",
+              "bank-ecra",
+              "bank-scra",
+              "corporate",
+              "retail",
+              "equity",
+              "residential-re",
+              "commercial-re",
+              "defaulted",
+              "ccf",
+              "currency-mismatch"
+            ]
           },
           "key": {
             "type": "string",
+            "enum": [
+              "AAA to AA-",
+              "A+ to A-",
+              "BBB+ to BBB-",
+              "BB+ to B-",
+              "below B-",
+              "unrated",
+              "BB+ to BB-",
+              "below BB-",
+              "0",
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "A",
+              "B",
+              "C",
+              "investment-grade-unrated",
+              "sme-unrated",
+              "regulatory-retail-sme",
+              "regulatory",
+              "transactor",
+              "other",
+              "equity",
+              "speculative-unlisted",
+              "legislated-programme",
+              "subordinated-debt",
+              "0.5",
+              "0.6",
+              "0.8",
+              "0.9",
+              "1.0",
+              "1.5",
+              "provision-below-20pct",
+              "provision-at-least-20pct",
+              "residential-non-cash-flow-dependent",
+              "multiplier",
+              "cap",
+              "direct-credit-substitute",
+              "repo",
+              "securities-lending",
+              "forward-purchase",
+              "nif-ruf",
+              "transaction-related-contingent",
+              "commitment",
+              "trade-letter-of-credit",
+              "unconditionally-cancellable"
+            ]
+          },
+          "band": {
+            "type": "string",
             "minLength": 1
+          },
+          "short_term": {
+            "type": "boolean"
+          },
+          "cash_flow_dependent": {
+            "type": "boolean"
+          },
+          "counterparty_weight": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "risk_weight": {
             "type": "number",
@@ -38238,14 +38770,143 @@
           },
           "paragraph": {
             "type": "string",
-            "pattern": "^(CRE|RBC|MAR)\\d+(\\.\\d+)?"
+            "pattern": "^(CRE|RBC|MAR)\\d+(\\.\\d+)?$"
           },
           "in_force_date": {
             "type": "string",
             "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
           }
         },
-        "description": "One cell of the CRE20 lookup grid: the exposure class, the rating bucket or LTV band, the risk weight as a decimal, the table, its paragraph and the in-force date of the chapter."
+        "description": "One cell of the CRE20 lookup grid, keyed as the engine's standardised.lookup(exposure_class, key, short_term, cash_flow_dependent, counterparty_weight): the risk weight as a decimal, the band as the table prints it, the table, its paragraph and the in-force date of the chapter. For an LTV band the key is a representative LTV (the upper edge, or 1.5 above 1.0 and 1.0 above 0.8)."
+      },
+      "regulatoryParameterRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key",
+          "parameter",
+          "value",
+          "unit"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1
+          },
+          "parameter": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "description": "One parameter of a regulatory table: the row key, the parameter's name, its value and its unit."
+      },
+      "regulatoryParameterTable": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "calculator",
+          "table",
+          "paragraph",
+          "in_force_date",
+          "source",
+          "rows"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": [
+              "cre52-72-table-2",
+              "mar50-16-table-1",
+              "mar33-12-table-2",
+              "mar33-4-table-1"
+            ]
+          },
+          "title": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "calculator": {
+            "type": "string",
+            "enum": [
+              "standardised-credit-risk-weights",
+              "output-floor",
+              "sa-ccr",
+              "ba-cva",
+              "frtb-sbm",
+              "frtb-liquidity-cascade"
+            ]
+          },
+          "table": {
+            "type": "string",
+            "minLength": 1
+          },
+          "paragraph": {
+            "type": "string",
+            "pattern": "^(CRE|RBC|MAR)\\d+(\\.\\d+)?$"
+          },
+          "in_force_date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/regulatoryParameterRow"
+            },
+            "minItems": 1
+          }
+        },
+        "description": "A parameter table the live ports display (CRE52.72 Table 2, MAR50.16 Table 1, MAR33.4 Table 1, MAR33.12 Table 2), with its paragraph and the in-force date of the chapter."
+      },
+      "regulatoryPhaseIn": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "year",
+          "effective_from",
+          "factor",
+          "table",
+          "paragraph",
+          "in_force_date"
+        ],
+        "properties": {
+          "year": {
+            "type": "integer",
+            "minimum": 2023
+          },
+          "effective_from": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "factor": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 1
+          },
+          "table": {
+            "const": "RBC90.1 Table 1"
+          },
+          "paragraph": {
+            "const": "RBC90.1"
+          },
+          "in_force_date": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          }
+        },
+        "description": "One row of the output-floor phase-in (RBC90.1 Table 1): the year, the date it applies from and the floor factor."
       },
       "regulatoryPublished": {
         "type": "object",
@@ -38271,14 +38932,51 @@
           },
           "rounding": {
             "type": "string",
+            "enum": [
+              "nearest integer",
+              "3 decimal places",
+              "4 decimal places",
+              "none"
+            ]
+          },
+          "paragraph": {
+            "type": "string",
+            "pattern": "^(CRE|RBC|MAR)\\d+(\\.\\d+)?$"
+          }
+        },
+        "description": "A value the framework publishes for a worked example (for example the EAD after rounding to an integer, or the multiplier to three decimals); it must equal the recomputed output rounded as stated."
+      },
+      "regulatoryTrade": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "trade_id",
+          "nature",
+          "paragraph",
+          "terms"
+        ],
+        "properties": {
+          "trade_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "nature": {
+            "type": "string",
             "minLength": 1
           },
           "paragraph": {
             "type": "string",
-            "pattern": "^(CRE|RBC|MAR)\\d+(\\.\\d+)?"
+            "pattern": "^(CRE|RBC|MAR)\\d+(\\.\\d+)?$"
+          },
+          "terms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/regulatoryValue"
+            },
+            "minItems": 1
           }
         },
-        "description": "A value the framework publishes for a worked example (for example the EAD after rounding)."
+        "description": "One trade of a worked example with its contractual terms as values (strings for currency, position and option type), transcribed from the CRE99 table with its paragraph."
       },
       "regulatoryUnits": {
         "type": "object",
@@ -38309,6 +39007,7 @@
           "symbol",
           "value",
           "unit",
+          "basis",
           "paragraph"
         ],
         "properties": {
@@ -38321,19 +39020,35 @@
             "minLength": 1
           },
           "value": {
-            "type": "number"
+            "type": [
+              "number",
+              "string",
+              "array"
+            ],
+            "items": {
+              "type": "number"
+            },
+            "description": "A number, a string (a currency, a position, an option type, an entity) or an array of numbers (a vector or a matrix in row-major order)."
           },
           "unit": {
             "type": "string",
             "minLength": 1
           },
+          "basis": {
+            "type": "string",
+            "enum": [
+              "transcribed",
+              "recomputed",
+              "constructed"
+            ]
+          },
           "paragraph": {
             "type": "string",
-            "pattern": "^(CRE|RBC|MAR)\\d+(\\.\\d+)?",
+            "pattern": "^(CRE|RBC|MAR)\\d+(\\.\\d+)?$",
             "description": "The paragraph this value comes from, for example CRE52.23."
           }
         },
-        "description": "One named number: an input or an output, with its unit and the paragraph it comes from."
+        "description": "One named value: an input or an output, with its unit, the paragraph it comes from and its basis: transcribed from a source line, recomputed from the inputs by the engine's formulas, or constructed by the fixture for an invariant."
       },
       "sourceRecord": {
         "type": "object",

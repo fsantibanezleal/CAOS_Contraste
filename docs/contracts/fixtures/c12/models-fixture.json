@@ -74,8 +74,9 @@
         "en": "FRED tags the series Public Domain: Citation Requested; the Treasury-side sentence is UNVERIFIED.",
         "es": "FRED etiqueta la serie como dominio publico con cita; la frase del Tesoro no esta verificada."
       },
+      "negative_spread_rule": "a negative HQM-minus-Treasury spread is set to zero and counted, never carried as a negative spread",
       "synthetic_spread": {
-        "value": 0.012,
+        "value": 0.0125,
         "unit": "decimal per year",
         "label": "convention"
       }

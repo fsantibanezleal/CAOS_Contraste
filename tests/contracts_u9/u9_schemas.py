@@ -15,9 +15,13 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+import semantics as sm  # noqa: E402
+
 ROOT = HERE.parents[1]
 SCHEMAS = ROOT / "docs" / "contracts" / "schemas"
 BASE = "https://contraste.fasl-work.com/contracts/"
@@ -40,29 +44,20 @@ VARIANTS = ["single-swap", "netting-set", "csa-mpor-10d", "csa-mpor-20d", "with-
 #: the six backtest horizons, in order: B5 adds the two MPoR horizons (BCBS 185 paragraphs 18 and 19) to D7's four
 HORIZONS = ["10bd", "20bd", "1m", "3m", "6m", "12m"]
 SUB_WINDOWS = ["before-2008", "2008-2019", "from-2020"]  # D7
-GIRR_TENORS = [0.25, 0.5, 1, 2, 3, 5, 10, 15, 20, 30]  # MAR21.8, MAR21.42 Table 1
-GIRR_RW = [0.017, 0.017, 0.016, 0.013, 0.012, 0.011, 0.011, 0.011, 0.011, 0.011]  # MAR21.42 Table 1
-#: MAR21.46 Table 2, percent, rows and columns in the order of GIRR_TENORS (addendum R7)
-GIRR_CORR = [
-    [100.0, 97.0, 91.4, 81.1, 71.9, 56.6, 40.0, 40.0, 40.0, 40.0],
-    [97.0, 100.0, 97.0, 91.4, 86.1, 76.3, 56.6, 41.9, 40.0, 40.0],
-    [91.4, 97.0, 100.0, 97.0, 94.2, 88.7, 76.3, 65.7, 56.6, 41.9],
-    [81.1, 91.4, 97.0, 100.0, 98.5, 95.6, 88.7, 82.3, 76.3, 65.7],
-    [71.9, 86.1, 94.2, 98.5, 100.0, 98.0, 93.2, 88.7, 84.4, 76.3],
-    [56.6, 76.3, 88.7, 95.6, 98.0, 100.0, 97.0, 94.2, 91.4, 86.1],
-    [40.0, 56.6, 76.3, 88.7, 93.2, 97.0, 100.0, 98.5, 97.0, 94.2],
-    [40.0, 41.9, 65.7, 82.3, 88.7, 94.2, 98.5, 100.0, 99.0, 97.0],
-    [40.0, 40.0, 56.6, 76.3, 84.4, 91.4, 97.0, 99.0, 100.0, 98.5],
-    [40.0, 40.0, 41.9, 65.7, 76.3, 86.1, 94.2, 97.0, 98.5, 100.0],
-]
-BA_CVA_SECTORS = ["sovereigns-central-banks-mdbs", "local-government-public", "financials", "basic-materials-energy-industrials",
-                  "consumer-transport-administrative", "technology-telecoms", "health-care-utilities-professional", "other"]
+GIRR_TENORS, GIRR_RW, GIRR_CORR = sm.GIRR_TENORS, sm.GIRR_RW, sm.GIRR_CORR  # MAR21.8, MAR21.42 Table 1, MAR21.46 Table 2 (R7)
+BA_CVA_SECTORS = list(sm.BA_CVA_RW)
 #: the named parameters of decision D6 and the settings the methods leave to the bake; each is required with the label "convention"
 NAMED = ["notionals", "maturities_years", "sides", "netting_set_members", "single_swap_member", "fixed_rate_rule",
          "csa_threshold", "csa_minimum_transfer_amount", "csa_independent_amount", "mpor_business_days_short",
          "mpor_business_days_long", "counterparty_spread", "counterparty_lgd", "bank_spread", "bank_lgd", "pfe_quantile",
-         "path_count", "seed", "wwr_b_grid", "im_quantile", "im_horizon_days", "im_regression_order", "ba_cva_sector",
-         "ba_cva_rating", "stress_window_start", "stress_window_end", "backtest_window_start"]
+         "path_count", "seed", "time_grid_years", "wwr_b_grid", "im_quantile", "im_horizon_calendar_days",
+         "im_mpor_calendar_days", "im_regression_order", "ba_cva_sector", "ba_cva_rating", "stress_window_start",
+         "stress_window_end", "backtest_window_start", "backtest_paths_per_date", "backtest_simulated_critical_count",
+         "reconciliation_se_threshold", "ee_check_k_se"]
+
+
+SENS_DESC = ("s_k = (V(r + 0.0001) - V(r)) / 0.0001 at each GIRR tenor, in USD per unit of rate: the change in value for a 1 basis "
+             "point shift divided by 0.0001 (MAR21.19), not the PV01 per basis point. The weighted sensitivity is RW_k s_k / sqrt(2).")
 
 
 def LBL(p: str) -> dict:
@@ -93,6 +88,11 @@ def c12_defs() -> dict:
         "currency": C("USD"), "values": A(N(), 2, desc="One value per point of the time grid."),
         "mc_se": A(N(minimum=0), 2, desc="The Monte Carlo standard error of each value."),
     }, "A money profile on the time grid with its Monte Carlo standard errors (same length as the grid: a producer check).")
+    d[p + "NonNegProfile"] = Ob({
+        "currency": C("USD"), "values": A(N(minimum=0), 2, desc="One non-negative value per point of the time grid."),
+        "mc_se": A(N(minimum=0), 2, desc="The Monte Carlo standard error of each value."),
+    }, "A non-negative money profile (an EE, ENE, PFE, effective EE or DIM) on the time grid with its Monte Carlo standard errors "
+       "(same length as the grid: a producer check).")
     d[p + "Convention"] = Ob({
         "value": {"type": ["number", "string", "array"]}, "unit": S(minLength=1), "label": C("convention"),
     }, "A named parameter of the synthetic book or of a method (decision D6): its value, its unit and the label \"convention\". "
@@ -128,24 +128,24 @@ def c12_defs() -> dict:
        "the date by phi(t). The sample window ends strictly before the backtest date (no look-ahead: a producer check).")
     d[p + "Exposure"] = Ob({
         "basis": E("uncollateralised", "collateralised-vm", "collateralised-vm-im"),
-        "time_grid_years": A(N(exclusiveMinimum=0), 2), "ee": R(p + "Profile"), "ee_discounted": R(p + "Profile"),
-        "ene": R(p + "Profile"), "ene_discounted": R(p + "Profile"), "pfe_quantile": N(exclusiveMinimum=0, exclusiveMaximum=1),
-        "pfe": R(p + "Profile"), "effective_ee": R(p + "Profile"), "epe": R(p + "MoneySe"), "eepe": R(p + "MoneySe"),
+        "time_grid_years": A(N(exclusiveMinimum=0), 2), "ee": R(p + "NonNegProfile"), "ee_discounted": R(p + "NonNegProfile"),
+        "ene": R(p + "NonNegProfile"), "ene_discounted": R(p + "NonNegProfile"), "pfe_quantile": N(exclusiveMinimum=0, exclusiveMaximum=1),
+        "pfe": R(p + "NonNegProfile"), "effective_ee": R(p + "NonNegProfile"), "epe": R(p + "MoneySe"), "eepe": R(p + "MoneySe"),
         "eepe_horizon_years": N(exclusiveMinimum=0, maximum=1), "measure_note": TXT,
     }, "The exposure measures of the variant on the time grid, each with its Monte Carlo error: EE and ENE undiscounted "
        "(Basel style, dossier 05 C.1) and discounted under the numeraire (the CVA input), the PFE at the stated quantile, the "
        "effective EE (running maximum, CRE53.12) and EEPE (CRE53.13) over the first year or to maturity.")
     d[p + "NettingBenefit"] = Ob({
-        "per_trade_ee": A(Ob({"trade_id": S(minLength=1), "ee": R(p + "Profile")}), 1),
-        "sum_of_single_trade_ee": R(p + "Profile"), "netted_ee": R(p + "Profile"), "benefit": R(p + "Profile"),
+        "per_trade_ee": A(Ob({"trade_id": S(minLength=1), "ee": R(p + "NonNegProfile")}), 1),
+        "sum_of_single_trade_ee": R(p + "NonNegProfile"), "netted_ee": R(p + "NonNegProfile"), "benefit": R(p + "NonNegProfile"),
     }, "The netting benefit: the netting-set EE is at most the sum of the single-trade EE; the benefit is their difference.")
     d[p + "Csa"] = Ob({
         "threshold": R(p + "Money"), "minimum_transfer_amount": R(p + "Money"), "independent_amount": R(p + "Money"),
-        "mpor_business_days": Int(1), "remargining_days": Int(1), "closeout": C("sticky-date close-out grid (ORE, R3)"),
+        "mpor_business_days": Int(10), "remargining_days": Int(1), "closeout": C("sticky-date close-out grid (ORE, R3)"),
         "floor_reference": S(minLength=1),
     }, "The CSA terms of the variant (ORE credit support amount and delivery amount equations, R3).")
     d[p + "Collateral"] = Ob({
-        "csa": R(p + "Csa"), "uncollateralised_ee": R(p + "Profile"), "collateral_balance": R(p + "Profile"),
+        "csa": R(p + "Csa"), "uncollateralised_ee": R(p + "NonNegProfile"), "collateral_balance": R(p + "Profile"),
         "limit": R(p + "Label"),
     }, "The variation-margin variant: the CSA terms, the uncollateralised EE on the same axis and the mean collateral balance. "
        "The limit states what the close-out model leaves out (the Andersen, Pykhtin and Sokol timelines).")
@@ -153,9 +153,11 @@ def c12_defs() -> dict:
     d[p + "Im"] = Ob({
         "method": C("ORE dynamic initial margin by regression (R2)"), "labelled": C("regression proxy, not SIMM"),
         "simm_used": C(False), "quantile": N(exclusiveMinimum=0, exclusiveMaximum=1), "alpha": N(exclusiveMinimum=0),
-        "horizon_days": Int(1), "mpor_days": Int(1), "regression_order": Int(0),
-        "dim": R(p + "Profile"), "ee_vm_only": R(p + "Profile"), "limit": R(p + "Label"),
-    }, "Initial margin as a separate balance: DIM(t) = alpha S(t) sqrt(horizon / MPoR) applied as max(exposure - DIM, 0). "
+        "horizon_calendar_days": Int(1), "mpor_calendar_days": Int(1), "regression_order": Int(0),
+        "dim": R(p + "NonNegProfile"), "ee_vm_only": R(p + "NonNegProfile"), "limit": R(p + "Label"),
+    }, "Initial margin as a separate balance: DIM(t) = alpha S(t) sqrt(horizon / MPoR) applied as max(exposure - DIM, 0), alpha "
+       "the normal quantile of `quantile`, the horizon and the MPoR in calendar days as ORE computes horizonCalendarDays / "
+       "mporCalendarDays (10 business days are 14 calendar days, 20 are 28). "
        "Labelled a regression proxy, never SIMM (SIMM is not used: its public notice restricts use to a participant's own "
        "transactions).")
     d[p + "CvaBucket"] = Ob({
@@ -166,7 +168,9 @@ def c12_defs() -> dict:
     d[p + "Cva"] = Ob({
         "credit_curve_source": E("hqm-minus-treasury", "synthetic-flat"),
         "credit_curve_label": C("proxy: an AAA to A market spread, a floor for lower ratings (R10)"),
-        "survival_formula": C("S(t) = exp(-s t / LGD)"), "lgd": N(exclusiveMinimum=0, maximum=1),
+        "survival_formula": C("S(t) = exp(-s t / LGD)"),
+        "negative_spread_rule": C("a negative HQM-minus-Treasury spread is set to zero and counted in spreads_floored_at_zero"),
+        "spreads_floored_at_zero": Int(0), "lgd": N(exclusiveMinimum=0, maximum=1),
         "bank_lgd": N(exclusiveMinimum=0, maximum=1), "buckets": A(R(p + "CvaBucket"), 1),
         "cva": R(p + "MoneySe"), "dva": R(p + "MoneySe"), "bcva": R(p + "Money"),
     }, "CVA and DVA by the discretised formula, with the bucket terms so a view or a test recomputes them from the EE.")
@@ -176,15 +180,18 @@ def c12_defs() -> dict:
                            "survival constraint; independent is true at b = 0 only.")
     d[p + "Wwr"] = Ob({
         "model": C("Hull and White (2012) hazard rate on the portfolio value, h(t) = exp(a(t) + b w(t))"),
-        "b_unit": C("per USD million of portfolio value"), "b_grid": A(N(), 3), "sweep": A(R(p + "WwrPoint"), 3),
-        "independent_cva": R(p + "Money"), "ore_limit": R(p + "Label"),
+        "b_unit": C("per USD million of portfolio value"), "b_grid": A(N(), 3),
+        "w_max_usd_million": N(exclusiveMinimum=0, description="The largest portfolio value of the simulated paths, in USD million."),
+        "largest_b_w": N(minimum=0, description="max |b| of the grid times w_max_usd_million: the largest exponent b w the grid "
+                                                 "reaches on this book, so the reader sees whether the sweep moves the hazard."),
+        "sweep": A(R(p + "WwrPoint"), 3), "independent_cva": R(p + "Money"), "ore_limit": R(p + "Label"),
     }, "The wrong-way risk variant (B1): CVA over the grid of b, a(t) calibrated sequentially on the simulated paths to the "
        "survival curve. b = 0 equals the independent CVA exactly. ORE's wrong-way example is a different model, so this variant "
        "has no ORE reconciliation and says so.")
     d[p + "SaTrade"] = Ob({
         "trade_id": S(minLength=1), "hedging_set": S(pattern="^[A-Z]{3}$"), "start_years": N(minimum=0),
         "end_years": N(exclusiveMinimum=0), "notional": R(p + "Money"), "supervisory_duration": N(minimum=0),
-        "adjusted_notional": R(p + "Money"), "delta": E("1", "-1"), "maturity_factor": N(exclusiveMinimum=0),
+        "adjusted_notional": R(p + "Money"), "delta": {"type": "number", "enum": [1, -1]}, "maturity_factor": N(exclusiveMinimum=0),
         "bucket": E("B1", "B2", "B3"), "effective_notional": N(),
     }, "The CRE52 intermediates of one trade: supervisory duration (CRE52.34), adjusted notional, supervisory delta, maturity "
        "factor (CRE52.48 to CRE52.52), the maturity bucket of its end date (CRE52.57) and the effective notional d x delta x MF.")
@@ -199,7 +206,7 @@ def c12_defs() -> dict:
     d[p + "SaCcr"] = Ob({
         "paragraph": C("CRE52"), "in_force_date": C("2023-01-01"), "margined": B,
         "v": R(p + "Money"), "c": R(p + "Money"), "th": R(p + "Money"), "mta": R(p + "Money"), "nica": R(p + "Money"),
-        "mpor_business_days": nullable(Int(1)), "rc": R(p + "Money"), "trades": A(R(p + "SaTrade"), 1),
+        "mpor_business_days": nullable(Int(10)), "rc": R(p + "Money"), "trades": A(R(p + "SaTrade"), 1),
         "hedging_sets": A(R(p + "SaHedgingSet"), 1), "addon_by_class": R(p + "SaAddOns"), "addon_aggregate": R(p + "Money"),
         "multiplier_floor": C(0.05), "multiplier": N(minimum=0.05, maximum=1), "pfe": R(p + "Money"), "alpha": C(1.4),
         "ead": R(p + "Money"),
@@ -223,7 +230,7 @@ def c12_defs() -> dict:
     }, "The stressed Effective EPE (B9): a named three-year window containing a stress period, and the HQM spread rising in it "
        "(B10).")
     d[p + "Regulatory"] = Ob({
-        "alpha": C(1.4), "alpha_paragraph": C("CRE53.14"), "effective_maturity_years": N(exclusiveMinimum=0, maximum=5),
+        "alpha": C(1.4), "alpha_paragraph": C("CRE53.14"), "effective_maturity_years": N(minimum=1, maximum=5),
         "alpha_times_eepe": R(p + "Money"), "sa_ccr_ead": R(p + "Money"), "sa_ccr_over_alpha_eepe": N(minimum=0),
         "stressed": R(p + "StressedEpe"),
     }, "The regulatory measures beside the modelled ones: alpha times EEPE (CRE53.11) against the SA-CCR EAD, the effective "
@@ -232,10 +239,11 @@ def c12_defs() -> dict:
                                "The bucket charge under one correlation scenario (MAR21.6).")
     d[p + "GirrCharge"] = Ob({
         "paragraph": C("MAR21.42 to MAR21.50"), "in_force_date": C("2023-01-01"), "currency": C("USD"),
-        "sqrt2_division": C(True), "sqrt2_label": C("convention"), "sensitivities_per_bp": A(N(), 10, 10),
+        "sqrt2_division": C(True), "sqrt2_label": C("convention"), "sensitivities": A(N(), 10, 10, desc=SENS_DESC),
         "weighted_sensitivities": A(N(), 10, 10), "scenarios": A(R(p + "GirrScenario"), 3, 3),
         "delta_charge": R(p + "Money"), "delta_charge_undivided": R(p + "Money"),
-    }, "The FRTB SA GIRR delta charge of the same book (single USD bucket): the PV01 per tenor, the weighted sensitivities with "
+    }, "The FRTB SA GIRR delta charge of the same book (single USD bucket): the sensitivities s_k per tenor as MAR21.19 defines "
+       "them, the weighted sensitivities with "
        "the MAR21.44 division by sqrt(2) (a named convention) and the charge, the maximum over the three correlation scenarios, "
        "with the undivided charge beside it.")
     d[p + "Pit"] = N("A PIT value in (0, 1) by the (i + 1) / (N + 2) rule.", exclusiveMinimum=0, exclusiveMaximum=1)
@@ -269,20 +277,36 @@ def c12_defs() -> dict:
     d[p + "SensitivityCase"] = Ob({
         "case": E("base", "a-plus-1se", "a-minus-1se", "sigma-plus-1se", "sigma-minus-1se"), "a": N(exclusiveMinimum=0),
         "sigma": N(exclusiveMinimum=0), "eepe": R(p + "Money"), "pfe_peak": R(p + "Money"),
-    }, "EE and PFE under the base calibration and with a and sigma moved by one standard error (B6).")
+        "ee": R(p + "NonNegProfile"), "pfe": R(p + "NonNegProfile"),
+    }, "EE and PFE (the profiles and their summaries) under the base calibration and with a and sigma moved by one standard error "
+       "(B6).")
+    d[p + "PointAgreement"] = Ob({"t": N(exclusiveMinimum=0), "difference": N(), "combined_se": N(minimum=0), "within_two_se": B},
+                                 "The agreement at one grid point: the difference ORE minus Python, the combined Monte Carlo "
+                                 "standard error and whether the difference is within two of them.")
+    d[p + "ScalarAgreement"] = Ob({"python": N(), "ore": N(), "difference": N(), "combined_se": N(minimum=0), "within_two_se": B},
+                                  "The agreement of one scalar (EEPE or CVA): the Python value, the ORE value, their difference "
+                                  "(ORE minus Python), the combined standard error and the two-standard-error flag.")
     d[p + "OreReconciliation"] = one_of(Ob({
         "status": E("reconciled", "not-applicable"), "ore_version": nullable(C("1.8.17.0")), "platform": nullable(S(minLength=1)),
-        "run_seconds": nullable(N(minimum=0)), "ore_ee": nullable(R(p + "Profile")),
-        "agreement": nullable(A(Ob({"t": N(exclusiveMinimum=0), "difference": N(), "combined_se": N(minimum=0),
-                                    "within_two_se": B}), 2)),
+        "run_seconds": nullable(N(minimum=0)), "ore_ee": nullable(R(p + "NonNegProfile")),
+        "ore_ee_discounted": nullable(R(p + "NonNegProfile")), "ore_eepe": nullable(R(p + "Money")),
+        "ore_cva": nullable(R(p + "Money")), "ore_dim": nullable(R(p + "NonNegProfile")),
+        "agreement": nullable(A(R(p + "PointAgreement"), 2)), "eepe_agreement": nullable(R(p + "ScalarAgreement")),
+        "cva_agreement": nullable(R(p + "ScalarAgreement")), "dim_agreement": nullable(A(R(p + "PointAgreement"), 2)),
         "all_within_two_se": nullable(B), "reason": nullable(R(p + "Label")),
-    }, "The reconciliation of the Python EE profile against ORE 1.8.17.0 on the same curve and model parameters (ADR-0069: the "
-       "bake's), with the agreement at every grid point; or not-applicable with its reason."),
+    }, "The reconciliation of the Python measures against ORE 1.8.17.0 on the same curve and model parameters (ADR-0069: the "
+       "bake's): the EE profile at every grid point, the EEPE and the CVA recomputed from the ORE profiles, and for the initial-"
+       "margin variant the DIM profile, each with its agreement. Every variant but the wrong-way one is reconciled (S2); the "
+       "wrong-way one is not-applicable with its reason. An ORE run that fails stops the bake: a variant is never published as "
+       "not-applicable because ORE failed."),
         {"status": C("reconciled"), "ore_version": C("1.8.17.0"), "platform": {"type": "string"}, "run_seconds": {"type": "number"},
-         "ore_ee": R(p + "Profile"), "agreement": {"type": "array"}, "all_within_two_se": {"type": "boolean"},
-         "reason": {"type": "null"}},
+         "ore_ee": R(p + "NonNegProfile"), "ore_ee_discounted": R(p + "NonNegProfile"), "ore_eepe": R(p + "Money"),
+         "ore_cva": R(p + "Money"), "agreement": {"type": "array"}, "eepe_agreement": R(p + "ScalarAgreement"),
+         "cva_agreement": R(p + "ScalarAgreement"), "all_within_two_se": {"type": "boolean"}, "reason": {"type": "null"}},
         {"status": C("not-applicable"), "ore_version": {"type": "null"}, "platform": {"type": "null"},
-         "run_seconds": {"type": "null"}, "ore_ee": {"type": "null"}, "agreement": {"type": "null"},
+         "run_seconds": {"type": "null"}, "ore_ee": {"type": "null"}, "ore_ee_discounted": {"type": "null"},
+         "ore_eepe": {"type": "null"}, "ore_cva": {"type": "null"}, "ore_dim": {"type": "null"}, "agreement": {"type": "null"},
+         "eepe_agreement": {"type": "null"}, "cva_agreement": {"type": "null"}, "dim_agreement": {"type": "null"},
          "all_within_two_se": {"type": "null"}, "reason": R(p + "Label")})
     return d
 
@@ -312,10 +336,19 @@ def c12_outputs() -> dict:
              "book": {"type": "object", "properties": {"trades": trades}, "required": ["trades"]},
              "collateral": {"type": "null"} if not coll else {"type": "object", "properties": {"csa": {"type": "object", "properties": {
                  "mpor_business_days": C(mpor)}, "required": ["mpor_business_days"]}}, "required": ["csa"]},
+             # the SA-CCR block is margined exactly when the variant has a CSA, with the CSA's MPoR (CRE52.50, CRE52.52)
+             "sa_ccr": {"type": "object", "properties": {"margined": C(bool(coll)), "mpor_business_days": C(mpor)},
+                        "required": ["margined", "mpor_business_days"]},
              "initial_margin": R(p + "Im") if im else {"type": "null"},
              "wrong_way_risk": R(p + "Wwr") if wwr else {"type": "null"}}
-        if wwr:
-            a["ore_reconciliation"] = {"type": "object", "properties": {"status": C("not-applicable")}, "required": ["status"]}
+        # S2: ORE reconciles every variant but the wrong-way one (a different model); the IM variant carries ORE's DIM (B2)
+        a["ore_reconciliation"] = {"type": "object", "properties": {"status": C("not-applicable" if wwr else "reconciled")},
+                                   "required": ["status"]}
+        if im:
+            a["ore_reconciliation"]["properties"].update({"ore_dim": R(p + "NonNegProfile"), "dim_agreement": {"type": "array"}})
+            a["ore_reconciliation"]["required"] += ["ore_dim", "dim_agreement"]
+        elif not wwr:
+            a["ore_reconciliation"]["properties"].update({"ore_dim": {"type": "null"}, "dim_agreement": {"type": "null"}})
         return a
 
     one = {"minItems": 1, "maxItems": 1}
@@ -354,6 +387,7 @@ def c12_models() -> dict:
         "base": C("US Treasury HQM corporate spot curve minus the Treasury zero curve of the same date"),
         "label": C("proxy"), "derivation": R(p + "Label"), "source_url": S(minLength=1),
         "licence_class": C("mirror-allowed with citation"), "licence_basis": R(p + "Label"),
+        "negative_spread_rule": C("a negative HQM-minus-Treasury spread is set to zero and counted, never carried as a negative spread"),
         "synthetic_spread": R(p + "Convention"),
     }, "The counterparty curve (B10): a derived AAA to A market spread, labelled a proxy; the synthetic spread stays for the "
        "BA-CVA rating and the sensitivity rows.")
@@ -373,38 +407,77 @@ def c12_models() -> dict:
 # ------------------------------------------------------------------------------------------------------------ regulatory
 
 CALCULATORS = ["standardised-credit-risk-weights", "output-floor", "sa-ccr", "ba-cva", "frtb-sbm", "frtb-liquidity-cascade"]
-PARA = r"^(CRE|RBC|MAR)\d+(\.\d+)?"
+PARA = r"^(CRE|RBC|MAR)\d+(\.\d+)?$"
+EXPOSURE_CLASSES = ["sovereign", "eca", "bank-ecra", "bank-scra", "corporate", "retail", "equity", "residential-re", "commercial-re",
+                    "defaulted", "ccf", "currency-mismatch"]
+#: the keys the engine's standardised.lookup takes: rating buckets, grades, kinds and an LTV as a string of the number
+CRE20_KEYS = ["AAA to AA-", "A+ to A-", "BBB+ to BBB-", "BB+ to B-", "below B-", "unrated", "BB+ to BB-", "below BB-",
+              "0", "1", "2", "3", "4", "5", "6", "7", "A", "B", "C", "investment-grade-unrated", "sme-unrated",
+              "regulatory-retail-sme", "regulatory", "transactor", "other", "equity", "speculative-unlisted",
+              "legislated-programme", "subordinated-debt", "0.5", "0.6", "0.8", "0.9", "1.0", "1.5",
+              "provision-below-20pct", "provision-at-least-20pct", "residential-non-cash-flow-dependent", "multiplier", "cap",
+              *sm.CCF]
+CHAPTERS = sorted(sm.IN_FORCE)
+TABLE_IDS = ["cre52-72-table-2", "mar50-16-table-1", "mar33-12-table-2", "mar33-4-table-1"]
 
 
 def regulatory_defs() -> dict:
     p = "regulatory"
     d: dict = {}
     d[p + "Value"] = Ob({
-        "name": S(minLength=1), "symbol": S(minLength=1), "value": N(), "unit": S(minLength=1),
+        "name": S(minLength=1), "symbol": S(minLength=1),
+        "value": {"type": ["number", "string", "array"], "items": {"type": "number"},
+                  "description": "A number, a string (a currency, a position, an option type, an entity) or an array of numbers "
+                                 "(a vector or a matrix in row-major order)."},
+        "unit": S(minLength=1), "basis": E("transcribed", "recomputed", "constructed"),
         "paragraph": S(pattern=PARA, description="The paragraph this value comes from, for example CRE52.23."),
-    }, "One named number: an input or an output, with its unit and the paragraph it comes from.")
+    }, "One named value: an input or an output, with its unit, the paragraph it comes from and its basis: transcribed from a source "
+       "line, recomputed from the inputs by the engine's formulas, or constructed by the fixture for an invariant.")
     d[p + "Published"] = Ob({
-        "name": S(minLength=1), "value": N(), "unit": S(minLength=1), "rounding": S(minLength=1),
+        "name": S(minLength=1), "value": N(), "unit": S(minLength=1), "rounding": E("nearest integer", "3 decimal places",
+                                                                                       "4 decimal places", "none"),
         "paragraph": S(pattern=PARA),
-    }, "A value the framework publishes for a worked example (for example the EAD after rounding).")
+    }, "A value the framework publishes for a worked example (for example the EAD after rounding to an integer, or the multiplier to "
+       "three decimals); it must equal the recomputed output rounded as stated.")
+    d[p + "Trade"] = Ob({
+        "trade_id": S(minLength=1), "nature": S(minLength=1), "paragraph": S(pattern=PARA),
+        "terms": A(R(p + "Value"), 1),
+    }, "One trade of a worked example with its contractual terms as values (strings for currency, position and option type), "
+       "transcribed from the CRE99 table with its paragraph.")
     d[p + "Entry"] = Ob({
         "id": S(pattern=r"^[a-z0-9-]+$"), "calculator": E(*CALCULATORS), "title": TXT,
         "kind": E("official-example", "invariant"),
         "paragraph": S(pattern=PARA, description="The paragraph (or the first paragraph of a range) of the rule."),
         "paragraph_range": S(minLength=1), "in_force_date": DATE, "published_date": DATE, "source": S(minLength=1),
+        "trades": A(R(p + "Trade")),
         "inputs": A(R(p + "Value"), 1), "outputs": A(R(p + "Value"), 1), "published": A(R(p + "Published")),
         "statement": nullable(TXT), "holds": nullable(B), "tolerance_relative": C(1e-9),
-    }, "A calculator entry of the regulation page: the inputs, the engine's outputs, the values the framework publishes, "
-       "the paragraph and the in-force date of the chapter. The live ports are held to it at 1e-9 relative.")
+    }, "A calculator entry of the regulation page: the trades (for an SA-CCR example), the inputs, the engine's outputs, the values "
+       "the framework publishes, the paragraph and the in-force date of the chapter. The live ports are held to it at 1e-9 relative.")
     d[p + "Entry"] = one_of(d[p + "Entry"],
                             {"kind": C("official-example"), "published": {"minItems": 1}, "statement": {"type": "null"},
                              "holds": {"type": "null"}},
                             {"kind": C("invariant"), "published": {"maxItems": 0}, "statement": TXT, "holds": C(True)})
     d[p + "GridRow"] = Ob({
-        "exposure_class": S(minLength=1), "key": S(minLength=1), "risk_weight": N(minimum=0), "table": S(minLength=1),
+        "exposure_class": E(*EXPOSURE_CLASSES), "key": E(*CRE20_KEYS), "band": S(minLength=1),
+        "short_term": B, "cash_flow_dependent": B, "counterparty_weight": nullable(N(minimum=0)),
+        "risk_weight": N(minimum=0), "table": S(minLength=1),
         "paragraph": S(pattern=PARA), "in_force_date": DATE,
-    }, "One cell of the CRE20 lookup grid: the exposure class, the rating bucket or LTV band, the risk weight as a decimal, "
-       "the table, its paragraph and the in-force date of the chapter.")
+    }, "One cell of the CRE20 lookup grid, keyed as the engine's standardised.lookup(exposure_class, key, short_term, "
+       "cash_flow_dependent, counterparty_weight): the risk weight as a decimal, the band as the table prints it, the table, its "
+       "paragraph and the in-force date of the chapter. For an LTV band the key is a representative LTV (the upper edge, or 1.5 "
+       "above 1.0 and 1.0 above 0.8).")
+    d[p + "PhaseIn"] = Ob({
+        "year": Int(2023), "effective_from": DATE, "factor": N(exclusiveMinimum=0, maximum=1), "table": C("RBC90.1 Table 1"),
+        "paragraph": C("RBC90.1"), "in_force_date": DATE,
+    }, "One row of the output-floor phase-in (RBC90.1 Table 1): the year, the date it applies from and the floor factor.")
+    d[p + "ParameterRow"] = Ob({"key": S(minLength=1), "parameter": S(minLength=1), "value": N(), "unit": S(minLength=1)},
+                               "One parameter of a regulatory table: the row key, the parameter's name, its value and its unit.")
+    d[p + "ParameterTable"] = Ob({
+        "id": E(*TABLE_IDS), "title": TXT, "calculator": E(*CALCULATORS), "table": S(minLength=1), "paragraph": S(pattern=PARA),
+        "in_force_date": DATE, "source": S(minLength=1), "rows": A(R(p + "ParameterRow"), 1),
+    }, "A parameter table the live ports display (CRE52.72 Table 2, MAR50.16 Table 1, MAR33.4 Table 1, MAR33.12 Table 2), with its "
+       "paragraph and the in-force date of the chapter.")
     d[p + "Engine"] = Ob({"name": C("riskvalidation"), "version": S(minLength=1)}, "The engine release that produced the outputs.")
     d[p + "Units"] = Ob({"money": C("as stated per value (USD thousands for CRE99, index points for RBC20.13)"),
                          "rate": C("decimal"), "dates": C("ISO-8601")}, "Units of every number, per value.")
@@ -418,17 +491,19 @@ def regulatory_doc() -> dict:
         "schema": C("contraste.regulatory/v1"), "case_id": C("REGULATORY"), "document_id": S(minLength=1),
         "engine": R(p + "Engine"), "units": R(p + "Units"),
         "official_examples": A(R(p + "Entry"), 7),
-        "invariant_cases": A(R(p + "Entry"), 3), "cre20_grid": A(R(p + "GridRow"), 1),
+        "invariant_cases": A(R(p + "Entry"), 7), "output_floor_phase_in": A(R(p + "PhaseIn"), 6, 6),
+        "parameter_tables": A(R(p + "ParameterTable"), 4, 4), "cre20_grid": A(R(p + "GridRow"), 1),
         "provenance": {"$ref": "../common/provenance.schema.json"}, "lane": {"$ref": "../common/lane-block.schema.json"},
     }, "The regulatory-calculators document.")
     return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "$id": f"{BASE}regulatory/calculators.schema.json",
         "title": "Regulatory calculators",
-        "description": "The official worked examples and the invariant cases of the regulatory calculators run through the engine "
-                       "(the five CRE99 SA-CCR netting sets, the RBC20.13 output floor, BA-CVA, the FRTB SBM aggregation, the "
-                       "liquidity-horizon cascade) and a CRE20 lookup grid, each with its paragraph and in-force date. The live "
-                       "ports of the regulation page are held to this document at 1e-9 relative.",
+        "description": "The official worked examples (the five CRE99 SA-CCR netting sets from their trades, the RBC20.13 output floor) "
+                       "and the invariant cases (BA-CVA, the FRTB SBM aggregation with its cross-bucket fallback, the liquidity-"
+                       "horizon cascade) of the regulatory calculators run through the engine, the output-floor phase-in, the "
+                       "parameter tables and a CRE20 lookup grid, each with its paragraph and in-force date. The live ports of the "
+                       "regulation page are held to this document at 1e-9 relative.",
         **{k: v for k, v in root.items() if k != "description"},
         "$defs": reachable_of(root, d),
     }

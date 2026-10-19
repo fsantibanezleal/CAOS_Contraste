@@ -82,16 +82,29 @@ def model_summary(mid: str, rung: str) -> dict:
 
 # ------------------------------------------------------------------------------------------------ C12 building blocks
 
-GRID = [0.25, 0.5, 1.0, 2.0, 3.0, 5.0]
+GRID = [0.25, 0.5, 1.0, 2.0, 3.0, 5.0, 7.0, 10.0]  # the fixture's grid; the bake's is finer, the six variants share it (m14)
 CURVE_DATE = "2019-12-31"
-TRADES = [  # conventions (D6); payer pays the fixed rate
-    ("SW-1", 10_000_000.0, 0.040, "payer", 5.0),
-    ("SW-2", 6_000_000.0, 0.038, "receiver", 3.0),
-    ("SW-3", 4_000_000.0, 0.042, "payer", 5.0),
+CURVE_TENORS = [0.25, 0.5, 1.0, 2.0, 3.0, 5.0, 7.0, 10.0]
+CURVE_PAR = [0.0154, 0.0155, 0.0155, 0.0158, 0.0162, 0.0169, 0.0178, 0.0186]
+
+
+def rule_rate(maturity: float) -> float:
+    """The fixed-rate rule: the par yield at the swap's maturity on the curve date, rounded to 10 bp (half up)."""
+    par = dict(zip(CURVE_TENORS, CURVE_PAR))[maturity]
+    return math.floor(par * 1000 + 0.5) / 1000
+
+
+TRADES = [  # conventions (D6, decision R1); payer pays the fixed rate; the fixed rate is the rule's output
+    ("SW-1", 10_000_000.0, rule_rate(10.0), "payer", 10.0),
+    ("SW-2", 6_000_000.0, rule_rate(5.0), "receiver", 5.0),
+    ("SW-3", 4_000_000.0, rule_rate(3.0), "payer", 3.0),
+    ("SW-4", 2_000_000.0, rule_rate(0.5), "receiver", 0.5),
 ]
-SHAPES = {"SW-1": 1.00, "SW-2": 0.55, "SW-3": 0.45}  # share of the single-swap EE scale, fixture
+SHAPES = {"SW-1": 1.00, "SW-2": 0.50, "SW-3": 0.30, "SW-4": 0.05}  # share of the single-swap EE scale, fixture
 DF = [math.exp(-0.015 * t) for t in GRID]
-LGD, BANK_LGD, SPREAD, BANK_SPREAD = 0.6, 0.6, 0.012, 0.008
+LGD, BANK_LGD, SPREAD, BANK_SPREAD = 0.6, 0.6, 0.0125, 0.008
+WWR_GRID = [-2.0, 0.0, 1.0, 2.0, 4.0]  # decision R1: per USD million
+PAR_SENS = {0.5: -1.0e6, 3.0: 1.16e7, 5.0: -2.7e7, 10.0: 8.0e7}  # s_k = dV / 0.0001 at the tenor of each swap, fixture (MAR21.19)
 
 
 def conv(value, unit: str) -> dict:
@@ -109,11 +122,14 @@ def named(mpor_long: int = 20) -> dict:
         "mpor_business_days_long": conv(mpor_long, "business days"), "counterparty_spread": conv(SPREAD, "decimal per year"),
         "counterparty_lgd": conv(LGD, "decimal"), "bank_spread": conv(BANK_SPREAD, "decimal per year"),
         "bank_lgd": conv(BANK_LGD, "decimal"), "pfe_quantile": conv(0.95, "decimal"), "path_count": conv(10000, "paths"),
-        "seed": conv(20260101, "integer"), "wwr_b_grid": conv([0.0, 0.01, 0.02, 0.04], "per USD million"),
-        "im_quantile": conv(0.99, "decimal"), "im_horizon_days": conv(10, "days"), "im_regression_order": conv(2, "polynomial order"),
+        "seed": conv(20260101, "integer"), "time_grid_years": conv(GRID, "years"), "wwr_b_grid": conv(WWR_GRID, "per USD million"),
+        "im_quantile": conv(0.99, "decimal"), "im_horizon_calendar_days": conv(14, "calendar days (10 business days)"),
+        "im_mpor_calendar_days": conv(14, "calendar days (10 business days)"), "im_regression_order": conv(2, "polynomial order"),
         "ba_cva_sector": conv("financials", "MAR50.16 Table 1 sector"), "ba_cva_rating": conv("investment-grade", "class"),
         "stress_window_start": conv("2007-01-01", "date"), "stress_window_end": conv("2009-12-31", "date"),
-        "backtest_window_start": conv("2000-01", "month"),
+        "backtest_window_start": conv("2000-01", "month"), "backtest_paths_per_date": conv(2000, "paths"),
+        "backtest_simulated_critical_count": conv(1000, "simulated backtests"),
+        "reconciliation_se_threshold": conv(2, "combined standard errors"), "ee_check_k_se": conv(3, "standard errors"),
     }
     assert list(vals) == sc.NAMED
     return vals
@@ -125,8 +141,7 @@ def trade_block(t) -> dict:
 
 
 def curve_block() -> dict:
-    ten = [0.25, 0.5, 1.0, 2.0, 3.0, 5.0, 7.0, 10.0]
-    par = [0.0154, 0.0155, 0.0155, 0.0158, 0.0162, 0.0169, 0.0178, 0.0186]
+    ten, par = CURVE_TENORS, CURVE_PAR
     zero = [p - 0.0001 * i for i, p in enumerate(par)]
     return {
         "curve_date": CURVE_DATE, "source": "US Treasury daily par yield curve (home.treasury.gov)", "licence_class": "mirror-allowed",
@@ -146,8 +161,9 @@ def calibration_block(backtest: str, end: str, a: float = 0.08, sigma: float = 0
     }
 
 
-def single_ee(scale: float = 40_000.0) -> list[float]:
-    return [scale * math.sqrt(t) * (1 - t / 6.0) for t in GRID]
+def single_ee(scale: float, maturity: float) -> list[float]:
+    """The fixture EE of one swap: zero once the swap has matured."""
+    return [scale * math.sqrt(t) * (1 - t / (2 * maturity)) if t < maturity else 0.0 for t in GRID]
 
 
 def sa_block(trades, margined_mpor: int | None, v: float, c: float, th: float, mta: float, nica: float) -> dict:
@@ -161,7 +177,7 @@ def sa_block(trades, margined_mpor: int | None, v: float, c: float, th: float, m
         en = adj * delta * mf
         d["B1 B2 B3".split().index(bucket)] += en
         rows.append({"trade_id": tid, "hedging_set": USD, "start_years": 0.0, "end_years": mat, "notional": money(notional),
-                     "supervisory_duration": r(sd), "adjusted_notional": money(adj), "delta": "1" if delta > 0 else "-1",
+                     "supervisory_duration": r(sd), "adjusted_notional": money(adj), "delta": 1 if delta > 0 else -1,
                      "maturity_factor": r(mf), "bucket": bucket, "effective_notional": r(en, 6)})
     enh = sm.ir_effective_notional(*d)
     addon = 0.005 * enh
@@ -182,16 +198,16 @@ def sa_block(trades, margined_mpor: int | None, v: float, c: float, th: float, m
 
 def girr_block() -> dict:
     rw, corr = sc.GIRR_RW, [[x / 100 for x in row] for row in sc.GIRR_CORR]
-    s = [0, 120.0, 260.0, 540.0, -310.0, 880.0, 0.0, 0.0, 0.0, 0.0]  # PV01 in USD per bp at each tenor, fixture
-    ws_div = [x * w / math.sqrt(2) for x, w in zip(s, rw)]
-    ws = [x * w for x, w in zip(s, rw)]
+    # s_k = (V(r + 1 bp) - V(r)) / 0.0001 at each GIRR tenor (MAR21.19): the book's four swaps sit at 0.5, 3, 5 and 10 years
+    s = [PAR_SENS.get(t, 0.0) for t in sc.GIRR_TENORS]
+    ws_div = [r(x * w / math.sqrt(2), 6) for x, w in zip(s, rw)]
     ks = {name: sm.sbm_bucket(ws_div, corr, name) for name in ("low", "medium", "high")}
-    ku = max(sm.sbm_bucket(ws, corr, name) for name in ("low", "medium", "high"))
+    charge = max(r(k, 6) for k in ks.values())
     return {
         "paragraph": "MAR21.42 to MAR21.50", "in_force_date": "2023-01-01", "currency": USD, "sqrt2_division": True,
-        "sqrt2_label": "convention", "sensitivities_per_bp": s, "weighted_sensitivities": [r(x, 9) for x in ws_div],
-        "scenarios": [{"scenario": k, "k_b": r(ks[k], 9)} for k in ("low", "medium", "high")],
-        "delta_charge": money(max(ks.values())), "delta_charge_undivided": money(ku),
+        "sqrt2_label": "convention", "sensitivities": s, "weighted_sensitivities": ws_div,
+        "scenarios": [{"scenario": k, "k_b": r(ks[k], 6)} for k in ("low", "medium", "high")],
+        "delta_charge": money(charge), "delta_charge_undivided": money(math.sqrt(2) * charge),
     }
 
 
@@ -224,7 +240,7 @@ def backtest_block() -> dict:
     return {
         "window_start": "2000-01", "window_end": "2025-09", "dates": ["2019-10-31", "2019-11-29", "2019-12-31"],
         "calibration_rule": "each initialisation date is calibrated on data up to that date only", "pit_rule": "(i + 1) / (N + 2)",
-        "statistic": "Anderson-Darling W^2", "paths_per_date": 10000, "book_horizons": book,
+        "statistic": "Anderson-Darling W^2", "paths_per_date": 2000, "book_horizons": book,
         "risk_factor": {"proxy_tenor_years": 0.25, "horizons": rf}, "sub_windows": subs,
     }
 
@@ -236,7 +252,7 @@ def label(en: str, es: str) -> dict:
 def variant(name: str) -> dict:
     multi = name != "single-swap"
     trades = TRADES if multi else TRADES[:1]
-    single = {t[0]: single_ee(40_000.0 * SHAPES[t[0]]) for t in TRADES}
+    single = {t[0]: single_ee(40_000.0 * SHAPES[t[0]], t[4]) for t in TRADES}
     summed = [sum(single[t[0]][k] for t in trades) for k in range(len(GRID))]
     netted = [x * (0.7 if multi else 1.0) for x in summed]
     mpor = {"csa-mpor-10d": 10, "csa-mpor-20d": 20, "with-im": 10}.get(name)
@@ -275,7 +291,8 @@ def variant(name: str) -> dict:
     im = None
     if name == "with-im":
         im = {"method": "ORE dynamic initial margin by regression (R2)", "labelled": "regression proxy, not SIMM", "simm_used": False,
-              "quantile": 0.99, "alpha": 2.33, "horizon_days": 10, "mpor_days": 10, "regression_order": 2, "dim": prof(dim),
+              "quantile": 0.99, "alpha": sm.PHI_INV(0.99), "horizon_calendar_days": 14, "mpor_calendar_days": 14,
+              "regression_order": 2, "dim": prof(dim),
               "ee_vm_only": prof(ee_vm),
               "limit": label("A regression proxy, never SIMM; compared with ORE's DIM on the same netting set.",
                              "Un proxy de regresion, nunca SIMM; se compara con el DIM de ORE sobre el mismo conjunto.")}
@@ -291,16 +308,20 @@ def variant(name: str) -> dict:
                         "pd_bank": r(pdb), "epe_discounted": r(e, 6), "ene_discounted": r(n_, 6), "cva_term": r(ct, 9),
                         "dva_term": r(dtm, 9)})
     cva = {"credit_curve_source": "synthetic-flat", "credit_curve_label": "proxy: an AAA to A market spread, a floor for lower ratings (R10)",
-           "survival_formula": "S(t) = exp(-s t / LGD)", "lgd": LGD, "bank_lgd": BANK_LGD, "buckets": buckets,
+           "survival_formula": "S(t) = exp(-s t / LGD)",
+           "negative_spread_rule": "a negative HQM-minus-Treasury spread is set to zero and counted in spreads_floored_at_zero",
+           "spreads_floored_at_zero": 0, "lgd": LGD, "bank_lgd": BANK_LGD, "buckets": buckets,
            "cva": msd(sum(b["cva_term"] for b in buckets), 0.5), "dva": msd(sum(b["dva_term"] for b in buckets), 0.4),
            "bcva": money(sum(b["cva_term"] for b in buckets) - sum(b["dva_term"] for b in buckets))}
     wwr = None
     if name == "wrong-way-risk":
-        grid_b = [0.0, 0.01, 0.02, 0.04]
+        grid_b = WWR_GRID
         base = cva["cva"]["amount"]
+        w_max = r(max(e * 3.0 for e in ee) / 1e6, 6)  # the PFE-scale value of the book in USD million, a fixture stand-in
         wwr = {"model": "Hull and White (2012) hazard rate on the portfolio value, h(t) = exp(a(t) + b w(t))",
-               "b_unit": "per USD million of portfolio value", "b_grid": grid_b,
-               "sweep": [{"b": b, "cva": msd(base * (1 + 12 * b), 0.5), "independent": b == 0, "a_calibration_max_error": 1e-12}
+               "b_unit": "per USD million of portfolio value", "b_grid": grid_b, "w_max_usd_million": w_max,
+               "largest_b_w": r(max(abs(b) for b in grid_b) * w_max, 6),
+               "sweep": [{"b": b, "cva": msd(base * (1 + 0.1 * b), 0.5), "independent": b == 0, "a_calibration_max_error": 1e-12}
                          for b in grid_b],
                "independent_cva": money(base),
                "ore_limit": label("ORE's wrong-way example is a different model (a correlated credit LGM): no ORE reconciliation.",
@@ -324,22 +345,43 @@ def variant(name: str) -> dict:
                         "spread_rose": True, "paragraph": "CRE53.7 and CRE53.51"}}
     sens = []
     cal = calibration_block(CURVE_DATE, "2019-12-30")
+    ee_p = prof(ee)
+    pfe_p = prof([e * 3.0 for e in ee])
     for case, a, s in (("base", 0.08, 0.011), ("a-plus-1se", 0.10, 0.011), ("a-minus-1se", 0.06, 0.011),
                        ("sigma-plus-1se", 0.08, 0.0115), ("sigma-minus-1se", 0.08, 0.0105)):
-        sens.append({"case": case, "a": a, "sigma": s, "eepe": money(eepe_v * (1 + 20 * (s - 0.011) - 0.3 * (a - 0.08))),
-                     "pfe_peak": money(max(e * 3.0 for e in ee) * (1 + 20 * (s - 0.011)))})
-    if name in ("single-swap", "netting-set"):
-        ore_vals = [x * 1.004 for x in ee]
-        agree = [{"t": t, "difference": r(o - e, 6), "combined_se": r(abs(e) * 0.014, 6), "within_two_se": True}
-                 for t, o, e in zip(GRID, ore_vals, ee)]
+        f = 1 + 20 * (s - 0.011) - 0.3 * (a - 0.08)
+        ee_c = prof([v * f for v in ee_p["values"]])
+        pfe_c = prof([v * f for v in pfe_p["values"]])
+        sens.append({"case": case, "a": a, "sigma": s, "eepe": money(sm.eepe(GRID, sm.effective_ee(ee_c["values"]))),
+                     "pfe_peak": money(max(pfe_c["values"])), "ee": ee_c, "pfe": pfe_c})
+    if name != "wrong-way-risk":
+        ore_ee = prof([x * 1.004 for x in ee_p["values"]])
+        ore_ee_d = prof([x * 1.004 for x in ee_d])
+        agree = [{"t": t, "difference": r(o - e, 6), "combined_se": r(abs(e) * 0.014 + 1e-6, 6), "within_two_se": True}
+                 for t, o, e in zip(GRID, ore_ee["values"], ee_p["values"])]
+        ore_eepe = sm.eepe(GRID, sm.effective_ee(ore_ee["values"]))
+        ore_cva = sm.cva_from(buckets, ore_ee_d["values"], LGD)
+        py_cva = cva["cva"]["amount"]
+
+        def scalar(py: float, orev: float) -> dict:
+            return {"python": r(py, 6), "ore": r(orev, 6), "difference": r(orev - py, 6), "combined_se": r(abs(py) * 0.014 + 1e-6, 6),
+                    "within_two_se": True}
+
+        ore_dim, dim_agree = None, None
+        if name == "with-im":
+            ore_dim = prof([x * 1.004 for x in prof(dim)["values"]])
+            dim_agree = [{"t": t, "difference": r(o - e, 6), "combined_se": r(abs(e) * 0.014 + 1e-6, 6), "within_two_se": True}
+                         for t, o, e in zip(GRID, ore_dim["values"], prof(dim)["values"])]
         ore = {"status": "reconciled", "ore_version": "1.8.17.0", "platform": "fixture: not an ORE run", "run_seconds": 0.0,
-               "ore_ee": prof(ore_vals), "agreement": agree, "all_within_two_se": True, "reason": None}
+               "ore_ee": ore_ee, "ore_ee_discounted": ore_ee_d, "ore_eepe": money(ore_eepe), "ore_cva": money(ore_cva),
+               "ore_dim": ore_dim, "agreement": agree, "eepe_agreement": scalar(exposure["eepe"]["amount"], ore_eepe),
+               "cva_agreement": scalar(py_cva, ore_cva), "dim_agreement": dim_agree, "all_within_two_se": True, "reason": None}
     else:
-        why = ("ORE's wrong-way example is a different model, so this variant has no reconciliation."
-               if name == "wrong-way-risk" else "The ORE run covers the single swap and the netting set only (U9-P1).")
         ore = {"status": "not-applicable", "ore_version": None, "platform": None, "run_seconds": None, "ore_ee": None,
-               "agreement": None, "all_within_two_se": None,
-               "reason": label(why, "ORE se ejecuta sobre el swap unico y el conjunto de neteo (U9-P1).")}
+               "ore_ee_discounted": None, "ore_eepe": None, "ore_cva": None, "ore_dim": None, "agreement": None,
+               "eepe_agreement": None, "cva_agreement": None, "dim_agreement": None, "all_within_two_se": None,
+               "reason": label("ORE's wrong-way example is a different model, so this variant has no reconciliation.",
+                               "El ejemplo de ORE usa otro modelo, asi que esta variante no tiene conciliacion.")}
     outputs = {
         "kind": "swap-exposure", "variant": name,
         "sign_convention": {"ee": "positive-exposure-to-the-counterparty", "ene": "bank-own-exposure-reported-positive",
@@ -357,7 +399,7 @@ def variant(name: str) -> dict:
     return {
         "schema": "contraste.case/v1", "case_id": "C12", "variant_id": f"fixture-{name}",
         "model": [model_summary("hw1f-exposure", "hw1f")], "outputs": outputs,
-        "tests": [test_row("ccr.ee_analytic_vs_simulated", "hw1f-exposure"), test_row("ccr.cva_recomputed_from_ee", "hw1f-exposure")],
+        "tests": [test_row("ccr.ee_analytic_vs_simulated", "hw1f-exposure"), test_row("ccr.cva_recomputed", "hw1f-exposure")],
         "impact": {}, "findings": [], "provenance": provenance(), "lane": lane(),
     }
 
@@ -380,6 +422,7 @@ def models_doc() -> dict:
                 "licence_class": "mirror-allowed with citation",
                 "licence_basis": label("FRED tags the series Public Domain: Citation Requested; the Treasury-side sentence is UNVERIFIED.",
                                        "FRED etiqueta la serie como dominio publico con cita; la frase del Tesoro no esta verificada."),
+                "negative_spread_rule": "a negative HQM-minus-Treasury spread is set to zero and counted, never carried as a negative spread",
                 "synthetic_spread": conv(SPREAD, "decimal per year"),
             },
             "girr_parameters": {
@@ -399,136 +442,336 @@ def models_doc() -> dict:
 
 # ------------------------------------------------------------------------------------------------------- regulatory
 
+K = "USD thousands"
 
-def V(name: str, symbol: str, value: float, unit: str, para: str) -> dict:
-    return {"name": name, "symbol": symbol, "value": value, "unit": unit, "paragraph": para}
+
+def V(name: str, symbol: str, value, unit: str, para: str, basis: str = "transcribed") -> dict:
+    return {"name": name, "symbol": symbol, "value": value, "unit": unit, "basis": basis, "paragraph": para}
 
 
 def P(name: str, value: float, unit: str, rounding: str, para: str) -> dict:
     return {"name": name, "value": value, "unit": unit, "rounding": rounding, "paragraph": para}
 
 
-def official(eid, calc, title, para, rng, inforce, pub, source, ins, outs, published) -> dict:
+def official(eid, calc, title, para, rng, inforce, pub, source, trades, ins, outs, published) -> dict:
     return {"id": eid, "calculator": calc, "title": title, "kind": "official-example", "paragraph": para, "paragraph_range": rng,
-            "in_force_date": inforce, "published_date": pub, "source": source, "inputs": ins, "outputs": outs,
+            "in_force_date": inforce, "published_date": pub, "source": source, "trades": trades, "inputs": ins, "outputs": outs,
             "published": published, "statement": None, "holds": None, "tolerance_relative": 1e-9}
 
 
 def invariant(eid, calc, title, para, rng, inforce, pub, source, ins, outs, en, es) -> dict:
     return {"id": eid, "calculator": calc, "title": title, "kind": "invariant", "paragraph": para, "paragraph_range": rng,
-            "in_force_date": inforce, "published_date": pub, "source": source, "inputs": ins, "outputs": outs, "published": [],
-            "statement": txt(en, es), "holds": True, "tolerance_relative": 1e-9}
+            "in_force_date": inforce, "published_date": pub, "source": source, "trades": [], "inputs": ins, "outputs": outs,
+            "published": [], "statement": txt(en, es), "holds": True, "tolerance_relative": 1e-9}
+
+
+def T(trade_id: str, nature: str, para: str, terms: list[tuple]) -> dict:
+    """terms: (name, value, unit, paragraph)."""
+    return {"trade_id": trade_id, "nature": nature, "paragraph": para,
+            "terms": [V(n, n, v, u, pp) for n, v, u, pp in terms]}
+
+
+def ir_trade(tid, nature, ccy, notional, start, end, position, mv, para, spara, extra=()):
+    return T(tid, nature, para, [
+        ("asset_class", "interest-rate", "text", para), ("currency", ccy, "ISO 4217", para), ("notional", notional, K, para),
+        ("start_years", start, "years", spara), ("end_years", end, "years", spara), ("position", position, "text", para),
+        ("option_type", "none", "text", para), ("market_value", mv, K, para), *extra])
+
+
+def credit_trade(tid, nature, entity, kind, rating, ccy, notional, end, position, mv, para):
+    return T(tid, nature, para, [
+        ("asset_class", "credit", "text", para), ("entity", entity, "text", para), ("reference_kind", kind, "text", para),
+        ("rating", rating, "text", para), ("currency", ccy, "ISO 4217", para), ("notional", notional, K, para),
+        ("start_years", 0, "years", "CRE99.47"), ("end_years", end, "years", para), ("position", position, "text", para),
+        ("market_value", mv, K, para)])
+
+
+def com_trade(tid, nature, hs, ctype, notional, maturity, position, mv, para):
+    return T(tid, nature, para, [
+        ("asset_class", "commodity", "text", para), ("hedging_set", hs, "text", "CRE99.67"), ("commodity_type", ctype, "text", "CRE99.68"),
+        ("notional", notional, K, para), ("adjusted_notional", notional, K, "CRE99.64"), ("maturity_years", maturity, "years", para),
+        ("position", position, "text", para), ("market_value", mv, K, para)])
+
+
+def ns1_trades(prefix: str = "") -> list[dict]:
+    return [
+        ir_trade(prefix + "T1", "Interest rate swap", "USD", 10000, 0, 10, "pay-fixed-receive-floating", 30, "CRE99.22", "CRE99.29"),
+        ir_trade(prefix + "T2", "Interest rate swap", "USD", 10000, 0, 4, "pay-floating-receive-fixed", -20, "CRE99.22", "CRE99.29"),
+        {**ir_trade(prefix + "T3", "European swaption (1 into 10 years)", "EUR", 5000, 1, 11, "pay-floating-receive-fixed", 50,
+                    "CRE99.22", "CRE99.29"),
+         "terms": [v for v in ir_trade(prefix + "T3", "", "EUR", 5000, 1, 11, "pay-floating-receive-fixed", 50, "CRE99.22",
+                                       "CRE99.29")["terms"] if v["name"] != "option_type"] + [
+             V("option_type", "option_type", "bought-put", "text", "CRE99.31"), V("option_price", "P", 0.06, "decimal", "CRE99.31"),
+             V("option_strike", "K", 0.05, "decimal", "CRE99.31"), V("option_volatility", "sigma", 0.5, "decimal", "CRE99.31"),
+             V("option_expiry_years", "T", 1, "years", "CRE99.31")]},
+    ]
+
+
+def ns2_trades(prefix: str = "") -> list[dict]:
+    return [
+        credit_trade(prefix + "T1", "Single-name CDS", "Firm A", "single-name", "AA", "USD", 10000, 3, "protection-buyer", 20, "CRE99.41"),
+        credit_trade(prefix + "T2", "Single-name CDS", "Firm B", "single-name", "BBB", "EUR", 10000, 6, "protection-seller", -40, "CRE99.41"),
+        credit_trade(prefix + "T3", "CDS index", "CDX.IG 5y", "index", "IG", "USD", 10000, 5, "protection-buyer", 0, "CRE99.41"),
+    ]
+
+
+def ns3_trades(prefix: str = "") -> list[dict]:
+    return [
+        com_trade(prefix + "T1", "Forward, WTI crude oil", "energy", "crude-oil", 10000, 0.75, "long", -50, "CRE99.59"),
+        com_trade(prefix + "T2", "Forward, Brent crude oil", "energy", "crude-oil", 20000, 2, "short", -30, "CRE99.59"),
+        com_trade(prefix + "T3", "Forward, silver", "metals", "silver", 10000, 5, "long", 100, "CRE99.59"),
+    ]
+
+
+def sa_outputs(trades: list[dict], c, mpor, th, mta, nica, names: list[str], paras: dict) -> list[dict]:
+    got = sm.sa_ccr_from_trades(trades, c, mpor, th, mta, nica)
+    unit = {"maturity_factor": "unitless", "multiplier": "unitless", "swaption_delta": "unitless"}
+    return [V(n, n, got[n], unit.get(n, K), paras.get(n, "CRE52.25"), "recomputed") for n in names]
 
 
 def regulatory_doc() -> dict:
-    K = "USD thousands"
-    src = "dossier 01 E.2 (CRE99.20 to CRE99.97)"
+    src = "BIS CRE99.20 to CRE99.97 (trade inputs) and dossier 01 E.2 (printed intermediates)"
     u, pub = "2023-01-01", "2020-06-05"
+    para = {"rc": "CRE52.10", "multiplier": "CRE52.23", "addon_aggregate": "CRE52.25", "pfe": "CRE52.20", "ead": "CRE52.1",
+            "en_usd": "CRE52.57", "en_eur": "CRE52.57", "addon_usd": "CRE52.57", "addon_eur": "CRE52.57", "addon_ir": "CRE52.57",
+            "swaption_delta": "CRE52.38", "term_1": "CRE52.61", "term_2": "CRE52.61", "addon_credit": "CRE52.61",
+            "addon_energy": "CRE52.70", "addon_metals": "CRE52.70", "addon_commodity": "CRE52.70", "maturity_factor": "CRE52.52"}
+    n4 = ns1_trades("NS1-") + ns2_trades("NS2-")
+    n5 = ns1_trades("NS1-") + ns3_trades("NS3-")
+    for t, para4 in ((n4, "CRE99.77"), (n5, "CRE99.80")):
+        for tr in t:
+            tr["paragraph"] = para4
+
+    def out(trades, c, mpor, th, mta, nica, names):
+        return sa_outputs(trades, c, mpor, th, mta, nica, names, para)
+
     ex = [
         official("cre99-netting-set-1", "sa-ccr", txt("CRE99 netting set 1: interest rate swaps and a swaption, unmargined",
                                                       "CRE99 conjunto 1: swaps de tasa y una swaption, sin margen"),
-                 "CRE52.1", "CRE52.10 to CRE52.57", u, pub, src,
-                 [V("v_trade_1", "V1", 30, K, "CRE99.20"), V("v_trade_2", "V2", -20, K, "CRE99.20"), V("v_trade_3", "V3", 50, K, "CRE99.20"),
-                  V("c", "C", 0, K, "CRE52.10")],
-                 [V("rc", "RC", 60, K, "CRE52.10"), V("en_usd", "EN_USD", 59270, K, "CRE52.57"), V("en_eur", "EN_EUR", 10083, K, "CRE52.57"),
-                  V("addon_usd", "AddOn_USD", 296.35, K, "CRE52.57"), V("addon_eur", "AddOn_EUR", 50.415, K, "CRE52.57"),
-                  V("addon_ir", "AddOn_IR", 346.765, K, "CRE52.57"), V("addon_aggregate", "AddOn", 346.765, K, "CRE52.25"),
-                  V("swaption_delta", "delta", -0.2694, "unitless", "CRE52.38"), V("multiplier", "multiplier", 1.0, "unitless", "CRE52.23")],
-                 [P("ead", 569, K, "nearest integer", "CRE52.1"), P("addon_ir", 347, K, "nearest integer", "CRE52.57")]),
+                 "CRE52.1", "CRE52.10 to CRE52.57", u, pub, src, ns1_trades(),
+                 [V("v", "V", 60, K, "CRE99.24"), V("c", "C", 0, K, "CRE99.23")],
+                 out(ns1_trades(), 0, None, 0, 0, 0, ["rc", "en_usd", "en_eur", "addon_usd", "addon_eur", "addon_ir", "addon_aggregate",
+                                                      "swaption_delta", "multiplier", "pfe", "ead"]),
+                 [P("rc", 60, K, "nearest integer", "CRE52.10"), P("en_usd", 59270, K, "nearest integer", "CRE52.57"),
+                  P("en_eur", 10083, K, "nearest integer", "CRE52.57"), P("addon_ir", 347, K, "nearest integer", "CRE52.57"),
+                  P("addon_aggregate", 347, K, "nearest integer", "CRE52.25"),
+                  P("swaption_delta", -0.2694, "unitless", "4 decimal places", "CRE99.32"),
+                  P("multiplier", 1.0, "unitless", "none", "CRE52.23"), P("ead", 569, K, "nearest integer", "CRE52.1")]),
         official("cre99-netting-set-2", "sa-ccr", txt("CRE99 netting set 2: credit derivatives, unmargined", "CRE99 conjunto 2: derivados de credito, sin margen"),
-                 "CRE52.1", "CRE52.61 to CRE52.65", u, pub, src,
-                 [V("v_minus_c", "V-C", -20, K, "CRE52.23")],
-                 [V("rc", "RC", 0, K, "CRE52.10"), V("term_1", "term 1", 2253, K, "CRE52.61"), V("term_2", "term 2", 77344, K, "CRE52.61"),
-                  V("addon_credit", "AddOn_credit", 282, K, "CRE52.61"), V("addon_aggregate", "AddOn", 282, K, "CRE52.25"),
-                  V("multiplier", "multiplier", 0.965, "unitless", "CRE52.23")],
-                 [P("ead", 381, K, "nearest integer", "CRE52.1")]),
+                 "CRE52.1", "CRE52.61 to CRE52.65", u, pub, src, ns2_trades(),
+                 [V("v", "V", -20, K, "CRE99.43"), V("c", "C", 0, K, "CRE99.42")],
+                 out(ns2_trades(), 0, None, 0, 0, 0, ["rc", "term_1", "term_2", "addon_credit", "addon_aggregate", "multiplier", "pfe", "ead"]),
+                 [P("rc", 0, K, "nearest integer", "CRE52.10"), P("term_1", 2253, K, "nearest integer", "CRE52.61"),
+                  P("term_2", 77344, K, "nearest integer", "CRE52.61"), P("addon_credit", 282, K, "nearest integer", "CRE52.61"),
+                  P("addon_aggregate", 282, K, "nearest integer", "CRE52.25"),
+                  P("multiplier", 0.965, "unitless", "3 decimal places", "CRE52.23"), P("ead", 381, K, "nearest integer", "CRE52.1")]),
         official("cre99-netting-set-3", "sa-ccr", txt("CRE99 netting set 3: commodity forwards and swaps", "CRE99 conjunto 3: forwards y swaps de commodities"),
-                 "CRE52.1", "CRE52.70 to CRE52.71", u, pub, src, [V("c", "C", 0, K, "CRE52.10")],
-                 [V("rc", "RC", 20, K, "CRE52.10"), V("addon_energy", "AddOn_energy", 2041, K, "CRE52.70"),
-                  V("addon_metals", "AddOn_metals", 1800, K, "CRE52.70"), V("addon_aggregate", "AddOn", 3841, K, "CRE52.25"),
-                  V("multiplier", "multiplier", 1.0, "unitless", "CRE52.23")], [P("ead", 5406, K, "nearest integer", "CRE52.1")]),
+                 "CRE52.1", "CRE52.70 to CRE52.71", u, pub, src, ns3_trades(),
+                 [V("v", "V", 20, K, "CRE99.60"), V("c", "C", 0, K, "CRE99.60")],
+                 out(ns3_trades(), 0, None, 0, 0, 0, ["rc", "addon_energy", "addon_metals", "addon_commodity", "addon_aggregate",
+                                                      "multiplier", "pfe", "ead"]),
+                 [P("rc", 20, K, "nearest integer", "CRE52.10"), P("addon_energy", 2041, K, "nearest integer", "CRE52.70"),
+                  P("addon_metals", 1800, K, "nearest integer", "CRE52.70"), P("addon_commodity", 3841, K, "nearest integer", "CRE52.70"),
+                  P("addon_aggregate", 3841, K, "nearest integer", "CRE52.25"), P("multiplier", 1.0, "unitless", "none", "CRE52.23"),
+                  P("ead", 5406, K, "nearest integer", "CRE52.1")]),
         official("cre99-netting-set-4", "sa-ccr", txt("CRE99 netting set 4: netting sets 1 and 2 combined", "CRE99 conjunto 4: conjuntos 1 y 2 combinados"),
-                 "CRE52.1", "CRE52.24 to CRE52.25", u, pub, src, [V("c", "C", 0, K, "CRE52.10")],
-                 [V("rc", "RC", 40, K, "CRE52.10"), V("addon_aggregate", "AddOn", 629, K, "CRE52.25"), V("multiplier", "multiplier", 1.0, "unitless", "CRE52.23")],
-                 [P("ead", 936, K, "nearest integer", "CRE52.1")]),
+                 "CRE52.1", "CRE52.24 to CRE52.25", u, pub, src, n4,
+                 [V("v", "V", 40, K, "CRE99.77"), V("c", "C", 0, K, "CRE99.77")],
+                 out(n4, 0, None, 0, 0, 0, ["rc", "addon_ir", "addon_credit", "addon_aggregate", "multiplier", "pfe", "ead"]),
+                 [P("rc", 40, K, "nearest integer", "CRE52.10"), P("addon_ir", 347, K, "nearest integer", "CRE52.57"),
+                  P("addon_credit", 282, K, "nearest integer", "CRE52.61"), P("addon_aggregate", 629, K, "nearest integer", "CRE52.25"),
+                  P("multiplier", 1.0, "unitless", "none", "CRE52.23"), P("ead", 936, K, "nearest integer", "CRE52.1")]),
         official("cre99-netting-set-5", "sa-ccr", txt("CRE99 netting set 5: margined interest rate and commodity", "CRE99 conjunto 5: tasas y commodities con margen"),
-                 "CRE52.1", "CRE52.18 to CRE52.52", u, pub, src,
-                 [V("v", "V", 80, K, "CRE52.18"), V("c", "C", 200, K, "CRE52.18"), V("th", "TH", 0, K, "CRE52.18"),
-                  V("mta", "MTA", 5, K, "CRE52.18"), V("nica", "NICA", 150, K, "CRE52.18"), V("v_minus_c", "V-C", -120, K, "CRE52.23"),
-                  V("mpor_business_days", "MPOR", 14, "business days", "CRE52.52")],
-                 [V("rc", "RC", 0, K, "CRE52.18"), V("maturity_factor", "MF", 1.5 * math.sqrt(14 / 250), "unitless", "CRE52.52"),
-                  V("addon_ir", "AddOn_IR", 123, K, "CRE52.57"), V("addon_commodity", "AddOn_commodity", 1278, K, "CRE52.70"),
-                  V("addon_aggregate", "AddOn", 1401, K, "CRE52.25"), V("multiplier", "multiplier", 0.958, "unitless", "CRE52.23")],
-                 [P("ead", 1879, K, "nearest integer", "CRE52.1")]),
+                 "CRE52.1", "CRE52.18 to CRE52.52", u, pub, src, n5,
+                 [V("v", "V", 80, K, "CRE99.82"), V("c", "C", 200, K, "CRE99.80"), V("th", "TH", 0, K, "CRE99.80"),
+                  V("mta", "MTA", 5, K, "CRE99.80"), V("nica", "NICA", 150, K, "CRE99.82"),
+                  V("margin_frequency_business_days", "N", 5, "business days", "CRE99.83"),
+                  V("mpor_business_days", "MPOR", 14, "business days", "CRE99.83")],
+                 out(n5, 200, 14, 0, 5, 150, ["rc", "maturity_factor", "addon_ir", "addon_commodity", "addon_aggregate", "multiplier",
+                                              "pfe", "ead"]),
+                 [P("rc", 0, K, "nearest integer", "CRE52.18"), P("addon_ir", 123, K, "nearest integer", "CRE52.57"),
+                  P("addon_commodity", 1278, K, "nearest integer", "CRE52.70"), P("addon_aggregate", 1401, K, "nearest integer", "CRE52.25"),
+                  P("multiplier", 0.958, "unitless", "3 decimal places", "CRE52.23"), P("ead", 1879, K, "nearest integer", "CRE52.1")]),
         official("rbc20-13-output-floor", "output-floor", txt("RBC20.13 output floor", "RBC20.13 piso de salida"), "RBC20.4",
-                 "RBC20.4 and RBC20.11 to RBC20.13", u, "2020-11-26", "dossier 01 C.1 and M.1",
+                 "RBC20.4 and RBC20.11 to RBC20.13", u, "2020-11-26", "dossier 01 C.1 and M.1", [],
                  [V("rwa_nominated", "RWA", 76, "index points", "RBC20.13"), V("rwa_sa_only", "RWA_SA", 140, "index points", "RBC20.13"),
                   V("floor_factor", "f", 0.725, "decimal", "RBC90.1")],
                  [V("rwa_floored", "RWA_floor", 101.5, "index points", "RBC20.4")], [P("rwa_floored", 101.5, "index points", "none", "RBC20.13")]),
         official("rbc20-13-output-floor-capped", "output-floor", txt("RBC20.13 output floor with the RBC90.2 cap", "RBC20.13 piso con el tope RBC90.2"),
-                 "RBC90.2", "RBC90.1 to RBC90.2", u, "2020-03-27", "dossier 01 C.1 and M.1",
+                 "RBC90.2", "RBC90.1 to RBC90.2", u, "2020-03-27", "dossier 01 C.1 and M.1", [],
                  [V("rwa_nominated", "RWA", 76, "index points", "RBC20.13"), V("rwa_sa_only", "RWA_SA", 140, "index points", "RBC20.13"),
                   V("floor_factor", "f", 0.725, "decimal", "RBC90.1"), V("cap_share", "cap", 0.25, "decimal of pre-floor RWA", "RBC90.2")],
                  [V("rwa_floored", "RWA_floor", 95, "index points", "RBC90.2")], [P("rwa_floored", 95, "index points", "none", "RBC90.2")]),
     ]
-    inv = [
-        invariant("ba-cva-rho-one", "ba-cva", txt("BA-CVA reduced with rho = 1 gives the sum of SCVA", "BA-CVA reducido con rho = 1 da la suma de SCVA"),
-                  "MAR50.14", "MAR50.14 to MAR50.16", u, "2020-07-08", "dossier 01 E.1 and M.1 (inputs constructed by the fixture)",
-                  [V("scva_1", "SCVA_1", 10, "USD", "MAR50.15"), V("scva_2", "SCVA_2", 20, "USD", "MAR50.15"), V("rho", "rho", 1.0, "decimal", "MAR50.14")],
-                  [V("k_reduced", "K_reduced", 30, "USD", "MAR50.14")],
-                  "With rho = 1 the reduced capital base K_reduced equals the sum of the SCVA.",
-                  "Con rho = 1 la base K_reduced es igual a la suma de los SCVA."),
-        invariant("ba-cva-hedges-floor", "ba-cva", txt("Hedges never take K_full below beta K_reduced", "Las coberturas nunca bajan K_full de beta K_reduced"),
-                  "MAR50.20", "MAR50.20 to MAR50.25", u, "2020-07-08", "dossier 01 E.1 and M.1 (inputs constructed by the fixture)",
-                  [V("k_reduced", "K_reduced", 30, "USD", "MAR50.14"), V("k_hedged", "K_hedged", 0, "USD", "MAR50.21"), V("beta", "beta", 0.25, "decimal", "MAR50.20")],
-                  [V("k_full", "K_full", 7.5, "USD", "MAR50.20")],
-                  "K_full = beta K_reduced + (1 - beta) K_hedged is at least beta K_reduced.",
-                  "K_full = beta K_reduced + (1 - beta) K_hedged es al menos beta K_reduced."),
-        invariant("sbm-low-and-high-scenarios", "frtb-sbm", txt("SBM correlation scenarios", "Escenarios de correlacion SBM"), "MAR21.6",
-                  "MAR21.6 to MAR21.7", u, "2026-03-23", "dossier 01 D.2 and M.1 (input constructed by the fixture)",
-                  [V("rho", "rho", 0.5, "decimal", "MAR21.6")],
-                  [V("rho_low", "rho_low", 0.375, "decimal", "MAR21.6"), V("rho_medium", "rho_medium", 0.5, "decimal", "MAR21.6"),
-                   V("rho_high", "rho_high", 0.625, "decimal", "MAR21.6")],
-                  "The low scenario uses max(2 rho - 1, 0.75 rho) and the high scenario min(1.25 rho, 1); the SBM result is the maximum of the three.",
-                  "El escenario bajo usa max(2 rho - 1, 0.75 rho) y el alto min(1.25 rho, 1); el resultado SBM es el maximo de los tres."),
-        invariant("cascade-all-lh-ten", "frtb-liquidity-cascade", txt("Cascade with every LH equal to 10", "Cascada con todos los LH iguales a 10"), "MAR33.4",
-                  "MAR33.4 and MAR33.12", u, "2020-06-05", "dossier 01 D.3 and M.1 (input constructed by the fixture)",
-                  [V("es_t_p", "ES_T(P)", 10, "USD", "MAR33.4"), V("t", "T", 10, "days", "MAR33.4"), V("lh_1", "LH_1", 10, "days", "MAR33.4")],
-                  [V("es", "ES", 10, "USD", "MAR33.4")],
-                  "If every risk factor has a liquidity horizon of 10 days the cascade returns ES_T(P); it is monotone in LH.",
-                  "Si todo factor tiene horizonte de liquidez de 10 dias la cascada devuelve ES_T(P); es monotona en LH."),
-    ]
-    grid = []
-
-    def g(cls, key, rw, table, para, pub_in=u):
-        grid.append({"exposure_class": cls, "key": key, "risk_weight": rw, "table": table, "paragraph": para, "in_force_date": pub_in})
-
-    for key, rw in zip(["AAA to AA-", "A+ to A-", "BBB+ to BBB-", "BB+ to B-", "below B-", "unrated"], [0.0, 0.2, 0.5, 1.0, 1.5, 1.0]):
-        g("sovereigns and central banks", key, rw, "CRE20 Table 1", "CRE20.7")
-    for key, rw in zip(["AAA to AA-", "A+ to A-", "BBB+ to BBB-", "BB+ to B-", "below B-"], [0.2, 0.3, 0.5, 1.0, 1.5]):
-        g("banks ECRA", key, rw, "CRE20 Table 6", "CRE20.18")
-    for key, rw in zip(["AAA to AA-", "A+ to A-", "BBB+ to BBB-", "BB+ to B-", "below B-"], [0.2, 0.2, 0.2, 0.5, 1.5]):
-        g("banks ECRA short-term", key, rw, "CRE20 Table 6", "CRE20.18")
-    for key, rw in zip(["Grade A", "Grade B", "Grade C"], [0.4, 0.75, 1.5]):
-        g("banks SCRA", key, rw, "CRE20 Table 7", "CRE20.21")
-    for key, rw in zip(["AAA to AA-", "A+ to A-", "BBB+ to BBB-", "BB+ to BB-", "below BB-", "unrated"], [0.2, 0.5, 0.75, 1.0, 1.5, 1.0]):
-        g("corporates", key, rw, "CRE20 Table 10", "CRE20.43")
-    for key, rw in zip(["ltv<=50", "50<ltv<=60", "60<ltv<=80", "80<ltv<=90", "90<ltv<=100", "ltv>100"], [0.2, 0.25, 0.3, 0.4, 0.5, 0.7]):
-        g("residential real estate, not cash-flow dependent", key, rw, "CRE20 Table 11", "CRE20.82")
-    for key, rw in zip(["ltv<=50", "50<ltv<=60", "60<ltv<=80", "80<ltv<=90", "90<ltv<=100", "ltv>100"], [0.3, 0.35, 0.45, 0.6, 0.75, 1.05]):
-        g("residential real estate, cash-flow dependent", key, rw, "CRE20 Table 12", "CRE20.84")
-    for key, rw in zip(["ltv<=60", "60<ltv<=80", "ltv>80"], [0.7, 0.9, 1.1]):
-        g("commercial real estate, cash-flow dependent", key, rw, "CRE20 Table 14", "CRE20.87")
-    for key, rw in [("regulatory retail", 0.75), ("transactors", 0.45), ("other retail", 1.0)]:
-        g("retail", key, rw, "CRE20.68", "CRE20.68")
-    for key, rw in [("equity", 2.5), ("speculative unlisted equity", 4.0), ("subordinated debt", 1.5)]:
-        g("equity and subordinated debt", key, rw, "CRE20.57 to CRE20.60", "CRE20.57")
+    inv = invariants(u)
     return {
         "schema": "contraste.regulatory/v1", "case_id": "REGULATORY", "document_id": "fixture-regulatory-calculators",
         "engine": {"name": "riskvalidation", "version": "fixture"},
         "units": {"money": "as stated per value (USD thousands for CRE99, index points for RBC20.13)", "rate": "decimal", "dates": "ISO-8601"},
-        "official_examples": ex, "invariant_cases": inv, "cre20_grid": grid, "provenance": provenance(), "lane": lane(),
+        "official_examples": ex, "invariant_cases": inv, "output_floor_phase_in": phase_in(), "parameter_tables": parameter_tables(),
+        "cre20_grid": cre20_grid(), "provenance": provenance(), "lane": lane(),
     }
+
+
+def invariants(u: str) -> list[dict]:
+    c = "constructed"
+    out: list[dict] = []
+    out.append(invariant(
+        "ba-cva-rho-one", "ba-cva", txt("BA-CVA reduced with rho = 1 gives the sum of SCVA", "BA-CVA reducido con rho = 1 da la suma de SCVA"),
+        "MAR50.14", "MAR50.14 to MAR50.16", u, "2020-07-08", "dossier 01 E.1 and M.1 (inputs constructed by the fixture)",
+        [V("scva_1", "SCVA_1", 10, "USD", "MAR50.15", c), V("scva_2", "SCVA_2", 20, "USD", "MAR50.15", c), V("rho", "rho", 1.0, "decimal", "MAR50.14", c)],
+        [V("k_reduced", "K_reduced", 30, "USD", "MAR50.14", "recomputed")],
+        "With rho = 1 the reduced capital base K_reduced equals the sum of the SCVA.",
+        "Con rho = 1 la base K_reduced es igual a la suma de los SCVA."))
+    out.append(invariant(
+        "ba-cva-hedges-floor", "ba-cva", txt("Hedges never take K_full below beta K_reduced", "Las coberturas nunca bajan K_full de beta K_reduced"),
+        "MAR50.20", "MAR50.20 to MAR50.25", u, "2020-07-08", "dossier 01 E.1 and M.1 (inputs constructed by the fixture)",
+        [V("k_reduced", "K_reduced", 30, "USD", "MAR50.14", c), V("k_hedged", "K_hedged", 0, "USD", "MAR50.21", c), V("beta", "beta", 0.25, "decimal", "MAR50.20")],
+        [V("k_full", "K_full", 7.5, "USD", "MAR50.20", "recomputed")],
+        "K_full = beta K_reduced + (1 - beta) K_hedged is at least beta K_reduced.",
+        "K_full = beta K_reduced + (1 - beta) K_hedged es al menos beta K_reduced."))
+    out.append(invariant(
+        "sbm-low-and-high-scenarios", "frtb-sbm", txt("SBM correlation scenarios", "Escenarios de correlacion SBM"), "MAR21.6",
+        "MAR21.6 to MAR21.7", u, "2026-03-23", "dossier 01 D.2 and M.1 (input constructed by the fixture)",
+        [V("rho", "rho", 0.5, "decimal", "MAR21.6", c)],
+        [V("rho_low", "rho_low", 0.375, "decimal", "MAR21.6", "recomputed"), V("rho_medium", "rho_medium", 0.5, "decimal", "MAR21.6", "recomputed"),
+         V("rho_high", "rho_high", 0.625, "decimal", "MAR21.6", "recomputed")],
+        "The low scenario uses max(2 rho - 1, 0.75 rho) and the high scenario min(1.25 rho, 1); the SBM result is the maximum of the three.",
+        "El escenario bajo usa max(2 rho - 1, 0.75 rho) y el alto min(1.25 rho, 1); el resultado SBM es el maximo de los tres."))
+    out.append(sbm_case(
+        "sbm-bucket-and-cross-bucket-aggregation", txt("SBM aggregation: within bucket, across buckets, maximum over the scenarios",
+                                                       "Agregacion SBM: dentro del bucket, entre buckets y maximo de los escenarios"),
+        [10.0, -4.0, 6.0], [1, .5, .2, .5, 1, .5, .2, .5, 1], [5.0, 3.0], [1, .5, .5, 1], 0.5, u,
+        "Two buckets with their within-bucket correlations and gamma 0.5: the bucket charge K_b of MAR21.4 under each of the three "
+        "scenarios of MAR21.6, the cross-bucket charge and the maximum over the scenarios (MAR21.7).",
+        "Dos buckets con sus correlaciones internas y gamma 0.5: el cargo K_b de MAR21.4 bajo cada escenario de MAR21.6, el cargo entre "
+        "buckets y el maximo de los escenarios (MAR21.7)."))
+    out.append(sbm_case(
+        "sbm-cross-bucket-fallback", txt("SBM cross-bucket fallback of MAR21.4(5)(b)", "Respaldo entre buckets de MAR21.4(5)(b)"),
+        [10.0, 10.0], [1, .5, .5, 1], [-10.0, -10.0], [1, .5, .5, 1], 0.8, u,
+        "Two buckets of opposite sign and gamma 0.8: under the medium and high scenarios the radicand is negative and S_b is "
+        "replaced by max(min(sum WS, K_b), -K_b) (MAR21.4(5)(b)); under the low scenario the plain path applies.",
+        "Dos buckets de signo opuesto y gamma 0.8: bajo los escenarios medio y alto el radicando es negativo y S_b se reemplaza por "
+        "max(min(sum WS, K_b), -K_b) (MAR21.4(5)(b)); bajo el bajo se aplica la via simple."))
+    out.append(invariant(
+        "cascade-all-lh-ten", "frtb-liquidity-cascade", txt("Cascade with every LH equal to 10", "Cascada con todos los LH iguales a 10"), "MAR33.4",
+        "MAR33.4 and MAR33.12", u, "2020-06-05", "dossier 01 D.3 and M.1 (input constructed by the fixture)",
+        [V("es_t_p", "ES_T(P)", 10, "USD", "MAR33.4", c), V("t", "T", 10, "days", "MAR33.4"), V("lh_1", "LH_1", 10, "days", "MAR33.4")],
+        [V("es", "ES", 10, "USD", "MAR33.4", "recomputed")],
+        "If every risk factor has a liquidity horizon of 10 days the cascade returns ES_T(P); it is monotone in LH.",
+        "Si todo factor tiene horizonte de liquidez de 10 dias la cascada devuelve ES_T(P); es monotona en LH."))
+    es = sm.liquidity_cascade(10.0, [6.0], [10.0, 20.0], 10.0)
+    out.append(invariant(
+        "cascade-two-horizons", "frtb-liquidity-cascade", txt("Cascade with a second liquidity horizon", "Cascada con un segundo horizonte de liquidez"),
+        "MAR33.4", "MAR33.4 Table 1 and MAR33.12", u, "2020-06-05", "dossier 01 D.3 and M.1 (inputs constructed by the fixture)",
+        [V("es_t_p", "ES_T(P)", 10, "USD", "MAR33.4", c), V("es_t_p_2", "ES_T(P, 2)", 6, "USD", "MAR33.4", c), V("t", "T", 10, "days", "MAR33.4"),
+         V("lh_1", "LH_1", 10, "days", "MAR33.4"), V("lh_2", "LH_2", 20, "days", "MAR33.4")],
+        [V("es", "ES", es, "USD", "MAR33.4", "recomputed")],
+        "ES = sqrt(ES_T(P)^2 + (ES_T(P, 2) sqrt((LH_2 - LH_1) / T))^2) = sqrt(100 + 36 x 1) = 11.661904; it is at least ES_T(P).",
+        "ES = sqrt(ES_T(P)^2 + (ES_T(P, 2) sqrt((LH_2 - LH_1) / T))^2) = sqrt(100 + 36 x 1) = 11.661904; es al menos ES_T(P)."))
+    return out
+
+
+def sbm_case(eid, title, ws1, rho1, ws2, rho2, gamma, u, en, es) -> dict:
+    c = "constructed"
+    ws, rhos = [ws1, ws2], [rho1, rho2]
+    ins = [V("ws_1", "WS_1", ws1, "USD", "MAR21.4", c), V("rho_1", "rho_1", [float(x) for x in rho1], "decimal", "MAR21.4", c),
+           V("ws_2", "WS_2", ws2, "USD", "MAR21.4", c), V("rho_2", "rho_2", [float(x) for x in rho2], "decimal", "MAR21.4", c),
+           V("gamma", "gamma", gamma, "decimal", "MAR21.4", c)]
+    outs = []
+    charges = {}
+    for scn in ("low", "medium", "high"):
+        kb = [sm.sbm_bucket(w, [r_[i * len(w):(i + 1) * len(w)] for i in range(len(w))], scn) for w, r_ in zip(ws, rhos)]
+        cross, fb = sm.sbm_cross(kb, [sum(w) for w in ws], gamma, scn)
+        charges[scn] = cross
+        outs += [V(f"k_b{b + 1}_{scn}", f"K_b{b + 1}", k, "USD", "MAR21.4", "recomputed") for b, k in enumerate(kb)]
+        outs += [V(f"cross_bucket_{scn}", "SBM_scenario", cross, "USD", "MAR21.4", "recomputed"),
+                 V(f"fallback_{scn}", "fallback", float(fb), "flag", "MAR21.4", "recomputed")]
+    outs.append(V("sbm_charge", "SBM", max(charges.values()), "USD", "MAR21.7", "recomputed"))
+    return invariant(eid, "frtb-sbm", title, "MAR21.4", "MAR21.4 to MAR21.7", u, "2026-03-23",
+                     "dossier 01 D.2 and M.1 (inputs constructed by the fixture)", ins, outs, en, es)
+
+
+def phase_in() -> list[dict]:
+    return [{"year": y, "effective_from": f"{y}-01-01", "factor": f, "table": "RBC90.1 Table 1", "paragraph": "RBC90.1",
+             "in_force_date": "2023-01-01"} for y, f in sm.PHASE_IN.items()]
+
+
+def parameter_tables() -> list[dict]:
+    u = "2023-01-01"
+    t52 = [{"key": k, "parameter": n, "value": v, "unit": "decimal"}
+           for k, row in sm.CRE52_72.items() for n, v in zip(("supervisory_factor", "correlation", "option_volatility"), row) if v is not None]
+    t50 = [{"key": k, "parameter": n, "value": v, "unit": "decimal"}
+           for k, row in sm.BA_CVA_RW.items() for n, v in zip(("risk_weight_investment_grade", "risk_weight_high_yield_or_not_rated"), row)]
+    t33_12 = [{"key": k, "parameter": "liquidity_horizon_days", "value": v, "unit": "days"} for k, v in sm.MAR33_12.items()]
+    t33_4 = [{"key": k, "parameter": "liquidity_horizon_days", "value": v, "unit": "days"} for k, v in sm.MAR33_4.items()]
+    return [
+        {"id": "cre52-72-table-2", "title": txt("SA-CCR supervisory parameters", "Parametros supervisores SA-CCR"), "calculator": "sa-ccr",
+         "table": "CRE52.72 Table 2", "paragraph": "CRE52.72", "in_force_date": u, "source": "dossier 01 E.2", "rows": t52},
+        {"id": "mar50-16-table-1", "title": txt("BA-CVA counterparty risk weights", "Ponderadores de contraparte BA-CVA"), "calculator": "ba-cva",
+         "table": "MAR50.16 Table 1", "paragraph": "MAR50.16", "in_force_date": u, "source": "dossier 01 E.1", "rows": t50},
+        {"id": "mar33-12-table-2", "title": txt("Liquidity horizons by risk factor", "Horizontes de liquidez por factor de riesgo"),
+         "calculator": "frtb-liquidity-cascade", "table": "MAR33.12 Table 2", "paragraph": "MAR33.12", "in_force_date": u,
+         "source": "dossier 01 D.3 (the row commodity volatility, 60 or 120 days, is ambiguous there and not transcribed)", "rows": t33_12},
+        {"id": "mar33-4-table-1", "title": txt("Liquidity horizons of the cascade", "Horizontes de liquidez de la cascada"),
+         "calculator": "frtb-liquidity-cascade", "table": "MAR33.4 Table 1", "paragraph": "MAR33.4", "in_force_date": u,
+         "source": "dossier 01 D.3", "rows": t33_4},
+    ]
+
+
+def cre20_grid() -> list[dict]:
+    grid: list[dict] = []
+    u = "2023-01-01"
+
+    def g(cls, key, band, rw, table, para, short=False, cf=False, cw=None):
+        grid.append({"exposure_class": cls, "key": key, "band": band, "short_term": short, "cash_flow_dependent": cf,
+                     "counterparty_weight": cw, "risk_weight": rw, "table": table, "paragraph": para, "in_force_date": u})
+
+    ratings = ["AAA to AA-", "A+ to A-", "BBB+ to BBB-", "BB+ to B-", "below B-", "unrated"]
+    for key, rw in zip(ratings, [0.0, 0.2, 0.5, 1.0, 1.5, 1.0]):
+        g("sovereign", key, key, rw, "CRE20 Table 1", "CRE20.7")
+    for score, rw in zip(range(8), [0.0, 0.0, 0.2, 0.5, 1.0, 1.0, 1.0, 1.5]):
+        g("eca", str(score), f"score {score}", rw, "CRE20 Table 2", "CRE20.9")
+    for key, rw in zip(ratings[:5], [0.2, 0.3, 0.5, 1.0, 1.5]):
+        g("bank-ecra", key, key, rw, "CRE20 Table 6", "CRE20.18")
+    for key, rw in zip(ratings[:5], [0.2, 0.2, 0.2, 0.5, 1.5]):
+        g("bank-ecra", key, key, rw, "CRE20 Table 6", "CRE20.18", short=True)
+    for key, rw, rws in zip(["A", "B", "C"], [0.4, 0.75, 1.5], [0.2, 0.5, 1.5]):
+        g("bank-scra", key, f"Grade {key}", rw, "CRE20 Table 7", "CRE20.21")
+        g("bank-scra", key, f"Grade {key}", rws, "CRE20 Table 7", "CRE20.21", short=True)
+    for key, band, rw in zip(["AAA to AA-", "A+ to A-", "BBB+ to BBB-", "BB+ to BB-", "below BB-", "unrated"],
+                             ["AAA to AA-", "A+ to A-", "BBB+ to BBB-", "BB+ to BB-", "below BB-", "unrated"], [0.2, 0.5, 0.75, 1.0, 1.5, 1.0]):
+        g("corporate", key, band, rw, "CRE20 Table 10", "CRE20.43")
+    g("corporate", "investment-grade-unrated", "investment grade where ratings are not allowed", 0.65, "CRE20.44 and CRE20.46", "CRE20.44")
+    g("corporate", "sme-unrated", "unrated SME", 0.85, "CRE20.47", "CRE20.47")
+    g("corporate", "regulatory-retail-sme", "regulatory retail SME", 0.75, "CRE20.47", "CRE20.47")
+    bands = [("0.5", "ltv <= 50%"), ("0.6", "50% < ltv <= 60%"), ("0.8", "60% < ltv <= 80%"), ("0.9", "80% < ltv <= 90%"),
+             ("1.0", "90% < ltv <= 100%"), ("1.5", "ltv > 100%")]
+    for (key, band), rw in zip(bands, [0.2, 0.25, 0.3, 0.4, 0.5, 0.7]):
+        g("residential-re", key, band, rw, "CRE20 Table 11", "CRE20.82")
+    for (key, band), rw in zip(bands, [0.3, 0.35, 0.45, 0.6, 0.75, 1.05]):
+        g("residential-re", key, band, rw, "CRE20 Table 12", "CRE20.84", cf=True)
+    for cw in (0.2, 1.0):
+        g("commercial-re", "0.6", "ltv <= 60%", min(0.6, cw), "CRE20 Table 13", "CRE20.85", cw=cw)
+        g("commercial-re", "1.0", "ltv > 60%", cw, "CRE20 Table 13", "CRE20.85", cw=cw)
+    for (key, band), rw in zip([("0.6", "ltv <= 60%"), ("0.8", "60% < ltv <= 80%"), ("1.0", "ltv > 80%")], [0.7, 0.9, 1.1]):
+        g("commercial-re", key, band, rw, "CRE20 Table 14", "CRE20.87", cf=True)
+    for key, band, rw in [("regulatory", "regulatory retail", 0.75), ("transactor", "transactors", 0.45), ("other", "other retail", 1.0)]:
+        g("retail", key, band, rw, "CRE20.68", "CRE20.68")
+    for key, band, rw in [("equity", "equity", 2.5), ("speculative-unlisted", "speculative unlisted equity", 4.0),
+                          ("legislated-programme", "legislated programmes", 1.0), ("subordinated-debt", "subordinated debt", 1.5)]:
+        g("equity", key, band, rw, "CRE20.57 to CRE20.60", "CRE20.57")
+    for key, band, rw in [("provision-below-20pct", "specific provisions below 20%", 1.5),
+                          ("provision-at-least-20pct", "specific provisions at least 20%", 1.0),
+                          ("residential-non-cash-flow-dependent", "residential not cash-flow dependent", 1.0)]:
+        g("defaulted", key, band, rw, "CRE20.104 to CRE20.107", "CRE20.104")
+    for key, rw in [("direct-credit-substitute", 1.0), ("repo", 1.0), ("securities-lending", 1.0), ("forward-purchase", 1.0),
+                    ("nif-ruf", 0.5), ("transaction-related-contingent", 0.5), ("commitment", 0.4), ("trade-letter-of-credit", 0.2),
+                    ("unconditionally-cancellable", 0.1)]:
+        g("ccf", key, key, rw, "CRE20.94 to CRE20.101", "CRE20.94")
+    g("currency-mismatch", "multiplier", "multiplier on the unhedged weight", 1.5, "CRE20.92", "CRE20.92")
+    g("currency-mismatch", "cap", "cap on the adjusted weight", 1.5, "CRE20.92", "CRE20.92")
+    return grid
 
 
 def main() -> None:

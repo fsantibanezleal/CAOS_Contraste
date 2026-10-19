@@ -43,28 +43,30 @@ ROW_IDS = ["c12-outputs", "c12-models", "regulatory-calculators", "engine-regula
 # --- the dossier and addendum values, typed here again ------------------------------------------------------------------
 
 CRE99_EAD = {1: 569, 2: 381, 3: 5406, 4: 936, 5: 1879}  # dossier 01 E.2, USD thousands
-CRE99_OUT = {  # dossier 01 E.2 intermediates
-    1: {"rc": 60, "en_usd": 59270, "en_eur": 10083, "addon_ir": 346.765, "swaption_delta": -0.2694},
-    2: {"rc": 0, "addon_credit": 282, "multiplier": 0.965},
-    3: {"rc": 20, "addon_energy": 2041, "addon_metals": 1800, "addon_aggregate": 3841},
-    4: {"rc": 40, "addon_aggregate": 629},
-    5: {"rc": 0, "addon_ir": 123, "addon_commodity": 1278, "addon_aggregate": 1401, "multiplier": 0.958},
+CRE99_PRINTED = {  # dossier 01 E.2 and the BIS page: the printed (rounded) intermediates, as (value, decimals)
+    1: {"rc": (60, 0), "en_usd": (59270, 0), "en_eur": (10083, 0), "addon_ir": (347, 0), "swaption_delta": (-0.2694, 4)},
+    2: {"rc": (0, 0), "term_1": (2253, 0), "term_2": (77344, 0), "addon_credit": (282, 0), "multiplier": (0.965, 3)},
+    3: {"rc": (20, 0), "addon_energy": (2041, 0), "addon_metals": (1800, 0), "addon_commodity": (3841, 0)},
+    4: {"rc": (40, 0), "addon_aggregate": (629, 0)},
+    5: {"rc": (0, 0), "addon_ir": (123, 0), "addon_commodity": (1278, 0), "addon_aggregate": (1401, 0), "multiplier": (0.958, 3)},
 }
 GIRR_TENORS = [0.25, 0.5, 1, 2, 3, 5, 10, 15, 20, 30]
 GIRR_RW = [0.017, 0.017, 0.016, 0.013, 0.012, 0.011, 0.011, 0.011, 0.011, 0.011]  # MAR21.42 Table 1
-CRE20 = {  # dossier 01 C
-    "sovereigns and central banks": [0.0, 0.2, 0.5, 1.0, 1.5, 1.0], "banks ECRA": [0.2, 0.3, 0.5, 1.0, 1.5],
-    "banks ECRA short-term": [0.2, 0.2, 0.2, 0.5, 1.5], "banks SCRA": [0.4, 0.75, 1.5],
-    "corporates": [0.2, 0.5, 0.75, 1.0, 1.5, 1.0],
-    "residential real estate, not cash-flow dependent": [0.2, 0.25, 0.3, 0.4, 0.5, 0.7],
-    "residential real estate, cash-flow dependent": [0.3, 0.35, 0.45, 0.6, 0.75, 1.05],
-    "commercial real estate, cash-flow dependent": [0.7, 0.9, 1.1],
+CRE20 = {  # dossier 01 C, keyed by the engine's lookup classes; the weights in the order of the table's columns
+    ("sovereign", False, False): [0.0, 0.2, 0.5, 1.0, 1.5, 1.0], ("bank-ecra", False, False): [0.2, 0.3, 0.5, 1.0, 1.5],
+    ("bank-ecra", True, False): [0.2, 0.2, 0.2, 0.5, 1.5], ("bank-scra", False, False): [0.4, 0.75, 1.5],
+    ("bank-scra", True, False): [0.2, 0.5, 1.5], ("corporate", False, False): [0.2, 0.5, 0.75, 1.0, 1.5, 1.0, 0.65, 0.85, 0.75],
+    ("residential-re", False, False): [0.2, 0.25, 0.3, 0.4, 0.5, 0.7], ("residential-re", False, True): [0.3, 0.35, 0.45, 0.6, 0.75, 1.05],
+    ("commercial-re", False, True): [0.7, 0.9, 1.1], ("eca", False, False): [0.0, 0.0, 0.2, 0.5, 1.0, 1.0, 1.0, 1.5],
+    ("retail", False, False): [0.75, 0.45, 1.0], ("equity", False, False): [2.5, 4.0, 1.0, 1.5],
+    ("defaulted", False, False): [1.5, 1.0, 1.0], ("ccf", False, False): [1.0, 1.0, 1.0, 1.0, 0.5, 0.5, 0.4, 0.2, 0.1],
 }
 NAMED = ["notionals", "maturities_years", "sides", "netting_set_members", "single_swap_member", "fixed_rate_rule", "csa_threshold",
          "csa_minimum_transfer_amount", "csa_independent_amount", "mpor_business_days_short", "mpor_business_days_long",
-         "counterparty_spread", "counterparty_lgd", "bank_spread", "bank_lgd", "pfe_quantile", "path_count", "seed", "wwr_b_grid",
-         "im_quantile", "im_horizon_days", "im_regression_order", "ba_cva_sector", "ba_cva_rating", "stress_window_start",
-         "stress_window_end", "backtest_window_start"]
+         "counterparty_spread", "counterparty_lgd", "bank_spread", "bank_lgd", "pfe_quantile", "path_count", "seed", "time_grid_years",
+         "wwr_b_grid", "im_quantile", "im_horizon_calendar_days", "im_mpor_calendar_days", "im_regression_order", "ba_cva_sector",
+         "ba_cva_rating", "stress_window_start", "stress_window_end", "backtest_window_start", "backtest_paths_per_date",
+         "backtest_simulated_critical_count", "reconciliation_se_threshold", "ee_check_k_se"]
 HORIZONS = ["10bd", "20bd", "1m", "3m", "6m", "12m"]
 
 
@@ -78,7 +80,7 @@ def ref_of(key: str) -> str:
 
 def all_documents() -> list:
     paths = [p for _, p in FILES.values()]
-    for case in ("C12",):
+    for case in ("C12", "regulatory"):
         d = ROOT / "data" / "derived" / case
         paths += sorted(d.glob("*.json")) if d.is_dir() else []
     return paths
@@ -312,10 +314,13 @@ def test_the_proposed_values_of_the_named_parameters_follow_the_sdd_and_are_the_
     assert n["pfe_quantile"]["value"] == 0.95 and n["path_count"]["value"] == 10000
     assert n["im_quantile"]["value"] == 0.99  # ORE guide: a high (99 percent) quantile (addendum R2)
     assert n["counterparty_lgd"]["value"] == 0.6 and n["bank_lgd"]["value"] == 0.6
-    assert sum(n["notionals"]["value"]) == 20_000_000.0
-    assert len(n["notionals"]["value"]) == len(n["maturities_years"]["value"]) == len(n["sides"]["value"])
-    assert "payer" in n["sides"]["value"] and "receiver" in n["sides"]["value"]
-    assert n["wwr_b_grid"]["value"][0] == 0  # the independent case is on the grid
+    # decision R1 (2026-10-19): the book, the wrong-way grid, the spread and the calendar-day IM horizon
+    assert n["notionals"]["value"] == [10_000_000.0, 6_000_000.0, 4_000_000.0, 2_000_000.0]
+    assert n["maturities_years"]["value"] == [10.0, 5.0, 3.0, 0.5] and n["sides"]["value"] == ["payer", "receiver", "payer", "receiver"]
+    assert n["netting_set_members"]["value"] == ["SW-1", "SW-2", "SW-3", "SW-4"] and n["single_swap_member"]["value"] == "SW-1"
+    assert n["wwr_b_grid"]["value"] == [-2.0, 0.0, 1.0, 2.0, 4.0] and 0 in n["wwr_b_grid"]["value"]
+    assert n["counterparty_spread"]["value"] == 0.0125  # Hull and White Tables 1 and 2 (addendum R1)
+    assert n["im_horizon_calendar_days"]["value"] == 14 and n["im_mpor_calendar_days"]["value"] == 14  # ORE: calendar days (R2)
 
 
 # --- the variants carry exactly the blocks they run ---------------------------------------------------------------------
@@ -323,9 +328,9 @@ def test_the_proposed_values_of_the_named_parameters_follow_the_sdd_and_are_the_
 
 def test_each_variant_carries_exactly_the_blocks_it_runs() -> None:
     expect = {  # trades, collateral mpor, im, wwr, ore
-        "single-swap": (1, None, False, False, "reconciled"), "netting-set": (3, None, False, False, "reconciled"),
-        "csa-mpor-10d": (3, 10, False, False, "not-applicable"), "csa-mpor-20d": (3, 20, False, False, "not-applicable"),
-        "with-im": (3, 10, True, False, "not-applicable"), "wrong-way-risk": (3, None, False, True, "not-applicable"),
+        "single-swap": (1, None, False, False, "reconciled"), "netting-set": (4, None, False, False, "reconciled"),
+        "csa-mpor-10d": (4, 10, False, False, "reconciled"), "csa-mpor-20d": (4, 20, False, False, "reconciled"),
+        "with-im": (4, 10, True, False, "reconciled"), "wrong-way-risk": (4, None, False, True, "not-applicable"),
     }
     for v, (n, mpor, im, wwr, ore) in expect.items():
         o = load(v)["outputs"]
@@ -465,11 +470,11 @@ def _w2(d: dict) -> None:
 
 
 def _wwr_b0(d: dict) -> None:
-    d["outputs"]["wrong_way_risk"]["sweep"][0]["cva"]["amount"] *= 1.0000001
+    next(x for x in d["outputs"]["wrong_way_risk"]["sweep"] if x["b"] == 0)["cva"]["amount"] *= 1.0000001
 
 
 def _wwr_independent_flag(d: dict) -> None:
-    d["outputs"]["wrong_way_risk"]["sweep"][1]["independent"] = True
+    d["outputs"]["wrong_way_risk"]["sweep"][2]["independent"] = True
 
 
 def _lookahead(d: dict) -> None:
@@ -646,8 +651,8 @@ def test_the_sa_ccr_ead_recomputes_from_the_trade_inputs(key: str) -> None:
     d = {"B1": 0.0, "B2": 0.0, "B3": 0.0}
     for t, tr in zip(sa["trades"], o["book"]["trades"]):
         sd = (1 - math.exp(-0.05 * tr["maturity_years"])) / 0.05
-        mf = 1.0 if mpor is None else 1.5 * math.sqrt(mpor / 250)
         end = tr["maturity_years"]
+        mf = math.sqrt(min(end, 1.0)) if mpor is None else 1.5 * math.sqrt(mpor / 250)  # CRE52.48, CRE52.52
         bucket = "B1" if end < 1 else "B2" if end <= 5 else "B3"
         d[bucket] += (1 if tr["side"] == "payer" else -1) * tr["notional"]["amount"] * sd * mf
     en = math.sqrt(d["B1"] ** 2 + d["B2"] ** 2 + d["B3"] ** 2 + 1.4 * d["B1"] * d["B2"] + 1.4 * d["B2"] * d["B3"] + 0.6 * d["B1"] * d["B3"])
@@ -674,10 +679,11 @@ def test_eepe_is_at_most_the_maximum_of_ee_and_the_netted_ee_at_most_the_sum(key
 
 def test_the_wrong_way_sweep_has_the_independent_case_at_b_zero_and_cva_rises_with_b() -> None:
     w = load("wrong-way-risk")["outputs"]["wrong_way_risk"]
-    assert [p["b"] for p in w["sweep"]][0] == 0 and w["sweep"][0]["independent"]
+    zero = next(p for p in w["sweep"] if p["b"] == 0)
+    assert zero["independent"] and [p["independent"] for p in w["sweep"]].count(True) == 1
     cvas = [p["cva"]["amount"] for p in w["sweep"]]
-    assert cvas == sorted(cvas)
-    assert w["sweep"][0]["cva"]["amount"] == w["independent_cva"]["amount"] == load("wrong-way-risk")["outputs"]["cva_dva"]["cva"]["amount"]
+    assert [p["b"] for p in w["sweep"]] == sorted(p["b"] for p in w["sweep"]) and cvas == sorted(cvas)
+    assert zero["cva"]["amount"] == w["independent_cva"]["amount"] == load("wrong-way-risk")["outputs"]["cva_dva"]["cva"]["amount"]
 
 
 def test_the_backtest_block_has_the_horizons_the_dates_and_the_sub_windows() -> None:
@@ -710,6 +716,7 @@ def test_the_girr_block_states_the_sqrt2_convention_and_the_undivided_charge_bes
     for k in VARIANT_KEYS:
         g = load(k)["outputs"]["girr"]
         assert g["sqrt2_division"] is True and g["sqrt2_label"] == "convention"
+        assert g["delta_charge"]["amount"] > 1e5, "the charge is of the order of the book's PV01 x 10^4 x the weights"
         assert g["delta_charge"]["amount"] == pytest.approx(g["delta_charge_undivided"]["amount"] / math.sqrt(2), rel=1e-6)
         assert [s["scenario"] for s in g["scenarios"]] == ["low", "medium", "high"]
 
@@ -724,18 +731,65 @@ def test_the_ba_cva_block_carries_the_mar50_constants_and_the_limit() -> None:
 # --- the regulatory-calculators document --------------------------------------------------------------------------------
 
 
-def test_the_five_cre99_netting_sets_carry_the_published_eads_and_every_printed_intermediate() -> None:
+def test_the_five_cre99_netting_sets_carry_the_published_eads_the_printed_intermediates_and_their_trades() -> None:
     doc = load("regulatory")
     ex = {e["id"]: e for e in doc["official_examples"]}
     for i, ead in CRE99_EAD.items():
         e = ex[f"cre99-netting-set-{i}"]
         assert {p["name"]: p["value"] for p in e["published"]}["ead"] == ead
         assert (e["calculator"], e["paragraph"], e["in_force_date"], e["published_date"]) == ("sa-ccr", "CRE52.1", "2023-01-01", "2020-06-05")
-        outs = {v["name"]: v["value"] for v in e["outputs"]}
-        for name, val in CRE99_OUT[i].items():
-            assert outs[name] == pytest.approx(val, rel=1e-9), (i, name)
+        pub = {p["name"]: p["value"] for p in e["published"]}
+        for name, (val, _) in CRE99_PRINTED[i].items():
+            assert pub[name] == pytest.approx(val, rel=1e-12), (i, name)
+        assert e["trades"], i
+        for t in e["trades"]:
+            assert t["paragraph"].startswith("CRE99.") and all(v["paragraph"].startswith("CRE99.") for v in t["terms"]), (i, t["trade_id"])
+        assert all(v["basis"] == "recomputed" for v in e["outputs"]), i
+    assert [len(ex[f"cre99-netting-set-{i}"]["trades"]) for i in range(1, 6)] == [3, 3, 3, 6, 6]
     s5 = {v["name"]: v["value"] for v in ex["cre99-netting-set-5"]["outputs"]}
     assert s5["maturity_factor"] == pytest.approx(1.5 * math.sqrt(14 / 250), rel=1e-12)
+
+
+def test_the_trade_level_cre99_path_rounds_exactly_to_the_five_published_eads() -> None:
+    """Independent of semantics.py: the five netting sets from the BIS trade tables, intermediates unrounded (CRE99.20)."""
+    from statistics import NormalDist
+
+    sd = lambda s_, e_: (math.exp(-0.05 * s_) - math.exp(-0.05 * e_)) / 0.05  # noqa: E731
+    mult = lambda vc, a: min(1.0, 0.05 + 0.95 * math.exp(vc / (2 * 0.95 * a)))  # noqa: E731
+    en = lambda d1, d2, d3: math.sqrt(d1 ** 2 + d2 ** 2 + d3 ** 2 + 1.4 * d1 * d2 + 1.4 * d2 * d3 + 0.6 * d1 * d3)  # noqa: E731
+    d1_ = (math.log(0.06 / 0.05) + 0.5 * 0.5 ** 2 * 1) / (0.5 * 1)
+    delta3 = -NormalDist().cdf(-d1_)  # a bought put (CRE99.31)
+    assert round(delta3, 4) == -0.2694
+    mf5 = 1.5 * math.sqrt(14 / 250)
+
+    def ir(mf):
+        usd = en(0, -1e4 * sd(0, 4) * mf, 1e4 * sd(0, 10) * mf)
+        eur = abs(5e3 * sd(1, 11) * delta3 * mf)
+        return 0.005 * (usd + eur)
+
+    def credit():
+        a = [1e4 * sd(0, 3) * 0.0038, -1e4 * sd(0, 6) * 0.0054, 1e4 * sd(0, 5) * 0.0038]
+        rho = [0.5, 0.5, 0.8]
+        return math.sqrt(sum(r * x for r, x in zip(rho, a)) ** 2 + sum((1 - r * r) * x * x for r, x in zip(rho, a)))
+
+    def com(mf1, mf2, mf3):
+        energy = abs(1e4 * mf1 - 2e4 * mf2) * 0.18
+        return energy + abs(1e4 * mf3) * 0.18
+
+    got = {
+        1: 1.4 * (60 + ir(1.0)),
+        2: 1.4 * mult(-20, credit()) * credit(),
+        3: 1.4 * (20 + com(math.sqrt(0.75), 1.0, 1.0)),
+        4: 1.4 * (40 + ir(1.0) + credit()),
+        5: 1.4 * (0 + mult(-120, ir(mf5) + com(mf5, mf5, mf5)) * (ir(mf5) + com(mf5, mf5, mf5))),
+    }
+    assert {i: math.floor(v + 0.5) for i, v in got.items()} == CRE99_EAD
+    # the document's own unrounded outputs are these values
+    ex = {e["id"]: e for e in load("regulatory")["official_examples"]}
+    for i, v in got.items():
+        assert {o["name"]: o["value"] for o in ex[f"cre99-netting-set-{i}"]["outputs"]}["ead"] == pytest.approx(v, rel=1e-9), i
+    assert mult(-20, credit()) == pytest.approx(0.965208, abs=5e-7)  # not 0.965205 (review M2)
+    assert credit() == pytest.approx(math.sqrt(2252.634990994 + 77344.042775506), rel=1e-9)
 
 
 def test_the_output_floor_examples_are_101_5_and_95() -> None:
@@ -751,7 +805,7 @@ def test_the_output_floor_examples_are_101_5_and_95() -> None:
 def test_every_regulatory_entry_has_a_paragraph_and_an_in_force_date_and_the_schema_refuses_one_without() -> None:
     doc = load("regulatory")
     entries = doc["official_examples"] + doc["invariant_cases"]
-    assert len(entries) >= 11
+    assert len(entries) >= 14
     for e in entries:
         assert re.match(r"^(CRE|RBC|MAR)\d+", e["paragraph"]) and re.match(r"^\d{4}-\d{2}-\d{2}$", e["in_force_date"])
         for v in e["inputs"] + e["outputs"] + e["published"]:
@@ -810,12 +864,14 @@ def test_the_invariant_inputs_recompute() -> None:
 
 
 def test_the_cre20_grid_equals_the_dossier_tables() -> None:
-    grid: dict[str, list[float]] = {}
+    grid: dict[tuple, list[float]] = {}
     for g in load("regulatory")["cre20_grid"]:
-        grid.setdefault(g["exposure_class"], []).append(g["risk_weight"])
+        grid.setdefault((g["exposure_class"], g["short_term"], g["cash_flow_dependent"]), []).append(g["risk_weight"])
     for cls, weights in CRE20.items():
         assert grid[cls] == weights, cls
-    assert grid["retail"] == [0.75, 0.45, 1.0] and grid["equity and subordinated debt"] == [2.5, 4.0, 1.5]
+    commercial = [g for g in load("regulatory")["cre20_grid"] if g["exposure_class"] == "commercial-re" and not g["cash_flow_dependent"]]
+    assert [(g["counterparty_weight"], g["risk_weight"]) for g in commercial] == [(0.2, 0.2), (0.2, 0.2), (1.0, 0.6), (1.0, 1.0)]
+    assert grid[("currency-mismatch", False, False)] == [1.5, 1.5]
 
 
 def test_the_regulatory_checker_refuses_a_wrong_ead_a_wrong_floor_and_a_wrong_multiplier() -> None:
@@ -846,11 +902,11 @@ def test_the_regulatory_checker_refuses_a_wrong_ead_a_wrong_floor_and_a_wrong_mu
 
 def test_the_cre99_goldens_recompute() -> None:
     mult = lambda vc, a: min(1.0, 0.05 + 0.95 * math.exp(vc / (2 * 0.95 * a)))  # noqa: E731
-    assert 1.4 * (60 + 1 * 346.765) == pytest.approx(569, abs=1)
-    assert math.sqrt(2253 + 77344) == pytest.approx(282, abs=0.2) and mult(-20, 282.13) == pytest.approx(0.965, abs=5e-4)
-    assert 1.4 * (0 + mult(-20, 282.13) * 282.13) == pytest.approx(381, abs=1)
-    assert 1.4 * (20 + 3841) == pytest.approx(5406, abs=1)
-    assert 1.4 * (40 + 629) == pytest.approx(936, abs=1)
+    assert 1.4 * (60 + 1 * 346.765) == pytest.approx(569, abs=1)  # the path from the printed intermediates keeps one unit
+    assert mult(-20, math.sqrt(2253 + 77344)) == pytest.approx(0.965208, abs=5e-7)
+    assert 1.4 * (0 + mult(-20, 282.1288) * 282.1288) == pytest.approx(381.24, abs=0.01)
+    assert 1.4 * (20 + 3841) == pytest.approx(5406, abs=1) and 1.4 * (40 + 629) == pytest.approx(936, abs=1)
+    assert 1.4 * (40 + 346.765 + 282.1294) == pytest.approx(936.45, abs=0.01)  # review m1: the unrounded add-ons round to 936
     assert mult(-120, 1401) == pytest.approx(0.958, abs=5e-4) and 1.4 * (0 + 0.958 * 1401) == pytest.approx(1879, abs=1)
     assert 59270 * 0.005 == pytest.approx(296.35) and 10083 * 0.005 == pytest.approx(50.415)
     assert max(80 - 200, 0 + 5 - 150, 0) == 0
@@ -912,7 +968,7 @@ def test_the_changelog_fragment_is_bullets_only() -> None:
 REG_MODULES = {
     "standardised": ["sovereign_risk_weight", "eca_risk_weight", "bank_risk_weight_ecra", "bank_risk_weight_scra",
                      "corporate_risk_weight", "retail_risk_weight", "equity_risk_weight", "residential_re_risk_weight",
-                     "commercial_re_risk_weight", "currency_mismatch_multiplier", "credit_conversion_factor",
+                     "commercial_re_risk_weight", "apply_currency_mismatch", "credit_conversion_factor",
                      "defaulted_risk_weight", "lookup"],
     "output_floor": ["phase_in_factor", "floored_rwa"],
     "sa_ccr": ["supervisory_duration", "supervisory_delta_option", "supervisory_delta_tranche", "maturity_factor", "maturity_bucket",
@@ -920,7 +976,7 @@ REG_MODULES = {
                "commodity_addon", "replacement_cost", "multiplier", "netting_set_ead"],
     "ba_cva": ["materiality_threshold_applies", "sector_risk_weight", "discount_factor", "scva", "k_reduced", "k_hedged", "k_full",
                "capital"],
-    "frtb": ["girr_parameters", "scenario_correlation", "bucket_charge", "cross_bucket", "sbm_delta_charge", "curvature_charge",
+    "frtb": ["girr_parameters", "scenario_correlation", "bucket_charge", "cross_bucket_charge", "girr_delta_charge", "curvature_charge",
              "sbm_capital", "liquidity_cascade_es"],
 }
 CCR_MODULES = {
@@ -933,10 +989,12 @@ CCR_MODULES = {
                    "variation_margin_exposure", "dynamic_initial_margin", "apply_initial_margin"],
     "cva": ["survival_from_spread", "default_probabilities", "cva", "dva", "b_from_two_points", "wwr_calibrate_a", "wwr_cva"],
     "validation.ccr": ["ee_analytic_vs_simulated", "martingale_discounted_bonds", "eepe_recomputed", "cva_recomputed",
-                       "path_convergence", "reconcile_ee_profile", "pfe_exceedance_backtest", "pit_exposure_backtest"],
+                       "path_convergence", "reconcile_ee_profile", "pfe_exceedance_backtest", "pit_exposure_backtest",
+                       "simulate_pit_critical_values", "effective_sample_size"],
 }
-CCR_TESTS = CCR_MODULES["validation.ccr"]
-CLASS_SECTIONS = {"riskvalidation.regulatory.standardised.RiskWeight", "riskvalidation.ccr.swaps.Swap"}
+CCR_TESTS = [n for n in CCR_MODULES["validation.ccr"] if n not in ("simulate_pit_critical_values", "effective_sample_size")]
+CLASS_SECTIONS = {"riskvalidation.regulatory.standardised.RegulatoryParameter", "riskvalidation.ccr.swaps.Swap",
+                  "riskvalidation.validation.ccr.CriticalValues"}
 
 
 def reg_key(module: str, name: str) -> str:
@@ -1027,6 +1085,7 @@ def test_golden_sa_ccr_formulas_recompute() -> None:
     assert (1 - math.exp(-0.05)) / 0.05 == pytest.approx(0.975412, abs=5e-7)
     assert (1 - math.exp(-0.25)) / 0.25 == pytest.approx(0.884797, abs=5e-7)
     assert 1.4 * (60 + 346.765) == pytest.approx(569.47, abs=0.01)
+    assert 1.4 * (60 + 346.7644) == pytest.approx(569.4701, abs=1e-4)
 
 
 def test_golden_ba_cva_and_frtb_formulas_recompute() -> None:
@@ -1103,11 +1162,12 @@ def hw_appendix(w: list[list[float]], b: float, s: float, dt: float) -> tuple[li
 
 def test_golden_hull_white_appendix_calibration_recomputes_to_the_printed_digits() -> None:
     a, h = hw_appendix([[100, 200, 300], [100, 300, 400]], 0.01, 0.01, 0.5)
-    assert a[0] == pytest.approx(-6.9128, abs=5e-5) and a[1] == pytest.approx(-7.8509, abs=2e-4)
+    assert a[0] == pytest.approx(-6.9128, abs=5e-5) and a[1] == pytest.approx(-7.85077, abs=5e-6)  # recomputed (review m2)
+    assert a[1] == pytest.approx(-7.8509, abs=2e-4)  # the paper's printed digits hold to 2e-4, not to one unit of the last digit
     assert [round(x, 5) for x in h[0]] == pytest.approx([0.00270, 0.00735, 0.01998], abs=6e-6)
     assert [round(x, 5) for x in h[1]] == pytest.approx([0.00106, 0.00782, 0.02126], abs=6e-6)
     text = CCR_API.read_text(encoding="utf-8")
-    for printed in ("-6.9128", "-7.8509", "0.00270", "0.00735", "0.01998", "0.00106", "0.00782", "0.02126", "0.0408"):
+    for printed in ("-6.9128", "-7.8509", "-7.85077", "0.00270", "0.00735", "0.01998", "0.00106", "0.00782", "0.02126", "0.0408"):
         assert printed in text or printed == "0.0408", printed
 
 
@@ -1119,7 +1179,7 @@ def test_the_anderson_darling_table_values_are_in_the_documents_and_the_contract
 
 def test_the_goldens_the_regulatory_contract_states_are_traceable_to_the_dossier_lines() -> None:
     text = REG_API.read_text(encoding="utf-8")
-    for printed in ("569", "381", "5,406", "936", "1,879", "101.5", "95", "0.965", "0.958", "-0.2694", "59,270", "10,083", "296.35", "50.415",
+    for printed in ("569", "381", "5,406", "936", "1,879", "101.5", "95", "0.965208", "0.958", "-0.2694", "59,270", "10,083", "296.35", "50.415",
                     "2,041", "1,800", "3,841", "1.5 sqrt(14/250)"):
         assert printed in text, printed
     assert "dossier 01" in text and "addendum" in text

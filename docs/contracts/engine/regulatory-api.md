@@ -20,16 +20,20 @@ an item the dossiers mark UNVERIFIED is marked so here and is not silently decid
   Rates and risk weights are decimals (0.05 is 5 percent); times are years; MPoR is in business days with 250 to the year (CRE52.52).
 - Every function is pure and deterministic (no hidden state, no I/O, inputs never mutated). Dataclasses are frozen.
 - **Every parameter the engine returns carries its paragraph and in-force date** (dossier 01 M.3 item 8): a table lookup returns a
-  `RiskWeight(weight, paragraph, table, in_force)` and a parameter table is module data of entries with the same fields. The
+  `RegulatoryParameter(value, paragraph, table, in_force)` (`RiskWeight` stays as an alias of it) and a parameter table is module data of
+  entries with the same fields. The
   in-force dates are those of the chapter version the dossier names: CRE20 2023-01-01 (published 2025-06-10), CRE52 2023-01-01 (published
   2020-06-05), MAR50 2023-01-01 (published 2020-07-08), MAR21 2023-01-01 (published 2026-03-23), MAR33 2023-01-01 (published 2020-06-05),
   RBC20 2023-01-01 (published 2020-11-26), RBC90 2023-01-01 (published 2020-03-27).
 - A key outside a table (an unknown rating bucket, an LTV below zero) raises `ValueError` naming the table and the paragraph; the engine
   never returns a placeholder weight.
-- Tolerance: each golden value states its own tolerance or is exact; a golden stated to three decimals holds to `5e-4`, an EAD printed as an
-  integer holds to one unit of its currency (the printed value is rounded from unrounded intermediates).
-- The worked-example values below are those of dossier 01 E.2 (CRE99.20 to CRE99.97, USD thousands). The dossier prints the intermediates
-  rounded, not the trade inputs; the engine's tests reproduce the EAD, and the document `regulatory-calculators` carries inputs and outputs.
+- Tolerance: each golden value states its own tolerance or is exact; a golden stated to three decimals holds to `5e-4`. An EAD printed as
+  an integer is reproduced EXACTLY after rounding on the trade-level path: `round(netting_set_ead(...))` from the trade inputs of the BIS
+  page (intermediates carried unrounded, CRE99.20) equals 569, 381, 5,406, 936 and 1,879 (dossier 01 M.3 item 2). The one-unit tolerance
+  stays only on the path from the printed (rounded) intermediates.
+- The worked-example values below are those of dossier 01 E.2 and of the BIS CRE99 page (CRE99.20 to CRE99.97, USD thousands). The
+  trade inputs of the five netting sets are transcribed from the BIS page (paragraph numbers kept) into the document
+  `regulatory-calculators` (`trades` of each example), so the engine tests start from the trades, not from the printed intermediates.
 
 ## Module `riskvalidation/regulatory/standardised.py`
 
@@ -37,24 +41,26 @@ The CRE20 standardised credit risk weights as data with their paragraph (dossier
 corporates use `"AAA to AA-"`, `"A+ to A-"`, `"BBB+ to BBB-"`, `"BB+ to B-"` (corporates `"BB+ to BB-"`), `"below B-"` (corporates
 `"below BB-"`), `"unrated"`.
 
-### `riskvalidation.regulatory.standardised.RiskWeight`
+### `riskvalidation.regulatory.standardised.RegulatoryParameter`
 
 ```python
 @dataclass(frozen=True)
-class RiskWeight:
-    weight: float        # decimal
+class RegulatoryParameter:
+    value: float         # a risk weight, a credit conversion factor, a phase-in factor or a multiplier, as a decimal
     paragraph: str       # for example "CRE20.7"
     table: str           # for example "CRE20 Table 1"
     in_force: str        # ISO date of the chapter version
+
+RiskWeight = RegulatoryParameter  # alias: the class also carries the CCF (CRE20.94) and the phase-in factor (RBC90.1)
 ```
 
-- Units: `weight` a decimal; `paragraph` and `table` strings; `in_force` an ISO date.
-- Invariants: every function of this module returns a `RiskWeight` (never a bare float), so a view shows the paragraph and the in-force date of every parameter (dossier 01 M.3 item 8).
+- Units: `value` a decimal; `paragraph` and `table` strings; `in_force` an ISO date.
+- Invariants: every function of this module returns a `RegulatoryParameter` (never a bare float), so a view shows the paragraph and the in-force date of every parameter (dossier 01 M.3 item 8); the `RiskWeight` alias is kept so a caller written against the first name still works.
 
 ### `riskvalidation.regulatory.standardised.sovereign_risk_weight`
 
 ```python
-def sovereign_risk_weight(rating: str) -> RiskWeight: ...
+def sovereign_risk_weight(rating: str) -> RegulatoryParameter: ...
 ```
 
 - Units: `rating` a bucket label; the weight a decimal.
@@ -63,7 +69,7 @@ def sovereign_risk_weight(rating: str) -> RiskWeight: ...
 ### `riskvalidation.regulatory.standardised.eca_risk_weight`
 
 ```python
-def eca_risk_weight(score: int) -> RiskWeight: ...
+def eca_risk_weight(score: int) -> RegulatoryParameter: ...
 ```
 
 - Units: `score` an integer 0 to 7.
@@ -72,7 +78,7 @@ def eca_risk_weight(score: int) -> RiskWeight: ...
 ### `riskvalidation.regulatory.standardised.bank_risk_weight_ecra`
 
 ```python
-def bank_risk_weight_ecra(rating: str, short_term: bool = False) -> RiskWeight: ...
+def bank_risk_weight_ecra(rating: str, short_term: bool = False) -> RegulatoryParameter: ...
 ```
 
 - Units: `rating` a bucket label of the ECRA; `short_term` the CRE20.18 short-term claims column.
@@ -81,7 +87,7 @@ def bank_risk_weight_ecra(rating: str, short_term: bool = False) -> RiskWeight: 
 ### `riskvalidation.regulatory.standardised.bank_risk_weight_scra`
 
 ```python
-def bank_risk_weight_scra(grade: str, short_term: bool = False) -> RiskWeight: ...
+def bank_risk_weight_scra(grade: str, short_term: bool = False) -> RegulatoryParameter: ...
 ```
 
 - Units: `grade` one of `A`, `B`, `C`.
@@ -90,7 +96,7 @@ def bank_risk_weight_scra(grade: str, short_term: bool = False) -> RiskWeight: .
 ### `riskvalidation.regulatory.standardised.corporate_risk_weight`
 
 ```python
-def corporate_risk_weight(rating: str, sme: bool = False, investment_grade_unrated: bool = False, regulatory_retail_sme: bool = False) -> RiskWeight: ...
+def corporate_risk_weight(rating: str, sme: bool = False, investment_grade_unrated: bool = False, regulatory_retail_sme: bool = False) -> RegulatoryParameter: ...
 ```
 
 - Units: `rating` a corporate bucket label or `unrated`.
@@ -99,7 +105,7 @@ def corporate_risk_weight(rating: str, sme: bool = False, investment_grade_unrat
 ### `riskvalidation.regulatory.standardised.retail_risk_weight`
 
 ```python
-def retail_risk_weight(kind: str) -> RiskWeight: ...
+def retail_risk_weight(kind: str) -> RegulatoryParameter: ...
 ```
 
 - Units: `kind` one of `regulatory`, `transactor`, `other`.
@@ -108,7 +114,7 @@ def retail_risk_weight(kind: str) -> RiskWeight: ...
 ### `riskvalidation.regulatory.standardised.equity_risk_weight`
 
 ```python
-def equity_risk_weight(kind: str) -> RiskWeight: ...
+def equity_risk_weight(kind: str) -> RegulatoryParameter: ...
 ```
 
 - Units: `kind` one of `equity`, `speculative-unlisted`, `legislated-programme`, `subordinated-debt`.
@@ -117,7 +123,7 @@ def equity_risk_weight(kind: str) -> RiskWeight: ...
 ### `riskvalidation.regulatory.standardised.residential_re_risk_weight`
 
 ```python
-def residential_re_risk_weight(ltv: float, cash_flow_dependent: bool = False, loan_splitting: bool = False) -> RiskWeight: ...
+def residential_re_risk_weight(ltv: float, cash_flow_dependent: bool = False, loan_splitting: bool = False) -> RegulatoryParameter: ...
 ```
 
 - Units: `ltv` a decimal (0.8 is 80 percent), at least 0.
@@ -126,34 +132,34 @@ def residential_re_risk_weight(ltv: float, cash_flow_dependent: bool = False, lo
 ### `riskvalidation.regulatory.standardised.commercial_re_risk_weight`
 
 ```python
-def commercial_re_risk_weight(ltv: float, cash_flow_dependent: bool, counterparty_weight: float | None = None) -> RiskWeight: ...
+def commercial_re_risk_weight(ltv: float, cash_flow_dependent: bool, counterparty_weight: float | None = None) -> RegulatoryParameter: ...
 ```
 
 - Units: `ltv` a decimal; `counterparty_weight` the weight of the counterparty, required when not cash-flow dependent.
 - Golden: CRE20.85 Table 13 (not cash-flow dependent): LTV at most 0.6 gives min(0.6, counterparty weight), above gives the counterparty weight. CRE20.87 Table 14 (cash-flow dependent): at most 0.6 gives 0.7, to 0.8 gives 0.9, above 0.8 gives 1.1.
 
-### `riskvalidation.regulatory.standardised.currency_mismatch_multiplier`
+### `riskvalidation.regulatory.standardised.apply_currency_mismatch`
 
 ```python
-def currency_mismatch_multiplier(weight: float) -> RiskWeight: ...
+def apply_currency_mismatch(weight: float) -> RegulatoryParameter: ...
 ```
 
-- Units: `weight` the unadjusted weight, a decimal.
+- Units: `weight` the unadjusted weight, a decimal; the result is the ADJUSTED weight (the multiplier 1.5 is the `currency-mismatch` / `multiplier` row of `lookup`).
 - Golden: CRE20.92: 1.5 times the weight, at most 1.5 (150 percent): 0.75 gives 1.125, 1.2 gives 1.5.
 
 ### `riskvalidation.regulatory.standardised.credit_conversion_factor`
 
 ```python
-def credit_conversion_factor(kind: str) -> RiskWeight: ...
+def credit_conversion_factor(kind: str) -> RegulatoryParameter: ...
 ```
 
 - Units: `kind` one of `direct-credit-substitute`, `repo`, `securities-lending`, `forward-purchase`, `nif-ruf`, `transaction-related-contingent`, `commitment`, `trade-letter-of-credit`, `unconditionally-cancellable`.
-- Golden: CRE20.94 to CRE20.101: 1.0 for the first four, 0.5 for `nif-ruf` and `transaction-related-contingent`, 0.4 for `commitment`, 0.2 for `trade-letter-of-credit`, 0.1 for `unconditionally-cancellable` (the `weight` field carries the factor).
+- Golden: CRE20.94 to CRE20.101: 1.0 for the first four, 0.5 for `nif-ruf` and `transaction-related-contingent`, 0.4 for `commitment`, 0.2 for `trade-letter-of-credit`, 0.1 for `unconditionally-cancellable` (the `value` field carries the factor).
 
 ### `riskvalidation.regulatory.standardised.defaulted_risk_weight`
 
 ```python
-def defaulted_risk_weight(specific_provision_share: float, residential_non_cash_flow_dependent: bool = False) -> RiskWeight: ...
+def defaulted_risk_weight(specific_provision_share: float, residential_non_cash_flow_dependent: bool = False) -> RegulatoryParameter: ...
 ```
 
 - Units: `specific_provision_share` the specific provisions over the outstanding amount, a decimal.
@@ -162,18 +168,18 @@ def defaulted_risk_weight(specific_provision_share: float, residential_non_cash_
 ### `riskvalidation.regulatory.standardised.lookup`
 
 ```python
-def lookup(exposure_class: str, key: str, **options) -> RiskWeight: ...
+def lookup(exposure_class: str, key: str, **options) -> RegulatoryParameter: ...
 ```
 
-- Units: `exposure_class` one of `sovereign`, `eca`, `bank-ecra`, `bank-scra`, `corporate`, `retail`, `equity`, `residential-re`, `commercial-re`, `defaulted`; `key` the rating bucket, grade, kind or the LTV as a string of the number.
-- Invariants: dispatches to the functions above and returns exactly their `RiskWeight`; every cell of the `cre20_grid` of `regulatory-calculators` equals `lookup(...)` of its class and key (the grid is generated by the engine, the document test compares them); an unknown class raises `ValueError`.
+- Units: `exposure_class` one of `sovereign`, `eca`, `bank-ecra`, `bank-scra`, `corporate`, `retail`, `equity`, `residential-re`, `commercial-re`, `defaulted`, `ccf`, `currency-mismatch`; `key` the rating bucket, grade, kind or the LTV as a string of the number (an ECA score as a string of the integer; for `ccf` the kind; for `currency-mismatch` `multiplier` or `cap`); the options `short_term`, `cash_flow_dependent` and `counterparty_weight` are those of the functions above.
+- Invariants: dispatches to the functions above and returns exactly their `RegulatoryParameter`; every cell of the `cre20_grid` of `regulatory-calculators` is keyed as `lookup(exposure_class, key, short_term, cash_flow_dependent, counterparty_weight)` and equals it (the grid is generated by the engine, the document test and `check_regulatory` compare them); an unknown class or key raises `ValueError`.
 
 ## Module `riskvalidation/regulatory/output_floor.py`
 
 ### `riskvalidation.regulatory.output_floor.phase_in_factor`
 
 ```python
-def phase_in_factor(year: int) -> RiskWeight: ...
+def phase_in_factor(year: int) -> RegulatoryParameter: ...
 ```
 
 - Units: `year` a calendar year; the factor a decimal.
@@ -271,11 +277,12 @@ def fx_addon(hedging_sets: dict[str, float]) -> float: ...
 ### `riskvalidation.regulatory.sa_ccr.entity_aggregate`
 
 ```python
-def entity_aggregate(addons: list[float], rho: float) -> float: ...
+def entity_aggregate(addons: list[float], rhos: list[float]) -> float: ...
 ```
 
-- Units: `addons` the entity add-ons `SF x EN_e`, `rho` the correlation of the asset class.
-- Invariants: CRE52.61, CRE52.66, CRE52.70 `sqrt((sum rho A_e)^2 + sum (1 - rho^2) A_e^2)`: one entity returns its own add-on for any `rho`; `rho = 1` returns `|sum A_e|`; `rho = 0` returns `sqrt(sum A_e^2)`. The CRE99 netting set 2 radicand `2,253 + 77,344` gives 282.13 (dossier 01 E.2; tolerance 5e-3 against the printed 282).
+- Units: `addons` the entity add-ons `SF x EN_e`, `rhos` the correlation of each entity (one per add-on, the same length; a different length raises `ValueError`). The correlation is per entity because CRE52.61 aggregates single names (0.5) and indices (0.8) in one formula, as `CommodityEntity(sf, rho, effective_notional)` already does.
+- Invariants: CRE52.61, CRE52.66, CRE52.70 `sqrt((sum rho_e A_e)^2 + sum (1 - rho_e^2) A_e^2)`: one entity returns its own add-on for any `rho`; every `rho = 1` returns `|sum A_e|`; every `rho = 0` returns `sqrt(sum A_e^2)`.
+- Golden: the CRE99 netting set 2 (CRE99.54): add-ons `106, -280, 168` (unrounded `105.86194, -279.91632, 168.11140`) with correlations `0.5, 0.5, 0.8` give the systematic term `(sum rho A)^2 = 2,252.635` (printed 2,253), the idiosyncratic term `sum (1 - rho^2) A^2 = 77,344.043` (printed 77,344) and `AddOn_credit = 282.128832` (printed 282), recomputed from the trade inputs.
 
 ### `riskvalidation.regulatory.sa_ccr.credit_addon`
 
@@ -284,7 +291,7 @@ def credit_addon(entities: list[CreditEntity]) -> float: ...
 ```
 
 - Units: `CreditEntity(rating, is_index, effective_notional)` in one currency.
-- Invariants: CRE52.61 to CRE52.65 with the CRE52.72 factors and correlations (50 percent single name, 80 percent index): equals `entity_aggregate` of the entity add-ons `SF x EN`; the CRE99 netting set 2 add-on is 282 (dossier 01 E.2).
+- Invariants: CRE52.61 to CRE52.65 with the CRE52.72 factors and correlations (50 percent single name, 80 percent index): equals `entity_aggregate(addons, rhos)` of the entity add-ons `SF x EN` with `rhos` 0.5 for a single name and 0.8 for an index; the CRE99 netting set 2 add-on is 282.128832 (printed 282; dossier 01 E.2, CRE99.54).
 
 ### `riskvalidation.regulatory.sa_ccr.equity_addon`
 
@@ -320,7 +327,7 @@ def multiplier(v_minus_c: float, addon_aggregate: float, floor: float = 0.05) ->
 ```
 
 - Units: `v_minus_c` and `addon_aggregate` in one currency; the multiplier unitless in `[floor, 1]`.
-- Golden: CRE52.23 `min(1, floor + (1 - floor) exp((V - C) / (2 (1 - floor) AddOn)))`: `(-20, 282.13)` gives 0.965205 (printed 0.965); `(-120, 1401)` gives 0.958 (printed, tolerance 5e-4); `V - C >= 0` gives 1. Invariants: monotone increasing in `V - C`; tends to the floor as `V - C` tends to minus infinity; an add-on of 0 returns 1.
+- Golden: CRE52.23 `min(1, floor + (1 - floor) exp((V - C) / (2 (1 - floor) AddOn)))`: `(-20, 282.128832)` gives 0.965208 (6 decimals, recomputed with the unrounded add-on; printed 0.965); `(-120, 1400.96238)` gives 0.958123 (printed 0.958, tolerance 5e-4); `V - C >= 0` gives 1. Invariants: monotone increasing in `V - C`; tends to the floor as `V - C` tends to minus infinity; an add-on of 0 returns 1.
 
 ### `riskvalidation.regulatory.sa_ccr.netting_set_ead`
 
@@ -329,7 +336,7 @@ def netting_set_ead(v: float, c: float, addon_by_class: AddOnByClass, margined: 
 ```
 
 - Units: money in one currency; `AddOnByClass(interest_rate, fx, credit, equity, commodity)`.
-- Golden: CRE52.1 `EAD = 1.4 (RC + multiplier x AddOn)` with the aggregate add-on the sum of the five classes (CRE52.24 to CRE52.25); the result carries `rc`, `addon_aggregate`, `multiplier`, `pfe`, `ead`. The five CRE99 values (USD thousands, dossier 01 E.2, M.3 item 2): set 1 RC 60, AddOn 346.765, multiplier 1 gives EAD 569.47 (printed 569); set 2 RC 0, AddOn 282.13, multiplier 0.9652 gives 381.2 (381); set 3 RC 20, AddOn 3,841 gives 5,405.4 (printed 5,406 from unrounded add-ons); set 4 RC 40, AddOn 629 gives 936.6 (936); set 5 RC 0, AddOn 1,401, multiplier 0.958 gives 1,878.9 (1,879). Each holds to one unit. Invariants: `ead = alpha (rc + pfe)`; alpha is 1.4 by default (CRE52.1).
+- Golden: CRE52.1 `EAD = 1.4 (RC + multiplier x AddOn)` with the aggregate add-on the sum of the five classes (CRE52.24 to CRE52.25); the result carries `rc`, `addon_aggregate`, `multiplier`, `pfe`, `ead`. The five CRE99 values (USD thousands, dossier 01 E.2, M.3 item 2), exact after rounding on the trade-level path (the `trades` of the example in `regulatory-calculators`, intermediates unrounded): set 1 RC 60, AddOn 346.764386, multiplier 1 gives EAD 569.470141 (569); set 2 RC 0, AddOn 282.128832, multiplier 0.965208 gives 381.238319 (381); set 3 RC 20, AddOn 3,841.154273 gives 5,405.615982 (5,406); set 4 RC 40, AddOn 628.893218 gives 936.450506 (936; the printed rounded add-ons give 1.4 x 669 = 936.6, which the printed value 936 does not follow, so the golden uses the unrounded ones); set 5 RC 0, AddOn 1,400.962380, multiplier 0.958123 gives 1,879.212632 (1,879). `round(ead)` equals the published integer exactly on this path; the path from the printed intermediates (RC, multiplier and AddOn as printed) holds to one unit. Invariants: `ead = alpha (rc + pfe)`; alpha is 1.4 by default (CRE52.1).
 
 ## Module `riskvalidation/regulatory/ba_cva.py`
 
@@ -351,7 +358,7 @@ def materiality_threshold_applies(aggregate_notional_eur: float) -> bool: ...
 ### `riskvalidation.regulatory.ba_cva.sector_risk_weight`
 
 ```python
-def sector_risk_weight(sector: str, investment_grade: bool) -> RiskWeight: ...
+def sector_risk_weight(sector: str, investment_grade: bool) -> RegulatoryParameter: ...
 ```
 
 - Units: `sector` one of the eight MAR50.16 Table 1 sector labels of the `c12-outputs` schema.
@@ -443,23 +450,25 @@ def bucket_charge(ws: np.ndarray, rho: np.ndarray, scenario: str = 'medium') -> 
 - Units: `ws` weighted sensitivities (money), `rho` the within-bucket correlations.
 - Invariants: MAR21.4 `K_b = sqrt(max(0, sum WS_k^2 + sum_{k != l} rho_kl WS_k WS_l))` with `rho` of the scenario: one factor gives `|WS|`; perfectly correlated factors (`rho = 1` off the diagonal) give `|sum WS|`; the result is never negative even when the radicand is.
 
-### `riskvalidation.regulatory.frtb.cross_bucket`
+### `riskvalidation.regulatory.frtb.cross_bucket_charge`
 
 ```python
-def cross_bucket(k_b: np.ndarray, s_b: np.ndarray, gamma: np.ndarray, scenario: str = 'medium') -> float: ...
+def cross_bucket_charge(k_b: np.ndarray, s_b: np.ndarray, gamma: np.ndarray, scenario: str = 'medium') -> float: ...
 ```
 
 - Units: `k_b` the bucket charges, `s_b` the signed bucket sums `sum WS` (money), `gamma` the cross-bucket correlations.
 - Invariants: MAR21.4 `sqrt(sum K_b^2 + sum_{b != c} gamma_bc S_b S_c)`; if the radicand is negative, `S_b` is replaced by `max(min(sum WS, K_b), -K_b)` and the sum recomputed (MAR21.4(5)(b)); one bucket gives its `K_b`; the result is never negative.
+- Golden: the invariant cases `sbm-bucket-and-cross-bucket-aggregation` and `sbm-cross-bucket-fallback` of `regulatory-calculators` (the second: two buckets `WS = (10, 10)` and `(-10, -10)` with within-bucket rho 0.5 and gamma 0.8 give `K_b = 17.3205`, `S_b = +-20`, a negative radicand under the medium scenario, the fallback `S_b = +-17.3205` and the charge 10.9545).
 
-### `riskvalidation.regulatory.frtb.sbm_delta_charge`
+### `riskvalidation.regulatory.frtb.girr_delta_charge`
 
 ```python
-def sbm_delta_charge(sensitivities: np.ndarray, tenors: np.ndarray, params: GirrParameters) -> SbmResult: ...
+def girr_delta_charge(sensitivities: np.ndarray, tenors: np.ndarray, params: GirrParameters) -> SbmResult: ...
 ```
 
-- Units: `sensitivities` (10,) the PV01 per basis point at each GIRR tenor in one currency (MAR21.19), one bucket (a single currency).
-- Invariants: the weighted sensitivities `RW_k s_k`, the bucket charge under each of the three scenarios and `charge = max` over them (MAR21.6 to MAR21.7); the result is a `SbmResult(weighted, k_by_scenario, charge)`; the charge with the `sqrt(2)`-divided weights is `1 / sqrt(2)` times the undivided charge (the weights scale uniformly); a zero sensitivity vector gives 0; the `girr.scenarios` of `c12-outputs` are `k_by_scenario` in the order low, medium, high.
+- Units: `sensitivities` (10,) `s_k = (V(r + 0.0001) - V(r)) / 0.0001` at each GIRR tenor in one currency: the change in value for a 1 basis point shift DIVIDED BY 0.0001, as MAR21.19 defines it (dossier 01 D.2, addendum R7), not the PV01 per basis point; one bucket (a single currency). A PV01 of 4,500 USD per basis point is `s_k = 4.5e7` USD per unit of rate.
+- Invariants: the weighted sensitivities `RW_k s_k` (divided by `sqrt(2)` for a specified currency), the bucket charge under each of the three scenarios and `charge = max` over them (MAR21.6 to MAR21.7); the result is a `SbmResult(weighted, k_by_scenario, charge)`; the charge with the `sqrt(2)`-divided weights is `1 / sqrt(2)` times the undivided charge (the weights scale uniformly); a zero sensitivity vector gives 0; the `girr.scenarios` of `c12-outputs` are `k_by_scenario` in the order low, medium, high.
+- Golden: a 10 million USD 10-year payer swap with `s = 8.0e7` at the 10-year tenor and no other sensitivity gives `WS = 0.011 x 8.0e7 / sqrt(2) = 622,253.97` and a charge of the same size (one factor gives `|WS|` under every scenario); the `girr` block of the C12 fixtures carries the four swaps of the book.
 
 ### `riskvalidation.regulatory.frtb.curvature_charge`
 
@@ -490,18 +499,26 @@ def liquidity_cascade_es(es_t_full: float, es_t_by_horizon: dict[int, float], ba
 
 ## Producer checks a bake calls
 
-The product's `tests/contracts_u9/semantics.py` recomputes from a document the SA-CCR intermediates from the trade inputs, BA-CVA from SCVA
-and the GIRR charge as the maximum over the three scenarios. A bake calls `check_c12` and `check_regulatory` on every document it writes; a
-non-empty list is a refusal to publish.
+The product's `tests/contracts_u9/semantics.py` recomputes from a document the SA-CCR intermediates from the trade inputs (and, in the
+regulatory document, the five CRE99 netting sets from their trades, exact after rounding), BA-CVA from SCVA and the GIRR weighted
+sensitivities, the bucket charge of each scenario from the Table 2 matrix and the charge as the maximum over the three scenarios. A bake
+calls `check_c12` and `check_regulatory` on every document it writes; a non-empty list is a refusal to publish. A checker returns a
+message, never an exception, on a document the schema would refuse.
 
 ## UNVERIFIED and open items
 
-- The CRE99 trade inputs are not in the dossier (only the intermediates and EADs are): the engine tests reproduce the printed intermediates
-  from the unrounded intermediate values and the EAD to one unit; U9-E1 must read the trade tables of CRE99.20 to CRE99.97 from the BIS page to
-  test the trade-level path, and a value it cannot read is reported, never inferred.
+- The CRE99 trade inputs are transcribed from the BIS page (CRE99.20 to CRE99.97, in force 2023-01-01, fetched 2026-10-19) into the
+  `trades` of the five examples of `regulatory-calculators`; the equations of the page are images and are not transcribed, the formulas are
+  those of CRE52 and recompute every printed intermediate and the five EADs exactly after rounding. The swaption inputs (price 6 percent,
+  strike 5 percent, volatility 50 percent, expiry 1 year) give the delta -0.2693952 (printed -0.2694).
 - BA-CVA full (MAR50.20 to MAR50.25): no official numeric example (addendum R8, RBI draft Annex I is backlog BL-080).
 - GIRR: the footnote 13 formula of MAR21.46 is reconstructed (`max(exp(-0.03 |Tk - Tl| / min(Tk, Tl)), 40%)`) and matches all 100 entries of
   Table 2; the table is the primary value. The vega risk-weight formula (footnote 24) is not transcribed (a swap book has no vega).
 - MAR21.101 (curvature cross-bucket aggregation) was not read in the addendum; `curvature_charge` follows dossier 01 D.2 (MAR21.5).
 - CRE20 version in force 2028-01-01 (published 2025-06-10) is not compared.
 - SA-CVA, DRC and RRAO are out of scope (sizing decision D1).
+- Curvature across buckets (S4, main session 2026-10-19): `curvature_charge` follows dossier 01 D.2 (MAR21.5, the psi rule). C12 is a
+  single-currency USD book with one GIRR bucket, so the cross-bucket step of MAR21.101 does not bind; it is a stated limit for a
+  multi-currency book.
+- The row of MAR33.12 Table 2 "commodity volatility, 60 or 120 days" is ambiguous in dossier 01 D.3 and is not transcribed into the parameter
+  table of the document.
