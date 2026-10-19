@@ -144,9 +144,12 @@
           "horizon_years": 1,
           "confidence_level": 0.999,
           "el_clp_m": 140000.0,
+          "el_status": "finite",
           "var_clp_m": 1190000.0,
           "es_clp_m": 1300000.0,
           "ec_clp_m": 1050000.0,
+          "ec_basis": "var-less-el",
+          "ec_label": null,
           "var_se_clp_m": 2380.0,
           "producer": "credit-grouped-copula-c07-segments",
           "source_documents": [
@@ -166,9 +169,12 @@
           "horizon_years": 1,
           "confidence_level": 0.999,
           "el_clp_m": 5000.0,
+          "el_status": "finite",
           "var_clp_m": 225000.0,
           "es_clp_m": 262000.0,
           "ec_clp_m": 220000.0,
+          "ec_basis": "var-less-el",
+          "ec_label": null,
           "var_se_clp_m": 450.0,
           "producer": "market-c11-mixed-portfolio-scaled-to-market-rwa",
           "source_documents": [
@@ -193,12 +199,35 @@
               },
               {
                 "name": "market_horizon_scaling",
-                "value": 15.8114,
-                "unit": "multiplier on the one-day measure",
-                "label": "case assumption",
+                "value": 21.0032486873,
+                "unit": "multiplier on C11's 99 percent one-day measure",
+                "label": "convention",
                 "basis": {
-                  "en": "Square-root-of-time scaling from the C11 horizon to one year, stated as an assumption (decision Q5)",
-                  "es": "Square-root-of-time scaling from the C11 horizon to one year, stated as an assumption (decision Q5) (es)"
+                  "en": "From C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 times the square root of 250, both named conventions (W4)",
+                  "es": "From C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 times the square root of 250, both named conventions (W4) (es)"
+                },
+                "source_confidence_level": 0.99,
+                "source_horizon_days": 1,
+                "trading_days_per_year": 250,
+                "level_factor": {
+                  "name": "market_level_factor",
+                  "value": 1.3283620823,
+                  "unit": "ratio of normal quantiles z_0.999 / z_0.99",
+                  "label": "convention",
+                  "basis": {
+                    "en": "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case",
+                    "es": "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case (es)"
+                  }
+                },
+                "horizon_factor": {
+                  "name": "market_horizon_factor",
+                  "value": 15.8113883008,
+                  "unit": "multiplier on a one-day measure, sqrt(250)",
+                  "label": "convention",
+                  "basis": {
+                    "en": "Square-root-of-time scaling from one day to one year with 250 trading days: a convention of the case",
+                    "es": "Square-root-of-time scaling from one day to one year with 250 trading days: a convention of the case (es)"
+                  }
                 }
               }
             ]
@@ -209,9 +238,12 @@
           "horizon_years": 1,
           "confidence_level": 0.999,
           "el_clp_m": 2000.0,
+          "el_status": "finite",
           "var_clp_m": 182000.0,
           "es_clp_m": 210000.0,
           "ec_clp_m": 180000.0,
+          "ec_basis": "var-less-el",
+          "ec_label": null,
           "var_se_clp_m": null,
           "producer": "irrbb-engine-simulation-c15-curve-and-book",
           "source_documents": [
@@ -231,9 +263,12 @@
           "horizon_years": 1,
           "confidence_level": 0.999,
           "el_clp_m": 20000.0,
+          "el_status": "finite",
           "var_clp_m": 280000.0,
           "es_clp_m": 345000.0,
           "ec_clp_m": 260000.0,
+          "ec_basis": "var-less-el",
+          "ec_label": null,
           "var_se_clp_m": 560.0,
           "producer": "operational-oprisk-aggregate-c17-parameters-scaled",
           "source_documents": [
@@ -252,8 +287,14 @@
                 "unit": "Banco Andino assets over the assets of the C17 bank",
                 "label": "case assumption",
                 "basis": {
-                  "en": "The scaling of the C17 generator frequency by assets (decision Q5)",
-                  "es": "The scaling of the C17 generator frequency by assets (decision Q5) (es)"
+                  "en": "Derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, converted at the rate (decision Q5, W5); this value is a fixture value",
+                  "es": "Derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, converted at the rate (decision Q5, W5); this value is a fixture value (es)"
+                },
+                "derivation": {
+                  "kind": "asset-ratio",
+                  "banco_andino_assets_clp_m": 40000000.0,
+                  "c17_bank_assets_eur_m": 50000.0,
+                  "converted_at": "operational_conversion_rate"
                 }
               },
               {
@@ -262,8 +303,16 @@
                 "unit": "CLP per EUR",
                 "label": "case assumption",
                 "basis": {
-                  "en": "The stated rate that converts the C17 loss distribution from EUR to CLP (decision Q5)",
-                  "es": "The stated rate that converts the C17 loss distribution from EUR to CLP (decision Q5) (es)"
+                  "en": "Derived at bake time: the EUR to CLP rate of the as-of date from the Banco Central de Chile (decision Q5, W5); this value is a fixture value",
+                  "es": "Derived at bake time: the EUR to CLP rate of the as-of date from the Banco Central de Chile (decision Q5, W5); this value is a fixture value (es)"
+                },
+                "derivation": {
+                  "kind": "observed-exchange-rate",
+                  "pair": "EUR/CLP",
+                  "observation_date": "2026-08-31",
+                  "source": "Banco Central de Chile, Base de Datos Estadisticos, daily exchange rate of the euro in Chilean pesos",
+                  "source_url": "https://si3.bcentral.cl/Siete/es/Siete/API",
+                  "source_series": "fixture-series-id"
                 }
               }
             ]
@@ -566,9 +615,12 @@
             "horizon_years": 1,
             "confidence_level": 0.999,
             "el_clp_m": 140000.0,
+            "el_status": "finite",
             "var_clp_m": 1190000.0,
             "es_clp_m": 1300000.0,
             "ec_clp_m": 1050000.0,
+            "ec_basis": "var-less-el",
+            "ec_label": null,
             "var_se_clp_m": 2380.0,
             "producer": "credit-grouped-copula-c07-segments",
             "source_documents": [
@@ -588,9 +640,12 @@
             "horizon_years": 1,
             "confidence_level": 0.999,
             "el_clp_m": 5000.0,
+            "el_status": "finite",
             "var_clp_m": 225000.0,
             "es_clp_m": 262000.0,
             "ec_clp_m": 220000.0,
+            "ec_basis": "var-less-el",
+            "ec_label": null,
             "var_se_clp_m": 450.0,
             "producer": "market-c11-mixed-portfolio-scaled-to-market-rwa",
             "source_documents": [
@@ -615,12 +670,35 @@
                 },
                 {
                   "name": "market_horizon_scaling",
-                  "value": 15.8114,
-                  "unit": "multiplier on the one-day measure",
-                  "label": "case assumption",
+                  "value": 21.0032486873,
+                  "unit": "multiplier on C11's 99 percent one-day measure",
+                  "label": "convention",
                   "basis": {
-                    "en": "Square-root-of-time scaling from the C11 horizon to one year, stated as an assumption (decision Q5)",
-                    "es": "Square-root-of-time scaling from the C11 horizon to one year, stated as an assumption (decision Q5) (es)"
+                    "en": "From C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 times the square root of 250, both named conventions (W4)",
+                    "es": "From C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 times the square root of 250, both named conventions (W4) (es)"
+                  },
+                  "source_confidence_level": 0.99,
+                  "source_horizon_days": 1,
+                  "trading_days_per_year": 250,
+                  "level_factor": {
+                    "name": "market_level_factor",
+                    "value": 1.3283620823,
+                    "unit": "ratio of normal quantiles z_0.999 / z_0.99",
+                    "label": "convention",
+                    "basis": {
+                      "en": "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case",
+                      "es": "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case (es)"
+                    }
+                  },
+                  "horizon_factor": {
+                    "name": "market_horizon_factor",
+                    "value": 15.8113883008,
+                    "unit": "multiplier on a one-day measure, sqrt(250)",
+                    "label": "convention",
+                    "basis": {
+                      "en": "Square-root-of-time scaling from one day to one year with 250 trading days: a convention of the case",
+                      "es": "Square-root-of-time scaling from one day to one year with 250 trading days: a convention of the case (es)"
+                    }
                   }
                 }
               ]
@@ -631,9 +709,12 @@
             "horizon_years": 1,
             "confidence_level": 0.999,
             "el_clp_m": 2000.0,
+            "el_status": "finite",
             "var_clp_m": 182000.0,
             "es_clp_m": 210000.0,
             "ec_clp_m": 180000.0,
+            "ec_basis": "var-less-el",
+            "ec_label": null,
             "var_se_clp_m": null,
             "producer": "irrbb-engine-simulation-c15-curve-and-book",
             "source_documents": [
@@ -653,9 +734,12 @@
             "horizon_years": 1,
             "confidence_level": 0.999,
             "el_clp_m": 20000.0,
+            "el_status": "finite",
             "var_clp_m": 280000.0,
             "es_clp_m": 345000.0,
             "ec_clp_m": 260000.0,
+            "ec_basis": "var-less-el",
+            "ec_label": null,
             "var_se_clp_m": 560.0,
             "producer": "operational-oprisk-aggregate-c17-parameters-scaled",
             "source_documents": [
@@ -674,8 +758,14 @@
                   "unit": "Banco Andino assets over the assets of the C17 bank",
                   "label": "case assumption",
                   "basis": {
-                    "en": "The scaling of the C17 generator frequency by assets (decision Q5)",
-                    "es": "The scaling of the C17 generator frequency by assets (decision Q5) (es)"
+                    "en": "Derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, converted at the rate (decision Q5, W5); this value is a fixture value",
+                    "es": "Derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, converted at the rate (decision Q5, W5); this value is a fixture value (es)"
+                  },
+                  "derivation": {
+                    "kind": "asset-ratio",
+                    "banco_andino_assets_clp_m": 40000000.0,
+                    "c17_bank_assets_eur_m": 50000.0,
+                    "converted_at": "operational_conversion_rate"
                   }
                 },
                 {
@@ -684,8 +774,16 @@
                   "unit": "CLP per EUR",
                   "label": "case assumption",
                   "basis": {
-                    "en": "The stated rate that converts the C17 loss distribution from EUR to CLP (decision Q5)",
-                    "es": "The stated rate that converts the C17 loss distribution from EUR to CLP (decision Q5) (es)"
+                    "en": "Derived at bake time: the EUR to CLP rate of the as-of date from the Banco Central de Chile (decision Q5, W5); this value is a fixture value",
+                    "es": "Derived at bake time: the EUR to CLP rate of the as-of date from the Banco Central de Chile (decision Q5, W5); this value is a fixture value (es)"
+                  },
+                  "derivation": {
+                    "kind": "observed-exchange-rate",
+                    "pair": "EUR/CLP",
+                    "observation_date": "2026-08-31",
+                    "source": "Banco Central de Chile, Base de Datos Estadisticos, daily exchange rate of the euro in Chilean pesos",
+                    "source_url": "https://si3.bcentral.cl/Siete/es/Siete/API",
+                    "source_series": "fixture-series-id"
                   }
                 }
               ]

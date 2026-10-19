@@ -86,6 +86,26 @@
           ]
         }
       }
+    },
+    {
+      "properties": {
+        "tests": {
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "stress.reverse_solution_check"
+                  }
+                },
+                "required": [
+                  "test_id"
+                ]
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "unevaluatedProperties": false,

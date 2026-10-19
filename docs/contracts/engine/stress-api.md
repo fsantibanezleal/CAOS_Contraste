@@ -64,9 +64,9 @@ agency series only (decision Q7).
 def link(name: str, p: np.ndarray) -> np.ndarray: ...
 ```
 
-- Units: `name` in `"probit"`, `"logit"`; `p` rates in `(0, 1)`; returns the link value. `probit`: `Phi^-1(p)`; `logit`: `ln(p / (1 - p))`.
-- Golden: `link("probit", 0.5) = 0.0`; `link("logit", 0.2) = -1.3863` (computed, `ln 0.25`).
-- Invariants: strictly increasing; `ValueError` for `p` outside `(0, 1)` or an unknown name.
+- Units: `name` in `"probit"`, `"logit"`, `"identity"`; `p` rates; returns the link value. `probit`: `Phi^-1(p)`; `logit`: `ln(p / (1 - p))`; `identity`: `p`, the linear form of the Federal Reserve's own PD regression (05 l.399), for the segments whose rate is zero or negative in some quarters (net recoveries: commercial and residential real estate in the Board's table).
+- Golden: `link("probit", 0.5) = 0.0`; `link("logit", 0.2) = -1.3863` (computed, `ln 0.25`); `link("identity", -0.0003) = -0.0003`.
+- Invariants: strictly increasing; `ValueError` for a probit or logit `p` outside `(0, 1)` (a non-positive rate: use the identity link) and for an unknown name; the identity link takes any finite `p`.
 
 ### `riskvalidation.stress.satellites.inverse_link`
 
@@ -74,8 +74,8 @@ def link(name: str, p: np.ndarray) -> np.ndarray: ...
 def inverse_link(name: str, x: np.ndarray) -> np.ndarray: ...
 ```
 
-- Units: link values; returns rates in `(0, 1)`.
-- Golden: `inverse_link("probit", 1.6449) = 0.9500` (to `5e-5`); `inverse_link("logit", -1.3863) = 0.2000`.
+- Units: link values; returns rates in `(0, 1)` for the probit and logit, and the value itself (signed) for the identity.
+- Golden: `inverse_link("probit", 1.6449) = 0.9500` (to `5e-5`); `inverse_link("logit", -1.3863) = 0.2000`; `inverse_link("identity", -0.0003) = -0.0003`.
 - Invariants: `inverse_link(name, link(name, p)) = p` to `1e-12` (the probit round trip DR to Z to DR of 04 l.791-793).
 
 ### `riskvalidation.stress.satellites.SatelliteFit`
@@ -97,7 +97,7 @@ class SatelliteFit:
     residual_sd: float
 ```
 
-- Units: dimensionless on the link scale; the window as ISO dates.
+- Units: dimensionless on the link scale; the window as ISO dates. `link` is the link the segment was fitted with: `identity` for commercial and residential real estate, whose windows start at 1991Q1 (the Board's table is missing both series from 1985Q1 to 1990Q4) and hold non-positive quarters (13 and 6 in 1991Q1 to 2019Q4); `probit` for the others, whose windows start 1985Q1. The document records `non_positive_quarters_in_window` beside the link.
 - Invariants: maps onto the models document `fit.satellites[*]` (`link`, `sample_window`, `ar_order`, `n_obs`, `regressors`, `coefficients` with `name`, `estimate`, `std_error`, `fit_statistics`); `n_obs` is the number of quarters of the window less the largest lag (`max(ar_order, lags)`), the check of `semantics.py`.
 
 ### `riskvalidation.stress.satellites.fit_satellite`
@@ -107,9 +107,10 @@ def fit_satellite(rates: np.ndarray, regressors: np.ndarray, regressor_names: Se
                   quarters: Sequence[str], window_start: str, window_end: str) -> SatelliteFit: ...
 ```
 
-- Units: `rates` (T,) decimals in `(0, 1)`, `regressors` (T, P) in the unit of each series, `quarters` (T,) ISO quarter ends, ascending and contiguous. OLS by `numpy.linalg.lstsq` on the observations of the window, with classical standard errors `sqrt(diag(s^2 (X'X)^-1))`.
+- Units: `rates` (T,) signed decimals (in `(0, 1)` for the probit and logit; net recoveries make a rate zero or negative and need the identity link), `regressors` (T, P) in the unit of each series, `quarters` (T,) ISO quarter ends, ascending and contiguous. OLS by `numpy.linalg.lstsq` on the observations of the window, with classical standard errors `sqrt(diag(s^2 (X'X)^-1))`.
+- Golden (identity): `link_name = "identity"`, `rates = (-0.002, 0.0, 0.002, 0.004)`, `ar_order = 0`, one regressor `x = (0, 1, 2, 3)`: estimates `(-0.002, 0.002)`, `r_squared = 1.0`; the same rates with `link_name = "probit"` raise `ValueError` (net recoveries, non-positive).
 - Golden: an exact line, `link(rate) = 1 + 2 x` with `ar_order = 0` and one regressor at lag 0 over four quarters `x = (0, 1, 2, 3)`: estimates `(1.0, 2.0)`, standard errors `(0.0, 0.0)`, `r_squared = 1.0`; the estimates equal `numpy.linalg.lstsq` to `1e-10`.
-- Invariants: only quarters inside `[window_start, window_end]` enter; `ValueError` for a window outside the data, a gap in `quarters`, a rate outside `(0, 1)`, a regressor name outside the agency list (`real_gdp_growth`, `unemployment_rate`, `cpi_inflation`, `treasury_3m`, `treasury_5y`, `treasury_10y`, `mortgage_rate`, `prime_rate`: the BBB corporate yield and the third-party index levels are not read, decision Q7), fewer observations than coefficients; `r_squared` in `[0, 1]`.
+- Invariants: only quarters inside `[window_start, window_end]` enter; `ValueError` for a window outside the data, a gap in `quarters` (a missing quarter inside the window is never filled; one outside it is out of the window), a probit or logit fit on a non-positive rate (the reason reads "a probit or logit fit on a non-positive rate: the link needs a rate in (0, 1); use the identity link"), a probit or logit rate of 1 or more, a regressor name outside the agency list (`real_gdp_growth`, `unemployment_rate`, `cpi_inflation`, `treasury_3m`, `treasury_5y`, `treasury_10y`, `mortgage_rate`, `prime_rate`: the BBB corporate yield and the third-party index levels are not read, decision Q7), fewer observations than coefficients; `r_squared` in `[0, 1]`.
 
 ### `riskvalidation.stress.satellites.SatelliteProjection`
 
@@ -120,7 +121,7 @@ class SatelliteProjection:
     rates: np.ndarray          # (H,) in (0, 1)
 ```
 
-- Units: link scale and decimal rates.
+- Units: link scale and decimal rates; `rates` are signed on the identity link and may be non-positive, read as net recoveries.
 - Invariants: `rates = inverse_link(link, link_values)`; maps onto the variant block `outputs.satellites.fed_loan_types[*].quarters[*]` (`rate`, `link_value`).
 
 ### `riskvalidation.stress.satellites.project_scenario`
@@ -146,6 +147,7 @@ def transpose_path(levels: np.ndarray, source_jump_off: float, target_value: flo
 - Units: any unit of the path (percent for Federal Reserve paths); `n` the number of periods returned. `target_value + (levels - source_jump_off)` for the first `n` periods, periods aligned by their distance from the jump-off (decision Q6).
 - Golden: `levels = (6, 8, 10)`, `source_jump_off = 5`, `target_value = 3`, `n = 3`: `[4.0, 6.0, 8.0]`.
 - Invariants: the first difference of the result equals that of the source; `ValueError` for `n` above the length of `levels` (extend with `revert_to_baseline`).
+- A level path of a growth regressor (the NGFS GDP level, `baseline-times-percent-deviation`): the transposed quarters of year `y` all carry that year's growth in percent, `(level_y / level_(y-1) - 1) * 100`, with `level_0` the source jump-off level; `semantics.py` `violations` checks it.
 
 ### `riskvalidation.stress.paths.revert_to_baseline`
 
@@ -250,7 +252,7 @@ def internal_capital_target(c_dsib: float, c_p2: float, c_ccob: float, c_ccyb: f
 
 - Units: shares of RWA; `p2r` the art. 66 quinquies requirement (the floor of `c_p2`: `c_P2,bank >= c_66 quinquies`, 03 l.152-169). `c_p2` and `c_d` are labelled assumptions of the case (decision Q4); `c_d` may be zero (03 B.2: "podria ser nula").
 - Golden (Santander Chile 2025-12-31 ratios, dossier 03 l.1324-1328, Ch$ million: CET1 `4,601,923` of RWA `41,715,467`, effective equity `7,047,321`; Pillar 2 `52,144`, so `0.125` percent of RWA, countercyclical `0.50`, systemic `1.50`, conservation `2.50` percent; computed, Contraste arithmetic and not a reported figure): `c_dsib = 0.015`, `c_p2 = 0.00125`, `c_ccob = 0.025`, `c_ccyb = 0.005`, `c_d = 0.0` give `oi = 0.12625`; the effective-equity ratio is `0.168938`, so the headroom (Annex 3 row 12, `1.1 - 5`) is `0.042688`.
-- Invariants: `ValueError` for a negative component or `c_p2 < p2r`, or `c_p2` above the 4 percent cap of RWA (03 l.253): the cap is `0.04 * 41,715,467 = 1,668,618.68` in the Santander figures, above the `52,144` Pillar 2 requirement.
+- Invariants: `ValueError` for a negative component, `c_p2 < p2r`, or `p2r` above the 4 percent cap of RWA (03 l.52, l.253-254: the cap bounds the CMF's art. 66 quinquies requirement): the cap is `0.04 * 41,715,467 = 1,668,618.68` in the Santander figures, above the `52,144` Pillar 2 requirement. `c_p2` is the bank's own estimate, at least `p2r` (03 l.156-163), and `c_p2` has no cap.
 
 ### `riskvalidation.stress.capital.chilean_cet1_stack`
 
@@ -516,7 +518,7 @@ def scenario_severity(path_peak: float, history_peak: float, is_stress: bool = T
                       model_id: str | None = None, segment: str | None = None) -> TestResult: ...
 ```
 
-- Units: the peak deviation from the jump-off of a scenario variable (unemployment in percentage points, GDP in percentage points) and the same deviation in the global financial crisis; `test_id = "stress.scenario_severity"`. `h0`: a stress path is at least as severe as history (the EBA documents severity against the GFC: 05 l.422).
+- Units: the peak deviation from the jump-off of a scenario variable (unemployment in percentage points, GDP in percentage points) and the same deviation in the global financial crisis; `test_id = "stress.scenario_severity"`. `h0`: a stress path is at least as severe as history (the EBA documents severity against the GFC: 05 l.422). It maps onto the document block `outputs.severity` (one row per path variable: `path_peak_deviation`, `history_peak_deviation`, `ratio`, `is_stress`; the reference episode 2008 to 2009 with its quarters and source).
 - Invariants: `statistic = path_peak / history_peak`; `is_stress = False` (the baseline) gives `not_evaluated` with the reason "not a stress path"; `history_peak <= 0` gives `not_evaluated`; `thresholds = {"minimum": minimum}`.
 - Light: green when `statistic >= minimum`; amber below (no red: a mild stress is a finding about the scenario, not a failure).
 - Golden: unemployment peak `+5.5` points against a GFC peak `+5.5`: `statistic = 1.0`, green; `+3.0` against `+5.5`: `0.5455`, amber.

@@ -187,9 +187,19 @@ LABEL = {"type": "string", "enum": ["convention", "case assumption"],
 INFO = C("information-not-capital", "A diversified or allocated figure is information for the validator and never a capital claim (dossier 05 l.519).")
 HORIZON = C(1, "One horizon for every marginal: one year (decision Q5).")
 LEVEL = C(0.999, "One confidence level for every marginal: 99.9 percent, as a decimal (decision Q5).")
-BASIS = C("economic-capital-var-less-el", "Capital of a risk and of an aggregate is EC = VaR(0.999, 1 year) less the expected loss; the expected loss is additive, so the "
-                                      "simple sum of the marginals equals the comonotonic total.")
+BASIS = C("economic-capital-var-less-el", "Capital of a risk and of an aggregate is EC = VaR(0.999, 1 year) less the expected loss, EC_q = VaR_q(L) - EL "
+                                      "(dossier 04 l.652-653, BCBS 2005 explanatory note section 4.4); the expected loss is additive, so the simple sum of the "
+                                      "marginals equals the comonotonic total. A marginal whose severity has an infinite mean has no expected loss: its EC is the VaR "
+                                      "alone, labelled (dossier 05 l.482).")
 APPROX = C("contraste-approximation", "The proxy is a Contraste approximation consistent with FAQ 24; the CMF calibration grid is not public.")
+#: the identity link is the linear form of the Federal Reserve's own PD regression (dossier 05 l.399): no quarter is floored or dropped
+LINKS = ["probit", "logit", "identity"]
+#: the Board's table is missing RECI and RERES from 1985Q1 to 1990Q4, so their windows start at the first available quarter, 1991Q1
+FIRST_QUARTER = {"commercial-industrial": "1985-03-31", "commercial-real-estate": "1991-03-31", "residential": "1991-03-31",
+                 "credit-cards": "1985-03-31", "other-consumer": "1985-03-31"}
+IDENTITY_TYPES = ["commercial-real-estate", "residential"]
+RATE = N("A net charge-off rate as a decimal. Signed: net recoveries make a rate zero or negative (the Board's table holds both).",
+         exclusiveMinimum=-1, exclusiveMaximum=1)
 ADAPT = C("us-calibrated-adaptation", "The satellites are fitted on United States charge-off rates and applied to Banco Andino: a US-calibrated adaptation (decision Q6).")
 UNIT_SHARE = N(minimum=0, maximum=1)
 MONEY = N("Money in CLP millions.")
@@ -239,6 +249,35 @@ def exact_rows(item: dict, key: str, values: list, desc: str) -> dict:
 # ---------------------------------------------------------------------------------------------------------------- defs
 
 
+def link_for(ty: str) -> dict:
+    """The link a Fed loan type uses: the identity on RECI and RERES (non-positive quarters), the probit or logit elsewhere."""
+    return C("identity") if ty in IDENTITY_TYPES else E("probit", "logit")
+
+
+def sat_alt(ty: str, series: str) -> dict:
+    """A projection alternative: the type, its series, its link and, for the probit and logit, a rate in (0, 1)."""
+    alt: dict = {"fed_loan_type": C(ty), "series_id": C(series), "link": link_for(ty)}
+    if ty not in IDENTITY_TYPES:
+        alt["quarters"] = {"items": {"properties": {"rate": {"exclusiveMinimum": 0, "exclusiveMaximum": 1}}}}
+    return alt
+
+
+def backcast_alt(ty: str, series: str) -> dict:
+    return {"fed_loan_type": C(ty), "series_id": C(series), "link": link_for(ty),
+            "fit_window": {"properties": {"start": C(FIRST_QUARTER[ty])}}}
+
+
+def fit_alt(ty: str, series: str) -> dict:
+    """A satellite alternative: the type, its link, the first quarter the Board publishes as the window start and, for the probit and logit,
+    no non-positive quarter in the window."""
+    alt: dict = {"fed_loan_type": C(ty), "series_id": C(series), "link": link_for(ty),
+                 "sample_window": {"properties": {"start": C(FIRST_QUARTER[ty])}}}
+    if ty not in IDENTITY_TYPES:
+        alt["non_positive_quarters_in_window"] = C(0)
+    return alt
+
+
+
 def common_defs() -> dict:
     d: dict = {}
     d["c18Named"] = Ob({
@@ -254,28 +293,81 @@ def common_defs() -> dict:
         "unit": C("correlation"), "label": LABEL, "basis": TXT,
     }, "A named inter-risk correlation matrix with the same label rule; symmetry, the unit diagonal and positive semi-definiteness are checked "
        "by semantics.py (the engine's check_correlation).")
+    d["c18NamedConvention"] = Ob({
+        "name": S(minLength=1), "value": N(), "unit": S(minLength=1), "label": C("convention"), "basis": TXT,
+    }, "A named parameter that is a convention by definition (the market level and horizon factors).")
+    d["c18MarketScaling"] = Ob({
+        "name": C("market_horizon_scaling"),
+        "value": N("The combined multiplier: the level factor times the horizon factor.", exclusiveMinimum=0),
+        "unit": S(minLength=1),
+        "label": C("convention"),
+        "basis": TXT,
+        "source_confidence_level": C(0.99, "C11's mixed-portfolio measure is at 99 percent (docs/contracts/schemas/c11/models.schema.json)."),
+        "source_horizon_days": C(1, "C11's measure is a one-day measure."),
+        "trading_days_per_year": C(250),
+        "level_factor": R("c18NamedConvention"),
+        "horizon_factor": R("c18NamedConvention"),
+    }, "The market marginal's conversion from C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / "
+       "z_0.99 and the square root of 250, both named conventions (W4), and the combined multiplier.")
+    d["c18FxDerivation"] = Ob({
+        "kind": C("observed-exchange-rate"),
+        "pair": C("EUR/CLP"),
+        "observation_date": DATE,
+        "source": C("Banco Central de Chile, Base de Datos Estadisticos, daily exchange rate of the euro in Chilean pesos",
+                    "The stated public source of the rate; the series id the bake reads is recorded in source_series (not named here: UNVERIFIED)."),
+        "source_url": C("https://si3.bcentral.cl/Siete/es/Siete/API"),
+        "source_series": S("The BDE series id the bake read.", minLength=1),
+    }, "How the rate is derived at bake time: the observed EUR to CLP rate of the as-of date.")
+    d["c18AssetDerivation"] = Ob({
+        "kind": C("asset-ratio"),
+        "banco_andino_assets_clp_m": N("Banco Andino total assets, CLP millions, from the C15 and C07 balance sheet.", exclusiveMinimum=0),
+        "c17_bank_assets_eur_m": N("The stated assets of the C17 synthetic bank, EUR millions (C17 models-generator generator.assets_eur_bn times 1000).",
+                                   exclusiveMinimum=0),
+        "converted_at": C("operational_conversion_rate"),
+    }, "How the scaling is derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, in one currency.")
+    d["c18DerivedFx"] = Ob({
+        "name": C("operational_conversion_rate"), "value": N(exclusiveMinimum=0), "unit": C("CLP per EUR"), "label": LABEL, "basis": TXT,
+        "derivation": R("c18FxDerivation"),
+    }, "The EUR to CLP rate of the as-of date, derived at bake time from a stated public source; the contract fixes no number.")
+    d["c18DerivedAssets"] = Ob({
+        "name": C("asset_scaling"), "value": N(exclusiveMinimum=0), "unit": C("Banco Andino assets over the assets of the C17 bank"), "label": LABEL,
+        "basis": TXT, "derivation": R("c18AssetDerivation"),
+    }, "The asset scaling of the C17 generator frequency, derived at bake time; the contract fixes no number.")
     d["c18Ref"] = Ob({"method": E(*BAND_METHODS), "nu": nullable(N(exclusiveMinimum=2))},
                      "A reference to a row of the band: its method and, for a t copula, its degrees of freedom.")
     d["c18Marginal"] = one_of(Ob({
         "risk": E(*RISKS),
         "horizon_years": HORIZON,
         "confidence_level": LEVEL,
-        "el_clp_m": MONEY0,
+        "el_clp_m": nullable(MONEY0, "The expected loss; null exactly when the severity has an infinite mean (el_status undefined)."),
+        "el_status": E("finite", "undefined (infinite mean)"),
         "var_clp_m": MONEY0,
         "es_clp_m": MONEY0,
         "ec_clp_m": MONEY0,
+        "ec_basis": E("var-less-el", "var-alone-infinite-mean"),
+        "ec_label": nullable(TXT, "The label of an EC that is the VaR alone (an infinite-mean severity); null on the EC = VaR - EL basis."),
         "var_se_clp_m": nullable(N(minimum=0), "The Monte Carlo standard error of the VaR; null where the marginal is analytic."),
         "producer": E(*PRODUCERS.values()),
         "source_documents": A(S(minLength=1), 1, desc="The committed documents or engine calls the marginal is computed from."),
-        "scaling": Ob({"statement": TXT, "parameters": A(R("c18Named"))},
+        "scaling": Ob({"statement": TXT, "parameters": A({"oneOf": [R("c18Named"), R("c18MarketScaling"), R("c18DerivedFx"), R("c18DerivedAssets")]})},
                       "How the source was scaled to Banco Andino: a statement and every scaling parameter named with its label."),
-    }, "One marginal at one horizon and one confidence level (decision Q5): its expected loss, VaR, ES and EC = VaR - EL, its source and its scaling."),
-        *[{"risk": C(r), "producer": C(p)} for r, p in PRODUCERS.items()])
+    }, "One marginal at one horizon and one confidence level (decision Q5): its expected loss, VaR, ES and EC = VaR - EL (or the VaR alone when the "
+       "expected loss is undefined), its source and its scaling."),
+        {"risk": C("credit"), "producer": C(PRODUCERS["credit"])},
+        {"risk": C("market"), "producer": C(PRODUCERS["market"]), "scaling": {"properties": {"parameters": {"allOf": [
+            {"contains": {"properties": {"name": {"const": n}}, "required": ["name"]}} for n in ("market_rwa_share", "market_horizon_scaling")]}}}},
+        {"risk": C("irrbb"), "producer": C(PRODUCERS["irrbb"])},
+        {"risk": C("operational"), "producer": C(PRODUCERS["operational"]), "scaling": {"properties": {"parameters": {"allOf": [
+            {"contains": {"properties": {"name": {"const": n}}, "required": ["name"]}} for n in ("asset_scaling", "operational_conversion_rate")]}}}})
+    when(d["c18Marginal"], "el_status", "finite", {"el_clp_m": MONEY0, "ec_basis": C("var-less-el"), "ec_label": {"type": "null"}})
+    when(d["c18Marginal"], "el_status", "undefined (infinite mean)", {"risk": C("operational"), "el_clp_m": {"type": "null"},
+                                                                        "ec_basis": C("var-alone-infinite-mean"), "ec_label": TXT})
     d["c18BandRow"] = when(when(Ob({
         "method": E(*BAND_METHODS),
         "nu": nullable(N(exclusiveMinimum=2), "Degrees of freedom: set for a t copula row, null otherwise."),
-        "capital_clp_m": MONEY0,
-        "diversification_factor": N("DF = capital of the row over the simple sum of the marginals.", minimum=0),
+        "capital_clp_m": N("Money in CLP millions. Signed on the lower-bound row only: the best VaR less the sum of the expected losses can be negative "
+                           "(Table 4 of the authors' paper, d = 56); every other row is not below zero."),
+        "diversification_factor": N("DF = capital of the row over the simple sum of the marginals; signed on the lower-bound row only."),
         "status": E("headline-capital", "information-not-capital"),
         "label": TXT,
         "horizon_years": HORIZON,
@@ -287,6 +379,8 @@ def common_defs() -> dict:
     # a t row needs a nu; the other rows have none
     for m in ("lower-bound", "variance-covariance", "gaussian-copula", "worst-case"):
         when(d["c18BandRow"], "method", m, {"nu": {"type": "null"}})
+    for m in ("simple-sum", "variance-covariance", "gaussian-copula", "t-copula", "worst-case"):
+        when(d["c18BandRow"], "method", m, {"capital_clp_m": {"minimum": 0}, "diversification_factor": {"minimum": 0}})
     band = A(R("c18BandRow"), 6, 12, "The band: the lower bound, the simple sum, variance-covariance, Gaussian, t at every nu of the set, the worst case "
                                       "(decision Q12). The comonotonic total equals the simple sum under the EC basis and is not a seventh row.")
     band["allOf"] = [{"contains": {"properties": {"method": {"const": m}}, "required": ["method"]}} for m in BAND_METHODS]
@@ -297,7 +391,7 @@ def common_defs() -> dict:
         "set_of_models": C("band-rows", "The set of aggregation models is the rows of the band (dossier 06 l.692-698)."),
         "reference_model": R("c18Ref"),
         "barrieu_scandolo": Ob({
-            "rho_x0_clp_m": MONEY0, "rho_max_clp_m": MONEY0, "rho_min_clp_m": MONEY0,
+            "rho_x0_clp_m": MONEY0, "rho_max_clp_m": MONEY0, "rho_min_clp_m": MONEY,
             "am": N("AM = max rho / rho(X0) - 1 (06 l.692-698)."),
             "rm": N("RM = (max rho - rho(X0)) / (max rho - min rho), in [0, 1].", minimum=0, maximum=1),
         }),
@@ -404,10 +498,11 @@ def scenario_defs() -> dict:
     }, "The scenario as used, with its source, its vintage and its label as a US-calibrated adaptation."),
         "scenario_id", "eba-2025-adverse", {"provider": C("eba-esrb"), "policy_shock_window": {"type": "null"}}),
         "scenario_id", "fed-2026-severely-adverse", {"provider": C("fed"), "policy_shock_window": {"type": "null"}}),
-        "scenario_id", "baseline", {"policy_shock_window": {"type": "null"}}),
-        "scenario_id", "ngfs-delayed-transition", {"provider": C("ngfs"), "policy_shock_window": R("c18PolicyWindow")})
+        "scenario_id", "baseline", {"provider": C("fed"), "policy_shock_window": {"type": "null"}}),
+        "scenario_id", "ngfs-delayed-transition", {"provider": C("ngfs"), "policy_shock_window": {
+            "$ref": "#/$defs/c18PolicyWindow", "properties": {"start_year": C(2031), "end_year": C(2033)}}})
     d["c18PolicyWindow"] = Ob({"start_year": Int(2025, 2100), "end_year": Int(2025, 2100), "label": TXT},
-                              "The window where the NGFS policy shock acts: three calendar years, transposed onto the jump-off.")
+                              "The window where the NGFS policy shock acts: 2031 to 2033 for the delayed transition (F8 of the research addendum), transposed onto the jump-off.")
     d["c18CapStart"] = Ob({
         "rwa_clp_m": MONEY0,
         "rwa_by_risk": Ob({"credit": MONEY0, "market": MONEY0, "operational": MONEY0}),
@@ -419,18 +514,20 @@ def scenario_defs() -> dict:
         "fed_loan_type": E(*FED_TYPES),
         "series_id": E(*FED_SERIES.values()),
         "model_id": S(minLength=1),
-        "link": E("probit", "logit"),
-        "quarters": A(Ob({"quarter_end": QEND, "rate": N("Annualised net charge-off rate as a decimal.", exclusiveMinimum=0, exclusiveMaximum=1),
-                          "link_value": N("g(rate): the probit or logit of the rate.")}), 12, 12),
-    }, "The projection of one Fed loan type over the 12 quarters of the horizon."),
-        *[{"fed_loan_type": C(t), "series_id": C(s)} for t, s in FED_SERIES.items()])
+        "link": E(*LINKS),
+        "quarters": A(Ob({"quarter_end": QEND, "rate": RATE,
+                          "link_value": N("g(rate): the probit or logit of the rate; the rate itself on the identity link.")}), 12, 12),
+    }, "The projection of one Fed loan type over the 12 quarters of the horizon. On the probit link the rate is in (0, 1); on the identity link "
+       "(RECI and RERES) it is signed and may be non-positive, read as net recoveries."),
+        *[sat_alt(t, s) for t, s in FED_SERIES.items()])
     d["c18ClassProjection"] = Ob({
         "banco_andino_class": E(*CLASSES),
         "maps_from": A(E(*FED_TYPES), 1),
         "weights": A(N(minimum=0, maximum=1), 1),
         "exposure_clp_m": MONEY0,
         "label": ADAPT,
-        "quarters": A(Ob({"quarter_end": QEND, "rate": N("Annualised loss rate of the class as a decimal.", exclusiveMinimum=0, exclusiveMaximum=1)}), 12, 12),
+        "quarters": A(Ob({"quarter_end": QEND, "rate": N("Annualised loss rate of the class as a decimal, signed like the rates it mixes.",
+                                                          exclusiveMinimum=-1, exclusiveMaximum=1)}), 12, 12),
     }, "The projection of one Banco Andino class as the weighted mix of the Fed loan types it maps from (decision Q6).")
     d["c18Satellites"] = Ob({
         "fed_loan_types": exact_rows(R("c18SatProjection"), "fed_loan_type", FED_TYPES, "One projection per Fed loan type."),
@@ -534,23 +631,43 @@ def scenario_defs() -> dict:
             }), "PPNR = (NII + fee income) (1 - cost ratio), fee income = fee ratio x NII; CET1 adds the cumulated PPNR to the loss-only path."),
         }),
     }, "The headline CET1 path as loss-only depletion, with the PPNR row labelled.")
+    d["c18Severity"] = Ob({
+        "reference_episode": Ob({"name": C("global-financial-crisis"), "start": QEND, "end": QEND, "source": TXT},
+                                "The history the severity of each path is read against: 2008 to 2009 (05 l.422), peaks read by the bake from the Board's historic table."),
+        "minimum_ratio": N("The amber threshold of stress.scenario_severity: a stress path is at least this share of the historical peak (a policy parameter).",
+                           exclusiveMinimum=0),
+        "rows": A(Ob({
+            "variable": S("The scenario path variable, as named in scenario.paths.", minLength=1),
+            "maps_to_regressor": E(*AGENCY_REGRESSORS),
+            "unit": S(minLength=1),
+            "path_peak_deviation": N("max over the transposed quarters of the absolute deviation from the jump-off value (the target).", minimum=0),
+            "path_peak_quarter": QEND,
+            "history_peak_deviation": N("The same deviation in the reference episode.", exclusiveMinimum=0),
+            "history_window": Ob({"start": QEND, "end": QEND}),
+            "history_source": TXT,
+            "ratio": N("path_peak_deviation / history_peak_deviation.", minimum=0),
+            "is_stress": B,
+        }), 1, desc="One row per scenario path variable, in the order of scenario.paths."),
+    }, "The severity of each path against history (dossier 05 l.422; sizing view U13-W): the path peak, the global financial crisis peak with its quarters "
+       "and source, their ratio and whether the path is a stress.")
     d["c18Backcast"] = Ob({
         "window": Ob({"start": C("2020-03-31"), "end": C("2025-12-31")}, "The out-of-time window, 2020 Q1 to 2025 Q4 (decision Q8)."),
-        "per_loan_type": exact_rows(Ob({
+        "per_loan_type": exact_rows(one_of(Ob({
             "fed_loan_type": E(*FED_TYPES),
             "series_id": E(*FED_SERIES.values()),
+            "link": E(*LINKS),
             "fit_window": Ob({"start": FIT_DATE, "end": FIT_DATE}),
-            "quarters": A(Ob({"quarter_end": QEND, "predicted": N(exclusiveMinimum=0, exclusiveMaximum=1), "realised": N(exclusiveMinimum=0, exclusiveMaximum=1)}), 24, 24),
+            "quarters": A(Ob({"quarter_end": QEND, "predicted": RATE, "realised": RATE}), 24, 24),
             "metrics": Ob({
                 "rmse": N(minimum=0),
-                "peak_predicted": N(exclusiveMinimum=0), "peak_predicted_quarter": QEND,
-                "peak_realised": N(exclusiveMinimum=0), "peak_realised_quarter": QEND,
+                "peak_predicted": RATE, "peak_predicted_quarter": QEND,
+                "peak_realised": RATE, "peak_realised_quarter": QEND,
                 "peak_timing_error_quarters": Int(),
             }),
-        }), "fed_loan_type", FED_TYPES, "One back-cast per Fed loan type: the satellite fitted to 2019, predicted against realised."),
+        }), *[backcast_alt(t, s) for t, s in FED_SERIES.items()]), "fed_loan_type", FED_TYPES, "One back-cast per Fed loan type: the satellite fitted to 2019, predicted against realised."),
         "descriptive_2026": A(Ob({
             "quarter_end": E("2026-03-31", "2026-06-30"),
-            "realised_rates": exact_rows(Ob({"fed_loan_type": E(*FED_TYPES), "rate": N(exclusiveMinimum=0, exclusiveMaximum=1)}),
+            "realised_rates": exact_rows(Ob({"fed_loan_type": E(*FED_TYPES), "rate": RATE}),
                                          "fed_loan_type", FED_TYPES, "The realised charge-off rate of each Fed loan type."),
             "label": C("rate-only-descriptive"),
             "forecast_claim": C(False),
@@ -571,6 +688,7 @@ def scenario_defs() -> dict:
         "p2g_proxy": R("c18P2g"),
         "annex3": R("c18Annex3"),
         "headline_cet1": R("c18Headline"),
+        "severity": R("c18Severity"),
         "backcast": R("c18Backcast"),
         "aggregation": R("c18Aggregation"),
     }, "C18 outputs of one scenario variant.")
@@ -680,16 +798,20 @@ def fit_defs() -> dict:
         "model_id": S(minLength=1),
         "fed_loan_type": E(*FED_TYPES),
         "series_id": E(*FED_SERIES.values()),
-        "link": E("probit", "logit"),
+        "link": E(*LINKS),
         "sample_window": R("c18FitWindow"),
+        "non_positive_quarters_in_window": Int(0, desc="The number of quarters of the fit window whose rate is zero or negative (net recoveries): a probit "
+                                                        "or logit fit needs none, the identity link takes them as they are."),
         "ar_order": Int(0, 4),
         "n_obs": Int(1),
         "regressors": A(R("c18Regressor"), 1),
         "coefficients": A(R("c18Coef"), 1),
         "fit_statistics": Ob({"r_squared": N(minimum=0, maximum=1), "residual_sd": N(minimum=0)}),
         "estimation": C("ols-numpy-with-standard-errors"),
-    }, "One satellite: g(DR_t) = alpha + sum phi_k g(DR_(t-k)) + sum beta_l' X_(t-l) + e, fitted by OLS on 1985-2019 (04 l.785-795)."),
-        *[{"fed_loan_type": C(t), "series_id": C(s)} for t, s in FED_SERIES.items()])
+    }, "One satellite: g(DR_t) = alpha + sum phi_k g(DR_(t-k)) + sum beta_l' X_(t-l) + e, fitted by OLS (04 l.785-795); g is the probit for C&I, "
+       "credit cards and other consumer, and the identity for RECI and RERES, whose windows hold non-positive quarters (the linear form of the Federal "
+       "Reserve's own PD regression, 05 l.399). The window ends in 2019 at the latest and starts at the first quarter the Board publishes."),
+        *[fit_alt(t, s) for t, s in FED_SERIES.items()])
     d["c18ClassMap"] = Ob({
         "banco_andino_class": E(*CLASSES),
         "fed_loan_types": A(E(*FED_TYPES), 1),
@@ -744,10 +866,10 @@ def fit_defs() -> dict:
         "ppnr_cost_ratio": R("c18Named"),
         "c_p2": R("c18Named"),
         "c_d": R("c18Named"),
-        "operational_conversion_rate": R("c18Named"),
-        "asset_scaling": R("c18Named"),
+        "operational_conversion_rate": R("c18DerivedFx"),
+        "asset_scaling": R("c18DerivedAssets"),
         "market_rwa_share": R("c18Named"),
-        "market_horizon_scaling": R("c18Named"),
+        "market_horizon_scaling": R("c18MarketScaling"),
         "reverse_p2_cet1": R("c18Named"),
     }, "Every named parameter of the case with its value, unit and label (convention or case assumption).")
     d["c18AggParams"] = Ob({
@@ -756,9 +878,19 @@ def fit_defs() -> dict:
         "horizon_years": HORIZON, "confidence_level": LEVEL, "capital_basis": BASIS,
         "marginal_interpolation": S("The rule that maps a uniform draw through a marginal sample.", minLength=1),
     })
+    d["c18C17Set"] = Ob({
+        "document": C("C17 models-generator"),
+        "variant_id": E("xi-0-6", "xi-0-8", "xi-0-96", "xi-1-1"),
+        "tail_index": N("The GPD tail index xi of the severity of the variant.", exclusiveMinimum=0),
+        "infinite_mean": B,
+        "assets_eur_bn": N("The stated assets of the C17 synthetic bank, EUR billions.", exclusiveMinimum=0),
+    }, "The C17 generator parameter set the operational marginal is recomputed from (decision Q5): the variant of the C17 models-generator document "
+       "(docs/contracts/schemas/c17/models.schema.json), its tail index and whether its severity has an infinite mean (xi of 1 or more).")
     d["c18MarginalSource"] = one_of(Ob({
         "risk": E(*RISKS), "producer": E(*PRODUCERS.values()), "description": TXT, "documents": A(S(minLength=1), 1),
-    }), *[{"risk": C(r), "producer": C(p)} for r, p in PRODUCERS.items()])
+        "c17_parameter_set": nullable(R("c18C17Set"), "Operational only: the C17 parameter set; null for the other risks."),
+    }), *[{"risk": C(r), "producer": C(p), "c17_parameter_set": R("c18C17Set") if r == "operational" else {"type": "null"}}
+          for r, p in PRODUCERS.items()])
     d["c18Fit"] = Ob({
         "currency": C("CLP"),
         "units": R("c18Units"),
@@ -787,6 +919,17 @@ NOT_EVALUATED_RULE = {
                                 "notes": {"type": "string", "minLength": 1}}},
     }}},
 }
+#: the G.5 and H.7 test rows a document must carry (F6): a validator and the Validation tab need them, so a document without one does not validate
+REQUIRED_TESTS = {
+    "scenario": ["aggregation.simple_sum_and_variance_covariance", "aggregation.copula_choice_sensitivity", "aggregation.worst_case_bracket",
+                 "aggregation.correlation_stress", "aggregation.diversification_sign", "aggregation.horizon_confidence_consistency",
+                 "portfolio.euler_additivity", "stress.satellite_backcast", "stress.sensitivity_monotonicity", "stress.static_balance_sheet_rules",
+                 "stress.scenario_severity"],
+    "aggregation": ["aggregation.simple_sum_and_variance_covariance", "aggregation.copula_choice_sensitivity", "aggregation.worst_case_bracket",
+                    "aggregation.correlation_stress", "aggregation.diversification_sign", "aggregation.horizon_confidence_consistency",
+                    "aggregation.elliptical_mc_agreement", "aggregation.rosenberg_schuermann_reference", "portfolio.euler_additivity"],
+    "reverse": ["stress.reverse_solution_check"],
+}
 IMPACT_KEYS = ["capital_simple_sum", "cet1_ratio_end_stress", "oi_headroom_min", "p2g_proxy"]
 IMPACT_RULE = {"properties": {"impact": {"required": IMPACT_KEYS}}}
 
@@ -805,6 +948,8 @@ def variant_schema(ref: str, kind: str, title: str, desc: str, root: str, defs: 
             NOT_EVALUATED_RULE,
             TRUTH_STATUS,
             IMPACT_RULE,
+            {"properties": {"tests": {"allOf": [{"contains": {"properties": {"test_id": {"const": tid}}, "required": ["test_id"]}}
+                                                for tid in REQUIRED_TESTS[kind]]}}},
         ],
         "unevaluatedProperties": False,
         "$defs": reachable(root, defs),

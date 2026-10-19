@@ -735,67 +735,67 @@
           "fed_loan_type": "commercial-real-estate",
           "series_id": "RECI",
           "model_id": "c18-satellite-commercial-real-estate",
-          "link": "probit",
+          "link": "identity",
           "quarters": [
             {
               "quarter_end": "2026-03-31",
               "rate": 0.003,
-              "link_value": -2.7477813854
+              "link_value": 0.003
             },
             {
               "quarter_end": "2026-06-30",
               "rate": 0.003,
-              "link_value": -2.7477813854
+              "link_value": 0.003
             },
             {
               "quarter_end": "2026-09-30",
               "rate": 0.003,
-              "link_value": -2.7477813854
+              "link_value": 0.003
             },
             {
               "quarter_end": "2026-12-31",
               "rate": 0.003,
-              "link_value": -2.7477813854
+              "link_value": 0.003
             },
             {
               "quarter_end": "2027-03-31",
               "rate": 0.003,
-              "link_value": -2.7477813854
+              "link_value": 0.003
             },
             {
               "quarter_end": "2027-06-30",
               "rate": 0.003,
-              "link_value": -2.7477813854
+              "link_value": 0.003
             },
             {
               "quarter_end": "2027-09-30",
               "rate": 0.003,
-              "link_value": -2.7477813854
+              "link_value": 0.003
             },
             {
               "quarter_end": "2027-12-31",
               "rate": 0.003,
-              "link_value": -2.7477813854
+              "link_value": 0.003
             },
             {
               "quarter_end": "2028-03-31",
               "rate": 0.003,
-              "link_value": -2.7477813854
+              "link_value": 0.003
             },
             {
               "quarter_end": "2028-06-30",
               "rate": 0.003,
-              "link_value": -2.7477813854
+              "link_value": 0.003
             },
             {
               "quarter_end": "2028-09-30",
               "rate": 0.003,
-              "link_value": -2.7477813854
+              "link_value": 0.003
             },
             {
               "quarter_end": "2028-12-31",
               "rate": 0.003,
-              "link_value": -2.7477813854
+              "link_value": 0.003
             }
           ]
         },
@@ -803,67 +803,67 @@
           "fed_loan_type": "residential",
           "series_id": "RERES",
           "model_id": "c18-satellite-residential",
-          "link": "probit",
+          "link": "identity",
           "quarters": [
             {
               "quarter_end": "2026-03-31",
-              "rate": 0.002,
-              "link_value": -2.8781617391
+              "rate": -0.0002,
+              "link_value": -0.0002
             },
             {
               "quarter_end": "2026-06-30",
-              "rate": 0.002,
-              "link_value": -2.8781617391
+              "rate": -0.0002,
+              "link_value": -0.0002
             },
             {
               "quarter_end": "2026-09-30",
-              "rate": 0.002,
-              "link_value": -2.8781617391
+              "rate": -0.0002,
+              "link_value": -0.0002
             },
             {
               "quarter_end": "2026-12-31",
-              "rate": 0.002,
-              "link_value": -2.8781617391
+              "rate": -0.0002,
+              "link_value": -0.0002
             },
             {
               "quarter_end": "2027-03-31",
-              "rate": 0.002,
-              "link_value": -2.8781617391
+              "rate": -0.0002,
+              "link_value": -0.0002
             },
             {
               "quarter_end": "2027-06-30",
-              "rate": 0.002,
-              "link_value": -2.8781617391
+              "rate": -0.0002,
+              "link_value": -0.0002
             },
             {
               "quarter_end": "2027-09-30",
-              "rate": 0.002,
-              "link_value": -2.8781617391
+              "rate": -0.0002,
+              "link_value": -0.0002
             },
             {
               "quarter_end": "2027-12-31",
-              "rate": 0.002,
-              "link_value": -2.8781617391
+              "rate": -0.0002,
+              "link_value": -0.0002
             },
             {
               "quarter_end": "2028-03-31",
-              "rate": 0.002,
-              "link_value": -2.8781617391
+              "rate": -0.0002,
+              "link_value": -0.0002
             },
             {
               "quarter_end": "2028-06-30",
-              "rate": 0.002,
-              "link_value": -2.8781617391
+              "rate": -0.0002,
+              "link_value": -0.0002
             },
             {
               "quarter_end": "2028-09-30",
-              "rate": 0.002,
-              "link_value": -2.8781617391
+              "rate": -0.0002,
+              "link_value": -0.0002
             },
             {
               "quarter_end": "2028-12-31",
-              "rate": 0.002,
-              "link_value": -2.8781617391
+              "rate": -0.0002,
+              "link_value": -0.0002
             }
           ]
         },
@@ -1144,51 +1144,51 @@
           "quarters": [
             {
               "quarter_end": "2026-03-31",
-              "rate": 0.002
+              "rate": -0.0002
             },
             {
               "quarter_end": "2026-06-30",
-              "rate": 0.002
+              "rate": -0.0002
             },
             {
               "quarter_end": "2026-09-30",
-              "rate": 0.002
+              "rate": -0.0002
             },
             {
               "quarter_end": "2026-12-31",
-              "rate": 0.002
+              "rate": -0.0002
             },
             {
               "quarter_end": "2027-03-31",
-              "rate": 0.002
+              "rate": -0.0002
             },
             {
               "quarter_end": "2027-06-30",
-              "rate": 0.002
+              "rate": -0.0002
             },
             {
               "quarter_end": "2027-09-30",
-              "rate": 0.002
+              "rate": -0.0002
             },
             {
               "quarter_end": "2027-12-31",
-              "rate": 0.002
+              "rate": -0.0002
             },
             {
               "quarter_end": "2028-03-31",
-              "rate": 0.002
+              "rate": -0.0002
             },
             {
               "quarter_end": "2028-06-30",
-              "rate": 0.002
+              "rate": -0.0002
             },
             {
               "quarter_end": "2028-09-30",
-              "rate": 0.002
+              "rate": -0.0002
             },
             {
               "quarter_end": "2028-12-31",
-              "rate": 0.002
+              "rate": -0.0002
             }
           ]
         }
@@ -1199,29 +1199,29 @@
         {
           "year": 1,
           "period_end": "2026-12-31",
-          "credit": 89312.288265,
+          "credit": 78668.23122,
           "market": 3000.0,
           "irrbb": 2000.0,
           "operational": 22000.0,
-          "total": 116312.288265
+          "total": 105668.23122
         },
         {
           "year": 2,
           "period_end": "2027-12-31",
-          "credit": 89312.288265,
+          "credit": 78668.23122,
           "market": 3000.0,
           "irrbb": 2000.0,
           "operational": 22000.0,
-          "total": 116312.288265
+          "total": 105668.23122
         },
         {
           "year": 3,
           "period_end": "2028-12-31",
-          "credit": 89312.288265,
+          "credit": 78668.23122,
           "market": 3000.0,
           "irrbb": 2000.0,
           "operational": 22000.0,
-          "total": 116312.288265
+          "total": 105668.23122
         }
       ],
       "basis": {
@@ -1268,9 +1268,9 @@
               "period_end": "2026-12-31",
               "rwa_clp_m": 20000000.0,
               "cet1": {
-                "pct_of_rwa": 0.1227468856,
+                "pct_of_rwa": 0.1232790884,
                 "need_clp_m": null,
-                "available_clp_m": 2454937.711735
+                "available_clp_m": 2465581.76878
               },
               "at1": {
                 "pct_of_rwa": 0.0125,
@@ -1283,15 +1283,15 @@
                 "available_clp_m": 500000.0
               },
               "pe": {
-                "pct_of_rwa": 0.1602468856,
+                "pct_of_rwa": 0.1607790884,
                 "need_clp_m": 2900000.0,
-                "available_clp_m": 3204937.711735
+                "available_clp_m": 3215581.76878
               },
               "requirement": {
                 "basis": "internal-target",
                 "pct_of_rwa": 0.14500000000000002
               },
-              "headroom_pct_of_rwa": 0.0152468856,
+              "headroom_pct_of_rwa": 0.0157790884,
               "deficit_clp_m": 0.0
             },
             {
@@ -1299,9 +1299,9 @@
               "period_end": "2027-12-31",
               "rwa_clp_m": 20000000.0,
               "cet1": {
-                "pct_of_rwa": 0.1354937712,
+                "pct_of_rwa": 0.1365581769,
                 "need_clp_m": null,
-                "available_clp_m": 2709875.42347
+                "available_clp_m": 2731163.53756
               },
               "at1": {
                 "pct_of_rwa": 0.0125,
@@ -1314,15 +1314,15 @@
                 "available_clp_m": 500000.0
               },
               "pe": {
-                "pct_of_rwa": 0.1729937712,
+                "pct_of_rwa": 0.1740581769,
                 "need_clp_m": 2900000.0,
-                "available_clp_m": 3459875.42347
+                "available_clp_m": 3481163.53756
               },
               "requirement": {
                 "basis": "internal-target",
                 "pct_of_rwa": 0.14500000000000002
               },
-              "headroom_pct_of_rwa": 0.0279937712,
+              "headroom_pct_of_rwa": 0.0290581769,
               "deficit_clp_m": 0.0
             },
             {
@@ -1330,9 +1330,9 @@
               "period_end": "2028-12-31",
               "rwa_clp_m": 20000000.0,
               "cet1": {
-                "pct_of_rwa": 0.1482406568,
+                "pct_of_rwa": 0.1498372653,
                 "need_clp_m": null,
-                "available_clp_m": 2964813.135205
+                "available_clp_m": 2996745.30634
               },
               "at1": {
                 "pct_of_rwa": 0.0125,
@@ -1345,15 +1345,15 @@
                 "available_clp_m": 500000.0
               },
               "pe": {
-                "pct_of_rwa": 0.1857406568,
+                "pct_of_rwa": 0.1873372653,
                 "need_clp_m": 2900000.0,
-                "available_clp_m": 3714813.135205
+                "available_clp_m": 3746745.30634
               },
               "requirement": {
                 "basis": "internal-target",
                 "pct_of_rwa": 0.14500000000000002
               },
-              "headroom_pct_of_rwa": 0.0407406568,
+              "headroom_pct_of_rwa": 0.0423372653,
               "deficit_clp_m": 0.0
             }
           ]
@@ -1366,9 +1366,9 @@
               "period_end": "2026-12-31",
               "rwa_clp_m": 20000000.0,
               "cet1": {
-                "pct_of_rwa": 0.1041843856,
+                "pct_of_rwa": 0.1047165884,
                 "need_clp_m": null,
-                "available_clp_m": 2083687.711735
+                "available_clp_m": 2094331.76878
               },
               "at1": {
                 "pct_of_rwa": 0.0125,
@@ -1381,15 +1381,15 @@
                 "available_clp_m": 500000.0
               },
               "pe": {
-                "pct_of_rwa": 0.1416843856,
+                "pct_of_rwa": 0.1422165884,
                 "need_clp_m": 1925000.0,
-                "available_clp_m": 2833687.711735
+                "available_clp_m": 2844331.76878
               },
               "requirement": {
                 "basis": "legal-minimum",
                 "pct_of_rwa": 0.09625
               },
-              "headroom_pct_of_rwa": 0.0454343856,
+              "headroom_pct_of_rwa": 0.0459665884,
               "deficit_clp_m": 0.0
             },
             {
@@ -1397,9 +1397,9 @@
               "period_end": "2027-12-31",
               "rwa_clp_m": 20000000.0,
               "cet1": {
-                "pct_of_rwa": 0.0983687712,
+                "pct_of_rwa": 0.0994331769,
                 "need_clp_m": null,
-                "available_clp_m": 1967375.42347
+                "available_clp_m": 1988663.53756
               },
               "at1": {
                 "pct_of_rwa": 0.0125,
@@ -1412,15 +1412,15 @@
                 "available_clp_m": 500000.0
               },
               "pe": {
-                "pct_of_rwa": 0.1358687712,
+                "pct_of_rwa": 0.1369331769,
                 "need_clp_m": 1925000.0,
-                "available_clp_m": 2717375.42347
+                "available_clp_m": 2738663.53756
               },
               "requirement": {
                 "basis": "legal-minimum",
                 "pct_of_rwa": 0.09625
               },
-              "headroom_pct_of_rwa": 0.0396187712,
+              "headroom_pct_of_rwa": 0.0406831769,
               "deficit_clp_m": 0.0
             },
             {
@@ -1428,9 +1428,9 @@
               "period_end": "2028-12-31",
               "rwa_clp_m": 20000000.0,
               "cet1": {
-                "pct_of_rwa": 0.0925531568,
+                "pct_of_rwa": 0.0941497653,
                 "need_clp_m": null,
-                "available_clp_m": 1851063.135205
+                "available_clp_m": 1882995.30634
               },
               "at1": {
                 "pct_of_rwa": 0.0125,
@@ -1443,15 +1443,15 @@
                 "available_clp_m": 500000.0
               },
               "pe": {
-                "pct_of_rwa": 0.1300531568,
+                "pct_of_rwa": 0.1316497653,
                 "need_clp_m": 1925000.0,
-                "available_clp_m": 2601063.135205
+                "available_clp_m": 2632995.30634
               },
               "requirement": {
                 "basis": "legal-minimum",
                 "pct_of_rwa": 0.09625
               },
-              "headroom_pct_of_rwa": 0.0338031568,
+              "headroom_pct_of_rwa": 0.0353997653,
               "deficit_clp_m": 0.0
             }
           ]
@@ -1464,9 +1464,9 @@
               "period_end": "2026-12-31",
               "rwa_clp_m": 20000000.0,
               "cet1": {
-                "pct_of_rwa": 0.1041843856,
+                "pct_of_rwa": 0.1047165884,
                 "need_clp_m": null,
-                "available_clp_m": 2083687.711735
+                "available_clp_m": 2094331.76878
               },
               "at1": {
                 "pct_of_rwa": 0.0125,
@@ -1479,15 +1479,15 @@
                 "available_clp_m": 500000.0
               },
               "pe": {
-                "pct_of_rwa": 0.1416843856,
+                "pct_of_rwa": 0.1422165884,
                 "need_clp_m": 1925000.0,
-                "available_clp_m": 2833687.711735
+                "available_clp_m": 2844331.76878
               },
               "requirement": {
                 "basis": "legal-minimum",
                 "pct_of_rwa": 0.09625
               },
-              "headroom_pct_of_rwa": 0.0454343856,
+              "headroom_pct_of_rwa": 0.0459665884,
               "deficit_clp_m": 0.0
             },
             {
@@ -1495,9 +1495,9 @@
               "period_end": "2027-12-31",
               "rwa_clp_m": 20000000.0,
               "cet1": {
-                "pct_of_rwa": 0.0983687712,
+                "pct_of_rwa": 0.0994331769,
                 "need_clp_m": null,
-                "available_clp_m": 1967375.42347
+                "available_clp_m": 1988663.53756
               },
               "at1": {
                 "pct_of_rwa": 0.0125,
@@ -1510,15 +1510,15 @@
                 "available_clp_m": 500000.0
               },
               "pe": {
-                "pct_of_rwa": 0.1358687712,
+                "pct_of_rwa": 0.1369331769,
                 "need_clp_m": 1925000.0,
-                "available_clp_m": 2717375.42347
+                "available_clp_m": 2738663.53756
               },
               "requirement": {
                 "basis": "legal-minimum",
                 "pct_of_rwa": 0.09625
               },
-              "headroom_pct_of_rwa": 0.0396187712,
+              "headroom_pct_of_rwa": 0.0406831769,
               "deficit_clp_m": 0.0
             },
             {
@@ -1526,9 +1526,9 @@
               "period_end": "2028-12-31",
               "rwa_clp_m": 20000000.0,
               "cet1": {
-                "pct_of_rwa": 0.0925531568,
+                "pct_of_rwa": 0.0941497653,
                 "need_clp_m": null,
-                "available_clp_m": 1851063.135205
+                "available_clp_m": 1882995.30634
               },
               "at1": {
                 "pct_of_rwa": 0.0125,
@@ -1541,15 +1541,15 @@
                 "available_clp_m": 500000.0
               },
               "pe": {
-                "pct_of_rwa": 0.1300531568,
+                "pct_of_rwa": 0.1316497653,
                 "need_clp_m": 1925000.0,
-                "available_clp_m": 2601063.135205
+                "available_clp_m": 2632995.30634
               },
               "requirement": {
                 "basis": "legal-minimum",
                 "pct_of_rwa": 0.09625
               },
-              "headroom_pct_of_rwa": 0.0338031568,
+              "headroom_pct_of_rwa": 0.0353997653,
               "deficit_clp_m": 0.0
             }
           ]
@@ -1568,7 +1568,7 @@
     "p2g_proxy": {
       "label": "contraste-approximation",
       "formula": "max over t of [(CET1/RWA)_0 - (CET1/RWA)_t severe] less the usable buffers and mitigation, floored at zero (03 l.1001-1005, FAQ 24)",
-      "peak_depletion": 0.0174468432,
+      "peak_depletion": 0.0158502347,
       "peak_year": 3,
       "usable_buffers_and_mitigation": 0.02,
       "value": 0.0,
@@ -2188,7 +2188,7 @@
           "row_id": "10.1",
           "label_cmf": "Impacto en indice de capital basico de las pruebas de tension severas, sin mitigacion",
           "a": {
-            "value": 0.0174468432,
+            "value": 0.0158502347,
             "status": "value"
           },
           "b": {
@@ -2277,28 +2277,28 @@
           "year": 1,
           "period_end": "2026-12-31",
           "cet1_start_clp_m": 2200000.0,
-          "cumulative_loss_clp_m": 116312.288265,
-          "cet1_clp_m": 2083687.711735,
+          "cumulative_loss_clp_m": 105668.23122,
+          "cet1_clp_m": 2094331.76878,
           "rwa_clp_m": 20000000.0,
-          "cet1_ratio": 0.1041843856
+          "cet1_ratio": 0.1047165884
         },
         {
           "year": 2,
           "period_end": "2027-12-31",
-          "cet1_start_clp_m": 2083687.711735,
-          "cumulative_loss_clp_m": 232624.57653,
-          "cet1_clp_m": 1967375.42347,
+          "cet1_start_clp_m": 2094331.76878,
+          "cumulative_loss_clp_m": 211336.46244,
+          "cet1_clp_m": 1988663.53756,
           "rwa_clp_m": 20000000.0,
-          "cet1_ratio": 0.0983687712
+          "cet1_ratio": 0.0994331769
         },
         {
           "year": 3,
           "period_end": "2028-12-31",
-          "cet1_start_clp_m": 1967375.42347,
-          "cumulative_loss_clp_m": 348936.864795,
-          "cet1_clp_m": 1851063.135205,
+          "cet1_start_clp_m": 1988663.53756,
+          "cumulative_loss_clp_m": 317004.69366,
+          "cet1_clp_m": 1882995.30634,
           "rwa_clp_m": 20000000.0,
-          "cet1_ratio": 0.0925531568
+          "cet1_ratio": 0.0941497653
         }
       ],
       "ppnr": {
@@ -2336,8 +2336,8 @@
             "fee_income_clp_m": 165000.0,
             "operating_cost_clp_m": 453750.0,
             "ppnr_clp_m": 371250.0,
-            "cet1_with_ppnr_clp_m": 2454937.711735,
-            "cet1_ratio_with_ppnr": 0.1227468856
+            "cet1_with_ppnr_clp_m": 2465581.76878,
+            "cet1_ratio_with_ppnr": 0.1232790884
           },
           {
             "year": 2,
@@ -2346,8 +2346,8 @@
             "fee_income_clp_m": 165000.0,
             "operating_cost_clp_m": 453750.0,
             "ppnr_clp_m": 371250.0,
-            "cet1_with_ppnr_clp_m": 2709875.42347,
-            "cet1_ratio_with_ppnr": 0.1354937712
+            "cet1_with_ppnr_clp_m": 2731163.53756,
+            "cet1_ratio_with_ppnr": 0.1365581769
           },
           {
             "year": 3,
@@ -2356,11 +2356,79 @@
             "fee_income_clp_m": 165000.0,
             "operating_cost_clp_m": 453750.0,
             "ppnr_clp_m": 371250.0,
-            "cet1_with_ppnr_clp_m": 2964813.135205,
-            "cet1_ratio_with_ppnr": 0.1482406568
+            "cet1_with_ppnr_clp_m": 2996745.30634,
+            "cet1_ratio_with_ppnr": 0.1498372653
           }
         ]
       }
+    },
+    "severity": {
+      "reference_episode": {
+        "name": "global-financial-crisis",
+        "start": "2008-03-31",
+        "end": "2009-12-31",
+        "source": {
+          "en": "2008 to 2009, the episode the satellites are back-cast through and the EBA documents severity against (05 l.422)",
+          "es": "2008 to 2009, the episode the satellites are back-cast through and the EBA documents severity against (05 l.422) (es)"
+        }
+      },
+      "minimum_ratio": 0.75,
+      "rows": [
+        {
+          "variable": "unemployment_rate",
+          "maps_to_regressor": "unemployment_rate",
+          "unit": "percent",
+          "path_peak_deviation": 0.24,
+          "path_peak_quarter": "2028-12-31",
+          "history_peak_deviation": 5.5,
+          "history_window": {
+            "start": "2008-03-31",
+            "end": "2009-12-31"
+          },
+          "history_source": {
+            "en": "Fixture value: the bake reads the peak deviation of the global financial crisis from the Board's historic table",
+            "es": "Fixture value: the bake reads the peak deviation of the global financial crisis from the Board's historic table (es)"
+          },
+          "ratio": 0.0436363636,
+          "is_stress": false
+        },
+        {
+          "variable": "real_gdp_growth",
+          "maps_to_regressor": "real_gdp_growth",
+          "unit": "percent, annualised",
+          "path_peak_deviation": 0.12,
+          "path_peak_quarter": "2028-12-31",
+          "history_peak_deviation": 6.0,
+          "history_window": {
+            "start": "2008-03-31",
+            "end": "2009-12-31"
+          },
+          "history_source": {
+            "en": "Fixture value: the bake reads the peak deviation of the global financial crisis from the Board's historic table",
+            "es": "Fixture value: the bake reads the peak deviation of the global financial crisis from the Board's historic table (es)"
+          },
+          "ratio": 0.02,
+          "is_stress": false
+        },
+        {
+          "variable": "prime_rate",
+          "maps_to_regressor": "prime_rate",
+          "unit": "percent",
+          "path_peak_deviation": 0.12,
+          "path_peak_quarter": "2028-12-31",
+          "history_peak_deviation": 4.0,
+          "history_window": {
+            "start": "2008-03-31",
+            "end": "2009-12-31"
+          },
+          "history_source": {
+            "en": "Fixture value: the bake reads the peak deviation of the global financial crisis from the Board's historic table",
+            "es": "Fixture value: the bake reads the peak deviation of the global financial crisis from the Board's historic table (es)"
+          },
+          "ratio": 0.03,
+          "is_stress": false
+        }
+      ]
     },
     "backcast": {
       "window": {
@@ -2371,6 +2439,7 @@
         {
           "fed_loan_type": "commercial-industrial",
           "series_id": "CI",
+          "link": "probit",
           "fit_window": {
             "start": "1985-03-31",
             "end": "2019-12-31"
@@ -2509,8 +2578,9 @@
         {
           "fed_loan_type": "commercial-real-estate",
           "series_id": "RECI",
+          "link": "identity",
           "fit_window": {
-            "start": "1985-03-31",
+            "start": "1991-03-31",
             "end": "2019-12-31"
           },
           "quarters": [
@@ -2567,7 +2637,7 @@
             {
               "quarter_end": "2022-09-30",
               "predicted": 0.0030491827,
-              "realised": 0.00300525
+              "realised": 0.0
             },
             {
               "quarter_end": "2022-12-31",
@@ -2636,7 +2706,7 @@
             }
           ],
           "metrics": {
-            "rmse": 0.0003344828,
+            "rmse": 0.0007065372,
             "peak_predicted": 0.0048,
             "peak_predicted_quarter": "2021-03-31",
             "peak_realised": 0.0054,
@@ -2647,144 +2717,146 @@
         {
           "fed_loan_type": "residential",
           "series_id": "RERES",
+          "link": "identity",
           "fit_window": {
-            "start": "1985-03-31",
+            "start": "1991-03-31",
             "end": "2019-12-31"
           },
           "quarters": [
             {
               "quarter_end": "2020-03-31",
-              "predicted": 0.0022422758,
-              "realised": 0.0025194439
+              "predicted": -0.0001192414,
+              "realised": -0.0003
             },
             {
               "quarter_end": "2020-06-30",
-              "predicted": 0.0024878836,
-              "realised": 0.0029704491
+              "predicted": -3.73721e-05,
+              "realised": 0.0
             },
             {
               "quarter_end": "2020-09-30",
-              "predicted": 0.0028043841,
-              "realised": 0.003411995
+              "predicted": 6.8128e-05,
+              "realised": 0.0
             },
             {
               "quarter_end": "2020-12-31",
-              "predicted": 0.0030858049,
-              "realised": 0.0036
+              "predicted": 0.000161935,
+              "realised": -0.0003
             },
             {
               "quarter_end": "2021-03-31",
-              "predicted": 0.0032,
-              "realised": 0.003411995
+              "predicted": 0.0002,
+              "realised": -0.0004
             },
             {
               "quarter_end": "2021-06-30",
-              "predicted": 0.0030858049,
-              "realised": 0.0029704491
+              "predicted": 0.000161935,
+              "realised": -0.0004
             },
             {
               "quarter_end": "2021-09-30",
-              "predicted": 0.0028043841,
-              "realised": 0.0025194439
+              "predicted": 6.8128e-05,
+              "realised": -0.0004
             },
             {
               "quarter_end": "2021-12-31",
-              "predicted": 0.0024878836,
-              "realised": 0.0022165365
+              "predicted": -3.73721e-05,
+              "realised": -0.0002
             },
             {
               "quarter_end": "2022-03-31",
-              "predicted": 0.0022422758,
-              "realised": 0.0020702991
+              "predicted": -0.0001192414,
+              "realised": -0.0003
             },
             {
               "quarter_end": "2022-06-30",
-              "predicted": 0.002098502,
-              "realised": 0.0020177744
+              "predicted": -0.000167166,
+              "realised": -0.0002
             },
             {
               "quarter_end": "2022-09-30",
-              "predicted": 0.0020327885,
-              "realised": 0.0020035
+              "predicted": -0.0001890705,
+              "realised": -0.0002
             },
             {
               "quarter_end": "2022-12-31",
-              "predicted": 0.0020089359,
-              "realised": 0.0020005367
+              "predicted": -0.0001970214,
+              "realised": -0.0002
             },
             {
               "quarter_end": "2023-03-31",
-              "predicted": 0.0020019939,
-              "realised": 0.0020000641
+              "predicted": -0.0001993354,
+              "realised": -0.0001
             },
             {
               "quarter_end": "2023-06-30",
-              "predicted": 0.0020003642,
-              "realised": 0.002000006
+              "predicted": -0.0001998786,
+              "realised": 0.0001
             },
             {
               "quarter_end": "2023-09-30",
-              "predicted": 0.0020000545,
-              "realised": 0.0020000004
+              "predicted": -0.0001999818,
+              "realised": -0.0
             },
             {
               "quarter_end": "2023-12-31",
-              "predicted": 0.0020000067,
-              "realised": 0.002
+              "predicted": -0.0001999978,
+              "realised": -0.0
             },
             {
               "quarter_end": "2024-03-31",
-              "predicted": 0.0020000007,
-              "realised": 0.002
+              "predicted": -0.0001999998,
+              "realised": -0.0
             },
             {
               "quarter_end": "2024-06-30",
-              "predicted": 0.0020000001,
-              "realised": 0.002
+              "predicted": -0.0002,
+              "realised": -0.0001
             },
             {
               "quarter_end": "2024-09-30",
-              "predicted": 0.002,
-              "realised": 0.002
+              "predicted": -0.0002,
+              "realised": -0.0001
             },
             {
               "quarter_end": "2024-12-31",
-              "predicted": 0.002,
-              "realised": 0.002
+              "predicted": -0.0002,
+              "realised": -0.0
             },
             {
               "quarter_end": "2025-03-31",
-              "predicted": 0.002,
-              "realised": 0.002
+              "predicted": -0.0002,
+              "realised": -0.0
             },
             {
               "quarter_end": "2025-06-30",
-              "predicted": 0.002,
-              "realised": 0.002
+              "predicted": -0.0002,
+              "realised": -0.0
             },
             {
               "quarter_end": "2025-09-30",
-              "predicted": 0.002,
-              "realised": 0.002
+              "predicted": -0.0002,
+              "realised": -0.0
             },
             {
               "quarter_end": "2025-12-31",
-              "predicted": 0.002,
-              "realised": 0.002
+              "predicted": -0.0002,
+              "realised": -0.0
             }
           ],
           "metrics": {
-            "rmse": 0.0002229885,
-            "peak_predicted": 0.0032,
+            "rmse": 0.0002619737,
+            "peak_predicted": 0.0002,
             "peak_predicted_quarter": "2021-03-31",
-            "peak_realised": 0.0036,
-            "peak_realised_quarter": "2020-12-31",
-            "peak_timing_error_quarters": 1
+            "peak_realised": 0.0001,
+            "peak_realised_quarter": "2023-06-30",
+            "peak_timing_error_quarters": -9
           }
         },
         {
           "fed_loan_type": "credit-cards",
           "series_id": "CONCC",
+          "link": "probit",
           "fit_window": {
             "start": "1985-03-31",
             "end": "2019-12-31"
@@ -2923,6 +2995,7 @@
         {
           "fed_loan_type": "other-consumer",
           "series_id": "CONOTH",
+          "link": "probit",
           "fit_window": {
             "start": "1985-03-31",
             "end": "2019-12-31"
@@ -3073,7 +3146,7 @@
             },
             {
               "fed_loan_type": "residential",
-              "rate": 0.0022
+              "rate": 0.0
             },
             {
               "fed_loan_type": "credit-cards",
@@ -3100,7 +3173,7 @@
             },
             {
               "fed_loan_type": "residential",
-              "rate": 0.0022
+              "rate": 0.0
             },
             {
               "fed_loan_type": "credit-cards",
@@ -3185,9 +3258,12 @@
           "horizon_years": 1,
           "confidence_level": 0.999,
           "el_clp_m": 140000.0,
+          "el_status": "finite",
           "var_clp_m": 1190000.0,
           "es_clp_m": 1300000.0,
           "ec_clp_m": 1050000.0,
+          "ec_basis": "var-less-el",
+          "ec_label": null,
           "var_se_clp_m": 2380.0,
           "producer": "credit-grouped-copula-c07-segments",
           "source_documents": [
@@ -3207,9 +3283,12 @@
           "horizon_years": 1,
           "confidence_level": 0.999,
           "el_clp_m": 5000.0,
+          "el_status": "finite",
           "var_clp_m": 225000.0,
           "es_clp_m": 262000.0,
           "ec_clp_m": 220000.0,
+          "ec_basis": "var-less-el",
+          "ec_label": null,
           "var_se_clp_m": 450.0,
           "producer": "market-c11-mixed-portfolio-scaled-to-market-rwa",
           "source_documents": [
@@ -3234,12 +3313,35 @@
               },
               {
                 "name": "market_horizon_scaling",
-                "value": 15.8114,
-                "unit": "multiplier on the one-day measure",
-                "label": "case assumption",
+                "value": 21.0032486873,
+                "unit": "multiplier on C11's 99 percent one-day measure",
+                "label": "convention",
                 "basis": {
-                  "en": "Square-root-of-time scaling from the C11 horizon to one year, stated as an assumption (decision Q5)",
-                  "es": "Square-root-of-time scaling from the C11 horizon to one year, stated as an assumption (decision Q5) (es)"
+                  "en": "From C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 times the square root of 250, both named conventions (W4)",
+                  "es": "From C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 times the square root of 250, both named conventions (W4) (es)"
+                },
+                "source_confidence_level": 0.99,
+                "source_horizon_days": 1,
+                "trading_days_per_year": 250,
+                "level_factor": {
+                  "name": "market_level_factor",
+                  "value": 1.3283620823,
+                  "unit": "ratio of normal quantiles z_0.999 / z_0.99",
+                  "label": "convention",
+                  "basis": {
+                    "en": "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case",
+                    "es": "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case (es)"
+                  }
+                },
+                "horizon_factor": {
+                  "name": "market_horizon_factor",
+                  "value": 15.8113883008,
+                  "unit": "multiplier on a one-day measure, sqrt(250)",
+                  "label": "convention",
+                  "basis": {
+                    "en": "Square-root-of-time scaling from one day to one year with 250 trading days: a convention of the case",
+                    "es": "Square-root-of-time scaling from one day to one year with 250 trading days: a convention of the case (es)"
+                  }
                 }
               }
             ]
@@ -3250,9 +3352,12 @@
           "horizon_years": 1,
           "confidence_level": 0.999,
           "el_clp_m": 2000.0,
+          "el_status": "finite",
           "var_clp_m": 182000.0,
           "es_clp_m": 210000.0,
           "ec_clp_m": 180000.0,
+          "ec_basis": "var-less-el",
+          "ec_label": null,
           "var_se_clp_m": null,
           "producer": "irrbb-engine-simulation-c15-curve-and-book",
           "source_documents": [
@@ -3272,9 +3377,12 @@
           "horizon_years": 1,
           "confidence_level": 0.999,
           "el_clp_m": 20000.0,
+          "el_status": "finite",
           "var_clp_m": 280000.0,
           "es_clp_m": 345000.0,
           "ec_clp_m": 260000.0,
+          "ec_basis": "var-less-el",
+          "ec_label": null,
           "var_se_clp_m": 560.0,
           "producer": "operational-oprisk-aggregate-c17-parameters-scaled",
           "source_documents": [
@@ -3293,8 +3401,14 @@
                 "unit": "Banco Andino assets over the assets of the C17 bank",
                 "label": "case assumption",
                 "basis": {
-                  "en": "The scaling of the C17 generator frequency by assets (decision Q5)",
-                  "es": "The scaling of the C17 generator frequency by assets (decision Q5) (es)"
+                  "en": "Derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, converted at the rate (decision Q5, W5); this value is a fixture value",
+                  "es": "Derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, converted at the rate (decision Q5, W5); this value is a fixture value (es)"
+                },
+                "derivation": {
+                  "kind": "asset-ratio",
+                  "banco_andino_assets_clp_m": 40000000.0,
+                  "c17_bank_assets_eur_m": 50000.0,
+                  "converted_at": "operational_conversion_rate"
                 }
               },
               {
@@ -3303,8 +3417,16 @@
                 "unit": "CLP per EUR",
                 "label": "case assumption",
                 "basis": {
-                  "en": "The stated rate that converts the C17 loss distribution from EUR to CLP (decision Q5)",
-                  "es": "The stated rate that converts the C17 loss distribution from EUR to CLP (decision Q5) (es)"
+                  "en": "Derived at bake time: the EUR to CLP rate of the as-of date from the Banco Central de Chile (decision Q5, W5); this value is a fixture value",
+                  "es": "Derived at bake time: the EUR to CLP rate of the as-of date from the Banco Central de Chile (decision Q5, W5); this value is a fixture value (es)"
+                },
+                "derivation": {
+                  "kind": "observed-exchange-rate",
+                  "pair": "EUR/CLP",
+                  "observation_date": "2026-08-31",
+                  "source": "Banco Central de Chile, Base de Datos Estadisticos, daily exchange rate of the euro in Chilean pesos",
+                  "source_url": "https://si3.bcentral.cl/Siete/es/Siete/API",
+                  "source_series": "fixture-series-id"
                 }
               }
             ]
@@ -3769,7 +3891,7 @@
       }
     },
     "cet1_ratio_end_stress": {
-      "value": 0.0925531568,
+      "value": 0.0941497653,
       "unit": "share of RWA",
       "label": {
         "en": "CET1 ratio at the end of year 3 under the stress without mitigation",
@@ -3777,7 +3899,7 @@
       }
     },
     "oi_headroom_min": {
-      "value": -0.0149468432,
+      "value": -0.0133502347,
       "unit": "share of RWA",
       "label": {
         "en": "Smallest headroom of the PE ratio over the internal target in the stress without mitigation",
