@@ -53,6 +53,9 @@ NMD_CAPS: dict[str, tuple[float, float]] = {
     "nmd_wholesale": (0.50, 4.0),
 }
 
+#: LCR30: the HQLA levels, and the assets that are not HQLA (the optional liquidity fields of the balance_sheet family).
+LIQUIDITY_CLASSES: tuple[str, ...] = ("level_1", "level_2a", "level_2b", "non_hqla")
+
 BEHAVIOURAL_CLASSES: tuple[str, ...] = (
     "contractual", *NMD_CAPS, "prepayable_fixed_rate_loan", "redeemable_term_deposit",
 )
@@ -869,6 +872,16 @@ BALANCE_SHEET = Family(
               unit="fraction", lo=0.0, hi=1.0, required=False),
         Field("core_avg_maturity_years", "float", _t("Average maturity of the core", "Plazo promedio de la porción estable"),
               unit="years", lo=0.0, required=False),
+        Field("liquidity_class", "enum", _t("Liquidity class: the HQLA level of an asset, or not HQLA (LCR30)",
+                                            "Clase de liquidez: el nivel HQLA de un activo, o no HQLA (LCR30)"),
+              values=LIQUIDITY_CLASSES, required=False),
+        Field("residual_days", "int", _t("Residual contractual maturity in days", "Plazo contractual residual en días"),
+              unit="days", lo=0.0, required=False),
+        Field("insured", "flag", _t("Insured by a deposit insurance scheme (a deposit)", "Asegurado por un esquema de seguro de depósitos"),
+              required=False),
+        Field("fair_value", "float", _t("Fair value beside the carrying amount, in the same sign convention as amount",
+                                        "Valor razonable junto al monto contable, con el mismo signo que amount"),
+              unit="currency", required=False),
     ),
     rules=(
         Rule("BS-NMD-CAPS", "record", "flag", "core_share",
@@ -878,7 +891,11 @@ BALANCE_SHEET = Family(
     ),
     notes=(_t("Band midpoints in years, SRP31.96 Table 3: " + ", ".join(f"{b} {m:g}" for b, m in REPRICING_BANDS) + ".",
               "Puntos medios de las bandas en años, SRP31.96 Tabla 3: "
-              + ", ".join(f"{b} {str(m).replace('.', ',')}" for b, m in REPRICING_BANDS) + "."),),
+              + ", ".join(f"{b} {str(m).replace('.', ',')}" for b, m in REPRICING_BANDS) + "."),
+           _t("Liquidity items add four optional fields: liquidity_class (the HQLA level or non_hqla), residual_days, insured (a "
+              "deposit) and fair_value beside amount; a record without them validates as before.",
+              "Las partidas de liquidez agregan cuatro campos opcionales: liquidity_class, residual_days, insured y fair_value "
+              "junto a amount; un registro sin ellos valida como antes."),),
 )
 
 LOSS_EVENTS = Family(
