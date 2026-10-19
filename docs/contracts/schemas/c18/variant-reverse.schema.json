@@ -1,0 +1,576 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c18/variant-reverse.schema.json",
+  "title": "C18 reverse stress variant",
+  "description": "Catalog row c18-outputs-reverse 1.0.0: the reverse stress variant (outputs.kind reverse), the minimum Mahalanobis distance scenario that takes CET1 to the Chilean legal minimum stack.",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C18"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c18RevOutputs",
+          "properties": {
+            "kind": {
+              "const": "reverse"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "if": {
+              "properties": {
+                "light": {
+                  "const": "not_evaluated"
+                }
+              },
+              "required": [
+                "light"
+              ]
+            },
+            "then": {
+              "properties": {
+                "statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "provenance": {
+          "properties": {
+            "truth_status": {
+              "const": "synthetic-calibrated"
+            }
+          }
+        }
+      },
+      "required": [
+        "provenance"
+      ]
+    },
+    {
+      "properties": {
+        "impact": {
+          "required": [
+            "capital_simple_sum",
+            "cet1_ratio_end_stress",
+            "oi_headroom_min",
+            "p2g_proxy"
+          ]
+        }
+      }
+    },
+    {
+      "properties": {
+        "tests": {
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "stress.reverse_solution_check"
+                  }
+                },
+                "required": [
+                  "test_id"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c18Named": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "enum": [
+            "convention",
+            "case assumption"
+          ],
+          "description": "Every named parameter is a convention or an assumption of the case, never a regulatory value."
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A named parameter: a required name, value and unit, the label convention or case assumption, and the basis it was taken from."
+    },
+    "c18Env": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "synthetic",
+        "notice",
+        "as_of"
+      ],
+      "properties": {
+        "name": {
+          "const": "Banco Andino"
+        },
+        "synthetic": {
+          "const": true
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        },
+        "as_of": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
+          "description": "An ISO date."
+        }
+      },
+      "description": "The synthetic bank, labelled."
+    },
+    "c18Units": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "money",
+        "ratio",
+        "dates"
+      ],
+      "properties": {
+        "money": {
+          "const": "CLP millions"
+        },
+        "ratio": {
+          "const": "decimal"
+        },
+        "dates": {
+          "const": "ISO date; quarters as the date of the quarter end"
+        }
+      },
+      "description": "The units of the document: money in CLP millions, ratios as decimals, quarters as ISO dates of the quarter end."
+    },
+    "c18RevFactor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "unit",
+        "sd"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "real_gdp_growth",
+            "unemployment_rate",
+            "cpi_inflation",
+            "treasury_3m",
+            "treasury_5y",
+            "treasury_10y",
+            "mortgage_rate",
+            "prime_rate"
+          ]
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sd": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "c18Stack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cet1_min",
+        "c_ccob",
+        "c_ccyb",
+        "c_dsib",
+        "p2_cet1",
+        "total",
+        "basis"
+      ],
+      "properties": {
+        "cet1_min": {
+          "const": 0.045
+        },
+        "c_ccob": {
+          "const": 0.025
+        },
+        "c_ccyb": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.025
+        },
+        "c_dsib": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.015
+        },
+        "p2_cet1": {
+          "$ref": "#/$defs/c18Named"
+        },
+        "total": {
+          "type": "number",
+          "description": "A ratio as a decimal."
+        },
+        "basis": {
+          "const": "chilean-legal-minimum-stack",
+          "description": "CET1/RWA >= 4.5% + 2.5% + RCC + c_DSIB + the CET1 share of c_P2 (RAN 21-13; 03 l.911-920)."
+        }
+      }
+    },
+    "c18Solution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "z_star",
+        "x_star",
+        "mahalanobis_distance",
+        "plausibility",
+        "loss_at_z_star_clp_m",
+        "loss_threshold_clp_m",
+        "relative_gap",
+        "tolerance"
+      ],
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "closed-form-linear",
+            "scipy-optimize"
+          ]
+        },
+        "z_star": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1
+        },
+        "x_star": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1
+        },
+        "mahalanobis_distance": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "plausibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "chi_square_df",
+            "tail_probability"
+          ],
+          "properties": {
+            "chi_square_df": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "tail_probability": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "loss_at_z_star_clp_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Money in CLP millions, not below zero."
+        },
+        "loss_threshold_clp_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Money in CLP millions, not below zero."
+        },
+        "relative_gap": {
+          "type": "number",
+          "minimum": 0
+        },
+        "tolerance": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "description": "The most plausible scenario that reaches the failure point and the loss at it."
+    },
+    "c18RevOutputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "currency",
+        "units",
+        "bank",
+        "failure_point",
+        "factor_space",
+        "loss_model",
+        "solution",
+        "starts"
+      ],
+      "properties": {
+        "kind": {
+          "const": "reverse"
+        },
+        "currency": {
+          "const": "CLP"
+        },
+        "units": {
+          "$ref": "#/$defs/c18Units"
+        },
+        "bank": {
+          "$ref": "#/$defs/c18Env"
+        },
+        "failure_point": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "definition",
+            "stack",
+            "cet1_ratio_start",
+            "rwa_clp_m",
+            "horizon_years"
+          ],
+          "properties": {
+            "label": {
+              "const": "contraste-formulation-not-regulatory",
+              "description": "The formal statement is Contraste's, not regulatory text (01 l.891-894; 05 l.412)."
+            },
+            "definition": {
+              "$ref": "../common/text.schema.json"
+            },
+            "stack": {
+              "$ref": "#/$defs/c18Stack"
+            },
+            "cet1_ratio_start": {
+              "type": "number",
+              "description": "A ratio as a decimal."
+            },
+            "rwa_clp_m": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Money in CLP millions, not below zero."
+            },
+            "horizon_years": {
+              "const": 3
+            }
+          },
+          "description": "The failure point: CET1 at the Chilean legal minimum stack at the end of the planning horizon (decision Q11)."
+        },
+        "factor_space": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "window",
+            "factors",
+            "covariance",
+            "label"
+          ],
+          "properties": {
+            "window": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "start",
+                "end"
+              ],
+              "properties": {
+                "start": {
+                  "type": "string",
+                  "pattern": "^(198[5-9]|199[0-9]|200[0-9]|201[0-9])-(03-31|06-30|09-30|12-31)$",
+                  "description": "A quarter end between 1985-03-31 and 2019-12-31: the satellites are fitted on 1985-2019 only."
+                },
+                "end": {
+                  "type": "string",
+                  "pattern": "^(198[5-9]|199[0-9]|200[0-9]|201[0-9])-(03-31|06-30|09-30|12-31)$",
+                  "description": "A quarter end between 1985-03-31 and 2019-12-31: the satellites are fitted on 1985-2019 only."
+                }
+              }
+            },
+            "factors": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/c18RevFactor"
+              },
+              "minItems": 1
+            },
+            "covariance": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 1
+              },
+              "minItems": 1
+            },
+            "label": {
+              "const": "us-calibrated-adaptation",
+              "description": "The satellites are fitted on United States charge-off rates and applied to Banco Andino: a US-calibrated adaptation (decision Q6)."
+            }
+          },
+          "description": "The standardised satellite regressors with their covariance from the 1985-2019 window (decision Q11)."
+        },
+        "loss_model": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "gradient_clp_m_per_unit",
+            "description"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "linear",
+                "nonlinear"
+              ]
+            },
+            "gradient_clp_m_per_unit": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "minItems": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "The loss per unit of each factor deviation for a linear loss; null for a nonlinear one."
+            },
+            "description": {
+              "$ref": "../common/text.schema.json"
+            }
+          },
+          "oneOf": [
+            {
+              "properties": {
+                "kind": {
+                  "const": "linear"
+                },
+                "gradient_clp_m_per_unit": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "minItems": 1
+                }
+              }
+            },
+            {
+              "properties": {
+                "kind": {
+                  "const": "nonlinear"
+                },
+                "gradient_clp_m_per_unit": {
+                  "type": "null"
+                }
+              }
+            }
+          ]
+        },
+        "solution": {
+          "$ref": "#/$defs/c18Solution"
+        },
+        "starts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "start_id",
+              "converged",
+              "distance",
+              "loss_clp_m"
+            ],
+            "properties": {
+              "start_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "converged": {
+                "type": "boolean"
+              },
+              "distance": {
+                "type": "number",
+                "minimum": 0
+              },
+              "loss_clp_m": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Money in CLP millions, not below zero."
+              }
+            }
+          },
+          "minItems": 3,
+          "description": "At least three starts: no closer point is found from any of them (H.7)."
+        }
+      },
+      "description": "C18 outputs of the reverse stress variant."
+    }
+  }
+}
