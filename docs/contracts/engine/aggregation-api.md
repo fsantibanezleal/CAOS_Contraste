@@ -22,8 +22,19 @@ UNVERIFIED here and is not silently decided.
 - Money is a float in one currency (CLP millions in C18); the currency is the caller's and never converted. Correlations and confidence
   levels are decimals (a level of 99.9 percent is `0.999`). One horizon (one year) and one confidence level (0.999) apply to every
   marginal and every aggregate (05 l.378); a function that takes a level checks `0 < level < 1`.
-- Capital basis (this contract's definition; the dossier writes EC for the capital of a risk): `EC = VaR_level(L) - EL`. The expected loss
-  is additive, so the simple sum of the marginal EC equals the comonotonic EC of the total. Aggregates are returned as EC on the same basis.
+- Capital basis (dossier 04 l.652-653, BCBS 2005 explanatory note section 4.4: "Economic capital on an unexpected-loss basis is
+  EC_q = VaR_q(L) - EL"): `EC = VaR_level(L) - EL`. The expected loss is additive, so the simple sum of the marginal EC equals the comonotonic
+  EC of the total. Aggregates are returned as EC on the same basis.
+- Infinite-mean marginal (W5; dossier 05 l.482 names xi of 1 or more, the infinite mean, as a failure mode): a marginal whose severity has an
+  infinite mean has no expected loss. The document reports its expected loss as "undefined (infinite mean)" (`el_status`, with `el_clp_m`
+  null) and its EC is the VaR alone, labelled (`ec_basis = "var-alone-infinite-mean"`, `ec_label`); EC is never computed with an infinite
+  expected loss and no capped value stands in for it. A function of this module receives such a marginal as `ec = VaR` and `el = 0.0`, so
+  every row of the band is built on the EC the document carries; the bake sets `el_status` from the C17 parameter set (`infinite_mean`, xi of 1
+  or more).
+- Level and horizon of a source measure (W4): a marginal read at another level or horizon is converted by the bake, never by the engine and
+  never silently. C11's mixed-portfolio figures are at 99 percent over one day; they move to 99.9 percent by the normal quantile ratio
+  z_0.999 / z_0.99 and to one year by sqrt(250), two named conventions (label "convention") that the models document states as
+  `market_horizon_scaling` with both factors, the source level and the source horizon.
 - `VaR`, `ES` and their Monte Carlo errors are those of the reused `portfolio` helpers (below), never restated.
 - Randomness: a function that draws takes an integer `seed` and uses `numpy.random.Generator(numpy.random.PCG64(seed))`; the result is
   reproducible for the same `(seed, n, chunk_size)`; another chunk size gives a different but equally valid sample. No function reads
@@ -318,7 +329,7 @@ class Band:
 ```
 
 - Units: money for `headline`.
-- Invariants: `headline` is the `capital` of the single `simple-sum` row; the rows are the lower bound, the simple sum, variance-covariance, Gaussian, one t row per `nu` of the set, the worst case; `lower-bound <= every other row <= worst-case`; the diversified rows are `<= headline` (the sign of every diversification benefit: a row above the headline is reported by `validation.aggregation.diversification_sign`, never repaired).
+- Invariants: `headline` is the `capital` of the single `simple-sum` row; the rows are the lower bound, the simple sum, variance-covariance, Gaussian, one t row per `nu` of the set, the worst case; `lower-bound <= every other row <= worst-case`; the variance-covariance, Gaussian and t rows are expected at or below `headline`, and the worst case is above it by construction (VaR is not subadditive: 05 l.366). A row above the headline is a true result, reported by `validation.aggregation.diversification_sign` (red or amber), never repaired and never refused by the document check: reported, not enforced.
 
 ### `riskvalidation.aggregation.band.dependence_band`
 
@@ -328,7 +339,7 @@ def dependence_band(ppfs: Sequence[Callable[[np.ndarray], np.ndarray]], ec: np.n
                     chunk_size: int = 100_000, bounds_n: int = 100_000, bounds_epsilon: float = 1e-3) -> Band: ...
 ```
 
-- Units: `ec`, `el` (K,) money; `nu_set` degrees of freedom above 2, ascending and distinct; returns a `Band`. The rows run over the same marginals: `simple_sum`, `variance_covariance`, `copula_aggregate` for the Gaussian copula and for each `nu`, and `worst_var_bounds` (its `lower_range[0]` and `upper_range[1]` less `sum el`) for the lower and the worst case.
+- Units: `ec`, `el` (K,) money; `nu_set` degrees of freedom above 2, ascending and distinct; returns a `Band`. The rows run over the same marginals: `simple_sum`, `variance_covariance`, `copula_aggregate` for the Gaussian copula and for each `nu`, and `worst_var_bounds` (its `lower_range[0]` and `upper_range[1]` less `sum el`) for the lower and the worst case. The lower-bound row is a signed capital: the best VaR less the sum of the expected losses may be negative (Table 4, d = 56: best VaR 45.82 against an EL of 56) and is reported as computed, signed, with its diversification factor; every other row is not below zero.
 - Golden: `ec = (3, 4)`, `el = (0, 0)`, `R = [[1, 0.5], [0.5, 1]]`: the simple-sum row is `7.0`, the variance-covariance row `6.0828`, and `lower <= 6.0828 <= worst`.
 - Invariants: one horizon and one confidence level on every row (`ValueError` otherwise); `ValueError` for a `nu_set` that is empty, unsorted or has a value `<= 2`; the same `seed` gives the same band.
 

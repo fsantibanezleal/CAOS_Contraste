@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import math
 from statistics import NormalDist
-from typing import Any
 
 RISKS = ["credit", "market", "irrbb", "operational"]
 FED_TYPES = ["commercial-industrial", "commercial-real-estate", "residential", "credit-cards", "other-consumer"]
@@ -47,6 +46,9 @@ NGFS_VARIABLES = [  # F8: the NiGEM variable names and units as printed (the GDP
 EBA_PARAGRAPHS = ["24", "33", "34", "90", "91", "92"]
 BAND_METHODS = ["lower-bound", "simple-sum", "variance-covariance", "gaussian-copula", "t-copula", "worst-case"]
 TOL = 1e-6
+FIRST_QUARTER = {"commercial-industrial": "1985-03-31", "commercial-real-estate": "1991-03-31", "residential": "1991-03-31",
+                 "credit-cards": "1985-03-31", "other-consumer": "1985-03-31"}
+SIGNALLING = ("red", "amber")
 
 
 # ------------------------------------------------------------------------------------------------ small numerics
@@ -153,7 +155,26 @@ def chi2_sf(x: float, df: int) -> float:
 
 
 def link(name: str, p: float) -> float:
+    if name == "identity":
+        return p
     return NormalDist().inv_cdf(p) if name == "probit" else math.log(p / (1 - p))
+
+
+def light_of(tests: list[dict], test_id: str) -> str | None:
+    return next((r["light"] for r in tests if r["test_id"] == test_id), None)
+
+
+def light_consistency(tests: list[dict], test_id: str, holds: bool, where: str, exact: bool = True) -> list[str]:
+    """The validation row must report what the document shows: red or amber when the condition holds, and (when ``exact``) not red or amber
+    when it does not. A true result is never refused for its sign; only a document that hides it is (F3 of the U13-S review)."""
+    light = light_of(tests, test_id)
+    if light is None:
+        return []   # a missing required row is the schema's refusal
+    if holds and light not in SIGNALLING:
+        return [f"{where}: the condition holds but the row {test_id} is {light}, not red or amber"]
+    if not holds and (light == "red" or (exact and light == "amber")):
+        return [f"{where}: the condition does not hold but the row {test_id} is {light}"]
+    return []
 
 
 def varcov(ec: list[float], r: list[list[float]]) -> float:
@@ -210,10 +231,14 @@ def aggregation_violations(agg: dict, where: str) -> list[str]:
         return out
     for m in marg:
         r = m["risk"]
-        if not close(m["ec_clp_m"], m["var_clp_m"] - m["el_clp_m"]):
-            out.append(f"{where}: marginal {r}: ec {m['ec_clp_m']} is not var - el = {m['var_clp_m'] - m['el_clp_m']}")
-        if m["var_clp_m"] < m["el_clp_m"] - 1e-6:
-            out.append(f"{where}: marginal {r}: var is below the expected loss")
+        if m["el_clp_m"] is None:
+            if not close(m["ec_clp_m"], m["var_clp_m"]):
+                out.append(f"{where}: marginal {r}: the expected loss is undefined (infinite mean), so ec {m['ec_clp_m']} must be the var {m['var_clp_m']} alone")
+        else:
+            if not close(m["ec_clp_m"], m["var_clp_m"] - m["el_clp_m"]):
+                out.append(f"{where}: marginal {r}: ec {m['ec_clp_m']} is not var - el = {m['var_clp_m'] - m['el_clp_m']}")
+            if m["var_clp_m"] < m["el_clp_m"] - 1e-6:
+                out.append(f"{where}: marginal {r}: var is below the expected loss")
         if m["es_clp_m"] < m["var_clp_m"] - 1e-6:
             out.append(f"{where}: marginal {r}: es is below var")
     ec = [m["ec_clp_m"] for m in marg]
@@ -250,9 +275,6 @@ def aggregation_violations(agg: dict, where: str) -> list[str]:
         out.append(f"{where}: the worst case is below another row of the band")
     if lower and worst and lower[0]["capital_clp_m"] > worst[0]["capital_clp_m"] + 1e-6:
         out.append(f"{where}: the lower bound is above the worst case")
-    for r in band:
-        if r["method"] in ("variance-covariance", "gaussian-copula", "t-copula") and r["capital_clp_m"] > total * (1 + 1e-9) + 1e-6:
-            out.append(f"{where}: band row {r['method']} {r['nu']} is above the simple sum: a diversification benefit with the wrong sign")
     # model risk (06 l.692-698)
     mr = agg["model_risk"]
     x0 = ref_row(band, mr["reference_model"])
@@ -306,12 +328,19 @@ def aggregation_violations(agg: dict, where: str) -> list[str]:
             out.append(f"{where}: the diversification factor {dv['factor']} is not that of its reference row {row['diversification_factor']}")
         if not close(dv["benefit"], 1 - dv["factor"]):
             out.append(f"{where}: the diversification benefit is not 1 - factor")
-        if dv["factor"] > 1 + 1e-9:
-            out.append(f"{where}: the diversification factor is above 1: a diversification benefit with the wrong sign")
     for b, a, m in zip(dv["euler_benefit_by_risk"], eu["allocation"], marg):
         if [b["risk"]] != [a["risk"]] or (m["es_clp_m"] and not close(b["benefit"], 1 - a["contribution_clp_m"] / m["es_clp_m"], 1e-6, 1e-9)):
             out.append(f"{where}: the Euler diversification benefit of {b['risk']} is not 1 - contribution / standalone ES")
     return out
+
+
+def diversified_above_sum(agg: dict) -> bool:
+    """True when a variance-covariance, Gaussian or t row, or the reference diversification factor, is above the simple sum (VaR is not
+    subadditive: a true result, reported by aggregation.diversification_sign and never repaired)."""
+    total = sum(m["ec_clp_m"] for m in agg["marginals"])
+    rows = any(r["method"] in ("variance-covariance", "gaussian-copula", "t-copula") and r["capital_clp_m"] > total * (1 + 1e-9) + 1e-6
+               for r in agg["band"])
+    return rows or agg["diversification"]["factor"] > 1 + 1e-9
 
 
 # ------------------------------------------------------------------------------------------------ the scenario variant
@@ -358,7 +387,17 @@ def path_violations(o: dict) -> list[str]:
                 want = tr["target"]["value"] + (lev[k]["value"] - tr["source_jump_off"]["value"])
                 if not close(t[k]["value"], want, 1e-6, 1e-6):
                     out.append(f"{where}: transposed[{k}] {t[k]['value']} is not the target plus the change of the source from its jump-off ({want})")
-        elif kind != "baseline-times-percent-deviation":
+        elif kind == "baseline-times-percent-deviation":
+            # a level path of a growth regressor: each year's four quarters carry that year's growth, level_y / level_(y-1) - 1, in percent
+            prev = tr["source_jump_off"]["value"]
+            for y, lv in enumerate(lev):
+                growth = (lv["value"] / prev - 1) * 100 if prev else 0.0
+                for k in range(4):
+                    idx = 4 * y + k
+                    if idx < len(t) and not close(t[idx]["value"], growth, 1e-6, 2e-4):
+                        out.append(f"{where}: transposed[{idx}] {t[idx]['value']} is not the annual growth of the level path ({growth:.4f} percent)")
+                prev = lv["value"]
+        else:
             prev = tr["source_jump_off"]["value"]
             for y, lv in enumerate(lev):
                 for k in range(1, 5):
@@ -379,6 +418,37 @@ def path_violations(o: dict) -> list[str]:
             out.append("scenario: the NGFS policy shock window is not three calendar years")
         elif any(not (w["start_year"] <= int(q["date"][:4]) <= w["end_year"]) for p in sc["paths"] for q in p["source"]):
             out.append("scenario: an NGFS path point lies outside the policy shock window")
+    return out
+
+
+def severity_violations(o: dict) -> list[str]:
+    out: list[str] = []
+    sev, sc = o["severity"], o["scenario"]
+    paths = sc["paths"]
+    rows = sev["rows"]
+    ep = sev["reference_episode"]
+    if ep["start"] > ep["end"]:
+        out.append("severity: the reference episode ends before it starts")
+    if [r["variable"] for r in rows] != [p["variable"] for p in paths]:
+        out.append("severity: the rows are not one per scenario path variable, in the order of the paths")
+        return out
+    for r, p in zip(rows, paths):
+        where = f"severity {r['variable']}"
+        if r["maps_to_regressor"] != p["maps_to_regressor"]:
+            out.append(f"{where}: maps_to_regressor differs from the path")
+        target = p["transposition"]["target"]["value"]
+        devs = [abs(q["value"] - target) for q in p["transposed"]]
+        peak = max(devs)
+        if not close(r["path_peak_deviation"], peak, 1e-6, 1e-9):
+            out.append(f"{where}: path_peak_deviation {r['path_peak_deviation']} is not the largest deviation of the transposed path from its jump-off {peak}")
+        if r["path_peak_quarter"] != p["transposed"][devs.index(peak)]["date"]:
+            out.append(f"{where}: path_peak_quarter is not the quarter of the peak")
+        if r["history_window"]["start"] > r["history_window"]["end"]:
+            out.append(f"{where}: the history window ends before it starts")
+        if not close(r["ratio"], r["path_peak_deviation"] / r["history_peak_deviation"], 1e-6, 1e-9):
+            out.append(f"{where}: ratio is not the path peak over the history peak")
+        if r["is_stress"] != (sc["scenario_id"] != "baseline"):
+            out.append(f"{where}: is_stress does not follow the scenario (only the baseline is not a stress)")
     return out
 
 
@@ -620,6 +690,8 @@ def scenario_violations(doc: dict) -> list[str]:
     out += capital_violations(o)
     out += annex3_violations(o)
     out += backcast_violations(o)
+    out += severity_violations(o)
+    out += light_consistency(doc["tests"], "aggregation.diversification_sign", diversified_above_sum(o["aggregation"]), "aggregation")
     ids = {"baseline", "eba-2025-adverse", "fed-2026-severely-adverse", "ngfs-delayed-transition"}
     if o["scenario"]["scenario_id"] not in ids:
         out.append("scenario: unknown scenario id")
@@ -659,12 +731,16 @@ def aggregation_variant_violations(doc: dict) -> list[str]:
         out.append("correlation_stress: the marginals differ from the base: only the correlation is stressed")
     if base["nu_set"] != st["nu_set"]:
         out.append("correlation_stress: the nu set differs from the base")
+    falls = False
     for r in base["band"]:
         s = ref_row(st["band"], r)
         if s is None:
             continue
         if r["method"] in ("variance-covariance", "gaussian-copula", "t-copula") and s["capital_clp_m"] < r["capital_clp_m"] - 1e-6:
-            out.append(f"correlation_stress: {r['method']} {r['nu']} falls when a correlation is raised")
+            falls = True   # fallacy 3 of 05 G.3: a true result the validation row reports, never a refusal
+    out += light_consistency(doc["tests"], "aggregation.correlation_stress", falls, "correlation_stress", exact=False)
+    out += light_consistency(doc["tests"], "aggregation.diversification_sign",
+                             diversified_above_sum(base) or diversified_above_sum(st), "aggregation")
     gauss = ref_row(base["band"], {"method": "gaussian-copula", "nu": None})
     for s in o["copula_sensitivity"]:
         t_row = next((r for r in base["band"] if r["method"] == "t-copula" and r["nu"] == s["nu"]), None)
@@ -762,6 +838,19 @@ def reverse_violations(doc: dict) -> list[str]:
 # ------------------------------------------------------------------------------------------------ the models artifact
 
 
+def market_scaling_violations(m: dict) -> list[str]:
+    out: list[str] = []
+    z = NormalDist()
+    level = z.inv_cdf(0.999) / z.inv_cdf(m["source_confidence_level"])
+    if not close(m["level_factor"]["value"], level, 1e-8, 1e-9):
+        out.append(f"market_horizon_scaling: the level factor {m['level_factor']['value']} is not z_0.999 / z_0.99 = {level}")
+    if not close(m["horizon_factor"]["value"], math.sqrt(m["trading_days_per_year"] / m["source_horizon_days"]), 1e-8, 1e-9):
+        out.append("market_horizon_scaling: the horizon factor is not sqrt(250), the square root of the trading days of one year over the source days")
+    if not close(m["value"], m["level_factor"]["value"] * m["horizon_factor"]["value"], 1e-6, 1e-9):
+        out.append("market_horizon_scaling: the combined multiplier is not the level factor times the horizon factor")
+    return out
+
+
 def models_violations(doc: dict) -> list[str]:
     f = doc["fit"]
     out: list[str] = []
@@ -779,9 +868,10 @@ def models_violations(doc: dict) -> list[str]:
         want = {"intercept"} | {f"ar_{k}" for k in range(1, s["ar_order"] + 1)} | {f"{r['name']}_lag{r['lag']}" for r in s["regressors"]}
         if names != want:
             out.append(f"{where}: the coefficients {sorted(names)} are not {sorted(want)}")
-        for c in s["coefficients"]:
-            if (c["expected_sign"] == "positive" and c["estimate"] <= 0) or (c["expected_sign"] == "negative" and c["estimate"] >= 0):
-                out.append(f"{where}: coefficient {c['name']} {c['estimate']} has not its expected sign {c['expected_sign']}")
+        if w["start"] != FIRST_QUARTER[s["fed_loan_type"]]:
+            out.append(f"{where}: the window starts {w['start']}, not at the first quarter the Board publishes ({FIRST_QUARTER[s['fed_loan_type']]})")
+        if s["link"] != "identity" and s["non_positive_quarters_in_window"] > 0:
+            out.append(f"{where}: a {s['link']} fit on a window that holds {s['non_positive_quarters_in_window']} non-positive quarters")
     for m in f["class_mapping"]:
         if len(m["weights"]) != len(m["fed_loan_types"]) or not close(sum(m["weights"]), 1.0, 1e-9, 1e-9):
             out.append(f"class_mapping {m['banco_andino_class']}: the weights do not sum to 1")
@@ -821,6 +911,18 @@ def models_violations(doc: dict) -> list[str]:
     for k in ("operational_conversion_rate", "asset_scaling", "market_horizon_scaling"):
         if n[k]["value"] <= 0:
             out.append(f"named_parameters: {k} is not positive")
+    out += market_scaling_violations(n["market_horizon_scaling"])
+    fx, assets = n["operational_conversion_rate"], n["asset_scaling"]
+    if fx["derivation"]["observation_date"] > doc["fit"]["bank"]["as_of"]:
+        out.append("named_parameters: the EUR to CLP rate is observed after the as-of date")
+    ad = assets["derivation"]
+    if not close(assets["value"], ad["banco_andino_assets_clp_m"] / (ad["c17_bank_assets_eur_m"] * fx["value"]), 1e-6, 1e-9):
+        out.append("named_parameters: asset_scaling is not Banco Andino assets over the C17 bank assets converted at the rate")
+    op = next(m for m in f["marginal_sources"] if m["risk"] == "operational")["c17_parameter_set"]
+    if not close(ad["c17_bank_assets_eur_m"], op["assets_eur_bn"] * 1000.0, 1e-9, 1e-9):
+        out.append("named_parameters: the C17 bank assets are not the assets_eur_bn of the C17 parameter set")
+    if op["infinite_mean"] != (op["tail_index"] >= 1.0):
+        out.append("marginal_sources: infinite_mean must be true exactly when the tail index xi is 1 or more")
     if n["c_p2"]["value"] < a["chilean_stack"]["p2r"] - 1e-12:
         out.append("named_parameters: c_P2 is below the Pillar 2 requirement (c_P2 >= c_66 quinquies)")
     if not close(n["market_rwa_share"]["value"], a["rwa_mix"]["market"], 1e-6, 1e-9):
@@ -919,6 +1021,14 @@ def cross_violations(docs: dict[str, dict]) -> list[str]:
                 out.append(f"{k}: class {c['banco_andino_class']} mapping differs from the models")
             if not close(c["exposure_clp_m"], ex["exposure_clp_m"]):
                 out.append(f"{k}: class {c['banco_andino_class']} exposure differs from the models anchor")
+        for p in o["backcast"]["per_loan_type"]:
+            sat = next(s for s in f["satellites"] if s["fed_loan_type"] == p["fed_loan_type"])
+            if p["link"] != sat["link"]:
+                out.append(f"{k}: the back-cast link of {p['fed_loan_type']} is not the satellite link of the models")
+        op_marg = o["aggregation"]["marginals"][3]
+        op_set = next(m for m in f["marginal_sources"] if m["risk"] == "operational")["c17_parameter_set"]
+        if (op_marg["el_status"] == "undefined (infinite mean)") != op_set["infinite_mean"]:
+            out.append(f"{k}: the operational expected loss is undefined exactly when the C17 parameter set has an infinite mean")
         for p in o["satellites"]["fed_loan_types"]:
             sat = next(s for s in f["satellites"] if s["fed_loan_type"] == p["fed_loan_type"])
             if p["model_id"] != sat["model_id"] or p["link"] != sat["link"]:
@@ -928,6 +1038,10 @@ def cross_violations(docs: dict[str, dict]) -> list[str]:
         mapped = {p["maps_to_regressor"] for p in o["scenario"]["paths"]}
         for name in sorted(regs - mapped):
             out.append(f"{k}: no path of the scenario maps to {name}, which a satellite reads")
+    wrong = [(s["fed_loan_type"], c["name"]) for s in f["satellites"] for c in s["coefficients"]
+             if (c["expected_sign"] == "positive" and c["estimate"] <= 0) or (c["expected_sign"] == "negative" and c["estimate"] >= 0)]
+    for k, d in scen.items():
+        out += light_consistency(d["tests"], "stress.sensitivity_monotonicity", bool(wrong), f"{k}: a satellite coefficient has the opposite of its expected sign")
     keys = list(scen)
     for k in keys[1:]:
         a, b = scen[keys[0]]["outputs"], scen[k]["outputs"]

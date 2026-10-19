@@ -90,6 +90,7 @@
           "start": "1985-03-31",
           "end": "2019-12-31"
         },
+        "non_positive_quarters_in_window": 0,
         "ar_order": 1,
         "n_obs": 139,
         "regressors": [
@@ -142,13 +143,14 @@
         "model_id": "c18-satellite-commercial-real-estate",
         "fed_loan_type": "commercial-real-estate",
         "series_id": "RECI",
-        "link": "probit",
+        "link": "identity",
         "sample_window": {
-          "start": "1985-03-31",
+          "start": "1991-03-31",
           "end": "2019-12-31"
         },
+        "non_positive_quarters_in_window": 13,
         "ar_order": 1,
-        "n_obs": 139,
+        "n_obs": 115,
         "regressors": [
           {
             "name": "real_gdp_growth",
@@ -166,8 +168,8 @@
         "coefficients": [
           {
             "name": "intercept",
-            "estimate": -0.9,
-            "std_error": 0.12,
+            "estimate": 0.0004,
+            "std_error": 0.0001,
             "expected_sign": "none"
           },
           {
@@ -178,14 +180,14 @@
           },
           {
             "name": "real_gdp_growth_lag0",
-            "estimate": -0.045,
-            "std_error": 0.011,
+            "estimate": -0.0004,
+            "std_error": 0.0001,
             "expected_sign": "negative"
           },
           {
             "name": "unemployment_rate_lag1",
-            "estimate": 0.06,
-            "std_error": 0.02,
+            "estimate": 0.0003,
+            "std_error": 0.0001,
             "expected_sign": "positive"
           }
         ],
@@ -199,13 +201,14 @@
         "model_id": "c18-satellite-residential",
         "fed_loan_type": "residential",
         "series_id": "RERES",
-        "link": "probit",
+        "link": "identity",
         "sample_window": {
-          "start": "1985-03-31",
+          "start": "1991-03-31",
           "end": "2019-12-31"
         },
+        "non_positive_quarters_in_window": 6,
         "ar_order": 1,
-        "n_obs": 139,
+        "n_obs": 115,
         "regressors": [
           {
             "name": "real_gdp_growth",
@@ -223,8 +226,8 @@
         "coefficients": [
           {
             "name": "intercept",
-            "estimate": -0.9,
-            "std_error": 0.12,
+            "estimate": 0.0004,
+            "std_error": 0.0001,
             "expected_sign": "none"
           },
           {
@@ -235,14 +238,14 @@
           },
           {
             "name": "real_gdp_growth_lag0",
-            "estimate": -0.045,
-            "std_error": 0.011,
+            "estimate": -0.0004,
+            "std_error": 0.0001,
             "expected_sign": "negative"
           },
           {
             "name": "unemployment_rate_lag1",
-            "estimate": 0.06,
-            "std_error": 0.02,
+            "estimate": 0.0003,
+            "std_error": 0.0001,
             "expected_sign": "positive"
           }
         ],
@@ -261,6 +264,7 @@
           "start": "1985-03-31",
           "end": "2019-12-31"
         },
+        "non_positive_quarters_in_window": 0,
         "ar_order": 1,
         "n_obs": 139,
         "regressors": [
@@ -318,6 +322,7 @@
           "start": "1985-03-31",
           "end": "2019-12-31"
         },
+        "non_positive_quarters_in_window": 0,
         "ar_order": 1,
         "n_obs": 139,
         "regressors": [
@@ -630,8 +635,16 @@
         "unit": "CLP per EUR",
         "label": "case assumption",
         "basis": {
-          "en": "The stated rate that converts the C17 loss distribution from EUR to CLP (decision Q5)",
-          "es": "The stated rate that converts the C17 loss distribution from EUR to CLP (decision Q5) (es)"
+          "en": "Derived at bake time: the EUR to CLP rate of the as-of date from the Banco Central de Chile (decision Q5, W5); this value is a fixture value",
+          "es": "Derived at bake time: the EUR to CLP rate of the as-of date from the Banco Central de Chile (decision Q5, W5); this value is a fixture value (es)"
+        },
+        "derivation": {
+          "kind": "observed-exchange-rate",
+          "pair": "EUR/CLP",
+          "observation_date": "2026-08-31",
+          "source": "Banco Central de Chile, Base de Datos Estadisticos, daily exchange rate of the euro in Chilean pesos",
+          "source_url": "https://si3.bcentral.cl/Siete/es/Siete/API",
+          "source_series": "fixture-series-id"
         }
       },
       "asset_scaling": {
@@ -640,8 +653,14 @@
         "unit": "Banco Andino assets over the assets of the C17 bank",
         "label": "case assumption",
         "basis": {
-          "en": "The scaling of the C17 generator frequency by assets (decision Q5)",
-          "es": "The scaling of the C17 generator frequency by assets (decision Q5) (es)"
+          "en": "Derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, converted at the rate (decision Q5, W5); this value is a fixture value",
+          "es": "Derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, converted at the rate (decision Q5, W5); this value is a fixture value (es)"
+        },
+        "derivation": {
+          "kind": "asset-ratio",
+          "banco_andino_assets_clp_m": 40000000.0,
+          "c17_bank_assets_eur_m": 50000.0,
+          "converted_at": "operational_conversion_rate"
         }
       },
       "market_rwa_share": {
@@ -656,12 +675,35 @@
       },
       "market_horizon_scaling": {
         "name": "market_horizon_scaling",
-        "value": 15.8114,
-        "unit": "multiplier on the one-day measure",
-        "label": "case assumption",
+        "value": 21.0032486873,
+        "unit": "multiplier on C11's 99 percent one-day measure",
+        "label": "convention",
         "basis": {
-          "en": "Square-root-of-time scaling from the C11 horizon to one year, stated as an assumption (decision Q5)",
-          "es": "Square-root-of-time scaling from the C11 horizon to one year, stated as an assumption (decision Q5) (es)"
+          "en": "From C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 times the square root of 250, both named conventions (W4)",
+          "es": "From C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 times the square root of 250, both named conventions (W4) (es)"
+        },
+        "source_confidence_level": 0.99,
+        "source_horizon_days": 1,
+        "trading_days_per_year": 250,
+        "level_factor": {
+          "name": "market_level_factor",
+          "value": 1.3283620823,
+          "unit": "ratio of normal quantiles z_0.999 / z_0.99",
+          "label": "convention",
+          "basis": {
+            "en": "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case",
+            "es": "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case (es)"
+          }
+        },
+        "horizon_factor": {
+          "name": "market_horizon_factor",
+          "value": 15.8113883008,
+          "unit": "multiplier on a one-day measure, sqrt(250)",
+          "label": "convention",
+          "basis": {
+            "en": "Square-root-of-time scaling from one day to one year with 250 trading days: a convention of the case",
+            "es": "Square-root-of-time scaling from one day to one year with 250 trading days: a convention of the case (es)"
+          }
         }
       },
       "reverse_p2_cet1": {
@@ -728,7 +770,8 @@
         },
         "documents": [
           "c07-outputs"
-        ]
+        ],
+        "c17_parameter_set": null
       },
       {
         "risk": "market",
@@ -739,7 +782,8 @@
         },
         "documents": [
           "c11-outputs mixed-2023"
-        ]
+        ],
+        "c17_parameter_set": null
       },
       {
         "risk": "irrbb",
@@ -750,18 +794,26 @@
         },
         "documents": [
           "c15-outputs"
-        ]
+        ],
+        "c17_parameter_set": null
       },
       {
         "risk": "operational",
         "producer": "operational-oprisk-aggregate-c17-parameters-scaled",
         "description": {
-          "en": "oprisk.aggregate on the C17 generator parameters scaled by assets and converted at a stated rate",
-          "es": "oprisk.aggregate on the C17 generator parameters scaled by assets and converted at a stated rate (es)"
+          "en": "oprisk.aggregate on the C17 generator parameters scaled by assets and converted at the observed rate",
+          "es": "oprisk.aggregate on the C17 generator parameters scaled by assets and converted at the observed rate (es)"
         },
         "documents": [
           "c17-models"
-        ]
+        ],
+        "c17_parameter_set": {
+          "document": "C17 models-generator",
+          "variant_id": "xi-0-8",
+          "tail_index": 0.8,
+          "infinite_mean": false,
+          "assets_eur_bn": 50.0
+        }
       }
     ],
     "scenario_sources": [

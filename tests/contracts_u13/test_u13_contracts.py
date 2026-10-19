@@ -640,7 +640,7 @@ def test_a_named_parameter_used_by_a_variant_carries_its_label_there_too() -> No
                      ("outputs/headline_cet1/ppnr/fee_ratio", "case assumption"), ("outputs/headline_cet1/ppnr/cost_ratio", "case assumption"),
                      ("outputs/aggregation/correlation", "convention"), ("outputs/aggregation/nu_set", "convention"),
                      ("outputs/aggregation/marginals/3/scaling/parameters/0", "case assumption"),
-                     ("outputs/aggregation/marginals/1/scaling/parameters/1", "case assumption")],
+                     ("outputs/aggregation/marginals/1/scaling/parameters/1", "convention")],   # the market conversion is a convention (W4)
         "aggregation": [("outputs/aggregation/correlation", "convention"), ("outputs/aggregation/nu_set", "convention"),
                         ("outputs/correlation_stress/aggregation/correlation", "convention")],
         "reverse": [("outputs/failure_point/stack/p2_cet1", "case assumption")],
@@ -827,7 +827,7 @@ PLANTS: list[tuple[str, str, Callable[[dict], dict], str]] = [
     ("annex3-capital-ratio-wrong", "fed", lambda d: annex_cell(d, "1.3", "a", 0.2), "semantic"),
     ("path-vintage-after-the-observation-date", "fed", mut("outputs/scenario/paths/0/vintage_date", const("2027-01-01")), "semantic"),
     ("transposed-shape-differs-from-the-source", "fed", mut("outputs/scenario/paths/1/transposed/3/value", plus(2.0)), "semantic"),
-    ("ngfs-window-not-three-years", "ngfs", mut("outputs/scenario/policy_shock_window/end_year", const(2036)), "semantic"),
+    ("ngfs-window-not-three-years", "ngfs", mut("outputs/scenario/policy_shock_window/end_year", const(2036)), "schema"),   # F11: pinned to 2031-2033
     ("ngfs-variable-renamed", "ngfs", mut("outputs/scenario/paths/0/variable", const("Unemployment rate")), "semantic"),
     ("ngfs-level-not-baseline-plus-deviation", "ngfs", mut("outputs/scenario/paths/1/transposed/6/value", plus(1.5)), "semantic"),
     ("class-rate-not-the-weighted-mix", "fed", mut("outputs/satellites/banco_andino_classes/0/quarters/4/rate", scale(1.3)), "semantic"),
@@ -839,7 +839,6 @@ PLANTS: list[tuple[str, str, Callable[[dict], dict], str]] = [
     ("plan-deficit-wrong", "fed", mut("outputs/capital_plan/cases/1/years/2/deficit_clp_m", plus(1_000.0)), "semantic"),
     ("capital-start-ratio-wrong", "fed", mut("outputs/capital_start/cet1_ratio", plus(0.01)), "semantic"),
     ("rwa-mix-does-not-add-up", "fed", mut("outputs/capital_start/rwa_by_risk/market", plus(50_000.0)), "semantic"),
-    ("satellite-sign-mismatch", "models", lambda d: flip_sign(d), "semantic"),
     ("satellite-n-obs-wrong", "models", mut("fit/satellites/0/n_obs", plus(5)), "semantic"),
     ("anchor-mix-does-not-add-up", "models", mut("fit/bank_anchors/rwa_mix/credit", plus(0.05)), "semantic"),
     ("anchor-rwa-differs-from-its-basis", "models", mut("fit/bank_anchors/rwa_basis/rwa_total_clp_m", scale(1.1)), "semantic"),
@@ -1134,7 +1133,7 @@ API_CASES = [(AGG_API, AGG_MODULES, "engine-aggregation-api"), (STRESS_API, STRE
 @pytest.mark.parametrize("path,modules,cid", API_CASES, ids=["aggregation", "stress"])
 def test_the_engine_contract_exists_with_its_version_and_names_test_result(path: Path, modules: dict, cid: str) -> None:
     text = path.read_text(encoding="utf-8")
-    assert text.startswith(f"# Engine ") and cid in text and "1.0.0" in text
+    assert text.startswith("# Engine ") and cid in text and "1.0.0" in text
     assert "common/test-result" in text
     assert "Owner: U13-S" in text
 

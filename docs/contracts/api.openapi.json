@@ -32666,6 +32666,122 @@
                 ]
               }
             }
+          },
+          {
+            "properties": {
+              "tests": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "aggregation.simple_sum_and_variance_covariance"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "aggregation.copula_choice_sensitivity"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "aggregation.worst_case_bracket"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "aggregation.correlation_stress"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "aggregation.diversification_sign"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "aggregation.horizon_confidence_consistency"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "aggregation.elliptical_mc_agreement"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "aggregation.rosenberg_schuermann_reference"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "portfolio.euler_additivity"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
           }
         ],
         "unevaluatedProperties": false
@@ -32756,6 +32872,26 @@
                 ]
               }
             }
+          },
+          {
+            "properties": {
+              "tests": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "stress.reverse_solution_check"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
           }
         ],
         "unevaluatedProperties": false
@@ -32843,6 +32979,146 @@
                   "cet1_ratio_end_stress",
                   "oi_headroom_min",
                   "p2g_proxy"
+                ]
+              }
+            }
+          },
+          {
+            "properties": {
+              "tests": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "aggregation.simple_sum_and_variance_covariance"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "aggregation.copula_choice_sensitivity"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "aggregation.worst_case_bracket"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "aggregation.correlation_stress"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "aggregation.diversification_sign"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "aggregation.horizon_confidence_consistency"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "portfolio.euler_additivity"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "stress.satellite_backcast"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "stress.sensitivity_monotonicity"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "stress.static_balance_sheet_rules"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "test_id": {
+                          "const": "stress.scenario_severity"
+                        }
+                      },
+                      "required": [
+                        "test_id"
+                      ]
+                    }
+                  }
                 ]
               }
             }
@@ -32998,7 +33274,7 @@
           },
           "capital_basis": {
             "const": "economic-capital-var-less-el",
-            "description": "Capital of a risk and of an aggregate is EC = VaR(0.999, 1 year) less the expected loss; the expected loss is additive, so the simple sum of the marginals equals the comonotonic total."
+            "description": "Capital of a risk and of an aggregate is EC = VaR(0.999, 1 year) less the expected loss, EC_q = VaR_q(L) - EL (dossier 04 l.652-653, BCBS 2005 explanatory note section 4.4); the expected loss is additive, so the simple sum of the marginals equals the comonotonic total. A marginal whose severity has an infinite mean has no expected loss: its EC is the VaR alone, labelled (dossier 05 l.482)."
           },
           "marginal_interpolation": {
             "type": "string",
@@ -33026,7 +33302,7 @@
         "properties": {
           "capital_basis": {
             "const": "economic-capital-var-less-el",
-            "description": "Capital of a risk and of an aggregate is EC = VaR(0.999, 1 year) less the expected loss; the expected loss is additive, so the simple sum of the marginals equals the comonotonic total."
+            "description": "Capital of a risk and of an aggregate is EC = VaR(0.999, 1 year) less the expected loss, EC_q = VaR_q(L) - EL (dossier 04 l.652-653, BCBS 2005 explanatory note section 4.4); the expected loss is additive, so the simple sum of the marginals equals the comonotonic total. A marginal whose severity has an infinite mean has no expected loss: its EC is the VaR alone, labelled (dossier 05 l.482)."
           },
           "horizon_years": {
             "const": 1,
@@ -33856,6 +34132,35 @@
         },
         "description": "A row of the Annex 3 summary: column A percent of RWA, B the amount (CLP millions), C the legal requirement, D the internal measurement."
       },
+      "c18AssetDerivation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "banco_andino_assets_clp_m",
+          "c17_bank_assets_eur_m",
+          "converted_at"
+        ],
+        "properties": {
+          "kind": {
+            "const": "asset-ratio"
+          },
+          "banco_andino_assets_clp_m": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Banco Andino total assets, CLP millions, from the C15 and C07 balance sheet."
+          },
+          "c17_bank_assets_eur_m": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "The stated assets of the C17 synthetic bank, EUR millions (C17 models-generator generator.assets_eur_bn times 1000)."
+          },
+          "converted_at": {
+            "const": "operational_conversion_rate"
+          }
+        },
+        "description": "How the scaling is derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, in one currency."
+      },
       "c18Backcast": {
         "type": "object",
         "additionalProperties": false,
@@ -33891,6 +34196,7 @@
               "required": [
                 "fed_loan_type",
                 "series_id",
+                "link",
                 "fit_window",
                 "quarters",
                 "metrics"
@@ -33914,6 +34220,14 @@
                     "RERES",
                     "CONCC",
                     "CONOTH"
+                  ]
+                },
+                "link": {
+                  "type": "string",
+                  "enum": [
+                    "probit",
+                    "logit",
+                    "identity"
                   ]
                 },
                 "fit_window": {
@@ -33954,13 +34268,15 @@
                       },
                       "predicted": {
                         "type": "number",
-                        "exclusiveMinimum": 0,
-                        "exclusiveMaximum": 1
+                        "exclusiveMinimum": -1,
+                        "exclusiveMaximum": 1,
+                        "description": "A net charge-off rate as a decimal. Signed: net recoveries make a rate zero or negative (the Board's table holds both)."
                       },
                       "realised": {
                         "type": "number",
-                        "exclusiveMinimum": 0,
-                        "exclusiveMaximum": 1
+                        "exclusiveMinimum": -1,
+                        "exclusiveMaximum": 1,
+                        "description": "A net charge-off rate as a decimal. Signed: net recoveries make a rate zero or negative (the Board's table holds both)."
                       }
                     }
                   },
@@ -33985,7 +34301,9 @@
                     },
                     "peak_predicted": {
                       "type": "number",
-                      "exclusiveMinimum": 0
+                      "exclusiveMinimum": -1,
+                      "exclusiveMaximum": 1,
+                      "description": "A net charge-off rate as a decimal. Signed: net recoveries make a rate zero or negative (the Board's table holds both)."
                     },
                     "peak_predicted_quarter": {
                       "type": "string",
@@ -33994,7 +34312,9 @@
                     },
                     "peak_realised": {
                       "type": "number",
-                      "exclusiveMinimum": 0
+                      "exclusiveMinimum": -1,
+                      "exclusiveMaximum": 1,
+                      "description": "A net charge-off rate as a decimal. Signed: net recoveries make a rate zero or negative (the Board's table holds both)."
                     },
                     "peak_realised_quarter": {
                       "type": "string",
@@ -34006,7 +34326,121 @@
                     }
                   }
                 }
-              }
+              },
+              "oneOf": [
+                {
+                  "properties": {
+                    "fed_loan_type": {
+                      "const": "commercial-industrial"
+                    },
+                    "series_id": {
+                      "const": "CI"
+                    },
+                    "link": {
+                      "type": "string",
+                      "enum": [
+                        "probit",
+                        "logit"
+                      ]
+                    },
+                    "fit_window": {
+                      "properties": {
+                        "start": {
+                          "const": "1985-03-31"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "fed_loan_type": {
+                      "const": "commercial-real-estate"
+                    },
+                    "series_id": {
+                      "const": "RECI"
+                    },
+                    "link": {
+                      "const": "identity"
+                    },
+                    "fit_window": {
+                      "properties": {
+                        "start": {
+                          "const": "1991-03-31"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "fed_loan_type": {
+                      "const": "residential"
+                    },
+                    "series_id": {
+                      "const": "RERES"
+                    },
+                    "link": {
+                      "const": "identity"
+                    },
+                    "fit_window": {
+                      "properties": {
+                        "start": {
+                          "const": "1991-03-31"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "fed_loan_type": {
+                      "const": "credit-cards"
+                    },
+                    "series_id": {
+                      "const": "CONCC"
+                    },
+                    "link": {
+                      "type": "string",
+                      "enum": [
+                        "probit",
+                        "logit"
+                      ]
+                    },
+                    "fit_window": {
+                      "properties": {
+                        "start": {
+                          "const": "1985-03-31"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "fed_loan_type": {
+                      "const": "other-consumer"
+                    },
+                    "series_id": {
+                      "const": "CONOTH"
+                    },
+                    "link": {
+                      "type": "string",
+                      "enum": [
+                        "probit",
+                        "logit"
+                      ]
+                    },
+                    "fit_window": {
+                      "properties": {
+                        "start": {
+                          "const": "1985-03-31"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
             },
             "minItems": 5,
             "maxItems": 5,
@@ -34115,8 +34549,9 @@
                       },
                       "rate": {
                         "type": "number",
-                        "exclusiveMinimum": 0,
-                        "exclusiveMaximum": 1
+                        "exclusiveMinimum": -1,
+                        "exclusiveMaximum": 1,
+                        "description": "A net charge-off rate as a decimal. Signed: net recoveries make a rate zero or negative (the Board's table holds both)."
                       }
                     }
                   },
@@ -34327,13 +34762,11 @@
           },
           "capital_clp_m": {
             "type": "number",
-            "minimum": 0,
-            "description": "Money in CLP millions, not below zero."
+            "description": "Money in CLP millions. Signed on the lower-bound row only: the best VaR less the sum of the expected losses can be negative (Table 4 of the authors' paper, d = 56); every other row is not below zero."
           },
           "diversification_factor": {
             "type": "number",
-            "minimum": 0,
-            "description": "DF = capital of the row over the simple sum of the marginals."
+            "description": "DF = capital of the row over the simple sum of the marginals; signed on the lower-bound row only."
           },
           "status": {
             "type": "string",
@@ -34492,8 +34925,157 @@
                 }
               }
             }
+          },
+          {
+            "if": {
+              "properties": {
+                "method": {
+                  "const": "simple-sum"
+                }
+              },
+              "required": [
+                "method"
+              ]
+            },
+            "then": {
+              "properties": {
+                "capital_clp_m": {
+                  "minimum": 0
+                },
+                "diversification_factor": {
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "method": {
+                  "const": "variance-covariance"
+                }
+              },
+              "required": [
+                "method"
+              ]
+            },
+            "then": {
+              "properties": {
+                "capital_clp_m": {
+                  "minimum": 0
+                },
+                "diversification_factor": {
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "method": {
+                  "const": "gaussian-copula"
+                }
+              },
+              "required": [
+                "method"
+              ]
+            },
+            "then": {
+              "properties": {
+                "capital_clp_m": {
+                  "minimum": 0
+                },
+                "diversification_factor": {
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "method": {
+                  "const": "t-copula"
+                }
+              },
+              "required": [
+                "method"
+              ]
+            },
+            "then": {
+              "properties": {
+                "capital_clp_m": {
+                  "minimum": 0
+                },
+                "diversification_factor": {
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "method": {
+                  "const": "worst-case"
+                }
+              },
+              "required": [
+                "method"
+              ]
+            },
+            "then": {
+              "properties": {
+                "capital_clp_m": {
+                  "minimum": 0
+                },
+                "diversification_factor": {
+                  "minimum": 0
+                }
+              }
+            }
           }
         ]
+      },
+      "c18C17Set": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "document",
+          "variant_id",
+          "tail_index",
+          "infinite_mean",
+          "assets_eur_bn"
+        ],
+        "properties": {
+          "document": {
+            "const": "C17 models-generator"
+          },
+          "variant_id": {
+            "type": "string",
+            "enum": [
+              "xi-0-6",
+              "xi-0-8",
+              "xi-0-96",
+              "xi-1-1"
+            ]
+          },
+          "tail_index": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "The GPD tail index xi of the severity of the variant."
+          },
+          "infinite_mean": {
+            "type": "boolean"
+          },
+          "assets_eur_bn": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "The stated assets of the C17 synthetic bank, EUR billions."
+          }
+        },
+        "description": "The C17 generator parameter set the operational marginal is recomputed from (decision Q5): the variant of the C17 models-generator document (docs/contracts/schemas/c17/models.schema.json), its tail index and whether its severity has an infinite mean (xi of 1 or more)."
       },
       "c18CapRow": {
         "type": "object",
@@ -34911,9 +35493,9 @@
                 },
                 "rate": {
                   "type": "number",
-                  "exclusiveMinimum": 0,
+                  "exclusiveMinimum": -1,
                   "exclusiveMaximum": 1,
-                  "description": "Annualised loss rate of the class as a decimal."
+                  "description": "Annualised loss rate of the class as a decimal, signed like the rates it mixes."
                 }
               }
             },
@@ -34988,6 +35570,84 @@
           }
         },
         "description": "The same aggregation under the stressed correlation matrix."
+      },
+      "c18DerivedAssets": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "value",
+          "unit",
+          "label",
+          "basis",
+          "derivation"
+        ],
+        "properties": {
+          "name": {
+            "const": "asset_scaling"
+          },
+          "value": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "unit": {
+            "const": "Banco Andino assets over the assets of the C17 bank"
+          },
+          "label": {
+            "type": "string",
+            "enum": [
+              "convention",
+              "case assumption"
+            ],
+            "description": "Every named parameter is a convention or an assumption of the case, never a regulatory value."
+          },
+          "basis": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "derivation": {
+            "$ref": "#/components/schemas/c18AssetDerivation"
+          }
+        },
+        "description": "The asset scaling of the C17 generator frequency, derived at bake time; the contract fixes no number."
+      },
+      "c18DerivedFx": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "value",
+          "unit",
+          "label",
+          "basis",
+          "derivation"
+        ],
+        "properties": {
+          "name": {
+            "const": "operational_conversion_rate"
+          },
+          "value": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "unit": {
+            "const": "CLP per EUR"
+          },
+          "label": {
+            "type": "string",
+            "enum": [
+              "convention",
+              "case assumption"
+            ],
+            "description": "Every named parameter is a convention or an assumption of the case, never a regulatory value."
+          },
+          "basis": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "derivation": {
+            "$ref": "#/components/schemas/c18FxDerivation"
+          }
+        },
+        "description": "The EUR to CLP rate of the as-of date, derived at bake time from a stated public source; the contract fixes no number."
       },
       "c18Diversification": {
         "type": "object",
@@ -35632,6 +36292,44 @@
         },
         "description": "A fit window: ISO quarter ends from 1985 to 2019. A window that reaches 2020 or later does not match."
       },
+      "c18FxDerivation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "pair",
+          "observation_date",
+          "source",
+          "source_url",
+          "source_series"
+        ],
+        "properties": {
+          "kind": {
+            "const": "observed-exchange-rate"
+          },
+          "pair": {
+            "const": "EUR/CLP"
+          },
+          "observation_date": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
+            "description": "An ISO date."
+          },
+          "source": {
+            "const": "Banco Central de Chile, Base de Datos Estadisticos, daily exchange rate of the euro in Chilean pesos",
+            "description": "The stated public source of the rate; the series id the bake reads is recorded in source_series (not named here: UNVERIFIED)."
+          },
+          "source_url": {
+            "const": "https://si3.bcentral.cl/Siete/es/Siete/API"
+          },
+          "source_series": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The BDE series id the bake read."
+          }
+        },
+        "description": "How the rate is derived at bake time: the observed EUR to CLP rate of the as-of date."
+      },
       "c18Headline": {
         "type": "object",
         "additionalProperties": false,
@@ -35938,9 +36636,12 @@
           "horizon_years",
           "confidence_level",
           "el_clp_m",
+          "el_status",
           "var_clp_m",
           "es_clp_m",
           "ec_clp_m",
+          "ec_basis",
+          "ec_label",
           "var_se_clp_m",
           "producer",
           "source_documents",
@@ -35965,9 +36666,24 @@
             "description": "One confidence level for every marginal: 99.9 percent, as a decimal (decision Q5)."
           },
           "el_clp_m": {
-            "type": "number",
-            "minimum": 0,
-            "description": "Money in CLP millions, not below zero."
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "description": "Money in CLP millions, not below zero."
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The expected loss; null exactly when the severity has an infinite mean (el_status undefined)."
+          },
+          "el_status": {
+            "type": "string",
+            "enum": [
+              "finite",
+              "undefined (infinite mean)"
+            ]
           },
           "var_clp_m": {
             "type": "number",
@@ -35983,6 +36699,24 @@
             "type": "number",
             "minimum": 0,
             "description": "Money in CLP millions, not below zero."
+          },
+          "ec_basis": {
+            "type": "string",
+            "enum": [
+              "var-less-el",
+              "var-alone-infinite-mean"
+            ]
+          },
+          "ec_label": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/common-text"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The label of an EC that is the VaR alone (an infinite-mean severity); null on the EC = VaR - EL basis."
           },
           "var_se_clp_m": {
             "anyOf": [
@@ -36028,14 +36762,27 @@
               "parameters": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/c18Named"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/c18Named"
+                    },
+                    {
+                      "$ref": "#/components/schemas/c18MarketScaling"
+                    },
+                    {
+                      "$ref": "#/components/schemas/c18DerivedFx"
+                    },
+                    {
+                      "$ref": "#/components/schemas/c18DerivedAssets"
+                    }
+                  ]
                 }
               }
             },
             "description": "How the source was scaled to Banco Andino: a statement and every scaling parameter named with its label."
           }
         },
-        "description": "One marginal at one horizon and one confidence level (decision Q5): its expected loss, VaR, ES and EC = VaR - EL, its source and its scaling.",
+        "description": "One marginal at one horizon and one confidence level (decision Q5): its expected loss, VaR, ES and EC = VaR - EL (or the VaR alone when the expected loss is undefined), its source and its scaling.",
         "oneOf": [
           {
             "properties": {
@@ -36054,6 +36801,38 @@
               },
               "producer": {
                 "const": "market-c11-mixed-portfolio-scaled-to-market-rwa"
+              },
+              "scaling": {
+                "properties": {
+                  "parameters": {
+                    "allOf": [
+                      {
+                        "contains": {
+                          "properties": {
+                            "name": {
+                              "const": "market_rwa_share"
+                            }
+                          },
+                          "required": [
+                            "name"
+                          ]
+                        }
+                      },
+                      {
+                        "contains": {
+                          "properties": {
+                            "name": {
+                              "const": "market_horizon_scaling"
+                            }
+                          },
+                          "required": [
+                            "name"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
               }
             }
           },
@@ -36074,6 +36853,95 @@
               },
               "producer": {
                 "const": "operational-oprisk-aggregate-c17-parameters-scaled"
+              },
+              "scaling": {
+                "properties": {
+                  "parameters": {
+                    "allOf": [
+                      {
+                        "contains": {
+                          "properties": {
+                            "name": {
+                              "const": "asset_scaling"
+                            }
+                          },
+                          "required": [
+                            "name"
+                          ]
+                        }
+                      },
+                      {
+                        "contains": {
+                          "properties": {
+                            "name": {
+                              "const": "operational_conversion_rate"
+                            }
+                          },
+                          "required": [
+                            "name"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "el_status": {
+                  "const": "finite"
+                }
+              },
+              "required": [
+                "el_status"
+              ]
+            },
+            "then": {
+              "properties": {
+                "el_clp_m": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "Money in CLP millions, not below zero."
+                },
+                "ec_basis": {
+                  "const": "var-less-el"
+                },
+                "ec_label": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "el_status": {
+                  "const": "undefined (infinite mean)"
+                }
+              },
+              "required": [
+                "el_status"
+              ]
+            },
+            "then": {
+              "properties": {
+                "risk": {
+                  "const": "operational"
+                },
+                "el_clp_m": {
+                  "type": "null"
+                },
+                "ec_basis": {
+                  "const": "var-alone-infinite-mean"
+                },
+                "ec_label": {
+                  "$ref": "#/components/schemas/common-text"
+                }
               }
             }
           }
@@ -36086,7 +36954,8 @@
           "risk",
           "producer",
           "description",
-          "documents"
+          "documents",
+          "c17_parameter_set"
         ],
         "properties": {
           "risk": {
@@ -36117,6 +36986,17 @@
               "minLength": 1
             },
             "minItems": 1
+          },
+          "c17_parameter_set": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c18C17Set"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Operational only: the C17 parameter set; null for the other risks."
           }
         },
         "oneOf": [
@@ -36127,6 +37007,9 @@
               },
               "producer": {
                 "const": "credit-grouped-copula-c07-segments"
+              },
+              "c17_parameter_set": {
+                "type": "null"
               }
             }
           },
@@ -36137,6 +37020,9 @@
               },
               "producer": {
                 "const": "market-c11-mixed-portfolio-scaled-to-market-rwa"
+              },
+              "c17_parameter_set": {
+                "type": "null"
               }
             }
           },
@@ -36147,6 +37033,9 @@
               },
               "producer": {
                 "const": "irrbb-engine-simulation-c15-curve-and-book"
+              },
+              "c17_parameter_set": {
+                "type": "null"
               }
             }
           },
@@ -36157,10 +37046,67 @@
               },
               "producer": {
                 "const": "operational-oprisk-aggregate-c17-parameters-scaled"
+              },
+              "c17_parameter_set": {
+                "$ref": "#/components/schemas/c18C17Set"
               }
             }
           }
         ]
+      },
+      "c18MarketScaling": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "value",
+          "unit",
+          "label",
+          "basis",
+          "source_confidence_level",
+          "source_horizon_days",
+          "trading_days_per_year",
+          "level_factor",
+          "horizon_factor"
+        ],
+        "properties": {
+          "name": {
+            "const": "market_horizon_scaling"
+          },
+          "value": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "The combined multiplier: the level factor times the horizon factor."
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "const": "convention"
+          },
+          "basis": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "source_confidence_level": {
+            "const": 0.99,
+            "description": "C11's mixed-portfolio measure is at 99 percent (docs/contracts/schemas/c11/models.schema.json)."
+          },
+          "source_horizon_days": {
+            "const": 1,
+            "description": "C11's measure is a one-day measure."
+          },
+          "trading_days_per_year": {
+            "const": 250
+          },
+          "level_factor": {
+            "$ref": "#/components/schemas/c18NamedConvention"
+          },
+          "horizon_factor": {
+            "$ref": "#/components/schemas/c18NamedConvention"
+          }
+        },
+        "description": "The market marginal's conversion from C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 and the square root of 250, both named conventions (W4), and the combined multiplier."
       },
       "c18Mitigation": {
         "type": "object",
@@ -36270,8 +37216,7 @@
               },
               "rho_min_clp_m": {
                 "type": "number",
-                "minimum": 0,
-                "description": "Money in CLP millions, not below zero."
+                "description": "Money in CLP millions."
               },
               "am": {
                 "type": "number",
@@ -36358,6 +37303,37 @@
           }
         },
         "description": "A named parameter: a required name, value and unit, the label convention or case assumption, and the basis it was taken from."
+      },
+      "c18NamedConvention": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "value",
+          "unit",
+          "label",
+          "basis"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "const": "convention"
+          },
+          "basis": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "A named parameter that is a convention by definition (the market level and horizon factors)."
       },
       "c18NamedMatrix": {
         "type": "object",
@@ -36457,16 +37433,16 @@
             "$ref": "#/components/schemas/c18Named"
           },
           "operational_conversion_rate": {
-            "$ref": "#/components/schemas/c18Named"
+            "$ref": "#/components/schemas/c18DerivedFx"
           },
           "asset_scaling": {
-            "$ref": "#/components/schemas/c18Named"
+            "$ref": "#/components/schemas/c18DerivedAssets"
           },
           "market_rwa_share": {
             "$ref": "#/components/schemas/c18Named"
           },
           "market_horizon_scaling": {
-            "$ref": "#/components/schemas/c18Named"
+            "$ref": "#/components/schemas/c18MarketScaling"
           },
           "reverse_p2_cet1": {
             "$ref": "#/components/schemas/c18Named"
@@ -36581,6 +37557,7 @@
           "p2g_proxy",
           "annex3",
           "headline_cet1",
+          "severity",
           "backcast",
           "aggregation"
         ],
@@ -36623,6 +37600,9 @@
           },
           "headline_cet1": {
             "$ref": "#/components/schemas/c18Headline"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/c18Severity"
           },
           "backcast": {
             "$ref": "#/components/schemas/c18Backcast"
@@ -37137,7 +38117,7 @@
             "$ref": "#/components/schemas/common-text"
           }
         },
-        "description": "The window where the NGFS policy shock acts: three calendar years, transposed onto the jump-off."
+        "description": "The window where the NGFS policy shock acts: 2031 to 2033 for the delayed transition (F8 of the research addendum), transposed onto the jump-off."
       },
       "c18QPoint": {
         "type": "object",
@@ -37605,6 +38585,7 @@
           "series_id",
           "link",
           "sample_window",
+          "non_positive_quarters_in_window",
           "ar_order",
           "n_obs",
           "regressors",
@@ -37641,11 +38622,17 @@
             "type": "string",
             "enum": [
               "probit",
-              "logit"
+              "logit",
+              "identity"
             ]
           },
           "sample_window": {
             "$ref": "#/components/schemas/c18FitWindow"
+          },
+          "non_positive_quarters_in_window": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "The number of quarters of the fit window whose rate is zero or negative (net recoveries): a probit or logit fit needs none, the identity link takes them as they are."
           },
           "ar_order": {
             "type": "integer",
@@ -37693,7 +38680,7 @@
             "const": "ols-numpy-with-standard-errors"
           }
         },
-        "description": "One satellite: g(DR_t) = alpha + sum phi_k g(DR_(t-k)) + sum beta_l' X_(t-l) + e, fitted by OLS on 1985-2019 (04 l.785-795).",
+        "description": "One satellite: g(DR_t) = alpha + sum phi_k g(DR_(t-k)) + sum beta_l' X_(t-l) + e, fitted by OLS (04 l.785-795); g is the probit for C&I, credit cards and other consumer, and the identity for RECI and RERES, whose windows hold non-positive quarters (the linear form of the Federal Reserve's own PD regression, 05 l.399). The window ends in 2019 at the latest and starts at the first quarter the Board publishes.",
         "oneOf": [
           {
             "properties": {
@@ -37702,6 +38689,23 @@
               },
               "series_id": {
                 "const": "CI"
+              },
+              "link": {
+                "type": "string",
+                "enum": [
+                  "probit",
+                  "logit"
+                ]
+              },
+              "sample_window": {
+                "properties": {
+                  "start": {
+                    "const": "1985-03-31"
+                  }
+                }
+              },
+              "non_positive_quarters_in_window": {
+                "const": 0
               }
             }
           },
@@ -37712,6 +38716,16 @@
               },
               "series_id": {
                 "const": "RECI"
+              },
+              "link": {
+                "const": "identity"
+              },
+              "sample_window": {
+                "properties": {
+                  "start": {
+                    "const": "1991-03-31"
+                  }
+                }
               }
             }
           },
@@ -37722,6 +38736,16 @@
               },
               "series_id": {
                 "const": "RERES"
+              },
+              "link": {
+                "const": "identity"
+              },
+              "sample_window": {
+                "properties": {
+                  "start": {
+                    "const": "1991-03-31"
+                  }
+                }
               }
             }
           },
@@ -37732,6 +38756,23 @@
               },
               "series_id": {
                 "const": "CONCC"
+              },
+              "link": {
+                "type": "string",
+                "enum": [
+                  "probit",
+                  "logit"
+                ]
+              },
+              "sample_window": {
+                "properties": {
+                  "start": {
+                    "const": "1985-03-31"
+                  }
+                }
+              },
+              "non_positive_quarters_in_window": {
+                "const": 0
               }
             }
           },
@@ -37742,6 +38783,23 @@
               },
               "series_id": {
                 "const": "CONOTH"
+              },
+              "link": {
+                "type": "string",
+                "enum": [
+                  "probit",
+                  "logit"
+                ]
+              },
+              "sample_window": {
+                "properties": {
+                  "start": {
+                    "const": "1985-03-31"
+                  }
+                }
+              },
+              "non_positive_quarters_in_window": {
+                "const": 0
               }
             }
           }
@@ -37786,7 +38844,8 @@
             "type": "string",
             "enum": [
               "probit",
-              "logit"
+              "logit",
+              "identity"
             ]
           },
           "quarters": {
@@ -37807,13 +38866,13 @@
                 },
                 "rate": {
                   "type": "number",
-                  "exclusiveMinimum": 0,
+                  "exclusiveMinimum": -1,
                   "exclusiveMaximum": 1,
-                  "description": "Annualised net charge-off rate as a decimal."
+                  "description": "A net charge-off rate as a decimal. Signed: net recoveries make a rate zero or negative (the Board's table holds both)."
                 },
                 "link_value": {
                   "type": "number",
-                  "description": "g(rate): the probit or logit of the rate."
+                  "description": "g(rate): the probit or logit of the rate; the rate itself on the identity link."
                 }
               }
             },
@@ -37821,7 +38880,7 @@
             "maxItems": 12
           }
         },
-        "description": "The projection of one Fed loan type over the 12 quarters of the horizon.",
+        "description": "The projection of one Fed loan type over the 12 quarters of the horizon. On the probit link the rate is in (0, 1); on the identity link (RECI and RERES) it is signed and may be non-positive, read as net recoveries.",
         "oneOf": [
           {
             "properties": {
@@ -37830,6 +38889,23 @@
               },
               "series_id": {
                 "const": "CI"
+              },
+              "link": {
+                "type": "string",
+                "enum": [
+                  "probit",
+                  "logit"
+                ]
+              },
+              "quarters": {
+                "items": {
+                  "properties": {
+                    "rate": {
+                      "exclusiveMinimum": 0,
+                      "exclusiveMaximum": 1
+                    }
+                  }
+                }
               }
             }
           },
@@ -37840,6 +38916,9 @@
               },
               "series_id": {
                 "const": "RECI"
+              },
+              "link": {
+                "const": "identity"
               }
             }
           },
@@ -37850,6 +38929,9 @@
               },
               "series_id": {
                 "const": "RERES"
+              },
+              "link": {
+                "const": "identity"
               }
             }
           },
@@ -37860,6 +38942,23 @@
               },
               "series_id": {
                 "const": "CONCC"
+              },
+              "link": {
+                "type": "string",
+                "enum": [
+                  "probit",
+                  "logit"
+                ]
+              },
+              "quarters": {
+                "items": {
+                  "properties": {
+                    "rate": {
+                      "exclusiveMinimum": 0,
+                      "exclusiveMaximum": 1
+                    }
+                  }
+                }
               }
             }
           },
@@ -37870,6 +38969,23 @@
               },
               "series_id": {
                 "const": "CONOTH"
+              },
+              "link": {
+                "type": "string",
+                "enum": [
+                  "probit",
+                  "logit"
+                ]
+              },
+              "quarters": {
+                "items": {
+                  "properties": {
+                    "rate": {
+                      "exclusiveMinimum": 0,
+                      "exclusiveMaximum": 1
+                    }
+                  }
+                }
               }
             }
           }
@@ -38137,6 +39253,9 @@
             },
             "then": {
               "properties": {
+                "provider": {
+                  "const": "fed"
+                },
                 "policy_shock_window": {
                   "type": "null"
                 }
@@ -38160,7 +39279,15 @@
                   "const": "ngfs"
                 },
                 "policy_shock_window": {
-                  "$ref": "#/components/schemas/c18PolicyWindow"
+                  "$ref": "#/components/schemas/c18PolicyWindow",
+                  "properties": {
+                    "start_year": {
+                      "const": 2031
+                    },
+                    "end_year": {
+                      "const": 2033
+                    }
+                  }
                 }
               }
             }
@@ -38268,6 +39395,143 @@
             "type": "number"
           }
         }
+      },
+      "c18Severity": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reference_episode",
+          "minimum_ratio",
+          "rows"
+        ],
+        "properties": {
+          "reference_episode": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "start",
+              "end",
+              "source"
+            ],
+            "properties": {
+              "name": {
+                "const": "global-financial-crisis"
+              },
+              "start": {
+                "type": "string",
+                "pattern": "^[0-9]{4}-(03-31|06-30|09-30|12-31)$",
+                "description": "A quarter end as an ISO date."
+              },
+              "end": {
+                "type": "string",
+                "pattern": "^[0-9]{4}-(03-31|06-30|09-30|12-31)$",
+                "description": "A quarter end as an ISO date."
+              },
+              "source": {
+                "$ref": "#/components/schemas/common-text"
+              }
+            },
+            "description": "The history the severity of each path is read against: 2008 to 2009 (05 l.422), peaks read by the bake from the Board's historic table."
+          },
+          "minimum_ratio": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "The amber threshold of stress.scenario_severity: a stress path is at least this share of the historical peak (a policy parameter)."
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "variable",
+                "maps_to_regressor",
+                "unit",
+                "path_peak_deviation",
+                "path_peak_quarter",
+                "history_peak_deviation",
+                "history_window",
+                "history_source",
+                "ratio",
+                "is_stress"
+              ],
+              "properties": {
+                "variable": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The scenario path variable, as named in scenario.paths."
+                },
+                "maps_to_regressor": {
+                  "type": "string",
+                  "enum": [
+                    "real_gdp_growth",
+                    "unemployment_rate",
+                    "cpi_inflation",
+                    "treasury_3m",
+                    "treasury_5y",
+                    "treasury_10y",
+                    "mortgage_rate",
+                    "prime_rate"
+                  ]
+                },
+                "unit": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "path_peak_deviation": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "max over the transposed quarters of the absolute deviation from the jump-off value (the target)."
+                },
+                "path_peak_quarter": {
+                  "type": "string",
+                  "pattern": "^[0-9]{4}-(03-31|06-30|09-30|12-31)$",
+                  "description": "A quarter end as an ISO date."
+                },
+                "history_peak_deviation": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "description": "The same deviation in the reference episode."
+                },
+                "history_window": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "start",
+                    "end"
+                  ],
+                  "properties": {
+                    "start": {
+                      "type": "string",
+                      "pattern": "^[0-9]{4}-(03-31|06-30|09-30|12-31)$",
+                      "description": "A quarter end as an ISO date."
+                    },
+                    "end": {
+                      "type": "string",
+                      "pattern": "^[0-9]{4}-(03-31|06-30|09-30|12-31)$",
+                      "description": "A quarter end as an ISO date."
+                    }
+                  }
+                },
+                "history_source": {
+                  "$ref": "#/components/schemas/common-text"
+                },
+                "ratio": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "path_peak_deviation / history_peak_deviation."
+                },
+                "is_stress": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "minItems": 1,
+            "description": "One row per scenario path variable, in the order of scenario.paths."
+          }
+        },
+        "description": "The severity of each path against history (dossier 05 l.422; sizing view U13-W): the path peak, the global financial crisis peak with its quarters and source, their ratio and whether the path is a stress."
       },
       "c18Solution": {
         "type": "object",
