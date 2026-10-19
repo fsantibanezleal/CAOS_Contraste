@@ -946,7 +946,13 @@ def row_cells(row: str) -> list[str]:
 
 
 def fragment_rows() -> dict[str, list[str]]:
-    text = ROWS.read_text(encoding="utf-8")
+    # merged at the batch 3 integration (task/0-13-000-wave2, 2026-10-19): the fragment is gone and the rows live in
+    # the catalog's Contracts table; read the fragment while it exists, the catalog after
+    if ROWS.is_file():
+        text = ROWS.read_text(encoding="utf-8")
+    else:
+        catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
+        text = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0]
     header = next(ln for ln in text.splitlines() if ln.startswith("| id | version"))
     assert row_cells(header) == ["id", "version", "owner", "schema file", "example", "producer test", "consumer test",
                                  "missing-data behavior", "provider", "model io", "swap test", "status"]
@@ -983,11 +989,21 @@ def test_the_rows_fragment_has_the_four_rows_in_the_catalog_columns_and_every_ci
 
 def test_the_rows_fragment_carries_no_row_already_in_the_catalog_and_names_the_family_bump_for_the_integrator() -> None:
     catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
-    existing = {row_cells(ln)[0] for ln in catalog.splitlines() if ln.startswith("| ")}
-    for rid in ROW_IDS:
-        assert rid not in existing, rid
-    text = ROWS.read_text(encoding="utf-8")
-    assert "contract-family" in text and "1.1.0" in text and "integrator" in text
+    if ROWS.is_file():
+        existing = {row_cells(ln)[0] for ln in catalog.splitlines() if ln.startswith("| ")}
+        for rid in ROW_IDS:
+            assert rid not in existing, rid
+        text = ROWS.read_text(encoding="utf-8")
+        assert "contract-family" in text and "1.1.0" in text and "integrator" in text
+    else:
+        # merged at the batch 3 integration: each row is in the Contracts table exactly once, and the integrator moved
+        # the contract-family row (at least 1.1.0, the balance_sheet bump) and recorded it in History
+        contracts = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0]
+        ids = [ln.split("|")[1].strip() for ln in contracts.splitlines() if ln.startswith("| ")]
+        assert all(ids.count(i) == 1 for i in ROW_IDS), [i for i in ROW_IDS if ids.count(i) != 1]
+        family = next(row_cells(ln) for ln in contracts.splitlines() if ln.startswith("| contract-family |"))
+        assert tuple(int(x) for x in family[1].split(".")) >= (1, 1, 0), family[1]
+        assert "| contract-family | 1.1.0 |" in catalog
     assert "missing" in fragment_rows()["c16-outputs"][7] or "partial" in fragment_rows()["c16-outputs"][7]
 
 
