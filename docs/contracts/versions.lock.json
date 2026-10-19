@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "7.0.0",
+    "version": "8.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "59ed3ded65bf83cff6c8e5c6d7877e113947234be5eeda78711776131dbce197"
+    "sha256": "f1fd6e690da2287805c330aec11a714fe79a382c733ffb13536b4fb8134b010c"
   },
   "readiness": {
     "version": "1.0.0",
@@ -275,9 +275,9 @@
     "sha256": "4d793e51262ef244710e323f609da2b0a82edffc24e2fa42e0b5ccec347c7b8c"
   },
   "c16-outputs-reverse": {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "schema": "docs/contracts/schemas/c16/variant-reverse.schema.json",
-    "sha256": "efeb5133ec93e95bd03e8fe35bf680e0b49ff90ed9b1d389ad45013400598497"
+    "sha256": "c742ef05e5a03e63ce3ff26819b123a092f805d10d2188a329d58bde638d42e5"
   },
   "c16-models": {
     "version": "1.0.0",
@@ -285,9 +285,9 @@
     "sha256": "28cb79c4ad81bee24e63714b2e8c0e7dab3e5dd7138bea01caac2d700f8bd22f"
   },
   "engine-liquidity-api": {
-    "version": "1.1.0",
+    "version": "1.2.0",
     "schema": "docs/contracts/engine/liquidity-api.md",
-    "sha256": "de5364f57fd5c939e2ab603242c2fc51e03443d72088b9bf920dae2905389188"
+    "sha256": "b3dffb40d35f2f42237b4172aae8b1135056ce562a539f24aed5472e92eda56a"
   },
   "c02-outputs": {
     "version": "1.0.0",
@@ -348,5 +348,60 @@
     "version": "1.0.0",
     "schema": "docs/contracts/engine/fairness-api.md",
     "sha256": "ba26f43f2900d038bfaab59085bc069e226a1b88b7542b08434fd7702418639f"
+  },
+  "c18-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c18/variant-scenario.schema.json",
+    "sha256": "a7b4d25d01b049886b1b1399b0b54352f14278f9f98eaed6fd04b9ce17e1e952"
+  },
+  "c18-outputs-aggregation": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c18/variant-aggregation.schema.json",
+    "sha256": "33f07e49a60c5122bc4a55d5217a371c5156368f4795f2cf9a51fd2a04c0d728"
+  },
+  "c18-outputs-reverse": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c18/variant-reverse.schema.json",
+    "sha256": "119980489deba24a4b7bff6854dda49e3eb561edbc5b0920f541dd4bae507f95"
+  },
+  "c18-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c18/models.schema.json",
+    "sha256": "6a6c4117660f06e65907ab78e24c96fd93bcea6b38dfb8de8220750ff06a87f9"
+  },
+  "engine-aggregation-api": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/engine/aggregation-api.md",
+    "sha256": "a4b93eee5807e2a95c6837e8d4a094a20c67393be99a6b37c545666483e2e652"
+  },
+  "engine-stress-api": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/engine/stress-api.md",
+    "sha256": "c650e9d48edb65212a373572fb1f0d9a396a2f5189a9210341464914ab23210c"
+  },
+  "c12-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c12/variant-swap-exposure.schema.json",
+    "sha256": "7a046f4fa48b5059e5049f98dac8c99c539f0dd86868884fd10a430bb419035c"
+  },
+  "c12-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c12/models.schema.json",
+    "sha256": "9a2988050a173dc98aa1001385864480ba6e7d264ca35092501c02508c7c3d0e"
+  },
+  "regulatory-calculators": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/regulatory/calculators.schema.json",
+    "sha256": "97b6f7bf06ae540821aa57d91fadbbd820e385ea32524f0bbb081319c0f5a749"
+  },
+  "engine-regulatory-api": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/engine/regulatory-api.md",
+    "sha256": "3850112a1f06e35650bc67e46c1f678d92adcd9a286f276dbdc36b31c0626a01"
+  },
+  "engine-ccr-api": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/engine/ccr-api.md",
+    "sha256": "c4e7a74730641c174c015b973bfaa0f7b247b7c39f43d49ebcf6dfd6b3bc7fa6"
   }
 }

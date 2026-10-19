@@ -623,8 +623,12 @@ def check_reverse(doc: dict) -> list[str]:
             rep.need(1.0 <= sol["multiplier"] <= b["max_multiplier"] + 1e-12, f"{b['base_id']}: the solved multiplier is beyond the cap")
             rep.need(sol["round_trip_error"] is not None and close(sol["round_trip_error"], sol["survival_at_multiplier"] - target, tol=1e-9),
                      f"{b['base_id']}: round trip: round_trip_error is not survival_at_multiplier minus the target")
-            rep.need(abs(sol["survival_at_multiplier"] - target) <= tol + 1e-12,
-                     f"{b['base_id']}: round trip: the survival at the solved multiplier is not the target within the tolerance")
+            # engine-liquidity-api 1.2.0 (U11 decision X1): the solved multiplier is the threshold, so the survival there is at
+            # most the target (below it when SP(m) steps past the target) and no cheaper curve point already reaches it
+            rep.need(sol["survival_at_multiplier"] <= target + tol + 1e-12,
+                     f"{b['base_id']}: round trip: the survival at the solved multiplier is above the target")
+            rep.need(all(survival_key(p["survival"]) > target for p in curve if p["multiplier"] < sol["multiplier"] - 1e-9),
+                     f"{b['base_id']}: round trip: a curve point below the solved multiplier already reaches the target")
             first = next((p for p in curve if survival_key(p["survival"]) <= target), None)
             if first is not None:
                 rep.need(sol["multiplier"] <= first["multiplier"] + 1e-12, f"{b['base_id']}: the solved multiplier is above the first curve point at the target")
