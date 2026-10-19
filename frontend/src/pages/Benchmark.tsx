@@ -206,6 +206,10 @@ export const NO_BENCHMARK: Record<string, { en: string; es: string }> = {
   },
   C14: IRRBB_REASON,
   C15: IRRBB_REASON,
+  C16: {
+    en: 'The liquidity case sets prescribed run-off scenarios (the LCR, the LiST Adverse and Extreme scenarios, a fast run) against one realised deposit run, not a champion with challengers; the scenarios and the March 2023 scoring are compared in the App.',
+    es: 'El caso de liquidez contrasta escenarios de salida de depósitos prescritos (el LCR, los escenarios Adverso y Extremo de LiST, una corrida rápida) con una corrida real, no un campeón con retadores; los escenarios y la evaluación de marzo de 2023 se comparan en la App.',
+  },
 };
 
 export function Benchmark() {
