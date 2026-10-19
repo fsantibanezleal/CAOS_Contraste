@@ -1,0 +1,484 @@
+{
+  "schema": "contraste.case/v1",
+  "case_id": "C21",
+  "variant_id": "fixture-2018-19",
+  "model": [
+    {
+      "id": "fixture-p1",
+      "family": "ml",
+      "rung": "P1",
+      "title": {
+        "en": "Fixture model fixture-p1",
+        "es": "Fixture model fixture-p1"
+      },
+      "short_title": {
+        "en": "fixture-p1",
+        "es": "fixture-p1"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    }
+  ],
+  "outputs": {
+    "kind": "year-pair",
+    "pair_id": "2018-19",
+    "fit_year": 2018,
+    "confirm_year": 2019,
+    "scope": {
+      "state": "fixture-state",
+      "source": "fixture-not-a-result",
+      "rows_fit": 2000,
+      "rows_confirm": 2100
+    },
+    "legal": {
+      "label": {
+        "en": "no legal claim",
+        "es": "sin afirmacion legal"
+      },
+      "regulation_b": {
+        "citation": "12 CFR 1002.6(a), as amended at 91 FR 21668 (2026-04-22, effective 2026-07-21)",
+        "quote": "The Act does not provide that the 'effects test' applies for determining whether there is discrimination in violation of the Act.",
+        "text": {
+          "en": "The Act does not provide that the 'effects test' applies for determining whether there is discrimination in violation of the Act.",
+          "es": "The Act does not provide that the 'effects test' applies for determining whether there is discrimination in violation of the Act."
+        }
+      },
+      "fair_housing_act": {
+        "citation": "91 FR 21620, recital of Texas Department of Housing & Community Affairs v. Inclusive Communities Project, Inc.",
+        "quote": "the Supreme Court held that disparate-impact claims are cognizable under the Fair Housing Act (FHA).",
+        "text": {
+          "en": "the Supreme Court held that disparate-impact claims are cognizable under the Fair Housing Act (FHA).",
+          "es": "the Supreme Court held that disparate-impact claims are cognizable under the Fair Housing Act (FHA)."
+        }
+      },
+      "procedures": {
+        "citation": "Interagency Fair Lending Examination Procedures, August 2009, appendix, printed page 26",
+        "quote": "Gross HMDA denial or approval rate disparities are not appropriate for disproportionate adverse impact analysis because they typically cannot be attributed to a specific policy or criterion.",
+        "text": {
+          "en": "Gross HMDA denial or approval rate disparities are not appropriate for disproportionate adverse impact analysis because they typically cannot be attributed to a specific policy or criterion.",
+          "es": "Gross HMDA denial or approval rate disparities are not appropriate for disproportionate adverse impact analysis because they typically cannot be attributed to a specific policy or criterion."
+        }
+      },
+      "unconditional_rates_are": "indicators-only",
+      "controlled_disparity_is": "approximation-of-comparative-evidence",
+      "is_a_finding_of_violation": false
+    },
+    "conventions": {
+      "label": "convention",
+      "outcome": {
+        "approval_codes": [
+          1,
+          2
+        ],
+        "denial_codes": [
+          3
+        ],
+        "excluded_codes": [
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "note": {
+          "en": "approval = originated or approved not accepted, denial = denied; the rest have no decision",
+          "es": "approval = originated or approved not accepted, denial = denied; the rest have no decision"
+        }
+      },
+      "dti_recode": {
+        "bins": [
+          "<20%",
+          "20%-<30%",
+          "30%-<36%",
+          "36",
+          "50%-60%",
+          ">60%"
+        ],
+        "note": {
+          "en": "The mixed exact and binned field is recoded to the published bins",
+          "es": "The mixed exact and binned field is recoded to the published bins"
+        }
+      },
+      "group_exclusion": {
+        "en": "Joint, Not Available and Free Form Text Only categories are excluded from the pairwise tests",
+        "es": "Joint, Not Available and Free Form Text Only categories are excluded from the pairwise tests"
+      }
+    },
+    "attributes": [
+      {
+        "field": "derived_sex",
+        "legal": {
+          "basis": "sex",
+          "ecoa": true,
+          "fha": true,
+          "theory": "comparative-evidence-of-disparate-treatment",
+          "note": {
+            "en": "Mapping taken from the research addendum H3 section 5; no legal claim",
+            "es": "Mapping taken from the research addendum H3 section 5; no legal claim"
+          }
+        },
+        "reference_group": "Male",
+        "groups": [
+          {
+            "group": "Male",
+            "n": 1000,
+            "n_approved": 880,
+            "n_denied": 120,
+            "selection_rate": 0.88
+          },
+          {
+            "group": "Female",
+            "n": 600,
+            "n_approved": 480,
+            "n_denied": 120,
+            "selection_rate": 0.8
+          }
+        ],
+        "excluded_groups": [
+          {
+            "group": "Joint",
+            "n": 50,
+            "reason": {
+              "en": "Not a protected group: carried as its own group, excluded from the pairwise tests",
+              "es": "Not a protected group: carried as its own group, excluded from the pairwise tests"
+            }
+          }
+        ],
+        "contrasts": [
+          {
+            "group": "Female",
+            "reference_group": "Male",
+            "n_group": 600,
+            "n_reference": 1000,
+            "selection_rate_group": 0.8,
+            "selection_rate_reference": 0.88,
+            "parity_gap": -0.07999999999999996,
+            "parity_ratio": 0.9090909090909092,
+            "adverse_impact_ratio": {
+              "value": 0.9090909090909092,
+              "four_fifths": {
+                "flag": false,
+                "threshold": 0.8,
+                "label": "employment benchmark",
+                "citation": "29 CFR 1607.4(D)",
+                "is_credit_law_threshold": false
+              },
+              "note": {
+                "en": "The four-fifths line is an employment benchmark, not a credit-law threshold",
+                "es": "The four-fifths line is an employment benchmark, not a credit-law threshold"
+              }
+            },
+            "z_test": {
+              "statistic": -4.3386091563731215,
+              "p_value": 1.4338726289171798e-05
+            },
+            "fisher_exact": {
+              "odds_ratio": 0.5454545454545454,
+              "p_value": 1.885961954010378e-05
+            },
+            "controlled": {
+              "estimate": {
+                "model": "logistic-decision-model",
+                "outcome": "approval",
+                "coefficient": -0.5,
+                "odds_ratio": 0.6065306597126334,
+                "ci": {
+                  "lo": -0.9,
+                  "hi": -0.1,
+                  "level": 0.95
+                },
+                "n": 1600,
+                "controls": [
+                  "debt_to_income_ratio",
+                  "combined_loan_to_value_ratio",
+                  "income",
+                  "loan_amount",
+                  "property_value",
+                  "loan_type"
+                ],
+                "missing_controls": [
+                  "credit_score"
+                ],
+                "label": "approximation of comparative evidence"
+              },
+              "reason": null
+            },
+            "rate_spread": {
+              "estimate": {
+                "model": "linear-rate-spread",
+                "population": "action_taken 1 or 2",
+                "coefficient": 0.1,
+                "ci": {
+                  "lo": 0.02,
+                  "hi": 0.18,
+                  "level": 0.95
+                },
+                "n": 1200,
+                "controls": [
+                  "debt_to_income_ratio",
+                  "combined_loan_to_value_ratio",
+                  "income",
+                  "loan_amount",
+                  "property_value",
+                  "loan_type"
+                ],
+                "missing_controls": [
+                  "credit_score"
+                ],
+                "label": "approximation of comparative evidence",
+                "unit": "percentage points of rate_spread"
+              },
+              "reason": null
+            },
+            "confirmation": {
+              "estimate": {
+                "fit_year": 2018,
+                "confirm_year": 2019,
+                "fit_coefficient": -0.5,
+                "confirm_coefficient": -0.4,
+                "same_sign": true,
+                "size_ratio": 0.8
+              },
+              "reason": null
+            }
+          }
+        ]
+      },
+      {
+        "field": "derived_race",
+        "legal": {
+          "basis": "race_color",
+          "ecoa": true,
+          "fha": true,
+          "theory": "comparative-evidence-of-disparate-treatment",
+          "note": {
+            "en": "Mapping taken from the research addendum H3 section 5; no legal claim",
+            "es": "Mapping taken from the research addendum H3 section 5; no legal claim"
+          }
+        },
+        "reference_group": "White",
+        "groups": [
+          {
+            "group": "White",
+            "n": 1000,
+            "n_approved": 880,
+            "n_denied": 120,
+            "selection_rate": 0.88
+          },
+          {
+            "group": "American Indian or Alaska Native",
+            "n": 600,
+            "n_approved": 480,
+            "n_denied": 120,
+            "selection_rate": 0.8
+          }
+        ],
+        "excluded_groups": [
+          {
+            "group": "Joint",
+            "n": 50,
+            "reason": {
+              "en": "Not a protected group: carried as its own group, excluded from the pairwise tests",
+              "es": "Not a protected group: carried as its own group, excluded from the pairwise tests"
+            }
+          }
+        ],
+        "contrasts": [
+          {
+            "group": "American Indian or Alaska Native",
+            "reference_group": "White",
+            "n_group": 600,
+            "n_reference": 1000,
+            "selection_rate_group": 0.8,
+            "selection_rate_reference": 0.88,
+            "parity_gap": -0.07999999999999996,
+            "parity_ratio": 0.9090909090909092,
+            "adverse_impact_ratio": {
+              "value": 0.9090909090909092,
+              "four_fifths": {
+                "flag": false,
+                "threshold": 0.8,
+                "label": "employment benchmark",
+                "citation": "29 CFR 1607.4(D)",
+                "is_credit_law_threshold": false
+              },
+              "note": {
+                "en": "The four-fifths line is an employment benchmark, not a credit-law threshold",
+                "es": "The four-fifths line is an employment benchmark, not a credit-law threshold"
+              }
+            },
+            "z_test": {
+              "statistic": -4.3386091563731215,
+              "p_value": 1.4338726289171798e-05
+            },
+            "fisher_exact": {
+              "odds_ratio": 0.5454545454545454,
+              "p_value": 1.885961954010378e-05
+            },
+            "controlled": {
+              "estimate": {
+                "model": "logistic-decision-model",
+                "outcome": "approval",
+                "coefficient": -0.5,
+                "odds_ratio": 0.6065306597126334,
+                "ci": {
+                  "lo": -0.9,
+                  "hi": -0.1,
+                  "level": 0.95
+                },
+                "n": 1600,
+                "controls": [
+                  "debt_to_income_ratio",
+                  "combined_loan_to_value_ratio",
+                  "income",
+                  "loan_amount",
+                  "property_value",
+                  "loan_type"
+                ],
+                "missing_controls": [
+                  "credit_score"
+                ],
+                "label": "approximation of comparative evidence"
+              },
+              "reason": null
+            },
+            "rate_spread": {
+              "estimate": {
+                "model": "linear-rate-spread",
+                "population": "action_taken 1 or 2",
+                "coefficient": 0.1,
+                "ci": {
+                  "lo": 0.02,
+                  "hi": 0.18,
+                  "level": 0.95
+                },
+                "n": 1200,
+                "controls": [
+                  "debt_to_income_ratio",
+                  "combined_loan_to_value_ratio",
+                  "income",
+                  "loan_amount",
+                  "property_value",
+                  "loan_type"
+                ],
+                "missing_controls": [
+                  "credit_score"
+                ],
+                "label": "approximation of comparative evidence",
+                "unit": "percentage points of rate_spread"
+              },
+              "reason": null
+            },
+            "confirmation": {
+              "estimate": {
+                "fit_year": 2018,
+                "confirm_year": 2019,
+                "fit_coefficient": -0.5,
+                "confirm_coefficient": -0.4,
+                "same_sign": true,
+                "size_ratio": 0.8
+              },
+              "reason": null
+            }
+          }
+        ]
+      }
+    ],
+    "situation_testing": {
+      "label": "situation-testing",
+      "comparator": "ceteris-paribus",
+      "counterfactual_test": {
+        "run": false,
+        "reason": {
+          "en": "Public HMDA gives no counterfactual dataset",
+          "es": "Public HMDA gives no counterfactual dataset"
+        }
+      },
+      "attribute": "derived_sex",
+      "k": 30,
+      "alpha": 0.05,
+      "tau": 0,
+      "centers": "excluded",
+      "interval": "one-sided Wald, equation (10) of arXiv 2502.01267",
+      "n_complainants": 600,
+      "n_cases": 80,
+      "n_significant": 20
+    },
+    "data_notes": [
+      {
+        "field": "debt_to_income_ratio",
+        "treatment": "binned",
+        "n_missing": null,
+        "reason": {
+          "en": "Binned outside 36 to 49 percent in the public release",
+          "es": "Binned outside 36 to 49 percent in the public release"
+        }
+      },
+      {
+        "field": "loan_amount",
+        "treatment": "rounded",
+        "n_missing": null,
+        "reason": {
+          "en": "Rounded to the midpoint of a $10,000 interval",
+          "es": "Rounded to the midpoint of a $10,000 interval"
+        }
+      }
+    ],
+    "requirements": [
+      "CT-2101"
+    ]
+  },
+  "tests": [
+    {
+      "test_id": "fair.demographic_parity",
+      "model_id": "fixture-p1",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    }
+  ],
+  "impact": {},
+  "findings": [],
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u14-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

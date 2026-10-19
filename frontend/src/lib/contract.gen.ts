@@ -279,6 +279,256 @@ export interface components {
             irb: components["schemas"]["c01Irb"];
         };
         /**
+         * C02 models
+         * @description Catalog row c02-models 1.0.0: the five Polish files, the ladder and the leakage-safe protocol.
+         */
+        "c02-models": components["schemas"]["common-models-envelope"] & {
+            /** @constant */
+            case_id: "C02";
+            fit: components["schemas"]["c02Fit"];
+        };
+        /**
+         * C02 horizon variant
+         * @description Catalog row c02-outputs 1.0.0: one horizon file (1 to 5 years) or the pooled variant of the corporate PD case (outputs.kind horizon).
+         */
+        "c02-variant-horizon": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C02";
+            outputs: components["schemas"]["c02Outputs"];
+        } & {
+            tests?: unknown;
+        } & unknown & {
+            impact?: unknown;
+        };
+        /** @description Champion and challenger: the DeLong difference and the paired bootstrap of the Brier difference (06 C.7 l.1041-1044). */
+        c02Challenger: {
+            champion: string;
+            challenger: string;
+            auc_diff: number;
+            auc_diff_ci: components["schemas"]["c02Ci"];
+            /** @description A value in [0, 1]. */
+            delong_p_value: number;
+            brier_diff: number;
+            brier_diff_ci: {
+                lo: number;
+                hi: number;
+                /** @constant */
+                level: 0.95;
+                /** @constant */
+                method: "paired-bootstrap";
+            };
+            /** @description A value in [0, 1]. */
+            grade_disagreement_share: number;
+        };
+        /** @description AUC interval, DeLong (the engine's disc_delong). */
+        c02Ci: {
+            lo: number;
+            hi: number;
+            /** @constant */
+            level: 0.95;
+            /** @constant */
+            method: "delong";
+        };
+        /** @description Counts and event rate of the file (bankruptcy within the horizon). */
+        c02Counts: {
+            rows: number;
+            events: number;
+            /** @description A value in [0, 1]. */
+            event_rate: number;
+            features: number;
+            event_definition: components["schemas"]["common-text"];
+        };
+        /** @description C02 models: the five files, the ladder reused from C01 and the leakage-safe protocol. */
+        c02Fit: {
+            files: {
+                /** @enum {unknown} */
+                horizon_id: "h1" | "h2" | "h3" | "h4" | "h5";
+                years: number;
+                file: string;
+                rows: number;
+                events: number;
+            }[];
+            ladder: {
+                /** @enum {unknown} */
+                rung: "P0" | "P1" | "P2a" | "P2b" | "P3" | "P4";
+                label: components["schemas"]["common-text"];
+                engine: string;
+                reference: string;
+            }[];
+            protocol: components["schemas"]["c02Split"];
+            parameters: components["schemas"]["c02Params"];
+        };
+        /** @description The 12-month and lifetime ECL effect of the horizon PDs (decision Q10). Exploratory. */
+        c02ImpactDetail: {
+            /**
+             * @description The block is exploratory and says so.
+             * @constant
+             */
+            label: "exploratory";
+            reason: components["schemas"]["common-text"];
+            /** @constant */
+            source: "engine-provisions-api";
+            pd_basis: string;
+            lgd: {
+                value: number;
+                /** @constant */
+                label: "assumption";
+            };
+            ecl_12m_effect: number | null;
+            ecl_lifetime_effect: number | null;
+            unit: string;
+            reason_if_null: string | null;
+        };
+        /** @description C02 horizon outputs: one document per horizon file (1 to 5 years) and the pooled variant. Exploratory blocks carry their label. */
+        c02Outputs: {
+            /** @constant */
+            kind: "horizon";
+            /** @enum {unknown} */
+            horizon_id: "h1" | "h2" | "h3" | "h4" | "h5" | "pooled";
+            /** @description The horizon of the file; null for the pooled variant. */
+            years: number | null;
+            counts: components["schemas"]["c02Counts"];
+            pooled: components["schemas"]["c02Pooled"] | null;
+            /** @description Required text for the pooled variant: the firm overlap across the five files is unknown (08 l.855-856). */
+            firm_overlap_caveat: components["schemas"]["common-text"] | null;
+            split: components["schemas"]["c02Split"];
+            rungs: components["schemas"]["c02Rung"][];
+            challenger: components["schemas"]["c02Challenger"][];
+            transfer: components["schemas"]["c02Transfer"];
+            term_structure: components["schemas"]["c02TermStructure"];
+            impact_detail: components["schemas"]["c02ImpactDetail"];
+            parameters: components["schemas"]["c02Params"];
+            /** @description Requirement ids CT-0201 onward (decision Q14). */
+            requirements: string[];
+        };
+        /** @description A named parameter: its value and the label convention. */
+        c02Param: {
+            /** @enum {unknown} */
+            name: "perturbation_grid" | "perturbation_tolerance" | "n_seeds" | "n_bootstrap_refits" | "overfit_tolerance" | "weak_spot_multiple" | "shift_score" | "worst_subsample_share" | "decision_cutoff_reject_share";
+            value: number | number[] | string;
+            unit: string;
+            /**
+             * @description Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270).
+             * @constant
+             */
+            label: "convention";
+            /** @description Where the construction comes from and how the value was proposed (decision Q8). */
+            basis: string;
+        };
+        /** @description The named parameters of the document, each once. */
+        c02Params: components["schemas"]["c02Param"][] & unknown;
+        c02PoolFile: {
+            file: string;
+            years: number;
+            rows: number;
+            events: number;
+        };
+        /** @description The five files stacked with a horizon indicator (decision Q9); the firm overlap is unknown. */
+        c02Pooled: {
+            files: components["schemas"]["c02PoolFile"][];
+            /** @constant */
+            horizon_indicator: true;
+            overlap: components["schemas"]["common-text"];
+        };
+        c02Rung: {
+            model_id: string;
+            /** @enum {unknown} */
+            rung: "P0" | "P1" | "P2a" | "P2b" | "P3" | "P4";
+            discrimination: {
+                /** @description A value in [0, 1]. */
+                auc: number;
+                auc_ci: components["schemas"]["c02Ci"];
+                gini: number;
+                /** @description A value in [0, 1]. */
+                ks: number;
+            };
+            calibration: {
+                /** @description A value in [0, 1]. */
+                brier: number;
+                /** @description A value in [0, 1]. */
+                ece: number;
+                hosmer_lemeshow: {
+                    statistic: number;
+                    df: number;
+                    /** @description A value in [0, 1]. */
+                    p_value: number;
+                };
+            };
+            overfit: {
+                /** @description A value in [0, 1]. */
+                train_auc: number;
+                /** @description A value in [0, 1]. */
+                holdout_auc: number;
+                gap: number;
+                tolerance: number;
+                flag: boolean;
+            };
+            /** @description Holdout against training slice (existing engine tests). */
+            stability: {
+                psi: number;
+                csi_max: number;
+            };
+        };
+        c02Split: {
+            /** @constant */
+            protocol: "locked-stratified-holdout";
+            seed: number;
+            train_rows: number;
+            calibration_rows: number;
+            holdout_rows: number;
+            holdout_events: number;
+            /**
+             * @description Binning, imputation and selection are fitted on the training slice only (04 l.1054-1059).
+             * @constant
+             */
+            fit_on_training_slice_only: true;
+            /** @constant */
+            calibration_map_on_separate_slice: true;
+            /** @constant */
+            resampling_before_calibration: false;
+            /**
+             * @description The files carry no date: no out-of-time claim.
+             * @constant
+             */
+            out_of_time_claim: false;
+        };
+        /** @description The five file event rates read as a cumulative PD: cumulative = 1 - product of (1 - hazard). Exploratory (decision Q9). */
+        c02TermStructure: {
+            /**
+             * @description The block is exploratory and says so.
+             * @constant
+             */
+            label: "exploratory";
+            reason: components["schemas"]["common-text"];
+            points: {
+                years: number;
+                cumulative_pd: number;
+                hazard: number;
+            }[];
+            cumulative_nondecreasing: boolean;
+            /** @constant */
+            source: "engine-provisions-api from_cumulative and lifetime_pd_backtest (04 E.2 l.479-497)";
+        };
+        /** @description Cross-file transfer: a rung fitted on file i scored on the holdout of file j. Exploratory: the firm overlap is unknown (SDD l.374). Empty for the pooled variant. */
+        c02Transfer: {
+            /**
+             * @description The block is exploratory and says so.
+             * @constant
+             */
+            label: "exploratory";
+            reason: components["schemas"]["common-text"];
+            cells: {
+                /** @enum {unknown} */
+                rung: "P0" | "P1" | "P2a" | "P2b" | "P3" | "P4";
+                fitted_on_years: number;
+                scored_on_years: number;
+                /** @description A value in [0, 1]. */
+                auc: number;
+                n: number;
+                events: number;
+            }[];
+        };
+        /**
          * C03 models
          * @description Catalog row c03-models 1.0.0: the C03 models artifact (vintage definition, target, training window, test cohorts, PD rungs).
          */
@@ -8404,6 +8654,796 @@ export interface components {
             true_mean_reason?: string;
         });
         /**
+         * C20 models
+         * @description Catalog row c20-models 1.0.0: the fitted rungs, the SGCD pin and the named parameters.
+         */
+        "c20-models": components["schemas"]["common-models-envelope"] & {
+            /** @constant */
+            case_id: "C20";
+            fit: components["schemas"]["c20Fit"];
+        };
+        /**
+         * C20 leakage variant
+         * @description Catalog row c20-outputs-leakage 1.0.0: the planted leakage (outputs.kind leakage).
+         */
+        "c20-variant-leakage": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C20";
+            outputs: components["schemas"]["c20OutputsLeakage"];
+        } & {
+            tests?: unknown;
+        } & unknown & unknown & {
+            impact?: unknown;
+        };
+        /**
+         * C20 perturbation variant
+         * @description Catalog row c20-outputs-perturbation 1.0.0: the perturbation grid (outputs.kind perturbation).
+         */
+        "c20-variant-perturbation": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C20";
+            outputs: components["schemas"]["c20OutputsPerturbation"];
+        } & {
+            tests?: unknown;
+        } & unknown & unknown & {
+            impact?: unknown;
+        };
+        /**
+         * C20 seeds variant
+         * @description Catalog row c20-outputs-seeds 1.0.0: the seed sweep (outputs.kind seeds).
+         */
+        "c20-variant-seeds": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C20";
+            outputs: components["schemas"]["c20OutputsSeeds"];
+        } & {
+            tests?: unknown;
+        } & unknown & unknown & {
+            impact?: unknown;
+        };
+        /**
+         * C20 shift variant
+         * @description Catalog row c20-outputs-shift 1.0.0: the Fed portfolios read both ways (decision Q7) (outputs.kind shift).
+         */
+        "c20-variant-shift": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C20";
+            outputs: components["schemas"]["c20OutputsShift"];
+        } & {
+            tests?: unknown;
+        } & unknown & unknown & {
+            impact?: unknown;
+        };
+        /**
+         * C20 shock variant
+         * @description Catalog row c20-outputs 1.0.0: SGCD seen and held-out shocks (outputs.kind shock).
+         */
+        "c20-variant-shock": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C20";
+            outputs: components["schemas"]["c20Outputs"];
+        } & {
+            tests?: unknown;
+        } & unknown & unknown & {
+            impact?: unknown;
+        };
+        c20Drift: {
+            psi_max: number;
+            csi_max: number;
+            chi2_p_value: number | null;
+        };
+        /** @description The labelled fairness battery on the Taiwan model (decision Q5): outcome-conditioned tests, a battery row set, not a compliance statement. */
+        c20FairBattery: {
+            /** @constant */
+            label: "labelled-fairness-battery";
+            /** @constant */
+            model: "uci-taiwan";
+            notice: components["schemas"]["common-text"];
+            rows: components["schemas"]["c20FairRow"][];
+        };
+        c20FairRow: {
+            /** @enum {unknown} */
+            test_id: "fair.equalized_odds" | "fair.equal_opportunity" | "fair.calibration_within_groups" | "fair.auc_by_group";
+            /** @enum {unknown} */
+            attribute: "sex" | "age" | "marital_status";
+            value: number | null;
+            groups: {
+                group: string;
+                n: number;
+                value: number | null;
+            }[];
+            /** @enum {unknown} */
+            light: "green" | "amber" | "red" | "not_evaluated" | "error";
+        };
+        /** @description C20 models: the fitted rungs on the UCI sets, the SGCD pin and the named parameters. */
+        c20Fit: {
+            datasets: {
+                /** @enum {unknown} */
+                id: "sgcd" | "uci-german" | "uci-taiwan" | "uci-polish" | "fed-2025-corporate";
+                rows: number;
+                role: string;
+            }[];
+            ladder: {
+                rung: string;
+                engine: string;
+                /** @enum {unknown} */
+                dataset: "uci-german" | "uci-taiwan" | "uci-polish";
+            }[];
+            sgcd: {
+                /** @constant */
+                commit: "8403fa9048f7159d51a0cec5a2d9a2e9712662bd";
+                /** @constant */
+                seed: 42;
+                notice: components["schemas"]["c20SgcdNotice"];
+            };
+            parameters: components["schemas"]["c20Params"];
+        };
+        /** @description The share of decisions that flip at the stated cut-off under each shift (decision Q10). */
+        c20Impact: {
+            /** @constant */
+            label: "decision-flip";
+            cutoff: {
+                /** @constant */
+                rule: "reject-worst-share-of-baseline-scores";
+                /** @description A value in [0, 1]. */
+                reject_share: number;
+                /**
+                 * @description Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270).
+                 * @constant
+                 */
+                label: "convention";
+            };
+            rows: {
+                shift_id: string;
+                /** @description A value in [0, 1]. */
+                flip_share: number;
+                n_decisions: number;
+            }[];
+        };
+        c20Metric: {
+            /** @description A value in [0, 1]. */
+            auc: number;
+            /** @description A value in [0, 1]. */
+            brier: number;
+            auc_delta: number;
+        };
+        c20Outputs: {
+            /** @constant */
+            kind: "shock";
+            /** @enum {unknown} */
+            dataset_id: "sgcd" | "uci-german" | "uci-taiwan" | "uci-polish" | "fed-2025-corporate";
+            /** @enum {unknown} */
+            model_dataset: "uci-german" | "uci-taiwan" | "uci-polish";
+            sgcd_notice: components["schemas"]["c20SgcdNotice"] | null;
+            parameters: components["schemas"]["c20Params"];
+            fairness_battery: components["schemas"]["c20FairBattery"] | null;
+            impact_detail: components["schemas"]["c20Impact"];
+            /** @description Requirement ids CT-2001 onward (decision Q14). */
+            requirements: string[];
+            /** @enum {unknown} */
+            seen_or_held_out: "seen" | "held-out";
+            /** @constant */
+            model_view: "json_view";
+            shipped: components["schemas"]["c20ShockBlock"];
+            applied: components["schemas"]["c20ShockBlock"];
+        };
+        c20OutputsLeakage: {
+            /** @constant */
+            kind: "leakage";
+            /** @enum {unknown} */
+            dataset_id: "sgcd" | "uci-german" | "uci-taiwan" | "uci-polish" | "fed-2025-corporate";
+            /** @enum {unknown} */
+            model_dataset: "uci-german" | "uci-taiwan" | "uci-polish";
+            sgcd_notice: components["schemas"]["c20SgcdNotice"] | null;
+            parameters: components["schemas"]["c20Params"];
+            fairness_battery: components["schemas"]["c20FairBattery"] | null;
+            impact_detail: components["schemas"]["c20Impact"];
+            /** @description Requirement ids CT-2001 onward (decision Q14). */
+            requirements: string[];
+            planted_feature: string;
+            screen: {
+                temporal_order: {
+                    violations: number;
+                };
+                single_feature_auc: {
+                    /** @description A value in [0, 1]. */
+                    max_auc: number;
+                    feature: string;
+                    suspect: boolean;
+                };
+                entity_overlap: {
+                    /** @description A value in [0, 1]. */
+                    share: number;
+                };
+                /** @description A value in [0, 1]. */
+                resemblance_auc: number;
+            };
+            caught: boolean;
+            performance: {
+                /** @description A value in [0, 1]. */
+                development_auc: number;
+                /** @description A value in [0, 1]. */
+                decision_time_auc: number;
+            };
+        };
+        c20OutputsPerturbation: {
+            /** @constant */
+            kind: "perturbation";
+            /** @enum {unknown} */
+            dataset_id: "sgcd" | "uci-german" | "uci-taiwan" | "uci-polish" | "fed-2025-corporate";
+            /** @enum {unknown} */
+            model_dataset: "uci-german" | "uci-taiwan" | "uci-polish";
+            sgcd_notice: components["schemas"]["c20SgcdNotice"] | null;
+            parameters: components["schemas"]["c20Params"];
+            fairness_battery: components["schemas"]["c20FairBattery"] | null;
+            impact_detail: components["schemas"]["c20Impact"];
+            /** @description Requirement ids CT-2001 onward (decision Q14). */
+            requirements: string[];
+            /** @description The scale at which the tolerance is tested. */
+            preset_eps: number;
+            rows: {
+                eps: number;
+                metric: components["schemas"]["c20Metric"];
+                finding: boolean;
+            }[];
+        };
+        c20OutputsSeeds: {
+            /** @constant */
+            kind: "seeds";
+            /** @enum {unknown} */
+            dataset_id: "sgcd" | "uci-german" | "uci-taiwan" | "uci-polish" | "fed-2025-corporate";
+            /** @enum {unknown} */
+            model_dataset: "uci-german" | "uci-taiwan" | "uci-polish";
+            sgcd_notice: components["schemas"]["c20SgcdNotice"] | null;
+            parameters: components["schemas"]["c20Params"];
+            fairness_battery: components["schemas"]["c20FairBattery"] | null;
+            impact_detail: components["schemas"]["c20Impact"];
+            /** @description Requirement ids CT-2001 onward (decision Q14). */
+            requirements: string[];
+            rows: components["schemas"]["c20SeedRow"][];
+        };
+        c20OutputsShift: {
+            /** @constant */
+            kind: "shift";
+            /** @enum {unknown} */
+            dataset_id: "sgcd" | "uci-german" | "uci-taiwan" | "uci-polish" | "fed-2025-corporate";
+            /** @enum {unknown} */
+            model_dataset: "uci-german" | "uci-taiwan" | "uci-polish";
+            sgcd_notice: components["schemas"]["c20SgcdNotice"] | null;
+            parameters: components["schemas"]["c20Params"];
+            fairness_battery: components["schemas"]["c20FairBattery"] | null;
+            impact_detail: components["schemas"]["c20Impact"];
+            /** @description Requirement ids CT-2001 onward (decision Q14). */
+            requirements: string[];
+            real_drift: components["schemas"]["c20RealDrift"];
+            synthetic_shift: components["schemas"]["c20SyntheticShift"];
+        };
+        /** @description A named parameter: its value and the label convention. */
+        c20Param: {
+            /** @enum {unknown} */
+            name: "perturbation_grid" | "perturbation_tolerance" | "n_seeds" | "n_bootstrap_refits" | "overfit_tolerance" | "weak_spot_multiple" | "shift_score" | "worst_subsample_share" | "decision_cutoff_reject_share";
+            value: number | number[] | string;
+            unit: string;
+            /**
+             * @description Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270).
+             * @constant
+             */
+            label: "convention";
+            /** @description Where the construction comes from and how the value was proposed (decision Q8). */
+            basis: string;
+        };
+        /** @description The named parameters of the document, each once. */
+        c20Params: components["schemas"]["c20Param"][] & (unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown);
+        c20Quality: {
+            /** @description A value in [0, 1]. */
+            completeness: number;
+            consistency: number | null;
+        };
+        /** @description Reading (a) of decision Q7: the real drift between the three 200-loan Fed 2025 portfolios, no model. */
+        c20RealDrift: {
+            /** @constant */
+            label: "real-drift-no-model";
+            /** @constant */
+            model: unknown;
+            portfolios: ("typical" | "higher-risk" | "lower-risk")[];
+            pairs: {
+                a: string;
+                b: string;
+                variables: {
+                    name: string;
+                    psi: number;
+                    csi: number;
+                    /** @description A value in [0, 1]. */
+                    ks: number;
+                }[];
+            }[];
+        };
+        c20SeedRow: {
+            rung: string;
+            n_seeds: number;
+            auc: {
+                /** @description A value in [0, 1]. */
+                mean: number;
+                sd: number;
+                /** @description A value in [0, 1]. */
+                min: number;
+                /** @description A value in [0, 1]. */
+                max: number;
+            };
+            /** @description A value in [0, 1]. */
+            grade_assignment_changed_share: number;
+            attribution_rank_tau: {
+                mean: number;
+                min: number;
+            };
+            reason_code_overlap: {
+                /** @constant */
+                top_k: 4;
+                n_refits: number;
+                /** @description A value in [0, 1]. */
+                mean: number;
+                /** @description A value in [0, 1]. */
+                p05: number;
+            };
+        };
+        /** @description The SGCD dataset card's prohibited-use sentence (U14 research addendum H4 6.5), on every variant that shows SGCD. */
+        c20SgcdNotice: {
+            /** @constant */
+            kind: "dataset-card-prohibition";
+            /** @constant */
+            quote: "It is provided for research and benchmarking only and must not be used for real-world credit scoring or any production decision-making about individuals.";
+            /** @constant */
+            commit: "8403fa9048f7159d51a0cec5a2d9a2e9712662bd";
+            text: components["schemas"]["common-text"];
+        };
+        /** @description The shocks as shipped, or Contraste's own application of each shock family to json_view (decision C5). */
+        c20ShockBlock: {
+            /** @enum {unknown} */
+            label: "shipped" | "contraste-applied";
+            rows: components["schemas"]["c20ShockRow"][];
+            parameters_source: "SGCDataset_metadata.json, seed 42" | null;
+        };
+        /** @description One shock family on the 1,000 SGCD records; n_reaching_structured_view counts the records whose json_view differs from a clean one (F1: 70 of 1,000, no other shock; addendum H4 6.4). */
+        c20ShockRow: {
+            /** @enum {unknown} */
+            shock_id: "F0" | "F1" | "F2" | "F3" | "F4" | "numeric-noise";
+            batches: string[];
+            n_records: number;
+            n_reaching_structured_view: number;
+            performance: components["schemas"]["c20Metric"];
+            drift: components["schemas"]["c20Drift"];
+            data_quality: components["schemas"]["c20Quality"];
+            attribution_rank_correlation: number | null;
+        };
+        /** @description Reading (b) of decision Q7: the Fed portfolios as the reference of a synthetic shift on the UCI evaluation set only. */
+        c20SyntheticShift: {
+            /** @constant */
+            label: "synthetic-shift-fed-reference";
+            /** @enum {unknown} */
+            reference_portfolio: "typical" | "higher-risk" | "lower-risk";
+            evaluation_set: string;
+            shifts: {
+                shift_id: string;
+                score: number;
+                metric: components["schemas"]["c20Metric"];
+                psi: number;
+                /** @description A value in [0, 1]. */
+                flip_share: number;
+            }[];
+            worst_subsample: {
+                /** @description A value in [0, 1]. */
+                share: number;
+                metric: components["schemas"]["c20Metric"];
+            };
+            label_free: {
+                conformal: {
+                    /** @description A value in [0, 1]. */
+                    alpha: number;
+                    /** @description A value in [0, 1]. */
+                    target_coverage: number;
+                    /** @description A value in [0, 1]. */
+                    coverage: number;
+                    /** @description A value in [0, 1]. */
+                    binomial_p_value: number;
+                };
+                cbpe: {
+                    /** @constant */
+                    label: "estimate";
+                    /** @description A value in [0, 1]. */
+                    estimated_auc: number;
+                    assumptions: {
+                        /** @enum {unknown} */
+                        id: "calibrated-probabilities" | "no-concept-drift" | "no-extrapolation" | "adequate-sample";
+                        text: components["schemas"]["common-text"];
+                    }[] & (unknown & unknown & unknown & unknown);
+                };
+            };
+        };
+        /**
+         * C21 models
+         * @description Catalog row c21-models 1.0.0: the HMDA fields, the fitted decision models and the conventions.
+         */
+        "c21-models": components["schemas"]["common-models-envelope"] & {
+            /** @constant */
+            case_id: "C21";
+            fit: components["schemas"]["c21Fit"];
+        };
+        /**
+         * C21 year-pair variant
+         * @description Catalog row c21-outputs 1.0.0: one HMDA year pair, fitted on year t and confirmed on t+1 (outputs.kind year-pair). No legal claim.
+         */
+        "c21-variant-year-pair": components["schemas"]["common-variant-envelope"] & {
+            /** @constant */
+            case_id: "C21";
+            outputs: components["schemas"]["c21Outputs"];
+        } & {
+            tests?: unknown;
+        } & {
+            tests?: unknown;
+        };
+        c21Air: {
+            /** @description Protected group's selection rate over the reference group's; null when the reference rate is 0. */
+            value: number | null;
+            /** @description The four-fifths line is an employment benchmark and never a credit-law threshold (06 C.7 l.1033-1037, I.6 l.1268-1270). */
+            four_fifths: {
+                flag: boolean;
+                /** @constant */
+                threshold: 0.8;
+                /** @constant */
+                label: "employment benchmark";
+                /** @constant */
+                citation: "29 CFR 1607.4(D)";
+                /** @constant */
+                is_credit_law_threshold: false;
+            };
+            note: components["schemas"]["common-text"];
+        } & unknown;
+        c21Attribute: {
+            /** @enum {unknown} */
+            field: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age";
+            /** @description The legal mapping of the attribute, from the addendum H3 section 5 table only. */
+            legal: {
+                /** @enum {unknown} */
+                basis: "race_color" | "national_origin_nearest_UNVERIFIED" | "sex" | "age_ecoa_only";
+                ecoa: boolean;
+                fha: boolean;
+                note: components["schemas"]["common-text"];
+                /** @constant */
+                theory: "comparative-evidence-of-disparate-treatment";
+            };
+            reference_group: string;
+            groups: components["schemas"]["c21Group"][];
+            excluded_groups: components["schemas"]["c21Excluded"][];
+            contrasts: components["schemas"]["c21Contrast"][];
+        } & ({
+            /** @constant */
+            field?: "derived_race";
+            legal?: {
+                /** @constant */
+                basis?: "race_color";
+                /** @constant */
+                ecoa?: true;
+                /** @constant */
+                fha?: true;
+            };
+        } | {
+            /** @constant */
+            field?: "derived_ethnicity";
+            legal?: {
+                /** @constant */
+                basis?: "national_origin_nearest_UNVERIFIED";
+                /** @constant */
+                ecoa?: true;
+                /** @constant */
+                fha?: true;
+            };
+        } | {
+            /** @constant */
+            field?: "derived_sex";
+            legal?: {
+                /** @constant */
+                basis?: "sex";
+                /** @constant */
+                ecoa?: true;
+                /** @constant */
+                fha?: true;
+            };
+        } | {
+            /** @constant */
+            field?: "applicant_age";
+            legal?: {
+                /** @constant */
+                basis?: "age_ecoa_only";
+                /** @constant */
+                ecoa?: true;
+                /** @constant */
+                fha?: false;
+            };
+        });
+        c21Ci: {
+            lo: number;
+            hi: number;
+            /** @constant */
+            level: 0.95;
+        };
+        /** @description Confirmation on year t+1 by sign and size (decision Q4). */
+        c21Confirmation: {
+            fit_year: number;
+            confirm_year: number;
+            fit_coefficient: number;
+            confirm_coefficient: number;
+            same_sign: boolean;
+            /** @description confirm coefficient over fit coefficient; null when the fit coefficient is 0. */
+            size_ratio: number | null;
+        };
+        c21Contrast: {
+            group: string;
+            reference_group: string;
+            n_group: number;
+            n_reference: number;
+            /** @description A value in [0, 1]. */
+            selection_rate_group: number;
+            /** @description A value in [0, 1]. */
+            selection_rate_reference: number;
+            /** @description Group rate minus reference rate. */
+            parity_gap: number;
+            parity_ratio: number | null;
+            adverse_impact_ratio: components["schemas"]["c21Air"];
+            z_test: components["schemas"]["c21Test"];
+            fisher_exact: {
+                odds_ratio: number | null;
+                /** @description A value in [0, 1]. */
+                p_value: number;
+            };
+            controlled: components["schemas"]["c21OptControlled"];
+            rate_spread: components["schemas"]["c21OptRateSpread"];
+            confirmation: components["schemas"]["c21OptConfirmation"];
+        };
+        /** @enum {unknown} */
+        c21Control: "debt_to_income_ratio" | "combined_loan_to_value_ratio" | "income" | "loan_amount" | "property_value" | "loan_type" | "loan_purpose" | "lien_status" | "occupancy_type";
+        /** @description Logistic decision model of approval on the protected attribute and the permitted underwriting controls (decision Q4). */
+        c21Controlled: {
+            /** @constant */
+            model: "logistic-decision-model";
+            /** @constant */
+            outcome: "approval";
+            coefficient: number;
+            odds_ratio: number;
+            ci: components["schemas"]["c21Ci"];
+            n: number;
+            controls: components["schemas"]["c21Control"][];
+            /** @description Public HMDA has no credit score: every controlled estimate names it as a missing control (decision C2). */
+            missing_controls: "credit_score"[];
+            /** @constant */
+            label: "approximation of comparative evidence";
+        };
+        /** @description Named conventions, labelled on every result. */
+        c21Conventions: {
+            /**
+             * @description Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270).
+             * @constant
+             */
+            label: "convention";
+            /** @description approval = 1 and 2, denial = 3; 4 and 5 have no decision; 6, 7 and 8 left out (decision C3). */
+            outcome: {
+                /** @constant */
+                approval_codes: [
+                    1,
+                    2
+                ];
+                /** @constant */
+                denial_codes: [
+                    3
+                ];
+                /** @constant */
+                excluded_codes: [
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ];
+                note: components["schemas"]["common-text"];
+            };
+            /** @description The mixed exact and binned debt-to-income field is recoded to the published bins (decision C2). */
+            dti_recode: {
+                bins: string[];
+                note: components["schemas"]["common-text"];
+            };
+            group_exclusion: components["schemas"]["common-text"];
+        };
+        /** @description A non-attribute category (Joint, Not Available, Free Form Text Only): carried as its own group and excluded from the pairwise tests (decision C2). */
+        c21Excluded: {
+            group: string;
+            n: number;
+            reason: components["schemas"]["common-text"];
+        };
+        /** @description C21 models: the HMDA fields used (addendum H1 names), the fitted decision models and the conventions. */
+        c21Fit: {
+            fields: {
+                name: components["schemas"]["c21Hmda"];
+                /** @enum {unknown} */
+                role: "attribute" | "control" | "outcome" | "reason" | "pricing" | "flag";
+                alias: string | null;
+            }[];
+            decision_models: {
+                fit_year: number;
+                /** @enum {unknown} */
+                kind: "logistic" | "linear";
+                /** @enum {unknown} */
+                outcome: "approval" | "rate_spread";
+                n: number;
+                converged: boolean;
+                terms: {
+                    term: string;
+                    coefficient: number;
+                    se: number;
+                }[];
+            }[];
+            conventions: components["schemas"]["c21Conventions"];
+            legal: components["schemas"]["c21Legal"];
+            data_notes: components["schemas"]["c21Note"][];
+        };
+        c21Group: {
+            group: string;
+            n: number;
+            n_approved: number;
+            n_denied: number;
+            /** @description A value in [0, 1]. */
+            selection_rate: number;
+        };
+        /** @enum {unknown} */
+        c21Hmda: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age" | "debt_to_income_ratio" | "combined_loan_to_value_ratio" | "income" | "loan_amount" | "property_value" | "loan_type" | "loan_purpose" | "lien_status" | "occupancy_type" | "applicant_age_above_62" | "action_taken" | "rate_spread" | "denial_reason_1" | "denial_reason_2" | "denial_reason_3" | "denial_reason_4";
+        /** @description The required label, on every C21 document. */
+        c21Label: {
+            /** @constant */
+            en: "no legal claim";
+            /** @constant */
+            es: "sin afirmacion legal";
+        };
+        /** @description No legal claim: the sentences the U14 research addendum quotes (H3 4.1 and 4.3), decision C4. */
+        c21Legal: {
+            label: components["schemas"]["c21Label"];
+            regulation_b: {
+                /** @constant */
+                citation: "12 CFR 1002.6(a), as amended at 91 FR 21668 (2026-04-22, effective 2026-07-21)";
+                /** @constant */
+                quote: "The Act does not provide that the 'effects test' applies for determining whether there is discrimination in violation of the Act.";
+                text: components["schemas"]["common-text"];
+            };
+            fair_housing_act: {
+                /** @constant */
+                citation: "91 FR 21620, recital of Texas Department of Housing & Community Affairs v. Inclusive Communities Project, Inc.";
+                /** @constant */
+                quote: "the Supreme Court held that disparate-impact claims are cognizable under the Fair Housing Act (FHA).";
+                text: components["schemas"]["common-text"];
+            };
+            procedures: {
+                /** @constant */
+                citation: "Interagency Fair Lending Examination Procedures, August 2009, appendix, printed page 26";
+                /** @constant */
+                quote: "Gross HMDA denial or approval rate disparities are not appropriate for disproportionate adverse impact analysis because they typically cannot be attributed to a specific policy or criterion.";
+                text: components["schemas"]["common-text"];
+            };
+            /** @constant */
+            unconditional_rates_are: "indicators-only";
+            /** @constant */
+            controlled_disparity_is: "approximation-of-comparative-evidence";
+            /** @constant */
+            is_a_finding_of_violation: false;
+        };
+        /** @description A field HMDA withholds or bins in the public release: a nullable value with its reason, never a fabricated number. */
+        c21Note: {
+            field: components["schemas"]["c21Hmda"];
+            /** @enum {unknown} */
+            treatment: "unmodified" | "binned" | "rounded" | "top-coded" | "bottom-coded" | "withheld" | "not-applicable";
+            n_missing: number | null;
+            reason: components["schemas"]["common-text"];
+        };
+        /** @description The estimate, or null with its reason (missing-data behavior). */
+        c21OptConfirmation: {
+            estimate: components["schemas"]["c21Confirmation"] | null;
+            reason: string | null;
+        } & ({
+            estimate?: components["schemas"]["c21Confirmation"];
+            reason?: null;
+        } | {
+            estimate?: null;
+            reason?: string;
+        });
+        /** @description The estimate, or null with its reason (missing-data behavior). */
+        c21OptControlled: {
+            estimate: components["schemas"]["c21Controlled"] | null;
+            reason: string | null;
+        } & ({
+            estimate?: components["schemas"]["c21Controlled"];
+            reason?: null;
+        } | {
+            estimate?: null;
+            reason?: string;
+        });
+        /** @description The estimate, or null with its reason (missing-data behavior). */
+        c21OptRateSpread: {
+            estimate: components["schemas"]["c21RateSpread"] | null;
+            reason: string | null;
+        } & ({
+            estimate?: components["schemas"]["c21RateSpread"];
+            reason?: null;
+        } | {
+            estimate?: null;
+            reason?: string;
+        });
+        /** @description C21 year-pair outputs: statistical disparity on public HMDA decisions, fitted on year t and confirmed on t+1. No outcome-conditioned test runs: HMDA has no outcome (08 l.180-181). */
+        c21Outputs: {
+            /** @constant */
+            kind: "year-pair";
+            pair_id: string;
+            fit_year: number;
+            confirm_year: number;
+            scope: {
+                state: string;
+                source: string;
+                rows_fit: number;
+                rows_confirm: number;
+            };
+            legal: components["schemas"]["c21Legal"];
+            conventions: components["schemas"]["c21Conventions"];
+            attributes: components["schemas"]["c21Attribute"][];
+            situation_testing: components["schemas"]["c21Situation"];
+            data_notes: components["schemas"]["c21Note"][];
+            /** @description Requirement ids CT-2101 onward (decision Q14). */
+            requirements: string[];
+        };
+        /** @description Linear model of the rate spread on the same terms; the loans that carry rate_spread (action taken 1 and 2). */
+        c21RateSpread: {
+            /** @constant */
+            model: "linear-rate-spread";
+            /** @constant */
+            population: "action_taken 1 or 2";
+            coefficient: number;
+            ci: components["schemas"]["c21Ci"];
+            n: number;
+            controls: components["schemas"]["c21Control"][];
+            /** @description Public HMDA has no credit score: every controlled estimate names it as a missing control (decision C2). */
+            missing_controls: "credit_score"[];
+            /** @constant */
+            label: "approximation of comparative evidence";
+            /** @constant */
+            unit: "percentage points of rate_spread";
+        };
+        /** @description Situation testing, ceteris paribus comparator only (algorithm of the addendum H5). */
+        c21Situation: {
+            /** @constant */
+            label: "situation-testing";
+            /** @constant */
+            comparator: "ceteris-paribus";
+            /** @description Public HMDA gives no counterfactual dataset, so the counterfactual test is not run here (decision C6). */
+            counterfactual_test: {
+                /** @constant */
+                run: false;
+                reason: components["schemas"]["common-text"];
+            };
+            /** @enum {unknown} */
+            attribute: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age";
+            k: number;
+            /** @constant */
+            alpha: 0.05;
+            /** @constant */
+            tau: 0;
+            /** @constant */
+            centers: "excluded";
+            /** @constant */
+            interval: "one-sided Wald, equation (10) of arXiv 2502.01267";
+            n_complainants: number;
+            n_cases: number;
+            n_significant: number;
+        };
+        c21Test: {
+            statistic: number;
+            /** @description A value in [0, 1]. */
+            p_value: number;
+        };
+        /**
          * C22 models
          * @description Catalog row c22-models 1.0.0: the C22 models artifact with the exact-probability parity points.
          */
@@ -9219,7 +10259,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c03-models"] | components["schemas"]["c03-variant-vintage-cohort"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c08-models"] | components["schemas"]["c08-variant-default-cohort"] | components["schemas"]["c09-models"] | components["schemas"]["c09-variant-acceleration-level"] | components["schemas"]["c10-models"] | components["schemas"]["c10-variant-correlation-grid"] | components["schemas"]["c10-variant-loan-type"] | components["schemas"]["c11-models"] | components["schemas"]["c11-variant-window"] | components["schemas"]["c13-models"] | components["schemas"]["c13-variant-deficiency"] | components["schemas"]["c14-models"] | components["schemas"]["c14-variant-valuation-date"] | components["schemas"]["c15-models"] | components["schemas"]["c15-variant-annex1-variant"] | components["schemas"]["c17-models"] | components["schemas"]["c17-variant-tail-index"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
+                    "application/json": components["schemas"]["c01-models"] | components["schemas"]["c01-variant"] | components["schemas"]["c02-models"] | components["schemas"]["c02-variant-horizon"] | components["schemas"]["c03-models"] | components["schemas"]["c03-variant-vintage-cohort"] | components["schemas"]["c04-models"] | components["schemas"]["c04-variant-agency"] | components["schemas"]["c04-variant-generator"] | components["schemas"]["c04-variant-published"] | components["schemas"]["c05-models-ldp"] | components["schemas"]["c05-models-sp"] | components["schemas"]["c05-variant-ldp"] | components["schemas"]["c05-variant-sp"] | components["schemas"]["c06-models"] | components["schemas"]["c06-variant-reporting-date"] | components["schemas"]["c07-models"] | components["schemas"]["c07-variant-three-regime"] | components["schemas"]["c08-models"] | components["schemas"]["c08-variant-default-cohort"] | components["schemas"]["c09-models"] | components["schemas"]["c09-variant-acceleration-level"] | components["schemas"]["c10-models"] | components["schemas"]["c10-variant-correlation-grid"] | components["schemas"]["c10-variant-loan-type"] | components["schemas"]["c11-models"] | components["schemas"]["c11-variant-window"] | components["schemas"]["c13-models"] | components["schemas"]["c13-variant-deficiency"] | components["schemas"]["c14-models"] | components["schemas"]["c14-variant-valuation-date"] | components["schemas"]["c15-models"] | components["schemas"]["c15-variant-annex1-variant"] | components["schemas"]["c17-models"] | components["schemas"]["c17-variant-tail-index"] | components["schemas"]["c20-models"] | components["schemas"]["c20-variant-leakage"] | components["schemas"]["c20-variant-perturbation"] | components["schemas"]["c20-variant-seeds"] | components["schemas"]["c20-variant-shift"] | components["schemas"]["c20-variant-shock"] | components["schemas"]["c21-models"] | components["schemas"]["c21-variant-year-pair"] | components["schemas"]["c22-models"] | components["schemas"]["c22-variant"];
                 };
             };
             404: components["responses"]["NotFound"];
