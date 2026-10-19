@@ -1,0 +1,1231 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c16/variant-reverse.schema.json",
+  "title": "C16 reverse-stress variant",
+  "description": "Catalog row c16-outputs-reverse 1.0.0: the reverse liquidity stress of the liquidity case, per base scenario (outputs.kind reverse-stress).",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C16"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c16ReverseOutputs",
+          "properties": {
+            "kind": {
+              "const": "reverse-stress"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "if": {
+              "properties": {
+                "light": {
+                  "const": "not_evaluated"
+                }
+              },
+              "required": [
+                "light"
+              ]
+            },
+            "then": {
+              "properties": {
+                "statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "properties": {
+              "test_id": {
+                "type": "string",
+                "pattern": "^liq\\."
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "impact": {
+          "required": [
+            "multiplier_list_adverse",
+            "multiplier_list_extreme",
+            "multiplier_fast_run"
+          ]
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c16Label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "en",
+        "es"
+      ],
+      "properties": {
+        "en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "es": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A non-empty bilingual label (an empty string is not a label)."
+    },
+    "c16Units": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "money_scale",
+        "rate",
+        "horizon",
+        "dates"
+      ],
+      "properties": {
+        "money_scale": {
+          "const": "thousands"
+        },
+        "rate": {
+          "const": "decimal-per-day"
+        },
+        "horizon": {
+          "const": "days"
+        },
+        "dates": {
+          "const": "ISO-8601"
+        }
+      },
+      "description": "Units of every number: money in USD thousands as the FDIC call report gives it, rates as decimals per relevant day, horizons in days, dates ISO."
+    },
+    "c16Bank": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "cert",
+        "aggregates",
+        "behaviour",
+        "deposits",
+        "notice"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cert": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "aggregates": {
+          "const": "real"
+        },
+        "behaviour": {
+          "const": "synthetic"
+        },
+        "deposits": {
+          "const": "synthetic"
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The bank of the case: real FDIC call-report aggregates used as public aggregates only, with synthetic behaviour and synthetic deposits from the depositor generator (SDD section 5: real event, synthetic deposits). The case does not represent the bank."
+    },
+    "c16Survival": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "day",
+        "horizon_days"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "day",
+            "survives-horizon"
+          ]
+        },
+        "day": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "horizon_days": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "description": "The survival period: the first day on which the NLP turns negative (a number of days), or \"survives the horizon\" with the horizon and no number (05 E.1, U11 sizing). The day is at most the horizon.",
+      "oneOf": [
+        {
+          "properties": {
+            "kind": {
+              "const": "day"
+            },
+            "day": {
+              "type": "integer"
+            }
+          }
+        },
+        {
+          "properties": {
+            "kind": {
+              "const": "survives-horizon"
+            },
+            "day": {
+              "type": "null"
+            }
+          }
+        }
+      ]
+    },
+    "c16Scalar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit",
+        "status",
+        "basis"
+      ],
+      "properties": {
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "const": "convention"
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A named scalar parameter: its value, its unit and the label \"convention\" (never \"regulatory\"); the basis says where the proposed value comes from (Q14: proposed by U11-S, approved by the main session)."
+    },
+    "c16Grid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "values",
+        "unit",
+        "status",
+        "basis"
+      ],
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "const": "convention"
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A named grid: its values in increasing order, its unit and the label \"convention\"."
+    },
+    "c16MappingRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "basis",
+        "role",
+        "lcr_category",
+        "list_class",
+        "label"
+      ],
+      "properties": {
+        "basis": {
+          "type": "string",
+          "enum": [
+            "insured",
+            "uninsured"
+          ]
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "central",
+            "band"
+          ]
+        },
+        "lcr_category": {
+          "type": "string",
+          "enum": [
+            "retail-stable",
+            "retail-less-stable",
+            "operational",
+            "non-financial-corporate",
+            "other-legal-entity"
+          ]
+        },
+        "list_class": {
+          "type": "string",
+          "enum": [
+            "stable-retail",
+            "other-retail",
+            "operational",
+            "non-operational-credit-institutions",
+            "non-operational-other-financial",
+            "non-operational-non-financial-corporates",
+            "non-operational-others"
+          ]
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "One mapping of a call-report deposit balance (insured or uninsured, DEPINS and DEPUNA) to an LCR category and a LiST class."
+    },
+    "c16DepositMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "rows",
+        "sensitivity_band",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "const": "convention"
+        },
+        "rows": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c16MappingRow",
+              "properties": {
+                "basis": {
+                  "const": "insured"
+                },
+                "role": {
+                  "const": "central"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16MappingRow",
+              "properties": {
+                "basis": {
+                  "const": "uninsured"
+                },
+                "role": {
+                  "const": "central"
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "The central mapping: insured to a retail class, uninsured to one class."
+        },
+        "sensitivity_band": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16MappingRow",
+            "properties": {
+              "basis": {
+                "const": "uninsured"
+              },
+              "role": {
+                "const": "band"
+              }
+            }
+          },
+          "minItems": 3,
+          "description": "The classes the uninsured balance may plausibly belong to (Q13): operational, non-financial corporate, other legal entity; the LCR variant reports its ratio under each."
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The deposit-category mapping with its sensitivity band (Q13): the call report carries no customer type, so every mapping is an assumption and a convention."
+    },
+    "c16VariantRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "variant",
+        "scenario_family",
+        "phase",
+        "parameter_set",
+        "horizon_days",
+        "axis"
+      ],
+      "properties": {
+        "variant": {
+          "type": "string",
+          "enum": [
+            "lcr-standard",
+            "list-adverse",
+            "list-extreme",
+            "fast-run",
+            "htm-losses"
+          ]
+        },
+        "scenario_family": {
+          "type": "string",
+          "enum": [
+            "idiosyncratic",
+            "market-wide",
+            "combined"
+          ]
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "acute",
+            "protracted"
+          ]
+        },
+        "parameter_set": {
+          "type": "string",
+          "enum": [
+            "basel-lcr",
+            "list-adverse",
+            "list-extreme",
+            "fast-run"
+          ]
+        },
+        "horizon_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "axis": {
+          "type": "string",
+          "enum": [
+            "relevant-days",
+            "calendar-days"
+          ]
+        }
+      },
+      "description": "The scenario family, phase, parameter set and horizon of one variant (dossier 05 E.2 and E.5)."
+    },
+    "c16VariantScenarios": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "rows",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "const": "convention"
+        },
+        "rows": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c16VariantRow",
+              "properties": {
+                "variant": {
+                  "const": "lcr-standard"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16VariantRow",
+              "properties": {
+                "variant": {
+                  "const": "list-adverse"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16VariantRow",
+              "properties": {
+                "variant": {
+                  "const": "list-extreme"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16VariantRow",
+              "properties": {
+                "variant": {
+                  "const": "fast-run"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16VariantRow",
+              "properties": {
+                "variant": {
+                  "const": "htm-losses"
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 5,
+          "maxItems": 5
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The mapping of each variant to a scenario family and phase (Q14), in the order of the five scenario variants."
+    },
+    "c16DayCalendar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "kind",
+        "first_day",
+        "excluded_weekdays",
+        "holidays",
+        "holiday_rule",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "const": "convention"
+        },
+        "kind": {
+          "const": "us-business-days"
+        },
+        "first_day": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "excluded_weekdays": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "saturday",
+              "sunday"
+            ]
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "holidays": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          }
+        },
+        "holiday_rule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The ladder's day calendar (A2): US business days from the day after the valuation date. The LiST rates are defined on the 2019 TARGET2 relevant-day calendar, so every LiST cumulative figure says which calendar it is on."
+    },
+    "c16SecurityRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "class_id",
+        "fed_category",
+        "duration_bucket",
+        "margin",
+        "haircut",
+        "haircut_low",
+        "haircut_high",
+        "rule",
+        "source"
+      ],
+      "properties": {
+        "class_id": {
+          "type": "string",
+          "enum": [
+            "cash-and-balances",
+            "reverse-repo",
+            "treasury",
+            "mortgage-backed",
+            "other-agency",
+            "municipal",
+            "other-debt"
+          ]
+        },
+        "fed_category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "duration_bucket": {
+          "type": "string",
+          "enum": [
+            "0-1",
+            ">1-3",
+            ">3-5",
+            ">5-10",
+            ">10",
+            "none"
+          ]
+        },
+        "margin": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A share or a rate in [0, 1]."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "haircut": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "haircut_low": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "haircut_high": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "rule": {
+          "type": "string",
+          "enum": [
+            "nominal-value",
+            "central-bank-framework",
+            "lcr-haircut-hqla",
+            "fifty-percent-fallback",
+            "ecb-equity-table",
+            "ecb-non-equity-hqla"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The central bank framework row a securities class takes (A3, A4): the Federal Reserve discount window margin in force on 2023-03-10, the duration bucket a convention, the haircut 1 - margin and its sensitivity band; a class the framework does not cover has a null margin and the fallback rule (LCR haircut if HQLA, else 50 percent)."
+    },
+    "c16SecurityMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "rows",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "const": "convention"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16SecurityRow"
+          },
+          "minItems": 1
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The securities classes of the CBC with their haircut rows (A3, A4)."
+    },
+    "c16Point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "day",
+        "cumulative_share"
+      ],
+      "properties": {
+        "day": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "cumulative_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        }
+      }
+    },
+    "c16Monetisation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "points",
+        "sensitivity_band",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "const": "convention"
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16Point"
+          },
+          "minItems": 1
+        },
+        "sensitivity_band": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "points"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "points": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/c16Point"
+                },
+                "minItems": 1
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The monetisation schedule of the CBC (Q6): the cumulative share of its liquidity value usable by day, with its band."
+    },
+    "c16CalibrationRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "rule",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "const": "convention"
+        },
+        "rule": {
+          "type": "string",
+          "enum": [
+            "maximum-implied-daily-rate",
+            "median-implied-daily-rate",
+            "mean-implied-daily-rate"
+          ]
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "How the fast-run daily rate is taken from the implied daily rates of the pre-2023 Table A.1 rows (the dossiers give no method)."
+    },
+    "c16CliffDays": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "near",
+        "far",
+        "day_basis",
+        "basis"
+      ],
+      "properties": {
+        "status": {
+          "const": "convention"
+        },
+        "near": {
+          "const": 30
+        },
+        "far": {
+          "const": 35
+        },
+        "day_basis": {
+          "type": "string",
+          "enum": [
+            "relevant-days",
+            "calendar-days"
+          ]
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The two days of the cliff diagnostic (NLP(35) - NLP(30)) / TA (05 E.1); whether they count calendar or relevant days is UNVERIFIED in the LiST note, so the basis is a convention."
+    },
+    "c16Conventions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deposit_category_mapping",
+        "variant_scenarios",
+        "day_calendar",
+        "cbc_securities_mapping",
+        "monetisation_schedule",
+        "fast_run_calibration_rule",
+        "cliff_days",
+        "contractual_bucket_edges_days",
+        "event_horizon_days",
+        "uninsured_share_grid",
+        "htm_loss_multiple_grid",
+        "runoff_multiplier_grid",
+        "reverse_target_days",
+        "list_compounding_tolerance",
+        "monotonicity_tolerance_days",
+        "nlp_identity_tolerance",
+        "cliff_amber_threshold",
+        "cliff_red_threshold",
+        "scoring_ratio_green",
+        "scoring_ratio_amber",
+        "generator_truth_se_green",
+        "generator_truth_se_red",
+        "htm_revaluation_green",
+        "htm_revaluation_amber",
+        "round_trip_tolerance_days",
+        "cbc_haircut_band"
+      ],
+      "properties": {
+        "deposit_category_mapping": {
+          "$ref": "#/$defs/c16DepositMapping"
+        },
+        "variant_scenarios": {
+          "$ref": "#/$defs/c16VariantScenarios"
+        },
+        "day_calendar": {
+          "$ref": "#/$defs/c16DayCalendar"
+        },
+        "cbc_securities_mapping": {
+          "$ref": "#/$defs/c16SecurityMapping"
+        },
+        "monetisation_schedule": {
+          "$ref": "#/$defs/c16Monetisation"
+        },
+        "fast_run_calibration_rule": {
+          "$ref": "#/$defs/c16CalibrationRule"
+        },
+        "cliff_days": {
+          "$ref": "#/$defs/c16CliffDays"
+        },
+        "contractual_bucket_edges_days": {
+          "$ref": "#/$defs/c16Grid"
+        },
+        "event_horizon_days": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "uninsured_share_grid": {
+          "$ref": "#/$defs/c16Grid"
+        },
+        "htm_loss_multiple_grid": {
+          "$ref": "#/$defs/c16Grid"
+        },
+        "runoff_multiplier_grid": {
+          "$ref": "#/$defs/c16Grid"
+        },
+        "reverse_target_days": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "list_compounding_tolerance": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "monotonicity_tolerance_days": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "nlp_identity_tolerance": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "cliff_amber_threshold": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "cliff_red_threshold": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "scoring_ratio_green": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "scoring_ratio_amber": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "generator_truth_se_green": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "generator_truth_se_red": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "htm_revaluation_green": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "htm_revaluation_amber": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "round_trip_tolerance_days": {
+          "$ref": "#/$defs/c16Scalar"
+        },
+        "cbc_haircut_band": {
+          "$ref": "#/$defs/c16Scalar"
+        }
+      },
+      "description": "Every named parameter of the case (Q13, Q14): the deposit mapping with its band, the variant scenarios, the day calendar, the CBC haircut rows and monetisation schedule, the calibration rule, the cliff days, the grids, the reverse-stress target, the tolerances and the lights of the tests. Each carries the label \"convention\"; none is a regulatory threshold. The same in every document of one bake."
+    },
+    "c16CurvePoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "multiplier",
+        "survival"
+      ],
+      "properties": {
+        "multiplier": {
+          "type": "number",
+          "minimum": 1
+        },
+        "survival": {
+          "$ref": "#/$defs/c16Survival"
+        }
+      },
+      "description": "One point of SP(m): the run-off multiplier and the survival period under it."
+    },
+    "c16Solved": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "multiplier",
+        "survival_at_multiplier",
+        "target_days",
+        "round_trip_error",
+        "refusal_reason"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "solved",
+            "refused"
+          ]
+        },
+        "multiplier": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "survival_at_multiplier": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "target_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "round_trip_error": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "refusal_reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The solved multiplier: the smallest m at which the survival period first falls to the target (05 E.5 rung 5), by bracketing on the monotone SP(m), with the round trip (the survival period at m returns the target); a target that is not bracketed is refused with the reason.",
+      "oneOf": [
+        {
+          "properties": {
+            "status": {
+              "const": "solved"
+            },
+            "multiplier": {
+              "type": "number"
+            },
+            "survival_at_multiplier": {
+              "type": "integer"
+            },
+            "round_trip_error": {
+              "type": "number"
+            },
+            "refusal_reason": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "status": {
+              "const": "refused"
+            },
+            "multiplier": {
+              "type": "null"
+            },
+            "survival_at_multiplier": {
+              "type": "null"
+            },
+            "round_trip_error": {
+              "type": "null"
+            },
+            "refusal_reason": {
+              "$ref": "#/$defs/c16Label"
+            }
+          }
+        }
+      ]
+    },
+    "c16ReverseBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "base_id",
+        "parameter_set",
+        "label",
+        "base_survival",
+        "max_multiplier",
+        "curve",
+        "solved"
+      ],
+      "properties": {
+        "base_id": {
+          "type": "string",
+          "enum": [
+            "list-adverse",
+            "list-extreme",
+            "fast-run"
+          ]
+        },
+        "parameter_set": {
+          "type": "string",
+          "enum": [
+            "list-adverse",
+            "list-extreme",
+            "fast-run"
+          ]
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "base_survival": {
+          "$ref": "#/$defs/c16Survival"
+        },
+        "max_multiplier": {
+          "type": "number",
+          "exclusiveMinimum": 1
+        },
+        "curve": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c16CurvePoint"
+          },
+          "minItems": 2
+        },
+        "solved": {
+          "$ref": "#/$defs/c16Solved"
+        }
+      },
+      "description": "The reverse stress of one base scenario (Q9): the multiplier applied to every segment's daily rate, capped so that each rate stays below 1 (max_multiplier), the SP(m) curve and the solved multiplier."
+    },
+    "c16ReverseOutputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "valuation_date",
+        "currency",
+        "units",
+        "bank",
+        "conventions",
+        "target",
+        "cap_rule",
+        "bases"
+      ],
+      "properties": {
+        "kind": {
+          "const": "reverse-stress"
+        },
+        "valuation_date": {
+          "const": "2022-12-31"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code of the money fields of this document.",
+          "const": "USD"
+        },
+        "units": {
+          "$ref": "#/$defs/c16Units"
+        },
+        "bank": {
+          "$ref": "#/$defs/c16Bank"
+        },
+        "conventions": {
+          "$ref": "#/$defs/c16Conventions"
+        },
+        "target": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "days",
+            "statement"
+          ],
+          "properties": {
+            "days": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "statement": {
+              "$ref": "../common/text.schema.json"
+            }
+          }
+        },
+        "cap_rule": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "each_rate_below_one",
+            "statement"
+          ],
+          "properties": {
+            "each_rate_below_one": {
+              "const": true
+            },
+            "statement": {
+              "$ref": "../common/text.schema.json"
+            }
+          }
+        },
+        "bases": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c16ReverseBase",
+              "properties": {
+                "base_id": {
+                  "const": "list-adverse"
+                },
+                "parameter_set": {
+                  "const": "list-adverse"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16ReverseBase",
+              "properties": {
+                "base_id": {
+                  "const": "list-extreme"
+                },
+                "parameter_set": {
+                  "const": "list-extreme"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16ReverseBase",
+              "properties": {
+                "base_id": {
+                  "const": "fast-run"
+                },
+                "parameter_set": {
+                  "const": "fast-run"
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 3,
+          "maxItems": 3
+        }
+      },
+      "description": "C16 reverse-stress outputs (outputs.kind reverse-stress): the run-off multiplier at which the survival period falls to the target, per base scenario (LiST Adverse, LiST Extreme, the fast run)."
+    }
+  }
+}
