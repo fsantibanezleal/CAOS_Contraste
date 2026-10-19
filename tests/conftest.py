@@ -39,10 +39,19 @@ def pytest_collectstart(collector: pytest.Collector) -> None:
     build_fixtures`), and several suites ship a helper of the same name. Python caches the first module of a name, so in
     one run a later suite would get an earlier suite's helper. Before a suite's module is collected, drop any cached
     helper of the same name loaded from another suite's folder, and put this suite's folder first on the path."""
-    path = getattr(collector, "path", None)
+    _own_suite_helpers(getattr(collector, "path", None))
+
+
+def pytest_runtest_setup(item: pytest.Item) -> None:
+    """The same before each test runs: a suite that imports a helper lazily, inside a test, gets its own helper even
+    after a later suite was collected."""
+    _own_suite_helpers(getattr(item, "path", None))
+
+
+def _own_suite_helpers(path: object) -> None:
     if path is None:
         return
-    folder = pathlib.Path(path)
+    folder = pathlib.Path(str(path))
     folder = folder.parent if folder.suffix == ".py" else folder
     if not folder.name.startswith("contracts_u"):
         return

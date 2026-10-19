@@ -33,7 +33,10 @@ SCHEMAS = ROOT / "docs" / "contracts" / "schemas"
 ENGINE = ROOT / "docs" / "contracts" / "engine"
 AGG_API = ENGINE / "aggregation-api.md"
 STRESS_API = ENGINE / "stress-api.md"
-ROWS = ROOT / "docs" / "contracts" / "rows" / "U13.md"
+ROWS_FRAGMENT = ROOT / "docs" / "contracts" / "rows" / "U13.md"
+# merged into the catalog at the batch 3 integration (task/0-13-000-wave2, 2026-10-19) and deleted by fragments.py rows;
+# the fragment as merged is kept beside these tests
+ROWS = ROWS_FRAGMENT if ROWS_FRAGMENT.is_file() else Path(__file__).parent / "rows-fragment-merged.md"
 CHANGES = ROOT / "changes" / "U13-S.md"
 THIS = Path(__file__)
 
@@ -1047,7 +1050,10 @@ def test_the_rows_fragment_has_the_six_rows_in_the_catalog_columns() -> None:
         assert "missing" in d["missing-data behavior"] or "partial" in d["missing-data behavior"], r[0]
     contracts = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0]
     cat_ids = [row_cells(ln)[0] for ln in contracts.splitlines() if ln.startswith("| ")]
-    assert not set(ROW_IDS) & set(cat_ids), "the integrator merges these rows; a unit never edits the catalog"
+    if ROWS_FRAGMENT.is_file():
+        assert not set(ROW_IDS) & set(cat_ids), "the integrator merges these rows; a unit never edits the catalog"
+    else:  # merged at the batch 3 integration: each row is in the Contracts table exactly once
+        assert all(cat_ids.count(i) == 1 for i in ROW_IDS), [i for i in ROW_IDS if cat_ids.count(i) != 1]
     assert [r[0] for r in history if r[0] in ROW_IDS] == ROW_IDS
 
 

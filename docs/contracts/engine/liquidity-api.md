@@ -1,4 +1,4 @@
-# Engine liquidity API contract: `engine-liquidity-api` 1.1.0
+# Engine liquidity API contract: `engine-liquidity-api` 1.2.0
 
 Owner: U11-S (unit sizing `plans/contraste/units/U11-sizing.md`, CAOS_MANAGE). Implemented by U11-E in `riskvalidation.liquidity`,
 `riskvalidation.regulatory.lcr_nsfr` and `riskvalidation.validation.liquidity` (repository CAOS_RiskValidation); called by the C16 bake
@@ -17,7 +17,7 @@ is transcribed from the dossier or the addendum named on its line; an item they 
 do not settle, is marked UNVERIFIED here and is not silently decided (list at the end). No official LCR or NSFR worked example exists
 (01 lines 1045 to 1046), so none is claimed: the LCR and NSFR carry constructed tests and invariants (01 M.1).
 
-Version history: 1.0.0, the first contract.
+Version history: 1.0.0, the first contract; 1.1.0 after U11-E (the `scored` keyword of `fast_run_scenario`, the FastRun class, the shared depositor chain); 1.2.0 after the U11-E review (the reverse-stress threshold multiplier, the inflow cap ceiling, the empty-stock shares, the RSF key `operational_deposits_held`, the cap wording of the reverse curve and the HQLA share basis).
 
 ## Conventions (all functions)
 
@@ -210,6 +210,7 @@ NSF20 (NSF20.2), NSF30 and NSF99 Tables 1 to 3 (in force 2019-12-15), from dossi
 | encumbered_hqla_6m_to_1y | 0.50 | NSF99 RSF: HQLA encumbered 6 months to under one year |
 | loans_fi_6m_to_1y | 0.50 | NSF99 RSF: loans to financial institutions and central banks 6 months to under one year |
 | other_assets_lt_1y | 0.50 | NSF99 RSF: all other assets under one year (corporate, retail, sovereign loans) |
+| operational_deposits_held | 0.50 | NSF99 RSF: operational deposits held at other financial institutions (dossier 01 l.634; added in 1.2.0) |
 | residential_mortgages_ge_1y_rw35 | 0.65 | NSF99 RSF: unencumbered residential mortgages of one year or more, SA risk weight at most 35 percent |
 | other_loans_ge_1y_rw35 | 0.65 | NSF99 RSF: other loans of one year or more, risk weight at most 35 percent |
 | initial_margin_ccp_default_fund | 0.85 | NSF99 RSF: initial margin and CCP default fund |
@@ -225,7 +226,7 @@ The derivative liabilities add-on (NSF30.8, dossier 01 G.2: "5% to 20% of deriva
 
 ## Module `riskvalidation/liquidity/_checks.py`
 
-Input checks naming the offending field; they import `validation._common.as_float_array` and add only what the per-package `_checks.py` of
+Input checks naming the offending field; they are self-contained (they do not import `validation._common`) and add only what the per-package `_checks.py` of
 `oprisk`, `lgd_ead` and `provisions` do not hold. Each returns the validated array and raises `ValueError(f"{name}: {reason}, got {value}")`.
 
 ### `riskvalidation.liquidity._checks.check_nonnegative_stock`
@@ -523,7 +524,7 @@ def survival_vs_multiplier(scenario: Scenario, cbc: np.ndarray, multipliers: np.
 ```
 
 - Units: `scenario` as composed by `compose_scenario`; `cbc` (H,) the CBC by day; `multipliers` increasing and at least 1; the result one `SurvivalResult` per multiplier.
-- Invariants: each segment's rate becomes `min(m x q, 1)` (a rate already at 1 stays); `SP(m)` is non-increasing in `m` ("survives the horizon" counts as longer than any day); a multiplier beyond the cap `1 / max(q < 1)` is refused and the document omits that point.
+- Invariants: each segment's rate becomes `min(m x q, 1)` (a rate already at 1 stays); `SP(m)` is non-increasing in `m` ("survives the horizon" counts as longer than any day); a multiplier beyond the cap `1 / max(q < 1)` is refused and the document omits that point; at the cap itself the largest rate is exactly 1, which is allowed (sizing Q9's "each rate stays below 1" reads as "at most 1": a segment that runs off in full in one day is a legitimate limit case).
 - Golden: one segment, opening `1000.0`, `q = 0.01`, constant `cbc = 100.0`, `H = 125`: `m = 1` gives `SP = 11` (`0.99^t < 0.9` first at `t = 11`); the curve over `[1, 2, 3]` is non-increasing.
 
 ### `riskvalidation.liquidity.reverse.solve_multiplier`
@@ -532,8 +533,9 @@ def survival_vs_multiplier(scenario: Scenario, cbc: np.ndarray, multipliers: np.
 def solve_multiplier(scenario: Scenario, cbc: np.ndarray, target_days: int) -> SolveResult: ...
 ```
 
-- Units: `target_days` an integer below the horizon; `SolveResult` is a frozen dataclass `(status, multiplier, survival_at_multiplier, reason)`, `status` one of `"solved"`, `"refused"`.
-- Invariants: the smallest `m` (rounded up to six decimals) at which `SP(m) <= target_days`, solved on the monotone `SP(m)` by bracketing with `scipy.optimize.brentq`, never above the cap; the round trip holds: `survival_at_multiplier == target_days` within the named tolerance `round_trip_tolerance_days`; a target that is not bracketed (the base survival period already at or below it, no multiplier under the cap reaches it, or a target not below the horizon) is refused with the reason, never a number.
+- Units: `target_days` an integer below the horizon; `SolveResult` is a frozen dataclass `(status, multiplier, survival_at_multiplier, reason, survival_just_below)`, `status` one of `"solved"`, `"refused"`; `survival_just_below` (added in 1.2.0, last field, default None) is the `SurvivalResult` at `m* - 1e-6` (`survives` true and `day` None when the bank survives the horizon there), None only for a refusal.
+- Invariants: the smallest `m` (rounded up to six decimals) at which `SP(m) <= target_days`, solved on the monotone `SP(m)` by bracketing with `scipy.optimize.brentq`, never above the cap; the solved `m*` is the threshold multiplier (U11 sizing decision X1, 1.2.0): `survival_at_multiplier` is `SP(m*)`, at most the target and below it when the curve steps past the target (a CBC that grows by the monetisation schedule moves `SP(m)` in jumps); the round trip is the threshold property `SP(m*) <= target_days` and `SP(m* - 1e-6) > target_days`, that is at least `target_days + 1` days or "survives the horizon", within the named tolerance `round_trip_tolerance_days`; a target that is not bracketed (the base survival period already at or below it, no multiplier under the cap reaches it, or a target not below the horizon) is refused with the reason, never a number.
+- Golden (step case, 1.2.0): one segment of 1000 at `q = 0.01`, the CBC of `monetisation_capacity(1000, [(1, 0.015), (2, 1.0)], 60)` and `target_days = 5` give a solved threshold multiplier with `survival_at_multiplier = 1` and "survives the horizon" just below it; the round trip with `survival_just_below` is green.
 - Golden: the one-segment bank of `survival_vs_multiplier` and `target_days = 5` gives `multiplier = 2.085164` (`1 - 0.9^(1/5) = 0.0208516`, divided by `q`, rounded up), `survival_at_multiplier = 5` and `SP = 6` just below it; `target_days = 125` is refused (not below the horizon); `target_days = 100` is refused when the base `SP` is 11.
 
 ## Module `riskvalidation/liquidity/deposits.py`
@@ -594,7 +596,7 @@ def hqla_stock(l1: float, l2a: float, l2b: float, adjusted_l1: float | None = No
 ```
 
 - Units: money (USD thousands) after haircuts; the adjusted amounts (after unwinding short-term SFTs and collateral swaps maturing within 30 days, LCR30.37) default to the unadjusted ones; `HqlaResult` is `(l1, l2a, l2b, adj_15, adj_40, hqla, l2_share, l2b_share)`.
-- Invariants: `HQLA = L1 + L2A + L2B - Adj15 - Adj40` (LCR30.38); `Adj15 = max(aL2B - 15/85 (aL1 + aL2A), aL2B - 15/60 aL1, 0)` and `Adj40 = max(aL2A + aL2B - Adj15 - two-thirds aL1, 0)` (LCR30.39); Level 1 is unlimited; Level 2 is at most 0.40 of HQLA (LCR30.31) and Level 2B at most 0.15 (LCR30.33), both after haircuts (LCR30.34); adjusted Level 2 is at most two-thirds of adjusted Level 1 (LCR30.35); Level 2B alone never exceeds 15/85 of Level 1 plus Level 2A after adjustment; `l2b_share = (L2B - Adj15) / HQLA` and `l2_share = (L2A + L2B - Adj15 - Adj40) / HQLA`; negative inputs raise.
+- Invariants: `HQLA = L1 + L2A + L2B - Adj15 - Adj40` (LCR30.38); `Adj15 = max(aL2B - 15/85 (aL1 + aL2A), aL2B - 15/60 aL1, 0)` and `Adj40 = max(aL2A + aL2B - Adj15 - two-thirds aL1, 0)` (LCR30.39); Level 1 is unlimited; Level 2 is at most 0.40 of HQLA (LCR30.31) and Level 2B at most 0.15 (LCR30.33), both after haircuts (LCR30.34); `l2_share` and `l2b_share` are shares of the unadjusted stock and may exceed 0.40 and 0.15 when the adjusted amounts differ, because the caps bind on the adjusted amounts (LCR30.37 to 39); for an empty stock (all levels 0) both shares are NaN, never 0 and never an error (1.2.0; the C16 documents write them as null with their reason); adjusted Level 2 is at most two-thirds of adjusted Level 1 (LCR30.35); Level 2B alone never exceeds 15/85 of Level 1 plus Level 2A after adjustment; `l2b_share = (L2B - Adj15) / HQLA` and `l2_share = (L2A + L2B - Adj15 - Adj40) / HQLA`; negative inputs raise.
 - Golden (constructed, 01 M.1; no official example exists): `(100, 20, 30)` gives `adj_15 = 8.823529`, `adj_40 = 0`, `hqla = 141.176471`, `l2b_share = 0.15`; `(100, 80, 0)` gives `adj_15 = 0`, `adj_40 = 13.333333`, `hqla = 166.666667`, `l2_share = 0.40`; `(100, 0, 0)` gives `hqla = 100` (Level 1 only).
 
 ### `riskvalidation.regulatory.lcr_nsfr.lcr_outflows`
@@ -623,7 +625,7 @@ def lcr_inflows(balances: Mapping[str, float], rates: Mapping[str, float] | None
 def net_cash_outflows(outflows: float, inflows: float, cap: float = 0.75) -> NetOutflowResult: ...
 ```
 
-- Units: money; `cap` the inflow cap share (0.75, LCR40.1); `NetOutflowResult` is `(inflows_counted, net, cap_binds)`.
+- Units: money; `cap` the inflow cap share (0.75, LCR40.1), in `(0, 0.75]`: a cap above 0.75 raises `ValueError` naming `cap` (1.2.0), and a stricter supervisor cap below 0.75 is allowed; `NetOutflowResult` is `(inflows_counted, net, cap_binds)`.
 - Invariants: `net = outflows - min(inflows, 0.75 x outflows)` (LCR40.1); inflows never offset more than 0.75 of outflows, so `net >= 0.25 x outflows`; `cap_binds` is `inflows > 0.75 x outflows`.
 - Golden: `(100.0, 90.0)` gives `inflows_counted = 75.0`, `net = 25.0`, `cap_binds = True`; `(100.0, 50.0)` gives `50.0`, `50.0`, `False`.
 
@@ -777,12 +779,13 @@ def uninsured_share_sensitivity(shares: Sequence[float], survival_days: Sequence
 ### `riskvalidation.validation.liquidity.reverse_stress_round_trip`
 
 ```python
-def reverse_stress_round_trip(solved_multiplier: float | None, survival_at_multiplier: int | None, target_days: int, tol_days: float = 0.0) -> TestResult: ...
+def reverse_stress_round_trip(solved_multiplier: float | None, survival_at_multiplier: int | None, target_days: int, tol_days: float = 0.0, *,
+                              survival_just_below: SurvivalResult | float | None = None) -> TestResult: ...
 ```
 
 - Units: the solved multiplier, the survival period it returns in relevant days, the target in days; the statistic is `abs(survival_at_multiplier - target_days)` and the metric the multiplier.
 - Test id: `test_id = "liq.reverse_stress_round_trip"`; 05 line 279; `segment` is the base scenario id.
-- Light: green when the statistic is at most `tol_days` (the named parameter `round_trip_tolerance_days`), red otherwise; `not_evaluated` with the reason when the multiplier is `None` (a refused solve); `extras["thresholds"] = {"tolerance_days": tol_days}`.
+- Light: with `survival_just_below` given (1.2.0: a `SurvivalResult`, a number of days, or `math.inf` for "survives the horizon"), green when the threshold property holds within `tol_days` (`survival_at_multiplier <= target_days + tol_days` and the survival just below at least `target_days + 1 - tol_days`), red otherwise, the notes stating the step `target_days - survival_at_multiplier` when the curve stepped; with `survival_just_below` None (not given), the 1.1.0 rule: green when the statistic is at most `tol_days` (the named parameter `round_trip_tolerance_days`), red otherwise; `not_evaluated` with the reason when the multiplier is `None` (a refused solve); `extras["thresholds"] = {"tolerance_days": tol_days}`.
 - Golden: `(2.085164, 5, 5)` gives statistic 0.0 and green; `(2.0, 7, 5)` gives 2.0 and red; `(None, None, 30)` gives `not_evaluated`.
 
 ### `riskvalidation.validation.liquidity.htm_revaluation_vs_reported`

@@ -656,9 +656,10 @@ def reverse_defs() -> dict:
     d["c16Solved"] = one_of(Ob({
         "status": E("solved", "refused"), "multiplier": nullable(N(minimum=1)), "survival_at_multiplier": nullable(Int(1)),
         "target_days": Int(1), "round_trip_error": nullable(N()), "refusal_reason": nullable(LABEL),
-    }, "The solved multiplier: the smallest m at which the survival period first falls to the target (05 E.5 rung 5), by bracketing on "
-       "the monotone SP(m), with the round trip (the survival period at m returns the target); a target that is not bracketed is "
-       "refused with the reason."),
+    }, "The solved multiplier: the threshold m*, the smallest m at which the survival period first falls to or below the target "
+       "(05 E.5 rung 5; engine-liquidity-api 1.2.0), by bracketing on the monotone SP(m); the round trip is the threshold property "
+       "(the survival at m* is at most the target, below it when SP(m) steps past the target, and every cheaper point survives longer "
+       "than the target); a target that is not bracketed is refused with the reason."),
         {"status": C("solved"), "multiplier": {"type": "number"}, "survival_at_multiplier": {"type": "integer"},
          "round_trip_error": {"type": "number"}, "refusal_reason": {"type": "null"}},
         {"status": C("refused"), "multiplier": {"type": "null"}, "survival_at_multiplier": {"type": "null"},

@@ -15,6 +15,7 @@ from __future__ import annotations
 import copy
 import math
 import re
+from pathlib import Path
 from typing import Any, Callable, Iterator
 
 import pytest
@@ -27,7 +28,10 @@ FIXTURES = ROOT / "docs" / "contracts" / "fixtures"
 SCHEMAS = ROOT / "docs" / "contracts" / "schemas"
 REG_API = ROOT / "docs" / "contracts" / "engine" / "regulatory-api.md"
 CCR_API = ROOT / "docs" / "contracts" / "engine" / "ccr-api.md"
-ROWS = ROOT / "docs" / "contracts" / "rows" / "U9.md"
+ROWS_FRAGMENT = ROOT / "docs" / "contracts" / "rows" / "U9.md"
+# merged into the catalog at the batch 3 integration (task/0-13-000-wave2, 2026-10-19) and deleted by fragments.py rows;
+# the fragment as merged is kept beside these tests
+ROWS = ROWS_FRAGMENT if ROWS_FRAGMENT.is_file() else Path(__file__).parent / "rows-fragment-merged.md"
 CHANGES = ROOT / "changes" / "U9-S.md"
 
 C12, C12M, REG = "c12/variant-swap-exposure", "c12/models", "regulatory/calculators"
@@ -950,7 +954,10 @@ def test_the_rows_fragment_carries_no_row_already_in_the_catalog_and_names_the_i
     catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
     contracts = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0]
     ids = [ln.split("|")[1].strip() for ln in contracts.splitlines() if ln.startswith("| ")]
-    assert not [i for i in ROW_IDS if i in ids]
+    if ROWS_FRAGMENT.is_file():
+        assert not [i for i in ROW_IDS if i in ids]
+    else:  # merged at the batch 3 integration: each row is in the Contracts table exactly once
+        assert all(ids.count(i) == 1 for i in ROW_IDS), [i for i in ROW_IDS if ids.count(i) != 1]
     text = ROWS.read_text(encoding="utf-8")
     assert "history" in text.lower() and "api.openapi.json" in text and "integrator" in text
 
