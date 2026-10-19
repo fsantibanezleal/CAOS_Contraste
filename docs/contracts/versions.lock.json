@@ -285,8 +285,8 @@
     "sha256": "28cb79c4ad81bee24e63714b2e8c0e7dab3e5dd7138bea01caac2d700f8bd22f"
   },
   "engine-liquidity-api": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "schema": "docs/contracts/engine/liquidity-api.md",
-    "sha256": "36d71cbeb5c0dbfd21894f304fb3c37ebbe9278ea72a38cf3df0cafb759648b4"
+    "sha256": "de5364f57fd5c939e2ab603242c2fc51e03443d72088b9bf920dae2905389188"
   }
 }

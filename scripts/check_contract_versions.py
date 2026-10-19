@@ -358,6 +358,10 @@ def base_findings(root: Path, ref: str, rows: list[dict[str, str]], text: str) -
             out.append(f"{cid}: the schema {cur_schema} changed against the base {ref} without a version bump (still {row['version']}), "
                        "whatever the lock says; bump the catalog version and add its History row, then --update")
             continue
+        if not cur_schema.lower().endswith(".json"):
+            # a prose contract (an engine API page, docs/contracts/engine/*.md) has no structure to compare: its version went
+            # up and its History row records the step's kind, which the checks above and the History check enforce
+            continue
         try:
             found = breaking(json.loads(before.decode("utf-8")), json.loads(path.read_text(encoding="utf-8")))
         except ValueError as e:

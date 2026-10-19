@@ -1,4 +1,4 @@
-# Engine liquidity API contract: `engine-liquidity-api` 1.0.0
+# Engine liquidity API contract: `engine-liquidity-api` 1.1.0
 
 Owner: U11-S (unit sizing `plans/contraste/units/U11-sizing.md`, CAOS_MANAGE). Implemented by U11-E in `riskvalidation.liquidity`,
 `riskvalidation.regulatory.lcr_nsfr` and `riskvalidation.validation.liquidity` (repository CAOS_RiskValidation); called by the C16 bake
@@ -474,11 +474,11 @@ def compose_scenario(family: str, phase: str, parameter_set: ListScenario | Fast
 ### `riskvalidation.liquidity.scenarios.fast_run_scenario`
 
 ```python
-def fast_run_scenario(rows: Sequence[tuple[float, int]], rule: str = "maximum-implied-daily-rate") -> FastRun: ...
+def fast_run_scenario(rows: Sequence[tuple[float, int]], rule: str = "maximum-implied-daily-rate", *, scored: bool = False) -> FastRun: ...
 ```
 
 - Units: `rows` the Table A.1 `(outflow share, days)` pairs the caller selects (pre-2023 only for the scored variant, Q4); `rule` one of `maximum-implied-daily-rate`, `median-implied-daily-rate`, `mean-implied-daily-rate` (the named parameter `fast_run_calibration_rule`); the result `FastRun` has the daily rate for the concentrated uninsured segment (decimal per relevant day) and the implied rates it came from.
-- Invariants: each row's rate is `daily_rate_from_cumulative`; the fitted rate is the rule's statistic of the implied rates; the dossiers give no calibration method (UNVERIFIED), so the rule is a convention; calibration on the 2023 rows is refused with a message when the caller marks them scored.
+- Invariants: each row's rate is `daily_rate_from_cumulative`; the fitted rate is the rule's statistic of the implied rates; the dossiers give no calibration method (UNVERIFIED), so the rule is a convention; calibration on the 2023 rows is refused with a message when the caller marks them scored, through the keyword `scored=True` (added in 1.1.0 after U11-E; the default `False` keeps every 1.0.0 call valid). A `FastRun` covers the class `concentrated-uninsured` only and raises for any other class: a fast-run variant that runs other segments composes them at their LiST rates itself (the C16 bake does).
 - Golden (recomputed): the rows Icesave `(0.20, 75)`, Northern Rock `(0.20, 4)`, WaMu `(0.10, 10)`, IndyMac `(0.08, 14)` give the implied rates `[0.002971, 0.054258, 0.010481, 0.005938]` and the fitted rate `0.054258` (maximum), `0.0082095` (median) or `0.018412` (mean).
 
 ### `riskvalidation.liquidity.scenarios.anchor_from_observation`
@@ -563,7 +563,7 @@ class DepositorConfig:
 ```
 
 - Units: hazards and probabilities are decimals per relevant day; shares sum to 1 (`check_weights_sum_to_one`); the configuration serialises through `GeneratorBase.config()` into the `generator.config` block of `c16-models`.
-- Invariants: frozen and hashable; a share vector that does not sum to one, a probability outside `[0, 1]` or a non-positive count raises `ValueError` naming the field; every segment id is in `SEGMENTS`.
+- Invariants: frozen and hashable; a share vector that does not sum to one, a probability outside `[0, 1]` or a non-positive count raises `ValueError` naming the field; every segment id is in `SEGMENTS`. The stress state is one chain shared by every depositor, so `p_enter_stress` and `p_exit_stress` must be equal across the segments; a configuration whose segments disagree raises `ValueError` naming the field (stated in 1.1.0 after U11-E; moving the two probabilities to `DepositorConfig` is backlog item BL-082 of a later major version).
 - Golden: a configuration of one segment with `share_of_deposits = 1.0` passes; `0.9` raises; the three-segment shares `0.057, 0.864, 0.079` sum to 1.0.
 
 ### `riskvalidation.liquidity.deposits.DepositorGenerator`
