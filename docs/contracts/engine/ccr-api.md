@@ -63,8 +63,8 @@ def bond_a(t: np.ndarray, big_t: np.ndarray, a: float, sigma: float, p0: Callabl
 ```
 
 - Units: `p0` today's discount factor `P(0, T)`; the result unitless.
-- Invariants: `A(t, T) = P(0, T) / P(0, t) exp(B f(0, t) - sigma^2 / (4 a) (1 - exp(-2 a t)) B^2)` (R4, `HullWhite::A`); `A(t, t) = 1`; at `t = 0` it equals `P(0, T)`.
-- Golden: at `t = 0` and any `a`, `sigma`: `A(0, T) = P(0, T)` exactly.
+- Invariants: `A(t, T) = P(0, T) / P(0, t) exp(B f(0, t) - sigma^2 / (4 a) (1 - exp(-2 a t)) B^2)` (R4, `HullWhite::A`); `A(t, t) = 1`; at `t = 0` it equals `P(0, T) exp(B(0, T) f(0, 0))`, NOT `P(0, T)` (the repricing identity is `bond_price` at `t = 0` with `r = phi(0)`, where the factor `exp(-B r)` with `r = f(0, 0)` cancels it).
+- Golden: at `t = 0` and any `a`, `sigma`: `A(0, T) = P(0, T) exp(B(0, T) f(0, 0))`; flat `f = 0.03`, `a = 0.1`, `T = 5` gives `A = exp(-0.15) exp(3.934693 x 0.03) = 0.968546` against `P(0, 5) = 0.860708` (recomputed).
 
 ### `riskvalidation.ccr.hw1f.bond_price`
 
@@ -162,12 +162,12 @@ def cash_flow_times(swap: Swap) -> np.ndarray: ...
 ### `riskvalidation.ccr.swaps.swap_value`
 
 ```python
-def swap_value(swap: Swap, t: float, r: np.ndarray, a: float, sigma: float, p0: Callable, forward: Callable) -> np.ndarray: ...
+def swap_value(swap: Swap, t: float, r: np.ndarray, a: float, sigma: float, p0: Callable, forward: Callable, last_fixing: np.ndarray | None = None) -> np.ndarray: ...
 ```
 
-- Units: `t` years, `r` (P,) the short rate at `t`; the result (P,) money, to the bank (positive is an asset); only flows after `t` are valued (sticky date, R3).
-- Invariants: fixed leg `sum c_i P(t, T_i)` and floating leg `N (P(t, T_0) - P(t, T_n))` from the affine bond prices; a payer value is minus the receiver value of the same terms; at `t = 0` on today's curve with the par fixed rate the value is 0 to `1e-12`; no flows after `t` gives value 0.
-- Golden: a flat curve `P(0, T) = exp(-0.03 T)`, a receiver swap at its par rate has value 0 at `t = 0` for any `a`, `sigma`.
+- Units: `t` years, `r` (P,) the short rate at `t`; `last_fixing` (P,) the simple rate fixed at the last reset date on or before `t` on each path (decimal per year); the result (P,) money, to the bank (positive is an asset); only flows after `t` are valued (sticky date, R3).
+- Invariants: the fixed leg is `sum c_i P(t, T_i)` over the fixed payments after `t`. The floating leg resets on the fixed schedule: at a reset date `T_j` the coupon `N tau L_j` with `L_j = (1 / P(T_j, T_{j+1}) - 1) / tau` is fixed and paid at `T_{j+1}`. With `t` ON a reset date (or before the first one) the floating leg is `N (P(t, T_0') - P(t, T_n))` with `T_0' = t` (the next reset at or after `t`) from the affine bond prices and `last_fixing` is not used. With `t` STRICTLY BETWEEN two resets `T_j < t < T_{j+1}` the current coupon is already fixed at `T_j` and the floating leg is `N tau L_j P(t, T_{j+1}) + N (P(t, T_{j+1}) - P(t, T_n))`, which needs the path's fixing: `last_fixing` is required there and its absence raises `ValueError` (the valuation is never silently approximated). A payer value is minus the receiver value of the same terms; at `t = 0` on today's curve with the par fixed rate the value is 0 to `1e-12`; no flows after `t` gives value 0.
+- Golden: a flat curve `P(0, T) = exp(-0.03 T)`, a receiver swap at its par rate has value 0 at `t = 0` for any `a`, `sigma`. With `sigma = 0` and a one-period swap `[0, 0.5]`, at `t = 0.25` (between resets) the floating coupon is `N (e^{0.015} - 1)` paid at 0.5 and the floating leg is `N (e^{0.0075} - e^{-0.0075}) = 0.01500014 N` (recomputed, tolerance 5e-9).
 
 ### `riskvalidation.ccr.swaps.par_fixed_rate`
 
@@ -186,7 +186,7 @@ def swap_values_on_grid(swaps: list[Swap], grid: np.ndarray, short_rate: np.ndar
 ```
 
 - Units: `short_rate` (P, K) from `simulate_short_rate`; the result (S, P, K) money per swap, path and grid point.
-- Invariants: equals `swap_value` at each grid point; the sum over swaps is the netting-set value (netting is on the sum, not the sum of positive parts).
+- Invariants: equals `swap_value` at each grid point; the sum over swaps is the netting-set value (netting is on the sum, not the sum of positive parts). The simulation grid is the union of `grid` and every reset date of every swap, so the fixing at the last reset is read from the same path (`last_fixing`) and the value between resets is exact on the path; the result is returned on `grid` only.
 - Golden: a single swap at its par rate has mean value 0 at the first grid point within the Monte Carlo error of `sigma sqrt(t)` scale.
 
 ## Module `riskvalidation/ccr/exposure.py`
@@ -234,10 +234,10 @@ def epe(grid: np.ndarray, ee: np.ndarray, horizon: float = 1.0) -> float: ...
 ### `riskvalidation.ccr.exposure.pfe`
 
 ```python
-def pfe(values: np.ndarray, quantile: float) -> tuple[np.ndarray, np.ndarray]: ...
+def pfe(values: np.ndarray, quantile: float, seed: int = 0, n_bootstrap: int = 200) -> tuple[np.ndarray, np.ndarray]: ...
 ```
 
-- Units: `values` (P, K) money, `quantile` in (0, 1); the result `(pfe, mc_se)` each (K,) in money, `pfe = max(quantile of the value, 0)`.
+- Units: `values` (P, K) money, `quantile` in (0, 1); `seed` the seed of the bootstrap resampling (`numpy.random.default_rng(seed)`, so the same inputs and the same `seed` give the same `mc_se`) and `n_bootstrap` its resamples; the result `(pfe, mc_se)` each (K,) in money, `pfe = max(quantile of the value, 0)`.
 - Invariants: dossier 05 C.1 `PFE_alpha(t) = (inf {x : F_t(x) >= alpha})^+`; non-negative; non-decreasing in the quantile; at least EE for a quantile of at least 0.5 on a symmetric value; the standard error is the order-statistic one (`sqrt(q (1 - q) / P) / density`, estimated by the bootstrap of the sample, seeded).
 - Golden: the values `1, 2, ..., 100` at quantile 0.95 give 95 (the inverse empirical distribution).
 
@@ -278,7 +278,7 @@ def analytic_ee_single_swap(swap: Swap, grid: np.ndarray, a: float, sigma: float
 ```
 
 - Units: the result (K,) the undiscounted EE in money.
-- Invariants: rung 2 (R4, derived statement): `EE_B(t) = Swaption(0; t) / P(0, t)` where the swaption is the payer one (payer swap) or the receiver one (receiver swap) expiring at `t` on the remaining swap, from `swaption_jamshidian`; flows at or before `t` are excluded (sticky date); it equals the Monte Carlo `expected_exposure` of the same swap within the Monte Carlo error at every grid point (test `ccr.ee_analytic_vs_simulated`); valid for the risk-neutral measure only (a check of the engine's EE, not a real-world measure).
+- Invariants: rung 2 (R4, derived statement): `EE_B(t) = Swaption(0; t) / P(0, t)` where the swaption is the payer one (payer swap) or the receiver one (receiver swap) expiring at `t` on the remaining swap, from `swaption_jamshidian`; flows at or before `t` are excluded (sticky date). The identity holds on the swap's RESET dates only: between resets the remaining swap has a fixed current coupon and is not a forward-starting swap, so a grid point that is neither a reset date nor at or after the maturity raises `ValueError`; the comparison with the Monte Carlo `expected_exposure` (test `ccr.ee_analytic_vs_simulated`) is made at the reset dates, within the Monte Carlo error, on the simulation grid of `swap_values_on_grid`; valid for the risk-neutral measure only (a check of the engine's EE, not a real-world measure).
 - Golden: at the last grid point at or after the maturity the EE is 0.
 
 ### `riskvalidation.ccr.exposure.rung1_ead`
@@ -288,7 +288,7 @@ def rung1_ead(v: float, c: float, addon_aggregate: float, margined: bool = False
 ```
 
 - Units: money in one currency.
-- Invariants: decision D3: ladder rung 1 is SA-CCR's `1.4 (RC + PFE)`; the function calls `riskvalidation.regulatory.sa_ccr` and equals its `netting_set_ead(...).ead` exactly.
+- Invariants: decision D3: ladder rung 1 is SA-CCR's `1.4 (RC + PFE)`; the function is a thin wrapper of `riskvalidation.regulatory.sa_ccr.netting_set_ead` (it only ties the ladder numbering to a public name) and equals its `netting_set_ead(...).ead` exactly.
 - Golden: the CRE99 netting set 5 inputs of `engine-regulatory-api` give 1,878.9 (printed 1,879), to one unit.
 
 ## Module `riskvalidation/ccr/collateral.py`
@@ -358,12 +358,12 @@ def variation_margin_exposure(values_main: np.ndarray, values_closeout: np.ndarr
 ### `riskvalidation.ccr.collateral.dynamic_initial_margin`
 
 ```python
-def dynamic_initial_margin(values_now: np.ndarray, values_mpor: np.ndarray, flows: np.ndarray, quantile: float, horizon_days: int, mpor_days: int, order: int = 2, regressor: np.ndarray | None = None) -> np.ndarray: ...
+def dynamic_initial_margin(values_now: np.ndarray, values_mpor: np.ndarray, flows: np.ndarray, quantile: float, horizon_calendar_days: int, mpor_calendar_days: int, order: int = 2, regressor: np.ndarray | None = None) -> np.ndarray: ...
 ```
 
 - Units: `values_now` and `values_mpor` (P,) the netting-set value at `t` and at `t + MPoR`, `flows` (P,) the cash flows in the window, all in money; `regressor` (P,) a market variable (default `values_now`); the result (P,) the DIM per path in money.
-- Invariants: R2 (ORE `xva.tex`, `dimregressioncalculator.cpp`): `X = V(t + MPoR) + F - V(t)`; `E[X^2]` by regression of `X^2` on a polynomial of the regressor of the given order (order 0 is the sample variance); `S = sqrt(max(E[X^2] - E[X]^2, 0))` with `E[X]` the sample mean; `DIM = Phi^{-1}(quantile) S sqrt(horizon_days / mpor_days)`; zero where `S` is zero; non-negative; labelled a regression proxy, never SIMM (SIMM is not used: its public notice restricts use to a market participant's own transactions).
-- Golden: order 0, `X` samples `[-2, -1, 1, 2]` (zero flows, `values_now = 0`), quantile 0.99, `horizon_days = mpor_days`: `S = sqrt(2.5) = 1.581139` and `DIM = 2.326348 x 1.581139 = 3.678279` (recomputed; the guide's rounded factor 2.33 gives 3.684053).
+- Invariants: R2 (ORE `xva.tex`, `dimregressioncalculator.cpp`): `X = V(t + MPoR) + F - V(t)`; `E[X^2]` by regression of `X^2` on a polynomial of the regressor of the given order (order 0 is the sample variance); `S = sqrt(max(E[X^2] - E[X]^2, 0))` with `E[X]` the sample mean; `DIM = Phi^{-1}(quantile) S sqrt(horizon_calendar_days / mpor_calendar_days)`, both in CALENDAR days as ORE computes `horizonCalendarDays / mporCalendarDays` (10 business days are 14 calendar days, 20 are 28); zero where `S` is zero; non-negative; labelled a regression proxy, never SIMM (SIMM is not used: its public notice restricts use to a market participant's own transactions).
+- Golden: order 0, `X` samples `[-2, -1, 1, 2]` (zero flows, `values_now = 0`), quantile 0.99, `horizon_calendar_days = mpor_calendar_days`: `S = sqrt(2.5) = 1.581139` and `DIM = 2.326348 x 1.581139 = 3.678279` (recomputed; the guide's rounded factor 2.33 gives 3.684053).
 
 ### `riskvalidation.ccr.collateral.apply_initial_margin`
 
@@ -404,7 +404,7 @@ def cva(epe_discounted: np.ndarray, pd: np.ndarray, lgd: float) -> tuple[float, 
 ```
 
 - Units: `epe_discounted` (K,) money (the discounted EE at `t_i`), `pd` (K,), `lgd` in (0, 1]; the result `(cva, terms)` with `terms` (K,) the bucket terms in money.
-- Invariants: dossier 05 C.2 `CVA = sum PD(t_{i-1}, t_i) LGD EPE(t_i)` (the advanced discretisation); CVA is a positive cost; with a zero spread (`pd = 0`) CVA is exactly 0; linear in `lgd` and in the EE; the document's `cva_dva.buckets` are `terms`, so CVA recomputed from EE equals the document value (test `ccr.cva_recomputed_from_ee`).
+- Invariants: dossier 05 C.2 `CVA = sum PD(t_{i-1}, t_i) LGD EPE(t_i)` (the advanced discretisation); CVA is a positive cost; with a zero spread (`pd = 0`) CVA is exactly 0; linear in `lgd` and in the EE; the document's `cva_dva.buckets` are `terms`, so CVA recomputed from EE equals the document value (test `ccr.cva_recomputed`).
 - Golden: `epe = [10, 20]`, `pd = [0.1, 0.1]`, `lgd = 0.6` gives `0.6 + 1.2 = 1.8` (arithmetic).
 
 ### `riskvalidation.ccr.cva.dva`
@@ -435,7 +435,7 @@ def wwr_calibrate_a(w: np.ndarray, survival_target: np.ndarray, dt: np.ndarray, 
 
 - Units: `w` (P, K) the simulated portfolio value in the unit `b` is stated in; `survival_target` (K,) the spread-implied survival `exp(-s_k t_k / (1 - R))`; `dt` (K,) years; the result `(a, h)` with `a` (K,) and the hazards `h` (P, K) per year.
 - Invariants: hazard `h_ij = exp(a_i + b w_ij + sigma eps_ij)`; sequential calibration (Hull-White Appendix, page 22): for each `k` the average over paths of `exp(-sum_{i <= k} h_ij dt_i)` equals `survival_target[k]` (the largest error is reported in `a_calibration_max_error` of the document, at most `1e-10`); `k = 1` by a root search from `w_1j`, then `k = 2` from `w_2j` and the `h_1j`, and so on; with `b = 0` every path has the same hazard.
-- Golden: the Appendix three-path example, copied inputs: `sigma = 0`, `m = 3`, spread 1 percent at every maturity, recovery 0, `dt = 0.5`, `b = 0.01`, `w` at step 1 `[100, 200, 300]`, at step 2 `[100, 300, 400]`: `a_1 = -6.9128`, `h_1 = [0.00270, 0.00735, 0.01998]`, `a_2 = -7.8509`, `h_2 = [0.00106, 0.00782, 0.02126]` (the paper's printed digits; recomputed on the printed equations: `a_1 = -6.91283`, `a_2 = -7.85077`, `h_1 = [0.002705, 0.007352, 0.019984]`, `h_2 = [0.001059, 0.007822, 0.021263]`; tolerance one unit of the last printed digit).
+- Golden: the Appendix three-path example, copied inputs: `sigma = 0`, `m = 3`, spread 1 percent at every maturity, recovery 0, `dt = 0.5`, `b = 0.01`, `w` at step 1 `[100, 200, 300]`, at step 2 `[100, 300, 400]`: `a_1 = -6.9128`, `h_1 = [0.00270, 0.00735, 0.01998]`, `a_2 = -7.8509`, `h_2 = [0.00106, 0.00782, 0.02126]` (the paper's printed digits). The engine is held to the values recomputed on the printed equations: `a_1 = -6.91283`, `a_2 = -7.85077`, `h_1 = [0.002705, 0.007352, 0.019984]`, `h_2 = [0.001059, 0.007822, 0.021263]` at a tolerance of `5e-6` for `a` and `5e-7` for `h`; against the paper's printed digits the tolerance is `2e-4` for `a` (the printed `a_2` is 1.3e-4 from the recomputed one) and one unit of the last printed digit for `h`.
 
 ### `riskvalidation.ccr.cva.wwr_cva`
 
@@ -536,14 +536,46 @@ def pit_exposure_backtest(realised: np.ndarray, simulated: np.ndarray, critical_
 
 - Units: `realised` (N,) the realised values at the horizon, one per backtest date; `simulated` (N, P) the simulated sample at the same horizon.
 - Test id: `test_id = "ccr.pit_exposure_backtest"`. `statistic` is the Anderson-Darling `W^2`; `extras` carry the PITs, the iid critical values and the simulated ones.
-- Light: PIT of each realised value by `(i + 1) / (N_sim + 2)` with `1 / (N_sim + 2)` and `(N_sim + 1) / (N_sim + 2)` the tails (R5, Formenti et al. arXiv 1505.04593); `W^2 = -n - sum (2k - 1) / n [ln F(x_k) + ln(1 - F(x_{n+1-k}))]`; green below the simulated 5 percent critical value, amber between the 5 and 1 percent values, red above the 1 percent value; the critical values come from simulating the whole backtest under the model itself with the same dates and overlapping horizons (B5), the iid table values `1.248, 1.610, 1.933, 2.492, 3.880, 4.500, 6.000` (upper-tail probabilities 0.25, 0.15, 0.10, 0.05, 0.01, 0.005, 0.001) reported beside them; the effective sample size is stated.
+- Light: when `critical_simulated` is `None` the function returns the `not_evaluated` light with the reason "no simulated critical values" in `notes` and `statistic`, `p_value` and `metric` all null (the iid table values are reported beside a simulated rule, never in its place, and no placeholder number stands in); otherwise: PIT of each realised value by `(i + 1) / (N_sim + 2)` with `1 / (N_sim + 2)` and `(N_sim + 1) / (N_sim + 2)` the tails (R5, Formenti et al. arXiv 1505.04593); `W^2 = -n - sum (2k - 1) / n [ln F(x_k) + ln(1 - F(x_{n+1-k}))]`; green below the simulated 5 percent critical value, amber between the 5 and 1 percent values, red above the 1 percent value; the critical values come from simulating the whole backtest under the model itself with the same dates and overlapping horizons (B5), the iid table values `1.248, 1.610, 1.933, 2.492, 3.880, 4.500, 6.000` (upper-tail probabilities 0.25, 0.15, 0.10, 0.05, 0.01, 0.005, 0.001) reported beside them; the effective sample size is stated.
 - Golden: PITs `(i + 1) / (n + 2)`-uniform give a small `W^2`; the iid table values above; the PITs of a realised path drawn from the model itself have the size of the nominal level, and a halved sigma has power (U9-E2 tests); with PITs `[0.25, 0.5, 0.75]`, `W^2 = 0.269431` (recomputed from the formula, tolerance 5e-7).
+
+### `riskvalidation.validation.ccr.CriticalValues`
+
+```python
+@dataclass(frozen=True)
+class CriticalValues:
+    p05: float; p01: float; effective_sample_size: float; n_backtests: int; w2_samples: np.ndarray
+```
+
+- Units: `p05` and `p01` the 95th and 99th percentiles of `W^2` under the model, unitless; `effective_sample_size` a number of independent observations; `w2_samples` (n_backtests,) the simulated statistics.
+- Invariants: frozen; `p01 >= p05 > 0`; `effective_sample_size` in `[1, n]`.
+
+### `riskvalidation.validation.ccr.simulate_pit_critical_values`
+
+```python
+def simulate_pit_critical_values(pit_sampler: Callable[[np.random.Generator], np.ndarray], n_backtests: int, seed: int, max_lag: int | None = None) -> CriticalValues: ...
+```
+
+- Units: `pit_sampler(rng)` returns the PITs (n,) of ONE whole backtest simulated under the model itself, at the same dates and with the same overlapping horizons as the real backtest (the caller draws the realised path from the model and applies the `(i + 1) / (N_sim + 2)` rule); `n_backtests` the number of simulated backtests (the named parameter `backtest_simulated_critical_count`); `seed` for `numpy.random.default_rng(seed)`.
+- Invariants: B5, addendum R5: the critical values come from simulating the whole backtest under the model, so the bake does not hand-roll statistics; `p05` and `p01` are the 0.95 and 0.99 empirical quantiles of `W^2` over the `n_backtests` statistics (inverse empirical distribution); the effective sample size is `effective_sample_size` of the first simulated PIT series; the same `seed` gives the same result; `n_backtests < 100` raises `ValueError` (a percentile of fewer is not stated); a sampler returning PITs outside (0, 1) raises `ValueError`.
+- Golden: a sampler returning `n` independent uniforms gives `p05` near 2.492 and `p01` near 3.880 (the iid values of R5, Formenti et al. Table 1) within the Monte Carlo error of the count (a unit test with 4,000 backtests accepts a band of 0.15 and 0.35).
+
+### `riskvalidation.validation.ccr.effective_sample_size`
+
+```python
+def effective_sample_size(pits: np.ndarray, max_lag: int | None = None) -> float: ...
+```
+
+- Units: `pits` (n,) PITs in (0, 1) in date order; the result a number of observations in `[1, n]`.
+- Invariants: with `z_i = Phi^{-1}(PIT_i)` and `rho_k` the sample autocorrelation of `z`, `ESS = n / (1 + 2 sum_{k=1}^{L} (1 - k / (L + 1)) rho_k)` (Bartlett weights, `L = max_lag`, default the integer part of `n ** (1/3)`), clipped to `[1, n]`; non-overlapping (uncorrelated) PITs give about `n`; fully overlapping horizons give less; the value is stated in the document (`effective_sample_size` of each horizon). A convention of this contract (UNVERIFIED as a backtesting standard).
+- Golden: `z = [1, 0, -1, 0]` has `rho_1 = 0` and with `max_lag = 1` gives `ESS = 4` (arithmetic).
 
 ## UNVERIFIED and open items
 
 - The HW1F journal derivations (Hull and White 1990 and 1994, Jamshidian 1989) are not read as papers; the closed forms are transcribed from QuantLib 1.44 and the C12 bake reconciles the engine against it (sizing B4).
 - The Andersen, Pykhtin and Sokol (2017) MPoR timelines are not modelled; the document states the limit (sizing B3).
 - The Anderson-Darling critical values for the overlapping-horizon backtest come from simulating the backtest under the model; the Ruiz (2014) and Anfuso et al. (2014) procedures were not read (addendum R5).
-- The default of ORE's `horizonCalendarDays` is not read (addendum R2); the contract takes `horizon_days` as a named parameter of the document.
+- The default of ORE's `horizonCalendarDays` is not read (addendum R2); the contract takes the horizon and the MPoR in calendar days as named parameters of the document (14 and 14 for the 10-business-day variant, decision R1).
+- The effective sample size of `effective_sample_size` (the Bartlett-kernel autocorrelation correction of the probit PITs) is the contract's convention, not a transcribed backtesting standard (BCBS 185 paragraph 25 requires only that the size be stated).
 - ORE's wrong-way example is a different model (correlated credit LGM): the wrong-way variant has no ORE reconciliation and no ORE golden.
 - No open CDS spread series is known (R5 of the sizing); the base credit curve is the HQM minus Treasury proxy of addendum R10, a floor for lower ratings.

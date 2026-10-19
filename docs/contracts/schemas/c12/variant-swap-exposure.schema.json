@@ -210,6 +210,39 @@
       },
       "description": "A money profile on the time grid with its Monte Carlo standard errors (same length as the grid: a producer check)."
     },
+    "c12NonNegProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "values",
+        "mc_se"
+      ],
+      "properties": {
+        "currency": {
+          "const": "USD"
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0
+          },
+          "minItems": 2,
+          "description": "One non-negative value per point of the time grid."
+        },
+        "mc_se": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0
+          },
+          "minItems": 2,
+          "description": "The Monte Carlo standard error of each value."
+        }
+      },
+      "description": "A non-negative money profile (an EE, ENE, PFE, effective EE or DIM) on the time grid with its Monte Carlo standard errors (same length as the grid: a producer check)."
+    },
     "c12Convention": {
       "type": "object",
       "additionalProperties": false,
@@ -258,15 +291,21 @@
         "pfe_quantile",
         "path_count",
         "seed",
+        "time_grid_years",
         "wwr_b_grid",
         "im_quantile",
-        "im_horizon_days",
+        "im_horizon_calendar_days",
+        "im_mpor_calendar_days",
         "im_regression_order",
         "ba_cva_sector",
         "ba_cva_rating",
         "stress_window_start",
         "stress_window_end",
-        "backtest_window_start"
+        "backtest_window_start",
+        "backtest_paths_per_date",
+        "backtest_simulated_critical_count",
+        "reconciliation_se_threshold",
+        "ee_check_k_se"
       ],
       "properties": {
         "notionals": {
@@ -323,13 +362,19 @@
         "seed": {
           "$ref": "#/$defs/c12Convention"
         },
+        "time_grid_years": {
+          "$ref": "#/$defs/c12Convention"
+        },
         "wwr_b_grid": {
           "$ref": "#/$defs/c12Convention"
         },
         "im_quantile": {
           "$ref": "#/$defs/c12Convention"
         },
-        "im_horizon_days": {
+        "im_horizon_calendar_days": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "im_mpor_calendar_days": {
           "$ref": "#/$defs/c12Convention"
         },
         "im_regression_order": {
@@ -348,6 +393,18 @@
           "$ref": "#/$defs/c12Convention"
         },
         "backtest_window_start": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "backtest_paths_per_date": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "backtest_simulated_critical_count": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "reconciliation_se_threshold": {
+          "$ref": "#/$defs/c12Convention"
+        },
+        "ee_check_k_se": {
           "$ref": "#/$defs/c12Convention"
         }
       },
@@ -622,16 +679,16 @@
           "minItems": 2
         },
         "ee": {
-          "$ref": "#/$defs/c12Profile"
+          "$ref": "#/$defs/c12NonNegProfile"
         },
         "ee_discounted": {
-          "$ref": "#/$defs/c12Profile"
+          "$ref": "#/$defs/c12NonNegProfile"
         },
         "ene": {
-          "$ref": "#/$defs/c12Profile"
+          "$ref": "#/$defs/c12NonNegProfile"
         },
         "ene_discounted": {
-          "$ref": "#/$defs/c12Profile"
+          "$ref": "#/$defs/c12NonNegProfile"
         },
         "pfe_quantile": {
           "type": "number",
@@ -639,10 +696,10 @@
           "exclusiveMaximum": 1
         },
         "pfe": {
-          "$ref": "#/$defs/c12Profile"
+          "$ref": "#/$defs/c12NonNegProfile"
         },
         "effective_ee": {
-          "$ref": "#/$defs/c12Profile"
+          "$ref": "#/$defs/c12NonNegProfile"
         },
         "epe": {
           "$ref": "#/$defs/c12MoneySe"
@@ -686,20 +743,20 @@
                 "minLength": 1
               },
               "ee": {
-                "$ref": "#/$defs/c12Profile"
+                "$ref": "#/$defs/c12NonNegProfile"
               }
             }
           },
           "minItems": 1
         },
         "sum_of_single_trade_ee": {
-          "$ref": "#/$defs/c12Profile"
+          "$ref": "#/$defs/c12NonNegProfile"
         },
         "netted_ee": {
-          "$ref": "#/$defs/c12Profile"
+          "$ref": "#/$defs/c12NonNegProfile"
         },
         "benefit": {
-          "$ref": "#/$defs/c12Profile"
+          "$ref": "#/$defs/c12NonNegProfile"
         }
       },
       "description": "The netting benefit: the netting-set EE is at most the sum of the single-trade EE; the benefit is their difference."
@@ -728,7 +785,7 @@
         },
         "mpor_business_days": {
           "type": "integer",
-          "minimum": 1
+          "minimum": 10
         },
         "remargining_days": {
           "type": "integer",
@@ -758,7 +815,7 @@
           "$ref": "#/$defs/c12Csa"
         },
         "uncollateralised_ee": {
-          "$ref": "#/$defs/c12Profile"
+          "$ref": "#/$defs/c12NonNegProfile"
         },
         "collateral_balance": {
           "$ref": "#/$defs/c12Profile"
@@ -797,8 +854,8 @@
         "simm_used",
         "quantile",
         "alpha",
-        "horizon_days",
-        "mpor_days",
+        "horizon_calendar_days",
+        "mpor_calendar_days",
         "regression_order",
         "dim",
         "ee_vm_only",
@@ -823,11 +880,11 @@
           "type": "number",
           "exclusiveMinimum": 0
         },
-        "horizon_days": {
+        "horizon_calendar_days": {
           "type": "integer",
           "minimum": 1
         },
-        "mpor_days": {
+        "mpor_calendar_days": {
           "type": "integer",
           "minimum": 1
         },
@@ -836,16 +893,16 @@
           "minimum": 0
         },
         "dim": {
-          "$ref": "#/$defs/c12Profile"
+          "$ref": "#/$defs/c12NonNegProfile"
         },
         "ee_vm_only": {
-          "$ref": "#/$defs/c12Profile"
+          "$ref": "#/$defs/c12NonNegProfile"
         },
         "limit": {
           "$ref": "#/$defs/c12Label"
         }
       },
-      "description": "Initial margin as a separate balance: DIM(t) = alpha S(t) sqrt(horizon / MPoR) applied as max(exposure - DIM, 0). Labelled a regression proxy, never SIMM (SIMM is not used: its public notice restricts use to a participant's own transactions)."
+      "description": "Initial margin as a separate balance: DIM(t) = alpha S(t) sqrt(horizon / MPoR) applied as max(exposure - DIM, 0), alpha the normal quantile of `quantile`, the horizon and the MPoR in calendar days as ORE computes horizonCalendarDays / mporCalendarDays (10 business days are 14 calendar days, 20 are 28). Labelled a regression proxy, never SIMM (SIMM is not used: its public notice restricts use to a participant's own transactions)."
     },
     "c12CvaBucket": {
       "type": "object",
@@ -916,6 +973,8 @@
         "credit_curve_source",
         "credit_curve_label",
         "survival_formula",
+        "negative_spread_rule",
+        "spreads_floored_at_zero",
         "lgd",
         "bank_lgd",
         "buckets",
@@ -936,6 +995,13 @@
         },
         "survival_formula": {
           "const": "S(t) = exp(-s t / LGD)"
+        },
+        "negative_spread_rule": {
+          "const": "a negative HQM-minus-Treasury spread is set to zero and counted in spreads_floored_at_zero"
+        },
+        "spreads_floored_at_zero": {
+          "type": "integer",
+          "minimum": 0
         },
         "lgd": {
           "type": "number",
@@ -999,6 +1065,8 @@
         "model",
         "b_unit",
         "b_grid",
+        "w_max_usd_million",
+        "largest_b_w",
         "sweep",
         "independent_cva",
         "ore_limit"
@@ -1016,6 +1084,16 @@
             "type": "number"
           },
           "minItems": 3
+        },
+        "w_max_usd_million": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "The largest portfolio value of the simulated paths, in USD million."
+        },
+        "largest_b_w": {
+          "type": "number",
+          "minimum": 0,
+          "description": "max |b| of the grid times w_max_usd_million: the largest exponent b w the grid reaches on this book, so the reader sees whether the sweep moves the hazard."
         },
         "sweep": {
           "type": "array",
@@ -1077,10 +1155,10 @@
           "$ref": "#/$defs/c12Money"
         },
         "delta": {
-          "type": "string",
+          "type": "number",
           "enum": [
-            "1",
-            "-1"
+            1,
+            -1
           ]
         },
         "maturity_factor": {
@@ -1232,7 +1310,7 @@
           "anyOf": [
             {
               "type": "integer",
-              "minimum": 1
+              "minimum": 10
             },
             {
               "type": "null"
@@ -1463,7 +1541,7 @@
         },
         "effective_maturity_years": {
           "type": "number",
-          "exclusiveMinimum": 0,
+          "minimum": 1,
           "maximum": 5
         },
         "alpha_times_eepe": {
@@ -1514,7 +1592,7 @@
         "currency",
         "sqrt2_division",
         "sqrt2_label",
-        "sensitivities_per_bp",
+        "sensitivities",
         "weighted_sensitivities",
         "scenarios",
         "delta_charge",
@@ -1536,13 +1614,14 @@
         "sqrt2_label": {
           "const": "convention"
         },
-        "sensitivities_per_bp": {
+        "sensitivities": {
           "type": "array",
           "items": {
             "type": "number"
           },
           "minItems": 10,
-          "maxItems": 10
+          "maxItems": 10,
+          "description": "s_k = (V(r + 0.0001) - V(r)) / 0.0001 at each GIRR tenor, in USD per unit of rate: the change in value for a 1 basis point shift divided by 0.0001 (MAR21.19), not the PV01 per basis point. The weighted sensitivity is RW_k s_k / sqrt(2)."
         },
         "weighted_sensitivities": {
           "type": "array",
@@ -1567,7 +1646,7 @@
           "$ref": "#/$defs/c12Money"
         }
       },
-      "description": "The FRTB SA GIRR delta charge of the same book (single USD bucket): the PV01 per tenor, the weighted sensitivities with the MAR21.44 division by sqrt(2) (a named convention) and the charge, the maximum over the three correlation scenarios, with the undivided charge beside it."
+      "description": "The FRTB SA GIRR delta charge of the same book (single USD bucket): the sensitivities s_k per tenor as MAR21.19 defines them, the weighted sensitivities with the MAR21.44 division by sqrt(2) (a named convention) and the charge, the maximum over the three correlation scenarios, with the undivided charge beside it."
     },
     "c12Pit": {
       "type": "number",
@@ -1925,7 +2004,9 @@
         "a",
         "sigma",
         "eepe",
-        "pfe_peak"
+        "pfe_peak",
+        "ee",
+        "pfe"
       ],
       "properties": {
         "case": {
@@ -1951,9 +2032,72 @@
         },
         "pfe_peak": {
           "$ref": "#/$defs/c12Money"
+        },
+        "ee": {
+          "$ref": "#/$defs/c12NonNegProfile"
+        },
+        "pfe": {
+          "$ref": "#/$defs/c12NonNegProfile"
         }
       },
-      "description": "EE and PFE under the base calibration and with a and sigma moved by one standard error (B6)."
+      "description": "EE and PFE (the profiles and their summaries) under the base calibration and with a and sigma moved by one standard error (B6)."
+    },
+    "c12PointAgreement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "t",
+        "difference",
+        "combined_se",
+        "within_two_se"
+      ],
+      "properties": {
+        "t": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "difference": {
+          "type": "number"
+        },
+        "combined_se": {
+          "type": "number",
+          "minimum": 0
+        },
+        "within_two_se": {
+          "type": "boolean"
+        }
+      },
+      "description": "The agreement at one grid point: the difference ORE minus Python, the combined Monte Carlo standard error and whether the difference is within two of them."
+    },
+    "c12ScalarAgreement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "python",
+        "ore",
+        "difference",
+        "combined_se",
+        "within_two_se"
+      ],
+      "properties": {
+        "python": {
+          "type": "number"
+        },
+        "ore": {
+          "type": "number"
+        },
+        "difference": {
+          "type": "number"
+        },
+        "combined_se": {
+          "type": "number",
+          "minimum": 0
+        },
+        "within_two_se": {
+          "type": "boolean"
+        }
+      },
+      "description": "The agreement of one scalar (EEPE or CVA): the Python value, the ORE value, their difference (ORE minus Python), the combined standard error and the two-standard-error flag."
     },
     "c12OreReconciliation": {
       "type": "object",
@@ -1964,7 +2108,14 @@
         "platform",
         "run_seconds",
         "ore_ee",
+        "ore_ee_discounted",
+        "ore_eepe",
+        "ore_cva",
+        "ore_dim",
         "agreement",
+        "eepe_agreement",
+        "cva_agreement",
+        "dim_agreement",
         "all_within_two_se",
         "reason"
       ],
@@ -2011,7 +2162,47 @@
         "ore_ee": {
           "anyOf": [
             {
-              "$ref": "#/$defs/c12Profile"
+              "$ref": "#/$defs/c12NonNegProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ore_ee_discounted": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c12NonNegProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ore_eepe": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c12Money"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ore_cva": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c12Money"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ore_dim": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c12NonNegProfile"
             },
             {
               "type": "null"
@@ -2023,30 +2214,41 @@
             {
               "type": "array",
               "items": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "t",
-                  "difference",
-                  "combined_se",
-                  "within_two_se"
-                ],
-                "properties": {
-                  "t": {
-                    "type": "number",
-                    "exclusiveMinimum": 0
-                  },
-                  "difference": {
-                    "type": "number"
-                  },
-                  "combined_se": {
-                    "type": "number",
-                    "minimum": 0
-                  },
-                  "within_two_se": {
-                    "type": "boolean"
-                  }
-                }
+                "$ref": "#/$defs/c12PointAgreement"
+              },
+              "minItems": 2
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "eepe_agreement": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c12ScalarAgreement"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cva_agreement": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c12ScalarAgreement"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "dim_agreement": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/c12PointAgreement"
               },
               "minItems": 2
             },
@@ -2076,7 +2278,7 @@
           ]
         }
       },
-      "description": "The reconciliation of the Python EE profile against ORE 1.8.17.0 on the same curve and model parameters (ADR-0069: the bake's), with the agreement at every grid point; or not-applicable with its reason.",
+      "description": "The reconciliation of the Python measures against ORE 1.8.17.0 on the same curve and model parameters (ADR-0069: the bake's): the EE profile at every grid point, the EEPE and the CVA recomputed from the ORE profiles, and for the initial-margin variant the DIM profile, each with its agreement. Every variant but the wrong-way one is reconciled (S2); the wrong-way one is not-applicable with its reason. An ORE run that fails stops the bake: a variant is never published as not-applicable because ORE failed.",
       "oneOf": [
         {
           "properties": {
@@ -2093,10 +2295,25 @@
               "type": "number"
             },
             "ore_ee": {
-              "$ref": "#/$defs/c12Profile"
+              "$ref": "#/$defs/c12NonNegProfile"
+            },
+            "ore_ee_discounted": {
+              "$ref": "#/$defs/c12NonNegProfile"
+            },
+            "ore_eepe": {
+              "$ref": "#/$defs/c12Money"
+            },
+            "ore_cva": {
+              "$ref": "#/$defs/c12Money"
             },
             "agreement": {
               "type": "array"
+            },
+            "eepe_agreement": {
+              "$ref": "#/$defs/c12ScalarAgreement"
+            },
+            "cva_agreement": {
+              "$ref": "#/$defs/c12ScalarAgreement"
             },
             "all_within_two_se": {
               "type": "boolean"
@@ -2123,7 +2340,28 @@
             "ore_ee": {
               "type": "null"
             },
+            "ore_ee_discounted": {
+              "type": "null"
+            },
+            "ore_eepe": {
+              "type": "null"
+            },
+            "ore_cva": {
+              "type": "null"
+            },
+            "ore_dim": {
+              "type": "null"
+            },
             "agreement": {
+              "type": "null"
+            },
+            "eepe_agreement": {
+              "type": "null"
+            },
+            "cva_agreement": {
+              "type": "null"
+            },
+            "dim_agreement": {
               "type": "null"
             },
             "all_within_two_se": {
@@ -2305,11 +2543,43 @@
               "collateral": {
                 "type": "null"
               },
+              "sa_ccr": {
+                "type": "object",
+                "properties": {
+                  "margined": {
+                    "const": false
+                  },
+                  "mpor_business_days": {
+                    "const": null
+                  }
+                },
+                "required": [
+                  "margined",
+                  "mpor_business_days"
+                ]
+              },
               "initial_margin": {
                 "type": "null"
               },
               "wrong_way_risk": {
                 "type": "null"
+              },
+              "ore_reconciliation": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "reconciled"
+                  },
+                  "ore_dim": {
+                    "type": "null"
+                  },
+                  "dim_agreement": {
+                    "type": "null"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
               }
             }
           }
@@ -2355,11 +2625,43 @@
               "collateral": {
                 "type": "null"
               },
+              "sa_ccr": {
+                "type": "object",
+                "properties": {
+                  "margined": {
+                    "const": false
+                  },
+                  "mpor_business_days": {
+                    "const": null
+                  }
+                },
+                "required": [
+                  "margined",
+                  "mpor_business_days"
+                ]
+              },
               "initial_margin": {
                 "type": "null"
               },
               "wrong_way_risk": {
                 "type": "null"
+              },
+              "ore_reconciliation": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "reconciled"
+                  },
+                  "ore_dim": {
+                    "type": "null"
+                  },
+                  "dim_agreement": {
+                    "type": "null"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
               }
             }
           }
@@ -2421,11 +2723,43 @@
                   "csa"
                 ]
               },
+              "sa_ccr": {
+                "type": "object",
+                "properties": {
+                  "margined": {
+                    "const": true
+                  },
+                  "mpor_business_days": {
+                    "const": 10
+                  }
+                },
+                "required": [
+                  "margined",
+                  "mpor_business_days"
+                ]
+              },
               "initial_margin": {
                 "type": "null"
               },
               "wrong_way_risk": {
                 "type": "null"
+              },
+              "ore_reconciliation": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "reconciled"
+                  },
+                  "ore_dim": {
+                    "type": "null"
+                  },
+                  "dim_agreement": {
+                    "type": "null"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
               }
             }
           }
@@ -2487,11 +2821,43 @@
                   "csa"
                 ]
               },
+              "sa_ccr": {
+                "type": "object",
+                "properties": {
+                  "margined": {
+                    "const": true
+                  },
+                  "mpor_business_days": {
+                    "const": 20
+                  }
+                },
+                "required": [
+                  "margined",
+                  "mpor_business_days"
+                ]
+              },
               "initial_margin": {
                 "type": "null"
               },
               "wrong_way_risk": {
                 "type": "null"
+              },
+              "ore_reconciliation": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "reconciled"
+                  },
+                  "ore_dim": {
+                    "type": "null"
+                  },
+                  "dim_agreement": {
+                    "type": "null"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
               }
             }
           }
@@ -2553,11 +2919,45 @@
                   "csa"
                 ]
               },
+              "sa_ccr": {
+                "type": "object",
+                "properties": {
+                  "margined": {
+                    "const": true
+                  },
+                  "mpor_business_days": {
+                    "const": 10
+                  }
+                },
+                "required": [
+                  "margined",
+                  "mpor_business_days"
+                ]
+              },
               "initial_margin": {
                 "$ref": "#/$defs/c12Im"
               },
               "wrong_way_risk": {
                 "type": "null"
+              },
+              "ore_reconciliation": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "const": "reconciled"
+                  },
+                  "ore_dim": {
+                    "$ref": "#/$defs/c12NonNegProfile"
+                  },
+                  "dim_agreement": {
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "status",
+                  "ore_dim",
+                  "dim_agreement"
+                ]
               }
             }
           }
@@ -2602,6 +3002,21 @@
               },
               "collateral": {
                 "type": "null"
+              },
+              "sa_ccr": {
+                "type": "object",
+                "properties": {
+                  "margined": {
+                    "const": false
+                  },
+                  "mpor_business_days": {
+                    "const": null
+                  }
+                },
+                "required": [
+                  "margined",
+                  "mpor_business_days"
+                ]
               },
               "initial_margin": {
                 "type": "null"

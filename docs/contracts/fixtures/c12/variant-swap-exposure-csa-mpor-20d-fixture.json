@@ -49,16 +49,18 @@
         "value": [
           10000000.0,
           6000000.0,
-          4000000.0
+          4000000.0,
+          2000000.0
         ],
         "unit": "USD",
         "label": "convention"
       },
       "maturities_years": {
         "value": [
+          10.0,
           5.0,
           3.0,
-          5.0
+          0.5
         ],
         "unit": "years",
         "label": "convention"
@@ -67,7 +69,8 @@
         "value": [
           "payer",
           "receiver",
-          "payer"
+          "payer",
+          "receiver"
         ],
         "unit": "payer or receiver",
         "label": "convention"
@@ -76,7 +79,8 @@
         "value": [
           "SW-1",
           "SW-2",
-          "SW-3"
+          "SW-3",
+          "SW-4"
         ],
         "unit": "trade ids",
         "label": "convention"
@@ -117,7 +121,7 @@
         "label": "convention"
       },
       "counterparty_spread": {
-        "value": 0.012,
+        "value": 0.0125,
         "unit": "decimal per year",
         "label": "convention"
       },
@@ -151,12 +155,27 @@
         "unit": "integer",
         "label": "convention"
       },
+      "time_grid_years": {
+        "value": [
+          0.25,
+          0.5,
+          1.0,
+          2.0,
+          3.0,
+          5.0,
+          7.0,
+          10.0
+        ],
+        "unit": "years",
+        "label": "convention"
+      },
       "wwr_b_grid": {
         "value": [
+          -2.0,
           0.0,
-          0.01,
-          0.02,
-          0.04
+          1.0,
+          2.0,
+          4.0
         ],
         "unit": "per USD million",
         "label": "convention"
@@ -166,9 +185,14 @@
         "unit": "decimal",
         "label": "convention"
       },
-      "im_horizon_days": {
-        "value": 10,
-        "unit": "days",
+      "im_horizon_calendar_days": {
+        "value": 14,
+        "unit": "calendar days (10 business days)",
+        "label": "convention"
+      },
+      "im_mpor_calendar_days": {
+        "value": 14,
+        "unit": "calendar days (10 business days)",
         "label": "convention"
       },
       "im_regression_order": {
@@ -200,6 +224,26 @@
         "value": "2000-01",
         "unit": "month",
         "label": "convention"
+      },
+      "backtest_paths_per_date": {
+        "value": 2000,
+        "unit": "paths",
+        "label": "convention"
+      },
+      "backtest_simulated_critical_count": {
+        "value": 1000,
+        "unit": "simulated backtests",
+        "label": "convention"
+      },
+      "reconciliation_se_threshold": {
+        "value": 2,
+        "unit": "combined standard errors",
+        "label": "convention"
+      },
+      "ee_check_k_se": {
+        "value": 3,
+        "unit": "standard errors",
+        "label": "convention"
       }
     },
     "book": {
@@ -212,10 +256,10 @@
             "amount": 10000000.0,
             "currency": "USD"
           },
-          "fixed_rate": 0.04,
+          "fixed_rate": 0.019,
           "side": "payer",
           "start_years": 0.0,
-          "maturity_years": 5.0,
+          "maturity_years": 10.0,
           "fixed_frequency_per_year": 2,
           "floating_leg": "USD floating leg on the single curve of the case",
           "label": "convention"
@@ -226,10 +270,10 @@
             "amount": 6000000.0,
             "currency": "USD"
           },
-          "fixed_rate": 0.038,
+          "fixed_rate": 0.017,
           "side": "receiver",
           "start_years": 0.0,
-          "maturity_years": 3.0,
+          "maturity_years": 5.0,
           "fixed_frequency_per_year": 2,
           "floating_leg": "USD floating leg on the single curve of the case",
           "label": "convention"
@@ -240,10 +284,24 @@
             "amount": 4000000.0,
             "currency": "USD"
           },
-          "fixed_rate": 0.042,
+          "fixed_rate": 0.016,
           "side": "payer",
           "start_years": 0.0,
-          "maturity_years": 5.0,
+          "maturity_years": 3.0,
+          "fixed_frequency_per_year": 2,
+          "floating_leg": "USD floating leg on the single curve of the case",
+          "label": "convention"
+        },
+        {
+          "trade_id": "SW-4",
+          "notional": {
+            "amount": 2000000.0,
+            "currency": "USD"
+          },
+          "fixed_rate": 0.016,
+          "side": "receiver",
+          "start_years": 0.0,
+          "maturity_years": 0.5,
           "fixed_frequency_per_year": 2,
           "floating_leg": "USD floating leg on the single curve of the case",
           "label": "convention"
@@ -336,130 +394,156 @@
         1.0,
         2.0,
         3.0,
-        5.0
+        5.0,
+        7.0,
+        10.0
       ],
       "ee": {
         "currency": "USD",
         "values": [
-          9391.666667,
-          12704.351835,
-          16333.333333,
-          18479.057215,
-          16974.097914,
-          7304.488726
+          8820.0,
+          11953.640136,
+          16170.0,
+          20788.939367,
+          20368.917497,
+          16435.099635,
+          16853.435851,
+          0.0
         ],
         "mc_se": [
-          93.916667,
-          127.043518,
-          163.333333,
-          184.790572,
-          169.740979,
-          73.044887
+          88.2,
+          119.536401,
+          161.7,
+          207.889394,
+          203.689175,
+          164.350996,
+          168.534359,
+          0.0
         ]
       },
       "ee_discounted": {
         "currency": "USD",
         "values": [
-          9356.513869,
-          12609.425615,
-          16090.16168,
-          17932.918538,
-          16227.194862,
-          6776.691837
+          8786.986938,
+          11864.323192,
+          15929.260063,
+          20174.533356,
+          19472.633835,
+          15247.556633,
+          15173.561587,
+          0.0
         ],
         "mc_se": [
-          93.565139,
-          126.094256,
-          160.901617,
-          179.329185,
-          162.271949,
-          67.766918
+          87.869869,
+          118.643232,
+          159.292601,
+          201.745334,
+          194.726338,
+          152.475566,
+          151.735616,
+          0.0
         ]
       },
       "ene": {
         "currency": "USD",
         "values": [
-          7513.333333,
-          10163.481468,
-          13066.666667,
-          14783.245772,
-          13579.278331,
-          5843.590981
+          7056.0,
+          9562.912109,
+          12936.0,
+          16631.151494,
+          16295.133998,
+          13148.079708,
+          13482.748681,
+          0.0
         ],
         "mc_se": [
-          75.133333,
-          101.634815,
-          130.666667,
-          147.832458,
-          135.792783,
-          58.43591
+          70.56,
+          95.629121,
+          129.36,
+          166.311515,
+          162.95134,
+          131.480797,
+          134.827487,
+          0.0
         ]
       },
       "ene_discounted": {
         "currency": "USD",
         "values": [
-          7485.211095,
-          10087.540492,
-          12872.129344,
-          14346.334831,
-          12981.75589,
-          5421.35347
+          7029.589551,
+          9491.458554,
+          12743.408051,
+          16139.626685,
+          15578.107068,
+          12198.045307,
+          12138.84927,
+          0.0
         ],
         "mc_se": [
-          74.852111,
-          100.875405,
-          128.721293,
-          143.463348,
-          129.817559,
-          54.213535
+          70.295896,
+          94.914586,
+          127.434081,
+          161.396267,
+          155.781071,
+          121.980453,
+          121.388493,
+          0.0
         ]
       },
       "pfe_quantile": 0.95,
       "pfe": {
         "currency": "USD",
         "values": [
-          28175.0,
-          38113.055506,
-          49000.0,
-          55437.171645,
-          50922.293743,
-          21913.466179
+          26460.0,
+          35860.920408,
+          48510.0,
+          62366.818101,
+          61106.752491,
+          49305.298904,
+          50560.307554,
+          0.0
         ],
         "mc_se": [
-          281.75,
-          381.130555,
-          490.0,
-          554.371716,
-          509.222937,
-          219.134662
+          264.6,
+          358.609204,
+          485.1,
+          623.668181,
+          611.067525,
+          493.052989,
+          505.603076,
+          0.0
         ]
       },
       "effective_ee": {
         "currency": "USD",
         "values": [
-          9391.666667,
-          12704.351835,
-          16333.333333,
-          18479.057215,
-          18479.057215,
-          18479.057215
+          8820.0,
+          11953.640136,
+          16170.0,
+          20788.939367,
+          20788.939367,
+          20788.939367,
+          20788.939367,
+          20788.939367
         ],
         "mc_se": [
-          93.916667,
-          127.043518,
-          163.333333,
-          184.790572,
-          184.790572,
-          184.790572
+          88.2,
+          119.536401,
+          161.7,
+          207.889394,
+          207.889394,
+          207.889394,
+          207.889394,
+          207.889394
         ]
       },
       "epe": {
-        "amount": 12750.560775,
+        "amount": 12101.333787,
         "currency": "USD",
         "mc_se": 15.0
       },
       "eepe": {
-        "amount": 13690.671292,
+        "amount": 13278.410034,
         "currency": "USD",
         "mc_se": 20.0
       },
@@ -476,20 +560,24 @@
           "ee": {
             "currency": "USD",
             "values": [
-              19166.666667,
-              25927.248644,
-              33333.333333,
-              37712.361663,
-              34641.016151,
-              14907.11985
+              19750.0,
+              27577.164466,
+              38000.0,
+              50911.688245,
+              58889.727457,
+              67082.039325,
+              68789.534088,
+              0.0
             ],
             "mc_se": [
-              191.666667,
-              259.272486,
-              333.333333,
-              377.123617,
-              346.410162,
-              149.071198
+              197.5,
+              275.771645,
+              380.0,
+              509.116882,
+              588.897275,
+              670.820393,
+              687.895341,
+              0.0
             ]
           }
         },
@@ -498,20 +586,24 @@
           "ee": {
             "currency": "USD",
             "values": [
-              10541.666667,
-              14259.986754,
-              18333.333333,
-              20741.798915,
-              19052.558883,
-              8198.915917
+              9750.0,
+              13435.028843,
+              18000.0,
+              22627.416998,
+              24248.711306,
+              0.0,
+              0.0,
+              0.0
             ],
             "mc_se": [
-              105.416667,
-              142.599868,
-              183.333333,
-              207.417989,
-              190.525589,
-              81.989159
+              97.5,
+              134.350288,
+              180.0,
+              226.27417,
+              242.487113,
+              0.0,
+              0.0,
+              0.0
             ]
           }
         },
@@ -520,20 +612,50 @@
           "ee": {
             "currency": "USD",
             "values": [
-              8625.0,
-              11667.26189,
-              15000.0,
-              16970.562748,
-              15588.457268,
-              6708.203932
+              5750.0,
+              7778.174593,
+              10000.0,
+              11313.708499,
+              0.0,
+              0.0,
+              0.0,
+              0.0
             ],
             "mc_se": [
-              86.25,
-              116.672619,
-              150.0,
-              169.705627,
-              155.884573,
-              67.082039
+              57.5,
+              77.781746,
+              100.0,
+              113.137085,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        {
+          "trade_id": "SW-4",
+          "ee": {
+            "currency": "USD",
+            "values": [
+              750.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "mc_se": [
+              7.5,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
             ]
           }
         }
@@ -541,58 +663,70 @@
       "sum_of_single_trade_ee": {
         "currency": "USD",
         "values": [
-          38333.333333,
-          51854.497287,
-          66666.666667,
-          75424.723327,
-          69282.032303,
-          29814.2397
+          36000.0,
+          48790.367902,
+          66000.0,
+          84852.813742,
+          83138.438763,
+          67082.039325,
+          68789.534088,
+          0.0
         ],
         "mc_se": [
-          383.333333,
-          518.544973,
-          666.666667,
-          754.247233,
-          692.820323,
-          298.142397
+          360.0,
+          487.903679,
+          660.0,
+          848.528137,
+          831.384388,
+          670.820393,
+          687.895341,
+          0.0
         ]
       },
       "netted_ee": {
         "currency": "USD",
         "values": [
-          26833.333333,
-          36298.148101,
-          46666.666667,
-          52797.306329,
-          48497.422612,
-          20869.96779
+          25200.0,
+          34153.257531,
+          46200.0,
+          59396.96962,
+          58196.907134,
+          46957.427527,
+          48152.673861,
+          0.0
         ],
         "mc_se": [
-          268.333333,
-          362.981481,
-          466.666667,
-          527.973063,
-          484.974226,
-          208.699678
+          252.0,
+          341.532575,
+          462.0,
+          593.969696,
+          581.969071,
+          469.574275,
+          481.526739,
+          0.0
         ]
       },
       "benefit": {
         "currency": "USD",
         "values": [
-          11500.0,
-          15556.349186,
-          20000.0,
-          22627.416998,
-          20784.609691,
-          8944.27191
+          10800.0,
+          14637.110371,
+          19800.0,
+          25455.844123,
+          24941.531629,
+          20124.611797,
+          20636.860226,
+          0.0
         ],
         "mc_se": [
-          115.0,
-          155.563492,
-          200.0,
-          226.27417,
-          207.846097,
-          89.442719
+          108.0,
+          146.371104,
+          198.0,
+          254.558441,
+          249.415316,
+          201.246118,
+          206.368602,
+          0.0
         ]
       }
     },
@@ -618,39 +752,47 @@
       "uncollateralised_ee": {
         "currency": "USD",
         "values": [
-          26833.333333,
-          36298.148101,
-          46666.666667,
-          52797.306329,
-          48497.422612,
-          20869.96779
+          25200.0,
+          34153.257531,
+          46200.0,
+          59396.96962,
+          58196.907134,
+          46957.427527,
+          48152.673861,
+          0.0
         ],
         "mc_se": [
-          268.333333,
-          362.981481,
-          466.666667,
-          527.973063,
-          484.974226,
-          208.699678
+          252.0,
+          341.532575,
+          462.0,
+          593.969696,
+          581.969071,
+          469.574275,
+          481.526739,
+          0.0
         ]
       },
       "collateral_balance": {
         "currency": "USD",
         "values": [
-          17441.666667,
-          23593.796266,
-          30333.333333,
-          34318.249114,
-          31523.324698,
-          13565.479063
+          16380.0,
+          22199.617395,
+          30030.0,
+          38608.030253,
+          37827.989637,
+          30522.327893,
+          31299.23801,
+          0.0
         ],
         "mc_se": [
-          174.416667,
-          235.937963,
-          303.333333,
-          343.182491,
-          315.233247,
-          135.654791
+          163.8,
+          221.996174,
+          300.3,
+          386.080303,
+          378.279896,
+          305.223279,
+          312.99238,
+          0.0
         ]
       },
       "limit": {
@@ -663,94 +805,120 @@
       "credit_curve_source": "synthetic-flat",
       "credit_curve_label": "proxy: an AAA to A market spread, a floor for lower ratings (R10)",
       "survival_formula": "S(t) = exp(-s t / LGD)",
+      "negative_spread_rule": "a negative HQM-minus-Treasury spread is set to zero and counted in spreads_floored_at_zero",
+      "spreads_floored_at_zero": 0,
       "lgd": 0.6,
       "bank_lgd": 0.6,
       "buckets": [
         {
           "t_start": 0.0,
           "t_end": 0.25,
-          "spread": 0.012,
-          "survival": 0.995012479,
-          "pd_counterparty": 0.004987521,
+          "spread": 0.0125,
+          "survival": 0.994805207,
+          "pd_counterparty": 0.005194793,
           "pd_bank": 0.003327784,
-          "epe_discounted": 9356.513869,
-          "ene_discounted": 7485.211095,
-          "cva_term": 27.999484564,
-          "dva_term": 14.945499187
+          "epe_discounted": 8786.986938,
+          "ene_discounted": 7029.589551,
+          "cva_term": 27.387949485,
+          "dva_term": 14.03577315
         },
         {
           "t_start": 0.25,
           "t_end": 0.5,
-          "spread": 0.012,
-          "survival": 0.990049834,
-          "pd_counterparty": 0.004962645,
+          "spread": 0.0125,
+          "survival": 0.989637399,
+          "pd_counterparty": 0.005167808,
           "pd_bank": 0.00331671,
-          "epe_discounted": 12609.425615,
-          "ene_discounted": 10087.540492,
-          "cva_term": 37.545665144,
-          "dva_term": 20.074466641
+          "epe_discounted": 11864.323192,
+          "ene_discounted": 9491.458554,
+          "cva_term": 36.787523757,
+          "dva_term": 18.888248158
         },
         {
           "t_start": 0.5,
           "t_end": 1.0,
-          "spread": 0.012,
-          "survival": 0.980198673,
-          "pd_counterparty": 0.00985116,
+          "spread": 0.0125,
+          "survival": 0.979382181,
+          "pd_counterparty": 0.010255218,
           "pd_bank": 0.006600344,
-          "epe_discounted": 16090.16168,
-          "ene_discounted": 12872.129344,
-          "cva_term": 95.104058554,
-          "dva_term": 50.976292469
+          "epe_discounted": 15929.260063,
+          "ene_discounted": 12743.408051,
+          "cva_term": 98.014816739,
+          "dva_term": 50.466529544
         },
         {
           "t_start": 1.0,
           "t_end": 2.0,
-          "spread": 0.012,
-          "survival": 0.960789439,
-          "pd_counterparty": 0.019409234,
+          "spread": 0.0125,
+          "survival": 0.959189457,
+          "pd_counterparty": 0.020192724,
           "pd_bank": 0.013069412,
-          "epe_discounted": 17932.918538,
-          "ene_discounted": 14346.334831,
-          "cva_term": 208.838528992,
-          "dva_term": 112.498900265
+          "epe_discounted": 20174.533356,
+          "ene_discounted": 16139.626685,
+          "cva_term": 244.427273018,
+          "dva_term": 126.561262798
         },
         {
           "t_start": 2.0,
           "t_end": 3.0,
-          "spread": 0.012,
-          "survival": 0.941764534,
-          "pd_counterparty": 0.019024906,
+          "spread": 0.0125,
+          "survival": 0.939413063,
+          "pd_counterparty": 0.019776394,
           "pd_bank": 0.01289631,
-          "epe_discounted": 16227.194862,
-          "ene_discounted": 12981.75589,
-          "cva_term": 185.232509934,
-          "dva_term": 100.450050544
+          "epe_discounted": 19472.633835,
+          "ene_discounted": 15578.107068,
+          "cva_term": 231.059090815,
+          "dva_term": 120.540060653
         },
         {
           "t_start": 3.0,
           "t_end": 5.0,
-          "spread": 0.012,
-          "survival": 0.904837418,
-          "pd_counterparty": 0.036927116,
+          "spread": 0.0125,
+          "survival": 0.901075106,
+          "pd_counterparty": 0.038337957,
           "pd_bank": 0.025282454,
-          "epe_discounted": 6776.691837,
-          "ene_discounted": 5421.35347,
-          "cva_term": 150.146209499,
-          "dva_term": 82.23907222
+          "epe_discounted": 15247.556633,
+          "ene_discounted": 12198.045307,
+          "cva_term": 350.736103178,
+          "dva_term": 185.037912495
+        },
+        {
+          "t_start": 5.0,
+          "t_end": 7.0,
+          "spread": 0.0125,
+          "survival": 0.864301741,
+          "pd_counterparty": 0.036773364,
+          "pd_bank": 0.024617165,
+          "epe_discounted": 15173.561587,
+          "ene_discounted": 12138.84927,
+          "cva_term": 334.789744323,
+          "dva_term": 179.29443531
+        },
+        {
+          "t_start": 7.0,
+          "t_end": 10.0,
+          "spread": 0.0125,
+          "survival": 0.811936346,
+          "pd_counterparty": 0.052365395,
+          "pd_bank": 0.035716501,
+          "epe_discounted": 0.0,
+          "ene_discounted": 0.0,
+          "cva_term": 0.0,
+          "dva_term": 0.0
         }
       ],
       "cva": {
-        "amount": 704.866457,
+        "amount": 1323.202501,
         "currency": "USD",
         "mc_se": 0.5
       },
       "dva": {
-        "amount": 381.184281,
+        "amount": 694.824222,
         "currency": "USD",
         "mc_se": 0.4
       },
       "bcva": {
-        "amount": 323.682175,
+        "amount": 628.378279,
         "currency": "USD"
       }
     },
@@ -789,92 +957,111 @@
           "trade_id": "SW-1",
           "hedging_set": "USD",
           "start_years": 0.0,
-          "end_years": 5.0,
+          "end_years": 10.0,
           "notional": {
             "amount": 10000000.0,
             "currency": "USD"
           },
-          "supervisory_duration": 4.423984339,
+          "supervisory_duration": 7.869386806,
           "adjusted_notional": {
-            "amount": 44239843.385719,
+            "amount": 78693868.057473,
             "currency": "USD"
           },
-          "delta": "1",
+          "delta": 1,
           "maturity_factor": 0.424264069,
-          "bucket": "B2",
-          "effective_notional": 18769375.954004
+          "bucket": "B3",
+          "effective_notional": 33386980.644743
         },
         {
           "trade_id": "SW-2",
           "hedging_set": "USD",
           "start_years": 0.0,
-          "end_years": 3.0,
+          "end_years": 5.0,
           "notional": {
             "amount": 6000000.0,
             "currency": "USD"
           },
-          "supervisory_duration": 2.785840471,
+          "supervisory_duration": 4.423984339,
           "adjusted_notional": {
-            "amount": 16715042.828993,
+            "amount": 26543906.031431,
             "currency": "USD"
           },
-          "delta": "-1",
+          "delta": -1,
           "maturity_factor": 0.424264069,
           "bucket": "B2",
-          "effective_notional": -7091592.079323
+          "effective_notional": -11261625.572402
         },
         {
           "trade_id": "SW-3",
           "hedging_set": "USD",
           "start_years": 0.0,
-          "end_years": 5.0,
+          "end_years": 3.0,
           "notional": {
             "amount": 4000000.0,
             "currency": "USD"
           },
-          "supervisory_duration": 4.423984339,
+          "supervisory_duration": 2.785840471,
           "adjusted_notional": {
-            "amount": 17695937.354288,
+            "amount": 11143361.885995,
             "currency": "USD"
           },
-          "delta": "1",
+          "delta": 1,
           "maturity_factor": 0.424264069,
           "bucket": "B2",
-          "effective_notional": 7507750.381601
+          "effective_notional": 4727728.052882
+        },
+        {
+          "trade_id": "SW-4",
+          "hedging_set": "USD",
+          "start_years": 0.0,
+          "end_years": 0.5,
+          "notional": {
+            "amount": 2000000.0,
+            "currency": "USD"
+          },
+          "supervisory_duration": 0.493801759,
+          "adjusted_notional": {
+            "amount": 987603.518867,
+            "currency": "USD"
+          },
+          "delta": -1,
+          "maturity_factor": 0.424264069,
+          "bucket": "B1",
+          "effective_notional": -419004.687189
         }
       ],
       "hedging_sets": [
         {
           "hedging_set": "USD",
-          "d_b1": 0.0,
-          "d_b2": 19185534.256282,
-          "d_b3": 0.0,
+          "d_b1": -419004.687189,
+          "d_b2": -6533897.51952,
+          "d_b3": 33386980.644743,
           "offset": true,
-          "effective_notional": 19185534.256282,
+          "effective_notional": 29113418.737783,
           "supervisory_factor": 0.005,
-          "addon": 95927.671281
+          "addon": 145567.093689
         }
       ],
       "addon_by_class": {
-        "interest_rate": 95927.671281,
+        "interest_rate": 145567.093689,
         "fx": 0.0,
         "credit": 0.0,
         "equity": 0.0,
         "commodity": 0.0
       },
       "addon_aggregate": {
-        "amount": 95927.671281,
+        "amount": 145567.093689,
         "currency": "USD"
       },
       "multiplier_floor": 0.05,
       "multiplier": 1.0,
       "pfe": {
-        "amount": 95927.671281,
+        "amount": 145567.093689,
         "currency": "USD"
       },
       "alpha": 1.4,
       "ead": {
-        "amount": 162298.739794,
+        "amount": 231793.931164,
         "currency": "USD"
       }
     },
@@ -892,17 +1079,17 @@
           "rating_class": "investment-grade",
           "risk_weight": 0.05,
           "ead": {
-            "amount": 162298.739794,
+            "amount": 231793.931164,
             "currency": "USD"
           },
-          "m_years": 5.0,
-          "discount_factor": 0.884796868,
-          "scva": 25643.110107808
+          "m_years": 10.0,
+          "discount_factor": 0.786938681,
+          "scva": 65145.575126939
         }
       ],
-      "k_reduced": 25643.110107808,
+      "k_reduced": 65145.575126939,
       "capital": {
-        "amount": 16668.02157,
+        "amount": 42344.623833,
         "currency": "USD"
       },
       "limit": {
@@ -915,20 +1102,20 @@
       "alpha_paragraph": "CRE53.14",
       "effective_maturity_years": 3.2,
       "alpha_times_eepe": {
-        "amount": 19166.939809,
+        "amount": 18589.774048,
         "currency": "USD"
       },
       "sa_ccr_ead": {
-        "amount": 162298.739794,
+        "amount": 231793.931164,
         "currency": "USD"
       },
-      "sa_ccr_over_alpha_eepe": 8.467639666,
+      "sa_ccr_over_alpha_eepe": 12.468894488,
       "stressed": {
         "window_start": "2007-01-01",
         "window_end": "2009-12-31",
         "label": "convention",
         "effective_epe": {
-          "amount": 17797.87268,
+          "amount": 17261.933044,
           "currency": "USD"
         },
         "hqm_spread_start": 0.0063,
@@ -943,26 +1130,26 @@
       "currency": "USD",
       "sqrt2_division": true,
       "sqrt2_label": "convention",
-      "sensitivities_per_bp": [
-        0,
-        120.0,
-        260.0,
-        540.0,
-        -310.0,
-        880.0,
+      "sensitivities": [
         0.0,
+        -1000000.0,
+        0.0,
+        0.0,
+        11600000.0,
+        -27000000.0,
+        80000000.0,
         0.0,
         0.0,
         0.0
       ],
       "weighted_sensitivities": [
         0.0,
-        1.442497834,
-        2.94156421,
-        4.963889604,
-        -2.630437226,
-        6.844793642,
+        -12020.81528,
         0.0,
+        0.0,
+        98429.263941,
+        -210010.714012,
+        622253.967444,
         0.0,
         0.0,
         0.0
@@ -970,23 +1157,23 @@
       "scenarios": [
         {
           "scenario": "low",
-          "k_b": 12.72056373
+          "k_b": 506396.079616
         },
         {
           "scenario": "medium",
-          "k_b": 13.130796503
+          "k_b": 504595.280002
         },
         {
           "scenario": "high",
-          "k_b": 13.528595345
+          "k_b": 502788.030635
         }
       ],
       "delta_charge": {
-        "amount": 13.528595,
+        "amount": 506396.079616,
         "currency": "USD"
       },
       "delta_charge_undivided": {
-        "amount": 19.132323,
+        "amount": 716152.203726,
         "currency": "USD"
       }
     },
@@ -1001,7 +1188,7 @@
       "calibration_rule": "each initialisation date is calibrated on data up to that date only",
       "pit_rule": "(i + 1) / (N + 2)",
       "statistic": "Anderson-Darling W^2",
-      "paths_per_date": 10000,
+      "paths_per_date": 2000,
       "book_horizons": [
         {
           "horizon": "10bd",
@@ -1489,12 +1676,58 @@
         "a": 0.08,
         "sigma": 0.011,
         "eepe": {
-          "amount": 13690.671292,
+          "amount": 13278.410034,
           "currency": "USD"
         },
         "pfe_peak": {
-          "amount": 55437.171645,
+          "amount": 62366.818101,
           "currency": "USD"
+        },
+        "ee": {
+          "currency": "USD",
+          "values": [
+            8820.0,
+            11953.640136,
+            16170.0,
+            20788.939367,
+            20368.917497,
+            16435.099635,
+            16853.435851,
+            0.0
+          ],
+          "mc_se": [
+            88.2,
+            119.536401,
+            161.7,
+            207.889394,
+            203.689175,
+            164.350996,
+            168.534359,
+            0.0
+          ]
+        },
+        "pfe": {
+          "currency": "USD",
+          "values": [
+            26460.0,
+            35860.920408,
+            48510.0,
+            62366.818101,
+            61106.752491,
+            49305.298904,
+            50560.307554,
+            0.0
+          ],
+          "mc_se": [
+            264.6,
+            358.609204,
+            485.1,
+            623.668181,
+            611.067525,
+            493.052989,
+            505.603076,
+            0.0
+          ]
         }
       },
       {
@@ -1502,12 +1735,58 @@
         "a": 0.1,
         "sigma": 0.011,
         "eepe": {
-          "amount": 13608.527264,
+          "amount": 13198.739574,
           "currency": "USD"
         },
         "pfe_peak": {
-          "amount": 55437.171645,
+          "amount": 61992.617192,
           "currency": "USD"
+        },
+        "ee": {
+          "currency": "USD",
+          "values": [
+            8767.08,
+            11881.918295,
+            16072.98,
+            20664.205731,
+            20246.703992,
+            16336.489037,
+            16752.315236,
+            0.0
+          ],
+          "mc_se": [
+            87.6708,
+            118.819183,
+            160.7298,
+            206.642057,
+            202.46704,
+            163.36489,
+            167.523152,
+            0.0
+          ]
+        },
+        "pfe": {
+          "currency": "USD",
+          "values": [
+            26301.24,
+            35645.754886,
+            48218.94,
+            61992.617192,
+            60740.111976,
+            49009.467111,
+            50256.945709,
+            0.0
+          ],
+          "mc_se": [
+            263.0124,
+            356.457549,
+            482.1894,
+            619.926172,
+            607.40112,
+            490.094671,
+            502.569457,
+            0.0
+          ]
         }
       },
       {
@@ -1515,12 +1794,58 @@
         "a": 0.06,
         "sigma": 0.011,
         "eepe": {
-          "amount": 13772.81532,
+          "amount": 13358.080494,
           "currency": "USD"
         },
         "pfe_peak": {
-          "amount": 55437.171645,
+          "amount": 62741.01901,
           "currency": "USD"
+        },
+        "ee": {
+          "currency": "USD",
+          "values": [
+            8872.92,
+            12025.361977,
+            16267.02,
+            20913.673003,
+            20491.131002,
+            16533.710233,
+            16954.556466,
+            0.0
+          ],
+          "mc_se": [
+            88.7292,
+            120.25362,
+            162.6702,
+            209.13673,
+            204.91131,
+            165.337102,
+            169.545565,
+            0.0
+          ]
+        },
+        "pfe": {
+          "currency": "USD",
+          "values": [
+            26618.76,
+            36076.08593,
+            48801.06,
+            62741.01901,
+            61473.393006,
+            49601.130697,
+            50863.669399,
+            0.0
+          ],
+          "mc_se": [
+            266.1876,
+            360.760859,
+            488.0106,
+            627.41019,
+            614.73393,
+            496.011307,
+            508.636694,
+            0.0
+          ]
         }
       },
       {
@@ -1528,12 +1853,58 @@
         "a": 0.08,
         "sigma": 0.0115,
         "eepe": {
-          "amount": 13827.578005,
+          "amount": 13411.194134,
           "currency": "USD"
         },
         "pfe_peak": {
-          "amount": 55991.543361,
+          "amount": 62990.486282,
           "currency": "USD"
+        },
+        "ee": {
+          "currency": "USD",
+          "values": [
+            8908.2,
+            12073.176537,
+            16331.7,
+            20996.828761,
+            20572.606672,
+            16599.450631,
+            17021.97021,
+            0.0
+          ],
+          "mc_se": [
+            89.082,
+            120.731765,
+            163.317,
+            209.968288,
+            205.726067,
+            165.994506,
+            170.219702,
+            0.0
+          ]
+        },
+        "pfe": {
+          "currency": "USD",
+          "values": [
+            26724.6,
+            36219.529612,
+            48995.1,
+            62990.486282,
+            61717.820016,
+            49798.351893,
+            51065.91063,
+            0.0
+          ],
+          "mc_se": [
+            267.246,
+            362.195296,
+            489.951,
+            629.904863,
+            617.1782,
+            497.983519,
+            510.659106,
+            0.0
+          ]
         }
       },
       {
@@ -1541,27 +1912,188 @@
         "a": 0.08,
         "sigma": 0.0105,
         "eepe": {
-          "amount": 13553.764579,
+          "amount": 13145.625934,
           "currency": "USD"
         },
         "pfe_peak": {
-          "amount": 54882.799929,
+          "amount": 61743.14992,
           "currency": "USD"
+        },
+        "ee": {
+          "currency": "USD",
+          "values": [
+            8731.8,
+            11834.103735,
+            16008.3,
+            20581.049973,
+            20165.228322,
+            16270.748639,
+            16684.901492,
+            0.0
+          ],
+          "mc_se": [
+            87.318,
+            118.341037,
+            160.083,
+            205.8105,
+            201.652283,
+            162.707486,
+            166.849015,
+            0.0
+          ]
+        },
+        "pfe": {
+          "currency": "USD",
+          "values": [
+            26195.4,
+            35502.311204,
+            48024.9,
+            61743.14992,
+            60495.684966,
+            48812.245915,
+            50054.704478,
+            0.0
+          ],
+          "mc_se": [
+            261.954,
+            355.023112,
+            480.249,
+            617.431499,
+            604.95685,
+            488.122459,
+            500.547045,
+            0.0
+          ]
         }
       }
     ],
     "ore_reconciliation": {
-      "status": "not-applicable",
-      "ore_version": null,
-      "platform": null,
-      "run_seconds": null,
-      "ore_ee": null,
-      "agreement": null,
-      "all_within_two_se": null,
-      "reason": {
-        "en": "The ORE run covers the single swap and the netting set only (U9-P1).",
-        "es": "ORE se ejecuta sobre el swap unico y el conjunto de neteo (U9-P1)."
-      }
+      "status": "reconciled",
+      "ore_version": "1.8.17.0",
+      "platform": "fixture: not an ORE run",
+      "run_seconds": 0.0,
+      "ore_ee": {
+        "currency": "USD",
+        "values": [
+          8855.28,
+          12001.454697,
+          16234.68,
+          20872.095124,
+          20450.393167,
+          16500.840034,
+          16920.849594,
+          0.0
+        ],
+        "mc_se": [
+          88.5528,
+          120.014547,
+          162.3468,
+          208.720951,
+          204.503932,
+          165.0084,
+          169.208496,
+          0.0
+        ]
+      },
+      "ore_ee_discounted": {
+        "currency": "USD",
+        "values": [
+          8822.134886,
+          11911.780485,
+          15992.977104,
+          20255.231489,
+          19550.52437,
+          15308.54686,
+          15234.255833,
+          0.0
+        ],
+        "mc_se": [
+          88.221349,
+          119.117805,
+          159.929771,
+          202.552315,
+          195.505244,
+          153.085469,
+          152.342558,
+          0.0
+        ]
+      },
+      "ore_eepe": {
+        "amount": 13331.523674,
+        "currency": "USD"
+      },
+      "ore_cva": {
+        "amount": 1328.495306,
+        "currency": "USD"
+      },
+      "ore_dim": null,
+      "agreement": [
+        {
+          "t": 0.25,
+          "difference": 35.28,
+          "combined_se": 123.480001,
+          "within_two_se": true
+        },
+        {
+          "t": 0.5,
+          "difference": 47.814561,
+          "combined_se": 167.350963,
+          "within_two_se": true
+        },
+        {
+          "t": 1.0,
+          "difference": 64.68,
+          "combined_se": 226.380001,
+          "within_two_se": true
+        },
+        {
+          "t": 2.0,
+          "difference": 83.155757,
+          "combined_se": 291.045152,
+          "within_two_se": true
+        },
+        {
+          "t": 3.0,
+          "difference": 81.47567,
+          "combined_se": 285.164846,
+          "within_two_se": true
+        },
+        {
+          "t": 5.0,
+          "difference": 65.740399,
+          "combined_se": 230.091396,
+          "within_two_se": true
+        },
+        {
+          "t": 7.0,
+          "difference": 67.413743,
+          "combined_se": 235.948103,
+          "within_two_se": true
+        },
+        {
+          "t": 10.0,
+          "difference": 0.0,
+          "combined_se": 1e-06,
+          "within_two_se": true
+        }
+      ],
+      "eepe_agreement": {
+        "python": 13278.410034,
+        "ore": 13331.523674,
+        "difference": 53.11364,
+        "combined_se": 185.897741,
+        "within_two_se": true
+      },
+      "cva_agreement": {
+        "python": 1323.202501,
+        "ore": 1328.495306,
+        "difference": 5.292805,
+        "combined_se": 18.524836,
+        "within_two_se": true
+      },
+      "dim_agreement": null,
+      "all_within_two_se": true,
+      "reason": null
     }
   },
   "tests": [
@@ -1586,7 +2118,7 @@
       "extras": {}
     },
     {
-      "test_id": "ccr.cva_recomputed_from_ee",
+      "test_id": "ccr.cva_recomputed",
       "model_id": "hw1f-exposure",
       "segment": null,
       "statistic": null,

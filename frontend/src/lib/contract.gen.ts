@@ -4250,7 +4250,7 @@ export interface components {
         /** @description The variation-margin variant: the CSA terms, the uncollateralised EE on the same axis and the mean collateral balance. The limit states what the close-out model leaves out (the Andersen, Pykhtin and Sokol timelines). */
         c12Collateral: {
             csa: components["schemas"]["c12Csa"];
-            uncollateralised_ee: components["schemas"]["c12Profile"];
+            uncollateralised_ee: components["schemas"]["c12NonNegProfile"];
             collateral_balance: components["schemas"]["c12Profile"];
             limit: components["schemas"]["c12Label"];
         };
@@ -4272,6 +4272,8 @@ export interface components {
             /** @constant */
             licence_class: "mirror-allowed with citation";
             licence_basis: components["schemas"]["c12Label"];
+            /** @constant */
+            negative_spread_rule: "a negative HQM-minus-Treasury spread is set to zero and counted, never carried as a negative spread";
             synthetic_spread: components["schemas"]["c12Convention"];
         };
         /** @description The CSA terms of the variant (ORE credit support amount and delivery amount equations, R3). */
@@ -4316,6 +4318,9 @@ export interface components {
             credit_curve_label: "proxy: an AAA to A market spread, a floor for lower ratings (R10)";
             /** @constant */
             survival_formula: "S(t) = exp(-s t / LGD)";
+            /** @constant */
+            negative_spread_rule: "a negative HQM-minus-Treasury spread is set to zero and counted in spreads_floored_at_zero";
+            spreads_floored_at_zero: number;
             lgd: number;
             bank_lgd: number;
             buckets: components["schemas"]["c12CvaBucket"][];
@@ -4347,13 +4352,13 @@ export interface components {
             /** @enum {string} */
             basis: "uncollateralised" | "collateralised-vm" | "collateralised-vm-im";
             time_grid_years: number[];
-            ee: components["schemas"]["c12Profile"];
-            ee_discounted: components["schemas"]["c12Profile"];
-            ene: components["schemas"]["c12Profile"];
-            ene_discounted: components["schemas"]["c12Profile"];
+            ee: components["schemas"]["c12NonNegProfile"];
+            ee_discounted: components["schemas"]["c12NonNegProfile"];
+            ene: components["schemas"]["c12NonNegProfile"];
+            ene_discounted: components["schemas"]["c12NonNegProfile"];
             pfe_quantile: number;
-            pfe: components["schemas"]["c12Profile"];
-            effective_ee: components["schemas"]["c12Profile"];
+            pfe: components["schemas"]["c12NonNegProfile"];
+            effective_ee: components["schemas"]["c12NonNegProfile"];
             epe: components["schemas"]["c12MoneySe"];
             eepe: components["schemas"]["c12MoneySe"];
             eepe_horizon_years: number;
@@ -4374,7 +4379,7 @@ export interface components {
             girr_parameters: components["schemas"]["c12GirrParameters"];
             limits: components["schemas"]["c12Label"][];
         };
-        /** @description The FRTB SA GIRR delta charge of the same book (single USD bucket): the PV01 per tenor, the weighted sensitivities with the MAR21.44 division by sqrt(2) (a named convention) and the charge, the maximum over the three correlation scenarios, with the undivided charge beside it. */
+        /** @description The FRTB SA GIRR delta charge of the same book (single USD bucket): the sensitivities s_k per tenor as MAR21.19 defines them, the weighted sensitivities with the MAR21.44 division by sqrt(2) (a named convention) and the charge, the maximum over the three correlation scenarios, with the undivided charge beside it. */
         c12GirrCharge: {
             /** @constant */
             paragraph: "MAR21.42 to MAR21.50";
@@ -4386,7 +4391,8 @@ export interface components {
             sqrt2_division: true;
             /** @constant */
             sqrt2_label: "convention";
-            sensitivities_per_bp: number[];
+            /** @description s_k = (V(r + 0.0001) - V(r)) / 0.0001 at each GIRR tenor, in USD per unit of rate: the change in value for a 1 basis point shift divided by 0.0001 (MAR21.19), not the PV01 per basis point. The weighted sensitivity is RW_k s_k / sqrt(2). */
+            sensitivities: number[];
             weighted_sensitivities: number[];
             scenarios: components["schemas"]["c12GirrScenario"][];
             delta_charge: components["schemas"]["c12Money"];
@@ -4453,7 +4459,7 @@ export interface components {
             scenario: "low" | "medium" | "high";
             k_b: number;
         };
-        /** @description Initial margin as a separate balance: DIM(t) = alpha S(t) sqrt(horizon / MPoR) applied as max(exposure - DIM, 0). Labelled a regression proxy, never SIMM (SIMM is not used: its public notice restricts use to a participant's own transactions). */
+        /** @description Initial margin as a separate balance: DIM(t) = alpha S(t) sqrt(horizon / MPoR) applied as max(exposure - DIM, 0), alpha the normal quantile of `quantile`, the horizon and the MPoR in calendar days as ORE computes horizonCalendarDays / mporCalendarDays (10 business days are 14 calendar days, 20 are 28). Labelled a regression proxy, never SIMM (SIMM is not used: its public notice restricts use to a participant's own transactions). */
         c12Im: {
             /** @constant */
             method: "ORE dynamic initial margin by regression (R2)";
@@ -4463,11 +4469,11 @@ export interface components {
             simm_used: false;
             quantile: number;
             alpha: number;
-            horizon_days: number;
-            mpor_days: number;
+            horizon_calendar_days: number;
+            mpor_calendar_days: number;
             regression_order: number;
-            dim: components["schemas"]["c12Profile"];
-            ee_vm_only: components["schemas"]["c12Profile"];
+            dim: components["schemas"]["c12NonNegProfile"];
+            ee_vm_only: components["schemas"]["c12NonNegProfile"];
             limit: components["schemas"]["c12Label"];
         };
         /** @description A non-empty bilingual label. */
@@ -4508,40 +4514,57 @@ export interface components {
             pfe_quantile: components["schemas"]["c12Convention"];
             path_count: components["schemas"]["c12Convention"];
             seed: components["schemas"]["c12Convention"];
+            time_grid_years: components["schemas"]["c12Convention"];
             wwr_b_grid: components["schemas"]["c12Convention"];
             im_quantile: components["schemas"]["c12Convention"];
-            im_horizon_days: components["schemas"]["c12Convention"];
+            im_horizon_calendar_days: components["schemas"]["c12Convention"];
+            im_mpor_calendar_days: components["schemas"]["c12Convention"];
             im_regression_order: components["schemas"]["c12Convention"];
             ba_cva_sector: components["schemas"]["c12Convention"];
             ba_cva_rating: components["schemas"]["c12Convention"];
             stress_window_start: components["schemas"]["c12Convention"];
             stress_window_end: components["schemas"]["c12Convention"];
             backtest_window_start: components["schemas"]["c12Convention"];
+            backtest_paths_per_date: components["schemas"]["c12Convention"];
+            backtest_simulated_critical_count: components["schemas"]["c12Convention"];
+            reconciliation_se_threshold: components["schemas"]["c12Convention"];
+            ee_check_k_se: components["schemas"]["c12Convention"];
         };
         /** @description The netting benefit: the netting-set EE is at most the sum of the single-trade EE; the benefit is their difference. */
         c12NettingBenefit: {
             per_trade_ee: {
                 trade_id: string;
-                ee: components["schemas"]["c12Profile"];
+                ee: components["schemas"]["c12NonNegProfile"];
             }[];
-            sum_of_single_trade_ee: components["schemas"]["c12Profile"];
-            netted_ee: components["schemas"]["c12Profile"];
-            benefit: components["schemas"]["c12Profile"];
+            sum_of_single_trade_ee: components["schemas"]["c12NonNegProfile"];
+            netted_ee: components["schemas"]["c12NonNegProfile"];
+            benefit: components["schemas"]["c12NonNegProfile"];
         };
-        /** @description The reconciliation of the Python EE profile against ORE 1.8.17.0 on the same curve and model parameters (ADR-0069: the bake's), with the agreement at every grid point; or not-applicable with its reason. */
+        /** @description A non-negative money profile (an EE, ENE, PFE, effective EE or DIM) on the time grid with its Monte Carlo standard errors (same length as the grid: a producer check). */
+        c12NonNegProfile: {
+            /** @constant */
+            currency: "USD";
+            /** @description One non-negative value per point of the time grid. */
+            values: number[];
+            /** @description The Monte Carlo standard error of each value. */
+            mc_se: number[];
+        };
+        /** @description The reconciliation of the Python measures against ORE 1.8.17.0 on the same curve and model parameters (ADR-0069: the bake's): the EE profile at every grid point, the EEPE and the CVA recomputed from the ORE profiles, and for the initial-margin variant the DIM profile, each with its agreement. Every variant but the wrong-way one is reconciled (S2); the wrong-way one is not-applicable with its reason. An ORE run that fails stops the bake: a variant is never published as not-applicable because ORE failed. */
         c12OreReconciliation: {
             /** @enum {string} */
             status: "reconciled" | "not-applicable";
             ore_version: "1.8.17.0" | null;
             platform: string | null;
             run_seconds: number | null;
-            ore_ee: components["schemas"]["c12Profile"] | null;
-            agreement: {
-                t: number;
-                difference: number;
-                combined_se: number;
-                within_two_se: boolean;
-            }[] | null;
+            ore_ee: components["schemas"]["c12NonNegProfile"] | null;
+            ore_ee_discounted: components["schemas"]["c12NonNegProfile"] | null;
+            ore_eepe: components["schemas"]["c12Money"] | null;
+            ore_cva: components["schemas"]["c12Money"] | null;
+            ore_dim: components["schemas"]["c12NonNegProfile"] | null;
+            agreement: components["schemas"]["c12PointAgreement"][] | null;
+            eepe_agreement: components["schemas"]["c12ScalarAgreement"] | null;
+            cva_agreement: components["schemas"]["c12ScalarAgreement"] | null;
+            dim_agreement: components["schemas"]["c12PointAgreement"][] | null;
             all_within_two_se: boolean | null;
             reason: components["schemas"]["c12Label"] | null;
         } & ({
@@ -4551,8 +4574,13 @@ export interface components {
             ore_version?: "1.8.17.0";
             platform?: string;
             run_seconds?: number;
-            ore_ee?: components["schemas"]["c12Profile"];
+            ore_ee?: components["schemas"]["c12NonNegProfile"];
+            ore_ee_discounted?: components["schemas"]["c12NonNegProfile"];
+            ore_eepe?: components["schemas"]["c12Money"];
+            ore_cva?: components["schemas"]["c12Money"];
             agreement?: unknown[];
+            eepe_agreement?: components["schemas"]["c12ScalarAgreement"];
+            cva_agreement?: components["schemas"]["c12ScalarAgreement"];
             all_within_two_se?: boolean;
             reason?: null;
         } | {
@@ -4562,7 +4590,14 @@ export interface components {
             platform?: null;
             run_seconds?: null;
             ore_ee?: null;
+            ore_ee_discounted?: null;
+            ore_eepe?: null;
+            ore_cva?: null;
+            ore_dim?: null;
             agreement?: null;
+            eepe_agreement?: null;
+            cva_agreement?: null;
+            dim_agreement?: null;
             all_within_two_se?: null;
             reason?: components["schemas"]["c12Label"];
         });
@@ -4594,6 +4629,13 @@ export interface components {
         } & (unknown & unknown & unknown & unknown & unknown & unknown);
         /** @description A PIT value in (0, 1) by the (i + 1) / (N + 2) rule. */
         c12Pit: number;
+        /** @description The agreement at one grid point: the difference ORE minus Python, the combined Monte Carlo standard error and whether the difference is within two of them. */
+        c12PointAgreement: {
+            t: number;
+            difference: number;
+            combined_se: number;
+            within_two_se: boolean;
+        };
         /** @description A money profile on the time grid with its Monte Carlo standard errors (same length as the grid: a producer check). */
         c12Profile: {
             /** @constant */
@@ -4670,14 +4712,22 @@ export interface components {
             notional: components["schemas"]["c12Money"];
             supervisory_duration: number;
             adjusted_notional: components["schemas"]["c12Money"];
-            /** @enum {string} */
-            delta: "1" | "-1";
+            /** @enum {number} */
+            delta: 1 | -1;
             maturity_factor: number;
             /** @enum {string} */
             bucket: "B1" | "B2" | "B3";
             effective_notional: number;
         };
-        /** @description EE and PFE under the base calibration and with a and sigma moved by one standard error (B6). */
+        /** @description The agreement of one scalar (EEPE or CVA): the Python value, the ORE value, their difference (ORE minus Python), the combined standard error and the two-standard-error flag. */
+        c12ScalarAgreement: {
+            python: number;
+            ore: number;
+            difference: number;
+            combined_se: number;
+            within_two_se: boolean;
+        };
+        /** @description EE and PFE (the profiles and their summaries) under the base calibration and with a and sigma moved by one standard error (B6). */
         c12SensitivityCase: {
             /** @enum {string} */
             case: "base" | "a-plus-1se" | "a-minus-1se" | "sigma-plus-1se" | "sigma-minus-1se";
@@ -4685,6 +4735,8 @@ export interface components {
             sigma: number;
             eepe: components["schemas"]["c12Money"];
             pfe_peak: components["schemas"]["c12Money"];
+            ee: components["schemas"]["c12NonNegProfile"];
+            pfe: components["schemas"]["c12NonNegProfile"];
         };
         /** @description Sign convention, stated in the document: EE is the positive exposure to the counterparty, ENE the bank's own, CVA a positive cost and DVA a positive benefit. */
         c12Sign: {
@@ -4763,6 +4815,10 @@ export interface components {
             /** @constant */
             b_unit: "per USD million of portfolio value";
             b_grid: number[];
+            /** @description The largest portfolio value of the simulated paths, in USD million. */
+            w_max_usd_million: number;
+            /** @description max |b| of the grid times w_max_usd_million: the largest exponent b w the grid reaches on this book, so the reader sees whether the sweep moves the hazard. */
+            largest_b_w: number;
             sweep: components["schemas"]["c12WwrPoint"][];
             independent_cva: components["schemas"]["c12Money"];
             ore_limit: components["schemas"]["c12Label"];
@@ -9724,7 +9780,7 @@ export interface components {
         };
         /**
          * Regulatory calculators
-         * @description The official worked examples and the invariant cases of the regulatory calculators run through the engine (the five CRE99 SA-CCR netting sets, the RBC20.13 output floor, BA-CVA, the FRTB SBM aggregation, the liquidity-horizon cascade) and a CRE20 lookup grid, each with its paragraph and in-force date. The live ports of the regulation page are held to this document at 1e-9 relative.
+         * @description The official worked examples (the five CRE99 SA-CCR netting sets from their trades, the RBC20.13 output floor) and the invariant cases (BA-CVA, the FRTB SBM aggregation with its cross-bucket fallback, the liquidity-horizon cascade) of the regulatory calculators run through the engine, the output-floor phase-in, the parameter tables and a CRE20 lookup grid, each with its paragraph and in-force date. The live ports of the regulation page are held to this document at 1e-9 relative.
          */
         "regulatory-calculators": {
             /** @constant */
@@ -9736,6 +9792,8 @@ export interface components {
             units: components["schemas"]["regulatoryUnits"];
             official_examples: components["schemas"]["regulatoryEntry"][];
             invariant_cases: components["schemas"]["regulatoryEntry"][];
+            output_floor_phase_in: components["schemas"]["regulatoryPhaseIn"][];
+            parameter_tables: components["schemas"]["regulatoryParameterTable"][];
             cre20_grid: components["schemas"]["regulatoryGridRow"][];
             provenance: components["schemas"]["common-provenance"];
             lane: components["schemas"]["common-lane-block"];
@@ -9746,7 +9804,7 @@ export interface components {
             name: "riskvalidation";
             version: string;
         };
-        /** @description A calculator entry of the regulation page: the inputs, the engine's outputs, the values the framework publishes, the paragraph and the in-force date of the chapter. The live ports are held to it at 1e-9 relative. */
+        /** @description A calculator entry of the regulation page: the trades (for an SA-CCR example), the inputs, the engine's outputs, the values the framework publishes, the paragraph and the in-force date of the chapter. The live ports are held to it at 1e-9 relative. */
         regulatoryEntry: {
             id: string;
             /** @enum {string} */
@@ -9760,6 +9818,7 @@ export interface components {
             in_force_date: string;
             published_date: string;
             source: string;
+            trades: components["schemas"]["regulatoryTrade"][];
             inputs: components["schemas"]["regulatoryValue"][];
             outputs: components["schemas"]["regulatoryValue"][];
             published: components["schemas"]["regulatoryPublished"][];
@@ -9781,22 +9840,67 @@ export interface components {
             /** @constant */
             holds?: true;
         });
-        /** @description One cell of the CRE20 lookup grid: the exposure class, the rating bucket or LTV band, the risk weight as a decimal, the table, its paragraph and the in-force date of the chapter. */
+        /** @description One cell of the CRE20 lookup grid, keyed as the engine's standardised.lookup(exposure_class, key, short_term, cash_flow_dependent, counterparty_weight): the risk weight as a decimal, the band as the table prints it, the table, its paragraph and the in-force date of the chapter. For an LTV band the key is a representative LTV (the upper edge, or 1.5 above 1.0 and 1.0 above 0.8). */
         regulatoryGridRow: {
-            exposure_class: string;
-            key: string;
+            /** @enum {string} */
+            exposure_class: "sovereign" | "eca" | "bank-ecra" | "bank-scra" | "corporate" | "retail" | "equity" | "residential-re" | "commercial-re" | "defaulted" | "ccf" | "currency-mismatch";
+            /** @enum {string} */
+            key: "AAA to AA-" | "A+ to A-" | "BBB+ to BBB-" | "BB+ to B-" | "below B-" | "unrated" | "BB+ to BB-" | "below BB-" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "A" | "B" | "C" | "investment-grade-unrated" | "sme-unrated" | "regulatory-retail-sme" | "regulatory" | "transactor" | "other" | "equity" | "speculative-unlisted" | "legislated-programme" | "subordinated-debt" | "0.5" | "0.6" | "0.8" | "0.9" | "1.0" | "1.5" | "provision-below-20pct" | "provision-at-least-20pct" | "residential-non-cash-flow-dependent" | "multiplier" | "cap" | "direct-credit-substitute" | "repo" | "securities-lending" | "forward-purchase" | "nif-ruf" | "transaction-related-contingent" | "commitment" | "trade-letter-of-credit" | "unconditionally-cancellable";
+            band: string;
+            short_term: boolean;
+            cash_flow_dependent: boolean;
+            counterparty_weight: number | null;
             risk_weight: number;
             table: string;
             paragraph: string;
             in_force_date: string;
         };
-        /** @description A value the framework publishes for a worked example (for example the EAD after rounding). */
+        /** @description One parameter of a regulatory table: the row key, the parameter's name, its value and its unit. */
+        regulatoryParameterRow: {
+            key: string;
+            parameter: string;
+            value: number;
+            unit: string;
+        };
+        /** @description A parameter table the live ports display (CRE52.72 Table 2, MAR50.16 Table 1, MAR33.4 Table 1, MAR33.12 Table 2), with its paragraph and the in-force date of the chapter. */
+        regulatoryParameterTable: {
+            /** @enum {string} */
+            id: "cre52-72-table-2" | "mar50-16-table-1" | "mar33-12-table-2" | "mar33-4-table-1";
+            title: components["schemas"]["common-text"];
+            /** @enum {string} */
+            calculator: "standardised-credit-risk-weights" | "output-floor" | "sa-ccr" | "ba-cva" | "frtb-sbm" | "frtb-liquidity-cascade";
+            table: string;
+            paragraph: string;
+            in_force_date: string;
+            source: string;
+            rows: components["schemas"]["regulatoryParameterRow"][];
+        };
+        /** @description One row of the output-floor phase-in (RBC90.1 Table 1): the year, the date it applies from and the floor factor. */
+        regulatoryPhaseIn: {
+            year: number;
+            effective_from: string;
+            factor: number;
+            /** @constant */
+            table: "RBC90.1 Table 1";
+            /** @constant */
+            paragraph: "RBC90.1";
+            in_force_date: string;
+        };
+        /** @description A value the framework publishes for a worked example (for example the EAD after rounding to an integer, or the multiplier to three decimals); it must equal the recomputed output rounded as stated. */
         regulatoryPublished: {
             name: string;
             value: number;
             unit: string;
-            rounding: string;
+            /** @enum {string} */
+            rounding: "nearest integer" | "3 decimal places" | "4 decimal places" | "none";
             paragraph: string;
+        };
+        /** @description One trade of a worked example with its contractual terms as values (strings for currency, position and option type), transcribed from the CRE99 table with its paragraph. */
+        regulatoryTrade: {
+            trade_id: string;
+            nature: string;
+            paragraph: string;
+            terms: components["schemas"]["regulatoryValue"][];
         };
         /** @description Units of every number, per value. */
         regulatoryUnits: {
@@ -9807,12 +9911,15 @@ export interface components {
             /** @constant */
             dates: "ISO-8601";
         };
-        /** @description One named number: an input or an output, with its unit and the paragraph it comes from. */
+        /** @description One named value: an input or an output, with its unit, the paragraph it comes from and its basis: transcribed from a source line, recomputed from the inputs by the engine's formulas, or constructed by the fixture for an invariant. */
         regulatoryValue: {
             name: string;
             symbol: string;
-            value: number;
+            /** @description A number, a string (a currency, a position, an option type, an entity) or an array of numbers (a vector or a matrix in row-major order). */
+            value: number | string | number[];
             unit: string;
+            /** @enum {string} */
+            basis: "transcribed" | "recomputed" | "constructed";
             /** @description The paragraph this value comes from, for example CRE52.23. */
             paragraph: string;
         };
