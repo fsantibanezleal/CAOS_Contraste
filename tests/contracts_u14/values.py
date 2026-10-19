@@ -7,7 +7,7 @@ from __future__ import annotations
 NAMED = {
     "perturbation_grid": ([0.05, 0.1, 0.25, 0.5, 1.0], "multiple of each feature's standard deviation",
                           "Noise scales for the perturbation robustness grid (06 C.7 l.1009-1012 gives the construction, no values)."),
-    "perturbation_tolerance": (0.02, "AUC points", "Degradation of AUC tolerated at the preset scale 0.1; about three standard errors of an AUC on the Taiwan holdout."),
+    "perturbation_tolerance": (0.02, "AUC points", "Degradation of AUC tolerated at the preset scale 0.1; about 2.5 standard errors of an AUC on the Taiwan holdout (about 6,000 holdout rows)."),
     "n_seeds": (20, "retraining seeds", "Seeds of the seed sweep (06 I.1 l.1191 gives none); 20 gives a standard deviation of the AUC with a relative error near 16 percent."),
     "n_bootstrap_refits": (100, "bootstrap refits", "Refits of the reason-code stability (04 J.2 l.881-883 gives none)."),
     "overfit_tolerance": (0.05, "AUC points", "Train minus test AUC gap beyond which the overfit flag is raised (06 C.7 l.1016-1018 gives no value)."),
@@ -33,6 +33,11 @@ LEGAL = {
     "derived_sex": ("sex", True, True),
     "applicant_age": ("age_ecoa_only", True, False),
 }
+# H3 section 5, column "Theory and role": "disparate impact under the FHA only" for race, ethnicity and sex; age is ECOA only.
+FHA_DI = ("not assessed (disparate impact under the FHA only; gross HMDA disparities are not appropriate for disproportionate adverse "
+          "impact analysis, Interagency Procedures appendix, printed page 26)")
+FHA_DI_AGE = "not applicable (age is a prohibited basis under ECOA only, not in 42 U.S.C. 3605(a))"
+FHA_DISPARATE_IMPACT = {"derived_race": FHA_DI, "derived_ethnicity": FHA_DI, "derived_sex": FHA_DI, "applicant_age": FHA_DI_AGE}
 GROUPS = {
     "derived_race": ["American Indian or Alaska Native", "Asian", "Black or African American",
                      "Native Hawaiian or Other Pacific Islander", "White", "2 or more minority races"],
@@ -60,3 +65,20 @@ SGCD_QUOTE = ("It is provided for research and benchmarking only and must not be
               "production decision-making about individuals.")
 SGCD_COMMIT = "8403fa9048f7159d51a0cec5a2d9a2e9712662bd"
 FAIR_TESTS = ["fair.equalized_odds", "fair.equal_opportunity", "fair.calibration_within_groups", "fair.auc_by_group"]
+
+# The tests a C21 document may carry (decision C2 and Q5): an allowlist, never a denylist of the outcome-conditioned ones.
+C21_TESTS = ["fair.demographic_parity", "fair.adverse_impact", "fair.two_proportion_z", "fair.fisher_exact", "fair.conditional_disparity",
+             "fair.rate_spread_disparity", "fair.replication", "fair.situation_testing"]
+FAIR_ATTRIBUTES = ["sex", "age", "marital_status"]
+
+# Decision V3: public HMDA withholds the loan identifier and the dates (addendum H1 2.5), so the reader writes two named conventions.
+HMDA_ID_RULE = "<activity_year>-<row>"
+HMDA_DATE_RULE = "<activity_year>-12-31"
+# Decision C7 (addendum H2 3.3): the data licence stays UNVERIFIED; the views quote the platform software terms and the CFPB statement.
+HMDA_PLATFORM_TERMS = ("As a work of the United States Government, this package (excluding any exceptions listed below) is in the public domain "
+                       "within the United States. Additionally, we waive copyright and related rights in the work worldwide through the CC0 "
+                       "1.0 Universal public domain dedication.")
+HMDA_MODIFIED = "The publicly available data are modified to protect applicants' and borrowers' privacy"
+
+HORIZON_YEARS = {"h1": 1, "h2": 2, "h3": 3, "h4": 4, "h5": 5, "pooled": None}
+PAIRS = {f"{y}-{str(y + 1)[2:]}": (y, y + 1) for y in range(2018, 2024)}

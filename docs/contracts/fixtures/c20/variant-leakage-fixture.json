@@ -47,7 +47,7 @@
         "value": 0.02,
         "unit": "AUC points",
         "label": "convention",
-        "basis": "Degradation of AUC tolerated at the preset scale 0.1; about three standard errors of an AUC on the Taiwan holdout."
+        "basis": "Degradation of AUC tolerated at the preset scale 0.1; about 2.5 standard errors of an AUC on the Taiwan holdout (about 6,000 holdout rows)."
       },
       {
         "name": "n_seeds",
@@ -344,6 +344,16 @@
       "CT-2001"
     ],
     "planted_feature": "fixture_leak",
+    "thresholds": {
+      "single_feature_auc": {
+        "value": 0.95,
+        "label": "convention"
+      },
+      "resemblance_auc": {
+        "value": 0.7,
+        "label": "convention"
+      }
+    },
     "screen": {
       "temporal_order": {
         "violations": 0

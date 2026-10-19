@@ -8,7 +8,8 @@ Owner: U14-S (unit sizing `plans/contraste/units/U14-sizing.md`, CAOS_MANAGE). I
 - Every function is pure and deterministic (no hidden state, no I/O, inputs never mutated); randomness takes a `seed` and uses `numpy.random.default_rng(seed)`. Dataclasses are frozen. The engine imports no learning library: a model enters as a callable on arrays, and the pipeline computes attributions with the pinned `shap`.
 - A function that cannot compute because data is missing raises `ValueError` with the reason, or (a validation function) returns the `not_evaluated` light with its reason in `notes`; it never returns a placeholder number.
 - A validation function returns one `TestResult` of `riskvalidation`, serialised by `TestResult.to_dict()` into a row that validates against `common/test-result` (`docs/contracts/schemas/common/test-result.schema.json`). Test ids are prefixed `ml.`.
-- Tolerances, grids, counts and cut-offs are conventions, never regulatory thresholds (06 I.6 l.1268-1270); the named parameters of the case documents are listed in the case schemas.
+- Tolerances, grids, counts and cut-offs are conventions, never regulatory thresholds (06 I.6 l.1268-1270); the named parameters of the case documents are listed in the case schemas, the light cut points in Policy thresholds and the other values in Conventions table.
+- Boundary rule of the lights: see Policy thresholds. `Threshold.classify` is inclusive; a tolerance stated as 'exceeds' is stored one float above, so the light and the strict boolean (`robustness_finding`, `overfit_gap`) agree at the boundary.
 - No golden value is claimed where the dossiers print none: each check is an identity, an independent reference or a size and power run on a planted defect.
 
 ## Module `riskvalidation/ml/robustness.py`
@@ -178,8 +179,8 @@ class OverlapResult: top_k: int; n_refits: int; mean: float; p05: float
 def rank_agreement(attribution_importance: numpy.ndarray, effect_range: numpy.ndarray) -> float
 ```
 
-- Units: Both shape (p,); mean absolute SHAP per feature against the range of its ALE or PDP curve; returns Spearman rho in [-1, 1] (06 C.7 l.1006-1008).
-- Invariants: scipy.stats.spearmanr is the reference; constant input raises ValueError.
+- Units: Both shape (p,), any two per-feature vectors: mean absolute SHAP per feature against the range of its ALE or PDP curve (the explainer agreement of C20, ml.effect_agreement, 06 C.7 l.1006-1008), or the mean absolute SHAP on the clean batches against the shocked batches (the shock row's attribution_rank_correlation); returns Spearman rho in [-1, 1].
+- Invariants: scipy.stats.spearmanr is the reference; constant input raises ValueError (the case document then carries null and its reason).
 - Check: Equal vectors give 1.0; reversed give -1.0.
 
 ### `riskvalidation.ml.explanations.shapley_additivity_gap`
@@ -296,9 +297,9 @@ class WeakSpot: label: int; n: int; mean_error: float; ratio: float
 def split_conformal_quantile(scores: numpy.ndarray, alpha: float) -> float
 ```
 
-- Units: scores shape (n,) nonconformity scores on n calibration points; alpha in (0, 1); returns the quantile of order ceil((n + 1)(1 - alpha)) / n (06 C.7 l.1019-1028).
-- Invariants: Order above 1 returns +inf (the set is the whole label space); monotone in alpha.
-- Check: Independent reference: MAPIE split conformal (optional extra) and numpy.quantile with method 'higher'.
+- Units: scores shape (n,) nonconformity scores on n calibration points; alpha in (0, 1); returns the k-th smallest score, k = ceil((n + 1)(1 - alpha)), with k computed on the exact decimal alpha (fractions.Fraction(str(alpha))) so that 101 * 0.9 cannot round the wrong way (06 C.7 l.1019-1028).
+- Invariants: k above n returns +inf (the set is the whole label space); monotone in alpha.
+- Check: Independent reference: numpy.sort(scores)[k - 1], equal to numpy.quantile(scores, k / n, method='inverted_cdf'); the `higher` method of numpy.quantile is NOT the reference, it returns the (k + 1)-th order statistic. Golden: scores 1 to 100 and alpha 0.1 give k = 91 and the 91st smallest score, 91.0 (the `higher` method returns 92.0); n = 19 and alpha 0.05 give k = 19. MAPIE reconciliation (optional extra): the test fits MAPIE's split conformal on the same scores and alpha and compares its quantile with this function; MAPIE 1.5.0's exact quantile call was not read, so its parameterisation is UNVERIFIED: U14-E1 reads it, states it in the test, and records any difference as a finding without changing the definition above.
 
 ### `riskvalidation.ml.conformal.conformal_sets`
 
@@ -602,133 +603,144 @@ class ExchangeabilityBreakPlant(GeneratorBase): def __init__(self, n: int, drift
 ### `riskvalidation.validation.ml.robustness`
 
 ```python
-def robustness(model_id: str, curve: RobustnessCurve, tolerance: float, preset_eps: float, policy: MlPolicy = DEFAULT_POLICY) -> TestResult
+def robustness(model_id: str, curve: RobustnessCurve, tolerance: float, preset_eps: float, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `ml.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "ml.robustness"
-- Light: green when the AUC degradation at the preset scale is within the tolerance (a convention), red when it exceeds it, amber between the tolerance and twice the tolerance; thresholds in extras['thresholds'].
+- Light: green when the degradation is at most the tolerance, amber above the tolerance up to twice the tolerance, red above twice the tolerance; the degradation is -auc_delta at the preset scale and the tolerance is the named parameter perturbation_tolerance (a convention); thresholds in extras['thresholds'].
+- Policy key: `ml.robustness` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.ml.shift_resilience`
 
 ```python
-def shift_resilience(model_id: str, result: SubsampleResult, policy: MlPolicy = DEFAULT_POLICY) -> TestResult
+def shift_resilience(model_id: str, result: SubsampleResult, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `ml.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "ml.shift_resilience"
-- Light: amber or red by the drop of AUC on the worst subsample against the full sample, thresholds from the policy version (conventions).
+- Light: by the drop of AUC on the worst subsample against the full sample: green below the amber cut point, amber from it, red from the red cut point (conventions).
+- Policy key: `ml.shift_resilience` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.ml.seed_stability`
 
 ```python
-def seed_stability(model_id: str, dispersion: SeedDispersion, policy: MlPolicy = DEFAULT_POLICY) -> TestResult
+def seed_stability(model_id: str, dispersion: SeedDispersion, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `ml.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "ml.seed_stability"
-- Light: amber or red by the standard deviation of the AUC across seeds against the policy thresholds (conventions).
+- Light: by the standard deviation of the AUC across seeds: green below the amber cut point, amber from it, red from the red cut point (conventions).
+- Policy key: `ml.seed_stability` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.ml.reason_code_stability`
 
 ```python
-def reason_code_stability(model_id: str, overlap: OverlapResult, policy: MlPolicy = DEFAULT_POLICY) -> TestResult
+def reason_code_stability(model_id: str, overlap: OverlapResult, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `ml.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "ml.reason_code_stability"
-- Light: amber or red by the mean top-four overlap against the policy thresholds (conventions).
+- Light: by the mean top-four overlap: green above the amber cut point, amber at or below it, red at or below the red cut point (conventions).
+- Policy key: `ml.reason_code_stability` (lower_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.ml.effect_agreement`
 
 ```python
-def effect_agreement(model_id: str, rho: float, n_features: int, policy: MlPolicy = DEFAULT_POLICY) -> TestResult
+def effect_agreement(model_id: str, rho: float, n_features: int, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `ml.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "ml.effect_agreement"
-- Light: amber or red by the rank correlation against the policy thresholds (conventions).
+- Light: by the Spearman rank correlation of SHAP against ALE or PDP: green above the amber cut point, amber at or below it, red at or below the red cut point (conventions).
+- Policy key: `ml.effect_agreement` (lower_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.ml.additivity`
 
 ```python
-def additivity(model_id: str, gap: float, tolerance: float = 1e-9) -> TestResult
+def additivity(model_id: str, gap: float, tolerance: float = 1e-9, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `ml.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "ml.additivity"
 - Light: red when the Shapley additivity gap exceeds the numeric tolerance, green otherwise.
+- Policy key: `ml.additivity` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.ml.overfit`
 
 ```python
-def overfit(model_id: str, result: OverfitResult) -> TestResult
+def overfit(model_id: str, result: OverfitResult, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `ml.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "ml.overfit"
-- Light: red when the gap exceeds overfit_tolerance, green otherwise (a convention, never regulatory).
+- Light: red when the gap exceeds overfit_tolerance, green otherwise (a named parameter, a convention, never regulatory).
+- Policy key: `ml.overfit` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.ml.weak_spot`
 
 ```python
-def weak_spot(model_id: str, spots: Sequence[WeakSpot], k: float, n_slices: int) -> TestResult
+def weak_spot(model_id: str, spots: Sequence[WeakSpot], k: float, n_slices: int, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `ml.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "ml.weak_spot"
-- Light: amber when at least one slice exceeds k times the average error, green otherwise.
+- Light: amber when the worst slice's error exceeds k times the average error (k is the named parameter weak_spot_multiple), green otherwise; never red.
+- Policy key: `ml.weak_spot` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.ml.conformal_coverage`
 
 ```python
-def conformal_coverage(model_id: str, result: CoverageResult, policy: MlPolicy = DEFAULT_POLICY) -> TestResult
+def conformal_coverage(model_id: str, result: CoverageResult, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `ml.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "ml.conformal_coverage"
-- Light: by the binomial p-value of the coverage against 1 - alpha with alpha_amber and alpha_red.
+- Light: by the binomial p-value of the coverage against 1 - alpha: red below alpha_red, amber below alpha_amber, green otherwise.
+- Policy key: `ml.conformal_coverage` (p_value); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.ml.leakage_screen`
 
 ```python
-def leakage_screen(model_id: str, temporal: int, single: SingleFeatureAuc, overlap: float, resemblance: AucResult, policy: MlPolicy = DEFAULT_POLICY) -> TestResult
+def leakage_screen(model_id: str, temporal: int, single: SingleFeatureAuc, overlap: float, resemblance: AucResult, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `ml.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "ml.leakage_screen"
-- Light: red when any of the four screens trips (a future-dated feature, a near-perfect single feature, entity overlap above zero, a resemblance AUC beyond the policy), green otherwise.
+- Light: the worst of the four screen lights: red when any screen trips (a future-dated feature, a near-perfect single feature, any entity overlap, a resemblance AUC beyond its limit), green otherwise.
+- Policy key: `ml.leakage_screen.single_feature_auc` (upper_bad), `ml.leakage_screen.resemblance_auc` (upper_bad), `ml.leakage_screen.temporal_order` (upper_bad), `ml.leakage_screen.entity_overlap` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.ml.data_quality`
 
 ```python
-def data_quality(model_id: str, counts: Sequence[DataQualityCount], policy: MlPolicy = DEFAULT_POLICY) -> TestResult
+def data_quality(model_id: str, counts: Sequence[DataQualityCount], policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `ml.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "ml.data_quality"
-- Light: amber or red by the share of failed checks against the policy thresholds (conventions).
+- Light: by the largest share of failed checks: green below the amber cut point, amber from it, red from the red cut point (conventions).
+- Policy key: `ml.data_quality` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.ml.cbpe_estimate`
@@ -741,6 +753,7 @@ def cbpe_estimate(model_id: str, estimate: CbpeAuc, labels_supplied: bool = Fals
 - Invariants: Pure and deterministic; ids are prefixed `ml.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "ml.cbpe_estimate"
 - Light: not_evaluated when a label is supplied; otherwise an estimate row, never green or red evidence.
+- Policy: no policy threshold (row `ml.cbpe_estimate` of Policy thresholds states why); the rule above is the whole classification.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.ml.challenger_brier`
@@ -752,11 +765,52 @@ def challenger_brier(model_id: str, result: PairedBrier) -> TestResult
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `ml.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "ml.challenger_brier"
-- Light: by the paired Brier interval: amber when it excludes zero in the champion's favour, green when it does not.
+- Light: by the paired Brier interval: amber when it excludes zero in the champion's favour (the challenger's Brier is higher), green when it does not.
+- Policy: no policy threshold (row `ml.challenger_brier` of Policy thresholds states why); the rule above is the whole classification.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
+
+## Policy thresholds
+
+Lights come from the engine's `riskvalidation.core.policy.Policy`, a named, versioned set of `Threshold(kind, amber, red)` keyed by test id (`kind` is `p_value`, `upper_bad` or `lower_bad`; engine v0.07.000 `core/policy.py`). Every validation function below takes `policy: Policy | None = None`, where None means `default_policy()`, and classifies with `Policy.classify`. The thresholds of this page are entries of `riskvalidation/policies/default.json` (U14-E1 adds the `ml.` keys and U14-E2 the `fair.` keys; the key sets are disjoint), each with its `source` text; a policy that lacks a key returns the `not_evaluated` light, never a colour. `Threshold.classify` is inclusive at its cut points (`upper_bad`: amber when the metric is at or above `amber`, red at or above `red`; `lower_bad`: amber at or below `amber`, red at or below `red`; `p_value`: red below `red`, amber below `amber`). A rule stated as 'exceeds' (a tolerance) keeps a value equal to the tolerance in the better colour: the engine stores `math.nextafter(cut, math.inf)` as the cut point of a row marked strict, so a delta equal to the tolerance is not a finding and is green. The values are conventions, never regulatory thresholds (06 I.6 l.1268-1270): each is a named parameter for the main session's approval.
+
+| key | kind | metric read | amber and red | boundary | basis | label |
+|---|---|---|---|---|---|---|
+| `ml.robustness` | upper_bad | AUC degradation at the preset scale, -auc_delta (AUC points) | amber 0.02 (perturbation_tolerance), red 0.04 (twice it) | strict | the named parameter; twice it for red | convention |
+| `ml.shift_resilience` | upper_bad | AUC of the full sample minus AUC of the worst subsample (AUC points) | amber 0.05, red 0.10 | inclusive | proposed: no dossier value (06 C.7 l.1013-1015 gives the construction only) | convention |
+| `ml.seed_stability` | upper_bad | standard deviation of the AUC across seeds (AUC points) | amber 0.01, red 0.02 | inclusive | proposed: about the sampling standard error of a Taiwan holdout AUC (0.008) | convention |
+| `ml.reason_code_stability` | lower_bad | mean top-four reason overlap across refits (share) | amber 0.80, red 0.60 | inclusive | proposed: no dossier value (04 J.2 l.881-883) | convention |
+| `ml.effect_agreement` | lower_bad | Spearman rho of mean absolute SHAP against the range of the ALE curve | amber 0.70, red 0.40 | inclusive | proposed: no dossier value (06 C.7 l.1006-1008) | convention |
+| `ml.additivity` | upper_bad | maximum Shapley additivity gap (prediction units) | amber 1e-9, red 1e-9 | strict | the numeric tolerance of the check (the argument tolerance) | convention |
+| `ml.overfit` | upper_bad | train minus holdout AUC gap (AUC points) | amber 0.05, red 0.05 (overfit_tolerance) | strict | the named parameter | convention |
+| `ml.weak_spot` | upper_bad | error ratio of the worst slice to the average error (0 when no slice qualifies) | amber 2.0 (weak_spot_multiple), red 1e12 | strict | the named parameter; red 1e12 is a sentinel no ratio reaches: never red | convention |
+| `ml.conformal_coverage` | p_value | binomial p-value of the coverage against 1 - alpha | amber 0.05 (alpha_amber), red 0.01 (alpha_red) | inclusive | the engine default p-value cut points | convention |
+| `ml.leakage_screen.single_feature_auc` | upper_bad | largest single-feature max(AUC, 1 - AUC) | amber 0.95, red 0.95 | strict | near-perfect: the default of single_feature_auc, no dossier value | convention |
+| `ml.leakage_screen.resemblance_auc` | upper_bad | cross-fitted AUC separating development from out-of-time rows | amber 0.70, red 0.70 | strict | proposed: the usual lower edge of acceptable discrimination, no dossier value | convention |
+| `ml.leakage_screen.temporal_order` | upper_bad | number of feature values dated after the observation date | amber 1, red 1 | inclusive | rule, not a convention: a single future-dated value is a leak by definition (06 C.7 l.1048-1051) | rule, not a convention |
+| `ml.leakage_screen.entity_overlap` | upper_bad | number of test entities present in training | amber 1, red 1 | inclusive | rule, not a convention: an entity in both slices is a leak by definition | rule, not a convention |
+| `ml.data_quality` | upper_bad | largest share of failed checks over the dq_ counts (1 - share_ok) | amber 0.01, red 0.05 | inclusive | proposed: no dossier value (06 C.7 l.1045-1047) | convention |
+| `ml.cbpe_estimate` | none | the CBPE estimate row: never green or red | none | not applicable | the estimate is not evidence (06 C.7 l.1052-1058) | rule, not a convention |
+| `ml.challenger_brier` | none | the 95 percent paired-bootstrap interval of the Brier difference | none | not applicable | the interval level 0.95 is a convention; no numeric cut point | convention |
+
+## Conventions table
+
+Values that are arguments of a function and not Policy thresholds; each is a convention for the main session's approval, never regulatory.
+
+| value | meaning |
+|---|---|
+| weak_spots min_n = 30 | the smallest slice reported as a weak spot (06 C.7 l.1016-1018 gives no value) |
+| shift-kind conformal alpha = 0.10 | the miscoverage of the conformal check in the C20 shift kind; the case document labels it a convention |
+| reason_code_overlap top_k = 4 | the number of reasons compared (04 J.2 l.881-883, ladder P4 l.968) |
+| grade_disagreement notches = 2 | the grade distance counted as a disagreement |
+| cbpe_auc n_thresholds = 101 | the threshold grid of the estimate |
+
+## Names
+
+The function names of this page are ratified as `engine-ml-api` 1.0.0 (decision V5, 2026-10-19); U14-E1 and U14-E2 amend them only through a contract bump. Two names exist in two modules and are easy to confuse: `ml.conformal.conformal_coverage` (the pure function, `from riskvalidation.ml.conformal import conformal_coverage`) and `validation.ml.conformal_coverage` (the TestResult function, `from riskvalidation.validation.ml import conformal_coverage`). Import each from the module named in its heading and never both unqualified.
 
 ## UNVERIFIED and open items
 
-- The values of the named parameters (grid, tolerance, seeds, refits, overfit tolerance, weak-spot multiple, shift score, worst share, cut-off) are proposed by U14-S and approved by the main session; the engine takes them as arguments.
+- The values of the named parameters (grid, tolerance, seeds, refits, overfit tolerance, weak-spot multiple, shift score, worst share, cut-off) were proposed by U14-S and approved by the main session (decision V6, 2026-10-19); the engine takes them as arguments. The other Policy thresholds are proposed for approval.
+- MAPIE 1.5.0's exact split-conformal quantile call was not read: the reconciliation test of `split_conformal_quantile` states its parameterisation (UNVERIFIED until U14-E1 reads it).
 - The dossiers print no worked example with numbers for these tests: no golden value is claimed (sizing, Modules and functions).
 - MAPIE and fairlearn are optional reconciliation extras (decision Q11), never imported by the engine core.

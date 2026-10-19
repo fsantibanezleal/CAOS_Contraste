@@ -487,7 +487,202 @@
           "items": {
             "$ref": "#/$defs/c20FairRow"
           },
-          "minItems": 4
+          "minItems": 12,
+          "maxItems": 12,
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            }
+          ]
         }
       },
       "description": "The labelled fairness battery on the Taiwan model (decision Q5): outcome-conditioned tests, a battery row set, not a compliance statement."

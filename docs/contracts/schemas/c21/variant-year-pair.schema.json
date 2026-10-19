@@ -65,15 +65,19 @@
       "properties": {
         "tests": {
           "items": {
-            "not": {
-              "properties": {
-                "test_id": {
-                  "pattern": "^fair\\.(equalized_odds|equal_opportunity|calibration_within_groups|auc_by_group)"
-                }
-              },
-              "required": [
-                "test_id"
-              ]
+            "properties": {
+              "test_id": {
+                "enum": [
+                  "fair.demographic_parity",
+                  "fair.adverse_impact",
+                  "fair.two_proportion_z",
+                  "fair.fisher_exact",
+                  "fair.conditional_disparity",
+                  "fair.rate_spread_disparity",
+                  "fair.replication",
+                  "fair.situation_testing"
+                ]
+              }
             }
           }
         }
@@ -306,7 +310,6 @@
       "additionalProperties": false,
       "required": [
         "value",
-        "four_fifths",
         "note"
       ],
       "properties": {
@@ -320,78 +323,96 @@
               "type": "null"
             }
           ],
-          "description": "Protected group's selection rate over the reference group's; null when the reference rate is 0."
-        },
-        "four_fifths": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "flag",
-            "threshold",
-            "label",
-            "citation",
-            "is_credit_law_threshold"
-          ],
-          "properties": {
-            "flag": {
-              "type": "boolean"
-            },
-            "threshold": {
-              "const": 0.8
-            },
-            "label": {
-              "const": "employment benchmark"
-            },
-            "citation": {
-              "const": "29 CFR 1607.4(D)"
-            },
-            "is_credit_law_threshold": {
-              "const": false
-            }
-          },
-          "description": "The four-fifths line is an employment benchmark and never a credit-law threshold (06 C.7 l.1033-1037, I.6 l.1268-1270)."
+          "description": "Protected group's selection rate over the reference group's: the parity ratio, null when the reference rate is 0. It is not the four-fifths ratio, which is taken against the highest-rate group (the attribute's four_fifths block)."
         },
         "note": {
           "$ref": "../common/text.schema.json"
         }
       },
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "value": {
-                "type": "number",
-                "exclusiveMaximum": 0.8
-              }
+      "description": "The adverse impact ratio against the chosen reference group."
+    },
+    "c21FourFifthsRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "group",
+        "ratio_to_highest",
+        "flag"
+      ],
+      "properties": {
+        "group": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ratio_to_highest": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
             },
-            "required": [
-              "value"
-            ]
-          },
-          "then": {
-            "properties": {
-              "four_fifths": {
-                "properties": {
-                  "flag": {
-                    "const": true
-                  }
-                }
-              }
+            {
+              "type": "null"
             }
-          },
-          "else": {
-            "properties": {
-              "four_fifths": {
-                "properties": {
-                  "flag": {
-                    "const": false
-                  }
-                }
-              }
-            }
-          }
+          ],
+          "description": "The group's selection rate over the highest group's rate; null when the highest rate is 0."
+        },
+        "flag": {
+          "type": "boolean"
         }
-      ]
+      },
+      "description": "One group against the highest-rate group; the flag is decided on the counts in exact arithmetic, never on the float ratio."
+    },
+    "c21FourFifths": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "citation",
+        "threshold",
+        "is_credit_law_threshold",
+        "compared_with",
+        "decided_on",
+        "rule",
+        "highest_rate_group",
+        "groups"
+      ],
+      "properties": {
+        "label": {
+          "const": "employment benchmark"
+        },
+        "citation": {
+          "const": "29 CFR 1607.4(D)"
+        },
+        "threshold": {
+          "const": 0.8
+        },
+        "is_credit_law_threshold": {
+          "const": false
+        },
+        "compared_with": {
+          "const": "highest-rate-group"
+        },
+        "decided_on": {
+          "const": "exact-counts"
+        },
+        "rule": {
+          "const": "flag when 5 * x_g * n_h < 4 * x_h * n_g"
+        },
+        "highest_rate_group": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The group with the highest selection rate (the first of them in groups order on a tie)."
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c21FourFifthsRow"
+          },
+          "minItems": 2,
+          "description": "One row per group of the attribute, the highest-rate group included (ratio 1, no flag)."
+        }
+      },
+      "description": "The four-fifths line is an employment benchmark and never a credit-law threshold (06 C.7 l.1033-1037, I.6 l.1268-1270). It compares each group with the highest-rate group (29 CFR 1607.4(D); 06 C.7 l.1034-1035), decided on the counts: a group is flagged when 5 * x_g * n_h < 4 * x_h * n_g, so exactly four-fifths is not flagged."
     },
     "c21Ci": {
       "type": "object",
@@ -860,6 +881,7 @@
         "reference_group",
         "groups",
         "excluded_groups",
+        "four_fifths",
         "contrasts"
       ],
       "properties": {
@@ -879,7 +901,8 @@
             "ecoa",
             "fha",
             "note",
-            "theory"
+            "theory",
+            "fha_disparate_impact"
           ],
           "properties": {
             "basis": {
@@ -901,6 +924,10 @@
             },
             "theory": {
               "const": "comparative-evidence-of-disparate-treatment"
+            },
+            "fha_disparate_impact": {
+              "type": "string",
+              "minLength": 1
             }
           },
           "description": "The legal mapping of the attribute, from the addendum H3 section 5 table only."
@@ -922,6 +949,9 @@
             "$ref": "#/$defs/c21Excluded"
           },
           "minItems": 0
+        },
+        "four_fifths": {
+          "$ref": "#/$defs/c21FourFifths"
         },
         "contrasts": {
           "type": "array",
@@ -947,6 +977,104 @@
                 },
                 "fha": {
                   "const": true
+                },
+                "fha_disparate_impact": {
+                  "const": "not assessed (disparate impact under the FHA only; gross HMDA disparities are not appropriate for disproportionate adverse impact analysis, Interagency Procedures appendix, printed page 26)"
+                }
+              }
+            },
+            "reference_group": {
+              "enum": [
+                "American Indian or Alaska Native",
+                "Asian",
+                "Black or African American",
+                "Native Hawaiian or Other Pacific Islander",
+                "White",
+                "2 or more minority races"
+              ]
+            },
+            "groups": {
+              "items": {
+                "properties": {
+                  "group": {
+                    "enum": [
+                      "American Indian or Alaska Native",
+                      "Asian",
+                      "Black or African American",
+                      "Native Hawaiian or Other Pacific Islander",
+                      "White",
+                      "2 or more minority races"
+                    ]
+                  }
+                }
+              }
+            },
+            "excluded_groups": {
+              "items": {
+                "properties": {
+                  "group": {
+                    "enum": [
+                      "Joint",
+                      "Free Form Text Only",
+                      "Race Not Available"
+                    ]
+                  }
+                }
+              }
+            },
+            "four_fifths": {
+              "properties": {
+                "highest_rate_group": {
+                  "enum": [
+                    "American Indian or Alaska Native",
+                    "Asian",
+                    "Black or African American",
+                    "Native Hawaiian or Other Pacific Islander",
+                    "White",
+                    "2 or more minority races"
+                  ]
+                },
+                "groups": {
+                  "items": {
+                    "properties": {
+                      "group": {
+                        "enum": [
+                          "American Indian or Alaska Native",
+                          "Asian",
+                          "Black or African American",
+                          "Native Hawaiian or Other Pacific Islander",
+                          "White",
+                          "2 or more minority races"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "contrasts": {
+              "items": {
+                "properties": {
+                  "group": {
+                    "enum": [
+                      "American Indian or Alaska Native",
+                      "Asian",
+                      "Black or African American",
+                      "Native Hawaiian or Other Pacific Islander",
+                      "White",
+                      "2 or more minority races"
+                    ]
+                  },
+                  "reference_group": {
+                    "enum": [
+                      "American Indian or Alaska Native",
+                      "Asian",
+                      "Black or African American",
+                      "Native Hawaiian or Other Pacific Islander",
+                      "White",
+                      "2 or more minority races"
+                    ]
+                  }
                 }
               }
             }
@@ -967,6 +1095,80 @@
                 },
                 "fha": {
                   "const": true
+                },
+                "fha_disparate_impact": {
+                  "const": "not assessed (disparate impact under the FHA only; gross HMDA disparities are not appropriate for disproportionate adverse impact analysis, Interagency Procedures appendix, printed page 26)"
+                }
+              }
+            },
+            "reference_group": {
+              "enum": [
+                "Hispanic or Latino",
+                "Not Hispanic or Latino"
+              ]
+            },
+            "groups": {
+              "items": {
+                "properties": {
+                  "group": {
+                    "enum": [
+                      "Hispanic or Latino",
+                      "Not Hispanic or Latino"
+                    ]
+                  }
+                }
+              }
+            },
+            "excluded_groups": {
+              "items": {
+                "properties": {
+                  "group": {
+                    "enum": [
+                      "Joint",
+                      "Free Form Text Only",
+                      "Ethnicity Not Available"
+                    ]
+                  }
+                }
+              }
+            },
+            "four_fifths": {
+              "properties": {
+                "highest_rate_group": {
+                  "enum": [
+                    "Hispanic or Latino",
+                    "Not Hispanic or Latino"
+                  ]
+                },
+                "groups": {
+                  "items": {
+                    "properties": {
+                      "group": {
+                        "enum": [
+                          "Hispanic or Latino",
+                          "Not Hispanic or Latino"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "contrasts": {
+              "items": {
+                "properties": {
+                  "group": {
+                    "enum": [
+                      "Hispanic or Latino",
+                      "Not Hispanic or Latino"
+                    ]
+                  },
+                  "reference_group": {
+                    "enum": [
+                      "Hispanic or Latino",
+                      "Not Hispanic or Latino"
+                    ]
+                  }
                 }
               }
             }
@@ -987,6 +1189,79 @@
                 },
                 "fha": {
                   "const": true
+                },
+                "fha_disparate_impact": {
+                  "const": "not assessed (disparate impact under the FHA only; gross HMDA disparities are not appropriate for disproportionate adverse impact analysis, Interagency Procedures appendix, printed page 26)"
+                }
+              }
+            },
+            "reference_group": {
+              "enum": [
+                "Male",
+                "Female"
+              ]
+            },
+            "groups": {
+              "items": {
+                "properties": {
+                  "group": {
+                    "enum": [
+                      "Male",
+                      "Female"
+                    ]
+                  }
+                }
+              }
+            },
+            "excluded_groups": {
+              "items": {
+                "properties": {
+                  "group": {
+                    "enum": [
+                      "Joint",
+                      "Sex Not Available"
+                    ]
+                  }
+                }
+              }
+            },
+            "four_fifths": {
+              "properties": {
+                "highest_rate_group": {
+                  "enum": [
+                    "Male",
+                    "Female"
+                  ]
+                },
+                "groups": {
+                  "items": {
+                    "properties": {
+                      "group": {
+                        "enum": [
+                          "Male",
+                          "Female"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "contrasts": {
+              "items": {
+                "properties": {
+                  "group": {
+                    "enum": [
+                      "Male",
+                      "Female"
+                    ]
+                  },
+                  "reference_group": {
+                    "enum": [
+                      "Male",
+                      "Female"
+                    ]
+                  }
                 }
               }
             }
@@ -1007,6 +1282,108 @@
                 },
                 "fha": {
                   "const": false
+                },
+                "fha_disparate_impact": {
+                  "const": "not applicable (age is a prohibited basis under ECOA only, not in 42 U.S.C. 3605(a))"
+                }
+              }
+            },
+            "reference_group": {
+              "enum": [
+                "<25",
+                "25-34",
+                "35-44",
+                "45-54",
+                "55-64",
+                "65-74",
+                ">74"
+              ]
+            },
+            "groups": {
+              "items": {
+                "properties": {
+                  "group": {
+                    "enum": [
+                      "<25",
+                      "25-34",
+                      "35-44",
+                      "45-54",
+                      "55-64",
+                      "65-74",
+                      ">74"
+                    ]
+                  }
+                }
+              }
+            },
+            "excluded_groups": {
+              "items": {
+                "properties": {
+                  "group": {
+                    "enum": [
+                      "8888"
+                    ]
+                  }
+                }
+              }
+            },
+            "four_fifths": {
+              "properties": {
+                "highest_rate_group": {
+                  "enum": [
+                    "<25",
+                    "25-34",
+                    "35-44",
+                    "45-54",
+                    "55-64",
+                    "65-74",
+                    ">74"
+                  ]
+                },
+                "groups": {
+                  "items": {
+                    "properties": {
+                      "group": {
+                        "enum": [
+                          "<25",
+                          "25-34",
+                          "35-44",
+                          "45-54",
+                          "55-64",
+                          "65-74",
+                          ">74"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "contrasts": {
+              "items": {
+                "properties": {
+                  "group": {
+                    "enum": [
+                      "<25",
+                      "25-34",
+                      "35-44",
+                      "45-54",
+                      "55-64",
+                      "65-74",
+                      ">74"
+                    ]
+                  },
+                  "reference_group": {
+                    "enum": [
+                      "<25",
+                      "25-34",
+                      "35-44",
+                      "45-54",
+                      "55-64",
+                      "65-74",
+                      ">74"
+                    ]
+                  }
                 }
               }
             }
@@ -1021,7 +1398,8 @@
         "label",
         "outcome",
         "dti_recode",
-        "group_exclusion"
+        "group_exclusion",
+        "identifiers"
       ],
       "properties": {
         "label": {
@@ -1088,9 +1466,64 @@
         },
         "group_exclusion": {
           "$ref": "../common/text.schema.json"
+        },
+        "identifiers": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "observation_date",
+            "label",
+            "note"
+          ],
+          "properties": {
+            "id": {
+              "const": "<activity_year>-<row>"
+            },
+            "observation_date": {
+              "const": "<activity_year>-12-31"
+            },
+            "label": {
+              "const": "convention",
+              "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
+            },
+            "note": {
+              "$ref": "../common/text.schema.json"
+            }
+          },
+          "description": "Public HMDA withholds the loan identifier and the dates (addendum H1 2.5): id is the row position in the source file within its activity year, observation_date is the activity year's 12-31 (decision V3)."
         }
       },
       "description": "Named conventions, labelled on every result."
+    },
+    "c21Licence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "platform_terms",
+        "platform_terms_cover",
+        "modified_statement",
+        "note"
+      ],
+      "properties": {
+        "status": {
+          "const": "UNVERIFIED"
+        },
+        "platform_terms": {
+          "const": "As a work of the United States Government, this package (excluding any exceptions listed below) is in the public domain within the United States. Additionally, we waive copyright and related rights in the work worldwide through the CC0 1.0 Universal public domain dedication."
+        },
+        "platform_terms_cover": {
+          "const": "the software package, not the published datasets"
+        },
+        "modified_statement": {
+          "const": "The publicly available data are modified to protect applicants' and borrowers' privacy"
+        },
+        "note": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The HMDA data licence stays UNVERIFIED (addendum H2 3.3); the views quote the platform software terms and the CFPB statement that the public data are modified (decision C7)."
     },
     "c21Note": {
       "type": "object",
@@ -1144,6 +1577,8 @@
         "k",
         "alpha",
         "tau",
+        "distance_normalization",
+        "label_parameters",
         "centers",
         "interval",
         "n_complainants",
@@ -1192,6 +1627,13 @@
         "tau": {
           "const": 0
         },
+        "distance_normalization": {
+          "const": "range"
+        },
+        "label_parameters": {
+          "const": "convention",
+          "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
+        },
         "centers": {
           "const": "excluded"
         },
@@ -1223,6 +1665,7 @@
         "confirm_year",
         "scope",
         "legal",
+        "licence",
         "conventions",
         "attributes",
         "situation_testing",
@@ -1279,6 +1722,9 @@
         "legal": {
           "$ref": "#/$defs/c21Legal"
         },
+        "licence": {
+          "$ref": "#/$defs/c21Licence"
+        },
         "conventions": {
           "$ref": "#/$defs/c21Conventions"
         },
@@ -1310,7 +1756,87 @@
           "description": "Requirement ids CT-2101 onward (decision Q14)."
         }
       },
-      "description": "C21 year-pair outputs: statistical disparity on public HMDA decisions, fitted on year t and confirmed on t+1. No outcome-conditioned test runs: HMDA has no outcome (08 l.180-181)."
+      "description": "C21 year-pair outputs: statistical disparity on public HMDA decisions, fitted on year t and confirmed on t+1. No outcome-conditioned test runs: HMDA has no outcome (08 l.180-181).",
+      "oneOf": [
+        {
+          "properties": {
+            "pair_id": {
+              "const": "2018-19"
+            },
+            "fit_year": {
+              "const": 2018
+            },
+            "confirm_year": {
+              "const": 2019
+            }
+          }
+        },
+        {
+          "properties": {
+            "pair_id": {
+              "const": "2019-20"
+            },
+            "fit_year": {
+              "const": 2019
+            },
+            "confirm_year": {
+              "const": 2020
+            }
+          }
+        },
+        {
+          "properties": {
+            "pair_id": {
+              "const": "2020-21"
+            },
+            "fit_year": {
+              "const": 2020
+            },
+            "confirm_year": {
+              "const": 2021
+            }
+          }
+        },
+        {
+          "properties": {
+            "pair_id": {
+              "const": "2021-22"
+            },
+            "fit_year": {
+              "const": 2021
+            },
+            "confirm_year": {
+              "const": 2022
+            }
+          }
+        },
+        {
+          "properties": {
+            "pair_id": {
+              "const": "2022-23"
+            },
+            "fit_year": {
+              "const": 2022
+            },
+            "confirm_year": {
+              "const": 2023
+            }
+          }
+        },
+        {
+          "properties": {
+            "pair_id": {
+              "const": "2023-24"
+            },
+            "fit_year": {
+              "const": 2023
+            },
+            "confirm_year": {
+              "const": 2024
+            }
+          }
+        }
+      ]
     }
   }
 }

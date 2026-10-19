@@ -415,7 +415,9 @@ def validate(
     _check_params(fam, params)
     fields = (*fam.fields, *extra_fields)
     if fam.name == "scored_sample" and params.get("outcome") == "none":
-        fields = tuple(dataclasses.replace(f, required=False) if f.name == "target" else f for f in fields)
+        # no outcome: target is optional and the lender's decision is the case's required output (decision V3)
+        fields = tuple(dataclasses.replace(f, required=False) if f.name == "target"
+                       else dataclasses.replace(f, required=True) if f.name == "decision" else f for f in fields)
     names = {f.name for f in fields}
     if len(names) != len(fields):
         raise ContractError(f"{fam.name}: a field is declared twice")
@@ -716,12 +718,14 @@ SCORED_SAMPLE = Family(
     ),
     params=(Param("grades", "list", _t("The grade scale, best to worst", "La escala de grados, de mejor a peor"),
                   required=False),
-            Param("outcome", "enum", _t("Whether the case declares an outcome: target (default, required) or none (a decision sample such as HMDA or the Fed portfolios: target becomes optional)",
-                                        "Si el caso declara un resultado: target (por defecto, obligatorio) o none (una muestra de decisiones como HMDA o las carteras de la Fed: target pasa a ser opcional)"),
+            Param("outcome", "enum", _t("Whether the case declares an outcome: target (default, required) or none (a decision sample such as HMDA or the Fed portfolios: target becomes optional and decision becomes required)",
+                                        "Si el caso declara un resultado: target (por defecto, obligatorio) o none (una muestra de decisiones como HMDA o las carteras de la Fed: target pasa a ser opcional y decision pasa a ser obligatorio)"),
                   required=False, values=("target", "none"))),
     open_fields=True,
-    notes=(_t("A case that declares no outcome sets the dataset parameter outcome to none; target is then optional and the optional decision field carries the lender's decision. Several protected attributes are the case's declared open fields.",
-              "Un caso que no declara resultado fija el parametro outcome en none; target pasa a ser opcional y el campo opcional decision lleva la decision del prestamista. Varios atributos protegidos son campos abiertos declarados por el caso."),
+    notes=(_t("A case that declares no outcome sets the dataset parameter outcome to none; target is then optional and the decision field becomes required and carries the lender's decision. Several protected attributes are the case's declared open fields.",
+              "Un caso que no declara resultado fija el parametro outcome en none; target pasa a ser opcional y el campo decision pasa a ser obligatorio y lleva la decision del prestamista. Varios atributos protegidos son campos abiertos declarados por el caso."),
+           _t("Public HMDA withholds the loan identifier and the application and action dates (U14 research addendum H1 2.5), so its reader writes two named conventions: id is the row position in the source file within its activity year, written <activity_year>-<row>, and observation_date is the activity year's 12-31, written <activity_year>-12-31. Both are conventions, not source values.",
+              "El HMDA publico omite el identificador del prestamo y las fechas de solicitud y de accion (adendum de investigacion U14 H1 2.5), de modo que su lector escribe dos convenciones con nombre: id es la posicion de la fila en el archivo fuente dentro de su ano de actividad, escrita <activity_year>-<row>, y observation_date es el 12-31 del ano de actividad, escrita <activity_year>-12-31. Ambas son convenciones, no valores de la fuente."),
            _t("The case declares its features with their units; a missing feature is flagged, and imputation is "
               "fitted on the training slice only.",
               "El caso declara sus variables con sus unidades; una variable faltante se marca, y la imputación se "

@@ -461,7 +461,202 @@
           "items": {
             "$ref": "#/$defs/c20FairRow"
           },
-          "minItems": 4
+          "minItems": 12,
+          "maxItems": 12,
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            }
+          ]
         }
       },
       "description": "The labelled fairness battery on the Taiwan model (decision Q5): outcome-conditioned tests, a battery row set, not a compliance statement."
@@ -534,6 +729,26 @@
       },
       "description": "The share of decisions that flip at the stated cut-off under each shift (decision Q10)."
     },
+    "c20Threshold": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "label"
+      ],
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A value in [0, 1]."
+        },
+        "label": {
+          "const": "convention",
+          "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
+        }
+      }
+    },
     "c20OutputsLeakage": {
       "type": "object",
       "additionalProperties": false,
@@ -547,6 +762,7 @@
         "impact_detail",
         "requirements",
         "planted_feature",
+        "thresholds",
         "screen",
         "caught",
         "performance"
@@ -610,6 +826,23 @@
         "planted_feature": {
           "type": "string",
           "minLength": 1
+        },
+        "thresholds": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "single_feature_auc",
+            "resemblance_auc"
+          ],
+          "properties": {
+            "single_feature_auc": {
+              "$ref": "#/$defs/c20Threshold"
+            },
+            "resemblance_auc": {
+              "$ref": "#/$defs/c20Threshold"
+            }
+          },
+          "description": "The two screen limits of the policy, each a convention (ml.leakage_screen.single_feature_auc and .resemblance_auc)."
         },
         "screen": {
           "type": "object",

@@ -399,27 +399,22 @@ def contrast(doc: dict) -> dict:
     return doc["outputs"]["attributes"][0]["contrasts"][0]
 
 
-def test_the_four_fifths_flag_is_labelled_an_employment_benchmark_and_follows_the_ratio() -> None:
+def test_the_four_fifths_flag_is_labelled_an_employment_benchmark_and_follows_the_counts() -> None:
+    import semantics
     doc = load(C21)
-    air = contrast(doc)["adverse_impact_ratio"]
-    assert air["four_fifths"]["label"] == "employment benchmark" and air["four_fifths"]["is_credit_law_threshold"] is False
-    for edit in (lambda a: a["four_fifths"].__setitem__("label", "credit-law threshold"),
-                 lambda a: a["four_fifths"].__setitem__("is_credit_law_threshold", True),
-                 lambda a: a["four_fifths"].pop("label"),
-                 lambda a: a["four_fifths"].__setitem__("flag", not a["four_fifths"]["flag"]),
-                 lambda a: a["four_fifths"].__setitem__("threshold", 0.9)):
+    ff = doc["outputs"]["attributes"][0]["four_fifths"]
+    assert ff["label"] == "employment benchmark" and ff["is_credit_law_threshold"] is False and ff["decided_on"] == "exact-counts"
+    for key, value in (("label", "credit-law threshold"), ("is_credit_law_threshold", True), ("threshold", 0.9)):
         bad = copy.deepcopy(doc)
-        edit(contrast(bad)["adverse_impact_ratio"])
-        assert not valid("c21/variant-year-pair", bad)
-    ok = copy.deepcopy(doc)
-    a = contrast(ok)["adverse_impact_ratio"]
-    a["value"] = 0.8
-    a["four_fifths"]["flag"] = False
-    assert valid("c21/variant-year-pair", ok), "0.8 exactly does not flag"
-    a["value"] = 0.79
-    assert not valid("c21/variant-year-pair", ok)
-    a["four_fifths"]["flag"] = True
-    assert valid("c21/variant-year-pair", ok)
+        bad["outputs"]["attributes"][0]["four_fifths"][key] = value
+        assert not valid("c21/variant-year-pair", bad), key
+    bad = copy.deepcopy(doc)
+    del bad["outputs"]["attributes"][0]["four_fifths"]["label"]
+    assert not valid("c21/variant-year-pair", bad)
+    flipped = copy.deepcopy(doc)
+    row = flipped["outputs"]["attributes"][0]["four_fifths"]["groups"][1]
+    row["flag"] = not row["flag"]
+    assert any("four-fifths" in m for m in semantics.check_c21(flipped)), "a flag the counts do not give is refused by the producer check"
 
 
 def test_the_adverse_impact_ratio_equals_the_parity_ratio_and_the_rates_are_the_counts_over_n() -> None:
@@ -427,7 +422,7 @@ def test_the_adverse_impact_ratio_equals_the_parity_ratio_and_the_rates_are_the_
         for g in attr["groups"]:
             assert abs(g["selection_rate"] - g["n_approved"] / g["n"]) < 1e-12 and g["n_approved"] + g["n_denied"] == g["n"]
         for c in attr["contrasts"]:
-            assert abs(c["adverse_impact_ratio"]["value"] - c["parity_ratio"]) < 1e-12
+            assert abs(c["adverse_impact_ratio"]["value"] - c["parity_ratio"]) < 1e-12 and "four_fifths" not in c["adverse_impact_ratio"]
             assert abs(c["parity_gap"] - (c["selection_rate_group"] - c["selection_rate_reference"])) < 1e-12
 
 
@@ -731,7 +726,7 @@ def test_the_fairness_contract_never_runs_outcome_conditioned_tests_on_hmda_and_
     for name in ("equalized_odds", "equal_opportunity", "calibration_within_groups", "auc_by_group"):
         body = sections(ENGINE / "fairness-api.md")[f"riskvalidation.validation.fairness.{name}"]
         assert "outcome-conditioned" in body and "not_evaluated" in body
-    assert "29 CFR 1607.4(D)" in text and "0.8 exactly does not flag" in text
+    assert "29 CFR 1607.4(D)" in text and "0.8 exactly does not flag" in text and "highest-rate group" in text
 
 
 def test_the_ml_contract_names_every_planted_defect_the_sizing_lists() -> None:

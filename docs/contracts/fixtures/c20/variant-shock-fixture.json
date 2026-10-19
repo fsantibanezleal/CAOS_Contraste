@@ -55,7 +55,7 @@
         "value": 0.02,
         "unit": "AUC points",
         "label": "convention",
-        "basis": "Degradation of AUC tolerated at the preset scale 0.1; about three standard errors of an AUC on the Taiwan holdout."
+        "basis": "Degradation of AUC tolerated at the preset scale 0.1; about 2.5 standard errors of an AUC on the Taiwan holdout (about 6,000 holdout rows)."
       },
       {
         "name": "n_seeds",
@@ -148,7 +148,21 @@
           "drift": {
             "psi_max": 0.08,
             "csi_max": 0.12,
-            "chi2_p_value": 0.2
+            "chi2_p_value": 0.2,
+            "variables": [
+              {
+                "name": "annual_salary",
+                "psi": 0.08,
+                "csi": 0.12,
+                "chi2_p_value": 0.2
+              },
+              {
+                "name": "committed_exposure",
+                "psi": 0.03,
+                "csi": 0.05,
+                "chi2_p_value": null
+              }
+            ]
           },
           "data_quality": {
             "completeness": 0.97,
@@ -173,7 +187,21 @@
           "drift": {
             "psi_max": 0.08,
             "csi_max": 0.12,
-            "chi2_p_value": 0.2
+            "chi2_p_value": 0.2,
+            "variables": [
+              {
+                "name": "annual_salary",
+                "psi": 0.08,
+                "csi": 0.12,
+                "chi2_p_value": 0.2
+              },
+              {
+                "name": "committed_exposure",
+                "psi": 0.03,
+                "csi": 0.05,
+                "chi2_p_value": null
+              }
+            ]
           },
           "data_quality": {
             "completeness": 0.97,
@@ -202,7 +230,21 @@
           "drift": {
             "psi_max": 0.08,
             "csi_max": 0.12,
-            "chi2_p_value": 0.2
+            "chi2_p_value": 0.2,
+            "variables": [
+              {
+                "name": "annual_salary",
+                "psi": 0.08,
+                "csi": 0.12,
+                "chi2_p_value": 0.2
+              },
+              {
+                "name": "committed_exposure",
+                "psi": 0.03,
+                "csi": 0.05,
+                "chi2_p_value": null
+              }
+            ]
           },
           "data_quality": {
             "completeness": 0.97,

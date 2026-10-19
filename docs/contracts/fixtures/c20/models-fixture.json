@@ -76,7 +76,7 @@
         "value": 0.02,
         "unit": "AUC points",
         "label": "convention",
-        "basis": "Degradation of AUC tolerated at the preset scale 0.1; about three standard errors of an AUC on the Taiwan holdout."
+        "basis": "Degradation of AUC tolerated at the preset scale 0.1; about 2.5 standard errors of an AUC on the Taiwan holdout (about 6,000 holdout rows)."
       },
       {
         "name": "n_seeds",
