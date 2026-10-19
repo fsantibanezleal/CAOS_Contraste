@@ -15,7 +15,7 @@ from riskvalidation.irrbb import slotting as rv_slotting
 
 from . import assumptions as asm
 from .bands import spread
-from .fdic import Report
+from ...io.fdic import Report
 
 CATEGORIES = (
     "cash", "securities-htm", "securities-afs", "loans-fixed", "loans-floating", "other-assets", "deposits-transactional",

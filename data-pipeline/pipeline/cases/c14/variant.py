@@ -19,7 +19,7 @@ from riskvalidation.validation import irrbb as rv_val
 
 from . import assumptions as asm
 from . import fits, slotting
-from .fdic import Report, realised_nii, report_at
+from ...io.fdic import Report, realised_nii, report_at
 from .slotting import Item, t
 from ...io.treasury import ParCurve, curve_as_of
 

@@ -13,7 +13,8 @@ import pytest
 import semantics
 from c14_support import SEED, SMALL_PATHS, data_root, requires_raw
 
-from pipeline.cases.c14 import assumptions, fdic
+from pipeline.cases.c14 import assumptions
+from pipeline.io import fdic
 from pipeline.io import treasury
 
 DATA = Path(__file__).resolve().parent / "data"
