@@ -18,8 +18,8 @@ import math
 import statistics
 from pathlib import Path
 
-from build_schemas import (A1_IDS, CALIBRATED_ON, CONVENTION_NAMES, LIST_CONTRACTUAL, LIST_DRAWDOWN, LIST_INFLOWS, LIST_OPEN,
-                           PARAMETER_SETS, SCORED_ON, TABLE_A1, VARIANTS)
+from build_schemas import (A1_IDS, CALIBRATED_ON, CONVENTION_NAMES, GOLDENS, LCR_INFLOW_RATES, LCR_OUTFLOW_RATES, LCR_PHASE, LIST_CONTRACTUAL,
+                           LIST_DRAWDOWN, LIST_INFLOWS, LIST_OPEN, PARAMETER_SETS, SCORED_ON, TABLE_A1, VARIANTS)
 
 ROOT = Path(__file__).resolve().parents[2]
 FIX = ROOT / "docs" / "contracts" / "fixtures" / "c16"
@@ -83,7 +83,6 @@ def grid(values: list, unit: str, en: str, es: str) -> dict:
 
 SEC_ROWS = [  # class, Federal Reserve category (M2, effective 2022-03-14 to 2023-03-12), duration bucket, margin, rule
     ("cash-and-balances", "not applicable: nominal value (LiST para 73)", "none", None, "nominal-value"),
-    ("reverse-repo", "no framework row: fallback", "none", None, "fifty-percent-fallback"),
     ("treasury", "U.S. Treasuries and fully guaranteed agencies: Bills, Notes, Bonds", ">3-5", 0.98, "central-bank-framework"),
     ("mortgage-backed", "Agency backed mortgages: pass-throughs, CMOs, commercial MBS", ">5-10", 0.96, "central-bank-framework"),
     ("other-agency", "Government Sponsored Enterprises: Bills, Notes, Bonds", ">3-5", 0.97, "central-bank-framework"),
@@ -113,9 +112,9 @@ def conventions() -> dict:
     c["deposit_category_mapping"] = {
         "status": "convention",
         "rows": [
-            {"basis": "insured", "role": "central", "lcr_category": "retail-less-stable", "list_class": "other-retail",
+            {"basis": "insured", "role": "central", "lcr_category": "retail_less_stable", "list_class": "other-retail",
              "label": txt("Insured deposits (DEPINS) as retail, less stable", "Depositos asegurados (DEPINS) como minoristas menos estables")},
-            {"basis": "uninsured", "role": "central", "lcr_category": "non-financial-corporate",
+            {"basis": "uninsured", "role": "central", "lcr_category": "non_financial_corporate",
              "list_class": "non-operational-non-financial-corporates",
              "label": txt("Uninsured deposits (DEPUNA) as non-operational non-financial corporates",
                           "Depositos no asegurados (DEPUNA) como corporativos no financieros no operacionales")},
@@ -123,10 +122,10 @@ def conventions() -> dict:
         "sensitivity_band": [
             {"basis": "uninsured", "role": "band", "lcr_category": "operational", "list_class": "operational",
              "label": txt("Uninsured balance as operational deposits", "Saldo no asegurado como depositos operacionales")},
-            {"basis": "uninsured", "role": "band", "lcr_category": "non-financial-corporate",
+            {"basis": "uninsured", "role": "band", "lcr_category": "non_financial_corporate",
              "list_class": "non-operational-non-financial-corporates",
              "label": txt("Uninsured balance as non-financial corporates", "Saldo no asegurado como corporativos no financieros")},
-            {"basis": "uninsured", "role": "band", "lcr_category": "other-legal-entity",
+            {"basis": "uninsured", "role": "band", "lcr_category": "other_legal_entity",
              "list_class": "non-operational-other-financial",
              "label": txt("Uninsured balance as other legal entities", "Saldo no asegurado como otras personas juridicas")},
         ],
@@ -140,15 +139,19 @@ def conventions() -> dict:
         "rows": [
             {"variant": v, "scenario_family": fam, "phase": ph, "parameter_set": ps, "horizon_days": n, "axis": ax}
             for v, fam, ph, ps, n, ax in (
-                ("lcr-standard", "combined", "protracted", "basel-lcr", 30, "calendar-days"),
+                ("lcr-standard", "combined", LCR_PHASE, "basel-lcr", 30, "calendar-days"),
                 ("list-adverse", "idiosyncratic", "protracted", "list-adverse", 125, "relevant-days"),
                 ("list-extreme", "idiosyncratic", "protracted", "list-extreme", 125, "relevant-days"),
                 ("fast-run", "idiosyncratic", "acute", "fast-run", 5, "relevant-days"),
                 ("htm-losses", "idiosyncratic", "protracted", "list-adverse", 125, "relevant-days"))],
         "basis": txt("Dossier 05 E.2 asks for three families and two horizons and the SDD names none: the LCR is the combined "
-                     "30-day stress, the LiST 2019 shocks are idiosyncratic only (annex slide 5), the fast run is acute (1 to 5 days).",
+                     "stress over 30 calendar days (LCR20.2), a phase of its own, lcr-30-day, outside the acute (1 to 5 days) and "
+                     "protracted (6 to 12 months) wording of 05 l.277; the LiST 2019 shocks are idiosyncratic only (annex slide 5) and "
+                     "protracted; the fast run is acute.",
                      "El dossier 05 E.2 pide tres familias y dos horizontes y el SDD no nombra ninguno: el LCR es el estres combinado "
-                     "a 30 dias, los choques LiST 2019 son solo idiosincraticos, la corrida rapida es aguda (1 a 5 dias)."),
+                     "a 30 dias corridos (LCR20.2), una fase propia, lcr-30-day, fuera de lo agudo (1 a 5 dias) y lo prolongado "
+                     "(6 a 12 meses) del dossier 05 l.277; los choques LiST 2019 son solo idiosincraticos y prolongados; la corrida "
+                     "rapida es aguda."),
     }
     c["day_calendar"] = {
         "status": "convention", "kind": "us-business-days", "first_day": FIRST_DAY, "excluded_weekdays": ["saturday", "sunday"],
@@ -254,16 +257,18 @@ CONV = conventions()
 # ------------------------------------------------------------------------------------------------------ the CBC and the ladder
 
 
-def cbc_classes(basis: str, par: bool = False) -> list[dict]:
+def cbc_classes(basis: str, par: bool = False, htm_multiple: float | None = None) -> list[dict]:
     """The CBC at 2022-12-31: the securities by type at the carrying values the FDIC reports, pledged securities encumbered pro
-    rata, the haircuts of the conventions; on the fair-value basis the HTM loss is applied to the whole book, pro rata."""
-    carrying = {"cash-and-balances": FDIC["CHBAL"], "reverse-repo": FDIC["FREPO"], "treasury": FDIC["SCUST"],
+    rata, the haircuts of the conventions; on the fair-value basis the HTM loss is applied to the whole book, pro rata.
+    ``htm_multiple`` scales the loss (0 none, 1 the reported loss) for the HTM sensitivity; the securities are then at fair value."""
+    factor = FV_FACTOR if htm_multiple is None else 1.0 + htm_multiple * (FV_FACTOR - 1.0)
+    at_fair_value = basis == "fair-value" or htm_multiple is not None
+    carrying = {"cash-and-balances": FDIC["CHBAL"], "treasury": FDIC["SCUST"],
                 "mortgage-backed": FDIC["SCMTGBK"], "other-agency": FDIC["SCASPNSUM"], "municipal": FDIC["SCMUNI"],
                 "other-debt": FDIC["SCDOMO"] + FDIC["SCFORD"]}
-    fields = {"cash-and-balances": ["CHBAL"], "reverse-repo": ["FREPO"], "treasury": ["SCUST"], "mortgage-backed": ["SCMTGBK"],
+    fields = {"cash-and-balances": ["CHBAL"], "treasury": ["SCUST"], "mortgage-backed": ["SCMTGBK"],
               "other-agency": ["SCASPNSUM"], "municipal": ["SCMUNI"], "other-debt": ["SCDOMO", "SCFORD"]}
     labels = {"cash-and-balances": txt("Cash and balances due", "Efectivo y saldos"),
-              "reverse-repo": txt("Federal funds sold and reverse repos", "Fondos federales vendidos y repos inversos"),
               "treasury": txt("Treasury securities", "Valores del Tesoro"), "mortgage-backed": txt("Mortgage-backed securities", "Valores respaldados por hipotecas"),
               "other-agency": txt("Other agency securities", "Otros valores de agencias"), "municipal": txt("Municipal securities", "Valores municipales"),
               "other-debt": txt("Other debt securities", "Otros valores de deuda")}
@@ -272,7 +277,7 @@ def cbc_classes(basis: str, par: bool = False) -> list[dict]:
     for cid in carrying:
         is_sec = cid in ("treasury", "mortgage-backed", "other-agency", "municipal", "other-debt")
         cv = float(carrying[cid])
-        fv = r6(cv * FV_FACTOR) if (is_sec and basis == "fair-value") else None
+        fv = r6(cv * factor) if (is_sec and at_fair_value) else None
         used = fv if fv is not None else cv
         enc = r6(cv * PLEDGED_SHARE) if is_sec else 0.0
         _, _, _, margin, rule = rows[cid]
@@ -285,8 +290,8 @@ def cbc_classes(basis: str, par: bool = False) -> list[dict]:
     return out
 
 
-def cbc_block(basis: str) -> dict:
-    classes = cbc_classes(basis)
+def cbc_block(basis: str, htm_multiple: float | None = None) -> dict:
+    classes = cbc_classes(basis, htm_multiple=htm_multiple)
     return {
         "as_of": VD, "htm_valuation_basis": basis,
         "haircut_framework": {
@@ -346,12 +351,23 @@ def fast_rate() -> float:
             "mean-implied-daily-rate": statistics.fmean}[CONV["fast_run_calibration_rule"]["rule"]](rates)
 
 
+def ladder_inflows(variant: str) -> list[dict]:
+    """The reverse repos (FREPO) as a maturing secured-lending inflow at 100 percent, as LiST takes them (addendum L1.2 and L1.3,
+    paras 114 and 115); assumed overnight, so the whole balance returns on day 1."""
+    h = H[variant]
+    return [{"component_id": "reverse-repo-maturing", "kind": "inflow-secured-lending", "source_kind": "transcribed-list-2019",
+             "source": "ECB LiST 2019 methodological note Table 3.2: maturing secured lending and open reverse repos flow in at 100 percent "
+                       "(addendum L1.2 and L1.3, paras 114 and 115); FREPO assumed overnight, so it returns on day 1 (synthetic behaviour)",
+             "amounts": [float(FDIC["FREPO"])] + [0.0] * (h - 1)}]
+
+
 def path_arrays(variant: str, segs: list[dict], cbc: dict) -> dict:
     h = H[variant]
     stack = [{"class_id": c["class_id"], "liquidity_value": [r6(c["liquidity_value"] * share_at(d + 1)) for d in range(h)]}
              for c in cbc["classes"]]
     total_out = [r6(sum(s["outflows"][d] for s in segs)) for d in range(h)]
-    total_in = [0.0] * h
+    inflows = ladder_inflows(variant)
+    total_in = [r6(sum(f["amounts"][d] for f in inflows)) for d in range(h)]
     cbc_total = [r6(sum(c["liquidity_value"][d] for c in stack)) for d in range(h)]
     cum, run = [], 0.0
     for d in range(h):
@@ -359,7 +375,7 @@ def path_arrays(variant: str, segs: list[dict], cbc: dict) -> dict:
         cum.append(r6(run))
     nlp = [r6(cbc_total[d] - cum[d]) for d in range(h)]
     return {"axis": "relevant-days", "day_index": list(range(1, h + 1)), "dates": relevant_days(h), "segments": segs, "other_outflows": [],
-            "inflows": [], "total_outflows": total_out, "total_inflows": total_in, "cbc_stack": stack, "cbc_total": cbc_total,
+            "inflows": inflows, "total_outflows": total_out, "total_inflows": total_in, "cbc_stack": stack, "cbc_total": cbc_total,
             "cumulative_net_outflow": cum, "nlp": nlp}
 
 
@@ -385,9 +401,10 @@ def path_block(variant: str, ladder: dict) -> dict:
     return p
 
 
-def sp_under(variant: str, mult: float = 1.0, uninsured_share: float | None = None, basis: str | None = None) -> tuple[dict, list[float]]:
+def sp_under(variant: str, mult: float = 1.0, uninsured_share: float | None = None, basis: str | None = None,
+             htm_multiple: float | None = None) -> tuple[dict, list[float]]:
     segs = segments_for(variant, mult, uninsured_share)
-    cbc = cbc_block(basis or ("fair-value" if variant == "htm-losses" else "amortised-cost"))
+    cbc = cbc_block(basis or ("fair-value" if variant == "htm-losses" else "amortised-cost"), htm_multiple)
     lad = path_arrays(variant, segs, cbc)
     return survival_of(lad["nlp"], H[variant]), lad["nlp"]
 
@@ -395,35 +412,40 @@ def sp_under(variant: str, mult: float = 1.0, uninsured_share: float | None = No
 # ------------------------------------------------------------------------------------------------------ the LCR block
 
 
-def lcr_block(central_category: str = "non-financial-corporate", detail: bool = True) -> dict:
+def lcr_block(central_category: str = "non_financial_corporate", detail: bool = True, rate_override: float | None = None) -> dict:
     l1, l2a, l2b = 20_000_000.0, 8_000_000.0, 12_000_000.0   # fixture levels chosen to exercise the 15 percent cap
     adj15 = max(l2b - 15 / 85 * (l1 + l2a), l2b - 15 / 60 * l1, 0.0)
     adj40 = max(l2a + l2b - adj15 - 2 / 3 * l1, 0.0)
-    hqla = l1 + l2a + l2b - adj15 - adj40
+    hqla = r6(l1 + l2a + l2b - r6(adj15) - r6(adj40))
 
     def block(category: str) -> tuple[list[dict], list[dict]]:
-        rate = {"operational": 0.25, "non-financial-corporate": 0.40, "other-legal-entity": 1.00}[category]
-        ref = {"operational": "LCR99: operational deposits 25 percent", "non-financial-corporate": "LCR99: non-financial corporates 40 percent",
-               "other-legal-entity": "LCR99: other legal entity customers 100 percent"}[category]
-        outs = [("retail_less_stable", float(FDIC["DEPINS"]), 0.10, "LCR99: retail less stable deposits 10 percent"),
-                (category.replace("-", "_"), float(FDIC["DEPUNA"]), rate, ref),
-                ("other_legal_entity", float(FOREIGN), 1.00, "LCR99: other legal entity customers 100 percent (foreign-office deposits, an assumption)"),
-                ("secured_other", float(FDIC["FREPP"]), 1.00, "LCR99: all other secured funding 100 percent")]
-        ins = [("secured_lending_other", float(FDIC["FREPO"]), 1.00, "LCR99: maturing secured lending on other collateral 100 percent"),
-               ("retail_and_nonfinancial_wholesale", 120_000_000.0, 0.50,
+        rate = LCR_OUTFLOW_RATES[category]
+        ref = {"operational": "LCR99: operational deposits 25 percent", "non_financial_corporate": "LCR99: non-financial corporates 40 percent",
+               "other_legal_entity": "LCR99: other legal entity customers 100 percent"}[category]
+        outs = [("retail_less_stable", float(FDIC["DEPINS"]), LCR_OUTFLOW_RATES["retail_less_stable"], "LCR99: retail less stable deposits 10 percent"),
+                (category, float(FDIC["DEPUNA"]), rate, ref),
+                ("other_legal_entity", float(FOREIGN), LCR_OUTFLOW_RATES["other_legal_entity"],
+                 "LCR99: other legal entity customers 100 percent (foreign-office deposits, an assumption)"),
+                ("secured_other", float(FDIC["FREPP"]), LCR_OUTFLOW_RATES["secured_other"], "LCR99: all other secured funding 100 percent")]
+        ins = [("secured_lending_other", float(FDIC["FREPO"]), LCR_INFLOW_RATES["secured_lending_other"],
+                "LCR99: maturing secured lending on other collateral 100 percent (reverse repos, FREPO)"),
+               ("retail_and_nonfinancial_wholesale", 120_000_000.0, LCR_INFLOW_RATES["retail_and_nonfinancial_wholesale"],
                 "LCR99: retail and non-financial wholesale inflows 50 percent; fixture row, the balance is above the call-report loan book on purpose to exercise the 75 percent cap")]
+        if rate_override is not None:   # a planted rate, for the tests of the checker only
+            outs = [(c, b, rate_override, f) for c, b, _, f in outs]
         return ([{"category": c, "balance": r6(b), "rate": r, "amount": r6(b * r), "reference": f} for c, b, r, f in outs],
                 [{"category": c, "balance": r6(b), "rate": r, "amount": r6(b * r), "reference": f} for c, b, r, f in ins])
 
-    def ratio_for(category: str) -> float:
+    def figures(mapping_id: str, category: str) -> dict:
         o, i = block(category)
-        to, ti = sum(x["amount"] for x in o), sum(x["amount"] for x in i)
-        return hqla / (to - min(ti, 0.75 * to))
+        to, ti = r6(sum(x["amount"] for x in o)), r6(sum(x["amount"] for x in i))
+        counted = r6(min(ti, 0.75 * to))
+        net = r6(to - counted)
+        return {"mapping_id": mapping_id, "lcr_category": category, "uninsured_outflow": o[1]["amount"], "total_outflows": to,
+                "inflows_counted": counted, "net_outflows": net, "ratio": r10(hqla / net)}
 
     outs, ins = block(central_category)
-    to, ti = r6(sum(x["amount"] for x in outs)), r6(sum(x["amount"] for x in ins))
-    counted = r6(min(ti, 0.75 * to))
-    net = r6(to - counted)
+    central = figures("central", central_category)
     return {
         "label": "basel-formula-on-call-report-aggregates", "reported_or_regulatory": False,
         "statement": txt("A Basel LCR formula applied to FDIC call-report aggregates with stated assumptions and synthetic deposit "
@@ -431,15 +453,14 @@ def lcr_block(central_category: str = "non-financial-corporate", detail: bool = 
                          "Una formula LCR de Basilea aplicada a agregados del reporte de llamada FDIC con supuestos declarados y "
                          "comportamiento sintetico de depositos: no es el LCR informado ni regulatorio del banco."),
         "hqla": {"l1": r6(l1), "l2a": r6(l2a), "l2b": r6(l2b), "adjusted_l1": r6(l1), "adjusted_l2a": r6(l2a), "adjusted_l2b": r6(l2b),
-                 "adj_15": r6(adj15), "adj_40": r6(adj40), "hqla": r6(l1 + l2a + l2b - r6(adj15) - r6(adj40)),
-                 "l2_share": r10((l2a + l2b - r6(adj15) - r6(adj40)) / (l1 + l2a + l2b - r6(adj15) - r6(adj40))),
-                 "l2b_share": r10((l2b - r6(adj15)) / (l1 + l2a + l2b - r6(adj15) - r6(adj40))),
+                 "adj_15": r6(adj15), "adj_40": r6(adj40), "hqla": hqla,
+                 "l2_share": r10((l2a + l2b - r6(adj15) - r6(adj40)) / hqla), "l2b_share": r10((l2b - r6(adj15)) / hqla),
                  "caps": {"l2_cap": 0.4, "l2b_cap": 0.15}},
-        "outflows": outs, "total_outflows": to, "inflows": ins, "total_inflows": ti, "inflow_cap": 0.75, "inflows_counted": counted,
-        "net_outflows": net, "ratio": r10((l1 + l2a + l2b - r6(adj15) - r6(adj40)) / net),
-        "mapping_sensitivity": [{"mapping_id": "central", "lcr_category": "non-financial-corporate", "ratio": r10(ratio_for("non-financial-corporate"))},
-                                {"mapping_id": "band-operational", "lcr_category": "operational", "ratio": r10(ratio_for("operational"))},
-                                {"mapping_id": "band-other-legal-entity", "lcr_category": "other-legal-entity", "ratio": r10(ratio_for("other-legal-entity"))}],
+        "outflows": outs, "total_outflows": central["total_outflows"], "inflows": ins,
+        "total_inflows": r6(sum(x["amount"] for x in ins)), "inflow_cap": 0.75, "inflows_counted": central["inflows_counted"],
+        "net_outflows": central["net_outflows"], "ratio": central["ratio"],
+        "mapping_sensitivity": [central, figures("band-operational", "operational"),
+                                figures("band-other-legal-entity", "other_legal_entity")],
         "below_100_note": txt("A ratio below 100 percent under stress is not a breach: the institution is expected to monitor its decline "
                               "(ECB ILAAP guide, dossier 01 J.3).",
                               "Una razon bajo 100 por ciento bajo estres no es un incumplimiento: se espera monitorear su caida."),
@@ -614,6 +635,23 @@ def scoring_block(variant: str, segs: list[dict], lcr: dict | None) -> dict:
             "model_deposit_base": base, "modelled_outflow": modelled_out, "denominators": den, "svb_anchor": anchor(), "table_a1_scoring": rows}
 
 
+def sensitivities(variant: str) -> dict:
+    """The survival period against the uninsured share and the survival period and CBC against the HTM loss multiple, on the grids of
+    the conventions; null with its reason for the LCR variant, which has no daily path."""
+    if variant == "lcr-standard":
+        why = txt("The LCR defines a 30-day aggregate ratio and no daily path, so there is no survival period to put against this grid.",
+                  "El LCR define una razon agregada a 30 dias sin trayectoria diaria: no hay periodo de supervivencia para esta grilla.")
+        return {"uninsured_share": None, "uninsured_share_reason": why, "htm_loss": None, "htm_loss_reason": why}
+    reported_loss = float(FDIC["SCHF"] - FDIC["SCHA"])
+    return {
+        "uninsured_share": [{"share": x, "survival": sp_under(variant, 1.0, x)[0]} for x in CONV["uninsured_share_grid"]["values"]],
+        "uninsured_share_reason": None,
+        "htm_loss": [{"multiple": m, "unrealised_loss": r6(m * reported_loss),
+                      "cbc": cbc_block("fair-value", htm_multiple=m)["total_liquidity_value"],
+                      "survival": sp_under(variant, 1.0, None, None, m)[0]} for m in CONV["htm_loss_multiple_grid"]["values"]],
+        "htm_loss_reason": None}
+
+
 def time_block(variant: str, survival_values: tuple) -> list[dict]:
     h = H[variant]
     out = []
@@ -706,7 +744,7 @@ def scenario_doc(variant: str) -> dict:
                                          ("non-operational-corporate", "non-operational-non-financial-corporates", float(FDIC["DEPUNA"]), lcr["outflows"][1]),
                                          ("financial", "non-operational-other-financial", float(FOREIGN), lcr["outflows"][2])):
             segs.append({"segment": name, "balance": bal, "rate": rate_row["rate"]})
-        seg_for_scoring = [{"opening_balance": s["balance"], "outflows": [r6(s["balance"] * s["rate"])]} for s in segs]
+        seg_for_scoring = lcr_scoring_segments(lcr)
         sc = scoring_block(variant, seg_for_scoring, lcr)
         survival = None
     else:
@@ -740,7 +778,7 @@ def scenario_doc(variant: str) -> dict:
         "path": path, "path_reason": reasons["path"] if path is None else None,
         "lcr": lcr, "lcr_reason": reasons["lcr"] if lcr is None else None,
         "htm": htm, "htm_reason": reasons["htm"] if htm is None else None,
-        "scoring": sc, "time_block": time_block(variant, surv_tb),
+        "scoring": sc, "sensitivities": sensitivities(variant), "time_block": time_block(variant, surv_tb),
     }
     if variant == "list-adverse":
         o["aggregate_record"] = {"source": "Federal Reserve H.8 release tables (fixture values, not read)", "series": [
@@ -815,6 +853,12 @@ def segments_nlp(variant: str) -> list[float]:
     return sp_under(variant)[1]
 
 
+def lcr_scoring_segments(lcr: dict) -> list[dict]:
+    """The three deposit segments of the central mapping as full 30-day roll-offs at the LCR rates, the base of the LCR variant's scoring."""
+    rows = zip((float(FDIC["DEPINS"]), float(FDIC["DEPUNA"]), float(FOREIGN)), lcr["outflows"][:3])
+    return [{"opening_balance": bal, "outflows": [r6(bal * row["rate"])]} for bal, row in rows]
+
+
 def contractual_ladder() -> dict:
     rows = [(0, 1, 15_000_000.0, 150_000_000.0), (1, 7, 2_000_000.0, 8_000_000.0), (7, 30, 6_000_000.0, 5_000_000.0), (30, 90, 12_000_000.0, 4_000_000.0),
             (90, 180, 15_000_000.0, 3_000_000.0), (180, 365, 18_000_000.0, 2_000_000.0), (365, None, 80_000_000.0, 3_378_000.0)]
@@ -869,7 +913,7 @@ def reverse_doc() -> dict:
                       "round_trip_error": float(s["day"] - target), "refusal_reason": None}
         bases.append({"base_id": variant, "parameter_set": variant if variant != "fast-run" else "fast-run",
                       "label": txt(VARIANT_LABEL[variant][0], VARIANT_LABEL[variant][1]), "base_survival": curve[0]["survival"],
-                      "max_multiplier": r6(cap), "curve": curve, "solved": solved})
+                      "max_rate_below_one": qmax, "max_multiplier": r6(cap), "curve": curve, "solved": solved})
     o = {"kind": "reverse-stress", "valuation_date": VD, "currency": "USD",
          "units": {"money_scale": "thousands", "rate": "decimal-per-day", "horizon": "days", "dates": "ISO-8601"},
          "bank": scenario_doc("list-adverse")["outputs"]["bank"], "conventions": CONV,
@@ -902,13 +946,19 @@ def reverse_doc() -> dict:
             "findings": [], "provenance": provenance("synthetic-calibrated"), "lane": {"lane": "precompute", "reasons": ["fixture"]}}
 
 
+def generator_truth(seg: dict, n: int) -> float:
+    """Exact expected cumulative outflow share by horizon n: the transfer recursion u_1 = (1 - h_calm, 0), u_(d+1) = (u_d P) x (1 - h)."""
+    hc, hs, pe, px = seg["calm_daily_hazard"], seg["stress_daily_hazard"], seg["p_enter_stress"], seg["p_exit_stress"]
+    calm, stress = 1.0 - hc, 0.0
+    for _ in range(n - 1):
+        calm, stress = (calm * (1.0 - pe) + stress * px) * (1.0 - hc), (calm * pe + stress * (1.0 - px)) * (1.0 - hs)
+    return 1.0 - (calm + stress)
+
+
 def models_doc() -> dict:
     rates = [{"row_id": r, "implied_daily_rate": r6(implied(s, n))} for r, _, _, s, n in TABLE_A1 if r in CALIBRATED_ON]
     order = {r: i for i, r in enumerate(CALIBRATED_ON)}
     rates.sort(key=lambda x: order[x["row_id"]])
-    gold = [("stable-retail-adverse", 0.00103258, 125, "dossier-05-line-237"), ("stable-retail-extreme", 0.00161494, 125, "recomputed"),
-            ("other-retail-adverse", 0.00373218, 125, "recomputed"), ("non-operational-nfc-adverse-2-days", 0.00688541, 2, "recomputed"),
-            ("committed-credit-facilities-adverse-63-days", 0.00202704, 63, "recomputed")]
     fit = {
         "currency": "USD", "units": {"money_scale": "thousands", "rate": "decimal-per-day", "horizon": "days", "dates": "ISO-8601"},
         "bank": scenario_doc("list-adverse")["outputs"]["bank"], "conventions": CONV,
@@ -925,9 +975,16 @@ def models_doc() -> dict:
             "contractual_inflows": [{"item": i, "baseline": b, "adverse": a, "extreme": e} for i, b, a, e in LIST_INFLOWS],
             "committed_drawdown": [{"item": i, "adverse": a, "extreme": e} for i, a, e in LIST_DRAWDOWN],
             "relevant_days_six_months": 125, "relevant_days_three_months": 63,
+            "results_annex": {
+                "n_banks": 103, "median_survival_days": {"adverse": 176, "extreme": 122}, "unit": "days",
+                "sources": {"annex": "ECB LiST 2019 results annex", "n_banks_slide": 9, "median_slides": [15], "dossier": "dossier 05 E.1 line 240"},
+                "statement": txt("Reference points of the LiST 2019 stress test, not results of this model: 103 banks, median reported "
+                                 "survival period 176 days under the Adverse and 122 days under the Extreme shock (results annex slides 9 and 15).",
+                                 "Puntos de referencia del test de estres LiST 2019, no resultados de este modelo: 103 bancos, periodo de "
+                                 "supervivencia mediano informado de 176 dias en el Adverso y 122 en el Extremo.")},
             "calendar_note": txt("The rates are defined on the 2019 TARGET2 relevant-day calendar (125 relevant days in six months); the C16 ladder runs on the US business-day convention.",
                                  "Las tasas se definen sobre el calendario TARGET2 de 2019 (125 dias en seis meses); la escalera de C16 usa dias habiles de EE.UU.")},
-        "list_goldens": [{"id": i, "daily_rate": q, "days": n, "cumulative_outflow": r10(1 - (1 - q) ** n), "label": lab} for i, q, n, lab in gold],
+        "list_goldens": [{"id": i, "daily_rate": q, "days": n, "cumulative_outflow": r10(1 - (1 - q) ** n), "label": lab} for i, q, n, lab in GOLDENS],
         "table_a1": {"source": "BCBS, Report on the 2023 banking turmoil (d555), Box A, Table A.1",
                      "attribution": "Bank for International Settlements, source cited; one table within the limited-extract terms (addendum L2.1)",
                      "rows": [{"row_id": r, "bank": b, "year": y, "outflow_share": s, "days": n} for r, b, y, s, n in TABLE_A1],
@@ -945,8 +1002,7 @@ def models_doc() -> dict:
              "basis": txt("Fixture: the share of DEPUNA in the deposit base", "Ejemplo: la proporcion de DEPUNA")},
             {"segment": "financial", "share_of_deposits": 0.079, "calm_daily_hazard": 0.001, "stress_daily_hazard": 0.5, "p_enter_stress": 0.01, "p_exit_stress": 0.05,
              "basis": txt("Fixture: the foreign-office share", "Ejemplo: la proporcion de oficinas extranjeras")}]},
-            "truth": [{"segment": "non-operational-corporate", "horizon_days": 2, "true_outflow_rate": 0.0083}, {"segment": "non-operational-corporate", "horizon_days": 5, "true_outflow_rate": 0.0197},
-                      {"segment": "retail-insured", "horizon_days": 2, "true_outflow_rate": 0.0048}],
+            "truth": [],
             "verification": {"n_draws": 1000, "max_abs_error": 0.0004, "mc_standard_error": 0.0003, "within_error": True}},
         "sources": [
             {"source_id": sid, "publisher": pub, "licence_class": cls, "licence_basis": basis_,
@@ -959,6 +1015,9 @@ def models_doc() -> dict:
                 ("ecb-list-2019", "European Central Bank", "mirror-allowed", "notice-read",
                  "Parameters used with the ECB cited, the text accurate and any modification stated. A reading of the notice, not legal advice."))],
     }
+    by_segment = {g["segment"]: g for g in fit["generator"]["config"]["segments"]}
+    fit["generator"]["truth"] = [{"segment": seg, "horizon_days": n, "true_outflow_rate": r10(generator_truth(by_segment[seg], n))}
+                                 for seg, n in (("non-operational-corporate", 2), ("non-operational-corporate", 5), ("retail-insured", 2))]
     return {"schema": "contraste.models/v1", "case_id": "C16", "fit_id": "fixture-liquidity", "model": [model_summary("liquidity-ladder", "behavioural-ladder", True)],
             "fit": fit, "provenance": provenance("synthetic-known-truth"), "lane": {"lane": "precompute", "reasons": ["fixture"]}}
 

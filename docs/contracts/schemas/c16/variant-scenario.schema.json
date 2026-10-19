@@ -348,11 +348,11 @@
         "lcr_category": {
           "type": "string",
           "enum": [
-            "retail-stable",
-            "retail-less-stable",
+            "retail_stable",
+            "retail_less_stable",
             "operational",
-            "non-financial-corporate",
-            "other-legal-entity"
+            "non_financial_corporate",
+            "other_legal_entity"
           ]
         },
         "list_class": {
@@ -473,7 +473,8 @@
           "type": "string",
           "enum": [
             "acute",
-            "protracted"
+            "protracted",
+            "lcr-30-day"
           ]
         },
         "parameter_set": {
@@ -497,7 +498,7 @@
           ]
         }
       },
-      "description": "The scenario family, phase, parameter set and horizon of one variant (dossier 05 E.2 and E.5)."
+      "description": "The scenario family, phase, parameter set and horizon of one variant (dossier 05 E.2 and E.5); the LCR variant's phase is lcr-30-day, the 30-calendar-day stress of LCR20.2, and no other variant takes it."
     },
     "c16VariantScenarios": {
       "type": "object",
@@ -519,6 +520,9 @@
               "properties": {
                 "variant": {
                   "const": "lcr-standard"
+                },
+                "phase": {
+                  "const": "lcr-30-day"
                 }
               }
             },
@@ -527,6 +531,13 @@
               "properties": {
                 "variant": {
                   "const": "list-adverse"
+                },
+                "phase": {
+                  "type": "string",
+                  "enum": [
+                    "acute",
+                    "protracted"
+                  ]
                 }
               }
             },
@@ -535,6 +546,13 @@
               "properties": {
                 "variant": {
                   "const": "list-extreme"
+                },
+                "phase": {
+                  "type": "string",
+                  "enum": [
+                    "acute",
+                    "protracted"
+                  ]
                 }
               }
             },
@@ -543,6 +561,13 @@
               "properties": {
                 "variant": {
                   "const": "fast-run"
+                },
+                "phase": {
+                  "type": "string",
+                  "enum": [
+                    "acute",
+                    "protracted"
+                  ]
                 }
               }
             },
@@ -551,6 +576,13 @@
               "properties": {
                 "variant": {
                   "const": "htm-losses"
+                },
+                "phase": {
+                  "type": "string",
+                  "enum": [
+                    "acute",
+                    "protracted"
+                  ]
                 }
               }
             }
@@ -636,7 +668,6 @@
           "type": "string",
           "enum": [
             "cash-and-balances",
-            "reverse-repo",
             "treasury",
             "mortgage-backed",
             "other-agency",
@@ -1018,7 +1049,8 @@
           "type": "string",
           "enum": [
             "acute",
-            "protracted"
+            "protracted",
+            "lcr-30-day"
           ]
         },
         "parameter_set": {
@@ -1795,7 +1827,6 @@
           "type": "string",
           "enum": [
             "cash-and-balances",
-            "reverse-repo",
             "treasury",
             "mortgage-backed",
             "other-agency",
@@ -2059,7 +2090,6 @@
           "type": "string",
           "enum": [
             "cash-and-balances",
-            "reverse-repo",
             "treasury",
             "mortgage-backed",
             "other-agency",
@@ -2270,7 +2300,7 @@
       },
       "description": "The counterbalancing capacity at the valuation date: the securities split by type at the carrying values the FDIC reports, pledged securities encumbered (LiST para 63), and the held-to-maturity book at amortised cost, or at fair value in the HTM variant."
     },
-    "c16LcrRow": {
+    "c16LcrOutflowRow": {
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -2283,7 +2313,39 @@
       "properties": {
         "category": {
           "type": "string",
-          "minLength": 1
+          "enum": [
+            "retail_stable_insurance_criteria",
+            "retail_stable",
+            "retail_less_stable",
+            "retail_term_gt_30d",
+            "small_business_stable",
+            "small_business_less_stable",
+            "operational",
+            "operational_insured_portion",
+            "cooperative_network",
+            "non_financial_corporate",
+            "non_financial_corporate_fully_insured",
+            "other_legal_entity",
+            "secured_central_bank",
+            "secured_level1",
+            "secured_level2a",
+            "secured_sovereign_mdb_pse",
+            "secured_level2b_rmbs",
+            "secured_other_level2b",
+            "secured_other",
+            "non_level1_collateral_valuation",
+            "undrawn_retail_small_business",
+            "undrawn_credit_non_financial_corporate",
+            "undrawn_liquidity_non_financial_corporate",
+            "undrawn_credit_supervised_bank",
+            "undrawn_liquidity_supervised_bank",
+            "undrawn_credit_other_fi",
+            "undrawn_liquidity_other_fi",
+            "undrawn_other_legal_entity",
+            "net_derivative_outflow",
+            "other_contractual_outflow",
+            "trade_finance"
+          ]
         },
         "balance": {
           "type": "number",
@@ -2304,7 +2366,105 @@
           "minLength": 1
         }
       },
-      "description": "One LCR outflow or inflow category: the balance, its rate and the amount, with the Basel paragraph."
+      "description": "One LCR outflow category (a key of LCR_OUTFLOW_RATES, or trade_finance): the balance, its rate (the table rate; trade finance a caller-supplied rate within 0 to 0.05) and the amount, with the Basel paragraph."
+    },
+    "c16LcrInflowRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "balance",
+        "rate",
+        "amount",
+        "reference"
+      ],
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "secured_lending_level1",
+            "secured_lending_level2a",
+            "secured_lending_level2b_rmbs",
+            "secured_lending_other_level2b",
+            "secured_lending_other",
+            "margin_lending_other_collateral",
+            "facilities_granted_to_bank",
+            "operational_deposits_at_other_institutions",
+            "retail_and_nonfinancial_wholesale",
+            "financial_institutions_and_central_banks",
+            "net_derivative_inflow"
+          ]
+        },
+        "balance": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "amount": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "One LCR inflow category (a key of LCR_INFLOW_RATES): the balance, its table rate and the amount, with the Basel paragraph."
+    },
+    "c16MappingSensitivity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mapping_id",
+        "lcr_category",
+        "uninsured_outflow",
+        "total_outflows",
+        "inflows_counted",
+        "net_outflows",
+        "ratio"
+      ],
+      "properties": {
+        "mapping_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lcr_category": {
+          "type": "string",
+          "enum": [
+            "retail_stable",
+            "retail_less_stable",
+            "operational",
+            "non_financial_corporate",
+            "other_legal_entity"
+          ]
+        },
+        "uninsured_outflow": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "total_outflows": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "inflows_counted": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "net_outflows": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "ratio": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "description": "The LCR under one mapping of the uninsured balance (Q13): the outflow of the uninsured balance under that category, the total outflows, the counted inflows, the net outflows and the ratio recomputable from them and the HQLA."
     },
     "c16Hqla": {
       "type": "object",
@@ -2426,7 +2586,7 @@
         "outflows": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/c16LcrRow"
+            "$ref": "#/$defs/c16LcrOutflowRow"
           },
           "minItems": 1
         },
@@ -2437,7 +2597,7 @@
         "inflows": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/c16LcrRow"
+            "$ref": "#/$defs/c16LcrInflowRow"
           }
         },
         "total_inflows": {
@@ -2462,33 +2622,7 @@
         "mapping_sensitivity": {
           "type": "array",
           "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "mapping_id",
-              "lcr_category",
-              "ratio"
-            ],
-            "properties": {
-              "mapping_id": {
-                "type": "string",
-                "minLength": 1
-              },
-              "lcr_category": {
-                "type": "string",
-                "enum": [
-                  "retail-stable",
-                  "retail-less-stable",
-                  "operational",
-                  "non-financial-corporate",
-                  "other-legal-entity"
-                ]
-              },
-              "ratio": {
-                "type": "number",
-                "minimum": 0
-              }
-            }
+            "$ref": "#/$defs/c16MappingSensitivity"
           },
           "minItems": 3
         },
@@ -3447,6 +3581,115 @@
       },
       "description": "The static contractual maturity ladder with gaps and cumulative gaps (05 E.5 rung 1; the SRP50 contractual maturity mismatch tool, 01 G.3), on the buckets of the conventions' contractual_bucket_edges_days."
     },
+    "c16ShareSensitivity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "share",
+        "survival"
+      ],
+      "properties": {
+        "share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A share or a rate in [0, 1]."
+        },
+        "survival": {
+          "$ref": "#/$defs/c16Survival"
+        }
+      },
+      "description": "The survival period when the uninsured share of the domestic deposits is `share` (05 E.5 rung 4)."
+    },
+    "c16HtmSensitivity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "multiple",
+        "unrealised_loss",
+        "cbc",
+        "survival"
+      ],
+      "properties": {
+        "multiple": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unrealised_loss": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "cbc": {
+          "type": "number",
+          "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+        },
+        "survival": {
+          "$ref": "#/$defs/c16Survival"
+        }
+      },
+      "description": "The HTM unrealised loss at `multiple` times the reported loss (05 E.5 rung 4, l.278): the loss, the CBC under it and the survival period; 1 is the reported loss and 0 no loss."
+    },
+    "c16Sensitivities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uninsured_share",
+        "uninsured_share_reason",
+        "htm_loss",
+        "htm_loss_reason"
+      ],
+      "properties": {
+        "uninsured_share": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/c16ShareSensitivity"
+              },
+              "minItems": 2
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "uninsured_share_reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "htm_loss": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/c16HtmSensitivity"
+              },
+              "minItems": 2
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "htm_loss_reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The two sensitivities the survival-horizon views draw: the survival period against the uninsured share, ordered as the conventions' uninsured_share_grid, and the survival period and CBC against the HTM unrealised-loss multiple, ordered as the htm_loss_multiple_grid. Each is null with its reason where the variant has no daily path (the LCR)."
+    },
     "c16Outputs": {
       "type": "object",
       "additionalProperties": false,
@@ -3471,6 +3714,7 @@
         "htm",
         "htm_reason",
         "scoring",
+        "sensitivities",
         "time_block"
       ],
       "properties": {
@@ -3593,6 +3837,9 @@
         "scoring": {
           "$ref": "#/$defs/c16Scoring"
         },
+        "sensitivities": {
+          "$ref": "#/$defs/c16Sensitivities"
+        },
         "time_block": {
           "type": "array",
           "prefixItems": [
@@ -3649,6 +3896,9 @@
                   "parameter_set": {
                     "const": "basel-lcr"
                   },
+                  "phase": {
+                    "const": "lcr-30-day"
+                  },
                   "axis": {
                     "const": "calendar-days"
                   }
@@ -3656,6 +3906,22 @@
                 "required": [
                   "id"
                 ]
+              },
+              "sensitivities": {
+                "properties": {
+                  "uninsured_share": {
+                    "type": "null"
+                  },
+                  "uninsured_share_reason": {
+                    "$ref": "#/$defs/c16Label"
+                  },
+                  "htm_loss": {
+                    "type": "null"
+                  },
+                  "htm_loss_reason": {
+                    "$ref": "#/$defs/c16Label"
+                  }
+                }
               },
               "path": {
                 "type": "null"
@@ -3727,6 +3993,13 @@
                   "parameter_set": {
                     "const": "list-adverse"
                   },
+                  "phase": {
+                    "type": "string",
+                    "enum": [
+                      "acute",
+                      "protracted"
+                    ]
+                  },
                   "axis": {
                     "const": "relevant-days"
                   }
@@ -3734,6 +4007,22 @@
                 "required": [
                   "id"
                 ]
+              },
+              "sensitivities": {
+                "properties": {
+                  "uninsured_share": {
+                    "type": "array"
+                  },
+                  "uninsured_share_reason": {
+                    "type": "null"
+                  },
+                  "htm_loss": {
+                    "type": "array"
+                  },
+                  "htm_loss_reason": {
+                    "type": "null"
+                  }
+                }
               },
               "path": {
                 "$ref": "#/$defs/c16Path"
@@ -3805,6 +4094,13 @@
                   "parameter_set": {
                     "const": "list-extreme"
                   },
+                  "phase": {
+                    "type": "string",
+                    "enum": [
+                      "acute",
+                      "protracted"
+                    ]
+                  },
                   "axis": {
                     "const": "relevant-days"
                   }
@@ -3812,6 +4108,22 @@
                 "required": [
                   "id"
                 ]
+              },
+              "sensitivities": {
+                "properties": {
+                  "uninsured_share": {
+                    "type": "array"
+                  },
+                  "uninsured_share_reason": {
+                    "type": "null"
+                  },
+                  "htm_loss": {
+                    "type": "array"
+                  },
+                  "htm_loss_reason": {
+                    "type": "null"
+                  }
+                }
               },
               "path": {
                 "$ref": "#/$defs/c16Path"
@@ -3883,6 +4195,13 @@
                   "parameter_set": {
                     "const": "fast-run"
                   },
+                  "phase": {
+                    "type": "string",
+                    "enum": [
+                      "acute",
+                      "protracted"
+                    ]
+                  },
                   "axis": {
                     "const": "relevant-days"
                   }
@@ -3890,6 +4209,22 @@
                 "required": [
                   "id"
                 ]
+              },
+              "sensitivities": {
+                "properties": {
+                  "uninsured_share": {
+                    "type": "array"
+                  },
+                  "uninsured_share_reason": {
+                    "type": "null"
+                  },
+                  "htm_loss": {
+                    "type": "array"
+                  },
+                  "htm_loss_reason": {
+                    "type": "null"
+                  }
+                }
               },
               "path": {
                 "$ref": "#/$defs/c16Path"
@@ -3966,6 +4301,13 @@
                       "fast-run"
                     ]
                   },
+                  "phase": {
+                    "type": "string",
+                    "enum": [
+                      "acute",
+                      "protracted"
+                    ]
+                  },
                   "axis": {
                     "const": "relevant-days"
                   }
@@ -3973,6 +4315,22 @@
                 "required": [
                   "id"
                 ]
+              },
+              "sensitivities": {
+                "properties": {
+                  "uninsured_share": {
+                    "type": "array"
+                  },
+                  "uninsured_share_reason": {
+                    "type": "null"
+                  },
+                  "htm_loss": {
+                    "type": "array"
+                  },
+                  "htm_loss_reason": {
+                    "type": "null"
+                  }
+                }
               },
               "path": {
                 "$ref": "#/$defs/c16Path"

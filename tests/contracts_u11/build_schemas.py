@@ -25,14 +25,39 @@ VARIANTS = ["lcr-standard", "list-adverse", "list-extreme", "fast-run", "htm-los
 SEGMENTS = ["retail-insured", "retail-uninsured", "operational", "non-operational-corporate", "financial"]
 LIST_CLASSES = ["stable-retail", "other-retail", "operational", "non-operational-credit-institutions",
                 "non-operational-other-financial", "non-operational-non-financial-corporates", "non-operational-others"]
-LCR_CATEGORIES = ["retail-stable", "retail-less-stable", "operational", "non-financial-corporate", "other-legal-entity"]
-CBC_CLASSES = ["cash-and-balances", "reverse-repo", "treasury", "mortgage-backed", "other-agency", "municipal", "other-debt"]
+LCR_CATEGORIES = ["retail_stable", "retail_less_stable", "operational", "non_financial_corporate", "other_legal_entity"]   # the engine keys
+CBC_CLASSES = ["cash-and-balances", "treasury", "mortgage-backed", "other-agency", "municipal", "other-debt"]
 HAIRCUT_RULES = ["nominal-value", "central-bank-framework", "lcr-haircut-hqla", "fifty-percent-fallback", "ecb-equity-table",
                  "ecb-non-equity-hqla"]
+PHASES = ["acute", "protracted"]
+LCR_PHASE = "lcr-30-day"   # the 30-calendar-day stress of LCR20.2: outside the acute (1 to 5 days) and protracted (6 to 12 months) wording of 05 l.277
 PARAMETER_SETS = ["basel-lcr", "list-adverse", "list-extreme", "fast-run"]
 SOURCE_KINDS = ["transcribed-list-2019", "transcribed-basel-lcr", "calibrated-pre-2023", "convention", "synthetic-stated",
                 "scenario-input"]
 DURATION_BUCKETS = ["0-1", ">1-3", ">3-5", ">5-10", ">10", "none"]
+
+# The LCR rows of a document are the keys of the engine tables (liquidity-api.md, transcribed from dossier 01 G.1: LCR20, LCR40, LCR99):
+# the rate of a row is the table rate; trade finance is a caller-supplied rate within 0 to 0.05 (national discretion), never a default.
+LCR_OUTFLOW_RATES: dict[str, float] = {
+    "retail_stable_insurance_criteria": 0.03, "retail_stable": 0.05, "retail_less_stable": 0.1, "retail_term_gt_30d": 0.0,
+    "small_business_stable": 0.05, "small_business_less_stable": 0.1, "operational": 0.25, "operational_insured_portion": 0.05,
+    "cooperative_network": 0.25, "non_financial_corporate": 0.4, "non_financial_corporate_fully_insured": 0.2,
+    "other_legal_entity": 1.0, "secured_central_bank": 0.0, "secured_level1": 0.0, "secured_level2a": 0.15,
+    "secured_sovereign_mdb_pse": 0.25, "secured_level2b_rmbs": 0.25, "secured_other_level2b": 0.5, "secured_other": 1.0,
+    "non_level1_collateral_valuation": 0.2, "undrawn_retail_small_business": 0.05,
+    "undrawn_credit_non_financial_corporate": 0.1, "undrawn_liquidity_non_financial_corporate": 0.3,
+    "undrawn_credit_supervised_bank": 0.4, "undrawn_liquidity_supervised_bank": 0.4, "undrawn_credit_other_fi": 0.4,
+    "undrawn_liquidity_other_fi": 1.0, "undrawn_other_legal_entity": 1.0, "net_derivative_outflow": 1.0,
+    "other_contractual_outflow": 1.0,
+}
+LCR_INFLOW_RATES: dict[str, float] = {
+    "secured_lending_level1": 0.0, "secured_lending_level2a": 0.15, "secured_lending_level2b_rmbs": 0.25,
+    "secured_lending_other_level2b": 0.5, "secured_lending_other": 1.0, "margin_lending_other_collateral": 0.5,
+    "facilities_granted_to_bank": 0.0, "operational_deposits_at_other_institutions": 0.0,
+    "retail_and_nonfinancial_wholesale": 0.5, "financial_institutions_and_central_banks": 1.0, "net_derivative_inflow": 1.0,
+}
+LCR_OUTFLOW_KEYS = list(LCR_OUTFLOW_RATES) + ["trade_finance"]
+LCR_INFLOW_KEYS = list(LCR_INFLOW_RATES)
 
 # The call-report field names a document may name: the U11 research addendum L3 and L3.2, and the C14 field list (cases/c14/fetch.py).
 CALL_REPORT_FIELDS = sorted({
@@ -68,6 +93,11 @@ TABLE_A1 = [  # d555 Table A.1 (addendum L2.1; dossier 05 E.2): row id, bank, ye
     ("signature-2023", "Signature", 2023, 0.20, 1), ("icesave-2008", "Icesave", 2008, 0.20, 75),
     ("northern-rock-2007", "Northern Rock", 2007, 0.20, 4), ("wamu-2008", "WaMu", 2008, 0.10, 10),
     ("indymac-2008", "IndyMac", 2008, 0.08, 14),
+]
+GOLDENS = [  # the compounding goldens of the models document: id, daily rate, days, label (only the Adverse 125 days is printed, 05 l.237)
+    ("stable-retail-adverse", 0.00103258, 125, "dossier-05-line-237"), ("stable-retail-extreme", 0.00161494, 125, "recomputed"),
+    ("other-retail-adverse", 0.00373218, 125, "recomputed"), ("non-operational-nfc-adverse-2-days", 0.00688541, 2, "recomputed"),
+    ("committed-credit-facilities-adverse-63-days", 0.00202704, 63, "recomputed"),
 ]
 A1_IDS = [r[0] for r in TABLE_A1]
 CALIBRATED_ON = ["icesave-2008", "northern-rock-2007", "wamu-2008", "indymac-2008"]
@@ -278,11 +308,13 @@ def conventions(d: dict) -> None:
     }, "The deposit-category mapping with its sensitivity band (Q13): the call report carries no customer type, so every mapping is "
        "an assumption and a convention.")
     d["c16VariantRow"] = Ob({
-        "variant": E(*VARIANTS), "scenario_family": E("idiosyncratic", "market-wide", "combined"), "phase": E("acute", "protracted"),
+        "variant": E(*VARIANTS), "scenario_family": E("idiosyncratic", "market-wide", "combined"), "phase": E(*PHASES, LCR_PHASE),
         "parameter_set": E(*PARAMETER_SETS), "horizon_days": Int(1), "axis": E("relevant-days", "calendar-days"),
-    }, "The scenario family, phase, parameter set and horizon of one variant (dossier 05 E.2 and E.5).")
+    }, "The scenario family, phase, parameter set and horizon of one variant (dossier 05 E.2 and E.5); the LCR variant's phase is "
+       "lcr-30-day, the 30-calendar-day stress of LCR20.2, and no other variant takes it.")
     d["c16VariantScenarios"] = Ob({
-        "status": status, "rows": ordered([pin("c16VariantRow", variant=v) for v in VARIANTS]), "basis": TXT,
+        "status": status, "rows": ordered([pin("c16VariantRow", variant=v, phase=C(LCR_PHASE) if v == "lcr-standard" else E(*PHASES)) for v in VARIANTS]),
+        "basis": TXT,
     }, "The mapping of each variant to a scenario family and phase (Q14), in the order of the five scenario variants.")
     d["c16DayCalendar"] = Ob({
         "status": status, "kind": C("us-business-days"), "first_day": DATE, "excluded_weekdays": A(E("saturday", "sunday"), 2, 2),
@@ -358,7 +390,7 @@ def scenario_defs() -> dict:
     d = common()
     d["c16Variant"] = Ob({
         "id": E(*VARIANTS), "label": TXT, "description": TXT, "scenario_family": E("idiosyncratic", "market-wide", "combined"),
-        "phase": E("acute", "protracted"), "parameter_set": E(*PARAMETER_SETS), "horizon_days": Int(1),
+        "phase": E(*PHASES, LCR_PHASE), "parameter_set": E(*PARAMETER_SETS), "horizon_days": Int(1),
         "axis": E("relevant-days", "calendar-days"),
     }, "The variant of the SDD (section 5), with its scenario family, phase, parameter set and horizon (the conventions' "
        "variant_scenarios row of the same variant).")
@@ -456,8 +488,19 @@ def scenario_defs() -> dict:
     }, "The counterbalancing capacity at the valuation date: the securities split by type at the carrying values the FDIC reports, "
        "pledged securities encumbered (LiST para 63), and the held-to-maturity book at amortised cost, or at fair value in the HTM "
        "variant.")
-    d["c16LcrRow"] = Ob({"category": S(minLength=1), "balance": MONEY, "rate": UNIT, "amount": MONEY, "reference": S(minLength=1)},
-                        "One LCR outflow or inflow category: the balance, its rate and the amount, with the Basel paragraph.")
+    d["c16LcrOutflowRow"] = Ob({"category": E(*LCR_OUTFLOW_KEYS), "balance": MONEY, "rate": UNIT, "amount": MONEY,
+                                "reference": S(minLength=1)},
+                               "One LCR outflow category (a key of LCR_OUTFLOW_RATES, or trade_finance): the balance, its rate (the table "
+                               "rate; trade finance a caller-supplied rate within 0 to 0.05) and the amount, with the Basel paragraph.")
+    d["c16LcrInflowRow"] = Ob({"category": E(*LCR_INFLOW_KEYS), "balance": MONEY, "rate": UNIT, "amount": MONEY,
+                               "reference": S(minLength=1)},
+                              "One LCR inflow category (a key of LCR_INFLOW_RATES): the balance, its table rate and the amount, with the "
+                              "Basel paragraph.")
+    d["c16MappingSensitivity"] = Ob({
+        "mapping_id": S(minLength=1), "lcr_category": E(*LCR_CATEGORIES), "uninsured_outflow": MONEY, "total_outflows": MONEY,
+        "inflows_counted": MONEY, "net_outflows": MONEY, "ratio": N(minimum=0),
+    }, "The LCR under one mapping of the uninsured balance (Q13): the outflow of the uninsured balance under that category, the total "
+       "outflows, the counted inflows, the net outflows and the ratio recomputable from them and the HQLA.")
     d["c16Hqla"] = Ob({
         "l1": MONEY, "l2a": MONEY, "l2b": MONEY, "adjusted_l1": MONEY, "adjusted_l2a": MONEY, "adjusted_l2b": MONEY,
         "adj_15": MONEY, "adj_40": MONEY, "hqla": MONEY, "l2_share": UNIT, "l2b_share": UNIT,
@@ -465,9 +508,9 @@ def scenario_defs() -> dict:
     }, "HQLA by level after the caps: HQLA = L1 + L2A + L2B - Adj15 - Adj40 (LCR30.38) with the adjustments of LCR30.39.")
     d["c16Lcr"] = Ob({
         "label": C("basel-formula-on-call-report-aggregates"), "reported_or_regulatory": C(False), "statement": TXT,
-        "hqla": R("c16Hqla"), "outflows": A(R("c16LcrRow"), 1), "total_outflows": MONEY, "inflows": A(R("c16LcrRow")),
+        "hqla": R("c16Hqla"), "outflows": A(R("c16LcrOutflowRow"), 1), "total_outflows": MONEY, "inflows": A(R("c16LcrInflowRow")),
         "total_inflows": MONEY, "inflow_cap": C(0.75), "inflows_counted": MONEY, "net_outflows": MONEY, "ratio": N(minimum=0),
-        "mapping_sensitivity": A(Ob({"mapping_id": S(minLength=1), "lcr_category": E(*LCR_CATEGORIES), "ratio": N(minimum=0)}), 3),
+        "mapping_sensitivity": A(R("c16MappingSensitivity"), 3),
         "below_100_note": TXT,
     }, "The LCR block: a Basel formula applied to call-report aggregates with stated assumptions, never the bank's reported or "
        "regulatory LCR (the label and the false flag are required). Inflows counted are at most 75 percent of outflows (LCR40.1) "
@@ -544,10 +587,29 @@ def scenario_defs() -> dict:
     }, "The static contractual maturity ladder with gaps and cumulative gaps (05 E.5 rung 1; the SRP50 contractual maturity "
        "mismatch tool, 01 G.3), on the buckets of the conventions' contractual_bucket_edges_days.")
 
+    d["c16ShareSensitivity"] = Ob({"share": UNIT, "survival": R("c16Survival")},
+                                  "The survival period when the uninsured share of the domestic deposits is `share` (05 E.5 rung 4).")
+    d["c16HtmSensitivity"] = Ob({
+        "multiple": N(minimum=0), "unrealised_loss": MONEY, "cbc": MONEY, "survival": R("c16Survival"),
+    }, "The HTM unrealised loss at `multiple` times the reported loss (05 E.5 rung 4, l.278): the loss, the CBC under it and the survival "
+       "period; 1 is the reported loss and 0 no loss.")
+    d["c16Sensitivities"] = Ob({
+        "uninsured_share": nullable(A(R("c16ShareSensitivity"), 2)), "uninsured_share_reason": nullable(LABEL),
+        "htm_loss": nullable(A(R("c16HtmSensitivity"), 2)), "htm_loss_reason": nullable(LABEL),
+    }, "The two sensitivities the survival-horizon views draw: the survival period against the uninsured share, ordered as the "
+       "conventions' uninsured_share_grid, and the survival period and CBC against the HTM unrealised-loss multiple, ordered as the "
+       "htm_loss_multiple_grid. Each is null with its reason where the variant has no daily path (the LCR).")
+
     def alt(vid: str, parameter_set: dict, path: bool, lcr: bool, htm: bool, basis: str) -> dict:
         return {
             "variant": {"properties": {"id": C(vid), "parameter_set": parameter_set,
+                                       "phase": C(LCR_PHASE) if vid == "lcr-standard" else E(*PHASES),
                                        "axis": C("calendar-days" if vid == "lcr-standard" else "relevant-days")}, "required": ["id"]},
+            "sensitivities": {"properties": {
+                "uninsured_share": {"type": "array"} if path else {"type": "null"},
+                "uninsured_share_reason": {"type": "null"} if path else LABEL,
+                "htm_loss": {"type": "array"} if path else {"type": "null"},
+                "htm_loss_reason": {"type": "null"} if path else LABEL}},
             "path": R("c16Path") if path else {"type": "null"}, "path_reason": {"type": "null"} if path else LABEL,
             "lcr": R("c16Lcr") if lcr else {"type": "null"}, "lcr_reason": {"type": "null"} if lcr else LABEL,
             "htm": R("c16Htm") if htm else {"type": "null"}, "htm_reason": {"type": "null"} if htm else LABEL,
@@ -563,6 +625,7 @@ def scenario_defs() -> dict:
         "balance_sheet": R("c16BalanceSheet"), "cbc": R("c16Cbc"), "contractual_ladder": R("c16ContractualLadder"),
         "path": nullable(R("c16Path")), "path_reason": nullable(LABEL), "lcr": nullable(R("c16Lcr")),
         "lcr_reason": nullable(LABEL), "htm": nullable(R("c16Htm")), "htm_reason": nullable(LABEL), "scoring": R("c16Scoring"),
+        "sensitivities": R("c16Sensitivities"),
         "time_block": ordered([pin("c16TimePoint", as_of="2021-12-31"), pin("c16TimePoint", as_of="2022-06-30")],
                               "The 2021-12-31 and 2022-06-30 call-report dates, in this order."),
     }, "C16 scenario outputs (outputs.kind scenario): one of the five scenario variants of the liquidity stress case at the last call "
@@ -602,10 +665,12 @@ def reverse_defs() -> dict:
          "round_trip_error": {"type": "null"}, "refusal_reason": LABEL})
     d["c16ReverseBase"] = Ob({
         "base_id": E("list-adverse", "list-extreme", "fast-run"), "parameter_set": E("list-adverse", "list-extreme", "fast-run"),
-        "label": TXT, "base_survival": R("c16Survival"), "max_multiplier": N(exclusiveMinimum=1),
-        "curve": A(R("c16CurvePoint"), 2), "solved": R("c16Solved"),
+        "label": TXT, "base_survival": R("c16Survival"),
+        "max_rate_below_one": N("The largest daily rate of the base scenario that is below 1 (a rate already at 1 stays at 1).",
+                                exclusiveMinimum=0, exclusiveMaximum=1),
+        "max_multiplier": N(exclusiveMinimum=1), "curve": A(R("c16CurvePoint"), 2), "solved": R("c16Solved"),
     }, "The reverse stress of one base scenario (Q9): the multiplier applied to every segment's daily rate, capped so that each rate "
-       "stays below 1 (max_multiplier), the SP(m) curve and the solved multiplier.")
+       "stays below 1 (max_multiplier = 1 / max_rate_below_one), the SP(m) curve and the solved multiplier.")
     d["c16ReverseOutputs"] = Ob({
         "kind": C("reverse-stress"), "valuation_date": C("2022-12-31"), "currency": {**CUR, "const": "USD"}, "units": R("c16Units"),
         "bank": R("c16Bank"), "conventions": R("c16Conventions"),
@@ -627,6 +692,14 @@ def models_defs() -> dict:
                          "compounding rate on the stock, as decimals.")
     d["c16DrawdownRow"] = Ob({"item": S(minLength=1), "adverse": N(minimum=0), "extreme": N(minimum=0)},
                              "A committed-facility daily drawdown rate on the undrawn stock for three months (N paras 119 to 126).")
+    d["c16ResultsAnnex"] = Ob({
+        "n_banks": C(103), "median_survival_days": Ob({"adverse": C(176), "extreme": C(122)}), "unit": C("days"),
+        "sources": Ob({"annex": C("ECB LiST 2019 results annex"), "n_banks_slide": C(9), "median_slides": ordered([C(15)]),
+                       "dossier": C("dossier 05 E.1 line 240")}),
+        "statement": TXT,
+    }, "The LiST 2019 results annex as constants (the markers of the survival views): 103 banks and the median reported survival "
+       "period under the Adverse (176 days) and the Extreme (122 days) shock; annex slide 9 gives the bank count and slide 15 the "
+       "medians (addendum L1; dossier 05 E.1 line 240). Reference points, not model results.")
     d["c16ListParameters"] = Ob({
         "source": S(minLength=1), "attribution": S(minLength=1),
         "contractual_outflows": ordered([pin("c16ListRow", item=i, baseline=b, adverse=a, extreme=e) for i, b, a, e in LIST_CONTRACTUAL]),
@@ -635,6 +708,7 @@ def models_defs() -> dict:
         "committed_drawdown": ordered([{"$ref": "#/$defs/c16DrawdownRow", "properties": {"item": C(i), "adverse": C(a), "extreme": C(e)}}
                                        for i, a, e in LIST_DRAWDOWN]),
         "relevant_days_six_months": C(125), "relevant_days_three_months": C(63), "calendar_note": TXT,
+        "results_annex": R("c16ResultsAnnex"),
     }, "The ECB LiST 2019 parameters as transcribed data (U11 research addendum L1; the rates are the note's own, on the 2019 TARGET2 "
        "relevant-day calendar): Table 3.2 for the contractual items, Table 3.3 for the open-maturity daily rates, the drawdown rates "
        "of the committed facilities. Collateral calls have no numeric parameter and are a scenario input.")
@@ -682,7 +756,7 @@ def models_defs() -> dict:
     d["c16Fit"] = Ob({
         "currency": {**CUR, "const": "USD"}, "units": R("c16Units"), "bank": R("c16Bank"), "conventions": R("c16Conventions"),
         "parameter_sets": ordered([pin("c16ParameterSet", set_id=s) for s in PARAMETER_SETS]),
-        "list_parameters": R("c16ListParameters"), "list_goldens": A(R("c16Golden"), 2), "table_a1": R("c16TableA1"),
+        "list_parameters": R("c16ListParameters"), "list_goldens": ordered([pin("c16Golden", id=i, daily_rate=q, days=n, label=lab) for i, q, n, lab in GOLDENS]), "table_a1": R("c16TableA1"),
         "calibration": R("c16Calibration"), "generator": R("c16Generator"), "sources": A(R("c16SourceNote"), 5),
     }, "C16 models: the run-off parameter sets with their sources (the LiST 2019 tables as data, Table A.1 as data), the pre-2023 "
        "calibration, the generator's parameters and truth, the named parameters (conventions) and the licence class of every source.")

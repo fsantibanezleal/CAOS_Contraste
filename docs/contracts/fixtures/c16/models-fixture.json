@@ -50,7 +50,7 @@
           {
             "basis": "insured",
             "role": "central",
-            "lcr_category": "retail-less-stable",
+            "lcr_category": "retail_less_stable",
             "list_class": "other-retail",
             "label": {
               "en": "Insured deposits (DEPINS) as retail, less stable",
@@ -60,7 +60,7 @@
           {
             "basis": "uninsured",
             "role": "central",
-            "lcr_category": "non-financial-corporate",
+            "lcr_category": "non_financial_corporate",
             "list_class": "non-operational-non-financial-corporates",
             "label": {
               "en": "Uninsured deposits (DEPUNA) as non-operational non-financial corporates",
@@ -82,7 +82,7 @@
           {
             "basis": "uninsured",
             "role": "band",
-            "lcr_category": "non-financial-corporate",
+            "lcr_category": "non_financial_corporate",
             "list_class": "non-operational-non-financial-corporates",
             "label": {
               "en": "Uninsured balance as non-financial corporates",
@@ -92,7 +92,7 @@
           {
             "basis": "uninsured",
             "role": "band",
-            "lcr_category": "other-legal-entity",
+            "lcr_category": "other_legal_entity",
             "list_class": "non-operational-other-financial",
             "label": {
               "en": "Uninsured balance as other legal entities",
@@ -111,7 +111,7 @@
           {
             "variant": "lcr-standard",
             "scenario_family": "combined",
-            "phase": "protracted",
+            "phase": "lcr-30-day",
             "parameter_set": "basel-lcr",
             "horizon_days": 30,
             "axis": "calendar-days"
@@ -150,8 +150,8 @@
           }
         ],
         "basis": {
-          "en": "Dossier 05 E.2 asks for three families and two horizons and the SDD names none: the LCR is the combined 30-day stress, the LiST 2019 shocks are idiosyncratic only (annex slide 5), the fast run is acute (1 to 5 days).",
-          "es": "El dossier 05 E.2 pide tres familias y dos horizontes y el SDD no nombra ninguno: el LCR es el estres combinado a 30 dias, los choques LiST 2019 son solo idiosincraticos, la corrida rapida es aguda (1 a 5 dias)."
+          "en": "Dossier 05 E.2 asks for three families and two horizons and the SDD names none: the LCR is the combined stress over 30 calendar days (LCR20.2), a phase of its own, lcr-30-day, outside the acute (1 to 5 days) and protracted (6 to 12 months) wording of 05 l.277; the LiST 2019 shocks are idiosyncratic only (annex slide 5) and protracted; the fast run is acute.",
+          "es": "El dossier 05 E.2 pide tres familias y dos horizontes y el SDD no nombra ninguno: el LCR es el estres combinado a 30 dias corridos (LCR20.2), una fase propia, lcr-30-day, fuera de lo agudo (1 a 5 dias) y lo prolongado (6 a 12 meses) del dossier 05 l.277; los choques LiST 2019 son solo idiosincraticos y prolongados; la corrida rapida es aguda."
         }
       },
       "day_calendar": {
@@ -193,17 +193,6 @@
             "haircut_low": 0.0,
             "haircut_high": 0.05,
             "rule": "nominal-value",
-            "source": "ECB LiST 2019 methodological note para 74 (addendum L1.6)"
-          },
-          {
-            "class_id": "reverse-repo",
-            "fed_category": "no framework row: fallback",
-            "duration_bucket": "none",
-            "margin": null,
-            "haircut": 0.5,
-            "haircut_low": 0.45,
-            "haircut_high": 0.55,
-            "rule": "fifty-percent-fallback",
             "source": "ECB LiST 2019 methodological note para 74 (addendum L1.6)"
           },
           {
@@ -775,6 +764,26 @@
       ],
       "relevant_days_six_months": 125,
       "relevant_days_three_months": 63,
+      "results_annex": {
+        "n_banks": 103,
+        "median_survival_days": {
+          "adverse": 176,
+          "extreme": 122
+        },
+        "unit": "days",
+        "sources": {
+          "annex": "ECB LiST 2019 results annex",
+          "n_banks_slide": 9,
+          "median_slides": [
+            15
+          ],
+          "dossier": "dossier 05 E.1 line 240"
+        },
+        "statement": {
+          "en": "Reference points of the LiST 2019 stress test, not results of this model: 103 banks, median reported survival period 176 days under the Adverse and 122 days under the Extreme shock (results annex slides 9 and 15).",
+          "es": "Puntos de referencia del test de estres LiST 2019, no resultados de este modelo: 103 bancos, periodo de supervivencia mediano informado de 176 dias en el Adverso y 122 en el Extremo."
+        }
+      },
       "calendar_note": {
         "en": "The rates are defined on the 2019 TARGET2 relevant-day calendar (125 relevant days in six months); the C16 ladder runs on the US business-day convention.",
         "es": "Las tasas se definen sobre el calendario TARGET2 de 2019 (125 dias en seis meses); la escalera de C16 usa dias habiles de EE.UU."
@@ -997,17 +1006,17 @@
         {
           "segment": "non-operational-corporate",
           "horizon_days": 2,
-          "true_outflow_rate": 0.0083
+          "true_outflow_rate": 0.0004668007
         },
         {
           "segment": "non-operational-corporate",
           "horizon_days": 5,
-          "true_outflow_rate": 0.0197
+          "true_outflow_rate": 0.0016247118
         },
         {
           "segment": "retail-insured",
           "horizon_days": 2,
-          "true_outflow_rate": 0.0048
+          "true_outflow_rate": 0.0002363082
         }
       ],
       "verification": {

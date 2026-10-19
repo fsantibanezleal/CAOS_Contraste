@@ -578,7 +578,7 @@ def test_the_proposed_values_follow_the_dossier_examples() -> None:
     assert [r["variant"] for r in rows] == SCENARIO_KEYS
     m = c["deposit_category_mapping"]
     assert {r["role"] for r in m["rows"]} == {"central"} and {r["role"] for r in m["sensitivity_band"]} == {"band"}
-    assert {"operational", "non-financial-corporate", "other-legal-entity"} <= {r["lcr_category"] for r in m["sensitivity_band"]}
+    assert {"operational", "non_financial_corporate", "other_legal_entity"} <= {r["lcr_category"] for r in m["sensitivity_band"]}
 
 
 # --- call-report field names ----------------------------------------------------------------------------------------------

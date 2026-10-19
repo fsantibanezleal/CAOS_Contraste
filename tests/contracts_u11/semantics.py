@@ -16,6 +16,35 @@ from typing import Any
 TOL = 1e-3        # money in USD thousands, the fixtures round to six decimals
 EVENT_AMOUNT = 140_000_000   # over 40 bn USD on 9 March plus over 100 bn USD expected on 10 March, USD thousands (Fed review, 08 E.3)
 HQLA_L2_CAP, HQLA_L2B_CAP, INFLOW_CAP = 0.40, 0.15, 0.75
+TRADE_FINANCE_MAX = 0.05   # LCR99: trade finance contingent outflows 0 to 0.05 at national discretion, a caller-supplied rate
+SECURITIES = ("treasury", "mortgage-backed", "other-agency", "municipal", "other-debt")
+
+# The LiST 2019 Table 3.3 open-maturity daily rates of the classes the run-off curves take (addendum L1.3): class -> (Adverse, Extreme).
+LIST_OPEN = {
+    "stable-retail": (0.00103258, 0.00161494), "other-retail": (0.00373218, 0.00440873), "operational": (0.00514464, 0.00750509),
+    "non-operational-credit-institutions": (1.0, 1.0), "non-operational-other-financial": (1.0, 1.0),
+    "non-operational-non-financial-corporates": (0.00688541, 0.01065229), "non-operational-others": (0.00688541, 0.01065229),
+}
+
+# The Basel LCR rate tables (dossier 01 G.1: LCR20, LCR40, LCR99), the keys of the engine's LCR_OUTFLOW_RATES and LCR_INFLOW_RATES.
+LCR_OUTFLOW_RATES: dict[str, float] = {
+    "retail_stable_insurance_criteria": 0.03, "retail_stable": 0.05, "retail_less_stable": 0.1, "retail_term_gt_30d": 0.0,
+    "small_business_stable": 0.05, "small_business_less_stable": 0.1, "operational": 0.25, "operational_insured_portion": 0.05,
+    "cooperative_network": 0.25, "non_financial_corporate": 0.4, "non_financial_corporate_fully_insured": 0.2,
+    "other_legal_entity": 1.0, "secured_central_bank": 0.0, "secured_level1": 0.0, "secured_level2a": 0.15,
+    "secured_sovereign_mdb_pse": 0.25, "secured_level2b_rmbs": 0.25, "secured_other_level2b": 0.5, "secured_other": 1.0,
+    "non_level1_collateral_valuation": 0.2, "undrawn_retail_small_business": 0.05,
+    "undrawn_credit_non_financial_corporate": 0.1, "undrawn_liquidity_non_financial_corporate": 0.3,
+    "undrawn_credit_supervised_bank": 0.4, "undrawn_liquidity_supervised_bank": 0.4, "undrawn_credit_other_fi": 0.4,
+    "undrawn_liquidity_other_fi": 1.0, "undrawn_other_legal_entity": 1.0, "net_derivative_outflow": 1.0,
+    "other_contractual_outflow": 1.0,
+}
+LCR_INFLOW_RATES: dict[str, float] = {
+    "secured_lending_level1": 0.0, "secured_lending_level2a": 0.15, "secured_lending_level2b_rmbs": 0.25,
+    "secured_lending_other_level2b": 0.5, "secured_lending_other": 1.0, "margin_lending_other_collateral": 0.5,
+    "facilities_granted_to_bank": 0.0, "operational_deposits_at_other_institutions": 0.0,
+    "retail_and_nonfinancial_wholesale": 0.5, "financial_institutions_and_central_banks": 1.0, "net_derivative_inflow": 1.0,
+}
 
 
 def close(a: float, b: float, rel: float = 1e-9, tol: float = TOL) -> bool:
@@ -58,6 +87,47 @@ def check_conventions_agree(docs: list[dict]) -> list[str]:
     return rep
 
 
+def generator_truth(seg: dict, n: int) -> float:
+    """The exact expected cumulative outflow share of a generator segment at horizon n (liquidity-api.md, DepositorGenerator): the
+    transfer recursion u_1 = (1 - h_calm, 0), u_(d+1) = (u_d P) x (1 - h_calm, 1 - h_stress), truth(n) = 1 - sum(u_n)."""
+    hc, hs, pe, px = seg["calm_daily_hazard"], seg["stress_daily_hazard"], seg["p_enter_stress"], seg["p_exit_stress"]
+    calm, stress = 1.0 - hc, 0.0
+    for _ in range(n - 1):
+        calm, stress = (calm * (1.0 - pe) + stress * px) * (1.0 - hc), (calm * pe + stress * (1.0 - px)) * (1.0 - hs)
+    return 1.0 - (calm + stress)
+
+
+def check_cross_document(docs: list[dict]) -> list[str]:
+    """What one document cannot know of another: the fast run's calibrated rate is the fitted rate of the models document, the models'
+    LiST table is the table the scenarios follow, and a reverse base's largest rate below 1 is the scenario's."""
+    rep = Report()
+    models = next((d for d in docs if "fit" in d), None)
+    scenarios = {d["outputs"]["variant"]["id"]: d for d in docs if d.get("outputs", {}).get("kind") == "scenario" and d["outputs"]["path"]}
+    if models is not None:
+        fit = models["fit"]
+        fitted = fit["calibration"]["fitted_daily_rate"]["value"]
+        for row in fit["list_parameters"]["open_maturity_daily"]:
+            want = LIST_OPEN.get(row["item"])
+            if want is not None:
+                rep.need((row["adverse"], row["extreme"]) == want, f"models open_maturity_daily {row['item']} differs from the LiST Table 3.3 value")
+        for vid, d in scenarios.items():
+            for seg in d["outputs"]["path"]["ladder"]["segments"]:
+                if seg["parameters"][0]["source_kind"] == "calibrated-pre-2023":
+                    rep.need(all(abs(q - fitted) <= 5e-7 for q in seg["daily_rates"]),
+                             f"{vid}: segment {seg['segment']} is run at a rate that is not the models document's fitted_daily_rate")
+    for d in docs:
+        if d.get("outputs", {}).get("kind") != "reverse-stress":
+            continue
+        for b in d["outputs"]["bases"]:
+            sc = scenarios.get(b["base_id"])
+            if sc is None:
+                continue
+            below = [q for seg in sc["outputs"]["path"]["ladder"]["segments"] if seg["daily_rates"] for q in seg["daily_rates"] if q < 1.0]
+            rep.need(bool(below) and abs(b["max_rate_below_one"] - max(below)) <= 1e-12,
+                     f"reverse base {b['base_id']}: max_rate_below_one is not the largest daily rate below 1 of the scenario document")
+    return rep
+
+
 def survival_key(s: dict) -> float:
     return math.inf if s["kind"] == "survives-horizon" else float(s["day"])
 
@@ -67,6 +137,14 @@ def first_negative(nlp: list[float]) -> int | None:
 
 
 # ------------------------------------------------------------------------------------------------ scenario documents
+
+
+def _survival_within(s: dict, horizon: int, rep: Report, where: str) -> None:
+    """A survival period is a day at most its horizon, and its horizon is the variant's: a day beyond the horizon means the bank
+    survived the horizon, never a number."""
+    rep.need(s["horizon_days"] == horizon, f"{where}: the survival horizon {s['horizon_days']} is not the variant's horizon {horizon}")
+    if s["kind"] == "day":
+        rep.need(s["day"] <= s["horizon_days"], f"{where}: the survival day {s['day']} is beyond its horizon {s['horizon_days']}")
 
 
 def check_scenario(doc: dict) -> list[str]:
@@ -99,11 +177,24 @@ def check_scenario(doc: dict) -> list[str]:
     # the CBC
     cbc = o["cbc"]
     rep.need(cbc["as_of"] == vd, "cbc.as_of is not the valuation date")
+    rows = {r["class_id"]: r for r in conv["cbc_securities_mapping"]["rows"]}
+    rep.need({c["class_id"] for c in cbc["classes"]} == set(rows), "the cbc classes are not the rows of the conventions' cbc_securities_mapping")
+    for r in rows.values():
+        _framework_row(r, rep)
+    fair = cbc["htm_valuation_basis"] == "fair-value"
     for c in cbc["classes"]:
-        used_ok = close(c["value_used"], c["carrying_value"]) or (c["fair_value"] is not None and close(c["value_used"], c["fair_value"]))
-        rep.need(used_ok, f"cbc class {c['class_id']}: value_used is neither the carrying value nor the fair value")
+        cid = c["class_id"]
+        if fair:
+            rep.need(c["fair_value"] is not None or cid not in SECURITIES, f"cbc class {cid}: a securities class has no fair value on the fair-value basis")
+            rep.need(close(c["value_used"], c["fair_value"] if c["fair_value"] is not None else c["carrying_value"]),
+                     f"cbc class {cid}: on the fair-value basis value_used is not the fair value")
+        else:
+            rep.need(close(c["value_used"], c["carrying_value"]), f"cbc class {cid}: on the amortised-cost basis value_used is not the carrying value")
+        row = rows.get(cid)
+        rep.need(row is not None and c["haircut"]["rule"] == row["rule"] and close(c["haircut"]["value"], row["haircut"], rel=0, tol=1e-9),
+                 f"cbc class {cid}: the haircut and its rule are not the framework row of the conventions' cbc_securities_mapping")
         rep.need(close(c["liquidity_value"], (c["value_used"] - c["encumbered"]) * (1 - c["haircut"]["value"])),
-                 f"cbc class {c['class_id']}: liquidity_value is not (value used - encumbered) x (1 - haircut)")
+                 f"cbc class {cid}: liquidity_value is not (value used - encumbered) x (1 - haircut)")
     rep.need(close(cbc["total_liquidity_value"], sum(c["liquidity_value"] for c in cbc["classes"])),
              "cbc total_liquidity_value is not the sum of the classes")
     rep.need(close(cbc["pledged"]["amount"], sum(c["encumbered"] for c in cbc["classes"])),
@@ -111,6 +202,8 @@ def check_scenario(doc: dict) -> list[str]:
     # the time block
     for t in o["time_block"]:
         rep.need(t["report_date"] <= t["as_of"] < vd, f"time block {t['as_of']}: report date or as_of after the valuation date")
+        if t["survival"] is not None:
+            _survival_within(t["survival"], o["variant"]["horizon_days"], rep, f"time block {t['as_of']}")
         _deposits(t["deposits"], rep, f"time_block {t['as_of']}")
         rep.need((t["survival"] is None) == (o["path"] is None), f"time block {t['as_of']}: survival and the daily path disagree")
         rep.need((t["lcr_ratio"] is not None) == (o["lcr"] is not None), f"time block {t['as_of']}: lcr_ratio and the LCR block disagree")
@@ -131,7 +224,7 @@ def check_scenario(doc: dict) -> list[str]:
     rep.need(doc["impact"]["survival_days"]["value"] == survival_value, "impact survival_days does not follow the survival period")
     # the LCR
     if o["lcr"] is not None:
-        _lcr(o["lcr"], rep)
+        _lcr(o, rep)
         rep.need(doc["impact"]["lcr"]["value"] is not None and close(doc["impact"]["lcr"]["value"], o["lcr"]["ratio"], tol=1e-9),
                  "impact lcr does not follow the LCR ratio")
     else:
@@ -139,12 +232,67 @@ def check_scenario(doc: dict) -> list[str]:
     # the HTM block
     if o["htm"] is not None:
         _htm(o, rep)
+    # the sensitivities the views draw
+    _sensitivities(o, rep)
     # the scoring block
     _scoring(o, horizon, rep)
     # the test rows
     for t in doc["tests"]:
         rep.need(t["test_id"].startswith("liq."), f"test id {t['test_id']} does not start with liq.")
     return rep
+
+
+def _framework_row(r: dict, rep: Report) -> None:
+    """A securities class row of the conventions: the haircut is 1 - margin where the central bank framework has a margin, the rule
+    says which, and the haircut lies inside its band."""
+    cid = r["class_id"]
+    if r["margin"] is not None:
+        rep.need(r["rule"] == "central-bank-framework", f"cbc_securities_mapping row {cid}: a margin is stated and the rule is not central-bank-framework")
+        rep.need(close(r["haircut"], 1 - r["margin"], rel=0, tol=1e-6), f"cbc_securities_mapping row {cid}: the haircut is not 1 - margin")
+    else:
+        rep.need(r["rule"] != "central-bank-framework", f"cbc_securities_mapping row {cid}: the rule is central-bank-framework and there is no margin")
+    if r["rule"] == "nominal-value":
+        rep.need(r["haircut"] == 0.0, f"cbc_securities_mapping row {cid}: nominal value has no haircut")
+    if r["rule"] == "fifty-percent-fallback":
+        rep.need(r["haircut"] == 0.5, f"cbc_securities_mapping row {cid}: the fallback haircut is 0.5")
+    rep.need(r["haircut_low"] <= r["haircut"] <= r["haircut_high"],
+             f"cbc_securities_mapping row {cid}: the haircut band is inverted or the haircut is outside it")
+
+
+def _sensitivities(o: dict, rep: Report) -> None:
+    s = o["sensitivities"]
+    conv = o["conventions"]
+    horizon = o["variant"]["horizon_days"]
+    has_path = o["path"] is not None
+    rep.need((s["uninsured_share"] is not None) == has_path and (s["htm_loss"] is not None) == has_path,
+             "the sensitivities are stated exactly where the variant has a daily path")
+    if not has_path or s["uninsured_share"] is None or s["htm_loss"] is None:
+        return
+    tol_days = conv["monotonicity_tolerance_days"]["value"]
+    shares = s["uninsured_share"]
+    rep.need([p["share"] for p in shares] == conv["uninsured_share_grid"]["values"], "the uninsured_share series is not ordered as the conventions' uninsured_share_grid")
+    for p in shares:
+        _survival_within(p["survival"], horizon, rep, f"uninsured share {p['share']}")
+    for a, b in zip(shares, shares[1:]):
+        rep.need(survival_key(b["survival"]) <= survival_key(a["survival"]) + tol_days,
+                 f"the survival period lengthens as the uninsured share rises from {a['share']} to {b['share']}")
+    losses = s["htm_loss"]
+    rep.need([p["multiple"] for p in losses] == conv["htm_loss_multiple_grid"]["values"], "the htm_loss series is not ordered as the conventions' htm_loss_multiple_grid")
+    held = next((i for i in o["balance_sheet"]["items"] if i["category"] == "securities-htm"), None)
+    reported = held["fair_value"] - held["amount"] if held and held["fair_value"] is not None else None
+    for p in losses:
+        _survival_within(p["survival"], horizon, rep, f"HTM loss multiple {p['multiple']}")
+        rep.need(reported is not None and close(p["unrealised_loss"], p["multiple"] * reported),
+                 f"HTM loss multiple {p['multiple']}: unrealised_loss is not the multiple of the reported loss")
+    for a, b in zip(losses, losses[1:]):
+        rep.need(b["cbc"] <= a["cbc"] + TOL, f"the CBC grows as the HTM loss grows from multiple {a['multiple']} to {b['multiple']}")
+        rep.need(survival_key(b["survival"]) <= survival_key(a["survival"]) + tol_days,
+                 f"the survival period lengthens as the HTM loss grows from multiple {a['multiple']} to {b['multiple']}")
+    anchor = 1.0 if o["cbc"]["htm_valuation_basis"] == "fair-value" else 0.0
+    own = next((p for p in losses if p["multiple"] == anchor), None)
+    if own is not None:
+        rep.need(close(own["cbc"], o["cbc"]["total_liquidity_value"]) and own["survival"] == o["path"]["survival"],
+                 f"the HTM loss series at multiple {anchor} does not reproduce the document's own CBC and survival period")
 
 
 def _deposits(d: dict, rep: Report, where: str) -> None:
@@ -197,6 +345,7 @@ def _path(o: dict, rep: Report) -> int:
             prev = cumulative[d - 1] if d else 0.0
             rep.need(close(s["outflows"][d], opening * (cumulative[d] - prev), tol=TOL),
                      f"segment {s['segment']}: outflow of day {d + 1} is not opening x the cumulative increment")
+    _segment_rates(o, rep)
     # the totals, the CBC, the NLP identity
     running = 0.0
     for d in range(h):
@@ -208,8 +357,8 @@ def _path(o: dict, rep: Report) -> int:
                  f"cbc_total of day {d + 1} is not the stack sum")
         running += lad["total_outflows"][d] - lad["total_inflows"][d]
         rep.need(close(lad["cumulative_net_outflow"][d], running), f"cumulative_net_outflow of day {d + 1} is not the running sum")
-        rep.need(close(lad["nlp"][d], lad["cbc_total"][d] - lad["cumulative_net_outflow"][d],
-                       tol=conv["nlp_identity_tolerance"]["value"] + TOL),
+        rep.need(close(lad["nlp"][d], lad["cbc_total"][d] - lad["cumulative_net_outflow"][d], rel=0.0,
+                       tol=conv["nlp_identity_tolerance"]["value"]),
                  f"nlp of day {d + 1} breaks NLP = CBC - cumulative net outflow")
     # the CBC stack follows the monetisation schedule (a step function of the day)
     pts = sorted(conv["monetisation_schedule"]["points"], key=lambda x: x["day"])
@@ -250,7 +399,29 @@ def _path(o: dict, rep: Report) -> int:
     return h
 
 
-def _lcr(lcr: dict, rep: Report) -> None:
+def _segment_rates(o: dict, rep: Report) -> None:
+    """The run-off rates are the parameters: a transcribed LiST rate is the Table 3.3 rate of its class under the scenario's severity,
+    the segment's parameter is its daily rate on every day (a calibrated rate is compared with the models document's fitted rate by
+    check_cross_document)."""
+    severity = 1 if o["variant"]["parameter_set"] == "list-extreme" else 0
+    for s in o["path"]["ladder"]["segments"]:
+        par = s["parameters"][0]
+        table = LIST_OPEN.get(s["list_class"])
+        opened = s["mechanism"] == "open-maturity-compounding"
+        if opened:
+            rep.need(all(close(q, par["value"], rel=0.0, tol=1e-9) for q in s["daily_rates"]),
+                     f"segment {s['segment']}: parameter {par['name']} {par['value']} is not its daily rate on every day")
+        if par["source_kind"] == "transcribed-list-2019" and table is not None:
+            if opened:
+                rep.need(all(close(q, table[severity], rel=0.0, tol=1e-12) for q in s["daily_rates"]),
+                         f"segment {s['segment']}: the daily rate is not the LiST Table 3.3 rate {table[severity]} of {s['list_class']}")
+            else:
+                rep.need(close(par["value"], table[severity], rel=0.0, tol=1e-12),
+                         f"segment {s['segment']}: the parameter {par['value']} is not the LiST Table 3.3 rate {table[severity]} of {s['list_class']}")
+
+
+def _lcr(o: dict, rep: Report) -> None:
+    lcr = o["lcr"]
     h = lcr["hqla"]
     al1, al2a, al2b = h["adjusted_l1"], h["adjusted_l2a"], h["adjusted_l2b"]
     adj15 = max(al2b - 15 / 85 * (al1 + al2a), al2b - 15 / 60 * al1, 0.0)
@@ -265,9 +436,14 @@ def _lcr(lcr: dict, rep: Report) -> None:
                  "l2_share is not Level 2 after the adjustments over HQLA")
         rep.need(h["l2b_share"] <= HQLA_L2B_CAP + 1e-9, "Level 2B is above the 15 percent cap of HQLA")
         rep.need(h["l2_share"] <= HQLA_L2_CAP + 1e-9, "Level 2 is above the 40 percent cap of HQLA")
-    for name, total in (("outflows", "total_outflows"), ("inflows", "total_inflows")):
+    for name, total, table in (("outflows", "total_outflows", LCR_OUTFLOW_RATES), ("inflows", "total_inflows", LCR_INFLOW_RATES)):
         for r in lcr[name]:
             rep.need(close(r["amount"], r["balance"] * r["rate"]), f"LCR {name} row {r['category']}: amount is not balance x rate")
+            if name == "outflows" and r["category"] == "trade_finance":
+                rep.need(0.0 <= r["rate"] <= TRADE_FINANCE_MAX, f"LCR outflows row trade_finance: the trade finance rate {r['rate']} is outside 0 to {TRADE_FINANCE_MAX}")
+            else:
+                rep.need(r["category"] in table and close(r["rate"], table[r["category"]], rel=0.0, tol=1e-12),
+                         f"LCR {name} row {r['category']}: the rate {r['rate']} is not the table rate {table.get(r['category'])}")
         rep.need(close(lcr[total], sum(r["amount"] for r in lcr[name])), f"LCR {total} is not the sum of its rows")
     expected = min(lcr["total_inflows"], INFLOW_CAP * lcr["total_outflows"])
     rep.need(close(lcr["inflows_counted"], expected), "LCR inflows counted are not min(inflows, 75 percent of outflows)")
@@ -275,8 +451,43 @@ def _lcr(lcr: dict, rep: Report) -> None:
     rep.need(close(lcr["net_outflows"], lcr["total_outflows"] - lcr["inflows_counted"]), "LCR net outflows are not outflows minus the counted inflows")
     if lcr["net_outflows"] > 0:
         rep.need(close(lcr["ratio"], h["hqla"] / lcr["net_outflows"], rel=1e-9, tol=1e-9), "LCR ratio is not HQLA over net outflows")
-    cats = {r["lcr_category"] for r in lcr["mapping_sensitivity"]}
-    rep.need({"operational", "non-financial-corporate", "other-legal-entity"} <= cats,
+    _mapping_sensitivity(o, rep)
+
+
+def _mapping_sensitivity(o: dict, rep: Report) -> None:
+    """Each row of the mapping sensitivity carries what its ratio is recomputed from: the uninsured balance's outflow under its
+    category (DEPUNA x the table rate), the total outflows with that outflow swapped for the central one, the counted inflows, the net
+    outflows and the ratio."""
+    lcr, h, dep = o["lcr"], o["lcr"]["hqla"], o["balance_sheet"]["deposits"]
+    rows = lcr["mapping_sensitivity"]
+    central_cat = next(r for r in o["conventions"]["deposit_category_mapping"]["rows"] if r["basis"] == "uninsured")["lcr_category"]
+    central = [r for r in rows if r["mapping_id"] == "central"]
+    rep.need(len(central) == 1 and central[0]["lcr_category"] == central_cat,
+             "LCR mapping sensitivity: there is not exactly one central row, on the central uninsured category of the mapping")
+    c = central[0] if len(central) == 1 else None
+    if c is not None:
+        rep.need(close(c["total_outflows"], lcr["total_outflows"]) and close(c["inflows_counted"], lcr["inflows_counted"])
+                 and close(c["net_outflows"], lcr["net_outflows"]) and close(c["ratio"], lcr["ratio"], rel=1e-9, tol=1e-9),
+                 "LCR mapping sensitivity: the central row is not the LCR block's own totals and ratio")
+        row = next((r for r in lcr["outflows"] if r["category"] == central_cat), None)
+        rep.need(row is not None and close(row["amount"], c["uninsured_outflow"]),
+                 "LCR mapping sensitivity: the central uninsured outflow is not the outflow row of the central category")
+    for r in rows:
+        rate = LCR_OUTFLOW_RATES.get(r["lcr_category"])
+        rep.need(rate is not None and close(r["uninsured_outflow"], dep["depuna"] * rate),
+                 f"LCR mapping sensitivity {r['mapping_id']}: uninsured_outflow is not DEPUNA x the table rate of {r['lcr_category']}")
+        if c is not None:
+            rep.need(close(r["total_outflows"], c["total_outflows"] - c["uninsured_outflow"] + r["uninsured_outflow"]),
+                     f"LCR mapping sensitivity {r['mapping_id']}: total_outflows is not the central outflows with the uninsured outflow replaced")
+        rep.need(close(r["inflows_counted"], min(lcr["total_inflows"], INFLOW_CAP * r["total_outflows"])),
+                 f"LCR mapping sensitivity {r['mapping_id']}: inflows_counted is not min(inflows, 75 percent of outflows)")
+        rep.need(close(r["net_outflows"], r["total_outflows"] - r["inflows_counted"]),
+                 f"LCR mapping sensitivity {r['mapping_id']}: net_outflows is not outflows minus the counted inflows")
+        if r["net_outflows"] > 0:
+            rep.need(close(r["ratio"], h["hqla"] / r["net_outflows"], rel=1e-9, tol=1e-9),
+                     f"LCR mapping sensitivity {r['mapping_id']}: the ratio is not HQLA over net outflows")
+    cats = {r["lcr_category"] for r in rows}
+    rep.need({"operational", "non_financial_corporate", "other_legal_entity"} <= cats,
              "the LCR mapping sensitivity does not cover the operational, non-financial corporate and other legal entity classes")
 
 
@@ -288,6 +499,12 @@ def _htm(o: dict, rep: Report) -> None:
     rep.need(close(h["cbc_removed"], h["cbc_without_loss"] - h["cbc_with_loss"]), "htm cbc_removed is not the CBC without the loss minus with it")
     rep.need(close(h["cbc_with_loss"], o["cbc"]["total_liquidity_value"]), "htm cbc_with_loss is not the CBC of the fair-value basis")
     rep.need(close(h["btfp_par"]["uplift"], h["btfp_par"]["cbc_at_par"] - h["cbc_without_loss"]), "the par uplift is not the par CBC minus the CBC without the loss")
+    if h["application"]["method"] == "whole-book":   # the reported HTM loss applied pro rata to the whole securities book
+        factor = (r["htm_fair_value"] + r["afs_fair_value"]) / (r["htm_amortised_cost"] + r["afs_fair_value"])
+        for c in o["cbc"]["classes"]:
+            if c["fair_value"] is not None:
+                rep.need(close(c["fair_value"], c["carrying_value"] * factor, rel=0.0, tol=1e-5),
+                         f"cbc class {c['class_id']}: the fair value is not the carrying value with the reported HTM loss applied to the whole book")
     rv = h["revaluation"]
     rep.need(close(rv["reported_fair_value"], r["htm_fair_value"]), "the revaluation row's reported fair value is not SCHF")
     if rv["status"] == "evaluated":
@@ -387,6 +604,12 @@ def check_reverse(doc: dict) -> list[str]:
         rep.need(all(x < y for x, y in zip(ms, ms[1:])), f"{b['base_id']}: the multipliers are not strictly increasing")
         rep.need(ms[0] == 1.0, f"{b['base_id']}: the curve does not start at the base multiplier 1")
         rep.need(ms[-1] <= b["max_multiplier"] + 1e-12, f"{b['base_id']}: a curve point is beyond the cap (each rate stays below 1)")
+        rep.need(close(b["max_multiplier"], 1.0 / b["max_rate_below_one"], rel=1e-9, tol=5e-7),
+                 f"{b['base_id']}: max_multiplier is not 1 / max_rate_below_one")
+        row = next((r for r in conv["variant_scenarios"]["rows"] if r["variant"] == b["base_id"]), None)
+        horizon_of_base = row["horizon_days"] if row is not None else None
+        for where, sv in [("base_survival", b["base_survival"])] + [(f"curve point {p['multiplier']}", p["survival"]) for p in curve]:
+            _survival_within(sv, horizon_of_base, rep, f"{b['base_id']} {where}")
         keys = [survival_key(p["survival"]) for p in curve]
         rep.need(all(x >= y for x, y in zip(keys, keys[1:])), f"{b['base_id']}: SP(m) is not monotone non-increasing in the multiplier")
         rep.need(b["base_survival"] == curve[0]["survival"], f"{b['base_id']}: base_survival is not the survival at multiplier 1")
@@ -446,6 +669,11 @@ def check_models(doc: dict) -> list[str]:
     red = fit["conventions"]["generator_truth_se_red"]["value"]
     rep.need(v["within_error"] == (v["max_abs_error"] <= red * v["mc_standard_error"] + 1e-15),
              "within_error does not follow max_abs_error against the Monte Carlo standard error")
+    config = {g["segment"]: g for g in gen["config"]["segments"]}
+    for t in gen["truth"]:
+        seg = config.get(t["segment"])
+        rep.need(seg is not None and abs(t["true_outflow_rate"] - generator_truth(seg, t["horizon_days"])) <= 5e-7,
+                 f"generator truth of {t['segment']} at horizon {t['horizon_days']} is not the transfer recursion of its configuration")
     by: dict[str, list[tuple[int, float]]] = {}
     for t in gen["truth"]:
         by.setdefault(t["segment"], []).append((t["horizon_days"], t["true_outflow_rate"]))
