@@ -1,0 +1,1316 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c21/variant-year-pair.schema.json",
+  "title": "C21 year-pair variant",
+  "description": "Catalog row c21-outputs 1.0.0: one HMDA year pair, fitted on year t and confirmed on t+1 (outputs.kind year-pair). No legal claim.",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C21"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c21Outputs",
+          "properties": {
+            "kind": {
+              "const": "year-pair"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "if": {
+              "properties": {
+                "light": {
+                  "const": "not_evaluated"
+                }
+              },
+              "required": [
+                "light"
+              ]
+            },
+            "then": {
+              "properties": {
+                "statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "not": {
+              "properties": {
+                "test_id": {
+                  "pattern": "^fair\\.(equalized_odds|equal_opportunity|calibration_within_groups|auc_by_group)"
+                }
+              },
+              "required": [
+                "test_id"
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c21Hmda": {
+      "enum": [
+        "derived_race",
+        "derived_ethnicity",
+        "derived_sex",
+        "applicant_age",
+        "debt_to_income_ratio",
+        "combined_loan_to_value_ratio",
+        "income",
+        "loan_amount",
+        "property_value",
+        "loan_type",
+        "loan_purpose",
+        "lien_status",
+        "occupancy_type",
+        "applicant_age_above_62",
+        "action_taken",
+        "rate_spread",
+        "denial_reason_1",
+        "denial_reason_2",
+        "denial_reason_3",
+        "denial_reason_4"
+      ]
+    },
+    "c21Control": {
+      "enum": [
+        "debt_to_income_ratio",
+        "combined_loan_to_value_ratio",
+        "income",
+        "loan_amount",
+        "property_value",
+        "loan_type",
+        "loan_purpose",
+        "lien_status",
+        "occupancy_type"
+      ]
+    },
+    "c21Label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "en",
+        "es"
+      ],
+      "properties": {
+        "en": {
+          "const": "no legal claim"
+        },
+        "es": {
+          "const": "sin afirmacion legal"
+        }
+      },
+      "description": "The required label, on every C21 document."
+    },
+    "c21Legal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "regulation_b",
+        "fair_housing_act",
+        "procedures",
+        "unconditional_rates_are",
+        "controlled_disparity_is",
+        "is_a_finding_of_violation"
+      ],
+      "properties": {
+        "label": {
+          "$ref": "#/$defs/c21Label"
+        },
+        "regulation_b": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "citation",
+            "quote",
+            "text"
+          ],
+          "properties": {
+            "citation": {
+              "const": "12 CFR 1002.6(a), as amended at 91 FR 21668 (2026-04-22, effective 2026-07-21)"
+            },
+            "quote": {
+              "const": "The Act does not provide that the 'effects test' applies for determining whether there is discrimination in violation of the Act."
+            },
+            "text": {
+              "$ref": "../common/text.schema.json"
+            }
+          }
+        },
+        "fair_housing_act": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "citation",
+            "quote",
+            "text"
+          ],
+          "properties": {
+            "citation": {
+              "const": "91 FR 21620, recital of Texas Department of Housing & Community Affairs v. Inclusive Communities Project, Inc."
+            },
+            "quote": {
+              "const": "the Supreme Court held that disparate-impact claims are cognizable under the Fair Housing Act (FHA)."
+            },
+            "text": {
+              "$ref": "../common/text.schema.json"
+            }
+          }
+        },
+        "procedures": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "citation",
+            "quote",
+            "text"
+          ],
+          "properties": {
+            "citation": {
+              "const": "Interagency Fair Lending Examination Procedures, August 2009, appendix, printed page 26"
+            },
+            "quote": {
+              "const": "Gross HMDA denial or approval rate disparities are not appropriate for disproportionate adverse impact analysis because they typically cannot be attributed to a specific policy or criterion."
+            },
+            "text": {
+              "$ref": "../common/text.schema.json"
+            }
+          }
+        },
+        "unconditional_rates_are": {
+          "const": "indicators-only"
+        },
+        "controlled_disparity_is": {
+          "const": "approximation-of-comparative-evidence"
+        },
+        "is_a_finding_of_violation": {
+          "const": false
+        }
+      },
+      "description": "No legal claim: the sentences the U14 research addendum quotes (H3 4.1 and 4.3), decision C4."
+    },
+    "c21Group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "group",
+        "n",
+        "n_approved",
+        "n_denied",
+        "selection_rate"
+      ],
+      "properties": {
+        "group": {
+          "type": "string",
+          "minLength": 1
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "n_approved": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_denied": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "selection_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A value in [0, 1]."
+        }
+      }
+    },
+    "c21Excluded": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "group",
+        "n",
+        "reason"
+      ],
+      "properties": {
+        "group": {
+          "type": "string",
+          "minLength": 1
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reason": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A non-attribute category (Joint, Not Available, Free Form Text Only): carried as its own group and excluded from the pairwise tests (decision C2)."
+    },
+    "c21Test": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "statistic",
+        "p_value"
+      ],
+      "properties": {
+        "statistic": {
+          "type": "number"
+        },
+        "p_value": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A value in [0, 1]."
+        }
+      }
+    },
+    "c21Air": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "four_fifths",
+        "note"
+      ],
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Protected group's selection rate over the reference group's; null when the reference rate is 0."
+        },
+        "four_fifths": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "flag",
+            "threshold",
+            "label",
+            "citation",
+            "is_credit_law_threshold"
+          ],
+          "properties": {
+            "flag": {
+              "type": "boolean"
+            },
+            "threshold": {
+              "const": 0.8
+            },
+            "label": {
+              "const": "employment benchmark"
+            },
+            "citation": {
+              "const": "29 CFR 1607.4(D)"
+            },
+            "is_credit_law_threshold": {
+              "const": false
+            }
+          },
+          "description": "The four-fifths line is an employment benchmark and never a credit-law threshold (06 C.7 l.1033-1037, I.6 l.1268-1270)."
+        },
+        "note": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "value": {
+                "type": "number",
+                "exclusiveMaximum": 0.8
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "then": {
+            "properties": {
+              "four_fifths": {
+                "properties": {
+                  "flag": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "four_fifths": {
+                "properties": {
+                  "flag": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "c21Ci": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lo",
+        "hi",
+        "level"
+      ],
+      "properties": {
+        "lo": {
+          "type": "number"
+        },
+        "hi": {
+          "type": "number"
+        },
+        "level": {
+          "const": 0.95
+        }
+      }
+    },
+    "c21Controlled": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model",
+        "outcome",
+        "coefficient",
+        "odds_ratio",
+        "ci",
+        "n",
+        "controls",
+        "missing_controls",
+        "label"
+      ],
+      "properties": {
+        "model": {
+          "const": "logistic-decision-model"
+        },
+        "outcome": {
+          "const": "approval"
+        },
+        "coefficient": {
+          "type": "number"
+        },
+        "odds_ratio": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "ci": {
+          "$ref": "#/$defs/c21Ci"
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "controls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c21Control"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "missing_controls": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "credit_score"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 1,
+          "description": "Public HMDA has no credit score: every controlled estimate names it as a missing control (decision C2)."
+        },
+        "label": {
+          "const": "approximation of comparative evidence"
+        }
+      },
+      "description": "Logistic decision model of approval on the protected attribute and the permitted underwriting controls (decision Q4)."
+    },
+    "c21RateSpread": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model",
+        "population",
+        "coefficient",
+        "ci",
+        "n",
+        "controls",
+        "missing_controls",
+        "label",
+        "unit"
+      ],
+      "properties": {
+        "model": {
+          "const": "linear-rate-spread"
+        },
+        "population": {
+          "const": "action_taken 1 or 2"
+        },
+        "coefficient": {
+          "type": "number"
+        },
+        "ci": {
+          "$ref": "#/$defs/c21Ci"
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "controls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c21Control"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "missing_controls": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "credit_score"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 1,
+          "description": "Public HMDA has no credit score: every controlled estimate names it as a missing control (decision C2)."
+        },
+        "label": {
+          "const": "approximation of comparative evidence"
+        },
+        "unit": {
+          "const": "percentage points of rate_spread"
+        }
+      },
+      "description": "Linear model of the rate spread on the same terms; the loans that carry rate_spread (action taken 1 and 2)."
+    },
+    "c21Confirmation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fit_year",
+        "confirm_year",
+        "fit_coefficient",
+        "confirm_coefficient",
+        "same_sign",
+        "size_ratio"
+      ],
+      "properties": {
+        "fit_year": {
+          "type": "integer",
+          "minimum": 2018,
+          "maximum": 2023
+        },
+        "confirm_year": {
+          "type": "integer",
+          "minimum": 2019,
+          "maximum": 2024
+        },
+        "fit_coefficient": {
+          "type": "number"
+        },
+        "confirm_coefficient": {
+          "type": "number"
+        },
+        "same_sign": {
+          "type": "boolean"
+        },
+        "size_ratio": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "confirm coefficient over fit coefficient; null when the fit coefficient is 0."
+        }
+      },
+      "description": "Confirmation on year t+1 by sign and size (decision Q4)."
+    },
+    "c21OptControlled": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "estimate",
+        "reason"
+      ],
+      "properties": {
+        "estimate": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c21Controlled"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The estimate, or null with its reason (missing-data behavior).",
+      "oneOf": [
+        {
+          "properties": {
+            "estimate": {
+              "$ref": "#/$defs/c21Controlled"
+            },
+            "reason": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "estimate": {
+              "type": "null"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "c21OptRateSpread": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "estimate",
+        "reason"
+      ],
+      "properties": {
+        "estimate": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c21RateSpread"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The estimate, or null with its reason (missing-data behavior).",
+      "oneOf": [
+        {
+          "properties": {
+            "estimate": {
+              "$ref": "#/$defs/c21RateSpread"
+            },
+            "reason": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "estimate": {
+              "type": "null"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "c21OptConfirmation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "estimate",
+        "reason"
+      ],
+      "properties": {
+        "estimate": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c21Confirmation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The estimate, or null with its reason (missing-data behavior).",
+      "oneOf": [
+        {
+          "properties": {
+            "estimate": {
+              "$ref": "#/$defs/c21Confirmation"
+            },
+            "reason": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "estimate": {
+              "type": "null"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    },
+    "c21Contrast": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "group",
+        "reference_group",
+        "n_group",
+        "n_reference",
+        "selection_rate_group",
+        "selection_rate_reference",
+        "parity_gap",
+        "parity_ratio",
+        "adverse_impact_ratio",
+        "z_test",
+        "fisher_exact",
+        "controlled",
+        "rate_spread",
+        "confirmation"
+      ],
+      "properties": {
+        "group": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reference_group": {
+          "type": "string",
+          "minLength": 1
+        },
+        "n_group": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "n_reference": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "selection_rate_group": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A value in [0, 1]."
+        },
+        "selection_rate_reference": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A value in [0, 1]."
+        },
+        "parity_gap": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1,
+          "description": "Group rate minus reference rate."
+        },
+        "parity_ratio": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "adverse_impact_ratio": {
+          "$ref": "#/$defs/c21Air"
+        },
+        "z_test": {
+          "$ref": "#/$defs/c21Test"
+        },
+        "fisher_exact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "odds_ratio",
+            "p_value"
+          ],
+          "properties": {
+            "odds_ratio": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "p_value": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            }
+          }
+        },
+        "controlled": {
+          "$ref": "#/$defs/c21OptControlled"
+        },
+        "rate_spread": {
+          "$ref": "#/$defs/c21OptRateSpread"
+        },
+        "confirmation": {
+          "$ref": "#/$defs/c21OptConfirmation"
+        }
+      }
+    },
+    "c21Attribute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field",
+        "legal",
+        "reference_group",
+        "groups",
+        "excluded_groups",
+        "contrasts"
+      ],
+      "properties": {
+        "field": {
+          "enum": [
+            "derived_race",
+            "derived_ethnicity",
+            "derived_sex",
+            "applicant_age"
+          ]
+        },
+        "legal": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "basis",
+            "ecoa",
+            "fha",
+            "note",
+            "theory"
+          ],
+          "properties": {
+            "basis": {
+              "enum": [
+                "race_color",
+                "national_origin_nearest_UNVERIFIED",
+                "sex",
+                "age_ecoa_only"
+              ]
+            },
+            "ecoa": {
+              "type": "boolean"
+            },
+            "fha": {
+              "type": "boolean"
+            },
+            "note": {
+              "$ref": "../common/text.schema.json"
+            },
+            "theory": {
+              "const": "comparative-evidence-of-disparate-treatment"
+            }
+          },
+          "description": "The legal mapping of the attribute, from the addendum H3 section 5 table only."
+        },
+        "reference_group": {
+          "type": "string",
+          "minLength": 1
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c21Group"
+          },
+          "minItems": 2
+        },
+        "excluded_groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c21Excluded"
+          },
+          "minItems": 0
+        },
+        "contrasts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c21Contrast"
+          },
+          "minItems": 1
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "field": {
+              "const": "derived_race"
+            },
+            "legal": {
+              "properties": {
+                "basis": {
+                  "const": "race_color"
+                },
+                "ecoa": {
+                  "const": true
+                },
+                "fha": {
+                  "const": true
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "field": {
+              "const": "derived_ethnicity"
+            },
+            "legal": {
+              "properties": {
+                "basis": {
+                  "const": "national_origin_nearest_UNVERIFIED"
+                },
+                "ecoa": {
+                  "const": true
+                },
+                "fha": {
+                  "const": true
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "field": {
+              "const": "derived_sex"
+            },
+            "legal": {
+              "properties": {
+                "basis": {
+                  "const": "sex"
+                },
+                "ecoa": {
+                  "const": true
+                },
+                "fha": {
+                  "const": true
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "field": {
+              "const": "applicant_age"
+            },
+            "legal": {
+              "properties": {
+                "basis": {
+                  "const": "age_ecoa_only"
+                },
+                "ecoa": {
+                  "const": true
+                },
+                "fha": {
+                  "const": false
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "c21Conventions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "outcome",
+        "dti_recode",
+        "group_exclusion"
+      ],
+      "properties": {
+        "label": {
+          "const": "convention",
+          "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
+        },
+        "outcome": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "approval_codes",
+            "denial_codes",
+            "excluded_codes",
+            "note"
+          ],
+          "properties": {
+            "approval_codes": {
+              "const": [
+                1,
+                2
+              ]
+            },
+            "denial_codes": {
+              "const": [
+                3
+              ]
+            },
+            "excluded_codes": {
+              "const": [
+                4,
+                5,
+                6,
+                7,
+                8
+              ]
+            },
+            "note": {
+              "$ref": "../common/text.schema.json"
+            }
+          },
+          "description": "approval = 1 and 2, denial = 3; 4 and 5 have no decision; 6, 7 and 8 left out (decision C3)."
+        },
+        "dti_recode": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "bins",
+            "note"
+          ],
+          "properties": {
+            "bins": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1
+            },
+            "note": {
+              "$ref": "../common/text.schema.json"
+            }
+          },
+          "description": "The mixed exact and binned debt-to-income field is recoded to the published bins (decision C2)."
+        },
+        "group_exclusion": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "Named conventions, labelled on every result."
+    },
+    "c21Note": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field",
+        "treatment",
+        "n_missing",
+        "reason"
+      ],
+      "properties": {
+        "field": {
+          "$ref": "#/$defs/c21Hmda"
+        },
+        "treatment": {
+          "enum": [
+            "unmodified",
+            "binned",
+            "rounded",
+            "top-coded",
+            "bottom-coded",
+            "withheld",
+            "not-applicable"
+          ]
+        },
+        "n_missing": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A field HMDA withholds or bins in the public release: a nullable value with its reason, never a fabricated number."
+    },
+    "c21Situation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "comparator",
+        "counterfactual_test",
+        "attribute",
+        "k",
+        "alpha",
+        "tau",
+        "centers",
+        "interval",
+        "n_complainants",
+        "n_cases",
+        "n_significant"
+      ],
+      "properties": {
+        "label": {
+          "const": "situation-testing"
+        },
+        "comparator": {
+          "const": "ceteris-paribus"
+        },
+        "counterfactual_test": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "run",
+            "reason"
+          ],
+          "properties": {
+            "run": {
+              "const": false
+            },
+            "reason": {
+              "$ref": "../common/text.schema.json"
+            }
+          },
+          "description": "Public HMDA gives no counterfactual dataset, so the counterfactual test is not run here (decision C6)."
+        },
+        "attribute": {
+          "enum": [
+            "derived_race",
+            "derived_ethnicity",
+            "derived_sex",
+            "applicant_age"
+          ]
+        },
+        "k": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "alpha": {
+          "const": 0.05
+        },
+        "tau": {
+          "const": 0
+        },
+        "centers": {
+          "const": "excluded"
+        },
+        "interval": {
+          "const": "one-sided Wald, equation (10) of arXiv 2502.01267"
+        },
+        "n_complainants": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_cases": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_significant": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "description": "Situation testing, ceteris paribus comparator only (algorithm of the addendum H5)."
+    },
+    "c21Outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "pair_id",
+        "fit_year",
+        "confirm_year",
+        "scope",
+        "legal",
+        "conventions",
+        "attributes",
+        "situation_testing",
+        "data_notes",
+        "requirements"
+      ],
+      "properties": {
+        "kind": {
+          "const": "year-pair"
+        },
+        "pair_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^20(18|19|20|21|22|23)-(19|20|21|22|23|24)$"
+        },
+        "fit_year": {
+          "type": "integer",
+          "minimum": 2018,
+          "maximum": 2023
+        },
+        "confirm_year": {
+          "type": "integer",
+          "minimum": 2019,
+          "maximum": 2024
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "source",
+            "rows_fit",
+            "rows_confirm"
+          ],
+          "properties": {
+            "state": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rows_fit": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "rows_confirm": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "legal": {
+          "$ref": "#/$defs/c21Legal"
+        },
+        "conventions": {
+          "$ref": "#/$defs/c21Conventions"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c21Attribute"
+          },
+          "minItems": 1
+        },
+        "situation_testing": {
+          "$ref": "#/$defs/c21Situation"
+        },
+        "data_notes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c21Note"
+          },
+          "minItems": 1
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^CT-21\\d\\d$"
+          },
+          "minItems": 1,
+          "description": "Requirement ids CT-2101 onward (decision Q14)."
+        }
+      },
+      "description": "C21 year-pair outputs: statistical disparity on public HMDA decisions, fitted on year t and confirmed on t+1. No outcome-conditioned test runs: HMDA has no outcome (08 l.180-181)."
+    }
+  }
+}
