@@ -1,0 +1,328 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c20/models.schema.json",
+  "title": "C20 models",
+  "description": "Catalog row c20-models 1.0.0: the fitted rungs, the SGCD pin and the named parameters.",
+  "allOf": [
+    {
+      "$ref": "../common/models-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C20"
+        },
+        "fit": {
+          "$ref": "#/$defs/c20Fit"
+        }
+      },
+      "required": [
+        "case_id",
+        "fit"
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c20Param": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "name": {
+          "enum": [
+            "perturbation_grid",
+            "perturbation_tolerance",
+            "n_seeds",
+            "n_bootstrap_refits",
+            "overfit_tolerance",
+            "weak_spot_multiple",
+            "shift_score",
+            "worst_subsample_share",
+            "decision_cutoff_reject_share"
+          ]
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 1
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "const": "convention",
+          "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Where the construction comes from and how the value was proposed (decision Q8)."
+        }
+      },
+      "description": "A named parameter: its value and the label convention."
+    },
+    "c20Params": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/c20Param"
+      },
+      "description": "The named parameters of the document, each once.",
+      "minItems": 9,
+      "maxItems": 9,
+      "allOf": [
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "perturbation_grid"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "perturbation_tolerance"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "n_seeds"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "n_bootstrap_refits"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "overfit_tolerance"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "weak_spot_multiple"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "shift_score"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "worst_subsample_share"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "decision_cutoff_reject_share"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        }
+      ]
+    },
+    "c20SgcdNotice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "quote",
+        "commit",
+        "text"
+      ],
+      "properties": {
+        "kind": {
+          "const": "dataset-card-prohibition"
+        },
+        "quote": {
+          "const": "It is provided for research and benchmarking only and must not be used for real-world credit scoring or any production decision-making about individuals."
+        },
+        "commit": {
+          "const": "8403fa9048f7159d51a0cec5a2d9a2e9712662bd"
+        },
+        "text": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The SGCD dataset card's prohibited-use sentence (U14 research addendum H4 6.5), on every variant that shows SGCD."
+    },
+    "c20Fit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "datasets",
+        "ladder",
+        "sgcd",
+        "parameters"
+      ],
+      "properties": {
+        "datasets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "rows",
+              "role"
+            ],
+            "properties": {
+              "id": {
+                "enum": [
+                  "sgcd",
+                  "uci-german",
+                  "uci-taiwan",
+                  "uci-polish",
+                  "fed-2025-corporate"
+                ]
+              },
+              "rows": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "role": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "ladder": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rung",
+              "engine",
+              "dataset"
+            ],
+            "properties": {
+              "rung": {
+                "type": "string",
+                "minLength": 1
+              },
+              "engine": {
+                "type": "string",
+                "minLength": 1
+              },
+              "dataset": {
+                "enum": [
+                  "uci-german",
+                  "uci-taiwan",
+                  "uci-polish"
+                ]
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "sgcd": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "commit",
+            "seed",
+            "notice"
+          ],
+          "properties": {
+            "commit": {
+              "const": "8403fa9048f7159d51a0cec5a2d9a2e9712662bd"
+            },
+            "seed": {
+              "const": 42
+            },
+            "notice": {
+              "$ref": "#/$defs/c20SgcdNotice"
+            }
+          }
+        },
+        "parameters": {
+          "$ref": "#/$defs/c20Params"
+        }
+      },
+      "description": "C20 models: the fitted rungs on the UCI sets, the SGCD pin and the named parameters."
+    }
+  }
+}

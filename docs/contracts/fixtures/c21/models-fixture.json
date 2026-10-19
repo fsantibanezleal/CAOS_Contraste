@@ -1,0 +1,200 @@
+{
+  "schema": "contraste.models/v1",
+  "case_id": "C21",
+  "fit_id": "fixture-2018",
+  "model": [
+    {
+      "id": "fixture-p1",
+      "family": "ml",
+      "rung": "P1",
+      "title": {
+        "en": "Fixture model fixture-p1",
+        "es": "Fixture model fixture-p1"
+      },
+      "short_title": {
+        "en": "fixture-p1",
+        "es": "fixture-p1"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "details": {}
+    }
+  ],
+  "fit": {
+    "fields": [
+      {
+        "name": "action_taken",
+        "role": "outcome",
+        "alias": null
+      },
+      {
+        "name": "derived_sex",
+        "role": "attribute",
+        "alias": null
+      },
+      {
+        "name": "combined_loan_to_value_ratio",
+        "role": "control",
+        "alias": "loan_to_value_ratio"
+      }
+    ],
+    "decision_models": [
+      {
+        "fit_year": 2018,
+        "kind": "logistic",
+        "outcome": "approval",
+        "n": 2000,
+        "converged": true,
+        "terms": [
+          {
+            "term": "derived_sex=Female",
+            "coefficient": -0.5,
+            "se": 0.2
+          }
+        ]
+      }
+    ],
+    "conventions": {
+      "label": "convention",
+      "outcome": {
+        "approval_codes": [
+          1,
+          2
+        ],
+        "denial_codes": [
+          3
+        ],
+        "excluded_codes": [
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "note": {
+          "en": "approval = originated or approved not accepted, denial = denied; the rest have no decision",
+          "es": "approval = originated or approved not accepted, denial = denied; the rest have no decision"
+        }
+      },
+      "dti_recode": {
+        "bins": [
+          "<20%",
+          "20%-<30%",
+          "30%-<36%",
+          "36",
+          "50%-60%",
+          ">60%"
+        ],
+        "note": {
+          "en": "The mixed exact and binned field is recoded to the published bins",
+          "es": "The mixed exact and binned field is recoded to the published bins"
+        }
+      },
+      "group_exclusion": {
+        "en": "Joint, Not Available and Free Form Text Only categories are excluded from the pairwise tests",
+        "es": "Joint, Not Available and Free Form Text Only categories are excluded from the pairwise tests"
+      },
+      "identifiers": {
+        "id": "<activity_year>-<row>",
+        "observation_date": "<activity_year>-12-31",
+        "label": "convention",
+        "note": {
+          "en": "Public HMDA withholds the loan identifier and the dates: id is the row position within the activity year, the date is the activity year's last day",
+          "es": "Public HMDA withholds the loan identifier and the dates: id is the row position within the activity year, the date is the activity year's last day"
+        }
+      }
+    },
+    "legal": {
+      "label": {
+        "en": "no legal claim",
+        "es": "sin afirmacion legal"
+      },
+      "regulation_b": {
+        "citation": "12 CFR 1002.6(a), as amended at 91 FR 21668 (2026-04-22, effective 2026-07-21)",
+        "quote": "The Act does not provide that the 'effects test' applies for determining whether there is discrimination in violation of the Act.",
+        "text": {
+          "en": "The Act does not provide that the 'effects test' applies for determining whether there is discrimination in violation of the Act.",
+          "es": "The Act does not provide that the 'effects test' applies for determining whether there is discrimination in violation of the Act."
+        }
+      },
+      "fair_housing_act": {
+        "citation": "91 FR 21620, recital of Texas Department of Housing & Community Affairs v. Inclusive Communities Project, Inc.",
+        "quote": "the Supreme Court held that disparate-impact claims are cognizable under the Fair Housing Act (FHA).",
+        "text": {
+          "en": "the Supreme Court held that disparate-impact claims are cognizable under the Fair Housing Act (FHA).",
+          "es": "the Supreme Court held that disparate-impact claims are cognizable under the Fair Housing Act (FHA)."
+        }
+      },
+      "procedures": {
+        "citation": "Interagency Fair Lending Examination Procedures, August 2009, appendix, printed page 26",
+        "quote": "Gross HMDA denial or approval rate disparities are not appropriate for disproportionate adverse impact analysis because they typically cannot be attributed to a specific policy or criterion.",
+        "text": {
+          "en": "Gross HMDA denial or approval rate disparities are not appropriate for disproportionate adverse impact analysis because they typically cannot be attributed to a specific policy or criterion.",
+          "es": "Gross HMDA denial or approval rate disparities are not appropriate for disproportionate adverse impact analysis because they typically cannot be attributed to a specific policy or criterion."
+        }
+      },
+      "unconditional_rates_are": "indicators-only",
+      "controlled_disparity_is": "approximation-of-comparative-evidence",
+      "is_a_finding_of_violation": false
+    },
+    "licence": {
+      "status": "UNVERIFIED",
+      "platform_terms": "As a work of the United States Government, this package (excluding any exceptions listed below) is in the public domain within the United States. Additionally, we waive copyright and related rights in the work worldwide through the CC0 1.0 Universal public domain dedication.",
+      "platform_terms_cover": "the software package, not the published datasets",
+      "modified_statement": "The publicly available data are modified to protect applicants' and borrowers' privacy",
+      "note": {
+        "en": "The HMDA data licence sentence is UNVERIFIED; the views quote the platform software terms and the CFPB statement",
+        "es": "The HMDA data licence sentence is UNVERIFIED; the views quote the platform software terms and the CFPB statement"
+      }
+    },
+    "data_notes": [
+      {
+        "field": "debt_to_income_ratio",
+        "treatment": "binned",
+        "n_missing": null,
+        "reason": {
+          "en": "Binned outside 36 to 49 percent in the public release",
+          "es": "Binned outside 36 to 49 percent in the public release"
+        }
+      },
+      {
+        "field": "loan_amount",
+        "treatment": "rounded",
+        "n_missing": null,
+        "reason": {
+          "en": "Rounded to the midpoint of a $10,000 interval",
+          "es": "Rounded to the midpoint of a $10,000 interval"
+        }
+      }
+    ]
+  },
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u14-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

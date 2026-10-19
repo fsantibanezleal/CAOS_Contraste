@@ -1,0 +1,1043 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c20/variant-seeds.schema.json",
+  "title": "C20 seeds variant",
+  "description": "Catalog row c20-outputs-seeds 1.0.0: the seed sweep (outputs.kind seeds).",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C20"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c20OutputsSeeds",
+          "properties": {
+            "kind": {
+              "const": "seeds"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "if": {
+              "properties": {
+                "light": {
+                  "const": "not_evaluated"
+                }
+              },
+              "required": [
+                "light"
+              ]
+            },
+            "then": {
+              "properties": {
+                "statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "dataset_id": {
+                "const": "sgcd"
+              }
+            },
+            "required": [
+              "dataset_id"
+            ]
+          }
+        },
+        "required": [
+          "outputs"
+        ]
+      },
+      "then": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "sgcd_notice": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "sgcd_notice": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "model_dataset": {
+                "const": "uci-taiwan"
+              }
+            },
+            "required": [
+              "model_dataset"
+            ]
+          }
+        },
+        "required": [
+          "outputs"
+        ]
+      },
+      "then": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "fairness_battery": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "fairness_battery": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "impact": {
+          "required": [
+            "decision_flip_share"
+          ]
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c20Param": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "name": {
+          "enum": [
+            "perturbation_grid",
+            "perturbation_tolerance",
+            "n_seeds",
+            "n_bootstrap_refits",
+            "overfit_tolerance",
+            "weak_spot_multiple",
+            "shift_score",
+            "worst_subsample_share",
+            "decision_cutoff_reject_share"
+          ]
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 1
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "const": "convention",
+          "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Where the construction comes from and how the value was proposed (decision Q8)."
+        }
+      },
+      "description": "A named parameter: its value and the label convention."
+    },
+    "c20Params": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/c20Param"
+      },
+      "description": "The named parameters of the document, each once.",
+      "minItems": 9,
+      "maxItems": 9,
+      "allOf": [
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "perturbation_grid"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "perturbation_tolerance"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "n_seeds"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "n_bootstrap_refits"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "overfit_tolerance"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "weak_spot_multiple"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "shift_score"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "worst_subsample_share"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "decision_cutoff_reject_share"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        }
+      ]
+    },
+    "c20SgcdNotice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "quote",
+        "commit",
+        "text"
+      ],
+      "properties": {
+        "kind": {
+          "const": "dataset-card-prohibition"
+        },
+        "quote": {
+          "const": "It is provided for research and benchmarking only and must not be used for real-world credit scoring or any production decision-making about individuals."
+        },
+        "commit": {
+          "const": "8403fa9048f7159d51a0cec5a2d9a2e9712662bd"
+        },
+        "text": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The SGCD dataset card's prohibited-use sentence (U14 research addendum H4 6.5), on every variant that shows SGCD."
+    },
+    "c20FairRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "test_id",
+        "attribute",
+        "value",
+        "groups",
+        "light"
+      ],
+      "properties": {
+        "test_id": {
+          "enum": [
+            "fair.equalized_odds",
+            "fair.equal_opportunity",
+            "fair.calibration_within_groups",
+            "fair.auc_by_group"
+          ]
+        },
+        "attribute": {
+          "enum": [
+            "sex",
+            "age",
+            "marital_status"
+          ]
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "group",
+              "n",
+              "value"
+            ],
+            "properties": {
+              "group": {
+                "type": "string",
+                "minLength": 1
+              },
+              "n": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "value": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "minItems": 2
+        },
+        "light": {
+          "enum": [
+            "green",
+            "amber",
+            "red",
+            "not_evaluated",
+            "error"
+          ]
+        }
+      }
+    },
+    "c20FairBattery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "model",
+        "notice",
+        "rows"
+      ],
+      "properties": {
+        "label": {
+          "const": "labelled-fairness-battery"
+        },
+        "model": {
+          "const": "uci-taiwan"
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c20FairRow"
+          },
+          "minItems": 12,
+          "maxItems": 12,
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "description": "The labelled fairness battery on the Taiwan model (decision Q5): outcome-conditioned tests, a battery row set, not a compliance statement."
+    },
+    "c20Impact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "cutoff",
+        "rows"
+      ],
+      "properties": {
+        "label": {
+          "const": "decision-flip"
+        },
+        "cutoff": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rule",
+            "reject_share",
+            "label"
+          ],
+          "properties": {
+            "rule": {
+              "const": "reject-worst-share-of-baseline-scores"
+            },
+            "reject_share": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            },
+            "label": {
+              "const": "convention",
+              "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
+            }
+          }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "shift_id",
+              "flip_share",
+              "n_decisions"
+            ],
+            "properties": {
+              "shift_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "flip_share": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "A value in [0, 1]."
+              },
+              "n_decisions": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          },
+          "minItems": 1
+        }
+      },
+      "description": "The share of decisions that flip at the stated cut-off under each shift (decision Q10)."
+    },
+    "c20SeedRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rung",
+        "n_seeds",
+        "auc",
+        "grade_assignment_changed_share",
+        "attribution_rank_tau",
+        "reason_code_overlap"
+      ],
+      "properties": {
+        "rung": {
+          "type": "string",
+          "minLength": 1
+        },
+        "n_seeds": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "auc": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mean",
+            "sd",
+            "min",
+            "max"
+          ],
+          "properties": {
+            "mean": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            },
+            "sd": {
+              "type": "number",
+              "minimum": 0
+            },
+            "min": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            },
+            "max": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            }
+          }
+        },
+        "grade_assignment_changed_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A value in [0, 1]."
+        },
+        "attribution_rank_tau": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mean",
+            "min"
+          ],
+          "properties": {
+            "mean": {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            },
+            "min": {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            }
+          }
+        },
+        "reason_code_overlap": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "top_k",
+            "n_refits",
+            "mean",
+            "p05"
+          ],
+          "properties": {
+            "top_k": {
+              "const": 4
+            },
+            "n_refits": {
+              "type": "integer",
+              "minimum": 2
+            },
+            "mean": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            },
+            "p05": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            }
+          }
+        }
+      }
+    },
+    "c20Ale": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "edges",
+        "effect"
+      ],
+      "properties": {
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2
+        },
+        "effect": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "ALE of one feature: bin edges (n_bins + 1) and the centred effect of each bin (n_bins), the engine's accumulated_local_effects."
+    },
+    "c20Explainer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rung",
+        "effect_reference",
+        "n_features",
+        "rank_correlation",
+        "reason_if_null",
+        "top_features"
+      ],
+      "properties": {
+        "rung": {
+          "type": "string",
+          "minLength": 1
+        },
+        "effect_reference": {
+          "enum": [
+            "ale",
+            "pdp"
+          ]
+        },
+        "n_features": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "rank_correlation": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Spearman rho between the mean absolute SHAP per feature and the range of its ALE or PDP curve (ml.explanations.rank_agreement, ml.effect_agreement)."
+        },
+        "reason_if_null": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "top_features": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "feature",
+              "shap_importance",
+              "effect_range",
+              "ale"
+            ],
+            "properties": {
+              "feature": {
+                "type": "string",
+                "minLength": 1
+              },
+              "shap_importance": {
+                "type": "number",
+                "minimum": 0
+              },
+              "effect_range": {
+                "type": "number",
+                "minimum": 0
+              },
+              "ale": {
+                "$ref": "#/$defs/c20Ale"
+              }
+            }
+          },
+          "minItems": 1,
+          "maxItems": 10
+        }
+      },
+      "description": "Explainer agreement of one model: SHAP against ALE or PDP, with the ALE curves of the top features (06 C.7 l.1006-1008)."
+    },
+    "c20OutputsSeeds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "dataset_id",
+        "model_dataset",
+        "sgcd_notice",
+        "parameters",
+        "fairness_battery",
+        "impact_detail",
+        "requirements",
+        "rows",
+        "explainer_agreement"
+      ],
+      "properties": {
+        "kind": {
+          "const": "seeds"
+        },
+        "dataset_id": {
+          "enum": [
+            "sgcd",
+            "uci-german",
+            "uci-taiwan",
+            "uci-polish",
+            "fed-2025-corporate"
+          ]
+        },
+        "model_dataset": {
+          "enum": [
+            "uci-german",
+            "uci-taiwan",
+            "uci-polish"
+          ]
+        },
+        "sgcd_notice": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c20SgcdNotice"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parameters": {
+          "$ref": "#/$defs/c20Params"
+        },
+        "fairness_battery": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c20FairBattery"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "impact_detail": {
+          "$ref": "#/$defs/c20Impact"
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^CT-20\\d\\d$"
+          },
+          "minItems": 1,
+          "description": "Requirement ids CT-2001 onward (decision Q14)."
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c20SeedRow"
+          },
+          "minItems": 1
+        },
+        "explainer_agreement": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c20Explainer"
+          },
+          "minItems": 1
+        }
+      }
+    }
+  }
+}

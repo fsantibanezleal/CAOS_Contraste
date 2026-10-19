@@ -1214,7 +1214,9 @@ def test_f8_the_rows_fragment_says_the_api_version_bump_is_the_integrators() -> 
     # the integrator bumped the api contract when it merged the fragments (0.11.000), with its History entry naming U10-S
     catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
     contracts = catalog.split("## Contracts", 1)[1].split("\n## ", 1)[0]
-    assert any(ln.startswith("| api | 5.") for ln in contracts.splitlines())       # 5.0.0 since c15-outputs 2.0.0 (U10-P2c)
+    # 5.0.0 since c15-outputs 2.0.0 (U10-P2c); every later case batch moves it up (6.0.0 and 7.0.0 at the batch 3 integration)
+    api = next(ln for ln in contracts.splitlines() if ln.startswith("| api |"))
+    assert int(api.split("|")[2].strip().split(".")[0]) >= 5, api[:40]
     history = catalog.split("## History", 1)[1]
     assert any(ln.startswith("| api | 4.0.0 |") and "U10-S" in ln for ln in history.splitlines())
 

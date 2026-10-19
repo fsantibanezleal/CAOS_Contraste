@@ -1,0 +1,1216 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c02/variant-horizon.schema.json",
+  "title": "C02 horizon variant",
+  "description": "Catalog row c02-outputs 1.0.0: one horizon file (1 to 5 years) or the pooled variant of the corporate PD case (outputs.kind horizon).",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C02"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c02Outputs",
+          "properties": {
+            "kind": {
+              "const": "horizon"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "if": {
+              "properties": {
+                "light": {
+                  "const": "not_evaluated"
+                }
+              },
+              "required": [
+                "light"
+              ]
+            },
+            "then": {
+              "properties": {
+                "statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "horizon_id": {
+                "const": "h1"
+              }
+            },
+            "required": [
+              "horizon_id"
+            ]
+          }
+        },
+        "required": [
+          "outputs"
+        ]
+      },
+      "then": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "years": {
+                "const": 1
+              },
+              "pooled": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "horizon_id": {
+                "const": "h2"
+              }
+            },
+            "required": [
+              "horizon_id"
+            ]
+          }
+        },
+        "required": [
+          "outputs"
+        ]
+      },
+      "then": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "years": {
+                "const": 2
+              },
+              "pooled": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "horizon_id": {
+                "const": "h3"
+              }
+            },
+            "required": [
+              "horizon_id"
+            ]
+          }
+        },
+        "required": [
+          "outputs"
+        ]
+      },
+      "then": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "years": {
+                "const": 3
+              },
+              "pooled": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "horizon_id": {
+                "const": "h4"
+              }
+            },
+            "required": [
+              "horizon_id"
+            ]
+          }
+        },
+        "required": [
+          "outputs"
+        ]
+      },
+      "then": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "years": {
+                "const": 4
+              },
+              "pooled": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "horizon_id": {
+                "const": "h5"
+              }
+            },
+            "required": [
+              "horizon_id"
+            ]
+          }
+        },
+        "required": [
+          "outputs"
+        ]
+      },
+      "then": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "years": {
+                "const": 5
+              },
+              "pooled": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "horizon_id": {
+                "const": "pooled"
+              }
+            },
+            "required": [
+              "horizon_id"
+            ]
+          }
+        },
+        "required": [
+          "outputs"
+        ]
+      },
+      "then": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "years": {
+                "const": null
+              },
+              "pooled": {
+                "type": "object"
+              },
+              "firm_overlap_caveat": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "impact": {
+          "required": [
+            "ecl_12m_effect",
+            "ecl_lifetime_effect"
+          ]
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c02Param": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "name": {
+          "enum": [
+            "perturbation_grid",
+            "perturbation_tolerance",
+            "n_seeds",
+            "n_bootstrap_refits",
+            "overfit_tolerance",
+            "weak_spot_multiple",
+            "shift_score",
+            "worst_subsample_share",
+            "decision_cutoff_reject_share"
+          ]
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 1
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "const": "convention",
+          "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Where the construction comes from and how the value was proposed (decision Q8)."
+        }
+      },
+      "description": "A named parameter: its value and the label convention."
+    },
+    "c02Params": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/c02Param"
+      },
+      "description": "The named parameters of the document, each once.",
+      "minItems": 1,
+      "maxItems": 1,
+      "allOf": [
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "overfit_tolerance"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        }
+      ]
+    },
+    "c02Ci": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lo",
+        "hi",
+        "level",
+        "method"
+      ],
+      "properties": {
+        "lo": {
+          "type": "number"
+        },
+        "hi": {
+          "type": "number"
+        },
+        "level": {
+          "const": 0.95
+        },
+        "method": {
+          "const": "delong"
+        }
+      },
+      "description": "AUC interval, DeLong (the engine's disc_delong)."
+    },
+    "c02Counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rows",
+        "events",
+        "event_rate",
+        "features",
+        "event_definition"
+      ],
+      "properties": {
+        "rows": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "event_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A value in [0, 1]."
+        },
+        "features": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "event_definition": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "Counts and event rate of the file (bankruptcy within the horizon)."
+    },
+    "c02PoolFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "file",
+        "years",
+        "rows",
+        "events"
+      ],
+      "properties": {
+        "file": {
+          "type": "string",
+          "minLength": 1
+        },
+        "years": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "rows": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "events": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "c02Pooled": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "files",
+        "horizon_indicator",
+        "overlap"
+      ],
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c02PoolFile"
+          },
+          "minItems": 5,
+          "maxItems": 5
+        },
+        "horizon_indicator": {
+          "const": true
+        },
+        "overlap": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The five files stacked with a horizon indicator (decision Q9); the firm overlap is unknown."
+    },
+    "c02Split": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "protocol",
+        "seed",
+        "train_rows",
+        "calibration_rows",
+        "holdout_rows",
+        "holdout_events",
+        "fit_on_training_slice_only",
+        "calibration_map_on_separate_slice",
+        "resampling_before_calibration",
+        "out_of_time_claim"
+      ],
+      "properties": {
+        "protocol": {
+          "const": "locked-stratified-holdout"
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "train_rows": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "calibration_rows": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "holdout_rows": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "holdout_events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fit_on_training_slice_only": {
+          "const": true,
+          "description": "Binning, imputation and selection are fitted on the training slice only (04 l.1054-1059)."
+        },
+        "calibration_map_on_separate_slice": {
+          "const": true
+        },
+        "resampling_before_calibration": {
+          "const": false
+        },
+        "out_of_time_claim": {
+          "const": false,
+          "description": "The files carry no date: no out-of-time claim."
+        }
+      }
+    },
+    "c02Roc": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fpr",
+        "tpr"
+      ],
+      "properties": {
+        "fpr": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A value in [0, 1]."
+          },
+          "minItems": 2
+        },
+        "tpr": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A value in [0, 1]."
+          },
+          "minItems": 2
+        }
+      },
+      "description": "ROC points of the holdout, in the shape of C01: false and true positive rates, same length, from (0, 0) to (1, 1)."
+    },
+    "c02Cap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "population",
+        "defaults",
+        "default_rate"
+      ],
+      "properties": {
+        "population": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A value in [0, 1]."
+          },
+          "minItems": 2
+        },
+        "defaults": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A value in [0, 1]."
+          },
+          "minItems": 2
+        },
+        "default_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A value in [0, 1]."
+        }
+      },
+      "description": "CAP points of the holdout, in the shape of C01: cumulative share of the population against the cumulative share of the defaults."
+    },
+    "c02ReliabilityBin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "n",
+        "pd",
+        "dr",
+        "lo",
+        "hi"
+      ],
+      "properties": {
+        "n": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "pd": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "dr": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A value in [0, 1]."
+        },
+        "lo": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A value in [0, 1]."
+        },
+        "hi": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A value in [0, 1]."
+        }
+      },
+      "description": "One decile of the reliability diagram, in the shape of C01: mean predicted PD, observed default rate and its interval."
+    },
+    "c02Rung": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_id",
+        "rung",
+        "roc",
+        "cap",
+        "reliability",
+        "discrimination",
+        "calibration",
+        "overfit",
+        "stability"
+      ],
+      "properties": {
+        "model_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rung": {
+          "enum": [
+            "P0",
+            "P1",
+            "P2a",
+            "P2b",
+            "P3",
+            "P4"
+          ]
+        },
+        "roc": {
+          "$ref": "#/$defs/c02Roc"
+        },
+        "cap": {
+          "$ref": "#/$defs/c02Cap"
+        },
+        "reliability": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c02ReliabilityBin"
+          },
+          "minItems": 1,
+          "maxItems": 10,
+          "description": "Calibration by decile of the holdout: at most ten bins."
+        },
+        "discrimination": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "auc",
+            "auc_ci",
+            "gini",
+            "ks"
+          ],
+          "properties": {
+            "auc": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            },
+            "auc_ci": {
+              "$ref": "#/$defs/c02Ci"
+            },
+            "gini": {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            },
+            "ks": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            }
+          }
+        },
+        "calibration": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "brier",
+            "ece",
+            "hosmer_lemeshow"
+          ],
+          "properties": {
+            "brier": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            },
+            "ece": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            },
+            "hosmer_lemeshow": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "statistic",
+                "df",
+                "p_value"
+              ],
+              "properties": {
+                "statistic": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "df": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "p_value": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "A value in [0, 1]."
+                }
+              }
+            }
+          }
+        },
+        "overfit": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "train_auc",
+            "holdout_auc",
+            "gap",
+            "tolerance",
+            "flag"
+          ],
+          "properties": {
+            "train_auc": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            },
+            "holdout_auc": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            },
+            "gap": {
+              "type": "number"
+            },
+            "tolerance": {
+              "type": "number",
+              "minimum": 0
+            },
+            "flag": {
+              "type": "boolean"
+            }
+          }
+        },
+        "stability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "psi",
+            "csi_max"
+          ],
+          "properties": {
+            "psi": {
+              "type": "number",
+              "minimum": 0
+            },
+            "csi_max": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "description": "Holdout against training slice (existing engine tests)."
+        }
+      }
+    },
+    "c02Challenger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "champion",
+        "challenger",
+        "auc_diff",
+        "auc_diff_ci",
+        "delong_p_value",
+        "brier_diff",
+        "brier_diff_ci",
+        "grade_disagreement_share"
+      ],
+      "properties": {
+        "champion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "challenger": {
+          "type": "string",
+          "minLength": 1
+        },
+        "auc_diff": {
+          "type": "number"
+        },
+        "auc_diff_ci": {
+          "$ref": "#/$defs/c02Ci"
+        },
+        "delong_p_value": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A value in [0, 1]."
+        },
+        "brier_diff": {
+          "type": "number"
+        },
+        "brier_diff_ci": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lo",
+            "hi",
+            "level",
+            "method"
+          ],
+          "properties": {
+            "lo": {
+              "type": "number"
+            },
+            "hi": {
+              "type": "number"
+            },
+            "level": {
+              "const": 0.95
+            },
+            "method": {
+              "const": "paired-bootstrap"
+            }
+          }
+        },
+        "grade_disagreement_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A value in [0, 1]."
+        }
+      },
+      "description": "Champion and challenger: the DeLong difference and the paired bootstrap of the Brier difference (06 C.7 l.1041-1044)."
+    },
+    "c02Transfer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "reason",
+        "cells"
+      ],
+      "properties": {
+        "label": {
+          "const": "exploratory",
+          "description": "The block is exploratory and says so."
+        },
+        "reason": {
+          "$ref": "../common/text.schema.json"
+        },
+        "cells": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rung",
+              "fitted_on_years",
+              "scored_on_years",
+              "auc",
+              "n",
+              "events"
+            ],
+            "properties": {
+              "rung": {
+                "enum": [
+                  "P0",
+                  "P1",
+                  "P2a",
+                  "P2b",
+                  "P3",
+                  "P4"
+                ]
+              },
+              "fitted_on_years": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "scored_on_years": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "auc": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "A value in [0, 1]."
+              },
+              "n": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "events": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "minItems": 0
+        }
+      },
+      "description": "Cross-file transfer: a rung fitted on file i scored on the holdout of file j. Exploratory: the firm overlap is unknown (SDD l.374). Empty for the pooled variant."
+    },
+    "c02TermStructure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "reason",
+        "points",
+        "cumulative_nondecreasing",
+        "source"
+      ],
+      "properties": {
+        "label": {
+          "const": "exploratory",
+          "description": "The block is exploratory and says so."
+        },
+        "reason": {
+          "$ref": "../common/text.schema.json"
+        },
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "years",
+              "cumulative_pd",
+              "hazard"
+            ],
+            "properties": {
+              "years": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "cumulative_pd": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 1
+              },
+              "hazard": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "exclusiveMaximum": 1
+              }
+            }
+          },
+          "minItems": 5,
+          "maxItems": 5
+        },
+        "cumulative_nondecreasing": {
+          "type": "boolean"
+        },
+        "source": {
+          "const": "engine-provisions-api from_cumulative and lifetime_pd_backtest (04 E.2 l.479-497)"
+        }
+      },
+      "description": "The five file event rates read as a cumulative PD: cumulative = 1 - product of (1 - hazard). Exploratory (decision Q9)."
+    },
+    "c02ImpactDetail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "reason",
+        "source",
+        "pd_basis",
+        "lgd",
+        "ecl_12m_effect",
+        "ecl_lifetime_effect",
+        "unit",
+        "reason_if_null"
+      ],
+      "properties": {
+        "label": {
+          "const": "exploratory",
+          "description": "The block is exploratory and says so."
+        },
+        "reason": {
+          "$ref": "../common/text.schema.json"
+        },
+        "source": {
+          "const": "engine-provisions-api"
+        },
+        "pd_basis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lgd": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "label"
+          ],
+          "properties": {
+            "value": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "label": {
+              "const": "assumption"
+            }
+          }
+        },
+        "ecl_12m_effect": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ecl_lifetime_effect": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason_if_null": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The 12-month and lifetime ECL effect of the horizon PDs (decision Q10). Exploratory."
+    },
+    "c02Outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "horizon_id",
+        "years",
+        "counts",
+        "pooled",
+        "firm_overlap_caveat",
+        "split",
+        "rungs",
+        "challenger",
+        "transfer",
+        "term_structure",
+        "impact_detail",
+        "parameters",
+        "requirements"
+      ],
+      "properties": {
+        "kind": {
+          "const": "horizon"
+        },
+        "horizon_id": {
+          "enum": [
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "pooled"
+          ]
+        },
+        "years": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The horizon of the file; null for the pooled variant."
+        },
+        "counts": {
+          "$ref": "#/$defs/c02Counts"
+        },
+        "pooled": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c02Pooled"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "firm_overlap_caveat": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Required text for the pooled variant: the firm overlap across the five files is unknown (08 l.855-856)."
+        },
+        "split": {
+          "$ref": "#/$defs/c02Split"
+        },
+        "rungs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c02Rung"
+          },
+          "minItems": 1
+        },
+        "challenger": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c02Challenger"
+          },
+          "minItems": 0
+        },
+        "transfer": {
+          "$ref": "#/$defs/c02Transfer"
+        },
+        "term_structure": {
+          "$ref": "#/$defs/c02TermStructure"
+        },
+        "impact_detail": {
+          "$ref": "#/$defs/c02ImpactDetail"
+        },
+        "parameters": {
+          "$ref": "#/$defs/c02Params"
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^CT-02\\d\\d$"
+          },
+          "minItems": 1,
+          "description": "Requirement ids CT-0201 onward (decision Q14)."
+        }
+      },
+      "description": "C02 horizon outputs: one document per horizon file (1 to 5 years) and the pooled variant. Exploratory blocks carry their label."
+    }
+  }
+}
