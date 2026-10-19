@@ -1,0 +1,299 @@
+{
+  "schema": "contraste.case/v1",
+  "case_id": "C18",
+  "variant_id": "fixture-reverse-stress",
+  "model": [
+    {
+      "id": "c18-satellites-us-calibrated",
+      "family": "stress",
+      "rung": "satellite-probit-ols",
+      "title": {
+        "en": "Fixture model c18-satellites-us-calibrated",
+        "es": "Modelo de ejemplo c18-satellites-us-calibrated"
+      },
+      "short_title": {
+        "en": "c18-satellites-us-calibrated",
+        "es": "c18-satellites-us-calibrated"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    },
+    {
+      "id": "c18-aggregation-ladder",
+      "family": "aggregation",
+      "rung": "simple-sum-headline",
+      "title": {
+        "en": "Fixture model c18-aggregation-ladder",
+        "es": "Modelo de ejemplo c18-aggregation-ladder"
+      },
+      "short_title": {
+        "en": "c18-aggregation-ladder",
+        "es": "c18-aggregation-ladder"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    },
+    {
+      "id": "c18-capital-engine",
+      "family": "stress",
+      "rung": "capital-engine-static",
+      "title": {
+        "en": "Fixture model c18-capital-engine",
+        "es": "Modelo de ejemplo c18-capital-engine"
+      },
+      "short_title": {
+        "en": "c18-capital-engine",
+        "es": "c18-capital-engine"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    }
+  ],
+  "outputs": {
+    "kind": "reverse",
+    "currency": "CLP",
+    "units": {
+      "money": "CLP millions",
+      "ratio": "decimal",
+      "dates": "ISO date; quarters as the date of the quarter end"
+    },
+    "bank": {
+      "name": "Banco Andino",
+      "synthetic": true,
+      "as_of": "2026-08-31",
+      "notice": {
+        "en": "Banco Andino is a synthetic bank. Its book and capital are calibrated to public aggregates; every figure here is a fixture and no result.",
+        "es": "Banco Andino is a synthetic bank. Its book and capital are calibrated to public aggregates; every figure here is a fixture and no result. (es)"
+      }
+    },
+    "failure_point": {
+      "label": "contraste-formulation-not-regulatory",
+      "definition": {
+        "en": "CET1 over RWA reaches the Chilean legal minimum stack at the end of the three-year planning horizon: the formal statement is Contraste's, not regulatory text.",
+        "es": "CET1 over RWA reaches the Chilean legal minimum stack at the end of the three-year planning horizon: the formal statement is Contraste's, not regulatory text. (es)"
+      },
+      "stack": {
+        "cet1_min": 0.045,
+        "c_ccob": 0.025,
+        "c_ccyb": 0.005,
+        "c_dsib": 0.015,
+        "p2_cet1": {
+          "name": "reverse_p2_cet1",
+          "value": 0.000625,
+          "unit": "share of RWA",
+          "label": "case assumption",
+          "basis": {
+            "en": "The CET1 share of the Pillar 2 requirement in the legal minimum stack (03 G.4: at most 4 percent in total, composition set bank by bank)",
+            "es": "The CET1 share of the Pillar 2 requirement in the legal minimum stack (03 G.4: at most 4 percent in total, composition set bank by bank) (es)"
+          }
+        },
+        "total": 0.090625,
+        "basis": "chilean-legal-minimum-stack"
+      },
+      "cet1_ratio_start": 0.11,
+      "rwa_clp_m": 20000000.0,
+      "horizon_years": 3
+    },
+    "factor_space": {
+      "window": {
+        "start": "1985-03-31",
+        "end": "2019-12-31"
+      },
+      "factors": [
+        {
+          "id": "real_gdp_growth",
+          "label": {
+            "en": "Real GDP growth",
+            "es": "Crecimiento del PIB real"
+          },
+          "unit": "percentage points",
+          "sd": 2.1
+        },
+        {
+          "id": "unemployment_rate",
+          "label": {
+            "en": "Unemployment rate",
+            "es": "Tasa de desempleo"
+          },
+          "unit": "percentage points",
+          "sd": 1.5
+        }
+      ],
+      "covariance": [
+        [
+          4.41,
+          -1.89
+        ],
+        [
+          -1.89,
+          2.25
+        ]
+      ],
+      "label": "us-calibrated-adaptation"
+    },
+    "loss_model": {
+      "kind": "linear",
+      "gradient_clp_m_per_unit": [
+        -60000.0,
+        110000.0
+      ],
+      "description": {
+        "en": "A linear loss in the factor deviations from the baseline: CLP millions per percentage point",
+        "es": "A linear loss in the factor deviations from the baseline: CLP millions per percentage point (es)"
+      }
+    },
+    "solution": {
+      "method": "closed-form-linear",
+      "z_star": [
+        -1.281245867,
+        1.3700789137
+      ],
+      "x_star": [
+        -2.6906163206,
+        2.0551183706
+      ],
+      "mahalanobis_distance": 1.4854595599,
+      "plausibility": {
+        "chi_square_df": 2,
+        "tail_probability": 0.3317760612
+      },
+      "loss_at_z_star_clp_m": 387500.000002,
+      "loss_threshold_clp_m": 387500.0,
+      "relative_gap": 0.0,
+      "tolerance": 1e-06
+    },
+    "starts": [
+      {
+        "start_id": "start-0",
+        "converged": true,
+        "distance": 1.4854595599,
+        "loss_clp_m": 387500.000002
+      },
+      {
+        "start_id": "start-1",
+        "converged": true,
+        "distance": 1.4854595748,
+        "loss_clp_m": 387500.000002
+      },
+      {
+        "start_id": "start-2",
+        "converged": true,
+        "distance": 1.4854595896,
+        "loss_clp_m": 387500.000002
+      },
+      {
+        "start_id": "start-3",
+        "converged": true,
+        "distance": 1.4854596045,
+        "loss_clp_m": 387500.000002
+      }
+    ]
+  },
+  "tests": [
+    {
+      "test_id": "stress.reverse_solution_check",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    }
+  ],
+  "impact": {
+    "capital_simple_sum": {
+      "value": 0.0,
+      "unit": "CLP millions",
+      "label": {
+        "en": "Not computed in this variant (reverse stress)",
+        "es": "Not computed in this variant (reverse stress) (es)"
+      }
+    },
+    "cet1_ratio_end_stress": {
+      "value": 0.090625,
+      "unit": "share of RWA",
+      "label": {
+        "en": "CET1 ratio at the failure point: the legal minimum stack",
+        "es": "CET1 ratio at the failure point: the legal minimum stack (es)"
+      }
+    },
+    "oi_headroom_min": {
+      "value": 0.0,
+      "unit": "share of RWA",
+      "label": {
+        "en": "Not computed in this variant",
+        "es": "Not computed in this variant (es)"
+      }
+    },
+    "p2g_proxy": {
+      "value": 0.0,
+      "unit": "share of RWA",
+      "label": {
+        "en": "Not computed in this variant",
+        "es": "Not computed in this variant (es)"
+      }
+    }
+  },
+  "findings": [
+    {
+      "id": "fixture-finding-1",
+      "severity": "S4",
+      "status": "open",
+      "evidence": [
+        "fixture"
+      ],
+      "title": {
+        "en": "Fixture finding, not a result",
+        "es": "Fixture finding, not a result (es)"
+      }
+    }
+  ],
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u13-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}
