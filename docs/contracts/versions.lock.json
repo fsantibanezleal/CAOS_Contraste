@@ -85,7 +85,7 @@
     "sha256": "3828606a7f05a6d930a44c7c8d54774a82f1945c14fc00fab94417d571071b7c"
   },
   "contract-family": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "schema": "docs/contracts/schemas/common/contract-family.schema.json",
     "sha256": "7131847ba47985b793908a00a00a90a7bcb9103350c65aeae568ae23afbb44a5"
   },
@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "5.0.0",
+    "version": "6.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "9012338f94b9ed2ef8968d436d8bd22b1708d6ee04f44285b2307ec9e64838f0"
+    "sha256": "61e5ba7956cc61af585d05a74edfa2026ff2105fdcf081949e524c4761ffcf0d"
   },
   "readiness": {
     "version": "1.0.0",
@@ -268,5 +268,25 @@
     "version": "1.0.0",
     "schema": "docs/contracts/engine/market-api.md",
     "sha256": "f3ccfb534c825d7ef38bade60a0be0a5aa5bdcb48dd2ceeb391c39b78922c6a5"
+  },
+  "c16-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c16/variant-scenario.schema.json",
+    "sha256": "4d793e51262ef244710e323f609da2b0a82edffc24e2fa42e0b5ccec347c7b8c"
+  },
+  "c16-outputs-reverse": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c16/variant-reverse.schema.json",
+    "sha256": "efeb5133ec93e95bd03e8fe35bf680e0b49ff90ed9b1d389ad45013400598497"
+  },
+  "c16-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c16/models.schema.json",
+    "sha256": "28cb79c4ad81bee24e63714b2e8c0e7dab3e5dd7138bea01caac2d700f8bd22f"
+  },
+  "engine-liquidity-api": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/engine/liquidity-api.md",
+    "sha256": "36d71cbeb5c0dbfd21894f304fb3c37ebbe9278ea72a38cf3df0cafb759648b4"
   }
 }
