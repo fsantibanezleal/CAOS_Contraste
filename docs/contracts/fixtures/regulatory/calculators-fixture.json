@@ -1,0 +1,1206 @@
+{
+  "schema": "contraste.regulatory/v1",
+  "case_id": "REGULATORY",
+  "document_id": "fixture-regulatory-calculators",
+  "engine": {
+    "name": "riskvalidation",
+    "version": "fixture"
+  },
+  "units": {
+    "money": "as stated per value (USD thousands for CRE99, index points for RBC20.13)",
+    "rate": "decimal",
+    "dates": "ISO-8601"
+  },
+  "official_examples": [
+    {
+      "id": "cre99-netting-set-1",
+      "calculator": "sa-ccr",
+      "title": {
+        "en": "CRE99 netting set 1: interest rate swaps and a swaption, unmargined",
+        "es": "CRE99 conjunto 1: swaps de tasa y una swaption, sin margen"
+      },
+      "kind": "official-example",
+      "paragraph": "CRE52.1",
+      "paragraph_range": "CRE52.10 to CRE52.57",
+      "in_force_date": "2023-01-01",
+      "published_date": "2020-06-05",
+      "source": "dossier 01 E.2 (CRE99.20 to CRE99.97)",
+      "inputs": [
+        {
+          "name": "v_trade_1",
+          "symbol": "V1",
+          "value": 30,
+          "unit": "USD thousands",
+          "paragraph": "CRE99.20"
+        },
+        {
+          "name": "v_trade_2",
+          "symbol": "V2",
+          "value": -20,
+          "unit": "USD thousands",
+          "paragraph": "CRE99.20"
+        },
+        {
+          "name": "v_trade_3",
+          "symbol": "V3",
+          "value": 50,
+          "unit": "USD thousands",
+          "paragraph": "CRE99.20"
+        },
+        {
+          "name": "c",
+          "symbol": "C",
+          "value": 0,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.10"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rc",
+          "symbol": "RC",
+          "value": 60,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.10"
+        },
+        {
+          "name": "en_usd",
+          "symbol": "EN_USD",
+          "value": 59270,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.57"
+        },
+        {
+          "name": "en_eur",
+          "symbol": "EN_EUR",
+          "value": 10083,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.57"
+        },
+        {
+          "name": "addon_usd",
+          "symbol": "AddOn_USD",
+          "value": 296.35,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.57"
+        },
+        {
+          "name": "addon_eur",
+          "symbol": "AddOn_EUR",
+          "value": 50.415,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.57"
+        },
+        {
+          "name": "addon_ir",
+          "symbol": "AddOn_IR",
+          "value": 346.765,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.57"
+        },
+        {
+          "name": "addon_aggregate",
+          "symbol": "AddOn",
+          "value": 346.765,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.25"
+        },
+        {
+          "name": "swaption_delta",
+          "symbol": "delta",
+          "value": -0.2694,
+          "unit": "unitless",
+          "paragraph": "CRE52.38"
+        },
+        {
+          "name": "multiplier",
+          "symbol": "multiplier",
+          "value": 1.0,
+          "unit": "unitless",
+          "paragraph": "CRE52.23"
+        }
+      ],
+      "published": [
+        {
+          "name": "ead",
+          "value": 569,
+          "unit": "USD thousands",
+          "rounding": "nearest integer",
+          "paragraph": "CRE52.1"
+        },
+        {
+          "name": "addon_ir",
+          "value": 347,
+          "unit": "USD thousands",
+          "rounding": "nearest integer",
+          "paragraph": "CRE52.57"
+        }
+      ],
+      "statement": null,
+      "holds": null,
+      "tolerance_relative": 1e-09
+    },
+    {
+      "id": "cre99-netting-set-2",
+      "calculator": "sa-ccr",
+      "title": {
+        "en": "CRE99 netting set 2: credit derivatives, unmargined",
+        "es": "CRE99 conjunto 2: derivados de credito, sin margen"
+      },
+      "kind": "official-example",
+      "paragraph": "CRE52.1",
+      "paragraph_range": "CRE52.61 to CRE52.65",
+      "in_force_date": "2023-01-01",
+      "published_date": "2020-06-05",
+      "source": "dossier 01 E.2 (CRE99.20 to CRE99.97)",
+      "inputs": [
+        {
+          "name": "v_minus_c",
+          "symbol": "V-C",
+          "value": -20,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.23"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rc",
+          "symbol": "RC",
+          "value": 0,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.10"
+        },
+        {
+          "name": "term_1",
+          "symbol": "term 1",
+          "value": 2253,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.61"
+        },
+        {
+          "name": "term_2",
+          "symbol": "term 2",
+          "value": 77344,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.61"
+        },
+        {
+          "name": "addon_credit",
+          "symbol": "AddOn_credit",
+          "value": 282,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.61"
+        },
+        {
+          "name": "addon_aggregate",
+          "symbol": "AddOn",
+          "value": 282,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.25"
+        },
+        {
+          "name": "multiplier",
+          "symbol": "multiplier",
+          "value": 0.965,
+          "unit": "unitless",
+          "paragraph": "CRE52.23"
+        }
+      ],
+      "published": [
+        {
+          "name": "ead",
+          "value": 381,
+          "unit": "USD thousands",
+          "rounding": "nearest integer",
+          "paragraph": "CRE52.1"
+        }
+      ],
+      "statement": null,
+      "holds": null,
+      "tolerance_relative": 1e-09
+    },
+    {
+      "id": "cre99-netting-set-3",
+      "calculator": "sa-ccr",
+      "title": {
+        "en": "CRE99 netting set 3: commodity forwards and swaps",
+        "es": "CRE99 conjunto 3: forwards y swaps de commodities"
+      },
+      "kind": "official-example",
+      "paragraph": "CRE52.1",
+      "paragraph_range": "CRE52.70 to CRE52.71",
+      "in_force_date": "2023-01-01",
+      "published_date": "2020-06-05",
+      "source": "dossier 01 E.2 (CRE99.20 to CRE99.97)",
+      "inputs": [
+        {
+          "name": "c",
+          "symbol": "C",
+          "value": 0,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.10"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rc",
+          "symbol": "RC",
+          "value": 20,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.10"
+        },
+        {
+          "name": "addon_energy",
+          "symbol": "AddOn_energy",
+          "value": 2041,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.70"
+        },
+        {
+          "name": "addon_metals",
+          "symbol": "AddOn_metals",
+          "value": 1800,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.70"
+        },
+        {
+          "name": "addon_aggregate",
+          "symbol": "AddOn",
+          "value": 3841,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.25"
+        },
+        {
+          "name": "multiplier",
+          "symbol": "multiplier",
+          "value": 1.0,
+          "unit": "unitless",
+          "paragraph": "CRE52.23"
+        }
+      ],
+      "published": [
+        {
+          "name": "ead",
+          "value": 5406,
+          "unit": "USD thousands",
+          "rounding": "nearest integer",
+          "paragraph": "CRE52.1"
+        }
+      ],
+      "statement": null,
+      "holds": null,
+      "tolerance_relative": 1e-09
+    },
+    {
+      "id": "cre99-netting-set-4",
+      "calculator": "sa-ccr",
+      "title": {
+        "en": "CRE99 netting set 4: netting sets 1 and 2 combined",
+        "es": "CRE99 conjunto 4: conjuntos 1 y 2 combinados"
+      },
+      "kind": "official-example",
+      "paragraph": "CRE52.1",
+      "paragraph_range": "CRE52.24 to CRE52.25",
+      "in_force_date": "2023-01-01",
+      "published_date": "2020-06-05",
+      "source": "dossier 01 E.2 (CRE99.20 to CRE99.97)",
+      "inputs": [
+        {
+          "name": "c",
+          "symbol": "C",
+          "value": 0,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.10"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rc",
+          "symbol": "RC",
+          "value": 40,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.10"
+        },
+        {
+          "name": "addon_aggregate",
+          "symbol": "AddOn",
+          "value": 629,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.25"
+        },
+        {
+          "name": "multiplier",
+          "symbol": "multiplier",
+          "value": 1.0,
+          "unit": "unitless",
+          "paragraph": "CRE52.23"
+        }
+      ],
+      "published": [
+        {
+          "name": "ead",
+          "value": 936,
+          "unit": "USD thousands",
+          "rounding": "nearest integer",
+          "paragraph": "CRE52.1"
+        }
+      ],
+      "statement": null,
+      "holds": null,
+      "tolerance_relative": 1e-09
+    },
+    {
+      "id": "cre99-netting-set-5",
+      "calculator": "sa-ccr",
+      "title": {
+        "en": "CRE99 netting set 5: margined interest rate and commodity",
+        "es": "CRE99 conjunto 5: tasas y commodities con margen"
+      },
+      "kind": "official-example",
+      "paragraph": "CRE52.1",
+      "paragraph_range": "CRE52.18 to CRE52.52",
+      "in_force_date": "2023-01-01",
+      "published_date": "2020-06-05",
+      "source": "dossier 01 E.2 (CRE99.20 to CRE99.97)",
+      "inputs": [
+        {
+          "name": "v",
+          "symbol": "V",
+          "value": 80,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.18"
+        },
+        {
+          "name": "c",
+          "symbol": "C",
+          "value": 200,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.18"
+        },
+        {
+          "name": "th",
+          "symbol": "TH",
+          "value": 0,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.18"
+        },
+        {
+          "name": "mta",
+          "symbol": "MTA",
+          "value": 5,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.18"
+        },
+        {
+          "name": "nica",
+          "symbol": "NICA",
+          "value": 150,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.18"
+        },
+        {
+          "name": "v_minus_c",
+          "symbol": "V-C",
+          "value": -120,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.23"
+        },
+        {
+          "name": "mpor_business_days",
+          "symbol": "MPOR",
+          "value": 14,
+          "unit": "business days",
+          "paragraph": "CRE52.52"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rc",
+          "symbol": "RC",
+          "value": 0,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.18"
+        },
+        {
+          "name": "maturity_factor",
+          "symbol": "MF",
+          "value": 0.354964786985977,
+          "unit": "unitless",
+          "paragraph": "CRE52.52"
+        },
+        {
+          "name": "addon_ir",
+          "symbol": "AddOn_IR",
+          "value": 123,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.57"
+        },
+        {
+          "name": "addon_commodity",
+          "symbol": "AddOn_commodity",
+          "value": 1278,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.70"
+        },
+        {
+          "name": "addon_aggregate",
+          "symbol": "AddOn",
+          "value": 1401,
+          "unit": "USD thousands",
+          "paragraph": "CRE52.25"
+        },
+        {
+          "name": "multiplier",
+          "symbol": "multiplier",
+          "value": 0.958,
+          "unit": "unitless",
+          "paragraph": "CRE52.23"
+        }
+      ],
+      "published": [
+        {
+          "name": "ead",
+          "value": 1879,
+          "unit": "USD thousands",
+          "rounding": "nearest integer",
+          "paragraph": "CRE52.1"
+        }
+      ],
+      "statement": null,
+      "holds": null,
+      "tolerance_relative": 1e-09
+    },
+    {
+      "id": "rbc20-13-output-floor",
+      "calculator": "output-floor",
+      "title": {
+        "en": "RBC20.13 output floor",
+        "es": "RBC20.13 piso de salida"
+      },
+      "kind": "official-example",
+      "paragraph": "RBC20.4",
+      "paragraph_range": "RBC20.4 and RBC20.11 to RBC20.13",
+      "in_force_date": "2023-01-01",
+      "published_date": "2020-11-26",
+      "source": "dossier 01 C.1 and M.1",
+      "inputs": [
+        {
+          "name": "rwa_nominated",
+          "symbol": "RWA",
+          "value": 76,
+          "unit": "index points",
+          "paragraph": "RBC20.13"
+        },
+        {
+          "name": "rwa_sa_only",
+          "symbol": "RWA_SA",
+          "value": 140,
+          "unit": "index points",
+          "paragraph": "RBC20.13"
+        },
+        {
+          "name": "floor_factor",
+          "symbol": "f",
+          "value": 0.725,
+          "unit": "decimal",
+          "paragraph": "RBC90.1"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rwa_floored",
+          "symbol": "RWA_floor",
+          "value": 101.5,
+          "unit": "index points",
+          "paragraph": "RBC20.4"
+        }
+      ],
+      "published": [
+        {
+          "name": "rwa_floored",
+          "value": 101.5,
+          "unit": "index points",
+          "rounding": "none",
+          "paragraph": "RBC20.13"
+        }
+      ],
+      "statement": null,
+      "holds": null,
+      "tolerance_relative": 1e-09
+    },
+    {
+      "id": "rbc20-13-output-floor-capped",
+      "calculator": "output-floor",
+      "title": {
+        "en": "RBC20.13 output floor with the RBC90.2 cap",
+        "es": "RBC20.13 piso con el tope RBC90.2"
+      },
+      "kind": "official-example",
+      "paragraph": "RBC90.2",
+      "paragraph_range": "RBC90.1 to RBC90.2",
+      "in_force_date": "2023-01-01",
+      "published_date": "2020-03-27",
+      "source": "dossier 01 C.1 and M.1",
+      "inputs": [
+        {
+          "name": "rwa_nominated",
+          "symbol": "RWA",
+          "value": 76,
+          "unit": "index points",
+          "paragraph": "RBC20.13"
+        },
+        {
+          "name": "rwa_sa_only",
+          "symbol": "RWA_SA",
+          "value": 140,
+          "unit": "index points",
+          "paragraph": "RBC20.13"
+        },
+        {
+          "name": "floor_factor",
+          "symbol": "f",
+          "value": 0.725,
+          "unit": "decimal",
+          "paragraph": "RBC90.1"
+        },
+        {
+          "name": "cap_share",
+          "symbol": "cap",
+          "value": 0.25,
+          "unit": "decimal of pre-floor RWA",
+          "paragraph": "RBC90.2"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rwa_floored",
+          "symbol": "RWA_floor",
+          "value": 95,
+          "unit": "index points",
+          "paragraph": "RBC90.2"
+        }
+      ],
+      "published": [
+        {
+          "name": "rwa_floored",
+          "value": 95,
+          "unit": "index points",
+          "rounding": "none",
+          "paragraph": "RBC90.2"
+        }
+      ],
+      "statement": null,
+      "holds": null,
+      "tolerance_relative": 1e-09
+    }
+  ],
+  "invariant_cases": [
+    {
+      "id": "ba-cva-rho-one",
+      "calculator": "ba-cva",
+      "title": {
+        "en": "BA-CVA reduced with rho = 1 gives the sum of SCVA",
+        "es": "BA-CVA reducido con rho = 1 da la suma de SCVA"
+      },
+      "kind": "invariant",
+      "paragraph": "MAR50.14",
+      "paragraph_range": "MAR50.14 to MAR50.16",
+      "in_force_date": "2023-01-01",
+      "published_date": "2020-07-08",
+      "source": "dossier 01 E.1 and M.1 (inputs constructed by the fixture)",
+      "inputs": [
+        {
+          "name": "scva_1",
+          "symbol": "SCVA_1",
+          "value": 10,
+          "unit": "USD",
+          "paragraph": "MAR50.15"
+        },
+        {
+          "name": "scva_2",
+          "symbol": "SCVA_2",
+          "value": 20,
+          "unit": "USD",
+          "paragraph": "MAR50.15"
+        },
+        {
+          "name": "rho",
+          "symbol": "rho",
+          "value": 1.0,
+          "unit": "decimal",
+          "paragraph": "MAR50.14"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "k_reduced",
+          "symbol": "K_reduced",
+          "value": 30,
+          "unit": "USD",
+          "paragraph": "MAR50.14"
+        }
+      ],
+      "published": [],
+      "statement": {
+        "en": "With rho = 1 the reduced capital base K_reduced equals the sum of the SCVA.",
+        "es": "Con rho = 1 la base K_reduced es igual a la suma de los SCVA."
+      },
+      "holds": true,
+      "tolerance_relative": 1e-09
+    },
+    {
+      "id": "ba-cva-hedges-floor",
+      "calculator": "ba-cva",
+      "title": {
+        "en": "Hedges never take K_full below beta K_reduced",
+        "es": "Las coberturas nunca bajan K_full de beta K_reduced"
+      },
+      "kind": "invariant",
+      "paragraph": "MAR50.20",
+      "paragraph_range": "MAR50.20 to MAR50.25",
+      "in_force_date": "2023-01-01",
+      "published_date": "2020-07-08",
+      "source": "dossier 01 E.1 and M.1 (inputs constructed by the fixture)",
+      "inputs": [
+        {
+          "name": "k_reduced",
+          "symbol": "K_reduced",
+          "value": 30,
+          "unit": "USD",
+          "paragraph": "MAR50.14"
+        },
+        {
+          "name": "k_hedged",
+          "symbol": "K_hedged",
+          "value": 0,
+          "unit": "USD",
+          "paragraph": "MAR50.21"
+        },
+        {
+          "name": "beta",
+          "symbol": "beta",
+          "value": 0.25,
+          "unit": "decimal",
+          "paragraph": "MAR50.20"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "k_full",
+          "symbol": "K_full",
+          "value": 7.5,
+          "unit": "USD",
+          "paragraph": "MAR50.20"
+        }
+      ],
+      "published": [],
+      "statement": {
+        "en": "K_full = beta K_reduced + (1 - beta) K_hedged is at least beta K_reduced.",
+        "es": "K_full = beta K_reduced + (1 - beta) K_hedged es al menos beta K_reduced."
+      },
+      "holds": true,
+      "tolerance_relative": 1e-09
+    },
+    {
+      "id": "sbm-low-and-high-scenarios",
+      "calculator": "frtb-sbm",
+      "title": {
+        "en": "SBM correlation scenarios",
+        "es": "Escenarios de correlacion SBM"
+      },
+      "kind": "invariant",
+      "paragraph": "MAR21.6",
+      "paragraph_range": "MAR21.6 to MAR21.7",
+      "in_force_date": "2023-01-01",
+      "published_date": "2026-03-23",
+      "source": "dossier 01 D.2 and M.1 (input constructed by the fixture)",
+      "inputs": [
+        {
+          "name": "rho",
+          "symbol": "rho",
+          "value": 0.5,
+          "unit": "decimal",
+          "paragraph": "MAR21.6"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rho_low",
+          "symbol": "rho_low",
+          "value": 0.375,
+          "unit": "decimal",
+          "paragraph": "MAR21.6"
+        },
+        {
+          "name": "rho_medium",
+          "symbol": "rho_medium",
+          "value": 0.5,
+          "unit": "decimal",
+          "paragraph": "MAR21.6"
+        },
+        {
+          "name": "rho_high",
+          "symbol": "rho_high",
+          "value": 0.625,
+          "unit": "decimal",
+          "paragraph": "MAR21.6"
+        }
+      ],
+      "published": [],
+      "statement": {
+        "en": "The low scenario uses max(2 rho - 1, 0.75 rho) and the high scenario min(1.25 rho, 1); the SBM result is the maximum of the three.",
+        "es": "El escenario bajo usa max(2 rho - 1, 0.75 rho) y el alto min(1.25 rho, 1); el resultado SBM es el maximo de los tres."
+      },
+      "holds": true,
+      "tolerance_relative": 1e-09
+    },
+    {
+      "id": "cascade-all-lh-ten",
+      "calculator": "frtb-liquidity-cascade",
+      "title": {
+        "en": "Cascade with every LH equal to 10",
+        "es": "Cascada con todos los LH iguales a 10"
+      },
+      "kind": "invariant",
+      "paragraph": "MAR33.4",
+      "paragraph_range": "MAR33.4 and MAR33.12",
+      "in_force_date": "2023-01-01",
+      "published_date": "2020-06-05",
+      "source": "dossier 01 D.3 and M.1 (input constructed by the fixture)",
+      "inputs": [
+        {
+          "name": "es_t_p",
+          "symbol": "ES_T(P)",
+          "value": 10,
+          "unit": "USD",
+          "paragraph": "MAR33.4"
+        },
+        {
+          "name": "t",
+          "symbol": "T",
+          "value": 10,
+          "unit": "days",
+          "paragraph": "MAR33.4"
+        },
+        {
+          "name": "lh_1",
+          "symbol": "LH_1",
+          "value": 10,
+          "unit": "days",
+          "paragraph": "MAR33.4"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "es",
+          "symbol": "ES",
+          "value": 10,
+          "unit": "USD",
+          "paragraph": "MAR33.4"
+        }
+      ],
+      "published": [],
+      "statement": {
+        "en": "If every risk factor has a liquidity horizon of 10 days the cascade returns ES_T(P); it is monotone in LH.",
+        "es": "Si todo factor tiene horizonte de liquidez de 10 dias la cascada devuelve ES_T(P); es monotona en LH."
+      },
+      "holds": true,
+      "tolerance_relative": 1e-09
+    }
+  ],
+  "cre20_grid": [
+    {
+      "exposure_class": "sovereigns and central banks",
+      "key": "AAA to AA-",
+      "risk_weight": 0.0,
+      "table": "CRE20 Table 1",
+      "paragraph": "CRE20.7",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "sovereigns and central banks",
+      "key": "A+ to A-",
+      "risk_weight": 0.2,
+      "table": "CRE20 Table 1",
+      "paragraph": "CRE20.7",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "sovereigns and central banks",
+      "key": "BBB+ to BBB-",
+      "risk_weight": 0.5,
+      "table": "CRE20 Table 1",
+      "paragraph": "CRE20.7",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "sovereigns and central banks",
+      "key": "BB+ to B-",
+      "risk_weight": 1.0,
+      "table": "CRE20 Table 1",
+      "paragraph": "CRE20.7",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "sovereigns and central banks",
+      "key": "below B-",
+      "risk_weight": 1.5,
+      "table": "CRE20 Table 1",
+      "paragraph": "CRE20.7",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "sovereigns and central banks",
+      "key": "unrated",
+      "risk_weight": 1.0,
+      "table": "CRE20 Table 1",
+      "paragraph": "CRE20.7",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "banks ECRA",
+      "key": "AAA to AA-",
+      "risk_weight": 0.2,
+      "table": "CRE20 Table 6",
+      "paragraph": "CRE20.18",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "banks ECRA",
+      "key": "A+ to A-",
+      "risk_weight": 0.3,
+      "table": "CRE20 Table 6",
+      "paragraph": "CRE20.18",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "banks ECRA",
+      "key": "BBB+ to BBB-",
+      "risk_weight": 0.5,
+      "table": "CRE20 Table 6",
+      "paragraph": "CRE20.18",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "banks ECRA",
+      "key": "BB+ to B-",
+      "risk_weight": 1.0,
+      "table": "CRE20 Table 6",
+      "paragraph": "CRE20.18",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "banks ECRA",
+      "key": "below B-",
+      "risk_weight": 1.5,
+      "table": "CRE20 Table 6",
+      "paragraph": "CRE20.18",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "banks ECRA short-term",
+      "key": "AAA to AA-",
+      "risk_weight": 0.2,
+      "table": "CRE20 Table 6",
+      "paragraph": "CRE20.18",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "banks ECRA short-term",
+      "key": "A+ to A-",
+      "risk_weight": 0.2,
+      "table": "CRE20 Table 6",
+      "paragraph": "CRE20.18",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "banks ECRA short-term",
+      "key": "BBB+ to BBB-",
+      "risk_weight": 0.2,
+      "table": "CRE20 Table 6",
+      "paragraph": "CRE20.18",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "banks ECRA short-term",
+      "key": "BB+ to B-",
+      "risk_weight": 0.5,
+      "table": "CRE20 Table 6",
+      "paragraph": "CRE20.18",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "banks ECRA short-term",
+      "key": "below B-",
+      "risk_weight": 1.5,
+      "table": "CRE20 Table 6",
+      "paragraph": "CRE20.18",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "banks SCRA",
+      "key": "Grade A",
+      "risk_weight": 0.4,
+      "table": "CRE20 Table 7",
+      "paragraph": "CRE20.21",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "banks SCRA",
+      "key": "Grade B",
+      "risk_weight": 0.75,
+      "table": "CRE20 Table 7",
+      "paragraph": "CRE20.21",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "banks SCRA",
+      "key": "Grade C",
+      "risk_weight": 1.5,
+      "table": "CRE20 Table 7",
+      "paragraph": "CRE20.21",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "corporates",
+      "key": "AAA to AA-",
+      "risk_weight": 0.2,
+      "table": "CRE20 Table 10",
+      "paragraph": "CRE20.43",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "corporates",
+      "key": "A+ to A-",
+      "risk_weight": 0.5,
+      "table": "CRE20 Table 10",
+      "paragraph": "CRE20.43",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "corporates",
+      "key": "BBB+ to BBB-",
+      "risk_weight": 0.75,
+      "table": "CRE20 Table 10",
+      "paragraph": "CRE20.43",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "corporates",
+      "key": "BB+ to BB-",
+      "risk_weight": 1.0,
+      "table": "CRE20 Table 10",
+      "paragraph": "CRE20.43",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "corporates",
+      "key": "below BB-",
+      "risk_weight": 1.5,
+      "table": "CRE20 Table 10",
+      "paragraph": "CRE20.43",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "corporates",
+      "key": "unrated",
+      "risk_weight": 1.0,
+      "table": "CRE20 Table 10",
+      "paragraph": "CRE20.43",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "residential real estate, not cash-flow dependent",
+      "key": "ltv<=50",
+      "risk_weight": 0.2,
+      "table": "CRE20 Table 11",
+      "paragraph": "CRE20.82",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "residential real estate, not cash-flow dependent",
+      "key": "50<ltv<=60",
+      "risk_weight": 0.25,
+      "table": "CRE20 Table 11",
+      "paragraph": "CRE20.82",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "residential real estate, not cash-flow dependent",
+      "key": "60<ltv<=80",
+      "risk_weight": 0.3,
+      "table": "CRE20 Table 11",
+      "paragraph": "CRE20.82",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "residential real estate, not cash-flow dependent",
+      "key": "80<ltv<=90",
+      "risk_weight": 0.4,
+      "table": "CRE20 Table 11",
+      "paragraph": "CRE20.82",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "residential real estate, not cash-flow dependent",
+      "key": "90<ltv<=100",
+      "risk_weight": 0.5,
+      "table": "CRE20 Table 11",
+      "paragraph": "CRE20.82",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "residential real estate, not cash-flow dependent",
+      "key": "ltv>100",
+      "risk_weight": 0.7,
+      "table": "CRE20 Table 11",
+      "paragraph": "CRE20.82",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "residential real estate, cash-flow dependent",
+      "key": "ltv<=50",
+      "risk_weight": 0.3,
+      "table": "CRE20 Table 12",
+      "paragraph": "CRE20.84",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "residential real estate, cash-flow dependent",
+      "key": "50<ltv<=60",
+      "risk_weight": 0.35,
+      "table": "CRE20 Table 12",
+      "paragraph": "CRE20.84",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "residential real estate, cash-flow dependent",
+      "key": "60<ltv<=80",
+      "risk_weight": 0.45,
+      "table": "CRE20 Table 12",
+      "paragraph": "CRE20.84",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "residential real estate, cash-flow dependent",
+      "key": "80<ltv<=90",
+      "risk_weight": 0.6,
+      "table": "CRE20 Table 12",
+      "paragraph": "CRE20.84",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "residential real estate, cash-flow dependent",
+      "key": "90<ltv<=100",
+      "risk_weight": 0.75,
+      "table": "CRE20 Table 12",
+      "paragraph": "CRE20.84",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "residential real estate, cash-flow dependent",
+      "key": "ltv>100",
+      "risk_weight": 1.05,
+      "table": "CRE20 Table 12",
+      "paragraph": "CRE20.84",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "commercial real estate, cash-flow dependent",
+      "key": "ltv<=60",
+      "risk_weight": 0.7,
+      "table": "CRE20 Table 14",
+      "paragraph": "CRE20.87",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "commercial real estate, cash-flow dependent",
+      "key": "60<ltv<=80",
+      "risk_weight": 0.9,
+      "table": "CRE20 Table 14",
+      "paragraph": "CRE20.87",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "commercial real estate, cash-flow dependent",
+      "key": "ltv>80",
+      "risk_weight": 1.1,
+      "table": "CRE20 Table 14",
+      "paragraph": "CRE20.87",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "retail",
+      "key": "regulatory retail",
+      "risk_weight": 0.75,
+      "table": "CRE20.68",
+      "paragraph": "CRE20.68",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "retail",
+      "key": "transactors",
+      "risk_weight": 0.45,
+      "table": "CRE20.68",
+      "paragraph": "CRE20.68",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "retail",
+      "key": "other retail",
+      "risk_weight": 1.0,
+      "table": "CRE20.68",
+      "paragraph": "CRE20.68",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "equity and subordinated debt",
+      "key": "equity",
+      "risk_weight": 2.5,
+      "table": "CRE20.57 to CRE20.60",
+      "paragraph": "CRE20.57",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "equity and subordinated debt",
+      "key": "speculative unlisted equity",
+      "risk_weight": 4.0,
+      "table": "CRE20.57 to CRE20.60",
+      "paragraph": "CRE20.57",
+      "in_force_date": "2023-01-01"
+    },
+    {
+      "exposure_class": "equity and subordinated debt",
+      "key": "subordinated debt",
+      "risk_weight": 1.5,
+      "table": "CRE20.57 to CRE20.60",
+      "paragraph": "CRE20.57",
+      "in_force_date": "2023-01-01"
+    }
+  ],
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u9-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

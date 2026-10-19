@@ -1,0 +1,359 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/regulatory/calculators.schema.json",
+  "title": "Regulatory calculators",
+  "description": "The official worked examples and the invariant cases of the regulatory calculators run through the engine (the five CRE99 SA-CCR netting sets, the RBC20.13 output floor, BA-CVA, the FRTB SBM aggregation, the liquidity-horizon cascade) and a CRE20 lookup grid, each with its paragraph and in-force date. The live ports of the regulation page are held to this document at 1e-9 relative.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "case_id",
+    "document_id",
+    "engine",
+    "units",
+    "official_examples",
+    "invariant_cases",
+    "cre20_grid",
+    "provenance",
+    "lane"
+  ],
+  "properties": {
+    "schema": {
+      "const": "contraste.regulatory/v1"
+    },
+    "case_id": {
+      "const": "REGULATORY"
+    },
+    "document_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "engine": {
+      "$ref": "#/$defs/regulatoryEngine"
+    },
+    "units": {
+      "$ref": "#/$defs/regulatoryUnits"
+    },
+    "official_examples": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/regulatoryEntry"
+      },
+      "minItems": 7
+    },
+    "invariant_cases": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/regulatoryEntry"
+      },
+      "minItems": 3
+    },
+    "cre20_grid": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/regulatoryGridRow"
+      },
+      "minItems": 1
+    },
+    "provenance": {
+      "$ref": "../common/provenance.schema.json"
+    },
+    "lane": {
+      "$ref": "../common/lane-block.schema.json"
+    }
+  },
+  "$defs": {
+    "regulatoryValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "symbol",
+        "value",
+        "unit",
+        "paragraph"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "symbol": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "paragraph": {
+          "type": "string",
+          "pattern": "^(CRE|RBC|MAR)\\d+(\\.\\d+)?",
+          "description": "The paragraph this value comes from, for example CRE52.23."
+        }
+      },
+      "description": "One named number: an input or an output, with its unit and the paragraph it comes from."
+    },
+    "regulatoryPublished": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "rounding",
+        "paragraph"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rounding": {
+          "type": "string",
+          "minLength": 1
+        },
+        "paragraph": {
+          "type": "string",
+          "pattern": "^(CRE|RBC|MAR)\\d+(\\.\\d+)?"
+        }
+      },
+      "description": "A value the framework publishes for a worked example (for example the EAD after rounding)."
+    },
+    "regulatoryEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "calculator",
+        "title",
+        "kind",
+        "paragraph",
+        "paragraph_range",
+        "in_force_date",
+        "published_date",
+        "source",
+        "inputs",
+        "outputs",
+        "published",
+        "statement",
+        "holds",
+        "tolerance_relative"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "calculator": {
+          "type": "string",
+          "enum": [
+            "standardised-credit-risk-weights",
+            "output-floor",
+            "sa-ccr",
+            "ba-cva",
+            "frtb-sbm",
+            "frtb-liquidity-cascade"
+          ]
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "official-example",
+            "invariant"
+          ]
+        },
+        "paragraph": {
+          "type": "string",
+          "pattern": "^(CRE|RBC|MAR)\\d+(\\.\\d+)?",
+          "description": "The paragraph (or the first paragraph of a range) of the rule."
+        },
+        "paragraph_range": {
+          "type": "string",
+          "minLength": 1
+        },
+        "in_force_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "published_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/regulatoryValue"
+          },
+          "minItems": 1
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/regulatoryValue"
+          },
+          "minItems": 1
+        },
+        "published": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/regulatoryPublished"
+          }
+        },
+        "statement": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "holds": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tolerance_relative": {
+          "const": 1e-09
+        }
+      },
+      "description": "A calculator entry of the regulation page: the inputs, the engine's outputs, the values the framework publishes, the paragraph and the in-force date of the chapter. The live ports are held to it at 1e-9 relative.",
+      "oneOf": [
+        {
+          "properties": {
+            "kind": {
+              "const": "official-example"
+            },
+            "published": {
+              "minItems": 1
+            },
+            "statement": {
+              "type": "null"
+            },
+            "holds": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "kind": {
+              "const": "invariant"
+            },
+            "published": {
+              "maxItems": 0
+            },
+            "statement": {
+              "$ref": "../common/text.schema.json"
+            },
+            "holds": {
+              "const": true
+            }
+          }
+        }
+      ]
+    },
+    "regulatoryGridRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exposure_class",
+        "key",
+        "risk_weight",
+        "table",
+        "paragraph",
+        "in_force_date"
+      ],
+      "properties": {
+        "exposure_class": {
+          "type": "string",
+          "minLength": 1
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "risk_weight": {
+          "type": "number",
+          "minimum": 0
+        },
+        "table": {
+          "type": "string",
+          "minLength": 1
+        },
+        "paragraph": {
+          "type": "string",
+          "pattern": "^(CRE|RBC|MAR)\\d+(\\.\\d+)?"
+        },
+        "in_force_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        }
+      },
+      "description": "One cell of the CRE20 lookup grid: the exposure class, the rating bucket or LTV band, the risk weight as a decimal, the table, its paragraph and the in-force date of the chapter."
+    },
+    "regulatoryEngine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "const": "riskvalidation"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The engine release that produced the outputs."
+    },
+    "regulatoryUnits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "money",
+        "rate",
+        "dates"
+      ],
+      "properties": {
+        "money": {
+          "const": "as stated per value (USD thousands for CRE99, index points for RBC20.13)"
+        },
+        "rate": {
+          "const": "decimal"
+        },
+        "dates": {
+          "const": "ISO-8601"
+        }
+      },
+      "description": "Units of every number, per value."
+    }
+  }
+}

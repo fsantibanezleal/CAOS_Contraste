@@ -1,0 +1,391 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c12/models.schema.json",
+  "title": "C12 models (HW1F calibration per backtest date)",
+  "description": "The C12 models document: the Hull-White one-factor calibration per backtest date with its sample window, the counterparty curve, the transcribed GIRR parameters and the stated limits.",
+  "allOf": [
+    {
+      "$ref": "../common/models-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C12"
+        },
+        "fit": {
+          "$ref": "#/$defs/c12Fit"
+        }
+      },
+      "required": [
+        "case_id",
+        "fit"
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c12Convention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit",
+        "label"
+      ],
+      "properties": {
+        "value": {
+          "type": [
+            "number",
+            "string",
+            "array"
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "const": "convention"
+        }
+      },
+      "description": "A named parameter of the synthetic book or of a method (decision D6): its value, its unit and the label \"convention\". A parameter without the label fails."
+    },
+    "c12Calibration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "backtest_date",
+        "model",
+        "estimator",
+        "proxy_tenor_years",
+        "sample_start",
+        "sample_end",
+        "n_obs",
+        "history_years",
+        "a",
+        "sigma",
+        "a_se",
+        "sigma_se",
+        "fit_to_curve"
+      ],
+      "properties": {
+        "backtest_date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "model": {
+          "const": "hw1f"
+        },
+        "estimator": {
+          "const": "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)"
+        },
+        "proxy_tenor_years": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "sample_start": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "sample_end": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "n_obs": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "history_years": {
+          "type": "number",
+          "minimum": 3,
+          "description": "At least three years of history (CRE53.51)."
+        },
+        "a": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "sigma": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "a_se": {
+          "type": "number",
+          "minimum": 0
+        },
+        "sigma_se": {
+          "type": "number",
+          "minimum": 0
+        },
+        "fit_to_curve": {
+          "const": "phi(t) = f(0,t) + sigma^2 (1 - exp(-a t))^2 / (2 a^2), the QuantLib 1.44 fitting parameter"
+        }
+      },
+      "description": "The Hull-White one-factor calibration at one backtest date: a and sigma from the history only, the fit to the curve of the date by phi(t). The sample window ends strictly before the backtest date (no look-ahead: a producer check)."
+    },
+    "c12Label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "en",
+        "es"
+      ],
+      "properties": {
+        "en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "es": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A non-empty bilingual label."
+    },
+    "c12GirrParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paragraph",
+        "in_force_date",
+        "tenors_years",
+        "risk_weights",
+        "correlation_percent",
+        "same_tenor_other_curve",
+        "gamma_between_buckets",
+        "curvature_shock",
+        "sqrt2_divisor",
+        "sqrt2_applies_to",
+        "vega"
+      ],
+      "properties": {
+        "paragraph": {
+          "const": "MAR21.42 to MAR21.50, MAR21.99"
+        },
+        "in_force_date": {
+          "const": "2023-01-01"
+        },
+        "tenors_years": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "const": 0.25
+            },
+            {
+              "const": 0.5
+            },
+            {
+              "const": 1
+            },
+            {
+              "const": 2
+            },
+            {
+              "const": 3
+            },
+            {
+              "const": 5
+            },
+            {
+              "const": 10
+            },
+            {
+              "const": 15
+            },
+            {
+              "const": 20
+            },
+            {
+              "const": 30
+            }
+          ],
+          "items": false,
+          "minItems": 10,
+          "maxItems": 10,
+          "description": "The ten GIRR delta tenors of MAR21.8."
+        },
+        "risk_weights": {
+          "type": "array",
+          "prefixItems": [
+            {
+              "const": 0.017
+            },
+            {
+              "const": 0.017
+            },
+            {
+              "const": 0.016
+            },
+            {
+              "const": 0.013
+            },
+            {
+              "const": 0.012
+            },
+            {
+              "const": 0.011
+            },
+            {
+              "const": 0.011
+            },
+            {
+              "const": 0.011
+            },
+            {
+              "const": 0.011
+            },
+            {
+              "const": 0.011
+            }
+          ],
+          "items": false,
+          "minItems": 10,
+          "maxItems": 10,
+          "description": "MAR21.42 Table 1, in the order of the tenors."
+        },
+        "correlation_percent": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 40,
+              "maximum": 100
+            },
+            "minItems": 10,
+            "maxItems": 10
+          },
+          "minItems": 10,
+          "maxItems": 10,
+          "description": "MAR21.46 Table 2 (percent): the table is the primary value, the formula max(exp(-0.03 |Tk - Tl| / min(Tk, Tl)), 40%) a reconstructed check."
+        },
+        "same_tenor_other_curve": {
+          "const": 0.999
+        },
+        "gamma_between_buckets": {
+          "const": 0.5
+        },
+        "curvature_shock": {
+          "const": 0.017
+        },
+        "sqrt2_divisor": {
+          "const": 1.4142135623730951
+        },
+        "sqrt2_applies_to": {
+          "const": "USD, a specified currency (MAR21.44 footnote 12)"
+        },
+        "vega": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "liquidity_horizon_days",
+            "risk_weight",
+            "correlation_alpha",
+            "footnote_24_formula"
+          ],
+          "properties": {
+            "liquidity_horizon_days": {
+              "const": 60
+            },
+            "risk_weight": {
+              "const": 1.0
+            },
+            "correlation_alpha": {
+              "const": 0.01
+            },
+            "footnote_24_formula": {
+              "const": "not transcribed (UNVERIFIED)"
+            }
+          }
+        }
+      },
+      "description": "The GIRR parameters of the addendum's R7, transcribed. A swap book has no vega, so the vega formula of footnote 24 is not needed and not transcribed."
+    },
+    "c12CreditCurve": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "base",
+        "label",
+        "derivation",
+        "source_url",
+        "licence_class",
+        "licence_basis",
+        "synthetic_spread"
+      ],
+      "properties": {
+        "base": {
+          "const": "US Treasury HQM corporate spot curve minus the Treasury zero curve of the same date"
+        },
+        "label": {
+          "const": "proxy"
+        },
+        "derivation": {
+          "$ref": "#/$defs/c12Label"
+        },
+        "source_url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "licence_class": {
+          "const": "mirror-allowed with citation"
+        },
+        "licence_basis": {
+          "$ref": "#/$defs/c12Label"
+        },
+        "synthetic_spread": {
+          "$ref": "#/$defs/c12Convention"
+        }
+      },
+      "description": "The counterparty curve (B10): a derived AAA to A market spread, labelled a proxy; the synthetic spread stays for the BA-CVA rating and the sensitivity rows."
+    },
+    "c12Fit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "estimator",
+        "calibrations",
+        "min_history_years",
+        "closed_forms_source",
+        "closed_forms_status",
+        "credit_curve",
+        "girr_parameters",
+        "limits"
+      ],
+      "properties": {
+        "estimator": {
+          "const": "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)"
+        },
+        "calibrations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c12Calibration"
+          },
+          "minItems": 2
+        },
+        "min_history_years": {
+          "const": 3
+        },
+        "closed_forms_source": {
+          "const": "QuantLib 1.44: hullwhite.hpp, hullwhite.cpp, jamshidianswaptionengine.cpp"
+        },
+        "closed_forms_status": {
+          "const": "formulas transcribed from the engine source; the journal derivations are UNVERIFIED as papers"
+        },
+        "credit_curve": {
+          "$ref": "#/$defs/c12CreditCurve"
+        },
+        "girr_parameters": {
+          "$ref": "#/$defs/c12GirrParameters"
+        },
+        "limits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c12Label"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "The HW1F calibration per backtest date with its sample window (which ends before the date), the counterparty curve, the GIRR parameters and the stated limits of the case. The calibration dates are unique and increasing."
+    }
+  }
+}
