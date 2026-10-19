@@ -30843,7 +30843,6 @@
             "type": "string",
             "enum": [
               "cash-and-balances",
-              "reverse-repo",
               "treasury",
               "mortgage-backed",
               "other-agency",
@@ -30974,7 +30973,6 @@
             "type": "string",
             "enum": [
               "cash-and-balances",
-              "reverse-repo",
               "treasury",
               "mortgage-backed",
               "other-agency",
@@ -31690,10 +31688,96 @@
           },
           "list_goldens": {
             "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/c16Golden"
-            },
-            "minItems": 2
+            "prefixItems": [
+              {
+                "$ref": "#/components/schemas/c16Golden",
+                "properties": {
+                  "id": {
+                    "const": "stable-retail-adverse"
+                  },
+                  "daily_rate": {
+                    "const": 0.00103258
+                  },
+                  "days": {
+                    "const": 125
+                  },
+                  "label": {
+                    "const": "dossier-05-line-237"
+                  }
+                }
+              },
+              {
+                "$ref": "#/components/schemas/c16Golden",
+                "properties": {
+                  "id": {
+                    "const": "stable-retail-extreme"
+                  },
+                  "daily_rate": {
+                    "const": 0.00161494
+                  },
+                  "days": {
+                    "const": 125
+                  },
+                  "label": {
+                    "const": "recomputed"
+                  }
+                }
+              },
+              {
+                "$ref": "#/components/schemas/c16Golden",
+                "properties": {
+                  "id": {
+                    "const": "other-retail-adverse"
+                  },
+                  "daily_rate": {
+                    "const": 0.00373218
+                  },
+                  "days": {
+                    "const": 125
+                  },
+                  "label": {
+                    "const": "recomputed"
+                  }
+                }
+              },
+              {
+                "$ref": "#/components/schemas/c16Golden",
+                "properties": {
+                  "id": {
+                    "const": "non-operational-nfc-adverse-2-days"
+                  },
+                  "daily_rate": {
+                    "const": 0.00688541
+                  },
+                  "days": {
+                    "const": 2
+                  },
+                  "label": {
+                    "const": "recomputed"
+                  }
+                }
+              },
+              {
+                "$ref": "#/components/schemas/c16Golden",
+                "properties": {
+                  "id": {
+                    "const": "committed-credit-facilities-adverse-63-days"
+                  },
+                  "daily_rate": {
+                    "const": 0.00202704
+                  },
+                  "days": {
+                    "const": 63
+                  },
+                  "label": {
+                    "const": "recomputed"
+                  }
+                }
+              }
+            ],
+            "items": false,
+            "minItems": 5,
+            "maxItems": 5
           },
           "table_a1": {
             "$ref": "#/components/schemas/c16TableA1"
@@ -32207,6 +32291,34 @@
         },
         "description": "The HTM losses in the CBC: the reported amortised cost and fair value (SCHA, SCHF, SCAA, SCAF), the loss applied to the book as a whole or pro rata by type (never a reported by-type loss), the CBC with and without it, the labelled counterfactual under the Bank Term Funding Program's par valuation (announced after the run) and the revaluation validation row."
       },
+      "c16HtmSensitivity": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "multiple",
+          "unrealised_loss",
+          "cbc",
+          "survival"
+        ],
+        "properties": {
+          "multiple": {
+            "type": "number",
+            "minimum": 0
+          },
+          "unrealised_loss": {
+            "type": "number",
+            "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+          },
+          "cbc": {
+            "type": "number",
+            "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+          },
+          "survival": {
+            "$ref": "#/components/schemas/c16Survival"
+          }
+        },
+        "description": "The HTM unrealised loss at `multiple` times the reported loss (05 E.5 rung 4, l.278): the loss, the CBC under it and the survival period; 1 is the reported loss and 0 no loss."
+      },
       "c16ImpliedRate": {
         "type": "object",
         "additionalProperties": false,
@@ -32600,7 +32712,7 @@
           "outflows": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/c16LcrRow"
+              "$ref": "#/components/schemas/c16LcrOutflowRow"
             },
             "minItems": 1
           },
@@ -32611,7 +32723,7 @@
           "inflows": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/c16LcrRow"
+              "$ref": "#/components/schemas/c16LcrInflowRow"
             }
           },
           "total_inflows": {
@@ -32636,33 +32748,7 @@
           "mapping_sensitivity": {
             "type": "array",
             "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "mapping_id",
-                "lcr_category",
-                "ratio"
-              ],
-              "properties": {
-                "mapping_id": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "lcr_category": {
-                  "type": "string",
-                  "enum": [
-                    "retail-stable",
-                    "retail-less-stable",
-                    "operational",
-                    "non-financial-corporate",
-                    "other-legal-entity"
-                  ]
-                },
-                "ratio": {
-                  "type": "number",
-                  "minimum": 0
-                }
-              }
+              "$ref": "#/components/schemas/c16MappingSensitivity"
             },
             "minItems": 3
           },
@@ -32672,7 +32758,7 @@
         },
         "description": "The LCR block: a Basel formula applied to call-report aggregates with stated assumptions, never the bank's reported or regulatory LCR (the label and the false flag are required). Inflows counted are at most 75 percent of outflows (LCR40.1) and Level 2B at most 15 percent of HQLA. A ratio below 100 percent under stress is not a breach (01 J.3)."
       },
-      "c16LcrRow": {
+      "c16LcrInflowRow": {
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -32685,7 +32771,19 @@
         "properties": {
           "category": {
             "type": "string",
-            "minLength": 1
+            "enum": [
+              "secured_lending_level1",
+              "secured_lending_level2a",
+              "secured_lending_level2b_rmbs",
+              "secured_lending_other_level2b",
+              "secured_lending_other",
+              "margin_lending_other_collateral",
+              "facilities_granted_to_bank",
+              "operational_deposits_at_other_institutions",
+              "retail_and_nonfinancial_wholesale",
+              "financial_institutions_and_central_banks",
+              "net_derivative_inflow"
+            ]
           },
           "balance": {
             "type": "number",
@@ -32706,7 +32804,75 @@
             "minLength": 1
           }
         },
-        "description": "One LCR outflow or inflow category: the balance, its rate and the amount, with the Basel paragraph."
+        "description": "One LCR inflow category (a key of LCR_INFLOW_RATES): the balance, its table rate and the amount, with the Basel paragraph."
+      },
+      "c16LcrOutflowRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "category",
+          "balance",
+          "rate",
+          "amount",
+          "reference"
+        ],
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "retail_stable_insurance_criteria",
+              "retail_stable",
+              "retail_less_stable",
+              "retail_term_gt_30d",
+              "small_business_stable",
+              "small_business_less_stable",
+              "operational",
+              "operational_insured_portion",
+              "cooperative_network",
+              "non_financial_corporate",
+              "non_financial_corporate_fully_insured",
+              "other_legal_entity",
+              "secured_central_bank",
+              "secured_level1",
+              "secured_level2a",
+              "secured_sovereign_mdb_pse",
+              "secured_level2b_rmbs",
+              "secured_other_level2b",
+              "secured_other",
+              "non_level1_collateral_valuation",
+              "undrawn_retail_small_business",
+              "undrawn_credit_non_financial_corporate",
+              "undrawn_liquidity_non_financial_corporate",
+              "undrawn_credit_supervised_bank",
+              "undrawn_liquidity_supervised_bank",
+              "undrawn_credit_other_fi",
+              "undrawn_liquidity_other_fi",
+              "undrawn_other_legal_entity",
+              "net_derivative_outflow",
+              "other_contractual_outflow",
+              "trade_finance"
+            ]
+          },
+          "balance": {
+            "type": "number",
+            "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+          },
+          "rate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or a rate in [0, 1]."
+          },
+          "amount": {
+            "type": "number",
+            "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "description": "One LCR outflow category (a key of LCR_OUTFLOW_RATES, or trade_finance): the balance, its rate (the table rate; trade finance a caller-supplied rate within 0 to 0.05) and the amount, with the Basel paragraph."
       },
       "c16ListParameters": {
         "type": "object",
@@ -32720,7 +32886,8 @@
           "committed_drawdown",
           "relevant_days_six_months",
           "relevant_days_three_months",
-          "calendar_note"
+          "calendar_note",
+          "results_annex"
         ],
         "properties": {
           "source": {
@@ -33326,6 +33493,9 @@
           },
           "calendar_note": {
             "$ref": "#/components/schemas/common-text"
+          },
+          "results_annex": {
+            "$ref": "#/components/schemas/c16ResultsAnnex"
           }
         },
         "description": "The ECB LiST 2019 parameters as transcribed data (U11 research addendum L1; the rates are the note's own, on the 2019 TARGET2 relevant-day calendar): Table 3.2 for the contractual items, Table 3.3 for the open-maturity daily rates, the drawdown rates of the committed facilities. Collateral calls have no numeric parameter and are a scenario input."
@@ -33387,11 +33557,11 @@
           "lcr_category": {
             "type": "string",
             "enum": [
-              "retail-stable",
-              "retail-less-stable",
+              "retail_stable",
+              "retail_less_stable",
               "operational",
-              "non-financial-corporate",
-              "other-legal-entity"
+              "non_financial_corporate",
+              "other_legal_entity"
             ]
           },
           "list_class": {
@@ -33411,6 +33581,56 @@
           }
         },
         "description": "One mapping of a call-report deposit balance (insured or uninsured, DEPINS and DEPUNA) to an LCR category and a LiST class."
+      },
+      "c16MappingSensitivity": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "mapping_id",
+          "lcr_category",
+          "uninsured_outflow",
+          "total_outflows",
+          "inflows_counted",
+          "net_outflows",
+          "ratio"
+        ],
+        "properties": {
+          "mapping_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "lcr_category": {
+            "type": "string",
+            "enum": [
+              "retail_stable",
+              "retail_less_stable",
+              "operational",
+              "non_financial_corporate",
+              "other_legal_entity"
+            ]
+          },
+          "uninsured_outflow": {
+            "type": "number",
+            "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+          },
+          "total_outflows": {
+            "type": "number",
+            "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+          },
+          "inflows_counted": {
+            "type": "number",
+            "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+          },
+          "net_outflows": {
+            "type": "number",
+            "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
+          },
+          "ratio": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "description": "The LCR under one mapping of the uninsured balance (Q13): the outflow of the uninsured balance under that category, the total outflows, the counted inflows, the net outflows and the ratio recomputable from them and the HQLA."
       },
       "c16Modelled": {
         "type": "object",
@@ -33570,6 +33790,7 @@
           "htm",
           "htm_reason",
           "scoring",
+          "sensitivities",
           "time_block"
         ],
         "properties": {
@@ -33692,6 +33913,9 @@
           "scoring": {
             "$ref": "#/components/schemas/c16Scoring"
           },
+          "sensitivities": {
+            "$ref": "#/components/schemas/c16Sensitivities"
+          },
           "time_block": {
             "type": "array",
             "prefixItems": [
@@ -33748,6 +33972,9 @@
                     "parameter_set": {
                       "const": "basel-lcr"
                     },
+                    "phase": {
+                      "const": "lcr-30-day"
+                    },
                     "axis": {
                       "const": "calendar-days"
                     }
@@ -33755,6 +33982,22 @@
                   "required": [
                     "id"
                   ]
+                },
+                "sensitivities": {
+                  "properties": {
+                    "uninsured_share": {
+                      "type": "null"
+                    },
+                    "uninsured_share_reason": {
+                      "$ref": "#/components/schemas/c16Label"
+                    },
+                    "htm_loss": {
+                      "type": "null"
+                    },
+                    "htm_loss_reason": {
+                      "$ref": "#/components/schemas/c16Label"
+                    }
+                  }
                 },
                 "path": {
                   "type": "null"
@@ -33826,6 +34069,13 @@
                     "parameter_set": {
                       "const": "list-adverse"
                     },
+                    "phase": {
+                      "type": "string",
+                      "enum": [
+                        "acute",
+                        "protracted"
+                      ]
+                    },
                     "axis": {
                       "const": "relevant-days"
                     }
@@ -33833,6 +34083,22 @@
                   "required": [
                     "id"
                   ]
+                },
+                "sensitivities": {
+                  "properties": {
+                    "uninsured_share": {
+                      "type": "array"
+                    },
+                    "uninsured_share_reason": {
+                      "type": "null"
+                    },
+                    "htm_loss": {
+                      "type": "array"
+                    },
+                    "htm_loss_reason": {
+                      "type": "null"
+                    }
+                  }
                 },
                 "path": {
                   "$ref": "#/components/schemas/c16Path"
@@ -33904,6 +34170,13 @@
                     "parameter_set": {
                       "const": "list-extreme"
                     },
+                    "phase": {
+                      "type": "string",
+                      "enum": [
+                        "acute",
+                        "protracted"
+                      ]
+                    },
                     "axis": {
                       "const": "relevant-days"
                     }
@@ -33911,6 +34184,22 @@
                   "required": [
                     "id"
                   ]
+                },
+                "sensitivities": {
+                  "properties": {
+                    "uninsured_share": {
+                      "type": "array"
+                    },
+                    "uninsured_share_reason": {
+                      "type": "null"
+                    },
+                    "htm_loss": {
+                      "type": "array"
+                    },
+                    "htm_loss_reason": {
+                      "type": "null"
+                    }
+                  }
                 },
                 "path": {
                   "$ref": "#/components/schemas/c16Path"
@@ -33982,6 +34271,13 @@
                     "parameter_set": {
                       "const": "fast-run"
                     },
+                    "phase": {
+                      "type": "string",
+                      "enum": [
+                        "acute",
+                        "protracted"
+                      ]
+                    },
                     "axis": {
                       "const": "relevant-days"
                     }
@@ -33989,6 +34285,22 @@
                   "required": [
                     "id"
                   ]
+                },
+                "sensitivities": {
+                  "properties": {
+                    "uninsured_share": {
+                      "type": "array"
+                    },
+                    "uninsured_share_reason": {
+                      "type": "null"
+                    },
+                    "htm_loss": {
+                      "type": "array"
+                    },
+                    "htm_loss_reason": {
+                      "type": "null"
+                    }
+                  }
                 },
                 "path": {
                   "$ref": "#/components/schemas/c16Path"
@@ -34065,6 +34377,13 @@
                         "fast-run"
                       ]
                     },
+                    "phase": {
+                      "type": "string",
+                      "enum": [
+                        "acute",
+                        "protracted"
+                      ]
+                    },
                     "axis": {
                       "const": "relevant-days"
                     }
@@ -34072,6 +34391,22 @@
                   "required": [
                     "id"
                   ]
+                },
+                "sensitivities": {
+                  "properties": {
+                    "uninsured_share": {
+                      "type": "array"
+                    },
+                    "uninsured_share_reason": {
+                      "type": "null"
+                    },
+                    "htm_loss": {
+                      "type": "array"
+                    },
+                    "htm_loss_reason": {
+                      "type": "null"
+                    }
+                  }
                 },
                 "path": {
                   "$ref": "#/components/schemas/c16Path"
@@ -34324,6 +34659,77 @@
         },
         "description": "One FDIC call-report quarter read for the case and the financials fields taken from it."
       },
+      "c16ResultsAnnex": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "n_banks",
+          "median_survival_days",
+          "unit",
+          "sources",
+          "statement"
+        ],
+        "properties": {
+          "n_banks": {
+            "const": 103
+          },
+          "median_survival_days": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "adverse",
+              "extreme"
+            ],
+            "properties": {
+              "adverse": {
+                "const": 176
+              },
+              "extreme": {
+                "const": 122
+              }
+            }
+          },
+          "unit": {
+            "const": "days"
+          },
+          "sources": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "annex",
+              "n_banks_slide",
+              "median_slides",
+              "dossier"
+            ],
+            "properties": {
+              "annex": {
+                "const": "ECB LiST 2019 results annex"
+              },
+              "n_banks_slide": {
+                "const": 9
+              },
+              "median_slides": {
+                "type": "array",
+                "prefixItems": [
+                  {
+                    "const": 15
+                  }
+                ],
+                "items": false,
+                "minItems": 1,
+                "maxItems": 1
+              },
+              "dossier": {
+                "const": "dossier 05 E.1 line 240"
+              }
+            }
+          },
+          "statement": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "The LiST 2019 results annex as constants (the markers of the survival views): 103 banks and the median reported survival period under the Adverse (176 days) and the Extreme (122 days) shock; annex slide 9 gives the bank count and slide 15 the medians (addendum L1; dossier 05 E.1 line 240). Reference points, not model results."
+      },
       "c16Revaluation": {
         "type": "object",
         "additionalProperties": false,
@@ -34465,6 +34871,7 @@
           "parameter_set",
           "label",
           "base_survival",
+          "max_rate_below_one",
           "max_multiplier",
           "curve",
           "solved"
@@ -34492,6 +34899,12 @@
           "base_survival": {
             "$ref": "#/components/schemas/c16Survival"
           },
+          "max_rate_below_one": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1,
+            "description": "The largest daily rate of the base scenario that is below 1 (a rate already at 1 stays at 1)."
+          },
           "max_multiplier": {
             "type": "number",
             "exclusiveMinimum": 1
@@ -34507,7 +34920,7 @@
             "$ref": "#/components/schemas/c16Solved"
           }
         },
-        "description": "The reverse stress of one base scenario (Q9): the multiplier applied to every segment's daily rate, capped so that each rate stays below 1 (max_multiplier), the SP(m) curve and the solved multiplier."
+        "description": "The reverse stress of one base scenario (Q9): the multiplier applied to every segment's daily rate, capped so that each rate stays below 1 (max_multiplier = 1 / max_rate_below_one), the SP(m) curve and the solved multiplier."
       },
       "c16ReverseOutputs": {
         "type": "object",
@@ -35016,7 +35429,6 @@
             "type": "string",
             "enum": [
               "cash-and-balances",
-              "reverse-repo",
               "treasury",
               "mortgage-backed",
               "other-agency",
@@ -35209,6 +35621,67 @@
           }
         ]
       },
+      "c16Sensitivities": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uninsured_share",
+          "uninsured_share_reason",
+          "htm_loss",
+          "htm_loss_reason"
+        ],
+        "properties": {
+          "uninsured_share": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/c16ShareSensitivity"
+                },
+                "minItems": 2
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "uninsured_share_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c16Label"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "htm_loss": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/c16HtmSensitivity"
+                },
+                "minItems": 2
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "htm_loss_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c16Label"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "The two sensitivities the survival-horizon views draw: the survival period against the uninsured share, ordered as the conventions' uninsured_share_grid, and the survival period and CBC against the HTM unrealised-loss multiple, ordered as the htm_loss_multiple_grid. Each is null with its reason where the variant has no daily path (the LCR)."
+      },
       "c16Series": {
         "type": "object",
         "additionalProperties": false,
@@ -35253,6 +35726,26 @@
           }
         },
         "description": "One H.8 weekly series with its unit."
+      },
+      "c16ShareSensitivity": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "share",
+          "survival"
+        ],
+        "properties": {
+          "share": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A share or a rate in [0, 1]."
+          },
+          "survival": {
+            "$ref": "#/components/schemas/c16Survival"
+          }
+        },
+        "description": "The survival period when the uninsured share of the domestic deposits is `share` (05 E.5 rung 4)."
       },
       "c16Solved": {
         "type": "object",
@@ -35820,7 +36313,8 @@
             "type": "string",
             "enum": [
               "acute",
-              "protracted"
+              "protracted",
+              "lcr-30-day"
             ]
           },
           "parameter_set": {
@@ -35880,7 +36374,8 @@
             "type": "string",
             "enum": [
               "acute",
-              "protracted"
+              "protracted",
+              "lcr-30-day"
             ]
           },
           "parameter_set": {
@@ -35904,7 +36399,7 @@
             ]
           }
         },
-        "description": "The scenario family, phase, parameter set and horizon of one variant (dossier 05 E.2 and E.5)."
+        "description": "The scenario family, phase, parameter set and horizon of one variant (dossier 05 E.2 and E.5); the LCR variant's phase is lcr-30-day, the 30-calendar-day stress of LCR20.2, and no other variant takes it."
       },
       "c16VariantScenarios": {
         "type": "object",
@@ -35926,6 +36421,9 @@
                 "properties": {
                   "variant": {
                     "const": "lcr-standard"
+                  },
+                  "phase": {
+                    "const": "lcr-30-day"
                   }
                 }
               },
@@ -35934,6 +36432,13 @@
                 "properties": {
                   "variant": {
                     "const": "list-adverse"
+                  },
+                  "phase": {
+                    "type": "string",
+                    "enum": [
+                      "acute",
+                      "protracted"
+                    ]
                   }
                 }
               },
@@ -35942,6 +36447,13 @@
                 "properties": {
                   "variant": {
                     "const": "list-extreme"
+                  },
+                  "phase": {
+                    "type": "string",
+                    "enum": [
+                      "acute",
+                      "protracted"
+                    ]
                   }
                 }
               },
@@ -35950,6 +36462,13 @@
                 "properties": {
                   "variant": {
                     "const": "fast-run"
+                  },
+                  "phase": {
+                    "type": "string",
+                    "enum": [
+                      "acute",
+                      "protracted"
+                    ]
                   }
                 }
               },
@@ -35958,6 +36477,13 @@
                 "properties": {
                   "variant": {
                     "const": "htm-losses"
+                  },
+                  "phase": {
+                    "type": "string",
+                    "enum": [
+                      "acute",
+                      "protracted"
+                    ]
                   }
                 }
               }

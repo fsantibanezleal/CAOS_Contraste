@@ -877,7 +877,10 @@ BALANCE_SHEET = Family(
               values=LIQUIDITY_CLASSES, required=False),
         Field("residual_days", "int", _t("Residual contractual maturity in days", "Plazo contractual residual en días"),
               unit="days", lo=0.0, required=False),
-        Field("insured", "flag", _t("Insured by a deposit insurance scheme (a deposit)", "Asegurado por un esquema de seguro de depósitos"),
+        Field("insured", "flag", _t("Insured by a deposit insurance scheme (a deposit): 1 insured, 0 not insured; a boolean is refused, "
+                                    "the producer maps it to 1 or 0",
+                                    "Asegurado por un esquema de seguro de depósitos: 1 asegurado, 0 no asegurado; se rechaza un "
+                                    "booleano, el productor lo traduce a 1 o 0"),
               required=False),
         Field("fair_value", "float", _t("Fair value beside the carrying amount, in the same sign convention as amount",
                                         "Valor razonable junto al monto contable, con el mismo signo que amount"),

@@ -308,11 +308,11 @@
         "lcr_category": {
           "type": "string",
           "enum": [
-            "retail-stable",
-            "retail-less-stable",
+            "retail_stable",
+            "retail_less_stable",
             "operational",
-            "non-financial-corporate",
-            "other-legal-entity"
+            "non_financial_corporate",
+            "other_legal_entity"
           ]
         },
         "list_class": {
@@ -433,7 +433,8 @@
           "type": "string",
           "enum": [
             "acute",
-            "protracted"
+            "protracted",
+            "lcr-30-day"
           ]
         },
         "parameter_set": {
@@ -457,7 +458,7 @@
           ]
         }
       },
-      "description": "The scenario family, phase, parameter set and horizon of one variant (dossier 05 E.2 and E.5)."
+      "description": "The scenario family, phase, parameter set and horizon of one variant (dossier 05 E.2 and E.5); the LCR variant's phase is lcr-30-day, the 30-calendar-day stress of LCR20.2, and no other variant takes it."
     },
     "c16VariantScenarios": {
       "type": "object",
@@ -479,6 +480,9 @@
               "properties": {
                 "variant": {
                   "const": "lcr-standard"
+                },
+                "phase": {
+                  "const": "lcr-30-day"
                 }
               }
             },
@@ -487,6 +491,13 @@
               "properties": {
                 "variant": {
                   "const": "list-adverse"
+                },
+                "phase": {
+                  "type": "string",
+                  "enum": [
+                    "acute",
+                    "protracted"
+                  ]
                 }
               }
             },
@@ -495,6 +506,13 @@
               "properties": {
                 "variant": {
                   "const": "list-extreme"
+                },
+                "phase": {
+                  "type": "string",
+                  "enum": [
+                    "acute",
+                    "protracted"
+                  ]
                 }
               }
             },
@@ -503,6 +521,13 @@
               "properties": {
                 "variant": {
                   "const": "fast-run"
+                },
+                "phase": {
+                  "type": "string",
+                  "enum": [
+                    "acute",
+                    "protracted"
+                  ]
                 }
               }
             },
@@ -511,6 +536,13 @@
               "properties": {
                 "variant": {
                   "const": "htm-losses"
+                },
+                "phase": {
+                  "type": "string",
+                  "enum": [
+                    "acute",
+                    "protracted"
+                  ]
                 }
               }
             }
@@ -596,7 +628,6 @@
           "type": "string",
           "enum": [
             "cash-and-balances",
-            "reverse-repo",
             "treasury",
             "mortgage-backed",
             "other-agency",
@@ -1070,6 +1101,7 @@
         "parameter_set",
         "label",
         "base_survival",
+        "max_rate_below_one",
         "max_multiplier",
         "curve",
         "solved"
@@ -1097,6 +1129,12 @@
         "base_survival": {
           "$ref": "#/$defs/c16Survival"
         },
+        "max_rate_below_one": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "description": "The largest daily rate of the base scenario that is below 1 (a rate already at 1 stays at 1)."
+        },
         "max_multiplier": {
           "type": "number",
           "exclusiveMinimum": 1
@@ -1112,7 +1150,7 @@
           "$ref": "#/$defs/c16Solved"
         }
       },
-      "description": "The reverse stress of one base scenario (Q9): the multiplier applied to every segment's daily rate, capped so that each rate stays below 1 (max_multiplier), the SP(m) curve and the solved multiplier."
+      "description": "The reverse stress of one base scenario (Q9): the multiplier applied to every segment's daily rate, capped so that each rate stays below 1 (max_multiplier = 1 / max_rate_below_one), the SP(m) curve and the solved multiplier."
     },
     "c16ReverseOutputs": {
       "type": "object",

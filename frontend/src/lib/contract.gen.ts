@@ -7934,7 +7934,7 @@ export interface components {
         /** @description One class of the CBC: liquidity value = (value used minus the encumbered part) x (1 - haircut), the haircut returned with its rule label (05 E.1 l.238; the Federal Reserve margins of A4). */
         c16CbcClass: {
             /** @enum {string} */
-            class_id: "cash-and-balances" | "reverse-repo" | "treasury" | "mortgage-backed" | "other-agency" | "municipal" | "other-debt";
+            class_id: "cash-and-balances" | "treasury" | "mortgage-backed" | "other-agency" | "municipal" | "other-debt";
             label: components["schemas"]["common-text"];
             source_fields: ("ASSET" | "CERT" | "CHBAL" | "DEP" | "DEPDOM" | "DEPFOR" | "DEPINS" | "DEPLGAMT" | "DEPSMAMT" | "DEPUNA" | "EQ" | "FREPO" | "FREPP" | "LIAB" | "LNLSNET" | "NAME" | "OTHBFHLB" | "RBCT1J" | "REPDTE" | "SC" | "SCAA" | "SCAF" | "SCAGE" | "SCASPNAF" | "SCASPNHA" | "SCASPNSUM" | "SCCMOT" | "SCCOL" | "SCDOMO" | "SCEQFV" | "SCFORD" | "SCGTY" | "SCHA" | "SCHF" | "SCHTMRES" | "SCMTGBK" | "SCMUNI" | "SCPLEDGE" | "SCRDEBT" | "SCSPN" | "SCUS" | "SCUST")[];
             /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
@@ -7956,7 +7956,7 @@ export interface components {
         /** @description The liquidity value of one CBC class available on each day of the ladder. */
         c16CbcStack: {
             /** @enum {string} */
-            class_id: "cash-and-balances" | "reverse-repo" | "treasury" | "mortgage-backed" | "other-agency" | "municipal" | "other-debt";
+            class_id: "cash-and-balances" | "treasury" | "mortgage-backed" | "other-agency" | "municipal" | "other-debt";
             liquidity_value: number[];
         };
         /** @description The cliff effect (NLP(35) - NLP(30)) / TA, a diagnostic of LCR window optimisation (05 E.1). */
@@ -8142,7 +8142,13 @@ export interface components {
                 components["schemas"]["c16ParameterSet"]
             ];
             list_parameters: components["schemas"]["c16ListParameters"];
-            list_goldens: components["schemas"]["c16Golden"][];
+            list_goldens: [
+                components["schemas"]["c16Golden"],
+                components["schemas"]["c16Golden"],
+                components["schemas"]["c16Golden"],
+                components["schemas"]["c16Golden"],
+                components["schemas"]["c16Golden"]
+            ];
             table_a1: components["schemas"]["c16TableA1"];
             calibration: components["schemas"]["c16Calibration"];
             generator: components["schemas"]["c16Generator"];
@@ -8286,6 +8292,15 @@ export interface components {
             };
             revaluation: components["schemas"]["c16Revaluation"];
         };
+        /** @description The HTM unrealised loss at `multiple` times the reported loss (05 E.5 rung 4, l.278): the loss, the CBC under it and the survival period; 1 is the reported loss and 0 no loss. */
+        c16HtmSensitivity: {
+            multiple: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            unrealised_loss: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            cbc: number;
+            survival: components["schemas"]["c16Survival"];
+        };
         /** @description The daily rate a Table A.1 row implies, 1 - (1 - share)^(1 / days). */
         c16ImpliedRate: {
             /** @enum {string} */
@@ -8347,10 +8362,10 @@ export interface components {
             reported_or_regulatory: false;
             statement: components["schemas"]["common-text"];
             hqla: components["schemas"]["c16Hqla"];
-            outflows: components["schemas"]["c16LcrRow"][];
+            outflows: components["schemas"]["c16LcrOutflowRow"][];
             /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
             total_outflows: number;
-            inflows: components["schemas"]["c16LcrRow"][];
+            inflows: components["schemas"]["c16LcrInflowRow"][];
             /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
             total_inflows: number;
             /** @constant */
@@ -8360,17 +8375,25 @@ export interface components {
             /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
             net_outflows: number;
             ratio: number;
-            mapping_sensitivity: {
-                mapping_id: string;
-                /** @enum {string} */
-                lcr_category: "retail-stable" | "retail-less-stable" | "operational" | "non-financial-corporate" | "other-legal-entity";
-                ratio: number;
-            }[];
+            mapping_sensitivity: components["schemas"]["c16MappingSensitivity"][];
             below_100_note: components["schemas"]["common-text"];
         };
-        /** @description One LCR outflow or inflow category: the balance, its rate and the amount, with the Basel paragraph. */
-        c16LcrRow: {
-            category: string;
+        /** @description One LCR inflow category (a key of LCR_INFLOW_RATES): the balance, its table rate and the amount, with the Basel paragraph. */
+        c16LcrInflowRow: {
+            /** @enum {string} */
+            category: "secured_lending_level1" | "secured_lending_level2a" | "secured_lending_level2b_rmbs" | "secured_lending_other_level2b" | "secured_lending_other" | "margin_lending_other_collateral" | "facilities_granted_to_bank" | "operational_deposits_at_other_institutions" | "retail_and_nonfinancial_wholesale" | "financial_institutions_and_central_banks" | "net_derivative_inflow";
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            balance: number;
+            /** @description A share or a rate in [0, 1]. */
+            rate: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            amount: number;
+            reference: string;
+        };
+        /** @description One LCR outflow category (a key of LCR_OUTFLOW_RATES, or trade_finance): the balance, its rate (the table rate; trade finance a caller-supplied rate within 0 to 0.05) and the amount, with the Basel paragraph. */
+        c16LcrOutflowRow: {
+            /** @enum {string} */
+            category: "retail_stable_insurance_criteria" | "retail_stable" | "retail_less_stable" | "retail_term_gt_30d" | "small_business_stable" | "small_business_less_stable" | "operational" | "operational_insured_portion" | "cooperative_network" | "non_financial_corporate" | "non_financial_corporate_fully_insured" | "other_legal_entity" | "secured_central_bank" | "secured_level1" | "secured_level2a" | "secured_sovereign_mdb_pse" | "secured_level2b_rmbs" | "secured_other_level2b" | "secured_other" | "non_level1_collateral_valuation" | "undrawn_retail_small_business" | "undrawn_credit_non_financial_corporate" | "undrawn_liquidity_non_financial_corporate" | "undrawn_credit_supervised_bank" | "undrawn_liquidity_supervised_bank" | "undrawn_credit_other_fi" | "undrawn_liquidity_other_fi" | "undrawn_other_legal_entity" | "net_derivative_outflow" | "other_contractual_outflow" | "trade_finance";
             /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
             balance: number;
             /** @description A share or a rate in [0, 1]. */
@@ -8429,6 +8452,7 @@ export interface components {
             /** @constant */
             relevant_days_three_months: 63;
             calendar_note: components["schemas"]["common-text"];
+            results_annex: components["schemas"]["c16ResultsAnnex"];
         };
         /** @description A LiST 2019 rate row (Baseline, Adverse, Extreme): a roll-off rate on a maturing flow or a daily compounding rate on the stock, as decimals. */
         c16ListRow: {
@@ -8444,10 +8468,25 @@ export interface components {
             /** @enum {string} */
             role: "central" | "band";
             /** @enum {string} */
-            lcr_category: "retail-stable" | "retail-less-stable" | "operational" | "non-financial-corporate" | "other-legal-entity";
+            lcr_category: "retail_stable" | "retail_less_stable" | "operational" | "non_financial_corporate" | "other_legal_entity";
             /** @enum {string} */
             list_class: "stable-retail" | "other-retail" | "operational" | "non-operational-credit-institutions" | "non-operational-other-financial" | "non-operational-non-financial-corporates" | "non-operational-others";
             label: components["schemas"]["common-text"];
+        };
+        /** @description The LCR under one mapping of the uninsured balance (Q13): the outflow of the uninsured balance under that category, the total outflows, the counted inflows, the net outflows and the ratio recomputable from them and the HQLA. */
+        c16MappingSensitivity: {
+            mapping_id: string;
+            /** @enum {string} */
+            lcr_category: "retail_stable" | "retail_less_stable" | "operational" | "non_financial_corporate" | "other_legal_entity";
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            uninsured_outflow: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            total_outflows: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            inflows_counted: number;
+            /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
+            net_outflows: number;
+            ratio: number;
         };
         /** @description The model's cumulative outflow at a horizon and its share of the model's deposit base. */
         c16Modelled: {
@@ -8508,6 +8547,7 @@ export interface components {
             htm: components["schemas"]["c16Htm"] | null;
             htm_reason: components["schemas"]["c16Label"] | null;
             scoring: components["schemas"]["c16Scoring"];
+            sensitivities: components["schemas"]["c16Sensitivities"];
             /** @description The 2021-12-31 and 2022-06-30 call-report dates, in this order. */
             time_block: [
                 components["schemas"]["c16TimePoint"],
@@ -8551,6 +8591,31 @@ export interface components {
             source: string;
             fields: ("ASSET" | "CERT" | "CHBAL" | "DEP" | "DEPDOM" | "DEPFOR" | "DEPINS" | "DEPLGAMT" | "DEPSMAMT" | "DEPUNA" | "EQ" | "FREPO" | "FREPP" | "LIAB" | "LNLSNET" | "NAME" | "OTHBFHLB" | "RBCT1J" | "REPDTE" | "SC" | "SCAA" | "SCAF" | "SCAGE" | "SCASPNAF" | "SCASPNHA" | "SCASPNSUM" | "SCCMOT" | "SCCOL" | "SCDOMO" | "SCEQFV" | "SCFORD" | "SCGTY" | "SCHA" | "SCHF" | "SCHTMRES" | "SCMTGBK" | "SCMUNI" | "SCPLEDGE" | "SCRDEBT" | "SCSPN" | "SCUS" | "SCUST")[];
         };
+        /** @description The LiST 2019 results annex as constants (the markers of the survival views): 103 banks and the median reported survival period under the Adverse (176 days) and the Extreme (122 days) shock; annex slide 9 gives the bank count and slide 15 the medians (addendum L1; dossier 05 E.1 line 240). Reference points, not model results. */
+        c16ResultsAnnex: {
+            /** @constant */
+            n_banks: 103;
+            median_survival_days: {
+                /** @constant */
+                adverse: 176;
+                /** @constant */
+                extreme: 122;
+            };
+            /** @constant */
+            unit: "days";
+            sources: {
+                /** @constant */
+                annex: "ECB LiST 2019 results annex";
+                /** @constant */
+                n_banks_slide: 9;
+                median_slides: [
+                    15
+                ];
+                /** @constant */
+                dossier: "dossier 05 E.1 line 240";
+            };
+            statement: components["schemas"]["common-text"];
+        };
         /** @description The HTM revaluation validation row (Q11): the book revalued from its maturity profile under the Treasury curve through the engine's irrbb curves, against the reported fair value; null with its reason when the revaluation did not run. */
         c16Revaluation: {
             /** @enum {string} */
@@ -8581,7 +8646,7 @@ export interface components {
             relative_difference?: null;
             reason?: components["schemas"]["c16Label"];
         });
-        /** @description The reverse stress of one base scenario (Q9): the multiplier applied to every segment's daily rate, capped so that each rate stays below 1 (max_multiplier), the SP(m) curve and the solved multiplier. */
+        /** @description The reverse stress of one base scenario (Q9): the multiplier applied to every segment's daily rate, capped so that each rate stays below 1 (max_multiplier = 1 / max_rate_below_one), the SP(m) curve and the solved multiplier. */
         c16ReverseBase: {
             /** @enum {string} */
             base_id: "list-adverse" | "list-extreme" | "fast-run";
@@ -8589,6 +8654,8 @@ export interface components {
             parameter_set: "list-adverse" | "list-extreme" | "fast-run";
             label: components["schemas"]["common-text"];
             base_survival: components["schemas"]["c16Survival"];
+            /** @description The largest daily rate of the base scenario that is below 1 (a rate already at 1 stays at 1). */
+            max_rate_below_one: number;
             max_multiplier: number;
             curve: components["schemas"]["c16CurvePoint"][];
             solved: components["schemas"]["c16Solved"];
@@ -8679,7 +8746,7 @@ export interface components {
         /** @description The central bank framework row a securities class takes (A3, A4): the Federal Reserve discount window margin in force on 2023-03-10, the duration bucket a convention, the haircut 1 - margin and its sensitivity band; a class the framework does not cover has a null margin and the fallback rule (LCR haircut if HQLA, else 50 percent). */
         c16SecurityRow: {
             /** @enum {string} */
-            class_id: "cash-and-balances" | "reverse-repo" | "treasury" | "mortgage-backed" | "other-agency" | "municipal" | "other-debt";
+            class_id: "cash-and-balances" | "treasury" | "mortgage-backed" | "other-agency" | "municipal" | "other-debt";
             fed_category: string;
             /** @enum {string} */
             duration_bucket: "0-1" | ">1-3" | ">3-5" | ">5-10" | ">10" | "none";
@@ -8717,6 +8784,13 @@ export interface components {
             mechanism?: "contractual-maturity-rolloff" | "full-runoff" | "constant-stock";
             daily_rates?: null;
         });
+        /** @description The two sensitivities the survival-horizon views draw: the survival period against the uninsured share, ordered as the conventions' uninsured_share_grid, and the survival period and CBC against the HTM unrealised-loss multiple, ordered as the htm_loss_multiple_grid. Each is null with its reason where the variant has no daily path (the LCR). */
+        c16Sensitivities: {
+            uninsured_share: components["schemas"]["c16ShareSensitivity"][] | null;
+            uninsured_share_reason: components["schemas"]["c16Label"] | null;
+            htm_loss: components["schemas"]["c16HtmSensitivity"][] | null;
+            htm_loss_reason: components["schemas"]["c16Label"] | null;
+        };
         /** @description One H.8 weekly series with its unit. */
         c16Series: {
             series_id: string;
@@ -8726,6 +8800,12 @@ export interface components {
                 date: string;
                 value: number;
             }[];
+        };
+        /** @description The survival period when the uninsured share of the domestic deposits is `share` (05 E.5 rung 4). */
+        c16ShareSensitivity: {
+            /** @description A share or a rate in [0, 1]. */
+            share: number;
+            survival: components["schemas"]["c16Survival"];
         };
         /** @description The solved multiplier: the smallest m at which the survival period first falls to the target (05 E.5 rung 5), by bracketing on the monotone SP(m), with the round trip (the survival period at m returns the target); a target that is not bracketed is refused with the reason. */
         c16Solved: {
@@ -8836,21 +8916,21 @@ export interface components {
             /** @enum {string} */
             scenario_family: "idiosyncratic" | "market-wide" | "combined";
             /** @enum {string} */
-            phase: "acute" | "protracted";
+            phase: "acute" | "protracted" | "lcr-30-day";
             /** @enum {string} */
             parameter_set: "basel-lcr" | "list-adverse" | "list-extreme" | "fast-run";
             horizon_days: number;
             /** @enum {string} */
             axis: "relevant-days" | "calendar-days";
         };
-        /** @description The scenario family, phase, parameter set and horizon of one variant (dossier 05 E.2 and E.5). */
+        /** @description The scenario family, phase, parameter set and horizon of one variant (dossier 05 E.2 and E.5); the LCR variant's phase is lcr-30-day, the 30-calendar-day stress of LCR20.2, and no other variant takes it. */
         c16VariantRow: {
             /** @enum {string} */
             variant: "lcr-standard" | "list-adverse" | "list-extreme" | "fast-run" | "htm-losses";
             /** @enum {string} */
             scenario_family: "idiosyncratic" | "market-wide" | "combined";
             /** @enum {string} */
-            phase: "acute" | "protracted";
+            phase: "acute" | "protracted" | "lcr-30-day";
             /** @enum {string} */
             parameter_set: "basel-lcr" | "list-adverse" | "list-extreme" | "fast-run";
             horizon_days: number;

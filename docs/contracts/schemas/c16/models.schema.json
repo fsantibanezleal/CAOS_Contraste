@@ -209,11 +209,11 @@
         "lcr_category": {
           "type": "string",
           "enum": [
-            "retail-stable",
-            "retail-less-stable",
+            "retail_stable",
+            "retail_less_stable",
             "operational",
-            "non-financial-corporate",
-            "other-legal-entity"
+            "non_financial_corporate",
+            "other_legal_entity"
           ]
         },
         "list_class": {
@@ -334,7 +334,8 @@
           "type": "string",
           "enum": [
             "acute",
-            "protracted"
+            "protracted",
+            "lcr-30-day"
           ]
         },
         "parameter_set": {
@@ -358,7 +359,7 @@
           ]
         }
       },
-      "description": "The scenario family, phase, parameter set and horizon of one variant (dossier 05 E.2 and E.5)."
+      "description": "The scenario family, phase, parameter set and horizon of one variant (dossier 05 E.2 and E.5); the LCR variant's phase is lcr-30-day, the 30-calendar-day stress of LCR20.2, and no other variant takes it."
     },
     "c16VariantScenarios": {
       "type": "object",
@@ -380,6 +381,9 @@
               "properties": {
                 "variant": {
                   "const": "lcr-standard"
+                },
+                "phase": {
+                  "const": "lcr-30-day"
                 }
               }
             },
@@ -388,6 +392,13 @@
               "properties": {
                 "variant": {
                   "const": "list-adverse"
+                },
+                "phase": {
+                  "type": "string",
+                  "enum": [
+                    "acute",
+                    "protracted"
+                  ]
                 }
               }
             },
@@ -396,6 +407,13 @@
               "properties": {
                 "variant": {
                   "const": "list-extreme"
+                },
+                "phase": {
+                  "type": "string",
+                  "enum": [
+                    "acute",
+                    "protracted"
+                  ]
                 }
               }
             },
@@ -404,6 +422,13 @@
               "properties": {
                 "variant": {
                   "const": "fast-run"
+                },
+                "phase": {
+                  "type": "string",
+                  "enum": [
+                    "acute",
+                    "protracted"
+                  ]
                 }
               }
             },
@@ -412,6 +437,13 @@
               "properties": {
                 "variant": {
                   "const": "htm-losses"
+                },
+                "phase": {
+                  "type": "string",
+                  "enum": [
+                    "acute",
+                    "protracted"
+                  ]
                 }
               }
             }
@@ -497,7 +529,6 @@
           "type": "string",
           "enum": [
             "cash-and-balances",
-            "reverse-repo",
             "treasury",
             "mortgage-backed",
             "other-agency",
@@ -890,6 +921,77 @@
       },
       "description": "A committed-facility daily drawdown rate on the undrawn stock for three months (N paras 119 to 126)."
     },
+    "c16ResultsAnnex": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "n_banks",
+        "median_survival_days",
+        "unit",
+        "sources",
+        "statement"
+      ],
+      "properties": {
+        "n_banks": {
+          "const": 103
+        },
+        "median_survival_days": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "adverse",
+            "extreme"
+          ],
+          "properties": {
+            "adverse": {
+              "const": 176
+            },
+            "extreme": {
+              "const": 122
+            }
+          }
+        },
+        "unit": {
+          "const": "days"
+        },
+        "sources": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "annex",
+            "n_banks_slide",
+            "median_slides",
+            "dossier"
+          ],
+          "properties": {
+            "annex": {
+              "const": "ECB LiST 2019 results annex"
+            },
+            "n_banks_slide": {
+              "const": 9
+            },
+            "median_slides": {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "const": 15
+                }
+              ],
+              "items": false,
+              "minItems": 1,
+              "maxItems": 1
+            },
+            "dossier": {
+              "const": "dossier 05 E.1 line 240"
+            }
+          }
+        },
+        "statement": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The LiST 2019 results annex as constants (the markers of the survival views): 103 banks and the median reported survival period under the Adverse (176 days) and the Extreme (122 days) shock; annex slide 9 gives the bank count and slide 15 the medians (addendum L1; dossier 05 E.1 line 240). Reference points, not model results."
+    },
     "c16ListParameters": {
       "type": "object",
       "additionalProperties": false,
@@ -902,7 +1004,8 @@
         "committed_drawdown",
         "relevant_days_six_months",
         "relevant_days_three_months",
-        "calendar_note"
+        "calendar_note",
+        "results_annex"
       ],
       "properties": {
         "source": {
@@ -1508,6 +1611,9 @@
         },
         "calendar_note": {
           "$ref": "../common/text.schema.json"
+        },
+        "results_annex": {
+          "$ref": "#/$defs/c16ResultsAnnex"
         }
       },
       "description": "The ECB LiST 2019 parameters as transcribed data (U11 research addendum L1; the rates are the note's own, on the 2019 TARGET2 relevant-day calendar): Table 3.2 for the contractual items, Table 3.3 for the open-maturity daily rates, the drawdown rates of the committed facilities. Collateral calls have no numeric parameter and are a scenario input."
@@ -2334,10 +2440,96 @@
         },
         "list_goldens": {
           "type": "array",
-          "items": {
-            "$ref": "#/$defs/c16Golden"
-          },
-          "minItems": 2
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/c16Golden",
+              "properties": {
+                "id": {
+                  "const": "stable-retail-adverse"
+                },
+                "daily_rate": {
+                  "const": 0.00103258
+                },
+                "days": {
+                  "const": 125
+                },
+                "label": {
+                  "const": "dossier-05-line-237"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16Golden",
+              "properties": {
+                "id": {
+                  "const": "stable-retail-extreme"
+                },
+                "daily_rate": {
+                  "const": 0.00161494
+                },
+                "days": {
+                  "const": 125
+                },
+                "label": {
+                  "const": "recomputed"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16Golden",
+              "properties": {
+                "id": {
+                  "const": "other-retail-adverse"
+                },
+                "daily_rate": {
+                  "const": 0.00373218
+                },
+                "days": {
+                  "const": 125
+                },
+                "label": {
+                  "const": "recomputed"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16Golden",
+              "properties": {
+                "id": {
+                  "const": "non-operational-nfc-adverse-2-days"
+                },
+                "daily_rate": {
+                  "const": 0.00688541
+                },
+                "days": {
+                  "const": 2
+                },
+                "label": {
+                  "const": "recomputed"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/c16Golden",
+              "properties": {
+                "id": {
+                  "const": "committed-credit-facilities-adverse-63-days"
+                },
+                "daily_rate": {
+                  "const": 0.00202704
+                },
+                "days": {
+                  "const": 63
+                },
+                "label": {
+                  "const": "recomputed"
+                }
+              }
+            }
+          ],
+          "items": false,
+          "minItems": 5,
+          "maxItems": 5
         },
         "table_a1": {
           "$ref": "#/$defs/c16TableA1"

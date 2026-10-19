@@ -218,9 +218,10 @@ NSF20 (NSF20.2), NSF30 and NSF99 Tables 1 to 3 (in force 2019-12-15), from dossi
 | physical_commodities | 0.85 | NSF99 RSF: physical commodities including gold |
 | encumbered_ge_1y | 1.00 | NSF99 RSF: assets encumbered one year or more |
 | net_derivative_assets | 1.00 | NSF99 RSF: net derivative assets |
-| derivative_liabilities_addon | 0.05 | NSF30.8: 5 percent of derivative liabilities (5 to 20 percent) |
 | other_assets | 1.00 | NSF99 RSF: all other assets including NPLs and fixed assets |
 | undrawn_facilities_obs | 0.05 | NSF99 RSF: irrevocable and conditionally revocable credit and liquidity facilities, 5 percent of the undrawn amount |
+
+The derivative liabilities add-on (NSF30.8, dossier 01 G.2: "5% to 20% of derivative liabilities") is not a fixed factor: `derivative_liabilities_addon` is a caller-supplied rate within [0.05, 0.20], never a default, as trade finance is in the LCR (the in-force value is the supervisor's). `nsfr_rsf` raises `ValueError` naming it for a rate outside the interval.
 
 ## Module `riskvalidation/liquidity/_checks.py`
 
@@ -649,12 +650,13 @@ def nsfr_asf(liabilities: Mapping[str, float], factors: Mapping[str, float] | No
 ### `riskvalidation.regulatory.lcr_nsfr.nsfr_rsf`
 
 ```python
-def nsfr_rsf(assets: Mapping[str, float], obs: Mapping[str, float] | None = None, factors: Mapping[str, float] | None = None) -> float: ...
+def nsfr_rsf(assets: Mapping[str, float], obs: Mapping[str, float] | None = None, factors: Mapping[str, float] | None = None,
+             derivative_liabilities: float = 0.0, derivative_liabilities_addon: float | None = None) -> float: ...
 ```
 
-- Units: money by key of `NSFR_RSF_FACTORS` (assets) and off-balance-sheet undrawn amounts (`obs`, keyed `undrawn_facilities_obs`); the result is the required stable funding.
-- Invariants: `RSF = sum of factor x asset + sum of factor x OBS` (NSF20.2, NSF99 Tables 2 and 3); keys outside the table raise `KeyError`; negative amounts raise.
-- Golden: `{"unencumbered_level_2b": 100.0}` gives `50.0`; adding `obs = {"undrawn_facilities_obs": 100.0}` gives `55.0`.
+- Units: money by key of `NSFR_RSF_FACTORS` (assets) and off-balance-sheet undrawn amounts (`obs`, keyed `undrawn_facilities_obs`), the gross derivative liabilities and their add-on rate (a share within `[0.05, 0.20]`, NSF30.8); the result is the required stable funding.
+- Invariants: `RSF = sum of factor x asset + sum of factor x OBS` (NSF20.2, NSF99 Tables 2 and 3); keys outside the table raise `KeyError`; negative amounts raise; `derivative_liabilities > 0` with `derivative_liabilities_addon` left `None` or outside `[0.05, 0.20]` raises `ValueError` naming `derivative_liabilities_addon` (no default rate); the add-on is `derivative_liabilities x derivative_liabilities_addon`.
+- Golden: `{"unencumbered_level_2b": 100.0}` gives `50.0`; adding `obs = {"undrawn_facilities_obs": 100.0}` gives `55.0`; with that `obs` and `derivative_liabilities = 200.0` at `derivative_liabilities_addon = 0.10` it gives `75.0` (55 + 20), and a rate of `0.25` raises.
 
 ### `riskvalidation.regulatory.lcr_nsfr.nsfr_ratio`
 

@@ -55,7 +55,7 @@
         "es": "El LCR de Basilea del balance del reporte de llamada bajo el estres combinado a 30 dias."
       },
       "scenario_family": "combined",
-      "phase": "protracted",
+      "phase": "lcr-30-day",
       "parameter_set": "basel-lcr",
       "horizon_days": 30,
       "axis": "calendar-days"
@@ -67,7 +67,7 @@
           {
             "basis": "insured",
             "role": "central",
-            "lcr_category": "retail-less-stable",
+            "lcr_category": "retail_less_stable",
             "list_class": "other-retail",
             "label": {
               "en": "Insured deposits (DEPINS) as retail, less stable",
@@ -77,7 +77,7 @@
           {
             "basis": "uninsured",
             "role": "central",
-            "lcr_category": "non-financial-corporate",
+            "lcr_category": "non_financial_corporate",
             "list_class": "non-operational-non-financial-corporates",
             "label": {
               "en": "Uninsured deposits (DEPUNA) as non-operational non-financial corporates",
@@ -99,7 +99,7 @@
           {
             "basis": "uninsured",
             "role": "band",
-            "lcr_category": "non-financial-corporate",
+            "lcr_category": "non_financial_corporate",
             "list_class": "non-operational-non-financial-corporates",
             "label": {
               "en": "Uninsured balance as non-financial corporates",
@@ -109,7 +109,7 @@
           {
             "basis": "uninsured",
             "role": "band",
-            "lcr_category": "other-legal-entity",
+            "lcr_category": "other_legal_entity",
             "list_class": "non-operational-other-financial",
             "label": {
               "en": "Uninsured balance as other legal entities",
@@ -128,7 +128,7 @@
           {
             "variant": "lcr-standard",
             "scenario_family": "combined",
-            "phase": "protracted",
+            "phase": "lcr-30-day",
             "parameter_set": "basel-lcr",
             "horizon_days": 30,
             "axis": "calendar-days"
@@ -167,8 +167,8 @@
           }
         ],
         "basis": {
-          "en": "Dossier 05 E.2 asks for three families and two horizons and the SDD names none: the LCR is the combined 30-day stress, the LiST 2019 shocks are idiosyncratic only (annex slide 5), the fast run is acute (1 to 5 days).",
-          "es": "El dossier 05 E.2 pide tres familias y dos horizontes y el SDD no nombra ninguno: el LCR es el estres combinado a 30 dias, los choques LiST 2019 son solo idiosincraticos, la corrida rapida es aguda (1 a 5 dias)."
+          "en": "Dossier 05 E.2 asks for three families and two horizons and the SDD names none: the LCR is the combined stress over 30 calendar days (LCR20.2), a phase of its own, lcr-30-day, outside the acute (1 to 5 days) and protracted (6 to 12 months) wording of 05 l.277; the LiST 2019 shocks are idiosyncratic only (annex slide 5) and protracted; the fast run is acute.",
+          "es": "El dossier 05 E.2 pide tres familias y dos horizontes y el SDD no nombra ninguno: el LCR es el estres combinado a 30 dias corridos (LCR20.2), una fase propia, lcr-30-day, fuera de lo agudo (1 a 5 dias) y lo prolongado (6 a 12 meses) del dossier 05 l.277; los choques LiST 2019 son solo idiosincraticos y prolongados; la corrida rapida es aguda."
         }
       },
       "day_calendar": {
@@ -210,17 +210,6 @@
             "haircut_low": 0.0,
             "haircut_high": 0.05,
             "rule": "nominal-value",
-            "source": "ECB LiST 2019 methodological note para 74 (addendum L1.6)"
-          },
-          {
-            "class_id": "reverse-repo",
-            "fed_category": "no framework row: fallback",
-            "duration_bucket": "none",
-            "margin": null,
-            "haircut": 0.5,
-            "haircut_low": 0.45,
-            "haircut_high": 0.55,
-            "rule": "fifty-percent-fallback",
             "source": "ECB LiST 2019 methodological note para 74 (addendum L1.6)"
           },
           {
@@ -966,25 +955,6 @@
           "liquidity_value": 12511000.0
         },
         {
-          "class_id": "reverse-repo",
-          "label": {
-            "en": "Federal funds sold and reverse repos",
-            "es": "Fondos federales vendidos y repos inversos"
-          },
-          "source_fields": [
-            "FREPO"
-          ],
-          "carrying_value": 707000.0,
-          "fair_value": null,
-          "value_used": 707000.0,
-          "encumbered": 0.0,
-          "haircut": {
-            "value": 0.5,
-            "rule": "fifty-percent-fallback"
-          },
-          "liquidity_value": 353500.0
-        },
-        {
           "class_id": "treasury",
           "label": {
             "en": "Treasury securities",
@@ -1086,7 +1056,7 @@
         "amount": 55360831.683675,
         "share_of_securities": 0.4719472791
       },
-      "total_liquidity_value": 72026090.54298
+      "total_liquidity_value": 71672590.54298
     },
     "contractual_ladder": {
       "buckets": [
@@ -1215,7 +1185,7 @@
           "balance": 707000.0,
           "rate": 1.0,
           "amount": 707000.0,
-          "reference": "LCR99: maturing secured lending on other collateral 100 percent"
+          "reference": "LCR99: maturing secured lending on other collateral 100 percent (reverse repos, FREPO)"
         },
         {
           "category": "retail_and_nonfinancial_wholesale",
@@ -1233,17 +1203,29 @@
       "mapping_sensitivity": [
         {
           "mapping_id": "central",
-          "lcr_category": "non-financial-corporate",
+          "lcr_category": "non_financial_corporate",
+          "uninsured_outflow": 60636800.0,
+          "total_outflows": 76058800.0,
+          "inflows_counted": 57044100.0,
+          "net_outflows": 19014700.0,
           "ratio": 1.732405795
         },
         {
           "mapping_id": "band-operational",
           "lcr_category": "operational",
+          "uninsured_outflow": 37898000.0,
+          "total_outflows": 53320000.0,
+          "inflows_counted": 39990000.0,
+          "net_outflows": 13330000.0,
           "ratio": 2.4712060368
         },
         {
           "mapping_id": "band-other-legal-entity",
-          "lcr_category": "other-legal-entity",
+          "lcr_category": "other_legal_entity",
+          "uninsured_outflow": 151592000.0,
+          "total_outflows": 167014000.0,
+          "inflows_counted": 60707000.0,
+          "net_outflows": 106307000.0,
           "ratio": 0.3098683668
         }
       ],
@@ -1454,6 +1436,18 @@
           }
         }
       ]
+    },
+    "sensitivities": {
+      "uninsured_share": null,
+      "uninsured_share_reason": {
+        "en": "The LCR defines a 30-day aggregate ratio and no daily path, so there is no survival period to put against this grid.",
+        "es": "El LCR define una razon agregada a 30 dias sin trayectoria diaria: no hay periodo de supervivencia para esta grilla."
+      },
+      "htm_loss": null,
+      "htm_loss_reason": {
+        "en": "The LCR defines a 30-day aggregate ratio and no daily path, so there is no survival period to put against this grid.",
+        "es": "El LCR define una razon agregada a 30 dias sin trayectoria diaria: no hay periodo de supervivencia para esta grilla."
+      }
     },
     "time_block": [
       {
