@@ -1,0 +1,1212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c20/variant-shift.schema.json",
+  "title": "C20 shift variant",
+  "description": "Catalog row c20-outputs-shift 1.0.0: the Fed portfolios read both ways (decision Q7) (outputs.kind shift).",
+  "allOf": [
+    {
+      "$ref": "../common/variant-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C20"
+        },
+        "outputs": {
+          "$ref": "#/$defs/c20OutputsShift",
+          "properties": {
+            "kind": {
+              "const": "shift"
+            }
+          }
+        }
+      },
+      "required": [
+        "case_id",
+        "outputs"
+      ]
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "if": {
+              "properties": {
+                "light": {
+                  "const": "not_evaluated"
+                }
+              },
+              "required": [
+                "light"
+              ]
+            },
+            "then": {
+              "properties": {
+                "statistic": {
+                  "type": "null"
+                },
+                "p_value": {
+                  "type": "null"
+                },
+                "metric": {
+                  "type": "null"
+                },
+                "notes": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "dataset_id": {
+                "const": "sgcd"
+              }
+            },
+            "required": [
+              "dataset_id"
+            ]
+          }
+        },
+        "required": [
+          "outputs"
+        ]
+      },
+      "then": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "sgcd_notice": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "sgcd_notice": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "model_dataset": {
+                "const": "uci-taiwan"
+              }
+            },
+            "required": [
+              "model_dataset"
+            ]
+          }
+        },
+        "required": [
+          "outputs"
+        ]
+      },
+      "then": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "fairness_battery": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "outputs": {
+            "properties": {
+              "fairness_battery": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "impact": {
+          "required": [
+            "decision_flip_share"
+          ]
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c20Param": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "name": {
+          "enum": [
+            "perturbation_grid",
+            "perturbation_tolerance",
+            "n_seeds",
+            "n_bootstrap_refits",
+            "overfit_tolerance",
+            "weak_spot_multiple",
+            "shift_score",
+            "worst_subsample_share",
+            "decision_cutoff_reject_share"
+          ]
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 1
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "const": "convention",
+          "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Where the construction comes from and how the value was proposed (decision Q8)."
+        }
+      },
+      "description": "A named parameter: its value and the label convention."
+    },
+    "c20Params": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/c20Param"
+      },
+      "description": "The named parameters of the document, each once.",
+      "minItems": 9,
+      "maxItems": 9,
+      "allOf": [
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "perturbation_grid"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "perturbation_tolerance"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "n_seeds"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "n_bootstrap_refits"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "overfit_tolerance"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "weak_spot_multiple"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "shift_score"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "worst_subsample_share"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "decision_cutoff_reject_share"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        }
+      ]
+    },
+    "c20SgcdNotice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "quote",
+        "commit",
+        "text"
+      ],
+      "properties": {
+        "kind": {
+          "const": "dataset-card-prohibition"
+        },
+        "quote": {
+          "const": "It is provided for research and benchmarking only and must not be used for real-world credit scoring or any production decision-making about individuals."
+        },
+        "commit": {
+          "const": "8403fa9048f7159d51a0cec5a2d9a2e9712662bd"
+        },
+        "text": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "The SGCD dataset card's prohibited-use sentence (U14 research addendum H4 6.5), on every variant that shows SGCD."
+    },
+    "c20Metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "auc",
+        "brier",
+        "auc_delta"
+      ],
+      "properties": {
+        "auc": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A value in [0, 1]."
+        },
+        "brier": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A value in [0, 1]."
+        },
+        "auc_delta": {
+          "type": "number"
+        }
+      }
+    },
+    "c20FairRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "test_id",
+        "attribute",
+        "value",
+        "groups",
+        "light"
+      ],
+      "properties": {
+        "test_id": {
+          "enum": [
+            "fair.equalized_odds",
+            "fair.equal_opportunity",
+            "fair.calibration_within_groups",
+            "fair.auc_by_group"
+          ]
+        },
+        "attribute": {
+          "enum": [
+            "sex",
+            "age",
+            "marital_status"
+          ]
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "group",
+              "n",
+              "value"
+            ],
+            "properties": {
+              "group": {
+                "type": "string",
+                "minLength": 1
+              },
+              "n": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "value": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "minItems": 2
+        },
+        "light": {
+          "enum": [
+            "green",
+            "amber",
+            "red",
+            "not_evaluated",
+            "error"
+          ]
+        }
+      }
+    },
+    "c20FairBattery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "model",
+        "notice",
+        "rows"
+      ],
+      "properties": {
+        "label": {
+          "const": "labelled-fairness-battery"
+        },
+        "model": {
+          "const": "uci-taiwan"
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c20FairRow"
+          },
+          "minItems": 12,
+          "maxItems": 12,
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "description": "The labelled fairness battery on the Taiwan model (decision Q5): outcome-conditioned tests, a battery row set, not a compliance statement."
+    },
+    "c20Impact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "cutoff",
+        "rows"
+      ],
+      "properties": {
+        "label": {
+          "const": "decision-flip"
+        },
+        "cutoff": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rule",
+            "reject_share",
+            "label"
+          ],
+          "properties": {
+            "rule": {
+              "const": "reject-worst-share-of-baseline-scores"
+            },
+            "reject_share": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            },
+            "label": {
+              "const": "convention",
+              "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
+            }
+          }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "shift_id",
+              "flip_share",
+              "n_decisions"
+            ],
+            "properties": {
+              "shift_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "flip_share": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "A value in [0, 1]."
+              },
+              "n_decisions": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          },
+          "minItems": 1
+        }
+      },
+      "description": "The share of decisions that flip at the stated cut-off under each shift (decision Q10)."
+    },
+    "c20RealDrift": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "model",
+        "portfolios",
+        "pairs"
+      ],
+      "properties": {
+        "label": {
+          "const": "real-drift-no-model"
+        },
+        "model": {
+          "const": null
+        },
+        "portfolios": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "typical",
+              "higher-risk",
+              "lower-risk"
+            ]
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true
+        },
+        "pairs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "a",
+              "b",
+              "variables"
+            ],
+            "properties": {
+              "a": {
+                "type": "string",
+                "minLength": 1
+              },
+              "b": {
+                "type": "string",
+                "minLength": 1
+              },
+              "variables": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "name",
+                    "psi",
+                    "csi",
+                    "ks",
+                    "chi2_p_value"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "psi": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "csi": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "ks": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1,
+                      "description": "A value in [0, 1]."
+                    },
+                    "chi2_p_value": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1,
+                          "description": "A value in [0, 1]."
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "minItems": 1
+              }
+            }
+          },
+          "minItems": 1
+        }
+      },
+      "description": "Reading (a) of decision Q7: the real drift between the three 200-loan Fed 2025 portfolios, no model."
+    },
+    "c20SyntheticShift": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "reference_portfolio",
+        "evaluation_set",
+        "shifts",
+        "worst_subsample",
+        "label_free"
+      ],
+      "properties": {
+        "label": {
+          "const": "synthetic-shift-fed-reference"
+        },
+        "reference_portfolio": {
+          "enum": [
+            "typical",
+            "higher-risk",
+            "lower-risk"
+          ]
+        },
+        "evaluation_set": {
+          "type": "string",
+          "minLength": 1
+        },
+        "shifts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "shift_id",
+              "score",
+              "metric",
+              "psi",
+              "flip_share"
+            ],
+            "properties": {
+              "shift_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "score": {
+                "type": "number",
+                "minimum": 0
+              },
+              "metric": {
+                "$ref": "#/$defs/c20Metric"
+              },
+              "psi": {
+                "type": "number",
+                "minimum": 0
+              },
+              "flip_share": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "A value in [0, 1]."
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "worst_subsample": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "share",
+            "metric"
+          ],
+          "properties": {
+            "share": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            },
+            "metric": {
+              "$ref": "#/$defs/c20Metric"
+            }
+          }
+        },
+        "label_free": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "conformal",
+            "cbpe"
+          ],
+          "properties": {
+            "conformal": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "alpha",
+                "target_coverage",
+                "coverage",
+                "binomial_p_value",
+                "coverage_by_window"
+              ],
+              "properties": {
+                "label": {
+                  "const": "convention",
+                  "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
+                },
+                "alpha": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "A value in [0, 1]."
+                },
+                "target_coverage": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "A value in [0, 1]."
+                },
+                "coverage": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "A value in [0, 1]."
+                },
+                "binomial_p_value": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "A value in [0, 1]."
+                },
+                "coverage_by_window": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "window",
+                      "n",
+                      "coverage",
+                      "binomial_p_value"
+                    ],
+                    "properties": {
+                      "window": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "n": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "coverage": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1,
+                        "description": "A value in [0, 1]."
+                      },
+                      "binomial_p_value": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1,
+                        "description": "A value in [0, 1]."
+                      }
+                    }
+                  },
+                  "minItems": 1,
+                  "description": "Coverage over time: one row per evaluation window (06 I.4 l.1248); alpha is a convention."
+                }
+              }
+            },
+            "cbpe": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "estimated_auc",
+                "assumptions"
+              ],
+              "properties": {
+                "label": {
+                  "const": "estimate"
+                },
+                "estimated_auc": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "A value in [0, 1]."
+                },
+                "assumptions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "text"
+                    ],
+                    "properties": {
+                      "id": {
+                        "enum": [
+                          "calibrated-probabilities",
+                          "no-concept-drift",
+                          "no-extrapolation",
+                          "adequate-sample"
+                        ]
+                      },
+                      "text": {
+                        "$ref": "../common/text.schema.json"
+                      }
+                    }
+                  },
+                  "minItems": 4,
+                  "maxItems": 4,
+                  "allOf": [
+                    {
+                      "contains": {
+                        "properties": {
+                          "id": {
+                            "const": "calibrated-probabilities"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ]
+                      }
+                    },
+                    {
+                      "contains": {
+                        "properties": {
+                          "id": {
+                            "const": "no-concept-drift"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ]
+                      }
+                    },
+                    {
+                      "contains": {
+                        "properties": {
+                          "id": {
+                            "const": "no-extrapolation"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ]
+                      }
+                    },
+                    {
+                      "contains": {
+                        "properties": {
+                          "id": {
+                            "const": "adequate-sample"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "description": "Reading (b) of decision Q7: the Fed portfolios as the reference of a synthetic shift on the UCI evaluation set only."
+    },
+    "c20OutputsShift": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "dataset_id",
+        "model_dataset",
+        "sgcd_notice",
+        "parameters",
+        "fairness_battery",
+        "impact_detail",
+        "requirements",
+        "real_drift",
+        "synthetic_shift"
+      ],
+      "properties": {
+        "kind": {
+          "const": "shift"
+        },
+        "dataset_id": {
+          "enum": [
+            "sgcd",
+            "uci-german",
+            "uci-taiwan",
+            "uci-polish",
+            "fed-2025-corporate"
+          ]
+        },
+        "model_dataset": {
+          "enum": [
+            "uci-german",
+            "uci-taiwan",
+            "uci-polish"
+          ]
+        },
+        "sgcd_notice": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c20SgcdNotice"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parameters": {
+          "$ref": "#/$defs/c20Params"
+        },
+        "fairness_battery": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c20FairBattery"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "impact_detail": {
+          "$ref": "#/$defs/c20Impact"
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^CT-20\\d\\d$"
+          },
+          "minItems": 1,
+          "description": "Requirement ids CT-2001 onward (decision Q14)."
+        },
+        "real_drift": {
+          "$ref": "#/$defs/c20RealDrift"
+        },
+        "synthetic_shift": {
+          "$ref": "#/$defs/c20SyntheticShift"
+        }
+      }
+    }
+  }
+}

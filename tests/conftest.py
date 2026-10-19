@@ -34,6 +34,28 @@ def _snapshot() -> dict[str, str]:
     return out
 
 
+def pytest_collectstart(collector: pytest.Collector) -> None:
+    """Each tests/contracts_u* suite imports its own helpers by plain name (`import semantics`, `import
+    build_fixtures`), and several suites ship a helper of the same name. Python caches the first module of a name, so in
+    one run a later suite would get an earlier suite's helper. Before a suite's module is collected, drop any cached
+    helper of the same name loaded from another suite's folder, and put this suite's folder first on the path."""
+    path = getattr(collector, "path", None)
+    if path is None:
+        return
+    folder = pathlib.Path(path)
+    folder = folder.parent if folder.suffix == ".py" else folder
+    if not folder.name.startswith("contracts_u"):
+        return
+    own = {p.stem for p in folder.glob("*.py")}
+    for name in [n for n in list(sys.modules) if n in own]:
+        loaded = getattr(sys.modules[name], "__file__", None)
+        if loaded and pathlib.Path(loaded).resolve().parent != folder.resolve():
+            del sys.modules[name]
+    if str(folder) in sys.path:
+        sys.path.remove(str(folder))
+    sys.path.insert(0, str(folder))
+
+
 def pytest_sessionstart(session: pytest.Session) -> None:
     session.config._caos_artifacts = _snapshot()  # type: ignore[attr-defined]
 

@@ -85,7 +85,7 @@
     "sha256": "3828606a7f05a6d930a44c7c8d54774a82f1945c14fc00fab94417d571071b7c"
   },
   "contract-family": {
-    "version": "1.1.0",
+    "version": "1.2.0",
     "schema": "docs/contracts/schemas/common/contract-family.schema.json",
     "sha256": "7131847ba47985b793908a00a00a90a7bcb9103350c65aeae568ae23afbb44a5"
   },
@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "6.0.0",
+    "version": "7.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "61e5ba7956cc61af585d05a74edfa2026ff2105fdcf081949e524c4761ffcf0d"
+    "sha256": "59ed3ded65bf83cff6c8e5c6d7877e113947234be5eeda78711776131dbce197"
   },
   "readiness": {
     "version": "1.0.0",
@@ -288,5 +288,65 @@
     "version": "1.1.0",
     "schema": "docs/contracts/engine/liquidity-api.md",
     "sha256": "de5364f57fd5c939e2ab603242c2fc51e03443d72088b9bf920dae2905389188"
+  },
+  "c02-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c02/variant-horizon.schema.json",
+    "sha256": "24b9ce6f9a82d0e560aac2a7d020ead466cfedc66c69ea491665b38121a1d63e"
+  },
+  "c02-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c02/models.schema.json",
+    "sha256": "2b10c30a02f4071792edc6b07c8ce5e782403c553488d09149fd1b02e0ac62a5"
+  },
+  "c20-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c20/variant-shock.schema.json",
+    "sha256": "51033adc205fdb31ace5f775f396f8b794d0e735316c077be63cdbebbe3d9b33"
+  },
+  "c20-outputs-shift": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c20/variant-shift.schema.json",
+    "sha256": "df52a383a218f127948e2dcc676f0beb71049be231508ec1ebbf6c17a95c75f8"
+  },
+  "c20-outputs-seeds": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c20/variant-seeds.schema.json",
+    "sha256": "639c8f2e4dba6c8c2dcc80bc3b9322612d30a64b221f969e36a0d07da0315dbd"
+  },
+  "c20-outputs-perturbation": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c20/variant-perturbation.schema.json",
+    "sha256": "bb5194a4acec1025edf3be105fa6467d8171d31fe24142e432e15d21133fceda"
+  },
+  "c20-outputs-leakage": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c20/variant-leakage.schema.json",
+    "sha256": "38c0c76dff6d43ddd65912208315d74c9df08562c83bb2359ff71a36e5d377ca"
+  },
+  "c20-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c20/models.schema.json",
+    "sha256": "f584731f90dc64b9bf075cfc7faca3550075508c9031979bfc683b11167c629a"
+  },
+  "c21-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c21/variant-year-pair.schema.json",
+    "sha256": "132a38b3e5f1d82f456544fb77833d6a448b8b3ccd928ce39402119c681b35b8"
+  },
+  "c21-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c21/models.schema.json",
+    "sha256": "eaa31c0e21bd669c187c7efd551c4826a16e80174032e3eb232617e31cd62b78"
+  },
+  "engine-ml-api": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/engine/ml-api.md",
+    "sha256": "6beb000681ade70d320565cc7e42eb56f18f13774d2fb2d151fb611e3e7f8d99"
+  },
+  "engine-fairness-api": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/engine/fairness-api.md",
+    "sha256": "ba26f43f2900d038bfaab59085bc069e226a1b88b7542b08434fd7702418639f"
   }
 }
