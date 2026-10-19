@@ -8,7 +8,8 @@ Owner: U14-S (unit sizing `plans/contraste/units/U14-sizing.md`, CAOS_MANAGE). I
 - Every function is pure and deterministic (no hidden state, no I/O, inputs never mutated); randomness takes a `seed` and uses `numpy.random.default_rng(seed)`. Dataclasses are frozen. The engine imports no learning library: a model enters as a callable on arrays, and the pipeline computes attributions with the pinned `shap`.
 - A function that cannot compute because data is missing raises `ValueError` with the reason, or (a validation function) returns the `not_evaluated` light with its reason in `notes`; it never returns a placeholder number.
 - A validation function returns one `TestResult` of `riskvalidation`, serialised by `TestResult.to_dict()` into a row that validates against `common/test-result` (`docs/contracts/schemas/common/test-result.schema.json`). Test ids are prefixed `fair.`.
-- Tolerances, grids, counts and cut-offs are conventions, never regulatory thresholds (06 I.6 l.1268-1270); the named parameters of the case documents are listed in the case schemas.
+- Tolerances, grids, counts and cut-offs are conventions, never regulatory thresholds (06 I.6 l.1268-1270); the named parameters of the case documents are listed in the case schemas, the light cut points in Policy thresholds and the other values in Conventions table.
+- Boundary rule of the lights: see Policy thresholds. `Threshold.classify` is inclusive; a tolerance stated as 'exceeds' is stored one float above, so the light and the strict boolean (`robustness_finding`, `overfit_gap`) agree at the boundary.
 - No golden value is claimed where the dossiers print none: each check is an identity, an independent reference or a size and power run on a planted defect.
 
 ## Module `riskvalidation/fairness/metrics.py`
@@ -80,29 +81,29 @@ def equal_opportunity_difference(y: numpy.ndarray, decision: numpy.ndarray, grou
 def adverse_impact_ratio(rates: Mapping[str, SelectionRate], reference: str) -> dict[str, float | None]
 ```
 
-- Units: The protected group's selection rate over the reference group's rate (06 C.7 l.1033-1037); None when the reference rate is 0.
+- Units: The protected group's selection rate over the chosen reference group's rate: the parity ratio (06 C.7 l.1033-1037); None when the reference rate is 0. It is not the four-fifths ratio, which is taken against the highest-rate group (four_fifths_flag).
 - Invariants: Equals demographic_parity_ratio (identity).
 - Check: Identity with demographic_parity_ratio.
 
 ### `riskvalidation.fairness.metrics.four_fifths_flag`
 
 ```python
-def four_fifths_flag(air: float | None) -> FourFifths
+def four_fifths_flag(rates: Mapping[str, SelectionRate]) -> FourFifths
 ```
 
-- Units: air dimensionless. The flag is raised when the ratio is below 0.8 (29 CFR 1607.4(D)); the result carries the label 'employment benchmark' and is_credit_law_threshold = False (I.6 l.1268-1270).
-- Invariants: None raises no flag.
-- Check: Boundary: 0.8 exactly does not flag; just below 0.8 flips the flag (C.7 l.1034).
+- Units: Each group's favourable count x_g and size n_g against the highest-rate group (x_h, n_h), per 29 CFR 1607.4(D) and dossier 06 C.7 l.1034-1035. A group is flagged when 5 * x_g * n_h < 4 * x_h * n_g: decided on the counts in exact arithmetic, never on a float ratio (60/100 over 75/100 is 0.7999999999999999 in IEEE doubles and exactly 4/5). The highest-rate group is the first of the groups of the highest rate, in the order of rates. The result carries ratio_to_highest per group (None when the highest rate is 0), the label 'employment benchmark' and is_credit_law_threshold = False (I.6 l.1268-1270).
+- Invariants: A highest rate of 0 raises no flag; the highest-rate group has ratio 1 and no flag; the ratio is for display and the flag never reads it.
+- Check: Golden: 60/100 against 75/100 is exactly four-fifths and is not flagged (0.8 exactly does not flag); 5999/10000 against 75/100 is flagged; 6001/10000 is not. Scenario: White 750/1000 (the reference), Asian 900/1000, Black 650/1000: Black is flagged against the highest-rate group (0.722) and would not be against the reference (0.867).
 
 ### `riskvalidation.fairness.metrics.FourFifths`
 
 ```python
 @dataclass(frozen=True)
-class FourFifths: flag: bool; threshold: float; label: str; is_credit_law_threshold: bool
+class FourFifths: highest_rate_group: str; ratio_to_highest: dict[str, float | None]; flag: dict[str, bool]; threshold: float; label: str; is_credit_law_threshold: bool; compared_with: str
 ```
 
-- Units: threshold 0.8.
-- Invariants: Frozen; label == 'employment benchmark'; is_credit_law_threshold is False.
+- Units: threshold 0.8; ratio dimensionless.
+- Invariants: Frozen; label == 'employment benchmark'; is_credit_law_threshold is False; compared_with == 'highest-rate-group'.
 - Check: Constructed only by four_fifths_flag.
 
 ### `riskvalidation.fairness.metrics.calibration_within_groups`
@@ -134,18 +135,18 @@ def two_proportion_z_test(x1: int, n1: int, x2: int, n2: int) -> ZResult
 ```
 
 - Units: Counts of favourable decisions and sizes of two groups; pooled two-sided z statistic and p-value in [0, 1] (06 C.7 l.1038-1039). Smaller differences can matter when statistically significant.
-- Invariants: n1, n2 >= 1; a pooled rate of 0 or 1 gives statistic 0 and p 1 with a note.
+- Invariants: n1, n2 >= 1; a pooled rate of 0 or 1 gives statistic 0 and p 1 and the field note says so (note is None otherwise).
 - Check: Independent reference: scipy.stats.norm for the p-value and statsmodels proportions_ztest.
 
 ### `riskvalidation.fairness.inference.ZResult`
 
 ```python
 @dataclass(frozen=True)
-class ZResult: statistic: float; p_value: float; n1: int; n2: int
+class ZResult: statistic: float; p_value: float; n1: int; n2: int; note: str | None
 ```
 
-- Units: Statistic dimensionless; p in [0, 1].
-- Invariants: Frozen.
+- Units: Statistic dimensionless; p in [0, 1]; note a short reason or None.
+- Invariants: Frozen; note is None unless the pooled rate is 0 or 1.
 - Check: Constructed only by two_proportion_z_test.
 
 ### `riskvalidation.fairness.inference.fisher_exact_test`
@@ -251,22 +252,22 @@ class Replication: same_sign: bool; size_ratio: float | None; fit_coefficient: f
 ### `riskvalidation.fairness.situation.gower_distance`
 
 ```python
-def gower_distance(x1: numpy.ndarray, x2: numpy.ndarray, categorical: numpy.ndarray, ranges: numpy.ndarray) -> float
+def gower_distance(x1: numpy.ndarray, x2: numpy.ndarray, categorical: numpy.ndarray, scale: numpy.ndarray, normalization: str = "range") -> float
 ```
 
-- Units: Mean over non-protected attributes of the overlap distance (categorical) or the Manhattan distance over the attribute range (continuous), in [0, 1] (arXiv 2502.01267 equations 3 to 5).
-- Invariants: Protected attributes never enter.
-- Check: Hand-computed pair.
+- Units: Mean over non-protected attributes of the overlap distance (categorical) or the Manhattan distance over the attribute scale (continuous), in [0, 1] under 'range' (arXiv 2502.01267 equations 3 to 5). normalization 'range' (the default, the paper's text, and C21's choice): scale holds max - min of each continuous attribute over the search space. normalization 'standard' (the reference code's default, a StandardScaler): scale holds the population standard deviation (ddof 0) of the attribute, so the continuous term is the absolute z-score difference and is not bounded by 1. Any other value raises ValueError.
+- Invariants: Protected attributes never enter; a zero scale raises ValueError.
+- Check: Hand-computed pair under each normalization.
 
 ### `riskvalidation.fairness.situation.k_nearest`
 
 ```python
-def k_nearest(center: numpy.ndarray, pool: numpy.ndarray, k: int, categorical: numpy.ndarray, ranges: numpy.ndarray) -> numpy.ndarray
+def k_nearest(center: numpy.ndarray, pool: numpy.ndarray, k: int, categorical: numpy.ndarray, scale: numpy.ndarray, normalization: str = "range") -> numpy.ndarray
 ```
 
-- Units: Indices of the k nearest rows of the search space by ascending distance; neither the protected attribute nor the decision is used (equations 6 and 7).
+- Units: Indices of the k nearest rows of the search space by ascending distance (the normalization of gower_distance); neither the protected attribute nor the decision is used (equations 6 and 7).
 - Invariants: Ties broken by row order; k <= len(pool).
-- Check: Hand-computed toy fixture of the research addendum 7.6 (4).
+- Check: Hand-computed toy fixture of the research addendum 7.6 (4), which holds under both normalizations (one continuous attribute: the distance order is the same).
 
 ### `riskvalidation.fairness.situation.situation_statistic`
 
@@ -284,19 +285,19 @@ def situation_statistic(decision_control: numpy.ndarray, decision_test: numpy.nd
 def wald_interval_one_sided(delta: float, p_c: float, p_t: float, k: int, alpha: float = 0.05) -> float
 ```
 
-- Units: Lower bound delta - z_alpha * sqrt((p_c(1 - p_c) + p_t(1 - p_t)) / k), z_alpha the (1 - alpha) normal quantile (equation 10).
+- Units: Lower bound delta - z_alpha * sqrt((p_c(1 - p_c) + p_t(1 - p_t)) / k), z_alpha = Phi^-1(1 - alpha) the exact normal quantile (equation 10); returns the lower bound.
 - Invariants: The claim is significant when the lower bound exceeds tau; the plus sign of the numerator, not the EAAMO typo (footnote 7).
-- Check: Golden (addendum 7.6 (4)): d_alpha = 1.645 * sqrt(0.25 / 2) = 0.581595, interval [-0.082, 1.082], not significant.
+- Check: Golden (addendum 7.6 (4) with the exact quantile Phi^-1(0.95) = 1.644854): w_alpha = 0.58154 to 1e-5 and lower bound -0.0815 to 1e-4, so the toy claim is not significant (the lower bound is below tau = 0). The reference code's figures for the same fixture use z rounded to 1.645 and a symmetric two-sided interval: recorded under Findings, not claimed.
 
 ### `riskvalidation.fairness.situation.situation_test`
 
 ```python
-def situation_test(X: numpy.ndarray, group: numpy.ndarray, decision: numpy.ndarray, k: int, tau: float = 0.0, alpha: float = 0.05, comparator: str = 'ceteris-paribus', counterfactual: numpy.ndarray | None = None) -> SituationResult
+def situation_test(X: numpy.ndarray, group: numpy.ndarray, decision: numpy.ndarray, k: int, tau: float = 0.0, alpha: float = 0.05, comparator: str = 'ceteris-paribus', counterfactual: numpy.ndarray | None = None, normalization: str = 'range') -> SituationResult
 ```
 
-- Units: Runs the test for every complainant of the protected group. comparator is 'ceteris-paribus' or 'mutatis-mutandis'; the latter needs a caller-supplied counterfactual aligned row by row (the algorithm supplies none; public HMDA gives none, so C21 runs the ceteris paribus comparator only).
+- Units: Runs the test for every complainant of the protected group. comparator is 'ceteris-paribus' or 'mutatis-mutandis'; the latter needs a caller-supplied counterfactual aligned row by row (the algorithm supplies none; public HMDA gives none, so C21 runs the ceteris paribus comparator only, with normalization 'range').
 - Invariants: Raises ValueError for 'mutatis-mutandis' without a counterfactual.
-- Check: Tested against the paper's equations and the golden counts of addendum 7.6, never against the reference code's report columns.
+- Check: Tested against the paper's equations and the toy golden of addendum 7.6 (4) (under both normalizations). The loan-application counts of addendum 7.6 (2) (ST 55 cases and 44 significant at k = 15, then 65 and 57, 84 and 65, 107 and 85, 204 and 148 at k = 30, 50, 100, 250) were produced by the reference code with its StandardScaler, so they are claimed only under normalization='standard'; nothing claims them under 'range'. Never tested against the reference code's report columns.
 
 ### `riskvalidation.fairness.situation.SituationResult`
 
@@ -356,13 +357,14 @@ class ProxyFeaturePlant(GeneratorBase): def __init__(self, n: int, proxy_strengt
 ### `riskvalidation.validation.fairness.demographic_parity`
 
 ```python
-def demographic_parity(model_id: str, rates: Mapping[str, SelectionRate], reference: str, policy: FairPolicy = DEFAULT_POLICY) -> TestResult
+def demographic_parity(model_id: str, rates: Mapping[str, SelectionRate], reference: str, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.demographic_parity"
-- Light: reported as an indicator; green when the gap is within the policy tolerance (a convention), amber otherwise; never red.
+- Light: reported as an indicator: green when the largest absolute parity gap is at most the tolerance (a convention), amber above it; never red.
+- Policy key: `fair.demographic_parity` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.fairness.adverse_impact`
@@ -374,79 +376,86 @@ def adverse_impact(model_id: str, rates: Mapping[str, SelectionRate], reference:
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.adverse_impact"
-- Light: amber when the ratio is below 0.8; the four-fifths line is labelled an employment benchmark in `reference` and `notes`, never a credit-law threshold.
+- Light: amber when four_fifths_flag raises a flag for any group (decided on the exact counts, against the highest-rate group), green otherwise; the four-fifths line is labelled an employment benchmark in `reference` and `notes`, never a credit-law threshold.
+- Policy: no policy threshold (row `fair.adverse_impact` of Policy thresholds states why); the rule above is the whole classification.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.fairness.two_proportion_z`
 
 ```python
-def two_proportion_z(model_id: str, x1: int, n1: int, x2: int, n2: int, policy: FairPolicy = DEFAULT_POLICY) -> TestResult
+def two_proportion_z(model_id: str, x1: int, n1: int, x2: int, n2: int, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.two_proportion_z"
-- Light: by the p-value with alpha_amber and alpha_red.
+- Light: by the p-value: red below alpha_red, amber below alpha_amber, green otherwise.
+- Policy key: `fair.two_proportion_z` (p_value); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.fairness.fisher_exact`
 
 ```python
-def fisher_exact(model_id: str, x1: int, n1: int, x2: int, n2: int, policy: FairPolicy = DEFAULT_POLICY) -> TestResult
+def fisher_exact(model_id: str, x1: int, n1: int, x2: int, n2: int, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.fisher_exact"
-- Light: by the p-value with alpha_amber and alpha_red.
+- Light: by the p-value: red below alpha_red, amber below alpha_amber, green otherwise.
+- Policy key: `fair.fisher_exact` (p_value); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.fairness.equalized_odds`
 
 ```python
-def equalized_odds(model_id: str, y: numpy.ndarray | None, decision: numpy.ndarray, group: numpy.ndarray, policy: FairPolicy = DEFAULT_POLICY) -> TestResult
+def equalized_odds(model_id: str, y: numpy.ndarray | None, decision: numpy.ndarray, group: numpy.ndarray, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.equalized_odds"
-- Light: outcome-conditioned: needs an outcome and returns not_evaluated with its reason when none is supplied; never run on HMDA.
+- Light: outcome-conditioned: needs an outcome and returns not_evaluated with its reason when none is supplied; never run on HMDA; with an outcome (the Taiwan battery) green below the amber cut point, amber from it, red from the red cut point (conventions).
+- Policy key: `fair.equalized_odds` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.fairness.equal_opportunity`
 
 ```python
-def equal_opportunity(model_id: str, y: numpy.ndarray | None, decision: numpy.ndarray, group: numpy.ndarray, policy: FairPolicy = DEFAULT_POLICY) -> TestResult
+def equal_opportunity(model_id: str, y: numpy.ndarray | None, decision: numpy.ndarray, group: numpy.ndarray, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.equal_opportunity"
 - Light: outcome-conditioned: same rule as equalized_odds.
+- Policy key: `fair.equal_opportunity` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.fairness.calibration_within_groups`
 
 ```python
-def calibration_within_groups(model_id: str, p: numpy.ndarray, y: numpy.ndarray | None, group: numpy.ndarray, policy: FairPolicy = DEFAULT_POLICY) -> TestResult
+def calibration_within_groups(model_id: str, p: numpy.ndarray, y: numpy.ndarray | None, group: numpy.ndarray, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.calibration_within_groups"
 - Light: outcome-conditioned: same rule as equalized_odds.
+- Policy key: `fair.calibration_within_groups` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.fairness.auc_by_group`
 
 ```python
-def auc_by_group(model_id: str, score: numpy.ndarray, y: numpy.ndarray | None, group: numpy.ndarray, policy: FairPolicy = DEFAULT_POLICY) -> TestResult
+def auc_by_group(model_id: str, score: numpy.ndarray, y: numpy.ndarray | None, group: numpy.ndarray, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.auc_by_group"
 - Light: outcome-conditioned: same rule as equalized_odds.
+- Policy key: `fair.auc_by_group` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.fairness.conditional_disparity`
@@ -458,7 +467,8 @@ def conditional_disparity(model_id: str, effect: Effect, controls: Sequence[str]
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.conditional_disparity"
-- Light: reported as an approximation of comparative evidence with the missing controls named; amber when the interval excludes 0; never a finding of violation.
+- Light: reported as an approximation of comparative evidence with the missing controls named; amber when the 95 percent interval excludes 0; never a finding of violation.
+- Policy: no policy threshold (row `fair.conditional_disparity` of Policy thresholds states why); the rule above is the whole classification.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.fairness.rate_spread_disparity`
@@ -471,6 +481,7 @@ def rate_spread_disparity(model_id: str, effect: Effect, controls: Sequence[str]
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.rate_spread_disparity"
 - Light: same rule as conditional_disparity.
+- Policy: no policy threshold (row `fair.rate_spread_disparity` of Policy thresholds states why); the rule above is the whole classification.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.fairness.replication`
@@ -483,23 +494,66 @@ def replication(model_id: str, replication: Replication) -> TestResult
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.replication"
 - Light: amber when the sign differs between year t and t+1.
+- Policy: no policy threshold (row `fair.replication` of Policy thresholds states why); the rule above is the whole classification.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
 ### `riskvalidation.validation.fairness.situation_testing`
 
 ```python
-def situation_testing(model_id: str, result: SituationResult, policy: FairPolicy = DEFAULT_POLICY) -> TestResult
+def situation_testing(model_id: str, result: SituationResult, policy: Policy | None = None) -> TestResult
 ```
 
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.situation_testing"
-- Light: reported as individual-level indicators: amber when the significant share exceeds the policy; no legal claim.
+- Light: reported as individual-level indicators: amber when the significant share of the complainants reaches the cut point; never red; no legal claim.
+- Policy key: `fair.situation_testing` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
+
+## Policy thresholds
+
+Lights come from the engine's `riskvalidation.core.policy.Policy`, a named, versioned set of `Threshold(kind, amber, red)` keyed by test id (`kind` is `p_value`, `upper_bad` or `lower_bad`; engine v0.07.000 `core/policy.py`). Every validation function below takes `policy: Policy | None = None`, where None means `default_policy()`, and classifies with `Policy.classify`. The thresholds of this page are entries of `riskvalidation/policies/default.json` (U14-E1 adds the `ml.` keys and U14-E2 the `fair.` keys; the key sets are disjoint), each with its `source` text; a policy that lacks a key returns the `not_evaluated` light, never a colour. `Threshold.classify` is inclusive at its cut points (`upper_bad`: amber when the metric is at or above `amber`, red at or above `red`; `lower_bad`: amber at or below `amber`, red at or below `red`; `p_value`: red below `red`, amber below `amber`). A rule stated as 'exceeds' (a tolerance) keeps a value equal to the tolerance in the better colour: the engine stores `math.nextafter(cut, math.inf)` as the cut point of a row marked strict, so a delta equal to the tolerance is not a finding and is green. The values are conventions, never regulatory thresholds (06 I.6 l.1268-1270): each is a named parameter for the main session's approval.
+
+| key | kind | metric read | amber and red | boundary | basis | label |
+|---|---|---|---|---|---|---|
+| `fair.demographic_parity` | upper_bad | largest absolute difference of a group's selection rate from the reference rate | amber 0.05, red 2.0 | strict | amber: proposed, no dossier value; red 2.0 is a sentinel above the metric's range (at most 1): never red | convention |
+| `fair.adverse_impact` | none | the four-fifths flag of four_fifths_flag, decided on exact counts | none | not applicable | rule, not a convention: the 0.8 line is the 29 CFR 1607.4(D) employment benchmark, never a credit-law threshold | rule, not a convention |
+| `fair.two_proportion_z` | p_value | two-sided p-value of the pooled z-test | amber 0.05 (alpha_amber), red 0.01 (alpha_red) | inclusive | the engine default p-value cut points | convention |
+| `fair.fisher_exact` | p_value | two-sided exact p-value | amber 0.05 (alpha_amber), red 0.01 (alpha_red) | inclusive | the engine default p-value cut points | convention |
+| `fair.equalized_odds` | upper_bad | equalized odds difference (largest true or false positive rate gap) | amber 0.05, red 0.10 | inclusive | proposed for the Taiwan battery: no dossier value (06 C.7 l.1029-1033) | convention |
+| `fair.equal_opportunity` | upper_bad | equal opportunity difference (largest true positive rate gap) | amber 0.05, red 0.10 | inclusive | proposed for the Taiwan battery: no dossier value | convention |
+| `fair.calibration_within_groups` | upper_bad | largest expected calibration error over the groups | amber 0.05, red 0.10 | inclusive | proposed for the Taiwan battery: no dossier value (04 J.3 l.904-905) | convention |
+| `fair.auc_by_group` | upper_bad | largest AUC gap between two groups | amber 0.05, red 0.10 | inclusive | proposed for the Taiwan battery: no dossier value (04 J.3 l.904-905) | convention |
+| `fair.conditional_disparity` | none | the 95 percent Wald interval of the protected effect: amber when it excludes 0 | none | not applicable | the interval level 0.95 is a convention; no numeric cut point | convention |
+| `fair.rate_spread_disparity` | none | the 95 percent interval of the rate-spread effect: amber when it excludes 0 | none | not applicable | the interval level 0.95 is a convention; no numeric cut point | convention |
+| `fair.replication` | none | the sign of the effect on year t and on year t+1 | none | not applicable | rule, not a convention: sign and size are the replication test (decision Q4) | rule, not a convention |
+| `fair.situation_testing` | upper_bad | n_significant over n_complainants | amber 0.10, red 2.0 | inclusive | amber: proposed, no source value; red 2.0 is a sentinel above the metric's range (at most 1): never red | convention |
+
+## Conventions table
+
+Values that are arguments of a function and not Policy thresholds; each is a convention for the main session's approval, never regulatory.
+
+| value | meaning |
+|---|---|
+| situation k = 30 | the neighbourhood size, 'a common size used in non-algorithmic situation testing' (arXiv 2502.01267, section 5.1) |
+| situation alpha = 0.05 and tau = 0 | the level and the accepted deviation of the experiments of the paper (section 5.1: tau 'often 0') |
+| situation distance normalization = range | C21's choice: the paper's text (equation 5); 'standard' follows the reference code |
+| calibration_within_groups n_bins = 10 | the number of calibration bins per group |
+| interval level 0.95 | the level of every Wald interval of the decision and rate-spread models |
+
+## Names
+
+The function names of this page are ratified as `engine-fairness-api` 1.0.0 (decision V5, 2026-10-19); U14-E1 and U14-E2 amend them only through a contract bump. Two pairs exist in two modules and are easy to confuse: `fairness.metrics.calibration_within_groups` and `auc_by_group` (the pure metrics, `from riskvalidation.fairness.metrics import auc_by_group`) against `validation.fairness.calibration_within_groups` and `auc_by_group` (the TestResult functions, `from riskvalidation.validation.fairness import auc_by_group`). Import each from the module named in its heading and never both unqualified.
+
+## Findings
+
+- F1, the distance normalization. The paper's text (arXiv 2502.01267, equation 5) divides the continuous distance by the range max - min of the attribute. The reference code (SantanderAI `SituationTesting` at commit 38e2c5b) standardizes with a scikit-learn StandardScaler by default, so its per-attribute distance is the absolute z-score difference; with normalize=False it divides by max - min of the search set (addendum 7.5). The published counts of addendum 7.6 (2) were produced under the standard scaler, so they are claimed only under normalization='standard'. C21 uses 'range' (decision V4).
+- F2, the one-sided interval. The reference code's report rounds z to 1.645 (0.581595 for the toy fixture of addendum 7.6 (4)) and reports the symmetric two-sided interval [-0.082, 1.082]; equation (10) with the exact quantile gives w_alpha 0.58154 and the one-sided interval [-0.0815, +inf). This page claims equation (10).
+- F3, the counterfactual paths. The reference code standardizes the counterfactual dataset with its own scaler and its include_centers=True path is broken on pandas 3 (DataFrame.append); tests use the paper's equations and the goldens of addendum 7.6, never the code's report columns.
 
 ## UNVERIFIED and open items
 
 - The approval and denial classification of HMDA `action_taken` is not settled by any source read (addendum UNVERIFIED); the C21 convention is approval = 1 and 2, denial = 3 and is labelled a convention.
 - Ethnicity maps to national origin only by convention (addendum H3, UNVERIFIED).
-- The reference situation-testing code differs from the paper in the distance normalisation and has a broken counterfactual-with-centers path: tests use the paper's equations and the golden values of the addendum 7.6.
 - A counterfactual generator for HMDA is not supplied by the algorithm: C21 runs the ceteris paribus comparator only.
+- The Policy thresholds of the four outcome-conditioned battery tests and of the situation-testing share are proposed for the main session's approval; no source gives a value.

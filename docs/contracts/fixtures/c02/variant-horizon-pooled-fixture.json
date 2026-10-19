@@ -47,9 +47,9 @@
     "horizon_id": "pooled",
     "years": null,
     "counts": {
-      "rows": 43405,
-      "events": 1891,
-      "event_rate": 0.043566,
+      "rows": 15000,
+      "events": 600,
+      "event_rate": 0.04,
       "features": 64,
       "event_definition": {
         "en": "Bankruptcy within the horizon (the file's class label)",
@@ -102,9 +102,9 @@
     "split": {
       "protocol": "locked-stratified-holdout",
       "seed": 0,
-      "train_rows": 26043,
-      "calibration_rows": 8681,
-      "holdout_rows": 8681,
+      "train_rows": 9000,
+      "calibration_rows": 3000,
+      "holdout_rows": 3000,
       "holdout_events": 60,
       "fit_on_training_slice_only": true,
       "calibration_map_on_separate_slice": true,
@@ -115,6 +115,72 @@
       {
         "model_id": "fixture-p1",
         "rung": "P1",
+        "roc": {
+          "fpr": [
+            0.0,
+            0.1,
+            0.3,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.4,
+            0.7,
+            1.0
+          ]
+        },
+        "cap": {
+          "population": [
+            0.0,
+            0.2,
+            0.5,
+            1.0
+          ],
+          "defaults": [
+            0.0,
+            0.5,
+            0.8,
+            1.0
+          ],
+          "default_rate": 0.0386
+        },
+        "reliability": [
+          {
+            "n": 200,
+            "pd": 0.01,
+            "dr": 0.012,
+            "lo": 0.0,
+            "hi": 0.032
+          },
+          {
+            "n": 200,
+            "pd": 0.02,
+            "dr": 0.019,
+            "lo": 0.0,
+            "hi": 0.039
+          },
+          {
+            "n": 200,
+            "pd": 0.04,
+            "dr": 0.045,
+            "lo": 0.024999999999999998,
+            "hi": 0.065
+          },
+          {
+            "n": 200,
+            "pd": 0.08,
+            "dr": 0.07,
+            "lo": 0.05,
+            "hi": 0.09000000000000001
+          },
+          {
+            "n": 200,
+            "pd": 0.2,
+            "dr": 0.22,
+            "lo": 0.2,
+            "hi": 0.24
+          }
+        ],
         "discrimination": {
           "auc": 0.82,
           "auc_ci": {
@@ -150,6 +216,72 @@
       {
         "model_id": "fixture-p4",
         "rung": "P4",
+        "roc": {
+          "fpr": [
+            0.0,
+            0.1,
+            0.3,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            0.4,
+            0.7,
+            1.0
+          ]
+        },
+        "cap": {
+          "population": [
+            0.0,
+            0.2,
+            0.5,
+            1.0
+          ],
+          "defaults": [
+            0.0,
+            0.5,
+            0.8,
+            1.0
+          ],
+          "default_rate": 0.0386
+        },
+        "reliability": [
+          {
+            "n": 200,
+            "pd": 0.01,
+            "dr": 0.012,
+            "lo": 0.0,
+            "hi": 0.032
+          },
+          {
+            "n": 200,
+            "pd": 0.02,
+            "dr": 0.019,
+            "lo": 0.0,
+            "hi": 0.039
+          },
+          {
+            "n": 200,
+            "pd": 0.04,
+            "dr": 0.045,
+            "lo": 0.024999999999999998,
+            "hi": 0.065
+          },
+          {
+            "n": 200,
+            "pd": 0.08,
+            "dr": 0.07,
+            "lo": 0.05,
+            "hi": 0.09000000000000001
+          },
+          {
+            "n": 200,
+            "pd": 0.2,
+            "dr": 0.22,
+            "lo": 0.2,
+            "hi": 0.24
+          }
+        ],
         "discrimination": {
           "auc": 0.88,
           "auc_ci": {

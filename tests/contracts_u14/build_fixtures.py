@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import math
 import sys
+from fractions import Fraction
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -78,6 +79,10 @@ def split(rows: int) -> dict:
 
 def rung(rung_id: str, auc: float) -> dict:
     return {"model_id": f"fixture-{rung_id.lower()}", "rung": rung_id,
+            "roc": {"fpr": [0.0, 0.1, 0.3, 1.0], "tpr": [0.0, 0.4, 0.7, 1.0]},
+            "cap": {"population": [0.0, 0.2, 0.5, 1.0], "defaults": [0.0, 0.5, 0.8, 1.0], "default_rate": 0.0386},
+            "reliability": [{"n": 200, "pd": p, "dr": d, "lo": max(d - 0.02, 0.0), "hi": d + 0.02}
+                            for p, d in ((0.01, 0.012), (0.02, 0.019), (0.04, 0.045), (0.08, 0.07), (0.2, 0.22))],
             "discrimination": {"auc": auc, "auc_ci": {"lo": auc - 0.03, "hi": auc + 0.03, "level": 0.95, "method": "delong"},
                                "gini": round(2 * auc - 1, 6), "ks": 0.4},
             "calibration": {"brier": 0.04, "ece": 0.01, "hosmer_lemeshow": {"statistic": 8.5, "df": 8, "p_value": 0.39}},
@@ -120,7 +125,7 @@ def c02() -> None:
            "ecl_lifetime_effect": impact_item(2.5, "index", "Lifetime ECL effect (exploratory)")}
     ms = [model_summary("fixture-p1", "P1"), model_summary("fixture-p4", "P4")]
     write("c02", "variant-horizon-h1-fixture.json", variant("C02", "fixture-h1", c02_outputs("h1", 1, 7027, 271), imp, ms, [test_row()]))
-    write("c02", "variant-horizon-pooled-fixture.json", variant("C02", "fixture-pooled", c02_outputs("pooled", None, 43405, 1891), imp, ms, [test_row()]))
+    write("c02", "variant-horizon-pooled-fixture.json", variant("C02", "fixture-pooled", c02_outputs("pooled", None, 15000, 600), imp, ms, [test_row()]))
     files = [{"horizon_id": f"h{y}", "years": y, "file": f"fixture-{y}year", "rows": 1000 * y, "events": 40 * y} for y in range(1, 6)]
     write("c02", "models-fixture.json", models_doc("C02", "fixture-ladder", {
         "files": files, "ladder": [{"rung": r, "label": t(f"Fixture rung {r}"), "engine": "fixture", "reference": "04 B"} for r in ("P0", "P1", "P4")],
@@ -159,7 +164,9 @@ def core(kind: str, dataset: str, model_dataset: str) -> dict:
 
 def shock_row(sid: str, batches: list[str], reach: int) -> dict:
     return {"shock_id": sid, "batches": batches, "n_records": 50, "n_reaching_structured_view": reach, "performance": metric(),
-            "drift": {"psi_max": 0.08, "csi_max": 0.12, "chi2_p_value": 0.2}, "data_quality": {"completeness": 0.97, "consistency": None},
+            "drift": {"psi_max": 0.08, "csi_max": 0.12, "chi2_p_value": 0.2,
+                      "variables": [{"name": "annual_salary", "psi": 0.08, "csi": 0.12, "chi2_p_value": 0.2},
+                                    {"name": "committed_exposure", "psi": 0.03, "csi": 0.05, "chi2_p_value": None}]}, "data_quality": {"completeness": 0.97, "consistency": None},
             "attribution_rank_correlation": 0.8}
 
 
@@ -175,23 +182,30 @@ def c20() -> None:
                          "parameters_source": None},
              "applied": {"label": "contraste-applied", "rows": [shock_row("F1", ["A1"], 10)], "parameters_source": "SGCDataset_metadata.json, seed 42"}}
     write("c20", "variant-shock-fixture.json", doc("shock", "sgcd", "uci-german", shock, "fixture-sgcd-seen"))
-    variables = [{"name": "committed_exposure", "psi": 0.2, "csi": 0.25, "ks": 0.18}]
+    variables = [{"name": "committed_exposure", "psi": 0.2, "csi": 0.25, "ks": 0.18, "chi2_p_value": 0.01}]
     shift = {"real_drift": {"label": "real-drift-no-model", "model": None, "portfolios": ["typical", "higher-risk", "lower-risk"],
                             "pairs": [{"a": "typical", "b": "higher-risk", "variables": variables}]},
              "synthetic_shift": {"label": "synthetic-shift-fed-reference", "reference_portfolio": "higher-risk", "evaluation_set": "fixture-uci-polish-holdout",
                                  "shifts": [{"shift_id": "fixture-shift", "score": 0.3, "metric": metric(), "psi": 0.15, "flip_share": 0.07}],
                                  "worst_subsample": {"share": 0.1, "metric": metric(-0.08)},
-                                 "label_free": {"conformal": {"alpha": 0.1, "target_coverage": 0.9, "coverage": 0.86, "binomial_p_value": 0.03},
+                                 "label_free": {"conformal": {"label": "convention", "alpha": 0.1, "target_coverage": 0.9, "coverage": 0.86, "binomial_p_value": 0.03,
+                                                             "coverage_by_window": [{"window": "fixture-w1", "n": 500, "coverage": 0.9, "binomial_p_value": 0.9},
+                                                                                    {"window": "fixture-w2", "n": 500, "coverage": 0.82, "binomial_p_value": 0.001}]},
                                                 "cbpe": {"label": "estimate", "estimated_auc": 0.71, "assumptions": [
                                                     {"id": i, "text": t(i)} for i in ("calibrated-probabilities", "no-concept-drift", "no-extrapolation", "adequate-sample")]}}}}
     write("c20", "variant-shift-fixture.json", doc("shift", "fed-2025-corporate", "uci-polish", shift, "fixture-fed-shift"))
     seeds = {"rows": [{"rung": "P4", "n_seeds": 20, "auc": {"mean": 0.77, "sd": 0.004, "min": 0.76, "max": 0.78},
                        "grade_assignment_changed_share": 0.1, "attribution_rank_tau": {"mean": 0.9, "min": 0.8},
-                       "reason_code_overlap": {"top_k": 4, "n_refits": 100, "mean": 0.85, "p05": 0.7}}]}
+                       "reason_code_overlap": {"top_k": 4, "n_refits": 100, "mean": 0.85, "p05": 0.7}}],
+             "explainer_agreement": [{"rung": "P4", "effect_reference": "ale", "n_features": 23, "rank_correlation": 0.82, "reason_if_null": None,
+                                      "top_features": [{"feature": "PAY_0", "shap_importance": 0.41, "effect_range": 0.22,
+                                                        "ale": {"edges": [-2.0, 0.0, 1.0, 2.0], "effect": [-0.05, 0.02, 0.09]}}]}]}
     write("c20", "variant-seeds-fixture.json", doc("seeds", "uci-taiwan", "uci-taiwan", seeds, "fixture-seeds"))
     pert = {"preset_eps": 0.1, "rows": [{"eps": e, "metric": metric(-0.01 * e), "finding": False} for e in (0.05, 0.1, 0.25)]}
     write("c20", "variant-perturbation-fixture.json", doc("perturbation", "uci-taiwan", "uci-taiwan", pert, "fixture-perturbation"))
-    leak = {"planted_feature": "fixture_leak", "screen": {"temporal_order": {"violations": 0},
+    leak = {"planted_feature": "fixture_leak",
+            "thresholds": {"single_feature_auc": {"value": 0.95, "label": "convention"}, "resemblance_auc": {"value": 0.7, "label": "convention"}},
+            "screen": {"temporal_order": {"violations": 0},
                                                            "single_feature_auc": {"max_auc": 0.99, "feature": "fixture_leak", "suspect": True},
                                                            "entity_overlap": {"share": 0.0}, "resemblance_auc": 0.55},
             "caught": True, "performance": {"development_auc": 0.99, "decision_time_auc": 0.75}}
@@ -213,31 +227,48 @@ def two_prop(a: int, na: int, b: int, nb: int) -> tuple[float, float, float, flo
     return z, pz, float(odds), float(pf)
 
 
-def c21_attribute(field: str) -> dict:
-    ref_name = {"derived_race": "White", "derived_ethnicity": "Not Hispanic or Latino", "derived_sex": "Male", "applicant_age": "35-44"}[field]
-    grp_name = next(g for g in GROUPS[field] if g != ref_name)
-    ref_n, ref_a = 1000, 880
-    g_n, g_a = 600, 480
+DEFAULT_SPEC = {
+    "derived_sex": ([("Male", 880, 1000), ("Female", 480, 600)], "Male"),
+    "derived_race": ([("White", 880, 1000), ("Asian", 920, 1000), ("Black or African American", 420, 600)], "White"),
+    "derived_ethnicity": ([("Not Hispanic or Latino", 880, 1000), ("Hispanic or Latino", 480, 600)], "Not Hispanic or Latino"),
+    "applicant_age": ([("35-44", 880, 1000), ("25-34", 480, 600)], "35-44"),
+}
+
+
+def four_fifths(spec: list[tuple[str, int, int]]) -> dict:
+    """The four-fifths block of one attribute: each group against the highest-rate group, decided on the counts (exact arithmetic)."""
+    top = max(spec, key=lambda g: Fraction(g[1], g[2]))  # the first group of the highest rate on a tie
+    rows = []
+    for name, x, n in spec:
+        ratio = None if top[1] == 0 else float(Fraction(x, n) / Fraction(top[1], top[2]))
+        rows.append({"group": name, "ratio_to_highest": ratio, "flag": 5 * x * top[2] < 4 * top[1] * n})
+    return {"label": "employment benchmark", "citation": "29 CFR 1607.4(D)", "threshold": 0.8, "is_credit_law_threshold": False,
+            "compared_with": "highest-rate-group", "decided_on": "exact-counts", "rule": "flag when 5 * x_g * n_h < 4 * x_h * n_g",
+            "highest_rate_group": top[0], "groups": rows}
+
+
+def c21_attribute(field: str, spec: list[tuple[str, int, int]] | None = None, reference: str | None = None) -> dict:
+    """One attribute from (group, approved, n) counts; a contrast per group against the reference group (default: the first)."""
+    if spec is None:
+        spec, reference = DEFAULT_SPEC[field]
+    reference = reference or spec[0][0]
+    counts = {g: (x, n) for g, x, n in spec}
+    ref_a, ref_n = counts[reference]
     basis, ecoa, fha = LEGAL[field]
-    z, pz, odds, pf = two_prop(g_a, g_n, ref_a, ref_n)
-    r_g, r_r = g_a / g_n, ref_a / ref_n
-    ratio = r_g / r_r
+    r_r = ref_a / ref_n
     ci = {"lo": -0.9, "hi": -0.1, "level": 0.95}
     controls = ["debt_to_income_ratio", "combined_loan_to_value_ratio", "income", "loan_amount", "property_value", "loan_type"]
-    return {
-        "field": field,
-        "legal": {"basis": basis, "ecoa": ecoa, "fha": fha, "theory": "comparative-evidence-of-disparate-treatment",
-                  "note": t("Mapping taken from the research addendum H3 section 5; no legal claim")},
-        "reference_group": ref_name,
-        "groups": [{"group": ref_name, "n": ref_n, "n_approved": ref_a, "n_denied": ref_n - ref_a, "selection_rate": r_r},
-                   {"group": grp_name, "n": g_n, "n_approved": g_a, "n_denied": g_n - g_a, "selection_rate": r_g}],
-        "excluded_groups": [{"group": NON_GROUPS[field][0], "n": 50, "reason": t("Not a protected group: carried as its own group, excluded from the pairwise tests")}],
-        "contrasts": [{
-            "group": grp_name, "reference_group": ref_name, "n_group": g_n, "n_reference": ref_n,
+    contrasts = []
+    for grp_name, g_a, g_n in spec:
+        if grp_name == reference:
+            continue
+        z, pz, odds, pf = two_prop(g_a, g_n, ref_a, ref_n)
+        r_g = g_a / g_n
+        ratio = None if ref_a == 0 else r_g / r_r
+        contrasts.append({
+            "group": grp_name, "reference_group": reference, "n_group": g_n, "n_reference": ref_n,
             "selection_rate_group": r_g, "selection_rate_reference": r_r, "parity_gap": r_g - r_r, "parity_ratio": ratio,
-            "adverse_impact_ratio": {"value": ratio, "four_fifths": {"flag": ratio < 0.8, "threshold": 0.8, "label": "employment benchmark",
-                                                                      "citation": "29 CFR 1607.4(D)", "is_credit_law_threshold": False},
-                                     "note": t("The four-fifths line is an employment benchmark, not a credit-law threshold")},
+            "adverse_impact_ratio": {"value": ratio, "note": t("The adverse impact ratio against the chosen reference group")},
             "z_test": {"statistic": z, "p_value": pz}, "fisher_exact": {"odds_ratio": odds, "p_value": pf},
             "controlled": {"estimate": {"model": "logistic-decision-model", "outcome": "approval", "coefficient": -0.5, "odds_ratio": math.exp(-0.5),
                                         "ci": ci, "n": g_n + ref_n, "controls": controls, "missing_controls": ["credit_score"],
@@ -248,7 +279,17 @@ def c21_attribute(field: str) -> dict:
                                          "unit": "percentage points of rate_spread"}, "reason": None},
             "confirmation": {"estimate": {"fit_year": 2018, "confirm_year": 2019, "fit_coefficient": -0.5, "confirm_coefficient": -0.4,
                                           "same_sign": True, "size_ratio": 0.8}, "reason": None},
-        }],
+        })
+    return {
+        "field": field,
+        "legal": {"basis": basis, "ecoa": ecoa, "fha": fha, "theory": "comparative-evidence-of-disparate-treatment",
+                  "fha_disparate_impact": FHA_DISPARATE_IMPACT[field],
+                  "note": t("Mapping taken from the research addendum H3 section 5; no legal claim")},
+        "reference_group": reference,
+        "groups": [{"group": g, "n": n, "n_approved": x, "n_denied": n - x, "selection_rate": x / n} for g, x, n in spec],
+        "excluded_groups": [{"group": NON_GROUPS[field][0], "n": 50, "reason": t("Not a protected group: carried as its own group, excluded from the pairwise tests")}],
+        "four_fifths": four_fifths(spec),
+        "contrasts": contrasts,
     }
 
 
@@ -257,7 +298,11 @@ CONVENTIONS = {"label": "convention",
                            "note": t("approval = originated or approved not accepted, denial = denied; the rest have no decision")},
                "dti_recode": {"bins": ["<20%", "20%-<30%", "30%-<36%", "36", "50%-60%", ">60%"],
                               "note": t("The mixed exact and binned field is recoded to the published bins")},
-               "group_exclusion": t("Joint, Not Available and Free Form Text Only categories are excluded from the pairwise tests")}
+               "group_exclusion": t("Joint, Not Available and Free Form Text Only categories are excluded from the pairwise tests"),
+               "identifiers": {"id": HMDA_ID_RULE, "observation_date": HMDA_DATE_RULE, "label": "convention",
+                               "note": t("Public HMDA withholds the loan identifier and the dates: id is the row position within the activity year, the date is the activity year's last day")}}
+LICENCE = {"status": "UNVERIFIED", "platform_terms": HMDA_PLATFORM_TERMS, "platform_terms_cover": "the software package, not the published datasets",
+           "modified_statement": HMDA_MODIFIED, "note": t("The HMDA data licence sentence is UNVERIFIED; the views quote the platform software terms and the CFPB statement")}
 NOTES = [{"field": "debt_to_income_ratio", "treatment": "binned", "n_missing": None, "reason": t("Binned outside 36 to 49 percent in the public release")},
          {"field": "loan_amount", "treatment": "rounded", "n_missing": None, "reason": t("Rounded to the midpoint of a $10,000 interval")}]
 
@@ -273,10 +318,10 @@ def c21_legal() -> dict:
 def c21() -> None:
     out = {"kind": "year-pair", "pair_id": "2018-19", "fit_year": 2018, "confirm_year": 2019,
            "scope": {"state": "fixture-state", "source": "fixture-not-a-result", "rows_fit": 2000, "rows_confirm": 2100},
-           "legal": c21_legal(), "conventions": CONVENTIONS, "attributes": [c21_attribute("derived_sex"), c21_attribute("derived_race")],
+           "legal": c21_legal(), "licence": LICENCE, "conventions": CONVENTIONS, "attributes": [c21_attribute("derived_sex"), c21_attribute("derived_race")],
            "situation_testing": {"label": "situation-testing", "comparator": "ceteris-paribus",
                                  "counterfactual_test": {"run": False, "reason": t("Public HMDA gives no counterfactual dataset")},
-                                 "attribute": "derived_sex", "k": 30, "alpha": 0.05, "tau": 0, "centers": "excluded",
+                                 "attribute": "derived_sex", "k": 30, "alpha": 0.05, "tau": 0, "distance_normalization": "range", "label_parameters": "convention", "centers": "excluded",
                                  "interval": "one-sided Wald, equation (10) of arXiv 2502.01267", "n_complainants": 600, "n_cases": 80, "n_significant": 20},
            "data_notes": NOTES, "requirements": ["CT-2101"]}
     write("c21", "variant-year-pair-fixture.json",
@@ -286,7 +331,7 @@ def c21() -> None:
                    {"name": "combined_loan_to_value_ratio", "role": "control", "alias": "loan_to_value_ratio"}],
         "decision_models": [{"fit_year": 2018, "kind": "logistic", "outcome": "approval", "n": 2000, "converged": True,
                              "terms": [{"term": "derived_sex=Female", "coefficient": -0.5, "se": 0.2}]}],
-        "conventions": CONVENTIONS, "legal": c21_legal(), "data_notes": NOTES}))
+        "conventions": CONVENTIONS, "legal": c21_legal(), "licence": LICENCE, "data_notes": NOTES}))
 
 
 if __name__ == "__main__":

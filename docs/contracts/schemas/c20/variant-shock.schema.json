@@ -389,7 +389,8 @@
       "required": [
         "psi_max",
         "csi_max",
-        "chi2_p_value"
+        "chi2_p_value",
+        "variables"
       ],
       "properties": {
         "psi_max": {
@@ -412,6 +413,48 @@
               "type": "null"
             }
           ]
+        },
+        "variables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "psi",
+              "csi",
+              "chi2_p_value"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "psi": {
+                "type": "number",
+                "minimum": 0
+              },
+              "csi": {
+                "type": "number",
+                "minimum": 0
+              },
+              "chi2_p_value": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "A value in [0, 1]."
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "minItems": 1,
+          "description": "Per variable PSI and CSI with the chi-square p-value, so the bars and the chi-square band can be drawn (engine validation.stability)."
         }
       }
     },
@@ -504,12 +547,13 @@
             {
               "type": "null"
             }
-          ]
+          ],
+          "description": "Spearman rho, the engine's ml.explanations.rank_agreement, between the mean absolute SHAP importance per feature on the clean batches and on the batches of this shock; null when a vector is constant (rank_agreement raises ValueError)."
         }
       },
       "description": "One shock family on the 1,000 SGCD records; n_reaching_structured_view counts the records whose json_view differs from a clean one (F1: 70 of 1,000, no other shock; addendum H4 6.4)."
     },
-    "c20ShockBlock": {
+    "c20ShockShipped": {
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -519,10 +563,7 @@
       ],
       "properties": {
         "label": {
-          "enum": [
-            "shipped",
-            "contraste-applied"
-          ]
+          "const": "shipped"
         },
         "rows": {
           "type": "array",
@@ -532,17 +573,35 @@
           "minItems": 1
         },
         "parameters_source": {
-          "anyOf": [
-            {
-              "const": "SGCDataset_metadata.json, seed 42"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "const": null
         }
       },
-      "description": "The shocks as shipped, or Contraste's own application of each shock family to json_view (decision C5)."
+      "description": "The shocks as shipped in the SGCD batches: no Contraste parameters (decision C5)."
+    },
+    "c20ShockApplied": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "rows",
+        "parameters_source"
+      ],
+      "properties": {
+        "label": {
+          "const": "contraste-applied"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c20ShockRow"
+          },
+          "minItems": 1
+        },
+        "parameters_source": {
+          "const": "SGCDataset_metadata.json, seed 42"
+        }
+      },
+      "description": "Contraste's own application of each shock family to json_view, with the metadata parameters and seed 42 (decision C5)."
     },
     "c20FairRow": {
       "type": "object",
@@ -648,7 +707,202 @@
           "items": {
             "$ref": "#/$defs/c20FairRow"
           },
-          "minItems": 4
+          "minItems": 12,
+          "maxItems": 12,
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            }
+          ]
         }
       },
       "description": "The labelled fairness battery on the Taiwan model (decision Q5): outcome-conditioned tests, a battery row set, not a compliance statement."
@@ -743,13 +997,7 @@
           "const": "shock"
         },
         "dataset_id": {
-          "enum": [
-            "sgcd",
-            "uci-german",
-            "uci-taiwan",
-            "uci-polish",
-            "fed-2025-corporate"
-          ]
+          "const": "sgcd"
         },
         "model_dataset": {
           "enum": [
@@ -804,10 +1052,10 @@
           "const": "json_view"
         },
         "shipped": {
-          "$ref": "#/$defs/c20ShockBlock"
+          "$ref": "#/$defs/c20ShockShipped"
         },
         "applied": {
-          "$ref": "#/$defs/c20ShockBlock"
+          "$ref": "#/$defs/c20ShockApplied"
         }
       }
     }

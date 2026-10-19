@@ -118,6 +118,13 @@ def contains_each(arr: dict, key: str, values: list) -> dict:
     return arr
 
 
+def contains_pairs(arr: dict, keys: tuple[str, ...], rows: list[tuple]) -> dict:
+    """The array holds each combination of ``keys`` exactly once (maxItems = number of combinations, one ``contains`` per combination)."""
+    arr["minItems"] = arr["maxItems"] = len(rows)
+    arr["allOf"] = [{"contains": {"properties": {k: {"const": v} for k, v in zip(keys, row)}, "required": list(keys)}} for row in rows]
+    return arr
+
+
 # A not_evaluated test row carries no number and states its reason (engine contract conventions).
 NOT_EVALUATED_RULE = {
     "properties": {"tests": {"items": {

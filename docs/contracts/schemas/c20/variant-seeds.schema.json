@@ -461,7 +461,202 @@
           "items": {
             "$ref": "#/$defs/c20FairRow"
           },
-          "minItems": 4
+          "minItems": 12,
+          "maxItems": 12,
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equalized_odds"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.equal_opportunity"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.calibration_within_groups"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "sex"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "age"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "test_id": {
+                    "const": "fair.auc_by_group"
+                  },
+                  "attribute": {
+                    "const": "marital_status"
+                  }
+                },
+                "required": [
+                  "test_id",
+                  "attribute"
+                ]
+              }
+            }
+          ]
         }
       },
       "description": "The labelled fairness battery on the Taiwan model (decision Q5): outcome-conditioned tests, a battery row set, not a compliance statement."
@@ -647,6 +842,116 @@
         }
       }
     },
+    "c20Ale": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "edges",
+        "effect"
+      ],
+      "properties": {
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2
+        },
+        "effect": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "ALE of one feature: bin edges (n_bins + 1) and the centred effect of each bin (n_bins), the engine's accumulated_local_effects."
+    },
+    "c20Explainer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rung",
+        "effect_reference",
+        "n_features",
+        "rank_correlation",
+        "reason_if_null",
+        "top_features"
+      ],
+      "properties": {
+        "rung": {
+          "type": "string",
+          "minLength": 1
+        },
+        "effect_reference": {
+          "enum": [
+            "ale",
+            "pdp"
+          ]
+        },
+        "n_features": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "rank_correlation": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Spearman rho between the mean absolute SHAP per feature and the range of its ALE or PDP curve (ml.explanations.rank_agreement, ml.effect_agreement)."
+        },
+        "reason_if_null": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "top_features": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "feature",
+              "shap_importance",
+              "effect_range",
+              "ale"
+            ],
+            "properties": {
+              "feature": {
+                "type": "string",
+                "minLength": 1
+              },
+              "shap_importance": {
+                "type": "number",
+                "minimum": 0
+              },
+              "effect_range": {
+                "type": "number",
+                "minimum": 0
+              },
+              "ale": {
+                "$ref": "#/$defs/c20Ale"
+              }
+            }
+          },
+          "minItems": 1,
+          "maxItems": 10
+        }
+      },
+      "description": "Explainer agreement of one model: SHAP against ALE or PDP, with the ALE curves of the top features (06 C.7 l.1006-1008)."
+    },
     "c20OutputsSeeds": {
       "type": "object",
       "additionalProperties": false,
@@ -659,7 +964,8 @@
         "fairness_battery",
         "impact_detail",
         "requirements",
-        "rows"
+        "rows",
+        "explainer_agreement"
       ],
       "properties": {
         "kind": {
@@ -721,6 +1027,13 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/c20SeedRow"
+          },
+          "minItems": 1
+        },
+        "explainer_agreement": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c20Explainer"
           },
           "minItems": 1
         }

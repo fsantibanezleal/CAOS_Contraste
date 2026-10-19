@@ -1191,6 +1191,171 @@
                 "outputs": {
                   "properties": {
                     "horizon_id": {
+                      "const": "h1"
+                    }
+                  },
+                  "required": [
+                    "horizon_id"
+                  ]
+                }
+              },
+              "required": [
+                "outputs"
+              ]
+            },
+            "then": {
+              "properties": {
+                "outputs": {
+                  "properties": {
+                    "years": {
+                      "const": 1
+                    },
+                    "pooled": {
+                      "type": "null"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "outputs": {
+                  "properties": {
+                    "horizon_id": {
+                      "const": "h2"
+                    }
+                  },
+                  "required": [
+                    "horizon_id"
+                  ]
+                }
+              },
+              "required": [
+                "outputs"
+              ]
+            },
+            "then": {
+              "properties": {
+                "outputs": {
+                  "properties": {
+                    "years": {
+                      "const": 2
+                    },
+                    "pooled": {
+                      "type": "null"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "outputs": {
+                  "properties": {
+                    "horizon_id": {
+                      "const": "h3"
+                    }
+                  },
+                  "required": [
+                    "horizon_id"
+                  ]
+                }
+              },
+              "required": [
+                "outputs"
+              ]
+            },
+            "then": {
+              "properties": {
+                "outputs": {
+                  "properties": {
+                    "years": {
+                      "const": 3
+                    },
+                    "pooled": {
+                      "type": "null"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "outputs": {
+                  "properties": {
+                    "horizon_id": {
+                      "const": "h4"
+                    }
+                  },
+                  "required": [
+                    "horizon_id"
+                  ]
+                }
+              },
+              "required": [
+                "outputs"
+              ]
+            },
+            "then": {
+              "properties": {
+                "outputs": {
+                  "properties": {
+                    "years": {
+                      "const": 4
+                    },
+                    "pooled": {
+                      "type": "null"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "outputs": {
+                  "properties": {
+                    "horizon_id": {
+                      "const": "h5"
+                    }
+                  },
+                  "required": [
+                    "horizon_id"
+                  ]
+                }
+              },
+              "required": [
+                "outputs"
+              ]
+            },
+            "then": {
+              "properties": {
+                "outputs": {
+                  "properties": {
+                    "years": {
+                      "const": 5
+                    },
+                    "pooled": {
+                      "type": "null"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "outputs": {
+                  "properties": {
+                    "horizon_id": {
                       "const": "pooled"
                     }
                   },
@@ -1208,27 +1373,13 @@
                 "outputs": {
                   "properties": {
                     "years": {
-                      "type": "null"
+                      "const": null
                     },
                     "pooled": {
                       "type": "object"
                     },
                     "firm_overlap_caveat": {
                       "type": "object"
-                    }
-                  }
-                }
-              }
-            },
-            "else": {
-              "properties": {
-                "outputs": {
-                  "properties": {
-                    "years": {
-                      "type": "integer"
-                    },
-                    "pooled": {
-                      "type": "null"
                     }
                   }
                 }
@@ -1247,6 +1398,44 @@
           }
         ],
         "unevaluatedProperties": false
+      },
+      "c02Cap": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "population",
+          "defaults",
+          "default_rate"
+        ],
+        "properties": {
+          "population": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            },
+            "minItems": 2
+          },
+          "defaults": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            },
+            "minItems": 2
+          },
+          "default_rate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A value in [0, 1]."
+          }
+        },
+        "description": "CAP points of the holdout, in the shape of C01: cumulative share of the population against the cumulative share of the defaults."
       },
       "c02Challenger": {
         "type": "object",
@@ -1811,12 +2000,87 @@
         },
         "description": "The five files stacked with a horizon indicator (decision Q9); the firm overlap is unknown."
       },
+      "c02ReliabilityBin": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "n",
+          "pd",
+          "dr",
+          "lo",
+          "hi"
+        ],
+        "properties": {
+          "n": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pd": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "exclusiveMaximum": 1
+          },
+          "dr": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A value in [0, 1]."
+          },
+          "lo": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A value in [0, 1]."
+          },
+          "hi": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A value in [0, 1]."
+          }
+        },
+        "description": "One decile of the reliability diagram, in the shape of C01: mean predicted PD, observed default rate and its interval."
+      },
+      "c02Roc": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fpr",
+          "tpr"
+        ],
+        "properties": {
+          "fpr": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            },
+            "minItems": 2
+          },
+          "tpr": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A value in [0, 1]."
+            },
+            "minItems": 2
+          }
+        },
+        "description": "ROC points of the holdout, in the shape of C01: false and true positive rates, same length, from (0, 0) to (1, 1)."
+      },
       "c02Rung": {
         "type": "object",
         "additionalProperties": false,
         "required": [
           "model_id",
           "rung",
+          "roc",
+          "cap",
+          "reliability",
           "discrimination",
           "calibration",
           "overfit",
@@ -1836,6 +2100,21 @@
               "P3",
               "P4"
             ]
+          },
+          "roc": {
+            "$ref": "#/components/schemas/c02Roc"
+          },
+          "cap": {
+            "$ref": "#/components/schemas/c02Cap"
+          },
+          "reliability": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c02ReliabilityBin"
+            },
+            "minItems": 1,
+            "maxItems": 10,
+            "description": "Calibration by decile of the holdout: at most ten bins."
           },
           "discrimination": {
             "type": "object",
@@ -34416,13 +34695,39 @@
         ],
         "unevaluatedProperties": false
       },
+      "c20Ale": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "edges",
+          "effect"
+        ],
+        "properties": {
+          "edges": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2
+          },
+          "effect": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 1
+          }
+        },
+        "description": "ALE of one feature: bin edges (n_bins + 1) and the centred effect of each bin (n_bins), the engine's accumulated_local_effects."
+      },
       "c20Drift": {
         "type": "object",
         "additionalProperties": false,
         "required": [
           "psi_max",
           "csi_max",
-          "chi2_p_value"
+          "chi2_p_value",
+          "variables"
         ],
         "properties": {
           "psi_max": {
@@ -34445,8 +34750,135 @@
                 "type": "null"
               }
             ]
+          },
+          "variables": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "psi",
+                "csi",
+                "chi2_p_value"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "psi": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "csi": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "chi2_p_value": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1,
+                      "description": "A value in [0, 1]."
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "minItems": 1,
+            "description": "Per variable PSI and CSI with the chi-square p-value, so the bars and the chi-square band can be drawn (engine validation.stability)."
           }
         }
+      },
+      "c20Explainer": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rung",
+          "effect_reference",
+          "n_features",
+          "rank_correlation",
+          "reason_if_null",
+          "top_features"
+        ],
+        "properties": {
+          "rung": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effect_reference": {
+            "enum": [
+              "ale",
+              "pdp"
+            ]
+          },
+          "n_features": {
+            "type": "integer",
+            "minimum": 2
+          },
+          "rank_correlation": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": -1,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Spearman rho between the mean absolute SHAP per feature and the range of its ALE or PDP curve (ml.explanations.rank_agreement, ml.effect_agreement)."
+          },
+          "reason_if_null": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "top_features": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "feature",
+                "shap_importance",
+                "effect_range",
+                "ale"
+              ],
+              "properties": {
+                "feature": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "shap_importance": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "effect_range": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "ale": {
+                  "$ref": "#/components/schemas/c20Ale"
+                }
+              }
+            },
+            "minItems": 1,
+            "maxItems": 10
+          }
+        },
+        "description": "Explainer agreement of one model: SHAP against ALE or PDP, with the ALE curves of the top features (06 C.7 l.1006-1008)."
       },
       "c20FairBattery": {
         "type": "object",
@@ -34472,7 +34904,202 @@
             "items": {
               "$ref": "#/components/schemas/c20FairRow"
             },
-            "minItems": 4
+            "minItems": 12,
+            "maxItems": 12,
+            "allOf": [
+              {
+                "contains": {
+                  "properties": {
+                    "test_id": {
+                      "const": "fair.equalized_odds"
+                    },
+                    "attribute": {
+                      "const": "sex"
+                    }
+                  },
+                  "required": [
+                    "test_id",
+                    "attribute"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "test_id": {
+                      "const": "fair.equalized_odds"
+                    },
+                    "attribute": {
+                      "const": "age"
+                    }
+                  },
+                  "required": [
+                    "test_id",
+                    "attribute"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "test_id": {
+                      "const": "fair.equalized_odds"
+                    },
+                    "attribute": {
+                      "const": "marital_status"
+                    }
+                  },
+                  "required": [
+                    "test_id",
+                    "attribute"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "test_id": {
+                      "const": "fair.equal_opportunity"
+                    },
+                    "attribute": {
+                      "const": "sex"
+                    }
+                  },
+                  "required": [
+                    "test_id",
+                    "attribute"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "test_id": {
+                      "const": "fair.equal_opportunity"
+                    },
+                    "attribute": {
+                      "const": "age"
+                    }
+                  },
+                  "required": [
+                    "test_id",
+                    "attribute"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "test_id": {
+                      "const": "fair.equal_opportunity"
+                    },
+                    "attribute": {
+                      "const": "marital_status"
+                    }
+                  },
+                  "required": [
+                    "test_id",
+                    "attribute"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "test_id": {
+                      "const": "fair.calibration_within_groups"
+                    },
+                    "attribute": {
+                      "const": "sex"
+                    }
+                  },
+                  "required": [
+                    "test_id",
+                    "attribute"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "test_id": {
+                      "const": "fair.calibration_within_groups"
+                    },
+                    "attribute": {
+                      "const": "age"
+                    }
+                  },
+                  "required": [
+                    "test_id",
+                    "attribute"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "test_id": {
+                      "const": "fair.calibration_within_groups"
+                    },
+                    "attribute": {
+                      "const": "marital_status"
+                    }
+                  },
+                  "required": [
+                    "test_id",
+                    "attribute"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "test_id": {
+                      "const": "fair.auc_by_group"
+                    },
+                    "attribute": {
+                      "const": "sex"
+                    }
+                  },
+                  "required": [
+                    "test_id",
+                    "attribute"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "test_id": {
+                      "const": "fair.auc_by_group"
+                    },
+                    "attribute": {
+                      "const": "age"
+                    }
+                  },
+                  "required": [
+                    "test_id",
+                    "attribute"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "test_id": {
+                      "const": "fair.auc_by_group"
+                    },
+                    "attribute": {
+                      "const": "marital_status"
+                    }
+                  },
+                  "required": [
+                    "test_id",
+                    "attribute"
+                  ]
+                }
+              }
+            ]
           }
         },
         "description": "The labelled fairness battery on the Taiwan model (decision Q5): outcome-conditioned tests, a battery row set, not a compliance statement."
@@ -34771,13 +35398,7 @@
             "const": "shock"
           },
           "dataset_id": {
-            "enum": [
-              "sgcd",
-              "uci-german",
-              "uci-taiwan",
-              "uci-polish",
-              "fed-2025-corporate"
-            ]
+            "const": "sgcd"
           },
           "model_dataset": {
             "enum": [
@@ -34832,10 +35453,10 @@
             "const": "json_view"
           },
           "shipped": {
-            "$ref": "#/components/schemas/c20ShockBlock"
+            "$ref": "#/components/schemas/c20ShockShipped"
           },
           "applied": {
-            "$ref": "#/components/schemas/c20ShockBlock"
+            "$ref": "#/components/schemas/c20ShockApplied"
           }
         }
       },
@@ -34852,6 +35473,7 @@
           "impact_detail",
           "requirements",
           "planted_feature",
+          "thresholds",
           "screen",
           "caught",
           "performance"
@@ -34915,6 +35537,23 @@
           "planted_feature": {
             "type": "string",
             "minLength": 1
+          },
+          "thresholds": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "single_feature_auc",
+              "resemblance_auc"
+            ],
+            "properties": {
+              "single_feature_auc": {
+                "$ref": "#/components/schemas/c20Threshold"
+              },
+              "resemblance_auc": {
+                "$ref": "#/components/schemas/c20Threshold"
+              }
+            },
+            "description": "The two screen limits of the policy, each a convention (ml.leakage_screen.single_feature_auc and .resemblance_auc)."
           },
           "screen": {
             "type": "object",
@@ -35128,7 +35767,8 @@
           "fairness_battery",
           "impact_detail",
           "requirements",
-          "rows"
+          "rows",
+          "explainer_agreement"
         ],
         "properties": {
           "kind": {
@@ -35190,6 +35830,13 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/c20SeedRow"
+            },
+            "minItems": 1
+          },
+          "explainer_agreement": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c20Explainer"
             },
             "minItems": 1
           }
@@ -35537,7 +36184,8 @@
                       "name",
                       "psi",
                       "csi",
-                      "ks"
+                      "ks",
+                      "chi2_p_value"
                     ],
                     "properties": {
                       "name": {
@@ -35557,6 +36205,19 @@
                         "minimum": 0,
                         "maximum": 1,
                         "description": "A value in [0, 1]."
+                      },
+                      "chi2_p_value": {
+                        "anyOf": [
+                          {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1,
+                            "description": "A value in [0, 1]."
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
                       }
                     }
                   },
@@ -35707,7 +36368,7 @@
         },
         "description": "The SGCD dataset card's prohibited-use sentence (U14 research addendum H4 6.5), on every variant that shows SGCD."
       },
-      "c20ShockBlock": {
+      "c20ShockApplied": {
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -35717,10 +36378,7 @@
         ],
         "properties": {
           "label": {
-            "enum": [
-              "shipped",
-              "contraste-applied"
-            ]
+            "const": "contraste-applied"
           },
           "rows": {
             "type": "array",
@@ -35730,17 +36388,10 @@
             "minItems": 1
           },
           "parameters_source": {
-            "anyOf": [
-              {
-                "const": "SGCDataset_metadata.json, seed 42"
-              },
-              {
-                "type": "null"
-              }
-            ]
+            "const": "SGCDataset_metadata.json, seed 42"
           }
         },
-        "description": "The shocks as shipped, or Contraste's own application of each shock family to json_view (decision C5)."
+        "description": "Contraste's own application of each shock family to json_view, with the metadata parameters and seed 42 (decision C5)."
       },
       "c20ShockRow": {
         "type": "object",
@@ -35802,10 +36453,36 @@
               {
                 "type": "null"
               }
-            ]
+            ],
+            "description": "Spearman rho, the engine's ml.explanations.rank_agreement, between the mean absolute SHAP importance per feature on the clean batches and on the batches of this shock; null when a vector is constant (rank_agreement raises ValueError)."
           }
         },
         "description": "One shock family on the 1,000 SGCD records; n_reaching_structured_view counts the records whose json_view differs from a clean one (F1: 70 of 1,000, no other shock; addendum H4 6.4)."
+      },
+      "c20ShockShipped": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "rows",
+          "parameters_source"
+        ],
+        "properties": {
+          "label": {
+            "const": "shipped"
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c20ShockRow"
+            },
+            "minItems": 1
+          },
+          "parameters_source": {
+            "const": null
+          }
+        },
+        "description": "The shocks as shipped in the SGCD batches: no Contraste parameters (decision C5)."
       },
       "c20SyntheticShift": {
         "type": "object",
@@ -35902,12 +36579,18 @@
                 "type": "object",
                 "additionalProperties": false,
                 "required": [
+                  "label",
                   "alpha",
                   "target_coverage",
                   "coverage",
-                  "binomial_p_value"
+                  "binomial_p_value",
+                  "coverage_by_window"
                 ],
                 "properties": {
+                  "label": {
+                    "const": "convention",
+                    "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
+                  },
                   "alpha": {
                     "type": "number",
                     "minimum": 0,
@@ -35931,6 +36614,43 @@
                     "minimum": 0,
                     "maximum": 1,
                     "description": "A value in [0, 1]."
+                  },
+                  "coverage_by_window": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "window",
+                        "n",
+                        "coverage",
+                        "binomial_p_value"
+                      ],
+                      "properties": {
+                        "window": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "n": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "coverage": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1,
+                          "description": "A value in [0, 1]."
+                        },
+                        "binomial_p_value": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1,
+                          "description": "A value in [0, 1]."
+                        }
+                      }
+                    },
+                    "minItems": 1,
+                    "description": "Coverage over time: one row per evaluation window (06 I.4 l.1248); alpha is a convention."
                   }
                 }
               },
@@ -36035,6 +36755,26 @@
         },
         "description": "Reading (b) of decision Q7: the Fed portfolios as the reference of a synthetic shift on the UCI evaluation set only."
       },
+      "c20Threshold": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "value",
+          "label"
+        ],
+        "properties": {
+          "value": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "A value in [0, 1]."
+          },
+          "label": {
+            "const": "convention",
+            "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
+          }
+        }
+      },
       "c21-models": {
         "title": "C21 models",
         "description": "Catalog row c21-models 1.0.0: the HMDA fields, the fitted decision models and the conventions.",
@@ -36124,15 +36864,19 @@
             "properties": {
               "tests": {
                 "items": {
-                  "not": {
-                    "properties": {
-                      "test_id": {
-                        "pattern": "^fair\\.(equalized_odds|equal_opportunity|calibration_within_groups|auc_by_group)"
-                      }
-                    },
-                    "required": [
-                      "test_id"
-                    ]
+                  "properties": {
+                    "test_id": {
+                      "enum": [
+                        "fair.demographic_parity",
+                        "fair.adverse_impact",
+                        "fair.two_proportion_z",
+                        "fair.fisher_exact",
+                        "fair.conditional_disparity",
+                        "fair.rate_spread_disparity",
+                        "fair.replication",
+                        "fair.situation_testing"
+                      ]
+                    }
                   }
                 }
               }
@@ -36146,7 +36890,6 @@
         "additionalProperties": false,
         "required": [
           "value",
-          "four_fifths",
           "note"
         ],
         "properties": {
@@ -36160,78 +36903,13 @@
                 "type": "null"
               }
             ],
-            "description": "Protected group's selection rate over the reference group's; null when the reference rate is 0."
-          },
-          "four_fifths": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "flag",
-              "threshold",
-              "label",
-              "citation",
-              "is_credit_law_threshold"
-            ],
-            "properties": {
-              "flag": {
-                "type": "boolean"
-              },
-              "threshold": {
-                "const": 0.8
-              },
-              "label": {
-                "const": "employment benchmark"
-              },
-              "citation": {
-                "const": "29 CFR 1607.4(D)"
-              },
-              "is_credit_law_threshold": {
-                "const": false
-              }
-            },
-            "description": "The four-fifths line is an employment benchmark and never a credit-law threshold (06 C.7 l.1033-1037, I.6 l.1268-1270)."
+            "description": "Protected group's selection rate over the reference group's: the parity ratio, null when the reference rate is 0. It is not the four-fifths ratio, which is taken against the highest-rate group (the attribute's four_fifths block)."
           },
           "note": {
             "$ref": "#/components/schemas/common-text"
           }
         },
-        "allOf": [
-          {
-            "if": {
-              "properties": {
-                "value": {
-                  "type": "number",
-                  "exclusiveMaximum": 0.8
-                }
-              },
-              "required": [
-                "value"
-              ]
-            },
-            "then": {
-              "properties": {
-                "four_fifths": {
-                  "properties": {
-                    "flag": {
-                      "const": true
-                    }
-                  }
-                }
-              }
-            },
-            "else": {
-              "properties": {
-                "four_fifths": {
-                  "properties": {
-                    "flag": {
-                      "const": false
-                    }
-                  }
-                }
-              }
-            }
-          }
-        ]
+        "description": "The adverse impact ratio against the chosen reference group."
       },
       "c21Attribute": {
         "type": "object",
@@ -36242,6 +36920,7 @@
           "reference_group",
           "groups",
           "excluded_groups",
+          "four_fifths",
           "contrasts"
         ],
         "properties": {
@@ -36261,7 +36940,8 @@
               "ecoa",
               "fha",
               "note",
-              "theory"
+              "theory",
+              "fha_disparate_impact"
             ],
             "properties": {
               "basis": {
@@ -36283,6 +36963,10 @@
               },
               "theory": {
                 "const": "comparative-evidence-of-disparate-treatment"
+              },
+              "fha_disparate_impact": {
+                "type": "string",
+                "minLength": 1
               }
             },
             "description": "The legal mapping of the attribute, from the addendum H3 section 5 table only."
@@ -36304,6 +36988,9 @@
               "$ref": "#/components/schemas/c21Excluded"
             },
             "minItems": 0
+          },
+          "four_fifths": {
+            "$ref": "#/components/schemas/c21FourFifths"
           },
           "contrasts": {
             "type": "array",
@@ -36329,6 +37016,104 @@
                   },
                   "fha": {
                     "const": true
+                  },
+                  "fha_disparate_impact": {
+                    "const": "not assessed (disparate impact under the FHA only; gross HMDA disparities are not appropriate for disproportionate adverse impact analysis, Interagency Procedures appendix, printed page 26)"
+                  }
+                }
+              },
+              "reference_group": {
+                "enum": [
+                  "American Indian or Alaska Native",
+                  "Asian",
+                  "Black or African American",
+                  "Native Hawaiian or Other Pacific Islander",
+                  "White",
+                  "2 or more minority races"
+                ]
+              },
+              "groups": {
+                "items": {
+                  "properties": {
+                    "group": {
+                      "enum": [
+                        "American Indian or Alaska Native",
+                        "Asian",
+                        "Black or African American",
+                        "Native Hawaiian or Other Pacific Islander",
+                        "White",
+                        "2 or more minority races"
+                      ]
+                    }
+                  }
+                }
+              },
+              "excluded_groups": {
+                "items": {
+                  "properties": {
+                    "group": {
+                      "enum": [
+                        "Joint",
+                        "Free Form Text Only",
+                        "Race Not Available"
+                      ]
+                    }
+                  }
+                }
+              },
+              "four_fifths": {
+                "properties": {
+                  "highest_rate_group": {
+                    "enum": [
+                      "American Indian or Alaska Native",
+                      "Asian",
+                      "Black or African American",
+                      "Native Hawaiian or Other Pacific Islander",
+                      "White",
+                      "2 or more minority races"
+                    ]
+                  },
+                  "groups": {
+                    "items": {
+                      "properties": {
+                        "group": {
+                          "enum": [
+                            "American Indian or Alaska Native",
+                            "Asian",
+                            "Black or African American",
+                            "Native Hawaiian or Other Pacific Islander",
+                            "White",
+                            "2 or more minority races"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "contrasts": {
+                "items": {
+                  "properties": {
+                    "group": {
+                      "enum": [
+                        "American Indian or Alaska Native",
+                        "Asian",
+                        "Black or African American",
+                        "Native Hawaiian or Other Pacific Islander",
+                        "White",
+                        "2 or more minority races"
+                      ]
+                    },
+                    "reference_group": {
+                      "enum": [
+                        "American Indian or Alaska Native",
+                        "Asian",
+                        "Black or African American",
+                        "Native Hawaiian or Other Pacific Islander",
+                        "White",
+                        "2 or more minority races"
+                      ]
+                    }
                   }
                 }
               }
@@ -36349,6 +37134,80 @@
                   },
                   "fha": {
                     "const": true
+                  },
+                  "fha_disparate_impact": {
+                    "const": "not assessed (disparate impact under the FHA only; gross HMDA disparities are not appropriate for disproportionate adverse impact analysis, Interagency Procedures appendix, printed page 26)"
+                  }
+                }
+              },
+              "reference_group": {
+                "enum": [
+                  "Hispanic or Latino",
+                  "Not Hispanic or Latino"
+                ]
+              },
+              "groups": {
+                "items": {
+                  "properties": {
+                    "group": {
+                      "enum": [
+                        "Hispanic or Latino",
+                        "Not Hispanic or Latino"
+                      ]
+                    }
+                  }
+                }
+              },
+              "excluded_groups": {
+                "items": {
+                  "properties": {
+                    "group": {
+                      "enum": [
+                        "Joint",
+                        "Free Form Text Only",
+                        "Ethnicity Not Available"
+                      ]
+                    }
+                  }
+                }
+              },
+              "four_fifths": {
+                "properties": {
+                  "highest_rate_group": {
+                    "enum": [
+                      "Hispanic or Latino",
+                      "Not Hispanic or Latino"
+                    ]
+                  },
+                  "groups": {
+                    "items": {
+                      "properties": {
+                        "group": {
+                          "enum": [
+                            "Hispanic or Latino",
+                            "Not Hispanic or Latino"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "contrasts": {
+                "items": {
+                  "properties": {
+                    "group": {
+                      "enum": [
+                        "Hispanic or Latino",
+                        "Not Hispanic or Latino"
+                      ]
+                    },
+                    "reference_group": {
+                      "enum": [
+                        "Hispanic or Latino",
+                        "Not Hispanic or Latino"
+                      ]
+                    }
                   }
                 }
               }
@@ -36369,6 +37228,79 @@
                   },
                   "fha": {
                     "const": true
+                  },
+                  "fha_disparate_impact": {
+                    "const": "not assessed (disparate impact under the FHA only; gross HMDA disparities are not appropriate for disproportionate adverse impact analysis, Interagency Procedures appendix, printed page 26)"
+                  }
+                }
+              },
+              "reference_group": {
+                "enum": [
+                  "Male",
+                  "Female"
+                ]
+              },
+              "groups": {
+                "items": {
+                  "properties": {
+                    "group": {
+                      "enum": [
+                        "Male",
+                        "Female"
+                      ]
+                    }
+                  }
+                }
+              },
+              "excluded_groups": {
+                "items": {
+                  "properties": {
+                    "group": {
+                      "enum": [
+                        "Joint",
+                        "Sex Not Available"
+                      ]
+                    }
+                  }
+                }
+              },
+              "four_fifths": {
+                "properties": {
+                  "highest_rate_group": {
+                    "enum": [
+                      "Male",
+                      "Female"
+                    ]
+                  },
+                  "groups": {
+                    "items": {
+                      "properties": {
+                        "group": {
+                          "enum": [
+                            "Male",
+                            "Female"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "contrasts": {
+                "items": {
+                  "properties": {
+                    "group": {
+                      "enum": [
+                        "Male",
+                        "Female"
+                      ]
+                    },
+                    "reference_group": {
+                      "enum": [
+                        "Male",
+                        "Female"
+                      ]
+                    }
                   }
                 }
               }
@@ -36389,6 +37321,108 @@
                   },
                   "fha": {
                     "const": false
+                  },
+                  "fha_disparate_impact": {
+                    "const": "not applicable (age is a prohibited basis under ECOA only, not in 42 U.S.C. 3605(a))"
+                  }
+                }
+              },
+              "reference_group": {
+                "enum": [
+                  "<25",
+                  "25-34",
+                  "35-44",
+                  "45-54",
+                  "55-64",
+                  "65-74",
+                  ">74"
+                ]
+              },
+              "groups": {
+                "items": {
+                  "properties": {
+                    "group": {
+                      "enum": [
+                        "<25",
+                        "25-34",
+                        "35-44",
+                        "45-54",
+                        "55-64",
+                        "65-74",
+                        ">74"
+                      ]
+                    }
+                  }
+                }
+              },
+              "excluded_groups": {
+                "items": {
+                  "properties": {
+                    "group": {
+                      "enum": [
+                        "8888"
+                      ]
+                    }
+                  }
+                }
+              },
+              "four_fifths": {
+                "properties": {
+                  "highest_rate_group": {
+                    "enum": [
+                      "<25",
+                      "25-34",
+                      "35-44",
+                      "45-54",
+                      "55-64",
+                      "65-74",
+                      ">74"
+                    ]
+                  },
+                  "groups": {
+                    "items": {
+                      "properties": {
+                        "group": {
+                          "enum": [
+                            "<25",
+                            "25-34",
+                            "35-44",
+                            "45-54",
+                            "55-64",
+                            "65-74",
+                            ">74"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "contrasts": {
+                "items": {
+                  "properties": {
+                    "group": {
+                      "enum": [
+                        "<25",
+                        "25-34",
+                        "35-44",
+                        "45-54",
+                        "55-64",
+                        "65-74",
+                        ">74"
+                      ]
+                    },
+                    "reference_group": {
+                      "enum": [
+                        "<25",
+                        "25-34",
+                        "35-44",
+                        "45-54",
+                        "55-64",
+                        "65-74",
+                        ">74"
+                      ]
+                    }
                   }
                 }
               }
@@ -36650,7 +37684,8 @@
           "label",
           "outcome",
           "dti_recode",
-          "group_exclusion"
+          "group_exclusion",
+          "identifiers"
         ],
         "properties": {
           "label": {
@@ -36717,6 +37752,32 @@
           },
           "group_exclusion": {
             "$ref": "#/components/schemas/common-text"
+          },
+          "identifiers": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "observation_date",
+              "label",
+              "note"
+            ],
+            "properties": {
+              "id": {
+                "const": "<activity_year>-<row>"
+              },
+              "observation_date": {
+                "const": "<activity_year>-12-31"
+              },
+              "label": {
+                "const": "convention",
+                "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
+              },
+              "note": {
+                "$ref": "#/components/schemas/common-text"
+              }
+            },
+            "description": "Public HMDA withholds the loan identifier and the dates (addendum H1 2.5): id is the row position in the source file within its activity year, observation_date is the activity year's 12-31 (decision V3)."
           }
         },
         "description": "Named conventions, labelled on every result."
@@ -36752,6 +37813,7 @@
           "decision_models",
           "conventions",
           "legal",
+          "licence",
           "data_notes"
         ],
         "properties": {
@@ -36868,6 +37930,9 @@
           "legal": {
             "$ref": "#/components/schemas/c21Legal"
           },
+          "licence": {
+            "$ref": "#/components/schemas/c21Licence"
+          },
           "data_notes": {
             "type": "array",
             "items": {
@@ -36877,6 +37942,89 @@
           }
         },
         "description": "C21 models: the HMDA fields used (addendum H1 names), the fitted decision models and the conventions."
+      },
+      "c21FourFifths": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "citation",
+          "threshold",
+          "is_credit_law_threshold",
+          "compared_with",
+          "decided_on",
+          "rule",
+          "highest_rate_group",
+          "groups"
+        ],
+        "properties": {
+          "label": {
+            "const": "employment benchmark"
+          },
+          "citation": {
+            "const": "29 CFR 1607.4(D)"
+          },
+          "threshold": {
+            "const": 0.8
+          },
+          "is_credit_law_threshold": {
+            "const": false
+          },
+          "compared_with": {
+            "const": "highest-rate-group"
+          },
+          "decided_on": {
+            "const": "exact-counts"
+          },
+          "rule": {
+            "const": "flag when 5 * x_g * n_h < 4 * x_h * n_g"
+          },
+          "highest_rate_group": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The group with the highest selection rate (the first of them in groups order on a tie)."
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c21FourFifthsRow"
+            },
+            "minItems": 2,
+            "description": "One row per group of the attribute, the highest-rate group included (ratio 1, no flag)."
+          }
+        },
+        "description": "The four-fifths line is an employment benchmark and never a credit-law threshold (06 C.7 l.1033-1037, I.6 l.1268-1270). It compares each group with the highest-rate group (29 CFR 1607.4(D); 06 C.7 l.1034-1035), decided on the counts: a group is flagged when 5 * x_g * n_h < 4 * x_h * n_g, so exactly four-fifths is not flagged."
+      },
+      "c21FourFifthsRow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "group",
+          "ratio_to_highest",
+          "flag"
+        ],
+        "properties": {
+          "group": {
+            "type": "string",
+            "minLength": 1
+          },
+          "ratio_to_highest": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The group's selection rate over the highest group's rate; null when the highest rate is 0."
+          },
+          "flag": {
+            "type": "boolean"
+          }
+        },
+        "description": "One group against the highest-rate group; the flag is decided on the counts in exact arithmetic, never on the float ratio."
       },
       "c21Group": {
         "type": "object",
@@ -37041,6 +38189,35 @@
           }
         },
         "description": "No legal claim: the sentences the U14 research addendum quotes (H3 4.1 and 4.3), decision C4."
+      },
+      "c21Licence": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "platform_terms",
+          "platform_terms_cover",
+          "modified_statement",
+          "note"
+        ],
+        "properties": {
+          "status": {
+            "const": "UNVERIFIED"
+          },
+          "platform_terms": {
+            "const": "As a work of the United States Government, this package (excluding any exceptions listed below) is in the public domain within the United States. Additionally, we waive copyright and related rights in the work worldwide through the CC0 1.0 Universal public domain dedication."
+          },
+          "platform_terms_cover": {
+            "const": "the software package, not the published datasets"
+          },
+          "modified_statement": {
+            "const": "The publicly available data are modified to protect applicants' and borrowers' privacy"
+          },
+          "note": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "The HMDA data licence stays UNVERIFIED (addendum H2 3.3); the views quote the platform software terms and the CFPB statement that the public data are modified (decision C7)."
       },
       "c21Note": {
         "type": "object",
@@ -37258,6 +38435,7 @@
           "confirm_year",
           "scope",
           "legal",
+          "licence",
           "conventions",
           "attributes",
           "situation_testing",
@@ -37314,6 +38492,9 @@
           "legal": {
             "$ref": "#/components/schemas/c21Legal"
           },
+          "licence": {
+            "$ref": "#/components/schemas/c21Licence"
+          },
           "conventions": {
             "$ref": "#/components/schemas/c21Conventions"
           },
@@ -37345,7 +38526,87 @@
             "description": "Requirement ids CT-2101 onward (decision Q14)."
           }
         },
-        "description": "C21 year-pair outputs: statistical disparity on public HMDA decisions, fitted on year t and confirmed on t+1. No outcome-conditioned test runs: HMDA has no outcome (08 l.180-181)."
+        "description": "C21 year-pair outputs: statistical disparity on public HMDA decisions, fitted on year t and confirmed on t+1. No outcome-conditioned test runs: HMDA has no outcome (08 l.180-181).",
+        "oneOf": [
+          {
+            "properties": {
+              "pair_id": {
+                "const": "2018-19"
+              },
+              "fit_year": {
+                "const": 2018
+              },
+              "confirm_year": {
+                "const": 2019
+              }
+            }
+          },
+          {
+            "properties": {
+              "pair_id": {
+                "const": "2019-20"
+              },
+              "fit_year": {
+                "const": 2019
+              },
+              "confirm_year": {
+                "const": 2020
+              }
+            }
+          },
+          {
+            "properties": {
+              "pair_id": {
+                "const": "2020-21"
+              },
+              "fit_year": {
+                "const": 2020
+              },
+              "confirm_year": {
+                "const": 2021
+              }
+            }
+          },
+          {
+            "properties": {
+              "pair_id": {
+                "const": "2021-22"
+              },
+              "fit_year": {
+                "const": 2021
+              },
+              "confirm_year": {
+                "const": 2022
+              }
+            }
+          },
+          {
+            "properties": {
+              "pair_id": {
+                "const": "2022-23"
+              },
+              "fit_year": {
+                "const": 2022
+              },
+              "confirm_year": {
+                "const": 2023
+              }
+            }
+          },
+          {
+            "properties": {
+              "pair_id": {
+                "const": "2023-24"
+              },
+              "fit_year": {
+                "const": 2023
+              },
+              "confirm_year": {
+                "const": 2024
+              }
+            }
+          }
+        ]
       },
       "c21RateSpread": {
         "type": "object",
@@ -37417,6 +38678,8 @@
           "k",
           "alpha",
           "tau",
+          "distance_normalization",
+          "label_parameters",
           "centers",
           "interval",
           "n_complainants",
@@ -37464,6 +38727,13 @@
           },
           "tau": {
             "const": 0
+          },
+          "distance_normalization": {
+            "const": "range"
+          },
+          "label_parameters": {
+            "const": "convention",
+            "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
           },
           "centers": {
             "const": "excluded"
