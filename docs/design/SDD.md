@@ -280,7 +280,8 @@ touched; raw data are read from the device data root (`CONTRASTE_DATA`) and are 
 ## Lanes
 
 - **Offline (canonical).** `.venv-pipeline` with the pinned engines (optbinning, scikit-learn, LightGBM, XGBoost,
-  CatBoost, InterpretML, SHAP, lifelines, statsmodels, arch, QuantLib, pyvinecopulib, MAPIE, fairlearn; ORE in WSL;
+  CatBoost, InterpretML, SHAP, lifelines, statsmodels, arch, QuantLib, pyvinecopulib, MAPIE, fairlearn; ORE 1.8.17.0
+  natively (its CPython 3.13 Windows wheel, in `data-pipeline/requirements-ore.txt`, pipeline-only);
   TabPFN and scikit-survival as optional extras with their licence notes). The only lane that writes artifacts.
   It runs on a workstation, never in CI (ADR-0074).
 - **Replay.** The SPA reads the committed artifacts for first paint and for every value marked precomputed. GBM
@@ -479,7 +480,7 @@ site.
 |---|---|
 | Freddie Mac terms do not allow derived aggregates in a public web | C06 and C08 publish the SBA twin; Freddie Mac results stay offline |
 | Pyodide cold start too slow | live features move to TypeScript ports with parity tests, or to replay only, per measurement |
-| ORE unusable in WSL | C12 uses QuantLib plus the analytic HW1F check only, stated |
+| ORE 1.8.17.0 will not install or run on the workstation | C12 uses QuantLib plus the analytic HW1F check only, and its ORE reconciliation rows are `not_evaluated` with the error, stated |
 | A golden value cannot be reproduced | the method or test is not shipped until it is |
 | Scope (22 cases, 17 units) | units ship vertically; nothing is presented as done until the convergence verdict |
 | Licence contamination | `scripts/check_licences.py` fails on AGPL, GPL or BSL in the default install |
