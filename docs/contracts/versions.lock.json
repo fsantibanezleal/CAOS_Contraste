@@ -370,9 +370,9 @@
     "sha256": "6a6c4117660f06e65907ab78e24c96fd93bcea6b38dfb8de8220750ff06a87f9"
   },
   "engine-aggregation-api": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "schema": "docs/contracts/engine/aggregation-api.md",
-    "sha256": "a4b93eee5807e2a95c6837e8d4a094a20c67393be99a6b37c545666483e2e652"
+    "sha256": "c558e86eeaece18d126c1b0aab46f315d81872057693f824cc579b704e84341e"
   },
   "engine-stress-api": {
     "version": "1.0.0",
