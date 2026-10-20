@@ -2,7 +2,6 @@
 inputs the document carries (the checks of ``semantics.py`` recompute with their own formulas; this test recomputes with the engine)."""
 from __future__ import annotations
 
-import re
 from functools import lru_cache
 
 import c14_docs as d
@@ -10,6 +9,7 @@ import numpy as np
 import pytest
 from riskvalidation.irrbb import curves, eve_nii, shocks, simulation, slotting
 from riskvalidation.validation import irrbb as vi
+from engine_pin import engine_pin_findings
 
 ROOT = d.ROOT
 MID = slotting.bucket_grid().midpoints
@@ -17,26 +17,6 @@ MID = slotting.bucket_grid().midpoints
 
 def approx(a, b, rel=1e-9, abs_=1e-6) -> bool:
     return bool(np.isclose(a, b, rtol=rel, atol=abs_))
-
-
-ENGINE_PIN = re.compile(r"^riskvalidation(?:\[market\])? @ git\+https://github\.com/fsantibanezleal/CAOS_RiskValidation(?:\.git)?@(?P<ref>\S+)\s*$", re.M)
-SDD_ENGINE_ROW = re.compile(r"^\|\s*engine\s*\|\s*riskvalidation\s*\|\s*(?P<ref>[^|\s]+)\s*\|", re.M)
-
-
-def engine_pin_findings(requirements: str, sdd: str) -> list[str]:
-    """The engine is pinned by a release tag, or (until the tag is cut) by a full 40-hex commit that the SDD technology row names too."""
-    pin = ENGINE_PIN.search(requirements)
-    if pin is None:
-        return ["the requirements carry no riskvalidation git pin"]
-    ref = pin.group("ref")
-    if re.fullmatch(r"v\d+\.\d+\.\d+", ref):
-        return []
-    if not re.fullmatch(r"[0-9a-f]{40}", ref):
-        return [f"the pin {ref} is neither a release tag nor a full 40-hex commit"]
-    row = SDD_ENGINE_ROW.search(sdd)
-    if row is None or row.group("ref") != ref:
-        return [f"the commit pin {ref} is not the one the SDD technology row names ({row.group('ref') if row else 'no row'})"]
-    return []
 
 
 def test_the_engine_is_pinned_by_its_release_tag_or_by_the_commit_the_sdd_names() -> None:

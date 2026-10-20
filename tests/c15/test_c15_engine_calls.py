@@ -2,7 +2,6 @@
 inputs the document carries (the checks of ``semantics.py`` recompute with their own formulas; this test recomputes with the engine)."""
 from __future__ import annotations
 
-import re
 
 import c15_docs as d
 import numpy as np
@@ -10,6 +9,7 @@ import pytest
 from c15_support import ROOT, SHOCKS, VARIANT_IDS
 from riskvalidation.irrbb import curves, eve_nii, shocks, simulation, slotting
 from riskvalidation.validation import irrbb as vi
+from engine_pin import engine_pin_findings
 
 MID = slotting.bucket_grid().midpoints
 
@@ -18,9 +18,10 @@ def approx(a, b, rel=1e-9, abs_=1e-6) -> bool:
     return bool(np.isclose(a, b, rtol=rel, atol=abs_))
 
 
-def test_the_engine_is_pinned_by_its_release_tag() -> None:
+def test_the_engine_is_pinned_by_its_release_tag_or_by_the_commit_the_sdd_names() -> None:
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
-    assert re.search(r"^riskvalidation(?:\[market\])? @ git\+https://github\.com/fsantibanezleal/CAOS_RiskValidation(?:\.git)?@v\d+\.\d+\.\d+\s*$", req, re.M)
+    sdd = (ROOT / "docs" / "design" / "SDD.md").read_text(encoding="utf-8")
+    assert engine_pin_findings(req, sdd) == []
 
 
 def test_the_pinned_engine_reproduces_the_contract_goldens() -> None:
