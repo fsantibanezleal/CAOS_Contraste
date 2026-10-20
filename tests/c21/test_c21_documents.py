@@ -55,7 +55,7 @@ def test_every_committed_document_validates_passes_the_checks_and_is_listed_with
     for pid, name in zip(PAIRS, VARIANTS):
         o = docs[name]["outputs"]
         assert o["pair_id"] == pid and (o["fit_year"], o["confirm_year"]) == (int(pid[:4]), int(pid[:4]) + 1)
-        assert docs[name]["provenance"]["riskvalidation_version"].endswith("+2a21c0b") and docs[name]["provenance"]["truth_status"] == "real-outcomes"
+        assert docs[name]["provenance"]["riskvalidation_version"] == "0.8.0" and docs[name]["provenance"]["truth_status"] == "real-outcomes"
 
 
 def test_no_outcome_conditioned_test_runs_and_only_the_allowlisted_ids_appear() -> None:
