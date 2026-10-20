@@ -8931,7 +8931,7 @@ export interface components {
             /** @enum {string} */
             class_id: "cash-and-balances" | "treasury" | "mortgage-backed" | "other-agency" | "municipal" | "other-debt";
             label: components["schemas"]["common-text"];
-            source_fields: ("ASSET" | "CERT" | "CHBAL" | "DEP" | "DEPDOM" | "DEPFOR" | "DEPINS" | "DEPLGAMT" | "DEPSMAMT" | "DEPUNA" | "EQ" | "FREPO" | "FREPP" | "LIAB" | "LNLSNET" | "NAME" | "OTHBFHLB" | "RBCT1J" | "REPDTE" | "SC" | "SCAA" | "SCAF" | "SCAGE" | "SCASPNAF" | "SCASPNHA" | "SCASPNSUM" | "SCCMOT" | "SCCOL" | "SCDOMO" | "SCEQFV" | "SCFORD" | "SCGTY" | "SCHA" | "SCHF" | "SCHTMRES" | "SCMTGBK" | "SCMUNI" | "SCPLEDGE" | "SCRDEBT" | "SCSPN" | "SCUS" | "SCUST")[];
+            source_fields: ("ASSET" | "CD1T3" | "CD1T3S" | "CD3LES" | "CD3LESS" | "CD3T12" | "CD3T12S" | "CDOV3" | "CDOV3S" | "CERT" | "CHBAL" | "DEP" | "DEPDOM" | "DEPFOR" | "DEPIDOM" | "DEPIFOR" | "DEPINS" | "DEPLGAMT" | "DEPLGB" | "DEPNIDOM" | "DEPNIFOR" | "DEPSMAMT" | "DEPSMB" | "DEPUNA" | "EQ" | "FREPO" | "FREPP" | "LIAB" | "LNATRES" | "LNLSGR" | "LNLSNET" | "LNOT1T3" | "LNOT3LES" | "LNOT3T12" | "LNOT3T5" | "LNOT5T15" | "LNOTOV15" | "LNRS1T3" | "LNRS3LES" | "LNRS3T12" | "LNRS3T5" | "LNRS5T15" | "LNRSOV15" | "NAME" | "NTRTIME" | "OTBFH1T3" | "OTBFH3T5" | "OTBFHOV5" | "OTBOT1L" | "OTBOT1T3" | "OTBOT3T5" | "OTBOTOV5" | "OTHBFH1L" | "OTHBFHLB" | "OTHBRF" | "RBCT1J" | "REPDTE" | "SC" | "SCAA" | "SCAF" | "SCAGE" | "SCASPNAF" | "SCASPNHA" | "SCASPNSUM" | "SCCMOT" | "SCCOL" | "SCDOMO" | "SCEQFV" | "SCFORD" | "SCGTY" | "SCHA" | "SCHF" | "SCHTMRES" | "SCMTGBK" | "SCMUNI" | "SCNM1T3" | "SCNM3LES" | "SCNM3T12" | "SCNM3T5" | "SCNM5T15" | "SCNMOV15" | "SCO3YLES" | "SCOOV3Y" | "SCPLEDGE" | "SCPT1T3" | "SCPT3LES" | "SCPT3T12" | "SCPT3T5" | "SCPT5T15" | "SCPTOV15" | "SCRDEBT" | "SCSPN" | "SCUS" | "SCUST" | "SUBND")[];
             /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
             carrying_value: number;
             fair_value: number | null;
@@ -9218,7 +9218,7 @@ export interface components {
             status: "convention";
             basis: components["schemas"]["common-text"];
         };
-        /** @description HQLA by level after the caps: HQLA = L1 + L2A + L2B - Adj15 - Adj40 (LCR30.38) with the adjustments of LCR30.39. */
+        /** @description HQLA by level after the caps: HQLA = L1 + L2A + L2B - Adj15 - Adj40 (LCR30.38) with the adjustments of LCR30.39. The Level 2 and Level 2B shares are over the HQLA stock: where the stock is empty they are undefined and are null together with their reason in shares_reason (never zero); where they are numbers, shares_reason is null (U11 decision X6). */
         c16Hqla: {
             /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
             l1: number;
@@ -9238,17 +9238,24 @@ export interface components {
             adj_40: number;
             /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
             hqla: number;
-            /** @description A share or a rate in [0, 1]. */
-            l2_share: number;
-            /** @description A share or a rate in [0, 1]. */
-            l2b_share: number;
+            l2_share: number | null;
+            l2b_share: number | null;
+            shares_reason: components["schemas"]["c16Label"] | null;
             caps: {
                 /** @constant */
                 l2_cap: 0.4;
                 /** @constant */
                 l2b_cap: 0.15;
             };
-        };
+        } & ({
+            l2_share?: number;
+            l2b_share?: number;
+            shares_reason?: null;
+        } | {
+            l2_share?: null;
+            l2b_share?: null;
+            shares_reason?: components["schemas"]["c16Label"];
+        });
         /** @description The HTM losses in the CBC: the reported amortised cost and fair value (SCHA, SCHF, SCAA, SCAF), the loss applied to the book as a whole or pro rata by type (never a reported by-type loss), the CBC with and without it, the labelled counterfactual under the Bank Term Funding Program's par valuation (announced after the run) and the revaluation validation row. */
         c16Htm: {
             reported: {
@@ -9312,7 +9319,7 @@ export interface components {
             /** @enum {string} */
             category: "cash" | "reverse-repo" | "securities-htm" | "securities-afs" | "loans" | "other-assets" | "deposits-insured" | "deposits-uninsured" | "deposits-foreign-office" | "repo-borrowings" | "fhlb-advances" | "other-liabilities" | "equity";
             /** @enum {string} */
-            source_field: "ASSET" | "CERT" | "CHBAL" | "DEP" | "DEPDOM" | "DEPFOR" | "DEPINS" | "DEPLGAMT" | "DEPSMAMT" | "DEPUNA" | "EQ" | "FREPO" | "FREPP" | "LIAB" | "LNLSNET" | "NAME" | "OTHBFHLB" | "RBCT1J" | "REPDTE" | "SC" | "SCAA" | "SCAF" | "SCAGE" | "SCASPNAF" | "SCASPNHA" | "SCASPNSUM" | "SCCMOT" | "SCCOL" | "SCDOMO" | "SCEQFV" | "SCFORD" | "SCGTY" | "SCHA" | "SCHF" | "SCHTMRES" | "SCMTGBK" | "SCMUNI" | "SCPLEDGE" | "SCRDEBT" | "SCSPN" | "SCUS" | "SCUST";
+            source_field: "ASSET" | "CD1T3" | "CD1T3S" | "CD3LES" | "CD3LESS" | "CD3T12" | "CD3T12S" | "CDOV3" | "CDOV3S" | "CERT" | "CHBAL" | "DEP" | "DEPDOM" | "DEPFOR" | "DEPIDOM" | "DEPIFOR" | "DEPINS" | "DEPLGAMT" | "DEPLGB" | "DEPNIDOM" | "DEPNIFOR" | "DEPSMAMT" | "DEPSMB" | "DEPUNA" | "EQ" | "FREPO" | "FREPP" | "LIAB" | "LNATRES" | "LNLSGR" | "LNLSNET" | "LNOT1T3" | "LNOT3LES" | "LNOT3T12" | "LNOT3T5" | "LNOT5T15" | "LNOTOV15" | "LNRS1T3" | "LNRS3LES" | "LNRS3T12" | "LNRS3T5" | "LNRS5T15" | "LNRSOV15" | "NAME" | "NTRTIME" | "OTBFH1T3" | "OTBFH3T5" | "OTBFHOV5" | "OTBOT1L" | "OTBOT1T3" | "OTBOT3T5" | "OTBOTOV5" | "OTHBFH1L" | "OTHBFHLB" | "OTHBRF" | "RBCT1J" | "REPDTE" | "SC" | "SCAA" | "SCAF" | "SCAGE" | "SCASPNAF" | "SCASPNHA" | "SCASPNSUM" | "SCCMOT" | "SCCOL" | "SCDOMO" | "SCEQFV" | "SCFORD" | "SCGTY" | "SCHA" | "SCHF" | "SCHTMRES" | "SCMTGBK" | "SCMUNI" | "SCNM1T3" | "SCNM3LES" | "SCNM3T12" | "SCNM3T5" | "SCNM5T15" | "SCNMOV15" | "SCO3YLES" | "SCOOV3Y" | "SCPLEDGE" | "SCPT1T3" | "SCPT3LES" | "SCPT3T12" | "SCPT3T5" | "SCPT5T15" | "SCPTOV15" | "SCRDEBT" | "SCSPN" | "SCUS" | "SCUST" | "SUBND";
             reported_amount: number | null;
             reason_missing: components["schemas"]["c16Label"] | null;
             assumption: string;
@@ -9584,7 +9591,7 @@ export interface components {
         c16Report: {
             report_date: string;
             source: string;
-            fields: ("ASSET" | "CERT" | "CHBAL" | "DEP" | "DEPDOM" | "DEPFOR" | "DEPINS" | "DEPLGAMT" | "DEPSMAMT" | "DEPUNA" | "EQ" | "FREPO" | "FREPP" | "LIAB" | "LNLSNET" | "NAME" | "OTHBFHLB" | "RBCT1J" | "REPDTE" | "SC" | "SCAA" | "SCAF" | "SCAGE" | "SCASPNAF" | "SCASPNHA" | "SCASPNSUM" | "SCCMOT" | "SCCOL" | "SCDOMO" | "SCEQFV" | "SCFORD" | "SCGTY" | "SCHA" | "SCHF" | "SCHTMRES" | "SCMTGBK" | "SCMUNI" | "SCPLEDGE" | "SCRDEBT" | "SCSPN" | "SCUS" | "SCUST")[];
+            fields: ("ASSET" | "CD1T3" | "CD1T3S" | "CD3LES" | "CD3LESS" | "CD3T12" | "CD3T12S" | "CDOV3" | "CDOV3S" | "CERT" | "CHBAL" | "DEP" | "DEPDOM" | "DEPFOR" | "DEPIDOM" | "DEPIFOR" | "DEPINS" | "DEPLGAMT" | "DEPLGB" | "DEPNIDOM" | "DEPNIFOR" | "DEPSMAMT" | "DEPSMB" | "DEPUNA" | "EQ" | "FREPO" | "FREPP" | "LIAB" | "LNATRES" | "LNLSGR" | "LNLSNET" | "LNOT1T3" | "LNOT3LES" | "LNOT3T12" | "LNOT3T5" | "LNOT5T15" | "LNOTOV15" | "LNRS1T3" | "LNRS3LES" | "LNRS3T12" | "LNRS3T5" | "LNRS5T15" | "LNRSOV15" | "NAME" | "NTRTIME" | "OTBFH1T3" | "OTBFH3T5" | "OTBFHOV5" | "OTBOT1L" | "OTBOT1T3" | "OTBOT3T5" | "OTBOTOV5" | "OTHBFH1L" | "OTHBFHLB" | "OTHBRF" | "RBCT1J" | "REPDTE" | "SC" | "SCAA" | "SCAF" | "SCAGE" | "SCASPNAF" | "SCASPNHA" | "SCASPNSUM" | "SCCMOT" | "SCCOL" | "SCDOMO" | "SCEQFV" | "SCFORD" | "SCGTY" | "SCHA" | "SCHF" | "SCHTMRES" | "SCMTGBK" | "SCMUNI" | "SCNM1T3" | "SCNM3LES" | "SCNM3T12" | "SCNM3T5" | "SCNM5T15" | "SCNMOV15" | "SCO3YLES" | "SCOOV3Y" | "SCPLEDGE" | "SCPT1T3" | "SCPT3LES" | "SCPT3T12" | "SCPT3T5" | "SCPT5T15" | "SCPTOV15" | "SCRDEBT" | "SCSPN" | "SCUS" | "SCUST" | "SUBND")[];
         };
         /** @description The LiST 2019 results annex as constants (the markers of the survival views): 103 banks and the median reported survival period under the Adverse (176 days) and the Extreme (122 days) shock; annex slide 9 gives the bank count and slide 15 the medians (addendum L1; dossier 05 E.1 line 240). Reference points, not model results. */
         c16ResultsAnnex: {
