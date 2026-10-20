@@ -380,7 +380,7 @@
     "sha256": "4ccbff4cfd1b8842372b3717326bdd97c1a43f336807c372204d93fd1b0d5216"
   },
   "c12-outputs": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "schema": "docs/contracts/schemas/c12/variant-swap-exposure.schema.json",
     "sha256": "7a046f4fa48b5059e5049f98dac8c99c539f0dd86868884fd10a430bb419035c"
   },
