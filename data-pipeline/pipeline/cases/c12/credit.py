@@ -94,4 +94,4 @@ def wrong_way_block(w_musd: np.ndarray, x_paths_d: np.ndarray, report: np.ndarra
             "largest_b_w": max(abs(b) for b in b_grid) * w_max, "sweep": sweep,
             "independent_cva": {"amount": independent["cva"]["amount"], "currency": book.CURRENCY},
             "ore_limit": {"en": "ORE's wrong-way example is a different model (a correlated credit LGM), so this variant has no ORE reconciliation.",
-                          "es": "El ejemplo de riesgo de direccion equivocada de ORE es otro modelo (un LGM de credito correlacionado), por lo que esta variante no tiene conciliacion con ORE."}}
+                          "es": "El ejemplo de riesgo de dirección equivocada de ORE es otro modelo (un LGM de crédito correlacionado), por lo que esta variante no tiene conciliación con ORE."}}

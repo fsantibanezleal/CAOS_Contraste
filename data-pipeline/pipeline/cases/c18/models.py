@@ -90,11 +90,11 @@ def model_summaries(ev: str) -> list[dict[str, Any]]:
 
     return [
         rec(sat.MODEL_ID, "stress", "satellite-probit-ols", "Macro satellites of the net charge-off rates, OLS on 1985 to 2019",
-            "Satelites macro de las tasas de castigo netas, MCO sobre 1985 a 2019", {"ar_order": (float(P.AR_ORDER), "lags"), "fit_end_year": (2019.0, "year")}),
+            "Satélites macro de las tasas de castigo netas, MCO sobre 1985 a 2019", {"ar_order": (float(P.AR_ORDER), "lags"), "fit_end_year": (2019.0, "year")}),
         rec("c18-aggregation-ladder", "aggregation", "simple-sum-headline", "Aggregation ladder, the simple sum as the headline",
-            "Escalera de agregacion, la suma simple como cifra principal", {"level": (P.LEVEL, "probability"), "horizon": (float(P.HORIZON_YEARS), "years")}),
+            "Escalera de agregación, la suma simple como cifra principal", {"level": (P.LEVEL, "probability"), "horizon": (float(P.HORIZON_YEARS), "years")}),
         rec("c18-capital-engine", "stress", "capital-engine-static", "Capital engine on a static balance sheet",
-            "Motor de capital sobre balance estatico", {"horizon": (3.0, "years")}),
+            "Motor de capital sobre balance estático", {"horizon": (3.0, "years")}),
     ]
 
 

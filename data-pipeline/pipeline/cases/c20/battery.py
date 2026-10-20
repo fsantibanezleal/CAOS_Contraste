@@ -41,9 +41,9 @@ def notice() -> dict[str, str]:
     return t("Labelled evidence on the Taiwan model of this variant: gaps in error rates, calibration and AUC across sex, age band and marital "
              "status groups at a cut-off that declines 20 percent of the baseline decisions. It is a descriptive check on one benchmark, not a "
              "statement about any lender and not a compliance statement.",
-             "Evidencia etiquetada sobre el modelo de Taiwan de esta variante: brechas de tasas de error, calibracion y AUC entre grupos de sexo, "
-             "tramo de edad y estado civil con un punto de corte que rechaza el 20 por ciento de las decisiones base. Es una verificacion "
-             "descriptiva sobre un benchmark, no una afirmacion sobre ningun prestamista ni una declaracion de cumplimiento.")
+             "Evidencia etiquetada sobre el modelo de Taiwan de esta variante: brechas de tasas de error, calibración y AUC entre grupos de sexo, "
+             "tramo de edad y estado civil con un punto de corte que rechaza el 20 por ciento de las decisiones base. Es una verificación "
+             "descriptiva sobre un benchmark, no una afirmación sobre ningún prestamista ni una declaración de cumplimiento.")
 
 
 def _group_values(test_id: str, extras: dict[str, Any], names: list[str]) -> dict[str, float | None]:

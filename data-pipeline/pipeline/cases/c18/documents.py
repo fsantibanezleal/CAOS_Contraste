@@ -30,12 +30,12 @@ NON_CREDIT_BASIS = T(
     "quarterly rates of the year. Market has no position book in C07 or C15 and no source maps a macro path to the operational loss, so each carries its annual expected "
     "loss in every scenario and year; the stressed loss is therefore a floor. IRRBB is nil here: an EVE change is not a profit-and-loss item of the banking book and stays "
     "out of the capital path; the rate path acts on the net interest income of the PPNR row.",
-    "Perdidas esperadas del escenario por riesgo y año. El credito sale de las proyecciones de los satelites: la exposicion de cada clase de Banco Andino por el promedio de "
-    "las cuatro tasas trimestrales del año. Mercado no tiene libro de posiciones en C07 ni en C15 y ninguna fuente liga una trayectoria macro con la perdida operacional, por "
-    "lo que cada uno lleva su perdida esperada anual en todo escenario y año; la perdida bajo tension es por tanto un piso (suelo). IRRBB es nulo aqui: un cambio de EVE no es "
-    "una partida de resultados del libro bancario y queda fuera de la trayectoria de capital; la trayectoria de tasas actua sobre el margen financiero de la fila de PPNR.")
+    "Pérdidas esperadas del escenario por riesgo y año. El crédito sale de las proyecciones de los satélites: la exposición de cada clase de Banco Andino por el promedio de "
+    "las cuatro tasas trimestrales del año. Mercado no tiene libro de posiciones en C07 ni en C15 y ninguna fuente liga una trayectoria macro con la pérdida operacional, por "
+    "lo que cada uno lleva su pérdida esperada anual en todo escenario y año; la pérdida bajo tensión es por tanto un piso (suelo). IRRBB es nulo aquí: un cambio de EVE no es "
+    "una partida de resultados del libro bancario y queda fuera de la trayectoria de capital; la trayectoria de tasas actúa sobre el margen financiero de la fila de PPNR.")
 BACKCAST_SENTENCE = T("The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
-                      "La trayectoria de credito bajo tension descansa en satelites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025.")
+                      "La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025.")
 
 
 def _join(a: dict[str, str], b: dict[str, str]) -> dict[str, str]:
@@ -166,7 +166,7 @@ def findings_scenario(core: Core, sc: Scenario, doc_outputs: dict[str, Any], tes
     gauss = next(r for r in a["band"] if r["method"] == "gaussian-copula")["capital_clp_m"]
     out.append({"id": "headline-simple-sum", "severity": "S4", "status": "open", "evidence": ["aggregation.simple_sum_and_variance_covariance"],
                 "title": _join(T(f"The headline capital is the simple sum, CLP {total:,.0f} million; the Gaussian copula figure, {1 - gauss / total:.1%} lower, is information and not capital.",
-                                 f"El capital principal es la suma simple, CLP {total:,.0f} millones; la cifra de la copula gaussiana, {1 - gauss / total:.1%} menor, es informacion y no capital."),
+                                 f"El capital principal es la suma simple, CLP {total:,.0f} millones; la cifra de la cópula gaussiana, {1 - gauss / total:.1%} menor, es información y no capital."),
                            BACKCAST_SENTENCE)})
     plan = {c["case"]: c for c in doc_outputs["capital_plan"]["cases"]}
     sw = plan["stress-without-mitigation"]["years"]
@@ -176,44 +176,44 @@ def findings_scenario(core: Core, sc: Scenario, doc_outputs: dict[str, Any], tes
     if head < 0:
         out.append({"id": "internal-target-not-held", "severity": "S2", "status": "open", "evidence": ["design:outputs.capital_plan"],
                     "title": T(f"Under this scenario the PE ratio falls to {worst['pe']['pct_of_rwa']:.2%} of RWA in year {worst['year']}, {-head:.2%} of RWA below the internal "
-                               f"target of {oi:.2%}.", f"Bajo este escenario la razon de PE cae a {worst['pe']['pct_of_rwa']:.2%} de los APR en el año {worst['year']}, "
+                               f"target of {oi:.2%}.", f"Bajo este escenario la razón de PE cae a {worst['pe']['pct_of_rwa']:.2%} de los APR en el año {worst['year']}, "
                                f"{-head:.2%} de los APR bajo el objetivo interno de {oi:.2%}.")})
     else:
         out.append({"id": "internal-target-held", "severity": "S4", "status": "open", "evidence": ["design:outputs.capital_plan"],
                     "title": T(f"Under this scenario the PE ratio stays {head:.2%} of RWA above the internal target of {oi:.2%} at its lowest, in year {worst['year']}.",
-                               f"Bajo este escenario la razon de PE se mantiene {head:.2%} de los APR sobre el objetivo interno de {oi:.2%} en su punto mas bajo, el año {worst['year']}.")})
+                               f"Bajo este escenario la razón de PE se mantiene {head:.2%} de los APR sobre el objetivo interno de {oi:.2%} en su punto más bajo, el año {worst['year']}.")})
     stack = rv_cap.chilean_cet1_stack(core.anchors.stack["c_ccyb"], core.anchors.stack["c_dsib"], core.named["reverse_p2_cet1"]["value"])
     low = min(sw, key=lambda y: y["cet1"]["pct_of_rwa"])
     if low["cet1"]["pct_of_rwa"] < stack:
         out.append({"id": "cet1-stack-breached", "severity": "S1", "status": "open", "evidence": ["design:outputs.headline_cet1"],
                     "title": T(f"On the loss-only path CET1 falls to {low['cet1']['pct_of_rwa']:.2%} of RWA in year {low['year']}, below the Chilean legal minimum stack of {stack:.2%}; "
                                "the labelled PPNR row, which credits earnings, is shown beside it.",
-                               f"En la trayectoria solo de perdidas el CET1 cae a {low['cet1']['pct_of_rwa']:.2%} de los APR en el año {low['year']}, bajo el minimo legal de {stack:.2%}; "
+                               f"En la trayectoria solo de pérdidas el CET1 cae a {low['cet1']['pct_of_rwa']:.2%} de los APR en el año {low['year']}, bajo el mínimo legal de {stack:.2%}; "
                                "la fila rotulada de PPNR, que acredita utilidades, se muestra al lado.")})
     deficit = [y for y in sw if y["deficit_clp_m"] > 0]
     if deficit:
         d = max(deficit, key=lambda y: y["deficit_clp_m"])
         out.append({"id": "legal-minimum-breached", "severity": "S1", "status": "open", "evidence": ["design:outputs.capital_plan"],
                     "title": T(f"The stress path leaves a deficit of CLP {d['deficit_clp_m']:,.0f} million against the legal minimum of PE in year {d['year']}.",
-                               f"La trayectoria de tension deja un deficit de CLP {d['deficit_clp_m']:,.0f} millones frente al minimo legal de PE en el año {d['year']}.")})
+                               f"La trayectoria de tensión deja un déficit de CLP {d['deficit_clp_m']:,.0f} millones frente al mínimo legal de PE en el año {d['year']}.")})
     sens = next(t for t in tests if t["test_id"] == "stress.sensitivity_monotonicity")
     if sens["light"] in ("red", "amber"):
         out.append({"id": "satellite-sign", "severity": "S3", "status": "open", "evidence": ["stress.sensitivity_monotonicity"],
                     "title": T(f"{int(sens['statistic'])} satellite coefficients have the opposite of the expected sign: the stress maps through them with that caveat.",
-                               f"{int(sens['statistic'])} coeficientes de los satelites tienen el signo contrario al esperado: la tension pasa por ellos con esa salvedad.")})
+                               f"{int(sens['statistic'])} coeficientes de los satélites tienen el signo contrario al esperado: la tensión pasa por ellos con esa salvedad.")})
     bad = [t for t in tests if t["test_id"] == "stress.satellite_backcast" and t["light"] in ("red", "amber")]
     if bad:
         out.append({"id": "satellite-backcast", "severity": "S3", "status": "open", "evidence": ["stress.satellite_backcast"],
                     "title": T(f"{len(bad)} of the 5 satellites do not back-cast the 2020 to 2025 peak within the thresholds (size or timing).",
-                               f"{len(bad)} de los 5 satelites no reproducen el pico de 2020 a 2025 dentro de los umbrales (tamaño u oportunidad).")})
+                               f"{len(bad)} de los 5 satélites no reproducen el pico de 2020 a 2025 dentro de los umbrales (tamaño u oportunidad).")})
     mild = [t for t in tests if t["test_id"] == "stress.scenario_severity" and t["light"] == "amber"]
     if mild and sc.key != "baseline":
         out.append({"id": "scenario-milder-than-gfc", "severity": "S3", "status": "open", "evidence": ["stress.scenario_severity"],
                     "title": T(f"{len(mild)} path variables of this scenario are milder than the global financial crisis (ratio below 0.75).",
-                               f"{len(mild)} variables de trayectoria de este escenario son mas suaves que la crisis financiera global (razon bajo 0,75).")})
+                               f"{len(mild)} variables de trayectoria de este escenario son más suaves que la crisis financiera global (razón bajo 0,75).")})
     out.append({"id": "non-credit-losses-at-expected-loss", "severity": "S3", "status": "open", "evidence": ["design:non-credit-losses-at-expected-loss"],
                 "title": T("Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
-                           "Solo el credito responde al escenario: las perdidas de mercado, IRRBB y operacional se mantienen en su perdida esperada, por lo que la perdida bajo tension es un piso.")})
+                           "Solo el crédito responde al escenario: las pérdidas de mercado, IRRBB y operacional se mantienen en su pérdida esperada, por lo que la pérdida bajo tensión es un piso.")})
     return out
 
 

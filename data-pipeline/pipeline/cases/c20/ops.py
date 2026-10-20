@@ -67,8 +67,8 @@ def findings(tests: list[dict[str, Any]], *, limits: list[tuple[str, dict[str, s
             "id": f"{prefix}-{tid}", "severity": _SEVERITY[worst], "status": "open", "evidence": [evidence_id(r) for r in rows],
             "title": t(f"{tid}: {n_red} red and {n_amber} amber rows in this document; a statistical finding on the data and the model "
                        f"of this variant, not a compliance statement",
-                       f"{tid}: {n_red} filas rojas y {n_amber} ambar en este documento; un hallazgo estadistico sobre los datos y el modelo de "
-                       f"esta variante, no una declaracion de cumplimiento")})
+                       f"{tid}: {n_red} filas rojas y {n_amber} ámbar en este documento; un hallazgo estadístico sobre los datos y el modelo de "
+                       f"esta variante, no una declaración de cumplimiento")})
     for key, title in limits:
         out.append({"id": f"{prefix}-limit-{key}", "severity": "S4", "status": "accepted", "evidence": [f"design:{key}"], "title": title})
     return out

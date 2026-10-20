@@ -143,7 +143,7 @@ def ngfs_scenario(fed: FedInputs, variables: list[ngfs_reader.NgfsVariable]) -> 
     order = [v[0] for v in ngfs_reader.VARIABLES]
     paths.sort(key=lambda p: order.index(p["variable"]))
     block = {
-        "scenario_id": P.SCENARIOS["ngfs"], "title": T("NGFS Phase 5 delayed transition (disorderly)", "Transicion tardia NGFS fase 5 (desordenada)"),
+        "scenario_id": P.SCENARIOS["ngfs"], "title": T("NGFS Phase 5 delayed transition (disorderly)", "Transición tardía NGFS fase 5 (desordenada)"),
         "provider": "ngfs",
         "source_document": "NGFS Phase V, NiGEM NGFS v1.24.2 runs, read through the IIASA Scenario Explorer (IXSE_NGFS_PHASE_5)",
         "source_url": fetch.NGFS_UI, "vintage_date": ngfs_vintage(), "adaptation_label": "us-calibrated-adaptation",

@@ -189,23 +189,23 @@ MEASURE_NOTE = text(
     "own measure differs by the convexity gap. The discounted profiles feed the CVA. The PFE is the quantile of the simulated "
     "exposure in the simulation measure. Effective EE starts from zero: the current exposure is the replacement cost of the "
     "sa_ccr block. EPE and EEPE are averages over the first year; their errors are batch errors of 20 antithetic batches.",
-    "EE y ENE no estan descontados (estilo Basilea) en la medida t-forward: el EE descontado del motor dividido por P(0, t), la "
-    "cantidad que da la identidad analitica de la swaption y la que reproduce el perfil de ORE; la esperanza en la medida propia de "
-    "la simulacion difiere por la brecha de convexidad. Los perfiles descontados alimentan el CVA. El PFE es el cuantil de la "
-    "exposicion simulada en la medida de la simulacion. El EE efectivo parte de cero: la exposicion actual es el costo de "
-    "reemplazo del bloque sa_ccr. EPE y EEPE son promedios del primer ano; sus errores son errores de 20 lotes antitieticos.")
+    "EE y ENE no están descontados (estilo Basilea) en la medida t-forward: el EE descontado del motor dividido por P(0, t), la "
+    "cantidad que da la identidad analítica de la swaption y la que reproduce el perfil de ORE; la esperanza en la medida propia de "
+    "la simulación difiere por la brecha de convexidad. Los perfiles descontados alimentan el CVA. El PFE es el cuantil de la "
+    "exposición simulada en la medida de la simulación. El EE efectivo parte de cero: la exposición actual es el costo de "
+    "reemplazo del bloque sa_ccr. EPE y EEPE son promedios del primer año; sus errores son errores de 20 lotes antitéticos.")
 
 CSA_LIMIT = text("The Andersen, Pykhtin and Sokol timelines are not modelled. The minimum transfer amount acts on the balance of the "
                  "report grid; ORE margins on its own call schedule, so its effect is larger there (see the ORE rows).",
-                 "No se modelan las cronologias de Andersen, Pykhtin y Sokol. El monto minimo de transferencia actua sobre el saldo de "
-                 "la grilla del informe; ORE margina con su propio calendario de llamadas, por lo que su efecto es mayor alli (vease "
+                 "No se modelan las cronologías de Andersen, Pykhtin y Sokol. El monto mínimo de transferencia actúa sobre el saldo de "
+                 "la grilla del informe; ORE margina con su propio calendario de llamadas, por lo que su efecto es mayor allí (véase "
                  "las filas de ORE).")
 
 IM_LIMIT = text(
     "A regression proxy, never SIMM. The DIM reduces the exposure path by path, E[max(X - DIM, 0)] (ORE's method, decision B2): "
     "the expected exposure after margin lies between max(ee_vm_only - dim, 0) and ee_vm_only, and `dim` is the mean regression DIM.",
-    "Un proxy de regresion, nunca SIMM. El DIM reduce la exposicion camino por camino, E[max(X - DIM, 0)] (metodo de ORE, decision "
-    "B2): la exposicion esperada tras el margen esta entre max(ee_vm_only - dim, 0) y ee_vm_only, y `dim` es el DIM de regresion medio.")
+    "Un proxy de regresión, nunca SIMM. El DIM reduce la exposición camino por camino, E[max(X - DIM, 0)] (método de ORE, decisión "
+    "B2): la exposición esperada tras el margen está entre max(ee_vm_only - dim, 0) y ee_vm_only, y `dim` es el DIM de regresión medio.")
 
 
 def outputs(c: Core, ctx: dict[str, Any], stress_eepe: float, sens: list[dict[str, Any]], ore_block: dict[str, Any],
@@ -286,7 +286,7 @@ def outputs(c: Core, ctx: dict[str, Any], stress_eepe: float, sens: list[dict[st
                             "cva": "positive-is-cost", "dva": "positive-is-benefit",
                             "statement": text("EE is the positive exposure to the counterparty, ENE the bank's own, CVA a positive cost "
                                               "and DVA a positive benefit.",
-                                              "EE es la exposicion positiva a la contraparte, ENE la propia del banco, CVA un costo "
+                                              "EE es la exposición positiva a la contraparte, ENE la propia del banco, CVA un costo "
                                               "positivo y DVA un beneficio positivo.")},
         "units": {"money": "amount with its ISO 4217 currency code, USD in this case", "rate": "decimal", "compounding": "continuous",
                   "time": "years-from-the-valuation-date", "mpor": "business-days", "dates": "ISO-8601"},
@@ -300,8 +300,8 @@ def outputs(c: Core, ctx: dict[str, Any], stress_eepe: float, sens: list[dict[st
 def not_applicable_ore() -> dict[str, Any]:
     reason = text("ORE's wrong-way example is a different model (a correlated credit LGM), not the Hull and White (2012) hazard on the "
                   "portfolio value, so this variant has no ORE reconciliation.",
-                  "El ejemplo de riesgo de direccion equivocada de ORE es otro modelo (un LGM de credito correlacionado), no el "
-                  "hazard de Hull y White (2012) sobre el valor del portafolio, por lo que esta variante no tiene conciliacion con ORE.")
+                  "El ejemplo de riesgo de dirección equivocada de ORE es otro modelo (un LGM de crédito correlacionado), no el "
+                  "hazard de Hull y White (2012) sobre el valor del portafolio, por lo que esta variante no tiene conciliación con ORE.")
     return {"status": "not-applicable", "ore_version": None, "platform": None, "run_seconds": None, "ore_ee": None,
             "ore_ee_discounted": None, "ore_eepe": None, "ore_cva": None, "ore_dim": None, "agreement": None, "eepe_agreement": None,
             "cva_agreement": None, "dim_agreement": None, "all_within_two_se": None, "reason": reason}
@@ -313,7 +313,7 @@ WHAT = {
     "ccr.pit_exposure_backtest": ("the simulated distributions against the realised curves (PIT, Anderson-Darling)",
                                   "las distribuciones simuladas frente a las curvas realizadas (PIT, Anderson-Darling)"),
     "ccr.pfe_exceedance_backtest": ("the exceedances of the PFE forecast, a secondary row (BCBS 185 paragraph 27)",
-                                    "las excedencias del pronostico de PFE, una fila secundaria (BCBS 185 parrafo 27)"),
+                                    "las excedencias del pronóstico de PFE, una fila secundaria (BCBS 185 párrafo 27)"),
     "ccr.reconcile_ee_profile": ("the EE profile against ORE 1.8.17.0", "el perfil de EE frente a ORE 1.8.17.0"),
     "ccr.ore_eepe_agreement": ("the EEPE against ORE 1.8.17.0", "el EEPE frente a ORE 1.8.17.0"),
     "ccr.ore_cva_agreement": ("the CVA against ORE 1.8.17.0", "el CVA frente a ORE 1.8.17.0"),

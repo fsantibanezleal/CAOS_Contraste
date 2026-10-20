@@ -35,8 +35,8 @@ def credit_curve_block() -> dict[str, Any]:
                                "converted to continuous compounding, minus the continuously compounded Treasury zero rate of the same "
                                "month end at the same maturity; survival is exp(-s t / LGD). An AAA-to-A market spread that includes "
                                "liquidity and tax effects, a floor for lower ratings.",
-                               "La tasa spot HQM de fin de mes (capitalizacion semestral, ecuacion 5.7a de la metodologia XRM del "
-                               "Tesoro) convertida a capitalizacion continua, menos la tasa cero continua del Tesoro del mismo fin de mes "
+                               "La tasa spot HQM de fin de mes (capitalización semestral, ecuación 5.7a de la metodología XRM del "
+                               "Tesoro) convertida a capitalización continua, menos la tasa cero continua del Tesoro del mismo fin de mes "
                                "al mismo plazo; la supervivencia es exp(-s t / LGD). Un spread de mercado AAA a A que incluye efectos de "
                                "liquidez e impuestos, un piso para calificaciones menores."),
             "source_url": HQM_URL, "licence_class": "mirror-allowed with citation",
@@ -53,28 +53,28 @@ LIMITS = [
          "observation from 1990 up to the day before each date (an expanding window of at least ten years for the first backtest "
          "date; a rolling window of five or ten years was measured and refused because the regression is not mean-reverting at a "
          "third of the dates). The fit to the curve of the date is the engine's phi.",
-         "a y sigma del mundo real vienen de un solo proxy de la tasa corta (la tasa cero a 3 meses) por la regresion AR(1) exacta sobre "
-         "cada observacion desde 1990 hasta el dia anterior a cada fecha (una ventana creciente de al menos diez anos para la primera "
-         "fecha; una ventana movil de cinco o diez anos se midio y se rechazo porque la regresion no revierte a la media en un tercio "
+         "a y sigma del mundo real vienen de un solo proxy de la tasa corta (la tasa cero a 3 meses) por la regresión AR(1) exacta sobre "
+         "cada observación desde 1990 hasta el día anterior a cada fecha (una ventana creciente de al menos diez años para la primera "
+         "fecha; una ventana móvil de cinco o diez años se midió y se rechazó porque la regresión no revierte a la media en un tercio "
          "de las fechas). El ajuste a la curva de la fecha es el phi del motor."),
     text("The stressed Effective EPE re-estimates a and sigma on 2007-01-01 to 2009-12-31 (2.996 years of observations; the floor of "
          "the engine is lowered to 2.99 for this window only) and re-prices the same book on the curve date.",
-         "El EPE efectivo bajo estres re-estima a y sigma en 2007-01-01 a 2009-12-31 (2,996 anos de observaciones; el piso del motor se "
+         "El EPE efectivo bajo estrés re-estima a y sigma en 2007-01-01 a 2009-12-31 (2,996 años de observaciones; el piso del motor se "
          "baja a 2,99 solo para esta ventana) y revalua el mismo libro en la fecha de la curva."),
     text("The counterparty curve is a market proxy (HQM minus Treasury, AAA to A), a floor for lower ratings; the base-credit "
          "spread of the BA-CVA rating and the sensitivity rows is the synthetic flat 0.0125.",
          "La curva de la contraparte es un proxy de mercado (HQM menos Tesoro, AAA a A), un piso para calificaciones menores; el spread "
-         "base de la calificacion BA-CVA y de las filas de sensibilidad es el sintetico plano 0,0125."),
+         "base de la calificación BA-CVA y de las filas de sensibilidad es el sintético plano 0,0125."),
     text("Dynamic initial margin is ORE's regression proxy, never ISDA SIMM; the Andersen, Pykhtin and Sokol margin-period timelines are "
          "not modelled.",
-         "El margen inicial dinamico es el proxy de regresion de ORE, nunca ISDA SIMM; no se modelan las cronologias del periodo de "
+         "El margen inicial dinámico es el proxy de regresión de ORE, nunca ISDA SIMM; no se modelan las cronologías del periodo de "
          "margen de Andersen, Pykhtin y Sokol."),
     text("The journal derivations of the Hull-White closed forms (Hull and White 1990 and 1994, Jamshidian 1989) were not read as "
          "papers; the engine's bond option and swaption are reconciled to QuantLib 1.44 numerically instead.",
          "Las derivaciones de revista de las formas cerradas de Hull-White (Hull y White 1990 y 1994, Jamshidian 1989) no se leyeron "
-         "como articulos; la opcion sobre bono y la swaption del motor se concilian numericamente con QuantLib 1.44."),
+         "como artículos; la opción sobre bono y la swaption del motor se concilian numéricamente con QuantLib 1.44."),
     text("The GIRR vega risk-weight formula (MAR21 footnote 24) is not transcribed: a swap book has no vega.",
-         "La formula del peso de riesgo vega GIRR (nota 24 de MAR21) no esta transcrita: un libro de swaps no tiene vega."),
+         "La fórmula del peso de riesgo vega GIRR (nota 24 de MAR21) no está transcrita: un libro de swaps no tiene vega."),
 ]
 
 
