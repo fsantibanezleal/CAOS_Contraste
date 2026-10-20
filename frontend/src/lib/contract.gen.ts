@@ -289,7 +289,7 @@ export interface components {
         };
         /**
          * C02 horizon variant
-         * @description Catalog row c02-outputs 1.0.0: one horizon file (1 to 5 years) or the pooled variant of the corporate PD case (outputs.kind horizon).
+         * @description Catalog row c02-outputs 1.1.0: one horizon file (1 to 5 years) or the pooled variant of the corporate PD case (outputs.kind horizon).
          */
         "c02-variant-horizon": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -407,6 +407,8 @@ export interface components {
             parameters: components["schemas"]["c02Params"];
             /** @description Requirement ids CT-0201 onward (decision Q14). */
             requirements: string[];
+            /** @description A reason where term_structure is null, null where the block is present (checked by semantics.check_c02). */
+            term_structure_reason?: components["schemas"]["common-text"] | null;
         };
         /** @description A named parameter: its value and the label convention. */
         c02Param: {
@@ -519,7 +521,7 @@ export interface components {
              */
             out_of_time_claim: false;
         };
-        /** @description The five file event rates read as a cumulative PD: cumulative = 1 - product of (1 - hazard). Exploratory (decision Q9). */
+        /** @description The five file event rates read as a cumulative PD: cumulative = 1 - product of (1 - hazard). Exploratory (decision Q9). Null, with its reason in term_structure_reason, when the points cannot form a cumulative curve (U14 G22: the horizon files are independent samples, not one cohort). */
         c02TermStructure: {
             /**
              * @description The block is exploratory and says so.
@@ -535,7 +537,7 @@ export interface components {
             cumulative_nondecreasing: boolean;
             /** @constant */
             source: "engine-provisions-api from_cumulative and lifetime_pd_backtest (04 E.2 l.479-497)";
-        };
+        } | null;
         /** @description Cross-file transfer: a rung fitted on file i scored on the holdout of file j. Exploratory: the firm overlap is unknown (SDD l.374). Empty for the pooled variant. */
         c02Transfer: {
             /**

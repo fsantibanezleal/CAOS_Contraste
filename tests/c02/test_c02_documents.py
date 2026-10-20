@@ -53,7 +53,8 @@ def test_no_out_of_time_claim_and_the_caveats_are_in_the_documents() -> None:
         assert o["split"]["out_of_time_claim"] is False and o["split"]["protocol"] == "locked-stratified-holdout"
         assert o["split"]["calibration_map_on_separate_slice"] and o["split"]["fit_on_training_slice_only"] and not o["split"]["resampling_before_calibration"]
         for block in ("transfer", "term_structure", "impact_detail"):
-            assert o[block]["label"] == "exploratory", (name, block)
+            if o[block] is not None:
+                assert o[block]["label"] == "exploratory", (name, block)
         ids = {f["id"]: f for f in doc["findings"]}
         assert "F-HORIZON-MAPPING" not in ids                    # decision G21: the mapping is a stated basis, not an open finding
         paper = ids["F-PAPER-READING"]
@@ -85,3 +86,18 @@ def test_the_mapping_is_asserted_per_variant_and_stated_beside_the_horizon() -> 
         assert doc["outputs"]["firm_overlap_caveat"] is None
     pooled = committed("pooled")["outputs"]["pooled"]["files"]
     assert [(f["years"], f["file"]) for f in pooled] == [(n, f"{6 - n}year.arff") for n in range(1, 6)]
+
+
+def test_the_term_structure_is_null_with_its_reason_and_the_impact_follows_decision_g22() -> None:
+    """Decision G22: under the dataset mapping the five rates fall with the horizon (6.94 to 3.86 percent); no cumulative curve is forced."""
+    rates = [cv.expected_counts(n)[1] / cv.expected_counts(n)[0] for n in range(1, 6)]
+    assert all(b < a for a, b in zip(rates, rates[1:]))
+    for name in VARIANTS:
+        doc = committed(name)
+        o = doc["outputs"]
+        assert o["term_structure"] is None and o["term_structure_reason"] is not None and set(o["term_structure_reason"]) == {"en", "es"}
+        assert "independent samples" in o["term_structure_reason"]["en"] and "1y 0.0694" in o["term_structure_reason"]["en"]
+        assert not [r for r in doc["tests"] if r["test_id"] == "ifrs9.lifetime_pd_backtest"]      # no cumulative curve, no lifetime back-test
+        im = o["impact_detail"]
+        assert im["label"] == "exploratory" and im["ecl_12m_effect"] is None and im["ecl_lifetime_effect"] is None and im["reason_if_null"]
+        assert doc["impact"]["ecl_12m_effect"]["value"] is None and doc["impact"]["ecl_lifetime_effect"]["value"] is None

@@ -24,11 +24,14 @@ def test_adversarial_an_out_of_time_claim_or_a_missing_exploratory_label_is_refu
     a = copy.deepcopy(doc)
     a["outputs"]["split"]["out_of_time_claim"] = True
     assert doc_errors(a)
+    fixture = load(ROOT / "docs" / "contracts" / "fixtures" / "c02" / "variant-horizon-h1-fixture.json")    # carries a term-structure block (G22: the baked ones are null)
     for block, bad in (("transfer", "core"), ("term_structure", "final"), ("impact_detail", "measured")):
-        b = copy.deepcopy(doc)
+        base = fixture if doc["outputs"][block] is None else doc
+        assert doc_errors(base) == []
+        b = copy.deepcopy(base)
         b["outputs"][block]["label"] = bad
         assert doc_errors(b), block
-        c = copy.deepcopy(doc)
+        c = copy.deepcopy(base)
         del c["outputs"][block]["label"]
         assert doc_errors(c), block
 

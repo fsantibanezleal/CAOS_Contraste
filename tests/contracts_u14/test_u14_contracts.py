@@ -141,6 +141,8 @@ def test_a_key_removed_from_any_object_fails(ref: str, path: Path) -> None:
     checked = 0
     for p, obj in closed(ref, path):
         for key in list(obj):
+            if key == "term_structure_reason":      # optional since c02-outputs 1.1.0 (U14 G22): every 1.0.0 document lacks it and stays valid
+                continue
             bad = copy.deepcopy(doc)
             del get(bad, p)[key]
             assert not valid(ref, bad), f"{path.name}: removing {'/'.join(map(str, p))}/{key} still validates"

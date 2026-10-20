@@ -114,16 +114,23 @@ def results_block(variants: dict[str, dict[str, Any]], models: dict[str, Any]) -
             cells = {c["scored_on_years"]: c["auc"] for c in docs[f"h{k}"]["outputs"]["transfer"]["cells"] if c["rung"] == code}
             rows.append([f"fitted on {k}y", *(f"{cells[j]:.3f}" for j in range(1, 6))])
         table(w, ["Fitted on", *(f"scored on {j}y" for j in range(1, 6))], rows)
-    w("### Exploratory: the five event rates as a cumulative PD")
+    w("### Exploratory: the five event rates and the term structure")
     w("")
     ts = docs["h1"]["outputs"]["term_structure"]
-    w("Exploratory: the files may not draw one population, and the UCI page reads the horizons the other way round (see Limits).")
-    w("")
-    table(w, ["Years", "Cumulative PD (percent)", "Hazard (percent)"], [[str(p["years"]), f"{p['cumulative_pd'] * 100:.3f}", f"{p['hazard'] * 100:.3f}"] for p in ts["points"]])
-    bt = next(r for r in docs["h1"]["tests"] if r["test_id"] == "ifrs9.lifetime_pd_backtest")
-    w(f"The engine's lifetime back-test of the champion's mean PD on each holdout against the holdout event rate: the largest gap is "
-      f"{bt['metric'] * 100:.3f} percentage points, light {bt['light']} (relative-gap rule of the engine, a convention).")
-    w("")
+    if ts is None:
+        w("Not computed: " + docs["h1"]["outputs"]["term_structure_reason"]["en"])
+        w("")
+        table(w, ["Horizon", "Source file", "Rows", "Bankruptcies", "Event rate (percent)"],
+              [[HEAD[h], docs[h]["outputs"]["counts"]["event_definition"]["en"].rsplit("file ", 1)[1].rstrip(")"), f"{docs[h]['outputs']['counts']['rows']:,}",
+                f"{docs[h]['outputs']['counts']['events']:,}", f"{docs[h]['outputs']['counts']['event_rate'] * 100:.2f}"] for h in HORIZONS[:5]], 1)
+    else:
+        w("Exploratory: the files may not draw one population.")
+        w("")
+        table(w, ["Years", "Cumulative PD (percent)", "Hazard (percent)"], [[str(p["years"]), f"{p['cumulative_pd'] * 100:.3f}", f"{p['hazard'] * 100:.3f}"] for p in ts["points"]])
+        bt = next(r for r in docs["h1"]["tests"] if r["test_id"] == "ifrs9.lifetime_pd_backtest")
+        w(f"The engine's lifetime back-test of the champion's mean PD on each holdout against the holdout event rate: the largest gap is "
+          f"{bt['metric'] * 100:.3f} percentage points, light {bt['light']} (relative-gap rule of the engine, a convention).")
+        w("")
     w("### Exploratory: the 12-month and lifetime ECL of one unit of exposure under the horizon PDs of the term-structure block")
     w("")
     im = docs["h1"]["outputs"]["impact_detail"]

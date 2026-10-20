@@ -1,5 +1,5 @@
 // The run-time descriptors of the C02 documents (outputs of a horizon variant, and the fit of the models artifact), one
-// key per key of the c02-outputs and c02-models 1.0.0 schemas; contract.test.ts reads every committed document and the
+// key per key of the c02-outputs 1.1.0 and c02-models 1.0.0 schemas; contract.test.ts reads every committed document and the
 // schema files against them in both directions. `satisfies` ties the top-level keys to the generated types, so a key
 // added to a schema and not here fails `tsc`. Kept beside the instrument that reads them; contract.types.ts composes the
 // variant and models descriptors from these (`variantKind`, `modelsKind`), the integrator's lines for the case. The
@@ -109,7 +109,8 @@ export const C02_OUTPUTS = { object: {
   rungs: { array: RUNG },
   challenger: { array: CHALLENGER },
   transfer: TRANSFER,
-  term_structure: TERM,
+  term_structure: { nullable: TERM },
+  term_structure_reason: { nullable: 'text' },
   impact_detail: IMPACT,
   parameters: PARAMS,
   requirements: { array: 'string' },
