@@ -395,9 +395,9 @@
     "sha256": "97b6f7bf06ae540821aa57d91fadbbd820e385ea32524f0bbb081319c0f5a749"
   },
   "engine-regulatory-api": {
-    "version": "2.1.0",
+    "version": "2.2.0",
     "schema": "docs/contracts/engine/regulatory-api.md",
-    "sha256": "a06605452f12ec4a3e955cb63c851d87454ab95dd3e781c92e06eb2b3d220569"
+    "sha256": "eccc272db27d66b1dcb705f8064dce2dd7108ce77d01dea4c64141bcc19ec2a9"
   },
   "engine-ccr-api": {
     "version": "2.0.0",

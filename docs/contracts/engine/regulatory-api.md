@@ -1,4 +1,4 @@
-# Engine regulatory API contract: `engine-regulatory-api` 2.1.0
+# Engine regulatory API contract: `engine-regulatory-api` 2.2.0
 
 Owner: U9-S (unit sizing `plans/contraste/units/U9-sizing.md`, CAOS_MANAGE). Implemented by U9-E1 in `riskvalidation.regulatory`
 (`standardised.py`, `output_floor.py`, `sa_ccr.py`, `ba_cva.py`, `frtb.py`; repository CAOS_RiskValidation); called by the regulatory
@@ -7,7 +7,7 @@ by U9-E1 against this file: a function exists with exactly the signature below, 
 signature, a unit or a golden value is a breaking change (a new major version of this contract). `regulatory/irb.py` and its contract
 are not part of it; SMA is `oprisk/sma.py`; LCR and NSFR are U11's (`regulatory/lcr_nsfr.py`, sizing decision D2).
 
-Version history: 1.0.0, the first contract; 1.1.0 and 2.0.0 after the U9-E1 review (the curvature gamma, see the catalog); 2.1.0 adds `entity_aggregate_terms`, `credit_addon_terms`, `equity_addon_terms` and `cross_bucket_charge_detail` (U9-E1 terms, engine 3d77e77), so the regulatory parity bake reads the CRE52.61 terms and the MAR21.4(5)(b) flag from the engine; the existing functions keep their signatures and results.
+Version history: 1.0.0, the first contract; 1.1.0 and 2.0.0 after the U9-E1 review (the curvature gamma, see the catalog); 2.1.0 adds `entity_aggregate_terms`, `credit_addon_terms`, `equity_addon_terms` and `cross_bucket_charge_detail` (U9-E1 terms, engine 3d77e77), so the regulatory parity bake reads the CRE52.61 terms and the MAR21.4(5)(b) flag from the engine; the existing functions keep their signatures and results. 2.2.0 adds `credit_trade_effective_notional` and `commodity_trade_effective_notional` (CRE52.34, CRE52.52; engine cd958cb), so the bake no longer multiplies the trade effective notionals itself.
 Sources: dossier 01 (`wip/contraste/01-basel-pillar1-pillar2-framework-2026-10-04.md`, sections C, C.1, D.2, D.3, E.1, E.2, M.1, M.3),
 the U9 research addendum (`wip/contraste/u9-research-addendum-2026-10-17.md`, R7 and R8) and the unit sizing. The documents this contract
 feeds are `regulatory-calculators` (`docs/contracts/schemas/regulatory/calculators.schema.json`) and `c12-outputs` (`sa_ccr`, `ba_cva`,
@@ -285,6 +285,26 @@ def entity_aggregate(addons: list[float], rhos: list[float]) -> float: ...
 - Units: `addons` the entity add-ons `SF x EN_e`, `rhos` the correlation of each entity (one per add-on, the same length; a different length raises `ValueError`). The correlation is per entity because CRE52.61 aggregates single names (0.5) and indices (0.8) in one formula, as `CommodityEntity(sf, rho, effective_notional)` already does.
 - Invariants: CRE52.61, CRE52.66, CRE52.70 `sqrt((sum rho_e A_e)^2 + sum (1 - rho_e^2) A_e^2)`: one entity returns its own add-on for any `rho`; every `rho = 1` returns `|sum A_e|`; every `rho = 0` returns `sqrt(sum A_e^2)`.
 - Golden: the CRE99 netting set 2 (CRE99.54): add-ons `106, -280, 168` (unrounded `105.86194, -279.91632, 168.11140`) with correlations `0.5, 0.5, 0.8` give the systematic term `(sum rho A)^2 = 2,252.635` (printed 2,253), the idiosyncratic term `sum (1 - rho^2) A^2 = 77,344.043` (printed 77,344) and `AddOn_credit = 282.128832` (printed 282), recomputed from the trade inputs.
+
+### `riskvalidation.regulatory.sa_ccr.credit_trade_effective_notional` (added in 2.2.0)
+
+```python
+def credit_trade_effective_notional(delta: float, notional: float, start_years: float, end_years: float, mpor_business_days: int | None = None) -> float: ...
+```
+
+- Units: `delta` the supervisory delta, `notional` in the trade currency, `start_years` and `end_years` from today; the result in the trade currency.
+- Invariants: CRE52.34, CRE52.52: `delta x notional x supervisory_duration(start_years, end_years) x maturity_factor(end_years, mpor_business_days)`; the refusals of `supervisory_duration` and `maturity_factor`, and a non-finite `delta` or `notional` raises `ValueError` naming it.
+- Golden: the CRE99 netting sets 2 to 5 entity effective notionals reproduce through it, and the EADs (381, 5,406, 936, 1,879) are unchanged.
+
+### `riskvalidation.regulatory.sa_ccr.commodity_trade_effective_notional` (added in 2.2.0)
+
+```python
+def commodity_trade_effective_notional(delta: float, adjusted_notional: float, maturity_years: float, mpor_business_days: int | None = None) -> float: ...
+```
+
+- Units: `adjusted_notional` the units times the price (CRE52.52), `maturity_years` from today; the result in the trade currency.
+- Invariants: `delta x adjusted_notional x maturity_factor(maturity_years, mpor_business_days)`; the refusals of `maturity_factor`, and a non-finite `delta` or `adjusted_notional` raises `ValueError` naming it.
+- Golden: the CRE99 commodity netting set reproduces its entity effective notionals through it, the EAD unchanged.
 
 ### `riskvalidation.regulatory.sa_ccr.entity_aggregate_terms` (added in 2.1.0)
 
