@@ -1,9 +1,11 @@
-# Engine CCR API contract: `engine-ccr-api` 1.0.0
+# Engine CCR API contract: `engine-ccr-api` 2.0.0
 
 Owner: U9-S (unit sizing `plans/contraste/units/U9-sizing.md`, CAOS_MANAGE). Implemented by U9-E2 in `riskvalidation.ccr` (`hw1f.py`,
 `swaps.py`, `exposure.py`, `collateral.py`, `cva.py`) and `riskvalidation.validation.ccr` (repository CAOS_RiskValidation); called by the C12
 bake (U9-P1). The tests of every function are written by U9-E2 against this file: a function exists with exactly the signature below, and each
 golden value or invariant is a test. Changing a signature, a unit or a golden value is a breaking change (a new major version of this contract).
+
+Version history: 1.0.0, the first contract; 2.0.0 after the U9-E2 review and fix round (U9 decisions H6 to H10): `path_convergence` takes the per-count Monte Carlo standard errors (required keywords, the breaking change), `bank_account` integrates phi exactly, `swaption_jamshidian` gains `nominal` and a Brent tolerance of 1e-12, `calibrate_ar1`'s residual spread uses ddof 1, `grid` is the simulation grid, the corrected `pfe` invariant, even `n_paths`.
 Sources: the U9 research addendum (`wip/contraste/u9-research-addendum-2026-10-17.md`: R1 wrong-way risk, R2 initial margin, R3 MPoR and CSA, R4
 Hull-White closed forms, R5 backtest, R6 estimators, R9 IMM measures), dossier 05 (`wip/contraste/05-market-ccr-alm-liquidity-oprisk-stress-sota-2026-10-04.md`,
 section C and the counterparty ladder at line 476), dossier 08 (row 27, line 832) and the sizing decisions D3 to D8 and B1 to B10. The documents this
@@ -92,9 +94,19 @@ def simulate_state(grid: np.ndarray, a: float, sigma: float, n_paths: int, seed:
 def simulate_short_rate(grid: np.ndarray, a: float, sigma: float, forward: Callable, n_paths: int, seed: int) -> np.ndarray: ...
 ```
 
-- Units: the result (P, K) short rates, decimals, `r = phi(t) + x`.
+- Units: the result (P, K) short rates, decimals, `r = phi(t) + x`; `n_paths` is even (the draws are antithetic pairs; an odd count raises `ValueError`).
 - Invariants: the martingale check: the sample mean of `exp(-integral r) P(t, T; r_t)` equals `P(0, T)` within the Monte Carlo error at every grid point (test `ccr.martingale_discounted_bonds`); the mean of `r(t)` is `phi(t)` to the Monte Carlo error.
 - Golden: none beyond the invariants.
+
+### `riskvalidation.ccr.hw1f.bank_account` (added in 2.0.0)
+
+```python
+def bank_account(grid: np.ndarray, short_rate: np.ndarray, a: float, sigma: float, p0: Callable, forward: Callable) -> np.ndarray: ...
+```
+
+- Units: `grid` starts at 0; the result (P, K) is the numeraire `N(t) = exp(integral_0^t r)`.
+- Invariants: the deterministic part is integrated exactly, `integral_0^t phi = -ln P(0, t) + sigma^2 / (2 a^2) [t - 2 (1 - e^{-a t}) / a + (1 - e^{-2 a t}) / (2 a)]`, with a power series in `a t` below `a t = 0.5` (limit `sigma^2 t^3 / 6`), and only the state `x` by the trapezoid rule (U9 decision H6: the trapezoid on phi biased `1 / N(t)` by 0.2 percent at five years on a semiannual grid).
+- Golden: with `sigma = 0`, `1 / N(t)` equals `P(0, t)` to 1e-12 on any grid; `ccr.martingale_discounted_bonds` is green at 100,000 paths on the semiannual grid.
 
 ### `riskvalidation.ccr.hw1f.bond_option`
 
@@ -109,11 +121,11 @@ def bond_option(is_call: bool, strike: float, expiry: float, bond_maturity: floa
 ### `riskvalidation.ccr.hw1f.swaption_jamshidian`
 
 ```python
-def swaption_jamshidian(is_payer: bool, expiry: float, fixed_times: np.ndarray, fixed_amounts: np.ndarray, a: float, sigma: float, p0: Callable, forward: Callable) -> float: ...
+def swaption_jamshidian(is_payer: bool, expiry: float, fixed_times: np.ndarray, fixed_amounts: np.ndarray, a: float, sigma: float, p0: Callable, forward: Callable, nominal: float | None = None) -> float: ...
 ```
 
-- Units: `fixed_times` (n,) the fixed payment times after the expiry in years, `fixed_amounts` (n,) the coupon amounts with the nominal added to the last (money); the result in the money of the nominal.
-- Invariants: the Jamshidian decomposition of R4 (QuantLib `jamshidianswaptionengine.cpp`): find `r*` with `N - sum c_i R_i(r*) = 0` by Brent on `[-10, 10]` with tolerance `1e-8`, the legs' strikes `K_i = R_i(r*)`, value `sum c_i ZBO(K_i)`; the type is a put for a payer swaption and a call for a receiver; payer minus receiver swaption of the same fixed rate equals the forward swap value (parity) to `1e-9`; non-negative; zero when `sigma` tends to zero and the swaption is out of the money.
+- Units: `fixed_times` (n,) the fixed payment times after the expiry in years, `fixed_amounts` (n,) the coupon amounts with the nominal added to the last (money); the result in the money of the nominal. `nominal` is inferred for constant coupons and required otherwise (`ValueError`).
+- Invariants: the Jamshidian decomposition of R4 (QuantLib `jamshidianswaptionengine.cpp`): find `r*` with `N - sum c_i R_i(r*) = 0` by Brent on `[-10, 10]` with tolerance `1e-12` (2.0.0: an error of 1e-8 in `r*` moves the value by about the duration times 1e-8, which the parity check at 1e-9 cannot hold), the legs' strikes `K_i = R_i(r*)`, value `sum c_i ZBO(K_i)`; the type is a put for a payer swaption and a call for a receiver; payer minus receiver swaption of the same fixed rate equals the forward swap value (parity) to `1e-9`; non-negative; zero when `sigma` tends to zero and the swaption is out of the money.
 - Golden: none numeric in the addendum; the C12 bake reconciles the engine against QuantLib 1.44 numerically (sizing B4), and the unit test checks parity and the Monte Carlo agreement.
 
 ### `riskvalidation.ccr.hw1f.calibrate_ar1`
@@ -127,7 +139,7 @@ def calibrate_ar1(dates: list[str], short_rate: np.ndarray, before: str, min_yea
 ```
 
 - Units: `dates` ISO dates, `short_rate` (N,) the shortest Treasury zero rate (decimal) on those dates; `before` an ISO date: only observations strictly before it are used; `dt` the step in years (default the median spacing); `a` per year, `sigma` per square-root year.
-- Invariants: OLS of `x(t_i)` on `x(t_{i-1})` gives `c`, `b`, `delta`; `a = -ln b / dt`, `theta = c / (1 - b)`, `sigma = delta / sqrt((b^2 - 1) dt / (2 ln b))` (R6 equations 55 to 57, Brigo et al. arXiv 0812.4210); the sample window ends before `before` (the result's `sample_end < before`, the document check "no look-ahead"); fewer than `min_years` of history raises `ValueError` (CRE53.51); a series with `b >= 1` or `b <= 0` raises `ValueError` (not mean-reverting); the standard errors are those of the OLS coefficients propagated to `a` and `sigma` by the delta method (they drive the sensitivity block of B6).
+- Invariants: OLS of `x(t_i)` on `x(t_{i-1})` gives `c`, `b`, `delta` (the residual standard deviation with ddof 1, as the R6 listing; the OLS variance of `b` and the standard error of `delta` keep `m - 2`); `a = -ln b / dt`, `theta = c / (1 - b)`, `sigma = delta / sqrt((b^2 - 1) dt / (2 ln b))` (R6 equations 55 to 57, Brigo et al. arXiv 0812.4210); the sample window ends before `before` (the result's `sample_end < before`, the document check "no look-ahead"); fewer than `min_years` of history raises `ValueError` (CRE53.51); a series with `b >= 1` or `b <= 0` raises `ValueError` (not mean-reverting); the standard errors are those of the OLS coefficients propagated to `a` and `sigma` by the delta method (they drive the sensitivity block of B6).
 - Golden: `b = 0.99`, `delta = 0.002`, `dt = 1/12` map to `a = 0.120604` and `sigma = 0.006963` (recomputed from R6 equations 55 to 57, tolerance 5e-7); a series simulated from `simulate_state` with known `a`, `sigma` is recovered within three standard errors.
 
 ## Module `riskvalidation/ccr/swaps.py`
@@ -186,7 +198,7 @@ def swap_values_on_grid(swaps: list[Swap], grid: np.ndarray, short_rate: np.ndar
 ```
 
 - Units: `short_rate` (P, K) from `simulate_short_rate`; the result (S, P, K) money per swap, path and grid point.
-- Invariants: equals `swap_value` at each grid point; the sum over swaps is the netting-set value (netting is on the sum, not the sum of positive parts). The simulation grid is the union of `grid` and every reset date of every swap, so the fixing at the last reset is read from the same path (`last_fixing`) and the value between resets is exact on the path; the result is returned on `grid` only.
+- Invariants: equals `swap_value` at each grid point; the sum over swaps is the netting-set value (netting is on the sum, not the sum of positive parts). The simulation grid is the union of `grid` and every reset date of every swap, so the fixing at the last reset is read from the same path (`last_fixing`) and the value between resets is exact on the path. `grid` is that simulation grid: it contains every reset date (`simulation_grid` builds it, a `ValueError` names `grid` otherwise), and the caller extracts the report dates from the result.
 - Golden: a single swap at its par rate has mean value 0 at the first grid point within the Monte Carlo error of `sigma sqrt(t)` scale.
 
 ## Module `riskvalidation/ccr/exposure.py`
@@ -238,7 +250,7 @@ def pfe(values: np.ndarray, quantile: float, seed: int = 0, n_bootstrap: int = 2
 ```
 
 - Units: `values` (P, K) money, `quantile` in (0, 1); `seed` the seed of the bootstrap resampling (`numpy.random.default_rng(seed)`, so the same inputs and the same `seed` give the same `mc_se`) and `n_bootstrap` its resamples; the result `(pfe, mc_se)` each (K,) in money, `pfe = max(quantile of the value, 0)`.
-- Invariants: dossier 05 C.1 `PFE_alpha(t) = (inf {x : F_t(x) >= alpha})^+`; non-negative; non-decreasing in the quantile; at least EE for a quantile of at least 0.5 on a symmetric value; the standard error is the order-statistic one (`sqrt(q (1 - q) / P) / density`, estimated by the bootstrap of the sample, seeded).
+- Invariants: dossier 05 C.1 `PFE_alpha(t) = (inf {x : F_t(x) >= alpha})^+`; non-negative; non-decreasing in the quantile; at least EE for a quantile `q` with `Phi^-1(q) >= phi(0)` (about 0.655) on a symmetric zero-mean normal value (at 0.5 the median is 0 while EE is 0.3989); the standard error is the order-statistic one (`sqrt(q (1 - q) / P) / density`, estimated by the bootstrap of the sample, seeded).
 - Golden: the values `1, 2, ..., 100` at quantile 0.95 give 95 (the inverse empirical distribution).
 
 ### `riskvalidation.ccr.exposure.net_values`
@@ -498,12 +510,12 @@ def cva_recomputed(epe_discounted: np.ndarray, pd: np.ndarray, lgd: float, cva_r
 ### `riskvalidation.validation.ccr.path_convergence`
 
 ```python
-def path_convergence(ee_by_path_count: dict[int, np.ndarray], cva_by_path_count: dict[int, float], k_se: float = 3.0) -> TestResult: ...
+def path_convergence(ee_by_path_count: dict[int, np.ndarray], cva_by_path_count: dict[int, float], *, ee_se_by_path_count: dict[int, np.ndarray], cva_se_by_path_count: dict[int, float], k_se: float = 3.0) -> TestResult: ...
 ```
 
 - Units: money; the keys are increasing path counts.
 - Test id: `test_id = "ccr.path_convergence"`. `statistic` is the largest relative change of the EE profile between the two largest path counts; `metric` the relative change of CVA.
-- Light: green when the change is within the Monte Carlo error implied by the smaller count, amber within `2 k_se`, red beyond; `extras["thresholds"] = {"k_se": ...}`.
+- Light: green when the change is within `k_se` times the standard error the caller passes for the smaller count, amber within `2 k_se`, red beyond (2.0.0, U9 decision H10: the unit coefficient of variation of 1.0.0 lit on noise, the EE of an at-the-money swap having a coefficient of variation above 1); `extras["thresholds"] = {"k_se": ..., "smaller_count": ..., "larger_count": ...}`.
 - Golden: identical profiles at every count give green with `statistic` 0; fewer than two path counts gives `not_evaluated` with its reason.
 
 ### `riskvalidation.validation.ccr.reconcile_ee_profile`

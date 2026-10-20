@@ -1,4 +1,4 @@
-# Engine regulatory API contract: `engine-regulatory-api` 1.1.0
+# Engine regulatory API contract: `engine-regulatory-api` 2.0.0
 
 Owner: U9-S (unit sizing `plans/contraste/units/U9-sizing.md`, CAOS_MANAGE). Implemented by U9-E1 in `riskvalidation.regulatory`
 (`standardised.py`, `output_floor.py`, `sa_ccr.py`, `ba_cva.py`, `frtb.py`; repository CAOS_RiskValidation); called by the regulatory

@@ -395,13 +395,13 @@
     "sha256": "97b6f7bf06ae540821aa57d91fadbbd820e385ea32524f0bbb081319c0f5a749"
   },
   "engine-regulatory-api": {
-    "version": "1.1.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/engine/regulatory-api.md",
-    "sha256": "ebd14e6b4d77178985f8525628ac14471635123bf0de224cf31f495e795bfc0b"
+    "sha256": "82f4a1697024586fd99e1cf7c6bc64fa25146ff06040f2d68c03227ca5281551"
   },
   "engine-ccr-api": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/engine/ccr-api.md",
-    "sha256": "c4e7a74730641c174c015b973bfaa0f7b247b7c39f43d49ebcf6dfd6b3bc7fa6"
+    "sha256": "e17a654161a1432a994ec95ca48947222dbb4b725d1954ce032fcd5361228671"
   }
 }
