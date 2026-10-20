@@ -375,9 +375,9 @@
     "sha256": "c558e86eeaece18d126c1b0aab46f315d81872057693f824cc579b704e84341e"
   },
   "engine-stress-api": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/engine/stress-api.md",
-    "sha256": "c650e9d48edb65212a373572fb1f0d9a396a2f5189a9210341464914ab23210c"
+    "sha256": "4ccbff4cfd1b8842372b3717326bdd97c1a43f336807c372204d93fd1b0d5216"
   },
   "c12-outputs": {
     "version": "1.0.0",
