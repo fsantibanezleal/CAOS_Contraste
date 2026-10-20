@@ -16,7 +16,7 @@ from riskvalidation.validation import stress as rv_vs
 
 from . import aggregation as agg
 from . import capital as cap
-from . import models
+from . import models, nii
 from . import params as P
 from . import satellites as sat
 from .anchors import Anchors
@@ -26,12 +26,20 @@ from .scenarios import Scenario
 
 T = P.text
 NON_CREDIT_BASIS = T(
-    "Expected losses of the scenario by risk and year. Credit comes from the satellite projections: the exposure of each Banco Andino class times the mean of the "
-    "four quarterly rates of the year. Market, IRRBB and operational risk have no macro satellite in this version (decisions Q6 and Q7), so each carries the annual "
-    "expected loss of its marginal in every scenario and year; the stressed total is therefore a floor of the loss the scenario could cause.",
-    "Perdidas esperadas del escenario por riesgo y año. El credito sale de las proyecciones de los satelites: la exposicion de cada clase de Banco Andino por el "
-    "promedio de las cuatro tasas trimestrales del año. Mercado, IRRBB y operacional no tienen satelite macro en esta version (decisiones Q6 y Q7), por lo que cada "
-    "uno lleva la perdida esperada anual de su marginal en todo escenario y año; el total bajo tension es por tanto un piso de la perdida que el escenario podria causar.")
+    "Expected losses of the scenario by risk and year. Credit comes from the satellite projections: the exposure of each Banco Andino class times the mean of the four "
+    "quarterly rates of the year. Market has no position book in C07 or C15 and no source maps a macro path to the operational loss, so each carries its annual expected "
+    "loss in every scenario and year; the stressed loss is therefore a floor. IRRBB is nil here: an EVE change is not a profit-and-loss item of the banking book and stays "
+    "out of the capital path; the rate path acts on the net interest income of the PPNR row.",
+    "Perdidas esperadas del escenario por riesgo y año. El credito sale de las proyecciones de los satelites: la exposicion de cada clase de Banco Andino por el promedio de "
+    "las cuatro tasas trimestrales del año. Mercado no tiene libro de posiciones en C07 ni en C15 y ninguna fuente liga una trayectoria macro con la perdida operacional, por "
+    "lo que cada uno lleva su perdida esperada anual en todo escenario y año; la perdida bajo tension es por tanto un piso (suelo). IRRBB es nulo aqui: un cambio de EVE no es "
+    "una partida de resultados del libro bancario y queda fuera de la trayectoria de capital; la trayectoria de tasas actua sobre el margen financiero de la fila de PPNR.")
+BACKCAST_SENTENCE = T("The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
+                      "La trayectoria de credito bajo tension descansa en satelites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025.")
+
+
+def _join(a: dict[str, str], b: dict[str, str]) -> dict[str, str]:
+    return {k: f"{a[k]} {b[k]}" for k in a}
 
 
 def plain(x: Any) -> Any:
@@ -131,16 +139,15 @@ def losses_block(core: Core, credit: list[float]) -> dict[str, Any]:
     el = {m.risk: (m.el if m.el is not None else 0.0) for m in core.marginals}
     rows = []
     for y, end in enumerate(P.year_ends()):
-        v = {"credit": credit[y], "market": el["market"], "irrbb": el["irrbb"], "operational": el["operational"]}
+        v = {"credit": credit[y], "market": el["market"], "irrbb": 0.0, "operational": el["operational"]}
         rows.append({"year": y + 1, "period_end": end, **v, "total": float(sum(v.values()))})
     return {"scenario_losses": rows, "basis": NON_CREDIT_BASIS}
 
 
-def baseline_cet1_path(core: Core, baseline_losses: list[float]) -> list[float]:
+def baseline_cet1_path(core: Core, baseline_losses: list[float], baseline_nii: list[float]) -> list[float]:
     cet1, out = core.anchors.cet1_clp_m, []
-    nii = core.nii_12m
     for y in range(3):
-        r = rv_cap.ppnr_row(nii, core.named["ppnr_fee_ratio"]["value"], core.named["ppnr_cost_ratio"]["value"])
+        r = rv_cap.ppnr_row(baseline_nii[y], core.named["ppnr_fee_ratio"]["value"], core.named["ppnr_cost_ratio"]["value"])
         cet1 = cet1 + r.ppnr - baseline_losses[y]
         out.append(cet1)
     return out
@@ -158,8 +165,9 @@ def findings_scenario(core: Core, sc: Scenario, doc_outputs: dict[str, Any], tes
     total = a["headline"]["capital_clp_m"]
     gauss = next(r for r in a["band"] if r["method"] == "gaussian-copula")["capital_clp_m"]
     out.append({"id": "headline-simple-sum", "severity": "S4", "status": "open", "evidence": ["aggregation.simple_sum_and_variance_covariance"],
-                "title": T(f"The headline capital is the simple sum, CLP {total:,.0f} million; the Gaussian copula figure, {1 - gauss / total:.1%} lower, is information and not capital.",
-                           f"El capital principal es la suma simple, CLP {total:,.0f} millones; la cifra de la copula gaussiana, {1 - gauss / total:.1%} menor, es informacion y no capital.")})
+                "title": _join(T(f"The headline capital is the simple sum, CLP {total:,.0f} million; the Gaussian copula figure, {1 - gauss / total:.1%} lower, is information and not capital.",
+                                 f"El capital principal es la suma simple, CLP {total:,.0f} millones; la cifra de la copula gaussiana, {1 - gauss / total:.1%} menor, es informacion y no capital."),
+                           BACKCAST_SENTENCE)})
     plan = {c["case"]: c for c in doc_outputs["capital_plan"]["cases"]}
     sw = plan["stress-without-mitigation"]["years"]
     oi = doc_outputs["internal_capital_target"]["oi"]
@@ -209,7 +217,7 @@ def findings_scenario(core: Core, sc: Scenario, doc_outputs: dict[str, Any], tes
     return out
 
 
-def scenario_document(core: Core, sc: Scenario, baseline_totals: list[float] | None) -> dict[str, Any]:
+def scenario_document(core: Core, sc: Scenario, baseline_totals: list[float] | None, baseline_nii: list[float] | None) -> dict[str, Any]:
     """One scenario variant: the document outputs, tests, impact and findings (the envelope is added by the bake)."""
     a = core.anchors
     proj = sat.project_all(core.sats, sc.transposed)
@@ -218,11 +226,16 @@ def scenario_document(core: Core, sc: Scenario, baseline_totals: list[float] | N
     losses = losses_block(core, credit)
     totals = [r["total"] for r in losses["scenario_losses"]]
     head_rows, path = cap.headline_rows(a.cet1_clp_m, totals, a.rwa_clp_m)
-    ppnr, _ = cap.ppnr_block(path, core.nii_12m, core.named, a.rwa_clp_m)
+    reg, variable = nii.rate_of(sc.transposed, sc.block["paths"])
+    jump = next(p["transposition"]["target"]["value"] for p in sc.block["paths"] if p["maps_to_regressor"] == reg)
+    shifts = nii.yearly_shifts_bp(sc.transposed, reg, jump)
+    nii_years = nii.nii_by_year(a, shifts)
+    ppnr, ppnr_list = cap.ppnr_block(path, nii_years, core.named, a.rwa_clp_m, nii.rate_statement(variable, reg))
     base_losses = totals if sc.key == "baseline" else baseline_totals
-    if base_losses is None:
-        raise ValueError("the baseline scenario is baked first: the base case of every variant is built on its losses")
-    plan = rv_cap.capital_plan(a.rwa_clp_m, a.cet1_clp_m, a.at1_clp_m, a.t2_clp_m, baseline_cet1_path(core, base_losses), totals, [0.0, 0.0, 0.0],
+    base_nii = nii_years if sc.key == "baseline" else baseline_nii
+    if base_losses is None or base_nii is None:
+        raise ValueError("the baseline scenario is baked first: the base case of every variant is built on its losses and its PPNR")
+    plan = rv_cap.capital_plan(a.rwa_clp_m, a.cet1_clp_m, a.at1_clp_m, a.t2_clp_m, baseline_cet1_path(core, base_losses, base_nii), totals, [0.0, 0.0, 0.0],
                                core.target.rv.oi, core.target.legal_minimum)
     plan_doc = {"cases": cap.plan_cases(plan, core.target.rv.oi, core.target.legal_minimum), "mitigation": cap.mitigation_block(), "alternative_sources": []}
     severe = [y.cet1 / y.rwa for y in plan["stress-without-mitigation"]]
@@ -234,7 +247,8 @@ def scenario_document(core: Core, sc: Scenario, baseline_totals: list[float] | N
         "capital_start": cap.capital_start(a), "scenario": sc.block, "satellites": sat.blocks(core.sats, proj, a.class_exposure_clp_m), "losses": losses,
         "internal_capital_target": core.target.block, "capital_plan": plan_doc, "p2g_proxy": p2g, "annex3": cap.annex3(a, core.target, plan, ec_by_risk(core)),
         "headline_cet1": {"method": "loss-only-depletion",
-                          "statement": T("CET1 at the jump-off less the cumulative stressed losses; no revenue is invented. The row with PPNR is labelled and is not the headline."),
+                          "statement": _join(T("CET1 at the jump-off less the cumulative stressed losses; no revenue is invented. The row with PPNR is labelled and is not the headline."),
+                                             BACKCAST_SENTENCE),
                           "rows": head_rows, "ppnr": ppnr},
         "severity": sev_block,
         "backcast": {"window": {"start": P.BACKCAST_START, "end": P.BACKCAST_END}, "per_loan_type": [{k: v for k, v in core.backcasts[lt].items() if k != "_test"} for lt in P.FED_TYPES],
@@ -255,4 +269,4 @@ def scenario_document(core: Core, sc: Scenario, baseline_totals: list[float] | N
                             "label": T("Smallest headroom of the PE ratio over the internal target in the stress without mitigation")},
         "p2g_proxy": {"value": p2g["value"], "unit": "share of RWA", "label": T("P2G proxy, a Contraste approximation")}}
     return {"outputs": plain(outputs), "tests": rows, "impact": impact, "findings": findings_scenario(core, sc, plain(outputs), rows), "credit_losses": credit,
-            "total_losses": totals, "cet1_path": [float(x) for x in path]}
+            "total_losses": totals, "nii": nii_years, "ppnr": ppnr_list, "rate": variable, "cet1_path": [float(x) for x in path]}

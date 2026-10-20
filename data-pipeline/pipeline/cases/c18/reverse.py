@@ -24,6 +24,16 @@ T = P.text
 FACTOR_LABELS = {"real_gdp_growth": T("Real GDP growth", "Crecimiento del PIB real"), "unemployment_rate": T("Unemployment rate", "Tasa de desempleo")}
 
 
+class NotEvaluated(ValueError):
+    """The reverse stress has no scenario to find: the PPNR baseline already ends below the stack (decision Z10). The loss is never redefined."""
+
+
+def check_baseline(net_loss_at_zero: float, threshold: float) -> None:
+    if net_loss_at_zero >= threshold:
+        raise NotEvaluated(f"not evaluated: the PPNR baseline already ends below the legal minimum stack (the three-year loss net of the cumulative PPNR is "
+                           f"{net_loss_at_zero:,.0f} against a headroom of {threshold:,.0f} CLP million), so no scenario is needed to reach the failure point")
+
+
 def factor_space(history: Any, ids: tuple[str, ...] = P.REGRESSORS) -> dict[str, Any]:
     """The covariance of the factors over 1985 Q1 to 2019 Q4 of the Federal Reserve history (the fit window of the satellites)."""
     h = history.set_index("quarter_end")
@@ -43,8 +53,9 @@ def failure_stack(anchors: Any, p2_cet1: dict[str, Any]) -> dict[str, Any]:
 
 
 def starts(sd: list[float]) -> list[np.ndarray]:
-    """Four deterministic starts in the adverse quadrant (growth falls, unemployment rises), in multiples of the factor sd."""
-    grid = ((-1.0, 1.0), (-2.0, 0.5), (-0.5, 2.0), (-2.5, 2.5))
+    """Four deterministic starts in the adverse quadrant (growth falls, unemployment rises), in multiples of the factor sd; the failure point of the PPNR path
+    lies far out, so the starts spread over the distances at which the loss reaches the threshold."""
+    grid = ((-1.0, 5.0), (-0.5, 7.0), (-2.0, 8.0), (0.0, 9.0))
     return [np.array([a * sd[0], b * sd[1]]) for a, b in grid]
 
 

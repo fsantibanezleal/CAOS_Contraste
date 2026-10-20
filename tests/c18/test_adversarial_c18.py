@@ -240,3 +240,51 @@ def test_adversarial_an_edited_results_block_is_found() -> None:
     assert got == want
     first = next(tok for tok in want.split() if tok.replace(",", "").isdigit())
     assert got.replace(first, str(int(first.replace(",", "")) + 1), 1) != want
+
+
+def test_adversarial_a_reverse_stress_in_excess_of_the_baseline_text_and_a_failing_ppnr_baseline_are_refused() -> None:
+    from pipeline.cases.c18 import reverse
+
+    d = doc("reverse-stress")
+    text = d["outputs"]["loss_model"]["description"]["en"]
+    assert "PPNR" in text and "excess" not in text.lower()
+    with pytest.raises(reverse.NotEvaluated):
+        reverse.check_baseline(150_000.0, 145_000.0)
+
+
+def test_adversarial_a_constant_nii_in_the_ppnr_row_is_found() -> None:
+    from test_c18_nii import _expected_nii
+
+    from pipeline.cases.c18 import anchors as anc
+
+    class C:
+        anchors = anc.load_anchors()
+
+    d = doc(FED_V)
+    want, _ = _expected_nii(C, d)
+    rows = d["outputs"]["headline_cet1"]["ppnr"]["rows"]
+    assert [r["nii_clp_m"] for r in rows] == pytest.approx(want)
+    constant = C.anchors.c15["thresholds"]["net_interest_and_indexation_margin_12m"]
+    assert any(abs(r["nii_clp_m"] - constant) > 1.0 for r in rows)                      # a constant margin would differ from the rate path
+    rows[0]["nii_clp_m"] = constant
+    assert [r["nii_clp_m"] for r in rows] != pytest.approx(want)
+
+
+def test_adversarial_a_headline_without_the_backcast_statement_is_found() -> None:
+    d = doc(FED_V)
+    head = next(f for f in d["findings"] if f["id"] == "headline-simple-sum")
+    assert "fail their own" in head["title"]["en"] and "UNVERIFIED" in d["outputs"]["capital_start"]["basis"]["en"]
+    head["title"]["en"] = head["title"]["en"].split(" The stressed")[0]
+    d["outputs"]["capital_start"]["basis"]["en"] = d["outputs"]["capital_start"]["basis"]["en"].replace("UNVERIFIED", "")
+    assert "fail their own" not in head["title"]["en"] and "UNVERIFIED" not in d["outputs"]["capital_start"]["basis"]["en"]
+
+
+def test_adversarial_the_granularity_rule_picks_the_larger_count_beyond_two_standard_errors() -> None:
+    from pipeline.cases.c18 import marginals
+
+    lo = {"names": 400, "seed": 1, "var": 100.0, "es": 130.0, "var_se": 1.0, "es_se": 1.0}
+    hi = dict(lo, names=1600, var=103.1, es=130.5)
+    g = marginals.granularity_choice(lo, hi)
+    assert g["exceeds_two_se"] and g["names_used"] == 1600
+    near = marginals.granularity_choice(lo, dict(hi, var=101.0, es=130.5))
+    assert not near["exceeds_two_se"] and near["names_used"] == 400

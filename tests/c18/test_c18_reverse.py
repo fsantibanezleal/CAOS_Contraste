@@ -36,3 +36,20 @@ def test_reverse_stress_reaches_the_stack_with_the_minimum_distance(built) -> No
     lin = rv_rev.reverse_stress_linear(g, cov, 1000.0)
     best, _ = rv_rev.reverse_stress(lambda v: float(g @ v), cov, 1000.0, [np.array([1.0, 1.0]), np.array([-1.0, 2.0]), np.array([0.5, 3.0])])
     assert best.distance == pytest.approx(lin.distance, rel=1e-5)
+
+
+def test_reverse_stress_rests_on_the_ppnr_path_and_is_not_evaluated_when_the_baseline_fails(built) -> None:
+    from pipeline.cases.c18 import reverse
+
+    o = built.variants[P.FILE_NAMES["reverse"]]["outputs"]
+    for lang in ("en", "es"):
+        text = o["loss_model"]["description"][lang] + " " + o["failure_point"]["definition"][lang]
+        assert "PPNR" in text and "excess" not in text.lower() and "exceso" not in text.lower()
+    # the threshold is the headroom of CET1 over the stack at the jump-off, and the loss is net of the cumulative PPNR of the baseline
+    fp, sol = o["failure_point"], o["solution"]
+    assert sol["loss_threshold_clp_m"] == pytest.approx((fp["cet1_ratio_start"] - fp["stack"]["total"]) * fp["rwa_clp_m"])
+    ppnr = sum(r["ppnr_clp_m"] for r in built.variants["baseline"]["outputs"]["headline_cet1"]["ppnr"]["rows"])
+    assert ppnr > 0 and built.results["reverse"]["net_loss_at_zero"] < sol["loss_threshold_clp_m"]
+    reverse.check_baseline(built.results["reverse"]["net_loss_at_zero"], sol["loss_threshold_clp_m"])          # evaluated: no error
+    with pytest.raises(reverse.NotEvaluated, match="PPNR baseline"):
+        reverse.check_baseline(sol["loss_threshold_clp_m"] * 1.01, sol["loss_threshold_clp_m"])

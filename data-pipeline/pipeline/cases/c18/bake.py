@@ -148,7 +148,7 @@ def build(seed: int, data_root: Path | str | None, *, n_draws: int | None = None
     agg_stress = agg.aggregation_block(marg, named, "correlation_matrix_stress", band_stress, n_draws, seed)
     _log("band: " + ", ".join(f"{r.method}{'' if r.nu is None else r.nu} {r.capital:,.0f}" for r in band_base.rows))
     target = cap.internal_target(named, anchors)
-    fit = models.fit_block(anchors, sats, space, named, n_draws, seed)
+    fit = models.fit_block(anchors, sats, space, named, marg[0].statement, n_draws, seed)
     recs = [dict(m, details={"engine_commit": ev}) for m in models.model_summaries(ev)]
     backcasts = {lt: sat.backcast(s) for lt, s in sats.items()}
     flat = [r for rows in prov.values() for r in rows]
@@ -173,12 +173,13 @@ def build(seed: int, data_root: Path | str | None, *, n_draws: int | None = None
     out: dict[str, dict[str, Any]] = {}
     results: dict[str, Any] = {}
     base_totals: list[float] | None = None
+    base_nii: list[float] | None = None
     for key in ("baseline", "eba", "fed", "ngfs"):
         if key not in scen:
             continue
-        r = docs.scenario_document(core, scen[key], base_totals)
+        r = docs.scenario_document(core, scen[key], base_totals, base_nii)
         if key == "baseline":
-            base_totals = r["total_losses"]
+            base_totals, base_nii = r["total_losses"], r["nii"]
         vid = P.SCENARIOS[key]
         results[vid] = r
         out[vid] = build_artifact(case_id=CASE_ID, variant_id=vid, model=docs.envelope_models(core), outputs=r["outputs"], tests=r["tests"], impact=r["impact"],
@@ -193,15 +194,21 @@ def build(seed: int, data_root: Path | str | None, *, n_draws: int | None = None
         proj = sat.project_all(sats, tr)
         return float(sum(sat.credit_losses(sat.class_rates(proj), anchors.class_exposure_clp_m)))
 
-    base_credit = credit_loss(np.zeros(len(P.REGRESSORS)))
+    other = sum((m.el or 0.0) for m in marg if m.risk not in ("credit", "irrbb"))
+    ppnr_baseline = float(sum(results[P.SCENARIOS["baseline"]]["ppnr"]))
 
     def loss_fn(x: np.ndarray) -> float:
-        """The stressed three-year loss in excess of the baseline scenario's (the other three risks carry the same expected loss in both)."""
-        return credit_loss(np.asarray(x, dtype=float)) - base_credit
+        """The three-year loss net of the baseline scenario's cumulative PPNR (decision Z10): the market and operational expected losses are the same in every variant."""
+        return credit_loss(np.asarray(x, dtype=float)) + 3.0 * other - ppnr_baseline
 
-    rv = docs2.reverse_document(core, loss_fn)
-    out[P.FILE_NAMES["reverse"]] = build_artifact(case_id=CASE_ID, variant_id=P.FILE_NAMES["reverse"], model=docs.envelope_models(core), outputs=rv["outputs"],
-                                                  tests=rv["tests"], impact=rv["impact"], findings=rv["findings"], lineage=lineage, lane=lane)
+    rv = None
+    try:
+        rv = docs2.reverse_document(core, loss_fn)
+    except rev.NotEvaluated as exc:
+        skipped["reverse"] = str(exc)
+    if rv is not None:
+        out[P.FILE_NAMES["reverse"]] = build_artifact(case_id=CASE_ID, variant_id=P.FILE_NAMES["reverse"], model=docs.envelope_models(core), outputs=rv["outputs"],
+                                                      tests=rv["tests"], impact=rv["impact"], findings=rv["findings"], lineage=lineage, lane=lane)
     models_doc = build_models_artifact(case_id=CASE_ID, fit_id=P.FIT_ID, model=recs, fit=fit, lineage=lineage, lane=lane)
     reg = registry.load()
     raw_sources = {"schema": "contraste.sources-manifest-rows/v1",
@@ -217,7 +224,7 @@ def build(seed: int, data_root: Path | str | None, *, n_draws: int | None = None
     gauss = next(r for r in band_base.rows if r.method == "gaussian-copula")
     values = {"headline_capital_over_rwa": band_base.headline / anchors.rwa_clp_m, "gaussian_over_simple_sum": gauss.capital / band_base.headline,
               "cet1_ratio_end_fed_severe": fed_v["cet1_path"][-1] / anchors.rwa_clp_m, "pe_ratio_start": pe0,
-              "reverse_mahalanobis_distance": rv["solution"].distance}
+              "reverse_mahalanobis_distance": rv["solution"].distance if rv else 1.0}
     if only is not None:
         out = {k: v for k, v in out.items() if k in only}
     return Built(models_doc, out, values, raw_sources, contract, skipped, {"core": core, "scenarios": scen, "reverse": rv, "aggregation": a, "scenario": results})

@@ -44,8 +44,13 @@ def capital_start(anchors: Anchors) -> dict[str, Any]:
             "cet1_ratio": anchors.cet1_clp_m / anchors.rwa_clp_m,
             "pe_ratio": (anchors.cet1_clp_m + anchors.at1_clp_m + anchors.t2_clp_m) / anchors.rwa_clp_m,
             "basis": T("RWA is the C15 Tier 1 proxy over the 11.0 percent CET1 anchor, split by the mix of the Banco Santander-Chile Form 20-F 2025 (ratios only, "
-                       "derived-only); CET1 is the proxy. The PE ratio is the 20-F effective equity over its RWA (a ratio); the sources give no split of the part "
-                       "above CET1 between AT1 and T2, so it is carried as T2 and AT1 is nil (decision Q4).")}
+                       "derived-only); CET1 is the proxy. The PE ratio is the 20-F effective equity over its RWA (a ratio). UNVERIFIED assumption: no source splits the part "
+                       "above CET1 between AT1 and T2, so it is carried as T2 and AT1 is nil; no CET1 figure depends on it, and it makes Tier 1 equal to CET1, the conservative "
+                       "Tier 1 (decisions Q4 and Z12).",
+                       "El APR es el proxy de Tier 1 de C15 sobre el ancla de CET1 de 11,0 por ciento, repartido segun la mezcla del Formulario 20-F 2025 de Banco Santander-Chile "
+                       "(solo razones, solo derivado); el CET1 es el proxy. La razon de PE es el patrimonio efectivo del 20-F sobre sus APR (una razon). Supuesto NO VERIFICADO "
+                       "(UNVERIFIED): ninguna fuente reparte la parte sobre el CET1 entre AT1 y T2, por lo que se lleva como T2 y el AT1 es nulo; ninguna cifra de CET1 depende de "
+                       "ello y deja el Tier 1 igual al CET1, el Tier 1 conservador (decisiones Q4 y Z12).")}
 
 
 def cap_row(available: float, rwa: float, need: float | None = None) -> dict[str, Any]:
@@ -67,19 +72,17 @@ def plan_cases(plan: dict[str, tuple[rv_cap.PlanYear, ...]], oi: float, legal: f
     return cases
 
 
-def ppnr_block(path: np.ndarray, nii: float, named: dict[str, dict[str, Any]], rwa: float) -> tuple[dict[str, Any], list[float]]:
+def ppnr_block(path: np.ndarray, nii: list[float], named: dict[str, dict[str, Any]], rwa: float, statement: dict[str, str]) -> tuple[dict[str, Any], list[float]]:
     rows, cum, ppnrs = [], 0.0, []
     for y, ends in enumerate(P.year_ends()):
-        r = rv_cap.ppnr_row(nii, named["ppnr_fee_ratio"]["value"], named["ppnr_cost_ratio"]["value"])
+        r = rv_cap.ppnr_row(nii[y], named["ppnr_fee_ratio"]["value"], named["ppnr_cost_ratio"]["value"])
         cum += r.ppnr
         ppnrs.append(r.ppnr)
         with_ = float(path[y]) + cum
         rows.append({"year": y + 1, "period_end": ends, "nii_clp_m": r.nii, "fee_income_clp_m": r.fee_income, "operating_cost_clp_m": r.operating_cost,
                      "ppnr_clp_m": r.ppnr, "cet1_with_ppnr_clp_m": with_, "cet1_ratio_with_ppnr": with_ / rwa})
-    block = {"label": "ppnr-labelled-row",
-             "statement": T("PPNR from the C15 twelve-month net interest margin, held constant (a static balance sheet at unchanged rates), plus a stated fee "
-                            "ratio and cost ratio, both assumptions of the case."),
-             "nii_source": "c15-dynamic-nii", "fee_ratio": named["ppnr_fee_ratio"], "cost_ratio": named["ppnr_cost_ratio"], "rows": rows}
+    block = {"label": "ppnr-labelled-row", "statement": statement, "nii_source": "c15-dynamic-nii", "fee_ratio": named["ppnr_fee_ratio"],
+             "cost_ratio": named["ppnr_cost_ratio"], "rows": rows}
     return block, ppnrs
 
 

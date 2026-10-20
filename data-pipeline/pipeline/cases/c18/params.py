@@ -21,7 +21,7 @@ BOUNDS_N = 100_000
 BOUNDS_EPSILON = 1e-3
 EC_TOLERANCE = 0.01
 N_PATHS_IRRBB = 1_000_000
-CREDIT_NAMES_PER_SEGMENT = 400            # the representative names of each C07 segment in the grouped copula (the accounts number 171,500)
+CREDIT_NAMES = (400, 1600)                # the representative names of each C07 segment in the grouped copula, measured at both (the accounts number 171,500; decision Z15)
 CREDIT_LGD_GAMMA = 0.0                    # a deterministic LGD per segment (C07 states one LGD per segment)
 
 FIT_START = "1985-03-31"

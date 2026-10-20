@@ -26,7 +26,9 @@ measure, capital plan row, OI, P2G proxy, Annex 3 row, reverse stress solution a
 One horizon (one year) and one confidence level (99.9 percent); EC is VaR less expected loss (dossier 04 l.652-653).
 
 * **Credit**: the engine's grouped copula (`portfolio_from_groups`, `simulate_gaussian`, one systematic factor) on the six C07 segments with their PD,
-  LGD and asset correlation. Each segment is a group of 400 representative names that carry its exposure (the accounts number 171,500).
+  LGD and asset correlation. Each segment is a group of representative names that carry its exposure (the accounts number 171,500). The 99.9 percent VaR and ES are measured
+  with 400 and with 1,600 names per segment and the same seed; the models document records both, the difference and the Monte Carlo standard error, and the larger
+  count is used when the difference exceeds two standard errors (decision Z15).
 * **Market**: C11's mixed-portfolio VaR and ES (champion of the 1 percent level, last forecast day) moved to 99.9 percent by the ratio of normal
   quantiles and to one year by the square root of 250 (two conventions, W4), scaled to the market share of RWA (the position value is the market
   RWA). C11 publishes a VaR and an ES, not a distribution: the marginal the copula needs is the zero-mean Student t whose scale and degrees of
@@ -52,23 +54,28 @@ mortgage classes map to the Fed loan types with stated weights. The back-cast ru
 Each published path keeps its shape (its change from its own jump-off) and takes the last observed value of the United States history (2025 Q4):
 the Fed paths start the quarter after it; the EBA annual values are read as year-end levels joined linearly from year-end 2024; the NGFS variables are the baseline run plus the
 Delayed transition deviation of 2031 to 2033, put on the same jump-off. Banco Andino's credit loss of a year is the exposure of each class times the
-mean of the year's four quarterly rates. Market, IRRBB and operational losses carry their expected loss in every scenario and year, so the stressed
-loss is a floor.
+mean of the year's four quarterly rates. Market has no position book in C07 or C15 and no source maps a macro path to the operational loss, so both carry their
+expected loss in every scenario and year and the stressed loss is a floor. An EVE change is not a profit-and-loss item of the banking book: the IRRBB loss of a scenario is
+nil and the rate path acts on the net interest income of the PPNR row (below).
 
 ## Capital (decisions Q4, Q10, W3)
 
 RWA is the C15 Tier 1 proxy over the 11.0 percent CET1 anchor, split by the mix of the Banco Santander-Chile Form 20-F 2025 (ratios only,
 derived-only); the buffers are its ratios; the PE ratio is its effective-equity ratio and, since no source splits the part above CET1, that part is
-carried as T2 with AT1 nil. The headline CET1 path is the loss-only depletion; a labelled row adds PPNR (the C15 twelve-month margin held constant,
-fee ratio 0.25, cost ratio 0.55, case assumptions). The OI adds the named c_P2 and c_d to the Chilean stack; the 4 percent cap binds the art.
+carried as T2 with AT1 nil (an UNVERIFIED assumption, decision Z12: no CET1 figure depends on it and Tier 1 equals CET1). The headline CET1 path is the loss-only
+depletion; a labelled row adds PPNR: the NII of each year is the C15 twelve-month margin less the engine's `irrbb.eve_nii.delta_nii` on C15's book and curve, the curve
+shifted in parallel by the variant's transposed rate change from the jump-off with C15's floors (the Fed prime rate or the NGFS policy rate where the variant carries
+a short rate, the EBA 10-year rate otherwise, named in the document), plus the fee ratio 0.25 and the cost ratio 0.55, case assumptions (decision Z11). The OI adds the named c_P2 and c_d to the Chilean stack; the 4 percent cap binds the art.
 66 quinquies requirement `p2r`. No mitigation is assumed (EBA para 33), so row 10.2 of the Annex 3 is N/A.
 
-## The reverse stress (decision Q11)
+## The reverse stress (decisions Q11 and Z10)
 
-The failure point is CET1/RWA at the Chilean legal minimum stack. Because the loss-only path of the baseline already ends below the stack (earnings are
-not credited), the reverse stress is stated on the loss in excess of the baseline scenario's: the headroom of CET1 over the stack at the jump-off is the
-loss the factors must cause. The factors are real GDP growth and the unemployment rate, shifted together for the twelve quarters; their covariance is
-that of 1985 Q1 to 2019 Q4. The engine finds the minimum Mahalanobis distance scenario from four starts.
+The failure point is CET1/RWA at the Chilean legal minimum stack. The loss-only path of the baseline already ends below the stack (earnings are not credited), which is
+the headline finding; the reverse stress therefore runs on the labelled PPNR path: CET1 at the jump-off plus the cumulative PPNR less the cumulative losses reaches the
+stack when the three-year loss net of the baseline's cumulative PPNR equals the headroom of CET1 over the stack at the jump-off. It rests on the assumptions of the PPNR
+row and says so in both languages. If the PPNR baseline also ended below the stack the reverse stress would be not evaluated, with that reason, and the loss would never be
+redefined. The factors are real GDP growth and the unemployment rate, shifted together for the twelve quarters; their covariance is that of 1985 Q1 to 2019 Q4. The engine
+finds the minimum Mahalanobis distance scenario from four starts.
 
 ## Documents
 
@@ -80,7 +87,8 @@ that of 1985 Q1 to 2019 Q4. The engine finds the minimum Mahalanobis distance sc
 
 * The satellites do not hold out of time: they predict a large 2020 peak that the stimulus of 2020 prevented (the back-cast is red for every loan type).
 * Some coefficients have the opposite of the expected sign; the sensitivity test is red and the documents say so.
-* Only credit responds to the scenario; the other three losses are expected losses.
+* Only credit responds to the scenario through the satellites, and the PPNR row's NII through the rate path; market and operational losses are expected losses and the stressed loss is a floor.
 * The IRRBB correlations of the base matrix are a convention labelled UNVERIFIED (decision T2).
-* The AT1/T2 split is not in any source. The EBA values are annual averages read as year-end levels (UNVERIFIED, F6).
-* The loss-only path ignores earnings, so even the baseline ends below the CET1 stack; the PPNR row is labelled and shown beside it.
+* The AT1/T2 split is not in any source (an UNVERIFIED assumption). The EBA values are annual averages read as year-end levels (UNVERIFIED, F6).
+* The loss-only path ignores earnings, so even the baseline ends below the CET1 stack; the PPNR row is labelled and shown beside it, and the reverse stress rests on it.
+* The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast; the documents state it in the headline.

@@ -49,3 +49,22 @@ def test_market_scaling_conventions_and_the_operational_marginal(built) -> None:
     inf = dataclasses.replace(a, c17=dict(a.c17, tail_index=1.1, infinite_mean=True))
     with pytest.raises(ValueError, match="infinite-mean"):
         marginals.operational(inf, 1076.06, n_points=1 << 14)
+
+
+def test_the_credit_granularity_is_measured_and_the_rule_picks_the_count(built) -> None:
+    core = built.results["core"]
+    g = core.marginals[0].extras["granularity"]
+    assert (g["low"]["names"], g["high"]["names"]) == (400, 1600) and g["low"]["seed"] == g["high"]["seed"]
+    for key in ("var", "es", "var_se", "es_se"):
+        assert g["low"][key] > 0 and g["high"][key] > 0
+    assert g["diff_var"] == pytest.approx(g["high"]["var"] - g["low"]["var"]) and g["diff_es"] == pytest.approx(g["high"]["es"] - g["low"]["es"])
+    exceeds = abs(g["diff_var"]) > 2 * g["se_var"] or abs(g["diff_es"]) > 2 * g["se_es"]
+    assert g["exceeds_two_se"] is exceeds and g["names_used"] == (1600 if exceeds else 400)
+    blk = next(m for m in core_models(built)["fit"]["marginal_sources"] if m["risk"] == "credit")
+    text = blk["description"]["en"]
+    for token in ("400", "1,600", "standard error", str(g["names_used"])):
+        assert token in text, token
+
+
+def core_models(built):
+    return built.models
