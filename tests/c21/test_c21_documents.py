@@ -39,6 +39,17 @@ def test_every_committed_document_validates_passes_the_checks_and_is_listed_with
         assert entries[name]["path"] == f"C21/{name}.json" and entries[name]["bytes"] == path.stat().st_size
         if name != MODELS:
             assert entries[name]["models_ref"] == f"C21/{MODELS}.json" and entries[name]["truth_status"] == "real-outcomes"
+    for name in VARIANTS:       # the rows whose light is not a p-value threshold carry their levels in extras and no alphas (estimates._segment)
+        for row in load(C21 / f"{name}.json")["tests"]:
+            if row["test_id"] in ("fair.conditional_disparity", "fair.rate_spread_disparity"):
+                assert row["alpha_amber"] is None and row["alpha_red"] is None and row["extras"]["thresholds"]["interval_level"] == 0.95
+                assert "interval_level=0.95" in row["policy_version"] and row["p_value"] is not None
+            elif row["test_id"] == "fair.situation_testing":
+                assert row["alpha_amber"] is None and row["alpha_red"] is None and row["extras"]["thresholds"]["amber"] == 0.2
+            elif row["test_id"] in ("fair.two_proportion_z", "fair.fisher_exact"):
+                assert (row["alpha_amber"], row["alpha_red"]) == (0.05, 0.01)
+            else:
+                assert row["alpha_amber"] is None and row["alpha_red"] is None
     assert manifest["sources"] == ["hmda"] and manifest["source_details"]["hmda"]["class"] == "mirror-allowed"
     assert manifest["contract"]["hmda"]["counts"]["rejected"] == 0 and manifest["expect"]
     for pid, name in zip(PAIRS, VARIANTS):

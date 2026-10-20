@@ -172,10 +172,26 @@ class AttributeResult:
     fits: list[dict[str, Any]]
 
 
+#: the tests whose light is not a p-value threshold: the 95 percent interval (two) and the share of significant complainants (one)
+NO_ALPHA_TESTS = ("fair.conditional_disparity", "fair.rate_spread_disparity", "fair.situation_testing")
+
+
 def _segment(result: Any, segment: str) -> Any:
-    """The engine row with its segment; a row whose notes do not carry the label (a test that was not evaluated) gets it appended."""
+    """The engine row with its segment, for the document.
+
+    A row whose notes do not carry the label (a test that was not evaluated) gets "no legal claim" appended. The engine writes
+    ``alpha_amber = 1 - level`` (0.050000000000000044) and no red level on the two interval tests, and the cut points of the share
+    (0.20 and the sentinel 2.0) in ``alpha_amber`` and ``alpha_red`` on the situation test: neither is a p-value threshold, and the
+    product's web gates read the alphas of a row as one (they require the pair 0.05 and 0.01, or a pair of the test family's own
+    policy, named in its policy version). The levels stay in ``extras.thresholds`` and in the policy version, so both alphas are set
+    to null here for those three tests and nothing else of the row changes (open question for the engine owner: these rows should
+    carry no alphas).
+    """
     notes = result.notes if "no legal claim" in result.notes else f"{result.notes}; no legal claim"
-    return dataclasses.replace(result, segment=segment, notes=notes)
+    fields: dict[str, Any] = {"segment": segment, "notes": notes}
+    if result.test_id in NO_ALPHA_TESTS:
+        fields.update(alpha_amber=None, alpha_red=None)
+    return dataclasses.replace(result, **fields)
 
 
 def attribute_result(field: str, fit_s: Sample, fit_d: Design, conf_s: Sample, conf_d: Design) -> AttributeResult:
