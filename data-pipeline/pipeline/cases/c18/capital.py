@@ -47,8 +47,8 @@ def capital_start(anchors: Anchors) -> dict[str, Any]:
                        "derived-only); CET1 is the proxy. The PE ratio is the 20-F effective equity over its RWA (a ratio). UNVERIFIED assumption: no source splits the part "
                        "above CET1 between AT1 and T2, so it is carried as T2 and AT1 is nil; no CET1 figure depends on it, and it makes Tier 1 equal to CET1, the conservative "
                        "Tier 1 (decisions Q4 and Z12).",
-                       "El APR es el proxy de Tier 1 de C15 sobre el ancla de CET1 de 11,0 por ciento, repartido segun la mezcla del Formulario 20-F 2025 de Banco Santander-Chile "
-                       "(solo razones, solo derivado); el CET1 es el proxy. La razon de PE es el patrimonio efectivo del 20-F sobre sus APR (una razon). Supuesto NO VERIFICADO "
+                       "El APR es el proxy de Tier 1 de C15 sobre el ancla de CET1 de 11,0 por ciento, repartido según la mezcla del Formulario 20-F 2025 de Banco Santander-Chile "
+                       "(solo razones, solo derivado); el CET1 es el proxy. La razón de PE es el patrimonio efectivo del 20-F sobre sus APR (una razón). Supuesto NO VERIFICADO "
                        "(UNVERIFIED): ninguna fuente reparte la parte sobre el CET1 entre AT1 y T2, por lo que se lleva como T2 y el AT1 es nulo; ninguna cifra de CET1 depende de "
                        "ello y deja el Tier 1 igual al CET1, el Tier 1 conservador (decisiones Q4 y Z12).")}
 

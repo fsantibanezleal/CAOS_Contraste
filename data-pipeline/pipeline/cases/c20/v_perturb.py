@@ -82,4 +82,4 @@ def build(frame: Frame, rungs: dict[str, Any], seed: int) -> dict[str, Any]:
                                                  "Decisiones que cambian en el punto de corte indicado con ruido de entrada, la mayor entre las escalas")}}
     return {"outputs": outputs, "tests": tests, "impact": impact, "models": [mid],
             "limits": [("noise-on-codes", t("The noise is added to every feature including the coded ones; a coded feature is read as the nearest integer code",
-                                            "El ruido se suma a todas las variables, tambien las codificadas; una variable codificada se lee como el codigo entero mas cercano"))]}
+                                            "El ruido se suma a todas las variables, también las codificadas; una variable codificada se lee como el código entero más cercano"))]}

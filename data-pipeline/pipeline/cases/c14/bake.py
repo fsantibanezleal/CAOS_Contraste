@@ -91,13 +91,13 @@ def _model_summaries(ev: str) -> list[dict[str, Any]]:
                 "parameters": {k: {"value": v, "unit": u} for k, (v, u) in params.items()}, "checkpoint_sha256": None}
 
     return [
-        rec("irrbb-gap-duration", "repricing-gap-and-duration-gap", "Repricing gap and duration gap", "Brecha de reprecio y brecha de duracion", {}),
+        rec("irrbb-gap-duration", "repricing-gap-and-duration-gap", "Repricing gap and duration gap", "Brecha de reprecio y brecha de duración", {}),
         rec(vt.MODEL_ID, "standardised-eve", "Standardised EVE, six shocks", "EVE estandarizado, seis choques",
             {"usd_parallel_bp_2024": (200.0, "bp"), "usd_short_bp_2024": (300.0, "bp"), "usd_long_bp_2024": (225.0, "bp"),
              "outlier_threshold": (0.15, "share of Tier 1"), "floor": (asm.FLOOR, "rate")}),
         rec("irrbb-nmd-replicating", "replicating-portfolio", "Replicating portfolio of the non-maturity deposits",
-            "Cartera replicante de los depositos a la vista", {"fit_quarters": (float(asm.FIT_QUARTERS), "quarters")}),
-        rec("irrbb-dynamic-nii", "dynamic-nii", "Dynamic NII with deposit betas", "NII dinamico con betas de depositos",
+            "Cartera replicante de los depósitos a la vista", {"fit_quarters": (float(asm.FIT_QUARTERS), "quarters")}),
+        rec("irrbb-dynamic-nii", "dynamic-nii", "Dynamic NII with deposit betas", "NII dinámico con betas de depósitos",
             {"horizon_months": (float(asm.HORIZON_MONTHS), "months")}),
         rec("irrbb-ear-evar-hw1f", "ear-evar", "EaR and EVaR, Hull-White one factor", "EaR y EVaR, Hull-White un factor",
             {"a": (asm.HW1F_A, "per year")}),
@@ -229,7 +229,7 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, n_paths: int 
     root = Path(paths.root)
     entries, sums = [], []
     regime = t("Call reports and Treasury curve read up to the date; behaviour synthetic, stated in the document.",
-               "Reportes y curva del Tesoro leidos hasta la fecha; comportamiento sintetico, declarado en el documento.")
+               "Reportes y curva del Tesoro leídos hasta la fecha; comportamiento sintético, declarado en el documento.")
     e = _check_and_write(root, MODELS_REL, built.models)
     sums.append(_sum(root, MODELS_REL))
     entries.append({"role": "models", "variant_id": f"models-{FIT_ID}", "truth_status": "synthetic-calibrated",
@@ -241,7 +241,7 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, n_paths: int 
         sums.append(_sum(root, rel))
         q = doc["outputs"]["quarter"]
         entries.append({"role": "variant", "variant_id": vid, "truth_status": "synthetic-calibrated",
-                        "title": t(f"Valuation date {doc['outputs']['valuation_date']} ({q})", f"Fecha de valoracion {doc['outputs']['valuation_date']} ({q})"),
+                        "title": t(f"Valuation date {doc['outputs']['valuation_date']} ({q})", f"Fecha de valoración {doc['outputs']['valuation_date']} ({q})"),
                         "short_title": t(q, q), "regime": regime, "models_ref": MODELS_REL, **e})
         _log(f"{vid}: {e['bytes']:,} bytes")
     write_json(root / RAW_REL, built.raw_sources)

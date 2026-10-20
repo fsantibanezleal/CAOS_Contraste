@@ -28,28 +28,28 @@ MODEL_ID = "liquidity-ladder"
 OTHER_FLOW_DAYS = 250      # relevant days in a year, over which the advances of one year or less mature uniformly (a convention)
 INFLOW_CAP = 0.75
 VARIANT_LABEL = {
-    "lcr-standard": ("LCR standard run-off", "LCR con salidas estandar", "The Basel LCR of the call-report balance sheet over the 30-day combined stress.",
-                     "El LCR de Basilea del balance del reporte de llamada bajo el estres combinado a 30 dias."),
+    "lcr-standard": ("LCR standard run-off", "LCR con salidas estándar", "The Basel LCR of the call-report balance sheet over the 30-day combined stress.",
+                     "El LCR de Basilea del balance del reporte de llamada bajo el estrés combinado a 30 días."),
     "list-adverse": ("LiST adverse", "LiST adverso", "ECB LiST 2019 Adverse daily compounding over the six-month horizon.",
-                     "Capitalizacion diaria LiST 2019 Adverso del BCE a seis meses."),
+                     "Capitalización diaria LiST 2019 Adverso del BCE a seis meses."),
     "list-extreme": ("LiST extreme", "LiST extremo", "ECB LiST 2019 Extreme daily compounding over the six-month horizon.",
-                     "Capitalizacion diaria LiST 2019 Extremo del BCE a seis meses."),
-    "fast-run": ("2023 fast run", "Corrida rapida 2023", "Daily compounding calibrated on the pre-2023 Table A.1 rows, scored on 2023.",
-                 "Capitalizacion diaria calibrada con las filas de la Tabla A.1 anteriores a 2023, evaluada en 2023."),
-    "htm-losses": ("HTM losses in CBC", "Perdidas HTM en el CBC", "LiST Adverse with the held-to-maturity book at fair value in the CBC.",
+                     "Capitalización diaria LiST 2019 Extremo del BCE a seis meses."),
+    "fast-run": ("2023 fast run", "Corrida rápida 2023", "Daily compounding calibrated on the pre-2023 Table A.1 rows, scored on 2023.",
+                 "Capitalización diaria calibrada con las filas de la Tabla A.1 anteriores a 2023, evaluada en 2023."),
+    "htm-losses": ("HTM losses in CBC", "Pérdidas HTM en el CBC", "LiST Adverse with the held-to-maturity book at fair value in the CBC.",
                    "LiST Adverso con el libro mantenido al vencimiento a valor razonable en el CBC."),
 }
 BANK = {"name": "Silicon Valley Bank (CERT 24735), failed 2023-03-10", "cert": 24735, "aggregates": "real", "behaviour": "synthetic",
         "deposits": "synthetic",
         "notice": txt("Real FDIC call-report aggregates used as public aggregates only, with synthetic behaviour and synthetic deposits: "
                       "the case does not represent the bank and certifies no model.",
-                      "Agregados reales del reporte de llamada FDIC usados solo como agregados publicos, con comportamiento y depositos "
-                      "sinteticos: el caso no representa al banco ni certifica ningun modelo.")}
+                      "Agregados reales del reporte de llamada FDIC usados solo como agregados públicos, con comportamiento y depósitos "
+                      "sintéticos: el caso no representa al banco ni certifica ningún modelo.")}
 UNITS = {"money_scale": "thousands", "rate": "decimal-per-day", "horizon": "days", "dates": "ISO-8601"}
 LCR_STATEMENT = txt("A Basel LCR formula applied to FDIC call-report aggregates with stated assumptions and synthetic deposit behaviour: "
                     "not the bank's reported or regulatory LCR.",
-                    "Una formula LCR de Basilea aplicada a agregados del reporte de llamada FDIC con supuestos declarados y "
-                    "comportamiento sintetico de depositos: no es el LCR informado ni regulatorio del banco.")
+                    "Una fórmula LCR de Basilea aplicada a agregados del reporte de llamada FDIC con supuestos declarados y "
+                    "comportamiento sintético de depósitos: no es el LCR informado ni regulatorio del banco.")
 
 
 # ------------------------------------------------------------------------------------------------------ small blocks
@@ -76,7 +76,7 @@ def hqla_block(l1: float, l2a: float, l2b: float, al1: float | None = None, al2a
             "adjusted_l2b": l2b if al2b is None else al2b, "adj_15": h.adj_15, "adj_40": h.adj_40, "hqla": h.hqla,
             "l2_share": None if empty else h.l2_share, "l2b_share": None if empty else h.l2b_share,
             "shares_reason": txt("The HQLA stock is empty: the Level 2 and Level 2B shares are undefined, not zero.",
-                                 "El stock HQLA esta vacio: las proporciones de nivel 2 y 2B no estan definidas, no son cero.") if empty else None,
+                                 "El stock HQLA está vacío: las proporciones de nivel 2 y 2B no están definidas, no son cero.") if empty else None,
             "caps": {"l2_cap": 0.4, "l2b_cap": 0.15}}
 
 
@@ -158,7 +158,7 @@ def cbc_block(report: Report, conv: dict, basis: str, htm_multiple: float | None
     return {
         "as_of": report.report_date, "htm_valuation_basis": basis,
         "haircut_framework": {
-            "label": txt("Federal Reserve discount window margins in force on 2023-03-10", "Margenes de la ventana de descuento de la Reserva Federal vigentes el 2023-03-10"),
+            "label": txt("Federal Reserve discount window margins in force on 2023-03-10", "Márgenes de la ventana de descuento de la Reserva Federal vigentes el 2023-03-10"),
             "central_bank": "Federal Reserve discount window", "effective_from": "2022-03-14", "effective_to": "2023-03-12",
             "source": "https://www.frbdiscountwindow.org/generalpages/historical_margins/2022/03142022_03122023_securities_table"},
         "classes": classes,
@@ -266,7 +266,7 @@ def path_block(p: Path, conv: dict, total_assets: float) -> dict[str, Any]:
     else:
         blk["cliff"] = None
         blk["cliff_reason"] = txt(f"The horizon of {h} days is shorter than the far day {far} of the cliff diagnostic.",
-                                  f"El horizonte de {h} dias es menor que el dia {far} del diagnostico del acantilado.")
+                                  f"El horizonte de {h} días es menor que el día {far} del diagnóstico del acantilado.")
     return blk
 
 
@@ -305,7 +305,7 @@ def lcr_block(report: Report, conv: dict) -> dict[str, Any]:
             "inflows_counted": net.inflows_counted, "net_outflows": net.net, "ratio": ratio, "mapping_sensitivity": band,
             "below_100_note": txt("A ratio below 100 percent under stress is not a breach: the institution is expected to monitor its decline "
                                   "(ECB ILAAP guide, dossier 01 J.3).",
-                                  "Una razon bajo 100 por ciento bajo estres no es un incumplimiento: se espera monitorear su caida.")}
+                                  "Una razón bajo 100 por ciento bajo estrés no es un incumplimiento: se espera monitorear su caída.")}
 
 
 # ------------------------------------------------------------------------------------------------------ HTM
@@ -323,7 +323,7 @@ def htm_revaluation(report: Report, curves: dict[str, treasury.ParCurve], valuat
     older = sorted(d for d in curves if d <= ref_date)
     if not known or not older:
         reason = txt("No Treasury par curve is available on or before the valuation date or the date one year before it.",
-                     "No hay curva de rendimientos del Tesoro a la fecha de valoracion ni un ano antes.")
+                     "No hay curva de rendimientos del Tesoro a la fecha de valoración ni un año antes.")
         return {"status": "not_evaluated", "curve_source": "US Treasury par yield curve (not read)", "curve_date": None, "model_fair_value": None,
                 "difference": None, "relative_difference": None, "reason": reason, **base}
     now, then = curves[known[-1]], curves[older[-1]]
@@ -344,7 +344,7 @@ def htm_revaluation(report: Report, curves: dict[str, treasury.ParCurve], valuat
     if rel is None:
         return {"status": "not_evaluated", "curve_source": f"US Treasury par yield curve of {known[-1]}", "curve_date": None, "model_fair_value": None,
                 "difference": None, "relative_difference": None,
-                "reason": txt("The reported unrealised loss is zero, so a relative difference is undefined.", "La perdida no realizada informada es cero."), **base}
+                "reason": txt("The reported unrealised loss is zero, so a relative difference is undefined.", "La pérdida no realizada informada es cero."), **base}
     return {"status": "evaluated", "curve_source": f"US Treasury par yield curve of {known[-1]} priced against the par curve of {older[-1]} "
             "(a par bond per maturity band of the securities book, the profile applied to the held-to-maturity amortised cost)",
             "curve_date": known[-1], "model_fair_value": model, "difference": diff, "relative_difference": rel, "reason": None, **base}
@@ -371,10 +371,10 @@ def htm_block(report: Report, conv: dict, curves: dict[str, treasury.ParCurve], 
     return {"reported": rep,
             "application": {"method": "whole-book", "statement": txt(
                 "The held-to-maturity fair-value loss (SCHF minus SCHA) is applied to the securities book as a whole, pro rata by type: a stated "
-                "assumption, never a reported by-type loss (A3).", "La perdida a valor razonable HTM se aplica al libro completo, a prorrata por tipo.")},
+                "assumption, never a reported by-type loss (A3).", "La pérdida a valor razonable HTM se aplica al libro completo, a prorrata por tipo.")},
             "cbc_without_loss": without, "cbc_with_loss": with_loss, "cbc_removed": without - with_loss,
             "btfp_par": {"label": txt("Counterfactual: Bank Term Funding Program par valuation, announced 2023-03-12 after the run; par is proxied by the carrying value",
-                                      "Contrafactual: valoracion a la par del BTFP, anunciada el 2023-03-12 tras la corrida"),
+                                      "Contrafactual: valoración a la par del BTFP, anunciada el 2023-03-12 tras la corrida"),
                          "announced": "2023-03-12", "cbc_at_par": at_par, "uplift": at_par - without},
             "revaluation": htm_revaluation(report, curves, valuation_date)}
 
@@ -385,7 +385,7 @@ def htm_block(report: Report, conv: dict, curves: dict[str, treasury.ParCurve], 
 def _anchor() -> dict[str, Any]:
     a = scenarios.anchor_from_observation(anchors.BOARD_SHARE, anchors.EVENT_HORIZON_DAYS)
     return {"label": txt("Labelled anchor, not a forecast: SVB's observed 85 percent in 2 days (Table A.1) and the daily rate it implies",
-                         "Ancla rotulada, no un pronostico: el 85 por ciento en 2 dias observado en SVB y la tasa diaria implicita"),
+                         "Ancla rotulada, no un pronóstico: el 85 por ciento en 2 días observado en SVB y la tasa diaria implícita"),
             "source": anchors.ANCHOR_SOURCE, "outflow_share": a["outflow_share"], "days": a["days"], "implied_daily_rate": a["implied_daily_rate"],
             "forecast_claim": False}
 
@@ -407,7 +407,7 @@ def scoring_block(vid: str, conv: dict, deposits: dict[str, Any], segs: list[dic
         at_model = {"horizon_days": h, "amount": amount, "share_of_model_base": amount / base}
         mo = {"at_event_horizon": None, "at_event_horizon_reason": txt(
             "The LCR defines one 30-day aggregate and no daily path, so no outflow exists at the 2-day event horizon: the comparison is at the model's own horizon.",
-            "El LCR define un agregado a 30 dias sin trayectoria diaria: la comparacion es en el horizonte propio del modelo."), "at_model_horizon": at_model}
+            "El LCR define un agregado a 30 días sin trayectoria diaria: la comparación es en el horizonte propio del modelo."), "at_model_horizon": at_model}
         chosen_amount, chosen_share, compared = amount, at_model["share_of_model_base"], "model-horizon"
     else:
         a_ev, a_h = modelled(ev), modelled(h)
@@ -418,9 +418,9 @@ def scoring_block(vid: str, conv: dict, deposits: dict[str, Any], segs: list[dic
     green, amber = conv["scoring_ratio_green"]["value"], conv["scoring_ratio_amber"]["value"]
     tests, den = [], []
     for did, label, d_amt, r_amt, r_share, m_share, src in (
-            ("board-stated-share", txt("Board review: roughly 85 percent of the deposit base", "Revision de la Junta: cerca de 85 por ciento de la base de depositos"),
+            ("board-stated-share", txt("Board review: roughly 85 percent of the deposit base", "Revisión de la Junta: cerca de 85 por ciento de la base de depósitos"),
              None, None, anchors.BOARD_SHARE, chosen_share, anchors.REVIEW_SOURCE),
-            ("call-report-dep", txt("Over 40 plus 100 billion USD against the call report's DEP", "Mas de 40 mas 100 mil millones de USD contra el DEP del reporte de llamada"),
+            ("call-report-dep", txt("Over 40 plus 100 billion USD against the call report's DEP", "Más de 40 más 100 mil millones de USD contra el DEP del reporte de llamada"),
              dep, anchors.EVENT_AMOUNT, anchors.EVENT_AMOUNT / dep, chosen_amount / dep,
              f"{anchors.REVIEW_SOURCE} (the amounts) and the FDIC call report of the valuation date (DEP)")):
         t = val.runoff_adequacy_back_test(m_share, r_share, green, amber, compared, did)
@@ -438,7 +438,7 @@ def scoring_block(vid: str, conv: dict, deposits: dict[str, Any], segs: list[dic
             ms = modelled(r.days) / base
             rows.append({"row_id": r.row_id, "bank": r.bank, "year": r.year, "horizon_days": r.days, "observed_share": r.outflow_share, "modelled_share": ms,
                          "error": r.outflow_share - ms, "role": role, "reason": None})
-    blk = {"event": {"label": txt("The deposit run of 9 and 10 March 2023, the bank that failed on 2023-03-10", "La corrida de depositos del 9 y 10 de marzo de 2023"),
+    blk = {"event": {"label": txt("The deposit run of 9 and 10 March 2023, the bank that failed on 2023-03-10", "La corrida de depósitos del 9 y 10 de marzo de 2023"),
                      "event_date": anchors.EVENT_DATE, "horizon_days": ev, "source": anchors.REVIEW_SOURCE},
            "model_deposit_base": base, "modelled_outflow": mo, "denominators": den, "svb_anchor": _anchor(), "table_a1_scoring": rows}
     return blk, tests
@@ -449,6 +449,6 @@ def _impact_survival(sv: dict[str, Any] | None, h: int) -> dict[str, Any]:
         return {"value": None, "unit": "relevant days", "label": txt("The LCR formula gives no daily path, so no survival period.", "El LCR no da trayectoria diaria.")}
     if sv["kind"] == "survives-horizon":
         return {"value": None, "unit": "relevant days",
-                "label": txt(f"Survival period: survives the {h}-day horizon", f"Periodo de supervivencia: sobrevive el horizonte de {h} dias")}
+                "label": txt(f"Survival period: survives the {h}-day horizon", f"Periodo de supervivencia: sobrevive el horizonte de {h} días")}
     return {"value": float(sv["day"]), "unit": "relevant days",
-            "label": txt("Survival period (first day the NLP is negative)", "Periodo de supervivencia (primer dia con NLP negativo)")}
+            "label": txt("Survival period (first day the NLP is negative)", "Periodo de supervivencia (primer día con NLP negativo)")}

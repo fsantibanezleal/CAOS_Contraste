@@ -50,15 +50,15 @@ def aggregation_document(core: Core) -> dict[str, Any]:
          "title": T(f"The headline capital is the simple sum, CLP {total:,.0f} million. The dependence band runs from CLP {lower:,.0f} million (best case) to CLP {worst:,.0f} "
                     f"million (worst case); the Gaussian copula figure is {1 - gauss / total:.1%} below the sum and is information, not capital.",
                     f"El capital principal es la suma simple, CLP {total:,.0f} millones. La banda de dependencia va de CLP {lower:,.0f} millones (mejor caso) a CLP {worst:,.0f} "
-                    f"millones (peor caso); la cifra de la copula gaussiana esta {1 - gauss / total:.1%} bajo la suma y es informacion, no capital.")},
+                    f"millones (peor caso); la cifra de la cópula gaussiana está {1 - gauss / total:.1%} bajo la suma y es información, no capital.")},
         {"id": "model-risk", "severity": "S3", "status": "open", "evidence": ["aggregation.copula_choice_sensitivity"],
          "title": T(f"The aggregation model moves the figure by up to {am:.1%} over the Gaussian copula (the Barrieu and Scandolo add-on): sensitivity information for the "
                     "validator, never capital.",
-                    f"El modelo de agregacion mueve la cifra hasta {am:.1%} sobre la copula gaussiana (el recargo de Barrieu y Scandolo): informacion de sensibilidad para el "
+                    f"El modelo de agregación mueve la cifra hasta {am:.1%} sobre la cópula gaussiana (el recargo de Barrieu y Scandolo): información de sensibilidad para el "
                     "validador, nunca capital.")},
         {"id": "rosenberg-schuermann-reference", "severity": "S4", "status": "open", "evidence": ["aggregation.rosenberg_schuermann_reference"],
          "title": T(f"The additive approximation exceeds the Gaussian copula figure by {over:.1%}; the published range of 30 to 40 percent is a reference and no gate.",
-                    f"La aproximacion aditiva excede la cifra de la copula gaussiana en {over:.1%}; el rango publicado de 30 a 40 por ciento es una referencia y no una barrera.")}]
+                    f"La aproximación aditiva excede la cifra de la cópula gaussiana en {over:.1%}; el rango publicado de 30 a 40 por ciento es una referencia y no una barrera.")}]
     return {"outputs": plain(outputs), "tests": rows, "impact": impact, "findings": findings}
 
 
@@ -80,19 +80,19 @@ def reverse_document(core: Core, loss_fn: Callable[[np.ndarray], float]) -> dict
              "legal minimum stack when this net loss equals the headroom of CET1 over the stack. The satellites give the credit loss and the other risks carry their expected "
              "loss. The basis is the labelled PPNR row and rests on its assumptions (the fee and cost ratios); the headline CET1 path is the loss-only one. The loss is nonlinear "
              "through the probit link.",
-             "La perdida de tres años de Banco Andino neta del PPNR acumulado del escenario base, cuando el crecimiento del PIB real y la tasa de desempleo se desplazan juntos en "
-             "los doce trimestres por la misma desviacion respecto de la trayectoria base de la Reserva Federal: el CET1 de partida mas el PPNR acumulado menos las perdidas "
-             "acumuladas llega al minimo legal cuando esta perdida neta iguala la holgura del CET1 sobre ese minimo. Los satelites dan la perdida de credito y los demas riesgos "
-             "llevan su perdida esperada. La base es la fila rotulada de PPNR y descansa en sus supuestos (las razones de comisiones y de costos); la trayectoria principal de "
-             "CET1 es la de solo perdidas. La perdida es no lineal por el enlace probit.")
+             "La pérdida de tres años de Banco Andino neta del PPNR acumulado del escenario base, cuando el crecimiento del PIB real y la tasa de desempleo se desplazan juntos en "
+             "los doce trimestres por la misma desviación respecto de la trayectoria base de la Reserva Federal: el CET1 de partida más el PPNR acumulado menos las pérdidas "
+             "acumuladas llega al mínimo legal cuando esta pérdida neta iguala la holgura del CET1 sobre ese mínimo. Los satélites dan la pérdida de crédito y los demás riesgos "
+             "llevan su pérdida esperada. La base es la fila rotulada de PPNR y descansa en sus supuestos (las razones de comisiones y de costos); la trayectoria principal de "
+             "CET1 es la de solo pérdidas. La pérdida es no lineal por el enlace probit.")
     outputs = {
         "kind": "reverse", "currency": "CLP", "units": UNITS, "bank": _bank(),
         "failure_point": {"label": "contraste-formulation-not-regulatory",
                           "definition": T("CET1 over RWA reaches the Chilean legal minimum stack at the end of the three-year planning horizon on the labelled PPNR path (CET1 at the "
                                           "jump-off plus the cumulative PPNR less the cumulative losses): the formal statement is Contraste's, not regulatory text, and it rests on "
                                           "the assumptions of the PPNR row.",
-                                          "El CET1 sobre APR llega al minimo legal chileno al final del horizonte de planificacion de tres años en la trayectoria rotulada de PPNR "
-                                          "(CET1 de partida mas PPNR acumulado menos perdidas acumuladas): el enunciado formal es de Contraste, no texto regulatorio, y descansa en "
+                                          "El CET1 sobre APR llega al mínimo legal chileno al final del horizonte de planificación de tres años en la trayectoria rotulada de PPNR "
+                                          "(CET1 de partida más PPNR acumulado menos pérdidas acumuladas): el enunciado formal es de Contraste, no texto regulatorio, y descansa en "
                                           "los supuestos de la fila de PPNR."),
                           "stack": stack, "cet1_ratio_start": start_ratio, "rwa_clp_m": a.rwa_clp_m, "horizon_years": 3},
         "factor_space": space, **rev.blocks(best, each, p, threshold, space, desc)}
@@ -107,7 +107,7 @@ def reverse_document(core: Core, loss_fn: Callable[[np.ndarray], float]) -> dict
     findings = [{"id": "reverse-scenario", "severity": "S3", "status": "open", "evidence": ["stress.reverse_solution_check"],
                  "title": T(f"On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts {names[0]} by {x[0]:+.2f} and {names[1]} by "
                             f"{x[1]:+.2f} points, a Mahalanobis distance of {best.distance:.2f} (tail probability {p:.1%}); the loss-only baseline already ends below the stack.",
-                            f"En la trayectoria rotulada de PPNR, el escenario mas plausible que lleva el CET1 al minimo legal desplaza {names[0]} en {x[0]:+.2f} y {names[1]} en "
-                            f"{x[1]:+.2f} puntos, a una distancia de Mahalanobis de {best.distance:.2f} (probabilidad de cola {p:.1%}); la base de solo perdidas ya termina bajo el minimo.")}]
+                            f"En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza {names[0]} en {x[0]:+.2f} y {names[1]} en "
+                            f"{x[1]:+.2f} puntos, a una distancia de Mahalanobis de {best.distance:.2f} (probabilidad de cola {p:.1%}); la base de solo pérdidas ya termina bajo el mínimo.")}]
     return {"outputs": plain(outputs), "tests": rows_of([test]), "impact": impact, "findings": findings, "solution": best, "plausibility": p,
             "net_loss_at_zero": net_zero}

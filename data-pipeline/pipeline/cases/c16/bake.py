@@ -301,18 +301,18 @@ def write_documents(root: Path | str, built: Built, manifests: Path | str | None
     if found:
         raise ValueError(f"C16: the documents disagree: {found[:5]}")
     regime = txt("Call reports read up to the date; real aggregates, synthetic behaviour stated in the document.",
-                 "Reportes leidos hasta la fecha; agregados reales, comportamiento sintetico declarado en el documento.")
+                 "Reportes leídos hasta la fecha; agregados reales, comportamiento sintético declarado en el documento.")
     entries, sums = [], []
     e = _check_and_write(root, MODELS_REL, built.models, sem)
     sums.append(_sum(root, MODELS_REL))
     entries.append({"role": "models", "variant_id": f"models-{FIT_ID}", "truth_status": "synthetic-calibrated",
-                    "title": txt("Parameter sets, calibration and generator", "Conjuntos de parametros, calibracion y generador"),
+                    "title": txt("Parameter sets, calibration and generator", "Conjuntos de parámetros, calibración y generador"),
                     "short_title": txt("Models", "Modelos"), "regime": regime, "path": MODELS_REL, **e})
     for vid, d in {**built.variants, **({REVERSE_ID: built.reverse} if built.reverse else {})}.items():
         rel = f"{CASE_ID}/{vid}.json"
         e = _check_and_write(root, rel, d, sem)
         sums.append(_sum(root, rel))
-        label = vt.VARIANT_LABEL[vid][:2] if vid in vt.VARIANT_LABEL else ("Reverse stress", "Estres inverso")
+        label = vt.VARIANT_LABEL[vid][:2] if vid in vt.VARIANT_LABEL else ("Reverse stress", "Estrés inverso")
         entries.append({"role": "variant", "variant_id": vid, "truth_status": "synthetic-calibrated", "title": txt(*label), "short_title": txt(*label),
                         "regime": regime, "models_ref": MODELS_REL, **e})
         _log(f"{vid}: {e['bytes']:,} bytes")
