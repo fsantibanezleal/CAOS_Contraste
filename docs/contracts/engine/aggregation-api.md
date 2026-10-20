@@ -1,4 +1,4 @@
-# Engine aggregation API contract: `engine-aggregation-api` 1.0.0
+# Engine aggregation API contract: `engine-aggregation-api` 1.1.0
 
 Owner: U13-S (unit sizing `plans/contraste/units/U13-sizing.md`, CAOS_MANAGE). Implemented by U13-E1 in `riskvalidation.aggregation` and
 `riskvalidation.validation.aggregation` (repository CAOS_RiskValidation, released with the one engine tag of batch 3, R1 of the sizing);
@@ -14,6 +14,8 @@ The engine computes; it states no compliance claim. The headline capital of C18 
 every other figure of this module is information, not capital (05 l.519). Every constant and golden value below is transcribed from the
 source on its line, or computed from a formula stated on its line and labelled as computed. An item the source marks UNVERIFIED is marked
 UNVERIFIED here and is not silently decided.
+
+Version history: 1.0.0, the first contract; 1.1.0 after the U13-E1 review and fix round (U13 decisions Z1 to Z5): `dependence_band` gains the optional keyword `ec_consistency_tolerance` and checks every `ec_k` against its marginal; `worst_var_bounds` refuses a non-finite bound; `hybrid_quantile` refuses a negative quantile; the review's text amendments (the `D = 1` invariant removed, what the one horizon and level check, the entropy budget bound, the null metric of the worst-case bracket, the extra `not_evaluated` conditions). An additive optional keyword and the refusal of inputs that gave false results are minor.
 
 ## Conventions (all functions)
 
@@ -42,6 +44,9 @@ UNVERIFIED here and is not silently decided.
 - Dataclasses are frozen. A function that cannot compute a value because an input is missing or invalid raises `ValueError` with the reason
   (a correlation matrix that is not symmetric with a unit diagonal and positive semi-definite, a level outside `(0, 1)`, a `nu` not above 2);
   a validation function returns a `not_evaluated` row instead, with its reason in `notes` and `statistic`, `p_value` and `metric` all null.
+  Besides `mc_se > 0`, a validation function is `not_evaluated` when a ratio has a zero or empty denominator: the simple sum or the
+  variance-covariance total is zero, the Gaussian capital is not positive or no pair exists, the base is not positive, an input is
+  empty, or `vc_capital` is not positive (1.1.0, the U13-E1 review); the row may keep its computed anchors in `extras`.
   Nothing returns a placeholder number.
 - A validation function returns one `TestResult` of `riskvalidation` (`core/result.py`), serialised by `TestResult.to_dict()` into a row that
   validates against `common/test-result` (`docs/contracts/schemas/common/test-result.schema.json`). The parameters of a light rule that are
@@ -107,7 +112,7 @@ def hybrid_quantile(samples: np.ndarray, q: float) -> float: ...
 
 - Units: `samples` (S, K) money, one loss sample per risk with a common row index; `q` decimal. The hybrid approximation of Rosenberg and Schuermann (05 G.1 item 4, "H-VaR"): the quantile of each column combined with the empirical correlation of the columns, `sqrt(v' R_emp v)` with `v_k = var_from_sample(samples[:, k], q)`. The dossier names the approach and not the estimator: the Pearson correlation of the columns is this contract's definition (UNVERIFIED against the paper).
 - Golden: columns `x` and `2 x` (correlation 1) give `q_x + q_2x = 3 q_x`; two columns with Pearson correlation 0 give `sqrt(v_1^2 + v_2^2)`.
-- Invariants: `ValueError` for `S < 2` or a constant column (a correlation is undefined); not above `sum v_k` (to rounding).
+- Invariants: `ValueError` for `S < 2` or a constant column (a correlation is undefined), or a negative column quantile (the square-root formula needs nonnegative quantiles; 1.1.0, U13 decision Z4); not above `sum v_k` (to rounding).
 
 ### `riskvalidation.aggregation.simple.diversification_factor`
 
@@ -266,7 +271,7 @@ def rearrangement_algorithm(matrix: np.ndarray, objective: str, epsilon: float, 
 
 - Units: `matrix` (N, D) money; `objective` in `"max-min-row-sum"` (maximise the smallest row sum, the upper VaR bound, F5 steps 2 to 5 on `X-underline`) and `"min-max-row-sum"` (minimise the largest row sum, the lower VaR bound); `epsilon > 0` the accuracy; returns `(rearranged matrix, value, sweeps, converged)` with `value` the smallest (largest) row sum of the result. Steps (F5, p.10): permute each column randomly (seeded); then, in a sweep, rearrange column `j` to be oppositely ordered to the sum of the other columns, for `j = 1..D`; repeat sweeps until the value changes by less than `epsilon` between two successive full sweeps, or `max_sweeps` is reached (`converged = False`; the paper's remark 6, p.11, says there is no analytic proof of convergence for all starting configurations: UNVERIFIED as a theorem, the random permutation of step 3 is the paper's mitigation).
 - Golden (Table 1, PDF p.12): `d = 3`, Pareto(2), `alpha = 0.99`, `N = 50`, `X-underline` with `x_(i,j) = F^-1(0.99 + 0.01 (i - 1) / 50)`: the first row is `(9.00000, 9.00000, 9.00000)` with row sum `27.0000`, the last row `(69.71068, 69.71068, 69.71068)` with row sum `209.1320`, every column sums to `851.72901`. After the algorithm every column still sums to `851.72901` (a column-wise permutation of the input), the smallest row sum is `44.7671` and the largest `87.8122` of the printed matrix `X*`; rows 1 to 3 of the printed result are `(13.43376, 15.66667, 15.66667)`, `(12.86750, 14.81139, 17.25742)`, `(15.66667, 13.14214, 16.14986)`. The random start moves the last digits: the test asserts the column sums to `5e-5` and the smallest and largest row sums within `0.5` of the printed values (a tolerance proposed by this contract).
-- Invariants: the output is a permutation of each input column; with `D = 1` the value is the minimum entry; `ValueError` for `epsilon <= 0`, `N < 2`, `D < 2`.
+- Invariants: the output is a permutation of each input column; `ValueError` for `epsilon <= 0`, `N < 2`, `D < 2` (the algorithm rearranges a column against the others, so one column has nothing to rearrange against; 1.1.0).
 
 ### `riskvalidation.aggregation.bounds.VarBounds`
 
@@ -294,7 +299,7 @@ def worst_var_bounds(ppfs: Sequence[Callable[[np.ndarray], np.ndarray]], alpha: 
 
 - Units: money; returns both bounds. The upper bound uses the matrices of F5 (18) over `[alpha, 1]` (cell edges `F_j^-1(alpha + (1 - alpha)(i - 1) / N)` and `F_j^-1(alpha + (1 - alpha) i / N)`), the lower bound those of F5 (20) over `[0, alpha]`. No distribution function is inverted: the quantile functions are evaluated on the grid.
 - Golden (Table 4, Pareto(2), `N = 1e5`, `epsilon = 1e-3`, `d = 8`; PDF p.14, columns lower RA range, upper exact, upper RA range): `alpha = 0.99`: lower `9.00 - 9.00`, upper exact `141.67`, upper RA `141.66 - 141.67`; `alpha = 0.995`: lower `13.13 - 13.14`, upper exact `203.66`, upper RA `203.65 - 203.66`; `alpha = 0.999`: lower `30.47 - 30.62`, upper exact `465.29`, upper RA `465.28 - 465.30`. The test asserts the ranges within `0.05` of the printed ranges for `alpha = 0.99` and `0.995` and within `0.5` for `0.999` (tolerances proposed by this contract). The exact upper value comes from the paper's Proposition 4 for homogeneous Pareto marginals, which F5 does not transcribe (UNVERIFIED as a transcription: the table values are the golden numbers).
-- Invariants: `lower_range[1] < comonotonic_var < upper_range[0]` for `d >= 3` Pareto(2); `ValueError` for `alpha` outside `(0, 1)` or `n < 2`.
+- Invariants: `lower_range[1] < comonotonic_var < upper_range[0]` for `d >= 3` Pareto(2); `ValueError` for `alpha` outside `(0, 1)` or `n < 2`, and for a non-finite bound ("n is too small for the unbounded upper tail: s-bar is infinite; use n > the number of marginals"; 1.1.0, U13 decision Z3).
 
 ## Module `riskvalidation/aggregation/band.py`
 
@@ -336,12 +341,13 @@ class Band:
 ```python
 def dependence_band(ppfs: Sequence[Callable[[np.ndarray], np.ndarray]], ec: np.ndarray, el: np.ndarray, corr: np.ndarray,
                     nu_set: Sequence[float], level: float = 0.999, horizon_years: int = 1, n_draws: int = 1_000_000, seed: int = 0,
-                    chunk_size: int = 100_000, bounds_n: int = 100_000, bounds_epsilon: float = 1e-3) -> Band: ...
+                    chunk_size: int = 100_000, bounds_n: int = 100_000, bounds_epsilon: float = 1e-3,
+                    ec_consistency_tolerance: float = 0.01) -> Band: ...
 ```
 
 - Units: `ec`, `el` (K,) money; `nu_set` degrees of freedom above 2, ascending and distinct; returns a `Band`. The rows run over the same marginals: `simple_sum`, `variance_covariance`, `copula_aggregate` for the Gaussian copula and for each `nu`, and `worst_var_bounds` (its `lower_range[0]` and `upper_range[1]` less `sum el`) for the lower and the worst case. The lower-bound row is a signed capital: the best VaR less the sum of the expected losses may be negative (Table 4, d = 56: best VaR 45.82 against an EL of 56) and is reported as computed, signed, with its diversification factor; every other row is not below zero.
 - Golden: `ec = (3, 4)`, `el = (0, 0)`, `R = [[1, 0.5], [0.5, 1]]`: the simple-sum row is `7.0`, the variance-covariance row `6.0828`, and `lower <= 6.0828 <= worst`.
-- Invariants: one horizon and one confidence level on every row (`ValueError` otherwise); `ValueError` for a `nu_set` that is empty, unsorted or has a value `<= 2`; the same `seed` gives the same band.
+- Invariants: the signature carries one horizon and one level, so every row shares them: `level` in `(0, 1)` and `horizon_years` a positive integer (`ValueError` otherwise; the marginals' own levels are checked by `horizon_confidence_consistency`); every `ec_k` matches its marginal, `abs(ec_k - (ppf_k(level) - el_k)) <= tol * max(1, abs(ec_k))` with `tol` = `ec_consistency_tolerance` (default 0.01, a named convention: `marginal_ppf_sample` interpolates while `var_from_sample` takes the order statistic), `ValueError` naming the marginal and both values otherwise (1.1.0, U13 decision Z5); `ValueError` for a `nu_set` that is empty, unsorted or has a value `<= 2`; the same `seed` gives the same band.
 
 ## Module `riskvalidation/aggregation/model_risk.py`
 
@@ -394,7 +400,7 @@ def glasserman_xu_worst_case(v: np.ndarray, budget: float, tol: float = 1e-10) -
 
 - Units: `v` (S,) the loss function evaluated on the baseline sample, `budget > 0` the relative entropy budget `eta`. Glasserman and Xu (2014), Quantitative Finance 14(1):29-58: `sup_{m: E[m log m] <= eta} E[m V]` is attained at `m_theta = exp(theta V) / E[exp(theta V)]` with `theta > 0` set (by bisection) so that the entropy constraint binds (06 l.684-691); the worst case is computed by reweighting the baseline sample.
 - Golden: `v = [0, 1]` (equally likely), `theta = 1`: `m = (0.5379, 1.4621)`, relative entropy `0.1109`, `worst_case = 0.7311` against `baseline = 0.5`; calling with `budget = 0.1109` recovers `theta = 1` to `1e-3` (computed).
-- Invariants: `ValueError` when `budget` exceeds `log S` (the largest attainable entropy of a finite sample) or `v` is constant; `worst_case` is increasing in `budget`.
+- Invariants: `ValueError` when `budget` is at or above `log(S / k)`, `k` the number of sample points at the maximum of `v` (at most `log S`): the tilt's entropy rises strictly to that limit and never reaches it (1.1.0), or when `v` is constant; `worst_case` is increasing in `budget`.
 
 ## Module `riskvalidation/validation/aggregation.py`
 
@@ -432,7 +438,7 @@ def worst_case_bracket(lower: float, rows: Sequence[float], worst: float, tolera
 ```
 
 - Units: money; `test_id = "aggregation.worst_case_bracket"`. `h0`: every row of the band lies between the lower bound and the worst case (05 G.3, G.5: report worst-case bounds).
-- Invariants: `statistic = worst - lower`, `metric = (worst - lower) / max(rows)`; `extras` carries `thresholds = {"tolerance": tolerance}`.
+- Invariants: `statistic = worst - lower`, `metric = (worst - lower) / max(rows)`, null when `max(rows) <= 0` (the ratio is undefined; 1.1.0); `extras` carries `thresholds = {"tolerance": tolerance}`.
 - Light: red when any row is outside `[lower - tolerance, worst + tolerance]` or `lower > worst`; green otherwise (no amber: a bracket holds or it does not).
 - Golden: `lower = 4.0`, `rows = (5.0, 6.0828, 7.0)`, `worst = 8.0`: `statistic = 4.0`, green; `worst = 6.5`: red.
 
