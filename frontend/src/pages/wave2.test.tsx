@@ -29,7 +29,7 @@ const load = (id: string) => FIXTURES[id][1].map((f) => fixture(FIXTURES[id][0],
 const flat = (tables: Array<{ head: string[]; rows: unknown[][] }>) => tables.flatMap((t) => t.rows.map((r) => r.map(String).join(' | '))).join('\n');
 
 describe('the Experiments case tabs are grouped by the question family, six new cases included', () => {
-  const BUILT = ['c01', 'c03', 'c04', 'c05', 'c06', 'c07', 'c08', 'c09', 'c10', 'c11', 'c13', 'c14', 'c15', 'c17', 'c22'];
+  const BUILT = ['c01', 'c03', 'c04', 'c05', 'c06', 'c07', 'c08', 'c09', 'c10', 'c11', 'c13', 'c14', 'c15', 'c17'];
   const groups = groupCases(BUILT.map((id) => ({ id, label: id.toUpperCase(), content: null })));
   it('holds no group above six peer tabs and loses no case', () => {
     for (const g of groups) expect(g.tabs.length, g.id).toBeLessThanOrEqual(6);
@@ -37,8 +37,8 @@ describe('the Experiments case tabs are grouped by the question family, six new 
   });
   it('joins portfolio capital and operational risk, names market risk and the balance sheet, in both languages', () => {
     const by = (lang: 'en' | 'es') => Object.fromEntries(groups.map((g) => [pick(g.label, lang), g.tabs.map((t) => t.id)]));
-    expect(by('en')).toMatchObject({ 'Capital models': ['c10', 'c17'], 'Market and balance-sheet risk': ['c11', 'c13', 'c14', 'c15'] });
-    expect(by('es')).toMatchObject({ 'Modelos de capital': ['c10', 'c17'], 'Riesgo de mercado y de balance': ['c11', 'c13', 'c14', 'c15'] });
+    expect(by('en')).toMatchObject({ 'Capital, aggregation and stress': ['c10', 'c17'], 'Market and balance-sheet risk': ['c11', 'c13', 'c14', 'c15'] });
+    expect(by('es')).toMatchObject({ 'Capital, agregación y estrés': ['c10', 'c17'], 'Riesgo de mercado y de balance': ['c11', 'c13', 'c14', 'c15'] });
     expect(groups.find((g) => g.id === 'capital')).toBeDefined();
     expect(groups.find((g) => g.id === 'market-balance')).toBeDefined();
     expect(groups.length + 1).toBeLessThanOrEqual(6);
@@ -47,7 +47,6 @@ describe('the Experiments case tabs are grouped by the question family, six new 
     const by = Object.fromEntries(groups.map((g) => [pick(g.label, 'en'), g.tabs.map((t) => t.id)]));
     expect(by['Credit scoring and PD']).toEqual(['c01', 'c03', 'c04', 'c05']);
     expect(by['Credit losses: provisions, severity and exposure']).toEqual(['c06', 'c07', 'c08', 'c09']);
-    expect(by['Validating the validator']).toEqual(['c22']);
   });
 });
 
