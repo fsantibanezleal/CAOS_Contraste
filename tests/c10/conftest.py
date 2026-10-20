@@ -12,12 +12,7 @@ sys.path.insert(0, str(HERE))
 ROOT = HERE.parents[1]
 sys.path.insert(0, str(ROOT / "tests" / "contracts_u7"))
 sys.path.insert(0, str(ROOT / "tests" / "contracts"))
-SAMPLE = HERE / "sample" / "chgallsa-sample.htm"
-SCALE = 0.004
-SEED = 42
-#: loan types the determinism and the seed tests bake (the others add time, not coverage)
-ONE_TYPE = ("credit-cards",)
-TYPES = ("credit-cards", "residential")   # one retail type with a full history and one whose first six years are n.a.
+from c10_support import SAMPLE, SCALE, SEED, TYPES  # noqa: E402
 
 
 @pytest.fixture(scope="session")
