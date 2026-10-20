@@ -11,6 +11,7 @@ import type { VariantArtifact } from '../../lib/contract.types';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { Pending } from '../Pending';
 import { LiveReadout, useCard } from '../c03/U6Shared';
+import { FindingsEvidenceCard } from './FindingsEvidence';
 import { LabelledOverTable, barMin, f3, int, pc, pc1 } from '../c20/U14Common';
 import { BASIS_TEXT, FIELD_TEXT, attributeFor, contrastFor, fitOf, outputsOf, text, type C21Legal, type C21Outputs, type C21Sel } from './selection';
 
@@ -59,15 +60,25 @@ export function C21FindingsView({ sel }: { sel: C21Sel | null }) {
   const lang = useShellLang();
   if (!sel) return <Pending />;
   const legal = legalOf(sel);
+  // with findings, the sentences sit under the evidence so the two cards take the height of the group; with none, they stay in the head
+  const none = sel.data.variant.findings.length === 0;
   return (
     <>
       <div className="ct-stack-natural" data-block="legal-head">
         <NoLegalClaim legal={legal} />
-        <LegalSentences legal={legal} />
-        <p className="ct-note">{pick({ en: 'The tests the engine returned sit under the view they belong to; a test that did not run shows its reason there.', es: 'Las pruebas que devolvió el motor están bajo la vista a la que pertenecen; una prueba que no corrió muestra allí su razón.' }, lang)}</p>
+        {none ? <LegalSentences legal={legal} /> : null}
       </div>
       <ViewsRow>
         <FindingsCard variant={sel.data.variant} />
+        <FindingsEvidenceCard
+          variant={sel.data.variant}
+          footer={
+            <>
+              <LegalSentences legal={legal} />
+              <p className="ct-note">{pick({ en: 'The tests the engine returned sit under the view they belong to; a test that did not run shows its reason there.', es: 'Las pruebas que devolvió el motor están bajo la vista a la que pertenecen; una prueba que no corrió muestra allí su razón.' }, lang)}</p>
+            </>
+          }
+        />
       </ViewsRow>
     </>
   );
