@@ -72,8 +72,8 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
   const o = base ? outputsOf(base) : null;
   const sel: C20Sel | null = useMemo(() => {
     if (!base || !o) return null;
-    const rows = o.kind === 'shock' ? blockRows(o, block === 'applied' ? 'applied' : 'shipped') : [];
-    const shocks: string[] = rows.map((r) => r.shock_id);
+    // the shocks of both blocks, so the choice does not vanish when the other block has fewer
+    const shocks: string[] = o.kind === 'shock' ? [...new Set([...blockRows(o, 'shipped'), ...blockRows(o, 'applied')].map((r) => r.shock_id))] : [];
     const shifts = o.kind === 'shift' ? o.synthetic_shift.shifts.map((x) => x.shift_id) : [];
     const wins = o.kind === 'shift' ? o.synthetic_shift.label_free.conformal.coverage_by_window.map((w) => w.window) : [];
     const rungs = o.kind === 'seeds' ? o.rows.map((r) => r.rung) : [];
@@ -98,7 +98,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
 
   let focus: RailSection;
   if (o.kind === 'shock') {
-    const rows = blockRows(o, sel.block);
+    const rows = [...new Map([...blockRows(o, 'shipped'), ...blockRows(o, 'applied')].map((r) => [r.shock_id, r])).values()];
     focus = {
       id: 'shock',
       label: { en: 'Shock', es: 'Choque' },

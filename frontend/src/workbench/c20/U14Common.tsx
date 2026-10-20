@@ -19,7 +19,7 @@ export const sig = (v: number | null | undefined, lang: Lang) => formatNumber(v,
 export const int = (v: number | null | undefined, lang: Lang) => formatNumber(v, lang, { decimals: 0 });
 
 /** The height a horizontal bar chart of `rows` rows needs (about 1.8 rem a row and the axis): below it the rows scroll in the drawing. */
-export const barMin = (rows: number): string => `${Math.max(9, 3.6 + rows * 1.8)}rem`;
+export const barMin = (rows: number): string => `${Math.max(10, 4.4 + rows * 1.8)}rem`;
 
 /** The words of the tests the ML validation and fairness engines return; an id without an entry is shown as it is. */
 export const TEST_TEXT: Record<string, Bi> = {
