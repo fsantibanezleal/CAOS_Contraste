@@ -18,13 +18,19 @@ Contraste más allá. Importan el motor y los lectores del pipeline y nunca reim
 | Español | [es/README.md](es/README.md) | [es/](es/) |
 
 The two trees hold the same notebooks at the same relative paths (the names are English, so the mirror is checkable); each
-notebook is written wholly in its tree's language, with the same code and the same numbers. Topics run from simple to complex,
+notebook is written wholly in its tree's language (prose, comments, labels and printed text), with the same cells, the same code
+structure and the same numbers. What the engine and the documents carry as identifiers or as their own texts (a `test_id`, a key, a
+light, a null hypothesis, a reference) is printed as it is written there, in English, in both trees; the bilingual fields of the
+documents are read in the tree's language. Topics run from simple to complex,
 and notebooks inside a topic by level: 1 fundamentals, 2 the method in practice, 3 state of the art, 4 beyond the state of the art.
 Every notebook opens with its title, level, prerequisites and reading time, and follows the same sections: Objectives, Setup, Data,
 Method, Results, Summary and References (the state of the art at level 3 and 4, and what goes beyond it at level 4).
 
 Los dos árboles tienen los mismos cuadernos en las mismas rutas relativas (los nombres están en inglés, así que el espejo se puede
-comprobar); cada cuaderno está escrito entero en el idioma de su árbol, con el mismo código y los mismos números.
+comprobar); cada cuaderno está escrito entero en el idioma de su árbol (prosa, comentarios, etiquetas y texto impreso), con las mismas celdas, la
+misma estructura de código y los mismos números. Lo que el motor y los documentos traen como identificadores o como textos propios
+(un `test_id`, una clave, una luz, una hipótesis nula, una referencia) se imprime tal como allí está escrito, en inglés, en ambos
+árboles; los campos bilingües de los documentos se leen en el idioma del árbol.
 
 ## Install and run them / Instalar y correrlos
 
@@ -64,6 +70,10 @@ here: [en/01-getting-started/](en/01-getting-started/) and [es/01-getting-starte
 
 ## Beyond the state of the art / Más allá del estado del arte
 
-The SDD claims eight components in its section `## Beyond the state of the art` (BS-1 to BS-8), each with its committed evidence.
-Every claim gets a level 4 notebook in each language with its topic's unit; until then the static check reports the claim as covered
-by no level 4 notebook, and `tests/test_notebooks_layer.py` names the claims that are pending.
+No claim is stated yet. The SDD's section `## Beyond the state of the art` says "None claimed." until a topic unit lands a claim: each
+claim enters the SDD together with the level 4 notebook, in each language, that demonstrates it, and from then on the static check
+holds the claim to that notebook.
+
+Todavía no se afirma ninguna. La sección `## Beyond the state of the art` del SDD dice "None claimed." hasta que la unidad de un
+tema aporta una afirmación: cada afirmación entra al SDD junto con el cuaderno de nivel 4, en cada idioma, que la demuestra, y desde
+entonces la comprobación estática la sostiene con ese cuaderno.

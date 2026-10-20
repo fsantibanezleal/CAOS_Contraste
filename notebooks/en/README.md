@@ -39,5 +39,5 @@ links when their folder lands.
 
 ## Beyond the state of the art
 
-The SDD claims BS-1 to BS-8 (section Beyond the state of the art). Topic 01 demonstrates none of them; each claim's level 4
-notebook comes with its topic's unit.
+No claim is stated yet: the SDD's section Beyond the state of the art says "None claimed." Topic 01 demonstrates nothing beyond the
+state of the art. Each claim enters the SDD together with the level 4 notebook that demonstrates it, in the unit of its topic.
