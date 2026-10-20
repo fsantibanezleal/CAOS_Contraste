@@ -191,6 +191,6 @@ def test_the_ear_evar_of_a_document_equals_the_engine_call_on_its_inputs(vid: st
         eve_p = np.array([eve_nii.eve(base, shocks.apply_floor(r0, np.full(19, (q[-1] - q[0]) * 1e4), floor), MID) for q in paths])
         for lv in e["levels"]:
             got = simulation.ear_evar(nii_p, eve_p, e["base_nii"], e["base_eve"], lv["level"])
-            err = simulation.ear_evar_mc_error(nii_p, eve_p, lv["level"], e["n_batches"])
+            err = simulation.ear_evar_mc_error(nii_p, eve_p, lv["level"], e["n_batches"], antithetic=True)
             assert approx(lv["ear"], got.ear) and approx(lv["evar"], got.evar), (name, lv["level"])
             assert approx(lv["ear_se"], err.ear_se) and approx(lv["evar_se"], err.evar_se), (name, lv["level"])

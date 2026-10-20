@@ -15,10 +15,18 @@ def _scenarios():
     return {v: committed(v) for v in VARIANTS}
 
 
-def engine_pin() -> str:
-    """The commit the product pins the engine by (data-pipeline/requirements.txt): the documents name the engine as ``<version>+<its first seven>``."""
+def engine_version() -> str:
+    """The engine version the documents name: the release a tag pin names (v0.08.000 is 0.8.0), or ``<version>+<first seven>`` of a
+    full-commit pin (data-pipeline/requirements.txt, the shared rule of tests/engine_pin.py)."""
+    import importlib.metadata as md
+
+    from engine_pin import ENGINE_PIN, released_version
+
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
-    return re.search(r"^riskvalidation\S* @ git\+\S+@([0-9a-f]{40})\s*$", req, re.M).group(1)
+    release = released_version(req)
+    if release is not None:
+        return ".".join(str(part) for part in release)
+    return f"{md.version('riskvalidation')}+{ENGINE_PIN.search(req).group('ref')[:7]}"
 
 
 def test_every_committed_document_validates_and_is_listed_with_its_hash():
@@ -49,7 +57,7 @@ def test_every_committed_document_validates_and_is_listed_with_its_hash():
     for sid in ("fdic-bankfind", "fed-h8", "treasury-par-curve"):
         for f in raw["sources"][sid]["files"]:
             assert f["url"].startswith("https://") and f["bytes"] > 0 and len(f["sha256"]) == 64 and f["retrieved"]
-    assert manifest["default_variant"] in {a["variant_id"] for a in manifest["artifacts"]} and manifest["engine"]["riskvalidation"].endswith(engine_pin()[:7])
+    assert manifest["default_variant"] in {a["variant_id"] for a in manifest["artifacts"]} and manifest["engine"]["riskvalidation"] == engine_version()
 
 
 def test_no_value_is_dated_after_its_valuation_date():

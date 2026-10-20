@@ -113,7 +113,7 @@ def engine_findings(out: dict, ear: bool = True) -> list[str]:
         nii, eve_p = simulated(out["valuation_date"], out)
         for lv in ee["levels"]:
             got = simulation.ear_evar(nii, eve_p, ee["base_nii"], ee["base_eve"], lv["level"])
-            err = simulation.ear_evar_mc_error(nii, eve_p, lv["level"], ee["n_batches"])
+            err = simulation.ear_evar_mc_error(nii, eve_p, lv["level"], ee["n_batches"], antithetic=True)
             need(approx(lv["ear"], got.ear) and approx(lv["evar"], got.evar), f"ear or evar at {lv['level']} differs from the engine")
             need(approx(lv["ear_se"], err.ear_se) and approx(lv["evar_se"], err.evar_se), f"a Monte Carlo error at {lv['level']} differs from the engine")
     return bad
