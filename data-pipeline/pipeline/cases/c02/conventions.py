@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from ...io import polish
+
 
 def t(en: str, es: str | None = None) -> dict[str, str]:
     """A bilingual text; a quotation keeps its English wording in both languages."""
@@ -15,20 +17,15 @@ def t(en: str, es: str | None = None) -> dict[str, str]:
 
 
 # --- the files ---------------------------------------------------------------------------------------------------------
-SOURCE_ID = "uci-polish"
-ZIP_NAME = "polish+companies+bankruptcy+data.zip"
-#: horizon id, years ahead, ARFF member of the zip. The dataset's own definition governs (decision G21): the UCI page labels the file kyear
-#: with the bankruptcy status after 6 - k years, so the horizon of n years ahead reads the file {6-n}year.
-HORIZONS: tuple[tuple[str, int, str], ...] = tuple((f"h{n}", n, f"{6 - n}year.arff") for n in range(1, 6))
+#: the publisher's layout lives in ``pipeline/io/polish.py`` (decision G19): the zip, the horizons (the horizon of n years ahead reads the
+#: file {6-n}year, decision G21), the counts the UCI page gives and the 64 ratio names
+SOURCE_ID = polish.SOURCE_ID
+ZIP_NAME = polish.ZIP_NAME
+HORIZONS = polish.HORIZONS
 POOLED = "pooled"
-#: the rows and bankruptcies the UCI page and the probe of 2026-10-16 give; the reader refuses a file that differs
-FILE_COUNTS: dict[int, tuple[int, int]] = {1: (7027, 271), 2: (10173, 400), 3: (10503, 495), 4: (9792, 515), 5: (5910, 410)}   # by file number
-
-
-def expected_counts(years: int) -> tuple[int, int]:
-    """(rows, bankruptcies) of the file that the horizon of ``years`` years ahead reads: the file {6 - years}year."""
-    return FILE_COUNTS[6 - years]
-ATTRIBUTES: tuple[str, ...] = tuple(f"Attr{k}" for k in range(1, 65))
+FILE_COUNTS = polish.FILE_COUNTS
+expected_counts = polish.expected_counts
+ATTRIBUTES = polish.ATTRIBUTES
 HORIZON_FEATURE = "horizon_years"
 
 # --- the ladder: model ids, the rung code each carries in the documents -----------------------------------------------------

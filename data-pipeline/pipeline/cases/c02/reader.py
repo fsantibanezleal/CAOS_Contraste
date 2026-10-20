@@ -1,4 +1,6 @@
-"""The reader of the five UCI Polish bankruptcy files (ARFF, ``scipy.io.arff``), the identity convention and contract 1.
+"""C02's side of the five UCI Polish bankruptcy files: the fetch, the identity convention and contract 1.
+
+The ARFF reader and the publisher's layout are shared with C20 in ``pipeline/io/polish.py`` (decision G19) and re-exported here.
 
 A file is a stack of financial statements: 64 ratios (``Attr1`` to ``Attr64``, ``?`` is missing) and the class (1 bankruptcy). There is
 no firm identifier and no date, so the reader writes two named conventions for contract 1: ``id`` is ``<horizon>-<row>`` (the row
@@ -9,10 +11,7 @@ The reader refuses a file whose row and bankruptcy counts differ from the UCI pa
 from __future__ import annotations
 
 import hashlib
-import io
-import zipfile
 from collections.abc import Callable
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -21,35 +20,13 @@ import pandas as pd
 
 from ...io import contract as c1
 from ...io import fetch as fetching
+from ...io.polish import Horizon, PolishFormatError, read_arff, read_horizons  # noqa: F401  (the shared reader, decision G19)
 from ...stages.ingest import IngestError, raw_file
 from . import conventions as cv
 
 
-class PolishFormatError(ValueError):
-    """A file does not have the layout or the counts the case reads."""
-
-
 class PolishSourceError(RuntimeError):
     """The raw zip is missing and the fetch from the UCI landing did not give it; C02 stops and names the file."""
-
-
-@dataclass
-class Horizon:
-    """One file: the ratios as floats (NaN where the file says ``?``) and the class."""
-
-    horizon_id: str
-    years: int
-    file: str
-    X: pd.DataFrame
-    y: np.ndarray
-
-    @property
-    def rows(self) -> int:
-        return int(len(self.y))
-
-    @property
-    def events(self) -> int:
-        return int(self.y.sum())
 
 
 def ensure_zip(data_root: Path | str, *, fetcher: Callable[..., Any] | None = None, manifest: dict[str, Any] | None = None) -> Path:
@@ -67,40 +44,6 @@ def ensure_zip(data_root: Path | str, *, fetcher: Callable[..., Any] | None = No
         return raw_file(cv.SOURCE_ID, cv.ZIP_NAME, root, manifest)
     except IngestError as exc:
         raise PolishSourceError(f"C02 stops: {exc}") from exc
-
-
-def read_arff(text: str, name: str) -> tuple[pd.DataFrame, np.ndarray]:
-    """One ARFF member: the ratios by name and the class. The layout is checked (64 numeric attributes then the class {0,1})."""
-    from scipy.io import arff
-
-    try:
-        data, meta = arff.loadarff(io.StringIO(text))
-    except Exception as exc:  # scipy raises its own ParseArffError and others
-        raise PolishFormatError(f"{name}: not a readable ARFF file ({exc})") from exc
-    names = list(meta.names())
-    if names != [*cv.ATTRIBUTES, "class"]:
-        raise PolishFormatError(f"{name}: the attributes are not Attr1 to Attr64 and class: {names[:3]} ... {names[-2:]}")
-    df = pd.DataFrame(data)
-    cls = df["class"].map(lambda b: b.decode() if isinstance(b, bytes) else str(b))
-    if not set(cls) <= {"0", "1"}:
-        raise PolishFormatError(f"{name}: class values {sorted(set(cls))} are not 0 and 1")
-    X = df[list(cv.ATTRIBUTES)].astype(float)
-    return X.reset_index(drop=True), cls.astype(int).to_numpy()
-
-
-def read_horizons(zip_path: Path | str, *, check_counts: bool = True) -> dict[int, Horizon]:
-    """The five horizons by years ahead; the horizon of n years reads the file {6-n}year (decision G21)."""
-    out: dict[int, Horizon] = {}
-    with zipfile.ZipFile(zip_path) as z:
-        for hid, years, member in cv.HORIZONS:
-            if member not in z.namelist():
-                raise PolishFormatError(f"{cv.ZIP_NAME}: the member {member} is missing")
-            X, y = read_arff(z.read(member).decode("utf-8"), member)
-            h = Horizon(hid, years, member, X, y)
-            if check_counts and (h.rows, h.events) != cv.expected_counts(years):
-                raise PolishFormatError(f"{member}: {h.rows} rows and {h.events} bankruptcies, the UCI page gives {cv.expected_counts(years)}")
-            out[years] = h
-    return out
 
 
 # --- contract 1 -----------------------------------------------------------------------------------------------------------

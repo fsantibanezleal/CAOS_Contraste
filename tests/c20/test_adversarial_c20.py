@@ -13,7 +13,8 @@ from test_c20_documents import FAIR_IDS, FORBIDDEN, group_problems, problems
 from test_c20_readers import polish_zip
 from test_c20_shocks import frame_of_sample, widened
 
-from pipeline.cases.c20 import bake, data, fed, fetch, polish, sgcd, shocks, v_shift
+from pipeline.cases.c20 import bake, data, fed, fetch, sgcd, shocks, v_shift
+from pipeline.io import polish
 from pipeline.core.manifest import ContractViolation, build_artifact
 
 
@@ -375,16 +376,16 @@ def test_adversarial_a_ladder_on_a_dataset_the_case_does_not_use_or_a_family_off
 
 def test_adversarial_a_polish_file_with_a_class_outside_the_two_values_or_foreign_attributes_is_refused(tmp_path: Path) -> None:
     with pytest.raises(Exception):
-        polish.read_polish(polish_zip(tmp_path / "a.zip", [(["1.0"] * 64, "2")]))
+        data.read_polish(polish_zip(tmp_path / "a.zip", [(["1.0"] * 64, "2")]))
     import io
     import zipfile
 
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w") as z:
-        z.writestr(polish.MEMBER, "@relation x\n@attribute a numeric\n@attribute class {0,1}\n@data\n1,0\n")
+        z.writestr(data.POLISH_MEMBER, "@relation x\n@attribute a numeric\n@attribute class {0,1}\n@data\n1,0\n")
     p = tmp_path / "b.zip"
     p.write_bytes(buf.getvalue())
     with pytest.raises(polish.PolishFormatError, match="Attr1 to Attr64"):
-        polish.read_polish(p)
+        data.read_polish(p)
     assert sha(p) != sha(polish_zip(tmp_path / "c.zip", [(["1.0"] * 64, "0")]))
     assert v_shift.PAIRS and Paths(tmp_path).root.exists()
