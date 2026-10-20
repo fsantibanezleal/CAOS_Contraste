@@ -98,7 +98,7 @@ describe('the aggregation and stress Methodology topic', () => {
     for (const v of ['9.00', '72.00', '141.67', '13.13', '105.14', '203.66', '30.47', '244.98', '465.29']) expect(en, v).toContain(v);
     expect(en).toContain('are conventions or case assumptions');
     expect(en).toContain('Several items of the sources stay unverified');
-    expect(en + markup('es')).not.toMatch(/[—―]|[\u{1F000}-\u{1FAFF}]/u);
+    expect(en + markup('es')).not.toMatch(/[\u2014\u2015]|[\u{1F000}-\u{1FAFF}]/u);
   });
 });
 
