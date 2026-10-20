@@ -1,0 +1,4133 @@
+{
+ "schema": "contraste.governance.findings/v1",
+ "case_id": "GOVERNANCE",
+ "governance_id": "findings",
+ "schema_version": "1.0.0",
+ "as_of": "2026-12-31",
+ "as_of_basis": {
+  "label": "convention",
+  "basis": {
+   "en": "a fixture date chosen after the due dates to exercise the overdue rule; not the date of publication",
+   "es": "una fecha de fixture elegida despues de los vencimientos para ejercer la regla de vencimiento; no es la fecha de publicacion"
+  }
+ },
+ "provenance": {
+  "code_version": "0.14.000",
+  "riskvalidation_version": "0.9.0",
+  "generators": [
+   "fixture:u15-s-contracts"
+  ],
+  "documents_read": [
+   {
+    "path": "data/derived/manifests/C01.json",
+    "sha256": "c0976c8fabc2d4cf82d076610019cc67e0def9ae8152650954c086162b070151",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C01/models-german.json",
+    "sha256": "60aadbffd7f6cba342f239be2b0b3b8661b9d5a7114cfaa6d0f133b0a99b03e6",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C01/german-twin.json",
+    "sha256": "9c0ac47beecf1e5c456ea0be6997855beace3a9e9f53dd36abec031bd0d0872b",
+    "ref": null
+   },
+   {
+    "path": "data/derived/manifests/C07.json",
+    "sha256": "bf356d3c335cebc0bad691c14ceb12d1747973335c071d87f073f5ed7709801a",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/models-banco-andino.json",
+    "sha256": "4d0f4bb96c0ef3dee6401f711f3b59fa5a0505d062141ec7cb6eebbb5b8cc2ac",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/base.json",
+    "sha256": "1e08b10e1d49419f86bbbc14fb06e82aba1faa99443bb4e799cd18ce4e7c13c5",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/combined-severe.json",
+    "sha256": "e079dfbdd14ecec8b979ab80435964e22567aaaa657defbad6744637b03cbabb",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/consumer-arrears-shock.json",
+    "sha256": "f47e32bccbe450f0582b2479302cd28a428a6601d9821fd3675b75bb838aeb99",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/house-price-fall.json",
+    "sha256": "45fa83c963f000281ceb41a63413666d415e21db4c8ace76f6fb858e288f659a",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/recession.json",
+    "sha256": "b9d02ae186c431e4f43541fc779884171be9af2fe5df4357678d2e9e2a574f1c",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/uf-inflation-spike.json",
+    "sha256": "24cb9ba1c6ec485fc74e6c9882c9bfe6d305a313ff08a65ac5af9909c2c8e01a",
+    "ref": null
+   },
+   {
+    "path": "data/derived/manifests/C18.json",
+    "sha256": "6225136025c8457bab8857501cb8b2939bd785807184f5e9f52a975299c359e5",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+   },
+   {
+    "path": "data/derived/C18/models-banco-andino.json",
+    "sha256": "4f5927257cbcca0e717753acf81e84f78b33a4906553ee571244874b9598ae3d",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+   },
+   {
+    "path": "data/derived/C18/baseline.json",
+    "sha256": "b424e3f4d386478c503eff31bd1d2bc597e20089e0b872a561b4d11e7cf78921",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+   },
+   {
+    "path": "data/derived/C18/eba-2025-adverse.json",
+    "sha256": "2b191fb877657b8a26850a5de8458bbe4fc88454d6d3753220189b6b95e46437",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+   },
+   {
+    "path": "data/derived/C18/fed-2026-severely-adverse.json",
+    "sha256": "fd614c8edf07464ec1bd266ec2f6b35506b214fcb938e62ed804d83bb5117fbd",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+   },
+   {
+    "path": "data/derived/C18/ngfs-delayed-transition.json",
+    "sha256": "5f78224b085addbc50b4c0ca823a87e150ffbefb5bbbfffe650cfddff76d57c5",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+   },
+   {
+    "path": "data/derived/C18/reverse-stress.json",
+    "sha256": "dc5bc0dd9e74ab9a7cee4dec9425eb8b633b014e2681dd5f1db3d0e75461e40a",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+   },
+   {
+    "path": "data/derived/C18/t-copula-baseline.json",
+    "sha256": "bbe42eb4ba4304106ae82ff3222b88d190d545f20d541e501d03d2643d2758a2",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+   },
+   {
+    "path": "data/derived/manifests/C22.json",
+    "sha256": "db7ab2bc13ef7448e26f89d8f9af7589fbdcaebd9fb8188ceb5920db59c9fe6c",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/models-generators.json",
+    "sha256": "2d09ae0f0271b7e1de112586f22ba9f2fe48fe9866e5b61d8c71f391bf9db3b7",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/broken-monotonicity.json",
+    "sha256": "1b6c6ed3a0bc5057317b2120a44ef9ed512e8fac97d323092699cd1e3a1197d8",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/clustering.json",
+    "sha256": "e755f149dfe75c49ef54ca4fae78c489f78be13370c2bbff4e93851357cc4492",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/concentration.json",
+    "sha256": "35c7d65c9c7bda2131ea2fca1f339bc091419b19bac792c3c61a78fe0c1f66ae",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/discrimination-decay.json",
+    "sha256": "218ee880efa1bfdf187a50e4d1b902a6b86cefada6c598d28c6d5daca09137da",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/drift.json",
+    "sha256": "3bb6d9bb6152b9f603ca4404d9c8d61b2f2cf779af76c93df4ec01563b7d59fa",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/leakage.json",
+    "sha256": "651c5113607b7c0cd5850837ccddf455b291918e341662632912d78ea35c419d",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/miscalibration.json",
+    "sha256": "9bdf292b5933c5366d581ee45928b5845966ded5f9b04030c2c30dc9a66fd467",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/null.json",
+    "sha256": "0ce1fb6140678acf48d51e84c1c5bcd880cc20fbb2ab38ec6314a02667bd2dc0",
+    "ref": null
+   }
+  ]
+ },
+ "conventions": {
+  "deadline_days": {
+   "label": "convention",
+   "basis": "days from the raised date to the due date by severity (rows S1 to S4) and tier (columns 1 to 4); no regulatory source prescribes days (06 B.7), so the table is a proposal (item 30 of the dossier UNVERIFIED list)",
+   "rows": [
+    {
+     "severity": "S1",
+     "days": [
+      30,
+      45,
+      60,
+      90
+     ]
+    },
+    {
+     "severity": "S2",
+     "days": [
+      60,
+      90,
+      120,
+      180
+     ]
+    },
+    {
+     "severity": "S3",
+     "days": [
+      90,
+      120,
+      180,
+      270
+     ]
+    },
+    {
+     "severity": "S4",
+     "days": [
+      180,
+      270,
+      365,
+      365
+     ]
+    }
+   ]
+  },
+  "severity_scale": {
+   "label": "convention",
+   "basis": "W15-2: the product keeps S1 critical to S4 minor; the ECB F equivalent is shown beside it (06 l.616-617): S1 is F4 (very high), S2 F3, S3 F2, S4 F1 (low)",
+   "rows": [
+    {
+     "severity": "S1",
+     "ecb_f": "F4"
+    },
+    {
+     "severity": "S2",
+     "ecb_f": "F3"
+    },
+    {
+     "severity": "S3",
+     "ecb_f": "F2"
+    },
+    {
+     "severity": "S4",
+     "ecb_f": "F1"
+    }
+   ]
+  },
+  "status_map": {
+   "label": "convention",
+   "basis": "W15-5: open to open, accepted to risk_accepted, closed to validated_closed; overdue is computed from the due date and as_of",
+   "rows": [
+    {
+     "product": "open",
+     "register": "open"
+    },
+    {
+     "product": "accepted",
+     "register": "risk_accepted"
+    },
+    {
+     "product": "closed",
+     "register": "validated_closed"
+    }
+   ]
+  }
+ },
+ "rows": [
+  {
+   "key": "C01/german-twin/F-CF-P4-lightgbm",
+   "case_id": "C01",
+   "variant_id": "german-twin",
+   "id": "F-CF-P4-lightgbm",
+   "entry_key": "C01/german",
+   "title": {
+    "en": "P4-lightgbm: calibration fit tests flag the german-twin population (pd.chi2_grades, pd.hosmer_lemeshow, pd.spiegelhalter)",
+    "es": "P4-lightgbm: las pruebas de ajuste de calibración alertan en la población german-twin (pd.chi2_grades, pd.hosmer_lemeshow, pd.spiegelhalter)"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "pd.chi2_grades@P4-lightgbm",
+    "pd.hosmer_lemeshow@P4-lightgbm",
+    "pd.spiegelhalter@P4-lightgbm"
+   ],
+   "anchor": {
+    "metric": "statistic",
+    "test_id": "pd.chi2_grades",
+    "model_id": "P4-lightgbm",
+    "segment": "portfolio",
+    "value": 333335.103,
+    "unit": "test statistic (dimensionless)",
+    "basis": "data/derived/C01/german-twin.json#/tests/135/statistic"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of PD models (synthetic role)",
+   "tier": 2,
+   "raised": "2026-10-12",
+   "deadline_days": 120,
+   "due": "2027-02-09",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C01/german-twin/F-D-P4-lightgbm",
+   "case_id": "C01",
+   "variant_id": "german-twin",
+   "id": "F-D-P4-lightgbm",
+   "entry_key": "C01/german",
+   "title": {
+    "en": "P4-lightgbm: discrimination tests flag the german-twin population (disc.auc_vs_initial)",
+    "es": "P4-lightgbm: las pruebas de discriminación alertan en la población german-twin (disc.auc_vs_initial)"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "disc.auc_vs_initial@P4-lightgbm"
+   ],
+   "anchor": {
+    "metric": "statistic",
+    "test_id": "disc.auc_vs_initial",
+    "model_id": "P4-lightgbm",
+    "segment": "portfolio",
+    "value": 1.68462789,
+    "unit": "test statistic (dimensionless)",
+    "basis": "data/derived/C01/german-twin.json#/tests/123/statistic"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of PD models (synthetic role)",
+   "tier": 2,
+   "raised": "2026-10-12",
+   "deadline_days": 120,
+   "due": "2027-02-09",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C01/german-twin/F-OOT",
+   "case_id": "C01",
+   "variant_id": "german-twin",
+   "id": "F-OOT",
+   "entry_key": "C01/german",
+   "title": {
+    "en": "No out-of-time validation is possible: the data is a single snapshot",
+    "es": "No es posible validar fuera del tiempo: los datos son una sola foto"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "design:single-snapshot"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of PD models (synthetic role)",
+   "tier": 2,
+   "raised": "2026-10-12",
+   "deadline_days": 120,
+   "due": "2027-02-09",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C07/base/F-GAP",
+   "case_id": "C07",
+   "variant_id": "base",
+   "id": "F-GAP",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "On one portfolio the IFRS 9 total is 64% of the CMF B-1 total (gap -54.4 CLP bn) and BdE Annex 9 is 52%",
+    "es": "Sobre una misma cartera el total IFRS 9 es 64% del total CMF B-1 (brecha -54,4 mil millones CLP) y el Anejo 9 del BdE es 52%"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.scenario_sensitivity@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.scenario_sensitivity",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.0742236775,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/base.json#/tests/0/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 60,
+   "due": "2026-12-11",
+   "ageing_days": 80,
+   "overdue": true,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C07/base/F-NONLINEARITY",
+   "case_id": "C07",
+   "variant_id": "base",
+   "id": "F-NONLINEARITY",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "The weighted ECL exceeds the ECL at the mean scenario path by 7.4%",
+    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 7,4%"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.scenario_sensitivity@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.scenario_sensitivity",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.0742236775,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/base.json#/tests/0/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 90,
+   "due": "2027-01-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C07/base/F-OVERLAY",
+   "case_id": "C07",
+   "variant_id": "base",
+   "id": "F-OVERLAY",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "Overlays are 0.33% of the IFRS 9 allowance, each a separate line",
+    "es": "Los ajustes posmodelo son 0,33% de la provisión IFRS 9, cada uno en una línea separada"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "ifrs9.overlay_diagnostics@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.overlay_diagnostics",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.00332127622,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/base.json#/tests/7/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C07/base/F-MINIMUM",
+   "case_id": "C07",
+   "variant_id": "base",
+   "id": "F-MINIMUM",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0.0 millones CLP)"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "design:b1-minimum-normal-individual"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C07/base/F-SICR",
+   "case_id": "C07",
+   "variant_id": "base",
+   "id": "F-SICR",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "Stage 2 defaults 3.0 times as often as Stage 1 in the generator's realised outcomes, but 86% of Stage 3 entries come directly from Stage 1 (amber)",
+    "es": "La Etapa 2 incumple 3.0 veces más que la Etapa 1 en los resultados realizados del generador, pero el 86% de las entradas a Etapa 3 viene directo de la Etapa 1 (amber)"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.sicr_effectiveness@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.sicr_effectiveness",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 2.9647253,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/base.json#/tests/8/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 90,
+   "due": "2027-01-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C07/combined-severe/F-GAP",
+   "case_id": "C07",
+   "variant_id": "combined-severe",
+   "id": "F-GAP",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "On one portfolio the IFRS 9 total is 119% of the CMF B-1 total (gap 52.0 CLP bn) and BdE Annex 9 is 69%",
+    "es": "Sobre una misma cartera el total IFRS 9 es 119% del total CMF B-1 (brecha 52,0 mil millones CLP) y el Anejo 9 del BdE es 69%"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.scenario_sensitivity@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.scenario_sensitivity",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.063272779,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/combined-severe.json#/tests/0/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 90,
+   "due": "2027-01-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C07/combined-severe/F-NONLINEARITY",
+   "case_id": "C07",
+   "variant_id": "combined-severe",
+   "id": "F-NONLINEARITY",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "The weighted ECL exceeds the ECL at the mean scenario path by 6.3%",
+    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 6,3%"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.scenario_sensitivity@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.scenario_sensitivity",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.063272779,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/combined-severe.json#/tests/0/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 90,
+   "due": "2027-01-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C07/combined-severe/F-OVERLAY",
+   "case_id": "C07",
+   "variant_id": "combined-severe",
+   "id": "F-OVERLAY",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "Overlays are 0.10% of the IFRS 9 allowance, each a separate line",
+    "es": "Los ajustes posmodelo son 0,10% de la provisión IFRS 9, cada uno en una línea separada"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "ifrs9.overlay_diagnostics@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.overlay_diagnostics",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.000988755578,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/combined-severe.json#/tests/7/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C07/combined-severe/F-MINIMUM",
+   "case_id": "C07",
+   "variant_id": "combined-severe",
+   "id": "F-MINIMUM",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0.0 millones CLP)"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "design:b1-minimum-normal-individual"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C07/consumer-arrears-shock/F-GAP",
+   "case_id": "C07",
+   "variant_id": "consumer-arrears-shock",
+   "id": "F-GAP",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "On one portfolio the IFRS 9 total is 71% of the CMF B-1 total (gap -52.4 CLP bn) and BdE Annex 9 is 54%",
+    "es": "Sobre una misma cartera el total IFRS 9 es 71% del total CMF B-1 (brecha -52,4 mil millones CLP) y el Anejo 9 del BdE es 54%"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.scenario_sensitivity@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.scenario_sensitivity",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.0657799294,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/consumer-arrears-shock.json#/tests/0/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 60,
+   "due": "2026-12-11",
+   "ageing_days": 80,
+   "overdue": true,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C07/consumer-arrears-shock/F-NONLINEARITY",
+   "case_id": "C07",
+   "variant_id": "consumer-arrears-shock",
+   "id": "F-NONLINEARITY",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "The weighted ECL exceeds the ECL at the mean scenario path by 6.6%",
+    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 6,6%"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.scenario_sensitivity@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.scenario_sensitivity",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.0657799294,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/consumer-arrears-shock.json#/tests/0/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 90,
+   "due": "2027-01-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C07/consumer-arrears-shock/F-OVERLAY",
+   "case_id": "C07",
+   "variant_id": "consumer-arrears-shock",
+   "id": "F-OVERLAY",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "Overlays are 0.26% of the IFRS 9 allowance, each a separate line",
+    "es": "Los ajustes posmodelo son 0,26% de la provisión IFRS 9, cada uno en una línea separada"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "ifrs9.overlay_diagnostics@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.overlay_diagnostics",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.00256700685,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/consumer-arrears-shock.json#/tests/7/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C07/consumer-arrears-shock/F-MINIMUM",
+   "case_id": "C07",
+   "variant_id": "consumer-arrears-shock",
+   "id": "F-MINIMUM",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0.0 millones CLP)"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "design:b1-minimum-normal-individual"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C07/consumer-arrears-shock/F-SICR",
+   "case_id": "C07",
+   "variant_id": "consumer-arrears-shock",
+   "id": "F-SICR",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "Stage 2 defaults 2.7 times as often as Stage 1 in the generator's realised outcomes, but 80% of Stage 3 entries come directly from Stage 1 (amber)",
+    "es": "La Etapa 2 incumple 2.7 veces más que la Etapa 1 en los resultados realizados del generador, pero el 80% de las entradas a Etapa 3 viene directo de la Etapa 1 (amber)"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.sicr_effectiveness@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.sicr_effectiveness",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 2.69837322,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/consumer-arrears-shock.json#/tests/8/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 90,
+   "due": "2027-01-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C07/house-price-fall/F-GAP",
+   "case_id": "C07",
+   "variant_id": "house-price-fall",
+   "id": "F-GAP",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "On one portfolio the IFRS 9 total is 76% of the CMF B-1 total (gap -40.0 CLP bn) and BdE Annex 9 is 56%",
+    "es": "Sobre una misma cartera el total IFRS 9 es 76% del total CMF B-1 (brecha -40,0 mil millones CLP) y el Anejo 9 del BdE es 56%"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.scenario_sensitivity@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.scenario_sensitivity",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.0781220757,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/house-price-fall.json#/tests/0/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 90,
+   "due": "2027-01-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C07/house-price-fall/F-NONLINEARITY",
+   "case_id": "C07",
+   "variant_id": "house-price-fall",
+   "id": "F-NONLINEARITY",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "The weighted ECL exceeds the ECL at the mean scenario path by 7.8%",
+    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 7,8%"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.scenario_sensitivity@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.scenario_sensitivity",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.0781220757,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/house-price-fall.json#/tests/0/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 90,
+   "due": "2027-01-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C07/house-price-fall/F-OVERLAY",
+   "case_id": "C07",
+   "variant_id": "house-price-fall",
+   "id": "F-OVERLAY",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "Overlays are 0.25% of the IFRS 9 allowance, each a separate line",
+    "es": "Los ajustes posmodelo son 0,25% de la provisión IFRS 9, cada uno en una línea separada"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "ifrs9.overlay_diagnostics@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.overlay_diagnostics",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.00251574493,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/house-price-fall.json#/tests/7/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C07/house-price-fall/F-MINIMUM",
+   "case_id": "C07",
+   "variant_id": "house-price-fall",
+   "id": "F-MINIMUM",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0.0 millones CLP)"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "design:b1-minimum-normal-individual"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C07/house-price-fall/F-SICR",
+   "case_id": "C07",
+   "variant_id": "house-price-fall",
+   "id": "F-SICR",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "Stage 2 defaults 2.9 times as often as Stage 1 in the generator's realised outcomes, but 79% of Stage 3 entries come directly from Stage 1 (amber)",
+    "es": "La Etapa 2 incumple 2.9 veces más que la Etapa 1 en los resultados realizados del generador, pero el 79% de las entradas a Etapa 3 viene directo de la Etapa 1 (amber)"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.sicr_effectiveness@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.sicr_effectiveness",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 2.94272683,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/house-price-fall.json#/tests/8/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 90,
+   "due": "2027-01-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C07/recession/F-GAP",
+   "case_id": "C07",
+   "variant_id": "recession",
+   "id": "F-GAP",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "On one portfolio the IFRS 9 total is 86% of the CMF B-1 total (gap -27.7 CLP bn) and BdE Annex 9 is 59%",
+    "es": "Sobre una misma cartera el total IFRS 9 es 86% del total CMF B-1 (brecha -27,7 mil millones CLP) y el Anejo 9 del BdE es 59%"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.scenario_sensitivity@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.scenario_sensitivity",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.0729412258,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/recession.json#/tests/0/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 90,
+   "due": "2027-01-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C07/recession/F-NONLINEARITY",
+   "case_id": "C07",
+   "variant_id": "recession",
+   "id": "F-NONLINEARITY",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "The weighted ECL exceeds the ECL at the mean scenario path by 7.3%",
+    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 7,3%"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.scenario_sensitivity@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.scenario_sensitivity",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.0729412258,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/recession.json#/tests/0/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 90,
+   "due": "2027-01-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C07/recession/F-OVERLAY",
+   "case_id": "C07",
+   "variant_id": "recession",
+   "id": "F-OVERLAY",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "Overlays are 0.19% of the IFRS 9 allowance, each a separate line",
+    "es": "Los ajustes posmodelo son 0,19% de la provisión IFRS 9, cada uno en una línea separada"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "ifrs9.overlay_diagnostics@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.overlay_diagnostics",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.00190903052,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/recession.json#/tests/7/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C07/recession/F-MINIMUM",
+   "case_id": "C07",
+   "variant_id": "recession",
+   "id": "F-MINIMUM",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0.0 millones CLP)"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "design:b1-minimum-normal-individual"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C07/recession/F-SICR",
+   "case_id": "C07",
+   "variant_id": "recession",
+   "id": "F-SICR",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "Stage 2 defaults 2.2 times as often as Stage 1 in the generator's realised outcomes, but 58% of Stage 3 entries come directly from Stage 1 (amber)",
+    "es": "La Etapa 2 incumple 2.2 veces más que la Etapa 1 en los resultados realizados del generador, pero el 58% de las entradas a Etapa 3 viene directo de la Etapa 1 (amber)"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.sicr_effectiveness@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.sicr_effectiveness",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 2.20166116,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/recession.json#/tests/8/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 90,
+   "due": "2027-01-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C07/uf-inflation-spike/F-GAP",
+   "case_id": "C07",
+   "variant_id": "uf-inflation-spike",
+   "id": "F-GAP",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "On one portfolio the IFRS 9 total is 70% of the CMF B-1 total (gap -49.5 CLP bn) and BdE Annex 9 is 51%",
+    "es": "Sobre una misma cartera el total IFRS 9 es 70% del total CMF B-1 (brecha -49,5 mil millones CLP) y el Anejo 9 del BdE es 51%"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.scenario_sensitivity@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.scenario_sensitivity",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.0712103942,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/uf-inflation-spike.json#/tests/0/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 60,
+   "due": "2026-12-11",
+   "ageing_days": 80,
+   "overdue": true,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C07/uf-inflation-spike/F-NONLINEARITY",
+   "case_id": "C07",
+   "variant_id": "uf-inflation-spike",
+   "id": "F-NONLINEARITY",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "The weighted ECL exceeds the ECL at the mean scenario path by 7.1%",
+    "es": "La ECL ponderada supera a la ECL en la trayectoria media de escenarios en 7,1%"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.scenario_sensitivity@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.scenario_sensitivity",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.0712103942,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/uf-inflation-spike.json#/tests/0/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 90,
+   "due": "2027-01-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C07/uf-inflation-spike/F-OVERLAY",
+   "case_id": "C07",
+   "variant_id": "uf-inflation-spike",
+   "id": "F-OVERLAY",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "Overlays are 0.28% of the IFRS 9 allowance, each a separate line",
+    "es": "Los ajustes posmodelo son 0,28% de la provisión IFRS 9, cada uno en una línea separada"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "ifrs9.overlay_diagnostics@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.overlay_diagnostics",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 0.00276175765,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/uf-inflation-spike.json#/tests/7/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C07/uf-inflation-spike/F-MINIMUM",
+   "case_id": "C07",
+   "variant_id": "uf-inflation-spike",
+   "id": "F-MINIMUM",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "The 0.50% minimum on the individually assessed normal portfolio is not binding (top-up 0.0 CLP million)",
+    "es": "El mínimo de 0,50 % de la cartera normal de evaluación individual no es vinculante (complemento 0.0 millones CLP)"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "design:b1-minimum-normal-individual"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C07/uf-inflation-spike/F-SICR",
+   "case_id": "C07",
+   "variant_id": "uf-inflation-spike",
+   "id": "F-SICR",
+   "entry_key": "C07/banco-andino",
+   "title": {
+    "en": "Stage 2 defaults 3.0 times as often as Stage 1 in the generator's realised outcomes, but 81% of Stage 3 entries come directly from Stage 1 (amber)",
+    "es": "La Etapa 2 incumple 3.0 veces más que la Etapa 1 en los resultados realizados del generador, pero el 81% de las entradas a Etapa 3 viene directo de la Etapa 1 (amber)"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "ifrs9.sicr_effectiveness@IFRS9-ecl"
+   ],
+   "anchor": {
+    "metric": "metric",
+    "test_id": "ifrs9.sicr_effectiveness",
+    "model_id": "IFRS9-ecl",
+    "segment": null,
+    "value": 3.04811319,
+    "unit": "metric of the test row (the unit its test defines)",
+    "basis": "data/derived/C07/uf-inflation-spike.json#/tests/8/metric"
+   },
+   "anchor_reason": null,
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-12",
+   "deadline_days": 90,
+   "due": "2027-01-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/baseline/headline-simple-sum",
+   "case_id": "C18",
+   "variant_id": "baseline",
+   "id": "headline-simple-sum",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "The headline capital is the simple sum, CLP 658,046 million; the Gaussian copula figure, 25.2% lower, is information and not capital. The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
+    "es": "El capital principal es la suma simple, CLP 658,046 millones; la cifra de la copula gaussiana, 25.2% menor, es informacion y no capital. La trayectoria de credito bajo tension descansa en satelites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "aggregation.simple_sum_and_variance_covariance"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 180,
+   "due": "2027-04-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/baseline/internal-target-held",
+   "case_id": "C18",
+   "variant_id": "baseline",
+   "id": "internal-target-held",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "Under this scenario the PE ratio stays 0.81% of RWA above the internal target of 14.50% at its lowest, in year 3.",
+    "es": "Bajo este escenario la razon de PE se mantiene 0.81% de los APR sobre el objetivo interno de 14.50% en su punto mas bajo, el año 3."
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "design:outputs.capital_plan"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 180,
+   "due": "2027-04-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/baseline/satellite-sign",
+   "case_id": "C18",
+   "variant_id": "baseline",
+   "id": "satellite-sign",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "6 satellite coefficients have the opposite of the expected sign: the stress maps through them with that caveat.",
+    "es": "6 coeficientes de los satelites tienen el signo contrario al esperado: la tension pasa por ellos con esa salvedad."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "stress.sensitivity_monotonicity"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/baseline/satellite-backcast",
+   "case_id": "C18",
+   "variant_id": "baseline",
+   "id": "satellite-backcast",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "5 of the 5 satellites do not back-cast the 2020 to 2025 peak within the thresholds (size or timing).",
+    "es": "5 de los 5 satelites no reproducen el pico de 2020 a 2025 dentro de los umbrales (tamaño u oportunidad)."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "stress.satellite_backcast"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/baseline/non-credit-losses-at-expected-loss",
+   "case_id": "C18",
+   "variant_id": "baseline",
+   "id": "non-credit-losses-at-expected-loss",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
+    "es": "Solo el credito responde al escenario: las perdidas de mercado, IRRBB y operacional se mantienen en su perdida esperada, por lo que la perdida bajo tension es un piso."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "design:non-credit-losses-at-expected-loss"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/eba-2025-adverse/headline-simple-sum",
+   "case_id": "C18",
+   "variant_id": "eba-2025-adverse",
+   "id": "headline-simple-sum",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "The headline capital is the simple sum, CLP 658,046 million; the Gaussian copula figure, 25.2% lower, is information and not capital. The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
+    "es": "El capital principal es la suma simple, CLP 658,046 millones; la cifra de la copula gaussiana, 25.2% menor, es informacion y no capital. La trayectoria de credito bajo tension descansa en satelites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "aggregation.simple_sum_and_variance_covariance"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 180,
+   "due": "2027-04-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/eba-2025-adverse/internal-target-not-held",
+   "case_id": "C18",
+   "variant_id": "eba-2025-adverse",
+   "id": "internal-target-not-held",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "Under this scenario the PE ratio falls to 12.98% of RWA in year 3, 1.52% of RWA below the internal target of 14.50%.",
+    "es": "Bajo este escenario la razon de PE cae a 12.98% de los APR en el año 3, 1.52% de los APR bajo el objetivo interno de 14.50%."
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "design:outputs.capital_plan"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 60,
+   "due": "2026-12-15",
+   "ageing_days": 76,
+   "overdue": true,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/eba-2025-adverse/cet1-stack-breached",
+   "case_id": "C18",
+   "variant_id": "eba-2025-adverse",
+   "id": "cet1-stack-breached",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "On the loss-only path CET1 falls to 7.09% of RWA in year 3, below the Chilean legal minimum stack of 9.06%; the labelled PPNR row, which credits earnings, is shown beside it.",
+    "es": "En la trayectoria solo de perdidas el CET1 cae a 7.09% de los APR en el año 3, bajo el minimo legal de 9.06%; la fila rotulada de PPNR, que acredita utilidades, se muestra al lado."
+   },
+   "severity": "S1",
+   "ecb_f": "F4",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "design:outputs.headline_cet1"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 30,
+   "due": "2026-11-15",
+   "ageing_days": 76,
+   "overdue": true,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/eba-2025-adverse/satellite-sign",
+   "case_id": "C18",
+   "variant_id": "eba-2025-adverse",
+   "id": "satellite-sign",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "6 satellite coefficients have the opposite of the expected sign: the stress maps through them with that caveat.",
+    "es": "6 coeficientes de los satelites tienen el signo contrario al esperado: la tension pasa por ellos con esa salvedad."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "stress.sensitivity_monotonicity"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/eba-2025-adverse/satellite-backcast",
+   "case_id": "C18",
+   "variant_id": "eba-2025-adverse",
+   "id": "satellite-backcast",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "5 of the 5 satellites do not back-cast the 2020 to 2025 peak within the thresholds (size or timing).",
+    "es": "5 de los 5 satelites no reproducen el pico de 2020 a 2025 dentro de los umbrales (tamaño u oportunidad)."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "stress.satellite_backcast"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/eba-2025-adverse/scenario-milder-than-gfc",
+   "case_id": "C18",
+   "variant_id": "eba-2025-adverse",
+   "id": "scenario-milder-than-gfc",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "1 path variables of this scenario are milder than the global financial crisis (ratio below 0.75).",
+    "es": "1 variables de trayectoria de este escenario son mas suaves que la crisis financiera global (razon bajo 0,75)."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "stress.scenario_severity"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/eba-2025-adverse/non-credit-losses-at-expected-loss",
+   "case_id": "C18",
+   "variant_id": "eba-2025-adverse",
+   "id": "non-credit-losses-at-expected-loss",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
+    "es": "Solo el credito responde al escenario: las perdidas de mercado, IRRBB y operacional se mantienen en su perdida esperada, por lo que la perdida bajo tension es un piso."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "design:non-credit-losses-at-expected-loss"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/fed-2026-severely-adverse/headline-simple-sum",
+   "case_id": "C18",
+   "variant_id": "fed-2026-severely-adverse",
+   "id": "headline-simple-sum",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "The headline capital is the simple sum, CLP 658,046 million; the Gaussian copula figure, 25.2% lower, is information and not capital. The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
+    "es": "El capital principal es la suma simple, CLP 658,046 millones; la cifra de la copula gaussiana, 25.2% menor, es informacion y no capital. La trayectoria de credito bajo tension descansa en satelites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "aggregation.simple_sum_and_variance_covariance"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 180,
+   "due": "2027-04-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/fed-2026-severely-adverse/internal-target-not-held",
+   "case_id": "C18",
+   "variant_id": "fed-2026-severely-adverse",
+   "id": "internal-target-not-held",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "Under this scenario the PE ratio falls to 13.25% of RWA in year 3, 1.25% of RWA below the internal target of 14.50%.",
+    "es": "Bajo este escenario la razon de PE cae a 13.25% de los APR en el año 3, 1.25% de los APR bajo el objetivo interno de 14.50%."
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "design:outputs.capital_plan"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 60,
+   "due": "2026-12-15",
+   "ageing_days": 76,
+   "overdue": true,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/fed-2026-severely-adverse/cet1-stack-breached",
+   "case_id": "C18",
+   "variant_id": "fed-2026-severely-adverse",
+   "id": "cet1-stack-breached",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "On the loss-only path CET1 falls to 7.36% of RWA in year 3, below the Chilean legal minimum stack of 9.06%; the labelled PPNR row, which credits earnings, is shown beside it.",
+    "es": "En la trayectoria solo de perdidas el CET1 cae a 7.36% de los APR en el año 3, bajo el minimo legal de 9.06%; la fila rotulada de PPNR, que acredita utilidades, se muestra al lado."
+   },
+   "severity": "S1",
+   "ecb_f": "F4",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "design:outputs.headline_cet1"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 30,
+   "due": "2026-11-15",
+   "ageing_days": 76,
+   "overdue": true,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/fed-2026-severely-adverse/satellite-sign",
+   "case_id": "C18",
+   "variant_id": "fed-2026-severely-adverse",
+   "id": "satellite-sign",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "6 satellite coefficients have the opposite of the expected sign: the stress maps through them with that caveat.",
+    "es": "6 coeficientes de los satelites tienen el signo contrario al esperado: la tension pasa por ellos con esa salvedad."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "stress.sensitivity_monotonicity"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/fed-2026-severely-adverse/satellite-backcast",
+   "case_id": "C18",
+   "variant_id": "fed-2026-severely-adverse",
+   "id": "satellite-backcast",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "5 of the 5 satellites do not back-cast the 2020 to 2025 peak within the thresholds (size or timing).",
+    "es": "5 de los 5 satelites no reproducen el pico de 2020 a 2025 dentro de los umbrales (tamaño u oportunidad)."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "stress.satellite_backcast"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/fed-2026-severely-adverse/scenario-milder-than-gfc",
+   "case_id": "C18",
+   "variant_id": "fed-2026-severely-adverse",
+   "id": "scenario-milder-than-gfc",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "1 path variables of this scenario are milder than the global financial crisis (ratio below 0.75).",
+    "es": "1 variables de trayectoria de este escenario son mas suaves que la crisis financiera global (razon bajo 0,75)."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "stress.scenario_severity"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/fed-2026-severely-adverse/non-credit-losses-at-expected-loss",
+   "case_id": "C18",
+   "variant_id": "fed-2026-severely-adverse",
+   "id": "non-credit-losses-at-expected-loss",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
+    "es": "Solo el credito responde al escenario: las perdidas de mercado, IRRBB y operacional se mantienen en su perdida esperada, por lo que la perdida bajo tension es un piso."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "design:non-credit-losses-at-expected-loss"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/ngfs-delayed-transition/headline-simple-sum",
+   "case_id": "C18",
+   "variant_id": "ngfs-delayed-transition",
+   "id": "headline-simple-sum",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "The headline capital is the simple sum, CLP 658,046 million; the Gaussian copula figure, 25.2% lower, is information and not capital. The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
+    "es": "El capital principal es la suma simple, CLP 658,046 millones; la cifra de la copula gaussiana, 25.2% menor, es informacion y no capital. La trayectoria de credito bajo tension descansa en satelites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "aggregation.simple_sum_and_variance_covariance"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 180,
+   "due": "2027-04-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/ngfs-delayed-transition/internal-target-held",
+   "case_id": "C18",
+   "variant_id": "ngfs-delayed-transition",
+   "id": "internal-target-held",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "Under this scenario the PE ratio stays 0.56% of RWA above the internal target of 14.50% at its lowest, in year 3.",
+    "es": "Bajo este escenario la razon de PE se mantiene 0.56% de los APR sobre el objetivo interno de 14.50% en su punto mas bajo, el año 3."
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "design:outputs.capital_plan"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 180,
+   "due": "2027-04-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/ngfs-delayed-transition/satellite-sign",
+   "case_id": "C18",
+   "variant_id": "ngfs-delayed-transition",
+   "id": "satellite-sign",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "6 satellite coefficients have the opposite of the expected sign: the stress maps through them with that caveat.",
+    "es": "6 coeficientes de los satelites tienen el signo contrario al esperado: la tension pasa por ellos con esa salvedad."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "stress.sensitivity_monotonicity"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/ngfs-delayed-transition/satellite-backcast",
+   "case_id": "C18",
+   "variant_id": "ngfs-delayed-transition",
+   "id": "satellite-backcast",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "5 of the 5 satellites do not back-cast the 2020 to 2025 peak within the thresholds (size or timing).",
+    "es": "5 de los 5 satelites no reproducen el pico de 2020 a 2025 dentro de los umbrales (tamaño u oportunidad)."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "stress.satellite_backcast"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/ngfs-delayed-transition/scenario-milder-than-gfc",
+   "case_id": "C18",
+   "variant_id": "ngfs-delayed-transition",
+   "id": "scenario-milder-than-gfc",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "4 path variables of this scenario are milder than the global financial crisis (ratio below 0.75).",
+    "es": "4 variables de trayectoria de este escenario son mas suaves que la crisis financiera global (razon bajo 0,75)."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "stress.scenario_severity"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/ngfs-delayed-transition/non-credit-losses-at-expected-loss",
+   "case_id": "C18",
+   "variant_id": "ngfs-delayed-transition",
+   "id": "non-credit-losses-at-expected-loss",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
+    "es": "Solo el credito responde al escenario: las perdidas de mercado, IRRBB y operacional se mantienen en su perdida esperada, por lo que la perdida bajo tension es un piso."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "design:non-credit-losses-at-expected-loss"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/reverse-stress/reverse-scenario",
+   "case_id": "C18",
+   "variant_id": "reverse-stress",
+   "id": "reverse-scenario",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts real_gdp_growth by -2.58 and unemployment_rate by +12.42 points, a Mahalanobis distance of 8.21 (tail probability 0.0%); the loss-only baseline already ends below the stack.",
+    "es": "En la trayectoria rotulada de PPNR, el escenario mas plausible que lleva el CET1 al minimo legal desplaza real_gdp_growth en -2.58 y unemployment_rate en +12.42 puntos, a una distancia de Mahalanobis de 8.21 (probabilidad de cola 0.0%); la base de solo perdidas ya termina bajo el minimo."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "stress.reverse_solution_check"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/t-copula-baseline/headline-simple-sum",
+   "case_id": "C18",
+   "variant_id": "t-copula-baseline",
+   "id": "headline-simple-sum",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "The headline capital is the simple sum, CLP 658,046 million. The dependence band runs from CLP 118,518 million (best case) to CLP 823,332 million (worst case); the Gaussian copula figure is 25.2% below the sum and is information, not capital.",
+    "es": "El capital principal es la suma simple, CLP 658,046 millones. La banda de dependencia va de CLP 118,518 millones (mejor caso) a CLP 823,332 millones (peor caso); la cifra de la copula gaussiana esta 25.2% bajo la suma y es informacion, no capital."
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "aggregation.simple_sum_and_variance_covariance"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 180,
+   "due": "2027-04-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/t-copula-baseline/model-risk",
+   "case_id": "C18",
+   "variant_id": "t-copula-baseline",
+   "id": "model-risk",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "The aggregation model moves the figure by up to 67.4% over the Gaussian copula (the Barrieu and Scandolo add-on): sensitivity information for the validator, never capital.",
+    "es": "El modelo de agregacion mueve la cifra hasta 67.4% sobre la copula gaussiana (el recargo de Barrieu y Scandolo): informacion de sensibilidad para el validador, nunca capital."
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "aggregation.copula_choice_sensitivity"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 90,
+   "due": "2027-01-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C18/t-copula-baseline/rosenberg-schuermann-reference",
+   "case_id": "C18",
+   "variant_id": "t-copula-baseline",
+   "id": "rosenberg-schuermann-reference",
+   "entry_key": "C18/banco-andino",
+   "title": {
+    "en": "The additive approximation exceeds the Gaussian copula figure by 33.8%; the published range of 30 to 40 percent is a reference and no gate.",
+    "es": "La aproximacion aditiva excede la cifra de la copula gaussiana en 33.8%; el rango publicado de 30 a 40 por ciento es una referencia y no una barrera."
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "aggregation.rosenberg_schuermann_reference"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of capital planning (synthetic role)",
+   "tier": 1,
+   "raised": "2026-10-16",
+   "deadline_days": 180,
+   "due": "2027-04-14",
+   "ageing_days": 76,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C22/broken-monotonicity/F-MIGRATION-POWER",
+   "case_id": "C22",
+   "variant_id": "broken-monotonicity",
+   "id": "F-MIGRATION-POWER",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "Holm's control over 42 cells makes the migration z-tests conservative: a migration twice too frequent goes unseen half the time with 500 obligors per grade",
+    "es": "El control de Holm sobre 42 celdas hace conservadoras las pruebas z de migración: una migración del doble de frecuente pasa inadvertida la mitad de las veces con 500 deudores por grado"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:rating.migration_ztests@r2-n500",
+    "rate:rating.migration_ztests@r1-n500"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 270,
+   "due": "2027-07-09",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C22/clustering/F-BINOM-RHO",
+   "case_id": "C22",
+   "variant_id": "clustering",
+   "id": "F-BINOM-RHO",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "Tests that assume independent defaults reject a right PD far above their level once defaults are correlated (WP14: an early warning)",
+    "es": "Las pruebas que suponen incumplimientos independientes rechazan una PD correcta muy sobre su nivel cuando hay correlación (WP14: alerta temprana)"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:pd.binomial@rho0.05",
+    "rate:pd.jeffreys@rho0.05",
+    "rate:pd.chi2_grades@rho0.05"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C22/clustering/F-OBLIGOR-RHO",
+   "case_id": "C22",
+   "variant_id": "clustering",
+   "id": "F-OBLIGOR-RHO",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "Obligor-level calibration tests assume independence too: one systematic factor inflates their size",
+    "es": "Las pruebas de calibración a nivel de deudor también suponen independencia: un factor sistemático infla su tamaño"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:pd.hosmer_lemeshow@rho0.05",
+    "rate:pd.spiegelhalter@rho0.05"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C22/concentration/F-HHI-BOUNDED",
+   "case_id": "C22",
+   "variant_id": "concentration",
+   "id": "F-HHI-BOUNDED",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "The ECB concentration statistic is bounded: with ten grades and an initial CV of 0.6 it cannot reject at 5%; test concentration on the counts",
+    "es": "El estadístico de concentración del BCE es acotado: con diez grados y un CV inicial de 0,6 no puede rechazar al 5%; pruébese la concentración en los conteos"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "open",
+   "status": "open",
+   "evidence": [
+    "rate:rating.hhi@c0.5",
+    "rate:stability.chi2@c0.05"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C22/discrimination-decay/F-AUC-INIT-C01",
+   "case_id": "C22",
+   "variant_id": "discrimination-decay",
+   "id": "F-AUC-INIT-C01",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "At C01's slice sizes the ECB form rejects about one time in six when nothing changed; C01 now adds the development AUC's variance",
+    "es": "Con los tamaños de tramo de C01 la forma del BCE rechaza cerca de una vez en seis sin cambio; C01 ahora suma la varianza del AUC de desarrollo"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "closed",
+   "status": "validated_closed",
+   "evidence": [
+    "rate:disc.auc_vs_initial@m0.467",
+    "rate:disc.auc_vs_initial@m0.467-extended"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C22/discrimination-decay/F-DECAY-POWER",
+   "case_id": "C22",
+   "variant_id": "discrimination-decay",
+   "id": "F-DECAY-POWER",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "With 150 defaulters an AUC drop of two points is rarely caught: small portfolios see only large decays",
+    "es": "Con 150 incumplidos una caída de dos puntos de AUC rara vez se detecta: las carteras pequeñas solo ven deterioros grandes"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:disc.auc_vs_initial@d0.02",
+    "rate:disc.auc_vs_initial@d0.05"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 270,
+   "due": "2027-07-09",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C22/drift/F-PSI-BANDS",
+   "case_id": "C22",
+   "variant_id": "drift",
+   "id": "F-PSI-BANDS",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "With samples of 1,000 the 0.25 band misses shifts the chi-square benchmark catches: fixed bands lose power as samples grow",
+    "es": "Con muestras de 1.000 la banda 0,25 pierde desplazamientos que la referencia chi-cuadrado detecta: las bandas fijas pierden potencia al crecer las muestras"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:stability.psi@s0.2",
+    "rate:stability.psi@s0.1"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C22/drift/F-DRIFT-NOT-MISCAL",
+   "case_id": "C22",
+   "variant_id": "drift",
+   "id": "F-DRIFT-NOT-MISCAL",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "Drift is not miscalibration: a right model stays calibrated under a covariate shift, so stability alarms and calibration tests answer different questions",
+    "es": "La deriva no es descalibración: un modelo correcto sigue calibrado ante un desplazamiento de covariables; las alarmas de estabilidad y las pruebas de calibración responden preguntas distintas"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:pd.hosmer_lemeshow@s0.5",
+    "rate:pd.spiegelhalter@s0.5"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 365,
+   "due": "2027-10-12",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C22/leakage/F-LEAK-SIGNAL",
+   "case_id": "C22",
+   "variant_id": "leakage",
+   "id": "F-LEAK-SIGNAL",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "The tests built so far see a leak mostly as a discrimination drop out of time; the leaked feature's own distribution moves too little for the CSI",
+    "es": "Las pruebas construidas hasta ahora ven una filtración sobre todo como una caída de discriminación fuera de tiempo; la distribución de la variable filtrada se mueve muy poco para el CSI"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:disc.auc_vs_initial@l1",
+    "rate:stability.csi@l1"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C22/leakage/F-DELONG-NESTED",
+   "case_id": "C22",
+   "variant_id": "leakage",
+   "id": "F-DELONG-NESTED",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "DeLong on nested models fitted on the comparison sample almost never rejects (Demler et al.); compare non-nested models on a holdout",
+    "es": "DeLong en modelos anidados ajustados en la muestra de comparación casi nunca rechaza (Demler et al.); compárense modelos no anidados en una reserva"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:disc.delong@nested",
+    "rate:disc.delong@non-nested"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 270,
+   "due": "2027-07-09",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C22/miscalibration/F-PROFILE-BLIND",
+   "case_id": "C22",
+   "variant_id": "miscalibration",
+   "id": "F-PROFILE-BLIND",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "The default-profile test sees the shape of the PD curve, not its level: a uniform underestimation leaves it at its size",
+    "es": "La prueba del perfil ve la forma de la curva de PD, no su nivel: una subestimación uniforme la deja en su tamaño"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:pd.default_profile@k3",
+    "rate:pd.chi2_grades@k3"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 365,
+   "due": "2027-10-12",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C22/miscalibration/F-VASICEK-COST",
+   "case_id": "C22",
+   "variant_id": "miscalibration",
+   "id": "F-VASICEK-COST",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "Correcting for a correlation the defaults do not have costs power: the Vasicek test misses most underestimations the binomial test catches",
+    "es": "Corregir por una correlación que los incumplimientos no tienen cuesta potencia: la prueba de Vasicek pierde la mayoría de las subestimaciones que la binomial detecta"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:pd.binomial_vasicek@k1.5",
+    "rate:pd.binomial@k1.5"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 270,
+   "due": "2027-07-09",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C22/null/F-HL-DOF",
+   "case_id": "C22",
+   "variant_id": "null",
+   "id": "F-HL-DOF",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "Hosmer-Lemeshow with G - 2 degrees of freedom over-rejects on validation samples; riskvalidation 0.3.0 uses G for given PDs and C01 was re-baked",
+    "es": "Hosmer-Lemeshow con G - 2 grados de libertad sobrerrechaza en muestras de validación; riskvalidation 0.3.0 usa G para PD dadas y C01 se recalculó"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "closed",
+   "status": "validated_closed",
+   "evidence": [
+    "rate:pd.hosmer_lemeshow@fitted",
+    "rate:pd.hosmer_lemeshow@null"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C22/null/F-NORMAL-SIZE",
+   "case_id": "C22",
+   "variant_id": "null",
+   "id": "F-NORMAL-SIZE",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "The normal test over five years rejects above its level, as WP14's own Table 7 shows; read it as an early warning",
+    "es": "La prueba normal en cinco años rechaza sobre su nivel, como muestra la propia Tabla 7 de WP14; léase como alerta temprana"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:pd.normal_multiperiod@null"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 270,
+   "due": "2027-07-09",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C22/null/F-TL-TIES",
+   "case_id": "C22",
+   "variant_id": "null",
+   "id": "F-TL-TIES",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "The traffic-lights size depends on the colour of a year with exactly the expected defaults; the printed rule is conservative, WP14's simulation used the other",
+    "es": "El tamaño del semáforo depende del color de un año con exactamente los incumplimientos esperados; la regla impresa es conservadora, la simulación de WP14 usó la otra"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:pd.traffic_lights@null",
+    "rate:pd.traffic_lights@upper"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 270,
+   "due": "2027-07-09",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C22/null/F-CHI2-THIN",
+   "case_id": "C22",
+   "variant_id": "null",
+   "id": "F-CHI2-THIN",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "The chi-square test over grades exceeds its level when a grade expects under one default",
+    "es": "La prueba chi-cuadrado por grados excede su nivel cuando un grado espera menos de un incumplimiento"
+   },
+   "severity": "S3",
+   "ecb_f": "F2",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:pd.chi2_grades@thin",
+    "rate:pd.chi2_grades@null"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 270,
+   "due": "2027-07-09",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C22/null/F-AUC-INIT",
+   "case_id": "C22",
+   "variant_id": "null",
+   "id": "F-AUC-INIT",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "The ECB AUC test treats the development AUC as known; estimated, it over-rejects; C01 now adds its variance",
+    "es": "La prueba de AUC del BCE trata el AUC de desarrollo como conocida; estimada, sobrerrechaza; C01 ahora suma su varianza"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "closed",
+   "status": "validated_closed",
+   "evidence": [
+    "rate:disc.auc_vs_initial@dev1",
+    "rate:disc.auc_vs_initial@dev1-extended"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  },
+  {
+   "key": "C22/null/F-JEFFREYS-DISCRETE",
+   "case_id": "C22",
+   "variant_id": "null",
+   "id": "F-JEFFREYS-DISCRETE",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "The Jeffreys test is Bayesian; on a discrete count its exact size moves with the number of obligors and can exceed the level (1.38% at 1% for 1,000 obligors at PD 1%)",
+    "es": "La prueba de Jeffreys es bayesiana; sobre un conteo discreto su tamaño exacto cambia con el número de deudores y puede exceder el nivel (1,38% al 1% para 1.000 deudores con PD 1%)"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:pd.jeffreys@null",
+    "rate:pd.binomial@null"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 365,
+   "due": "2027-10-12",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C22/null/F-PSI-RULE",
+   "case_id": "C22",
+   "variant_id": "null",
+   "id": "F-PSI-RULE",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "The PSI 0.10 rule of thumb raises false alarms in most samples of 100; the chi-square benchmark controls the error",
+    "es": "La regla empírica PSI 0,10 da falsas alarmas en la mayoría de las muestras de 100; la referencia chi-cuadrado controla el error"
+   },
+   "severity": "S2",
+   "ecb_f": "F3",
+   "product_status": "accepted",
+   "status": "risk_accepted",
+   "evidence": [
+    "rate:stability.psi@n100"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 180,
+   "due": "2027-04-10",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": {
+    "approver": "not-applicable",
+    "approver_reason": {
+     "en": "a stated limit of a synthetic case: Contraste approves no model, so there is no approver",
+     "es": "un limite declarado de un caso sintetico: Contraste no aprueba ningun modelo, por lo que no hay aprobador"
+    },
+    "expiry": null,
+    "expiry_reason": {
+     "en": "the limit is a property of the case, not a time-limited acceptance of a risk",
+     "es": "el limite es una propiedad del caso, no la aceptacion de un riesgo con plazo"
+    }
+   }
+  },
+  {
+   "key": "C22/null/F-TRANSITION-SIZE",
+   "case_id": "C22",
+   "variant_id": "null",
+   "id": "F-TRANSITION-SIZE",
+   "entry_key": "C22/generators",
+   "title": {
+    "en": "The four transition tests in their default forms on a Markov chain of 5,000 obligors over five years: 4 of 4 hold their size at both levels (at 5%: Time homogeneity (chi-square) 4.72%, Markov order (grouped by direction) 6.05%, Matrix against a reference 3.70%, Downward momentum (hazard) 4.45%); the order test, near its bound in 4,000 repetitions, rejects 5.05% at 5% over 20,000; the printed forms of three fail on sparse rating tables, which is why riskvalidation defaults to these",
+    "es": "Las cuatro pruebas de transición en sus formas por defecto sobre una cadena de Markov de 5.000 deudores en cinco años: 4 de 4 mantienen su tamaño en ambos niveles (al 5%: Homogeneidad temporal (chi-cuadrado) 4,72%, Orden de Markov (agrupado por dirección) 6,05%, Matriz contra una referencia 3,70%, Momentum a la baja (riesgo) 4,45%); la prueba de orden, cerca de su cota en 4.000 repeticiones, rechaza 5,05% al 5% en 20.000; las formas impresas de tres fallan en tablas de calificación ralas, por eso riskvalidation usa estas por defecto"
+   },
+   "severity": "S4",
+   "ecb_f": "F1",
+   "product_status": "closed",
+   "status": "validated_closed",
+   "evidence": [
+    "rate:rating.time_homogeneity@null",
+    "rate:rating.markov_order@null",
+    "rate:rating.matrix_reference@null",
+    "rate:rating.momentum@null",
+    "rate:rating.markov_order@null-20000"
+   ],
+   "anchor": null,
+   "anchor_reason": {
+    "en": "the evidence is not a test_id@model row (it is a design:, contract:, rate: or bare test id), so no statistic is read",
+    "es": "la evidencia no es una fila test_id@modelo (es design:, contract:, rate: o un id de prueba sin modelo), por lo que no se lee estadistico"
+   },
+   "rwea_share": null,
+   "rwea_share_reason": {
+    "en": "the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+    "es": "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA"
+   },
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "tier": 4,
+   "raised": "2026-10-12",
+   "deadline_days": 365,
+   "due": "2027-10-12",
+   "ageing_days": 80,
+   "overdue": false,
+   "remediation": null,
+   "remediation_reason": {
+    "en": "no remediation plan: the finding is an open result or a stated limit of a synthetic case",
+    "es": "sin plan de remediacion: el hallazgo es un resultado abierto o un limite declarado de un caso sintetico"
+   },
+   "risk_acceptance": null
+  }
+ ],
+ "counts": {
+  "total": 81,
+  "by_severity": {
+   "S1": 2,
+   "S2": 14,
+   "S3": 41,
+   "S4": 24
+  },
+  "by_status": {
+   "open": 49,
+   "action_plan_agreed": 0,
+   "in_progress": 0,
+   "submitted_for_closure": 0,
+   "validated_closed": 4,
+   "overdue": 0,
+   "risk_accepted": 28
+  },
+  "overdue": 7,
+  "by_case": [
+   {
+    "case_id": "C01",
+    "total": 3,
+    "by_severity": {
+     "S1": 0,
+     "S2": 0,
+     "S3": 3,
+     "S4": 0
+    },
+    "by_status": {
+     "open": 2,
+     "action_plan_agreed": 0,
+     "in_progress": 0,
+     "submitted_for_closure": 0,
+     "validated_closed": 0,
+     "overdue": 0,
+     "risk_accepted": 1
+    },
+    "overdue": 0
+   },
+   {
+    "case_id": "C07",
+    "total": 29,
+    "by_severity": {
+     "S1": 0,
+     "S2": 3,
+     "S3": 14,
+     "S4": 12
+    },
+    "by_status": {
+     "open": 17,
+     "action_plan_agreed": 0,
+     "in_progress": 0,
+     "submitted_for_closure": 0,
+     "validated_closed": 0,
+     "overdue": 0,
+     "risk_accepted": 12
+    },
+    "overdue": 3
+   },
+   {
+    "case_id": "C18",
+    "total": 29,
+    "by_severity": {
+     "S1": 2,
+     "S2": 2,
+     "S3": 17,
+     "S4": 8
+    },
+    "by_status": {
+     "open": 29,
+     "action_plan_agreed": 0,
+     "in_progress": 0,
+     "submitted_for_closure": 0,
+     "validated_closed": 0,
+     "overdue": 0,
+     "risk_accepted": 0
+    },
+    "overdue": 4
+   },
+   {
+    "case_id": "C22",
+    "total": 20,
+    "by_severity": {
+     "S1": 0,
+     "S2": 9,
+     "S3": 7,
+     "S4": 4
+    },
+    "by_status": {
+     "open": 1,
+     "action_plan_agreed": 0,
+     "in_progress": 0,
+     "submitted_for_closure": 0,
+     "validated_closed": 4,
+     "overdue": 0,
+     "risk_accepted": 15
+    },
+    "overdue": 0
+   }
+  ]
+ }
+}

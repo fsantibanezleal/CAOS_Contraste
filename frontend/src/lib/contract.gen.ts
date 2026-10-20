@@ -99,6 +99,41 @@ export interface components {
         NotFoundBody: {
             detail: string;
         };
+        /** @description One B.6 metric (06 l.606-612) with its value, unit, numerator, denominator and its light under a stated threshold. */
+        appMetric: {
+            /** @enum {string} */
+            id: "tier1-validated-on-time" | "open-high-severity" | "overdue-remediation" | "entries-under-exception" | "entries-in-breach" | "pma-magnitude" | "owner-and-complete-record";
+            name: components["schemas"]["common-text"];
+            /** @enum {string} */
+            kind: "share" | "count" | "magnitude";
+            /** @description Computed by riskvalidation.governance.appetite.appetite_metrics. */
+            value: number | null;
+            /** @enum {string} */
+            unit: "share" | "count" | "share-of-model-output";
+            /** @description Computed by riskvalidation.governance.appetite.appetite_metrics. */
+            numerator: number | null;
+            /** @description Computed by riskvalidation.governance.appetite.appetite_metrics. */
+            denominator: number | null;
+            /** @description The count metrics count distinct (entry, id) findings (W15-14); this is the number of register rows behind the same metric; null for a metric that counts entries or is a share or magnitude. Computed by riskvalidation.governance.appetite.appetite_metrics. */
+            register_rows: number | null;
+            reason: components["schemas"]["common-text"] | null;
+            threshold: components["schemas"]["appThreshold"];
+            /**
+             * @description Computed by riskvalidation.governance.appetite.light.
+             * @enum {string}
+             */
+            light: "green" | "amber" | "red" | "not_evaluated";
+        } & (unknown & unknown);
+        /** @description The stated threshold of a light: a convention with its basis (item 30), never a regulatory value. */
+        appThreshold: {
+            /** @constant */
+            label: "convention";
+            basis: string;
+            /** @enum {string} */
+            direction: "higher-is-better" | "lower-is-better";
+            green_limit: number;
+            amber_limit: number;
+        };
         /**
          * C01 models
          * @description Catalog row c01-models 1.0.0: a C01 models artifact (one per fit_id: german, taiwan, taiwan-small).
@@ -13828,6 +13863,681 @@ export interface components {
             access: string;
             files: components["schemas"]["fetchedFile"][];
         };
+        /** @description The quantitative anchor: the cited test row's statistic or metric, with its unit and the pointer it was read from. */
+        fndAnchor: {
+            /** @enum {string} */
+            metric: "statistic" | "metric";
+            test_id: string;
+            model_id: string;
+            segment: string | null;
+            value: number;
+            unit: string;
+            basis: string;
+        };
+        fndBySeverity: {
+            S1: number;
+            S2: number;
+            S3: number;
+            S4: number;
+        };
+        fndByStatus: {
+            open: number;
+            action_plan_agreed: number;
+            in_progress: number;
+            submitted_for_closure: number;
+            validated_closed: number;
+            overdue: number;
+            risk_accepted: number;
+        };
+        fndCaseCount: {
+            case_id: string;
+            total: number;
+            by_severity: components["schemas"]["fndBySeverity"];
+            by_status: components["schemas"]["fndByStatus"];
+            overdue: number;
+        };
+        fndConventions: {
+            /** @description Days from the raised date to the due date, by severity (rows) and tier 1 to 4 (columns). No regulatory source prescribes days. */
+            deadline_days: {
+                /** @constant */
+                label: "convention";
+                basis: string;
+                rows: {
+                    severity: components["schemas"]["govSeverity"];
+                    days: number[];
+                }[];
+            };
+            severity_scale: {
+                /** @constant */
+                label: "convention";
+                basis: string;
+                rows: {
+                    severity: components["schemas"]["govSeverity"];
+                    ecb_f: components["schemas"]["govEcbF"];
+                }[];
+            };
+            status_map: {
+                /** @constant */
+                label: "convention";
+                basis: string;
+                rows: {
+                    /** @enum {string} */
+                    product: "open" | "accepted" | "closed";
+                    /** @enum {string} */
+                    register: "open" | "action_plan_agreed" | "in_progress" | "submitted_for_closure" | "validated_closed" | "overdue" | "risk_accepted";
+                }[];
+            };
+        };
+        /** @description The counts by case, severity and status. */
+        fndCounts: {
+            total: number;
+            by_severity: components["schemas"]["fndBySeverity"];
+            by_status: components["schemas"]["fndByStatus"];
+            overdue: number;
+            by_case: components["schemas"]["fndCaseCount"][];
+        };
+        /** @description Risk acceptance of a stated limit of a synthetic case (W15-5): no approver and no expiry exist, each with its reason. */
+        fndRisk: {
+            /** @constant */
+            approver: "not-applicable";
+            approver_reason: components["schemas"]["common-text"];
+            /** @constant */
+            expiry: unknown;
+            expiry_reason: components["schemas"]["common-text"];
+        };
+        /** @description One finding of one variant, enriched with the B.7 fields from committed values (R3, W15-5). */
+        fndRow: {
+            /** @description case_id/variant_id/id. */
+            key: string;
+            case_id: string;
+            variant_id: string;
+            id: string;
+            /** @description The inventory entry (case_id/fit_id) the finding belongs to. */
+            entry_key: string;
+            title: components["schemas"]["common-text"];
+            severity: components["schemas"]["govSeverity"];
+            /** @description Computed by riskvalidation.governance.findings.severity_to_ecb. */
+            ecb_f: components["schemas"]["govEcbF"];
+            /** @enum {string} */
+            product_status: "open" | "accepted" | "closed";
+            /**
+             * @description Computed by riskvalidation.governance.findings.map_product_status.
+             * @enum {string}
+             */
+            status: "open" | "action_plan_agreed" | "in_progress" | "submitted_for_closure" | "validated_closed" | "overdue" | "risk_accepted";
+            evidence: string[];
+            /** @description Computed by riskvalidation.governance.findings.anchor_from_test_row. */
+            anchor: components["schemas"]["fndAnchor"] | null;
+            anchor_reason: components["schemas"]["common-text"] | null;
+            /** @description A decimal share of RWEA (0.05 is 5 percent); non-null only where the anchor's metric is stated as a share of RWEA or as an RWEA amount (W15-11). Computed by riskvalidation.governance.findings.rwea_share_of_anchor. */
+            rwea_share: number | null;
+            rwea_share_reason: components["schemas"]["common-text"] | null;
+            owner_role: string;
+            tier: components["schemas"]["govTier"];
+            raised: components["schemas"]["govDate"];
+            /** @description Computed by riskvalidation.governance.findings.deadline_days. */
+            deadline_days: number;
+            /** @description Computed by riskvalidation.governance.findings.due_date. */
+            due: components["schemas"]["govDate"];
+            /** @description Computed by riskvalidation.governance.findings.ageing_days. */
+            ageing_days: number;
+            /** @description Computed by riskvalidation.governance.findings.is_overdue. */
+            overdue: boolean;
+            remediation: components["schemas"]["common-text"] | null;
+            remediation_reason: components["schemas"]["common-text"] | null;
+            risk_acceptance: components["schemas"]["fndRisk"] | null;
+        } & (unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown);
+        /** @description Why the as-of date is the date it is (W15-13). Production rule: the date of the newest release heading of CHANGELOG.md when the bake runs, never earlier than a raised date. A fixture states that its date is chosen to exercise the overdue rule. */
+        govAsOfBasis: {
+            /** @constant */
+            label: "convention";
+            basis: components["schemas"]["common-text"];
+        };
+        /** @description An ISO date (YYYY-MM-DD). The dates of a governance document are deterministic: the as-of date and every raised date come from committed values (R4 of the U15 sizing); a wall-clock date never enters a document. */
+        govDate: string;
+        /** @enum {string} */
+        govEcbF: "F1" | "F2" | "F3" | "F4";
+        /** @description A governance finding of the inventory itself (W15-3: the rubric blind spot, S3; W15-4: independence not established, S2). */
+        govGovFinding: {
+            id: string;
+            severity: components["schemas"]["govSeverity"];
+            /** @description Computed by riskvalidation.governance.findings.severity_to_ecb. */
+            ecb_f: components["schemas"]["govEcbF"];
+            /** @constant */
+            status: "open";
+            title: components["schemas"]["common-text"];
+            description: components["schemas"]["common-text"];
+            /** @description The decision or finding of the record that raises it. */
+            basis: string;
+        } & (unknown & unknown & unknown & unknown);
+        /** @description Where a governance document came from: code and engine versions and the sha256 of every case document it read. */
+        govProvenance: {
+            /** @description The Contraste code version that wrote the document. */
+            code_version: string;
+            /** @description The engine version that computed it. */
+            riskvalidation_version: string;
+            /** @description The writer of the document; a fixture is labelled fixture:u15-s-contracts. */
+            generators: string[];
+            /** @description Every case document read, with the sha256 of its bytes (line endings normalised to LF) and its git ref. */
+            documents_read: {
+                path: string;
+                sha256: components["schemas"]["govSha256"];
+                /** @description The git ref and commit the bytes were read from when the document is not on the branch the bake runs on (the C18 documents of the fixture); null otherwise. */
+                ref: string | null;
+            }[];
+        };
+        /** @enum {string} */
+        govSeverity: "S1" | "S2" | "S3" | "S4";
+        govSha256: string;
+        /** @enum {string} */
+        govTag: "doc" | "convention";
+        govTier: number;
+        /**
+         * Governance model risk appetite
+         * @description Catalog row governance-appetite 1.0.0: the model risk appetite metrics of 06 B.6 (data/derived/governance/appetite.json), each with its value, unit, numerator, denominator and a light under a stated convention threshold.
+         */
+        "governance-governance-appetite": {
+            /** @constant */
+            schema: "contraste.governance.appetite/v1";
+            /** @constant */
+            case_id: "GOVERNANCE";
+            /** @constant */
+            governance_id: "appetite";
+            schema_version: string;
+            as_of: components["schemas"]["govDate"];
+            as_of_basis: components["schemas"]["govAsOfBasis"];
+            provenance: components["schemas"]["govProvenance"];
+            /** @description Computed by riskvalidation.governance.appetite.appetite_metrics. */
+            population: {
+                entries: number;
+                findings: number;
+                distinct_findings: number;
+                tier1_entries: number;
+            };
+            metrics: components["schemas"]["appMetric"][];
+        };
+        /**
+         * Governance findings register
+         * @description Catalog row governance-findings 1.0.0: the findings register across cases (data/derived/governance/findings.json): one row per case_id/variant_id/id with the product severity and its ECB F equivalent, the mapped B.7 status, the evidence, the anchor, the owner role, the raised and due dates, the ageing, the overdue flag, the remediation and the risk acceptance, with the counts.
+         */
+        "governance-governance-findings": {
+            /** @constant */
+            schema: "contraste.governance.findings/v1";
+            /** @constant */
+            case_id: "GOVERNANCE";
+            /** @constant */
+            governance_id: "findings";
+            schema_version: string;
+            as_of: components["schemas"]["govDate"];
+            as_of_basis: components["schemas"]["govAsOfBasis"];
+            provenance: components["schemas"]["govProvenance"];
+            conventions: components["schemas"]["fndConventions"];
+            rows: components["schemas"]["fndRow"][];
+            /** @description Computed by riskvalidation.governance.findings.register_counts. */
+            counts: components["schemas"]["fndCounts"];
+        };
+        /**
+         * Governance inventory
+         * @description Catalog row governance-inventory 1.0.0: the model inventory of Contraste's own case models (data/derived/governance/inventory.json): one entry per fit (case_id/fit_id) with the 40 B.2 attributes, the components, the scope record, the tier block, the lifecycle state, the schedule dates, the dependency edges, the engine node and the governance findings of the inventory itself.
+         */
+        "governance-governance-inventory": {
+            /** @constant */
+            schema: "contraste.governance.inventory/v1";
+            /** @constant */
+            case_id: "GOVERNANCE";
+            /** @constant */
+            governance_id: "inventory";
+            schema_version: string;
+            as_of: components["schemas"]["govDate"];
+            as_of_basis: components["schemas"]["govAsOfBasis"];
+            provenance: components["schemas"]["govProvenance"];
+            conventions: components["schemas"]["invConventions"];
+            engine_node: components["schemas"]["invEngineNode"];
+            /** @description Computed by riskvalidation.governance.inventory.build_inventory. */
+            entries: components["schemas"]["invEntry"][];
+            /** @description Computed by riskvalidation.governance.inventory.build_inventory. */
+            edges: components["schemas"]["invEdge"][];
+            related: components["schemas"]["invRelated"][];
+            excluded: components["schemas"]["invExcluded"][];
+            /** @description Computed by riskvalidation.governance.inventory.attribute_completeness. */
+            completeness: components["schemas"]["invCompleteness"];
+            /** @description Computed by riskvalidation.governance.tiering.tier_counts. */
+            tier_counts: components["schemas"]["invTierCounts"][];
+            governance_findings: components["schemas"]["govGovFinding"][];
+        };
+        /**
+         * Governance validation report
+         * @description Catalog row governance-report 1.0.0: the I.3 validation report of one inventory entry (data/derived/governance/reports/<case>-<fit>.json): twelve sections, each filled from the inputs it names or absent with its reason; section 11 holds the opinion level 1 to 4, the rule that gave it and the recommendation, labelled the rule's output.
+         */
+        "governance-governance-report": {
+            /** @constant */
+            schema: "contraste.governance.report/v1";
+            /** @constant */
+            case_id: "GOVERNANCE";
+            /** @constant */
+            governance_id: "report";
+            schema_version: string;
+            as_of: components["schemas"]["govDate"];
+            as_of_basis: components["schemas"]["govAsOfBasis"];
+            provenance: components["schemas"]["govProvenance"];
+            /** @description The inventory entry (case_id/fit_id) the report is for. */
+            entry_key: string;
+            title: components["schemas"]["common-text"];
+            tier: components["schemas"]["govTier"];
+            /** @description Computed by riskvalidation.governance.report.executive_counts. */
+            test_counts: components["schemas"]["repCounts"];
+            /** @description Computed by riskvalidation.governance.report.build_report. */
+            sections: [
+                components["schemas"]["repSection1"],
+                components["schemas"]["repSection2"],
+                components["schemas"]["repSection3"],
+                components["schemas"]["repSection4"],
+                components["schemas"]["repSection5"],
+                components["schemas"]["repSection6"],
+                components["schemas"]["repSection7"],
+                components["schemas"]["repSection8"],
+                components["schemas"]["repSection9"],
+                components["schemas"]["repSection10"],
+                components["schemas"]["repSection11"],
+                components["schemas"]["repSection12"]
+            ];
+        };
+        /** @description A B.2 attribute: never a bare value. basis is the JSON pointer read, or the convention's or the absence's reason. */
+        invAttr: {
+            value: unknown;
+            /** @enum {string} */
+            status: "present" | "derivable" | "convention" | "not-applicable" | "missing";
+            basis: string;
+        } & (unknown & unknown);
+        invAttrCount: {
+            present: number;
+            derivable: number;
+            convention: number;
+            not_applicable: number;
+            missing: number;
+        };
+        /** @description The 40 attributes of 06 B.2 (l.539-551), keyed A01 to A40. */
+        invAttributes: {
+            A01: components["schemas"]["invAttr"];
+            A02: components["schemas"]["invAttr"];
+            A03: components["schemas"]["invAttr"];
+            A04: components["schemas"]["invAttr"];
+            A05: components["schemas"]["invAttr"];
+            A06: components["schemas"]["invAttr"];
+            /** @description Computed by riskvalidation.governance.lifecycle.transition. */
+            A07: components["schemas"]["invAttr"];
+            A08: components["schemas"]["invAttr"];
+            A09: components["schemas"]["invAttr"];
+            A10: components["schemas"]["invAttr"];
+            A11: components["schemas"]["invAttr"];
+            A12: components["schemas"]["invAttr"];
+            A13: components["schemas"]["invAttr"];
+            A14: components["schemas"]["invAttr"];
+            A15: components["schemas"]["invAttr"];
+            A16: components["schemas"]["invAttr"];
+            A17: components["schemas"]["invAttr"];
+            A18: components["schemas"]["invAttr"];
+            A19: components["schemas"]["invAttr"];
+            A20: components["schemas"]["invAttr"];
+            A21: components["schemas"]["invAttr"];
+            /** @description Computed by riskvalidation.governance.tiering.materiality. */
+            A22: components["schemas"]["invAttr"];
+            /** @description Computed by riskvalidation.governance.tiering.complexity. */
+            A23: components["schemas"]["invAttr"];
+            /** @description Computed by riskvalidation.governance.tiering.apply_override. */
+            A24: components["schemas"]["invAttr"];
+            A25: components["schemas"]["invAttr"];
+            A26: components["schemas"]["invAttr"];
+            A27: components["schemas"]["invAttr"];
+            A28: components["schemas"]["invAttr"];
+            A29: components["schemas"]["invAttr"];
+            A30: components["schemas"]["invAttr"];
+            A31: components["schemas"]["invAttr"];
+            A32: components["schemas"]["invAttr"];
+            A33: components["schemas"]["invAttr"];
+            A34: components["schemas"]["invAttr"];
+            /** @description Computed by riskvalidation.governance.schedule.next_dates. */
+            A35: components["schemas"]["invAttr"];
+            /** @description Computed by riskvalidation.governance.report.executive_counts. */
+            A36: components["schemas"]["invAttr"];
+            /** @description Computed by riskvalidation.governance.findings.register_counts. */
+            A37: components["schemas"]["invAttr"];
+            /** @description Computed by riskvalidation.governance.findings.due_date. */
+            A38: components["schemas"]["invAttr"];
+            A39: components["schemas"]["invAttr"];
+            A40: components["schemas"]["invAttr"];
+        };
+        invCompleteness: {
+            entries: number;
+            attributes: {
+                A01: components["schemas"]["invAttrCount"];
+                A02: components["schemas"]["invAttrCount"];
+                A03: components["schemas"]["invAttrCount"];
+                A04: components["schemas"]["invAttrCount"];
+                A05: components["schemas"]["invAttrCount"];
+                A06: components["schemas"]["invAttrCount"];
+                A07: components["schemas"]["invAttrCount"];
+                A08: components["schemas"]["invAttrCount"];
+                A09: components["schemas"]["invAttrCount"];
+                A10: components["schemas"]["invAttrCount"];
+                A11: components["schemas"]["invAttrCount"];
+                A12: components["schemas"]["invAttrCount"];
+                A13: components["schemas"]["invAttrCount"];
+                A14: components["schemas"]["invAttrCount"];
+                A15: components["schemas"]["invAttrCount"];
+                A16: components["schemas"]["invAttrCount"];
+                A17: components["schemas"]["invAttrCount"];
+                A18: components["schemas"]["invAttrCount"];
+                A19: components["schemas"]["invAttrCount"];
+                A20: components["schemas"]["invAttrCount"];
+                A21: components["schemas"]["invAttrCount"];
+                A22: components["schemas"]["invAttrCount"];
+                A23: components["schemas"]["invAttrCount"];
+                A24: components["schemas"]["invAttrCount"];
+                A25: components["schemas"]["invAttrCount"];
+                A26: components["schemas"]["invAttrCount"];
+                A27: components["schemas"]["invAttrCount"];
+                A28: components["schemas"]["invAttrCount"];
+                A29: components["schemas"]["invAttrCount"];
+                A30: components["schemas"]["invAttrCount"];
+                A31: components["schemas"]["invAttrCount"];
+                A32: components["schemas"]["invAttrCount"];
+                A33: components["schemas"]["invAttrCount"];
+                A34: components["schemas"]["invAttrCount"];
+                A35: components["schemas"]["invAttrCount"];
+                A36: components["schemas"]["invAttrCount"];
+                A37: components["schemas"]["invAttrCount"];
+                A38: components["schemas"]["invAttrCount"];
+                A39: components["schemas"]["invAttrCount"];
+                A40: components["schemas"]["invAttrCount"];
+            };
+        };
+        /** @description C from the factor scores: the mean rounded half up, and the maximum. A factor with a null score is unscored, with its reason. */
+        invComplexity: {
+            factors: components["schemas"]["invFactor"][];
+            /** @description Computed by riskvalidation.governance.tiering.complexity. */
+            scored: number;
+            /** @description Computed by riskvalidation.governance.tiering.complexity. */
+            sum: number;
+            /** @description Computed by riskvalidation.governance.tiering.complexity. */
+            mean: number;
+            /** @description Computed by riskvalidation.governance.tiering.complexity. */
+            c: {
+                mean: number;
+                maximum: number;
+            };
+        };
+        invComponent: {
+            /** @description case_id/fit_id/model_id: model ids repeat across cases, so the key is the triple. */
+            key: string;
+            model_id: string;
+            /** @enum {string} */
+            role: "champion" | "challenger" | "benchmark" | "reference";
+            role_tag: components["schemas"]["govTag"];
+            role_basis: string;
+            family: string | null;
+            rung: string | null;
+            title: components["schemas"]["common-text"] | null;
+        };
+        /** @description The tables that are conventions (item 30 of the dossier UNVERIFIED list): named parameters, each labelled convention with its basis. */
+        invConventions: {
+            exposure_band_cuts: {
+                /** @constant */
+                label: "convention";
+                basis: string;
+                cuts: number[];
+            };
+            regulatory_use_grades: {
+                /** @constant */
+                label: "convention";
+                basis: string;
+                graded: {
+                    reported_figure: number;
+                    feeding_parameter: number;
+                    compliance_monitoring: number;
+                    none: number;
+                };
+                literal: {
+                    feeds_capital_provisioning_or_reporting: number;
+                    compliance_monitoring: number;
+                    none: number;
+                };
+            };
+            complexity_rounding: {
+                /** @constant */
+                label: "convention";
+                basis: string;
+                /** @constant */
+                rule: "mean-rounded-half-up";
+            };
+            frequency: {
+                /** @constant */
+                label: "convention";
+                basis: string;
+                tiers: {
+                    tier: components["schemas"]["govTier"];
+                    /** @enum {string} */
+                    review_kind: "review" | "attestation";
+                    review_months: number;
+                    revalidation_months: number | null;
+                    monitoring_months: number | null;
+                    null_reason: components["schemas"]["common-text"] | null;
+                }[];
+            };
+            adopted_reading: {
+                /** @constant */
+                label: "convention";
+                basis: string;
+                /** @constant */
+                reading: "B";
+            };
+        };
+        invDecision: {
+            score: number;
+            tag: components["schemas"]["govTag"];
+            basis: string;
+        };
+        /** @description A dependency (W15-8): a document read or a code import, with its stated source. Kept apart from the related links. */
+        invEdge: {
+            upstream: string;
+            downstream: string;
+            /** @enum {string} */
+            kind: "document" | "code";
+            stated_source: string;
+        };
+        /** @description The engine node every entry depends on (W15-8); its key is never an entry key. */
+        invEngineNode: {
+            /** @constant */
+            key: "riskvalidation";
+            version: string;
+            basis: string;
+        };
+        /** @description One fit of one case (W15-1). */
+        invEntry: {
+            /** @description case_id/fit_id (W15-1). */
+            key: string;
+            case_id: string;
+            fit_id: string;
+            title: components["schemas"]["common-text"];
+            attributes: components["schemas"]["invAttributes"];
+            variants: components["schemas"]["invVariant"][];
+            components: components["schemas"]["invComponent"][];
+            scope: components["schemas"]["invScope"];
+            tier_block: components["schemas"]["invTier"];
+            lifecycle: components["schemas"]["invLifecycle"];
+            schedule: components["schemas"]["invSchedule"];
+            graph: components["schemas"]["invGraph"];
+            map: components["schemas"]["invMap"];
+        };
+        invException: {
+            type: string;
+            approver: string;
+            expiry: components["schemas"]["govDate"];
+            reason: components["schemas"]["common-text"];
+        };
+        /** @description A case, or one variant of a case, left out of the inventory, with the reason (missing-data behavior). */
+        invExcluded: {
+            case_id: string;
+            /** @description Null when the whole case is left out; a variant id when only that variant has no determinable fit (W15-15). */
+            variant_id: string | null;
+            reason: components["schemas"]["common-text"];
+        };
+        invExposure: {
+            /** @description The share of the stated balance; null where no balance exists. */
+            share: number | null;
+            /** @description Computed by riskvalidation.governance.tiering.exposure_band. */
+            band: number;
+            tag: components["schemas"]["govTag"];
+            basis: string;
+        };
+        invFactor: {
+            /** @enum {string} */
+            id: "F1" | "F2" | "F3" | "F4" | "F5" | "F6" | "F7";
+            name: string;
+            score: number | null;
+            tag: components["schemas"]["govTag"];
+            basis: string;
+        };
+        invGraph: {
+            /** @description Computed by riskvalidation.governance.inventory.graph_metrics. */
+            depth: number;
+            /** @description Computed by riskvalidation.governance.inventory.graph_metrics. */
+            fan_in: number;
+            /** @description Computed by riskvalidation.governance.inventory.graph_metrics. */
+            fan_out: number;
+        };
+        invLast: {
+            date: components["schemas"]["govDate"];
+            /** @enum {string} */
+            type: "full battery" | "annual" | "change-triggered" | "initial";
+            basis: string;
+        };
+        /** @description The B.4 lifecycle state; use before validation only with an exception record (type, approver, expiry). */
+        invLifecycle: {
+            /**
+             * @description Computed by riskvalidation.governance.lifecycle.transition.
+             * @enum {string}
+             */
+            state: "proposed" | "in_development" | "submitted_for_validation" | "in_validation" | "approved" | "approved_with_conditions" | "in_use" | "under_monitoring_alert" | "restricted" | "in_remediation" | "material_change_pending" | "decommissioned";
+            basis: string;
+            transitions: components["schemas"]["invTransition"][];
+            exception: components["schemas"]["invException"] | null;
+        };
+        /** @description The layered layout of the dependency map (the bake's networkx layout, a geometry and not a model value). */
+        invMap: {
+            /** @description Computed by riskvalidation.governance.inventory.graph_metrics. */
+            generation: number;
+            x: number;
+            y: number;
+        };
+        /** @description M = max(exposure band, regulatory use, decision criticality), under both readings of regulatory use. */
+        invMateriality: {
+            exposure: components["schemas"]["invExposure"];
+            regulatory_use: components["schemas"]["invRegUse"];
+            decision_criticality: components["schemas"]["invDecision"];
+            /** @description Computed by riskvalidation.governance.tiering.materiality. */
+            m: {
+                literal: number;
+                graded: number;
+            };
+        };
+        /** @description An override of the computed tier: a rationale and an approver are required, never silent (SS1/23 Principle 1.3(d)(e)). */
+        invOverride: {
+            to_tier: components["schemas"]["govTier"];
+            rationale: string;
+            approver: string;
+        };
+        invRegUse: {
+            literal: number;
+            graded: number;
+            tag: components["schemas"]["govTag"];
+            basis: string;
+        };
+        /** @description A link that is not a dependency: a page statement, a shared method, a shared source (A D4 5.1, 5.3). */
+        invRelated: {
+            a: string;
+            b: string;
+            /** @enum {string} */
+            kind: "page-statement" | "method" | "source" | "measures" | "conceptual";
+            source: string;
+        };
+        /** @description The next review, full revalidation and monitoring dates from the tier and the frequency table (06 B.8). */
+        invSchedule: {
+            /** @enum {string} */
+            profile: "default" | "ecb";
+            /** @enum {string} */
+            review_kind: "review" | "attestation";
+            last_validation: components["schemas"]["invLast"];
+            /** @description Computed by riskvalidation.governance.schedule.next_dates. */
+            next_review: components["schemas"]["govDate"];
+            /** @description Computed by riskvalidation.governance.schedule.next_dates. */
+            next_full_revalidation: components["schemas"]["govDate"] | null;
+            /** @description Computed by riskvalidation.governance.schedule.next_dates. */
+            next_monitoring: components["schemas"]["govDate"] | null;
+            null_reason: components["schemas"]["common-text"] | null;
+        };
+        /** @description The B.1 scope record: the four answers and the in-scope decision per jurisdiction profile (06 l.523-537). */
+        invScope: {
+            answers: components["schemas"]["invScopeAnswers"];
+            /** @description Computed by riskvalidation.governance.scope.scope_record. */
+            profiles: components["schemas"]["invScopeProfile"][];
+            basis: string;
+        };
+        invScopeAnswers: {
+            applies_theory: boolean;
+            output_is_estimate: boolean;
+            deterministic: boolean;
+            generative_or_agentic: boolean;
+        };
+        invScopeProfile: {
+            /** @enum {string} */
+            profile: "us-2026" | "pra" | "osfi-2027" | "ecb";
+            in_scope: boolean;
+            rationale: components["schemas"]["common-text"];
+        };
+        invSensitivity: {
+            /** @enum {string} */
+            reading: "A" | "B" | "C" | "D";
+            /** @enum {string} */
+            regulatory_use: "literal" | "graded";
+            /** @enum {string} */
+            complexity: "mean" | "maximum";
+            m: number;
+            c: number;
+            tier: components["schemas"]["govTier"];
+        };
+        /** @description The tier block: M, C, the factor scores with their tags, the tier, the override and the tier under the four readings. */
+        invTier: {
+            materiality: components["schemas"]["invMateriality"];
+            complexity: components["schemas"]["invComplexity"];
+            /** @constant */
+            adopted_reading: "B";
+            /** @description Computed by riskvalidation.governance.tiering.matrix_tier. */
+            computed_tier: components["schemas"]["govTier"];
+            override: components["schemas"]["invOverride"] | null;
+            /** @description Computed by riskvalidation.governance.tiering.apply_override. */
+            tier: components["schemas"]["govTier"];
+            /** @description Computed by riskvalidation.governance.tiering.tier_sensitivity. */
+            tier_sensitivity: components["schemas"]["invSensitivity"][];
+        };
+        invTierCounts: {
+            /** @enum {string} */
+            reading: "A" | "B" | "C" | "D";
+            counts: number[];
+        };
+        invTransition: {
+            /** @enum {string} */
+            from: "proposed" | "in_development" | "submitted_for_validation" | "in_validation" | "approved" | "approved_with_conditions" | "in_use" | "under_monitoring_alert" | "restricted" | "in_remediation" | "material_change_pending" | "decommissioned";
+            /** @enum {string} */
+            to: "proposed" | "in_development" | "submitted_for_validation" | "in_validation" | "approved" | "approved_with_conditions" | "in_use" | "under_monitoring_alert" | "restricted" | "in_remediation" | "material_change_pending" | "decommissioned";
+            date: components["schemas"]["govDate"];
+            basis: string;
+        };
+        /** @description A variant document of the entry and the provenance rule that assigned it (W15-15): the fit whose sources the variant's provenance reads, or the single models document of the case. A variant whose fit cannot be determined is in excluded. */
+        invVariant: {
+            variant_id: string;
+            basis: string;
+        };
         /** @enum {unknown} */
         licenceClass: "mirror-allowed" | "derived-only" | "link-only" | "unusable";
         modelCalibration: {
@@ -13981,6 +14691,280 @@ export interface components {
             /** @description The paragraph this value comes from, for example CRE52.23. */
             paragraph: string;
         };
+        repBlock: {
+            /** @constant */
+            kind: "text";
+            text: components["schemas"]["common-text"];
+        } | {
+            /** @constant */
+            kind: "list";
+            items: components["schemas"]["common-text"][];
+        } | {
+            /** @constant */
+            kind: "table";
+            caption: components["schemas"]["common-text"];
+            columns: components["schemas"]["common-text"][];
+            rows: (string | number | boolean | null)[][];
+        } | {
+            /** @constant */
+            kind: "outcomes";
+            variant_id: string;
+            rows: components["schemas"]["repOutcomeRow"][];
+        };
+        repCounts: {
+            green: number;
+            amber: number;
+            red: number;
+            not_evaluated: number;
+            error: number;
+        };
+        /** @description An input a section names (A D5). */
+        repInput: {
+            ref: string;
+            /** @enum {string} */
+            kind: "document" | "engine" | "convention";
+        };
+        /** @description An element of the I.3 template the product holds nothing behind (A D5, the Missing column). */
+        repMissing: {
+            element: components["schemas"]["common-text"];
+            reason: components["schemas"]["common-text"];
+        };
+        repOpenFinding: {
+            key: string;
+            severity: components["schemas"]["govSeverity"];
+            /** @description The register row's share, carried unchanged. Computed by riskvalidation.governance.findings.rwea_share_of_anchor. */
+            rwea_share: number | null;
+        };
+        /** @description Section 11: the ECB four-level opinion, the rule that gave it, the open findings it was computed on and the labelled recommendation. */
+        repOpinion: {
+            /** @description Computed by riskvalidation.governance.opinion.opinion_level. */
+            level: number;
+            level_label: components["schemas"]["common-text"];
+            rule: {
+                /** @constant */
+                id: "W15-7";
+                text: components["schemas"]["common-text"];
+            };
+            /** @description Computed by riskvalidation.governance.opinion.opinion_level. */
+            rwea_cut_points_applied: boolean;
+            open_findings: components["schemas"]["repOpenFinding"][];
+            /** @description Computed by riskvalidation.governance.opinion.recommendation. */
+            recommendation: {
+                /** @enum {string} */
+                outcome: "approve" | "approve with conditions" | "remediate before use";
+                text: components["schemas"]["common-text"];
+            };
+            label: components["schemas"]["common-text"] & {
+                /** @constant */
+                en?: "the rule's output on the evidence; Contraste approves no model";
+            };
+        };
+        repOutcomeRow: {
+            test_id: string;
+            model_id: string | null;
+            segment: string | null;
+            family: string;
+            statistic: number | null;
+            p_value: number | null;
+            metric: number | null;
+            /** @enum {string} */
+            light: "green" | "amber" | "red" | "not_evaluated" | "error";
+            h0: string;
+            reference: string;
+            policy: components["schemas"]["repPolicy"];
+        };
+        /** @description The policy identity of a test row (W15-6, W15-12): a packaged label through the policy file, an inline battery string parsed, or unresolved with its reason. */
+        repPolicy: {
+            label: string;
+            /** @description spec(test_id).decision of the engine registry (W15-12): p_value or metric. Computed by riskvalidation.governance.policy.resolve_policy. */
+            kind: ("p_value" | "metric") | null;
+            kind_reason: string | null;
+            /** @description Read from the policy file where one resolves; null for an inline battery string. Computed by riskvalidation.governance.policy.resolve_policy. */
+            direction: ("upper_bad" | "lower_bad") | null;
+            direction_reason: string | null;
+            alpha_amber: number | null;
+            alpha_red: number | null;
+            parameters: {
+                [key: string]: number | string;
+            };
+            version: string | null;
+            /**
+             * @description Computed by riskvalidation.governance.policy.resolve_policy.
+             * @enum {string}
+             */
+            source: "packaged-policy" | "inline-battery" | "unresolved";
+            reason: string | null;
+        } & (unknown & unknown & unknown);
+        /** @description I.3 section 1: Executive summary (06 l.1219-1237). */
+        repSection1: {
+            /** @constant */
+            number: 1;
+            /** @constant */
+            key: "executive_summary";
+            title: components["schemas"]["common-text"];
+            /** @enum {string} */
+            status: "filled" | "absent";
+            inputs: components["schemas"]["repInput"][];
+            absent_reason: components["schemas"]["common-text"] | null;
+            blocks: components["schemas"]["repBlock"][];
+            missing: components["schemas"]["repMissing"][];
+            opinion_level: number;
+        } & unknown;
+        /** @description I.3 section 10: Findings register (06 l.1219-1237). */
+        repSection10: {
+            /** @constant */
+            number: 10;
+            /** @constant */
+            key: "findings_register";
+            title: components["schemas"]["common-text"];
+            /** @enum {string} */
+            status: "filled" | "absent";
+            inputs: components["schemas"]["repInput"][];
+            absent_reason: components["schemas"]["common-text"] | null;
+            blocks: components["schemas"]["repBlock"][];
+            missing: components["schemas"]["repMissing"][];
+        } & unknown;
+        /** @description I.3 section 11: Overall opinion and recommendation (06 l.1219-1237). */
+        repSection11: {
+            /** @constant */
+            number: 11;
+            /** @constant */
+            key: "opinion_and_recommendation";
+            title: components["schemas"]["common-text"];
+            /** @enum {string} */
+            status: "filled" | "absent";
+            inputs: components["schemas"]["repInput"][];
+            absent_reason: components["schemas"]["common-text"] | null;
+            blocks: components["schemas"]["repBlock"][];
+            missing: components["schemas"]["repMissing"][];
+            opinion: components["schemas"]["repOpinion"];
+        } & unknown;
+        /** @description I.3 section 12: Appendices (06 l.1219-1237). */
+        repSection12: {
+            /** @constant */
+            number: 12;
+            /** @constant */
+            key: "appendices";
+            title: components["schemas"]["common-text"];
+            /** @enum {string} */
+            status: "filled" | "absent";
+            inputs: components["schemas"]["repInput"][];
+            absent_reason: components["schemas"]["common-text"] | null;
+            blocks: components["schemas"]["repBlock"][];
+            missing: components["schemas"]["repMissing"][];
+        } & unknown;
+        /** @description I.3 section 2: Model description and intended use (06 l.1219-1237). */
+        repSection2: {
+            /** @constant */
+            number: 2;
+            /** @constant */
+            key: "model_description";
+            title: components["schemas"]["common-text"];
+            /** @enum {string} */
+            status: "filled" | "absent";
+            inputs: components["schemas"]["repInput"][];
+            absent_reason: components["schemas"]["common-text"] | null;
+            blocks: components["schemas"]["repBlock"][];
+            missing: components["schemas"]["repMissing"][];
+        } & unknown;
+        /** @description I.3 section 3: Conceptual soundness (06 l.1219-1237). */
+        repSection3: {
+            /** @constant */
+            number: 3;
+            /** @constant */
+            key: "conceptual_soundness";
+            title: components["schemas"]["common-text"];
+            /** @enum {string} */
+            status: "filled" | "absent";
+            inputs: components["schemas"]["repInput"][];
+            absent_reason: components["schemas"]["common-text"] | null;
+            blocks: components["schemas"]["repBlock"][];
+            missing: components["schemas"]["repMissing"][];
+        } & unknown;
+        /** @description I.3 section 4: Data (06 l.1219-1237). */
+        repSection4: {
+            /** @constant */
+            number: 4;
+            /** @constant */
+            key: "data";
+            title: components["schemas"]["common-text"];
+            /** @enum {string} */
+            status: "filled" | "absent";
+            inputs: components["schemas"]["repInput"][];
+            absent_reason: components["schemas"]["common-text"] | null;
+            blocks: components["schemas"]["repBlock"][];
+            missing: components["schemas"]["repMissing"][];
+        } & unknown;
+        /** @description I.3 section 5: Implementation and process verification (06 l.1219-1237). */
+        repSection5: {
+            /** @constant */
+            number: 5;
+            /** @constant */
+            key: "implementation";
+            title: components["schemas"]["common-text"];
+            /** @enum {string} */
+            status: "filled" | "absent";
+            inputs: components["schemas"]["repInput"][];
+            absent_reason: components["schemas"]["common-text"] | null;
+            blocks: components["schemas"]["repBlock"][];
+            missing: components["schemas"]["repMissing"][];
+        } & unknown;
+        /** @description I.3 section 6: Outcomes analysis (06 l.1219-1237). */
+        repSection6: {
+            /** @constant */
+            number: 6;
+            /** @constant */
+            key: "outcomes_analysis";
+            title: components["schemas"]["common-text"];
+            /** @enum {string} */
+            status: "filled" | "absent";
+            inputs: components["schemas"]["repInput"][];
+            absent_reason: components["schemas"]["common-text"] | null;
+            blocks: components["schemas"]["repBlock"][];
+            missing: components["schemas"]["repMissing"][];
+        } & unknown;
+        /** @description I.3 section 7: Sensitivity, robustness and stress (06 l.1219-1237). */
+        repSection7: {
+            /** @constant */
+            number: 7;
+            /** @constant */
+            key: "sensitivity_robustness_stress";
+            title: components["schemas"]["common-text"];
+            /** @enum {string} */
+            status: "filled" | "absent";
+            inputs: components["schemas"]["repInput"][];
+            absent_reason: components["schemas"]["common-text"] | null;
+            blocks: components["schemas"]["repBlock"][];
+            missing: components["schemas"]["repMissing"][];
+        } & unknown;
+        /** @description I.3 section 8: Ongoing monitoring (06 l.1219-1237). */
+        repSection8: {
+            /** @constant */
+            number: 8;
+            /** @constant */
+            key: "ongoing_monitoring";
+            title: components["schemas"]["common-text"];
+            /** @enum {string} */
+            status: "filled" | "absent";
+            inputs: components["schemas"]["repInput"][];
+            absent_reason: components["schemas"]["common-text"] | null;
+            blocks: components["schemas"]["repBlock"][];
+            missing: components["schemas"]["repMissing"][];
+        } & unknown;
+        /** @description I.3 section 9: Limitations and compensating controls (06 l.1219-1237). */
+        repSection9: {
+            /** @constant */
+            number: 9;
+            /** @constant */
+            key: "limitations_and_controls";
+            title: components["schemas"]["common-text"];
+            /** @enum {string} */
+            status: "filled" | "absent";
+            inputs: components["schemas"]["repInput"][];
+            absent_reason: components["schemas"]["common-text"] | null;
+            blocks: components["schemas"]["repBlock"][];
+            missing: components["schemas"]["repMissing"][];
+        } & unknown;
         sourceRecord: {
             id: string;
             name: string;
