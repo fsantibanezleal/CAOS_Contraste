@@ -9218,7 +9218,7 @@ export interface components {
             status: "convention";
             basis: components["schemas"]["common-text"];
         };
-        /** @description HQLA by level after the caps: HQLA = L1 + L2A + L2B - Adj15 - Adj40 (LCR30.38) with the adjustments of LCR30.39. The Level 2 and Level 2B shares are over the HQLA stock: where the stock is empty they are undefined and are null together with their reason in shares_reason (never zero); where they are numbers, shares_reason is null (U11 decision X6). */
+        /** @description HQLA by level after the caps: HQLA = L1 + L2A + L2B - Adj15 - Adj40 (LCR30.38) with the adjustments of LCR30.39. The Level 2 and Level 2B shares are over the HQLA stock: where the stock is empty they are undefined and are null together with their reason in shares_reason (never zero); where they are numbers, shares_reason is null (U11 decision X6). The pairing is a cross-field rule the producer checker holds (semantics.check_document), as the product's other cross-field rules. */
         c16Hqla: {
             /** @description Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`). */
             l1: number;
@@ -9247,15 +9247,7 @@ export interface components {
                 /** @constant */
                 l2b_cap: 0.15;
             };
-        } & ({
-            l2_share?: number;
-            l2b_share?: number;
-            shares_reason?: null;
-        } | {
-            l2_share?: null;
-            l2b_share?: null;
-            shares_reason?: components["schemas"]["c16Label"];
-        });
+        };
         /** @description The HTM losses in the CBC: the reported amortised cost and fair value (SCHA, SCHF, SCAA, SCAF), the loss applied to the book as a whole or pro rata by type (never a reported by-type loss), the CBC with and without it, the labelled counterfactual under the Bank Term Funding Program's par valuation (announced after the run) and the revaluation validation row. */
         c16Htm: {
             reported: {

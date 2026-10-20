@@ -2733,35 +2733,7 @@
           }
         }
       },
-      "description": "HQLA by level after the caps: HQLA = L1 + L2A + L2B - Adj15 - Adj40 (LCR30.38) with the adjustments of LCR30.39. The Level 2 and Level 2B shares are over the HQLA stock: where the stock is empty they are undefined and are null together with their reason in shares_reason (never zero); where they are numbers, shares_reason is null (U11 decision X6).",
-      "oneOf": [
-        {
-          "properties": {
-            "l2_share": {
-              "type": "number"
-            },
-            "l2b_share": {
-              "type": "number"
-            },
-            "shares_reason": {
-              "type": "null"
-            }
-          }
-        },
-        {
-          "properties": {
-            "l2_share": {
-              "type": "null"
-            },
-            "l2b_share": {
-              "type": "null"
-            },
-            "shares_reason": {
-              "$ref": "#/$defs/c16Label"
-            }
-          }
-        }
-      ]
+      "description": "HQLA by level after the caps: HQLA = L1 + L2A + L2B - Adj15 - Adj40 (LCR30.38) with the adjustments of LCR30.39. The Level 2 and Level 2B shares are over the HQLA stock: where the stock is empty they are undefined and are null together with their reason in shares_reason (never zero); where they are numbers, shares_reason is null (U11 decision X6). The pairing is a cross-field rule the producer checker holds (semantics.check_document), as the product's other cross-field rules."
     },
     "c16Lcr": {
       "type": "object",
