@@ -284,7 +284,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
         }}
       >
         <ChartOverTable
-          chartMin={`${(rowsAll + (legalRows?.length ?? 0)) * 1.55 + 7}rem`}
+          chartMin={`${(rowsAll + (legalRows?.length ?? 0)) * 1.3 + 4}rem`}
           chart={
             <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 0', minHeight: 0 }}>
               <div style={{ flex: `${rowsAll} 1 0`, minHeight: 0 }}>
