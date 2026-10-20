@@ -100,6 +100,11 @@ export function TermStructureView({ sel }: { sel: C02Sel | null }) {
   const o = outputsOf(sel);
   if (!sel || !o) return <Pending />;
   const t = o.term_structure;
+  if (t === null) {
+    // decision G22 (c02-outputs 1.1.0): the files are independent samples, so no cumulative curve is read; the document says why
+    const why = o.term_structure_reason;
+    return <UnavailableCard sel={sel} title={{ en: 'Term structure (exploratory)', es: 'Estructura de plazos (exploratorio)' }} reason={{ en: `Not available: ${why?.en ?? 'the document carries no term structure and gives no reason.'}`, es: `No disponible: ${why?.es ?? 'el documento no trae estructura de plazos y no da razón.'}` }} />;
+  }
   if (t.points.length === 0) {
     return <UnavailableCard sel={sel} title={{ en: 'Term structure (exploratory)', es: 'Estructura de plazos (exploratorio)' }} reason={{ en: `Not available: the document carries no point. ${t.reason.en}`, es: `No disponible: el documento no trae ningún punto. ${t.reason.es}` }} />;
   }

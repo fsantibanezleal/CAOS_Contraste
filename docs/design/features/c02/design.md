@@ -46,9 +46,11 @@ The challenger table compares each learned rung with P1 (`disc_delong`, `paired_
 ## The exploratory blocks
 
 - Transfer: the rung fitted on the document's file, scored on the locked holdout of each file. Empty for the pooled variant.
-- Term structure: the five file event rates as a cumulative PD through `from_cumulative`, and the `lifetime_pd_backtest` row of the
-  champion's mean PD on each holdout against the holdout event rate.
-- Impact: the 12-month and lifetime ECL of one unit of exposure (`ecl_scenario`, undiscounted) under the horizon PDs of the term-structure block (the five file event rates; the champion's holdout mean PDs are not strictly increasing on the real files, so they cannot form a structure).
+- Term structure (decision G22): the five file event rates as a cumulative PD through `from_cumulative`, with the `lifetime_pd_backtest` row of the
+  champion's mean PD on each holdout, when the rates rise strictly with the horizon. Under the dataset mapping (G21) they fall (6.94 to 3.86 percent):
+  the files are independent samples of different forecast years, so the block is null with `term_structure_reason` (`c02-outputs` 1.1.0) and there is no back-test row.
+- Impact: the 12-month and lifetime ECL of one unit of exposure (`ecl_scenario`, undiscounted) under the horizon PDs (the five file event rates). Under
+  the dataset mapping the rates fall with the horizon and cannot form a term structure, so the block is null with its reason (`reason_if_null`).
 
 ## Out of scope
 

@@ -148,6 +148,14 @@ def c02_defs() -> dict:
         "parameters": R("c02Params"),
         "requirements": A(S(pattern=r"^CT-02\d\d$"), 1, desc="Requirement ids CT-0201 onward (decision Q14)."),
     }, "C02 horizon outputs: one document per horizon file (1 to 5 years) and the pooled variant. Exploratory blocks carry their label.")
+    # U14 G22 (1.1.0): the block may be null (a widened type, so the mechanical floor of the contract gate sees no break); `properties`,
+    # `required` and `additionalProperties` constrain an object only
+    d["c02TermStructure"]["type"] = ["object", "null"]
+    d["c02TermStructure"]["description"] = ("The five file event rates read as a cumulative PD: cumulative = 1 - product of (1 - hazard). Exploratory (decision Q9). "
+                                            "Null, with its reason in term_structure_reason, when the points cannot form a cumulative curve (U14 G22: the horizon "
+                                            "files are independent samples, not one cohort).")
+    # the reason is optional in the schema (every 1.0.0 document stays valid); the checker pairs it with the block
+    d["c02Outputs"]["properties"]["term_structure_reason"] = nullable(TXT, "A reason where term_structure is null, null where the block is present (checked by semantics.check_c02).")
     d["c02Fit"] = Ob({
         "files": A(Ob({"horizon_id": E("h1", "h2", "h3", "h4", "h5"), "years": Int(1, 5), "file": S(), "rows": Int(1), "events": Int(0)}), 5, 5),
         "ladder": A(Ob({"rung": RUNGS, "label": TXT, "engine": S(), "reference": S()}), 1),
@@ -463,7 +471,7 @@ C21_RULES = [C21_ALLOWLIST]
 def main() -> None:
     d = c02_defs()
     variant_schema("c02", "variant-horizon", "horizon", "C02 horizon variant",
-                   "Catalog row c02-outputs 1.0.0: one horizon file (1 to 5 years) or the pooled variant of the corporate PD case (outputs.kind horizon).",
+                   "Catalog row c02-outputs 1.1.0: one horizon file (1 to 5 years) or the pooled variant of the corporate PD case (outputs.kind horizon).",
                    "c02Outputs", d, C02_RULES)
     models_schema("c02", "C02 models", "Catalog row c02-models 1.0.0: the five Polish files, the ladder and the leakage-safe protocol.", "c02Fit", d)
     d = c20_defs()

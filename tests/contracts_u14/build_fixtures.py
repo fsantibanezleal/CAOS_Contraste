@@ -122,11 +122,14 @@ def c02_outputs(horizon: str, years: int | None, rows: int, events: int) -> dict
                         "grade_disagreement_share": 0.12}],
         "transfer": {"label": "exploratory", "reason": t("The firm overlap across files is unknown, so a transfer AUC may be inflated"),
                      "cells": [] if pooled else [{"rung": "P1", "fitted_on_years": 1, "scored_on_years": 2, "auc": 0.78, "n": 900, "events": 40}]},
-        "term_structure": {"label": "exploratory", "reason": t("Five file event rates read as a cumulative PD; the files may not draw one population"),
-                           "points": [{"years": y, "cumulative_pd": c, "hazard": h} for y, c, h in
-                                      [(1, 0.0386, 0.0386), (2, 0.0393, 0.00073), (3, 0.0471, 0.00812), (4, 0.0526, 0.00577), (5, 0.0694, 0.01773)]],
-                           "cumulative_nondecreasing": True,
-                           "source": "engine-provisions-api from_cumulative and lifetime_pd_backtest (04 E.2 l.479-497)"},
+        "term_structure": None if pooled else {
+            "label": "exploratory", "reason": t("Five file event rates read as a cumulative PD; the files may not draw one population"),
+            "points": [{"years": y, "cumulative_pd": c, "hazard": h} for y, c, h in
+                       [(1, 0.0386, 0.0386), (2, 0.0393, 0.00073), (3, 0.0471, 0.00812), (4, 0.0526, 0.00577), (5, 0.0694, 0.01773)]],
+            "cumulative_nondecreasing": True,
+            "source": "engine-provisions-api from_cumulative and lifetime_pd_backtest (04 E.2 l.479-497)"},
+        "term_structure_reason": t("The five files are independent samples of different forecast years, not one cohort followed through time; their "
+                                   "rates fall with the horizon, so no cumulative PD is read from them (fixture)") if pooled else None,
         "impact_detail": {"label": "exploratory", "reason": t("ECL effect of the horizon PDs on an illustrative exposure"),
                           "source": "engine-provisions-api", "pd_basis": "P1 horizon PDs, fixture",
                           "lgd": {"value": 0.45, "label": "assumption"}, "ecl_12m_effect": 1.0, "ecl_lifetime_effect": 2.5,

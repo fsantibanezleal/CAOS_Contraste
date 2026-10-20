@@ -141,19 +141,24 @@ def test_the_term_structure_block_is_exploratory_and_comes_from_the_engine() -> 
 
     rows = {1: 7027, 2: 10173, 3: 10503, 4: 9792, 5: 5910}
     events = {1: 271, 2: 400, 3: 495, 4: 515, 5: 410}
-    b = blocks.term_structure_block(rows, events)
+    b, why = blocks.term_structure(rows, events)
     cum = np.array([events[k] / rows[k] for k in range(1, 6)])
     eng = ts.from_cumulative(cum, np.array([12, 24, 36, 48, 60]))
-    assert b["label"] == "exploratory" and b["source"] == cv.TERM_SOURCE and b["cumulative_nondecreasing"] is True
+    assert why is None and b["label"] == "exploratory" and b["source"] == cv.TERM_SOURCE and b["cumulative_nondecreasing"] is True
     assert [p["years"] for p in b["points"]] == [1, 2, 3, 4, 5]
     assert [p["cumulative_pd"] for p in b["points"]] == list(cum) and [p["hazard"] for p in b["points"]] == list(eng.hazard)
     survive = 1.0
     for p in b["points"]:
         survive *= 1 - p["hazard"]
         assert abs((1 - survive) - p["cumulative_pd"]) < 1e-12
-    # the rates must be strictly increasing for a term structure: otherwise C02 refuses to write the block, naming the rates
-    with pytest.raises(blocks.TermStructureError, match="strictly increasing"):
-        blocks.term_structure_block(rows, {**events, 2: 300})
+    # decision G22: rates that are not strictly increasing cannot form a cumulative curve; none is forced, the block is null with its reason
+    b2, why2 = blocks.term_structure(rows, {**events, 2: 300})
+    assert b2 is None and set(why2) == {"en", "es"} and "independent samples" in why2["en"] and "2y 0.0295" in why2["en"]
+    # the real files under decision G21 (h{n} reads the file {6-n}year): the rates fall with the horizon
+    real_rows = {n: cv.expected_counts(n)[0] for n in range(1, 6)}
+    real_events = {n: cv.expected_counts(n)[1] for n in range(1, 6)}
+    b3, why3 = blocks.term_structure(real_rows, real_events)
+    assert b3 is None and "1y 0.0694" in why3["en"] and "5y 0.0386" in why3["en"]
     # the back-test row is the engine's, with the champion's horizon PDs against the holdout event rates
     from riskvalidation.validation import ifrs9
 

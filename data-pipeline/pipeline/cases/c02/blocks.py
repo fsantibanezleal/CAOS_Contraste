@@ -1,6 +1,6 @@
 """The exploratory term-structure and Impact blocks of C02 (decisions Q9 and Q10), through ``riskvalidation.provisions``.
 
-The five files are read as the cumulative PD at 1 to 5 years (``from_cumulative``). The back-test row is the engine's
+The five event rates are read as the cumulative PD at 1 to 5 years (``from_cumulative``) when they can form a curve; otherwise the block is null with its reason (decision G22). The back-test row is the engine's
 ``lifetime_pd_backtest`` of the champion's mean PD on each holdout against the holdout event rate. The Impact block is the 12-month and
 lifetime ECL of one unit of exposure under the cumulative PDs of the term-structure block (the file event rates) (``ecl_scenario``, undiscounted, the loss given default an assumption).
 Both are labelled exploratory: the files may not draw one population and their firm overlap is unknown.
@@ -18,25 +18,29 @@ BACKTEST_SEGMENT = "term-structure:P1-scorecard,holdout"
 ECL_UNIT = "ECL per unit of exposure (EAD 1, LGD 45 percent assumed, undiscounted)"
 
 
-class TermStructureError(ValueError):
-    """The five rates cannot be read as a cumulative PD; the contract has no null for the block, so no document is written."""
-
-
 def _strictly_increasing(c: np.ndarray) -> bool:
     return bool(np.all(np.isfinite(c)) and np.all(c > 0) and np.all(c < 1) and np.all(np.diff(c) > 0))
 
 
-def term_structure_block(rows: dict[int, int], events: dict[int, int]) -> dict[str, Any]:
+def term_structure(rows: dict[int, int], events: dict[int, int]) -> tuple[dict[str, Any] | None, dict[str, str] | None]:
+    """(block, None) when the five event rates can form a cumulative curve, else (None, reason): decision G22. The files are independent
+    samples of different forecast years, not one cohort followed through time, so a curve that does not rise with the horizon is not
+    forced (the engine's ``from_cumulative`` needs a strictly increasing cumulative PD)."""
     from riskvalidation.provisions import term_structure as ts
 
     cum = np.array([events[k] / rows[k] for k in range(1, 6)])
     if not _strictly_increasing(cum):
-        raise TermStructureError("C02: the event rates of the five files " + ", ".join(f"{k}y {c:.4f}" for k, c in zip(range(1, 6), cum))
-                                 + " are not strictly increasing, so the engine's from_cumulative cannot read them as a cumulative PD")
+        rates = ", ".join(f"{k}y {c:.4f}" for k, c in zip(range(1, 6), cum))
+        return None, cv.t(
+            f"The five files are independent samples of different forecast years, not one cohort followed through time, so no cumulative PD is read "
+            f"from them. Their event rates ({rates}) are not strictly increasing with the horizon, which a cumulative PD would be (decision G22).",
+            f"Los cinco archivos son muestras independientes de distintos años de pronóstico, no una cohorte seguida en el tiempo, así que no se lee "
+            f"de ellos una PD acumulada. Sus tasas de evento ({rates}) no crecen estrictamente con el horizonte, como lo haría una PD acumulada "
+            f"(decisión G22).")
     t = ts.from_cumulative(cum, MONTHS)
     points = [{"years": k, "cumulative_pd": float(cum[k - 1]), "hazard": float(t.hazard[k - 1])} for k in range(1, 6)]
     return {"label": "exploratory", "reason": cv.TERM_STRUCTURE_REASON, "points": points,
-            "cumulative_nondecreasing": bool(np.all(np.diff(cum) >= 0)), "source": cv.TERM_SOURCE}
+            "cumulative_nondecreasing": bool(np.all(np.diff(cum) >= 0)), "source": cv.TERM_SOURCE}, None
 
 
 def backtest_row(pred: np.ndarray, n: np.ndarray, d: np.ndarray) -> dict[str, Any]:

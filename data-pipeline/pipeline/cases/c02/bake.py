@@ -135,13 +135,13 @@ def build(seed: int, data_root: Path | str | None, *, manifest: dict[str, Any] |
     hz = [fits[f"h{k}"] for k in range(1, 6)]
     rows_by = {k: int(len(fits[f"h{k}"].y)) for k in range(1, 6)}
     events_by = {k: int(fits[f"h{k}"].y.sum()) for k in range(1, 6)}
-    term = blocks.term_structure_block(rows_by, events_by)
+    term, term_reason = blocks.term_structure(rows_by, events_by)
     champ_pd = np.array([float(np.mean(f.rungs[cv.CHAMPION].pd(f.Xhold))) for f in hz])
     n_hold = np.array([len(f.yhold) for f in hz])
     d_hold = np.array([int(f.yhold.sum()) for f in hz])
-    backtest = blocks.backtest_row(champ_pd, n_hold, d_hold)
-    cum = np.array([p["cumulative_pd"] for p in term["points"]])
-    detail, impact = blocks.impact_block(cum, "the five file event rates of the term-structure block, read as the cumulative PD of horizons 1 to 5")
+    backtest = blocks.backtest_row(champ_pd, n_hold, d_hold) if term is not None else None      # the lifetime back-test presumes a cumulative curve
+    cum = np.array([events_by[k] / rows_by[k] for k in range(1, 6)])
+    detail, impact = blocks.impact_block(cum, "the five file event rates, read as the cumulative PD of horizons 1 to 5")
     docs: dict[str, dict[str, Any]] = {}
     values: dict[str, float] = {}
     for hid in VARIANT_IDS:
@@ -154,7 +154,7 @@ def build(seed: int, data_root: Path | str | None, *, manifest: dict[str, Any] |
             test_rows += rows
             pds[rid] = p
         table, ch_rows = battery.challenger_table(f, hid, pds, seed)
-        test_rows += ch_rows + csi_rows + [dict(backtest)]
+        test_rows += ch_rows + csi_rows + ([dict(backtest)] if backtest is not None else [])
         pooled = None
         caveat = None
         if hid == cv.POOLED:
@@ -164,7 +164,7 @@ def build(seed: int, data_root: Path | str | None, *, manifest: dict[str, Any] |
         outputs = {
             "kind": "horizon", "horizon_id": hid, "years": f.years, "counts": _counts(f), "pooled": pooled, "firm_overlap_caveat": caveat,
             "split": _split_block(f, seed), "rungs": rung_blocks, "challenger": table, "transfer": battery.transfer_block(fits, f),
-            "term_structure": term, "impact_detail": detail, "parameters": cv.parameters(), "requirements": REQUIREMENTS}
+            "term_structure": term, "term_structure_reason": term_reason, "impact_detail": detail, "parameters": cv.parameters(), "requirements": REQUIREMENTS}
         doc = build_artifact(case_id=CASE_ID, variant_id=hid, model=models.model_records(f, False, cv.BATTERY_RUNGS), outputs=outputs,
                              tests=test_rows, impact=impact, findings=findings.build(test_rows), lineage=lineage, lane=lane)
         docs[hid] = doc
