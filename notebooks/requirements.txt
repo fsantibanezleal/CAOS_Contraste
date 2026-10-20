@@ -1,0 +1,13 @@
+# The notebook environment (.venv-notebooks, built by scripts/setup.sh --notebooks or scripts/setup.ps1 -Notebooks).
+# Exact pins only (scripts/check_tech_matrix.py reads this file; scripts/check_notebooks.py holds each notebook's
+# `caos.packages` to these lines). The product's PyPI package first: the engine of every test the notebooks call.
+# The engine release is riskvalidation 0.8.0 (tag v0.08.000); the maintainer's route until its PyPI publication is in notebooks/README.md.
+riskvalidation==0.8.0
+# the method libraries, at the pins of data-pipeline/requirements.txt (the engine's own dependencies, numpy and scipy)
+numpy==2.4.6
+scipy==1.18.1
+matplotlib==3.11.2
+# the runtime that executes the notebooks (scripts/run_notebooks.py)
+nbclient==0.11.0
+nbformat==5.11.1
+ipykernel==7.4.0
