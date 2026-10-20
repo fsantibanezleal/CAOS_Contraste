@@ -181,7 +181,7 @@ export function SectionView({ section }: { section: ReportSection }) {
           <ul className="ct-evidence">
             {section.inputs.map((inp, i) => (
               <li key={i}>
-                <span lang="en" translate="no">
+                <span lang="en" translate="no" style={{ overflowWrap: 'anywhere' }}>
                   {inp.ref}
                 </span>{' '}
                 ({pick(INPUT_KIND[inp.kind], lang)})
