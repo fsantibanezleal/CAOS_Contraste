@@ -991,7 +991,7 @@ def test_the_rows_fragment_has_the_four_rows_in_the_catalog_columns_and_every_ci
                 assert (ROOT / path).is_file(), (rid, ref)
                 if path.endswith("test_u11_contracts.py"):
                     assert f"def {name}(" in me, (rid, ref)
-        assert "U11-S" in cells[2]
+        assert ("U11-S" in cells[2]) if rid.startswith("engine-") else cells[2] == "data-pipeline/pipeline/cases/c16/"
     assert rows["c16-outputs"][3] == "docs/contracts/schemas/c16/variant-scenario.schema.json"
     assert rows["c16-outputs-reverse"][3] == "docs/contracts/schemas/c16/variant-reverse.schema.json"
     assert rows["c16-models"][3] == "docs/contracts/schemas/c16/models.schema.json"

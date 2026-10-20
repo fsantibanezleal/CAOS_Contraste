@@ -4,7 +4,6 @@ the raw files."""
 from __future__ import annotations
 
 import json
-import re
 
 import pytest
 
