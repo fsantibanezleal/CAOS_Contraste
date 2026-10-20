@@ -123,6 +123,16 @@ public site are unconfirmed, so the mortgage cases ship the SBA twin as the publ
 figures other than those of Q4 2025 are not read at the EBA. The four C's of the positioning are not defined in the
 records. The details of each dossier's own unverified list (10 items in dossier 01, 15 in dossier 03) are kept there.
 
+### Sources the notebooks cite
+
+A notebook cites only sources this document lists (`scripts/check_notebooks.py`). Besides the sources named above and in the research
+basis, the topic 01 notebooks cite:
+
+- Brown, Cai and DasGupta (2001), Interval estimation for a binomial proportion, https://doi.org/10.1214/ss/1009213286;
+- Hanley and McNeil (1982), the meaning and use of the area under a receiver operating characteristic curve,
+  https://doi.org/10.1148/radiology.143.1.7063747;
+- Spiegelhalter (1986), probabilistic prediction in patient management and clinical trials, https://doi.org/10.1002/sim.4780050506.
+
 ## Sizing and contracts
 
 The design rests on two artifacts of contract-first parallel delivery (ADR-0080): the sizing and the contract catalog.
@@ -235,6 +245,10 @@ the ones the dossiers and `docs/frameworks/` record.
 | engine | riskvalidation | v0.08.001 | the validation tests, regulatory calculators and generators (the release tag of the batch 3 engine, 0.8.1 (0.8.0 with the fairness metric rows at null alphas): liquidity, aggregation and stress testing, the regulatory calculators and counterparty credit risk, ML model validation and fair lending) | none: no toolkit implements the ECB tests as specified |
 | models (optional) | torch | 2.14.1 | CPU runtime of the TabPFN extra, outside the default install | none recorded |
 | models (optional) | tabpfn | 9.1.0 | the TabPFN challenger of the small cases, weights under the Prior Labs License | none recorded |
+| notebooks | matplotlib | 3.11.2 | the figures of the notebooks (`notebooks/requirements.txt`) | none recorded |
+| notebooks | nbclient | 0.11.0 | executes the notebooks top to bottom in a fresh kernel (`scripts/run_notebooks.py`, a local release gate) | none recorded |
+| notebooks | nbformat | 5.11.1 | reads and writes the notebook documents of the runner | none recorded |
+| notebooks | ipykernel | 7.4.0 | the kernel the notebooks run in | none recorded |
 | tests | pytest | 9.1.1 | the pipeline, contract, guard and adversarial tests | none recorded |
 | lint | ruff | 0.15.18 | lint of data-pipeline, tests, scripts and app | none recorded (0.17.0 is current and was not adopted) |
 | contracts | jsonschema | 4.26.0 | validates every document against its schema file | none recorded |
@@ -464,6 +478,14 @@ gated in the engine repository.
 6. **Licence lineage**: an artifact derived from a link-only or unusable source is refused.
 
 No oracle here is a model judging another model.
+
+## Beyond the state of the art
+
+None claimed. A component of Contraste that goes further than the practice its research found enters this section with the
+topic unit that demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes
+beyond, and a level 4 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches
+the package's contract and demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8)
+and enter here one by one, so no claim is stated before its demonstration exists.
 
 ## Deploy driver
 
