@@ -5,9 +5,10 @@
 // carries the three legal sentences of the addendum.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { useCard } from '../c03/U6Shared';
+import { C21TestsTable, Marked } from './Marked';
 import { Pending } from '../Pending';
 import { UnavailableCard } from '../c14/C14Common';
-import { LabelledOverTable, U14TestsTable, barMin, f2, f3, int, pc1, sig, testsOf } from '../c20/U14Common';
+import { LabelledOverTable, barMin, f2, f3, int, pc1, sig, testsOf } from '../c20/U14Common';
 import { LegalSentences, NoLegalClaim, legalOf } from './C21Common';
 import { FIELD_TEXT, attributeFor, outputsOf, text, type C21Sel } from './selection';
 
@@ -82,7 +83,7 @@ export function RatesView({ sel }: { sel: C21Sel | null }) {
               {a.excluded_groups.map((e) => `${e.group} (${int(e.n, lang)}; ${pick(e.reason, lang)})`).join('; ')}
             </p>
           ) : null}
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('fair.demographic', 'fair.adverse')} />
+          <C21TestsTable tests={sel.data.variant.tests} only={testsOf('fair.demographic', 'fair.adverse')} />
           <LegalSentences legal={legalOf(sel)} />
         </LabelledOverTable>
       </PlotCard>
@@ -107,8 +108,8 @@ export function FourFifthsView({ sel }: { sel: C21Sel | null }) {
         title={{ en: `${title.en}: ${text(FIELD_TEXT, a.field).en.toLowerCase()}`, es: `${title.es}: ${text(FIELD_TEXT, a.field).es.toLowerCase()}` }}
         {...card}
         note={{
-          en: `Each group's rate over the rate of the highest-rate group (${f.highest_rate_group}). The line at ${formatNumber(f.threshold, 'en', { decimals: 1 })} is the four-fifths rule of ${f.citation}, an employment-selection benchmark and not a credit-law threshold. The flag is decided on the counts in exact arithmetic: ${f.rule}.`,
-          es: `La tasa de cada grupo sobre la del grupo de mayor tasa (${f.highest_rate_group}). La línea en ${formatNumber(f.threshold, 'es', { decimals: 1 })} es la regla de cuatro quintos de ${f.citation}, una referencia de selección laboral y no un umbral de la ley de crédito. La alerta se decide sobre los conteos en aritmética exacta: ${f.rule}.`,
+          en: `Each group's rate over the rate of the highest-rate group (${f.highest_rate_group}). The line at ${formatNumber(f.threshold, 'en', { decimals: 1 })} is the four-fifths rule (its citation is above the chart), an employment-selection benchmark and not a credit-law threshold. The flag is decided on the counts in exact arithmetic: ${f.rule}.`,
+          es: `La tasa de cada grupo sobre la del grupo de mayor tasa (${f.highest_rate_group}). La línea en ${formatNumber(f.threshold, 'es', { decimals: 1 })} es la regla de cuatro quintos (su cita está sobre el gráfico), una referencia de selección laboral y no un umbral de la ley de crédito. La alerta se decide sobre los conteos en aritmética exacta: ${f.rule}.`,
         }}
       >
         <LabelledOverTable
@@ -117,7 +118,7 @@ export function FourFifthsView({ sel }: { sel: C21Sel | null }) {
               <NoLegalClaim legal={legalOf(sel)} />
               <p className="ct-note" data-label="employment-benchmark" data-credit-law={String(f.is_credit_law_threshold)}>
                 <strong>{pick({ en: 'Employment benchmark.', es: 'Referencia de selección laboral.' }, lang)}</strong>{' '}
-                {pick({ en: `${f.citation}; not a credit-law threshold.`, es: `${f.citation}; no es un umbral de la ley de crédito.` }, lang)}
+                <Marked>{pick({ en: `${f.citation}; not a credit-law threshold.`, es: `${f.citation}; no es un umbral de la ley de crédito.` }, lang)}</Marked>
               </p>
             </>
           }
@@ -222,7 +223,7 @@ export function TestsView({ sel }: { sel: C21Sel | null }) {
               ))}
             </tbody>
           </table>
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('fair.two_proportion', 'fair.fisher')} />
+          <C21TestsTable tests={sel.data.variant.tests} only={testsOf('fair.two_proportion', 'fair.fisher')} />
           <LegalSentences legal={legalOf(sel)} />
         </LabelledOverTable>
       </PlotCard>
