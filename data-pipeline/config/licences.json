@@ -15,6 +15,7 @@
     "xgboost": {"licence": "Apache-2.0", "source": "package metadata (License-Expression), xgboost 3.4.1", "verified": "2026-10-05"},
     "catboost": {"licence": "Apache-2.0", "source": "package metadata (License: Apache License, Version 2.0), catboost 1.2.10", "verified": "2026-10-12"},
     "shap": {"licence": "MIT", "source": "package metadata (License: MIT License), shap 0.52.0", "verified": "2026-10-05"},
+    "openpyxl": {"licence": "MIT", "source": "package metadata (License, classifier OSI Approved :: MIT License), openpyxl 3.1.5; reads the EBA/ESRB 2025 macro-financial scenario workbook of case C18", "verified": "2026-10-20"},
     "pypdf": {"licence": "BSD-3-Clause", "source": "package metadata (License-Expression), pypdf 6.19.0; reads the arXiv PDFs of case C05", "verified": "2026-10-05"},
     "riskvalidation": {"licence": "MIT", "source": "package metadata (License-Expression), riskvalidation 0.7.0 (CAOS_RiskValidation v0.07.000)", "verified": "2026-10-14"},
     "arch": {"licence": "NCSA", "source": "package metadata (License-Expression), arch 8.0.0, installed by the engine extra riskvalidation[market] for C11 and C13", "verified": "2026-10-14"},
