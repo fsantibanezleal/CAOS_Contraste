@@ -23,7 +23,7 @@ from typing import Any
 from . import legal
 from .legal import t
 
-LABEL_EN, LABEL_ES = "no legal claim", "sin afirmacion legal"
+LABEL_EN, LABEL_ES = "no legal claim", "sin afirmación legal"
 MODEL_RATES, MODEL_LOGIT, MODEL_OLS = "hmda-selection-rates", "hmda-logistic-decision", "hmda-linear-rate-spread"
 
 

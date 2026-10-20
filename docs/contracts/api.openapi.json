@@ -53970,7 +53970,7 @@
       },
       "c21-models": {
         "title": "C21 models",
-        "description": "Catalog row c21-models 1.0.0: the HMDA fields, the fitted decision models and the conventions.",
+        "description": "Catalog row c21-models 2.0.0: the HMDA fields, the fitted decision models and the conventions.",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-models-envelope"
@@ -53994,7 +53994,7 @@
       },
       "c21-variant-year-pair": {
         "title": "C21 year-pair variant",
-        "description": "Catalog row c21-outputs 1.0.0: one HMDA year pair, fitted on year t and confirmed on t+1 (outputs.kind year-pair). No legal claim.",
+        "description": "Catalog row c21-outputs 2.0.0: one HMDA year pair, fitted on year t and confirmed on t+1 (outputs.kind year-pair). No legal claim.",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-variant-envelope"
@@ -55290,7 +55290,7 @@
             "const": "no legal claim"
           },
           "es": {
-            "const": "sin afirmacion legal"
+            "const": "sin afirmación legal"
           }
         },
         "description": "The required label, on every C21 document."

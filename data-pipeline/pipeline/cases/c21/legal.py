@@ -75,7 +75,7 @@ def legal_block() -> dict[str, Any]:
     def sentence(k: str) -> dict[str, Any]:
         return {"citation": QUOTES[k][0], "quote": QUOTES[k][1], "text": t(QUOTES[k][1])}
 
-    return {"label": {"en": "no legal claim", "es": "sin afirmacion legal"}, "regulation_b": sentence("reg_b"),
+    return {"label": {"en": "no legal claim", "es": "sin afirmación legal"}, "regulation_b": sentence("reg_b"),
             "fair_housing_act": sentence("fha"), "procedures": sentence("procedures"),
             "unconditional_rates_are": "indicators-only", "controlled_disparity_is": "approximation-of-comparative-evidence",
             "is_a_finding_of_violation": False}
