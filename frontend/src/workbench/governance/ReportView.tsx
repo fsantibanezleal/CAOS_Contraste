@@ -9,7 +9,7 @@ import { useId, useState } from 'react';
 import { P } from '../../content/bi';
 import type { Text } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
-import { AsOf, ConventionNote, GovernanceDoc } from './common';
+import { AsOf, ConventionNote, Doc, GovernanceDoc } from './common';
 import { OpinionCard } from './OpinionBlock';
 import { GOVERNANCE_FILES, OPINION_NAME, entryLabel, reportFile, tierName, type GovInventory, type GovReport, type ReportSection } from './model';
 
@@ -94,12 +94,12 @@ function OutcomesTable({ rows, variant }: { rows: OutcomeRow[]; variant: string 
 
 function BlockView({ block }: { block: Block }) {
   const lang = useShellLang();
-  if (block.kind === 'text') return <p>{pick(block.text, lang)}</p>;
+  if (block.kind === 'text') return <p><Doc t={block.text} /></p>;
   if (block.kind === 'list')
     return (
       <ul>
         {block.items.map((it, i) => (
-          <li key={i}>{pick(it, lang)}</li>
+          <li key={i}><Doc t={it} /></li>
         ))}
       </ul>
     );
@@ -150,7 +150,7 @@ export function SectionView({ section }: { section: ReportSection }) {
       {section.status === 'absent' && section.absent_reason && (
         <p data-state="unavailable" className="caos-pending">
           {pick({ en: 'Not available: ', es: 'No disponible: ' }, lang)}
-          {pick(section.absent_reason, lang)}
+          <Doc t={section.absent_reason} />
         </p>
       )}
       {level !== null && (
@@ -168,7 +168,7 @@ export function SectionView({ section }: { section: ReportSection }) {
           {section.missing.map((m, i) => (
             <li key={i}>
               <strong>{pick({ en: 'Not available: ', es: 'No disponible: ' }, lang)}</strong>
-              {pick(m.element, lang)}. {pick(m.reason, lang)}
+              <Doc t={m.element} />. <Doc t={m.reason} />
             </li>
           ))}
         </ul>
@@ -252,6 +252,10 @@ export function ReportsTabLoader() {
       <P
         en="One validation report per inventory entry, in the twelve sections of the template of dossier 06 I.3. A section is filled from named inputs, or absent with its reason, and what the template asks for and Contraste holds nothing behind is listed as not available. Section 11 gives the opinion on the ECB four-level scale as the output of a stated rule: it is not an approval."
         es="Un informe de validación por entrada del inventario, en las doce secciones de la plantilla del dossier 06 I.3. Una sección se completa con insumos nombrados, o queda ausente con su razón, y lo que la plantilla pide y Contraste no tiene detrás se lista como no disponible. La sección 11 da la opinión en la escala de cuatro niveles del BCE como resultado de una regla declarada: no es una aprobación."
+      />
+      <P
+        en="Pick an entry to read its report. Each section names the inputs it was assembled from, in a fold under it: a committed document, an engine function or a stated convention. A section that is filled can still list elements of the template that Contraste holds nothing behind, such as a written soundness assessment or a monitoring pack; those are not invented, they are listed as not available with the reason. The report of an entry the bake has not written is shown as not available yet, with the file that is missing."
+        es="Elija una entrada para leer su informe. Cada sección nombra los insumos con que se armó, en un pliegue bajo ella: un documento comprometido, una función del motor o una convención declarada. Una sección completa puede igualmente listar elementos de la plantilla que Contraste no tiene detrás, como una evaluación escrita de solidez o un paquete de monitoreo; no se inventan, se listan como no disponibles con su razón. El informe de una entrada que la generación no ha escrito se muestra como aún no disponible, con el archivo que falta."
       />
       <ConventionNote />
       <GovernanceDoc<GovInventory> file={GOVERNANCE_FILES.inventory}>{(inv) => <ReportReader inv={inv} />}</GovernanceDoc>

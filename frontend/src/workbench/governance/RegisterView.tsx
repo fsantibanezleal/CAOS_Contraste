@@ -8,7 +8,7 @@ import { BarChart, PlotCard, formatNumber, pick, useShellLang, type BarDatum, ty
 import { useMemo, useState } from 'react';
 import { P } from '../../content/bi';
 import { LIGHT_TEXT } from '../../lib/policy';
-import { AsOf, Basis, ConventionNote, GovernanceDoc, Tag } from './common';
+import { AsOf, Basis, ConventionNote, Doc, GovernanceDoc, Tag } from './common';
 import {
   GOVERNANCE_FILES,
   PRODUCT_STATUS_NAME,
@@ -61,7 +61,7 @@ function AnchorCell({ row }: { row: FindingRow }) {
   return (
     <span data-anchor="unavailable">
       {pick({ en: 'not available: ', es: 'no disponible: ' }, lang)}
-      {row.anchor_reason ? pick(row.anchor_reason, lang) : ''}
+      {row.anchor_reason ? <Doc t={row.anchor_reason} /> : ''}
     </span>
   );
 }
@@ -140,7 +140,7 @@ export function SeverityStatusBars({ rows }: { rows: FindingRow[] }) {
           >
             {statuses.map((s) =>
               d.byStatus[s] ? (
-                <span key={s} data-segment={s} title={`${pick(STATUS_NAME[s], lang)}: ${d.byStatus[s]}`} style={{ flex: d.byStatus[s], background: STATUS_FILL[s], display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#141414', fontSize: 11, fontWeight: 600, minWidth: 0 }}>
+                <span key={s} data-segment={s} title={`${pick(STATUS_NAME[s], lang)}: ${d.byStatus[s]}`} style={{ flex: d.byStatus[s], background: STATUS_FILL[s], display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-bg)', fontSize: 11, fontWeight: 600, minWidth: 0 }}>
                   {formatNumber(d.byStatus[s], lang, { decimals: 0 })}
                 </span>
               ) : null,
@@ -229,7 +229,7 @@ export function AppetiteTable({ appetite }: { appetite: GovAppetite }) {
               <td>{m.register_rows === null ? '-' : formatNumber(m.register_rows, lang, { decimals: 0 })}</td>
               <td className="caos-col-text">
                 <Tag tag={m.threshold.label} />: {thresholdText(m, lang)}
-                {m.reason ? <><br />{pick(m.reason, lang)}</> : null}
+                {m.reason ? <><br /><Doc t={m.reason} /></> : null}
                 <Basis label={pick(m.name, lang)} text={m.threshold.basis} />
               </td>
             </tr>

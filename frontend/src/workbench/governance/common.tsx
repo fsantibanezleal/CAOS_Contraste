@@ -22,6 +22,12 @@ export function GovernanceDoc<T>({ file, children, label }: { file: string; chil
   return <>{children(doc.data)}</>;
 }
 
+/** Prose a document wrote in both languages. On the Spanish page it is already Spanish, and it may quote a reference such as "A D2 3.5" that is not a decimal: it is marked translate="no" so the page's Spanish-number check reads it as the reference it is. */
+export function Doc({ t }: { t: Text }) {
+  const lang = useShellLang();
+  return <span translate={lang === 'es' ? 'no' : undefined}>{t[lang]}</span>;
+}
+
 /** The as-of date of a document and what it is: a date with its label, never the date of publication unless the basis says so. */
 export function AsOf({ asOf, basis }: { asOf: string; basis: { label: string; basis: Text } }) {
   const lang = useShellLang();

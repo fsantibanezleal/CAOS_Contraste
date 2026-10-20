@@ -5,7 +5,7 @@
 // open findings, an evidence summary for a validator, never an approval or a certification.
 import { Callout, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import type { ReactNode } from 'react';
-import { GovernanceDoc } from './common';
+import { Doc, GovernanceDoc } from './common';
 import { unavailableBlock } from './states';
 import {
   ECB_F_OF,
@@ -33,7 +33,7 @@ export function OpinionCard({ opinion }: { opinion: Opinion }) {
       <Callout variant={tone} title={`${pick({ en: 'Opinion level ', es: 'Nivel de opinión ' }, lang)}${opinion.level}: ${pick(OPINION_NAME[opinion.level] ?? opinion.level_label, lang)}`}>
         <p data-opinion-rule>
           {pick({ en: 'Rule ', es: 'Regla ' }, lang)}
-          <span translate="no">{opinion.rule.id}</span>: {pick(opinion.rule.text, lang)}
+          <span translate="no">{opinion.rule.id}</span>: <Doc t={opinion.rule.text} />
         </p>
         <p data-opinion-findings>
           {opinion.open_findings.length === 0
@@ -43,10 +43,10 @@ export function OpinionCard({ opinion }: { opinion: Opinion }) {
         </p>
         <p data-recommendation={opinion.recommendation.outcome}>
           <strong>{pick({ en: 'Recommendation: ', es: 'Recomendación: ' }, lang)}</strong>
-          {pick(RECOMMENDATION_NAME[opinion.recommendation.outcome], lang)}. {pick(opinion.recommendation.text, lang)}
+          {pick(RECOMMENDATION_NAME[opinion.recommendation.outcome], lang)}. <Doc t={opinion.recommendation.text} />
         </p>
         <p data-rule-label>
-          <em>{pick(opinion.label, lang)}</em>
+          <em><Doc t={opinion.label} /></em>
         </p>
       </Callout>
     </div>

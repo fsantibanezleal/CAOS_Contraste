@@ -6,7 +6,7 @@
 import { PlotCard, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import { useMemo, useState } from 'react';
 import { P } from '../../content/bi';
-import { AsOf, Basis, ConventionNote, GovernanceDoc, Tag } from './common';
+import { AsOf, Basis, ConventionNote, Doc, GovernanceDoc, Tag } from './common';
 import { DependencyMap, EDGE_COLOR, SEVERITY_RING, tierColor } from './DependencyMap';
 import { GOVERNANCE_FILES, adoptedCell, severityText, tierName, worstOpen, type GovInventory, type InvEntry } from './model';
 import { SensitivityTable, TierMatrix, type CellPick } from './TierMatrix';
@@ -187,7 +187,7 @@ function Excluded({ inv }: { inv: GovInventory }) {
           {inv.excluded.map((x) => (
             <tr key={`${x.case_id}/${x.variant_id ?? ''}`}>
               <td>{x.variant_id ? `${x.case_id}/${x.variant_id}` : x.case_id}</td>
-              <td className="caos-col-text">{pick(x.reason, lang)}</td>
+              <td className="caos-col-text"><Doc t={x.reason} /></td>
             </tr>
           ))}
         </tbody>
@@ -213,9 +213,9 @@ function InventoryOwn({ inv }: { inv: GovInventory }) {
             <tr key={f.id}>
               <td className="caos-col-text">{severityText(f.severity, f.ecb_f, lang)}</td>
               <td className="caos-col-text">
-                <strong>{pick(f.title, lang)}</strong>
+                <strong><Doc t={f.title} /></strong>
                 <br />
-                {pick(f.description, lang)}
+                <Doc t={f.description} />
               </td>
             </tr>
           ))}
@@ -263,6 +263,10 @@ export function InventoryTab({ inv }: { inv: GovInventory }) {
       <P
         en="The inventory records the models Contraste validates, one entry per fit, each with its components (champion, challenger, benchmark rung or reference), its tier and what is open on it. It records Contraste's own models: it approves nothing and certifies nothing, and a tier says how much a model matters for validation effort, not whether it may be used."
         es="El inventario registra los modelos que Contraste valida, una entrada por ajuste, cada una con sus componentes (campeón, retador, peldaño de referencia o referencia), su nivel y lo que hay abierto en ella. Registra los modelos de Contraste mismo: no aprueba nada ni certifica nada, y un nivel dice cuánto importa un modelo para el esfuerzo de validación, no si puede usarse."
+      />
+      <P
+        en="To read the page: the map shows what each model reads from another and how much of the inventory rests on one entry; the matrix shows how many entries sit at each combination of materiality and complexity, and the table beneath the sensitivity says how much that depends on the rubric rather than on the models. A cell of the matrix picks its entries in the table. What is open on each entry, its next review and its record completeness come from the inventory document, and the attributes the product holds nothing behind are listed as missing, each with the reason, never filled in."
+        es="Para leer la página: el mapa muestra qué lee cada modelo de otro y cuánto del inventario descansa en una entrada; la matriz muestra cuántas entradas hay en cada combinación de materialidad y complejidad, y la tabla de sensibilidad dice cuánto de eso depende de la rúbrica y no de los modelos. Una celda de la matriz elige sus entradas en la tabla. Lo que está abierto en cada entrada, su próxima revisión y la completitud de su registro vienen del documento del inventario, y los atributos sobre los que el producto no tiene nada se listan como faltantes, cada uno con su razón, nunca rellenados."
       />
       <Completeness inv={inv} />
       <ConventionNote />
