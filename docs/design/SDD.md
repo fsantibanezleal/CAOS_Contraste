@@ -123,6 +123,16 @@ public site are unconfirmed, so the mortgage cases ship the SBA twin as the publ
 figures other than those of Q4 2025 are not read at the EBA. The four C's of the positioning are not defined in the
 records. The details of each dossier's own unverified list (10 items in dossier 01, 15 in dossier 03) are kept there.
 
+### Sources the notebooks cite
+
+A notebook cites only sources this document lists (`scripts/check_notebooks.py`). Besides the sources named above and in the research
+basis, the topic 01 notebooks cite:
+
+- Brown, Cai and DasGupta (2001), Interval estimation for a binomial proportion, https://doi.org/10.1214/ss/1009213286;
+- Hanley and McNeil (1982), the meaning and use of the area under a receiver operating characteristic curve,
+  https://doi.org/10.1148/radiology.143.1.7063747;
+- Spiegelhalter (1986), probabilistic prediction in patient management and clinical trials, https://doi.org/10.1002/sim.4780050506.
+
 ## Sizing and contracts
 
 The design rests on two artifacts of contract-first parallel delivery (ADR-0080): the sizing and the contract catalog.
@@ -468,83 +478,11 @@ No oracle here is a model judging another model.
 
 ## Beyond the state of the art
 
-Eight components of Contraste go further than the practice its research found. Each claim has an identifier, the committed
-evidence a reader can open, and the practice it goes beyond; it is stated only as far as its evidence goes. Every claim is
-demonstrated by a level 4 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`) that comes with
-its topic's unit; topic 01 demonstrates none. Further claims enter this section once the cases they rest on are baked.
-
-- **BS-1** The measured size and power of every validation test on planted defects.
-  What it adds: for each test with a p-value, its rejection rate under its null and against defects of known severity, every rate
-  with its Monte Carlo standard error, on generators with a known truth.
-  Evidence: `data/derived/C22/null.json`, `data/derived/C22/miscalibration.json`, `data/derived/C22/clustering.json`,
-  `data/derived/C22/drift.json`, `data/derived/C22/discrimination-decay.json`, `data/derived/C22/leakage.json`,
-  `data/derived/C22/broken-monotonicity.json`, `data/derived/C22/concentration.json`, `docs/design/features/c22-validator/requirements.md`,
-  `tests/test_c22.py`.
-  Beyond: the ECB 2019 instructions define the tests and set no thresholds or error rates, and the PSI bands are used without a
-  statement of their type I and type II error (Yurdakul and Naranjo 2020, https://doi.org/10.21314/JRMV.2020.227).
-- **BS-2** The reconciliations against reference engines that exist today.
-  What it adds: the engine's tests and estimators are held to independent implementations and to the printed digits of the papers,
-  and the gap is reported. The reconciliations that exist are the ones claimed: the printed tables and papers recomputed beside their
-  prints, and the SciPy distributions behind the test statistics. Not claimed: the Hull-White swap against ORE, which is not run,
-  and the equality with the transition-matrix cohort estimator, which has no engine test (backlog item BL-083).
-  Evidence: `tests/test_c04_parity.py`, `tests/test_c04_published.py`, `data/derived/C04/published.json`,
-  `data/derived/C05/ldp-published.json`, `docs/frameworks/01_riskvalidation/riskvalidation.md`.
-  Beyond: toolkits ship the estimators and leave the reconciliation to the user; the persisted research (dossier 05) lists ORE and
-  QuantLib as reference engines whose numbers may be claimed only beyond the reconciliations actually run.
-- **BS-3** The leakage-safe protocol per case, with gates.
-  What it adds: a split declared per case (a locked stratified holdout, out-of-time cohorts, calibration before the test window)
-  and enforced by tests: transforms fitted on the training slice only, a calibration slice disjoint from the test slice, and every
-  fitted parameter unchanged when a value outside the training information set is perturbed. It is enforcement of known rules, not
-  a new method.
-  Evidence: `docs/design/features/c01-retail-pd/requirements.md`, `tests/test_leakage.py`, `data/derived/C22/leakage.json`,
-  `data/derived/C03/fy2015-17.json`, `data/derived/C03/fy2018-20.json`.
-  Beyond: the research dossier 04 states the rules and names single-split evaluation as the common counter-example.
-- **BS-4** The default definition as part of the PD, informative withdrawals and thin grades.
-  What it adds: the same agency's long-run PD of the CCC to C grade is 26.64% under the CEREP default page and 8.61% under the
-  transition page, and the IRB risk weight of the cohort mix moves from 58.0% to 47.5% with the definition; informative
-  withdrawals and thin grades are measured on rating paths of known truth.
-  Evidence: `data/derived/C04/sp.json`, `data/derived/C04/withdrawals.json`, `data/derived/C04/thin.json`,
-  `docs/design/features/c04-transitions/requirements.md`.
-  Beyond: the ESMA CEREP publication (https://registers.esma.europa.eu/cerep-publication/) states no deterministic definition of a
-  default event, and cohort and duration estimators take the agencies' tables as given.
-- **BS-5** Provisions reconciliation identities as gates, overlays apart, three regimes on one portfolio.
-  What it adds: the IFRS 7 roll-forward closes as a gate, overlays are separate lines, the non-linearity of the weighted ECL is
-  reproduced, and one synthetic bank is provisioned under CMF B-1, IFRS 9 and Bank of Spain Annex 9 with a gap bridge.
-  Evidence: `data/derived/C06/rd-2008-12.json`, `data/derived/C07/base.json`, `docs/design/features/c06/requirements.md`,
-  `docs/design/features/c07/requirements.md`.
-  Beyond: IFRS 9 does not prescribe detailed methods; the research (dossiers 02 and 03) found no public comparison of the three
-  regimes on one portfolio. The C07 bank is synthetic and labelled so.
-- **BS-6** Engines and test catalogues no open toolkit provides.
-  What it adds: the ECB 2019 IRB validation-reporting tests as specified, a copula and CreditRisk+ portfolio engine and a bank IRRBB
-  engine, with golden values reproduced from the primary sources. It is an absence claim: on 2026-10-04 a search of GitHub and PyPI
-  found no toolkit that implements these tests as specified.
-  Evidence: `docs/frameworks/01_riskvalidation/riskvalidation.md`, `data/derived/C01/holdout.json`, `data/derived/C10/grid-22.json`,
-  `data/derived/C14/vd-2022-q2.json`.
-  Beyond: the research dossiers 04, 05 and 06 record no maintained permissive implementation of these families.
-- **BS-7** The UF as its own currency in IRRBB.
-  What it adds: the reajustabilidad risk of CMF RAN 21-13 Annex 1 as a separate currency with its own shocks, floors, the
-  indexation charge (2.5% of the absolute net UF position) and the 50% offset of the CLP delta against the CLF delta.
-  Evidence: `data/derived/C15/long-uf.json`, `data/derived/C15/floors-active.json`, `data/derived/C15/offset-on-off.json`,
-  `docs/design/features/c15/requirements.md`.
-  Beyond: the BCBS standard has no UF-like unit. The claim is regional: no public implementation of Annex 1 was found, which is
-  UNVERIFIED beyond the dossier's search.
-- **BS-8** A test that flags a behavioural assumption changed at a limit breach.
-  What it adds: `irrbb.behavioural_change_at_breach` turns the Federal Reserve's finding on Silicon Valley Bank into a test; on the
-  committed 2022-Q2 balance sheet it is red with "1 change(s) coincide with a breach".
-  Evidence: `data/derived/C14/vd-2022-q2.json`, `docs/design/features/c14/requirements.md`.
-  Beyond: the supervisor's review states the practice as a finding and the research dossier 05 proposes the test; it cites no tool
-  that implements it. The bank of C14 is real in aggregate and synthetic in behaviour: the red row shows the test works on those
-  parameters, not that the bank did it in these numbers.
-
-### Sources the notebooks cite
-
-A notebook cites only sources this document lists (`scripts/check_notebooks.py`). Besides the sources named above and in the research
-basis, the topic 01 notebooks cite:
-
-- Brown, Cai and DasGupta (2001), Interval estimation for a binomial proportion, https://doi.org/10.1214/ss/1009213286;
-- Hanley and McNeil (1982), the meaning and use of the area under a receiver operating characteristic curve,
-  https://doi.org/10.1148/radiology.143.1.7063747;
-- Spiegelhalter (1986), probabilistic prediction in patient management and clinical trials, https://doi.org/10.1002/sim.4780050506.
+None claimed. A component of Contraste that goes further than the practice its research found enters this section with the
+topic unit that demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes
+beyond, and a level 4 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches
+the package's contract and demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8)
+and enter here one by one, so no claim is stated before its demonstration exists.
 
 ## Deploy driver
 
