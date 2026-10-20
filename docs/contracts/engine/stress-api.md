@@ -1,4 +1,4 @@
-# Engine stress API contract: `engine-stress-api` 1.0.0
+# Engine stress API contract: `engine-stress-api` 2.0.0
 
 Owner: U13-S (unit sizing `plans/contraste/units/U13-sizing.md`, CAOS_MANAGE). Implemented by U13-E2 in `riskvalidation.stress` and
 `riskvalidation.validation.stress` (repository CAOS_RiskValidation, released with the one engine tag of batch 3, R1 of the sizing); called
@@ -17,6 +17,8 @@ supervisory replication test, and BL-081 revisits it. The engine computes; it st
 reverse stress and the P2G proxy are Contraste's, not regulatory text. Every constant and golden value is transcribed from the source on its
 line or computed from a formula stated on its line and labelled as computed; an item a source marks UNVERIFIED is marked UNVERIFIED here.
 
+Version history: 1.0.0, the first contract; 2.0.0 after the U13-E2 review and fix round (U13 decisions Z6 to Z9): `InternalTarget` carries `p2r` and the Annex 3 rows 7, 7.2 and 8 read it; `annex3_summary` refuses an RWA that differs from the plan's; the `not_evaluated` rows carry `model_id` and `segment`; the goldens of `satellite_backcast` and `bottom_up_vs_top_down` corrected to agree with their own light rules (a changed golden is breaking by this contract's rule); AT1 and T2 constant in every case of `capital_plan`.
+
 ## Conventions (all functions)
 
 - Arrays are `numpy.ndarray` of `float64`. Shapes: `T` quarters of history, `H` projected quarters (12 in C18), `P` regressors, `K` factors,
@@ -28,7 +30,7 @@ line or computed from a formula stated on its line and labelled as computed; an 
 - Randomness: a function that draws or starts a search takes an integer `seed` and uses `numpy.random.Generator(numpy.random.PCG64(seed))`.
   No function reads global state, the clock or the environment; inputs are never mutated.
 - Dataclasses are frozen. A function that cannot compute a value raises `ValueError` with the reason; a validation function returns a
-  `not_evaluated` row with its reason in `notes` and `statistic`, `p_value` and `metric` all null. Nothing returns a placeholder number.
+  `not_evaluated` row with its reason in `notes` and `statistic`, `p_value` and `metric` all null, carrying `model_id` and `segment` as the evaluated rows do (2.0.0). Nothing returns a placeholder number.
 - A validation function returns one `TestResult` of `riskvalidation` (`core/result.py`), serialised by `TestResult.to_dict()` into a row that
   validates against `common/test-result` (`docs/contracts/schemas/common/test-result.schema.json`); the parameters of a light rule that are not
   alphas travel in `extras["thresholds"]` beside `alpha_amber` and `alpha_red` (null here). The thresholds are policy parameters proposed by
@@ -239,10 +241,11 @@ class InternalTarget:
     c_ccyb: float
     c_d: float
     oi: float
+    p2r: float = 0.0   # the art. 66 quinquies requirement (2.0.0)
 ```
 
 - Units: shares of RWA (decimals).
-- Invariants: `oi = min_pe + c_dsib + c_p2 + c_ccob + c_ccyb + c_d`; maps onto the document block `internal_capital_target`.
+- Invariants: `oi = min_pe + c_dsib + c_p2 + c_ccob + c_ccyb + c_d`; maps onto the document block `internal_capital_target`. `p2r` is the CMF's art. 66 quinquies requirement, the field the 4 percent cap binds (decision W3), stored by `internal_capital_target`; the Annex 3 rows 7, 7.2 and 8 read it, never `c_p2` (2.0.0, U13 decision Z7).
 
 ### `riskvalidation.stress.capital.internal_capital_target`
 
@@ -291,7 +294,7 @@ def capital_plan(rwa: float, cet1_0: float, at1: float, t2: float, base_cet1: Se
                  mitigation_effects: Sequence[float], oi: float, legal_minimum: float) -> dict[str, tuple[PlanYear, ...]]: ...
 ```
 
-- Units: money; `base_cet1` (Y,) the base-case CET1 at each year end (the baseline scenario's `cet1_0 + cumulated (PPNR - losses)`, computed by the caller), `stress_losses` (Y,), `mitigation_effects` (Y,) the effect of the mitigation actions on CET1 of each year, not cumulated; `oi` and `legal_minimum` shares of RWA. Returns the keys `"base"` (requirement `oi`), `"stress-without-mitigation"` (CET1 from `cet1_path_loss_only`, requirement `legal_minimum`) and `"stress-with-mitigation"` (the loss-only path plus the cumulated mitigation effects, requirement `legal_minimum`). AT1 and T2 stay at their jump-off values in the first two cases: no capital measure after the reference date (para 33).
+- Units: money; `base_cet1` (Y,) the base-case CET1 at each year end (the baseline scenario's `cet1_0 + cumulated (PPNR - losses)`, computed by the caller), `stress_losses` (Y,), `mitigation_effects` (Y,) the effect of the mitigation actions on CET1 of each year, not cumulated; `oi` and `legal_minimum` shares of RWA. Returns the keys `"base"` (requirement `oi`), `"stress-without-mitigation"` (CET1 from `cet1_path_loss_only`, requirement `legal_minimum`) and `"stress-with-mitigation"` (the loss-only path plus the cumulated mitigation effects, requirement `legal_minimum`). AT1 and T2 stay at their jump-off values in every case: no capital measure after the reference date (para 33).
 - Golden (hand-computed): `rwa = 100`, `cet1_0 = 11`, `at1 = 2`, `t2 = 3`, `stress_losses = (1, 2, 1.5)`, `mitigation_effects = (0, 1, 1)`, `legal_minimum = 0.09625`: stress without mitigation CET1 `(10, 8, 6.5)`, PE `(15, 13, 11.5)`, `pe_pct = (0.15, 0.13, 0.115)`, headroom `(0.05375, 0.03375, 0.01875)`, deficit `(0, 0, 0)`; with mitigation CET1 `(10, 9, 8.5)`.
 - Invariants: the mitigated PE is not below the unmitigated PE in any year; `ValueError` for series of unequal length.
 
@@ -314,7 +317,7 @@ def annex3_summary(capital: Mapping[str, float], target: InternalTarget, rwa_by_
 
 - Units: money in CLP millions (the form states thousand pesos; the document states millions, `money_unit`); shares of RWA. Returns the 34 rows of the CMF summary with the labels as printed (F7: Circular 2.365 of 2025-07-08, Resolution 6801; URL https://www.cmfchile.cl/portal/principal/623/articles-29808_doc_pdf.pdf, Annex 3 from pdf p.29): rows `1`, `1.1`, `1.2`, `1.3`, `2`, `2.T2`, `2.AT1`, `2.CET1`, `3`, `4`, `4.1`, `4.1.1`, `4.1.2`, `4.2`, `4.3`, `4.4`, `4.4.1`, `4.4.2`, `4.4.3`, `4.5`, `4.6`, `4.7`, `4.8`, `5`, `6`, `7`, `7.1`, `7.2`, `8`, `9`, `10.1`, `10.2`, `11`, `12`, each with the four columns A (percent of RWA), B (amount), C (legal requirement), D (internal measurement) as cells of status `value`, `RI` (an immaterial risk), `not-to-be-filled` (market and operational risk under the standardised method) or `not-applicable`. The row ids `2.T2`, `2.AT1`, `2.CET1` are this contract's ids for the three unnumbered components of row 2.
 - Golden (computed): capital start CET1 `0.11`, AT1 `0.0125`, T2 `0.025` of RWA and OI `0.145`: row 1.1 is `0.1475`, row 12 is `0.0025`; row 7 is `0.08 + row 7.1 + row 7.2` (`0.09625` for `0.015` and `0.00125`); row 9 is `c_CCoB + c_CCyB`; row 10.1 is the largest CET1/RWA fall of the stress without mitigation and row 10.2 is `not-applicable` when `mitigation_applies` is false (the form: "N/A if the stress leads to no mitigation actions").
-- Invariants: the row ids and labels equal the transcribed table (a test); row 3 column B is the RWA; row 5 is `oi`; row 12 is row 1.1 less row 5; row 8 is row 6 less row 7.2.
+- Invariants: the row ids and labels equal the transcribed table (a test); row 3 column B is the RWA; row 5 is `oi`; row 12 is row 1.1 less row 5; row 8 is row 6 less row 7.2; row 7.2 is `target.p2r` (2.0.0); an RWA that differs from the capital plan's beyond 1e-9 relative raises `ValueError` naming both values (2.0.0, U13 decision Z9).
 
 ### `riskvalidation.stress.capital.eba_static_balance_sheet`
 
@@ -473,7 +476,7 @@ def satellite_backcast(predicted: np.ndarray, realised: np.ndarray, quarters: Se
 - Units: rates as decimals, `quarters` ISO quarter ends, `fit_end` the last quarter of the fit window; `test_id = "stress.satellite_backcast"`. `h0`: satellites estimated before the episode back-cast it: the predicted loss-rate peak is within the thresholds of the realised peak, in size and timing (05 l.422).
 - Invariants: `statistic` is the RMSE; `metric` is the peak timing error in quarters (predicted peak quarter less realised peak quarter); the size ratio `peak_predicted / peak_realised` is in `extras["peak_ratio"]` with `thresholds = {"peak_amber": peak_amber, "peak_red": peak_red, "timing_quarters": timing_quarters}`; the test returns `error` (light) with its reason when `fit_end` is not before the first quarter of the episode (leakage).
 - Light: green when `|1 - peak_ratio| <= peak_amber` and `|timing| <= timing_quarters`; amber when `|1 - peak_ratio| <= peak_red`; red otherwise.
-- Golden: predicted peak `1.0`, realised peak `1.2` (ratio `0.8333`, deviation `0.1667`) one quarter apart: green; predicted peak `0.5` against `1.2`: red.
+- Golden: predicted peak `1.0`, realised peak `1.2` (ratio `0.8333`, deviation `0.1667`) one quarter apart: green; predicted peak `0.4` against `1.2` (deviation `0.6667`): red (2.0.0: the 1.0.0 golden `0.5` gives `0.5833`, inside `peak_red` 0.60, which the light rule makes amber; U13 decision Z8).
 
 ### `riskvalidation.validation.stress.sensitivity_monotonicity`
 
@@ -509,7 +512,7 @@ def bottom_up_vs_top_down(bottom_up: float, top_down: float, amber: float = 0.25
 - Units: money (the stressed loss of the bottom-up result and of a top-down challenger); `test_id = "stress.bottom_up_vs_top_down"`. `h0`: the bottom-up result agrees with a top-down challenger within the thresholds (05 l.422).
 - Invariants: `statistic = bottom_up / top_down - 1`; `metric` equals `statistic`; `top_down <= 0` gives `not_evaluated`; `thresholds = {"amber": amber, "red": red}`.
 - Light: green when `|statistic| <= amber`; amber when `<= red`; red above.
-- Golden: `bottom_up = 120`, `top_down = 100`: `statistic = 0.2`, green; `160`: amber; `200`: red.
+- Golden: `bottom_up = 120`, `top_down = 100`: `statistic = 0.2`, green; `140`: amber (`0.4`); `200`: red (2.0.0: the 1.0.0 golden `160` gives `0.6`, above the red gate 0.50; U13 decision Z8).
 
 ### `riskvalidation.validation.stress.scenario_severity`
 
