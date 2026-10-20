@@ -197,7 +197,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
           unit={{ en: 'thousand USD', es: 'miles de USD' }}
           hint={{ en: 'The net independent collateral amount of the live SA-CCR: the replacement cost is the value less this amount, and the multiplier falls as it grows.', es: 'El monto neto de colateral independiente del SA-CCR en vivo: el costo de reemplazo es el valor menos este monto, y el multiplicador baja cuando crece.' }}
           format={{ decimals: 0 }}
-          onChange={(v) => setCollateral(v * 1000)}
+          onChange={(v) => setCollateral(v === Math.round(committedCollateral(o) / 1000) ? null : v * 1000)}
         />
         <SaCcrReadout sel={sel} />
       </>

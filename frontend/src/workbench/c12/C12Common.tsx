@@ -126,7 +126,7 @@ export function C12VariantsTable({ peers, onPick, current }: { peers: Peers; onP
       }}
     >
       <ChartOverTable
-        chartMin="13rem"
+        chartMin="17rem"
         chart={
           <BarChart
             title={{ en: 'EEPE by variant', es: 'EEPE por variante' }}
@@ -476,7 +476,6 @@ export function HorizonReadout({ sel }: { sel: C12Sel | null }) {
       items={[
         { label: { en: 'W²', es: 'W²' }, value: h?.w2 ?? null, unitless: true, format: { digits: 4 }, hint: { en: 'The Anderson-Darling statistic of the PITs: large when they are not uniform.', es: 'El estadístico de Anderson-Darling de los PIT: grande cuando no son uniformes.' } },
         { label: { en: '5% value', es: 'Valor al 5%' }, value: h?.critical_simulated.p05 ?? null, unitless: true, format: { digits: 4 }, hint: { en: 'The 95th percentile of W² when the whole back-test is simulated under the model itself.', es: 'El percentil 95 de W² cuando todo el backtest se simula bajo el propio modelo.' } },
-        { label: { en: 'Back-tests', es: 'Backtests' }, value: h?.n ?? null, unit: { en: 'dates', es: 'fechas' }, format: { decimals: 0 }, hint: { en: 'The number of initialisation dates.', es: 'El número de fechas de inicialización.' } },
         { label: { en: 'Decision', es: 'Decisión' }, text: h ? (h.reject_at_5pct ? { en: 'rejected at 5%', es: 'rechazado al 5%' } : { en: 'not rejected', es: 'no rechazado' }) : NA, hint: { en: 'Against the simulated critical value, not the independent-sample table.', es: 'Contra el valor crítico simulado, no la tabla de muestras independientes.' } },
       ]}
     />
