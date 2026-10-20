@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<NettingSetDefinitions>
+  <NettingSet>
+    <NettingSetId>NS-1</NettingSetId>
+    <ActiveCSAFlag>true</ActiveCSAFlag>
+    <CSADetails>
+      <Bilateral>Bilateral</Bilateral>
+      <CSACurrency>USD</CSACurrency>
+      <Index>USD-C12IBOR-6M</Index>
+      <ThresholdPay>0</ThresholdPay>
+      <ThresholdReceive>0</ThresholdReceive>
+      <MinimumTransferAmountPay>10000</MinimumTransferAmountPay>
+      <MinimumTransferAmountReceive>10000</MinimumTransferAmountReceive>
+      <IndependentAmount>
+        <IndependentAmountHeld>0</IndependentAmountHeld>
+        <IndependentAmountType>FIXED</IndependentAmountType>
+      </IndependentAmount>
+      <MarginingFrequency>
+        <CallFrequency>1D</CallFrequency>
+        <PostFrequency>1D</PostFrequency>
+      </MarginingFrequency>
+      <MarginPeriodOfRisk>4W</MarginPeriodOfRisk>
+      <CollateralCompoundingSpreadReceive>0.0</CollateralCompoundingSpreadReceive>
+      <CollateralCompoundingSpreadPay>0.0</CollateralCompoundingSpreadPay>
+      <EligibleCollaterals>
+        <Currencies>
+          <Currency>USD</Currency>
+        </Currencies>
+      </EligibleCollaterals>
+    </CSADetails>
+  </NettingSet>
+</NettingSetDefinitions>

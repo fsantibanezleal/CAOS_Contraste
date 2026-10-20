@@ -370,12 +370,13 @@ def _exposure_and_collateral(o: dict, msgs: list[str], grid: list[float]) -> Non
         bd = col["csa"]["mpor_business_days"] if col else None
         if bd is not None and im["mpor_calendar_days"] != round(1.4 * bd):
             msgs.append(f"initial margin: the MPoR is stated in calendar days ({round(1.4 * bd)} for {bd} business days)")
-        scale = math.sqrt(im["horizon_calendar_days"] / im["mpor_calendar_days"])
         if any(e > b + 1e-9 for e, b in zip(ex["ee"]["values"], im["ee_vm_only"]["values"])):
             msgs.append("initial margin: the EE with IM is above the VM-only EE")
         for k, (e, b, d) in enumerate(zip(ex["ee"]["values"], im["ee_vm_only"]["values"], im["dim"]["values"])):
-            if not close(e, max(b - d, 0.0) if scale == 1.0 else max(b - d, 0.0), abs_=1e-3):
-                msgs.append(f"initial margin: the EE is not max(VM-only EE - DIM, 0) at point {k}")
+            # DIM reduces the exposure path by path (U9 decision B2, ORE): E[max(X - DIM, 0)] is at least max(E[X] - E[DIM], 0)
+            # (Jensen) and at most the VM-only EE, so the profile-level identity of earlier versions is an inequality
+            if e < max(b - d, 0.0) - 1e-3:
+                msgs.append(f"initial margin: the EE is below max(VM-only EE - DIM, 0) at point {k}")
                 break
 
 
