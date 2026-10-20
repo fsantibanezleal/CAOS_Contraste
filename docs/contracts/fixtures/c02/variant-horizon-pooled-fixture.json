@@ -345,41 +345,10 @@
       },
       "cells": []
     },
-    "term_structure": {
-      "label": "exploratory",
-      "reason": {
-        "en": "Five file event rates read as a cumulative PD; the files may not draw one population",
-        "es": "Five file event rates read as a cumulative PD; the files may not draw one population"
-      },
-      "points": [
-        {
-          "years": 1,
-          "cumulative_pd": 0.0386,
-          "hazard": 0.0386
-        },
-        {
-          "years": 2,
-          "cumulative_pd": 0.0393,
-          "hazard": 0.00073
-        },
-        {
-          "years": 3,
-          "cumulative_pd": 0.0471,
-          "hazard": 0.00812
-        },
-        {
-          "years": 4,
-          "cumulative_pd": 0.0526,
-          "hazard": 0.00577
-        },
-        {
-          "years": 5,
-          "cumulative_pd": 0.0694,
-          "hazard": 0.01773
-        }
-      ],
-      "cumulative_nondecreasing": true,
-      "source": "engine-provisions-api from_cumulative and lifetime_pd_backtest (04 E.2 l.479-497)"
+    "term_structure": null,
+    "term_structure_reason": {
+      "en": "The five files are independent samples of different forecast years, not one cohort followed through time; their rates fall with the horizon, so no cumulative PD is read from them (fixture)",
+      "es": "The five files are independent samples of different forecast years, not one cohort followed through time; their rates fall with the horizon, so no cumulative PD is read from them (fixture)"
     },
     "impact_detail": {
       "label": "exploratory",

@@ -349,6 +349,7 @@
       "cumulative_nondecreasing": true,
       "source": "engine-provisions-api from_cumulative and lifetime_pd_backtest (04 E.2 l.479-497)"
     },
+    "term_structure_reason": null,
     "impact_detail": {
       "label": "exploratory",
       "reason": {

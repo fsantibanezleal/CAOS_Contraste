@@ -90,14 +90,18 @@ def check_c02(doc: dict) -> Report:
         out.need(ch["auc_diff_ci"]["lo"] <= ch["auc_diff"] <= ch["auc_diff_ci"]["hi"], "challenger: the AUC difference is outside its interval")
         out.need(ch["brier_diff_ci"]["lo"] <= ch["brier_diff"] <= ch["brier_diff_ci"]["hi"], "challenger: the Brier difference is outside its interval")
     ts = o["term_structure"]
-    pts = ts["points"]
-    out.need([p["years"] for p in pts] == [1, 2, 3, 4, 5], "term structure: the points are not years 1 to 5 in order")
-    cum = [p["cumulative_pd"] for p in pts]
-    out.need(ts["cumulative_nondecreasing"] == all(b >= a for a, b in zip(cum, cum[1:])), "term structure: cumulative_nondecreasing disagrees with the points")
-    survive = 1.0
-    for p in pts:
-        survive *= 1 - p["hazard"]
-        out.need(abs((1 - survive) - p["cumulative_pd"]) < 1e-3, f"term structure: year {p['years']} cumulative is not 1 - product of (1 - hazard)")
+    reason = o.get("term_structure_reason")
+    # U14 G22 (c02-outputs 1.1.0): a null block carries its reason, a block carries a null reason; the curve checks run only on a block
+    out.need((ts is None) == (reason is not None), "term_structure_reason is a reason where term_structure is null and null (or absent) where the block is present")
+    if ts is not None:
+        pts = ts["points"]
+        out.need([p["years"] for p in pts] == [1, 2, 3, 4, 5], "term structure: the points are not years 1 to 5 in order")
+        cum = [p["cumulative_pd"] for p in pts]
+        out.need(ts["cumulative_nondecreasing"] == all(b >= a for a, b in zip(cum, cum[1:])), "term structure: cumulative_nondecreasing disagrees with the points")
+        survive = 1.0
+        for p in pts:
+            survive *= 1 - p["hazard"]
+            out.need(abs((1 - survive) - p["cumulative_pd"]) < 1e-3, f"term structure: year {p['years']} cumulative is not 1 - product of (1 - hazard)")
     check_params(doc, out)
     return out
 
