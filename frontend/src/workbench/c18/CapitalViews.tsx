@@ -8,7 +8,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { NOT_SCENARIO, PCT, UnavailableCard, cell } from './C18Common';
+import { Defs, NOT_SCENARIO, PCT, UnavailableCard, cell } from './C18Common';
 import { HWaterfall, stackRows } from './Waterfall';
 import {
   ANNEX3_EN, CELL_TEXT, LABEL_TEXT, MONEY_UNIT, P2G_LABEL, PLAN_LONG, PLAN_ORDER, PLAN_TEXT, REQUIREMENT_TEXT, axisOf, fitOf, outputsOf, planOf, text,
@@ -369,7 +369,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
             <p className="ct-note" data-na="true">{`${formatNumber(null, lang)}: ${pick({ en: 'the models artifact carries no legal stack', es: 'el artefacto de modelos no trae el capital apilado legal' }, lang)}`}</p>
           )}
           <h3 className="ct-sub">{pick({ en: 'The P2G proxy', es: 'El proxy de P2G' }, lang)}</h3>
-          <dl className="ct-defs" data-table="c18-p2g" data-p2g={o.p2g_proxy.label}>
+          <Defs data-table="c18-p2g" data-p2g={o.p2g_proxy.label}>
             <dt>{pick({ en: 'Status', es: 'Estado' }, lang)}</dt>
             <dd>{`${pick(text(LABEL_TEXT, o.p2g_proxy.label), lang)}. ${pick(P2G_LABEL, lang)}`}</dd>
             <dt>{pick({ en: 'Peak depletion of the CET1 ratio', es: 'Máxima caída de la razón de CET1' }, lang)}</dt>
@@ -380,7 +380,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
             <dd>{PCT(o.p2g_proxy.value, lang, 3)}</dd>
             <dt>{pick({ en: 'Statement', es: 'Declaración' }, lang)}</dt>
             <dd>{pick(o.p2g_proxy.statement, lang)}</dd>
-          </dl>
+          </Defs>
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>

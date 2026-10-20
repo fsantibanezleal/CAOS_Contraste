@@ -7,7 +7,7 @@ import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type Bi
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { NOT_REVERSE, PCT, UnavailableCard, cell, digits } from './C18Common';
+import { Defs, NOT_REVERSE, PCT, UnavailableCard, cell, digits } from './C18Common';
 import { MONEY_UNIT, amount, reverseOf, type C18Sel } from './selection';
 
 const METHOD_TEXT: Record<string, BiText> = {
@@ -51,7 +51,7 @@ export function ReverseSolutionView({ sel }: { sel: C18Sel | null }) {
             />
           }
         >
-          <dl className="ct-defs" data-table="c18-failure" data-failure-point={f.label}>
+          <Defs data-table="c18-failure" data-failure-point={f.label}>
             <dt>{pick({ en: 'Status', es: 'Estado' }, lang)}</dt>
             <dd>{pick({ en: 'Contraste\'s own formulation, not regulatory text.', es: 'Formulación propia de Contraste, no texto regulatorio.' }, lang)}</dd>
             <dt>{pick({ en: 'Failure point', es: 'Punto de falla' }, lang)}</dt>
@@ -68,7 +68,7 @@ export function ReverseSolutionView({ sel }: { sel: C18Sel | null }) {
             <dd data-tail-probability={s.plausibility.tail_probability}>{`${PCT(s.plausibility.tail_probability, lang)} ${pick({ en: `(chi-square tail with ${s.plausibility.chi_square_df} degrees of freedom: the probability of a scenario at least this far from the baseline)`, es: `(cola chi cuadrado con ${s.plausibility.chi_square_df} grados de libertad: la probabilidad de un escenario al menos así de lejos de la línea base)` }, lang)}`}</dd>
             <dt>{pick({ en: 'Loss model', es: 'Modelo de pérdida' }, lang)}</dt>
             <dd data-loss-model={lm.kind}>{pick(lm.description, lang)}</dd>
-          </dl>
+          </Defs>
           <table className="caos-table ct-wrap-head" data-table="c18-reverse-factors">
             <thead>
               <tr>
@@ -177,14 +177,14 @@ export function ReverseSearchView({ sel }: { sel: C18Sel | null }) {
               ))}
             </tbody>
           </table>
-          <dl className="ct-defs" data-table="c18-solution-check">
+          <Defs data-table="c18-solution-check">
             <dt>{pick({ en: 'Loss threshold', es: 'Umbral de pérdida' }, lang)}</dt>
             <dd>{`${cell(s.loss_threshold_clp_m, lang)} ${pick(MONEY_UNIT, lang)}`}</dd>
             <dt>{pick({ en: 'Loss at the solved scenario', es: 'Pérdida en el escenario resuelto' }, lang)}</dt>
             <dd>{`${cell(s.loss_at_z_star_clp_m, lang)} ${pick(MONEY_UNIT, lang)}`}</dd>
             <dt>{pick({ en: 'Relative gap and tolerance', es: 'Brecha relativa y tolerancia' }, lang)}</dt>
             <dd>{`${formatNumber(s.relative_gap, lang, { digits: 4 })} ${pick({ en: 'for a tolerance of', es: 'para una tolerancia de' }, lang)} ${formatNumber(s.tolerance, lang, { digits: 4 })}`}</dd>
-          </dl>
+          </Defs>
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>

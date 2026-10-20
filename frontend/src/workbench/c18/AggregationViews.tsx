@@ -10,7 +10,7 @@ import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { HWaterfall, stackRows } from './Waterfall';
-import { NOT_AGGREGATION, NOT_AGG_VARIANT, PCT, UnavailableCard, cell, digits, producerText } from './C18Common';
+import { Defs, NOT_AGGREGATION, NOT_AGG_VARIANT, PCT, UnavailableCard, cell, digits, producerText } from './C18Common';
 import {
   MONEY_UNIT, NOT_CAPITAL, RISK_ORDER, RISK_TEXT, aggDocOf, aggOf, axisOf, methodShort, methodText, text,
   type C18Sel,
@@ -111,7 +111,7 @@ export function BandView({ sel }: { sel: C18Sel | null }) {
           </table>
           <h3 className="ct-sub">{pick({ en: 'Model risk of the aggregation', es: 'Riesgo de modelo de la agregación' }, lang)}</h3>
           <p className="ct-note" data-status={mr.status}>{`${pick(NOT_CAPITAL, lang)} ${pick(mr.label, lang)}`}</p>
-          <dl className="ct-defs" data-table="c18-model-risk">
+          <Defs data-table="c18-model-risk">
             <dt>{pick({ en: 'Reference model', es: 'Modelo de referencia' }, lang)}</dt>
             <dd>{pick(methodText(mr.reference_model), lang)}</dd>
             <dt>{pick({ en: 'Highest, reference and lowest capital of the set', es: 'Mayor capital, de referencia y menor del conjunto' }, lang)}</dt>
@@ -122,7 +122,7 @@ export function BandView({ sel }: { sel: C18Sel | null }) {
             <dd data-measure="rm">{formatNumber(mr.barrieu_scandolo.rm, lang, { digits: 4 })}</dd>
             <dt>{pick({ en: 'Worst case by reweighting, Glasserman and Xu', es: 'Peor caso por reponderación, Glasserman y Xu' }, lang)}</dt>
             <dd>{`${cell(mr.glasserman_xu.baseline_clp_m, lang)} ${pick({ en: 'to', es: 'a' }, lang)} ${cell(mr.glasserman_xu.worst_case_clp_m, lang)}; ${pick({ en: 'entropy budget', es: 'presupuesto de entropía' }, lang)} ${formatNumber(mr.glasserman_xu.relative_entropy_budget, lang, { digits: 4 })}; theta ${formatNumber(mr.glasserman_xu.theta, lang, { digits: 4 })}`}</dd>
-          </dl>
+          </Defs>
           <p className="ct-note">{pick(mr.glasserman_xu.quantity, lang)}</p>
         </ChartOverTable>
       </PlotCard>
@@ -379,7 +379,7 @@ export function SensitivityView({ sel }: { sel: C18Sel | null }) {
             </tbody>
           </table>
           <h3 className="ct-sub">{pick({ en: 'Rosenberg and Schuermann reference', es: 'Referencia de Rosenberg y Schuermann' }, lang)}</h3>
-          <dl className="ct-defs" data-table="c18-rs" data-role={rs.role} data-within-published-range={String(rs.within_published_range)}>
+          <Defs data-table="c18-rs" data-role={rs.role} data-within-published-range={String(rs.within_published_range)}>
             <dt>{pick({ en: 'Status', es: 'Estado' }, lang)}</dt>
             <dd>{pick({ en: 'A published reference point, not a gate: the case does not pass or fail on it.', es: 'Un punto de referencia publicado, no un umbral: el caso no aprueba ni falla por él.' }, lang)}</dd>
             <dt>{pick({ en: 'Weights of the benchmark bank', es: 'Ponderaciones del banco de referencia' }, lang)}</dt>
@@ -390,7 +390,7 @@ export function SensitivityView({ sel }: { sel: C18Sel | null }) {
             <dd>{`${PCT(rs.published_additive_overestimate.low, lang, 0)} ${pick({ en: 'to', es: 'a' }, lang)} ${PCT(rs.published_additive_overestimate.high, lang, 0)}`}</dd>
             <dt>{pick({ en: 'Overestimate in this case', es: 'Sobrestimación en este caso' }, lang)}</dt>
             <dd>{`${PCT(rs.case_additive_overestimate, lang, 1)} (${rs.within_published_range ? pick({ en: 'inside the published range', es: 'dentro del rango publicado' }, lang) : pick({ en: 'outside the published range', es: 'fuera del rango publicado' }, lang)})`}</dd>
-          </dl>
+          </Defs>
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>
