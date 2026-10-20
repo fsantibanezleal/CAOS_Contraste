@@ -276,6 +276,14 @@ def data_notes(s: Sample | None = None, action_counts: dict[int, int] | None = N
     def missing(a: np.ndarray) -> int | None:
         return None if s is None else int(np.isnan(a).sum())
 
+    def unusable(name: str) -> tuple[str, str]:
+        """The sentence on the values that are present and not positive (no logarithm), with their count when a sample is given."""
+        if s is None:
+            return "", ""
+        a = getattr(s, name)
+        k = int(((a <= 0) & ~np.isnan(a)).sum())
+        return f" ({k} present values are not positive)", f" ({k} valores presentes no son positivos)"
+
     if action_counts is None:
         left_out = ("The rows of codes 4 to 8 are left out of every rate by the decision convention; their counts by code are in the "
                     "outputs documents.",
@@ -301,14 +309,14 @@ def data_notes(s: Sample | None = None, action_counts: dict[int, int] | None = N
                      "marcadores NA y Exempt cuentan aquí; las filas sin él quedan fuera de los ajustes controlados")},
         {"field": "combined_loan_to_value_ratio", "treatment": "unmodified", "n_missing": None if s is None else missing(s.cltv),
          "reason": t("Disclosed without modification; entered as its natural logarithm, so a non-positive value is unusable and the row is "
-                     "left out of the controlled fits",
+                     f"left out of the controlled fits{unusable('cltv')[0]}",
                      "Se divulga sin modificación; entra como su logaritmo natural, de modo que un valor no positivo es inutilizable y la "
-                     "fila queda fuera de los ajustes controlados")},
+                     f"fila queda fuera de los ajustes controlados{unusable('cltv')[1]}")},
         {"field": "income", "treatment": "unmodified", "n_missing": None if s is None else missing(s.income),
          "reason": t("Disclosed without modification, in thousands of dollars, with no upper limit and outliers; entered as its natural "
-                     "logarithm, so a non-positive value is unusable and the row is left out of the controlled fits",
+                     f"logarithm, so a non-positive value is unusable and the row is left out of the controlled fits{unusable('income')[0]}",
                      "Se divulga sin modificación, en miles de dólares, sin límite superior y con valores atípicos; entra como su logaritmo "
-                     "natural, de modo que un valor no positivo es inutilizable y la fila queda fuera de los ajustes controlados")},
+                     f"natural, de modo que un valor no positivo es inutilizable y la fila queda fuera de los ajustes controlados{unusable('income')[1]}")},
         {"field": "loan_amount", "treatment": "rounded", "n_missing": None if s is None else missing(s.loan_amount),
          "reason": t("Rounded to the midpoint of the $10,000 interval in the public release; entered as its natural logarithm",
                      "Redondeado al punto medio del intervalo de $10.000 en la publicación pública; entra como su logaritmo natural")},
