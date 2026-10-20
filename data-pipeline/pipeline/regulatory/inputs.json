@@ -423,7 +423,7 @@
    "calculator": "sa-ccr",
    "title": {
     "en": "CRE99 netting set 2: credit derivatives, unmargined",
-    "es": "CRE99 conjunto 2: derivados de credito, sin margen"
+    "es": "CRE99 conjunto 2: derivados de crédito, sin margen"
    },
    "kind": "official-example",
    "paragraph": "CRE52.1",
@@ -2696,7 +2696,7 @@
    "calculator": "frtb-sbm",
    "title": {
     "en": "SBM correlation scenarios",
-    "es": "Escenarios de correlacion SBM"
+    "es": "Escenarios de correlación SBM"
    },
    "kind": "invariant",
    "paragraph": "MAR21.6",
@@ -2741,7 +2741,7 @@
    "published": [],
    "statement": {
     "en": "The low scenario uses max(2 rho - 1, 0.75 rho) and the high scenario min(1.25 rho, 1); the SBM result is the maximum of the three.",
-    "es": "El escenario bajo usa max(2 rho - 1, 0.75 rho) y el alto min(1.25 rho, 1); el resultado SBM es el maximo de los tres."
+    "es": "El escenario bajo usa max(2 rho - 1, 0.75 rho) y el alto min(1.25 rho, 1); el resultado SBM es el máximo de los tres."
    }
   },
   {
@@ -2749,7 +2749,7 @@
    "calculator": "frtb-sbm",
    "title": {
     "en": "SBM aggregation: within bucket, across buckets, maximum over the scenarios",
-    "es": "Agregacion SBM: dentro del bucket, entre buckets y maximo de los escenarios"
+    "es": "Agregación SBM: dentro del bucket, entre buckets y máximo de los escenarios"
    },
    "kind": "invariant",
    "paragraph": "MAR21.4",
@@ -2918,7 +2918,7 @@
    "published": [],
    "statement": {
     "en": "Two buckets with their within-bucket correlations and gamma 0.5: the bucket charge K_b of MAR21.4 under each of the three scenarios of MAR21.6, the cross-bucket charge and the maximum over the scenarios (MAR21.7).",
-    "es": "Dos buckets con sus correlaciones internas y gamma 0.5: el cargo K_b de MAR21.4 bajo cada escenario de MAR21.6, el cargo entre buckets y el maximo de los escenarios (MAR21.7)."
+    "es": "Dos buckets con sus correlaciones internas y gamma 0.5: el cargo K_b de MAR21.4 bajo cada escenario de MAR21.6, el cargo entre buckets y el máximo de los escenarios (MAR21.7)."
    }
   },
   {
@@ -3089,7 +3089,7 @@
    "published": [],
    "statement": {
     "en": "Two buckets of opposite sign and gamma 0.8: under the medium and high scenarios the radicand is negative and S_b is replaced by max(min(sum WS, K_b), -K_b) (MAR21.4(5)(b)); under the low scenario the plain path applies.",
-    "es": "Dos buckets de signo opuesto y gamma 0.8: bajo los escenarios medio y alto el radicando es negativo y S_b se reemplaza por max(min(sum WS, K_b), -K_b) (MAR21.4(5)(b)); bajo el bajo se aplica la via simple."
+    "es": "Dos buckets de signo opuesto y gamma 0.8: bajo los escenarios medio y alto el radicando es negativo y S_b se reemplaza por max(min(sum WS, K_b), -K_b) (MAR21.4(5)(b)); bajo el bajo se aplica la vía simple."
    }
   },
   {
@@ -3144,7 +3144,7 @@
    "published": [],
    "statement": {
     "en": "If every risk factor has a liquidity horizon of 10 days the cascade returns ES_T(P); it is monotone in LH.",
-    "es": "Si todo factor tiene horizonte de liquidez de 10 dias la cascada devuelve ES_T(P); es monotona en LH."
+    "es": "Si todo factor tiene horizonte de liquidez de 10 días la cascada devuelve ES_T(P); es monótona en LH."
    }
   },
   {
@@ -3223,7 +3223,7 @@
    "calculator": "frtb-sbm",
    "title": {
     "en": "GIRR delta charge of a 10-year payer swap, with and without the sqrt(2) division",
-    "es": "Cargo delta GIRR de un swap pagador a 10 anos, con y sin la division por sqrt(2)"
+    "es": "Cargo delta GIRR de un swap pagador a 10 años, con y sin la división por sqrt(2)"
    },
    "kind": "invariant",
    "paragraph": "MAR21.44",
@@ -3334,7 +3334,7 @@
    "published": [],
    "statement": {
     "en": "The headline charge divides the MAR21.42 risk weights by sqrt(2) for a specified currency such as USD (MAR21.44; a named parameter, label: convention, the bank's discretion); the charge of the undivided weights is written beside it and equals the headline times sqrt(2). With one non-zero tenor the charge is |RW s| under every scenario.",
-    "es": "El cargo principal divide los ponderadores de MAR21.42 por sqrt(2) para una moneda especificada como USD (MAR21.44; parametro nombrado, etiqueta: convencion, a discrecion del banco); el cargo con los ponderadores sin dividir se escribe al lado y es el principal por sqrt(2). Con un solo plazo distinto de cero el cargo es |RW s| bajo todo escenario."
+    "es": "El cargo principal divide los ponderadores de MAR21.42 por sqrt(2) para una moneda especificada como USD (MAR21.44; parámetro nombrado, etiqueta: convención, a discreción del banco); el cargo con los ponderadores sin dividir se escribe al lado y es el principal por sqrt(2). Con un solo plazo distinto de cero el cargo es |RW s| bajo todo escenario."
    }
   }
  ],
@@ -3977,7 +3977,7 @@
    "id": "cre52-72-table-2",
    "title": {
     "en": "SA-CCR supervisory parameters",
-    "es": "Parametros supervisores SA-CCR"
+    "es": "Parámetros supervisores SA-CCR"
    },
    "calculator": "sa-ccr",
    "table": "CRE52.72 Table 2",

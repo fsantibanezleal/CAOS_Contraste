@@ -284,17 +284,17 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, n_draws: int 
     entries, sums = [], []
     regime = P.text("Fed, EBA and NGFS paths transposed onto the last observed value, satellites fitted on 1985 to 2019; Banco Andino is synthetic and the satellites are a "
                     "US-calibrated adaptation.",
-                    "Trayectorias Fed, EBA y NGFS trasladadas al ultimo valor observado, satelites ajustados sobre 1985 a 2019; Banco Andino es sintetico y los satelites son una "
-                    "adaptacion calibrada en EE. UU.")
+                    "Trayectorias Fed, EBA y NGFS trasladadas al último valor observado, satélites ajustados sobre 1985 a 2019; Banco Andino es sintético y los satélites son una "
+                    "adaptación calibrada en EE. UU.")
     e = _check_and_write(root, P.MODELS_REL, built.models)
     sums.append(_sum(root, P.MODELS_REL))
     entries.append({"role": "models", "variant_id": f"models-{P.FIT_ID}", "truth_status": "synthetic-calibrated",
-                    "title": P.text("Fitted satellites, aggregation parameters and anchors", "Satelites ajustados, parametros de agregacion y anclas"),
+                    "title": P.text("Fitted satellites, aggregation parameters and anchors", "Satélites ajustados, parámetros de agregación y anclas"),
                     "short_title": P.text("Models", "Modelos"), "regime": regime, "path": P.MODELS_REL, **e})
     titles = {
         P.SCENARIOS["baseline"]: ("Baseline (Fed 2026)", "Base (Fed 2026)"), P.SCENARIOS["eba"]: ("EBA 2025 adverse", "Adverso EBA 2025"),
-        P.SCENARIOS["fed"]: ("Fed 2026 severely adverse", "Severamente adverso Fed 2026"), P.SCENARIOS["ngfs"]: ("NGFS delayed transition", "Transicion tardia NGFS"),
-        P.FILE_NAMES["aggregation"]: ("t-copula aggregation", "Agregacion con copula t"), P.FILE_NAMES["reverse"]: ("Reverse stress", "Tension inversa")}
+        P.SCENARIOS["fed"]: ("Fed 2026 severely adverse", "Severamente adverso Fed 2026"), P.SCENARIOS["ngfs"]: ("NGFS delayed transition", "Transición tardía NGFS"),
+        P.FILE_NAMES["aggregation"]: ("t-copula aggregation", "Agregación con cópula t"), P.FILE_NAMES["reverse"]: ("Reverse stress", "Tensión inversa")}
     for vid in [*P.SCENARIOS.values(), P.FILE_NAMES["aggregation"], P.FILE_NAMES["reverse"]]:
         if vid not in built.variants:
             continue

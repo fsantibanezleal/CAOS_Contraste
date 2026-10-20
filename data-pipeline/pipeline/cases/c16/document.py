@@ -25,8 +25,8 @@ DATA_FIELDS = ["ASSET", "CHBAL", "DEP", "DEPDOM", "DEPFOR", "DEPINS", "DEPLGAMT"
 TIME_FIELDS = ["DEP", "DEPDOM", "DEPINS", "DEPUNA", "SCAA", "SCAF", "SCHA", "SCHF"]
 TIME_DATES = ("2021-12-31", "2022-06-30")
 FDIC_SOURCE = "https://api.fdic.gov/banks/financials (CERT 24735, REPDTE {date})"
-H8_SERIES = {"large-domestic-deposits": ("h8-deposits-large-domestic", "Deposits, large domestically chartered banks", "Depositos, bancos grandes domesticos"),
-             "small-domestic-deposits": ("h8-deposits-small-domestic", "Deposits, small domestically chartered banks", "Depositos, bancos pequenos domesticos")}
+H8_SERIES = {"large-domestic-deposits": ("h8-deposits-large-domestic", "Deposits, large domestically chartered banks", "Depósitos, bancos grandes domésticos"),
+             "small-domestic-deposits": ("h8-deposits-small-domestic", "Deposits, small domestically chartered banks", "Depósitos, bancos pequeños domésticos")}
 
 
 def basis_of(vid: str) -> str:
@@ -38,7 +38,7 @@ def sensitivities(vid: str, report: Report, conv: dict, fit: scenarios.FastRun) 
     of the conventions (05 E.5 rung 4); null with its reason where the variant has no daily path."""
     if vid == "lcr-standard":
         why = txt("The LCR defines a 30-day aggregate ratio and no daily path, so there is no survival period to put against this grid.",
-                  "El LCR define una razon agregada a 30 dias sin trayectoria diaria: no hay periodo de supervivencia para esta grilla.")
+                  "El LCR define una razón agregada a 30 días sin trayectoria diaria: no hay periodo de supervivencia para esta grilla.")
         return {"uninsured_share": None, "uninsured_share_reason": why, "htm_loss": None, "htm_loss_reason": why}
     shares = conv["uninsured_share_grid"]["values"]
     mults = conv["htm_loss_multiple_grid"]["values"]
@@ -65,7 +65,7 @@ def time_point(vid: str, rep: Report, conv: dict, fit: scenarios.FastRun) -> dic
 def model_summary(ev: str, rung: str = "behavioural-ladder", details: bool = False) -> dict[str, Any]:
     m = {"id": "liquidity-ladder", "family": "liquidity", "rung": rung,
          "title": txt("Liquidity ladder: run-off curves, counterbalancing capacity, net liquidity position and survival period",
-                      "Escalera de liquidez: curvas de salida, capacidad de contrapeso, posicion neta de liquidez y periodo de supervivencia"),
+                      "Escalera de liquidez: curvas de salida, capacidad de contrapeso, posición neta de liquidez y periodo de supervivencia"),
          "short_title": txt("Liquidity ladder", "Escalera de liquidez"), "engine": "riskvalidation", "engine_version": ev, "licence": "MIT",
          "calibration": None, "parameters": {}, "checkpoint_sha256": None}
     if details:
@@ -94,7 +94,7 @@ class Shared:
 def aggregate_record(sh: Shared) -> tuple[dict | None, dict | None]:
     if sh.h8 is None:
         return None, txt(f"The H.8 release tables are not read: {sh.h8_reason or 'not available'}. The aggregate record is omitted with this statement.",
-                         "Las tablas H.8 no se leen: el registro agregado se omite con esta declaracion.")
+                         "Las tablas H.8 no se leen: el registro agregado se omite con esta declaración.")
     series = [{"series_id": sid, "label": txt(en, es), "unit": "USD billions, seasonally adjusted, weekly (Wednesday level)",
                "points": [{"date": d, "value": v} for d, v in sh.h8[key]]} for key, (sid, en, es) in H8_SERIES.items()]
     return {"source": "Federal Reserve H.8 release tables, Tables 6 and 8 (https://www.federalreserve.gov/releases/h8/): weekly levels of the large and the "
@@ -136,10 +136,10 @@ def scenario_document(vid: str, report: Report, earlier: list[Report], sh: Share
     data = {"call_reports": [{"report_date": vd, "source": FDIC_SOURCE.format(date=vd), "fields": DATA_FIELDS},
                              *({"report_date": r.report_date, "source": FDIC_SOURCE.format(date=r.report_date), "fields": TIME_FIELDS} for r in earlier)],
             "data_cutoff": vd, "read_up_to_valuation_date": True,
-            "rule": txt("No call report dated after the valuation date is read.", "No se lee ningun reporte de llamada posterior a la fecha de valoracion.")}
+            "rule": txt("No call report dated after the valuation date is read.", "No se lee ningún reporte de llamada posterior a la fecha de valoración.")}
     reasons = {"path": txt("The LCR is a 30-day aggregate ratio: its formula gives no daily path, so no ladder, survival period or cliff is stated.",
-                           "El LCR es una razon agregada a 30 dias: su formula no da trayectoria diaria."),
-               "lcr": txt("This variant runs the run-off ladder, not the LCR formula.", "Esta variante corre la escalera de salidas, no la formula del LCR."),
+                           "El LCR es una razón agregada a 30 días: su fórmula no da trayectoria diaria."),
+               "lcr": txt("This variant runs the run-off ladder, not the LCR formula.", "Esta variante corre la escalera de salidas, no la fórmula del LCR."),
                "htm": txt("Only the HTM variant takes the held-to-maturity book at fair value.", "Solo la variante HTM toma el libro a valor razonable.")}
     o = {"kind": "scenario", "valuation_date": vd, "currency": "USD", "units": UNITS, "bank": BANK,
          "variant": {"id": vid, "label": txt(*VARIANT_LABEL[vid][:2]), "description": txt(*VARIANT_LABEL[vid][2:]), "scenario_family": row["scenario_family"],
@@ -179,7 +179,7 @@ def scenario_document(vid: str, report: Report, earlier: list[Report], sh: Share
         rv = htm["revaluation"]
         tests.append(_tr(val.htm_revaluation_vs_reported(rv["model_fair_value"], htm["reported"]["htm_fair_value"], htm["reported"]["htm_amortised_cost"],
                                                          conv["htm_revaluation_green"]["value"], conv["htm_revaluation_amber"]["value"])))
-    impact = {"lcr": {"value": lcr["ratio"], "unit": "ratio", "label": txt("LCR, a Basel formula on call-report aggregates", "LCR, una formula de Basilea sobre agregados del reporte de llamada")}
+    impact = {"lcr": {"value": lcr["ratio"], "unit": "ratio", "label": txt("LCR, a Basel formula on call-report aggregates", "LCR, una fórmula de Basilea sobre agregados del reporte de llamada")}
               if lcr else {"value": None, "unit": "ratio", "label": txt("No LCR in this variant", "Sin LCR en esta variante")},
               "survival_days": _impact_survival(p.survival if p else None, h)}
     return {"outputs": o, "tests": tests, "impact": impact, "findings": findings, "path": p}

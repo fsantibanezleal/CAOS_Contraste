@@ -209,6 +209,6 @@ def build(frame: Frame, rungs: dict[str, Any], ds: sgcd.Dataset, codebook: dict[
                                                  "Decisiones que cambian en el punto de corte indicado, la mayor entre los choques aplicados")}}
     return {"outputs": outputs, "tests": tests, "impact": impact, "models": [fits.rung_id("P4-lightgbm", frame)],
             "limits": [("sgcd-not-for-scoring", t("SGCD is a research benchmark and must not be used for real-world credit scoring; nothing here scores a person",
-                                                  "SGCD es un benchmark de investigacion y no debe usarse para scoring de credito real; nada aqui puntua a una persona")),
+                                                  "SGCD es un benchmark de investigación y no debe usarse para scoring de crédito real; nada aquí puntúa a una persona")),
                        ("small-groups", t("Each shock row holds 30 to 90 records, so its AUC carries a wide interval; the rows show the direction, not a precise size",
-                                         "Cada fila de choque tiene de 30 a 90 registros, de modo que su AUC tiene un intervalo ancho; las filas muestran la direccion, no un tamano preciso"))]}
+                                         "Cada fila de choque tiene de 30 a 90 registros, de modo que su AUC tiene un intervalo ancho; las filas muestran la dirección, no un tamaño preciso"))]}

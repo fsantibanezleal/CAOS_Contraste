@@ -19,7 +19,7 @@ from .variant import BANK, MID, SHOCKS, SIGN, UNITS, VariantResult
 EN = ["Overnight", "O/N to 1M", "1M to 3M", "3M to 6M", "6M to 9M", "9M to 1Y", "1Y to 1.5Y", "1.5Y to 2Y", "2Y to 3Y", "3Y to 4Y",
       "4Y to 5Y", "5Y to 6Y", "6Y to 7Y", "7Y to 8Y", "8Y to 9Y", "9Y to 10Y", "10Y to 15Y", "15Y to 20Y", "Over 20Y"]
 ES = ["A la vista", "Hasta 1M", "1M a 3M", "3M a 6M", "6M a 9M", "9M a 1A", "1A a 1,5A", "1,5A a 2A", "2A a 3A", "3A a 4A",
-      "4A a 5A", "5A a 6A", "6A a 7A", "7A a 8A", "8A a 9A", "9A a 10A", "10A a 15A", "15A a 20A", "Mas de 20A"]
+      "4A a 5A", "5A a 6A", "6A a 7A", "7A a 8A", "8A a 9A", "9A a 10A", "10A a 15A", "15A a 20A", "Más de 20A"]
 TABLES = {
     "2024": ("SRP31.90 Table 2 (in force 2026-01-01; d578 recalibration, dossier 01 H.3)", "January 2000 to December 2023",
              "99.9th percentile of local rolling six-month average absolute changes", 25),
@@ -75,7 +75,7 @@ def models_document(dates: list[str], results: dict[str, VariantResult]) -> dict
                 "parameter": name, "category": "wholesale", "from_date": a, "to_date": b, "from_value": va, "to_value": vb, "unit": unit,
                 "limit_breach_in_window": bool(breach), "flagged": bool(va != vb and breach),
                 "note": t(f"{note_en} The standardised outlier test is {'breached' if breach else 'not breached'} at {b}.",
-                          f"{note_es} El test de valores atipicos estandarizado {'se supera' if breach else 'no se supera'} al {b}.")})
+                          f"{note_es} El test de valores atípicos estandarizado {'se supera' if breach else 'no se supera'} al {b}.")})
     return {
         "currency": "USD", "sign_convention": SIGN, "units": UNITS, "bank": BANK,
         "buckets": [{"bucket": k + 1, "label": t(EN[k], ES[k]), "midpoint_years": float(MID[k])} for k in range(19)],

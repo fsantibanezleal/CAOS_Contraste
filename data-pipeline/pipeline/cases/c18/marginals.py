@@ -93,11 +93,11 @@ def granularity_text(g: dict[str, Any]) -> dict[str, str]:
           f"with {lo['names']:,} and with {hi['names']:,} names per segment and the same seed: VaR {lo['var']:,.0f} and {hi['var']:,.0f} (difference {g['diff_var']:,.0f}), ES "
           f"{lo['es']:,.0f} and {hi['es']:,.0f} (difference {g['diff_es']:,.0f}), the Monte Carlo standard error of the difference {g['se_var']:,.0f} for the VaR and "
           f"{g['se_es']:,.0f} for the ES. The difference {'exceeds' if g['exceeds_two_se'] else 'does not exceed'} two standard errors, so {g['names_used']:,} names per segment are used.")
-    es = (f"La copula agrupada del motor sobre los seis segmentos de C07, cada uno un grupo de nombres representativos que llevan la exposicion, PD, LGD y correlacion de activos "
-          f"del segmento (un factor sistematico); las cuentas son 171.500. El VaR y el ES al 99,9 por ciento se midieron con {lo['names']:,} y con {hi['names']:,} nombres por "
+    es = (f"La cópula agrupada del motor sobre los seis segmentos de C07, cada uno un grupo de nombres representativos que llevan la exposición, PD, LGD y correlación de activos "
+          f"del segmento (un factor sistemático); las cuentas son 171.500. El VaR y el ES al 99,9 por ciento se midieron con {lo['names']:,} y con {hi['names']:,} nombres por "
           f"segmento y la misma semilla: VaR {lo['var']:,.0f} y {hi['var']:,.0f} (diferencia {g['diff_var']:,.0f}), ES {lo['es']:,.0f} y {hi['es']:,.0f} (diferencia {g['diff_es']:,.0f}), "
-          f"error estandar de Monte Carlo de la diferencia {g['se_var']:,.0f} para el VaR y {g['se_es']:,.0f} para el ES. La diferencia "
-          f"{'excede' if g['exceeds_two_se'] else 'no excede'} dos errores estandar, por lo que se usan {g['names_used']:,} nombres por segmento.")
+          f"error estándar de Monte Carlo de la diferencia {g['se_var']:,.0f} para el VaR y {g['se_es']:,.0f} para el ES. La diferencia "
+          f"{'excede' if g['exceeds_two_se'] else 'no excede'} dos errores estándar, por lo que se usan {g['names_used']:,} nombres por segmento.")
     return {"en": en, "es": es}
 
 

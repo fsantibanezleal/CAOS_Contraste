@@ -141,10 +141,10 @@ def build(frame: Frame, rungs: dict[str, Any], seed: int) -> dict[str, Any]:
                                                  "Decisiones que cambian en el punto de corte indicado entre el primer ajuste y uno con otra semilla, la mayor entre las semillas")}}
     return {"outputs": outputs, "tests": tests, "impact": impact, "models": models,
             "limits": [("rungs-swept", t("Only the two boosted-tree rungs are swept: the others are deterministic given the data or have no TreeSHAP attribution",
-                                         "Solo se barren las dos etapas de arboles potenciados: las demas son deterministas dado los datos o no tienen atribucion TreeSHAP")),
+                                         "Solo se barren las dos etapas de árboles potenciados: las demás son deterministas dado los datos o no tienen atribución TreeSHAP")),
                        ("xgboost-float32", t("XGBoost computes in single precision, so the Shapley additivity gap of its rung is about 1e-6 and the engine's 1e-9 tolerance flags it; "
                                              "it is a precision remark on the arithmetic, not an error of the attributions",
-                                             "XGBoost calcula en precision simple, de modo que la brecha de aditividad de Shapley de su etapa es cercana a 1e-6 y la tolerancia de 1e-9 del motor la senala; "
-                                             "es una observacion de precision aritmetica, no un error de las atribuciones")),
+                                             "XGBoost calcula en precisión simple, de modo que la brecha de aditividad de Shapley de su etapa es cercana a 1e-6 y la tolerancia de 1e-9 del motor la señala; "
+                                             "es una observación de precisión aritmética, no un error de las atribuciones")),
                        ("fixed-rounds", t("The number of boosting rounds is the one chosen on the first fit and is not re-chosen per seed, so the dispersion is the seed's effect with the model size held",
-                                         "El numero de rondas se elige en el primer ajuste y no se reelige por semilla, de modo que la dispersion es el efecto de la semilla con el tamano del modelo fijo"))]}
+                                         "El número de rondas se elige en el primer ajuste y no se reelige por semilla, de modo que la dispersión es el efecto de la semilla con el tamaño del modelo fijo"))]}

@@ -99,7 +99,7 @@ def _model_summaries(ev: str) -> list[dict[str, Any]]:
         rec("irrbb-curves-nelson-siegel", "curve-fit", "Nelson-Siegel zero curves", "Curvas cero Nelson-Siegel", {"coupon_frequency": (2.0, "per year")}),
         rec("irrbb-ear-evar-hw1f", "ear-evar", "EaR and EVaR, Hull-White one factor", "EaR y EVaR, Hull-White un factor",
             {"a": (asm.HW1F_A, "per year"), "n_paths": (float(asm.N_PATHS), "paths")}),
-        rec("irrbb-dynamic-nii", "dynamic-nii", "Dynamic NII, constant balance sheet", "NII dinamico, balance constante",
+        rec("irrbb-dynamic-nii", "dynamic-nii", "Dynamic NII, constant balance sheet", "NII dinámico, balance constante",
             {"horizon_months": (float(asm.HORIZON_MONTHS), "months")}),
     ]
 

@@ -32,11 +32,11 @@ def effective_cbc(lad: dict[str, Any]) -> np.ndarray:
 def _es(reason: str, target: int) -> str:
     m = re.match(r"the target of (\d+) days is not below the horizon of (\d+) days", reason)
     if m:
-        return f"El objetivo de {m.group(1)} dias no es menor que el horizonte de {m.group(2)} dias: no existe un intervalo."
+        return f"El objetivo de {m.group(1)} días no es menor que el horizonte de {m.group(2)} días: no existe un intervalo."
     m = re.match(r"the base survival period of (\d+) days is already at or below the target", reason)
     if m:
-        return f"El periodo de supervivencia base de {m.group(1)} dias ya es menor o igual que el objetivo de {target} dias."
-    return f"Ningun multiplicador bajo el tope alcanza un periodo de supervivencia de {target} dias o menos."
+        return f"El periodo de supervivencia base de {m.group(1)} días ya es menor o igual que el objetivo de {target} días."
+    return f"Ningún multiplicador bajo el tope alcanza un periodo de supervivencia de {target} días o menos."
 
 
 def _horizon_text(reason: str) -> str:
@@ -102,10 +102,10 @@ def reverse_document(paths: dict[str, Path], sh: Shared) -> dict[str, Any]:
          "target": {"days": target, "statement": txt(
              f"The run-off multiplier at which the survival period first falls to {target} days (dossier 05 E.5 rung 5): the threshold multiplier, the "
              "smallest one at which the survival period is at most the target, with the survival reached there.",
-             f"El multiplicador de salidas con el que el periodo de supervivencia cae por primera vez a {target} dias: el multiplicador umbral.")},
+             f"El multiplicador de salidas con el que el periodo de supervivencia cae por primera vez a {target} días: el multiplicador umbral.")},
          "cap_rule": {"each_rate_below_one": True, "statement": txt(
              "The multiplier scales every segment's daily rate and is capped so that each rate stays at most 1; a rate already at 1 stays.",
-             "El multiplicador escala la tasa diaria de cada segmento y se limita para que cada tasa quede como maximo 1.")},
+             "El multiplicador escala la tasa diaria de cada segmento y se limita para que cada tasa quede como máximo 1.")},
          "bases": bases}
     impact = {"multiplier_list_adverse": mi(bases[0], "Reverse-stress multiplier, LiST Adverse"),
               "multiplier_list_extreme": mi(bases[1], "Reverse-stress multiplier, LiST Extreme"),
@@ -115,7 +115,7 @@ def reverse_document(paths: dict[str, Path], sh: Shared) -> dict[str, Any]:
         if b["solved"]["status"] == "refused":
             findings.append(finding(f"F-liq-reverse-{b['base_id']}", "S4", ["liq.reverse_stress_round_trip"],
                                     f"The reverse stress of the {b['base_id']} base is refused: its ladder is shorter than the target",
-                                    f"El estres inverso de la base {b['base_id']} se rechaza: su escalera es menor que el objetivo"))
+                                    f"El estrés inverso de la base {b['base_id']} se rechaza: su escalera es menor que el objetivo"))
     return {"outputs": o, "tests": tests, "impact": impact, "findings": findings, "models": [model_summary(sh.engine_version, "reverse-stress")]}
 
 

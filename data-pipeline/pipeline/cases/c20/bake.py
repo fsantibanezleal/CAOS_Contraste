@@ -53,20 +53,20 @@ EXPECT = {
 TITLES = {
     "sgcd-seen": (t("SGCD shocks the model has seen (F1 and F2)", "Choques de SGCD que el modelo ha visto (F1 y F2)"), t("SGCD seen", "SGCD vistos"),
                   t("Test batches T1 to T3 of the stressed German credit data: the shipped shocks and Contraste's own application of each family to the structured view.",
-                    "Lotes de prueba T1 a T3 de los datos de credito aleman estresados: los choques entregados y la aplicacion propia de Contraste de cada familia a la vista estructurada.")),
+                    "Lotes de prueba T1 a T3 de los datos de crédito alemán estresados: los choques entregados y la aplicación propia de Contraste de cada familia a la vista estructurada.")),
     "sgcd-held-out": (t("SGCD shocks the model has not seen (F4)", "Choques de SGCD que el modelo no ha visto (F4)"), t("SGCD held out", "SGCD no vistos"),
                       t("Test batches T4 to T6: the contradiction shock held out of the protocol's adaptation phase.",
-                        "Lotes de prueba T4 a T6: el choque de contradiccion reservado fuera de la fase de adaptacion del protocolo.")),
+                        "Lotes de prueba T4 a T6: el choque de contradicción reservado fuera de la fase de adaptación del protocolo.")),
     "fed-shift": (t("Fed corporate shift probes", "Sondas de desplazamiento corporativas de la Fed"), t("Fed shift", "Desplazamiento Fed"),
                   t("The three Fed 2025 corporate portfolios read as real drift with no model and as the size of a synthetic shift on the Polish evaluation set.",
-                    "Las tres carteras corporativas 2025 de la Fed leidas como deriva real sin modelo y como el tamano de un desplazamiento sintetico sobre el conjunto de evaluacion polaco.")),
-    "seed-sweep": (t("Seed sweep and reason-code stability", "Barrido de semillas y estabilidad de codigos de razon"), t("Seeds", "Semillas"),
+                    "Las tres carteras corporativas 2025 de la Fed leídas como deriva real sin modelo y como el tamaño de un desplazamiento sintético sobre el conjunto de evaluación polaco.")),
+    "seed-sweep": (t("Seed sweep and reason-code stability", "Barrido de semillas y estabilidad de códigos de razón"), t("Seeds", "Semillas"),
                    t("The boosted Taiwan rungs refitted across 20 seeds and 100 bootstrap refits.", "Las etapas potenciadas de Taiwan reajustadas con 20 semillas y 100 remuestreos.")),
-    "perturbation-grid": (t("Perturbation grid", "Grilla de perturbacion"), t("Noise", "Ruido"),
-                          t("Performance of the Taiwan model against Gaussian input noise on the locked holdout.", "Desempeno del modelo de Taiwan frente a ruido gaussiano de entrada en la muestra reservada.")),
+    "perturbation-grid": (t("Perturbation grid", "Grilla de perturbación"), t("Noise", "Ruido"),
+                          t("Performance of the Taiwan model against Gaussian input noise on the locked holdout.", "Desempeño del modelo de Taiwan frente a ruido gaussiano de entrada en la muestra reservada.")),
     "leakage-planted": (t("Planted leakage", "Fuga plantada"), t("Leakage", "Fuga"),
                         t("A leaking feature planted in the Taiwan training set, caught by the leakage screen while performance collapses at decision time.",
-                          "Una variable filtrada plantada en el entrenamiento de Taiwan, detectada por la prueba de fuga mientras el desempeno colapsa al decidir.")),
+                          "Una variable filtrada plantada en el entrenamiento de Taiwan, detectada por la prueba de fuga mientras el desempeño colapsa al decidir.")),
 }
 _T0 = time.perf_counter()
 
@@ -306,10 +306,10 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, *, only: tupl
     e = _check_and_write(root, MODELS_REL, built.models)
     sums.append(_sum(root, MODELS_REL))
     entries.append({"role": "models", "variant_id": f"models-{FIT_ID}", "truth_status": "synthetic-known-truth",
-                    "title": t("Fitted ladders: German as carried by SGCD, Taiwan and Polish", "Escaleras ajustadas: aleman segun SGCD, Taiwan y polaco"),
+                    "title": t("Fitted ladders: German as carried by SGCD, Taiwan and Polish", "Escaleras ajustadas: alemán según SGCD, Taiwan y polaco"),
                     "short_title": t("Models", "Modelos"),
                     "regime": t("The C01 ladder rungs fitted on each dataset of C20, with the fit sizes and the named parameters.",
-                                "Las etapas de la escalera de C01 ajustadas en cada conjunto de C20, con los tamanos de ajuste y los parametros con nombre."),
+                                "Las etapas de la escalera de C01 ajustadas en cada conjunto de C20, con los tamaños de ajuste y los parámetros con nombre."),
                     "path": MODELS_REL, **e})
     for vid in built.order:
         doc = built.variants[vid]
