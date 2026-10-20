@@ -206,8 +206,8 @@ directions by `frontend/src/lib/contract.test.ts`; a drift fails the build.
 
 ## Technology and versions
 
-Every pinned dependency of the offline lane (`data-pipeline/requirements.txt` and the optional
-`data-pipeline/requirements-tabpfn.txt`), of `requirements-dev.txt` and of `frontend/package.json`, with the version
+Every pinned dependency of the offline lane (`data-pipeline/requirements.txt`, the optional
+`data-pipeline/requirements-tabpfn.txt` and `data-pipeline/requirements-ore.txt`), of `requirements-dev.txt` and of `frontend/package.json`, with the version
 actually pinned or locked; `scripts/check_tech_matrix.py` fails when a pin and this table disagree. A `package.json`
 range is recorded at the version `frontend/package-lock.json` resolves it to. The runtimes are Python 3.13.14 on the
 development workstation and 3.12 in CI, and Node 22 in CI (24.14.1 on the workstation). The full evaluation of every
@@ -229,6 +229,9 @@ the ones the dossiers and `docs/frameworks/` record.
 | models | catboost | 1.2.10 | the gradient-boosted LGD challenger of case C08 (U6 sizing technology matrix) | lightgbm on the same features |
 | models | shap | 0.52.0 | reason codes and explanation stability of the boosted rung | none recorded (0.53.0 is current and was not adopted) |
 | data | pypdf | 6.19.0 | reading the published tables of the papers (Tasche, Pluto and Tasche, BCBS WP14) | none recorded (6.20.0 is current and was not adopted) |
+| data | openpyxl | 3.1.5 | reading the EBA/ESRB 2025 macro-financial scenario workbook of C18 (U13 decision Q15; MIT) | none recorded |
+| reference (optional) | open-source-risk-engine | 1.8.17.0 | ORE, run natively from its Windows wheel as the reference engine of the C12 exposure reconciliation (`data-pipeline/requirements-ore.txt`, U9 decision D4); pipeline only, never an engine dependency | none: ORE is the open reference engine the dossiers name |
+| reference (optional) | QuantLib | 1.44 | the independent check of the Hull-White closed forms in C12 (`data-pipeline/requirements-ore.txt`, U9 decision B4); pipeline only | none recorded |
 | engine | riskvalidation | v0.08.000 | the validation tests, regulatory calculators and generators (the release tag of the batch 3 engine, 0.8.0: liquidity, aggregation and stress testing, the regulatory calculators and counterparty credit risk, ML model validation and fair lending) | none: no toolkit implements the ECB tests as specified |
 | models (optional) | torch | 2.14.1 | CPU runtime of the TabPFN extra, outside the default install | none recorded |
 | models (optional) | tabpfn | 9.1.0 | the TabPFN challenger of the small cases, weights under the Prior Labs License | none recorded |
