@@ -3,8 +3,8 @@
 ``build`` makes every document in memory (it reads the raw files of the device data root, which ``fetch`` wrote); ``bake_case`` writes
 them with the checksums, the raw-source record and the manifest. The documents are the c21-outputs and c21-models contracts
 (docs/contracts/schemas/c21/). Every document passes the schema and ``tests/contracts_u14/semantics.py::check_c21`` before it is
-written (a non-empty finding list is a refusal to publish). A year that is not in the data root stops the pairs that need it: they are
-named with the URL and nothing is written for them.
+written. The findings are statistical findings about each document's own test rows (``findings.py``, decision G16). A year that is
+not in the data root stops the pairs that need it: they are named with the URL and nothing is written for them.
 """
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ from ...io import sources as registry
 from ...io.formats import write_json
 from ...stages.export import write_artifact
 from . import estimates as est
-from . import fetch, legal, models, reader
+from . import fetch, findings, legal, models, reader
 from .legal import t
 
 CASE_ID = "C21"
@@ -40,7 +40,7 @@ ENGINES = {"numpy", "scipy", "riskvalidation"}
 RUN_MS = 600_000.0
 #: the measured results are exact in the documents: their identities close to 1e-9 and rounding to nine digits would only add noise
 EXACT = frozenset({"outputs", "fit", "tests"})
-REQUIREMENTS = [f"CT-21{n:02d}" for n in range(1, 18)]
+REQUIREMENTS = [f"CT-21{n:02d}" for n in range(1, 20)]
 
 #: what a reader should see, declared before the bake and wide on purpose (a result outside is a finding to read, not to tune away)
 EXPECT_APPROVAL = (0.55, 0.95)   # approvals over decisions, Delaware, any year
@@ -170,8 +170,9 @@ def build(seed: int, data_root: Path | str | None, *, k: int = est.SITUATION_K, 
             "legal": legal.legal_block(), "licence": legal.licence_block(), "conventions": legal.conventions_block(),
             "attributes": attrs, "situation_testing": sit, "data_notes": est.data_notes(fs, rows[a].action_counts),
             "requirements": REQUIREMENTS}
+        test_rows = [r.to_dict() for r in tests]
         doc = build_artifact(case_id=CASE_ID, variant_id=variant_id(pid), model=model_summaries(ev, k), outputs=outputs,
-                             tests=[r.to_dict() for r in tests], impact={}, findings=[], lineage=_lineage(prov, {a, b}, seed, ev), lane=lane)
+                             tests=test_rows, impact={}, findings=findings.build(test_rows), lineage=_lineage(prov, {a, b}, seed, ev), lane=lane)
         docs[variant_id(pid)] = doc
         values[f"approval_rate_{a}"] = float(fs.decision.mean())
         race = next(x for x in attrs if x["field"] == "derived_race")

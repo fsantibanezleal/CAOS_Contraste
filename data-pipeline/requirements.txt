@@ -15,6 +15,6 @@ xgboost==3.4.1
 catboost==1.2.10
 shap==0.52.0
 pypdf==6.19.0
-# the engine: the validation tests, the regulatory calculators and the reference engines, pinned to its release tag
-# until its first PyPI release (the repository is private until then); the `market` extra brings `arch` for C11 and C13
-riskvalidation[market] @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation.git@25e9538faf10bfdbcde03c5adccffd8e86ec275c
+# the engine: the validation tests, the regulatory calculators and the reference engines, pinned to the commit of its batch 3 integration branch (task/0-08-000-batch3, engine-fairness-api 1.2.0)
+# until the release tag replaces it (the repository is private until then); the `market` extra brings `arch` for C11 and C13
+riskvalidation[market] @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation.git@2a21c0b85578357bc7eb13e9d8ffda9ab9b300fa

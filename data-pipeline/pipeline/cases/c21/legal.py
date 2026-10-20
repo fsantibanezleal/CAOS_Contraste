@@ -133,13 +133,15 @@ def conventions_block() -> dict[str, Any]:
                               "Codes 4 and 5 (withdrawn, closed for incompleteness) have no decision; 6 (purchased) and the "
                               "preapproval codes 7 and 8 are left out. No source classifies the codes: this is a convention. The "
                               "unconditional rates, their tests, the four-fifths flag and the situation test are computed on the fit "
-                              "year of the pair; the rate-spread estimate uses the loans of codes 1 and 2.",
+                              "year of the pair; the rate-spread estimate uses the loans of codes 1 and 2. No outcome-conditioned test runs: public "
+                              "HMDA carries no loan outcome.",
                               "La aprobación es la acción 1 (préstamo originado) y 2 (solicitud aprobada pero no aceptada); el rechazo "
                               "es 3. Los códigos 4 y 5 (retirada, archivo cerrado por estar incompleto) no tienen decisión; 6 (comprado) "
                               "y los códigos de preaprobación 7 y 8 se dejan fuera. Ninguna fuente clasifica los códigos: es una "
                               "convención. Las tasas incondicionales, sus pruebas, la marca de cuatro quintos y la prueba de situación se "
                               "calculan en el año de ajuste del par; la estimación del diferencial de tasa usa los préstamos de los "
-                              "códigos 1 y 2.")},
+                              "códigos 1 y 2. No hay ninguna prueba condicionada al resultado: el HMDA público no trae el resultado del "
+                              "préstamo.")},
         "dti_recode": {"bins": list(DTI_BINS),
                        "note": t("The debt-to-income field mixes exact whole percents (36 to 49) with bins; it is recoded to the six "
                                  "published bins, the exact values 36 to 49 forming one bin. A convention. The missing markers NA and "
@@ -148,9 +150,13 @@ def conventions_block() -> dict[str, Any]:
                                  "los seis tramos publicados, y los valores exactos 36 a 49 forman un tramo. Una convención. Los "
                                  "marcadores NA y Exempt son datos faltantes.")},
         "group_exclusion": t("The Joint, Not Available and Free Form Text Only categories are carried as their own groups and excluded "
-                             "from the pairwise tests; a convention.",
+                             "from the pairwise tests; a convention. The reference group of each attribute is the customary comparison group, a "
+                             "convention too: White, Not Hispanic or Latino and Male, and 35-44 for age, where no source names a reference "
+                             "age band.",
                              "Las categorías Joint, Not Available y Free Form Text Only se llevan como grupos propios y se excluyen de "
-                             "las pruebas por pares; una convención."),
+                             "las pruebas por pares; una convención. El grupo de referencia de cada atributo es el grupo de comparación habitual, "
+                             "también una convención: White, Not Hispanic or Latino y Male, y 35-44 para la edad, donde ninguna fuente "
+                             "nombra un tramo de edad de referencia."),
         "identifiers": {"id": ID_RULE, "observation_date": DATE_RULE, "label": "convention",
                         "note": t("Public HMDA withholds the loan identifier and the application and action dates: id is the row "
                                   "position in the source file within its activity year, and the observation date is the activity "
