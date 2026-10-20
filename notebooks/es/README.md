@@ -39,5 +39,5 @@ pasan a ser enlaces cuando existe su carpeta.
 
 ## Más allá del estado del arte
 
-El SDD afirma BS-1 a BS-8 (sección Beyond the state of the art). El tema 01 no demuestra ninguna; el cuaderno de nivel 4 de cada
-afirmación llega con la unidad de su tema.
+Todavía no se afirma ninguna: la sección Beyond the state of the art del SDD dice "None claimed." El tema 01 no demuestra nada más
+allá del estado del arte. Cada afirmación entra al SDD junto con el cuaderno de nivel 4 que la demuestra, en la unidad de su tema.

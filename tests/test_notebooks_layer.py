@@ -259,15 +259,62 @@ def test_the_committed_outputs_are_clean_and_in_order():
         assert counts == list(range(1, len(counts) + 1)), path.name
 
 
-def test_a_spanish_notebook_has_the_cells_the_english_one_has():
+NUMBER = re.compile(r"-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?")
+
+
+def stream_text(cell: dict) -> str:
+    return "".join("".join(o["text"]) for o in cell["outputs"] if o["output_type"] == "stream")
+
+
+def numeric_tokens(cell: dict) -> list[str]:
+    """The numbers a code cell printed, in order: what the two trees must share (their text is in their own language)."""
+    return NUMBER.findall(stream_text(cell))
+
+
+def test_a_spanish_notebook_has_the_cells_and_the_numbers_the_english_one_has():
     assert kind(findings_of(ROOT), "mirror") == []
     for en in notebooks(ROOT):
         es = ROOT / "notebooks" / "es" / en.parent.name / en.name
         a, b = read_nb(en), read_nb(es)
         assert [c["cell_type"] for c in a["cells"]] == [c["cell_type"] for c in b["cells"]]
-        a_out = [json.dumps(c["outputs"], sort_keys=True) for c in code_cells(a) if all(o["output_type"] == "stream" for o in c["outputs"])]
-        b_out = [json.dumps(c["outputs"], sort_keys=True) for c in code_cells(b) if all(o["output_type"] == "stream" for o in c["outputs"])]
-        assert a_out == b_out, f"{en.name}: the printed outputs of the two trees differ"
+        a_cells, b_cells = code_cells(a), code_cells(b)
+        assert len(a_cells) == len(b_cells)
+        for i, (x, y) in enumerate(zip(a_cells, b_cells), 1):
+            assert [o["output_type"] for o in x["outputs"]] == [o["output_type"] for o in y["outputs"]], f"{en.name}: code cell {i}"
+            assert numeric_tokens(x) == numeric_tokens(y), f"{en.name}: code cell {i}: the printed numbers of the two trees differ"
+
+
+# English labels the English notebooks print; a Spanish notebook prints none of them (conventions/product-notebooks.md:
+# each notebook is written in its tree's language: prose, comments, labels and printed text)
+ENGLISH_LABELS = (
+    "registered tests", "derived folder found", "default case", "held-out cards", "test rows", "keys of a test row",
+    "cards in the sample", "mean PD of the scorecard", "standard error", "95% interval", "pairs compared",
+    "equal to the engine", "p-value, SciPy", "expected defaults", "Brier score", "tests with a threshold", "worst light",
+    "tasks:", "tests compared", "all agree", "thresholds by kind", "same label", "same threshold", "obligors:",
+    "truth status", "same envelope", "installed riskvalidation", "ignored columns", "contract 1 counts", "first upper bounds",
+    "grades:", "defaults:", "no value", "amber below", "light:", "policy:", "50 cards", "9000 cards", "mean PD",
+    "module version", "worst:", "results:", "counts:", "expected by the PDs",
+)
+
+
+def literals(source: str) -> str:
+    """The text inside the quotes of a code cell: where a label lives (an identifier such as `run.results` is not a label)."""
+    return "\n".join(re.findall(r"\"[^\"\n]*\"|'[^'\n]*'", source))
+
+
+def test_the_english_labels_list_is_not_vacuous_the_english_notebooks_print_it():
+    text = "\n".join(stream_text(c) + literals("".join(c["source"])) for p in notebooks(ROOT) for c in code_cells(read_nb(p)))
+    assert [label for label in ENGLISH_LABELS if label not in text] == []
+
+
+def test_a_spanish_notebook_prints_spanish_labels_and_reads_the_spanish_fields():
+    for path in notebooks(ROOT, "es"):
+        for i, cell in enumerate(code_cells(read_nb(path)), 1):
+            seen = [label for label in ENGLISH_LABELS if label in stream_text(cell) or label in literals("".join(cell["source"]))]
+            assert seen == [], f"{path.name}: code cell {i} prints English labels {seen}"
+            source = "".join(cell["source"])
+            # a bilingual field is read in the tree's language; the English one may only be shown beside the Spanish one
+            assert '["en"]' not in source or '["es"]' in source, f"{path.name}: code cell {i} reads the English field of a bilingual document"
 
 
 def test_a_notebook_never_installs_and_never_needs_the_data_root_or_writes_the_repository():
@@ -466,7 +513,10 @@ def test_adversarial_an_error_a_stderr_stream_a_machine_path_and_a_token_are_fou
 
     edit_both(repo, notebooks(repo)[0].name, plant)
     found = findings_of(repo)
-    assert kind(found, "output") and kind(found, "execution") and kind(found, "path") and kind(found, "secret")
+    # one assert per planted defect: the error output alone must not satisfy the stderr check, nor the reverse
+    assert any("error output" in f for f in kind(found, "output"))
+    assert any("stderr stream" in f for f in kind(found, "output"))
+    assert kind(found, "execution") and any("machine path" in f for f in kind(found, "path")) and kind(found, "secret")
 
 
 def test_adversarial_an_image_above_the_limit_is_found(repo):
@@ -564,6 +614,64 @@ def test_adversarial_topic_one_with_a_dropped_notebook_loses_its_plan(repo):
         (repo / "notebooks" / lang / TOPIC_01 / sorted(p.name for p in (repo / "notebooks" / lang / TOPIC_01).glob("*.ipynb"))[-1]).unlink()
     got = [read_nb(p)["metadata"]["caos"]["level"] for p in notebooks(repo)]
     assert got != [1, 1, 1, 2]
+
+
+# ---- the review round (U17-A fixes): the index wording, the level 2 equations and the policy scope -------------------------
+
+
+def test_no_index_states_a_claim_while_the_sdd_claims_none():
+    assert CLAIMS == frozenset()
+    for rel, phrase in (("README.md", "no claim is stated yet"), ("en/README.md", "no claim is stated yet"), ("es/README.md", "todavía no se afirma ninguna")):
+        text = (ROOT / "notebooks" / rel).read_text(encoding="utf-8")
+        assert not re.search(r"BS-\d", text), f"notebooks/{rel} states a BS- claim the SDD does not make"
+        assert phrase in text.lower(), f"notebooks/{rel} does not say that no claim is stated yet"
+
+
+def level_two(lang: str) -> dict:
+    return read_nb(ROOT / "notebooks" / lang / TOPIC_01 / "04-a-battery-on-your-own-scored-sample.ipynb")
+
+
+def test_the_level_two_notebook_states_its_equations_and_shows_the_intermediates():
+    for lang in LANGS:
+        nb = level_two(lang)
+        markdown = "\n".join("".join(c["source"]) for c in markdown_cells(nb))
+        assert markdown.count("$$") // 2 >= 5, f"{lang}: the level 2 notebook states fewer than five display equations"
+        for needle in ("10.21314/JRMV.2020.227", "Hosmer", "\\chi^2_{B-1}", "\\chi^2_{K}"):
+            assert needle in markdown, f"{lang}: {needle} is missing from the level 2 notebook"
+        tokens = NUMBER.findall("\n".join(stream_text(c) for c in code_cells(nb)))
+        for number in ("62.603", "0.0169", "136", "341"):
+            assert number in tokens, f"{lang}: the level 2 notebook does not print {number}"
+
+
+def test_the_policy_claim_of_notebook_three_is_scoped_and_states_the_regulatory_zones():
+    for lang in LANGS:
+        nb = read_nb(ROOT / "notebooks" / lang / TOPIC_01 / "03-policies-and-traffic-lights.ipynb")
+        markdown = "\n".join("".join(c["source"]) for c in markdown_cells(nb))
+        for needle in ("MAR32.9", "SRP31", "https://www.bis.org/basel_framework/chapter/MAR/32.htm", "https://www.bis.org/basel_framework/chapter/SRP/31.htm"):
+            assert needle in markdown, f"{lang}: {needle} is missing from notebook 03"
+        for unscoped in ("the sources the engine cites set none", "las fuentes que cita el motor no fijan ninguno", "Supervisors set no such thresholds",
+                         "Los supervisores no fijan tales umbrales", "the tests hold no thresholds", "las pruebas no guardan umbrales",
+                         "of the order of 1e-9", "del orden de 1e-9"):
+            assert unscoped not in markdown, f"{lang}: notebook 03 still says {unscoped!r}"
+
+
+def test_the_wording_fixes_of_the_review_hold():
+    def md(lang: str, name: str) -> str:
+        return "\n".join("".join(c["source"]) for c in markdown_cells(read_nb(ROOT / "notebooks" / lang / TOPIC_01 / name)))
+
+    one, two, four = ("01-install-the-engine-and-open-an-artifact.ipynb", "02-a-first-testresult-on-a-real-slice.ipynb",
+                      "04-a-battery-on-your-own-scored-sample.ipynb")
+    for lang in LANGS:
+        for name in (two, four):
+            assert "Annex 3.1" not in md(lang, name) and "Anexo 3.1" not in md(lang, name), f"{lang}/{name}: the ECB annex is Annex 1 (section 3.1)"
+        brier_cells = "".join("".join(c["source"]) for c in code_cells(read_nb(ROOT / "notebooks" / lang / TOPIC_01 / two)))
+        assert "decomposition_exact" in brier_cells
+    assert "which calls one test yourself" not in md("en", one) and "que llama tú mismo" not in md("es", one)
+    assert "has the ranking changed" not in md("en", four) and "cambió el ordenamiento" not in md("es", four)
+    assert "which is why the engine reports both" not in md("en", four) and "por eso el motor informa ambas" not in md("es", four)
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    api = next(ln for ln in readme.split("## Areas", 1)[1].splitlines() if ln.startswith("| API"))
+    assert "/api/readiness" in api and "/healthz" in api and "four read-only endpoints" not in api
 
 
 # ---- RP gates: the README by areas -------------------------------------------------------------------------------------
