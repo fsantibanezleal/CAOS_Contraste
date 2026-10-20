@@ -9,7 +9,7 @@ import numpy as np
 from c20_support import DATA
 
 from pipeline.cases import c01_features as feat
-from pipeline.cases.c20 import fed, polish, sgcd
+from pipeline.cases.c20 import data, fed, sgcd
 from pipeline.io import contract as c1
 from pipeline.io.readers import GERMAN_OBSERVATION_DATE
 
@@ -64,11 +64,11 @@ def test_the_fed_reader_reads_na_as_missing_and_the_rating_on_its_scale() -> Non
 
 def test_the_polish_reader_maps_missing_values_and_the_target(tmp_path: Path) -> None:
     z = polish_zip(tmp_path / "pl.zip", [(["1.5"] * 63 + ["?"], "0"), (["2.5"] * 64, "1")])
-    rows = polish.read_polish(z)
+    rows = data.read_polish(z)
     assert [r["id"] for r in rows] == ["PL3-00001", "PL3-00002"] and [r["target"] for r in rows] == [0, 1]
     assert rows[0]["Attr64"] is None and rows[0]["Attr1"] == 1.5 and rows[1]["Attr64"] == 2.5
-    assert rows[0]["observation_date"] == polish.OBSERVATION_DATE == "2013-12-31"
-    report = c1.validate("scored_sample", rows, extra_fields=polish.FIELDS)
+    assert rows[0]["observation_date"] == data.OBSERVATION_DATE == "2013-12-31"
+    report = c1.validate("scored_sample", rows, extra_fields=data.POLISH_FIELDS)
     assert report.counts()["accepted"] == 2 and report.counts()["flagged"] == 1
 
 
@@ -77,6 +77,6 @@ def polish_zip(path: Path, rows: list[tuple[list[str], str]]) -> Path:
     body = "".join(",".join([*vals, cls]) + "\n" for vals, cls in rows)
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w") as z:
-        z.writestr(polish.MEMBER, head + body)
+        z.writestr(data.POLISH_MEMBER, head + body)
     path.write_bytes(buf.getvalue())
     return path

@@ -21,12 +21,12 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from ...io import readers
+from ...io import polish, readers
 from ...io.contract import Field
 from ...stages import split
 from ...stages.ingest import ingest
 from .. import c01_features as feat
-from . import polish, sgcd
+from . import sgcd
 from .conv import CASE_ID
 
 TAIWAN_ZIP = "default+of+credit+card+clients.zip"
@@ -37,6 +37,35 @@ EXTRA_TAIWAN = (
     Field("MARRIAGE", "int", {"en": "Marital status (1 married, 2 single, 3 others; a protected attribute, never an input)",
                               "es": "Estado civil (1 casado, 2 soltero, 3 otros; atributo protegido, nunca una entrada)"}, on_missing="flag"),
 )
+
+
+# --- Polish, the 3-year file: C20's contract-1 convention over the shared reader (decision G19) --------------------------------------
+#: the base model of the Fed shift probes reads the 3-year file only (decision Q6 (a)); the files carry no firm identifier and no date, so
+#: ``id`` is the row position in the file (``PL3-<row>``) and ``observation_date`` is the last day of the dataset's span, 2013-12-31 (both
+#: named conventions, as the HMDA and German readers write theirs). The 64 ratios keep their names ``Attr1`` to ``Attr64``.
+POLISH_FILE = 3
+POLISH_MEMBER = polish.member(POLISH_FILE)
+POLISH_ATTRS = polish.ATTRIBUTES
+OBSERVATION_DATE = "2013-12-31"
+POLISH_FIELDS: tuple[Field, ...] = tuple(
+    Field(a, "float", {"en": f"Financial ratio {a} of the Polish Companies Bankruptcy data",
+                       "es": f"Razón financiera {a} de los datos de quiebra de empresas polacas"}, unit="ratio", on_missing="flag")
+    for a in POLISH_ATTRS)
+POLISH_MONOTONE: dict[str, int] = {a: 0 for a in POLISH_ATTRS}
+
+
+def read_polish(zip_path: str | Path) -> list[dict[str, Any]]:
+    """One record per firm-year row of the 3-year file: ``Attr1`` to ``Attr64`` (None for ``?``) and the bankruptcy flag as the target."""
+    X, y = polish.read_member(zip_path, POLISH_MEMBER)
+    vals = X.to_numpy(dtype=float)
+    records = []
+    for k in range(len(y)):
+        rec: dict[str, Any] = {"id": f"PL{POLISH_FILE}-{k + 1:05d}", "observation_date": OBSERVATION_DATE, "target": int(y[k])}
+        for j, a in enumerate(POLISH_ATTRS):
+            v = float(vals[k, j])
+            rec[a] = None if not np.isfinite(v) else v
+        records.append(rec)
+    return records
 
 
 @dataclass
@@ -91,16 +120,16 @@ def load_taiwan(data_root: Path, seed: int, max_rows: int | None = None) -> Fram
 
 
 def load_polish(data_root: Path, seed: int, max_rows: int | None = None) -> Frame:
-    X, rep = ingest(CASE_ID, polish.SOURCE_ID, polish.ZIP_NAME, polish.read_polish, data_root=data_root, family="scored_sample",
-                    extra_fields=polish.FIELDS)
+    X, rep = ingest(CASE_ID, polish.SOURCE_ID, polish.ZIP_NAME, read_polish, data_root=data_root, family="scored_sample",
+                    extra_fields=POLISH_FIELDS)
     y = X["target"].to_numpy(dtype=int)
     X, y = _subsample(X, y, max_rows, seed)
     sp = split.stratified_split(y, seed=seed)
-    feats = list(polish.ATTRS)
+    feats = list(POLISH_ATTRS)
     med = X.iloc[sp.train][feats].astype(float).median()
     X = X.copy()
     X[feats] = X[feats].astype(float).fillna(med)      # the training-slice median in every slice
-    return Frame("polish", polish.SOURCE_ID, X, y, polish.ATTRS, (), polish.MONOTONE, sp.train, sp.calibration, sp.holdout, sp.folds,
+    return Frame("polish", polish.SOURCE_ID, X, y, POLISH_ATTRS, (), POLISH_MONOTONE, sp.train, sp.calibration, sp.holdout, sp.folds,
                  rep.summary(), extras={"imputed_with": "training-slice median", "median": {k: float(v) for k, v in med.items()}})
 
 
