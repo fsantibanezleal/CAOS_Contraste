@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -56,12 +57,26 @@ def load(rel: str, source: str, ref: str) -> tuple[dict, str]:
     return json.loads(raw.decode("utf-8")), sha256_lf(raw)
 
 
+def registry_decisions(src: Path) -> dict[str, str]:
+    """test id -> ``decision`` (``p_value`` or ``metric``) of every ``@register(...)`` in the engine sources: the ``spec(test_id).decision`` of
+    ``core/registry.py``. Read from the source text, so the engine need not be installed."""
+    out: dict[str, str] = {}
+    rx = re.compile(r'register\(\s*"([^"]+)"(.*?)decision="(p_value|metric)"', re.S)
+    for f in sorted(src.rglob("*.py")):
+        for m in rx.finditer(f.read_text(encoding="utf-8")):
+            out[m.group(1)] = m.group(3)
+    return out
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--c18-ref", default="origin/task/u13-p1")
+    ap.add_argument("--engine-src", required=True, help="the src folder of the engine checkout (the batch 3 integration head) whose registry gives spec(test_id).decision")
     args = ap.parse_args()
+    engine_commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=Path(args.engine_src).parent, check=True, capture_output=True, text=True).stdout.strip()
+    decisions = registry_decisions(Path(args.engine_src))
     commit = subprocess.run(["git", "rev-parse", args.c18_ref], cwd=ROOT, check=True, capture_output=True, text=True).stdout.strip()
-    out: dict = {"c18_ref": args.c18_ref, "c18_commit": commit, "cases": {}}
+    out: dict = {"c18_ref": args.c18_ref, "c18_commit": commit, "engine_commit": engine_commit, "cases": {}}
     for case, (fit, models_name, variants, default, source) in CASES.items():
         models, models_hash = load(f"data/derived/{case}/{models_name}", source, args.c18_ref)
         manifest, manifest_hash = load(f"data/derived/manifests/{case}.json", source, args.c18_ref)
@@ -90,6 +105,7 @@ def main() -> None:
                 "variant_id": doc["variant_id"], "path": f"data/derived/{case}/{v}.json", "sha256": h,
                 "code_version": doc["provenance"]["code_version"],
                 "riskvalidation_version": doc["provenance"]["riskvalidation_version"],
+                "sources": [i["source"] for i in doc["provenance"]["inputs"]],
                 "findings": doc["findings"],
                 "tests": [{k: r[k] for k in keys} for r in doc["tests"]],
             })
@@ -115,6 +131,8 @@ def main() -> None:
         if case == "C18":
             named = models["fit"]["named_parameters"]
             entry["named_parameters_count"] = len(named)
+        default_rows = next(v for v in entry["variants"] if v["variant_id"] == default)["tests"]
+        entry["spec_decisions"] = {t: decisions.get(t) for t in sorted({r["test_id"] for r in default_rows})}
         out["cases"][case] = entry
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")

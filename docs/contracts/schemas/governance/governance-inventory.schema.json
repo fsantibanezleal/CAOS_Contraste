@@ -10,6 +10,7 @@
     "governance_id",
     "schema_version",
     "as_of",
+    "as_of_basis",
     "provenance",
     "conventions",
     "engine_node",
@@ -37,6 +38,9 @@
     },
     "as_of": {
       "$ref": "#/$defs/govDate"
+    },
+    "as_of_basis": {
+      "$ref": "#/$defs/govAsOfBasis"
     },
     "provenance": {
       "$ref": "#/$defs/govProvenance"
@@ -97,6 +101,23 @@
   },
   "description": "Catalog row governance-inventory 1.0.0: the model inventory of Contraste's own case models (data/derived/governance/inventory.json): one entry per fit (case_id/fit_id) with the 40 B.2 attributes, the components, the scope record, the tier block, the lifecycle state, the schedule dates, the dependency edges, the engine node and the governance findings of the inventory itself.",
   "$defs": {
+    "govAsOfBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "label": {
+          "const": "convention"
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "Why the as-of date is the date it is (W15-13). Production rule: the date of the newest release heading of CHANGELOG.md when the bake runs, never earlier than a raised date. A fixture states that its date is chosen to exercise the overdue rule."
+    },
     "govDate": {
       "type": "string",
       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
@@ -266,7 +287,8 @@
             "additionalProperties": false,
             "required": [
               "path",
-              "sha256"
+              "sha256",
+              "ref"
             ],
             "properties": {
               "path": {
@@ -275,11 +297,23 @@
               },
               "sha256": {
                 "$ref": "#/$defs/govSha256"
+              },
+              "ref": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "The git ref and commit the bytes were read from when the document is not on the branch the bake runs on (the C18 documents of the fixture); null otherwise."
               }
             }
           },
           "minItems": 1,
-          "description": "Every case document read, with the sha256 of its bytes (line endings normalised to LF)."
+          "description": "Every case document read, with the sha256 of its bytes (line endings normalised to LF) and its git ref."
         }
       },
       "description": "Where a governance document came from: code and engine versions and the sha256 of every case document it read."
@@ -474,7 +508,8 @@
           "$ref": "#/$defs/invAttr"
         },
         "A07": {
-          "$ref": "#/$defs/invAttr"
+          "$ref": "#/$defs/invAttr",
+          "description": "Computed by riskvalidation.governance.lifecycle.transition."
         },
         "A08": {
           "$ref": "#/$defs/invAttr"
@@ -519,13 +554,16 @@
           "$ref": "#/$defs/invAttr"
         },
         "A22": {
-          "$ref": "#/$defs/invAttr"
+          "$ref": "#/$defs/invAttr",
+          "description": "Computed by riskvalidation.governance.tiering.materiality."
         },
         "A23": {
-          "$ref": "#/$defs/invAttr"
+          "$ref": "#/$defs/invAttr",
+          "description": "Computed by riskvalidation.governance.tiering.complexity."
         },
         "A24": {
-          "$ref": "#/$defs/invAttr"
+          "$ref": "#/$defs/invAttr",
+          "description": "Computed by riskvalidation.governance.tiering.apply_override."
         },
         "A25": {
           "$ref": "#/$defs/invAttr"
@@ -558,16 +596,20 @@
           "$ref": "#/$defs/invAttr"
         },
         "A35": {
-          "$ref": "#/$defs/invAttr"
+          "$ref": "#/$defs/invAttr",
+          "description": "Computed by riskvalidation.governance.schedule.next_dates."
         },
         "A36": {
-          "$ref": "#/$defs/invAttr"
+          "$ref": "#/$defs/invAttr",
+          "description": "Computed by riskvalidation.governance.report.executive_counts."
         },
         "A37": {
-          "$ref": "#/$defs/invAttr"
+          "$ref": "#/$defs/invAttr",
+          "description": "Computed by riskvalidation.governance.findings.register_counts."
         },
         "A38": {
-          "$ref": "#/$defs/invAttr"
+          "$ref": "#/$defs/invAttr",
+          "description": "Computed by riskvalidation.governance.findings.due_date."
         },
         "A39": {
           "$ref": "#/$defs/invAttr"
@@ -782,16 +824,19 @@
         "scored": {
           "type": "integer",
           "minimum": 1,
-          "maximum": 7
+          "maximum": 7,
+          "description": "Computed by riskvalidation.governance.tiering.complexity."
         },
         "sum": {
           "type": "integer",
-          "minimum": 1
+          "minimum": 1,
+          "description": "Computed by riskvalidation.governance.tiering.complexity."
         },
         "mean": {
           "type": "number",
           "minimum": 1,
-          "maximum": 4
+          "maximum": 4,
+          "description": "Computed by riskvalidation.governance.tiering.complexity."
         },
         "c": {
           "type": "object",
@@ -981,10 +1026,16 @@
               "additionalProperties": false,
               "required": [
                 "feeds_capital_provisioning_or_reporting",
+                "compliance_monitoring",
                 "none"
               ],
               "properties": {
                 "feeds_capital_provisioning_or_reporting": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4
+                },
+                "compliance_monitoring": {
                   "type": "integer",
                   "minimum": 1,
                   "maximum": 4
@@ -1213,6 +1264,7 @@
         "fit_id",
         "title",
         "attributes",
+        "variants",
         "components",
         "scope",
         "tier_block",
@@ -1240,6 +1292,13 @@
         },
         "attributes": {
           "$ref": "#/$defs/invAttributes"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/invVariant"
+          },
+          "minItems": 1
         },
         "components": {
           "type": "array",
@@ -1300,6 +1359,7 @@
       "additionalProperties": false,
       "required": [
         "case_id",
+        "variant_id",
         "reason"
       ],
       "properties": {
@@ -1307,11 +1367,23 @@
           "type": "string",
           "pattern": "^C\\d{2}$"
         },
+        "variant_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Null when the whole case is left out; a variant id when only that variant has no determinable fit (W15-15)."
+        },
         "reason": {
           "$ref": "../common/text.schema.json"
         }
       },
-      "description": "A case left out of the inventory, with the reason (missing-data behavior)."
+      "description": "A case, or one variant of a case, left out of the inventory, with the reason (missing-data behavior)."
     },
     "invExposure": {
       "type": "object",
@@ -1514,7 +1586,8 @@
       "properties": {
         "generation": {
           "type": "integer",
-          "minimum": 0
+          "minimum": 0,
+          "description": "Computed by riskvalidation.governance.inventory.graph_metrics."
         },
         "x": {
           "type": "number"
@@ -1984,6 +2057,25 @@
           "minLength": 1
         }
       }
+    },
+    "invVariant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "variant_id",
+        "basis"
+      ],
+      "properties": {
+        "variant_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A variant document of the entry and the provenance rule that assigned it (W15-15): the fit whose sources the variant's provenance reads, or the single models document of the case. A variant whose fit cannot be determined is in excluded."
     }
   }
 }

@@ -4,6 +4,13 @@
  "governance_id": "report",
  "schema_version": "1.0.0",
  "as_of": "2026-12-31",
+ "as_of_basis": {
+  "label": "convention",
+  "basis": {
+   "en": "a fixture date chosen after the due dates to exercise the overdue rule; not the date of publication",
+   "es": "una fecha de fixture elegida despues de los vencimientos para ejercer la regla de vencimiento; no es la fecha de publicacion"
+  }
+ },
  "provenance": {
   "code_version": "0.14.000",
   "riskvalidation_version": "0.9.0",
@@ -13,119 +20,148 @@
   "documents_read": [
    {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "c0976c8fabc2d4cf82d076610019cc67e0def9ae8152650954c086162b070151"
+    "sha256": "c0976c8fabc2d4cf82d076610019cc67e0def9ae8152650954c086162b070151",
+    "ref": null
    },
    {
     "path": "data/derived/C01/models-german.json",
-    "sha256": "60aadbffd7f6cba342f239be2b0b3b8661b9d5a7114cfaa6d0f133b0a99b03e6"
+    "sha256": "60aadbffd7f6cba342f239be2b0b3b8661b9d5a7114cfaa6d0f133b0a99b03e6",
+    "ref": null
    },
    {
     "path": "data/derived/C01/german-twin.json",
-    "sha256": "9c0ac47beecf1e5c456ea0be6997855beace3a9e9f53dd36abec031bd0d0872b"
+    "sha256": "9c0ac47beecf1e5c456ea0be6997855beace3a9e9f53dd36abec031bd0d0872b",
+    "ref": null
    },
    {
     "path": "data/derived/manifests/C07.json",
-    "sha256": "bf356d3c335cebc0bad691c14ceb12d1747973335c071d87f073f5ed7709801a"
+    "sha256": "bf356d3c335cebc0bad691c14ceb12d1747973335c071d87f073f5ed7709801a",
+    "ref": null
    },
    {
     "path": "data/derived/C07/models-banco-andino.json",
-    "sha256": "4d0f4bb96c0ef3dee6401f711f3b59fa5a0505d062141ec7cb6eebbb5b8cc2ac"
+    "sha256": "4d0f4bb96c0ef3dee6401f711f3b59fa5a0505d062141ec7cb6eebbb5b8cc2ac",
+    "ref": null
    },
    {
     "path": "data/derived/C07/base.json",
-    "sha256": "1e08b10e1d49419f86bbbc14fb06e82aba1faa99443bb4e799cd18ce4e7c13c5"
+    "sha256": "1e08b10e1d49419f86bbbc14fb06e82aba1faa99443bb4e799cd18ce4e7c13c5",
+    "ref": null
    },
    {
     "path": "data/derived/C07/combined-severe.json",
-    "sha256": "e079dfbdd14ecec8b979ab80435964e22567aaaa657defbad6744637b03cbabb"
+    "sha256": "e079dfbdd14ecec8b979ab80435964e22567aaaa657defbad6744637b03cbabb",
+    "ref": null
    },
    {
     "path": "data/derived/C07/consumer-arrears-shock.json",
-    "sha256": "f47e32bccbe450f0582b2479302cd28a428a6601d9821fd3675b75bb838aeb99"
+    "sha256": "f47e32bccbe450f0582b2479302cd28a428a6601d9821fd3675b75bb838aeb99",
+    "ref": null
    },
    {
     "path": "data/derived/C07/house-price-fall.json",
-    "sha256": "45fa83c963f000281ceb41a63413666d415e21db4c8ace76f6fb858e288f659a"
+    "sha256": "45fa83c963f000281ceb41a63413666d415e21db4c8ace76f6fb858e288f659a",
+    "ref": null
    },
    {
     "path": "data/derived/C07/recession.json",
-    "sha256": "b9d02ae186c431e4f43541fc779884171be9af2fe5df4357678d2e9e2a574f1c"
+    "sha256": "b9d02ae186c431e4f43541fc779884171be9af2fe5df4357678d2e9e2a574f1c",
+    "ref": null
    },
    {
     "path": "data/derived/C07/uf-inflation-spike.json",
-    "sha256": "24cb9ba1c6ec485fc74e6c9882c9bfe6d305a313ff08a65ac5af9909c2c8e01a"
+    "sha256": "24cb9ba1c6ec485fc74e6c9882c9bfe6d305a313ff08a65ac5af9909c2c8e01a",
+    "ref": null
    },
    {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "6225136025c8457bab8857501cb8b2939bd785807184f5e9f52a975299c359e5"
+    "sha256": "6225136025c8457bab8857501cb8b2939bd785807184f5e9f52a975299c359e5",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
    },
    {
     "path": "data/derived/C18/models-banco-andino.json",
-    "sha256": "4f5927257cbcca0e717753acf81e84f78b33a4906553ee571244874b9598ae3d"
+    "sha256": "4f5927257cbcca0e717753acf81e84f78b33a4906553ee571244874b9598ae3d",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
    },
    {
     "path": "data/derived/C18/baseline.json",
-    "sha256": "b424e3f4d386478c503eff31bd1d2bc597e20089e0b872a561b4d11e7cf78921"
+    "sha256": "b424e3f4d386478c503eff31bd1d2bc597e20089e0b872a561b4d11e7cf78921",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
    },
    {
     "path": "data/derived/C18/eba-2025-adverse.json",
-    "sha256": "2b191fb877657b8a26850a5de8458bbe4fc88454d6d3753220189b6b95e46437"
+    "sha256": "2b191fb877657b8a26850a5de8458bbe4fc88454d6d3753220189b6b95e46437",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
    },
    {
     "path": "data/derived/C18/fed-2026-severely-adverse.json",
-    "sha256": "fd614c8edf07464ec1bd266ec2f6b35506b214fcb938e62ed804d83bb5117fbd"
+    "sha256": "fd614c8edf07464ec1bd266ec2f6b35506b214fcb938e62ed804d83bb5117fbd",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
    },
    {
     "path": "data/derived/C18/ngfs-delayed-transition.json",
-    "sha256": "5f78224b085addbc50b4c0ca823a87e150ffbefb5bbbfffe650cfddff76d57c5"
+    "sha256": "5f78224b085addbc50b4c0ca823a87e150ffbefb5bbbfffe650cfddff76d57c5",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
    },
    {
     "path": "data/derived/C18/reverse-stress.json",
-    "sha256": "dc5bc0dd9e74ab9a7cee4dec9425eb8b633b014e2681dd5f1db3d0e75461e40a"
+    "sha256": "dc5bc0dd9e74ab9a7cee4dec9425eb8b633b014e2681dd5f1db3d0e75461e40a",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
    },
    {
     "path": "data/derived/C18/t-copula-baseline.json",
-    "sha256": "bbe42eb4ba4304106ae82ff3222b88d190d545f20d541e501d03d2643d2758a2"
+    "sha256": "bbe42eb4ba4304106ae82ff3222b88d190d545f20d541e501d03d2643d2758a2",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
    },
    {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "db7ab2bc13ef7448e26f89d8f9af7589fbdcaebd9fb8188ceb5920db59c9fe6c"
+    "sha256": "db7ab2bc13ef7448e26f89d8f9af7589fbdcaebd9fb8188ceb5920db59c9fe6c",
+    "ref": null
    },
    {
     "path": "data/derived/C22/models-generators.json",
-    "sha256": "2d09ae0f0271b7e1de112586f22ba9f2fe48fe9866e5b61d8c71f391bf9db3b7"
+    "sha256": "2d09ae0f0271b7e1de112586f22ba9f2fe48fe9866e5b61d8c71f391bf9db3b7",
+    "ref": null
    },
    {
     "path": "data/derived/C22/broken-monotonicity.json",
-    "sha256": "1b6c6ed3a0bc5057317b2120a44ef9ed512e8fac97d323092699cd1e3a1197d8"
+    "sha256": "1b6c6ed3a0bc5057317b2120a44ef9ed512e8fac97d323092699cd1e3a1197d8",
+    "ref": null
    },
    {
     "path": "data/derived/C22/clustering.json",
-    "sha256": "e755f149dfe75c49ef54ca4fae78c489f78be13370c2bbff4e93851357cc4492"
+    "sha256": "e755f149dfe75c49ef54ca4fae78c489f78be13370c2bbff4e93851357cc4492",
+    "ref": null
    },
    {
     "path": "data/derived/C22/concentration.json",
-    "sha256": "35c7d65c9c7bda2131ea2fca1f339bc091419b19bac792c3c61a78fe0c1f66ae"
+    "sha256": "35c7d65c9c7bda2131ea2fca1f339bc091419b19bac792c3c61a78fe0c1f66ae",
+    "ref": null
    },
    {
     "path": "data/derived/C22/discrimination-decay.json",
-    "sha256": "218ee880efa1bfdf187a50e4d1b902a6b86cefada6c598d28c6d5daca09137da"
+    "sha256": "218ee880efa1bfdf187a50e4d1b902a6b86cefada6c598d28c6d5daca09137da",
+    "ref": null
    },
    {
     "path": "data/derived/C22/drift.json",
-    "sha256": "3bb6d9bb6152b9f603ca4404d9c8d61b2f2cf779af76c93df4ec01563b7d59fa"
+    "sha256": "3bb6d9bb6152b9f603ca4404d9c8d61b2f2cf779af76c93df4ec01563b7d59fa",
+    "ref": null
    },
    {
     "path": "data/derived/C22/leakage.json",
-    "sha256": "651c5113607b7c0cd5850837ccddf455b291918e341662632912d78ea35c419d"
+    "sha256": "651c5113607b7c0cd5850837ccddf455b291918e341662632912d78ea35c419d",
+    "ref": null
    },
    {
     "path": "data/derived/C22/miscalibration.json",
-    "sha256": "9bdf292b5933c5366d581ee45928b5845966ded5f9b04030c2c30dc9a66fd467"
+    "sha256": "9bdf292b5933c5366d581ee45928b5845966ded5f9b04030c2c30dc9a66fd467",
+    "ref": null
    },
    {
     "path": "data/derived/C22/null.json",
-    "sha256": "0ce1fb6140678acf48d51e84c1c5bcd880cc20fbb2ab38ec6314a02667bd2dc0"
+    "sha256": "0ce1fb6140678acf48d51e84c1c5bcd880cc20fbb2ab38ec6314a02667bd2dc0",
+    "ref": null
    }
   ]
  },
@@ -516,9 +552,12 @@
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); dossier 05 G.1 (the aggregation ladder: simple sum, variance-covariance, copulas)",
        "policy": {
         "label": "contraste-aggregation-battery-1.0.0; amber=0.1; tolerance=1e-09",
-        "kind": "upper_bad",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "amber": 0.1,
          "tolerance": 1e-09
@@ -541,9 +580,12 @@
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); Rosenberg and Schuermann (2006), A general approach to integrated risk management with skewed, fat-tailed risks, J. Financial Economics 79(3):569-614, doi:10.1016/j.jfineco.2005.03.001 (dossier 05 G.2)",
        "policy": {
         "label": "contraste-aggregation-battery-1.0.0; amber=0.05; red=0.15",
-        "kind": "upper_bad",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "amber": 0.05,
          "red": 0.15
@@ -566,9 +608,12 @@
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); dossier 05 G.3 (VaR is not subadditive; worst-case VaR bounds by the rearrangement algorithm of Embrechts, Puccetti and Ruschendorf 2013, doi:10.1016/j.jbankfin.2013.03.014)",
        "policy": {
         "label": "contraste-aggregation-battery-1.0.0; tolerance=1e-09",
-        "kind": "upper_bad",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "tolerance": 1e-09
         },
@@ -590,9 +635,12 @@
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level)",
        "policy": {
         "label": "contraste-aggregation-battery-1.0.0; amber=0.1; tolerance=1e-09",
-        "kind": "upper_bad",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "amber": 0.1,
          "tolerance": 1e-09
@@ -615,9 +663,12 @@
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); dossier 05 G.3 (VaR is not subadditive; worst-case VaR bounds by the rearrangement algorithm of Embrechts, Puccetti and Ruschendorf 2013, doi:10.1016/j.jbankfin.2013.03.014)",
        "policy": {
         "label": "contraste-aggregation-battery-1.0.0; tolerance=1e-09",
-        "kind": "upper_bad",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "tolerance": 1e-09
         },
@@ -640,8 +691,11 @@
        "policy": {
         "label": "contraste-aggregation-battery-1.0.0; expected_horizon=1.0; expected_level=0.999",
         "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "expected_horizon": 1.0,
          "expected_level": 0.999
@@ -664,9 +718,12 @@
        "reference": "Tasche (2008), Capital allocation to business units and sub-portfolios: the Euler principle, arXiv 0708.2542 (full allocation); dossier 05 G.5 (validation tests of an economic capital model: check the allocation sums to the total, the sensitivity checks)",
        "policy": {
         "label": "contraste-portfolio-battery-1.0.0; tolerance=1e-06",
-        "kind": "upper_bad",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "tolerance": 1e-06
         },
@@ -689,8 +746,11 @@
        "policy": {
         "label": "contraste-stress-battery-1.0.0; rule=red-on-any",
         "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "rule": "red-on-any"
         },
@@ -712,9 +772,12 @@
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
        "policy": {
         "label": "contraste-stress-battery-1.0.0; peak_amber=0.35; peak_red=0.6; timing_quarters=2",
-        "kind": "upper_bad",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "peak_amber": 0.35,
          "peak_red": 0.6,
@@ -738,9 +801,12 @@
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
        "policy": {
         "label": "contraste-stress-battery-1.0.0; peak_amber=0.35; peak_red=0.6; timing_quarters=2",
-        "kind": "upper_bad",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "peak_amber": 0.35,
          "peak_red": 0.6,
@@ -764,9 +830,12 @@
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
        "policy": {
         "label": "contraste-stress-battery-1.0.0; peak_amber=0.35; peak_red=0.6; timing_quarters=2",
-        "kind": "upper_bad",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "peak_amber": 0.35,
          "peak_red": 0.6,
@@ -790,9 +859,12 @@
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
        "policy": {
         "label": "contraste-stress-battery-1.0.0; peak_amber=0.35; peak_red=0.6; timing_quarters=2",
-        "kind": "upper_bad",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "peak_amber": 0.35,
          "peak_red": 0.6,
@@ -816,9 +888,12 @@
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
        "policy": {
         "label": "contraste-stress-battery-1.0.0; peak_amber=0.35; peak_red=0.6; timing_quarters=2",
-        "kind": "upper_bad",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "peak_amber": 0.35,
          "peak_red": 0.6,
@@ -842,9 +917,12 @@
        "reference": "EBA 2025 EU-wide stress test, Methodological Note of 2025-01-20, paras 33, 34 and 90 (static balance sheet: constant total, no cure of stage 3); dossier 05 H.4 and H.7",
        "policy": {
         "label": "contraste-stress-battery-1.0.0; tolerance=0.006000000000000001",
-        "kind": "upper_bad",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "tolerance": 0.006000000000000001
         },
@@ -866,9 +944,12 @@
        "reference": "dossier 05 H.7: document severity relative to history (GDP and unemployment paths against the GFC, as the EBA does)",
        "policy": {
         "label": "contraste-stress-battery-1.0.0; minimum=0.75",
-        "kind": "lower_bad",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "minimum": 0.75
         },
@@ -890,9 +971,12 @@
        "reference": "dossier 05 H.7: document severity relative to history (GDP and unemployment paths against the GFC, as the EBA does)",
        "policy": {
         "label": "contraste-stress-battery-1.0.0; minimum=0.75",
-        "kind": "lower_bad",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "minimum": 0.75
         },
@@ -914,9 +998,12 @@
        "reference": "dossier 05 H.7: document severity relative to history (GDP and unemployment paths against the GFC, as the EBA does)",
        "policy": {
         "label": "contraste-stress-battery-1.0.0; minimum=0.75",
-        "kind": "lower_bad",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
         "alpha_amber": null,
         "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
         "parameters": {
          "minimum": 0.75
         },
@@ -935,8 +1022,8 @@
       "es": "Tipo de umbral para filas sin archivo de politica"
      },
      "reason": {
-      "en": "the inline battery strings have no policy file to call threshold() on; the kind shown is read from the string's parameters (UNVERIFIED against the registry)",
-      "es": "las cadenas de bateria en linea no tienen archivo de politica; el tipo mostrado se lee de los parametros de la cadena (NO VERIFICADO contra el registro)"
+      "en": "the kind is spec(test_id).decision where the test is registered (these tests are not: spec() raises KeyError at the batch 3 head), and the direction is null for an inline battery string until a policy file exists (BL-085)",
+      "es": "el tipo es spec(test_id).decision donde la prueba esta registrada (estas no lo estan: spec() lanza KeyError en la cabeza del lote 3), y la direccion es nula para una cadena de bateria en linea hasta que exista un archivo de politica (BL-085)"
      }
     }
    ]
@@ -1401,8 +1488,8 @@
     "rule": {
      "id": "W15-7",
      "text": {
-      "en": "Level 1 with no open finding; 2 with S4 or S3 only; 3 with any S2; 4 with any S1 (open and overdue findings, not risk_accepted); where an anchor is a share of RWEA, 5 to 10 percent is level 3 and 10 percent or more is level 4. A convention (item 30).",
-      "es": "Nivel 1 sin hallazgos abiertos; 2 con solo S4 o S3; 3 con algun S2; 4 con algun S1 (hallazgos abiertos y vencidos, no risk_accepted); si el ancla es una proporcion de RWEA, de 5 a 10 por ciento es nivel 3 y 10 por ciento o mas es nivel 4. Una convencion (punto 30)."
+      "en": "Level 1 with no open finding; 2 with S4 or S3 only; 3 with any S2; 4 with any S1 (open and overdue findings, not risk_accepted); where an anchor is a share of RWEA, 5 to 10 percent gives level 3 and 10 percent or more level 4, and an anchor can only raise a level (the maximum of the two). A convention (item 30).",
+      "es": "Nivel 1 sin hallazgos abiertos; 2 con solo S4 o S3; 3 con algun S2; 4 con algun S1 (hallazgos abiertos y vencidos, no risk_accepted); si el ancla es una proporcion de RWEA, de 5 a 10 por ciento da nivel 3 y 10 por ciento o mas da nivel 4, y un ancla solo puede subir un nivel (el maximo de ambos). Una convencion (punto 30)."
      }
     },
     "rwea_cut_points_applied": false,

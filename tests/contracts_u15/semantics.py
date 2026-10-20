@@ -53,14 +53,38 @@ B4_PRE_VALIDATION = ("in_development", "submitted_for_validation", "in_validatio
 B4_IN_USE = ("in_use", "under_monitoring_alert", "restricted", "material_change_pending", "in_remediation")
 TOL = 1e-9
 
-# the phrases that call a convention regulatory (English and Spanish); "no regulatory source prescribes days" is not one of them
+# the phrases that call a convention regulatory (English and Spanish); "no regulatory source prescribes days" is not one of them. Each pattern has a
+# sample in the tests that only it matches (a pattern removed is a pattern found missing).
+_ACTORS = r"(regulat\w*|supervis\w*|ECB|PRA|OSFI|(?-i:Fed)(?:eral Reserve)?|EBA|BCBS|Basel|SR\s?\d+-\d+|SS1/23|E-23)"
 _REG_CLAIMS = [
     re.compile(r"\bregulatory\s+(value|requirement|threshold|deadline|limit|minimum|standard|cut|interval|frequency|table|parameter|band)s?\b", re.I),
     re.compile(r"\b(is|are|as)\s+(a\s+|an\s+)?regulatory\b", re.I),
     re.compile(r"\brequired\s+by\s+(the\s+)?(regulat|law|supervis)\w*", re.I),
     re.compile(r"\b(plazo|valor|umbral|requisito|l[ií]mite|m[ií]nimo|frecuencia|tabla)s?\s+regulatori[oa]s?\b", re.I),
     re.compile(r"\b(es|son)\s+(un\s+|una\s+)?regulatori[oa]s?\b", re.I),
+    re.compile(r"\b(prescribed|set|mandated|imposed|dictated|fixed|stipulated)\s+by\s+(the\s+)?" + _ACTORS, re.I),
+    re.compile(r"\b(?-i:PRA|ECB|OSFI|Fed|EBA)\s+(requires|require|mandates|prescribes|imposes|sets)\b|\b(regulator|supervisor)\s+(requires|mandates|prescribes|imposes|sets)\b", re.I),
+    re.compile(r"\b(a|an|the)\s+supervisory\s+(requirement|minimum|standard|threshold|deadline|interval|limit|value)\b", re.I),
+    re.compile(r"\b(SR\s?\d+-\d+|SS1/23|E-23)\s+(minimum|requirement|threshold|deadline|interval|limit)s?\b", re.I),
+    re.compile(r"\b(exige|impone|establece|fija|prescribe)\s+(el|la|los|las)\s+(regulador|supervisor|BCE|PRA|OSFI)\w*", re.I),
 ]
+# a statement that Contraste approves, certifies or finds a model compliant (SDD non-goal 1; 06 I.6); the fixed negations are removed first
+_APPROVAL_CLAIMS = [
+    re.compile(r"\bapprov(es|ed|ing|al)\b", re.I),
+    re.compile(r"\bcertif(y|ies|ied|ication)\b", re.I),
+    re.compile(r"\b(compliant|complies|complying)\b|\bcompliance\s+with\b|\bin\s+compliance\b", re.I),
+    re.compile(r"\baprob(ado|ada|ados|adas|amos|[oó])\b", re.I),
+    re.compile(r"\bcertificad[oa]s?\b|\bcertifica\b", re.I),
+    re.compile(r"\bcumple\b|\bcumplimiento\s+(de|con)\b|\bconforme\s+a\b", re.I),
+]
+_APPROVAL_NEGATIONS = re.compile(
+    r"Contraste approves no model|Contraste no aprueba ning[uú]n modelo|\b(no|without)\s+(an?\s+)?(approval|approver)\b|approval date or (the )?authority|"
+    r"\bsin\s+(aprobaci[oó]n|aprobador)\b|\bnon-goal\b|\bapproval[ _]rate\b", re.I)
+
+
+def regulatory_claim_hits(text: str) -> list[int]:
+    """The indexes of the patterns that match ``text``."""
+    return [i for i, rx in enumerate(_REG_CLAIMS) if rx.search(text)]
 
 
 def regulatory_claims(text: str) -> list[str]:
@@ -68,6 +92,24 @@ def regulatory_claims(text: str) -> list[str]:
     out = []
     for rx in _REG_CLAIMS:
         out += [m.group(0) for m in rx.finditer(text)]
+    return out
+
+
+def approval_claims(text: str) -> list[str]:
+    """The phrases of ``text`` that state an approval, a certification or a compliance of a model, the fixed negations exempt."""
+    clean = _APPROVAL_NEGATIONS.sub(" ", text)
+    out = []
+    for rx in _APPROVAL_CLAIMS:
+        out += [m.group(0) for m in rx.finditer(clean)]
+    return out
+
+
+def text_violations(doc: dict) -> list[str]:
+    """Every string of the document is scanned for an approval, certification or compliance claim (M2), whichever object holds it."""
+    out = []
+    for text in strings(doc):
+        for claim in approval_claims(text):
+            out.append(f"text states an approval, certification or compliance ({claim!r}): {text[:80]!r}")
     return out
 
 
@@ -114,11 +156,16 @@ def light(value: float | None, direction: str, green: float, amber: float) -> st
     return "green" if value >= green else "amber" if value >= amber else "red"
 
 
+def rwea_level(rwea_share: float | None) -> int:
+    """The level an RWEA share gives (ECB Instructions 2019, 2.4.2): 3 from 5 percent, 4 from 10 percent, none (0) below 5 percent."""
+    if rwea_share is None:
+        return 0
+    return 4 if rwea_share >= 0.10 else 3 if rwea_share >= 0.05 else 0
+
+
 def finding_level(severity: str, rwea_share: float | None = None) -> int:
-    """The ECB level one open finding gives: by its RWEA share where the anchor is one (5 and 10 percent), by its severity otherwise."""
-    if rwea_share is not None:
-        return 4 if rwea_share >= 0.10 else 3 if rwea_share >= 0.05 else 2
-    return {"S1": 4, "S2": 3}.get(severity, 2)
+    """The level one open finding gives (W15-11): the maximum of its severity level and its RWEA level, so an anchor can only raise it."""
+    return max({"S1": 4, "S2": 3}.get(severity, 2), rwea_level(rwea_share))
 
 
 def opinion_level(open_findings: list[dict]) -> int:
@@ -200,6 +247,8 @@ def convention_violations(doc: dict) -> list[str]:
 def inventory_violations(doc: dict) -> list[str]:
     out: list[str] = []
     entries = doc["entries"]
+    if not entries:
+        return ["the inventory holds no entry: there is nothing to check, nothing to publish"]
     keys = [e["key"] for e in entries]
     if len(set(keys)) != len(keys):
         out.append(f"entry keys repeat: {sorted(k for k in set(keys) if keys.count(k) > 1)}")
@@ -211,8 +260,19 @@ def inventory_violations(doc: dict) -> list[str]:
     if sorted(freq) != [1, 2, 3, 4]:
         out.append("the frequency table does not hold tiers 1 to 4 once each")
     comp_seen: dict[str, str] = {}
+    out += as_of_violations(doc, "inventory", [e["schedule"]["last_validation"]["date"] for e in entries])
+    for x in doc["excluded"]:
+        if x["variant_id"] is not None and any(x["variant_id"] == v["variant_id"] and x["case_id"] == e["case_id"]
+                                                for e in entries for v in e["variants"]):
+            out.append(f"excluded variant {x['case_id']}/{x['variant_id']} is also assigned to an entry")
     for e in entries:
         k = e["key"]
+        vids = [v["variant_id"] for v in e["variants"]]
+        if len(set(vids)) != len(vids):
+            out.append(f"{k}: a variant is listed twice")
+        for v in e["variants"]:
+            if not v["basis"].strip():
+                out.append(f"{k}: variant {v['variant_id']} has no basis for its assignment to the fit")
         if k != f"{e['case_id']}/{e['fit_id']}":
             out.append(f"{k}: the key is not case_id/fit_id")
         # components (W15-1): case_id/fit_id/model_id, unique across the inventory
@@ -244,6 +304,18 @@ def inventory_violations(doc: dict) -> list[str]:
         if ECB_F[f["severity"]] != f["ecb_f"]:
             out.append(f"governance finding {f['id']}: ecb_f is {f['ecb_f']} for {f['severity']}")
     out += convention_violations(doc)
+    return out
+
+
+def as_of_violations(doc: dict, name: str, dates: list[str]) -> list[str]:
+    """W15-13: the as-of date carries its basis labelled convention and is never earlier than the newest raised date it ages."""
+    out = []
+    basis = doc["as_of_basis"]
+    if basis["label"] != "convention" or not basis["basis"]["en"].strip() or not basis["basis"]["es"].strip():
+        out.append(f"{name}: as_of_basis must be labelled convention with its basis in both languages")
+    newest = max(dates, default=None)
+    if newest is not None and iso(doc["as_of"]) < iso(newest):
+        out.append(f"{name}: as_of {doc['as_of']} is earlier than the newest raised date {newest}")
     return out
 
 
@@ -295,6 +367,8 @@ def _tier_block(e: dict, cuts: list[float]) -> list[str]:
     band = exposure_band(mat["exposure"]["share"], cuts)
     if mat["exposure"]["band"] != band:
         out.append(f"{k}: exposure band is {mat['exposure']['band']}, the share and the cut points give {band}")
+    if mat["regulatory_use"]["literal"] < mat["regulatory_use"]["graded"]:
+        out.append(f"{k}: literal regulatory use {mat['regulatory_use']['literal']} is below the graded {mat['regulatory_use']['graded']}")
     m = {r: max(band, mat["regulatory_use"][r], mat["decision_criticality"]["score"]) for r in ("literal", "graded")}
     if mat["m"] != m:
         out.append(f"{k}: M is {mat['m']}, max(band, regulatory use, decision criticality) gives {m}")
@@ -472,6 +546,7 @@ def findings_violations(doc: dict) -> list[str]:
     keys = [r["key"] for r in doc["rows"]]
     if len(set(keys)) != len(keys):
         out.append("register keys repeat")
+    out += as_of_violations(doc, "findings", [r["raised"] for r in doc["rows"]])
     for r in doc["rows"]:
         k = r["key"]
         if k != f"{r['case_id']}/{r['variant_id']}/{r['id']}":
@@ -499,6 +574,14 @@ def findings_violations(doc: dict) -> list[str]:
             out.append(f"{k}: risk_acceptance holds an approver or an expiry: none exists for a stated limit of a synthetic case")
         if (r["anchor"] is None) != (r["anchor_reason"] is not None):
             out.append(f"{k}: anchor and anchor_reason must be null together with the reason, or an anchor with no reason")
+        if r["rwea_share"] is not None:
+            an = r["anchor"]
+            if an is None or an["unit"] not in ("share-of-rwea", "rwea-amount"):
+                out.append(f"{k}: rwea_share is set but the anchor is not stated as a share of RWEA or an RWEA amount")
+            elif an["unit"] == "share-of-rwea" and not close(an["value"], r["rwea_share"]):
+                out.append(f"{k}: rwea_share {r['rwea_share']} is not the anchor's value {an['value']}")
+        if (r["rwea_share"] is None) != (r["rwea_share_reason"] is not None):
+            out.append(f"{k}: rwea_share and its reason must be coupled")
         if (r["remediation"] is None) != (r["remediation_reason"] is not None):
             out.append(f"{k}: remediation and its reason must be coupled")
     out += _counts(doc)
@@ -561,7 +644,7 @@ def report_violations(doc: dict) -> list[str]:
             out.append(f"recommendation {op['recommendation']['outcome']!r} is not the level {op['level']}'s {RECOMMENDATION[op['level']]!r}")
         if op["label"]["en"] != LABEL_EN:
             out.append("the recommendation label is not 'the rule's output on the evidence; Contraste approves no model'")
-        if op["rwea_cut_points_applied"] != any(f.get("rwea_share") is not None for f in op["open_findings"]):
+        if op["rwea_cut_points_applied"] != any(rwea_level(f.get("rwea_share")) > 0 for f in op["open_findings"]):
             out.append("opinion rwea_cut_points_applied disagrees with the open findings' anchors")
         outcomes = [b for b in secs[5]["blocks"] if b["kind"] == "outcomes"]
         if outcomes:
@@ -592,6 +675,10 @@ def appetite_violations(doc: dict) -> list[str]:
         if t["label"] != "convention":
             out.append(f"{i}: the threshold is labelled {t['label']!r}, it is a convention")
         num, den, val = m["numerator"], m["denominator"], m["value"]
+        if (i in ("open-high-severity", "overdue-remediation")) != (m["register_rows"] is not None):
+            out.append(f"{i}: register_rows is the row count behind a distinct-finding count metric, and only those carry it")
+        if m["register_rows"] is not None and num is not None and m["register_rows"] < num:
+            out.append(f"{i}: register_rows {m['register_rows']} is below the {num} distinct findings")
         if val is not None:
             if m["unit"] == "count":
                 ok = num is not None and close(val, num)
@@ -615,7 +702,7 @@ def violations(doc: dict) -> list[str]:
     if fn is None:
         return [f"unknown governance_id {gid!r}"]
     try:
-        return fn(doc)
+        return fn(doc) + text_violations(doc)
     except (KeyError, TypeError, IndexError, ValueError, StopIteration) as exc:   # a document the schema refuses may lack what a rule reads
         return [f"malformed {gid} document: {type(exc).__name__} {exc}"]
 
@@ -636,6 +723,8 @@ def cross_violations(docs: dict) -> list[str]:
             continue
         if r["tier"] != e["tier_block"]["tier"]:
             out.append(f"{r['key']}: tier {r['tier']} is not the entry's tier {e['tier_block']['tier']}")
+        if r["variant_id"] not in [v["variant_id"] for v in e["variants"]]:
+            out.append(f"{r['key']}: variant {r['variant_id']} is not in the variants of entry {r['entry_key']}")
         if r["owner_role"] != e["attributes"]["A28"]["value"]:
             out.append(f"{r['key']}: owner_role differs from the entry's owner (A28)")
     for k, e in entries.items():
@@ -654,12 +743,20 @@ def cross_violations(docs: dict) -> list[str]:
             continue
         if rep["tier"] != entries[k]["tier_block"]["tier"]:
             out.append(f"report {k}: tier {rep['tier']} is not the entry's {entries[k]['tier_block']['tier']}")
-        open_rows = {r["key"]: r["severity"] for r in fnd["rows"] if r["entry_key"] == k and r["status"] in OPEN_STATES}
-        listed = {f["key"]: f["severity"] for f in rep["sections"][10]["opinion"]["open_findings"]}
-        if listed != open_rows:
-            out.append(f"report {k}: the opinion's open findings differ from the register's open findings ({len(listed)} against {len(open_rows)})")
+        listed = {f["key"]: (f["severity"], f["rwea_share"]) for f in rep["sections"][10]["opinion"]["open_findings"]}
+        want_rows = {r["key"]: (r["severity"], r["rwea_share"]) for r in fnd["rows"] if r["entry_key"] == k and r["status"] in OPEN_STATES}
+        if listed != want_rows:
+            differ = sorted(x for x in set(listed) | set(want_rows) if listed.get(x) != want_rows.get(x))
+            out.append(f"report {k}: the opinion's open findings differ from the register's open findings (severity or rwea_share) at {differ[:5]}"
+                       f" ({len(listed)} listed against {len(want_rows)})")
     out += _appetite_cross(inv, fnd, app)
     return out
+
+
+def _distinct(rows: list[dict], pick) -> tuple[int, int]:
+    """(distinct (entry, id) findings with a row that ``pick`` selects, rows that ``pick`` selects)."""
+    sel = [r for r in rows if pick(r)]
+    return len({(r["entry_key"], r["id"]) for r in sel}), len(sel)
 
 
 def _appetite_cross(inv: dict, fnd: dict, app: dict) -> list[str]:
@@ -671,21 +768,50 @@ def _appetite_cross(inv: dict, fnd: dict, app: dict) -> list[str]:
     pma = [e["attributes"]["A26"]["value"] for e in entries if e["attributes"]["A26"]["status"] == "present"]
     complete = [e for e in entries if e["attributes"]["A28"]["status"] in ("present", "derivable", "convention")
                 and all(a["status"] != "missing" for a in e["attributes"].values())]
+    distinct_all = len({(r["entry_key"], r["id"]) for r in rows})
+    high, high_rows = _distinct(rows, lambda r: r["status"] in OPEN_STATES and r["severity"] in ("S1", "S2"))
+    over, over_rows = _distinct(rows, lambda r: r["overdue"])
     want = {
-        "tier1-validated-on-time": (sum(1 for e in t1 if iso(e["schedule"]["next_review"]) >= as_of), len(t1)),
-        "open-high-severity": (sum(1 for r in rows if r["status"] in OPEN_STATES and r["severity"] in ("S1", "S2")), len(rows)),
-        "overdue-remediation": (sum(1 for r in rows if r["overdue"]), len(rows)),
-        "entries-under-exception": (sum(1 for e in entries if e["lifecycle"]["exception"]), len(entries)),
-        "entries-in-breach": (sum(1 for e in entries if e["attributes"]["A36"]["value"]["red"] > 0), len(entries)),
-        "pma-magnitude": (sum(p["overlays_total"] for p in pma), sum(p["model_output"] for p in pma)) if pma else (None, None),
-        "owner-and-complete-record": (len(complete), len(entries)),
+        "tier1-validated-on-time": (sum(1 for e in t1 if iso(e["schedule"]["next_review"]) >= as_of), len(t1), None),
+        "open-high-severity": (high, distinct_all, high_rows),
+        "overdue-remediation": (over, distinct_all, over_rows),
+        "entries-under-exception": (sum(1 for e in entries if e["lifecycle"]["exception"]), len(entries), None),
+        "entries-in-breach": (sum(1 for e in entries if e["attributes"]["A36"]["value"]["red"] > 0), len(entries), None),
+        "pma-magnitude": (sum(p["overlays_total"] for p in pma), sum(p["model_output"] for p in pma), None) if pma else (None, None, None),
+        "owner-and-complete-record": (len(complete), len(entries), None),
     }
-    pop = {"entries": len(entries), "findings": len(rows), "tier1_entries": len(t1)}
+    pop = {"entries": len(entries), "findings": len(rows), "distinct_findings": distinct_all, "tier1_entries": len(t1)}
     if app["population"] != pop:
         out.append(f"appetite population {app['population']} differs from the documents' {pop}")
     for m in app["metrics"]:
-        n, d = want[m["id"]]
+        n, d, rr = want[m["id"]]
         if (m["numerator"], m["denominator"]) != (n, d) and not (
                 m["numerator"] is not None and n is not None and close(m["numerator"], n) and close(m["denominator"], d)):
             out.append(f"appetite {m['id']}: numerator/denominator {(m['numerator'], m['denominator'])} differ from the documents' {(n, d)}")
+        if m["register_rows"] != rr:
+            out.append(f"appetite {m['id']}: register_rows {m['register_rows']} differs from the register's {rr}")
     return out
+
+
+# the schema properties whose value a rule of this file recomputes: (schema file, $defs name or None for the root, property). The test holds each to
+# the engine function named in the property's description, so a recomputed field that names none fails (m6).
+RECOMPUTED = [
+    ("governance-inventory", "invExposure", "band"), ("governance-inventory", "invMateriality", "m"), ("governance-inventory", "invComplexity", "scored"),
+    ("governance-inventory", "invComplexity", "sum"), ("governance-inventory", "invComplexity", "mean"), ("governance-inventory", "invComplexity", "c"),
+    ("governance-inventory", "invTier", "computed_tier"), ("governance-inventory", "invTier", "tier"),
+    ("governance-inventory", "invTier", "tier_sensitivity"), ("governance-inventory", "invSchedule", "next_review"),
+    ("governance-inventory", "invSchedule", "next_full_revalidation"), ("governance-inventory", "invSchedule", "next_monitoring"),
+    ("governance-inventory", "invGraph", "depth"), ("governance-inventory", "invGraph", "fan_in"), ("governance-inventory", "invGraph", "fan_out"),
+    ("governance-inventory", "invMap", "generation"), ("governance-inventory", None, "completeness"), ("governance-inventory", None, "tier_counts"),
+    ("governance-inventory", "invAttributes", "A07"), ("governance-inventory", "invAttributes", "A22"), ("governance-inventory", "invAttributes", "A23"),
+    ("governance-inventory", "invAttributes", "A24"), ("governance-inventory", "invAttributes", "A35"), ("governance-inventory", "invAttributes", "A37"),
+    ("governance-inventory", "invAttributes", "A38"),
+    ("governance-findings", "fndRow", "ecb_f"), ("governance-findings", "fndRow", "status"), ("governance-findings", "fndRow", "deadline_days"),
+    ("governance-findings", "fndRow", "due"), ("governance-findings", "fndRow", "ageing_days"), ("governance-findings", "fndRow", "overdue"),
+    ("governance-findings", "fndRow", "rwea_share"), ("governance-findings", None, "counts"),
+    ("governance-report", "repOpinion", "level"), ("governance-report", "repOpinion", "rwea_cut_points_applied"),
+    ("governance-report", "repOpinion", "recommendation"), ("governance-report", "repOpenFinding", "rwea_share"),
+    ("governance-report", None, "test_counts"),
+    ("governance-appetite", "appMetric", "value"), ("governance-appetite", "appMetric", "light"), ("governance-appetite", "appMetric", "numerator"),
+    ("governance-appetite", "appMetric", "denominator"), ("governance-appetite", "appMetric", "register_rows"), ("governance-appetite", None, "population"),
+]
