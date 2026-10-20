@@ -4,6 +4,7 @@
 // read from the contract fixtures here (they share the documents' shape); a field the artifact leaves null reads "not
 // available" with its reason.
 import { readFileSync } from 'node:fs';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { formatNumber, pick } from '@fasl-work/caos-app-shell';
 import { describe, expect, it } from 'vitest';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
@@ -48,14 +49,16 @@ const FIXTURES: Record<string, [string, string[]]> = {
   C21: ['c21', ['variant-year-pair-fixture.json']],
 };
 const load = (id: string) => FIXTURES[id][1].map((f) => fixture(FIXTURES[id][0], f));
-const flat = (tables: Array<{ head: string[]; rows: unknown[][] }>) => tables.flatMap((t) => t.rows.map((r) => r.map(String).join(' | '))).join('\n');
+const flat = (tables: Array<{ head: string[]; rows: unknown[][] }>) => tables.flatMap((t) => t.rows.map((r) => r.map(cellText).join(' | '))).join('\n');
 const clone = <T,>(x: T): T => JSON.parse(JSON.stringify(x)) as T;
+// a cell is a string, or the C21 citation cell (marked translate="no"): the text a reader sees
+const cellText = (c: unknown): string => (typeof c === 'string' ? c : renderToStaticMarkup(c as never).replace(/<[^>]+>/g, ''));
 const rowOf = (id: string, variant: string, lang: 'en' | 'es' = 'en') => {
   const vs = load(id);
   const [t] = batch3ExperimentTables(manifestOf(id, vs), vs, lang);
   const i = vs.findIndex((v) => v.variant_id === variant);
   expect(i, `${id} ${variant}`).toBeGreaterThanOrEqual(0);
-  return t.rows[i].map(String);
+  return t.rows[i].map(cellText);
 };
 
 // every built case of the product at this batch (C19 is planned)
@@ -268,6 +271,15 @@ describe('every batch 3 case has an Experiments table with one headline row per 
     expect(es[3]).toMatch(/referencia/i);
     expect(es[5]).toMatch(/Sí/);
   });
+  it('C21: the four-fifths cell keeps the regulation citation as the source writes it, marked translate="no", and marks nothing else', () => {
+    const vs = load('C21');
+    const [t] = batch3ExperimentTables(manifestOf('C21', vs), vs, 'es');
+    const i = vs.findIndex((v) => v.variant_id === 'fixture-2018-19');
+    const markup = renderToStaticMarkup(t.rows[i][3] as never);
+    expect(markup).toMatch(/<span translate="no" lang="en">29 CFR 1607\.4[^<]*<\/span>/);
+    expect(markup.replace(/<span translate="no"[^>]*>[^<]*<\/span>/g, '')).not.toMatch(/CFR/);
+    expect(cellText(t.rows[i][3])).toMatch(/referencia de empleo/);
+  });
   it('C21: a confirmation the document leaves null shows not available with its reason', () => {
     const vs = load('C21');
     const v = clone(vs[0]) as VariantArtifact<{ attributes: Array<{ contrasts: Array<{ confirmation: { estimate: unknown; reason: unknown } }> }> }>;
@@ -293,7 +305,7 @@ describe('the fallback table of a case without a section reads the impact items,
     expect(text).toMatch(NOT_AVAILABLE);
     expect(text).not.toMatch(BAD);
     expect(text).not.toMatch(/AUC|Jeffreys|PSI|Default rate/);
-    const nullRow = tables[0].rows.map((r) => r.map(String)).find((r) => r.join(' ').includes('Fixture fixture-fast-run') && NOT_AVAILABLE.test(r.join(' ')));
+    const nullRow = tables[0].rows.map((r) => r.map(cellText)).find((r) => r.join(' ').includes('Fixture fixture-fast-run') && NOT_AVAILABLE.test(r.join(' ')));
     expect(nullRow).toBeDefined();
     expect(nullRow!.join(' ')).toMatch(/Spanish|Run-off|LCR|survival/i);
   });
@@ -345,10 +357,10 @@ describe('Benchmark: a comparison in the case terms or an exclusion with its rea
     const vs = load('C12');
     const [t] = batch3BenchmarkTables(manifestOf('C12', vs), vs, 'en');
     expect(t.rows).toHaveLength(vs.length);
-    const im = t.rows.map((r) => r.map(String)).find((r) => r[0].includes('fixture-with-im'))!;
+    const im = t.rows.map((r) => r.map(cellText)).find((r) => r[0].includes('fixture-with-im'))!;
     expect(im.join(' ')).toMatch(/\+15\.18/);
     expect(im.join(' ')).toMatch(/reconciled/i);
-    const wrong = t.rows.map((r) => r.map(String)).find((r) => r[0].includes('fixture-wrong-way-risk'))!;
+    const wrong = t.rows.map((r) => r.map(cellText)).find((r) => r[0].includes('fixture-wrong-way-risk'))!;
     expect(wrong.join(' ')).toMatch(NOT_AVAILABLE);
     expect(wrong.join(' ')).toMatch(/different model/);
   });
@@ -357,7 +369,7 @@ describe('Benchmark: a comparison in the case terms or an exclusion with its rea
     const tables = batch3BenchmarkTables(manifestOf('C18', vs), vs, 'en');
     const agg = tables.find((t) => t.key.includes('fixture-t-copula-aggregation'))!;
     expect(agg.rows).toHaveLength(8);
-    const text = agg.rows.map((r) => r.map(String).join(' | '));
+    const text = agg.rows.map((r) => r.map(cellText).join(' | '));
     expect(text.some((r) => /lower bound/i.test(r))).toBe(true);
     expect(text.some((r) => /worst case/i.test(r))).toBe(true);
     expect(text.some((r) => /simple sum/i.test(r))).toBe(true);
@@ -368,7 +380,7 @@ describe('Benchmark: a comparison in the case terms or an exclusion with its rea
     const tables = batch3BenchmarkTables(manifestOf('C02', vs), vs, 'en');
     const h1 = tables.find((t) => t.key.includes('fixture-h1'))!;
     expect(h1.rows).toHaveLength(2);
-    const text = h1.rows.map((r) => r.map(String).join(' | '));
+    const text = h1.rows.map((r) => r.map(cellText).join(' | '));
     expect(text[0]).toMatch(/Champion/);
     expect(text[1]).toMatch(/0\.060/);
     expect(text[1]).toMatch(/0\.02/);

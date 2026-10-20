@@ -152,7 +152,10 @@ def market(anchors: Anchors, n_draws: int = P.N_DRAWS) -> Marginal:
                     [f"c11-outputs mixed-2023 ({c11['model_id']}, alpha 0.01, {c11['date']})", "market share of RWA from the 20-F mix (ratio)"],
                     T("C11's mixed-portfolio VaR and ES of the last forecast day, moved from 99 percent and one day to 99.9 percent and one year by the normal "
                       "quantile ratio and the square root of 250 (two conventions), and scaled to the market share of RWA: the position value is taken as the "
-                      "market RWA of Banco Andino. The expected loss is zero (a zero-mean return)."),
+                      "market RWA of Banco Andino. The expected loss is zero (a zero-mean return).",
+                      "El VaR y el ES de la cartera mixta de C11 del último día de pronóstico, llevados de 99 por ciento y un día a 99,9 por ciento y un año por la razón de "
+                      "cuantiles normales y la raíz cuadrada de 250 (dos convenciones), y escalados a la parte de APR de mercado: el valor de la posición se toma como el APR "
+                      "de mercado de Banco Andino. La pérdida esperada es cero (un retorno de media cero)."),
                     ["market_rwa_share", "market_horizon_scaling"],
                     {"nu": nu, "scale": scale, "target_var": var_t, "target_es": es_t, "c11": c11, "notional_clp_m": notional, "scaling": sc})
 

@@ -295,6 +295,9 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, n_draws: int 
         P.SCENARIOS["baseline"]: ("Baseline (Fed 2026)", "Base (Fed 2026)"), P.SCENARIOS["eba"]: ("EBA 2025 adverse", "Adverso EBA 2025"),
         P.SCENARIOS["fed"]: ("Fed 2026 severely adverse", "Severamente adverso Fed 2026"), P.SCENARIOS["ngfs"]: ("NGFS delayed transition", "Transición tardía NGFS"),
         P.FILE_NAMES["aggregation"]: ("t-copula aggregation", "Agregación con cópula t"), P.FILE_NAMES["reverse"]: ("Reverse stress", "Tensión inversa")}
+    # the chip of the variant in the rail is one line of the rail's width, in the wide font too (ADR-0071): the Spanish title of the Fed
+    # scenario is 28 characters and overran it by 25 px, so its short title is the shorter wording (the title stays whole)
+    short_es = {P.SCENARIOS["fed"]: "Fed 2026 severo"}
     for vid in [*P.SCENARIOS.values(), P.FILE_NAMES["aggregation"], P.FILE_NAMES["reverse"]]:
         if vid not in built.variants:
             continue
@@ -302,7 +305,7 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, n_draws: int 
         e = _check_and_write(root, rel, built.variants[vid])
         sums.append(_sum(root, rel))
         en, es = titles[vid]
-        entries.append({"role": "variant", "variant_id": vid, "truth_status": "synthetic-calibrated", "title": P.text(en, es), "short_title": P.text(en, es),
+        entries.append({"role": "variant", "variant_id": vid, "truth_status": "synthetic-calibrated", "title": P.text(en, es), "short_title": P.text(en, short_es.get(vid, es)),
                         "regime": regime, "models_ref": P.MODELS_REL, **e})
         _log(f"{vid}: {e['bytes']:,} bytes")
     write_json(root / P.RAW_REL, built.raw_sources)

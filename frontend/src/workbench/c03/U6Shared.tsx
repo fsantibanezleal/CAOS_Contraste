@@ -22,6 +22,28 @@ export function humanize(id: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+/**
+ * The notes the validation engine writes in English only (its `notes` field is one plain string, with no Spanish beside it),
+ * read in the page's language. Only a note the engine is known to write is translated, whole; any other note is shown as it
+ * comes, and English is never changed. The correlation value is formatted for the language, not copied.
+ */
+const ENGINE_NOTES: Array<[RegExp, (m: RegExpMatchArray, lang: 'en' | 'es') => string]> = [
+  [/^assumes independent defaults; WP14: the true type I error can be much larger if defaults are correlated$/, () => 'supone incumplimientos independientes; WP14: el error tipo I verdadero puede ser mucho mayor si los incumplimientos están correlacionados'],
+  [/^asset correlation (\d+(?:\.\d+)?) is a modelling assumption$/, (m, lang) => `la correlación de activos ${formatNumber(Number(m[1]), lang)} es un supuesto de modelación`],
+  [/^the development AUC's variance is added to the ECB statistic \(an extension of the ECB 2019 formula\): both AUCs are estimates on independent samples$/, () => 'la varianza del AUC de desarrollo se suma al estadístico del BCE (una extensión de la fórmula del BCE de 2019): ambos AUC son estimaciones sobre muestras independientes'],
+  [/^conventional band: (significant|moderate|little) change \(0\.10\/0\.25 rule of thumb, no error control\)$/, (m) => `banda convencional: cambio ${({ significant: 'significativo', moderate: 'moderado', little: 'pequeño' } as Record<string, string>)[m[1]]} (regla práctica de 0,10/0,25, sin control del error)`],
+];
+
+/** An engine note in the page's language (see ENGINE_NOTES). */
+export function engineNote(note: string, lang: 'en' | 'es'): string {
+  if (lang === 'en') return note;
+  for (const [re, make] of ENGINE_NOTES) {
+    const m = note.match(re);
+    if (m) return make(m, lang);
+  }
+  return note;
+}
+
 /** A proportion with two decimals: 9.20%, 104.00%. */
 export const p2 = (v: number | null | undefined, lang: 'en' | 'es') => pct(v, lang, 2);
 
@@ -112,7 +134,7 @@ export function U6TestsTable({ variant, modelLabel, only }: { variant: VariantAr
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ?? t.reference}</td>
+                  <td className="ct-text">{t.notes ? engineNote(t.notes, lang) : t.reference}</td>
                 </tr>
               );
             })}

@@ -100,7 +100,10 @@ def headline_rows(cet1_0: float, losses: list[float], rwa: float) -> tuple[list[
 def mitigation_block() -> dict[str, Any]:
     return {"applies": False,
             "reason": T("No mitigation action is assumed: the sources name none and the EBA static balance sheet rules forbid capital measures taken after the "
-                        "reference date (para 33), so the stress with mitigation equals the stress without it and row 10.2 of the Annex 3 is N/A."),
+                        "reference date (para 33), so the stress with mitigation equals the stress without it and row 10.2 of the Annex 3 is N/A.",
+                        "No se supone ninguna acción de mitigación: las fuentes no nombran ninguna y las reglas de balance estático de la EBA prohíben las medidas de capital "
+                        "tomadas después de la fecha de referencia (párrafo 33), por lo que la tensión con mitigación es igual a la tensión sin ella y la fila 10.2 del Anexo 3 "
+                        "es N/A."),
             "actions": []}
 
 
