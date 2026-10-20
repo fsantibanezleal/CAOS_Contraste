@@ -8,7 +8,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { NOT_SCENARIO, PCT, UnavailableCard, cell, digits } from './C18Common';
+import { Defs, NOT_SCENARIO, PCT, UnavailableCard, cell, digits } from './C18Common';
 import {
   CLASS_TEXT, LABEL_TEXT, LEVEL_RULE_TEXT, LINK_TEXT, LOAN_ORDER, LOAN_TEXT, MONEY_UNIT, PROVIDER_TEXT, REGRESSOR_TEXT, RISK_ORDER, RISK_TEXT, US_ADAPTATION,
   backcastOf, fitOf, outputsOf, satFitOf, text,
@@ -290,7 +290,7 @@ export function BackcastView({ sel }: { sel: C18Sel | null }) {
             />
           }
         >
-          <dl className="ct-defs" data-table="c18-backcast-metrics">
+          <Defs data-table="c18-backcast-metrics">
             <dt>{pick({ en: 'Error of the window', es: 'Error de la ventana' }, lang)}</dt>
             <dd>{RATE(m.rmse, lang)}</dd>
             <dt>{pick({ en: 'Predicted peak', es: 'Máximo predicho' }, lang)}</dt>
@@ -309,7 +309,7 @@ export function BackcastView({ sel }: { sel: C18Sel | null }) {
                 <dd>{`R ${pick({ en: 'squared', es: 'cuadrado' }, lang)} ${digits(fit.fit_statistics.r_squared, lang)}; ${pick({ en: 'residual spread', es: 'dispersión residual' }, lang)} ${digits(fit.fit_statistics.residual_sd, lang)}`}</dd>
               </>
             ) : null}
-          </dl>
+          </Defs>
           {fit ? (
             <table className="caos-table ct-wrap-head" data-table="c18-coefficients" data-loan={sel.loan}>
               <thead>

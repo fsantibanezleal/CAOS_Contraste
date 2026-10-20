@@ -5,7 +5,9 @@
 // the synthetic Banco Andino; the P2G proxy is a Contraste approximation; every named parameter is a convention or a case
 // assumption. Money is CLP millions as the documents give it; a rail read-out scales it to bn with the unit that says so.
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
+import type { ReactNode } from 'react';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
+import { useMedia } from '../../lib/useMedia';
 import type { TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
@@ -25,6 +27,19 @@ export const PCT = (v: number | null | undefined, lang: Lang, decimals = 2) => f
 export const cell = (v: number | null | undefined, lang: Lang) => formatNumber(v, lang, { decimals: 0 });
 export const digits = (v: number | null | undefined, lang: Lang) => formatNumber(v, lang, { digits: 4 });
 const RATIO_FORMAT = { percent: true, decimals: 2 } as const;
+
+/**
+ * A definition list whose label column does not starve its values on a phone: from 640 px down the labels sit above their values,
+ * so a number or an amount is never broken over several lines (the gate's values-whole check).
+ */
+export function Defs({ children, ...rest }: { children: ReactNode; [key: `data-${string}`]: string | undefined }) {
+  const narrow = useMedia('(max-width: 640px)');
+  return (
+    <dl className="ct-defs" style={narrow ? { gridTemplateColumns: 'minmax(0, 1fr)' } : undefined} {...rest}>
+      {children}
+    </dl>
+  );
+}
 
 /** The words an absent block says when the view is given a document of another kind. */
 export const NOT_SCENARIO: BiText = { en: 'Not available: this document is not a scenario variant, so it has no capital plan, satellites or back-cast.', es: 'No disponible: este documento no es una variante de escenario, así que no tiene plan de capital, satélites ni back-cast.' };
@@ -315,7 +330,7 @@ function ModelBlocks({ fit, card }: { fit: C18Fit; card: ReturnType<typeof useCa
       </PlotCard>
       <PlotCard title={{ en: 'The bank anchors and the scenario sources', es: 'Los anclajes del banco y las fuentes de escenarios' }} {...card} note={{ en: 'Only ratios computed from the Banco Santander-Chile Form 20-F 2025 enter the documents, with the filing cited; the amounts of Banco Andino are scaled from them.', es: 'Solo entran a los documentos razones calculadas del Formulario 20-F 2025 de Banco Santander-Chile, con la presentación citada; los montos de Banco Andino se escalan desde ellas.' }}>
         <div className="ct-scroll">
-          <dl className="ct-defs" data-table="c18-anchors">
+          <Defs data-table="c18-anchors">
             <dt>{pick({ en: 'Anchor of the RWA', es: 'Anclaje de los APR' }, lang)}</dt>
             <dd>{`${pick({ en: 'Tier 1 proxy', es: 'Proxy de Tier 1' }, lang)} ${cell(a.rwa_basis.tier1_proxy_clp_m, lang)} ${pick(MONEY_UNIT, lang)}; ${pick({ en: 'CET1 anchor', es: 'ancla CET1' }, lang)} ${PCT(a.rwa_basis.cet1_ratio_anchor, lang)}; ${pick({ en: 'RWA', es: 'APR' }, lang)} ${cell(a.rwa_basis.rwa_total_clp_m, lang)}`}</dd>
             <dt>{pick({ en: 'Mix of the RWA', es: 'Mezcla de los APR' }, lang)}</dt>
@@ -326,7 +341,7 @@ function ModelBlocks({ fit, card }: { fit: C18Fit; card: ReturnType<typeof useCa
             <dd>{a.loan_exposures.map((e) => `${pick(text(CLASS_TEXT, e.banco_andino_class), lang)} ${PCT(e.share, lang)}`).join('; ')}</dd>
             <dt>{pick({ en: 'Source of the anchors', es: 'Fuente de los anclajes' }, lang)}</dt>
             <dd data-licence-class={a.licence_class}>{pick(a.source, lang)}</dd>
-          </dl>
+          </Defs>
           <table className="caos-table ct-wrap-head" data-table="c18-scenario-sources">
             <thead>
               <tr>
@@ -365,14 +380,14 @@ function ModelBlocks({ fit, card }: { fit: C18Fit; card: ReturnType<typeof useCa
               ))}
             </tbody>
           </table>
-          <dl className="ct-defs" data-table="c18-aggregation-parameters">
+          <Defs data-table="c18-aggregation-parameters">
             <dt>{pick({ en: 'Draws, seed and chunk', es: 'Sorteos, semilla y bloque' }, lang)}</dt>
             <dd>{`${cell(fit.aggregation.n_draws, lang)}; ${fit.aggregation.seed}; ${cell(fit.aggregation.chunk_size, lang)}`}</dd>
             <dt>{pick({ en: 'Rule that maps a draw through a marginal', es: 'Regla que lleva un sorteo por una marginal' }, lang)}</dt>
             <dd>{fit.aggregation.marginal_interpolation}</dd>
             <dt>{pick({ en: 'Static balance sheet rules (EBA 2025 note)', es: 'Reglas de balance estático (nota EBA 2025)' }, lang)}</dt>
             <dd>{fit.capital_engine.rules.map((r) => `${pick({ en: 'paragraph', es: 'párrafo' }, lang)} ${r.paragraph}`).join('; ')}</dd>
-          </dl>
+          </Defs>
         </div>
       </PlotCard>
     </>
@@ -398,7 +413,7 @@ export function C18ContextView({ sel }: { sel: C18Sel | null }) {
         <p>
           <strong>{pick(m.title, lang)}</strong>. {pick(m.question, lang)}
         </p>
-        <dl className="ct-defs" data-table="c18-bank">
+        <Defs data-table="c18-bank">
           <dt>{pick({ en: 'Bank', es: 'Banco' }, lang)}</dt>
           <dd data-synthetic={String(base.bank.synthetic)}>{base.bank.name}</dd>
           <dt>{pick({ en: 'What is real and what is synthetic', es: 'Qué es real y qué es sintético' }, lang)}</dt>
@@ -427,7 +442,7 @@ export function C18ContextView({ sel }: { sel: C18Sel | null }) {
               <dd>{`CET1 ${PCT(o.capital_start.cet1_ratio, lang)}; PE ${PCT(o.capital_start.pe_ratio, lang)}; ${pick({ en: 'RWA', es: 'APR' }, lang)} ${cell(o.capital_start.rwa_clp_m, lang)}. ${pick(o.capital_start.basis, lang)}`}</dd>
             </>
           ) : null}
-        </dl>
+        </Defs>
       </PlotCard>
       {fit ? <ModelBlocks fit={fit} card={card} /> : null}
     </div>
