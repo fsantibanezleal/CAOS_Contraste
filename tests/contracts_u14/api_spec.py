@@ -162,6 +162,14 @@ ML_MODULES = {
     ]),
 }
 
+#: the entries engine-ml-api 2.0.0 adds to the 1.0.0 modules above (U14 decision G18; the page is amended in place since, so
+#: build_docs.py keeps it): module key, the dotted module and the names
+ML_ADDED_2_0_0 = {
+    "robustness": ("riskvalidation.ml.robustness", ["SingleClassSubsampleError", "ShiftReference", "shift_development_reference"]),
+    "dataquality": ("riskvalidation.ml.dataquality", ["CompletenessCount"]),
+    "policy": ("riskvalidation.ml.policy", ["strict", "ml_thresholds", "threshold_rows", "ml_policy"]),
+}
+
 ML_TESTS = [
     # name, test_id, light rule (the cut points are in the Policy thresholds table of the page)
     ("robustness", "ml.robustness", "green when the degradation is at most the tolerance, amber above the tolerance up to twice the tolerance, red above twice the tolerance; the degradation is -auc_delta at the preset scale and the tolerance is the named parameter perturbation_tolerance (a convention); thresholds in extras['thresholds']."),
