@@ -6,10 +6,10 @@ scripts/run_notebooks.py, scripts/check_readme_areas.py); these tests run them o
 requirement, plant a defect in a copy of the committed set and expect the real check to name it. The copy lives in
 pytest's temporary folder; the repository is never written.
 
-BS claims: the SDD lists eight claims (BS-1 to BS-8). The adopted check requires a level 4 notebook in each language for
-every claim, and those notebooks come with their topic units (U17-B onwards), so until they land the check reports each
-claim as covered by no level 4 notebook. ``PENDING_CLAIMS`` names exactly those claims; a topic unit's integrator removes
-a claim from it when its level 4 notebook is committed, and the test then holds the claim to the check.
+BS claims (U17 decision N8): a claim enters the SDD's section with the topic unit whose level 4 notebook demonstrates it, so
+the section says 'None claimed.' until the first one lands. ``CLAIMS`` lists the claims the SDD states; a topic unit adds its
+claim there and in the SDD together, and the tests hold every listed claim to its evidence and to its level 4 notebooks.
+``PENDING_CLAIMS`` stays empty: no claim is stated before its demonstration exists.
 """
 from __future__ import annotations
 
@@ -28,7 +28,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
 LANGS = ("en", "es")
 TOPIC_01 = "01-getting-started"
-PENDING_CLAIMS = frozenset(f"BS-{k}" for k in range(1, 9))
+CLAIMS: frozenset[str] = frozenset()  # the BS- claims the SDD states (decision N8: each enters with its level 4 notebook)
+PENDING_CLAIMS: frozenset[str] = frozenset()
 ENGINE_PIN = "0.8.0"  # the PyPI pin of the notebooks; the engine release tag is the same number, zero-padded (X.XX.XXX)
 ENGINE_TAG = "v%d.%02d.%03d" % tuple(int(part) for part in ENGINE_PIN.split("."))
 ENGINE_RELEASE = f"https://github.com/fsantibanezleal/CAOS_RiskValidation/releases/tag/{ENGINE_TAG}"
@@ -210,7 +211,7 @@ def test_every_index_row_gives_its_reason_and_lists_every_notebook():
 
 def test_every_sdd_claim_is_covered_by_a_level_four_notebook_or_is_pending():
     claims, problem = NOTEBOOKS.sdd_claims(ROOT)
-    assert problem is None and claims == {f"BS-{k}" for k in range(1, 9)}
+    assert problem is None and claims == CLAIMS
     for lang in LANGS:
         covered = set()
         for path in notebooks(ROOT, lang):
@@ -223,7 +224,7 @@ def test_every_sdd_claim_is_covered_by_a_level_four_notebook_or_is_pending():
 
 def test_every_sdd_claim_names_its_committed_evidence():
     sdd = (ROOT / "docs" / "design" / "SDD.md").read_text(encoding="utf-8")
-    assert sorted(claim_blocks(sdd)) == [f"BS-{k}" for k in range(1, 9)]
+    assert sorted(claim_blocks(sdd)) == sorted(CLAIMS)
     assert evidence_gaps(sdd) == []
 
 
@@ -398,7 +399,11 @@ def test_adversarial_a_missing_reason_and_an_unlisted_notebook_are_found(repo):
 
 def test_adversarial_a_claim_with_no_level_four_notebook_and_a_notebook_claiming_an_unlisted_one_are_found(repo):
     sdd = repo / "docs" / "design" / "SDD.md"
-    sdd.write_text(sdd.read_text(encoding="utf-8") + "\n\n## Planted\n\nnothing\n", encoding="utf-8")
+    text = sdd.read_text(encoding="utf-8")
+    start = text.index("## Beyond the state of the art\n")
+    end = text.index("\n## ", start + 5)
+    planted = "## Beyond the state of the art\n\n- **BS-1** A planted claim.\n  Evidence: `docs/design/SDD.md`.\n"
+    sdd.write_text(text[:start] + planted + text[end:], encoding="utf-8")
     edit_both(repo, notebooks(repo)[0].name, lambda nb: nb["metadata"]["caos"].update({"level": 4, "beyond": ["BS-99"]}))
     found = NOTEBOOKS.findings_of(repo)
     assert any("BS-99" in f and "not a claim" in f for f in found)
