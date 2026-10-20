@@ -12,7 +12,7 @@ OUT = ROOT / "docs" / "contracts" / "engine"
 ARR = sp.ARR
 
 ML_TEST_ARGS = {
-    "robustness": f"model_id: str, curve: RobustnessCurve, tolerance: float, preset_eps: float, policy: Policy | None = None",
+    "robustness": "model_id: str, curve: RobustnessCurve, tolerance: float, preset_eps: float, policy: Policy | None = None",
     "shift_resilience": "model_id: str, result: SubsampleResult, policy: Policy | None = None",
     "seed_stability": "model_id: str, dispersion: SeedDispersion, policy: Policy | None = None",
     "reason_code_stability": "model_id: str, overlap: OverlapResult, policy: Policy | None = None",

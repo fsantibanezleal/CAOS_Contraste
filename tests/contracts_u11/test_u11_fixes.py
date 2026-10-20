@@ -9,17 +9,14 @@ contract accepts the plant (red); after it they pass.
 from __future__ import annotations
 
 import copy
-import json
 import re
 import sys
-from pathlib import Path
-from typing import Any, Callable
+from typing import Callable
 
 import pytest
 
 import build_fixtures as bf
-import contract_schemas as cs
-from test_u11_contracts import (API, FIXTURES, ROOT, SC, RV, MD, PATH_KEYS, SCENARIO_KEYS, errs, load, out, ref_of, sm)
+from test_u11_contracts import (API, ROOT, SC, PATH_KEYS, errs, load, out, ref_of, sm)
 
 sys.path.insert(0, str(ROOT / "data-pipeline"))
 

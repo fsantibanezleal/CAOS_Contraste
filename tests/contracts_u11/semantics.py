@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import math
 import statistics
-from typing import Any
 
 TOL = 1e-3        # money in USD thousands, the fixtures round to six decimals
 EVENT_AMOUNT = 140_000_000   # over 40 bn USD on 9 March plus over 100 bn USD expected on 10 March, USD thousands (Fed review, 08 E.3)

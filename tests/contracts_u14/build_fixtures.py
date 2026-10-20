@@ -13,7 +13,22 @@ from fractions import Fraction
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from values import *  # noqa: E402,F403
+from values import (  # noqa: E402
+    C02_NAMES,
+    C20_NAMES,
+    FAIR_TESTS,
+    FHA_DISPARATE_IMPACT,
+    HMDA_DATE_RULE,
+    HMDA_ID_RULE,
+    HMDA_MODIFIED,
+    HMDA_PLATFORM_TERMS,
+    LEGAL,
+    NAMED,
+    NON_GROUPS,
+    QUOTES,
+    SGCD_COMMIT,
+    SGCD_QUOTE,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 FIX = ROOT / "docs" / "contracts" / "fixtures"
