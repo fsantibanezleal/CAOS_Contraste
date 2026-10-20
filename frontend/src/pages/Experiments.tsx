@@ -222,7 +222,6 @@ const FAMILY: Record<string, { id: string; label: BiText }> = {
   'ratings-calibration': { id: 'pd', label: { en: 'Credit scoring and PD', es: 'Scoring de crédito y PD' } },
   provisions: { id: 'credit-losses', label: { en: 'Credit losses: provisions, severity and exposure', es: 'Pérdidas de crédito: provisiones, severidad y exposición' } },
   'lgd-ead': { id: 'credit-losses', label: { en: 'Credit losses: provisions, severity and exposure', es: 'Pérdidas de crédito: provisiones, severidad y exposición' } },
-  validator: { id: 'validator', label: { en: 'Validating the validator', es: 'Validar al validador' } },
   'portfolio-capital': { id: 'capital', label: { en: 'Capital, aggregation and stress', es: 'Capital, agregación y estrés' } },
   operational: { id: 'capital', label: { en: 'Capital, aggregation and stress', es: 'Capital, agregación y estrés' } },
   'capital-stress': { id: 'capital', label: { en: 'Capital, aggregation and stress', es: 'Capital, agregación y estrés' } },
@@ -242,6 +241,21 @@ export function groupCases(tabs: Array<{ id: string; label: string; content: Rea
     else groups.push({ id: fam.id, label: fam.label, tabs: [tab] });
   }
   return groups;
+}
+
+type TabDef = { id: string; label: string; content: ReactNode };
+
+/** The cases whose tab sits in the design group, not in a family: the size and power of the tests is part of how the experiments are designed (SDD l.425). */
+export const DESIGN_CASES = new Set(['c22']);
+const DESIGN_CASE_LABEL: Record<string, BiText> = { c22: { en: 'Validating the validator (C22)', es: 'Validar al validador (C22)' } };
+
+/** The top row of the page: the design group (its own tabs in one array, then the design cases, so a later unit extends the array) and the question families of the other cases. */
+export function topRow(designTabs: TabDef[], caseTabs: TabDef[], lang: 'en' | 'es'): Array<{ id: string; label: string; tabs: TabDef[] }> {
+  const design = caseTabs.filter((c) => DESIGN_CASES.has(c.id)).map((c) => ({ ...c, label: pick(DESIGN_CASE_LABEL[c.id] ?? { en: c.label, es: c.label }, lang) }));
+  return [
+    { id: 'design', label: lang === 'es' ? '¿Cómo se diseñan los experimentos?' : 'How are the experiments designed?', tabs: [...designTabs, ...design] },
+    ...groupCases(caseTabs.filter((c) => !DESIGN_CASES.has(c.id))).map((g) => ({ id: g.id, label: pick(g.label, lang), tabs: g.tabs })),
+  ];
 }
 
 export function Experiments() {
@@ -268,6 +282,11 @@ export function Experiments() {
               ),
           },
         ];
+  const designTabs = [
+    { id: 'coverage', label: t('Coverage', 'Cobertura'), content: <Coverage built={built} /> },
+    { id: 'protocol', label: t('Protocol', 'Protocolo'), content: <Protocol /> },
+    { id: 'metrics', label: t('Metrics', 'Métricas'), content: <Metrics /> },
+  ];
   return (
     <DocPage
       wide
@@ -280,20 +299,14 @@ export function Experiments() {
       <NoTranslateRefs />
       <TabGroups
         ariaLabel={lang === 'es' ? 'Partes de los experimentos' : 'Parts of the experiments'}
-        groups={[
-          {
-            id: 'design',
-            label: t('How are the experiments designed?', '¿Cómo se diseñan los experimentos?'),
-            tabs: [
-              { id: 'coverage', label: t('Coverage', 'Cobertura'), content: <Coverage built={built} /> },
-              { id: 'protocol', label: t('Protocol', 'Protocolo'), content: <Protocol /> },
-              { id: 'metrics', label: t('Metrics', 'Métricas'), content: <Metrics /> },
-            ],
-          },
-          ...(all.state === 'ready'
-            ? groupCases(caseTabs).map((g) => ({ id: g.id, label: pick(g.label, lang), tabs: g.tabs }))
-            : [{ id: 'cases', label: t('What did each built case find?', '¿Qué encontró cada caso construido?'), tabs: caseTabs }]),
-        ]}
+        groups={
+          all.state === 'ready'
+            ? topRow(designTabs, caseTabs, lang)
+            : [
+                { id: 'design', label: t('How are the experiments designed?', '¿Cómo se diseñan los experimentos?'), tabs: designTabs },
+                { id: 'cases', label: t('What did each built case find?', '¿Qué encontró cada caso construido?'), tabs: caseTabs },
+              ]
+        }
       />
     </DocPage>
   );

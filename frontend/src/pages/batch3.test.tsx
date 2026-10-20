@@ -8,7 +8,7 @@ import { formatNumber, pick } from '@fasl-work/caos-app-shell';
 import { describe, expect, it } from 'vitest';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { HAS_OWN_BENCHMARK, NO_BENCHMARK } from './Benchmark';
-import { groupCases, sectionKindOf } from './Experiments';
+import { groupCases, sectionKindOf, topRow } from './Experiments';
 import { U6_BENCHMARK_CASES, U6_CASES } from './U6Sections';
 import { W2_BENCHMARK_CASES, W2_CASES } from './Wave2Sections';
 import { B3_BENCHMARK_CASES, B3_CASES, batch3BenchmarkTables, batch3ExperimentTables, impactTables } from './Batch3Sections';
@@ -62,11 +62,12 @@ const rowOf = (id: string, variant: string, lang: 'en' | 'es' = 'en') => {
 const BUILT = ['c01', 'c02', 'c03', 'c04', 'c05', 'c06', 'c07', 'c08', 'c09', 'c10', 'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c17', 'c18', 'c20', 'c21', 'c22'];
 
 describe('the Experiments case tabs are grouped by the question family, six more cases included', () => {
-  const groups = groupCases(BUILT.map((id) => ({ id, label: id.toUpperCase(), content: null })));
+  const caseTabs = BUILT.map((id) => ({ id, label: id.toUpperCase(), content: null }));
+  const groups = groupCases(caseTabs.filter((c) => c.id !== 'c22'));
   const by = (lang: 'en' | 'es') => Object.fromEntries(groups.map((g) => [pick(g.label, lang), g.tabs.map((t) => t.id)]));
   it('holds no group above six peer tabs and loses no case', () => {
     for (const g of groups) expect(g.tabs.length, g.id).toBeLessThanOrEqual(6);
-    expect(groups.flatMap((g) => g.tabs.map((t) => t.id)).sort()).toEqual([...BUILT].sort());
+    expect(groups.flatMap((g) => g.tabs.map((t) => t.id)).sort()).toEqual(BUILT.filter((id) => id !== 'c22').sort());
   });
   it('puts C18 in the capital family, relabelled, in both languages', () => {
     expect(by('en')['Capital, aggregation and stress']).toEqual(['c10', 'c17', 'c18']);
@@ -84,13 +85,22 @@ describe('the Experiments case tabs are grouped by the question family, six more
   });
   it('keeps the other families as they were', () => {
     expect(by('en')['Credit losses: provisions, severity and exposure']).toEqual(['c06', 'c07', 'c08', 'c09']);
-    expect(by('en')['Validating the validator']).toEqual(['c22']);
   });
-  // The decision of the main session (2026-10-20) gives six families, and the page adds its design group in front, which
-  // makes seven peer tabs in the top row (the shell logs it, ADR-0071 rule 5). It is an open question of the brief, kept
-  // here as an expected failure so the day a family is merged this test flips and says so.
-  it.fails('OPEN QUESTION: the top row (the design group plus the families) stays within six peer tabs', () => {
-    expect(groups.length + 1).toBeLessThanOrEqual(6);
+  it('holds at most six groups in the top row, with C22 in the design group after Coverage, Protocol and Metrics, in both languages', () => {
+    const design = [
+      { id: 'coverage', label: 'Coverage', content: null },
+      { id: 'protocol', label: 'Protocol', content: null },
+      { id: 'metrics', label: 'Metrics', content: null },
+    ];
+    for (const lang of ['en', 'es'] as const) {
+      const top = topRow(design, caseTabs, lang);
+      expect(top.length, lang).toBeLessThanOrEqual(6);
+      expect(top.map((g) => g.id)).toEqual(['design', 'pd', 'credit-losses', 'capital', 'market-balance', 'ml-ai-risk']);
+      expect(top[0].tabs.map((t) => t.id)).toEqual(['coverage', 'protocol', 'metrics', 'c22']);
+      expect(top[0].tabs[3].label).toBe(lang === 'en' ? 'Validating the validator (C22)' : 'Validar al validador (C22)');
+      for (const g of top) expect(g.tabs.length, g.id).toBeLessThanOrEqual(6);
+      expect(top.slice(1).flatMap((g) => g.tabs.map((t) => t.id)).sort()).toEqual(BUILT.filter((id) => id !== 'c22').sort());
+    }
   });
 });
 

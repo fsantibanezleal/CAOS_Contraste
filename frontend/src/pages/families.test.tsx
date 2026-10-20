@@ -12,7 +12,7 @@ const NOT_AVAILABLE = /not available|no disponible/i;
 const fixture = (dir: string, file: string) => JSON.parse(readFileSync(new URL(`../../../docs/contracts/fixtures/${dir}/${file}`, import.meta.url), 'utf8')) as VariantArtifact<unknown>;
 const manifestOf = (id: string, v: VariantArtifact<unknown>) => ({ case_id: id, artifacts: [{ role: 'variant', variant_id: v.variant_id, title: { en: 'A long title of the fixture variant, with 1.25 inside', es: 'Un título largo con 1.25 dentro' }, short_title: { en: 'Fixture variant', es: 'Variante de prueba' } }] }) as unknown as CaseManifest;
 
-const BUILT = ['c01', 'c03', 'c04', 'c05', 'c06', 'c07', 'c08', 'c09', 'c22'];
+const BUILT = ['c01', 'c03', 'c04', 'c05', 'c06', 'c07', 'c08', 'c09'];
 const tabs = BUILT.map((id) => ({ id, label: id.toUpperCase(), content: null }));
 
 describe('the Experiments case tabs are grouped by the question family', () => {
@@ -21,12 +21,11 @@ describe('the Experiments case tabs are grouped by the question family', () => {
     for (const g of groups) expect(g.tabs.length, g.id).toBeLessThanOrEqual(6);
     expect(groups.flatMap((g) => g.tabs.map((t) => t.id)).sort()).toEqual([...BUILT].sort());
   });
-  it('groups credit scoring and PD, provisions, loss severity and exposure, and validating the validator', () => {
+  it('groups credit scoring and PD, provisions, loss severity and exposure', () => {
     const by = Object.fromEntries(groups.map((g) => [pick(g.label, 'en'), g.tabs.map((t) => t.id)]));
     expect(by).toEqual({
       'Credit scoring and PD': ['c01', 'c03', 'c04', 'c05'],
       'Credit losses: provisions, severity and exposure': ['c06', 'c07', 'c08', 'c09'],
-      'Validating the validator': ['c22'],
     });
     for (const g of groups) expect(pick(g.label, 'es').length).toBeGreaterThan(0);
   });
