@@ -10,7 +10,7 @@ from pathlib import Path
 import c14_docs as d
 import contract_schemas as cs
 import pytest
-import semantics
+from c14_support import semantics
 from c14_support import SEED, SMALL_PATHS, data_root, requires_raw
 
 from pipeline.cases.c14 import assumptions

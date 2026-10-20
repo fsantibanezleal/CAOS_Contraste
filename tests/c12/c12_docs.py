@@ -9,7 +9,7 @@ from typing import Any
 
 import c12_support  # noqa: F401  (puts the contract test folders on the path)
 import contract_schemas as cs
-import semantics
+from c12_support import semantics
 
 ROOT = c12_support.ROOT
 DERIVED = ROOT / "data" / "derived"
