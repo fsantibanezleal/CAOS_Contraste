@@ -1,8 +1,8 @@
-# Engine fairness API contract: `engine-fairness-api` 1.1.0
+# Engine fairness API contract: `engine-fairness-api` 1.2.0
 
 Owner: U14-S (unit sizing `plans/contraste/units/U14-sizing.md`, CAOS_MANAGE). Implemented by U14-E2 in `riskvalidation.fairness` and `riskvalidation.validation.fairness`; called by the C20 and C21 bakes (U14-P2, U14-P3). The tests are written by U14-E2 against this file. Sources: dossier 06 C.7 l.1029-1040, I.6 l.1268-1270; dossier 04 J.3 l.897-905; dossier 07 A.3 l.158-177; the U14 research addendum (`wip/contraste/u14-research-addendum-2026-10-17.md`: H1 field names, H3 legal tests, H5 the situation-testing algorithm). The case documents are `c21-outputs`, `c21-models` (`docs/contracts/schemas/c21/`) and the Taiwan battery rows of the C20 documents. The four-fifths line is an employment benchmark and never a credit-law threshold. HMDA has no outcome (08 l.180-181): the outcome-conditioned tests (equalized odds, equal opportunity, calibration within groups, AUC by group) never run on it. The engine states no legal claim.
 
-Version history: 1.0.0, the first contract; 1.1.0 after the U14-E2 review (U14 decisions G5, G8 to G13): the 'never red' lights capped at amber under any policy, `protected_effect` refusing the intercept, the `categorical` keyword of `situation_test`, the situation-testing amber cut 0.20, the `fair.` rows in the packaged default policy, the replication rule at a zero fit coefficient and the counterfactual counts finding.
+Version history: 1.0.0, the first contract; 1.1.0 after the U14-E2 review (U14 decisions G5, G8 to G13): the 'never red' lights capped at amber under any policy, `protected_effect` refusing the intercept, the `categorical` keyword of `situation_test`, the situation-testing amber cut 0.20, the `fair.` rows in the packaged default policy, the replication rule at a zero fit coefficient and the counterfactual counts finding; 1.2.0 after the U14-P3 review (deviation 4): `conditional_disparity`, `rate_spread_disparity` and `situation_testing` carry null alphas, the interval level and the share cut point in `extras['thresholds']` and `policy_version` (no statistic, metric or light changes).
 
 ## Conventions (all functions)
 
@@ -470,6 +470,7 @@ def conditional_disparity(model_id: str, effect: Effect, controls: Sequence[str]
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.conditional_disparity"
+- Alphas (1.2.0): `alpha_amber` and `alpha_red` are null: the test has no p-value threshold. The interval level (0.95) is in `extras['thresholds']` and in `policy_version`, never in the alpha fields, which a reader takes for p-value cut points.
 - Light: reported as an approximation of comparative evidence with the missing controls named; amber when the 95 percent interval excludes 0; never a finding of violation.
 - Policy: no policy threshold (row `fair.conditional_disparity` of Policy thresholds states why); the rule above is the whole classification.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
@@ -483,6 +484,7 @@ def rate_spread_disparity(model_id: str, effect: Effect, controls: Sequence[str]
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.rate_spread_disparity"
+- Alphas (1.2.0): `alpha_amber` and `alpha_red` are null: the test has no p-value threshold. The interval level (0.95) is in `extras['thresholds']` and in `policy_version`, never in the alpha fields, which a reader takes for p-value cut points.
 - Light: same rule as conditional_disparity.
 - Policy: no policy threshold (row `fair.rate_spread_disparity` of Policy thresholds states why); the rule above is the whole classification.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
@@ -509,6 +511,7 @@ def situation_testing(model_id: str, result: SituationResult, policy: Policy | N
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.situation_testing"
+- Alphas (1.2.0): `alpha_amber` and `alpha_red` are null: the test has no p-value threshold. The share cut point (amber 0.20) is in `extras['thresholds']` and in `policy_version`, never in the alpha fields, which a reader takes for p-value cut points.
 - Light: reported as individual-level indicators: amber when the significant share of the complainants reaches the cut point; never red, under any policy (1.1.0, U14 decision G8); no legal claim.
 - Policy key: `fair.situation_testing` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).

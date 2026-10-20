@@ -345,9 +345,9 @@
     "sha256": "6beb000681ade70d320565cc7e42eb56f18f13774d2fb2d151fb611e3e7f8d99"
   },
   "engine-fairness-api": {
-    "version": "1.1.0",
+    "version": "1.2.0",
     "schema": "docs/contracts/engine/fairness-api.md",
-    "sha256": "27fda540284955bfa8c3f79ee050ee94487490fa8f3dd7b43bb94a33e9768788"
+    "sha256": "e581b846866060cd6a6521d0130832f0a2829d808b19f8a6fb827e246cfad1b1"
   },
   "c18-outputs": {
     "version": "1.0.0",
