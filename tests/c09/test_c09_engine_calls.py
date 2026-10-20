@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import math
 import pathlib
-import re
 
 import numpy as np
 import pytest
@@ -12,6 +11,7 @@ from pipeline.cases.c09 import estimators, generator
 from riskvalidation.lgd_ead import ccf, floors, lgd_models
 from riskvalidation.lgd_ead.workout import range_flag
 from riskvalidation.validation import lgd_ead as val
+from engine_pin import engine_pin_findings, released_version
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
@@ -20,9 +20,11 @@ def test_the_pin_is_the_released_engine() -> None:
     from importlib.metadata import version
 
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
-    tag = re.search(r"CAOS_RiskValidation@v(\d+)\.(\d+)\.(\d+)", req)
-    assert tag is not None
-    assert version("riskvalidation") == ".".join(str(int(g)) for g in tag.groups())          # tag v0.06.000 is release 0.6.0
+    sdd = (ROOT / "docs" / "design" / "SDD.md").read_text(encoding="utf-8")
+    assert engine_pin_findings(req, sdd) == []  # a release tag, or during a batch the commit the SDD names (tests/engine_pin.py)
+    rel = released_version(req)
+    if rel is not None:  # tag v0.06.000 is release 0.6.0
+        assert version("riskvalidation") == ".".join(map(str, rel))
 
 
 def test_the_pinned_engine_reproduces_the_contract_goldens() -> None:
