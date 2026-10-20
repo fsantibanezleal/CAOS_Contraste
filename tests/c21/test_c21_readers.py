@@ -69,6 +69,18 @@ def test_non_attribute_categories_are_excluded_groups_and_dti_is_recoded_to_the_
         reader.dti_bin("abc", "x")
 
 
+SAMPLE = Path(__file__).resolve().parent / "data" / "sample-synthetic-api-2019.csv"
+
+
+def test_the_committed_synthetic_sample_reads_to_its_known_counts() -> None:
+    """tests/c21/data/sample-synthetic-api-2019.csv: 56 synthetic rows (planted, never HMDA) in the Data Browser spelling."""
+    y = reader.read_year(SAMPLE, 2019)
+    assert (y.n_file_rows, len(y.rows)) == (56, 50) and y.action_counts == {1: 28, 2: 3, 3: 19, 4: 1, 6: 1, 7: 4}
+    assert sum(r["decision"] for r in y.rows) == 31 and sum(1 for r in y.rows if r["dti_bin"] is None) == 4
+    assert y.rows[0]["row"] == 1 and y.rows[0]["derived_race"] == "Native Hawaiian or Other Pacific Islander" and y.rows[0]["income"] == 104.0
+    assert reader.validate_contract([y]).counts() == {"input": 50, "accepted": 50, "rejected": 0, "flagged": 0, "excluded": 0}
+
+
 def _file(path: Path, year: int, rows: list[list[str]], header: list[str] | None = None) -> Path:
     write_file(path, rows, header)
     return path
