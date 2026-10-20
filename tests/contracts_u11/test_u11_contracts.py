@@ -983,7 +983,7 @@ def test_the_rows_fragment_has_the_four_rows_in_the_catalog_columns_and_every_ci
     me = Path(__file__).read_text(encoding="utf-8")
     for rid, cells in rows.items():
         # engine-liquidity-api 1.1.0 after U11-E (additive: the `scored` keyword of fast_run_scenario), at the batch 3 integration
-        assert cells[1] == {"engine-liquidity-api": "1.2.0", "c16-outputs-reverse": "1.0.1", "c16-outputs": "2.1.0"}.get(rid, "1.0.0") and cells[11] == "active"
+        assert cells[1] == {"engine-liquidity-api": "1.2.0", "c16-outputs-reverse": "1.0.1", "c16-outputs": "2.1.0"}.get(rid, "1.0.0") and cells[11] == ("active" if rid.startswith("engine-") else "real")  # the case rows are real since C16 merged
         assert cells[8].startswith("fixture:docs/contracts/fixtures/c16/") or cells[8].startswith("fixture:docs/contracts/engine/")
         for cell in (cells[5], cells[6], cells[10]):
             for ref in cell.split(", "):
