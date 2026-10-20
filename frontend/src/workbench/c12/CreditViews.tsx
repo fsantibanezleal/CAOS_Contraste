@@ -123,7 +123,7 @@ export function WwrView({ sel }: { sel: C12Sel | null }) {
     return <UnavailableCard sel={sel} title={title} reason={sel.peers ? { en: 'Not available: this variant has no wrong-way block, and the case holds none of the wrong-way variant.', es: 'No disponible: esta variante no tiene bloque de correlación adversa, y el caso no tiene la variante de correlación adversa.' } : { en: 'Not available: this variant has no wrong-way block; the wrong-way variant is loading.', es: 'No disponible: esta variante no tiene bloque de correlación adversa; la variante de correlación adversa se está cargando.' }} />;
   }
   const w = found.block;
-  const own = found.owner === o;
+  const own = found.owner.variant === o.variant;
   const ore = found.owner.ore_reconciliation;
   const axis = axisOf(w.sweep.map((p) => p.cva.amount));
   const picked = w.sweep[Math.min(sel.b, w.sweep.length - 1)];

@@ -47,7 +47,7 @@ export function ComparisonView({ sel }: { sel: C12Sel | null }) {
         }}
       >
         <ChartOverTable
-          chartMin="13rem"
+          chartMin="17rem"
           chart={
             <BarChart
               title={{ en: 'Regulatory and modelled measures', es: 'Medidas regulatorias y modeladas' }}
@@ -264,7 +264,7 @@ export function BaCvaView({ sel }: { sel: C12Sel | null }) {
         }}
       >
         <ChartOverTable
-          chartMin="13rem"
+          chartMin="22rem"
           chart={
             <BarChart
               title={{ en: 'BA-CVA capital by sector', es: 'Capital BA-CVA por sector' }}

@@ -194,6 +194,8 @@ describe('the live BA-CVA port (MAR50, reduced version)', () => {
     const k = kReduced([3, 4]);
     expect(k).toBeGreaterThan(5);
     expect(k).toBeLessThan(7);
+    // the supervisory correlation is 50 percent: sqrt((0.5 x 7)^2 + 0.75 x 25) = sqrt(31), and the fixtures (one counterparty) cannot pin it
+    expect(k).toBeCloseTo(Math.sqrt(31), 12);
     // the discount factor tends to one as the maturity tends to zero and is one for an internal-model bank
     expect(discountFactor(1e-9)).toBeCloseTo(1, 8);
     expect(discountFactor(10)).toBeCloseTo((1 - Math.exp(-0.5)) / 0.5, 12);

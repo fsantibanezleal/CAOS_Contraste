@@ -113,7 +113,7 @@ export function ExceedanceView({ sel }: { sel: C12Sel | null }) {
         }}
       >
         <ChartOverTable
-          chartMin="12rem"
+          chartMin="17rem"
           chart={
             <BarChart
               title={{ en: 'W² by horizon', es: 'W² por horizonte' }}
