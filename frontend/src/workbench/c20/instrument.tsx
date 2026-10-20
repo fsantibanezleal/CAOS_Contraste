@@ -109,7 +109,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
             label={{ en: 'Shocks', es: 'Choques' }}
             options={[
               { id: 'shipped', label: { en: 'As shipped', es: 'Entregados' }, hint: { en: 'The shocks as the dataset ships them.', es: 'Los choques como los entrega el conjunto de datos.' } },
-              { id: 'applied', label: { en: 'Contraste-applied', es: 'De Contraste' }, hint: { en: 'Contraste applies each shock family to the structured view itself.', es: 'Contraste aplica cada familia de choques a la vista estructurada misma.' } },
+              { id: 'applied', label: { en: 'Contraste-applied', es: 'Contraste' }, hint: { en: 'Contraste applies each shock family to the structured view itself.', es: 'Contraste aplica cada familia de choques a la vista estructurada misma.' } },
             ]}
             value={sel.block}
             onChange={setBlock}

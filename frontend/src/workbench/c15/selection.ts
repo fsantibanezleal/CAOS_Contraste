@@ -58,6 +58,11 @@ export const OFFSET_TEXT: Record<string, Bi> = {
   on: { en: 'Offset on', es: 'Compensación activa' },
   off: { en: 'Offset off', es: 'Compensación inactiva' },
 };
+/** The chip text of the offset choice: the section and the group label already say "offset", so the two chips fit one row of the rail. */
+export const OFFSET_SHORT: Record<string, Bi> = {
+  on: { en: 'On', es: 'Activa' },
+  off: { en: 'Off', es: 'Inactiva' },
+};
 export const OFFSET_LONG: Record<string, Bi> = {
   on: { en: 'Half of the CLP delta is offset against the CLF delta when their signs are opposite', es: 'Se compensa la mitad del delta CLP contra el delta CLF cuando sus signos son opuestos' },
   off: { en: 'No offset: the positive parts of the two legs add', es: 'Sin compensación: se suman las partes positivas de los dos tramos' },
