@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<TodaysMarket>
+  <Configuration id="default">
+    <DiscountingCurvesId>default</DiscountingCurvesId>
+    <IndexForwardingCurvesId>default</IndexForwardingCurvesId>
+    <YieldCurvesId>default</YieldCurvesId>
+    <SwapIndexCurvesId>default</SwapIndexCurvesId>
+    <SwaptionVolatilitiesId>default</SwaptionVolatilitiesId>
+  </Configuration>
+  <DiscountingCurves id="default">
+    <DiscountingCurve currency="USD">Yield/USD/C12_ZERO</DiscountingCurve>
+  </DiscountingCurves>
+  <IndexForwardingCurves id="default">
+    <Index name="USD-C12IBOR-6M">Yield/USD/C12_ZERO</Index>
+  </IndexForwardingCurves>
+  <YieldCurves id="default">
+    <YieldCurve name="C12_ZERO">Yield/USD/C12_ZERO</YieldCurve>
+  </YieldCurves>
+  <SwapIndexCurves id="default">
+    <SwapIndex name="USD-CMS-1Y">
+      <Discounting>USD-C12IBOR-6M</Discounting>
+    </SwapIndex>
+    <SwapIndex name="USD-CMS-30Y">
+      <Discounting>USD-C12IBOR-6M</Discounting>
+    </SwapIndex>
+  </SwapIndexCurves>
+  <SwaptionVolatilities id="default">
+    <SwaptionVolatility currency="USD">SwaptionVolatility/USD/USD_SW_N</SwaptionVolatility>
+  </SwaptionVolatilities>
+</TodaysMarket>
