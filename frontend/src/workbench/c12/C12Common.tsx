@@ -14,7 +14,6 @@ import { Pending } from '../Pending';
 import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { T } from '../../content/bi';
 import { UnavailableCard } from '../c14/C14Common';
-import { riskWeight } from './bacva';
 import { RATING_TEXT, SECTOR_TEXT, VARIANT_ORDER, VARIANT_TEXT, BASIS_TEXT, CASE_TEXT, HORIZON_LONG, SUBJECT_TEXT, amount, axisOf, fitOf, horizonOf, liveBaCva, liveSaCcr, outputsOf, sensitivityOf, text, gridOf, type C12Outputs, type C12Sel, type Peers } from './selection';
 
 type Lang = 'en' | 'es';
@@ -464,7 +463,6 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
 
 // --- the read-outs of the rail ---------------------------------------------------------------------------------------
 
-const SHARE_FORMAT = { percent: true, decimals: 2 } as const;
 export const MAX_SENSITIVITY = 5;
 
 /** The live read-out of the Time section: the EE, the ENE and the PFE at the grid point in focus. */
@@ -553,9 +551,7 @@ export function LiveCcrReadout({ sel }: { sel: C12Sel | null }) {
       variant={sel?.data.variant}
       title={{ en: 'SA-CCR and BA-CVA, live', es: 'SA-CCR y BA-CVA, en vivo' }}
       items={[
-        { label: { en: 'EAD', es: 'EAD' }, value: ead.value, unit: ead.unit, format: ead.format, hint: { en: 'SA-CCR: alpha 1.4 times the replacement cost plus the PFE, on the collateral held (CRE52.1).', es: 'SA-CCR: alfa 1,4 por el costo de reemplazo más el PFE, con el colateral mantenido (CRE52.1).' } },
-        { label: { en: 'Multiplier', es: 'Multiplicador' }, value: sa?.multiplier ?? null, unitless: true, format: { digits: 4 }, hint: { en: 'At most 1, with a floor of 5 percent: it falls as the netting set is over-collateralised (CRE52.23).', es: 'A lo más 1, con un piso de 5 por ciento: baja cuando el conjunto está sobrecolateralizado (CRE52.23).' } },
-        { label: { en: 'Risk weight', es: 'Ponderador' }, value: sel ? riskWeight(sel.sector, sel.rating) : null, unitless: true, format: SHARE_FORMAT, hint: { en: 'MAR50.16 Table 1: by sector and by investment grade or high yield and not rated.', es: 'Tabla 1 de MAR50.16: por sector y por grado de inversión o alto rendimiento y sin calificación.' } },
+        { label: { en: 'EAD (multiplier)', es: 'EAD (multiplicador)' }, text: ead.value === null ? NA : { en: `${formatNumber(ead.value, 'en', ead.format)} ${pick(ead.unit, 'en')} (${formatNumber(sa?.multiplier ?? null, 'en', { digits: 4 })})`, es: `${formatNumber(ead.value, 'es', ead.format)} ${pick(ead.unit, 'es')} (${formatNumber(sa?.multiplier ?? null, 'es', { digits: 4 })})` }, hint: { en: 'SA-CCR: alpha 1.4 times the replacement cost plus the PFE, on the collateral held (CRE52.1); the multiplier is at most 1, with a floor of 5 percent, and falls as the netting set is over-collateralised (CRE52.23).', es: 'SA-CCR: alfa 1,4 por el costo de reemplazo más el PFE, con el colateral mantenido (CRE52.1); el multiplicador es a lo más 1, con un piso de 5 por ciento, y baja cuando el conjunto está sobrecolateralizado (CRE52.23).' } },
         { label: { en: 'BA-CVA capital', es: 'Capital BA-CVA' }, value: cap.value, unit: cap.unit, format: cap.format, hint: { en: 'DS 0.65 times K reduced (MAR50.14) on the live EAD; the reduced version, no hedges.', es: 'DS 0,65 por K reducido (MAR50.14) sobre la EAD en vivo; la versión reducida, sin coberturas.' } },
       ]}
     />

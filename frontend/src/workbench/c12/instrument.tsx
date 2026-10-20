@@ -13,7 +13,7 @@ import { loadAllVariants, useArtifact, type CaseData } from '../../api/artifacts
 import type { VariantArtifact } from '../../lib/contract.types';
 import { provenanceOf } from '../model';
 import { RailSelect } from '../c06/RailSelect';
-import { SECTORS } from './bacva';
+import { SECTORS, riskWeight } from './bacva';
 import { C12ContextView, C12FindingsView, C12TestsView, C12VariantsView, CaseReadout, HorizonReadout, LiveCcrReadout, TimeReadout } from './C12Common';
 import { CollateralView, NettingView, ProfileView, SensitivityView } from './ExposureViews';
 import { CvaView, WwrView } from './CreditViews';
@@ -128,19 +128,22 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     label: { en: 'Test', es: 'Prueba' },
     content: (
       <>
-        <ChipGroup
+        <RailSelect
           id="c12-horizon"
-          label={{ en: 'Horizon', es: 'Horizonte' }}
-          options={HORIZONS.map((h) => ({ id: h, label: text(HORIZON_SHORT, h), hint: text(HORIZON_LONG, h) }))}
-          value={sel.horizon}
-          onChange={setHorizon}
-        />
-        <ChipGroup
-          id="c12-subject"
-          label={{ en: 'Backtested', es: 'Evaluado' }}
-          options={(['book', 'risk-factor'] as const).map((s) => ({ id: s, label: text(SUBJECT_TEXT, s), hint: text(SUBJECT_LONG, s) }))}
-          value={sel.subject}
-          onChange={setSubject}
+          label={{ en: 'Horizon and the series backtested', es: 'Horizonte y la serie evaluada' }}
+          options={HORIZONS.flatMap((h) =>
+            (['book', 'risk-factor'] as const).map((s) => ({
+              id: `${h}|${s}`,
+              label: { en: `${text(HORIZON_SHORT, h).en}, ${text(SUBJECT_TEXT, s).en}`, es: `${text(HORIZON_SHORT, h).es}, ${text(SUBJECT_TEXT, s).es}` },
+              hint: { en: `${text(HORIZON_LONG, h).en}; ${text(SUBJECT_LONG, s).en}`, es: `${text(HORIZON_LONG, h).es}; ${text(SUBJECT_LONG, s).es}` },
+            })),
+          )}
+          value={`${sel.horizon}|${sel.subject}`}
+          onChange={(v) => {
+            const [h, s] = v.split('|');
+            setHorizon(h);
+            setSubject(s);
+          }}
         />
         <HorizonReadout sel={sel} />
       </>
@@ -201,7 +204,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <RailSelect
           id="c12-counterparty"
           label={{ en: 'Counterparty of the BA-CVA', es: 'Contraparte del BA-CVA' }}
-          options={SECTORS.flatMap((s) => (['investment-grade', 'high-yield-or-not-rated'] as const).map((r) => ({ id: `${s}|${r}`, label: { en: `${text(SECTOR_TEXT, s).en}, ${text(RATING_SHORT, r).en}`, es: `${text(SECTOR_TEXT, s).es}, ${text(RATING_SHORT, r).es}` }, hint: text(RATING_TEXT, r) })))}
+          options={SECTORS.flatMap((s) => (['investment-grade', 'high-yield-or-not-rated'] as const).map((r) => ({ id: `${s}|${r}`, label: { en: `${text(SECTOR_TEXT, s).en}, ${text(RATING_SHORT, r).en}, RW ${formatNumber(riskWeight(s, r), 'en', { percent: true, decimals: 1 })}`, es: `${text(SECTOR_TEXT, s).es}, ${text(RATING_SHORT, r).es}, RW ${formatNumber(riskWeight(s, r), 'es', { percent: true, decimals: 1 })}` }, hint: text(RATING_TEXT, r) })))}
           value={`${sel.sector}|${sel.rating}`}
           onChange={setCounterparty}
         />
