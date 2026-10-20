@@ -83,7 +83,7 @@ export function C12TestsView({ sel }: { sel: C12Sel | null }) {
                 height="fill"
                 orientation="horizontal"
                 data={LIGHT_ORDER.map((l) => ({ id: l, label: LIGHT_TEXT[l], value: rows.filter((t) => t.light === l).length, tone: LIGHT_TONE_BAR[l] }))}
-                axis={{ label: { en: 'Number of tests', es: 'Número de pruebas' }, format: { digits: 4 } }}
+                axis={{ label: { en: 'Number of tests', es: 'Número de pruebas' }, format: { decimals: 0 }, range: [0, Math.max(4, rows.length)] }}
               />
             }
           >

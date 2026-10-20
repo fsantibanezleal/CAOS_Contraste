@@ -50,7 +50,7 @@ export function PitView({ sel }: { sel: C12Sel | null }) {
               height="fill"
               orientation="vertical"
               data={counts.map((n, i) => ({ id: `bin${i}`, label: { en: `${formatNumber(i / bins, 'en', { decimals: 1 })} to ${formatNumber((i + 1) / bins, 'en', { decimals: 1 })}`, es: `${formatNumber(i / bins, 'es', { decimals: 1 })} a ${formatNumber((i + 1) / bins, 'es', { decimals: 1 })}` }, value: n, tone: 'accent' as const }))}
-              axis={{ label: { en: 'Back-test dates', es: 'Fechas del backtest' }, format: { digits: 4 } }}
+              axis={{ label: { en: 'Back-test dates', es: 'Fechas del backtest' }, format: { decimals: 0 }, range: [0, Math.max(4, ...counts)] }}
             />
           }
         >
