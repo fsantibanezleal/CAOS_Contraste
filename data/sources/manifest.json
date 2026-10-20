@@ -2604,6 +2604,27 @@
           "sha256": "45c2859ae7246c071b69df8623854751f0629b04393957e14fe28bc33c04ebbb",
           "bytes": 1824,
           "retrieved": "2026-10-12"
+        },
+        {
+          "name": "corporate-typical-risk-2025.csv",
+          "url": "https://www.federalreserve.gov/supervisionreg/files/corporate-typical-risk-2025.csv",
+          "bytes": 10184,
+          "sha256": "eb2f9714ba14b363f8a241ea9894cd8b25bf86658ac127ebe36afa2ef1f919b4",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "corporate-high-risk-2025.csv",
+          "url": "https://www.federalreserve.gov/supervisionreg/files/corporate-high-risk-2025.csv",
+          "bytes": 10139,
+          "sha256": "5010dcbf475500309aaec7c57ce5f4ff039f79957bd53c0c9949bb96c4d6f21f",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "corporate-low-risk-2025.csv",
+          "url": "https://www.federalreserve.gov/supervisionreg/files/corporate-low-risk-2025.csv",
+          "bytes": 10156,
+          "sha256": "e1e8fcf7fdca27bae799aa947749069d6b0ba8447f1cc8177f6d55dd97783f89",
+          "retrieved": "2026-10-20"
         }
       ]
     },
@@ -3566,6 +3587,45 @@
           "url": "https://ffiec.cfpb.gov/v2/data-browser-api/view/csv?states=DE&years=2024&actions_taken=1,2,3,4,5,6,7,8",
           "bytes": 18605360,
           "sha256": "82672845bea20b6e33246a7ac083baa5ef12dd6c169ed09c77bdf52c105ecd84",
+          "retrieved": "2026-10-20"
+        }
+      ]
+    },
+    "santanderai-sgcd": {
+      "name": "Stressed German Credit Dataset (SGCD-v0.1)",
+      "publisher": "Santander AI Lab",
+      "landing": "https://github.com/SantanderAI/sota-stressed-datasets",
+      "class": "mirror-allowed",
+      "licence": "data CC BY 4.0 (same as the mother dataset, Statlog German Credit); validation tooling Apache-2.0; the dataset card forbids real-world credit scoring use",
+      "attribution": "Santander AI Lab, sota-stressed-datasets, SGCD-v0.1 (CC BY 4.0), derived from Statlog German Credit, UCI, https://doi.org/10.24432/C5NC77",
+      "access": "GitHub repository",
+      "files": [
+        {
+          "name": "SGCDataset.jsonl",
+          "url": "https://raw.githubusercontent.com/SantanderAI/sota-stressed-datasets/8403fa9048f7159d51a0cec5a2d9a2e9712662bd/datasets/stressed_german_credit_dataset/data/SGCDataset.jsonl",
+          "bytes": 1356305,
+          "sha256": "d096d71e3e7b4f97d0e7fd5d292d2f4323518110e63142e4ea934e2178d7f6c5",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "SGCDataset_metadata.json",
+          "url": "https://raw.githubusercontent.com/SantanderAI/sota-stressed-datasets/8403fa9048f7159d51a0cec5a2d9a2e9712662bd/datasets/stressed_german_credit_dataset/data/SGCDataset_metadata.json",
+          "bytes": 1906,
+          "sha256": "4d98e4523b4e267d9ef187538ff369a74444a175137e63835668bd6a6f6d5202",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "codebook.md",
+          "url": "https://raw.githubusercontent.com/SantanderAI/sota-stressed-datasets/8403fa9048f7159d51a0cec5a2d9a2e9712662bd/datasets/stressed_german_credit_dataset/data/codebook.md",
+          "bytes": 3466,
+          "sha256": "1038b02212e3252799b17db054e66cc6c00135e59adeabcc4370c6c7cb445785",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "README.md",
+          "url": "https://raw.githubusercontent.com/SantanderAI/sota-stressed-datasets/8403fa9048f7159d51a0cec5a2d9a2e9712662bd/datasets/stressed_german_credit_dataset/README.md",
+          "bytes": 4236,
+          "sha256": "2e1369a8ef3955f67054701882965cce393371463ebd7ded3d90e0f3e636f087",
           "retrieved": "2026-10-20"
         }
       ]
