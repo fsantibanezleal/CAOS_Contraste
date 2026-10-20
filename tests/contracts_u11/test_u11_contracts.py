@@ -793,7 +793,6 @@ def test_the_checker_is_an_importable_function_a_bake_calls() -> None:
 
 
 def _plants() -> list[tuple[str, str, Callable[[dict], None]]]:
-    P = ("outputs", "path", "ladder")
     plants: list[tuple[str, str, Callable[[dict], None]]] = []
     for key in PATH_KEYS:
         plants += [

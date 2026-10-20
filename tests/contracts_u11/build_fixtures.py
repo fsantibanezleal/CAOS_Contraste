@@ -18,8 +18,8 @@ import math
 import statistics
 from pathlib import Path
 
-from build_schemas import (A1_IDS, CALIBRATED_ON, CONVENTION_NAMES, GOLDENS, LCR_INFLOW_RATES, LCR_OUTFLOW_RATES, LCR_PHASE, LIST_CONTRACTUAL,
-                           LIST_DRAWDOWN, LIST_INFLOWS, LIST_OPEN, PARAMETER_SETS, SCORED_ON, TABLE_A1, VARIANTS)
+from build_schemas import (CALIBRATED_ON, CONVENTION_NAMES, GOLDENS, LCR_INFLOW_RATES, LCR_OUTFLOW_RATES, LCR_PHASE, LIST_CONTRACTUAL,
+                           LIST_DRAWDOWN, LIST_INFLOWS, LIST_OPEN, SCORED_ON, TABLE_A1)
 
 ROOT = Path(__file__).resolve().parents[2]
 FIX = ROOT / "docs" / "contracts" / "fixtures" / "c16"

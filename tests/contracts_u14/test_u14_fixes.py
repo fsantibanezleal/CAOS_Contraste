@@ -12,7 +12,6 @@ import re
 import sys
 from fractions import Fraction
 from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -20,7 +19,7 @@ import api_spec as sp
 import build_fixtures as bf
 import contract_schemas as cs
 import values as V
-from test_u14_contracts import (C21, DOCS, ENGINE, FIXTURES, H1, POOLED, ROWS, SCHEMAS, SEEDS, SHOCK, load, ref_of, valid)
+from test_u14_contracts import (C21, ENGINE, FIXTURES, H1, POOLED, ROWS, SCHEMAS, SEEDS, SHOCK, load, valid)
 
 ROOT = cs.ROOT
 sys.path.insert(0, str(ROOT / "data-pipeline"))
