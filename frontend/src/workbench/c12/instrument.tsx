@@ -14,7 +14,7 @@ import type { VariantArtifact } from '../../lib/contract.types';
 import { provenanceOf } from '../model';
 import { RailSelect } from '../c06/RailSelect';
 import { SECTORS } from './bacva';
-import { BaCvaReadout, C12ContextView, C12FindingsView, C12TestsView, C12VariantsView, CaseReadout, HorizonReadout, SaCcrReadout, TimeReadout } from './C12Common';
+import { C12ContextView, C12FindingsView, C12TestsView, C12VariantsView, CaseReadout, HorizonReadout, LiveCcrReadout, TimeReadout } from './C12Common';
 import { CollateralView, NettingView, ProfileView, SensitivityView } from './ExposureViews';
 import { CvaView, WwrView } from './CreditViews';
 import { BaCvaView, ComparisonView, GirrView, SaCcrView } from './RegulatoryViews';
@@ -61,8 +61,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
   const [b, setB] = useState<string | null>(null);
   const [caseId, setCaseId] = useState<string | null>(null);
   const [collateral, setCollateral] = useState<number | null>(null);
-  const [sector, setSector] = useState<string | null>(null);
-  const [rating, setRating] = useState<string | null>(null);
+  const [counterparty, setCounterparty] = useState<string | null>(null);
   const variantId = data?.variant.variant_id;
   // a new variant starts every control on its own defaults
   useEffect(() => {
@@ -72,13 +71,13 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     setB(null);
     setCaseId(null);
     setCollateral(null);
-    setSector(null);
-    setRating(null);
+    setCounterparty(null);
   }, [variantId]);
 
   const o = base ? outputsOf(base) : null;
   const grid = gridOf(o);
   const sweep = o?.wrong_way_risk?.sweep ?? null;
+  const cp = counterparty !== null ? counterparty.split('|') : null;
   const sel: C12Sel | null = useMemo(() => {
     if (!base) return null;
     return {
@@ -89,10 +88,10 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       b: b !== null && sweep && Number(b) >= 0 && Number(b) < sweep.length ? Number(b) : base.b,
       caseId: (caseId !== null && (CASE_ORDER as readonly string[]).includes(caseId) ? caseId : base.caseId) as CaseId,
       collateral,
-      sector: sector !== null && isSector(sector) ? sector : base.sector,
-      rating: rating !== null && isRating(rating) ? rating : base.rating,
+      sector: cp && isSector(cp[0]) ? cp[0] : base.sector,
+      rating: cp && isRating(cp[1]) ? cp[1] : base.rating,
     };
-  }, [base, grid.length, sweep, t, horizon, subject, b, caseId, collateral, sector, rating]);
+  }, [base, grid.length, sweep, t, horizon, subject, b, caseId, collateral, counterparty]);
   if (!sel || !data || !o) return null;
   const prov = provenanceOf(data.variant.provenance.truth_status);
 
@@ -126,7 +125,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
   };
   const horizonSection: RailSection = {
     id: 'horizon',
-    label: { en: 'Back-test', es: 'Backtest' },
+    label: { en: 'Test', es: 'Prueba' },
     content: (
       <>
         <ChipGroup
@@ -150,7 +149,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
   const caseSection: RailSection = sweep
     ? {
         id: 'case',
-        label: { en: 'Wrong-way', es: 'Corr. adversa' },
+        label: { en: 'Case', es: 'Caso' },
         content: (
           <>
             <ChipGroup
@@ -166,7 +165,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       }
     : {
         id: 'case',
-        label: { en: 'Calibration', es: 'Calibración' },
+        label: { en: 'Case', es: 'Caso' },
         content: (
           <>
             <RailSelect
@@ -182,9 +181,9 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       };
   const range = collateralRange(o);
   const held = sel.collateral ?? committedCollateral(o);
-  const collateralSection: RailSection = {
-    id: 'collateral',
-    label: { en: 'Collateral', es: 'Colateral' },
+  const liveSection: RailSection = {
+    id: 'live',
+    label: { en: 'Live', es: 'Vivo' },
     content: (
       <>
         <Knob
@@ -199,37 +198,21 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
           format={{ decimals: 0 }}
           onChange={(v) => setCollateral(v === Math.round(committedCollateral(o) / 1000) ? null : v * 1000)}
         />
-        <SaCcrReadout sel={sel} />
-      </>
-    ),
-  };
-  const counterpartySection: RailSection = {
-    id: 'counterparty',
-    label: { en: 'Counterparty', es: 'Contraparte' },
-    content: (
-      <>
         <RailSelect
-          id="c12-sector"
-          label={{ en: 'Sector (MAR50.16)', es: 'Sector (MAR50.16)' }}
-          options={SECTORS.map((s) => ({ id: s, label: text(SECTOR_TEXT, s) }))}
-          value={sel.sector}
-          onChange={setSector}
+          id="c12-counterparty"
+          label={{ en: 'Counterparty of the BA-CVA', es: 'Contraparte del BA-CVA' }}
+          options={SECTORS.flatMap((s) => (['investment-grade', 'high-yield-or-not-rated'] as const).map((r) => ({ id: `${s}|${r}`, label: { en: `${text(SECTOR_TEXT, s).en}, ${text(RATING_SHORT, r).en}`, es: `${text(SECTOR_TEXT, s).es}, ${text(RATING_SHORT, r).es}` }, hint: text(RATING_TEXT, r) })))}
+          value={`${sel.sector}|${sel.rating}`}
+          onChange={setCounterparty}
         />
-        <ChipGroup
-          id="c12-rating"
-          label={{ en: 'Rating class', es: 'Clase de calificación' }}
-          options={(['investment-grade', 'high-yield-or-not-rated'] as const).map((r) => ({ id: r, label: text(RATING_SHORT, r), hint: text(RATING_TEXT, r) }))}
-          value={sel.rating}
-          onChange={setRating}
-        />
-        <BaCvaReadout sel={sel} />
+        <LiveCcrReadout sel={sel} />
       </>
     ),
   };
 
   return {
     sel,
-    rail: [timeSection, horizonSection, caseSection, collateralSection, counterpartySection],
+    rail: [timeSection, horizonSection, caseSection, liveSection],
     groups: [
       group(
         'exposure',
@@ -289,7 +272,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     ],
     compare: { label: { en: 'Variants', es: 'Variantes' }, lane: 'replay', provenance: prov, content: <C12VariantsView sel={sel} onPick={onPick} /> },
     context: { content: <C12ContextView sel={sel} /> },
-    controls: { t: sel.t, horizon: sel.horizon, subject: sel.subject, [sweep ? 'b' : 'case']: sweep ? sel.b : sel.caseId, collateral: held, sector: sel.sector, rating: sel.rating },
+    controls: { t: sel.t, horizon: sel.horizon, subject: sel.subject, [sweep ? 'b' : 'case']: sweep ? sel.b : sel.caseId, collateral: held, counterparty: `${sel.sector}|${sel.rating}` },
   };
 }
 

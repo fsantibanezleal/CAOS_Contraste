@@ -7,6 +7,8 @@
 // convention, "not available" with a reason for every null, and no number that the document does not contain.
 import { formatNumber } from '@fasl-work/caos-app-shell';
 import { readFileSync } from 'node:fs';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { MemoryRouter } from 'react-router';
 import type { ReactElement } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { CaseData } from '../../api/artifacts';
@@ -20,7 +22,7 @@ import {
   VARIANT_ORDER, defaultSel, fitOf, histogram, liveBaCva, liveSaCcr, nearestIndex, outputsOf, runningSum, wwrOf,
   type C12Outputs, type C12Sel, type Peers,
 } from './selection';
-import { BaCvaReadout, C12ContextView, C12FindingsView, C12TestsView, C12VariantsTable, C12VariantsView, CaseReadout, HorizonReadout, SaCcrReadout, TimeReadout, cell, digits } from './C12Common';
+import { C12ContextView, C12FindingsView, C12TestsView, C12VariantsTable, C12VariantsView, CaseReadout, HorizonReadout, LiveCcrReadout, TimeReadout, cell, digits } from './C12Common';
 import { CollateralView, NettingView, ProfileView, SensitivityView } from './ExposureViews';
 import { CvaView, WwrView } from './CreditViews';
 import { BaCvaView, ComparisonView, GirrView, SaCcrView } from './RegulatoryViews';
@@ -54,6 +56,8 @@ const VIEWS: Array<[string, (p: { sel: C12Sel | null }) => ReactElement]> = [
   ['PIT', PitView], ['Exceedances', ExceedanceView], ['Tests', C12TestsView], ['Findings', C12FindingsView], ['Context', C12ContextView],
 ];
 
+const html2 = (el: React.ReactNode) => renderToStaticMarkup(<MemoryRouter>{el}</MemoryRouter>);
+
 function Names({ v }: { v: Doc }) {
   const inst = useC12Instrument(dataOf(v), () => undefined);
   return <p>{inst ? [...inst.groups.map((g) => g.label), inst.compare.label].map((l) => (typeof l === 'string' ? l : l.en)).join('|') : 'none'}</p>;
@@ -61,6 +65,10 @@ function Names({ v }: { v: Doc }) {
 function Rail({ v }: { v: Doc }) {
   const inst = useC12Instrument(dataOf(v), () => undefined);
   return <div>{inst ? inst.rail.map((s) => (typeof s.label === 'string' ? s.label : s.label.en)).join('|') : 'none'}</div>;
+}
+function RailControls({ v }: { v: Doc }) {
+  const inst = useC12Instrument(dataOf(v), () => undefined);
+  return <div>{inst ? inst.rail.map((x) => html2(x.content)).join('') : 'none'}</div>;
 }
 function Controls({ v }: { v: Doc }) {
   const inst = useC12Instrument(dataOf(v), () => undefined);
@@ -265,17 +273,19 @@ describe('the C12 instrument', () => {
   });
 
   it('the rail holds a control and a live read-out per section, and the wrong-way variant swaps the calibration case for its parameter b', () => {
-    expect(html(<Rail v={netting} />)).toContain('Time|Back-test|Calibration|Collateral|Counterparty');
-    expect(html(<Rail v={wwr} />)).toContain('Time|Back-test|Wrong-way|Collateral|Counterparty');
+    expect(html(<Rail v={netting} />)).toContain('Time|Test|Case|Live');
+    expect(html(<Rail v={wwr} />)).toContain('Time|Test|Case|Live');
+    expect(html(<RailControls v={netting} />)).toContain('c12-case');
+    expect(html(<RailControls v={wwr} />)).toContain('c12-wwr-b');
     expect(html(<Controls v={netting} />)).toContain('&quot;case&quot;:&quot;base&quot;');
     expect(html(<Controls v={wwr} />)).toContain('&quot;b&quot;:1');
-    for (const k of ['t', 'horizon', 'subject', 'collateral', 'sector', 'rating']) expect(html(<Controls v={netting} />)).toContain(`&quot;${k}&quot;`);
+    for (const k of ['t', 'horizon', 'subject', 'collateral', 'counterparty']) expect(html(<Controls v={netting} />)).toContain(`&quot;${k}&quot;`);
   });
 
   it('every rail read-out is drawn with a unit and prints no raw amount', () => {
     for (const [name, el] of [
       ['time', <TimeReadout sel={selOf(netting)} />], ['horizon', <HorizonReadout sel={selOf(netting)} />], ['wrong-way', <CaseReadout sel={selOf(wwr)} />],
-      ['calibration', <CaseReadout sel={selOf(netting)} />], ['collateral', <SaCcrReadout sel={selOf(netting)} />], ['counterparty', <BaCvaReadout sel={selOf(netting)} />],
+      ['calibration', <CaseReadout sel={selOf(netting)} />], ['live', <LiveCcrReadout sel={selOf(netting)} />],
     ] as Array<[string, ReactElement]>) {
       const markup = html(el);
       expect(markup, name).toContain('caos-readout');
@@ -288,8 +298,9 @@ describe('the C12 instrument', () => {
     const b = html(<TimeReadout sel={selOf(netting, { t: 5 })} />);
     expect(a).not.toBe(b);
     expect(html(<HorizonReadout sel={selOf(netting, { horizon: '10bd' })} />)).not.toBe(html(<HorizonReadout sel={selOf(netting, { horizon: '12m' })} />));
-    expect(html(<SaCcrReadout sel={selOf(netting, { collateral: 0 })} />)).not.toBe(html(<SaCcrReadout sel={selOf(netting, { collateral: 300_000 })} />));
-    expect(html(<BaCvaReadout sel={selOf(netting, { sector: 'financials' })} />)).not.toBe(html(<BaCvaReadout sel={selOf(netting, { sector: 'sovereigns-central-banks-mdbs' })} />));
+    expect(html(<LiveCcrReadout sel={selOf(netting, { collateral: 0 })} />)).not.toBe(html(<LiveCcrReadout sel={selOf(netting, { collateral: 300_000 })} />));
+    expect(html(<LiveCcrReadout sel={selOf(netting, { sector: 'financials' })} />)).not.toBe(html(<LiveCcrReadout sel={selOf(netting, { sector: 'sovereigns-central-banks-mdbs' })} />));
+    expect(html(<LiveCcrReadout sel={selOf(netting, { rating: 'investment-grade' })} />)).not.toBe(html(<LiveCcrReadout sel={selOf(netting, { rating: 'high-yield-or-not-rated' })} />));
     expect(html(<CaseReadout sel={selOf(wwr, { b: 0 })} />)).not.toBe(html(<CaseReadout sel={selOf(wwr, { b: 4 })} />));
     expect(html(<CaseReadout sel={selOf(netting, { caseId: 'base' })} />)).not.toBe(html(<CaseReadout sel={selOf(netting, { caseId: 'sigma-plus-1se' })} />));
   });
