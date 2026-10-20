@@ -624,7 +624,7 @@ def test_the_committed_declaration_is_regenerated_from_the_producer_and_the_othe
     assert cs.errors("common/contract-family", doc) == []
     assert [f["name"] for f in doc["fields"]][:3] == ["id", "observation_date", "target"] and "decision" in [f["name"] for f in doc["fields"]]
     assert next(f for f in doc["fields"] if f["name"] == "target")["required"] is True
-    assert next(p for p in doc["params"] if p["name"] == "outcome")["values"] == ["target", "none"]
+    assert next(p for p in doc["params"] if p["name"] == "outcome")["values"] == ["target", "none", "population"]
     assert doc["open_fields"] is True
 
 
