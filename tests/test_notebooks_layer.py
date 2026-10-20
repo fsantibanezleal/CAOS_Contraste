@@ -30,9 +30,9 @@ LANGS = ("en", "es")
 TOPIC_01 = "01-getting-started"
 CLAIMS: frozenset[str] = frozenset()  # the BS- claims the SDD states (decision N8: each enters with its level 4 notebook)
 PENDING_CLAIMS: frozenset[str] = frozenset()
-ENGINE_PIN = "0.8.0"  # the PyPI pin of the notebooks; the engine release tag is the same number, zero-padded (X.XX.XXX)
+ENGINE_PIN = "0.8.1"  # the PyPI pin of the notebooks; the engine release tag is the same number, zero-padded (X.XX.XXX)
 ENGINE_TAG = "v%d.%02d.%03d" % tuple(int(part) for part in ENGINE_PIN.split("."))
-ENGINE_RELEASE = f"https://github.com/fsantibanezleal/CAOS_RiskValidation/releases/tag/{ENGINE_TAG}"
+ENGINE_RELEASE = f"https://pypi.org/project/riskvalidation/{ENGINE_PIN}/"  # the README Packages row links the PyPI release
 
 # sha256 of the three adopted scripts at the template release 0.10 (git show of scripts/<name> at its tag)
 ADOPTED = {
@@ -355,8 +355,7 @@ def test_the_notebook_pins_are_exact_and_the_sdd_technology_table_holds_them():
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
         if line.startswith("|") and len(cells) >= 3:
             rows[cells[1]] = cells[2]
-    # riskvalidation is pinned by commit in the pipeline's requirements until the release tag replaces it (SDD row);
-    # the notebooks pin the release, 0.8.0, and the two pins become one at the release that carries the set
+    # the pipeline pins riskvalidation by its release tag (SDD row) and the notebooks by the same release on PyPI
     for line in NOTEBOOKS.requirement_lines(ROOT):
         name, version = line.split("==")
         if name == "riskvalidation":
@@ -707,7 +706,7 @@ def test_the_packages_row_links_the_engine_release():
     section = (ROOT / "README.md").read_text(encoding="utf-8").split("## Areas", 1)[1].split("\n## ", 1)[0]
     row = next(ln for ln in section.splitlines() if ln.startswith("| Packages"))
     assert ENGINE_RELEASE in row and "riskvalidation" in row
-    assert "not yet published on PyPI" in row
+    assert "published on PyPI" in row and "not yet" not in row
 
 
 def test_the_areas_section_follows_the_purpose_and_the_live_urls():
