@@ -15,6 +15,7 @@ import { C22BenchmarkSection } from './C22Sections';
 import { NoTranslateRefs } from './NoTranslateRefs';
 import { Table, U6BenchmarkSection, U6_BENCHMARK_CASES } from './U6Sections';
 import { W2BenchmarkSection, W2_BENCHMARK_CASES } from './Wave2Sections';
+import { B3BenchmarkSection, B3_BENCHMARK_CASES } from './Batch3Sections';
 
 function Comparison({ v, title }: { v: VariantArtifact; title: string }) {
   const lang = useShellLang();
@@ -210,6 +211,10 @@ export const NO_BENCHMARK: Record<string, { en: string; es: string }> = {
     en: 'The liquidity case sets prescribed run-off scenarios (the LCR, the LiST Adverse and Extreme scenarios, a fast run) against one realised deposit run, not a champion with challengers; the scenarios and the March 2023 scoring are compared in the App.',
     es: 'El caso de liquidez contrasta escenarios de salida de depósitos prescritos (el LCR, los escenarios Adverso y Extremo de LiST, una corrida rápida) con una corrida real, no un campeón con retadores; los escenarios y la evaluación de marzo de 2023 se comparan en la App.',
   },
+  C21: {
+    en: 'Disparity measurement scores no model against another: it measures the gap in approval rates between groups of one lender and whether it replicates in the next year, so there is no champion to rank against challengers; the contrasts are read in the App.',
+    es: 'La medición de disparidad no evalúa un modelo frente a otro: mide la brecha de tasas de aprobación entre grupos de un prestamista y si se replica en el año siguiente, así que no hay un campeón que ordenar frente a retadores; los contrastes se leen en la App.',
+  },
 };
 
 export function Benchmark() {
@@ -219,7 +224,7 @@ export function Benchmark() {
   const manifests = all.state === 'ready' ? all.data.manifests : [];
   const shown = manifests.filter((m) => !(m.case_id in NO_BENCHMARK));
   const excluded = manifests.filter((m) => m.case_id in NO_BENCHMARK);
-  const comparable = shown.filter((m) => !HAS_OWN_BENCHMARK.has(m.case_id) && !U6_BENCHMARK_CASES.has(m.case_id) && !W2_BENCHMARK_CASES.has(m.case_id));
+  const comparable = shown.filter((m) => !HAS_OWN_BENCHMARK.has(m.case_id) && !U6_BENCHMARK_CASES.has(m.case_id) && !W2_BENCHMARK_CASES.has(m.case_id) && !B3_BENCHMARK_CASES.has(m.case_id));
   return (
     <DocPage
       wide
@@ -253,7 +258,7 @@ export function Benchmark() {
             title={{ en: `${m.case_id}: ${m.title.en}`, es: `${m.case_id}: ${m.title.es}` }}
             noRefsReason={{ en: 'Read from the committed artifacts.', es: 'Leído desde los artefactos comprometidos.' }}
           >
-            {m.case_id === 'C04' ? <C04Benchmark manifest={m} /> : m.case_id === 'C05' ? <C05BenchmarkSection manifest={m} /> : m.case_id === 'C22' ? <C22BenchmarkSection manifest={m} /> : U6_BENCHMARK_CASES.has(m.case_id) ? <U6BenchmarkSection manifest={m} /> : W2_BENCHMARK_CASES.has(m.case_id) ? <W2BenchmarkSection manifest={m} /> : <CaseBenchmark manifest={m} />}
+            {m.case_id === 'C04' ? <C04Benchmark manifest={m} /> : m.case_id === 'C05' ? <C05BenchmarkSection manifest={m} /> : m.case_id === 'C22' ? <C22BenchmarkSection manifest={m} /> : U6_BENCHMARK_CASES.has(m.case_id) ? <U6BenchmarkSection manifest={m} /> : W2_BENCHMARK_CASES.has(m.case_id) ? <W2BenchmarkSection manifest={m} /> : B3_BENCHMARK_CASES.has(m.case_id) ? <B3BenchmarkSection manifest={m} /> : <CaseBenchmark manifest={m} />}
           </DocSection>
         ))}
       {all.state === 'ready' && excluded.length > 0 && (
