@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import pytest
-from c21_support import PAIRS, planted_root  # noqa: F401  (puts the pipeline and the contract test folders on the path)
+from c21_support import planted_root  # noqa: F401  (puts the pipeline and the contract test folders on the path)
 
 
 @pytest.fixture(scope="session")
@@ -20,7 +20,3 @@ def built(root):
 
     return bake.build(SEED, root)
 
-
-@pytest.fixture(scope="session")
-def pairs():
-    return PAIRS

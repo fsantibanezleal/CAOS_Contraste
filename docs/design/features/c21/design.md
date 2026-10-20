@@ -56,8 +56,8 @@ The permitted controls are the nine underwriting fields the contract enumerates 
 the situation test also uses). In the fits they enter as: the debt-to-income bin as indicators (the 36 to 49 bin is the reference), the
 natural logarithm of the combined loan-to-value ratio, the income, the loan amount and the property value (a logarithm tames the
 unbounded, outlier-heavy values and is the usual form), and the indicators of the loan type, the loan purpose, the lien status and the
-occupancy type (the first code is the reference). A row whose control is missing or not positive is left out of the controlled fits and
-counted in `data_notes`; the unconditional rates use every decision row. Two refusals keep a fit honest: a column that is constant in the
+occupancy type (the first code is the reference). A row whose control is missing or not positive is left out of the controlled fits;
+`data_notes` counts the missing values and, in its reason, the values that are present and not positive; the unconditional rates use every decision row. Two refusals keep a fit honest: a column that is constant in the
 pair of groups is dropped (it is collinear with the intercept), and an indicator whose rows all share one decision is dropped (it would
 separate the classes completely); a fit that still does not converge, or cannot be made, has `estimate: null` and a reason. Nothing is
 imputed.
