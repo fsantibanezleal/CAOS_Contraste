@@ -340,9 +340,9 @@
     "sha256": "eaa31c0e21bd669c187c7efd551c4826a16e80174032e3eb232617e31cd62b78"
   },
   "engine-ml-api": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/engine/ml-api.md",
-    "sha256": "6beb000681ade70d320565cc7e42eb56f18f13774d2fb2d151fb611e3e7f8d99"
+    "sha256": "53e8f60619f6092c7c82b74bf6d4f988a0f045ae73800b695a71bc712b655c3b"
   },
   "engine-fairness-api": {
     "version": "1.2.0",

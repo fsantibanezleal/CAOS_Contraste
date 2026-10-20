@@ -697,7 +697,8 @@ RESULT_TYPES = re.compile(r"^@dataclass\(frozen=True\)", re.M)
 def test_the_engine_contract_lists_every_function_of_the_sizing_modules_with_its_check(api, pkg, mods, tests, test_mod, prefix) -> None:
     path = ENGINE / api
     text = path.read_text(encoding="utf-8")
-    assert f"engine-{pkg if pkg == 'fairness' else 'ml'}-api" in text and "1.0.0" in text and "common/test-result" in text
+    version = "2.0.0" if pkg == "ml" else "1.0.0"  # engine-ml-api 2.0.0 (U14 G18); the fairness page names its history from 1.0.0
+    assert f"engine-{pkg if pkg == 'fairness' else 'ml'}-api" in text and version in text and "common/test-result" in text
     sec = sections(path)
     expected_modules = ML_PATHS if pkg == "ml" else FAIR_PATHS
     assert list(mods) == expected_modules, "every module of the sizing's Modules and functions table"
@@ -716,6 +717,16 @@ def test_the_engine_contract_lists_every_function_of_the_sizing_modules_with_its
                 assert re.search(rf"^- {label}: \S", body, flags=re.M), f"{key}: no {label} line"
             if name[0].isupper():
                 assert RESULT_TYPES.search(body) or "(GeneratorBase)" in body, f"{key}: result types are frozen dataclasses"
+    if pkg == "ml":
+        assert "`riskvalidation/ml/policy.py`" in text
+        for mod_pkg, names in sp.ML_ADDED_2_0_0.values():
+            for name in names:
+                key = f"{mod_pkg}.{name}"
+                declared.add(key)
+                body = sec[key]
+                assert "```python" in body, key
+                for label in ("Units", "Invariants", "Check"):
+                    assert re.search(rf"^- {label}: \S", body, flags=re.M), f"{key}: no {label} line"
     for name, tid, light in tests:
         key = f"riskvalidation.validation.{test_mod}.{name}"
         declared.add(key)
