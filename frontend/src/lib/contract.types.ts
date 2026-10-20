@@ -18,6 +18,7 @@ import { C14_FIT, C14_OUTPUTS } from '../workbench/c14/descriptor';
 import { C15_FIT, C15_OUTPUTS } from '../workbench/c15/descriptor';
 import { C16_FIT, C16_OUTPUTS, C16_OUTPUTS_REVERSE } from '../workbench/c16/descriptor';
 import { C17_FIT, C17_OUTPUTS } from '../workbench/c17/descriptor';
+import { C18_FIT, C18_OUTPUTS, C18_OUTPUTS_AGGREGATION, C18_OUTPUTS_REVERSE } from '../workbench/c18/descriptor';
 
 /** Every reader-facing string is bilingual at the source. */
 export type Text = components['schemas']['common-text'];
@@ -1278,6 +1279,10 @@ export const VARIANT_C15 = { ...VARIANT, outputs: C15_OUTPUTS, tests: 'json' as 
 export const VARIANT_C16_SCENARIO = { ...VARIANT, outputs: C16_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
 export const VARIANT_C16_REVERSE = { ...VARIANT, outputs: C16_OUTPUTS_REVERSE, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
 export const VARIANT_C17 = { ...VARIANT, outputs: C17_OUTPUTS, tests: 'json' as Kind, provenance: { object: PROVENANCE } } satisfies Record<keyof VariantArtifact, Kind>;
+// C18 (U13-W): its scenario variants carry outputs.kind 'scenario' like C16's, so variantKind reads the document's case_id first
+export const VARIANT_C18_SCENARIO = { ...VARIANT, outputs: C18_OUTPUTS, tests: 'json' as Kind, provenance: { object: PROVENANCE } } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C18_AGGREGATION = { ...VARIANT, outputs: C18_OUTPUTS_AGGREGATION, tests: 'json' as Kind, provenance: { object: PROVENANCE } } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C18_REVERSE = { ...VARIANT, outputs: C18_OUTPUTS_REVERSE, tests: 'json' as Kind, provenance: { object: PROVENANCE } } satisfies Record<keyof VariantArtifact, Kind>;
 export const MODELS_C10 = { ...MODELS, fit: C10_FIT, provenance: { object: PROVENANCE } } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C11 = { ...MODELS, fit: C11_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C12 = { ...MODELS, fit: C12_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
@@ -1285,10 +1290,12 @@ export const MODELS_C13 = { ...MODELS, fit: C13_FIT } satisfies Record<keyof Mod
 export const MODELS_C14 = { ...MODELS, fit: C14_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C15 = { ...MODELS, fit: C15_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C16 = { ...MODELS, fit: C16_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
+export const MODELS_C18 = { ...MODELS, fit: C18_FIT, provenance: { object: PROVENANCE } } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C17 = { ...MODELS, fit: C17_FIT, provenance: { object: PROVENANCE } } satisfies Record<keyof ModelsArtifact, Kind>;
 
 /** The variant descriptor an artifact is read against: by its outputs' kind (C04, C05, C06, C07, C22) or C01's. */
 export function variantKind(doc: {
+  case_id?: string;
   outputs?: { kind?: string };
 }):
   | typeof VARIANT
@@ -1312,8 +1319,12 @@ export function variantKind(doc: {
   | typeof VARIANT_C16_SCENARIO
   | typeof VARIANT_C16_REVERSE
   | typeof VARIANT_C17
+  | typeof VARIANT_C18_SCENARIO
+  | typeof VARIANT_C18_AGGREGATION
+  | typeof VARIANT_C18_REVERSE
   | typeof VARIANT_C22 {
   const kind = doc.outputs?.kind;
+  if (doc.case_id === 'C18') return kind === 'aggregation' ? VARIANT_C18_AGGREGATION : kind === 'reverse' ? VARIANT_C18_REVERSE : VARIANT_C18_SCENARIO;
   if (kind === 'agency') return VARIANT_C04_AGENCY;
   if (kind === 'generator') return VARIANT_C04_FAMILY;
   if (kind === 'published') return VARIANT_C04_PUBLISHED;
@@ -1339,7 +1350,7 @@ export function variantKind(doc: {
 export function modelsKind(doc: {
   case_id?: string;
   fit_id?: string;
-}): typeof MODELS | typeof MODELS_C04 | typeof MODELS_C05_SP | typeof MODELS_C05_LDP | typeof MODELS_C06 | typeof MODELS_C07 | typeof MODELS_C03 | typeof MODELS_C08 | typeof MODELS_C09 | typeof MODELS_C10 | typeof MODELS_C11 | typeof MODELS_C12 | typeof MODELS_C13 | typeof MODELS_C14 | typeof MODELS_C15 | typeof MODELS_C16 | typeof MODELS_C17 | typeof MODELS_C22 {
+}): typeof MODELS | typeof MODELS_C04 | typeof MODELS_C05_SP | typeof MODELS_C05_LDP | typeof MODELS_C06 | typeof MODELS_C07 | typeof MODELS_C03 | typeof MODELS_C08 | typeof MODELS_C09 | typeof MODELS_C10 | typeof MODELS_C11 | typeof MODELS_C12 | typeof MODELS_C13 | typeof MODELS_C14 | typeof MODELS_C15 | typeof MODELS_C16 | typeof MODELS_C17 | typeof MODELS_C18 | typeof MODELS_C22 {
   if (doc.case_id === 'C04') return MODELS_C04;
   if (doc.case_id === 'C05') return doc.fit_id === 'ldp' ? MODELS_C05_LDP : MODELS_C05_SP;
   if (doc.case_id === 'C06') return MODELS_C06;
@@ -1355,6 +1366,7 @@ export function modelsKind(doc: {
   if (doc.case_id === 'C15') return MODELS_C15;
   if (doc.case_id === 'C16') return MODELS_C16;
   if (doc.case_id === 'C17') return MODELS_C17;
+  if (doc.case_id === 'C18') return MODELS_C18;
   if (doc.case_id === 'C22') return MODELS_C22;
   return MODELS;
 }
