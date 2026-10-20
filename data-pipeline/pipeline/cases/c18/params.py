@@ -103,6 +103,16 @@ def text(en: str, es: str | None = None) -> dict[str, str]:
     return {"en": en, "es": es if es is not None else en}
 
 
+def es_num(formatted: str) -> str:
+    """A number formatted the English way (``1,234.5``, ``12.34%``) written the Spanish way (``1.234,5``, ``12,34%``): the two separators swap."""
+    return formatted.translate(str.maketrans(",.", ".,"))
+
+
+def es(value: float, spec: str) -> str:
+    """``format(value, spec)`` written the Spanish way (``es(0.1234, ".2%")`` is ``12,34%``)."""
+    return es_num(format(value, spec))
+
+
 def quarter_end(year: int, quarter: int) -> str:
     return f"{year:04d}-{('03-31', '06-30', '09-30', '12-31')[quarter - 1]}"
 

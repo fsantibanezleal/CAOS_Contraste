@@ -6,16 +6,18 @@
 // number is read from the committed variant artifacts when the page opens, none is typed in, and a value the artifact
 // leaves null says "not available" with the reason the document gives. The tables are pure functions of the artifacts so
 // that the tests read them from the contract fixtures.
+import type { ReactElement } from 'react';
 import { formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import type { BiText } from '@fasl-work/caos-app-shell';
 import type { components } from '../lib/contract.gen';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT } from '../lib/policy';
 import { P, useT } from '../content/bi';
+import { Marked } from '../workbench/c21/Marked';
 import { Loading, Table, money, num, pct, useVariants } from './U6Sections';
 
 type Lang = 'en' | 'es';
-type Cell = string;
+type Cell = string | ReactElement;
 type Variant = VariantArtifact<unknown>;
 type Schemas = components['schemas'];
 
@@ -407,13 +409,14 @@ function c21Row(name: string, v: Variant, lang: Lang): Cell[] {
     name,
     `${o.fit_year} ${t('to', 'a')} ${o.confirm_year}`,
     per((_, c) => (c.adverse_impact_ratio.value === null ? na(lang, bi(c.adverse_impact_ratio.note, lang)) : num(c.adverse_impact_ratio.value, lang, 2))),
-    join(
+    // the regulation's own citation ("29 CFR 1607.4") is kept as the source writes it, marked by the C21 helper
+    <Marked key="four-fifths">{join(
       o.attributes.map((a) => {
         const flagged = a.four_fifths.groups.filter((g) => g.flag).map((g) => g.group);
         const label = bi(BENCHMARK_LABEL_TEXT[a.four_fifths.label] ?? { en: a.four_fifths.label, es: a.four_fifths.label }, lang);
         return `${attrName(a.field, lang)}: ${flagged.length ? t(`flagged ${flagged.join(', ')}`, `marcado ${flagged.join(', ')}`) : t('no group flagged', 'ningún grupo marcado')} (${label}, ${a.four_fifths.citation})`;
       }),
-    ),
+    )}</Marked>,
     per((_, c) => {
       const e = c.controlled.estimate;
       return e ? t(`odds ratio ${num(e.odds_ratio, lang, 2)} (coefficient ${num(e.coefficient, lang, 2)}, 95% interval ${num(e.ci.lo, lang, 2)} to ${num(e.ci.hi, lang, 2)})`, `razón de momios ${num(e.odds_ratio, lang, 2)} (coeficiente ${num(e.coefficient, lang, 2)}, intervalo 95% ${num(e.ci.lo, lang, 2)} a ${num(e.ci.hi, lang, 2)})`) : na(lang, c.controlled.reason);
