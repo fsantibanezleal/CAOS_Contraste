@@ -15,8 +15,9 @@ indicator, decision Q9), each with a locked holdout, the C01 ladder, the battery
 The rows are the UCI Polish Companies Bankruptcy files (CC BY 4.0, DOI 10.24432/C5F600), read from the device data root. Nothing else
 is invented. The conventions, all labelled so in the documents:
 
-- the horizon of a document is the name of its file (the contracts and the SDD). The UCI page reads the files the other way (open
-  decision, finding `F-HORIZON-MAPPING`, `conventions.HORIZON_NOTE`);
+- the horizon of a document is the dataset's own definition (decision G21): the UCI page labels the file kyear with the bankruptcy
+  status after 6 - k years, so h{n} (n years ahead) reads the file {6-n}year. Each document states its file beside its horizon; the reading
+  of the source paper is UNVERIFIED (finding `F-PAPER-READING`, `conventions.MAPPING_NOTE`);
 - contract 1 needs an identity and a date the files do not carry: `id = <horizon>-<row>` and `observation_date = 2013-12-31`, the end
   of the span the page gives. No out-of-time claim and no temporal order rests on the date;
 - the overfit tolerance 0.05 AUC points (decision V6, the only named parameter the case uses);

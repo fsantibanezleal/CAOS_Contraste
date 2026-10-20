@@ -89,7 +89,7 @@ def read_arff(text: str, name: str) -> tuple[pd.DataFrame, np.ndarray]:
 
 
 def read_horizons(zip_path: Path | str, *, check_counts: bool = True) -> dict[int, Horizon]:
-    """The five files by horizon in years."""
+    """The five horizons by years ahead; the horizon of n years reads the file {6-n}year (decision G21)."""
     out: dict[int, Horizon] = {}
     with zipfile.ZipFile(zip_path) as z:
         for hid, years, member in cv.HORIZONS:
@@ -97,8 +97,8 @@ def read_horizons(zip_path: Path | str, *, check_counts: bool = True) -> dict[in
                 raise PolishFormatError(f"{cv.ZIP_NAME}: the member {member} is missing")
             X, y = read_arff(z.read(member).decode("utf-8"), member)
             h = Horizon(hid, years, member, X, y)
-            if check_counts and (h.rows, h.events) != cv.EXPECTED_COUNTS[years]:
-                raise PolishFormatError(f"{member}: {h.rows} rows and {h.events} bankruptcies, the UCI page gives {cv.EXPECTED_COUNTS[years]}")
+            if check_counts and (h.rows, h.events) != cv.expected_counts(years):
+                raise PolishFormatError(f"{member}: {h.rows} rows and {h.events} bankruptcies, the UCI page gives {cv.expected_counts(years)}")
             out[years] = h
     return out
 

@@ -120,10 +120,19 @@ def test_adversarial_a_finding_citing_a_row_of_no_document_is_refused() -> None:
 
 
 def test_adversarial_a_changed_pool_changes_the_split_and_a_decreasing_rate_stops_the_term_structure(tmp_path) -> None:
-    root, man = planted_root(tmp_path / "raw", rows=(100,) * 5)
+    root, man = planted_root(tmp_path / "raw", rows=(300,) * 5, shift=0.0)
     h = reader.read_horizons(root / "raw" / "uci-polish" / ZIP_NAME, check_counts=False)
     a = fits.build_fits(h, SEED, with_ladder=False)
-    other = make_zip(tmp_path / "raw2" / "uci-polish" / ZIP_NAME, (100,) * 5, seed=SEED + 3)
+    other = make_zip(tmp_path / "raw2" / "uci-polish" / ZIP_NAME, (300,) * 5, seed=SEED + 3, shift=0.0)
     b = fits.build_fits(reader.read_horizons(other, check_counts=False), SEED, with_ladder=False)
     assert not np.array_equal(a["pooled"].y, b["pooled"].y)
     assert hashlib.sha256(a["pooled"].y.tobytes()).hexdigest() != hashlib.sha256(b["pooled"].y.tobytes()).hexdigest() and man
+
+
+def test_adversarial_a_horizon_read_from_the_file_name_mapping_is_found() -> None:
+    """The old mapping (h{n} reads {n}year) disagrees with the dataset definition the documents must follow (decision G21)."""
+    old = [(f"h{k}", k, f"{k}year.arff") for k in range(1, 6)]
+    assert old != list(cv.HORIZONS)
+    wrong = [m for _, years, m in old if m != f"{6 - years}year.arff"]
+    assert wrong == ["1year.arff", "2year.arff", "4year.arff", "5year.arff"]                       # only h3 reads the same file either way
+    assert cv.expected_counts(1) != cv.FILE_COUNTS[1]

@@ -29,9 +29,9 @@ LIMITS = (
     ("F-NO-OUT-OF-TIME", "S4", "accepted", "design:no-date",
      "No out-of-time validation is possible: the files carry no date and the holdout is a random stratified one",
      "No es posible validar fuera del tiempo: los archivos no traen fecha y la muestra reservada es estratificada al azar"),
-    ("F-HORIZON-MAPPING", "S3", "open", "design:uci-horizon-mapping",
-     "The horizon of each file is its name, but the UCI page describes the files the other way round (an open decision)",
-     "El horizonte de cada archivo es su nombre, pero la página de UCI describe los archivos al revés (una decisión abierta)"),
+    ("F-PAPER-READING", "S4", "accepted", "design:paper-reading-unverified",
+     "The horizon mapping follows the UCI page; the reading of the source paper is UNVERIFIED against Zieba, Tomczak and Tomczak 2016",
+     "La correspondencia de horizontes sigue la página de UCI; la lectura del artículo fuente está SIN VERIFICAR contra Zieba, Tomczak and Tomczak 2016"),
     ("F-FIRM-OVERLAP", "S4", "accepted", "design:firm-overlap-unknown",
      "The firm overlap across the five files is unknown, so pooled and transfer results may be flattered by repeated firms",
      "Se desconoce el traslape de empresas entre los cinco archivos, así que los resultados agrupados y de traslado pueden estar "
