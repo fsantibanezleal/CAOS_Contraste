@@ -19,7 +19,10 @@ _CLEAN: dict[tuple[str, ...], str] = {}
 
 
 def _run(repo: Path, args: list[str], timeout: int = 300) -> subprocess.CompletedProcess:
-    return subprocess.run(args, capture_output=True, encoding="utf-8", errors="replace", cwd=repo, timeout=timeout)
+    # the child writes UTF-8 as the parent reads it (Python's UTF-8 mode): on Windows a pipe defaults to the ANSI code page,
+    # and a guard that prints the planted emoji would fail on its own output instead of on the plant
+    env = {**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
+    return subprocess.run(args, capture_output=True, encoding="utf-8", errors="replace", cwd=repo, timeout=timeout, env=env)
 
 
 def pytest_gate(repo: Path, *selectors: str) -> subprocess.CompletedProcess:
