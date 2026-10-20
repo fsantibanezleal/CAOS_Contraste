@@ -268,7 +268,9 @@ export function LcrView({ sel }: { sel: C16Sel | null }) {
             <dt>{pick({ en: `Net outflows (${pick(MONEY_UNIT, 'en')})`, es: `Salidas netas (${pick(MONEY_UNIT, 'es')})` }, lang)}</dt>
             <dd>{cell(l.net_outflows, lang)}</dd>
             <dt>{pick({ en: 'Level 2 and Level 2B shares of HQLA', es: 'Partes de Nivel 2 y Nivel 2B del HQLA' }, lang)}</dt>
-            <dd>{`${SHARE(l.hqla.l2_share, lang)} (${pick({ en: 'cap', es: 'tope' }, lang)} ${SHARE(l.hqla.caps.l2_cap, lang)}), ${SHARE(l.hqla.l2b_share, lang)} (${pick({ en: 'cap', es: 'tope' }, lang)} ${SHARE(l.hqla.caps.l2b_cap, lang)})`}</dd>
+            <dd>{l.hqla.l2_share === null || l.hqla.l2b_share === null
+              ? pick(l.hqla.shares_reason ?? { en: 'Not available: the HQLA stock is empty.', es: 'No disponible: el stock de HQLA está vacío.' }, lang)
+              : `${SHARE(l.hqla.l2_share, lang)} (${pick({ en: 'cap', es: 'tope' }, lang)} ${SHARE(l.hqla.caps.l2_cap, lang)}), ${SHARE(l.hqla.l2b_share, lang)} (${pick({ en: 'cap', es: 'tope' }, lang)} ${SHARE(l.hqla.caps.l2b_cap, lang)})`}</dd>
           </dl>
           <table className="caos-table ct-wrap-head" data-table="c16-lcr-flows">
             <thead>

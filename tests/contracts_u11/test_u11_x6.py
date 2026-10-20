@@ -1,7 +1,7 @@
 """U11 integration, decision X6 and item 5: the null Level 2 shares of an empty HQLA stock and the maturity-band call-report fields.
 
 ``l2_share`` and ``l2b_share`` of ``c16Hqla`` are nullable; ``shares_reason`` is required and nullable: a reason (a label) where the
-shares are null, null where they are numbers. The schema (a ``oneOf`` of the two states) and the producer checker (``semantics.check_document``) both hold the rule. The fixture ``variant-scenario-lcr-empty-stock-fixture.json`` is the document of an empty stock. The ``c16Report.fields`` and
+shares are null, null where they are numbers. The schema types the three fields as nullable; the pairing is a cross-field rule the producer checker (``semantics.check_document``) holds, as the product holds its other cross-field rules (the descriptor language of the web side has no ``oneOf``). The fixture ``variant-scenario-lcr-empty-stock-fixture.json`` is the document of an empty stock. The ``c16Report.fields`` and
 ``source_fields`` enumeration names the maturity-band fields the ladder reads (U11-P integration item 5).
 """
 from __future__ import annotations
@@ -50,7 +50,7 @@ def test_every_other_fixture_has_numeric_shares_and_a_null_reason() -> None:
 def test_null_shares_without_a_reason_fail() -> None:
     bad = empty_doc()
     hq(bad)["shares_reason"] = None
-    assert errs(SC, bad) != [], "the schema refuses the pairing"
+    assert errs(SC, bad) == [], "the schema types the fields; the pairing is the checker's"
     assert "shares_reason" in checker(bad)
 
 
@@ -58,14 +58,14 @@ def test_null_shares_without_a_reason_fail() -> None:
 def test_one_null_share_without_a_reason_fails(which: str) -> None:
     bad = load("lcr-standard")
     hq(bad)[which] = None
-    assert errs(SC, bad) != []
+    assert errs(SC, bad) == [], "the schema types the fields; the pairing is the checker's"
     assert "shares_reason" in checker(bad)
 
 
 def test_numeric_shares_with_a_reason_fail() -> None:
     bad = load("lcr-standard")
     hq(bad)["shares_reason"] = REASON
-    assert errs(SC, bad) != []
+    assert errs(SC, bad) == [], "the schema types the fields; the pairing is the checker's"
     assert "shares_reason" in checker(bad)
 
 
@@ -73,7 +73,7 @@ def test_one_null_and_one_numeric_share_fail_even_with_a_reason() -> None:
     bad = load("lcr-standard")
     hq(bad)["l2b_share"] = None
     hq(bad)["shares_reason"] = REASON
-    assert errs(SC, bad) != []
+    assert errs(SC, bad) == [], "the schema types the fields; the pairing is the checker's"
     assert "both" in checker(bad)
 
 

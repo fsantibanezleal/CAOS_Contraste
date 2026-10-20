@@ -184,8 +184,10 @@ const HQLA: Kind = { object: {
   adj_15: 'number',
   adj_40: 'number',
   hqla: 'number',
-  l2_share: 'number',
-  l2b_share: 'number',
+  // null together with their reason when the HQLA stock is empty (c16-outputs 2.0.0, U11 decision X6)
+  l2_share: { nullable: 'number' },
+  l2b_share: { nullable: 'number' },
+  shares_reason: { nullable: 'text' },
   caps: { object: { l2_cap: 'number', l2b_cap: 'number' } },
 } };
 

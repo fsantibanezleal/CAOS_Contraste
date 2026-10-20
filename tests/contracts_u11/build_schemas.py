@@ -507,16 +507,15 @@ def scenario_defs() -> dict:
         "inflows_counted": MONEY, "net_outflows": MONEY, "ratio": N(minimum=0),
     }, "The LCR under one mapping of the uninsured balance (Q13): the outflow of the uninsured balance under that category, the total "
        "outflows, the counted inflows, the net outflows and the ratio recomputable from them and the HQLA.")
-    d["c16Hqla"] = one_of(Ob({
+    d["c16Hqla"] = Ob({
         "l1": MONEY, "l2a": MONEY, "l2b": MONEY, "adjusted_l1": MONEY, "adjusted_l2a": MONEY, "adjusted_l2b": MONEY,
         "adj_15": MONEY, "adj_40": MONEY, "hqla": MONEY, "l2_share": nullable(UNIT), "l2b_share": nullable(UNIT),
         "shares_reason": nullable(LABEL),
         "caps": Ob({"l2_cap": C(0.4), "l2b_cap": C(0.15)}),
     }, "HQLA by level after the caps: HQLA = L1 + L2A + L2B - Adj15 - Adj40 (LCR30.38) with the adjustments of LCR30.39. The Level 2 "
        "and Level 2B shares are over the HQLA stock: where the stock is empty they are undefined and are null together with their "
-       "reason in shares_reason (never zero); where they are numbers, shares_reason is null (U11 decision X6)."),
-        {"l2_share": {"type": "number"}, "l2b_share": {"type": "number"}, "shares_reason": {"type": "null"}},
-        {"l2_share": {"type": "null"}, "l2b_share": {"type": "null"}, "shares_reason": LABEL})
+       "reason in shares_reason (never zero); where they are numbers, shares_reason is null (U11 decision X6). The pairing is a "
+       "cross-field rule the producer checker holds (semantics.check_document), as the product's other cross-field rules.")
     d["c16Lcr"] = Ob({
         "label": C("basel-formula-on-call-report-aggregates"), "reported_or_regulatory": C(False), "statement": TXT,
         "hqla": R("c16Hqla"), "outflows": A(R("c16LcrOutflowRow"), 1), "total_outflows": MONEY, "inflows": A(R("c16LcrInflowRow")),
