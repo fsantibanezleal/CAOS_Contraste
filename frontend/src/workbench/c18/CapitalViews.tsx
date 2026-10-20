@@ -299,7 +299,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
                 <div style={{ flex: `${legalRows.length + 2} 1 0`, minHeight: 0 }}>
                   <HWaterfall
                     rows={legalRows}
-                    axisLabel={{ en: 'Legal minimum stack of the CET1, share of RWA', es: 'Mínimo legal apilado de CET1, parte de los APR' }}
+                    axisLabel={{ en: 'Share of RWA, legal stack', es: 'Parte de los APR, capital legal' }}
                     tickFormat={axisFmt}
                     ariaLabel={{ en: 'The legal minimum stack of the CET1 in Chile', es: 'El mínimo legal apilado de CET1 en Chile' }}
                   />
