@@ -13,7 +13,7 @@ shifts on the evaluation set only. The case validates models; it certifies none,
 ## The engine is binding
 
 `docs/contracts/engine/ml-api.md` on this branch is 1.0.0, and its 2.0.0 amendment is written in parallel (decision G18). Where the page
-and the engine at its pin (the release tag `v0.08.000` since the 0.13.000 integration, `data-pipeline/requirements.txt` and the engine row of the SDD technology table, checked by
+and the engine at its pin (the release tag `v0.08.001` since the 0.13.000 integration, `data-pipeline/requirements.txt` and the engine row of the SDD technology table, checked by
 `tests/engine_pin.py`) differ, the engine wins. The bake uses the signatures of the engine: `conformal_coverage(sets, y, alpha, *, n_cal)`
 (the Beta-Binomial p-value drives the light and the binomial p-value of the dossier sits beside it), `shift_development_reference(...)`
 with 199 permutations and `validation.ml.shift_resilience(model_id, result, reference)`, the CBPE row always `not_evaluated` with the estimate in

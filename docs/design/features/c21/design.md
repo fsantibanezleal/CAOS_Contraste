@@ -81,7 +81,7 @@ Under engine-fairness-api 1.2.0 the rows of `conditional_disparity`, `rate_sprea
 interval level and the share cut points in `extras.thresholds` and in the policy version, so the web gates that read the alphas of a row as
 p-value thresholds hold without any change in the product. The bake therefore alters no engine row: `estimates._segment` replaces the
 segment and appends "no legal claim" to the notes of a row that lacks it, and nothing else. The engine is pinned at the release tag
-`v0.08.000` (since the 0.13.000 integration) that the technology row of the SDD names (`tests/engine_pin.py`).
+`v0.08.001` (since the 0.13.000 integration) that the technology row of the SDD names (`tests/engine_pin.py`).
 
 ## The reference groups (a named convention, decision G14)
 

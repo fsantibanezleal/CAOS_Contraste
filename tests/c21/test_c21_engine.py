@@ -11,7 +11,7 @@ from riskvalidation.validation import fairness as rv_tests
 from pipeline.cases.c21 import bake, legal, reader
 from pipeline.cases.c21 import estimates as est
 
-PIN, RELEASE = "v0.08.000", "0.8.0"
+PIN, RELEASE = "v0.08.001", "0.8.1"
 NULL_ALPHA_TESTS = ("fair.conditional_disparity", "fair.rate_spread_disparity", "fair.situation_testing")
 
 

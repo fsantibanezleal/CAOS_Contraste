@@ -8,7 +8,7 @@ from engine_pin import ENGINE_PIN, engine_pin_findings
 
 from pipeline.cases.c20 import bake, conv, ops
 
-PIN, RELEASE = "v0.08.000", "0.8.0"
+PIN, RELEASE = "v0.08.001", "0.8.1"
 
 
 def test_the_engine_is_pinned_at_the_batch_3_release_tag_that_the_sdd_names() -> None:
