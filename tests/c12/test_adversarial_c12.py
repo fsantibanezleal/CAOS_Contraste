@@ -184,3 +184,12 @@ def test_adversarial_a_book_with_no_first_year_exposure_has_no_effective_maturit
     with pytest.raises(ValueError, match="undefined"):
         ex.effective_maturity(grid, np.zeros(3), np.zeros(3), np.ones(3))
     assert semantics is not None
+
+
+def test_adversarial_a_red_row_without_a_finding_is_found() -> None:
+    from test_c12_documents import uncited
+
+    doc = d.variant("netting-set")
+    assert uncited(doc) == []
+    bad = d.mutated(doc, lambda x: x.update(findings=x["findings"][1:]))
+    assert uncited(bad)

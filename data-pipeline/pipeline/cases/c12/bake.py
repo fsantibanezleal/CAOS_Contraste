@@ -255,12 +255,13 @@ def build(seed: int, data_root: Path | str | None, *, n_paths: int | None = None
         out = vt.outputs(c, ctx, stress_eepe, sens, blk, bt_blocks[sp.book_key], seed)
         rows = (vt.engine_rows(c, ccurve, 0.6, 3.0, book.PFE_QUANTILE) + bt_rows[sp.book_key] + ql_rows + ore_rows + extra_rows[sp.variant]
 )
+        rows = [{**r, "model_id": r.get("model_id") or vt.MODEL_ID} for r in rows]    # every row names the model it tests
         impact = {
             "sa_ccr_ead": {"value": out["sa_ccr"]["ead"]["amount"], "unit": "USD", "label": vt.text("SA-CCR exposure at default", "Exposicion en incumplimiento SA-CCR")},
             "cva": {"value": out["cva_dva"]["cva"]["amount"], "unit": "USD", "label": vt.text("CVA", "CVA")},
             "eepe": {"value": out["exposure"]["eepe"]["amount"], "unit": "USD", "label": vt.text("Effective EPE", "EPE efectivo")}}
         docs[sp.variant] = build_artifact(case_id=CASE_ID, variant_id=sp.variant, model=_model_summaries(ev, fit.a, fit.sigma), outputs=out,
-                                          tests=rows, impact=impact, findings=[], lineage=lineage, lane=lane)
+                                          tests=rows, impact=impact, findings=vt.findings_of(rows), lineage=lineage, lane=lane)
         values[f"sa_ccr_ead_{sp.variant.replace('-', '_')}_usd"] = out["sa_ccr"]["ead"]["amount"]
         values[f"eepe_{sp.variant.replace('-', '_')}_usd"] = out["exposure"]["eepe"]["amount"]
         values[f"cva_{sp.variant.replace('-', '_')}_usd"] = out["cva_dva"]["cva"]["amount"]
