@@ -44,7 +44,7 @@ function NoiseFigure() {
       <path className="dg-curve" d={path(grid.map((e) => [x(e), y(auc(e))]))} fill="none" />
       <line className="dg-marker" x1={x(preset)} y1={y(0.8)} x2={x(preset)} y2={y(0.6)} />
       <text className="dg-marker-label" x={x(preset) + 4} y={y(0.8) + 10} textAnchor="start">{t('preset scale', 'escala preestablecida')}</text>
-      <text className="dg-edge-label" x={x(1) - 4} y={y(0.78 - tolerance) - 6} textAnchor="end">{t('clean AUC less the tolerance', 'AUC limpio menos la tolerancia')}</text>
+      <text className="dg-edge-label" x={x(1) - 4} y={y(0.78 - tolerance) + 16} textAnchor="end">{t('clean AUC less the tolerance', 'AUC limpio menos la tolerancia')}</text>
       <text className="dg-edge-label" x={x(1) - 4} y={y(auc(1)) - 8} textAnchor="end">{t('AUC under noise', 'AUC bajo ruido')}</text>
       <text className="dg-axis-label" x={W / 2} y={H - 26} textAnchor="middle">{t('noise scale, in standard deviations of each input', 'escala de ruido, en desviaciones estándar de cada entrada')}</text>
       <text className="dg-axis-label" x={W - 8} y={14} textAnchor="end">AUC</text>
