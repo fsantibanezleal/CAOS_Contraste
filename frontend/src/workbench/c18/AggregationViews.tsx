@@ -44,7 +44,7 @@ export function BandView({ sel }: { sel: C18Sel | null }) {
         }}
       >
         <ChartOverTable
-          chartMin={`${a.band.length * 1.8 + 3}rem`}
+          chartMin={`${a.band.length * 2.2 + 3}rem`}
           chart={
             <BarChart
               title={{ en: 'Capital of the four risks by aggregation method', es: 'Capital de los cuatro riesgos por método de agregación' }}
