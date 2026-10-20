@@ -1,0 +1,1989 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/governance/governance-inventory.schema.json",
+  "title": "Governance inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "case_id",
+    "governance_id",
+    "schema_version",
+    "as_of",
+    "provenance",
+    "conventions",
+    "engine_node",
+    "entries",
+    "edges",
+    "related",
+    "excluded",
+    "completeness",
+    "tier_counts",
+    "governance_findings"
+  ],
+  "properties": {
+    "schema": {
+      "const": "contraste.governance.inventory/v1"
+    },
+    "case_id": {
+      "const": "GOVERNANCE"
+    },
+    "governance_id": {
+      "const": "inventory"
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "as_of": {
+      "$ref": "#/$defs/govDate"
+    },
+    "provenance": {
+      "$ref": "#/$defs/govProvenance"
+    },
+    "conventions": {
+      "$ref": "#/$defs/invConventions"
+    },
+    "engine_node": {
+      "$ref": "#/$defs/invEngineNode"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/invEntry"
+      },
+      "minItems": 1,
+      "description": "Computed by riskvalidation.governance.inventory.build_inventory."
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/invEdge"
+      },
+      "description": "Computed by riskvalidation.governance.inventory.build_inventory."
+    },
+    "related": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/invRelated"
+      }
+    },
+    "excluded": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/invExcluded"
+      }
+    },
+    "completeness": {
+      "$ref": "#/$defs/invCompleteness",
+      "description": "Computed by riskvalidation.governance.inventory.attribute_completeness."
+    },
+    "tier_counts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/invTierCounts"
+      },
+      "minItems": 4,
+      "maxItems": 4,
+      "description": "Computed by riskvalidation.governance.tiering.tier_counts."
+    },
+    "governance_findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/govGovFinding"
+      },
+      "minItems": 2
+    }
+  },
+  "description": "Catalog row governance-inventory 1.0.0: the model inventory of Contraste's own case models (data/derived/governance/inventory.json): one entry per fit (case_id/fit_id) with the 40 B.2 attributes, the components, the scope record, the tier block, the lifecycle state, the schedule dates, the dependency edges, the engine node and the governance findings of the inventory itself.",
+  "$defs": {
+    "govDate": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "An ISO date (YYYY-MM-DD). The dates of a governance document are deterministic: the as-of date and every raised date come from committed values (R4 of the U15 sizing); a wall-clock date never enters a document."
+    },
+    "govEcbF": {
+      "type": "string",
+      "enum": [
+        "F1",
+        "F2",
+        "F3",
+        "F4"
+      ]
+    },
+    "govGovFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "severity",
+        "ecb_f",
+        "status",
+        "title",
+        "description",
+        "basis"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "$ref": "#/$defs/govSeverity"
+        },
+        "ecb_f": {
+          "$ref": "#/$defs/govEcbF",
+          "description": "Computed by riskvalidation.governance.findings.severity_to_ecb."
+        },
+        "status": {
+          "const": "open"
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "description": {
+          "$ref": "../common/text.schema.json"
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The decision or finding of the record that raises it."
+        }
+      },
+      "description": "A governance finding of the inventory itself (W15-3: the rubric blind spot, S3; W15-4: independence not established, S2).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "severity": {
+                "const": "S1"
+              }
+            },
+            "required": [
+              "severity"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ecb_f": {
+                "const": "F4"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "severity": {
+                "const": "S2"
+              }
+            },
+            "required": [
+              "severity"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ecb_f": {
+                "const": "F3"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "severity": {
+                "const": "S3"
+              }
+            },
+            "required": [
+              "severity"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ecb_f": {
+                "const": "F2"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "severity": {
+                "const": "S4"
+              }
+            },
+            "required": [
+              "severity"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ecb_f": {
+                "const": "F1"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "govProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code_version",
+        "riskvalidation_version",
+        "generators",
+        "documents_read"
+      ],
+      "properties": {
+        "code_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The Contraste code version that wrote the document."
+        },
+        "riskvalidation_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The engine version that computed it."
+        },
+        "generators": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "description": "The writer of the document; a fixture is labelled fixture:u15-s-contracts."
+        },
+        "documents_read": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "sha256"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "$ref": "#/$defs/govSha256"
+              }
+            }
+          },
+          "minItems": 1,
+          "description": "Every case document read, with the sha256 of its bytes (line endings normalised to LF)."
+        }
+      },
+      "description": "Where a governance document came from: code and engine versions and the sha256 of every case document it read."
+    },
+    "govSeverity": {
+      "type": "string",
+      "enum": [
+        "S1",
+        "S2",
+        "S3",
+        "S4"
+      ]
+    },
+    "govSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "govTag": {
+      "type": "string",
+      "enum": [
+        "doc",
+        "convention"
+      ]
+    },
+    "govTier": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4
+    },
+    "invAttr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "status",
+        "basis"
+      ],
+      "properties": {
+        "value": {},
+        "status": {
+          "type": "string",
+          "enum": [
+            "present",
+            "derivable",
+            "convention",
+            "not-applicable",
+            "missing"
+          ]
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A B.2 attribute: never a bare value. basis is the JSON pointer read, or the convention's or the absence's reason.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "missing"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "const": null
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not-applicable"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "const": null
+              }
+            }
+          }
+        }
+      ]
+    },
+    "invAttrCount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "present",
+        "derivable",
+        "convention",
+        "not_applicable",
+        "missing"
+      ],
+      "properties": {
+        "present": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "derivable": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "convention": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "not_applicable": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "invAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A08",
+        "A09",
+        "A10",
+        "A11",
+        "A12",
+        "A13",
+        "A14",
+        "A15",
+        "A16",
+        "A17",
+        "A18",
+        "A19",
+        "A20",
+        "A21",
+        "A22",
+        "A23",
+        "A24",
+        "A25",
+        "A26",
+        "A27",
+        "A28",
+        "A29",
+        "A30",
+        "A31",
+        "A32",
+        "A33",
+        "A34",
+        "A35",
+        "A36",
+        "A37",
+        "A38",
+        "A39",
+        "A40"
+      ],
+      "properties": {
+        "A01": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A02": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A03": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A04": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A05": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A06": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A07": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A08": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A09": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A10": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A11": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A12": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A13": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A14": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A15": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A16": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A17": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A18": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A19": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A20": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A21": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A22": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A23": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A24": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A25": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A26": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A27": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A28": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A29": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A30": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A31": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A32": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A33": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A34": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A35": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A36": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A37": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A38": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A39": {
+          "$ref": "#/$defs/invAttr"
+        },
+        "A40": {
+          "$ref": "#/$defs/invAttr"
+        }
+      },
+      "description": "The 40 attributes of 06 B.2 (l.539-551), keyed A01 to A40."
+    },
+    "invCompleteness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entries",
+        "attributes"
+      ],
+      "properties": {
+        "entries": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "A01",
+            "A02",
+            "A03",
+            "A04",
+            "A05",
+            "A06",
+            "A07",
+            "A08",
+            "A09",
+            "A10",
+            "A11",
+            "A12",
+            "A13",
+            "A14",
+            "A15",
+            "A16",
+            "A17",
+            "A18",
+            "A19",
+            "A20",
+            "A21",
+            "A22",
+            "A23",
+            "A24",
+            "A25",
+            "A26",
+            "A27",
+            "A28",
+            "A29",
+            "A30",
+            "A31",
+            "A32",
+            "A33",
+            "A34",
+            "A35",
+            "A36",
+            "A37",
+            "A38",
+            "A39",
+            "A40"
+          ],
+          "properties": {
+            "A01": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A02": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A03": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A04": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A05": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A06": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A07": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A08": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A09": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A10": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A11": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A12": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A13": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A14": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A15": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A16": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A17": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A18": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A19": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A20": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A21": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A22": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A23": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A24": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A25": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A26": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A27": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A28": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A29": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A30": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A31": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A32": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A33": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A34": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A35": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A36": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A37": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A38": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A39": {
+              "$ref": "#/$defs/invAttrCount"
+            },
+            "A40": {
+              "$ref": "#/$defs/invAttrCount"
+            }
+          }
+        }
+      }
+    },
+    "invComplexity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "factors",
+        "scored",
+        "sum",
+        "mean",
+        "c"
+      ],
+      "properties": {
+        "factors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/invFactor"
+          },
+          "minItems": 7,
+          "maxItems": 7
+        },
+        "scored": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 7
+        },
+        "sum": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "mean": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "c": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mean",
+            "maximum"
+          ],
+          "properties": {
+            "mean": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4
+            },
+            "maximum": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4
+            }
+          },
+          "description": "Computed by riskvalidation.governance.tiering.complexity."
+        }
+      },
+      "description": "C from the factor scores: the mean rounded half up, and the maximum. A factor with a null score is unscored, with its reason."
+    },
+    "invComponent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "model_id",
+        "role",
+        "role_tag",
+        "role_basis",
+        "family",
+        "rung",
+        "title"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[^/]+/[^/]+/[^/]+$",
+          "description": "case_id/fit_id/model_id: model ids repeat across cases, so the key is the triple."
+        },
+        "model_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "champion",
+            "challenger",
+            "benchmark",
+            "reference"
+          ]
+        },
+        "role_tag": {
+          "$ref": "#/$defs/govTag"
+        },
+        "role_basis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "family": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rung": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "title": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "invConventions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exposure_band_cuts",
+        "regulatory_use_grades",
+        "complexity_rounding",
+        "frequency",
+        "adopted_reading"
+      ],
+      "properties": {
+        "exposure_band_cuts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "basis",
+            "cuts"
+          ],
+          "properties": {
+            "label": {
+              "const": "convention"
+            },
+            "basis": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cuts": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "minItems": 3,
+              "maxItems": 3
+            }
+          }
+        },
+        "regulatory_use_grades": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "basis",
+            "graded",
+            "literal"
+          ],
+          "properties": {
+            "label": {
+              "const": "convention"
+            },
+            "basis": {
+              "type": "string",
+              "minLength": 1
+            },
+            "graded": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "reported_figure",
+                "feeding_parameter",
+                "compliance_monitoring",
+                "none"
+              ],
+              "properties": {
+                "reported_figure": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4
+                },
+                "feeding_parameter": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4
+                },
+                "compliance_monitoring": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4
+                },
+                "none": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4
+                }
+              }
+            },
+            "literal": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "feeds_capital_provisioning_or_reporting",
+                "none"
+              ],
+              "properties": {
+                "feeds_capital_provisioning_or_reporting": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4
+                },
+                "none": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4
+                }
+              }
+            }
+          }
+        },
+        "complexity_rounding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "basis",
+            "rule"
+          ],
+          "properties": {
+            "label": {
+              "const": "convention"
+            },
+            "basis": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rule": {
+              "const": "mean-rounded-half-up"
+            }
+          }
+        },
+        "frequency": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "basis",
+            "tiers"
+          ],
+          "properties": {
+            "label": {
+              "const": "convention"
+            },
+            "basis": {
+              "type": "string",
+              "minLength": 1
+            },
+            "tiers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "tier",
+                  "review_kind",
+                  "review_months",
+                  "revalidation_months",
+                  "monitoring_months",
+                  "null_reason"
+                ],
+                "properties": {
+                  "tier": {
+                    "$ref": "#/$defs/govTier"
+                  },
+                  "review_kind": {
+                    "type": "string",
+                    "enum": [
+                      "review",
+                      "attestation"
+                    ]
+                  },
+                  "review_months": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "revalidation_months": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "monitoring_months": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "null_reason": {
+                    "anyOf": [
+                      {
+                        "$ref": "../common/text.schema.json"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              "minItems": 4,
+              "maxItems": 4
+            }
+          }
+        },
+        "adopted_reading": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "basis",
+            "reading"
+          ],
+          "properties": {
+            "label": {
+              "const": "convention"
+            },
+            "basis": {
+              "type": "string",
+              "minLength": 1
+            },
+            "reading": {
+              "const": "B"
+            }
+          }
+        }
+      },
+      "description": "The tables that are conventions (item 30 of the dossier UNVERIFIED list): named parameters, each labelled convention with its basis."
+    },
+    "invDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "score",
+        "tag",
+        "basis"
+      ],
+      "properties": {
+        "score": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "tag": {
+          "$ref": "#/$defs/govTag"
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "invEdge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "upstream",
+        "downstream",
+        "kind",
+        "stated_source"
+      ],
+      "properties": {
+        "upstream": {
+          "type": "string",
+          "minLength": 1
+        },
+        "downstream": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "document",
+            "code"
+          ]
+        },
+        "stated_source": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A dependency (W15-8): a document read or a code import, with its stated source. Kept apart from the related links."
+    },
+    "invEngineNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "version",
+        "basis"
+      ],
+      "properties": {
+        "key": {
+          "const": "riskvalidation"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The engine node every entry depends on (W15-8); its key is never an entry key."
+    },
+    "invEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "case_id",
+        "fit_id",
+        "title",
+        "attributes",
+        "components",
+        "scope",
+        "tier_block",
+        "lifecycle",
+        "schedule",
+        "graph",
+        "map"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^C\\d{2}/[a-z0-9-]+$",
+          "description": "case_id/fit_id (W15-1)."
+        },
+        "case_id": {
+          "type": "string",
+          "pattern": "^C\\d{2}$"
+        },
+        "fit_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "attributes": {
+          "$ref": "#/$defs/invAttributes"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/invComponent"
+          },
+          "minItems": 1
+        },
+        "scope": {
+          "$ref": "#/$defs/invScope"
+        },
+        "tier_block": {
+          "$ref": "#/$defs/invTier"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/invLifecycle"
+        },
+        "schedule": {
+          "$ref": "#/$defs/invSchedule"
+        },
+        "graph": {
+          "$ref": "#/$defs/invGraph"
+        },
+        "map": {
+          "$ref": "#/$defs/invMap"
+        }
+      },
+      "description": "One fit of one case (W15-1)."
+    },
+    "invException": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "approver",
+        "expiry",
+        "reason"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "approver": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expiry": {
+          "$ref": "#/$defs/govDate"
+        },
+        "reason": {
+          "$ref": "../common/text.schema.json"
+        }
+      }
+    },
+    "invExcluded": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "reason"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "pattern": "^C\\d{2}$"
+        },
+        "reason": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A case left out of the inventory, with the reason (missing-data behavior)."
+    },
+    "invExposure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "share",
+        "band",
+        "tag",
+        "basis"
+      ],
+      "properties": {
+        "share": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The share of the stated balance; null where no balance exists."
+        },
+        "band": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4,
+          "description": "Computed by riskvalidation.governance.tiering.exposure_band."
+        },
+        "tag": {
+          "$ref": "#/$defs/govTag"
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "invFactor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "score",
+        "tag",
+        "basis"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "F1",
+            "F2",
+            "F3",
+            "F4",
+            "F5",
+            "F6",
+            "F7"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "score": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tag": {
+          "$ref": "#/$defs/govTag"
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "invGraph": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "depth",
+        "fan_in",
+        "fan_out"
+      ],
+      "properties": {
+        "depth": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Computed by riskvalidation.governance.inventory.graph_metrics."
+        },
+        "fan_in": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Computed by riskvalidation.governance.inventory.graph_metrics."
+        },
+        "fan_out": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Computed by riskvalidation.governance.inventory.graph_metrics."
+        }
+      }
+    },
+    "invLast": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "date",
+        "type",
+        "basis"
+      ],
+      "properties": {
+        "date": {
+          "$ref": "#/$defs/govDate"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "full battery",
+            "annual",
+            "change-triggered",
+            "initial"
+          ]
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "invLifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "basis",
+        "transitions",
+        "exception"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "proposed",
+            "in_development",
+            "submitted_for_validation",
+            "in_validation",
+            "approved",
+            "approved_with_conditions",
+            "in_use",
+            "under_monitoring_alert",
+            "restricted",
+            "in_remediation",
+            "material_change_pending",
+            "decommissioned"
+          ],
+          "description": "Computed by riskvalidation.governance.lifecycle.transition."
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "transitions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/invTransition"
+          }
+        },
+        "exception": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/invException"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The B.4 lifecycle state; use before validation only with an exception record (type, approver, expiry)."
+    },
+    "invMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generation",
+        "x",
+        "y"
+      ],
+      "properties": {
+        "generation": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        }
+      },
+      "description": "The layered layout of the dependency map (the bake's networkx layout, a geometry and not a model value)."
+    },
+    "invMateriality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exposure",
+        "regulatory_use",
+        "decision_criticality",
+        "m"
+      ],
+      "properties": {
+        "exposure": {
+          "$ref": "#/$defs/invExposure"
+        },
+        "regulatory_use": {
+          "$ref": "#/$defs/invRegUse"
+        },
+        "decision_criticality": {
+          "$ref": "#/$defs/invDecision"
+        },
+        "m": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "literal",
+            "graded"
+          ],
+          "properties": {
+            "literal": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4
+            },
+            "graded": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4
+            }
+          },
+          "description": "Computed by riskvalidation.governance.tiering.materiality."
+        }
+      },
+      "description": "M = max(exposure band, regulatory use, decision criticality), under both readings of regulatory use."
+    },
+    "invOverride": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "to_tier",
+        "rationale",
+        "approver"
+      ],
+      "properties": {
+        "to_tier": {
+          "$ref": "#/$defs/govTier"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "approver": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "An override of the computed tier: a rationale and an approver are required, never silent (SS1/23 Principle 1.3(d)(e))."
+    },
+    "invRegUse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "literal",
+        "graded",
+        "tag",
+        "basis"
+      ],
+      "properties": {
+        "literal": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "graded": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "tag": {
+          "$ref": "#/$defs/govTag"
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "invRelated": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "a",
+        "b",
+        "kind",
+        "source"
+      ],
+      "properties": {
+        "a": {
+          "type": "string",
+          "minLength": 1
+        },
+        "b": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "page-statement",
+            "method",
+            "source",
+            "measures",
+            "conceptual"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "A link that is not a dependency: a page statement, a shared method, a shared source (A D4 5.1, 5.3)."
+    },
+    "invSchedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "review_kind",
+        "last_validation",
+        "next_review",
+        "next_full_revalidation",
+        "next_monitoring",
+        "null_reason"
+      ],
+      "properties": {
+        "profile": {
+          "type": "string",
+          "enum": [
+            "default",
+            "ecb"
+          ]
+        },
+        "review_kind": {
+          "type": "string",
+          "enum": [
+            "review",
+            "attestation"
+          ]
+        },
+        "last_validation": {
+          "$ref": "#/$defs/invLast"
+        },
+        "next_review": {
+          "$ref": "#/$defs/govDate",
+          "description": "Computed by riskvalidation.governance.schedule.next_dates."
+        },
+        "next_full_revalidation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/govDate"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Computed by riskvalidation.governance.schedule.next_dates."
+        },
+        "next_monitoring": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/govDate"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Computed by riskvalidation.governance.schedule.next_dates."
+        },
+        "null_reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The next review, full revalidation and monitoring dates from the tier and the frequency table (06 B.8)."
+    },
+    "invScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "answers",
+        "profiles",
+        "basis"
+      ],
+      "properties": {
+        "answers": {
+          "$ref": "#/$defs/invScopeAnswers"
+        },
+        "profiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/invScopeProfile"
+          },
+          "minItems": 4,
+          "maxItems": 4,
+          "description": "Computed by riskvalidation.governance.scope.scope_record."
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The B.1 scope record: the four answers and the in-scope decision per jurisdiction profile (06 l.523-537)."
+    },
+    "invScopeAnswers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applies_theory",
+        "output_is_estimate",
+        "deterministic",
+        "generative_or_agentic"
+      ],
+      "properties": {
+        "applies_theory": {
+          "type": "boolean"
+        },
+        "output_is_estimate": {
+          "type": "boolean"
+        },
+        "deterministic": {
+          "type": "boolean"
+        },
+        "generative_or_agentic": {
+          "type": "boolean"
+        }
+      }
+    },
+    "invScopeProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "in_scope",
+        "rationale"
+      ],
+      "properties": {
+        "profile": {
+          "type": "string",
+          "enum": [
+            "us-2026",
+            "pra",
+            "osfi-2027",
+            "ecb"
+          ]
+        },
+        "in_scope": {
+          "type": "boolean"
+        },
+        "rationale": {
+          "$ref": "../common/text.schema.json"
+        }
+      }
+    },
+    "invSensitivity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reading",
+        "regulatory_use",
+        "complexity",
+        "m",
+        "c",
+        "tier"
+      ],
+      "properties": {
+        "reading": {
+          "type": "string",
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ]
+        },
+        "regulatory_use": {
+          "type": "string",
+          "enum": [
+            "literal",
+            "graded"
+          ]
+        },
+        "complexity": {
+          "type": "string",
+          "enum": [
+            "mean",
+            "maximum"
+          ]
+        },
+        "m": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "c": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "tier": {
+          "$ref": "#/$defs/govTier"
+        }
+      }
+    },
+    "invTier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "materiality",
+        "complexity",
+        "adopted_reading",
+        "computed_tier",
+        "override",
+        "tier",
+        "tier_sensitivity"
+      ],
+      "properties": {
+        "materiality": {
+          "$ref": "#/$defs/invMateriality"
+        },
+        "complexity": {
+          "$ref": "#/$defs/invComplexity"
+        },
+        "adopted_reading": {
+          "const": "B"
+        },
+        "computed_tier": {
+          "$ref": "#/$defs/govTier",
+          "description": "Computed by riskvalidation.governance.tiering.matrix_tier."
+        },
+        "override": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/invOverride"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tier": {
+          "$ref": "#/$defs/govTier",
+          "description": "Computed by riskvalidation.governance.tiering.apply_override."
+        },
+        "tier_sensitivity": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/invSensitivity"
+          },
+          "minItems": 4,
+          "maxItems": 4,
+          "description": "Computed by riskvalidation.governance.tiering.tier_sensitivity."
+        }
+      },
+      "description": "The tier block: M, C, the factor scores with their tags, the tier, the override and the tier under the four readings."
+    },
+    "invTierCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reading",
+        "counts"
+      ],
+      "properties": {
+        "reading": {
+          "type": "string",
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ]
+        },
+        "counts": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 4,
+          "maxItems": 4
+        }
+      }
+    },
+    "invTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "to",
+        "date",
+        "basis"
+      ],
+      "properties": {
+        "from": {
+          "type": "string",
+          "enum": [
+            "proposed",
+            "in_development",
+            "submitted_for_validation",
+            "in_validation",
+            "approved",
+            "approved_with_conditions",
+            "in_use",
+            "under_monitoring_alert",
+            "restricted",
+            "in_remediation",
+            "material_change_pending",
+            "decommissioned"
+          ]
+        },
+        "to": {
+          "type": "string",
+          "enum": [
+            "proposed",
+            "in_development",
+            "submitted_for_validation",
+            "in_validation",
+            "approved",
+            "approved_with_conditions",
+            "in_use",
+            "under_monitoring_alert",
+            "restricted",
+            "in_remediation",
+            "material_change_pending",
+            "decommissioned"
+          ]
+        },
+        "date": {
+          "$ref": "#/$defs/govDate"
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

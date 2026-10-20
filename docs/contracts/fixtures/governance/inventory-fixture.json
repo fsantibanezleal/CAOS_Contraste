@@ -1,0 +1,2857 @@
+{
+ "schema": "contraste.governance.inventory/v1",
+ "case_id": "GOVERNANCE",
+ "governance_id": "inventory",
+ "schema_version": "1.0.0",
+ "as_of": "2026-12-31",
+ "provenance": {
+  "code_version": "0.14.000",
+  "riskvalidation_version": "0.9.0",
+  "generators": [
+   "fixture:u15-s-contracts"
+  ],
+  "documents_read": [
+   {
+    "path": "data/derived/manifests/C01.json",
+    "sha256": "c0976c8fabc2d4cf82d076610019cc67e0def9ae8152650954c086162b070151"
+   },
+   {
+    "path": "data/derived/C01/models-german.json",
+    "sha256": "60aadbffd7f6cba342f239be2b0b3b8661b9d5a7114cfaa6d0f133b0a99b03e6"
+   },
+   {
+    "path": "data/derived/C01/german-twin.json",
+    "sha256": "9c0ac47beecf1e5c456ea0be6997855beace3a9e9f53dd36abec031bd0d0872b"
+   },
+   {
+    "path": "data/derived/manifests/C07.json",
+    "sha256": "bf356d3c335cebc0bad691c14ceb12d1747973335c071d87f073f5ed7709801a"
+   },
+   {
+    "path": "data/derived/C07/models-banco-andino.json",
+    "sha256": "4d0f4bb96c0ef3dee6401f711f3b59fa5a0505d062141ec7cb6eebbb5b8cc2ac"
+   },
+   {
+    "path": "data/derived/C07/base.json",
+    "sha256": "1e08b10e1d49419f86bbbc14fb06e82aba1faa99443bb4e799cd18ce4e7c13c5"
+   },
+   {
+    "path": "data/derived/C07/combined-severe.json",
+    "sha256": "e079dfbdd14ecec8b979ab80435964e22567aaaa657defbad6744637b03cbabb"
+   },
+   {
+    "path": "data/derived/C07/consumer-arrears-shock.json",
+    "sha256": "f47e32bccbe450f0582b2479302cd28a428a6601d9821fd3675b75bb838aeb99"
+   },
+   {
+    "path": "data/derived/C07/house-price-fall.json",
+    "sha256": "45fa83c963f000281ceb41a63413666d415e21db4c8ace76f6fb858e288f659a"
+   },
+   {
+    "path": "data/derived/C07/recession.json",
+    "sha256": "b9d02ae186c431e4f43541fc779884171be9af2fe5df4357678d2e9e2a574f1c"
+   },
+   {
+    "path": "data/derived/C07/uf-inflation-spike.json",
+    "sha256": "24cb9ba1c6ec485fc74e6c9882c9bfe6d305a313ff08a65ac5af9909c2c8e01a"
+   },
+   {
+    "path": "data/derived/manifests/C18.json",
+    "sha256": "6225136025c8457bab8857501cb8b2939bd785807184f5e9f52a975299c359e5"
+   },
+   {
+    "path": "data/derived/C18/models-banco-andino.json",
+    "sha256": "4f5927257cbcca0e717753acf81e84f78b33a4906553ee571244874b9598ae3d"
+   },
+   {
+    "path": "data/derived/C18/baseline.json",
+    "sha256": "b424e3f4d386478c503eff31bd1d2bc597e20089e0b872a561b4d11e7cf78921"
+   },
+   {
+    "path": "data/derived/C18/eba-2025-adverse.json",
+    "sha256": "2b191fb877657b8a26850a5de8458bbe4fc88454d6d3753220189b6b95e46437"
+   },
+   {
+    "path": "data/derived/C18/fed-2026-severely-adverse.json",
+    "sha256": "fd614c8edf07464ec1bd266ec2f6b35506b214fcb938e62ed804d83bb5117fbd"
+   },
+   {
+    "path": "data/derived/C18/ngfs-delayed-transition.json",
+    "sha256": "5f78224b085addbc50b4c0ca823a87e150ffbefb5bbbfffe650cfddff76d57c5"
+   },
+   {
+    "path": "data/derived/C18/reverse-stress.json",
+    "sha256": "dc5bc0dd9e74ab9a7cee4dec9425eb8b633b014e2681dd5f1db3d0e75461e40a"
+   },
+   {
+    "path": "data/derived/C18/t-copula-baseline.json",
+    "sha256": "bbe42eb4ba4304106ae82ff3222b88d190d545f20d541e501d03d2643d2758a2"
+   },
+   {
+    "path": "data/derived/manifests/C22.json",
+    "sha256": "db7ab2bc13ef7448e26f89d8f9af7589fbdcaebd9fb8188ceb5920db59c9fe6c"
+   },
+   {
+    "path": "data/derived/C22/models-generators.json",
+    "sha256": "2d09ae0f0271b7e1de112586f22ba9f2fe48fe9866e5b61d8c71f391bf9db3b7"
+   },
+   {
+    "path": "data/derived/C22/broken-monotonicity.json",
+    "sha256": "1b6c6ed3a0bc5057317b2120a44ef9ed512e8fac97d323092699cd1e3a1197d8"
+   },
+   {
+    "path": "data/derived/C22/clustering.json",
+    "sha256": "e755f149dfe75c49ef54ca4fae78c489f78be13370c2bbff4e93851357cc4492"
+   },
+   {
+    "path": "data/derived/C22/concentration.json",
+    "sha256": "35c7d65c9c7bda2131ea2fca1f339bc091419b19bac792c3c61a78fe0c1f66ae"
+   },
+   {
+    "path": "data/derived/C22/discrimination-decay.json",
+    "sha256": "218ee880efa1bfdf187a50e4d1b902a6b86cefada6c598d28c6d5daca09137da"
+   },
+   {
+    "path": "data/derived/C22/drift.json",
+    "sha256": "3bb6d9bb6152b9f603ca4404d9c8d61b2f2cf779af76c93df4ec01563b7d59fa"
+   },
+   {
+    "path": "data/derived/C22/leakage.json",
+    "sha256": "651c5113607b7c0cd5850837ccddf455b291918e341662632912d78ea35c419d"
+   },
+   {
+    "path": "data/derived/C22/miscalibration.json",
+    "sha256": "9bdf292b5933c5366d581ee45928b5845966ded5f9b04030c2c30dc9a66fd467"
+   },
+   {
+    "path": "data/derived/C22/null.json",
+    "sha256": "0ce1fb6140678acf48d51e84c1c5bcd880cc20fbb2ab38ec6314a02667bd2dc0"
+   }
+  ]
+ },
+ "conventions": {
+  "exposure_band_cuts": {
+   "label": "convention",
+   "basis": "A D2 3.2 and W15-3: share of the stated balance at least 25 percent is 4, 10 percent 3, 2 percent 2, below 1; 06 B.3 fixes no cut-offs (item 30 of the dossier UNVERIFIED list)",
+   "cuts": [
+    0.25,
+    0.1,
+    0.02
+   ]
+  },
+  "regulatory_use_grades": {
+   "label": "convention",
+   "basis": "W15-3: 4 where the output is itself the reported or binding figure, 3 where it is a parameter or a back-test that feeds one, 2 for compliance monitoring, 1 for none; the literal reading gives 4 whenever the output feeds capital, provisioning or reporting (A D2 3.2)",
+   "graded": {
+    "reported_figure": 4,
+    "feeding_parameter": 3,
+    "compliance_monitoring": 2,
+    "none": 1
+   },
+   "literal": {
+    "feeds_capital_provisioning_or_reporting": 4,
+    "none": 1
+   }
+  },
+  "complexity_rounding": {
+   "label": "convention",
+   "basis": "06 l.567: C is the mean of the factor scores; the rounding is not in the text, half up is used (A D2 3.3)",
+   "rule": "mean-rounded-half-up"
+  },
+  "frequency": {
+   "label": "convention",
+   "basis": "06 B.8 l.636-640: Tier 1 annual review, full revalidation every 3 years, quarterly monitoring; Tier 2 annual, 3 years, semi-annual; Tier 3 every 2 years, annual monitoring; Tier 4 attestation every 3 years. A convention, configurable; the ECB minimums override it for IRB profiles (item 30)",
+   "tiers": [
+    {
+     "tier": 1,
+     "review_kind": "review",
+     "review_months": 12,
+     "revalidation_months": 36,
+     "monitoring_months": 3,
+     "null_reason": null
+    },
+    {
+     "tier": 2,
+     "review_kind": "review",
+     "review_months": 12,
+     "revalidation_months": 36,
+     "monitoring_months": 6,
+     "null_reason": null
+    },
+    {
+     "tier": 3,
+     "review_kind": "review",
+     "review_months": 24,
+     "revalidation_months": null,
+     "monitoring_months": 12,
+     "null_reason": {
+      "en": "the table states none for this tier (06 l.636-640)",
+      "es": "la tabla no fija ninguno para este nivel (06 l.636-640)"
+     }
+    },
+    {
+     "tier": 4,
+     "review_kind": "attestation",
+     "review_months": 36,
+     "revalidation_months": null,
+     "monitoring_months": null,
+     "null_reason": {
+      "en": "the table states none for this tier (06 l.636-640)",
+      "es": "la tabla no fija ninguno para este nivel (06 l.636-640)"
+     }
+    }
+   ]
+  },
+  "adopted_reading": {
+   "label": "convention",
+   "basis": "W15-3: regulatory use graded, complexity the mean rounded half up; the other three readings are shown beside it (tier_sensitivity)",
+   "reading": "B"
+  }
+ },
+ "engine_node": {
+  "key": "riskvalidation",
+  "version": "0.9.0",
+  "basis": "every entry depends on the engine: it computes every value and runs every test (W15-8)"
+ },
+ "entries": [
+  {
+   "key": "C01/german",
+   "case_id": "C01",
+   "fit_id": "german",
+   "title": {
+    "en": "Retail cards PD: champion vs challenger",
+    "es": "PD de tarjetas: campeón vs retador"
+   },
+   "attributes": {
+    "A01": {
+     "value": "C01/german",
+     "status": "present",
+     "basis": "read at data/derived/C01/models-german.json#/case_id | data/derived/C01/models-german.json#/fit_id"
+    },
+    "A02": {
+     "value": {
+      "en": "Retail cards PD: champion vs challenger",
+      "es": "PD de tarjetas: campeón vs retador"
+     },
+     "status": "present",
+     "basis": "read at data/derived/manifests/C01.json#/title"
+    },
+    "A03": {
+     "value": "german@0.07.000/riskvalidation-0.4.3",
+     "status": "derivable",
+     "basis": "no model version field: the fit id with the code and engine versions identify the build (A D1 A03): data/derived/C01/models-german.json#/fit_id | data/derived/C01/models-german.json#/provenance/code_version | data/derived/C01/models-german.json#/provenance/riskvalidation_version"
+    },
+    "A04": {
+     "value": {
+      "en": "Does a monotone WoE scorecard match the challengers the literature says can beat it, once calibration is required, and what do the validation tests say when the population shifts?",
+      "es": "¿Iguala una scorecard WoE monótona a los retadores que según la literatura pueden superarla, cuando se exige calibración, y qué dicen las pruebas de validación cuando la población cambia?"
+     },
+     "status": "present",
+     "basis": "case level only; read at data/derived/manifests/C01.json#/question"
+    },
+    "A05": {
+     "value": [
+      "pd-scoring"
+     ],
+     "status": "present",
+     "basis": "free text, no controlled vocabulary; read at data/derived/C01/models-german.json#/model/0/family and the other model records"
+    },
+    "A06": {
+     "value": [
+      "InterpretML ExplainableBoostingClassifier",
+      "LightGBM",
+      "optbinning + statsmodels Logit",
+      "own",
+      "own on optbinning",
+      "scikit-learn LogisticRegression",
+      "scikit-learn trees and LogisticRegression, own rule extraction",
+      "tabpfn"
+     ],
+     "status": "derivable",
+     "basis": "no origin field: derived from the engine of each model record (own riskvalidation or a third-party library)"
+    },
+    "A07": {
+     "value": "in_validation",
+     "status": "derivable",
+     "basis": "built from the committed manifest; the B.4 vocabulary does not exist in the documents (A D1 A07); no approval is recorded"
+    },
+    "A08": {
+     "value": {
+      "en": "Does a monotone WoE scorecard match the challengers the literature says can beat it, once calibration is required, and what do the validation tests say when the population shifts?",
+      "es": "¿Iguala una scorecard WoE monótona a los retadores que según la literatura pueden superarla, cuando se exige calibración, y qué dicen las pruebas de validación cuando la población cambia?"
+     },
+     "status": "present",
+     "basis": "read at data/derived/manifests/C01.json#/question"
+    },
+    "A09": {
+     "value": null,
+     "status": "missing",
+     "basis": "structured field lacking in C01 (A D1 A09); the prose Source line of the case page is not data"
+    },
+    "A10": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: a benchmark case has no actual use (A D1 A10)"
+    },
+    "A11": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field in any committed document (A D1 A11)"
+    },
+    "A12": {
+     "value": null,
+     "status": "missing",
+     "basis": "prose only: the case-page Limits sections and the SDD non-goals are not structured data (A D1 A12)"
+    },
+    "A13": {
+     "value": {
+      "split": {
+       "train": {
+        "n": 560,
+        "defaults": 168,
+        "default_rate": 0.3
+       },
+       "calibration": {
+        "n": 140,
+        "defaults": 42,
+        "default_rate": 0.3
+       },
+       "holdout": {
+        "n": 300,
+        "defaults": 90,
+        "default_rate": 0.3
+       },
+       "folds": {
+        "k": 5,
+        "repeats": 2
+       }
+      },
+      "train_rows": 560
+     },
+     "status": "derivable",
+     "basis": "the training span is the split of the fit; no sample range per risk driver: data/derived/C01/models-german.json#/fit/split | data/derived/C01/models-german.json#/fit/train_rows"
+    },
+    "A14": {
+     "value": {
+      "sources": [
+       "uci-taiwan",
+       "uci-german"
+      ],
+      "generators": []
+     },
+     "status": "present",
+     "basis": "read at data/derived/manifests/C01.json#/sources | data/derived/C01/models-german.json#/provenance/generators"
+    },
+    "A15": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: no document says whether alternative or unstructured data is used (A D1 A15)"
+    },
+    "A16": {
+     "value": {
+      "upstream": [],
+      "downstream": [
+       "C22/generators"
+      ]
+     },
+     "status": "derivable",
+     "basis": "derived from the edge table of the inventory, each edge with its stated source (W15-8); the case documents hold no dependency field"
+    },
+    "A17": {
+     "value": {
+      "impact_items": [
+       "approval_rate",
+       "bad_rate_champion",
+       "bad_rate_challenger",
+       "el_champion",
+       "el_challenger",
+       "loss_champion",
+       "loss_challenger",
+       "swap_in",
+       "swap_out",
+       "swap_in_bad_rate",
+       "swap_out_bad_rate",
+       "capital_champion",
+       "capital_challenger",
+       "min_cost_champion",
+       "min_cost_challenger"
+      ]
+     },
+     "status": "present",
+     "basis": "outputs and impact items of the default variant: data/derived/C01/german-twin.json#/outputs | data/derived/C01/german-twin.json#/impact"
+    },
+    "A18": {
+     "value": [
+      "P0",
+      "P0",
+      "P1",
+      "P2",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+     ],
+     "status": "present",
+     "basis": "read at data/derived/C01/models-german.json#/model/0/rung and the other model records"
+    },
+    "A19": {
+     "value": null,
+     "status": "missing",
+     "basis": "limits are in prose only; no structured form in this case (A D1 A19)"
+    },
+    "A20": {
+     "value": true,
+     "status": "derivable",
+     "basis": "derived from the rung and the engine of the model records: P3-ebm, P4-lightgbm and P5-tabpfn are machine-learning rungs"
+    },
+    "A21": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field; the fits are static per fit_id (A D1 A21)"
+    },
+    "A22": {
+     "value": 3,
+     "status": "convention",
+     "basis": "M of the adopted reading B; tier_block.materiality (tiering.materiality)"
+    },
+    "A23": {
+     "value": 2,
+     "status": "convention",
+     "basis": "C of the adopted reading B; tier_block.complexity (tiering.complexity)"
+    },
+    "A24": {
+     "value": 2,
+     "status": "convention",
+     "basis": "the matrix of M and C (06 B.3) under the adopted reading B; tier_block (tiering.matrix_tier)"
+    },
+    "A25": {
+     "value": null,
+     "status": "missing",
+     "basis": "no rating; the explainability evidence by rung is not a rating (A D1 A25)"
+    },
+    "A26": {
+     "value": null,
+     "status": "not-applicable",
+     "basis": "no PMA or overlay exists in this case: A D1 A26 finds PMAs in C06 and C07 only"
+    },
+    "A27": {
+     "value": null,
+     "status": "missing",
+     "basis": "no concept of an exception to policy; an accepted finding is a stated limit, not an exception (A D1 A27)"
+    },
+    "A28": {
+     "value": "Head of PD models (synthetic role)",
+     "status": "convention",
+     "basis": "W15-4: a named role of the synthetic bank per risk area, labelled synthetic; the role names are set in inputs.json"
+    },
+    "A29": {
+     "value": "data-pipeline/pipeline/cases/c01_retail_pd.py",
+     "status": "derivable",
+     "basis": "the producing pipeline module, the owner column of docs/contracts/catalog.md (A D1 A29)"
+    },
+    "A30": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: a synthetic bank has no users (A D1 A30)"
+    },
+    "A31": {
+     "value": "riskvalidation 0.4.3",
+     "status": "derivable",
+     "basis": "riskvalidation at the pinned version; independence is not established because the pipeline and the engine are built in the same programme (W15-4, the governance finding GOV-INDEPENDENCE-NOT-ESTABLISHED)"
+    },
+    "A32": {
+     "value": null,
+     "status": "not-applicable",
+     "basis": "Contraste approves no model (SDD non-goal 1): no approver exists"
+    },
+    "A33": {
+     "value": null,
+     "status": "not-applicable",
+     "basis": "Contraste approves no model (SDD non-goal 1): no approval date or authority exists"
+    },
+    "A34": {
+     "value": {
+      "date": "2026-10-12",
+      "type": "full battery"
+     },
+     "status": "derivable",
+     "basis": "the release date of code version 0.07.000 in CHANGELOG.md; the type is one full battery: data/derived/C01/models-german.json#/provenance/code_version"
+    },
+    "A35": {
+     "value": "2027-10-12",
+     "status": "convention",
+     "basis": "schedule.next_dates over the frequency table (a convention, 06 B.8 l.636-640)"
+    },
+    "A36": {
+     "value": {
+      "green": 137,
+      "amber": 3,
+      "red": 13,
+      "not_evaluated": 31,
+      "error": 0
+     },
+     "status": "derivable",
+     "basis": "the lights of every test row of the entry's variants: data/derived/C01/german-twin.json#/tests and the other variants"
+    },
+    "A37": {
+     "value": {
+      "S1": 0,
+      "S2": 0,
+      "S3": 2,
+      "S4": 0
+     },
+     "status": "present",
+     "basis": "open findings by severity, counted over the findings of the variants (per variant, not per model): data/derived/C01/german-twin.json#/findings and the other variants"
+    },
+    "A38": {
+     "value": {
+      "earliest_due": "2027-02-09"
+     },
+     "status": "convention",
+     "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
+    },
+    "A39": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: no document states how long the model is expected to stay valid (A D1 A39)"
+    },
+    "A40": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: no model is retired (A D1 A40)"
+    }
+   },
+   "components": [
+    {
+     "key": "C01/german/P0-constant",
+     "model_id": "P0-constant",
+     "role": "benchmark",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (P0): the model records carry no role",
+     "family": "pd-scoring",
+     "rung": "P0",
+     "title": {
+      "en": "Constant PD",
+      "es": "PD constante"
+     }
+    },
+    {
+     "key": "C01/german/P0-single",
+     "model_id": "P0-single",
+     "role": "benchmark",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (P0): the model records carry no role",
+     "family": "pd-scoring",
+     "rung": "P0",
+     "title": {
+      "en": "Single variable (checking_status)",
+      "es": "Una variable (checking_status)"
+     }
+    },
+    {
+     "key": "C01/german/P1-scorecard",
+     "model_id": "P1-scorecard",
+     "role": "champion",
+     "role_tag": "doc",
+     "role_basis": "the champion P1-scorecard (frontend/src/workbench/model.ts:8)",
+     "family": "pd-scoring",
+     "rung": "P1",
+     "title": {
+      "en": "WoE logistic scorecard",
+      "es": "Scorecard logística WoE"
+     }
+    },
+    {
+     "key": "C01/german/P2a-l1",
+     "model_id": "P2a-l1",
+     "role": "challenger",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (P2): the model records carry no role",
+     "family": "pd-scoring",
+     "rung": "P2",
+     "title": {
+      "en": "L1 logistic regression on WoE",
+      "es": "Regresión logística L1 sobre WoE"
+     }
+    },
+    {
+     "key": "C01/german/P2b-pltr",
+     "model_id": "P2b-pltr",
+     "role": "challenger",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (P2): the model records carry no role",
+     "family": "pd-scoring",
+     "rung": "P2",
+     "title": {
+      "en": "Penalised logistic tree regression (PLTR)",
+      "es": "Regresión logística penalizada con árboles (PLTR)"
+     }
+    },
+    {
+     "key": "C01/german/P3-ebm",
+     "model_id": "P3-ebm",
+     "role": "challenger",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (P3): the model records carry no role",
+     "family": "pd-scoring",
+     "rung": "P3",
+     "title": {
+      "en": "Explainable boosting machine (GA2M)",
+      "es": "Máquina de boosting explicable (GA2M)"
+     }
+    },
+    {
+     "key": "C01/german/P4-lightgbm",
+     "model_id": "P4-lightgbm",
+     "role": "challenger",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (P4): the model records carry no role",
+     "family": "pd-scoring",
+     "rung": "P4",
+     "title": {
+      "en": "Monotone gradient boosting (LightGBM)",
+      "es": "Gradient boosting monótono (LightGBM)"
+     }
+    },
+    {
+     "key": "C01/german/P5-tabpfn",
+     "model_id": "P5-tabpfn",
+     "role": "challenger",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (P5): the model records carry no role",
+     "family": "pd-scoring",
+     "rung": "P5",
+     "title": {
+      "en": "TabPFN v2 (research challenger)",
+      "es": "TabPFN v2 (retador de investigación)"
+     }
+    }
+   ],
+   "scope": {
+    "answers": {
+     "applies_theory": true,
+     "output_is_estimate": true,
+     "deterministic": false,
+     "generative_or_agentic": false
+    },
+    "profiles": [
+     {
+      "profile": "us-2026",
+      "in_scope": true,
+      "rationale": {
+       "en": "In scope: it applies statistical or economic theory, its output is an estimate and it is not generative or agentic (SR 26-2).",
+       "es": "En alcance: aplica teoria estadistica o economica, su resultado es una estimacion y no es generativo ni agentico (SR 26-2)."
+      }
+     },
+     {
+      "profile": "pra",
+      "in_scope": true,
+      "rationale": {
+       "en": "In scope: it applies a quantitative method (SS1/23 Principle 1.1).",
+       "es": "En alcance: aplica un metodo cuantitativo (SS1/23 Principio 1.1)."
+      }
+     },
+     {
+      "profile": "osfi-2027",
+      "in_scope": true,
+      "rationale": {
+       "en": "In scope: it processes input data into results (OSFI E-23).",
+       "es": "En alcance: procesa datos de entrada en resultados (OSFI E-23)."
+      }
+     },
+     {
+      "profile": "ecb",
+      "in_scope": true,
+      "rationale": {
+       "en": "In scope: it is a quantitative estimate used in a validated risk process.",
+       "es": "En alcance: es una estimacion cuantitativa usada en un proceso de riesgo validado."
+      }
+     }
+    ],
+    "basis": "B.1 (06 l.523-537); the four answers are read from the models document; the profile rules are a reading of the B.1 table (UNVERIFIED beyond it)"
+   },
+   "tier_block": {
+    "materiality": {
+     "exposure": {
+      "share": 0.0531,
+      "band": 2,
+      "tag": "convention",
+      "basis": "consumer-cards segment of the C07 book (a mapping convention); band cut points 25, 10 and 2 percent (a convention, A D2 3.2)"
+     },
+     "regulatory_use": {
+      "literal": 4,
+      "graded": 3,
+      "tag": "doc",
+      "basis": "impact.capital_champion and capital_challenger (IRB capital) in C01/holdout.json; the approval rate on card applicants"
+     },
+     "decision_criticality": {
+      "score": 3,
+      "tag": "doc",
+      "basis": "automated credit decision on natural persons (06 B.3): impact.approval_rate, swap_in, swap_out"
+     },
+     "m": {
+      "literal": 4,
+      "graded": 3
+     }
+    },
+    "complexity": {
+     "factors": [
+      {
+       "id": "F1",
+       "name": "methodology",
+       "score": 4,
+       "tag": "convention",
+       "basis": "P5-tabpfn (a foundation model) in models-german.json"
+      },
+      {
+       "id": "F2",
+       "name": "data",
+       "score": 2,
+       "tag": "doc",
+       "basis": "external sources: uci-taiwan, uci-german"
+      },
+      {
+       "id": "F3",
+       "name": "explainability",
+       "score": 3,
+       "tag": "doc",
+       "basis": "post hoc explanation for P4 and P5; P3-ebm is glass-box"
+      },
+      {
+       "id": "F4",
+       "name": "dynamic updating",
+       "score": 1,
+       "tag": "doc",
+       "basis": "static fit per fit_id"
+      },
+      {
+       "id": "F5",
+       "name": "dependency depth",
+       "score": 1,
+       "tag": "convention",
+       "basis": "no feeding case (A D4: feeder count 0)"
+      },
+      {
+       "id": "F6",
+       "name": "reproducibility",
+       "score": 1,
+       "tag": "convention",
+       "basis": "seed, versions and file hashes in every document"
+      },
+      {
+       "id": "F7",
+       "name": "history against horizon",
+       "score": null,
+       "tag": "convention",
+       "basis": "not scored: history against the forecast horizon is not a field in any committed document (A D2 3.3)"
+      }
+     ],
+     "scored": 6,
+     "sum": 12,
+     "mean": 2.0,
+     "c": {
+      "mean": 2,
+      "maximum": 4
+     }
+    },
+    "adopted_reading": "B",
+    "computed_tier": 2,
+    "override": null,
+    "tier": 2,
+    "tier_sensitivity": [
+     {
+      "reading": "A",
+      "regulatory_use": "literal",
+      "complexity": "mean",
+      "m": 4,
+      "c": 2,
+      "tier": 1
+     },
+     {
+      "reading": "B",
+      "regulatory_use": "graded",
+      "complexity": "mean",
+      "m": 3,
+      "c": 2,
+      "tier": 2
+     },
+     {
+      "reading": "C",
+      "regulatory_use": "literal",
+      "complexity": "maximum",
+      "m": 4,
+      "c": 4,
+      "tier": 1
+     },
+     {
+      "reading": "D",
+      "regulatory_use": "graded",
+      "complexity": "maximum",
+      "m": 3,
+      "c": 4,
+      "tier": 1
+     }
+    ]
+   },
+   "lifecycle": {
+    "state": "in_validation",
+    "basis": "the full battery has run and no approval exists (SDD non-goal 1); transitions are not recorded in the committed documents",
+    "transitions": [],
+    "exception": null
+   },
+   "schedule": {
+    "profile": "default",
+    "review_kind": "review",
+    "last_validation": {
+     "date": "2026-10-12",
+     "type": "full battery",
+     "basis": "A34: the release date of the code version"
+    },
+    "next_review": "2027-10-12",
+    "next_full_revalidation": "2029-10-12",
+    "next_monitoring": "2027-04-12",
+    "null_reason": null
+   },
+   "graph": {
+    "depth": 0,
+    "fan_in": 0,
+    "fan_out": 1
+   },
+   "map": {
+    "generation": 0,
+    "x": 0.0,
+    "y": 0.0
+   }
+  },
+  {
+   "key": "C07/banco-andino",
+   "case_id": "C07",
+   "fit_id": "banco-andino",
+   "title": {
+    "en": "Chile provisions trilogy: CMF B-1 vs IFRS 9 vs BdE Annex 9",
+    "es": "Trilogía de provisiones en Chile: CMF B-1 vs IFRS 9 vs Anexo 9 del BdE"
+   },
+   "attributes": {
+    "A01": {
+     "value": "C07/banco-andino",
+     "status": "present",
+     "basis": "read at data/derived/C07/models-banco-andino.json#/case_id | data/derived/C07/models-banco-andino.json#/fit_id"
+    },
+    "A02": {
+     "value": {
+      "en": "Chile provisions trilogy: CMF B-1 vs IFRS 9 vs BdE Annex 9",
+      "es": "Trilogía de provisiones en Chile: CMF B-1 vs IFRS 9 vs Anexo 9 del BdE"
+     },
+     "status": "present",
+     "basis": "read at data/derived/manifests/C07.json#/title"
+    },
+    "A03": {
+     "value": "banco-andino@0.07.000/riskvalidation-0.5.0",
+     "status": "derivable",
+     "basis": "no model version field: the fit id with the code and engine versions identify the build (A D1 A03): data/derived/C07/models-banco-andino.json#/fit_id | data/derived/C07/models-banco-andino.json#/provenance/code_version | data/derived/C07/models-banco-andino.json#/provenance/riskvalidation_version"
+    },
+    "A04": {
+     "value": {
+      "en": "How far apart are the provisions of CMF B-1, IFRS 9 and BdE Annex 9 on the same portfolio under stress?",
+      "es": "¿Qué tan distintas son las provisiones de CMF B-1, IFRS 9 y el Anexo 9 del BdE sobre una misma cartera bajo tensión?"
+     },
+     "status": "present",
+     "basis": "case level only; read at data/derived/manifests/C07.json#/question"
+    },
+    "A05": {
+     "value": [
+      "ecl",
+      "statutory-provision",
+      "synthetic-generator"
+     ],
+     "status": "present",
+     "basis": "free text, no controlled vocabulary; read at data/derived/C07/models-banco-andino.json#/model/0/family and the other model records"
+    },
+    "A06": {
+     "value": [
+      "none",
+      "riskvalidation.provisions.ecl",
+      "riskvalidation.provisions.local_cl",
+      "riskvalidation.provisions.local_es"
+     ],
+     "status": "derivable",
+     "basis": "no origin field: derived from the engine of each model record (own riskvalidation or a third-party library)"
+    },
+    "A07": {
+     "value": "in_validation",
+     "status": "derivable",
+     "basis": "built from the committed manifest; the B.4 vocabulary does not exist in the documents (A D1 A07); no approval is recorded"
+    },
+    "A08": {
+     "value": {
+      "en": "How far apart are the provisions of CMF B-1, IFRS 9 and BdE Annex 9 on the same portfolio under stress?",
+      "es": "¿Qué tan distintas son las provisiones de CMF B-1, IFRS 9 y el Anexo 9 del BdE sobre una misma cartera bajo tensión?"
+     },
+     "status": "present",
+     "basis": "read at data/derived/manifests/C07.json#/question"
+    },
+    "A09": {
+     "value": {
+      "classes": [
+       "mortgage",
+       "consumer",
+       "commercial"
+      ],
+      "source": "fit.segments"
+     },
+     "status": "derivable",
+     "basis": "the book segments of the C07 fit: data/derived/C07/models-banco-andino.json#/fit/segments"
+    },
+    "A10": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: a benchmark case has no actual use (A D1 A10)"
+    },
+    "A11": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field in any committed document (A D1 A11)"
+    },
+    "A12": {
+     "value": null,
+     "status": "missing",
+     "basis": "prose only: the case-page Limits sections and the SDD non-goals are not structured data (A D1 A12)"
+    },
+    "A13": {
+     "value": null,
+     "status": "missing",
+     "basis": "no training span or split field in the C07 documents (A D1 A13)"
+    },
+    "A14": {
+     "value": {
+      "sources": [],
+      "generators": [
+       "banco-andino-synthetic/1.0.0"
+      ]
+     },
+     "status": "present",
+     "basis": "read at data/derived/manifests/C07.json#/sources | data/derived/C07/models-banco-andino.json#/provenance/generators"
+    },
+    "A15": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: no document says whether alternative or unstructured data is used (A D1 A15)"
+    },
+    "A16": {
+     "value": {
+      "upstream": [],
+      "downstream": [
+       "C18/banco-andino"
+      ]
+     },
+     "status": "derivable",
+     "basis": "derived from the edge table of the inventory, each edge with its stated source (W15-8); the case documents hold no dependency field"
+    },
+    "A17": {
+     "value": {
+      "impact_items": [
+       "provision_cmf_b1",
+       "provision_ifrs9",
+       "provision_bde",
+       "gap_ifrs9_minus_b1",
+       "ifrs9_over_b1",
+       "b1_booked_total"
+      ]
+     },
+     "status": "present",
+     "basis": "outputs and impact items of the default variant: data/derived/C07/base.json#/outputs | data/derived/C07/base.json#/impact"
+    },
+    "A18": {
+     "value": [
+      "calibrated",
+      "cmf-b1",
+      "L0-ttc-one-factor-constant-hazard",
+      "bde-annex9"
+     ],
+     "status": "present",
+     "basis": "read at data/derived/C07/models-banco-andino.json#/model/0/rung and the other model records"
+    },
+    "A19": {
+     "value": null,
+     "status": "missing",
+     "basis": "limits are in prose only; no structured form in this case (A D1 A19)"
+    },
+    "A20": {
+     "value": false,
+     "status": "derivable",
+     "basis": "derived from the rung and the engine of the model records: no machine-learning rung or engine is present"
+    },
+    "A21": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field; the fits are static per fit_id (A D1 A21)"
+    },
+    "A22": {
+     "value": 4,
+     "status": "convention",
+     "basis": "M of the adopted reading B; tier_block.materiality (tiering.materiality)"
+    },
+    "A23": {
+     "value": 1,
+     "status": "convention",
+     "basis": "C of the adopted reading B; tier_block.complexity (tiering.complexity)"
+    },
+    "A24": {
+     "value": 1,
+     "status": "convention",
+     "basis": "the matrix of M and C (06 B.3) under the adopted reading B; tier_block (tiering.matrix_tier)"
+    },
+    "A25": {
+     "value": null,
+     "status": "missing",
+     "basis": "no rating; the explainability evidence by rung is not a rating (A D1 A25)"
+    },
+    "A26": {
+     "value": {
+      "overlays_total": 324129997.0,
+      "currency": "CLP",
+      "model_output": 97592002519.53,
+      "model_output_pointer": "data/derived/C07/base.json#/impact/provision_ifrs9/value"
+     },
+     "status": "present",
+     "basis": "read at data/derived/C07/base.json#/outputs/ifrs9_detail/overlays_total"
+    },
+    "A27": {
+     "value": null,
+     "status": "missing",
+     "basis": "no concept of an exception to policy; an accepted finding is a stated limit, not an exception (A D1 A27)"
+    },
+    "A28": {
+     "value": "Head of provisioning models (synthetic role)",
+     "status": "convention",
+     "basis": "W15-4: a named role of the synthetic bank per risk area, labelled synthetic; the role names are set in inputs.json"
+    },
+    "A29": {
+     "value": "data-pipeline/pipeline/cases/c07/",
+     "status": "derivable",
+     "basis": "the producing pipeline module, the owner column of docs/contracts/catalog.md (A D1 A29)"
+    },
+    "A30": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: a synthetic bank has no users (A D1 A30)"
+    },
+    "A31": {
+     "value": "riskvalidation 0.5.0",
+     "status": "derivable",
+     "basis": "riskvalidation at the pinned version; independence is not established because the pipeline and the engine are built in the same programme (W15-4, the governance finding GOV-INDEPENDENCE-NOT-ESTABLISHED)"
+    },
+    "A32": {
+     "value": null,
+     "status": "not-applicable",
+     "basis": "Contraste approves no model (SDD non-goal 1): no approver exists"
+    },
+    "A33": {
+     "value": null,
+     "status": "not-applicable",
+     "basis": "Contraste approves no model (SDD non-goal 1): no approval date or authority exists"
+    },
+    "A34": {
+     "value": {
+      "date": "2026-10-12",
+      "type": "full battery"
+     },
+     "status": "derivable",
+     "basis": "the release date of code version 0.07.000 in CHANGELOG.md; the type is one full battery: data/derived/C07/models-banco-andino.json#/provenance/code_version"
+    },
+    "A35": {
+     "value": "2027-10-12",
+     "status": "convention",
+     "basis": "schedule.next_dates over the frequency table (a convention, 06 B.8 l.636-640)"
+    },
+    "A36": {
+     "value": {
+      "green": 61,
+      "amber": 5,
+      "red": 0,
+      "not_evaluated": 0,
+      "error": 0
+     },
+     "status": "derivable",
+     "basis": "the lights of every test row of the entry's variants: data/derived/C07/base.json#/tests and the other variants"
+    },
+    "A37": {
+     "value": {
+      "S1": 0,
+      "S2": 3,
+      "S3": 14,
+      "S4": 0
+     },
+     "status": "present",
+     "basis": "open findings by severity, counted over the findings of the variants (per variant, not per model): data/derived/C07/base.json#/findings and the other variants"
+    },
+    "A38": {
+     "value": {
+      "earliest_due": "2026-12-11"
+     },
+     "status": "convention",
+     "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
+    },
+    "A39": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: no document states how long the model is expected to stay valid (A D1 A39)"
+    },
+    "A40": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: no model is retired (A D1 A40)"
+    }
+   },
+   "components": [
+    {
+     "key": "C07/banco-andino/G0-banco-andino",
+     "model_id": "G0-banco-andino",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (calibrated): the model records carry no role",
+     "family": "synthetic-generator",
+     "rung": "calibrated",
+     "title": {
+      "en": "Banco Andino synthetic generator",
+      "es": "Generador sintético de Banco Andino"
+     }
+    },
+    {
+     "key": "C07/banco-andino/B1-standard",
+     "model_id": "B1-standard",
+     "role": "benchmark",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (cmf-b1): the model records carry no role",
+     "family": "statutory-provision",
+     "rung": "cmf-b1",
+     "title": {
+      "en": "CMF CNCB B-1 standard methods",
+      "es": "Métodos estándar CMF CNCB B-1"
+     }
+    },
+    {
+     "key": "C07/banco-andino/IFRS9-ecl",
+     "model_id": "IFRS9-ecl",
+     "role": "champion",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (L0-ttc-one-factor-constant-hazard): the model records carry no role",
+     "family": "ecl",
+     "rung": "L0-ttc-one-factor-constant-hazard",
+     "title": {
+      "en": "IFRS 9 probability-weighted ECL",
+      "es": "ECL IFRS 9 ponderada por probabilidad"
+     }
+    },
+    {
+     "key": "C07/banco-andino/BDE-annex9",
+     "model_id": "BDE-annex9",
+     "role": "benchmark",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (bde-annex9): the model records carry no role",
+     "family": "statutory-provision",
+     "rung": "bde-annex9",
+     "title": {
+      "en": "BdE Circular 4/2017 Annex 9 alternative solutions",
+      "es": "Soluciones alternativas del Anejo 9 de la Circular 4/2017 del BdE"
+     }
+    }
+   ],
+   "scope": {
+    "answers": {
+     "applies_theory": true,
+     "output_is_estimate": true,
+     "deterministic": false,
+     "generative_or_agentic": false
+    },
+    "profiles": [
+     {
+      "profile": "us-2026",
+      "in_scope": true,
+      "rationale": {
+       "en": "In scope: it applies statistical or economic theory, its output is an estimate and it is not generative or agentic (SR 26-2).",
+       "es": "En alcance: aplica teoria estadistica o economica, su resultado es una estimacion y no es generativo ni agentico (SR 26-2)."
+      }
+     },
+     {
+      "profile": "pra",
+      "in_scope": true,
+      "rationale": {
+       "en": "In scope: it applies a quantitative method (SS1/23 Principle 1.1).",
+       "es": "En alcance: aplica un metodo cuantitativo (SS1/23 Principio 1.1)."
+      }
+     },
+     {
+      "profile": "osfi-2027",
+      "in_scope": true,
+      "rationale": {
+       "en": "In scope: it processes input data into results (OSFI E-23).",
+       "es": "En alcance: procesa datos de entrada en resultados (OSFI E-23)."
+      }
+     },
+     {
+      "profile": "ecb",
+      "in_scope": true,
+      "rationale": {
+       "en": "In scope: it is a quantitative estimate used in a validated risk process.",
+       "es": "En alcance: es una estimacion cuantitativa usada en un proceso de riesgo validado."
+      }
+     }
+    ],
+    "basis": "B.1 (06 l.523-537); the four answers are read from the models document; the profile rules are a reading of the B.1 table (UNVERIFIED beyond it); the components B1-standard and BDE-annex9 are deterministic rule sets, the entry as a whole is not"
+   },
+   "tier_block": {
+    "materiality": {
+     "exposure": {
+      "share": 1.0,
+      "band": 4,
+      "tag": "convention",
+      "basis": "whole C07 loan book (6,000,000 CLP million, IFRS 9 scope); band cut points 25, 10 and 2 percent (a convention, A D2 3.2)"
+     },
+     "regulatory_use": {
+      "literal": 4,
+      "graded": 4,
+      "tag": "doc",
+      "basis": "impact.provision_cmf_b1, provision_ifrs9, provision_bde (the provisions are the reported figures)"
+     },
+     "decision_criticality": {
+      "score": 1,
+      "tag": "convention",
+      "basis": "no rubric rule names an automated decision on natural persons in this case"
+     },
+     "m": {
+      "literal": 4,
+      "graded": 4
+     }
+    },
+    "complexity": {
+     "factors": [
+      {
+       "id": "F1",
+       "name": "methodology",
+       "score": 2,
+       "tag": "convention",
+       "basis": "IFRS9-ecl is a fitted hazard model (B1-standard is 1)"
+      },
+      {
+       "id": "F2",
+       "name": "data",
+       "score": 1,
+       "tag": "doc",
+       "basis": "no outside file: sources is empty, the book is generated"
+      },
+      {
+       "id": "F3",
+       "name": "explainability",
+       "score": 1,
+       "tag": "doc",
+       "basis": "intrinsically interpretable"
+      },
+      {
+       "id": "F4",
+       "name": "dynamic updating",
+       "score": 1,
+       "tag": "doc",
+       "basis": "static fit per fit_id"
+      },
+      {
+       "id": "F5",
+       "name": "dependency depth",
+       "score": 1,
+       "tag": "convention",
+       "basis": "no feeding case (A D4: feeder count 0)"
+      },
+      {
+       "id": "F6",
+       "name": "reproducibility",
+       "score": 1,
+       "tag": "convention",
+       "basis": "seed, versions and file hashes in every document"
+      },
+      {
+       "id": "F7",
+       "name": "history against horizon",
+       "score": null,
+       "tag": "convention",
+       "basis": "not scored: history against the forecast horizon is not a field in any committed document (A D2 3.3)"
+      }
+     ],
+     "scored": 6,
+     "sum": 7,
+     "mean": 1.17,
+     "c": {
+      "mean": 1,
+      "maximum": 2
+     }
+    },
+    "adopted_reading": "B",
+    "computed_tier": 1,
+    "override": null,
+    "tier": 1,
+    "tier_sensitivity": [
+     {
+      "reading": "A",
+      "regulatory_use": "literal",
+      "complexity": "mean",
+      "m": 4,
+      "c": 1,
+      "tier": 1
+     },
+     {
+      "reading": "B",
+      "regulatory_use": "graded",
+      "complexity": "mean",
+      "m": 4,
+      "c": 1,
+      "tier": 1
+     },
+     {
+      "reading": "C",
+      "regulatory_use": "literal",
+      "complexity": "maximum",
+      "m": 4,
+      "c": 2,
+      "tier": 1
+     },
+     {
+      "reading": "D",
+      "regulatory_use": "graded",
+      "complexity": "maximum",
+      "m": 4,
+      "c": 2,
+      "tier": 1
+     }
+    ]
+   },
+   "lifecycle": {
+    "state": "in_validation",
+    "basis": "the full battery has run and no approval exists (SDD non-goal 1); transitions are not recorded in the committed documents",
+    "transitions": [],
+    "exception": null
+   },
+   "schedule": {
+    "profile": "default",
+    "review_kind": "review",
+    "last_validation": {
+     "date": "2026-10-12",
+     "type": "full battery",
+     "basis": "A34: the release date of the code version"
+    },
+    "next_review": "2027-10-12",
+    "next_full_revalidation": "2029-10-12",
+    "next_monitoring": "2027-01-12",
+    "null_reason": null
+   },
+   "graph": {
+    "depth": 0,
+    "fan_in": 0,
+    "fan_out": 1
+   },
+   "map": {
+    "generation": 0,
+    "x": 0.0,
+    "y": 1.0
+   }
+  },
+  {
+   "key": "C18/banco-andino",
+   "case_id": "C18",
+   "fit_id": "banco-andino",
+   "title": {
+    "en": "ICAAP and IAPE capital aggregation under macro scenarios",
+    "es": "Agregación de capital ICAAP e IAPE bajo escenarios macro"
+   },
+   "attributes": {
+    "A01": {
+     "value": "C18/banco-andino",
+     "status": "present",
+     "basis": "read at data/derived/C18/models-banco-andino.json#/case_id | data/derived/C18/models-banco-andino.json#/fit_id"
+    },
+    "A02": {
+     "value": {
+      "en": "ICAAP and IAPE capital aggregation under macro scenarios",
+      "es": "Agregación de capital ICAAP e IAPE bajo escenarios macro"
+     },
+     "status": "present",
+     "basis": "read at data/derived/manifests/C18.json#/title"
+    },
+    "A03": {
+     "value": "banco-andino@0.12.000/riskvalidation-0.7.0+4193b58",
+     "status": "derivable",
+     "basis": "no model version field: the fit id with the code and engine versions identify the build (A D1 A03): data/derived/C18/models-banco-andino.json#/fit_id | data/derived/C18/models-banco-andino.json#/provenance/code_version | data/derived/C18/models-banco-andino.json#/provenance/riskvalidation_version"
+    },
+    "A04": {
+     "value": {
+      "en": "Does Banco Andino hold its internal capital target for three years under each scenario once credit, market, IRRBB and operational risk are aggregated, and how much of the answer rests on the aggregation method?",
+      "es": "¿Mantiene Banco Andino su objetivo interno de capital durante tres años bajo cada escenario una vez agregados los riesgos de crédito, mercado, IRRBB y operacional, y cuánto de la respuesta depende del método de agregación?"
+     },
+     "status": "present",
+     "basis": "case level only; read at data/derived/manifests/C18.json#/question"
+    },
+    "A05": {
+     "value": [
+      "aggregation",
+      "stress"
+     ],
+     "status": "present",
+     "basis": "free text, no controlled vocabulary; read at data/derived/C18/models-banco-andino.json#/model/0/family and the other model records"
+    },
+    "A06": {
+     "value": [
+      "riskvalidation"
+     ],
+     "status": "derivable",
+     "basis": "no origin field: derived from the engine of each model record (own riskvalidation or a third-party library)"
+    },
+    "A07": {
+     "value": "in_validation",
+     "status": "derivable",
+     "basis": "built from the committed manifest; the B.4 vocabulary does not exist in the documents (A D1 A07); no approval is recorded"
+    },
+    "A08": {
+     "value": {
+      "en": "Does Banco Andino hold its internal capital target for three years under each scenario once credit, market, IRRBB and operational risk are aggregated, and how much of the answer rests on the aggregation method?",
+      "es": "¿Mantiene Banco Andino su objetivo interno de capital durante tres años bajo cada escenario una vez agregados los riesgos de crédito, mercado, IRRBB y operacional, y cuánto de la respuesta depende del método de agregación?"
+     },
+     "status": "present",
+     "basis": "read at data/derived/manifests/C18.json#/question"
+    },
+    "A09": {
+     "value": {
+      "classes": [
+       "commercial",
+       "consumer",
+       "mortgage"
+      ],
+      "source": "fit.class_mapping"
+     },
+     "status": "derivable",
+     "basis": "the class mapping of the C18 fit: data/derived/C18/models-banco-andino.json#/fit/class_mapping"
+    },
+    "A10": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: a benchmark case has no actual use (A D1 A10)"
+    },
+    "A11": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field in any committed document (A D1 A11)"
+    },
+    "A12": {
+     "value": null,
+     "status": "missing",
+     "basis": "prose only: the case-page Limits sections and the SDD non-goals are not structured data (A D1 A12)"
+    },
+    "A13": {
+     "value": {
+      "fit_end_year": 2019.0
+     },
+     "status": "derivable",
+     "basis": "the satellite fit window ends in 2019: data/derived/C18/models-banco-andino.json#/model/0/parameters/fit_end_year"
+    },
+    "A14": {
+     "value": {
+      "sources": [
+       "fed-stress-tests",
+       "fed-chargeoff",
+       "eba-esrb-stress-2025",
+       "ngfs-phase-v",
+       "bcch-bde"
+      ],
+      "generators": []
+     },
+     "status": "present",
+     "basis": "read at data/derived/manifests/C18.json#/sources | data/derived/C18/models-banco-andino.json#/provenance/generators"
+    },
+    "A15": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: no document says whether alternative or unstructured data is used (A D1 A15)"
+    },
+    "A16": {
+     "value": {
+      "upstream": [
+       "C07/banco-andino"
+      ],
+      "downstream": []
+     },
+     "status": "present",
+     "basis": "the edge table agrees with the feeders the models document holds as data, read at data/derived/C18/models-banco-andino.json#/fit/marginal_sources"
+    },
+    "A17": {
+     "value": {
+      "impact_items": [
+       "capital_simple_sum",
+       "cet1_ratio_end_stress",
+       "oi_headroom_min",
+       "p2g_proxy"
+      ]
+     },
+     "status": "present",
+     "basis": "outputs and impact items of the default variant: data/derived/C18/baseline.json#/outputs | data/derived/C18/baseline.json#/impact"
+    },
+    "A18": {
+     "value": [
+      "satellite-probit-ols",
+      "simple-sum-headline",
+      "capital-engine-static"
+     ],
+     "status": "present",
+     "basis": "read at data/derived/C18/models-banco-andino.json#/model/0/rung and the other model records"
+    },
+    "A19": {
+     "value": {
+      "named_parameters": 12
+     },
+     "status": "present",
+     "basis": "labelled parameters: data/derived/C18/models-banco-andino.json#/fit/named_parameters"
+    },
+    "A20": {
+     "value": false,
+     "status": "derivable",
+     "basis": "derived from the rung and the engine of the model records: no machine-learning rung or engine is present"
+    },
+    "A21": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field; the fits are static per fit_id (A D1 A21)"
+    },
+    "A22": {
+     "value": 4,
+     "status": "convention",
+     "basis": "M of the adopted reading B; tier_block.materiality (tiering.materiality)"
+    },
+    "A23": {
+     "value": 2,
+     "status": "convention",
+     "basis": "C of the adopted reading B; tier_block.complexity (tiering.complexity)"
+    },
+    "A24": {
+     "value": 1,
+     "status": "convention",
+     "basis": "the matrix of M and C (06 B.3) under the adopted reading B; tier_block (tiering.matrix_tier)"
+    },
+    "A25": {
+     "value": null,
+     "status": "missing",
+     "basis": "no rating; the explainability evidence by rung is not a rating (A D1 A25)"
+    },
+    "A26": {
+     "value": null,
+     "status": "not-applicable",
+     "basis": "no PMA or overlay exists in this case: A D1 A26 finds PMAs in C06 and C07 only"
+    },
+    "A27": {
+     "value": null,
+     "status": "missing",
+     "basis": "no concept of an exception to policy; an accepted finding is a stated limit, not an exception (A D1 A27)"
+    },
+    "A28": {
+     "value": "Head of capital planning (synthetic role)",
+     "status": "convention",
+     "basis": "W15-4: a named role of the synthetic bank per risk area, labelled synthetic; the role names are set in inputs.json"
+    },
+    "A29": {
+     "value": "data-pipeline/pipeline/cases/c18/",
+     "status": "derivable",
+     "basis": "the producing pipeline module, the owner column of docs/contracts/catalog.md (A D1 A29)"
+    },
+    "A30": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: a synthetic bank has no users (A D1 A30)"
+    },
+    "A31": {
+     "value": "riskvalidation 0.7.0+4193b58",
+     "status": "derivable",
+     "basis": "riskvalidation at the pinned version; independence is not established because the pipeline and the engine are built in the same programme (W15-4, the governance finding GOV-INDEPENDENCE-NOT-ESTABLISHED)"
+    },
+    "A32": {
+     "value": null,
+     "status": "not-applicable",
+     "basis": "Contraste approves no model (SDD non-goal 1): no approver exists"
+    },
+    "A33": {
+     "value": null,
+     "status": "not-applicable",
+     "basis": "Contraste approves no model (SDD non-goal 1): no approval date or authority exists"
+    },
+    "A34": {
+     "value": {
+      "date": "2026-10-16",
+      "type": "full battery"
+     },
+     "status": "derivable",
+     "basis": "the release date of code version 0.12.000 in CHANGELOG.md; the type is one full battery: data/derived/C18/models-banco-andino.json#/provenance/code_version"
+    },
+    "A35": {
+     "value": "2027-10-16",
+     "status": "convention",
+     "basis": "schedule.next_dates over the frequency table (a convention, 06 B.8 l.636-640)"
+    },
+    "A36": {
+     "value": {
+      "green": 36,
+      "amber": 16,
+      "red": 24,
+      "not_evaluated": 3,
+      "error": 0
+     },
+     "status": "derivable",
+     "basis": "the lights of every test row of the entry's variants: data/derived/C18/baseline.json#/tests and the other variants"
+    },
+    "A37": {
+     "value": {
+      "S1": 2,
+      "S2": 2,
+      "S3": 17,
+      "S4": 8
+     },
+     "status": "present",
+     "basis": "open findings by severity, counted over the findings of the variants (per variant, not per model): data/derived/C18/baseline.json#/findings and the other variants"
+    },
+    "A38": {
+     "value": {
+      "earliest_due": "2026-11-15"
+     },
+     "status": "convention",
+     "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
+    },
+    "A39": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: no document states how long the model is expected to stay valid (A D1 A39)"
+    },
+    "A40": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: no model is retired (A D1 A40)"
+    }
+   },
+   "components": [
+    {
+     "key": "C18/banco-andino/c18-satellites-us-calibrated",
+     "model_id": "c18-satellites-us-calibrated",
+     "role": "champion",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (satellite-probit-ols): the model records carry no role",
+     "family": "stress",
+     "rung": "satellite-probit-ols",
+     "title": {
+      "en": "Macro satellites of the net charge-off rates, OLS on 1985 to 2019",
+      "es": "Satelites macro de las tasas de castigo netas, MCO sobre 1985 a 2019"
+     }
+    },
+    {
+     "key": "C18/banco-andino/c18-aggregation-ladder",
+     "model_id": "c18-aggregation-ladder",
+     "role": "challenger",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (simple-sum-headline): the model records carry no role",
+     "family": "aggregation",
+     "rung": "simple-sum-headline",
+     "title": {
+      "en": "Aggregation ladder, the simple sum as the headline",
+      "es": "Escalera de agregacion, la suma simple como cifra principal"
+     }
+    },
+    {
+     "key": "C18/banco-andino/c18-capital-engine",
+     "model_id": "c18-capital-engine",
+     "role": "champion",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (capital-engine-static): the model records carry no role",
+     "family": "stress",
+     "rung": "capital-engine-static",
+     "title": {
+      "en": "Capital engine on a static balance sheet",
+      "es": "Motor de capital sobre balance estatico"
+     }
+    }
+   ],
+   "scope": {
+    "answers": {
+     "applies_theory": true,
+     "output_is_estimate": true,
+     "deterministic": false,
+     "generative_or_agentic": false
+    },
+    "profiles": [
+     {
+      "profile": "us-2026",
+      "in_scope": true,
+      "rationale": {
+       "en": "In scope: it applies statistical or economic theory, its output is an estimate and it is not generative or agentic (SR 26-2).",
+       "es": "En alcance: aplica teoria estadistica o economica, su resultado es una estimacion y no es generativo ni agentico (SR 26-2)."
+      }
+     },
+     {
+      "profile": "pra",
+      "in_scope": true,
+      "rationale": {
+       "en": "In scope: it applies a quantitative method (SS1/23 Principle 1.1).",
+       "es": "En alcance: aplica un metodo cuantitativo (SS1/23 Principio 1.1)."
+      }
+     },
+     {
+      "profile": "osfi-2027",
+      "in_scope": true,
+      "rationale": {
+       "en": "In scope: it processes input data into results (OSFI E-23).",
+       "es": "En alcance: procesa datos de entrada en resultados (OSFI E-23)."
+      }
+     },
+     {
+      "profile": "ecb",
+      "in_scope": true,
+      "rationale": {
+       "en": "In scope: it is a quantitative estimate used in a validated risk process.",
+       "es": "En alcance: es una estimacion cuantitativa usada en un proceso de riesgo validado."
+      }
+     }
+    ],
+    "basis": "B.1 (06 l.523-537); the four answers are read from the models document; the profile rules are a reading of the B.1 table (UNVERIFIED beyond it)"
+   },
+   "tier_block": {
+    "materiality": {
+     "exposure": {
+      "share": 1.0,
+      "band": 4,
+      "tag": "convention",
+      "basis": "whole capital of Banco Andino (RWA 7,492,853 CLP million at 2026-08-31); band cut points 25, 10 and 2 percent (a convention, A D2 3.2)"
+     },
+     "regulatory_use": {
+      "literal": 4,
+      "graded": 4,
+      "tag": "doc",
+      "basis": "impact.capital_simple_sum, cet1_ratio_end_stress, p2g_proxy (the capital plan)"
+     },
+     "decision_criticality": {
+      "score": 1,
+      "tag": "convention",
+      "basis": "no rubric rule names an automated decision on natural persons in this case"
+     },
+     "m": {
+      "literal": 4,
+      "graded": 4
+     }
+    },
+    "complexity": {
+     "factors": [
+      {
+       "id": "F1",
+       "name": "methodology",
+       "score": 2,
+       "tag": "convention",
+       "basis": "c18-satellites-us-calibrated and c18-aggregation-ladder are fitted parametric models"
+      },
+      {
+       "id": "F2",
+       "name": "data",
+       "score": 2,
+       "tag": "doc",
+       "basis": "five external sources"
+      },
+      {
+       "id": "F3",
+       "name": "explainability",
+       "score": 1,
+       "tag": "doc",
+       "basis": "intrinsically interpretable"
+      },
+      {
+       "id": "F4",
+       "name": "dynamic updating",
+       "score": 1,
+       "tag": "doc",
+       "basis": "static fit per fit_id"
+      },
+      {
+       "id": "F5",
+       "name": "dependency depth",
+       "score": 4,
+       "tag": "convention",
+       "basis": "reads C07, C11, C15 and C17 (four feeding cases, D4)"
+      },
+      {
+       "id": "F6",
+       "name": "reproducibility",
+       "score": 1,
+       "tag": "convention",
+       "basis": "seed, versions and file hashes in every document"
+      },
+      {
+       "id": "F7",
+       "name": "history against horizon",
+       "score": null,
+       "tag": "convention",
+       "basis": "not scored: history against the forecast horizon is not a field in any committed document (A D2 3.3)"
+      }
+     ],
+     "scored": 6,
+     "sum": 11,
+     "mean": 1.83,
+     "c": {
+      "mean": 2,
+      "maximum": 4
+     }
+    },
+    "adopted_reading": "B",
+    "computed_tier": 1,
+    "override": null,
+    "tier": 1,
+    "tier_sensitivity": [
+     {
+      "reading": "A",
+      "regulatory_use": "literal",
+      "complexity": "mean",
+      "m": 4,
+      "c": 2,
+      "tier": 1
+     },
+     {
+      "reading": "B",
+      "regulatory_use": "graded",
+      "complexity": "mean",
+      "m": 4,
+      "c": 2,
+      "tier": 1
+     },
+     {
+      "reading": "C",
+      "regulatory_use": "literal",
+      "complexity": "maximum",
+      "m": 4,
+      "c": 4,
+      "tier": 1
+     },
+     {
+      "reading": "D",
+      "regulatory_use": "graded",
+      "complexity": "maximum",
+      "m": 4,
+      "c": 4,
+      "tier": 1
+     }
+    ]
+   },
+   "lifecycle": {
+    "state": "in_validation",
+    "basis": "the full battery has run and no approval exists (SDD non-goal 1); transitions are not recorded in the committed documents",
+    "transitions": [],
+    "exception": null
+   },
+   "schedule": {
+    "profile": "default",
+    "review_kind": "review",
+    "last_validation": {
+     "date": "2026-10-16",
+     "type": "full battery",
+     "basis": "A34: the release date of the code version"
+    },
+    "next_review": "2027-10-16",
+    "next_full_revalidation": "2029-10-16",
+    "next_monitoring": "2027-01-16",
+    "null_reason": null
+   },
+   "graph": {
+    "depth": 1,
+    "fan_in": 1,
+    "fan_out": 0
+   },
+   "map": {
+    "generation": 1,
+    "x": 1.0,
+    "y": 0.0
+   }
+  },
+  {
+   "key": "C22/generators",
+   "case_id": "C22",
+   "fit_id": "generators",
+   "title": {
+    "en": "Validating the validator: size and power of every test",
+    "es": "Validar al validador: tamaño y potencia de cada prueba"
+   },
+   "attributes": {
+    "A01": {
+     "value": "C22/generators",
+     "status": "present",
+     "basis": "read at data/derived/C22/models-generators.json#/case_id | data/derived/C22/models-generators.json#/fit_id"
+    },
+    "A02": {
+     "value": {
+      "en": "Validating the validator: size and power of every test",
+      "es": "Validar al validador: tamaño y potencia de cada prueba"
+     },
+     "status": "present",
+     "basis": "read at data/derived/manifests/C22.json#/title"
+    },
+    "A03": {
+     "value": "generators@0.07.000/riskvalidation-0.4.3",
+     "status": "derivable",
+     "basis": "no model version field: the fit id with the code and engine versions identify the build (A D1 A03): data/derived/C22/models-generators.json#/fit_id | data/derived/C22/models-generators.json#/provenance/code_version | data/derived/C22/models-generators.json#/provenance/riskvalidation_version"
+    },
+    "A04": {
+     "value": {
+      "en": "How often does each validation test reject a right model, and which defects does it catch?",
+      "es": "¿Con qué frecuencia cada prueba de validación rechaza un modelo correcto, y qué defectos detecta?"
+     },
+     "status": "present",
+     "basis": "case level only; read at data/derived/manifests/C22.json#/question"
+    },
+    "A05": {
+     "value": [
+      "exact",
+      "generator"
+     ],
+     "status": "present",
+     "basis": "free text, no controlled vocabulary; read at data/derived/C22/models-generators.json#/model/0/family and the other model records"
+    },
+    "A06": {
+     "value": [
+      "riskvalidation.generators.BinormalScores",
+      "riskvalidation.generators.DefaultCounts",
+      "riskvalidation.generators.GradeFrequencies",
+      "riskvalidation.generators.LogisticPortfolio",
+      "riskvalidation.generators.Migrations",
+      "riskvalidation.generators.NestedLda",
+      "riskvalidation.generators.TwoSample",
+      "riskvalidation.harness.exact"
+     ],
+     "status": "derivable",
+     "basis": "no origin field: derived from the engine of each model record (own riskvalidation or a third-party library)"
+    },
+    "A07": {
+     "value": "in_validation",
+     "status": "derivable",
+     "basis": "built from the committed manifest; the B.4 vocabulary does not exist in the documents (A D1 A07); no approval is recorded"
+    },
+    "A08": {
+     "value": {
+      "en": "How often does each validation test reject a right model, and which defects does it catch?",
+      "es": "¿Con qué frecuencia cada prueba de validación rechaza un modelo correcto, y qué defectos detecta?"
+     },
+     "status": "present",
+     "basis": "read at data/derived/manifests/C22.json#/question"
+    },
+    "A09": {
+     "value": null,
+     "status": "not-applicable",
+     "basis": "C22 is the validator case: it holds no products or portfolios (A D1 A09)"
+    },
+    "A10": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: a benchmark case has no actual use (A D1 A10)"
+    },
+    "A11": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field in any committed document (A D1 A11)"
+    },
+    "A12": {
+     "value": null,
+     "status": "missing",
+     "basis": "prose only: the case-page Limits sections and the SDD non-goals are not structured data (A D1 A12)"
+    },
+    "A13": {
+     "value": null,
+     "status": "missing",
+     "basis": "no training span or split field in the C22 documents (A D1 A13)"
+    },
+    "A14": {
+     "value": {
+      "sources": [
+       "bcbs-wp14",
+       "yurdakul-naranjo-2020"
+      ],
+      "generators": [
+       "DefaultCounts",
+       "BinormalScores",
+       "LogisticPortfolio",
+       "TwoSample",
+       "Migrations",
+       "GradeFrequencies",
+       "NestedLda"
+      ]
+     },
+     "status": "present",
+     "basis": "read at data/derived/manifests/C22.json#/sources | data/derived/C22/models-generators.json#/provenance/generators"
+    },
+    "A15": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: no document says whether alternative or unstructured data is used (A D1 A15)"
+    },
+    "A16": {
+     "value": {
+      "upstream": [
+       "C01/german"
+      ],
+      "downstream": []
+     },
+     "status": "derivable",
+     "basis": "derived from the edge table of the inventory, each edge with its stated source (W15-8); the case documents hold no dependency field"
+    },
+    "A17": {
+     "value": {
+      "impact_items": [
+       "tests_within_bound",
+       "size_hl_fitted",
+       "size_normal",
+       "psi010_false_alarm_n100"
+      ]
+     },
+     "status": "present",
+     "basis": "outputs and impact items of the default variant: data/derived/C22/null.json#/outputs | data/derived/C22/null.json#/impact"
+    },
+    "A18": {
+     "value": [
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "dgp",
+      "exact"
+     ],
+     "status": "present",
+     "basis": "read at data/derived/C22/models-generators.json#/model/0/rung and the other model records"
+    },
+    "A19": {
+     "value": null,
+     "status": "missing",
+     "basis": "limits are in prose only; no structured form in this case (A D1 A19)"
+    },
+    "A20": {
+     "value": false,
+     "status": "derivable",
+     "basis": "derived from the rung and the engine of the model records: no machine-learning rung or engine is present"
+    },
+    "A21": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field; the fits are static per fit_id (A D1 A21)"
+    },
+    "A22": {
+     "value": 1,
+     "status": "convention",
+     "basis": "M of the adopted reading B; tier_block.materiality (tiering.materiality)"
+    },
+    "A23": {
+     "value": 1,
+     "status": "convention",
+     "basis": "C of the adopted reading B; tier_block.complexity (tiering.complexity)"
+    },
+    "A24": {
+     "value": 4,
+     "status": "convention",
+     "basis": "the matrix of M and C (06 B.3) under the adopted reading B; tier_block (tiering.matrix_tier)"
+    },
+    "A25": {
+     "value": null,
+     "status": "missing",
+     "basis": "no rating; the explainability evidence by rung is not a rating (A D1 A25)"
+    },
+    "A26": {
+     "value": null,
+     "status": "not-applicable",
+     "basis": "no PMA or overlay exists in this case: A D1 A26 finds PMAs in C06 and C07 only"
+    },
+    "A27": {
+     "value": null,
+     "status": "missing",
+     "basis": "no concept of an exception to policy; an accepted finding is a stated limit, not an exception (A D1 A27)"
+    },
+    "A28": {
+     "value": "Head of validation tooling (synthetic role)",
+     "status": "convention",
+     "basis": "W15-4: a named role of the synthetic bank per risk area, labelled synthetic; the role names are set in inputs.json"
+    },
+    "A29": {
+     "value": "data-pipeline/pipeline/cases/c22_validator.py",
+     "status": "derivable",
+     "basis": "the producing pipeline module, the owner column of docs/contracts/catalog.md (A D1 A29)"
+    },
+    "A30": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: a synthetic bank has no users (A D1 A30)"
+    },
+    "A31": {
+     "value": "riskvalidation 0.4.3",
+     "status": "derivable",
+     "basis": "riskvalidation at the pinned version validates the entry; independence is not established because the pipeline and the engine are built in the same programme (W15-4); C22 itself is validated by its exact rejection probabilities and by the engine's own tests (A D1)"
+    },
+    "A32": {
+     "value": null,
+     "status": "not-applicable",
+     "basis": "Contraste approves no model (SDD non-goal 1): no approver exists"
+    },
+    "A33": {
+     "value": null,
+     "status": "not-applicable",
+     "basis": "Contraste approves no model (SDD non-goal 1): no approval date or authority exists"
+    },
+    "A34": {
+     "value": {
+      "date": "2026-10-12",
+      "type": "full battery"
+     },
+     "status": "derivable",
+     "basis": "the release date of code version 0.07.000 in CHANGELOG.md; the type is one full battery: data/derived/C22/models-generators.json#/provenance/code_version"
+    },
+    "A35": {
+     "value": "2029-10-12",
+     "status": "convention",
+     "basis": "schedule.next_dates over the frequency table (a convention, 06 B.8 l.636-640)"
+    },
+    "A36": {
+     "value": {
+      "green": 11,
+      "amber": 0,
+      "red": 8,
+      "not_evaluated": 2,
+      "error": 0
+     },
+     "status": "derivable",
+     "basis": "the lights of every test row of the entry's variants: data/derived/C22/broken-monotonicity.json#/tests and the other variants"
+    },
+    "A37": {
+     "value": {
+      "S1": 0,
+      "S2": 1,
+      "S3": 0,
+      "S4": 0
+     },
+     "status": "present",
+     "basis": "open findings by severity, counted over the findings of the variants (per variant, not per model): data/derived/C22/broken-monotonicity.json#/findings and the other variants"
+    },
+    "A38": {
+     "value": {
+      "earliest_due": "2027-04-10"
+     },
+     "status": "convention",
+     "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
+    },
+    "A39": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: no document states how long the model is expected to stay valid (A D1 A39)"
+    },
+    "A40": {
+     "value": null,
+     "status": "missing",
+     "basis": "no field: no model is retired (A D1 A40)"
+    }
+   },
+   "components": [
+    {
+     "key": "C22/generators/G1-default-counts",
+     "model_id": "G1-default-counts",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Default counts, one-factor model with time correlation (WP14)",
+      "es": "Conteos de incumplimiento, modelo de un factor con correlación temporal (WP14)"
+     }
+    },
+    {
+     "key": "C22/generators/G2-binormal",
+     "model_id": "G2-binormal",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Binormal scores with an exact AUC",
+      "es": "Puntajes binormales con AUC exacta"
+     }
+    },
+    {
+     "key": "C22/generators/G3-logistic",
+     "model_id": "G3-logistic",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Logistic portfolio with a planted calibration",
+      "es": "Cartera logística con calibración plantada"
+     }
+    },
+    {
+     "key": "C22/generators/G4-two-sample",
+     "model_id": "G4-two-sample",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Two samples (Yurdakul and Naranjo's design)",
+      "es": "Dos muestras (diseño de Yurdakul y Naranjo)"
+     }
+    },
+    {
+     "key": "C22/generators/G5-migrations",
+     "model_id": "G5-migrations",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Migration matrices with a planted cell",
+      "es": "Matrices de migración con una celda plantada"
+     }
+    },
+    {
+     "key": "C22/generators/G6-grade-frequencies",
+     "model_id": "G6-grade-frequencies",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Grade frequencies with planted concentration",
+      "es": "Frecuencias por grado con concentración plantada"
+     }
+    },
+    {
+     "key": "C22/generators/G7-nested-lda",
+     "model_id": "G7-nested-lda",
+     "role": "reference",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (dgp): the model records carry no role",
+     "family": "generator",
+     "rung": "dgp",
+     "title": {
+      "en": "Nested discriminants (Demler et al.)",
+      "es": "Discriminantes anidados (Demler et al.)"
+     }
+    },
+    {
+     "key": "C22/generators/X1-exact",
+     "model_id": "X1-exact",
+     "role": "benchmark",
+     "role_tag": "convention",
+     "role_basis": "convention by rung (exact): the model records carry no role",
+     "family": "exact",
+     "rung": "exact",
+     "title": {
+      "en": "Exact rejection probabilities of the count tests",
+      "es": "Probabilidades exactas de rechazo de las pruebas de conteo"
+     }
+    }
+   ],
+   "scope": {
+    "answers": {
+     "applies_theory": true,
+     "output_is_estimate": true,
+     "deterministic": false,
+     "generative_or_agentic": false
+    },
+    "profiles": [
+     {
+      "profile": "us-2026",
+      "in_scope": true,
+      "rationale": {
+       "en": "In scope: it applies statistical or economic theory, its output is an estimate and it is not generative or agentic (SR 26-2).",
+       "es": "En alcance: aplica teoria estadistica o economica, su resultado es una estimacion y no es generativo ni agentico (SR 26-2)."
+      }
+     },
+     {
+      "profile": "pra",
+      "in_scope": true,
+      "rationale": {
+       "en": "In scope: it applies a quantitative method (SS1/23 Principle 1.1).",
+       "es": "En alcance: aplica un metodo cuantitativo (SS1/23 Principio 1.1)."
+      }
+     },
+     {
+      "profile": "osfi-2027",
+      "in_scope": true,
+      "rationale": {
+       "en": "In scope: it processes input data into results (OSFI E-23).",
+       "es": "En alcance: procesa datos de entrada en resultados (OSFI E-23)."
+      }
+     },
+     {
+      "profile": "ecb",
+      "in_scope": true,
+      "rationale": {
+       "en": "In scope: it is a quantitative estimate used in a validated risk process.",
+       "es": "En alcance: es una estimacion cuantitativa usada en un proceso de riesgo validado."
+      }
+     }
+    ],
+    "basis": "B.1 (06 l.523-537); the four answers are read from the models document; the profile rules are a reading of the B.1 table (UNVERIFIED beyond it)"
+   },
+   "tier_block": {
+    "materiality": {
+     "exposure": {
+      "share": null,
+      "band": 1,
+      "tag": "convention",
+      "basis": "not a bank balance: C22 tests the tests of the other cases; band cut points 25, 10 and 2 percent (a convention, A D2 3.2)"
+     },
+     "regulatory_use": {
+      "literal": 1,
+      "graded": 1,
+      "tag": "doc",
+      "basis": "no regulatory number: it tests the tests of the other cases"
+     },
+     "decision_criticality": {
+      "score": 1,
+      "tag": "convention",
+      "basis": "no rubric rule names an automated decision on natural persons in this case"
+     },
+     "m": {
+      "literal": 1,
+      "graded": 1
+     }
+    },
+    "complexity": {
+     "factors": [
+      {
+       "id": "F1",
+       "name": "methodology",
+       "score": 2,
+       "tag": "convention",
+       "basis": "the G1 to G7 generators and the X1-exact harness"
+      },
+      {
+       "id": "F2",
+       "name": "data",
+       "score": 1,
+       "tag": "doc",
+       "basis": "generated data"
+      },
+      {
+       "id": "F3",
+       "name": "explainability",
+       "score": 1,
+       "tag": "doc",
+       "basis": "intrinsically interpretable"
+      },
+      {
+       "id": "F4",
+       "name": "dynamic updating",
+       "score": 1,
+       "tag": "doc",
+       "basis": "static fit per fit_id"
+      },
+      {
+       "id": "F5",
+       "name": "dependency depth",
+       "score": 1,
+       "tag": "convention",
+       "basis": "no feeding case (A D4: feeder count 0)"
+      },
+      {
+       "id": "F6",
+       "name": "reproducibility",
+       "score": 1,
+       "tag": "convention",
+       "basis": "seed, versions and file hashes in every document"
+      },
+      {
+       "id": "F7",
+       "name": "history against horizon",
+       "score": null,
+       "tag": "convention",
+       "basis": "not scored: history against the forecast horizon is not a field in any committed document (A D2 3.3)"
+      }
+     ],
+     "scored": 6,
+     "sum": 7,
+     "mean": 1.17,
+     "c": {
+      "mean": 1,
+      "maximum": 2
+     }
+    },
+    "adopted_reading": "B",
+    "computed_tier": 4,
+    "override": null,
+    "tier": 4,
+    "tier_sensitivity": [
+     {
+      "reading": "A",
+      "regulatory_use": "literal",
+      "complexity": "mean",
+      "m": 1,
+      "c": 1,
+      "tier": 4
+     },
+     {
+      "reading": "B",
+      "regulatory_use": "graded",
+      "complexity": "mean",
+      "m": 1,
+      "c": 1,
+      "tier": 4
+     },
+     {
+      "reading": "C",
+      "regulatory_use": "literal",
+      "complexity": "maximum",
+      "m": 1,
+      "c": 2,
+      "tier": 4
+     },
+     {
+      "reading": "D",
+      "regulatory_use": "graded",
+      "complexity": "maximum",
+      "m": 1,
+      "c": 2,
+      "tier": 4
+     }
+    ]
+   },
+   "lifecycle": {
+    "state": "in_validation",
+    "basis": "the full battery has run and no approval exists (SDD non-goal 1); transitions are not recorded in the committed documents",
+    "transitions": [],
+    "exception": null
+   },
+   "schedule": {
+    "profile": "default",
+    "review_kind": "attestation",
+    "last_validation": {
+     "date": "2026-10-12",
+     "type": "full battery",
+     "basis": "A34: the release date of the code version"
+    },
+    "next_review": "2029-10-12",
+    "next_full_revalidation": null,
+    "next_monitoring": null,
+    "null_reason": {
+     "en": "the frequency table of this tier states no full revalidation or no monitoring interval (06 l.636-640)",
+     "es": "la tabla de frecuencias de este nivel no fija revalidacion completa o monitoreo (06 l.636-640)"
+    }
+   },
+   "graph": {
+    "depth": 1,
+    "fan_in": 1,
+    "fan_out": 0
+   },
+   "map": {
+    "generation": 1,
+    "x": 1.0,
+    "y": 1.0
+   }
+  }
+ ],
+ "edges": [
+  {
+   "upstream": "C07/banco-andino",
+   "downstream": "C18/banco-andino",
+   "kind": "document",
+   "stated_source": "data-pipeline/pipeline/cases/c18/anchors.py:102-103 loads C07/base.json and C07/models-banco-andino.json; the C18 models document $.fit.marginal_sources[0].documents is [\"c07-outputs\"] (task/u13-p1)"
+  },
+  {
+   "upstream": "C01/german",
+   "downstream": "C22/generators",
+   "kind": "code",
+   "stated_source": "data-pipeline/pipeline/cases/c22_validator.py:68 imports the helpers _t and _v of c01_ladder (A D4 5.1)"
+  }
+ ],
+ "related": [
+  {
+   "a": "C22/generators",
+   "b": "C01/german",
+   "kind": "measures",
+   "source": "docs/cases/C22.md:70, 157-158, 180, 182 (C22 measures the size of C01's tests); docs/cases/C01.md:69"
+  }
+ ],
+ "excluded": [
+  {
+   "case_id": "C02",
+   "reason": {
+    "en": "planned: no committed document or models record exists (A D1)",
+    "es": "planificado: no existe documento ni registro de modelos confirmado (A D1)"
+   }
+  },
+  {
+   "case_id": "C19",
+   "reason": {
+    "en": "planned: no committed document or models record exists (A D1)",
+    "es": "planificado: no existe documento ni registro de modelos confirmado (A D1)"
+   }
+  },
+  {
+   "case_id": "C20",
+   "reason": {
+    "en": "planned: no committed document or models record exists (A D1)",
+    "es": "planificado: no existe documento ni registro de modelos confirmado (A D1)"
+   }
+  }
+ ],
+ "completeness": {
+  "entries": 4,
+  "attributes": {
+   "A01": {
+    "present": 4,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A02": {
+    "present": 4,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A03": {
+    "present": 0,
+    "derivable": 4,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A04": {
+    "present": 4,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A05": {
+    "present": 4,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A06": {
+    "present": 0,
+    "derivable": 4,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A07": {
+    "present": 0,
+    "derivable": 4,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A08": {
+    "present": 4,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A09": {
+    "present": 0,
+    "derivable": 2,
+    "convention": 0,
+    "not_applicable": 1,
+    "missing": 1
+   },
+   "A10": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 4
+   },
+   "A11": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 4
+   },
+   "A12": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 4
+   },
+   "A13": {
+    "present": 0,
+    "derivable": 2,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 2
+   },
+   "A14": {
+    "present": 4,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A15": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 4
+   },
+   "A16": {
+    "present": 1,
+    "derivable": 3,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A17": {
+    "present": 4,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A18": {
+    "present": 4,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A19": {
+    "present": 1,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 3
+   },
+   "A20": {
+    "present": 0,
+    "derivable": 4,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A21": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 4
+   },
+   "A22": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 4,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A23": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 4,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A24": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 4,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A25": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 4
+   },
+   "A26": {
+    "present": 1,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 3,
+    "missing": 0
+   },
+   "A27": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 4
+   },
+   "A28": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 4,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A29": {
+    "present": 0,
+    "derivable": 4,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A30": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 4
+   },
+   "A31": {
+    "present": 0,
+    "derivable": 4,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A32": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 4,
+    "missing": 0
+   },
+   "A33": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 4,
+    "missing": 0
+   },
+   "A34": {
+    "present": 0,
+    "derivable": 4,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A35": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 4,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A36": {
+    "present": 0,
+    "derivable": 4,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A37": {
+    "present": 4,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A38": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 4,
+    "not_applicable": 0,
+    "missing": 0
+   },
+   "A39": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 4
+   },
+   "A40": {
+    "present": 0,
+    "derivable": 0,
+    "convention": 0,
+    "not_applicable": 0,
+    "missing": 4
+   }
+  }
+ },
+ "tier_counts": [
+  {
+   "reading": "A",
+   "counts": [
+    3,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "reading": "B",
+   "counts": [
+    2,
+    1,
+    0,
+    1
+   ]
+  },
+  {
+   "reading": "C",
+   "counts": [
+    3,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "reading": "D",
+   "counts": [
+    3,
+    0,
+    0,
+    1
+   ]
+  }
+ ],
+ "governance_findings": [
+  {
+   "id": "GOV-RUBRIC-BLIND-SPOT",
+   "severity": "S3",
+   "ecb_f": "F2",
+   "status": "open",
+   "title": {
+    "en": "The tier rubric has no materiality term for fan-out",
+    "es": "La rubrica de niveles no tiene termino de materialidad por dependencia"
+   },
+   "description": {
+    "en": "The engine and C22's test sizing reach every case, yet C22 keeps the tier its inputs give (Tier 4): the rubric counts feeders in complexity and has no term for fan-out in materiality (A D2 3.5 item 3).",
+    "es": "El motor y el dimensionamiento de pruebas de C22 alcanzan a todos los casos, pero C22 conserva el nivel que dan sus insumos (Nivel 4): la rubrica cuenta alimentadores en la complejidad y no tiene termino de dependencia en la materialidad (A D2 3.5 punto 3)."
+   },
+   "basis": "W15-3; A D2 3.5 item 3"
+  },
+  {
+   "id": "GOV-INDEPENDENCE-NOT-ESTABLISHED",
+   "severity": "S2",
+   "ecb_f": "F3",
+   "status": "open",
+   "title": {
+    "en": "Independence of the validator is not established",
+    "es": "La independencia del validador no esta establecida"
+   },
+   "description": {
+    "en": "The pipeline (developer) and the engine (validator) are built in the same programme, so the separation of the first and second line is a convention, not a fact (A D1 A31).",
+    "es": "El pipeline (desarrollador) y el motor (validador) se construyen en el mismo programa, por lo que la separacion de primera y segunda linea es una convencion y no un hecho (A D1 A31)."
+   },
+   "basis": "W15-4; A D1 A31"
+  }
+ ]
+}
