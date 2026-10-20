@@ -1019,7 +1019,12 @@ def sections(path) -> dict[str, str]:
 
 def test_the_engine_contracts_exist_with_their_version_and_cover_every_module_of_the_sizing_table() -> None:
     reg, ccr = REG_API.read_text(encoding="utf-8"), CCR_API.read_text(encoding="utf-8")
-    assert "engine-regulatory-api" in reg and "1.0.0" in reg and "engine-ccr-api" in ccr and "1.0.0" in ccr
+    catalog = (ROOT / "docs" / "contracts" / "catalog.md").read_text(encoding="utf-8")
+    for name, text in (("engine-regulatory-api", reg), ("engine-ccr-api", ccr)):
+        # the heading names the version the catalog holds (the integration amends the engine contracts after their reviews)
+        head = re.search(rf"`{name}` (\d+\.\d+\.\d+)", text.splitlines()[0])
+        row = re.search(rf"^\| {name} \| (\d+\.\d+\.\d+) \| U", catalog, re.M)
+        assert head and row and head.group(1) == row.group(1), name
     assert "common/test-result" in ccr
     for m in ("standardised", "output_floor", "sa_ccr", "ba_cva", "frtb"):
         assert f"`riskvalidation/regulatory/{m}.py`" in reg, m
