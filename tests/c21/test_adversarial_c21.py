@@ -280,11 +280,11 @@ def test_adversarial_an_engine_pin_the_sdd_does_not_name_or_a_branch_pin_is_refu
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
     sdd = (ROOT / "docs" / "design" / "SDD.md").read_text(encoding="utf-8")
     assert engine_pin_findings(req, sdd) == []
-    other = req.replace("v0.08.001", "25e9538faf10bfdbcde03c5adccffd8e86ec275c")
+    other = "riskvalidation[market] @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation.git@25e9538faf10bfdbcde03c5adccffd8e86ec275c\n"
     assert any("not the one the SDD technology row names" in m for m in engine_pin_findings(other, sdd))
-    branch = req.replace("v0.08.001", "task/0-08-000-batch3")
+    branch = "riskvalidation[market] @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation.git@task/0-08-000-batch3\n"
     assert any("neither a release tag nor a full 40-hex commit" in m for m in engine_pin_findings(branch, sdd))
-    assert engine_pin_findings("", sdd) == ["the requirements carry no riskvalidation git pin"]
+    assert engine_pin_findings("", sdd) == ["the requirements carry no riskvalidation pin"]
 
 
 def _write(path: Path, rows: list[list[str]]) -> Path:

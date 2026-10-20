@@ -5,21 +5,21 @@ import importlib.metadata as md
 import inspect
 
 from c21_support import ROOT, VARIANTS, committed
-from engine_pin import ENGINE_PIN, engine_pin_findings
+from engine_pin import engine_pin_findings, pinned_ref
 from riskvalidation.validation import fairness as rv_tests
 
 from pipeline.cases.c21 import bake, legal, reader
 from pipeline.cases.c21 import estimates as est
 
-PIN, RELEASE = "v0.08.001", "0.8.1"
+RELEASE = "0.8.1"
 NULL_ALPHA_TESTS = ("fair.conditional_disparity", "fair.rate_spread_disparity", "fair.situation_testing")
 
 
 def test_the_engine_is_pinned_at_the_batch_3_release_tag_that_the_sdd_names() -> None:
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
     sdd = (ROOT / "docs" / "design" / "SDD.md").read_text(encoding="utf-8")
-    assert len(ENGINE_PIN.findall(req)) == 1 and engine_pin_findings(req, sdd) == []   # a tag, or a full commit that the SDD row names
-    assert ENGINE_PIN.search(req).group("ref") == PIN
+    assert len([ln for ln in req.splitlines() if ln.startswith("riskvalidation")]) == 1 and engine_pin_findings(req, sdd) == []   # the PyPI release the SDD row names
+    assert pinned_ref(req) == RELEASE
     assert bake.engine_version() == RELEASE == md.version("riskvalidation")
     for name in VARIANTS:
         assert committed(name)["provenance"]["riskvalidation_version"] == RELEASE

@@ -8,7 +8,7 @@ from pathlib import Path
 from c10_invariants import DERIVED, ROOT, hash_findings, label_findings, schema_findings, violations
 
 from pipeline.cases.c10 import params as P
-from engine_pin import ENGINE_PIN, engine_pin_findings
+from engine_pin import engine_pin_findings, pinned_ref
 
 LOAN_TYPES = [lt["id"] for lt in P.LOAN_TYPES]
 VARIANTS = (*LOAN_TYPES, "grid-22", "grid-40")
@@ -75,4 +75,5 @@ def test_the_provenance_pins_the_board_page_and_the_truth_statuses() -> None:
         assert prov["truth_status"] == "synthetic-known-truth" and prov["inputs"] == [] and prov["generators"] == [P.GENERATOR]
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
     sdd = (ROOT / "docs" / "design" / "SDD.md").read_text(encoding="utf-8")
-    assert len(ENGINE_PIN.findall(req)) == 1 and engine_pin_findings(req, sdd) == []  # one engine line, pinned as tests/engine_pin.py says
+    engine_lines = [ln for ln in req.splitlines() if ln.startswith("riskvalidation")]
+    assert len(engine_lines) == 1 and pinned_ref(req) is not None and engine_pin_findings(req, sdd) == []  # one engine line, pinned as tests/engine_pin.py says
