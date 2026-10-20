@@ -47,18 +47,20 @@ def _code(name: str, en: str, es: str) -> c1.Field:
     return c1.Field(name, "int", t(en, es), unit="code", lo=0.0)
 
 
-#: the twelve loan variables as extra fields of contract 1. The units are read from the values of the files; the stress test
-#: documentation page is not re-read here, so a unit the values do not show is stated UNVERIFIED in its meaning.
+#: the twelve loan variables as extra fields of contract 1. The meanings follow Table 20 of the Federal Reserve's June 2025 supervisory stress
+#: test methodology, "List of variables included in portfolios of hypothetical corporate loans"
+#: (https://www.federalreserve.gov/publications/2025-june-supervisory-stress-test-methodology-modeled-loss-rates.htm, read 2026-10-20);
+#: a unit the table does not state is read from the values of the files and labelled so.
 CONTRACT_FIELDS: tuple[c1.Field, ...] = (
     _amount("committed_exposure_amt", "Committed exposure of the loan, in US dollars", "Exposición comprometida del préstamo, en dólares de EE.UU."),
     _amount("utilized_exposure_amt", "Utilized exposure of the loan, in US dollars (zero for an undrawn commitment)",
             "Exposición utilizada del préstamo, en dólares de EE.UU. (cero para un compromiso sin desembolsar)"),
     c1.Field("interest_rate", "float",
-             t("Interest rate as a decimal fraction (the file shows 0.0456 for a loan at 4.56 percent; 0.0 where the loan is undrawn); the rate basis (annual, nominal) is UNVERIFIED",
-               "Tasa de interés como fracción decimal (el archivo muestra 0.0456 para un préstamo al 4.56 por ciento; 0.0 donde el préstamo no está desembolsado); la base de la tasa (anual, nominal) NO ESTÁ VERIFICADA"),
+             t("Interest rate on the credit facility (Fed Table 20), as a decimal fraction read from the values (the file shows 0.0456 for a loan at 4.56 percent; 0.0 where the loan is undrawn); the table does not state the rate basis (annual, nominal)",
+               "Tasa de interés de la facilidad de crédito (tabla 20 de la Fed), como fracción decimal leída de los valores (el archivo muestra 0.0456 para un préstamo al 4.56 por ciento; 0.0 donde el préstamo no está desembolsado); la tabla no indica la base de la tasa (anual, nominal)"),
              unit="decimal fraction", lo=0.0, hi=1.0),
-    c1.Field("term", "int", t("Term of the loan in months (UNVERIFIED against the source page); NA is a missing value (the term of a revolving line), flagged and never imputed",
-                              "Plazo del préstamo en meses (NO VERIFICADO contra la página de la fuente); NA es un valor faltante (el plazo de una línea rotativa), marcado y nunca imputado"),
+    c1.Field("term", "int", t("Remaining term of the loan in months (Fed Table 20); NA is a missing value (the term of a revolving line), flagged and never imputed",
+                              "Plazo remanente del préstamo en meses (tabla 20 de la Fed); NA es un valor faltante (el plazo de una línea rotativa), marcado y nunca imputado"),
              unit="months", lo=0.0, on_missing="flag"),
     c1.Field("orig_year", "int", t("Origination year", "Año de originación"), unit="year", lo=1900.0, hi=2100.0),
     _code("facility_type_cat", "Facility type, a category code", "Tipo de facilidad, un código de categoría"),
