@@ -19,6 +19,9 @@ import { C15_FIT, C15_OUTPUTS } from '../workbench/c15/descriptor';
 import { C16_FIT, C16_OUTPUTS, C16_OUTPUTS_REVERSE } from '../workbench/c16/descriptor';
 import { C17_FIT, C17_OUTPUTS } from '../workbench/c17/descriptor';
 import { C18_FIT, C18_OUTPUTS, C18_OUTPUTS_AGGREGATION, C18_OUTPUTS_REVERSE } from '../workbench/c18/descriptor';
+import { C02_FIT, C02_OUTPUTS } from '../workbench/c02/descriptor';
+import { C20_FIT, C20_OUTPUTS, C20_OUTPUTS_LEAKAGE, C20_OUTPUTS_PERTURBATION, C20_OUTPUTS_SEEDS, C20_OUTPUTS_SHIFT } from '../workbench/c20/descriptor';
+import { C21_FIT, C21_OUTPUTS } from '../workbench/c21/descriptor';
 
 /** Every reader-facing string is bilingual at the source. */
 export type Text = components['schemas']['common-text'];
@@ -1291,6 +1294,17 @@ export const MODELS_C14 = { ...MODELS, fit: C14_FIT } satisfies Record<keyof Mod
 export const MODELS_C15 = { ...MODELS, fit: C15_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C16 = { ...MODELS, fit: C16_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C18 = { ...MODELS, fit: C18_FIT, provenance: { object: PROVENANCE } } satisfies Record<keyof ModelsArtifact, Kind>;
+// --- wave 2 batch 3 (U14-W views): C02, C20 and C21; the C21 outputs are a oneOf over the year pairs, so `json` (its descriptor head says why) ---
+export const VARIANT_C02 = { ...VARIANT, outputs: C02_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C20_SHOCK = { ...VARIANT, outputs: C20_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C20_SHIFT = { ...VARIANT, outputs: C20_OUTPUTS_SHIFT, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C20_SEEDS = { ...VARIANT, outputs: C20_OUTPUTS_SEEDS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C20_PERTURBATION = { ...VARIANT, outputs: C20_OUTPUTS_PERTURBATION, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C20_LEAKAGE = { ...VARIANT, outputs: C20_OUTPUTS_LEAKAGE, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
+export const VARIANT_C21 = { ...VARIANT, outputs: C21_OUTPUTS, tests: 'json' as Kind } satisfies Record<keyof VariantArtifact, Kind>;
+export const MODELS_C02 = { ...MODELS, fit: C02_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
+export const MODELS_C20 = { ...MODELS, fit: C20_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
+export const MODELS_C21 = { ...MODELS, fit: C21_FIT } satisfies Record<keyof ModelsArtifact, Kind>;
 export const MODELS_C17 = { ...MODELS, fit: C17_FIT, provenance: { object: PROVENANCE } } satisfies Record<keyof ModelsArtifact, Kind>;
 
 /** The variant descriptor an artifact is read against: by its outputs' kind (C04, C05, C06, C07, C22) or C01's. */
@@ -1322,6 +1336,13 @@ export function variantKind(doc: {
   | typeof VARIANT_C18_SCENARIO
   | typeof VARIANT_C18_AGGREGATION
   | typeof VARIANT_C18_REVERSE
+  | typeof VARIANT_C02
+  | typeof VARIANT_C20_SHOCK
+  | typeof VARIANT_C20_SHIFT
+  | typeof VARIANT_C20_SEEDS
+  | typeof VARIANT_C20_PERTURBATION
+  | typeof VARIANT_C20_LEAKAGE
+  | typeof VARIANT_C21
   | typeof VARIANT_C22 {
   const kind = doc.outputs?.kind;
   if (doc.case_id === 'C18') return kind === 'aggregation' ? VARIANT_C18_AGGREGATION : kind === 'reverse' ? VARIANT_C18_REVERSE : VARIANT_C18_SCENARIO;
@@ -1343,6 +1364,13 @@ export function variantKind(doc: {
   if (kind === 'scenario') return VARIANT_C16_SCENARIO;
   if (kind === 'reverse-stress') return VARIANT_C16_REVERSE;
   if (kind === 'tail-index') return VARIANT_C17;
+  if (kind === 'horizon') return VARIANT_C02;
+  if (kind === 'shock') return VARIANT_C20_SHOCK;
+  if (kind === 'shift') return VARIANT_C20_SHIFT;
+  if (kind === 'seeds') return VARIANT_C20_SEEDS;
+  if (kind === 'perturbation') return VARIANT_C20_PERTURBATION;
+  if (kind === 'leakage') return VARIANT_C20_LEAKAGE;
+  if (kind === 'year-pair') return VARIANT_C21;
   return kind === 'sp-calibration' ? VARIANT_C05_SP : kind === 'ldp' ? VARIANT_C05_LDP : kind === 'validator' ? VARIANT_C22 : VARIANT;
 }
 
@@ -1350,7 +1378,7 @@ export function variantKind(doc: {
 export function modelsKind(doc: {
   case_id?: string;
   fit_id?: string;
-}): typeof MODELS | typeof MODELS_C04 | typeof MODELS_C05_SP | typeof MODELS_C05_LDP | typeof MODELS_C06 | typeof MODELS_C07 | typeof MODELS_C03 | typeof MODELS_C08 | typeof MODELS_C09 | typeof MODELS_C10 | typeof MODELS_C11 | typeof MODELS_C12 | typeof MODELS_C13 | typeof MODELS_C14 | typeof MODELS_C15 | typeof MODELS_C16 | typeof MODELS_C17 | typeof MODELS_C18 | typeof MODELS_C22 {
+}): typeof MODELS | typeof MODELS_C04 | typeof MODELS_C05_SP | typeof MODELS_C05_LDP | typeof MODELS_C06 | typeof MODELS_C07 | typeof MODELS_C03 | typeof MODELS_C08 | typeof MODELS_C09 | typeof MODELS_C10 | typeof MODELS_C11 | typeof MODELS_C12 | typeof MODELS_C13 | typeof MODELS_C14 | typeof MODELS_C15 | typeof MODELS_C16 | typeof MODELS_C17 | typeof MODELS_C18 | typeof MODELS_C02 | typeof MODELS_C20 | typeof MODELS_C21 | typeof MODELS_C22 {
   if (doc.case_id === 'C04') return MODELS_C04;
   if (doc.case_id === 'C05') return doc.fit_id === 'ldp' ? MODELS_C05_LDP : MODELS_C05_SP;
   if (doc.case_id === 'C06') return MODELS_C06;
@@ -1367,6 +1395,9 @@ export function modelsKind(doc: {
   if (doc.case_id === 'C16') return MODELS_C16;
   if (doc.case_id === 'C17') return MODELS_C17;
   if (doc.case_id === 'C18') return MODELS_C18;
+  if (doc.case_id === 'C02') return MODELS_C02;
+  if (doc.case_id === 'C20') return MODELS_C20;
+  if (doc.case_id === 'C21') return MODELS_C21;
   if (doc.case_id === 'C22') return MODELS_C22;
   return MODELS;
 }
