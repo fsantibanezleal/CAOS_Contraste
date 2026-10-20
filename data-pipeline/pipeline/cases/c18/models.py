@@ -98,7 +98,7 @@ def model_summaries(ev: str) -> list[dict[str, Any]]:
     ]
 
 
-def fit_block(anchors: Anchors, sats: dict[str, sat.Satellite], space: dict[str, Any], named_p: dict[str, Any], n_draws: int = P.N_DRAWS,
+def fit_block(anchors: Anchors, sats: dict[str, sat.Satellite], space: dict[str, Any], named_p: dict[str, Any], credit_description: dict[str, str], n_draws: int = P.N_DRAWS,
               seed: int = P.SEED) -> dict[str, Any]:
     exp = [{"banco_andino_class": c, "exposure_clp_m": anchors.class_exposure_clp_m[c], "share": anchors.class_exposure_clp_m[c] / anchors.loans_clp_m}
            for c in P.CLASSES]
@@ -127,7 +127,7 @@ def fit_block(anchors: Anchors, sats: dict[str, sat.Satellite], space: dict[str,
                         "(decision Q4, E5)."),
             "licence_class": "derived-only", "ratios_only": True},
         "marginal_sources": [
-            {"risk": "credit", "producer": "credit-grouped-copula-c07-segments", "description": T("The engine's grouped copula on the C07 segments of Banco Andino"),
+            {"risk": "credit", "producer": "credit-grouped-copula-c07-segments", "description": credit_description,
              "documents": ["c07-outputs"], "c17_parameter_set": None},
             {"risk": "market", "producer": "market-c11-mixed-portfolio-scaled-to-market-rwa",
              "description": T("C11's mixed-portfolio VaR and ES scaled to the market share of RWA"), "documents": ["c11-outputs mixed-2023"], "c17_parameter_set": None},

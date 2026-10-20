@@ -18,6 +18,7 @@ back through the engine's estimators.
 """
 from __future__ import annotations
 
+import dataclasses
 import math
 from dataclasses import dataclass
 from statistics import NormalDist
@@ -59,10 +60,10 @@ class Marginal:
 # ------------------------------------------------------------------------------------------------ credit
 
 
-def credit(anchors: Anchors, n_draws: int = P.N_DRAWS, seed: int = P.SEED, chunk: int = P.CHUNK) -> Marginal:
+def credit_at(anchors: Anchors, names: int, n_draws: int = P.N_DRAWS, seed: int = P.SEED, chunk: int = P.CHUNK) -> Marginal:
     groups = []
     for s in anchors.segments:
-        n = min(s.accounts, P.CREDIT_NAMES_PER_SEGMENT)
+        n = min(s.accounts, names)
         groups.append({"id": s.segment_id, "n_names": n, "ead_each": s.exposure_clp_m / n, "pd": s.pd, "lgd": s.lgd, "loading": math.sqrt(s.rho),
                        "sector": "systematic"})
     port = rv_port.portfolio_from_groups(groups, "CLP", P.CREDIT_LGD_GAMMA, one_factor=True, label="banco-andino-c07-segments")
@@ -72,10 +73,45 @@ def credit(anchors: Anchors, n_draws: int = P.N_DRAWS, seed: int = P.SEED, chunk
     srt = np.sort(sample.losses)
     return Marginal("credit", el, m.var, m.es or 0.0, m.ec, m.var_se, rv_cop.marginal_ppf_sample(srt), el, "credit-grouped-copula-c07-segments",
                     ["c07-outputs", "riskvalidation.portfolio.portfolio.portfolio_from_groups", "riskvalidation.portfolio.copula.simulate_gaussian"],
-                    T("No scaling: the engine's grouped copula runs on the six C07 segments of Banco Andino, each a group of "
-                      f"{P.CREDIT_NAMES_PER_SEGMENT} representative names that carry the segment's exposure, PD, LGD and asset correlation (one systematic "
-                      "factor); the accounts number 171,500, which no simulation of 10^6 scenarios could carry name by name."),
-                    [], {"n_draws": n_draws, "seed": seed, "names": int(port.ead.size), "es_se": m.es_se})
+                    {}, [], {"n_draws": n_draws, "seed": seed, "names": int(port.ead.size), "names_per_segment": names, "es": m.es, "es_se": m.es_se, "var_se": m.var_se})
+
+
+def granularity_choice(lo: dict[str, Any], hi: dict[str, Any]) -> dict[str, Any]:
+    """The rule of decision Z15: the larger count when the VaR or ES differs by more than two standard errors of the difference."""
+    se_var = math.sqrt(lo["var_se"] ** 2 + hi["var_se"] ** 2)
+    se_es = math.sqrt(lo["es_se"] ** 2 + hi["es_se"] ** 2)
+    d_var, d_es = hi["var"] - lo["var"], hi["es"] - lo["es"]
+    exceeds = abs(d_var) > 2.0 * se_var or abs(d_es) > 2.0 * se_es
+    return {"low": lo, "high": hi, "diff_var": d_var, "diff_es": d_es, "se_var": se_var, "se_es": se_es, "exceeds_two_se": bool(exceeds),
+            "names_used": hi["names"] if exceeds else lo["names"]}
+
+
+def granularity_text(g: dict[str, Any]) -> dict[str, str]:
+    lo, hi = g["low"], g["high"]
+    en = (f"The engine's grouped copula on the six C07 segments, each a group of representative names that carry the segment's exposure, PD, LGD and asset correlation "
+          f"(one systematic factor); the accounts number 171,500, which no simulation of 10^6 scenarios could carry name by name. The 99.9 percent VaR and ES were measured "
+          f"with {lo['names']:,} and with {hi['names']:,} names per segment and the same seed: VaR {lo['var']:,.0f} and {hi['var']:,.0f} (difference {g['diff_var']:,.0f}), ES "
+          f"{lo['es']:,.0f} and {hi['es']:,.0f} (difference {g['diff_es']:,.0f}), the Monte Carlo standard error of the difference {g['se_var']:,.0f} for the VaR and "
+          f"{g['se_es']:,.0f} for the ES. The difference {'exceeds' if g['exceeds_two_se'] else 'does not exceed'} two standard errors, so {g['names_used']:,} names per segment are used.")
+    es = (f"La copula agrupada del motor sobre los seis segmentos de C07, cada uno un grupo de nombres representativos que llevan la exposicion, PD, LGD y correlacion de activos "
+          f"del segmento (un factor sistematico); las cuentas son 171.500. El VaR y el ES al 99,9 por ciento se midieron con {lo['names']:,} y con {hi['names']:,} nombres por "
+          f"segmento y la misma semilla: VaR {lo['var']:,.0f} y {hi['var']:,.0f} (diferencia {g['diff_var']:,.0f}), ES {lo['es']:,.0f} y {hi['es']:,.0f} (diferencia {g['diff_es']:,.0f}), "
+          f"error estandar de Monte Carlo de la diferencia {g['se_var']:,.0f} para el VaR y {g['se_es']:,.0f} para el ES. La diferencia "
+          f"{'excede' if g['exceeds_two_se'] else 'no excede'} dos errores estandar, por lo que se usan {g['names_used']:,} nombres por segmento.")
+    return {"en": en, "es": es}
+
+
+def credit(anchors: Anchors, n_draws: int = P.N_DRAWS, seed: int = P.SEED, chunk: int = P.CHUNK) -> Marginal:
+    """The credit marginal at the count of names the granularity rule picks (400 and 1,600 per segment, decision Z15)."""
+    # the working memory of a chunk is chunk x names x 8 bytes: the larger count takes a proportionally smaller chunk
+    lo_m, hi_m = (credit_at(anchors, n, n_draws, seed, max(1, chunk * P.CREDIT_NAMES[0] // n)) for n in P.CREDIT_NAMES)
+
+    def rec(m: Marginal) -> dict[str, Any]:
+        return {"names": m.extras["names_per_segment"], "seed": seed, "var": m.var, "es": m.es, "var_se": m.var_se, "es_se": m.extras["es_se"]}
+
+    g = granularity_choice(rec(lo_m), rec(hi_m))
+    chosen = hi_m if g["exceeds_two_se"] else lo_m
+    return dataclasses.replace(chosen, statement=granularity_text(g), extras={**chosen.extras, "granularity": g})
 
 
 # ------------------------------------------------------------------------------------------------ market
