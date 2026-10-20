@@ -10,6 +10,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+import re
+
 import numpy as np
 from riskvalidation.ccr import cva as cv
 from riskvalidation.ccr import exposure as ex
@@ -303,3 +305,40 @@ def not_applicable_ore() -> dict[str, Any]:
     return {"status": "not-applicable", "ore_version": None, "platform": None, "run_seconds": None, "ore_ee": None,
             "ore_ee_discounted": None, "ore_eepe": None, "ore_cva": None, "ore_dim": None, "agreement": None, "eepe_agreement": None,
             "cva_agreement": None, "dim_agreement": None, "all_within_two_se": None, "reason": reason}
+
+
+# ---------------------------------------------------------------------------------------------------------- findings
+
+WHAT = {
+    "ccr.pit_exposure_backtest": ("the simulated distributions against the realised curves (PIT, Anderson-Darling)",
+                                  "las distribuciones simuladas frente a las curvas realizadas (PIT, Anderson-Darling)"),
+    "ccr.pfe_exceedance_backtest": ("the exceedances of the PFE forecast, a secondary row (BCBS 185 paragraph 27)",
+                                    "las excedencias del pronostico de PFE, una fila secundaria (BCBS 185 parrafo 27)"),
+    "ccr.reconcile_ee_profile": ("the EE profile against ORE 1.8.17.0", "el perfil de EE frente a ORE 1.8.17.0"),
+    "ccr.ore_eepe_agreement": ("the EEPE against ORE 1.8.17.0", "el EEPE frente a ORE 1.8.17.0"),
+    "ccr.ore_cva_agreement": ("the CVA against ORE 1.8.17.0", "el CVA frente a ORE 1.8.17.0"),
+    "ccr.ore_dim_agreement": ("the mean initial margin against ORE's dim_cube", "el margen inicial medio frente al dim_cube de ORE"),
+}
+_SEG = re.compile(r"-(10bd|20bd|1m|3m|6m|12m)(-q\d+)?$")
+SEVERITY = {"red": "S2", "amber": "S3"}
+
+
+def findings_of(tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """One finding per kind of non-green row (test, light, measure), not one per row. A red level test is S2 and an amber one S3
+    (the product's severity policy, FindingsView); the status is open: every effect here is a result to read, and the causes the
+    case page marks UNVERIFIED stay open."""
+    groups: dict[tuple[str, str, str], list[str]] = {}
+    for r in tests:
+        if r["light"] not in SEVERITY:
+            continue
+        seg = r.get("segment") or ""
+        key = (r["test_id"], r["light"], _SEG.sub("", seg))
+        ident = f"{r['test_id']}@{r['model_id']}" + (f"@{seg}" if seg else "")
+        groups.setdefault(key, []).append(ident)
+    out = []
+    for n, ((tid, light, measure), ids) in enumerate(sorted(groups.items()), start=1):
+        en, es = WHAT.get(tid, (tid, tid))
+        tag = f" ({measure})" if measure else ""
+        out.append({"id": f"C12-F{n:02d}", "severity": SEVERITY[light], "status": "open", "evidence": ids,
+                    "title": text(f"{len(ids)} {light} row(s) on {en}{tag}", f"{len(ids)} fila(s) {light} sobre {es}{tag}")})
+    return out

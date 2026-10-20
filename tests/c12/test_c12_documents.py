@@ -155,3 +155,26 @@ def test_the_quantlib_rows_are_green_in_every_variant() -> None:
         assert sorted(t["test_id"] for t in rows) == ["ccr.quantlib_bond_call", "ccr.quantlib_bond_put", "ccr.quantlib_swaption_payer",
                                                     "ccr.quantlib_swaption_receiver"], v
         assert all(t["light"] == "green" and t["statistic"] <= 1e-6 for t in rows), v
+
+
+def uncited(doc: dict) -> list[str]:
+    """The red and amber rows of a document that no finding cites (by test_id@model or test_id@model@segment)."""
+    cited = {e for f in doc["findings"] for e in f["evidence"]}
+    out = []
+    for r in doc["tests"]:
+        if r["light"] in {"red", "amber"}:
+            ident = f"{r['test_id']}@{r['model_id']}" + (f"@{r['segment']}" if r.get("segment") else "")
+            if ident not in cited and f"{r['test_id']}@{r['model_id']}" not in cited:
+                out.append(ident)
+    return out
+
+
+def test_every_red_or_amber_row_is_cited_by_a_finding() -> None:
+    for v in d.VARIANTS:
+        doc = d.variant(v)
+        assert uncited(doc) == [], v
+        has_rows = any(r["light"] in {"red", "amber"} for r in doc["tests"])
+        assert bool(doc["findings"]) == has_rows, v
+        for f in doc["findings"]:
+            assert f["status"] in {"open", "accepted"} and f["evidence"] and f["severity"] in {"S2", "S3"}
+            assert f["status"] != "accepted" or "design" in f["title"]["en"].lower()

@@ -25,3 +25,4 @@ Adversarial checks: what was planted, and the gate that must refuse it. Each gat
 | CT-1218 | The seed is changed by one; the documents must differ (the determinism gate is not satisfied by constant output). | `tests/c12/test_adversarial_c12.py::test_adversarial_a_different_seed_writes_different_documents` |
 | CT-1219 | A committed document is edited in memory; the generated block must change. | `tests/c12/test_adversarial_c12.py::test_adversarial_a_planted_generated_block_is_not_the_committed_one` |
 | CT-1220 | A profile with no exposure in the first year is planted; the effective maturity must raise as undefined. | `tests/c12/test_adversarial_c12.py::test_adversarial_a_book_with_no_first_year_exposure_has_no_effective_maturity` |
+| CT-1221 | A finding is removed from a committed document; the citation check must name the uncited red row. | `tests/c12/test_adversarial_c12.py::test_adversarial_a_red_row_without_a_finding_is_found` |
