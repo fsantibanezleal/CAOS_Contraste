@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "9.1.0",
+    "version": "9.2.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "5abeac343fb6fcde85fcd42d7d24a82ec366dd47e87737fb93ebe12d8bf30e72"
+    "sha256": "ccf4d757f02ffb0006053eafcc99400305a8b1c244f084e27c82b5638c8ffc58"
   },
   "readiness": {
     "version": "1.0.0",
@@ -290,9 +290,9 @@
     "sha256": "b3dffb40d35f2f42237b4172aae8b1135056ce562a539f24aed5472e92eda56a"
   },
   "c02-outputs": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "schema": "docs/contracts/schemas/c02/variant-horizon.schema.json",
-    "sha256": "24b9ce6f9a82d0e560aac2a7d020ead466cfedc66c69ea491665b38121a1d63e"
+    "sha256": "d92efeb8bca3aa79a21d2c82e78d145d864bb2154d4ae08ab23c11f4738c8d91"
   },
   "c02-models": {
     "version": "1.0.0",

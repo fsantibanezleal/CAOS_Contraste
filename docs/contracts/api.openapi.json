@@ -1153,7 +1153,7 @@
       },
       "c02-variant-horizon": {
         "title": "C02 horizon variant",
-        "description": "Catalog row c02-outputs 1.0.0: one horizon file (1 to 5 years) or the pooled variant of the corporate PD case (outputs.kind horizon).",
+        "description": "Catalog row c02-outputs 1.1.0: one horizon file (1 to 5 years) or the pooled variant of the corporate PD case (outputs.kind horizon).",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-variant-envelope"
@@ -1887,6 +1887,17 @@
             },
             "minItems": 1,
             "description": "Requirement ids CT-0201 onward (decision Q14)."
+          },
+          "term_structure_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/common-text"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "A reason where term_structure is null, null where the block is present (checked by semantics.check_c02)."
           }
         },
         "description": "C02 horizon outputs: one document per horizon file (1 to 5 years) and the pooled variant. Exploratory blocks carry their label."
@@ -2335,7 +2346,10 @@
         }
       },
       "c02TermStructure": {
-        "type": "object",
+        "type": [
+          "object",
+          "null"
+        ],
         "additionalProperties": false,
         "required": [
           "label",
@@ -2390,7 +2404,7 @@
             "const": "engine-provisions-api from_cumulative and lifetime_pd_backtest (04 E.2 l.479-497)"
           }
         },
-        "description": "The five file event rates read as a cumulative PD: cumulative = 1 - product of (1 - hazard). Exploratory (decision Q9)."
+        "description": "The five file event rates read as a cumulative PD: cumulative = 1 - product of (1 - hazard). Exploratory (decision Q9). Null, with its reason in term_structure_reason, when the points cannot form a cumulative curve (U14 G22: the horizon files are independent samples, not one cohort)."
       },
       "c02Transfer": {
         "type": "object",

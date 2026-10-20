@@ -178,15 +178,26 @@ describe('the C02 instrument', () => {
   it('the term structure is labelled exploratory and gives each year with its cumulative PD and hazard', () => {
     const markup = html(<TermStructureView sel={sel} />);
     expect(markup).toContain('data-label="exploratory"');
-    expect(markup).toContain(escapeHtml(o.term_structure.reason.en));
-    for (const p of o.term_structure.points) {
+    const ts = o.term_structure!;
+    expect(markup).toContain(escapeHtml(ts.reason.en));
+    for (const p of ts.points) {
       expect(markup).toContain(`data-years="${p.years}"`);
       expect(markup).toContain(pct(p.cumulative_pd));
     }
     expect(markup).toContain('data-nondecreasing="true"');
     const odd = clone();
-    odd.outputs.term_structure.cumulative_nondecreasing = false;
+    odd.outputs.term_structure!.cumulative_nondecreasing = false;
     expect(html(<TermStructureView sel={withVariant(odd)} />)).toContain('data-nondecreasing="false"');
+  });
+
+  it('a null term structure shows its reason and draws no point (decision G22, c02-outputs 1.1.0)', () => {
+    expect(pooled.outputs.term_structure).toBeNull();
+    const markup = html(<TermStructureView sel={withVariant(pooled)} />);
+    expect(markup).toContain('data-state="unavailable"');
+    expect(markup).toContain(escapeHtml(pooled.outputs.term_structure_reason!.en));
+    expect(markup).not.toContain('data-years="');
+    setLang('es');
+    expect(html(<TermStructureView sel={withVariant(pooled)} />)).toContain(escapeHtml(pooled.outputs.term_structure_reason!.es));
   });
 
   it('the ECL effect is labelled exploratory, in the document unit, with the LGD named an assumption', () => {
