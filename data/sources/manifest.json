@@ -2830,6 +2830,13 @@
           "bytes": 59831,
           "sha256": "03b036abc5ffb89dc2c685d57ad76b4479bd3808e59957df6e219076044f41e4",
           "retrieved": "2026-10-14"
+        },
+        {
+          "name": "financials-cert24735-20091231-20221231.json",
+          "url": "https://api.fdic.gov/banks/financials?filters=CERT%3A24735%20AND%20REPDTE%3A%5B20091231%20TO%2020221231%5D&fields=CERT%2CREPDTE%2CNAME%2CASSET%2CLIAB%2CEQ%2CRBCT1J%2CDEP%2CDEPDOM%2CDEPFOR%2CDEPNIDOM%2CDEPIDOM%2CDEPNIFOR%2CDEPIFOR%2CDEPINS%2CDEPUNA%2CDEPSMAMT%2CDEPSMB%2CDEPLGAMT%2CDEPLGB%2CNTRTIME%2CCD3LES%2CCD3T12%2CCD1T3%2CCDOV3%2CCD3LESS%2CCD3T12S%2CCD1T3S%2CCDOV3S%2CCHBAL%2CFREPO%2CFREPP%2CSC%2CSCRDEBT%2CSCAF%2CSCAA%2CSCHA%2CSCHF%2CSCUST%2CSCUS%2CSCAGE%2CSCASPNSUM%2CSCASPNHA%2CSCASPNAF%2CSCSPN%2CSCMTGBK%2CSCGTY%2CSCCOL%2CSCCMOT%2CSCMUNI%2CSCDOMO%2CSCFORD%2CSCEQFV%2CSCPLEDGE%2CSCHTMRES%2CSCNM3LES%2CSCNM3T12%2CSCNM1T3%2CSCNM3T5%2CSCNM5T15%2CSCNMOV15%2CSCPT3LES%2CSCPT3T12%2CSCPT1T3%2CSCPT3T5%2CSCPT5T15%2CSCPTOV15%2CSCO3YLES%2CSCOOV3Y%2CLNLSGR%2CLNLSNET%2CLNATRES%2CLNRS3LES%2CLNRS3T12%2CLNRS1T3%2CLNRS3T5%2CLNRS5T15%2CLNRSOV15%2CLNOT3LES%2CLNOT3T12%2CLNOT1T3%2CLNOT3T5%2CLNOT5T15%2CLNOTOV15%2COTHBFHLB%2COTHBFH1L%2COTBFH1T3%2COTBFH3T5%2COTBFHOV5%2COTHBRF%2COTBOT1L%2COTBOT1T3%2COTBOT3T5%2COTBOTOV5%2CSUBND&sort_by=REPDTE&sort_order=ASC&limit=100",
+          "bytes": 84462,
+          "sha256": "6dd598f7c0f93bb00054d8fecbe970a7a07636c3c5eda6687249e8d615d68b65",
+          "retrieved": "2026-10-19"
         }
       ]
     },
@@ -3235,6 +3242,168 @@
           "bytes": 3799,
           "sha256": "8ccec5a4c8499dc3ae591077ec58778ded86a4a749db4f90b63edf0bc8bd1df0",
           "retrieved": "2026-10-16"
+        }
+      ]
+    },
+    "fed-h8": {
+      "name": "Federal Reserve H.8 (assets and liabilities of commercial banks)",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "landing": "https://www.federalreserve.gov/releases/h8/current/default.htm",
+      "class": "mirror-allowed",
+      "licence": "information on Board's website is in the public domain and may be copied and distributed without permission",
+      "attribution": "Board of Governors of the Federal Reserve System, H.8",
+      "access": "web, DDP (retiring), FRED",
+      "files": [
+        {
+          "name": "h8-20220304.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20220304/",
+          "bytes": 678050,
+          "sha256": "97b6f5da1c0409cbcc60469043bafef4bb2b6337c0e5713cbbe8f9fcc9831a43",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20220401.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20220401/",
+          "bytes": 678130,
+          "sha256": "72a622b01f673301009a0dfc4317174eac1c544836d014da9bd971560ae24dec",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20220429.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20220429/",
+          "bytes": 653024,
+          "sha256": "46fdef7ac7d135b65ebc7396acce2021d644ae06ac35146e250eba671de47605",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20220527.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20220527/",
+          "bytes": 653243,
+          "sha256": "f385c81e6c51534e6a21850198a5cb928dbccb69c282960c1b366959fcc3ab40",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20220624.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20220624/",
+          "bytes": 653078,
+          "sha256": "d60ec91569d67c3a21bbc17675256146e1e1adc549884f0cde8f7e67eb7349dc",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20220722.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20220722/",
+          "bytes": 658195,
+          "sha256": "e73bfc04a901585031633c22af4db80a92741bdfefb4d29b05c88a2fc88b203f",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20220819.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20220819/",
+          "bytes": 658237,
+          "sha256": "83a39db280dc5386b56587b7b5831828426e052a056c272dbe7ae1b0ab1ac2aa",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20220916.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20220916/",
+          "bytes": 658253,
+          "sha256": "32b8bedcdba42d221ef332fd2dbca97d095028a48ef6e80426907f4477b7a61a",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20221014.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20221014/",
+          "bytes": 658887,
+          "sha256": "bce984677dabe43da6227002ed679123a133b2b1cd4048805b4dc9e7537b9f9a",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20221110.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20221110/",
+          "bytes": 658462,
+          "sha256": "997fa083e3821d5235cc9b40706f5e01913d9578b22b2986c2822146d3f3044c",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20221209.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20221209/",
+          "bytes": 658278,
+          "sha256": "03774e3e9e151aa05511e223efb2a97759c6838d1707999667bf82685e8a74ca",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20230106.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20230106/",
+          "bytes": 658311,
+          "sha256": "ed46a5a80746c405c0f7fb3cc1276583b95423cb8ebf964cf6966aed5cb619b5",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20230203.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20230203/",
+          "bytes": 658579,
+          "sha256": "22a57bb4d1e61f094a283f99c22edd336c8e40e77f4ac7f98769580c48c7b5ba",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20230303.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20230303/",
+          "bytes": 658355,
+          "sha256": "d0a30f6b85cf14690369310182c4d90ad48bc987d0517cf1e1cc2a0c844d70a0",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20230310.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20230310/",
+          "bytes": 658347,
+          "sha256": "e175363d6a7fb56a3e083ec0835e7d18a33cc35ba9bc8ef96bafcb15633c0988",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20230317.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20230317/",
+          "bytes": 658342,
+          "sha256": "bbe81914dcaa266dd1b8f88c835a9d56c49da9f05e347ddaf5d4995c97950dca",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20230324.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20230324/",
+          "bytes": 661502,
+          "sha256": "27f8ec36f4a63c0695aedfb0727bb45e177d280e1a0246ab6c261a2f1bd3d157",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20230331.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20230331/",
+          "bytes": 658798,
+          "sha256": "d431a03d04a814c1deabf15f877ec0760e508510c0ce31d313a57c61d98bf942",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20230407.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20230407/",
+          "bytes": 658991,
+          "sha256": "57eb5ac33d0301c4e3fd5c9537875af87c7cc2490519746d5364a2ee128465fa",
+          "retrieved": "2026-10-19"
+        }
+      ]
+    },
+    "fed-svb-review": {
+      "name": "Federal Reserve review of the supervision and regulation of Silicon Valley Bank",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "landing": "https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf",
+      "class": "mirror-allowed",
+      "licence": "information on Board's website is in the public domain and may be copied and distributed without permission",
+      "attribution": "Board of Governors of the Federal Reserve System, Review of the Federal Reserve's Supervision and Regulation of Silicon Valley Bank (2023-04-28)",
+      "access": "pdf",
+      "files": [
+        {
+          "name": "svb-review-20230428.pdf",
+          "url": "https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf",
+          "bytes": 4079524,
+          "sha256": "601c32a73e833d3b2a2d6fa5d25a23c56eac85a6fa87558dcd5aa3e30a96f2d6",
+          "retrieved": "2026-10-19"
         }
       ]
     }

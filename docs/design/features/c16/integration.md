@@ -25,3 +25,17 @@ What the unit leaves to the integrator because the files are outside its write s
    changes that string in `provenance` and the manifest only if the version differs.
 7. **Shared registries.** The C16 registry line, the readiness row, the catalog rows `c16-*` and `CHANGELOG.md` are the integrator's; the
    change fragment is `changes/U11-P.md`.
+
+## Resolved at the batch 3 integration (task/u11-p-int)
+
+1. Done: the `fdic-bankfind` row gains the wide-span file, the rows `fed-h8` and `fed-svb-review` are new, the Treasury files were already
+   pinned with the same hashes (`data/sources/manifest.json`).
+2. Done as C14's precedent: the `sources.json` rows keep `fetch: null` (the case package fetches with its own `fetch.py`).
+3. Done: C16 removed from `planned_cases.json`, readiness rebuilt, `tests/test_registry.py` names C16 among the built cases.
+4. Done (decision X6): `c16-outputs` 2.0.0, `l2_share` and `l2b_share` nullable with a required nullable `shares_reason`; the bake writes null
+   shares with their reason for an empty stock; the fixture `variant-scenario-lcr-empty-stock-fixture.json`; the `api` document 9.0.0.
+   `lcr-standard.json` gains `"shares_reason": null` (the only content change of the re-bake besides the engine strings).
+5. Done: the `fields` enumeration gains the maturity-band fields of `FDIC_FIELDS`; the documents keep naming the fields they named.
+6. Done: the engine is pinned by the commit `25e9538faf10bfdbcde03c5adccffd8e86ec275c` of `task/0-08-000-batch3` (SDD technology row, C14 pin
+   test); the documents name the engine `0.7.0+25e9538`. The release tag replaces the pin at the release.
+7. The catalog rows exist; `CHANGELOG.md` stays the integrator's.
