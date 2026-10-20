@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 import pytest
-from reg_support import COMMITTED, EAD_PUBLISHED, ENGINE_RELEASE, ENGINE_TAG, INPUTS, REQUIREMENTS, ROOT, SDD, by_id, load_semantics, out
+from reg_support import COMMITTED, EAD_PUBLISHED, ENGINE_RELEASE, INPUTS, REQUIREMENTS, ROOT, SDD, by_id, load_semantics, out
 
 sys.path.insert(0, str(ROOT / "tests"))
 sys.path.insert(0, str(ROOT / "tests" / "contracts"))
@@ -216,12 +216,12 @@ def test_the_provenance_names_no_third_party_file_and_the_engine_release(built) 
     assert built["lane"]["lane"] in ("live", "precompute")
 
 
-def test_the_engine_is_pinned_by_the_release_tag_the_sdd_row_names_and_the_shared_pin_rule_accepts_it() -> None:
-    from engine_pin import engine_pin_findings
+def test_the_engine_is_pinned_by_the_release_the_sdd_row_names_and_the_shared_pin_rule_accepts_it() -> None:
+    from engine_pin import engine_pin_findings, pinned_ref
 
     req, sdd = REQUIREMENTS.read_text(encoding="utf-8"), SDD.read_text(encoding="utf-8")
     assert engine_pin_findings(req, sdd) == []
-    assert f"@{ENGINE_TAG}" in req and "| engine | riskvalidation | " + ENGINE_TAG + " |" in sdd
+    assert pinned_ref(req) == ENGINE_RELEASE and "| engine | riskvalidation | " + ENGINE_RELEASE + " |" in sdd  # the PyPI release (tag ENGINE_TAG)
 
 
 def test_two_bakes_write_byte_identical_documents(tmp_path: Path) -> None:
