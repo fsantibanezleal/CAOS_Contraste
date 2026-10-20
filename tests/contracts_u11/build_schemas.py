@@ -65,6 +65,12 @@ CALL_REPORT_FIELDS = sorted({
     "SCUST", "SCUS", "SCAGE", "SCASPNSUM", "SCASPNHA", "SCASPNAF", "SCSPN", "SCMTGBK", "SCGTY", "SCCOL", "SCCMOT", "SCMUNI",
     "SCDOMO", "SCFORD", "SCRDEBT", "SCEQFV", "SCPLEDGE", "SCHTMRES", "DEP", "DEPDOM", "DEPFOR", "ASSET", "LIAB", "EQ", "RBCT1J",
     "LNLSNET", "CERT", "REPDTE", "NAME",
+    # the maturity-band and other fields the ladder reads (U11-P integration item 5; the list of cases/c16/fetch.py FDIC_FIELDS)
+    "DEPNIDOM", "DEPIDOM", "DEPNIFOR", "DEPIFOR", "DEPSMB", "DEPLGB", "NTRTIME", "CD3LES", "CD3T12", "CD1T3", "CDOV3", "CD3LESS",
+    "CD3T12S", "CD1T3S", "CDOV3S", "SCNM3LES", "SCNM3T12", "SCNM1T3", "SCNM3T5", "SCNM5T15", "SCNMOV15", "SCPT3LES", "SCPT3T12",
+    "SCPT1T3", "SCPT3T5", "SCPT5T15", "SCPTOV15", "SCO3YLES", "SCOOV3Y", "LNLSGR", "LNATRES", "LNRS3LES", "LNRS3T12", "LNRS1T3",
+    "LNRS3T5", "LNRS5T15", "LNRSOV15", "LNOT3LES", "LNOT3T12", "LNOT1T3", "LNOT3T5", "LNOT5T15", "LNOTOV15", "OTHBFH1L", "OTBFH1T3",
+    "OTBFH3T5", "OTBFHOV5", "OTHBRF", "OTBOT1L", "OTBOT1T3", "OTBOT3T5", "OTBOTOV5", "SUBND",
 })
 
 LIST_CONTRACTUAL = [  # N Table 3.2 (addendum L1.1): item, baseline, adverse, extreme
@@ -501,11 +507,16 @@ def scenario_defs() -> dict:
         "inflows_counted": MONEY, "net_outflows": MONEY, "ratio": N(minimum=0),
     }, "The LCR under one mapping of the uninsured balance (Q13): the outflow of the uninsured balance under that category, the total "
        "outflows, the counted inflows, the net outflows and the ratio recomputable from them and the HQLA.")
-    d["c16Hqla"] = Ob({
+    d["c16Hqla"] = one_of(Ob({
         "l1": MONEY, "l2a": MONEY, "l2b": MONEY, "adjusted_l1": MONEY, "adjusted_l2a": MONEY, "adjusted_l2b": MONEY,
-        "adj_15": MONEY, "adj_40": MONEY, "hqla": MONEY, "l2_share": UNIT, "l2b_share": UNIT,
+        "adj_15": MONEY, "adj_40": MONEY, "hqla": MONEY, "l2_share": nullable(UNIT), "l2b_share": nullable(UNIT),
+        "shares_reason": nullable(LABEL),
         "caps": Ob({"l2_cap": C(0.4), "l2b_cap": C(0.15)}),
-    }, "HQLA by level after the caps: HQLA = L1 + L2A + L2B - Adj15 - Adj40 (LCR30.38) with the adjustments of LCR30.39.")
+    }, "HQLA by level after the caps: HQLA = L1 + L2A + L2B - Adj15 - Adj40 (LCR30.38) with the adjustments of LCR30.39. The Level 2 "
+       "and Level 2B shares are over the HQLA stock: where the stock is empty they are undefined and are null together with their "
+       "reason in shares_reason (never zero); where they are numbers, shares_reason is null (U11 decision X6)."),
+        {"l2_share": {"type": "number"}, "l2b_share": {"type": "number"}, "shares_reason": {"type": "null"}},
+        {"l2_share": {"type": "null"}, "l2b_share": {"type": "null"}, "shares_reason": LABEL})
     d["c16Lcr"] = Ob({
         "label": C("basel-formula-on-call-report-aggregates"), "reported_or_regulatory": C(False), "statement": TXT,
         "hqla": R("c16Hqla"), "outflows": A(R("c16LcrOutflowRow"), 1), "total_outflows": MONEY, "inflows": A(R("c16LcrInflowRow")),

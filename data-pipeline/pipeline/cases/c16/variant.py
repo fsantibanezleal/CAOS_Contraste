@@ -279,12 +279,6 @@ def lcr_block(report: Report, conv: dict) -> dict[str, Any]:
     # the securities enter at fair value less the encumbered part, after the Basel haircut of their level
     after = {lvl: float(ecbc.liquidity_value(v, lcr_nsfr.HQLA_HAIRCUTS[lvl])) for lvl, v in inp["levels"].items() if lvl in lcr_nsfr.HQLA_HAIRCUTS}
     hq = hqla_block(after["level_1"], after["level_2a"], 0.0)   # no asset of the mapping is Level 2B
-    if hq["l2_share"] is None:
-        # decision X3 says null shares with their reason; the c16-outputs schema (1.0.1) types them as numbers, so a document with an empty
-        # stock cannot be written until the contract amends c16Hqla (nullable shares and a shares_reason): refused, naming it
-        raise ValueError(f"{report.report_date}: the HQLA stock is empty, so its Level 2 shares are undefined; the c16-outputs schema has no null share "
-                         "(contract amendment proposed: nullable l2_share and l2b_share with shares_reason)")
-    hq.pop("shares_reason")
     out = lcr_nsfr.lcr_outflows(inp["outflows"])
     inn = lcr_nsfr.lcr_inflows(inp["inflows"])
     net = lcr_nsfr.net_cash_outflows(out.total, inn.total, INFLOW_CAP)

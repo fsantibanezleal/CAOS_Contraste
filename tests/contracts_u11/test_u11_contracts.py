@@ -15,6 +15,7 @@ fixtures are labelled as fixtures and never published as results.
 from __future__ import annotations
 
 import copy
+import importlib.util
 import json
 import os
 import math
@@ -27,7 +28,19 @@ from typing import Any, Callable, Iterator
 import pytest
 
 import contract_schemas as cs
-import semantics as sm
+
+
+def _load_semantics():
+    """The producer checker of this folder under a name of its own: several suites ship a ``semantics.py`` (C14's is loaded by the
+    bare name) and one run of the whole tree must keep each suite on its own checker."""
+    spec = importlib.util.spec_from_file_location("contracts_u11_semantics", Path(__file__).with_name("semantics.py"))
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules["contracts_u11_semantics"] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+sm = _load_semantics()
 
 ROOT = cs.ROOT
 sys.path.insert(0, str(ROOT / "data-pipeline"))
@@ -971,7 +984,7 @@ def test_the_rows_fragment_has_the_four_rows_in_the_catalog_columns_and_every_ci
     me = Path(__file__).read_text(encoding="utf-8")
     for rid, cells in rows.items():
         # engine-liquidity-api 1.1.0 after U11-E (additive: the `scored` keyword of fast_run_scenario), at the batch 3 integration
-        assert cells[1] == {"engine-liquidity-api": "1.2.0", "c16-outputs-reverse": "1.0.1"}.get(rid, "1.0.0") and cells[11] == "active"
+        assert cells[1] == {"engine-liquidity-api": "1.2.0", "c16-outputs-reverse": "1.0.1", "c16-outputs": "2.0.0"}.get(rid, "1.0.0") and cells[11] == "active"
         assert cells[8].startswith("fixture:docs/contracts/fixtures/c16/") or cells[8].startswith("fixture:docs/contracts/engine/")
         for cell in (cells[5], cells[6], cells[10]):
             for ref in cell.split(", "):

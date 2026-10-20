@@ -19,8 +19,7 @@ import pytest
 
 import build_fixtures as bf
 import contract_schemas as cs
-import semantics as sm
-from test_u11_contracts import (API, FIXTURES, ROOT, SC, RV, MD, PATH_KEYS, SCENARIO_KEYS, errs, load, out, ref_of)
+from test_u11_contracts import (API, FIXTURES, ROOT, SC, RV, MD, PATH_KEYS, SCENARIO_KEYS, errs, load, out, ref_of, sm)
 
 sys.path.insert(0, str(ROOT / "data-pipeline"))
 

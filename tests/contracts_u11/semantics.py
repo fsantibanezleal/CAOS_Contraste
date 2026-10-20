@@ -430,7 +430,11 @@ def _lcr(o: dict, rep: Report) -> None:
     rep.need(close(h["adj_40"], adj40), "HQLA Adj40 is not the LCR30.39 formula on the adjusted amounts")
     rep.need(close(h["hqla"], h["l1"] + h["l2a"] + h["l2b"] - h["adj_15"] - h["adj_40"]),
              "HQLA is not L1 + L2A + L2B - Adj15 - Adj40 (LCR30.38)")
-    if h["hqla"] > 0:
+    shares = (h["l2_share"], h["l2b_share"])
+    rep.need((shares[0] is None) == (shares[1] is None), "l2_share and l2b_share are both null or both numbers (one stock, one undefined state)")
+    rep.need((h["shares_reason"] is None) == (None not in shares),
+             "shares_reason is a reason where the Level 2 shares are null and null where they are numbers")
+    if h["hqla"] > 0 and None not in shares:
         rep.need(close(h["l2b_share"], (h["l2b"] - h["adj_15"]) / h["hqla"], tol=1e-9), "l2b_share is not Level 2B after Adj15 over HQLA")
         rep.need(close(h["l2_share"], (h["l2a"] + h["l2b"] - h["adj_15"] - h["adj_40"]) / h["hqla"], tol=1e-9),
                  "l2_share is not Level 2 after the adjustments over HQLA")

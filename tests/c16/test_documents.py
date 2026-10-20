@@ -4,14 +4,21 @@ the raw files."""
 from __future__ import annotations
 
 import json
+import re
 
 import pytest
 
-from .helpers import (C16, MANIFEST, MODELS, REVERSE, VARIANTS, VD, committed, committed_documents, problems, semantics, sha)
+from .helpers import (C16, MANIFEST, ROOT, MODELS, REVERSE, VARIANTS, VD, committed, committed_documents, problems, semantics, sha)
 
 
 def _scenarios():
     return {v: committed(v) for v in VARIANTS}
+
+
+def engine_pin() -> str:
+    """The commit the product pins the engine by (data-pipeline/requirements.txt): the documents name the engine as ``<version>+<its first seven>``."""
+    req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
+    return re.search(r"^riskvalidation\S* @ git\+\S+@([0-9a-f]{40})\s*$", req, re.M).group(1)
 
 
 def test_every_committed_document_validates_and_is_listed_with_its_hash():
@@ -42,7 +49,7 @@ def test_every_committed_document_validates_and_is_listed_with_its_hash():
     for sid in ("fdic-bankfind", "fed-h8", "treasury-par-curve"):
         for f in raw["sources"][sid]["files"]:
             assert f["url"].startswith("https://") and f["bytes"] > 0 and len(f["sha256"]) == 64 and f["retrieved"]
-    assert manifest["default_variant"] in {a["variant_id"] for a in manifest["artifacts"]} and manifest["engine"]["riskvalidation"].endswith("a52888e")
+    assert manifest["default_variant"] in {a["variant_id"] for a in manifest["artifacts"]} and manifest["engine"]["riskvalidation"].endswith(engine_pin()[:7])
 
 
 def test_no_value_is_dated_after_its_valuation_date():
