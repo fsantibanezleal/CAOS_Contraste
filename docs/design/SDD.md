@@ -229,7 +229,7 @@ the ones the dossiers and `docs/frameworks/` record.
 | models | catboost | 1.2.10 | the gradient-boosted LGD challenger of case C08 (U6 sizing technology matrix) | lightgbm on the same features |
 | models | shap | 0.52.0 | reason codes and explanation stability of the boosted rung | none recorded (0.53.0 is current and was not adopted) |
 | data | pypdf | 6.19.0 | reading the published tables of the papers (Tasche, Pluto and Tasche, BCBS WP14) | none recorded (6.20.0 is current and was not adopted) |
-| engine | riskvalidation | 3767a3ddbfe88fbb26eef60c9c2b08815132e172 | the validation tests, regulatory calculators and generators (pinned by the commit of the batch 3 engine integration branch task/0-08-000-batch3 until the release tag replaces it; its liquidity code is that of a52888e) | none: no toolkit implements the ECB tests as specified |
+| engine | riskvalidation | v0.08.000 | the validation tests, regulatory calculators and generators (the release tag of the batch 3 engine, 0.8.0: liquidity, aggregation and stress testing, the regulatory calculators and counterparty credit risk, ML model validation and fair lending) | none: no toolkit implements the ECB tests as specified |
 | models (optional) | torch | 2.14.1 | CPU runtime of the TabPFN extra, outside the default install | none recorded |
 | models (optional) | tabpfn | 9.1.0 | the TabPFN challenger of the small cases, weights under the Prior Labs License | none recorded |
 | tests | pytest | 9.1.1 | the pipeline, contract, guard and adversarial tests | none recorded |

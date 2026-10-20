@@ -325,9 +325,9 @@ def test_adversarial_an_engine_pin_the_sdd_does_not_name_or_a_branch_pin_is_refu
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
     sdd = (ROOT / "docs" / "design" / "SDD.md").read_text(encoding="utf-8")
     assert engine_pin_findings(req, sdd) == []
-    old = req.replace("3767a3ddbfe88fbb26eef60c9c2b08815132e172", "2a21c0b85578357bc7eb13e9d8ffda9ab9b300fa")
+    old = req.replace("v0.08.000", "2a21c0b85578357bc7eb13e9d8ffda9ab9b300fa")
     assert any("not the one the SDD technology row names" in f for f in engine_pin_findings(old, sdd))
-    branch = req.replace("@3767a3ddbfe88fbb26eef60c9c2b08815132e172", "@task/0-08-000-batch3")
+    branch = req.replace("@v0.08.000", "@task/0-08-000-batch3")
     assert any("neither a release tag nor a full 40-hex commit" in f for f in engine_pin_findings(branch, sdd))
 
 

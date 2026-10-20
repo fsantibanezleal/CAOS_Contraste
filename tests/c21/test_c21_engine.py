@@ -11,18 +11,18 @@ from riskvalidation.validation import fairness as rv_tests
 from pipeline.cases.c21 import bake, legal, reader
 from pipeline.cases.c21 import estimates as est
 
-PIN = "2a21c0b85578357bc7eb13e9d8ffda9ab9b300fa"
+PIN, RELEASE = "v0.08.000", "0.8.0"
 NULL_ALPHA_TESTS = ("fair.conditional_disparity", "fair.rate_spread_disparity", "fair.situation_testing")
 
 
-def test_the_engine_is_pinned_at_the_engine_1_2_0_commit_that_the_sdd_names() -> None:
+def test_the_engine_is_pinned_at_the_batch_3_release_tag_that_the_sdd_names() -> None:
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
     sdd = (ROOT / "docs" / "design" / "SDD.md").read_text(encoding="utf-8")
     assert len(ENGINE_PIN.findall(req)) == 1 and engine_pin_findings(req, sdd) == []   # a tag, or a full commit that the SDD row names
     assert ENGINE_PIN.search(req).group("ref") == PIN
-    assert bake.engine_version().endswith(f"+{PIN[:7]}") and md.version("riskvalidation")
+    assert bake.engine_version() == RELEASE == md.version("riskvalidation")
     for name in VARIANTS:
-        assert committed(name)["provenance"]["riskvalidation_version"].endswith(f"+{PIN[:7]}")
+        assert committed(name)["provenance"]["riskvalidation_version"] == RELEASE
 
 
 def test_the_product_alters_no_engine_row_and_the_committed_rows_carry_the_engines_null_alphas(built) -> None:

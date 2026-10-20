@@ -8,17 +8,17 @@ from engine_pin import ENGINE_PIN, engine_pin_findings
 
 from pipeline.cases.c20 import bake, conv, ops
 
-PIN = "3767a3ddbfe88fbb26eef60c9c2b08815132e172"
+PIN, RELEASE = "v0.08.000", "0.8.0"
 
 
-def test_the_engine_is_pinned_at_the_batch_3_commit_that_the_sdd_names() -> None:
+def test_the_engine_is_pinned_at_the_batch_3_release_tag_that_the_sdd_names() -> None:
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
     sdd = (ROOT / "docs" / "design" / "SDD.md").read_text(encoding="utf-8")
     assert len(ENGINE_PIN.findall(req)) == 1 and engine_pin_findings(req, sdd) == []   # a tag, or a full commit that the SDD row names
     assert ENGINE_PIN.search(req).group("ref") == PIN
-    assert bake.engine_version().endswith(f"+{PIN[:7]}") and md.version("riskvalidation")
+    assert bake.engine_version() == RELEASE == md.version("riskvalidation")
     for name in VARIANTS:
-        assert committed(name)["provenance"]["riskvalidation_version"].endswith(f"+{PIN[:7]}")
+        assert committed(name)["provenance"]["riskvalidation_version"] == RELEASE
 
 
 def test_the_product_alters_no_engine_row_it_names_the_segment_and_the_model_only() -> None:
