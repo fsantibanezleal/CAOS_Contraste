@@ -4,7 +4,7 @@
 // governance document shows "not available yet" with its reason, never a guess. The opinion is the rule's output over the
 // open findings, an evidence summary for a validator, never an approval or a certification.
 import { Callout, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Doc, GovernanceDoc } from './common';
 import { unavailableBlock } from './states';
 import {
@@ -109,13 +109,16 @@ export function OpinionBlock({ caseId }: { caseId: string }) {
  */
 export function FindingsWithOpinion({ caseId, children }: { caseId: string; children: ReactNode }) {
   const lang = useShellLang();
+  // the governance documents are read when the reader opens the disclosure, not when the group opens: a case page makes no
+  // request (and no 404 while the bake has not written them) for an opinion nobody asked to read
+  const [opened, setOpened] = useState(false);
   return (
     <div className="ct-part" data-findings-with-opinion={caseId} style={{ height: '100%', gap: 0 }}>
       <div className="ct-part ct-part-3">{children}</div>
-      <details className="ct-note" data-opinion-disclosure style={{ margin: 0, fontSize: '0.78rem', lineHeight: 1.15 }}>
+      <details className="ct-note" data-opinion-disclosure onToggle={(e) => { if ((e.currentTarget as HTMLDetailsElement).open) setOpened(true); }} style={{ margin: 0, fontSize: '0.78rem', lineHeight: 1.15 }}>
         <summary>{pick({ en: 'Overall opinion on the evidence (governance)', es: 'Opinión global sobre la evidencia (gobernanza)' }, lang)}</summary>
         <div style={{ maxHeight: 260, overflow: 'auto', minWidth: 0 }}>
-          <OpinionBlock caseId={caseId} />
+          {opened ? <OpinionBlock caseId={caseId} /> : null}
         </div>
       </details>
     </div>
