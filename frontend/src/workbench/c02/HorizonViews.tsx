@@ -219,30 +219,47 @@ export function EclImpactView({ sel }: { sel: C02Sel | null }) {
             )
           }
         >
-          <table className="caos-table ct-wrap-head" data-table="ecl-impact">
-            <tbody>
-              <tr data-measure="ecl-12m">
-                <td className="ct-text">{pick({ en: '12-month ECL effect', es: 'Efecto en la PCE a 12 meses' }, lang)}</td>
-                <td data-na={d.ecl_12m_effect === null ? 'true' : undefined}>{value(d.ecl_12m_effect)}</td>
-              </tr>
-              <tr data-measure="ecl-lifetime">
-                <td className="ct-text">{pick({ en: 'Lifetime ECL effect', es: 'Efecto en la PCE de toda la vida' }, lang)}</td>
-                <td data-na={d.ecl_lifetime_effect === null ? 'true' : undefined}>{value(d.ecl_lifetime_effect)}</td>
-              </tr>
-              <tr>
-                <td className="ct-text">{pick({ en: 'Unit', es: 'Unidad' }, lang)}</td>
-                <td>{d.unit}</td>
-              </tr>
-              <tr data-lgd={d.lgd.label}>
-                <td className="ct-text">{pick({ en: 'LGD (an assumption)', es: 'LGD (un supuesto)' }, lang)}</td>
-                <td>{pc(d.lgd.value, lang)}</td>
-              </tr>
-              <tr>
-                <td className="ct-text">{pick({ en: 'PD basis', es: 'Base de las PD' }, lang)}</td>
-                <td className="ct-text">{d.pd_basis}</td>
-              </tr>
-            </tbody>
-          </table>
+          {missing ? (
+            // a declared absence draws nothing: the rows stay as a definition list, because a table here counted as the drawing of
+            // a card kept at the full height of its stage and painted 28% of it (G6, floor 30%)
+            <dl className="ct-defs" data-table="ecl-impact">
+              <dt>{pick({ en: '12-month ECL effect', es: 'Efecto en la PCE a 12 meses' }, lang)}</dt>
+              <dd data-measure="ecl-12m" data-na={d.ecl_12m_effect === null ? 'true' : undefined}>{value(d.ecl_12m_effect)}</dd>
+              <dt>{pick({ en: 'Lifetime ECL effect', es: 'Efecto en la PCE de toda la vida' }, lang)}</dt>
+              <dd data-measure="ecl-lifetime" data-na={d.ecl_lifetime_effect === null ? 'true' : undefined}>{value(d.ecl_lifetime_effect)}</dd>
+              <dt>{pick({ en: 'Unit', es: 'Unidad' }, lang)}</dt>
+              <dd>{d.unit}</dd>
+              <dt>{pick({ en: 'LGD (an assumption)', es: 'LGD (un supuesto)' }, lang)}</dt>
+              <dd data-lgd={d.lgd.label}>{pc(d.lgd.value, lang)}</dd>
+              <dt>{pick({ en: 'PD basis', es: 'Base de las PD' }, lang)}</dt>
+              <dd>{d.pd_basis}</dd>
+            </dl>
+          ) : (
+            <table className="caos-table ct-wrap-head" data-table="ecl-impact">
+              <tbody>
+                <tr data-measure="ecl-12m">
+                  <td className="ct-text">{pick({ en: '12-month ECL effect', es: 'Efecto en la PCE a 12 meses' }, lang)}</td>
+                  <td data-na={d.ecl_12m_effect === null ? 'true' : undefined}>{value(d.ecl_12m_effect)}</td>
+                </tr>
+                <tr data-measure="ecl-lifetime">
+                  <td className="ct-text">{pick({ en: 'Lifetime ECL effect', es: 'Efecto en la PCE de toda la vida' }, lang)}</td>
+                  <td data-na={d.ecl_lifetime_effect === null ? 'true' : undefined}>{value(d.ecl_lifetime_effect)}</td>
+                </tr>
+                <tr>
+                  <td className="ct-text">{pick({ en: 'Unit', es: 'Unidad' }, lang)}</td>
+                  <td>{d.unit}</td>
+                </tr>
+                <tr data-lgd={d.lgd.label}>
+                  <td className="ct-text">{pick({ en: 'LGD (an assumption)', es: 'LGD (un supuesto)' }, lang)}</td>
+                  <td>{pc(d.lgd.value, lang)}</td>
+                </tr>
+                <tr>
+                  <td className="ct-text">{pick({ en: 'PD basis', es: 'Base de las PD' }, lang)}</td>
+                  <td className="ct-text">{d.pd_basis}</td>
+                </tr>
+              </tbody>
+            </table>
+          )}
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>

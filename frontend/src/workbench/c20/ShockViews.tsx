@@ -59,7 +59,7 @@ function BlockCard({ sel, block }: { sel: C20Sel; block: Block }) {
               height="fill"
               orientation="horizontal"
               data={rows.map((r) => ({ id: r.shock_id, label: text(SHOCK_TEXT, r.shock_id), value: -r.performance.auc_delta, tone: r.performance.auc_delta < 0 ? ('bad' as const) : ('good' as const), highlight: r.shock_id === sel.shock }))}
-              axis={{ label: { en: 'AUC loss against the clean set (positive is a loss)', es: 'Pérdida de AUC contra el conjunto limpio (positivo es una pérdida)' }, format: { decimals: 3 } }}
+              axis={{ label: { en: 'AUC loss against the clean set (positive is a loss)', es: 'Pérdida de AUC (positiva) vs. conjunto limpio' }, format: { decimals: 3 } }}
             />
           )
         }

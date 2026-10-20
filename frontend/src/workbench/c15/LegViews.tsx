@@ -72,7 +72,7 @@ export function EveByLegView({ sel }: { sel: C15Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={chartData}
-              axis={{ label: { en: 'Delta EVE, positive is a loss', es: 'Delta EVE, positivo es una pérdida' }, unit: axis.unit, format: { digits: 4 } }}
+              axis={{ label: { en: 'Delta EVE, positive is a loss', es: 'Delta EVE, pérdida positiva' }, unit: axis.unit, format: { digits: 4 } }}
             />
           }
         >
