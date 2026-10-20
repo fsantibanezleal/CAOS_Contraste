@@ -23,7 +23,7 @@ import * as governanceSection from '../../pages/methodology/governance';
 import { setLang } from '../c03/u6-testkit';
 import { MapDrawing } from './DependencyMap';
 import { InventoryTab } from './InventoryView';
-import { OpinionBlockView, OpinionCard, ReportOpinion } from './OpinionBlock';
+import { FindingsWithOpinion, OpinionBlockView, OpinionCard, ReportOpinion } from './OpinionBlock';
 import { AppetiteTable, FindingsTab, RegisterTable, SeverityStatusBars } from './RegisterView';
 import { ReportDocument, ReportReader } from './ReportView';
 import { MatrixDrawing } from './TierMatrix';
@@ -241,6 +241,19 @@ describe('the opinion block of a Findings group', () => {
   });
   it('asks for the report of each entry of the case while it loads', () => {
     expect(html(<OpinionBlockView caseId="C07" inv={inv} />)).toContain('data-opinion-entry="C07/banco-andino"');
+  });
+});
+
+describe('the Findings group with its opinion', () => {
+  it('keeps the group content and adds the opinion in a disclosure, in both languages', () => {
+    for (const lang of LANGS) {
+      setLang(lang);
+      const h = html(<FindingsWithOpinion caseId="C07"><p data-group-content>the findings</p></FindingsWithOpinion>);
+      expect(h).toContain('data-group-content');
+      expect(h).toContain('data-opinion-disclosure');
+      expect(h).toContain('data-governance-opinion="C07"');
+      expect(text(h)).toContain(lang === 'es' ? 'Opinión global sobre la evidencia' : 'Overall opinion on the evidence');
+    }
   });
 });
 

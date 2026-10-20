@@ -3,8 +3,8 @@
 // and the recommendation, labelled "the rule's output on the evidence; Contraste approves no model". A case without a
 // governance document shows "not available yet" with its reason, never a guess. The opinion is the rule's output over the
 // open findings, an evidence summary for a validator, never an approval or a certification.
-import { formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
-import { Callout } from '@fasl-work/caos-app-shell';
+import { Callout, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
+import type { ReactNode } from 'react';
 import { GovernanceDoc } from './common';
 import { unavailableBlock } from './states';
 import {
@@ -99,5 +99,25 @@ export function OpinionBlock({ caseId }: { caseId: string }) {
       <h3 className="ct-sub">{pick({ en: 'Overall opinion on the evidence', es: 'Opinión global sobre la evidencia' }, lang)}</h3>
       <GovernanceDoc<GovInventory> file={GOVERNANCE_FILES.inventory}>{(inv) => <OpinionBlockView caseId={caseId} inv={inv} />}</GovernanceDoc>
     </section>
+  );
+}
+
+/**
+ * The Findings group of a case with its opinion: the group's own content keeps its height, and the opinion sits under it
+ * in a disclosure that is one line when closed, so the instrument stays inside its panel (ADR-0071 rule 6); opened, the
+ * opinion scrolls inside its own box. One registration point serves every case (Workbench.tsx, the patch in changes/U15-W.md).
+ */
+export function FindingsWithOpinion({ caseId, children }: { caseId: string; children: ReactNode }) {
+  const lang = useShellLang();
+  return (
+    <div className="ct-part" data-findings-with-opinion={caseId} style={{ height: '100%' }}>
+      <div className="ct-part ct-part-3">{children}</div>
+      <details className="ct-note" data-opinion-disclosure>
+        <summary>{pick({ en: 'Overall opinion on the evidence (governance)', es: 'Opinión global sobre la evidencia (gobernanza)' }, lang)}</summary>
+        <div style={{ maxHeight: 260, overflow: 'auto', minWidth: 0 }}>
+          <OpinionBlock caseId={caseId} />
+        </div>
+      </details>
+    </div>
   );
 }
