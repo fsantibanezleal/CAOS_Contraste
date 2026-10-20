@@ -100,7 +100,7 @@ describe('the C18 instrument', () => {
   });
 
   it('the rail of each document holds its controls and a read-out with no raw amount', () => {
-    expect(html(<Rail v={fedV} />)).toContain('Capital|Path|Loan type|Risk');
+    expect(html(<Rail v={fedV} />)).toContain('Year|Path|Loan|Risk');
     expect(html(<Rail v={aggV} />)).toContain('Matrix|Row|Risk');
     expect(html(<Rail v={reverseV} />)).toContain('Factor|Start');
     function Controls() {

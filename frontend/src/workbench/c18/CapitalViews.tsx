@@ -412,7 +412,7 @@ export function Annex3View({ sel }: { sel: C18Sel | null }) {
   const bars = ['4.1.1', '4.1.2', '4.2', '4.3', '4.4.1', '4.4.2', '4.4.3', '4.5', '4.6', '4.7', '4.8'].flatMap((id) => {
     const r = get(id);
     if (!r) return [];
-    const col = (['c', 'd'] as const).find((k) => r[k].status !== 'not-applicable' && !(r[k].status === 'not-to-be-filled'));
+    const col = (['c', 'd'] as const).find((k) => r[k].status === 'value');
     if (!col) return [];
     return [{ r, col }];
   });
@@ -424,8 +424,8 @@ export function Annex3View({ sel }: { sel: C18Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: `${a.entity}, ${a.report_date}, consolidation ${a.consolidation === 'local' ? 'local' : 'global consolidated'}. Column A is a share of RWA at the start, B the amount in ${pick(MONEY_UNIT, 'en')}, C the legal requirement of each risk and D the internal measurement; RI marks a risk the bank treats as immaterial and does not quantify. The bars show the capital needed by risk where a cell has a value.`,
-          es: `${a.entity}, ${a.report_date}, consolidación ${a.consolidation === 'local' ? 'local' : 'global consolidada'}. La columna A es una parte de los APR al inicio, B el monto en ${pick(MONEY_UNIT, 'es')}, C la exigencia legal de cada riesgo y D la medición interna; RI marca un riesgo que el banco trata como inmaterial y no cuantifica. Las barras muestran el capital necesario por riesgo donde una celda tiene valor.`,
+          en: `${a.entity}, ${a.report_date}, consolidation ${a.consolidation === 'local' ? 'local' : 'global consolidated'}. Column A is a share of RWA at the start, B the amount in ${pick(MONEY_UNIT, 'en')}, C the legal requirement of each risk and D the internal measurement; RI marks a risk the bank treats as immaterial and does not quantify. The bars show the capital needed by risk where a cell has a value; the cells without one are in the table with their reason.`,
+          es: `${a.entity}, ${a.report_date}, consolidación ${a.consolidation === 'local' ? 'local' : 'global consolidada'}. La columna A es una parte de los APR al inicio, B el monto en ${pick(MONEY_UNIT, 'es')}, C la exigencia legal de cada riesgo y D la medición interna; RI marca un riesgo que el banco trata como inmaterial y no cuantifica. Las barras muestran el capital necesario por riesgo donde una celda tiene valor; las celdas sin él están en la tabla con su razón.`,
         }}
       >
         <ChartOverTable

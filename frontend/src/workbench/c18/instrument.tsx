@@ -217,7 +217,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     rail: [
       {
         id: 'capital',
-        label: { en: 'Capital', es: 'Capital' },
+        label: { en: 'Year', es: 'Año' },
         content: (
           <>
             <Knob
@@ -238,7 +238,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       },
       {
         id: 'path',
-        label: { en: 'Path', es: 'Trayectoria' },
+        label: { en: 'Path', es: 'Ruta' },
         content: (
           <>
             <RailSelect id="c18-path" label={{ en: 'Variable of the scenario', es: 'Variable del escenario' }} options={paths.map((p, i) => ({ id: String(i), label: text(REGRESSOR_TEXT, p.maps_to_regressor) }))} value={String(sel.path)} onChange={setPath} />
@@ -248,7 +248,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
       },
       {
         id: 'loan',
-        label: { en: 'Loan type', es: 'Tipo de préstamo' },
+        label: { en: 'Loan', es: 'Préstamo' },
         content: (
           <>
             <RailSelect id="c18-loan" label={{ en: 'Loan type', es: 'Tipo de préstamo' }} options={LOAN_ORDER.map((id) => ({ id, label: text(LOAN_TEXT, id) }))} value={sel.loan} onChange={setLoan} />

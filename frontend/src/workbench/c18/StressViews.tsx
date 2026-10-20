@@ -298,7 +298,7 @@ export function BackcastView({ sel }: { sel: C18Sel | null }) {
             <dt>{pick({ en: 'Realised peak', es: 'Máximo realizado' }, lang)}</dt>
             <dd>{`${RATE(m.peak_realised, lang)} (${quarterText(m.peak_realised_quarter, lang)})`}</dd>
             <dt>{pick({ en: 'Timing of the peak', es: 'Desfase del máximo' }, lang)}</dt>
-            <dd data-timing={m.peak_timing_error_quarters}>{`${m.peak_timing_error_quarters} ${pick({ en: 'quarters (positive: the model is late)', es: 'trimestres (positivo: el modelo llega tarde)' }, lang)}`}</dd>
+            <dd data-timing={m.peak_timing_error_quarters}>{`${m.peak_timing_error_quarters} ${Math.abs(m.peak_timing_error_quarters) === 1 ? pick({ en: 'quarter', es: 'trimestre' }, lang) : pick({ en: 'quarters', es: 'trimestres' }, lang)} ${pick({ en: '(positive: the model is late)', es: '(positivo: el modelo llega tarde)' }, lang)}`}</dd>
             <dt>{pick({ en: 'Fitted window', es: 'Ventana de ajuste' }, lang)}</dt>
             <dd>{`${quarterText(b.fit_window.start, lang)} ${pick({ en: 'to', es: 'a' }, lang)} ${quarterText(b.fit_window.end, lang)}`}</dd>
             {fit ? (
