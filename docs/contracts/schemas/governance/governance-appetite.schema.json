@@ -1,0 +1,324 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/governance/governance-appetite.schema.json",
+  "title": "Governance model risk appetite",
+  "description": "Catalog row governance-appetite 1.0.0: the model risk appetite metrics of 06 B.6 (data/derived/governance/appetite.json), each with its value, unit, numerator, denominator and a light under a stated convention threshold.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "case_id",
+    "governance_id",
+    "schema_version",
+    "as_of",
+    "provenance",
+    "population",
+    "metrics"
+  ],
+  "properties": {
+    "schema": {
+      "const": "contraste.governance.appetite/v1"
+    },
+    "case_id": {
+      "const": "GOVERNANCE"
+    },
+    "governance_id": {
+      "const": "appetite"
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "as_of": {
+      "$ref": "#/$defs/govDate"
+    },
+    "provenance": {
+      "$ref": "#/$defs/govProvenance"
+    },
+    "population": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entries",
+        "findings",
+        "tier1_entries"
+      ],
+      "properties": {
+        "entries": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "findings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tier1_entries": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/appMetric"
+      },
+      "minItems": 7,
+      "maxItems": 7
+    }
+  },
+  "$defs": {
+    "appMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "kind",
+        "value",
+        "unit",
+        "numerator",
+        "denominator",
+        "reason",
+        "threshold",
+        "light"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "tier1-validated-on-time",
+            "open-high-severity",
+            "overdue-remediation",
+            "entries-under-exception",
+            "entries-in-breach",
+            "pma-magnitude",
+            "owner-and-complete-record"
+          ]
+        },
+        "name": {
+          "$ref": "../common/text.schema.json"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "share",
+            "count",
+            "magnitude"
+          ]
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Computed by riskvalidation.governance.appetite.appetite_metrics."
+        },
+        "unit": {
+          "type": "string",
+          "enum": [
+            "share",
+            "count",
+            "share-of-model-output"
+          ]
+        },
+        "numerator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Computed by riskvalidation.governance.appetite.appetite_metrics."
+        },
+        "denominator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Computed by riskvalidation.governance.appetite.appetite_metrics."
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "threshold": {
+          "$ref": "#/$defs/appThreshold"
+        },
+        "light": {
+          "type": "string",
+          "enum": [
+            "green",
+            "amber",
+            "red",
+            "not_evaluated"
+          ],
+          "description": "Computed by riskvalidation.governance.appetite.light."
+        }
+      },
+      "description": "One B.6 metric (06 l.606-612) with its value, unit, numerator, denominator and its light under a stated threshold.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "then": {
+            "properties": {
+              "reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "reason": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "value": {
+                "const": null
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "then": {
+            "properties": {
+              "light": {
+                "const": "not_evaluated"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "appThreshold": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "basis",
+        "direction",
+        "green_limit",
+        "amber_limit"
+      ],
+      "properties": {
+        "label": {
+          "const": "convention"
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "higher-is-better",
+            "lower-is-better"
+          ]
+        },
+        "green_limit": {
+          "type": "number"
+        },
+        "amber_limit": {
+          "type": "number"
+        }
+      },
+      "description": "The stated threshold of a light: a convention with its basis (item 30), never a regulatory value."
+    },
+    "govDate": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "An ISO date (YYYY-MM-DD). The dates of a governance document are deterministic: the as-of date and every raised date come from committed values (R4 of the U15 sizing); a wall-clock date never enters a document."
+    },
+    "govProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code_version",
+        "riskvalidation_version",
+        "generators",
+        "documents_read"
+      ],
+      "properties": {
+        "code_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The Contraste code version that wrote the document."
+        },
+        "riskvalidation_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The engine version that computed it."
+        },
+        "generators": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "description": "The writer of the document; a fixture is labelled fixture:u15-s-contracts."
+        },
+        "documents_read": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "sha256"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "$ref": "#/$defs/govSha256"
+              }
+            }
+          },
+          "minItems": 1,
+          "description": "Every case document read, with the sha256 of its bytes (line endings normalised to LF)."
+        }
+      },
+      "description": "Where a governance document came from: code and engine versions and the sha256 of every case document it read."
+    },
+    "govSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

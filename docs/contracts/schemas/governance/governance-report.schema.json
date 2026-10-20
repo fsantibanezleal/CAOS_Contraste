@@ -1,0 +1,1897 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/governance/governance-report.schema.json",
+  "title": "Governance validation report",
+  "description": "Catalog row governance-report 1.0.0: the I.3 validation report of one inventory entry (data/derived/governance/reports/<case>-<fit>.json): twelve sections, each filled from the inputs it names or absent with its reason; section 11 holds the opinion level 1 to 4, the rule that gave it and the recommendation, labelled the rule's output.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "case_id",
+    "governance_id",
+    "schema_version",
+    "as_of",
+    "provenance",
+    "entry_key",
+    "title",
+    "tier",
+    "test_counts",
+    "sections"
+  ],
+  "properties": {
+    "schema": {
+      "const": "contraste.governance.report/v1"
+    },
+    "case_id": {
+      "const": "GOVERNANCE"
+    },
+    "governance_id": {
+      "const": "report"
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "as_of": {
+      "$ref": "#/$defs/govDate"
+    },
+    "provenance": {
+      "$ref": "#/$defs/govProvenance"
+    },
+    "entry_key": {
+      "type": "string",
+      "pattern": "^C\\d{2}/[a-z0-9-]+$",
+      "description": "The inventory entry (case_id/fit_id) the report is for."
+    },
+    "title": {
+      "$ref": "../common/text.schema.json"
+    },
+    "tier": {
+      "$ref": "#/$defs/govTier"
+    },
+    "test_counts": {
+      "$ref": "#/$defs/repCounts",
+      "description": "Computed by riskvalidation.governance.report.executive_counts."
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/repSection1"
+        },
+        {
+          "$ref": "#/$defs/repSection2"
+        },
+        {
+          "$ref": "#/$defs/repSection3"
+        },
+        {
+          "$ref": "#/$defs/repSection4"
+        },
+        {
+          "$ref": "#/$defs/repSection5"
+        },
+        {
+          "$ref": "#/$defs/repSection6"
+        },
+        {
+          "$ref": "#/$defs/repSection7"
+        },
+        {
+          "$ref": "#/$defs/repSection8"
+        },
+        {
+          "$ref": "#/$defs/repSection9"
+        },
+        {
+          "$ref": "#/$defs/repSection10"
+        },
+        {
+          "$ref": "#/$defs/repSection11"
+        },
+        {
+          "$ref": "#/$defs/repSection12"
+        }
+      ],
+      "description": "Computed by riskvalidation.governance.report.build_report."
+    }
+  },
+  "$defs": {
+    "govDate": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "An ISO date (YYYY-MM-DD). The dates of a governance document are deterministic: the as-of date and every raised date come from committed values (R4 of the U15 sizing); a wall-clock date never enters a document."
+    },
+    "govProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code_version",
+        "riskvalidation_version",
+        "generators",
+        "documents_read"
+      ],
+      "properties": {
+        "code_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The Contraste code version that wrote the document."
+        },
+        "riskvalidation_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The engine version that computed it."
+        },
+        "generators": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "description": "The writer of the document; a fixture is labelled fixture:u15-s-contracts."
+        },
+        "documents_read": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "sha256"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "$ref": "#/$defs/govSha256"
+              }
+            }
+          },
+          "minItems": 1,
+          "description": "Every case document read, with the sha256 of its bytes (line endings normalised to LF)."
+        }
+      },
+      "description": "Where a governance document came from: code and engine versions and the sha256 of every case document it read."
+    },
+    "govSeverity": {
+      "type": "string",
+      "enum": [
+        "S1",
+        "S2",
+        "S3",
+        "S4"
+      ]
+    },
+    "govSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "govTier": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4
+    },
+    "repBlock": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "text"
+          ],
+          "properties": {
+            "kind": {
+              "const": "text"
+            },
+            "text": {
+              "$ref": "../common/text.schema.json"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "items"
+          ],
+          "properties": {
+            "kind": {
+              "const": "list"
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "../common/text.schema.json"
+              },
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "caption",
+            "columns",
+            "rows"
+          ],
+          "properties": {
+            "kind": {
+              "const": "table"
+            },
+            "caption": {
+              "$ref": "../common/text.schema.json"
+            },
+            "columns": {
+              "type": "array",
+              "items": {
+                "$ref": "../common/text.schema.json"
+              },
+              "minItems": 1
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "string",
+                    "number",
+                    "boolean",
+                    "null"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "variant_id",
+            "rows"
+          ],
+          "properties": {
+            "kind": {
+              "const": "outcomes"
+            },
+            "variant_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/repOutcomeRow"
+              },
+              "minItems": 1
+            }
+          }
+        }
+      ]
+    },
+    "repCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "green",
+        "amber",
+        "red",
+        "not_evaluated",
+        "error"
+      ],
+      "properties": {
+        "green": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "amber": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "red": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "not_evaluated": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "error": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "repInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "kind"
+      ],
+      "properties": {
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "document",
+            "engine",
+            "convention"
+          ]
+        }
+      },
+      "description": "An input a section names (A D5)."
+    },
+    "repMissing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "element",
+        "reason"
+      ],
+      "properties": {
+        "element": {
+          "$ref": "../common/text.schema.json"
+        },
+        "reason": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "An element of the I.3 template the product holds nothing behind (A D5, the Missing column)."
+    },
+    "repOpenFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "severity",
+        "rwea_share"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "$ref": "#/$defs/govSeverity"
+        },
+        "rwea_share": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "repOpinion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "level",
+        "level_label",
+        "rule",
+        "rwea_cut_points_applied",
+        "open_findings",
+        "recommendation",
+        "label"
+      ],
+      "properties": {
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4,
+          "description": "Computed by riskvalidation.governance.opinion.opinion_level."
+        },
+        "level_label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "rule": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "text"
+          ],
+          "properties": {
+            "id": {
+              "const": "W15-7"
+            },
+            "text": {
+              "$ref": "../common/text.schema.json"
+            }
+          }
+        },
+        "rwea_cut_points_applied": {
+          "type": "boolean"
+        },
+        "open_findings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repOpenFinding"
+          }
+        },
+        "recommendation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "outcome",
+            "text"
+          ],
+          "properties": {
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "approve",
+                "approve with conditions",
+                "remediate before use"
+              ]
+            },
+            "text": {
+              "$ref": "../common/text.schema.json"
+            }
+          },
+          "description": "Computed by riskvalidation.governance.opinion.recommendation."
+        },
+        "label": {
+          "allOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "properties": {
+                "en": {
+                  "const": "the rule's output on the evidence; Contraste approves no model"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "description": "Section 11: the ECB four-level opinion, the rule that gave it, the open findings it was computed on and the labelled recommendation."
+    },
+    "repOutcomeRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "test_id",
+        "model_id",
+        "segment",
+        "family",
+        "statistic",
+        "p_value",
+        "metric",
+        "light",
+        "h0",
+        "reference",
+        "policy"
+      ],
+      "properties": {
+        "test_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "segment": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "statistic": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "p_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metric": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "light": {
+          "type": "string",
+          "enum": [
+            "green",
+            "amber",
+            "red",
+            "not_evaluated",
+            "error"
+          ]
+        },
+        "h0": {
+          "type": "string"
+        },
+        "reference": {
+          "type": "string"
+        },
+        "policy": {
+          "$ref": "#/$defs/repPolicy"
+        }
+      }
+    },
+    "repPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "kind",
+        "alpha_amber",
+        "alpha_red",
+        "parameters",
+        "version",
+        "source",
+        "reason"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "p_value",
+                "upper_bad",
+                "lower_bad"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "alpha_amber": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "alpha_red": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "number",
+              "string"
+            ]
+          }
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "packaged-policy",
+            "inline-battery",
+            "unresolved"
+          ],
+          "description": "Computed by riskvalidation.governance.policy.resolve_policy."
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "The policy identity of a test row (W15-6): a packaged label through the policy file, an inline battery string parsed, or unresolved with its reason.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "unresolved"
+              }
+            },
+            "required": [
+              "source"
+            ]
+          },
+          "then": {
+            "properties": {
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              },
+              "kind": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "repSection1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "number",
+        "key",
+        "title",
+        "status",
+        "inputs",
+        "absent_reason",
+        "blocks",
+        "missing",
+        "opinion_level"
+      ],
+      "properties": {
+        "number": {
+          "const": 1
+        },
+        "key": {
+          "const": "executive_summary"
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "filled",
+            "absent"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repInput"
+          }
+        },
+        "absent_reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repBlock"
+          }
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repMissing"
+          }
+        },
+        "opinion_level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        }
+      },
+      "description": "I.3 section 1: Executive summary (06 l.1219-1237).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "filled"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "inputs": {
+                "minItems": 1
+              },
+              "blocks": {
+                "minItems": 1
+              },
+              "absent_reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "blocks": {
+                "maxItems": 0
+              },
+              "absent_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "repSection10": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "number",
+        "key",
+        "title",
+        "status",
+        "inputs",
+        "absent_reason",
+        "blocks",
+        "missing"
+      ],
+      "properties": {
+        "number": {
+          "const": 10
+        },
+        "key": {
+          "const": "findings_register"
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "filled",
+            "absent"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repInput"
+          }
+        },
+        "absent_reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repBlock"
+          }
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repMissing"
+          }
+        }
+      },
+      "description": "I.3 section 10: Findings register (06 l.1219-1237).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "filled"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "inputs": {
+                "minItems": 1
+              },
+              "blocks": {
+                "minItems": 1
+              },
+              "absent_reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "blocks": {
+                "maxItems": 0
+              },
+              "absent_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "repSection11": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "number",
+        "key",
+        "title",
+        "status",
+        "inputs",
+        "absent_reason",
+        "blocks",
+        "missing",
+        "opinion"
+      ],
+      "properties": {
+        "number": {
+          "const": 11
+        },
+        "key": {
+          "const": "opinion_and_recommendation"
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "filled",
+            "absent"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repInput"
+          }
+        },
+        "absent_reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repBlock"
+          }
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repMissing"
+          }
+        },
+        "opinion": {
+          "$ref": "#/$defs/repOpinion"
+        }
+      },
+      "description": "I.3 section 11: Overall opinion and recommendation (06 l.1219-1237).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "filled"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "inputs": {
+                "minItems": 1
+              },
+              "blocks": {
+                "minItems": 1
+              },
+              "absent_reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "blocks": {
+                "maxItems": 0
+              },
+              "absent_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "repSection12": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "number",
+        "key",
+        "title",
+        "status",
+        "inputs",
+        "absent_reason",
+        "blocks",
+        "missing"
+      ],
+      "properties": {
+        "number": {
+          "const": 12
+        },
+        "key": {
+          "const": "appendices"
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "filled",
+            "absent"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repInput"
+          }
+        },
+        "absent_reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repBlock"
+          }
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repMissing"
+          }
+        }
+      },
+      "description": "I.3 section 12: Appendices (06 l.1219-1237).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "filled"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "inputs": {
+                "minItems": 1
+              },
+              "blocks": {
+                "minItems": 1
+              },
+              "absent_reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "blocks": {
+                "maxItems": 0
+              },
+              "absent_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "repSection2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "number",
+        "key",
+        "title",
+        "status",
+        "inputs",
+        "absent_reason",
+        "blocks",
+        "missing"
+      ],
+      "properties": {
+        "number": {
+          "const": 2
+        },
+        "key": {
+          "const": "model_description"
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "filled",
+            "absent"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repInput"
+          }
+        },
+        "absent_reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repBlock"
+          }
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repMissing"
+          }
+        }
+      },
+      "description": "I.3 section 2: Model description and intended use (06 l.1219-1237).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "filled"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "inputs": {
+                "minItems": 1
+              },
+              "blocks": {
+                "minItems": 1
+              },
+              "absent_reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "blocks": {
+                "maxItems": 0
+              },
+              "absent_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "repSection3": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "number",
+        "key",
+        "title",
+        "status",
+        "inputs",
+        "absent_reason",
+        "blocks",
+        "missing"
+      ],
+      "properties": {
+        "number": {
+          "const": 3
+        },
+        "key": {
+          "const": "conceptual_soundness"
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "filled",
+            "absent"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repInput"
+          }
+        },
+        "absent_reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repBlock"
+          }
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repMissing"
+          }
+        }
+      },
+      "description": "I.3 section 3: Conceptual soundness (06 l.1219-1237).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "filled"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "inputs": {
+                "minItems": 1
+              },
+              "blocks": {
+                "minItems": 1
+              },
+              "absent_reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "blocks": {
+                "maxItems": 0
+              },
+              "absent_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "repSection4": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "number",
+        "key",
+        "title",
+        "status",
+        "inputs",
+        "absent_reason",
+        "blocks",
+        "missing"
+      ],
+      "properties": {
+        "number": {
+          "const": 4
+        },
+        "key": {
+          "const": "data"
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "filled",
+            "absent"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repInput"
+          }
+        },
+        "absent_reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repBlock"
+          }
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repMissing"
+          }
+        }
+      },
+      "description": "I.3 section 4: Data (06 l.1219-1237).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "filled"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "inputs": {
+                "minItems": 1
+              },
+              "blocks": {
+                "minItems": 1
+              },
+              "absent_reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "blocks": {
+                "maxItems": 0
+              },
+              "absent_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "repSection5": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "number",
+        "key",
+        "title",
+        "status",
+        "inputs",
+        "absent_reason",
+        "blocks",
+        "missing"
+      ],
+      "properties": {
+        "number": {
+          "const": 5
+        },
+        "key": {
+          "const": "implementation"
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "filled",
+            "absent"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repInput"
+          }
+        },
+        "absent_reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repBlock"
+          }
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repMissing"
+          }
+        }
+      },
+      "description": "I.3 section 5: Implementation and process verification (06 l.1219-1237).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "filled"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "inputs": {
+                "minItems": 1
+              },
+              "blocks": {
+                "minItems": 1
+              },
+              "absent_reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "blocks": {
+                "maxItems": 0
+              },
+              "absent_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "repSection6": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "number",
+        "key",
+        "title",
+        "status",
+        "inputs",
+        "absent_reason",
+        "blocks",
+        "missing"
+      ],
+      "properties": {
+        "number": {
+          "const": 6
+        },
+        "key": {
+          "const": "outcomes_analysis"
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "filled",
+            "absent"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repInput"
+          }
+        },
+        "absent_reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repBlock"
+          }
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repMissing"
+          }
+        }
+      },
+      "description": "I.3 section 6: Outcomes analysis (06 l.1219-1237).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "filled"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "inputs": {
+                "minItems": 1
+              },
+              "blocks": {
+                "minItems": 1
+              },
+              "absent_reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "blocks": {
+                "maxItems": 0
+              },
+              "absent_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "repSection7": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "number",
+        "key",
+        "title",
+        "status",
+        "inputs",
+        "absent_reason",
+        "blocks",
+        "missing"
+      ],
+      "properties": {
+        "number": {
+          "const": 7
+        },
+        "key": {
+          "const": "sensitivity_robustness_stress"
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "filled",
+            "absent"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repInput"
+          }
+        },
+        "absent_reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repBlock"
+          }
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repMissing"
+          }
+        }
+      },
+      "description": "I.3 section 7: Sensitivity, robustness and stress (06 l.1219-1237).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "filled"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "inputs": {
+                "minItems": 1
+              },
+              "blocks": {
+                "minItems": 1
+              },
+              "absent_reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "blocks": {
+                "maxItems": 0
+              },
+              "absent_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "repSection8": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "number",
+        "key",
+        "title",
+        "status",
+        "inputs",
+        "absent_reason",
+        "blocks",
+        "missing"
+      ],
+      "properties": {
+        "number": {
+          "const": 8
+        },
+        "key": {
+          "const": "ongoing_monitoring"
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "filled",
+            "absent"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repInput"
+          }
+        },
+        "absent_reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repBlock"
+          }
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repMissing"
+          }
+        }
+      },
+      "description": "I.3 section 8: Ongoing monitoring (06 l.1219-1237).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "filled"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "inputs": {
+                "minItems": 1
+              },
+              "blocks": {
+                "minItems": 1
+              },
+              "absent_reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "blocks": {
+                "maxItems": 0
+              },
+              "absent_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "repSection9": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "number",
+        "key",
+        "title",
+        "status",
+        "inputs",
+        "absent_reason",
+        "blocks",
+        "missing"
+      ],
+      "properties": {
+        "number": {
+          "const": 9
+        },
+        "key": {
+          "const": "limitations_and_controls"
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "filled",
+            "absent"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repInput"
+          }
+        },
+        "absent_reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repBlock"
+          }
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/repMissing"
+          }
+        }
+      },
+      "description": "I.3 section 9: Limitations and compensating controls (06 l.1219-1237).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "filled"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "inputs": {
+                "minItems": 1
+              },
+              "blocks": {
+                "minItems": 1
+              },
+              "absent_reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "blocks": {
+                "maxItems": 0
+              },
+              "absent_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

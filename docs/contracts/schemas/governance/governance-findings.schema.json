@@ -1,0 +1,894 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/governance/governance-findings.schema.json",
+  "title": "Governance findings register",
+  "description": "Catalog row governance-findings 1.0.0: the findings register across cases (data/derived/governance/findings.json): one row per case_id/variant_id/id with the product severity and its ECB F equivalent, the mapped B.7 status, the evidence, the anchor, the owner role, the raised and due dates, the ageing, the overdue flag, the remediation and the risk acceptance, with the counts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "case_id",
+    "governance_id",
+    "schema_version",
+    "as_of",
+    "provenance",
+    "conventions",
+    "rows",
+    "counts"
+  ],
+  "properties": {
+    "schema": {
+      "const": "contraste.governance.findings/v1"
+    },
+    "case_id": {
+      "const": "GOVERNANCE"
+    },
+    "governance_id": {
+      "const": "findings"
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "as_of": {
+      "$ref": "#/$defs/govDate"
+    },
+    "provenance": {
+      "$ref": "#/$defs/govProvenance"
+    },
+    "conventions": {
+      "$ref": "#/$defs/fndConventions"
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/fndRow"
+      },
+      "minItems": 1
+    },
+    "counts": {
+      "$ref": "#/$defs/fndCounts",
+      "description": "Computed by riskvalidation.governance.findings.register_counts."
+    }
+  },
+  "$defs": {
+    "fndAnchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric",
+        "test_id",
+        "model_id",
+        "segment",
+        "value",
+        "unit",
+        "basis"
+      ],
+      "properties": {
+        "metric": {
+          "type": "string",
+          "enum": [
+            "statistic",
+            "metric"
+          ]
+        },
+        "test_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "segment": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "description": "The quantitative anchor: the cited test row's statistic or metric, with its unit and the pointer it was read from."
+    },
+    "fndBySeverity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "S1",
+        "S2",
+        "S3",
+        "S4"
+      ],
+      "properties": {
+        "S1": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "S2": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "S3": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "S4": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "fndByStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "open",
+        "action_plan_agreed",
+        "in_progress",
+        "submitted_for_closure",
+        "validated_closed",
+        "overdue",
+        "risk_accepted"
+      ],
+      "properties": {
+        "open": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "action_plan_agreed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "in_progress": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "submitted_for_closure": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "validated_closed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "overdue": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "risk_accepted": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "fndCaseCount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "total",
+        "by_severity",
+        "by_status",
+        "overdue"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "pattern": "^C\\d{2}$"
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "by_severity": {
+          "$ref": "#/$defs/fndBySeverity"
+        },
+        "by_status": {
+          "$ref": "#/$defs/fndByStatus"
+        },
+        "overdue": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "fndConventions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deadline_days",
+        "severity_scale",
+        "status_map"
+      ],
+      "properties": {
+        "deadline_days": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "basis",
+            "rows"
+          ],
+          "properties": {
+            "label": {
+              "const": "convention"
+            },
+            "basis": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "severity",
+                  "days"
+                ],
+                "properties": {
+                  "severity": {
+                    "$ref": "#/$defs/govSeverity"
+                  },
+                  "days": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "minItems": 4,
+                    "maxItems": 4
+                  }
+                }
+              },
+              "minItems": 4,
+              "maxItems": 4
+            }
+          },
+          "description": "Days from the raised date to the due date, by severity (rows) and tier 1 to 4 (columns). No regulatory source prescribes days."
+        },
+        "severity_scale": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "basis",
+            "rows"
+          ],
+          "properties": {
+            "label": {
+              "const": "convention"
+            },
+            "basis": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "severity",
+                  "ecb_f"
+                ],
+                "properties": {
+                  "severity": {
+                    "$ref": "#/$defs/govSeverity"
+                  },
+                  "ecb_f": {
+                    "$ref": "#/$defs/govEcbF"
+                  }
+                }
+              },
+              "minItems": 4,
+              "maxItems": 4
+            }
+          }
+        },
+        "status_map": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "basis",
+            "rows"
+          ],
+          "properties": {
+            "label": {
+              "const": "convention"
+            },
+            "basis": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "product",
+                  "register"
+                ],
+                "properties": {
+                  "product": {
+                    "type": "string",
+                    "enum": [
+                      "open",
+                      "accepted",
+                      "closed"
+                    ]
+                  },
+                  "register": {
+                    "type": "string",
+                    "enum": [
+                      "open",
+                      "action_plan_agreed",
+                      "in_progress",
+                      "submitted_for_closure",
+                      "validated_closed",
+                      "overdue",
+                      "risk_accepted"
+                    ]
+                  }
+                }
+              },
+              "minItems": 3,
+              "maxItems": 3
+            }
+          }
+        }
+      }
+    },
+    "fndCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "by_severity",
+        "by_status",
+        "overdue",
+        "by_case"
+      ],
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "by_severity": {
+          "$ref": "#/$defs/fndBySeverity"
+        },
+        "by_status": {
+          "$ref": "#/$defs/fndByStatus"
+        },
+        "overdue": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "by_case": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fndCaseCount"
+          },
+          "minItems": 1
+        }
+      },
+      "description": "The counts by case, severity and status."
+    },
+    "fndRisk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approver",
+        "approver_reason",
+        "expiry",
+        "expiry_reason"
+      ],
+      "properties": {
+        "approver": {
+          "const": "not-applicable"
+        },
+        "approver_reason": {
+          "$ref": "../common/text.schema.json"
+        },
+        "expiry": {
+          "const": null
+        },
+        "expiry_reason": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "Risk acceptance of a stated limit of a synthetic case (W15-5): no approver and no expiry exist, each with its reason."
+    },
+    "fndRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "case_id",
+        "variant_id",
+        "id",
+        "entry_key",
+        "title",
+        "severity",
+        "ecb_f",
+        "product_status",
+        "status",
+        "evidence",
+        "anchor",
+        "anchor_reason",
+        "owner_role",
+        "tier",
+        "raised",
+        "deadline_days",
+        "due",
+        "ageing_days",
+        "overdue",
+        "remediation",
+        "remediation_reason",
+        "risk_acceptance"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[^/]+/[^/]+/[^/]+$",
+          "description": "case_id/variant_id/id."
+        },
+        "case_id": {
+          "type": "string",
+          "pattern": "^C\\d{2}$"
+        },
+        "variant_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "entry_key": {
+          "type": "string",
+          "pattern": "^C\\d{2}/[a-z0-9-]+$",
+          "description": "The inventory entry (case_id/fit_id) the finding belongs to."
+        },
+        "title": {
+          "$ref": "../common/text.schema.json"
+        },
+        "severity": {
+          "$ref": "#/$defs/govSeverity"
+        },
+        "ecb_f": {
+          "$ref": "#/$defs/govEcbF",
+          "description": "Computed by riskvalidation.governance.findings.severity_to_ecb."
+        },
+        "product_status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "accepted",
+            "closed"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "action_plan_agreed",
+            "in_progress",
+            "submitted_for_closure",
+            "validated_closed",
+            "overdue",
+            "risk_accepted"
+          ],
+          "description": "Computed by riskvalidation.governance.findings.map_product_status."
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "anchor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/fndAnchor"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Computed by riskvalidation.governance.findings.anchor_from_test_row."
+        },
+        "anchor_reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "owner_role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tier": {
+          "$ref": "#/$defs/govTier"
+        },
+        "raised": {
+          "$ref": "#/$defs/govDate"
+        },
+        "deadline_days": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Computed by riskvalidation.governance.findings.deadline_days."
+        },
+        "due": {
+          "$ref": "#/$defs/govDate",
+          "description": "Computed by riskvalidation.governance.findings.due_date."
+        },
+        "ageing_days": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Computed by riskvalidation.governance.findings.ageing_days."
+        },
+        "overdue": {
+          "type": "boolean",
+          "description": "Computed by riskvalidation.governance.findings.is_overdue."
+        },
+        "remediation": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "remediation_reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "risk_acceptance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/fndRisk"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "One finding of one variant, enriched with the B.7 fields from committed values (R3, W15-5).",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "severity": {
+                "const": "S1"
+              }
+            },
+            "required": [
+              "severity"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ecb_f": {
+                "const": "F4"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "severity": {
+                "const": "S2"
+              }
+            },
+            "required": [
+              "severity"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ecb_f": {
+                "const": "F3"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "severity": {
+                "const": "S3"
+              }
+            },
+            "required": [
+              "severity"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ecb_f": {
+                "const": "F2"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "severity": {
+                "const": "S4"
+              }
+            },
+            "required": [
+              "severity"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ecb_f": {
+                "const": "F1"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "anchor": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "anchor"
+            ]
+          },
+          "then": {
+            "properties": {
+              "anchor_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "anchor_reason": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "remediation": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "remediation"
+            ]
+          },
+          "then": {
+            "properties": {
+              "remediation_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "remediation_reason": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "risk_accepted"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "risk_acceptance": {
+                "$ref": "#/$defs/fndRisk"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "risk_acceptance": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "product_status": {
+                "const": "open"
+              }
+            },
+            "required": [
+              "product_status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "open"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "product_status": {
+                "const": "accepted"
+              }
+            },
+            "required": [
+              "product_status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "risk_accepted"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "product_status": {
+                "const": "closed"
+              }
+            },
+            "required": [
+              "product_status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "validated_closed"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "govDate": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "An ISO date (YYYY-MM-DD). The dates of a governance document are deterministic: the as-of date and every raised date come from committed values (R4 of the U15 sizing); a wall-clock date never enters a document."
+    },
+    "govEcbF": {
+      "type": "string",
+      "enum": [
+        "F1",
+        "F2",
+        "F3",
+        "F4"
+      ]
+    },
+    "govProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code_version",
+        "riskvalidation_version",
+        "generators",
+        "documents_read"
+      ],
+      "properties": {
+        "code_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The Contraste code version that wrote the document."
+        },
+        "riskvalidation_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The engine version that computed it."
+        },
+        "generators": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "description": "The writer of the document; a fixture is labelled fixture:u15-s-contracts."
+        },
+        "documents_read": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "sha256"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "$ref": "#/$defs/govSha256"
+              }
+            }
+          },
+          "minItems": 1,
+          "description": "Every case document read, with the sha256 of its bytes (line endings normalised to LF)."
+        }
+      },
+      "description": "Where a governance document came from: code and engine versions and the sha256 of every case document it read."
+    },
+    "govSeverity": {
+      "type": "string",
+      "enum": [
+        "S1",
+        "S2",
+        "S3",
+        "S4"
+      ]
+    },
+    "govSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "govTier": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4
+    }
+  }
+}
