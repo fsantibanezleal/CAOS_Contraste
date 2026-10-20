@@ -15,6 +15,8 @@ xgboost==3.4.1
 catboost==1.2.10
 shap==0.52.0
 pypdf==6.19.0
-# the engine: the validation tests, the regulatory calculators and the reference engines, pinned to the commit of the batch 3 engine branch (task/u11-liquidity, U11-P) until the integrator tags the release
+# the engine: the validation tests, the regulatory calculators and the reference engines, pinned to the commit of the batch 3 engine (4193b58: the U13-E2 fix round on the U11 and U13-E1 work) until the integrator tags the release
 # until its first PyPI release (the repository is private until then); the `market` extra brings `arch` for C11 and C13
-riskvalidation[market] @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation.git@25e9538faf10bfdbcde03c5adccffd8e86ec275c
+riskvalidation[market] @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation.git@4193b587c03b0475c56a695c995f9b68d60eb487
+# reads the EBA/ESRB 2025 macro-financial scenario workbook (C18, decision Q15 of the U13 sizing); MIT
+openpyxl==3.1.5
