@@ -417,7 +417,10 @@ def validate(
     params = dict(params or {})
     _check_params(fam, params)
     fields = (*fam.fields, *extra_fields)
-    if fam.name == "scored_sample" and params.get("outcome") == "none":
+    if fam.name == "scored_sample" and params.get("outcome") == "population":
+        # a population sample (a shift probe): neither target nor decision is required; SS-POPULATION-NO-OUTCOME rejects a row that carries one (G20)
+        fields = tuple(dataclasses.replace(f, required=False) if f.name == "target" else f for f in fields)
+    elif fam.name == "scored_sample" and params.get("outcome") == "none":
         # no outcome: target is optional and the lender's decision is the case's required output (decision V3)
         fields = tuple(dataclasses.replace(f, required=False) if f.name == "target"
                        else dataclasses.replace(f, required=True) if f.name == "decision" else f for f in fields)
@@ -527,6 +530,13 @@ def _key(fam: Family, rec: Mapping[str, Any]) -> str:
 
 def _unique(members: Sequence[tuple[int, Mapping[str, Any]]], _params: Mapping[str, Any]) -> list[tuple[int, str]]:
     return [(i, "duplicate of an earlier record") for i, _ in members[1:]]
+
+
+def _population_has_no_outcome(rec: Mapping[str, Any], params: Mapping[str, Any]) -> str | None:
+    if params.get("outcome") != "population":
+        return None
+    carried = [n for n in ("target", "decision") if rec.get(n) is not None]
+    return f"carries {' and '.join(carried)}" if carried else None
 
 
 def _months_between(a: dt.date, b: dt.date) -> int:
@@ -718,15 +728,21 @@ SCORED_SAMPLE = Family(
              _t("Each identifier appears once per observation date.",
                 "Cada identificador aparece una vez por fecha de observación."),
              _unique, group_by=("id", "observation_date")),
+        Rule("SS-POPULATION-NO-OUTCOME", "record", "reject", "target",
+             _t("A population sample carries neither an outcome nor a decision; its role is a shift probe.",
+                "Una muestra de población no lleva ni resultado ni decisión; su papel es el de una sonda de desplazamiento."),
+             _population_has_no_outcome),
     ),
     params=(Param("grades", "list", _t("The grade scale, best to worst", "La escala de grados, de mejor a peor"),
                   required=False),
-            Param("outcome", "enum", _t("Whether the case declares an outcome: target (default, required) or none (a decision sample such as HMDA or the Fed portfolios: target becomes optional and decision becomes required)",
-                                        "Si el caso declara un resultado: target (por defecto, obligatorio) o none (una muestra de decisiones como HMDA o las carteras de la Fed: target pasa a ser opcional y decision pasa a ser obligatorio)"),
-                  required=False, values=("target", "none"))),
+            Param("outcome", "enum", _t("Whether the case declares an outcome: target (default, required), none (a decision sample such as HMDA: target becomes optional and decision becomes required) or population (a population sample such as the Fed portfolios, a shift probe: target and decision are optional and a row that carries either is rejected)",
+                                        "Si el caso declara un resultado: target (por defecto, obligatorio), none (una muestra de decisiones como HMDA: target pasa a ser opcional y decision pasa a ser obligatorio) o population (una muestra de población como las carteras de la Fed, una sonda de desplazamiento: target y decision son opcionales y se rechaza la fila que lleve alguno)"),
+                  required=False, values=("target", "none", "population"))),
     open_fields=True,
     notes=(_t("A case that declares no outcome sets the dataset parameter outcome to none; target is then optional and the decision field becomes required and carries the lender's decision. Several protected attributes are the case's declared open fields.",
               "Un caso que no declara resultado fija el parametro outcome en none; target pasa a ser opcional y el campo decision pasa a ser obligatorio y lleva la decision del prestamista. Varios atributos protegidos son campos abiertos declarados por el caso."),
+           _t("A case whose data carries loan or obligor variables only, with neither an outcome nor a decision (the Federal Reserve hypothetical portfolios of C20), sets the dataset parameter outcome to population: its role is a shift probe, target and decision are optional and a row that carries either is rejected by SS-POPULATION-NO-OUTCOME. A population sample is never validated as a scored one.",
+              "Un caso cuyos datos llevan solo variables de préstamo o de deudor, sin resultado ni decisión (las carteras hipotéticas de la Reserva Federal de C20), fija el parámetro outcome en population: su papel es el de una sonda de desplazamiento, target y decision son opcionales y la regla SS-POPULATION-NO-OUTCOME rechaza la fila que lleve alguno. Una muestra de población nunca se valida como una puntuada."),
            _t("Public HMDA withholds the loan identifier and the application and action dates (U14 research addendum H1 2.5), so its reader writes two named conventions: id is the row position in the source file within its activity year, written <activity_year>-<row>, and observation_date is the activity year's 12-31, written <activity_year>-12-31. Both are conventions, not source values.",
               "El HMDA publico omite el identificador del prestamo y las fechas de solicitud y de accion (adendum de investigacion U14 H1 2.5), de modo que su lector escribe dos convenciones con nombre: id es la posicion de la fila en el archivo fuente dentro de su ano de actividad, escrita <activity_year>-<row>, y observation_date es el 12-31 del ano de actividad, escrita <activity_year>-12-31. Ambas son convenciones, no valores de la fuente."),
            _t("The case declares its features with their units; a missing feature is flagged, and imputation is "

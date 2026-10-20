@@ -80,3 +80,40 @@ def polish_zip(path: Path, rows: list[tuple[list[str], str]]) -> Path:
         z.writestr(data.POLISH_MEMBER, head + body)
     path.write_bytes(buf.getvalue())
     return path
+
+
+def test_the_fed_portfolios_validate_through_contract_1_as_a_population_sample() -> None:
+    """G20: the Fed files carry loan variables only, so they pass contract 1 with outcome = population, none rejected."""
+    rows = fed.contract_records(DATA / "fed-sample.csv", expected_rows=10)
+    assert len(rows) == 10 and rows[0]["id"] == "1" and rows[0]["observation_date"] == fed.OBSERVATION_DATE == "2025-12-31"
+    assert set(fed.VARIABLES) <= set(rows[0]) and "target" not in rows[0] and "decision" not in rows[0]
+    assert sum(r["term"] is None for r in rows) == 3                                       # NA stays a missing value, never imputed
+    rep = fed.validate_portfolio(DATA / "fed-sample.csv", "typical", expected_rows=10)
+    assert rep.counts()["rejected"] == 0 and rep.counts()["accepted"] == 10
+    assert {f["field"] for f in rep.flagged} == {"term"} and len(rep.flagged) == 3
+
+
+def test_a_fed_row_contract_1_rejects_stops_the_bake_naming_the_file_and_the_row(tmp_path: Path) -> None:
+    import pytest
+
+    lines = (DATA / "fed-sample.csv").read_text(encoding="utf-8").splitlines()
+    bad = lines[:]
+    cells = bad[3].split(",")
+    cells[4] = "1.5"                                                                      # a term that is not a whole number of months
+    bad[3] = ",".join(cells)
+    p = tmp_path / "bad.csv"
+    p.write_text("\n".join(bad) + "\n", encoding="utf-8")
+    with pytest.raises(fed.FedFormatError, match=r"bad\.csv.*row 3.*term"):
+        fed.validate_portfolio(p, "typical", expected_rows=10)
+
+
+def test_a_fed_rating_outside_the_scale_is_rejected_by_the_case_rule_and_a_report_keeps_the_extra_rule_id() -> None:
+    from pipeline.io import contract as c1
+
+    row = fed.contract_records(DATA / "fed-sample.csv", expected_rows=10)[0]
+    rep = c1.validate("scored_sample", [{**row, "rating": "ZZ"}], params=fed.CONTRACT_PARAMS,
+                      extra_fields=fed.CONTRACT_FIELDS, extra_rules=fed.CONTRACT_RULES)
+    assert rep.accepted == [] and rep.rejected[0]["violations"][0]["rule"] == "C20-FED-RATING"
+    rep = c1.validate("scored_sample", [{**row, "target": 1}], params=fed.CONTRACT_PARAMS,
+                      extra_fields=fed.CONTRACT_FIELDS, extra_rules=fed.CONTRACT_RULES)
+    assert rep.rejected[0]["violations"][0]["rule"] == "SS-POPULATION-NO-OUTCOME"
