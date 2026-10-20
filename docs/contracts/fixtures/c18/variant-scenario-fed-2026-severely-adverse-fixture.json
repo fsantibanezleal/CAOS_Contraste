@@ -3448,7 +3448,7 @@
                   "kind": "observed-exchange-rate",
                   "pair": "EUR/CLP",
                   "observation_date": "2026-08-31",
-                  "source": "Banco Central de Chile, Base de Datos Estadisticos, daily exchange rate of the euro in Chilean pesos",
+                  "source": "Banco Central de Chile, Base de Datos Estadísticos, daily exchange rate of the euro in Chilean pesos",
                   "source_url": "https://si3.bcentral.cl/Siete/es/Siete/API",
                   "source_series": "fixture-series-id"
                 }

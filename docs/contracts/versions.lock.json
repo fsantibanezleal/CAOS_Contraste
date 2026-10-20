@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "10.0.0",
+    "version": "11.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "0e3f645b7ecccd823647c1883a087b513a5768e00da0ebc4a96cc4e5b1c59d7e"
+    "sha256": "55811bb1634f87ba6838b1c91e62ec588ea5687b89851a8f451713b2933ae5da"
   },
   "readiness": {
     "version": "1.0.0",
@@ -350,14 +350,14 @@
     "sha256": "e581b846866060cd6a6521d0130832f0a2829d808b19f8a6fb827e246cfad1b1"
   },
   "c18-outputs": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c18/variant-scenario.schema.json",
-    "sha256": "a7b4d25d01b049886b1b1399b0b54352f14278f9f98eaed6fd04b9ce17e1e952"
+    "sha256": "3be05fb7e6780ae3d8ef219bee5c7acb699ea6e0a26ef0d93109119285bebe9d"
   },
   "c18-outputs-aggregation": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c18/variant-aggregation.schema.json",
-    "sha256": "33f07e49a60c5122bc4a55d5217a371c5156368f4795f2cf9a51fd2a04c0d728"
+    "sha256": "9e1393ba11748ef571d186897c45e459df2ea21fcf6f6239374617d49a8a21ea"
   },
   "c18-outputs-reverse": {
     "version": "1.0.0",
@@ -365,9 +365,9 @@
     "sha256": "119980489deba24a4b7bff6854dda49e3eb561edbc5b0920f541dd4bae507f95"
   },
   "c18-models": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c18/models.schema.json",
-    "sha256": "6a6c4117660f06e65907ab78e24c96fd93bcea6b38dfb8de8220750ff06a87f9"
+    "sha256": "fc32bf28c8adb8aa4d34ac6ef4321f6200c3aeb6586009a066fd9db4de9532b2"
   },
   "engine-aggregation-api": {
     "version": "1.1.0",
