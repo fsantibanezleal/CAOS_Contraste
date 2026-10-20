@@ -8,7 +8,9 @@ import type { TestRow } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { testName } from '../c20/U14Common';
 
-const CITATION = /\d+ CFR \d+(?:\.\d+)?(?:\([^)]*\))*/;
+// a regulation citation ("29 CFR 1607.4(D)"), a row of a regulation's annex ("row 10.2", "fila 10.2") and the arithmetic of rows a
+// label names ("(4.4+4.5+4.6)", "(8%+7.1+7.2)", "(6-7.2)", "(1.1 - 5)"): references kept as the source writes them
+const CITATION = /\d+ CFR \d+(?:\.\d+)?(?:\([^)]*\))*|\b(?:row|fila) \d+(?:\.\d+)+|\((?=[^)]*\d\.\d)(?:\d+(?:\.\d+)?%?\s*[-+]\s*)+\d+(?:\.\d+)?%?\)/;
 const RANGE = /\d{4}-\d{2}-\d{2}|\d+ (?:to|a) \d+|[<>]?\d+(?:\.\d+)?%?-[<>]?\d+(?:\.\d+)?%?/;
 const TOKEN = new RegExp(`(${CITATION.source})|(${RANGE.source})`, 'g');
 
@@ -21,7 +23,7 @@ export function Marked({ children }: { children: string }): ReactNode {
     if (i > at) parts.push(children.slice(at, i));
     parts.push(
       m[1] ? (
-        <span key={i} translate="no" lang="en">{m[0]}</span>
+        <span key={i} translate="no" lang={/^fila /.test(m[0]) ? 'es' : /^\(/.test(m[0]) ? undefined : 'en'}>{m[0]}</span>
       ) : (
         <span key={i} style={{ whiteSpace: 'nowrap' }}>{m[0]}</span>
       ),

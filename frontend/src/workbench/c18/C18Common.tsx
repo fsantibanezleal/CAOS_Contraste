@@ -41,6 +41,21 @@ export function Defs({ children, ...rest }: { children: ReactNode; [key: `data-$
   );
 }
 
+/**
+ * The rule that maps a draw through a marginal, which the document writes as one English string. The call and the formula stay as
+ * written (code, the gate skips code), the words around them are read in the page's language; a rule in another shape is shown
+ * as the document writes it.
+ */
+export function InterpolationRule({ rule, lang }: { rule: string; lang: Lang }) {
+  const m = lang === 'es' ? rule.match(/^(np\.interp) on the Hazen positions (.+?) of the sorted sample, clamped at the ends$/) : null;
+  if (!m) return <>{rule}</>;
+  return (
+    <>
+      <code>{m[1]}</code> sobre las posiciones de Hazen <code>{m[2]}</code> de la muestra ordenada, acotada en los extremos
+    </>
+  );
+}
+
 /** The words an absent block says when the view is given a document of another kind. */
 export const NOT_SCENARIO: BiText = { en: 'Not available: this document is not a scenario variant, so it has no capital plan, satellites or back-cast.', es: 'No disponible: este documento no es una variante de escenario, así que no tiene plan de capital, satélites ni back-cast.' };
 export const NOT_AGGREGATION: BiText = { en: 'Not available: this document carries no aggregation block.', es: 'No disponible: este documento no trae un bloque de agregación.' };
@@ -384,7 +399,7 @@ function ModelBlocks({ fit, card }: { fit: C18Fit; card: ReturnType<typeof useCa
             <dt>{pick({ en: 'Draws, seed and chunk', es: 'Sorteos, semilla y bloque' }, lang)}</dt>
             <dd>{`${cell(fit.aggregation.n_draws, lang)}; ${fit.aggregation.seed}; ${cell(fit.aggregation.chunk_size, lang)}`}</dd>
             <dt>{pick({ en: 'Rule that maps a draw through a marginal', es: 'Regla que lleva un sorteo por una marginal' }, lang)}</dt>
-            <dd>{fit.aggregation.marginal_interpolation}</dd>
+            <dd><InterpolationRule rule={fit.aggregation.marginal_interpolation} lang={lang} /></dd>
             <dt>{pick({ en: 'Static balance sheet rules (EBA 2025 note)', es: 'Reglas de balance estático (nota EBA 2025)' }, lang)}</dt>
             <dd>{fit.capital_engine.rules.map((r) => `${pick({ en: 'paragraph', es: 'párrafo' }, lang)} ${r.paragraph}`).join('; ')}</dd>
           </Defs>

@@ -49,16 +49,16 @@ def aggregation_document(core: Core) -> dict[str, Any]:
         {"id": "headline-simple-sum", "severity": "S4", "status": "open", "evidence": ["aggregation.simple_sum_and_variance_covariance"],
          "title": T(f"The headline capital is the simple sum, CLP {total:,.0f} million. The dependence band runs from CLP {lower:,.0f} million (best case) to CLP {worst:,.0f} "
                     f"million (worst case); the Gaussian copula figure is {1 - gauss / total:.1%} below the sum and is information, not capital.",
-                    f"El capital principal es la suma simple, CLP {total:,.0f} millones. La banda de dependencia va de CLP {lower:,.0f} millones (mejor caso) a CLP {worst:,.0f} "
-                    f"millones (peor caso); la cifra de la cópula gaussiana está {1 - gauss / total:.1%} bajo la suma y es información, no capital.")},
+                    f"El capital principal es la suma simple, CLP {P.es(total, ',.0f')} millones. La banda de dependencia va de CLP {P.es(lower, ',.0f')} millones (mejor caso) a CLP {P.es(worst, ',.0f')} "
+                    f"millones (peor caso); la cifra de la cópula gaussiana está {P.es(1 - gauss / total, '.1%')} bajo la suma y es información, no capital.")},
         {"id": "model-risk", "severity": "S3", "status": "open", "evidence": ["aggregation.copula_choice_sensitivity"],
          "title": T(f"The aggregation model moves the figure by up to {am:.1%} over the Gaussian copula (the Barrieu and Scandolo add-on): sensitivity information for the "
                     "validator, never capital.",
-                    f"El modelo de agregación mueve la cifra hasta {am:.1%} sobre la cópula gaussiana (el recargo de Barrieu y Scandolo): información de sensibilidad para el "
+                    f"El modelo de agregación mueve la cifra hasta {P.es(am, '.1%')} sobre la cópula gaussiana (el recargo de Barrieu y Scandolo): información de sensibilidad para el "
                     "validador, nunca capital.")},
         {"id": "rosenberg-schuermann-reference", "severity": "S4", "status": "open", "evidence": ["aggregation.rosenberg_schuermann_reference"],
          "title": T(f"The additive approximation exceeds the Gaussian copula figure by {over:.1%}; the published range of 30 to 40 percent is a reference and no gate.",
-                    f"La aproximación aditiva excede la cifra de la cópula gaussiana en {over:.1%}; el rango publicado de 30 a 40 por ciento es una referencia y no una barrera.")}]
+                    f"La aproximación aditiva excede la cifra de la cópula gaussiana en {P.es(over, '.1%')}; el rango publicado de 30 a 40 por ciento es una referencia y no una barrera.")}]
     return {"outputs": plain(outputs), "tests": rows, "impact": impact, "findings": findings}
 
 
@@ -107,7 +107,7 @@ def reverse_document(core: Core, loss_fn: Callable[[np.ndarray], float]) -> dict
     findings = [{"id": "reverse-scenario", "severity": "S3", "status": "open", "evidence": ["stress.reverse_solution_check"],
                  "title": T(f"On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts {names[0]} by {x[0]:+.2f} and {names[1]} by "
                             f"{x[1]:+.2f} points, a Mahalanobis distance of {best.distance:.2f} (tail probability {p:.1%}); the loss-only baseline already ends below the stack.",
-                            f"En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza {names[0]} en {x[0]:+.2f} y {names[1]} en "
-                            f"{x[1]:+.2f} puntos, a una distancia de Mahalanobis de {best.distance:.2f} (probabilidad de cola {p:.1%}); la base de solo pérdidas ya termina bajo el mínimo.")}]
+                            f"En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza {names[0]} en {P.es(x[0], '+.2f')} y {names[1]} en "
+                            f"{P.es(x[1], '+.2f')} puntos, a una distancia de Mahalanobis de {P.es(best.distance, '.2f')} (probabilidad de cola {P.es(p, '.1%')}); la base de solo pérdidas ya termina bajo el mínimo.")}]
     return {"outputs": plain(outputs), "tests": rows_of([test]), "impact": impact, "findings": findings, "solution": best, "plausibility": p,
             "net_loss_at_zero": net_zero}

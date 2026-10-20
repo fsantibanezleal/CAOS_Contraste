@@ -8,6 +8,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
+import { Marked } from '../c21/Marked';
 import { Defs, NOT_SCENARIO, PCT, UnavailableCard, cell } from './C18Common';
 import { HWaterfall, stackRows } from './Waterfall';
 import {
@@ -201,7 +202,7 @@ export function FanView({ sel }: { sel: C18Sel | null }) {
               </tbody>
             </table>
           ) : (
-            <p className="ct-note" data-mitigation="none" data-na="true">{`${formatNumber(null, lang)}: ${m.reason ? pick(m.reason, lang) : ''}`}</p>
+            <p className="ct-note" data-mitigation="none" data-na="true">{formatNumber(null, lang)}: <Marked>{m.reason ? pick(m.reason, lang) : ''}</Marked></p>
           )}
           {o.capital_plan.alternative_sources.length > 0 ? (
             <p className="ct-note">
@@ -459,7 +460,7 @@ export function Annex3View({ sel }: { sel: C18Sel | null }) {
             <tbody>
               {rows.map((r) => (
                 <tr key={r.row_id} data-annex-row={r.row_id}>
-                  <td className="ct-text" title={r.label_cmf}>{`${r.row_id} ${label(r)}`}</td>
+                  <td className="ct-text" title={r.label_cmf}><span translate="no">{r.row_id}</span> <Marked>{label(r)}</Marked></td>
                   <td><CellText c={r.a} kind="pct" lang={lang} /></td>
                   <td><CellText c={r.b} kind="money" lang={lang} /></td>
                   <td><CellText c={r.c} kind="money" lang={lang} /></td>

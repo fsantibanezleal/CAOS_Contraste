@@ -166,7 +166,7 @@ def findings_scenario(core: Core, sc: Scenario, doc_outputs: dict[str, Any], tes
     gauss = next(r for r in a["band"] if r["method"] == "gaussian-copula")["capital_clp_m"]
     out.append({"id": "headline-simple-sum", "severity": "S4", "status": "open", "evidence": ["aggregation.simple_sum_and_variance_covariance"],
                 "title": _join(T(f"The headline capital is the simple sum, CLP {total:,.0f} million; the Gaussian copula figure, {1 - gauss / total:.1%} lower, is information and not capital.",
-                                 f"El capital principal es la suma simple, CLP {total:,.0f} millones; la cifra de la cópula gaussiana, {1 - gauss / total:.1%} menor, es información y no capital."),
+                                 f"El capital principal es la suma simple, CLP {P.es(total, ',.0f')} millones; la cifra de la cópula gaussiana, {P.es(1 - gauss / total, '.1%')} menor, es información y no capital."),
                            BACKCAST_SENTENCE)})
     plan = {c["case"]: c for c in doc_outputs["capital_plan"]["cases"]}
     sw = plan["stress-without-mitigation"]["years"]
@@ -176,26 +176,26 @@ def findings_scenario(core: Core, sc: Scenario, doc_outputs: dict[str, Any], tes
     if head < 0:
         out.append({"id": "internal-target-not-held", "severity": "S2", "status": "open", "evidence": ["design:outputs.capital_plan"],
                     "title": T(f"Under this scenario the PE ratio falls to {worst['pe']['pct_of_rwa']:.2%} of RWA in year {worst['year']}, {-head:.2%} of RWA below the internal "
-                               f"target of {oi:.2%}.", f"Bajo este escenario la razón de PE cae a {worst['pe']['pct_of_rwa']:.2%} de los APR en el año {worst['year']}, "
-                               f"{-head:.2%} de los APR bajo el objetivo interno de {oi:.2%}.")})
+                               f"target of {oi:.2%}.", f"Bajo este escenario la razón de PE cae a {P.es(worst['pe']['pct_of_rwa'], '.2%')} de los APR en el año {worst['year']}, "
+                               f"{P.es(-head, '.2%')} de los APR bajo el objetivo interno de {P.es(oi, '.2%')}.")})
     else:
         out.append({"id": "internal-target-held", "severity": "S4", "status": "open", "evidence": ["design:outputs.capital_plan"],
                     "title": T(f"Under this scenario the PE ratio stays {head:.2%} of RWA above the internal target of {oi:.2%} at its lowest, in year {worst['year']}.",
-                               f"Bajo este escenario la razón de PE se mantiene {head:.2%} de los APR sobre el objetivo interno de {oi:.2%} en su punto más bajo, el año {worst['year']}.")})
+                               f"Bajo este escenario la razón de PE se mantiene {P.es(head, '.2%')} de los APR sobre el objetivo interno de {P.es(oi, '.2%')} en su punto más bajo, el año {worst['year']}.")})
     stack = rv_cap.chilean_cet1_stack(core.anchors.stack["c_ccyb"], core.anchors.stack["c_dsib"], core.named["reverse_p2_cet1"]["value"])
     low = min(sw, key=lambda y: y["cet1"]["pct_of_rwa"])
     if low["cet1"]["pct_of_rwa"] < stack:
         out.append({"id": "cet1-stack-breached", "severity": "S1", "status": "open", "evidence": ["design:outputs.headline_cet1"],
                     "title": T(f"On the loss-only path CET1 falls to {low['cet1']['pct_of_rwa']:.2%} of RWA in year {low['year']}, below the Chilean legal minimum stack of {stack:.2%}; "
                                "the labelled PPNR row, which credits earnings, is shown beside it.",
-                               f"En la trayectoria solo de pérdidas el CET1 cae a {low['cet1']['pct_of_rwa']:.2%} de los APR en el año {low['year']}, bajo el mínimo legal de {stack:.2%}; "
+                               f"En la trayectoria solo de pérdidas el CET1 cae a {P.es(low['cet1']['pct_of_rwa'], '.2%')} de los APR en el año {low['year']}, bajo el mínimo legal de {P.es(stack, '.2%')}; "
                                "la fila rotulada de PPNR, que acredita utilidades, se muestra al lado.")})
     deficit = [y for y in sw if y["deficit_clp_m"] > 0]
     if deficit:
         d = max(deficit, key=lambda y: y["deficit_clp_m"])
         out.append({"id": "legal-minimum-breached", "severity": "S1", "status": "open", "evidence": ["design:outputs.capital_plan"],
                     "title": T(f"The stress path leaves a deficit of CLP {d['deficit_clp_m']:,.0f} million against the legal minimum of PE in year {d['year']}.",
-                               f"La trayectoria de tensión deja un déficit de CLP {d['deficit_clp_m']:,.0f} millones frente al mínimo legal de PE en el año {d['year']}.")})
+                               f"La trayectoria de tensión deja un déficit de CLP {P.es(d['deficit_clp_m'], ',.0f')} millones frente al mínimo legal de PE en el año {d['year']}.")})
     sens = next(t for t in tests if t["test_id"] == "stress.sensitivity_monotonicity")
     if sens["light"] in ("red", "amber"):
         out.append({"id": "satellite-sign", "severity": "S3", "status": "open", "evidence": ["stress.sensitivity_monotonicity"],
