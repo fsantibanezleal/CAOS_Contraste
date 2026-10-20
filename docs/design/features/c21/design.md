@@ -96,14 +96,15 @@ with under 62 (`applicant_age_above_62`, Regulation B 1002.6(b)(2)), would chang
 
 | Id | Severity | Status | Shows | Cites |
 |---|---|---|---|---|
-| `F-CONTROLLED-REPEATS` | S2 | open | the controlled disparity of group contrasts whose 95 percent interval excludes 0 in the fit year and whose sign repeats on t + 1 | the `fair.conditional_disparity` row and its `|controlled` `fair.replication` row, per contrast |
-| `F-CONTROLLED-NOT-REPEATED` | S3 | open | the same, where the sign does not repeat | the same two rows |
-| `F-RATE-SPREAD-REPEATS` | S3 | open | the rate-spread disparity whose interval excludes 0 and whose sign repeats | the `fair.rate_spread_disparity` row and its `|rate_spread` replication row |
-| `F-UNCONDITIONAL-GAP` | S4 | open | the attributes whose parity light is not green, as an indicator only, with the sentence of the Interagency Procedures | the `fair.demographic_parity` and `fair.adverse_impact` rows of those attributes |
+| `F-CONTROLLED-LOWER-ODDS` | S2 | open | the controlled disparity of group contrasts whose 95 percent interval excludes 0 in the fit year, whose sign repeats on t + 1 and whose controlled odds ratio is below 1 (approved at lower controlled odds than the reference group) | the `fair.conditional_disparity` row and its `|controlled` `fair.replication` row, per contrast |
+| `F-CONTROLLED-HIGHER-ODDS` | S3 | open | the same, where the odds ratio is above 1 (approved at higher controlled odds) | the same two rows |
+| `F-CONTROLLED-NOT-REPEATED` | S3 | open | the controlled disparity whose interval excludes 0 and whose sign does not repeat | the same two rows |
+| `F-RATE-SPREAD-HIGHER` | S3 | open | the rate-spread disparity whose interval excludes 0, whose sign repeats and whose coefficient is positive (a higher spread for the group) | the `fair.rate_spread_disparity` row and its `|rate_spread` replication row |
+| `F-UNCONDITIONAL-GAP` | S4 | open | the attributes whose parity light is not green, as an indicator only, with the sentence of the Interagency Procedures; and the repeating rate-spread disparities with a lower spread for the group | the `fair.demographic_parity` and `fair.adverse_impact` rows of those attributes, and the rate-spread rows of those contrasts |
 | `F-LIMIT-CREDIT-SCORE` | S4 | accepted | the credit score is missing from public HMDA | `design:credit-score-missing` |
 | `F-LIMIT-COMPLETE-CASES` | S4 | accepted | the controlled fits use complete cases | `design:complete-case-selection` |
 
-A finding whose rule matches no row is not written. A rate-spread interval that excludes 0 without repeating is not a finding.
+A finding whose rule matches no row is not written, and no finding mixes directions. A rate-spread interval that excludes 0 without repeating is not a finding.
 
 ## What the documents do not say
 
