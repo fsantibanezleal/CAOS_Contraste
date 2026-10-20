@@ -1,4 +1,4 @@
-# Engine regulatory API contract: `engine-regulatory-api` 1.0.0
+# Engine regulatory API contract: `engine-regulatory-api` 1.1.0
 
 Owner: U9-S (unit sizing `plans/contraste/units/U9-sizing.md`, CAOS_MANAGE). Implemented by U9-E1 in `riskvalidation.regulatory`
 (`standardised.py`, `output_floor.py`, `sa_ccr.py`, `ba_cva.py`, `frtb.py`; repository CAOS_RiskValidation); called by the regulatory
@@ -430,7 +430,7 @@ def girr_parameters(specified_currency: bool = True) -> GirrParameters: ...
 ```
 
 - Units: tenors in years, risk weights decimals, correlations decimals.
-- Golden: the addendum R7 values: tenors `0.25, 0.5, 1, 2, 3, 5, 10, 15, 20, 30` (MAR21.8), risk weights `1.7, 1.7, 1.6, 1.3, 1.2, 1.1, 1.1, 1.1, 1.1, 1.1` percent (MAR21.42 Table 1), the 10 by 10 correlation matrix of MAR21.46 Table 2 (for example 0.5 to 5 years 0.763, 2 to 3 years 0.985, 0.25 to 30 years 0.40), 0.999 for the same tenor on other curves (MAR21.45), `gamma = 0.5` (MAR21.50), curvature shock 0.017 (MAR21.99); with `specified_currency` the weights are divided by `sqrt(2)` (MAR21.44, the bank's discretion: 0.017 / sqrt(2) = 0.012021) and the field `sqrt2_applied` says so. Invariant: the matrix is symmetric with a unit diagonal and every off-diagonal entry in `[0.40, 1)`; it equals `max(exp(-0.03 |Tk - Tl| / min(Tk, Tl)), 0.40)` to the printed 0.1 percent (a reconstructed check, the table is primary).
+- Golden: the addendum R7 values: tenors `0.25, 0.5, 1, 2, 3, 5, 10, 15, 20, 30` (MAR21.8), risk weights `1.7, 1.7, 1.6, 1.3, 1.2, 1.1, 1.1, 1.1, 1.1, 1.1` percent (MAR21.42 Table 1), the 10 by 10 correlation matrix of MAR21.46 Table 2 (for example 0.5 to 5 years 0.763, 2 to 3 years 0.985, 0.25 to 30 years 0.40), 0.999 for the same tenor on other curves (MAR21.45), `gamma = 0.5` (MAR21.50), curvature shock 0.017 (MAR21.99); with `specified_currency` the weights are divided by `sqrt(2)` (MAR21.44, the bank's discretion: 0.017 / sqrt(2) = 0.012021) and the field `sqrt2_applied` says so. A curvature consumer uses `curvature_shock_undivided` (0.017): MAR21.99 bases the curvature weight on "the highest prescribed delta risk weight" and MAR21.44's division names the delta weights of MAR21.42 to 43, so the divided 0.012021 is a derived reading, kept exposed and labelled (1.1.0, U9 decision H4). Invariant: the matrix is symmetric with a unit diagonal and every off-diagonal entry in `[0.40, 1)`; it equals `max(exp(-0.03 |Tk - Tl| / min(Tk, Tl)), 0.40)` to the printed 0.1 percent (a reconstructed check, the table is primary).
 
 ### `riskvalidation.regulatory.frtb.scenario_correlation`
 
@@ -477,7 +477,7 @@ def curvature_charge(cvr_plus: np.ndarray, cvr_minus: np.ndarray, rho: np.ndarra
 ```
 
 - Units: `cvr_plus` and `cvr_minus` (B, K) curvature risk positions per bucket and factor (money).
-- Invariants: MAR21.5 with `psi(x, y) = 0` if both are negative and 1 otherwise, `K_b = max(K_b+, K_b-)`, the within-bucket correlations the squares of the delta ones (MAR21.100); `S_b` is the sum of the CVR of the scenario that selected `K_b`; all-negative CVR give 0; the result is never negative. The GIRR curvature shock is 0.017 (MAR21.99).
+- Invariants: MAR21.5 with `psi(x, y) = 0` if both are negative and 1 otherwise, `K_b = max(K_b+, K_b-)`, the within-bucket correlations the squares of the delta ones (MAR21.100) and the cross-bucket ones too: `gamma` is the DELTA cross-bucket correlation and the function squares it (MAR21.101, transcribed verbatim in the engine's `docs/regulatory/u9/05_frtb-sbm-and-cascade.md`; 1.1.0, U9 decision H2), so a caller never passes it squared; when `K_b+ = K_b-` the upward scenario is selected if and only if the sum of `CVR+` exceeds the sum of `CVR-` (MAR21.5(3)(a)(iii); 1.1.0, U9 decision H3); `S_b` is the sum of the CVR of the scenario that selected `K_b`; all-negative CVR give 0; the result is never negative. The GIRR curvature shock is 0.017 (MAR21.99).
 
 ### `riskvalidation.regulatory.frtb.sbm_capital`
 
@@ -514,11 +514,11 @@ message, never an exception, on a document the schema would refuse.
 - BA-CVA full (MAR50.20 to MAR50.25): no official numeric example (addendum R8, RBI draft Annex I is backlog BL-080).
 - GIRR: the footnote 13 formula of MAR21.46 is reconstructed (`max(exp(-0.03 |Tk - Tl| / min(Tk, Tl)), 40%)`) and matches all 100 entries of
   Table 2; the table is the primary value. The vega risk-weight formula (footnote 24) is not transcribed (a swap book has no vega).
-- MAR21.101 (curvature cross-bucket aggregation) was not read in the addendum; `curvature_charge` follows dossier 01 D.2 (MAR21.5).
+- MAR21.101 (curvature cross-bucket aggregation) was not read in the addendum; the U9-E1 fix round transcribed it and MAR21.5(3)(a)(iii) from the BIS page (in force 2023-01-01), and `curvature_charge` follows both (1.1.0).
 - CRE20 version in force 2028-01-01 (published 2025-06-10) is not compared.
 - SA-CVA, DRC and RRAO are out of scope (sizing decision D1).
 - Curvature across buckets (S4, main session 2026-10-19): `curvature_charge` follows dossier 01 D.2 (MAR21.5, the psi rule). C12 is a
-  single-currency USD book with one GIRR bucket, so the cross-bucket step of MAR21.101 does not bind; it is a stated limit for a
-  multi-currency book.
+  single-currency USD book with one GIRR bucket, so the cross-bucket step of MAR21.101 does not bind; from 1.1.0 the engine
+  applies it (gamma squared) for a multi-currency book.
 - The row of MAR33.12 Table 2 "commodity volatility, 60 or 120 days" is ambiguous in dossier 01 D.3 and is not transcribed into the parameter
   table of the document.

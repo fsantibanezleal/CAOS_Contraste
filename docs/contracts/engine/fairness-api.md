@@ -1,6 +1,8 @@
-# Engine fairness API contract: `engine-fairness-api` 1.0.0
+# Engine fairness API contract: `engine-fairness-api` 1.1.0
 
 Owner: U14-S (unit sizing `plans/contraste/units/U14-sizing.md`, CAOS_MANAGE). Implemented by U14-E2 in `riskvalidation.fairness` and `riskvalidation.validation.fairness`; called by the C20 and C21 bakes (U14-P2, U14-P3). The tests are written by U14-E2 against this file. Sources: dossier 06 C.7 l.1029-1040, I.6 l.1268-1270; dossier 04 J.3 l.897-905; dossier 07 A.3 l.158-177; the U14 research addendum (`wip/contraste/u14-research-addendum-2026-10-17.md`: H1 field names, H3 legal tests, H5 the situation-testing algorithm). The case documents are `c21-outputs`, `c21-models` (`docs/contracts/schemas/c21/`) and the Taiwan battery rows of the C20 documents. The four-fifths line is an employment benchmark and never a credit-law threshold. HMDA has no outcome (08 l.180-181): the outcome-conditioned tests (equalized odds, equal opportunity, calibration within groups, AUC by group) never run on it. The engine states no legal claim.
+
+Version history: 1.0.0, the first contract; 1.1.0 after the U14-E2 review (U14 decisions G5, G8 to G13): the 'never red' lights capped at amber under any policy, `protected_effect` refusing the intercept, the `categorical` keyword of `situation_test`, the situation-testing amber cut 0.20, the `fair.` rows in the packaged default policy, the replication rule at a zero fit coefficient and the counterfactual counts finding.
 
 ## Conventions (all functions)
 
@@ -9,6 +11,7 @@ Owner: U14-S (unit sizing `plans/contraste/units/U14-sizing.md`, CAOS_MANAGE). I
 - A function that cannot compute because data is missing raises `ValueError` with the reason, or (a validation function) returns the `not_evaluated` light with its reason in `notes`; it never returns a placeholder number.
 - A validation function returns one `TestResult` of `riskvalidation`, serialised by `TestResult.to_dict()` into a row that validates against `common/test-result` (`docs/contracts/schemas/common/test-result.schema.json`). Test ids are prefixed `fair.`.
 - Tolerances, grids, counts and cut-offs are conventions, never regulatory thresholds (06 I.6 l.1268-1270); the named parameters of the case documents are listed in the case schemas, the light cut points in Policy thresholds and the other values in Conventions table.
+- The `fair.` rows sit in the packaged `policies/default.json` (1.1.0, U14 decision G5): `run_suite` passes `default_policy()` explicitly, so a row held only in a module would give no colour. `fairness_default_policy()` is then the default policy itself, label unchanged.
 - Boundary rule of the lights: see Policy thresholds. `Threshold.classify` is inclusive; a tolerance stated as 'exceeds' is stored one float above, so the light and the strict boolean (`robustness_finding`, `overfit_gap`) agree at the boundary.
 - No golden value is claimed where the dossiers print none: each check is an identity, an independent reference or a size and power run on a planted defect.
 
@@ -199,7 +202,7 @@ class DecisionModel: coefficients: tuple[float, ...]; standard_errors: tuple[flo
 def protected_effect(model: DecisionModel, index: int, level: float = 0.95) -> Effect
 ```
 
-- Units: Returns the coefficient, the odds ratio and the Wald interval of one protected indicator.
+- Units: Returns the coefficient, the odds ratio and the Wald interval of one protected indicator. `index` is the position in `coefficients`: protected indicator j is index 1 + j, and index 0 (the intercept) raises `ValueError` (1.1.0, U14 decision G9).
 - Invariants: ci lo <= coefficient <= ci hi; odds ratio = exp(coefficient).
 - Check: Interval equals coefficient +/- z * se (identity).
 
@@ -292,11 +295,11 @@ def wald_interval_one_sided(delta: float, p_c: float, p_t: float, k: int, alpha:
 ### `riskvalidation.fairness.situation.situation_test`
 
 ```python
-def situation_test(X: numpy.ndarray, group: numpy.ndarray, decision: numpy.ndarray, k: int, tau: float = 0.0, alpha: float = 0.05, comparator: str = 'ceteris-paribus', counterfactual: numpy.ndarray | None = None, normalization: str = 'range') -> SituationResult
+def situation_test(X: numpy.ndarray, group: numpy.ndarray, decision: numpy.ndarray, k: int, tau: float = 0.0, alpha: float = 0.05, comparator: str = 'ceteris-paribus', counterfactual: numpy.ndarray | None = None, normalization: str = 'range', categorical: numpy.ndarray | None = None) -> SituationResult
 ```
 
 - Units: Runs the test for every complainant of the protected group. comparator is 'ceteris-paribus' or 'mutatis-mutandis'; the latter needs a caller-supplied counterfactual aligned row by row (the algorithm supplies none; public HMDA gives none, so C21 runs the ceteris paribus comparator only, with normalization 'range').
-- Invariants: Raises ValueError for 'mutatis-mutandis' without a counterfactual.
+- Invariants: Raises ValueError for 'mutatis-mutandis' without a counterfactual. `categorical` (1.1.0, U14 decision G10) is a boolean mask over the columns of `X`: a categorical column contributes the overlap measure (1 if the values differ, 0 otherwise) and every other column the normalised Manhattan distance, the paper's equations (3) to (5) (addendum line 323); under `standard` the categorical columns still use overlap and the standardisation applies to the others; `None` keeps every column continuous, as in 1.0.0. C21 marks the nominal `loan_type`, `loan_purpose`, `lien_status` and `occupancy_type` categorical; the binned debt-to-income is ordinal and enters as its bin index.
 - Check: Tested against the paper's equations and the toy golden of addendum 7.6 (4) (under both normalizations). The loan-application counts of addendum 7.6 (2) (ST 55 cases and 44 significant at k = 15, then 65 and 57, 84 and 65, 107 and 85, 204 and 148 at k = 30, 50, 100, 250) were produced by the reference code with its StandardScaler, so they are claimed only under normalization='standard'; nothing claims them under 'range'. Never tested against the reference code's report columns.
 
 ### `riskvalidation.fairness.situation.SituationResult`
@@ -363,7 +366,7 @@ def demographic_parity(model_id: str, rates: Mapping[str, SelectionRate], refere
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.demographic_parity"
-- Light: reported as an indicator: green when the largest absolute parity gap is at most the tolerance (a convention), amber above it; never red.
+- Light: reported as an indicator: green when the largest absolute parity gap is at most the tolerance (a convention), amber above it; never red, under any policy: a policy's red cut is not applied and the notes say so (1.1.0, U14 decision G8).
 - Policy key: `fair.demographic_parity` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
@@ -493,7 +496,7 @@ def replication(model_id: str, replication: Replication) -> TestResult
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.replication"
-- Light: amber when the sign differs between year t and t+1.
+- Light: amber when the sign differs between year t and t+1. A fit coefficient of exactly 0 has no sign: the result is `not_evaluated` with that reason (1.1.0).
 - Policy: no policy threshold (row `fair.replication` of Policy thresholds states why); the rule above is the whole classification.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
@@ -506,7 +509,7 @@ def situation_testing(model_id: str, result: SituationResult, policy: Policy | N
 - Units: A TestResult row validating against common/test-result: statistic, p_value in [0, 1] or null, metric, alphas decimals, n and n_events integers.
 - Invariants: Pure and deterministic; ids are prefixed `fair.`; `reference`, `h0` and `alternative` are filled; the policy version records every tolerance as a parameter in `extras['thresholds']` (conventions, never regulatory); missing data returns the `not_evaluated` light with the reason in `notes` and statistic, p_value and metric all null.
 - Test id: test_id = "fair.situation_testing"
-- Light: reported as individual-level indicators: amber when the significant share of the complainants reaches the cut point; never red; no legal claim.
+- Light: reported as individual-level indicators: amber when the significant share of the complainants reaches the cut point; never red, under any policy (1.1.0, U14 decision G8); no legal claim.
 - Policy key: `fair.situation_testing` (upper_bad); the cut points are the rows of Policy thresholds, a `policy` argument of None means `default_policy()`.
 - Check: The size under the null and the power against the planted defect at alpha 0.05, with Monte Carlo error, at no fewer than 4,000 repetitions (SDD l.335); no golden value is claimed (the dossiers print none).
 
@@ -527,7 +530,7 @@ Lights come from the engine's `riskvalidation.core.policy.Policy`, a named, vers
 | `fair.conditional_disparity` | none | the 95 percent Wald interval of the protected effect: amber when it excludes 0 | none | not applicable | the interval level 0.95 is a convention; no numeric cut point | convention |
 | `fair.rate_spread_disparity` | none | the 95 percent interval of the rate-spread effect: amber when it excludes 0 | none | not applicable | the interval level 0.95 is a convention; no numeric cut point | convention |
 | `fair.replication` | none | the sign of the effect on year t and on year t+1 | none | not applicable | rule, not a convention: sign and size are the replication test (decision Q4) | rule, not a convention |
-| `fair.situation_testing` | upper_bad | n_significant over n_complainants | amber 0.10, red 2.0 | inclusive | amber: proposed, no source value; red 2.0 is a sentinel above the metric's range (at most 1): never red | convention |
+| `fair.situation_testing` | upper_bad | n_significant over n_complainants | amber 0.20, red 2.0 | inclusive | amber: 0.20, set on the measured size 0.039 and power 1.000 at n 400 and k 30 (1.1.0, U14 decision G11; 0.10 had size 0.194), no source value; red 2.0 is a sentinel above the metric's range (at most 1): never red | convention |
 
 ## Conventions table
 
@@ -549,11 +552,11 @@ The function names of this page are ratified as `engine-fairness-api` 1.0.0 (dec
 
 - F1, the distance normalization. The paper's text (arXiv 2502.01267, equation 5) divides the continuous distance by the range max - min of the attribute. The reference code (SantanderAI `SituationTesting` at commit 38e2c5b) standardizes with a scikit-learn StandardScaler by default, so its per-attribute distance is the absolute z-score difference; with normalize=False it divides by max - min of the search set (addendum 7.5). The published counts of addendum 7.6 (2) were produced under the standard scaler, so they are claimed only under normalization='standard'. C21 uses 'range' (decision V4).
 - F2, the one-sided interval. The reference code's report rounds z to 1.645 (0.581595 for the toy fixture of addendum 7.6 (4)) and reports the symmetric two-sided interval [-0.082, 1.082]; equation (10) with the exact quantile gives w_alpha 0.58154 and the one-sided interval [-0.0815, +inf). This page claims equation (10).
-- F3, the counterfactual paths. The reference code standardizes the counterfactual dataset with its own scaler and its include_centers=True path is broken on pandas 3 (DataFrame.append); tests use the paper's equations and the goldens of addendum 7.6, never the code's report columns.
+- F3, the counterfactual paths. The reference code standardizes the counterfactual dataset with its own scaler and its include_centers=True path is broken on pandas 3 (DataFrame.append); tests use the paper's equations and the goldens of addendum 7.6, never the code's report columns. The published counterfactual (CST) counts reproduce only through the reference code's own counterfactual scaler; read in the factual space (the engine's semantics) they are (433, 416), (456, 449), (487, 477), (539, 530), (661, 648) (U14-E2 review F8, recorded in 1.1.0).
 
 ## UNVERIFIED and open items
 
 - The approval and denial classification of HMDA `action_taken` is not settled by any source read (addendum UNVERIFIED); the C21 convention is approval = 1 and 2, denial = 3 and is labelled a convention.
 - Ethnicity maps to national origin only by convention (addendum H3, UNVERIFIED).
 - A counterfactual generator for HMDA is not supplied by the algorithm: C21 runs the ceteris paribus comparator only.
-- The Policy thresholds of the four outcome-conditioned battery tests and of the situation-testing share are proposed for the main session's approval; no source gives a value.
+- The Policy thresholds of the four outcome-conditioned battery tests are proposed for the main session's approval; no source gives a value. The situation-testing share's cut is set on its measured size (1.1.0, U14 decision G11).

@@ -345,9 +345,9 @@
     "sha256": "6beb000681ade70d320565cc7e42eb56f18f13774d2fb2d151fb611e3e7f8d99"
   },
   "engine-fairness-api": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "schema": "docs/contracts/engine/fairness-api.md",
-    "sha256": "ba26f43f2900d038bfaab59085bc069e226a1b88b7542b08434fd7702418639f"
+    "sha256": "27fda540284955bfa8c3f79ee050ee94487490fa8f3dd7b43bb94a33e9768788"
   },
   "c18-outputs": {
     "version": "1.0.0",
@@ -395,9 +395,9 @@
     "sha256": "97b6f7bf06ae540821aa57d91fadbbd820e385ea32524f0bbb081319c0f5a749"
   },
   "engine-regulatory-api": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "schema": "docs/contracts/engine/regulatory-api.md",
-    "sha256": "3850112a1f06e35650bc67e46c1f678d92adcd9a286f276dbdc36b31c0626a01"
+    "sha256": "ebd14e6b4d77178985f8525628ac14471635123bf0de224cf31f495e795bfc0b"
   },
   "engine-ccr-api": {
     "version": "1.0.0",
