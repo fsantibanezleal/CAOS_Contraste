@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contraste.fasl-work.com/contracts/c18/variant-aggregation.schema.json",
   "title": "C18 t-copula aggregation variant",
-  "description": "Catalog row c18-outputs-aggregation 1.0.0: the t-copula aggregation variant (outputs.kind aggregation), the band over the nu set at the Rosenberg and Schuermann matrix and under the market-credit 0.8 stress.",
+  "description": "Catalog row c18-outputs-aggregation 2.0.0: the t-copula aggregation variant (outputs.kind aggregation), the band over the nu set at the Rosenberg and Schuermann matrix and under the market-credit 0.8 stress.",
   "allOf": [
     {
       "$ref": "../common/variant-envelope.schema.json"
@@ -449,7 +449,7 @@
           "description": "An ISO date."
         },
         "source": {
-          "const": "Banco Central de Chile, Base de Datos Estadisticos, daily exchange rate of the euro in Chilean pesos",
+          "const": "Banco Central de Chile, Base de Datos Estadísticos, daily exchange rate of the euro in Chilean pesos",
           "description": "The stated public source of the rate; the series id the bake reads is recorded in source_series (not named here: UNVERIFIED)."
         },
         "source_url": {

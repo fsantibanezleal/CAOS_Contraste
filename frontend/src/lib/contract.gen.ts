@@ -10606,7 +10606,7 @@ export interface components {
         });
         /**
          * C18 models
-         * @description Catalog row c18-models 1.0.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank anchors, scenario sources, capital engine rules, named parameters).
+         * @description Catalog row c18-models 2.0.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank anchors, scenario sources, capital engine rules, named parameters).
          */
         "c18-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -10620,7 +10620,7 @@ export interface components {
         };
         /**
          * C18 t-copula aggregation variant
-         * @description Catalog row c18-outputs-aggregation 1.0.0: the t-copula aggregation variant (outputs.kind aggregation), the band over the nu set at the Rosenberg and Schuermann matrix and under the market-credit 0.8 stress.
+         * @description Catalog row c18-outputs-aggregation 2.0.0: the t-copula aggregation variant (outputs.kind aggregation), the band over the nu set at the Rosenberg and Schuermann matrix and under the market-credit 0.8 stress.
          */
         "c18-variant-aggregation": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -10660,7 +10660,7 @@ export interface components {
         };
         /**
          * C18 scenario variant
-         * @description Catalog row c18-outputs 1.0.0: one scenario of the ICAAP and IAPE capital aggregation case (outputs.kind scenario): baseline, EBA 2025 adverse, Fed 2026 severely adverse or NGFS delayed transition, on the synthetic Banco Andino.
+         * @description Catalog row c18-outputs 2.0.0: one scenario of the ICAAP and IAPE capital aggregation case (outputs.kind scenario): baseline, EBA 2025 adverse, Fed 2026 severely adverse or NGFS delayed transition, on the synthetic Banco Andino.
          */
         "c18-variant-scenario": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -11292,7 +11292,7 @@ export interface components {
              * @description The stated public source of the rate; the series id the bake reads is recorded in source_series (not named here: UNVERIFIED).
              * @constant
              */
-            source: "Banco Central de Chile, Base de Datos Estadisticos, daily exchange rate of the euro in Chilean pesos";
+            source: "Banco Central de Chile, Base de Datos Estadísticos, daily exchange rate of the euro in Chilean pesos";
             /** @constant */
             source_url: "https://si3.bcentral.cl/Siete/es/Siete/API";
             /** @description The BDE series id the bake read. */

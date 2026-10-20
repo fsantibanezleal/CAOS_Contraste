@@ -313,7 +313,7 @@ def common_defs() -> dict:
         "kind": C("observed-exchange-rate"),
         "pair": C("EUR/CLP"),
         "observation_date": DATE,
-        "source": C("Banco Central de Chile, Base de Datos Estadisticos, daily exchange rate of the euro in Chilean pesos",
+        "source": C("Banco Central de Chile, Base de Datos Estadísticos, daily exchange rate of the euro in Chilean pesos",
                     "The stated public source of the rate; the series id the bake reads is recorded in source_series (not named here: UNVERIFIED)."),
         "source_url": C("https://si3.bcentral.cl/Siete/es/Siete/API"),
         "source_series": S("The BDE series id the bake read.", minLength=1),
@@ -978,16 +978,16 @@ def models_schema(title: str, desc: str, root: str, defs: dict) -> None:
 def main() -> None:
     sd, ad, rd, fd = scenario_defs(), aggregation_defs(), reverse_defs(), fit_defs()
     variant_schema("variant-scenario", "scenario", "C18 scenario variant",
-                   "Catalog row c18-outputs 1.0.0: one scenario of the ICAAP and IAPE capital aggregation case (outputs.kind scenario): baseline, "
+                   "Catalog row c18-outputs 2.0.0: one scenario of the ICAAP and IAPE capital aggregation case (outputs.kind scenario): baseline, "
                    "EBA 2025 adverse, Fed 2026 severely adverse or NGFS delayed transition, on the synthetic Banco Andino.", "c18Outputs", sd)
     variant_schema("variant-aggregation", "aggregation", "C18 t-copula aggregation variant",
-                   "Catalog row c18-outputs-aggregation 1.0.0: the t-copula aggregation variant (outputs.kind aggregation), the band over the nu set at "
+                   "Catalog row c18-outputs-aggregation 2.0.0: the t-copula aggregation variant (outputs.kind aggregation), the band over the nu set at "
                    "the Rosenberg and Schuermann matrix and under the market-credit 0.8 stress.", "c18AggOutputs", ad)
     variant_schema("variant-reverse", "reverse", "C18 reverse stress variant",
                    "Catalog row c18-outputs-reverse 1.0.0: the reverse stress variant (outputs.kind reverse), the minimum Mahalanobis distance scenario "
                    "that takes CET1 to the Chilean legal minimum stack.", "c18RevOutputs", rd)
     models_schema("C18 models",
-                  "Catalog row c18-models 1.0.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank "
+                  "Catalog row c18-models 2.0.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank "
                   "anchors, scenario sources, capital engine rules, named parameters).", "c18Fit", fd)
 
 
