@@ -2,9 +2,9 @@
 
 ``build`` makes the document in memory; ``bake`` checks it (schema, then ``check_regulatory``) and writes it. Every output value is the
 return value of an engine function; the inputs come from ``inputs.json`` (the CRE99 trade inputs transcribed from the BIS page, the
-constructed invariant inputs, the values the framework prints). Three diagnostics have no engine function and are derived here from
-engine outputs, each verified against the engine's own aggregate before it is written (findings F1 to F3 in changes/U9-P2.md):
-the systematic and idiosyncratic terms of CRE52.61 and the cross-bucket fallback flag of MAR21.4(5)(b).
+constructed invariant inputs, the values the framework prints). The CRE52.61 terms (``credit_addon_terms``), the MAR21.4(5)(b)
+fallback flag (``cross_bucket_charge_detail``) and the CRE52.34 trade effective notionals (``credit_trade_effective_notional``,
+``commodity_trade_effective_notional``) are the engine's too (engine-regulatory-api 2.2.0); the product derives nothing.
 """
 from __future__ import annotations
 
@@ -116,9 +116,7 @@ def _sa_ccr(e: dict) -> dict[str, Any]:
             ir_trades.append(sa_ccr.IrTrade(t["currency"], t["start_years"], t["end_years"], t["notional"], delta))
             mfs.append(sa_ccr.maturity_factor(t["end_years"], mpor))
         elif ac == "credit":
-            # CRE52.34, CRE52.48 or CRE52.52: the effective notional is delta x notional x supervisory duration x maturity factor
-            en = (delta * t["notional"] * sa_ccr.supervisory_duration(t["start_years"], t["end_years"])
-                  * sa_ccr.maturity_factor(t["end_years"], mpor))
+            en = sa_ccr.credit_trade_effective_notional(delta, t["notional"], t["start_years"], t["end_years"], mpor)
             mfs.append(sa_ccr.maturity_factor(t["end_years"], mpor))
             row = credit.setdefault(t["entity"], [t["rating"], t["reference_kind"] == "index", 0.0])
             row[2] += en
@@ -127,7 +125,7 @@ def _sa_ccr(e: dict) -> dict[str, Any]:
             mfs.append(mf)
             key = "commodity-electricity" if t["commodity_type"] == "electricity" else "commodity-oil-gas-metals-agricultural-other"
             row = commodity.setdefault(t["hedging_set"], {}).setdefault(t["commodity_type"], [key, 0.0])
-            row[1] += delta * t["adjusted_notional"] * mf
+            row[1] += sa_ccr.commodity_trade_effective_notional(delta, t["adjusted_notional"], t["maturity_years"], mpor)
         else:
             raise ValueError(f"{e['id']}: asset class {ac!r} is not one the CRE99 examples use (CRE99.20 to CRE99.97)")
     if not math.isclose(v, ins["v"], rel_tol=0.0, abs_tol=1e-12):
@@ -141,8 +139,11 @@ def _sa_ccr(e: dict) -> dict[str, Any]:
         out["addon_ir"] = classes["interest_rate"] = ir.addon
     if credit:
         entities = [sa_ccr.CreditEntity(r, idx, en) for r, idx, en in credit.values()]
-        classes["credit"] = out["addon_credit"] = sa_ccr.credit_addon(entities)
-        out["term_1"], out["term_2"] = _credit_terms(entities, out["addon_credit"])
+        terms = sa_ccr.credit_addon_terms(entities)
+        if not math.isclose(math.sqrt(terms.systematic + terms.idiosyncratic), terms.addon, rel_tol=1e-12):
+            raise ValueError("the engine's systematic and idiosyncratic terms do not recompose its credit add-on (CRE52.61)")
+        classes["credit"] = out["addon_credit"] = terms.addon
+        out["term_1"], out["term_2"] = terms.systematic, terms.idiosyncratic
     if commodity:
         by_set = {hs: [sa_ccr.CommodityEntity(sa_ccr.supervisory_parameter(k, "supervisory_factor").value,
                                               sa_ccr.supervisory_parameter(k, "correlation").value, en) for k, en in types.values()]
@@ -155,22 +156,6 @@ def _sa_ccr(e: dict) -> dict[str, Any]:
     if margined:
         out["maturity_factor"] = mfs[0]
     return out
-
-
-def _credit_terms(entities: list, addon: float) -> tuple[float, float]:
-    """F1: the systematic and idiosyncratic terms of CRE52.61 (no engine function returns them), from the engine's SF and rho,
-    verified against the engine's aggregate: sqrt(term_1 + term_2) must equal ``credit_addon``."""
-    sa_ccr, *_ = _engine()
-    adds, rhos = [], []
-    for ent in entities:
-        key = ("credit-index-" if ent.is_index else "credit-single-name-") + ent.rating
-        adds.append(sa_ccr.supervisory_parameter(key, "supervisory_factor").value * ent.effective_notional)
-        rhos.append(sa_ccr.supervisory_parameter(key, "correlation").value)
-    term_1 = sum(r * a for r, a in zip(rhos, adds)) ** 2
-    term_2 = sum((1.0 - r * r) * a * a for r, a in zip(rhos, adds))
-    if not math.isclose(math.sqrt(term_1 + term_2), addon, rel_tol=1e-12):
-        raise ValueError("the systematic and idiosyncratic terms do not recompose the engine's credit add-on (CRE52.61)")
-    return term_1, term_2
 
 
 # --- the output floor, BA-CVA, SBM, GIRR and the cascade ----------------------------------------------------------------------
@@ -199,19 +184,6 @@ def _sbm_scenarios(e: dict) -> dict[str, Any]:
     return {f"rho_{sc}": float(frtb.scenario_correlation(rho, sc)) for sc in SCENARIOS}
 
 
-def _fallback(k_b: np.ndarray, s_b: np.ndarray, gamma: np.ndarray, sc: str, charge: float) -> bool:
-    """F3: whether MAR21.4(5)(b) replaced S_b (the radicand under the scenario was negative); the engine returns the charge only.
-    The flag is verified against the engine: without the fallback the charge is the square root of the radicand."""
-    _, _, frtb, _, _ = _engine()
-    g = np.array(frtb.scenario_correlation(gamma, sc), dtype=float)
-    np.fill_diagonal(g, 0.0)
-    radicand = float(k_b @ k_b + s_b @ g @ s_b)
-    flag = radicand < 0.0
-    if not flag and not math.isclose(charge, math.sqrt(radicand), rel_tol=1e-12, abs_tol=1e-12):
-        raise ValueError("the cross-bucket charge is not the square root of the radicand and no fallback was detected (MAR21.4)")
-    return flag
-
-
 def _sbm(e: dict) -> dict[str, Any]:
     _, _, frtb, _, _ = _engine()
     ins = _vals(e["inputs"])
@@ -227,8 +199,9 @@ def _sbm(e: dict) -> dict[str, Any]:
         s_b = np.array([float(np.sum(w)) for w in ws])
         for b, k in enumerate(k_b):
             out[f"k_b{b + 1}_{sc}"] = float(k)
-        cross[sc] = out[f"cross_bucket_{sc}"] = frtb.cross_bucket_charge(k_b, s_b, gamma, sc)
-        out[f"fallback_{sc}"] = 1.0 if _fallback(k_b, s_b, gamma, sc, cross[sc]) else 0.0
+        detail = frtb.cross_bucket_charge_detail(k_b, s_b, gamma, sc)
+        cross[sc] = out[f"cross_bucket_{sc}"] = detail.charge
+        out[f"fallback_{sc}"] = 1.0 if detail.fallback_used else 0.0
     zero = {sc: 0.0 for sc in SCENARIOS}
     out["sbm_charge"] = frtb.sbm_capital(cross, zero, zero).capital
     return out

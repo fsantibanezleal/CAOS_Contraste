@@ -9,7 +9,9 @@ ROOT = Path(__file__).resolve().parents[2]
 COMMITTED = ROOT / "data" / "derived" / "regulatory" / "calculators.json"
 INPUTS = ROOT / "data-pipeline" / "pipeline" / "regulatory" / "inputs.json"
 REQUIREMENTS = ROOT / "data-pipeline" / "requirements.txt"
-ENGINE_COMMIT = "25e9538faf10bfdbcde03c5adccffd8e86ec275c"
+ENGINE_COMMIT = "2a21c0b85578357bc7eb13e9d8ffda9ab9b300fa"
+SDD = ROOT / "docs" / "design" / "SDD.md"
+BAKE = ROOT / "data-pipeline" / "pipeline" / "regulatory" / "bake.py"
 EAD_PUBLISHED = {"cre99-netting-set-1": 569, "cre99-netting-set-2": 381, "cre99-netting-set-3": 5406,
                  "cre99-netting-set-4": 936, "cre99-netting-set-5": 1879}
 
@@ -24,6 +26,10 @@ def load_semantics():
     sys.modules[name] = mod
     spec.loader.exec_module(mod)
     return mod
+
+
+def terms_of(trade: dict) -> dict:
+    return {v["name"]: v["value"] for v in trade["terms"]}
 
 
 def out(entry: dict, name: str):
