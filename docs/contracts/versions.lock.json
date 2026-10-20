@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "9.2.0",
+    "version": "10.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "ccf4d757f02ffb0006053eafcc99400305a8b1c244f084e27c82b5638c8ffc58"
+    "sha256": "0e3f645b7ecccd823647c1883a087b513a5768e00da0ebc4a96cc4e5b1c59d7e"
   },
   "readiness": {
     "version": "1.0.0",
@@ -330,14 +330,14 @@
     "sha256": "f584731f90dc64b9bf075cfc7faca3550075508c9031979bfc683b11167c629a"
   },
   "c21-outputs": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c21/variant-year-pair.schema.json",
-    "sha256": "132a38b3e5f1d82f456544fb77833d6a448b8b3ccd928ce39402119c681b35b8"
+    "sha256": "9a89796c2494e25415afbdbd17e3b3d92962f8ecbfbf5f1a07ee2d0385f64f5f"
   },
   "c21-models": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c21/models.schema.json",
-    "sha256": "eaa31c0e21bd669c187c7efd551c4826a16e80174032e3eb232617e31cd62b78"
+    "sha256": "6716f81fd33c1b14df380f3a60dc4b75aa928877a3f65f330d173bf381dfcb6b"
   },
   "engine-ml-api": {
     "version": "2.0.0",

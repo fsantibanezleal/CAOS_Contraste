@@ -57,7 +57,7 @@ def named_parameters(anchors: Anchors, fx: Any, op_extras: dict[str, Any], mk_sc
             **named("operational_conversion_rate", fx.value, "CLP per EUR", "case assumption",
                     "Derived at bake time: the observed EUR to CLP rate of the as-of date from the Banco Central de Chile (decision Q5, W5)"),
             "derivation": {"kind": "observed-exchange-rate", "pair": "EUR/CLP", "observation_date": fx.observation_date,
-                           "source": "Banco Central de Chile, Base de Datos Estadisticos, daily exchange rate of the euro in Chilean pesos",
+                           "source": "Banco Central de Chile, Base de Datos Estadísticos, daily exchange rate of the euro in Chilean pesos",
                            "source_url": "https://si3.bcentral.cl/Siete/es/Siete/API", "source_series": fx.series_id}},
         "asset_scaling": {
             **named("asset_scaling", op_extras["asset_scaling"], "Banco Andino assets over the assets of the C17 bank", "case assumption",

@@ -52,7 +52,7 @@ def check_findings(name: str, doc: dict) -> dict[str, dict]:
     rows = rows_of(doc)
     for f in doc["findings"]:
         assert cs.errors("common/finding", f) == [], (name, f["id"])
-        assert "no legal claim" in f["title"]["en"] and "sin afirmacion legal" in f["title"]["es"], (name, f["id"])
+        assert "no legal claim" in f["title"]["en"] and "sin afirmación legal" in f["title"]["es"], (name, f["id"])
         assert not any(w in f["title"]["en"].lower() or w in f["title"]["es"].lower() for w in FORBIDDEN), (name, f["id"])
         for e in f["evidence"]:
             assert e.startswith("design:") or e in rows, (name, f["id"], e)                 # test rows of this very document

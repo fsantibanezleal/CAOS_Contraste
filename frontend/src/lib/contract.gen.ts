@@ -12656,7 +12656,7 @@ export interface components {
         };
         /**
          * C21 models
-         * @description Catalog row c21-models 1.0.0: the HMDA fields, the fitted decision models and the conventions.
+         * @description Catalog row c21-models 2.0.0: the HMDA fields, the fitted decision models and the conventions.
          */
         "c21-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -12665,7 +12665,7 @@ export interface components {
         };
         /**
          * C21 year-pair variant
-         * @description Catalog row c21-outputs 1.0.0: one HMDA year pair, fitted on year t and confirmed on t+1 (outputs.kind year-pair). No legal claim.
+         * @description Catalog row c21-outputs 2.0.0: one HMDA year pair, fitted on year t and confirmed on t+1 (outputs.kind year-pair). No legal claim.
          */
         "c21-variant-year-pair": components["schemas"]["common-variant-envelope"] & {
             /** @constant */
@@ -12975,7 +12975,7 @@ export interface components {
             /** @constant */
             en: "no legal claim";
             /** @constant */
-            es: "sin afirmacion legal";
+            es: "sin afirmación legal";
         };
         /** @description No legal claim: the sentences the U14 research addendum quotes (H3 4.1 and 4.3), decision C4. */
         c21Legal: {

@@ -308,7 +308,7 @@ def build_book(seed: int, spec: VariantSpec, uf_value: float) -> Book:
         legs[leg].items.append(Item(item_id, t(en, es), side, category, bclass, source, float(amount), _slot(amount, sign, times, weights), dyn))
 
     syn = "profile and currency split synthetic (assumptions.item_profiles, assumptions.currency_split)"
-    cmf = "CMF, Informe del Desempeno del Sistema Bancario y Cooperativas, agosto 2026, Cuadro N 1 (Bancos)"
+    cmf = "CMF, Informe del Desempeño del Sistema Bancario y Cooperativas, agosto 2026, Cuadro N 1 (Bancos)"
     lw = p["clp_long_asset_share"]
     fl = p["ur_floating_share"]
     # ---- assets, CLP

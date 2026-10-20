@@ -77,7 +77,7 @@ def test_every_document_carries_the_label_and_the_legal_sentences() -> None:
     v = values()
     for name, doc in all_documents().items():
         block = (doc["outputs"] if name != MODELS else doc["fit"])["legal"]
-        assert block["label"] == {"en": "no legal claim", "es": "sin afirmacion legal"}
+        assert block["label"] == {"en": "no legal claim", "es": "sin afirmación legal"}
         for key, quote in (("regulation_b", "reg_b"), ("fair_housing_act", "fha"), ("procedures", "procedures")):
             assert (block[key]["citation"], block[key]["quote"]) == tuple(v.QUOTES[quote]) and block[key]["text"]["en"] == block[key]["quote"]
         assert block["unconditional_rates_are"] == "indicators-only"

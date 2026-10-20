@@ -322,7 +322,7 @@ def c21_defs() -> dict:
     d: dict = {}
     d["c21Hmda"] = E(*HMDA_FIELDS)
     d["c21Control"] = E(*CONTROL_FIELDS)
-    d["c21Label"] = Ob({"en": C("no legal claim"), "es": C("sin afirmacion legal")}, "The required label, on every C21 document.")
+    d["c21Label"] = Ob({"en": C("no legal claim"), "es": C("sin afirmación legal")}, "The required label, on every C21 document.")
 
     def statement(key: str) -> dict:
         cit, quote = QUOTES[key]
@@ -486,9 +486,9 @@ def main() -> None:
     models_schema("c20", "C20 models", "Catalog row c20-models 1.0.0: the fitted rungs, the SGCD pin and the named parameters.", "c20Fit", d)
     d = c21_defs()
     variant_schema("c21", "variant-year-pair", "year-pair", "C21 year-pair variant",
-                   "Catalog row c21-outputs 1.0.0: one HMDA year pair, fitted on year t and confirmed on t+1 (outputs.kind year-pair). No legal claim.",
+                   "Catalog row c21-outputs 2.0.0: one HMDA year pair, fitted on year t and confirmed on t+1 (outputs.kind year-pair). No legal claim.",
                    "c21Outputs", d, C21_RULES)
-    models_schema("c21", "C21 models", "Catalog row c21-models 1.0.0: the HMDA fields, the fitted decision models and the conventions.", "c21Fit", d)
+    models_schema("c21", "C21 models", "Catalog row c21-models 2.0.0: the HMDA fields, the fitted decision models and the conventions.", "c21Fit", d)
 
 
 if __name__ == "__main__":

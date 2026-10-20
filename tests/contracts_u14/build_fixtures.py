@@ -328,7 +328,7 @@ NOTES = [{"field": "debt_to_income_ratio", "treatment": "binned", "n_missing": N
 def c21_legal() -> dict:
     def s(k: str) -> dict:
         return {"citation": QUOTES[k][0], "quote": QUOTES[k][1], "text": t(QUOTES[k][1])}
-    return {"label": {"en": "no legal claim", "es": "sin afirmacion legal"}, "regulation_b": s("reg_b"), "fair_housing_act": s("fha"),
+    return {"label": {"en": "no legal claim", "es": "sin afirmación legal"}, "regulation_b": s("reg_b"), "fair_housing_act": s("fha"),
             "procedures": s("procedures"), "unconditional_rates_are": "indicators-only",
             "controlled_disparity_is": "approximation-of-comparative-evidence", "is_a_finding_of_violation": False}
 
