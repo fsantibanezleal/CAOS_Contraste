@@ -114,6 +114,8 @@ export interface components {
             numerator: number | null;
             /** @description Computed by riskvalidation.governance.appetite.appetite_metrics. */
             denominator: number | null;
+            /** @description The count metrics count distinct (entry, id) findings (W15-14); this is the number of register rows behind the same metric; null for a metric that counts entries or is a share or magnitude. Computed by riskvalidation.governance.appetite.appetite_metrics. */
+            register_rows: number | null;
             reason: components["schemas"]["common-text"] | null;
             threshold: components["schemas"]["appThreshold"];
             /**
@@ -13967,6 +13969,9 @@ export interface components {
             /** @description Computed by riskvalidation.governance.findings.anchor_from_test_row. */
             anchor: components["schemas"]["fndAnchor"] | null;
             anchor_reason: components["schemas"]["common-text"] | null;
+            /** @description A decimal share of RWEA (0.05 is 5 percent); non-null only where the anchor's metric is stated as a share of RWEA or as an RWEA amount (W15-11). Computed by riskvalidation.governance.findings.rwea_share_of_anchor. */
+            rwea_share: number | null;
+            rwea_share_reason: components["schemas"]["common-text"] | null;
             owner_role: string;
             tier: components["schemas"]["govTier"];
             raised: components["schemas"]["govDate"];
@@ -13981,7 +13986,13 @@ export interface components {
             remediation: components["schemas"]["common-text"] | null;
             remediation_reason: components["schemas"]["common-text"] | null;
             risk_acceptance: components["schemas"]["fndRisk"] | null;
-        } & (unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown);
+        } & (unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown);
+        /** @description Why the as-of date is the date it is (W15-13). Production rule: the date of the newest release heading of CHANGELOG.md when the bake runs, never earlier than a raised date. A fixture states that its date is chosen to exercise the overdue rule. */
+        govAsOfBasis: {
+            /** @constant */
+            label: "convention";
+            basis: components["schemas"]["common-text"];
+        };
         /** @description An ISO date (YYYY-MM-DD). The dates of a governance document are deterministic: the as-of date and every raised date come from committed values (R4 of the U15 sizing); a wall-clock date never enters a document. */
         govDate: string;
         /** @enum {string} */
@@ -14007,10 +14018,12 @@ export interface components {
             riskvalidation_version: string;
             /** @description The writer of the document; a fixture is labelled fixture:u15-s-contracts. */
             generators: string[];
-            /** @description Every case document read, with the sha256 of its bytes (line endings normalised to LF). */
+            /** @description Every case document read, with the sha256 of its bytes (line endings normalised to LF) and its git ref. */
             documents_read: {
                 path: string;
                 sha256: components["schemas"]["govSha256"];
+                /** @description The git ref and commit the bytes were read from when the document is not on the branch the bake runs on (the C18 documents of the fixture); null otherwise. */
+                ref: string | null;
             }[];
         };
         /** @enum {string} */
@@ -14032,10 +14045,13 @@ export interface components {
             governance_id: "appetite";
             schema_version: string;
             as_of: components["schemas"]["govDate"];
+            as_of_basis: components["schemas"]["govAsOfBasis"];
             provenance: components["schemas"]["govProvenance"];
+            /** @description Computed by riskvalidation.governance.appetite.appetite_metrics. */
             population: {
                 entries: number;
                 findings: number;
+                distinct_findings: number;
                 tier1_entries: number;
             };
             metrics: components["schemas"]["appMetric"][];
@@ -14053,6 +14069,7 @@ export interface components {
             governance_id: "findings";
             schema_version: string;
             as_of: components["schemas"]["govDate"];
+            as_of_basis: components["schemas"]["govAsOfBasis"];
             provenance: components["schemas"]["govProvenance"];
             conventions: components["schemas"]["fndConventions"];
             rows: components["schemas"]["fndRow"][];
@@ -14072,6 +14089,7 @@ export interface components {
             governance_id: "inventory";
             schema_version: string;
             as_of: components["schemas"]["govDate"];
+            as_of_basis: components["schemas"]["govAsOfBasis"];
             provenance: components["schemas"]["govProvenance"];
             conventions: components["schemas"]["invConventions"];
             engine_node: components["schemas"]["invEngineNode"];
@@ -14100,6 +14118,7 @@ export interface components {
             governance_id: "report";
             schema_version: string;
             as_of: components["schemas"]["govDate"];
+            as_of_basis: components["schemas"]["govAsOfBasis"];
             provenance: components["schemas"]["govProvenance"];
             /** @description The inventory entry (case_id/fit_id) the report is for. */
             entry_key: string;
@@ -14145,6 +14164,7 @@ export interface components {
             A04: components["schemas"]["invAttr"];
             A05: components["schemas"]["invAttr"];
             A06: components["schemas"]["invAttr"];
+            /** @description Computed by riskvalidation.governance.lifecycle.transition. */
             A07: components["schemas"]["invAttr"];
             A08: components["schemas"]["invAttr"];
             A09: components["schemas"]["invAttr"];
@@ -14160,8 +14180,11 @@ export interface components {
             A19: components["schemas"]["invAttr"];
             A20: components["schemas"]["invAttr"];
             A21: components["schemas"]["invAttr"];
+            /** @description Computed by riskvalidation.governance.tiering.materiality. */
             A22: components["schemas"]["invAttr"];
+            /** @description Computed by riskvalidation.governance.tiering.complexity. */
             A23: components["schemas"]["invAttr"];
+            /** @description Computed by riskvalidation.governance.tiering.apply_override. */
             A24: components["schemas"]["invAttr"];
             A25: components["schemas"]["invAttr"];
             A26: components["schemas"]["invAttr"];
@@ -14173,9 +14196,13 @@ export interface components {
             A32: components["schemas"]["invAttr"];
             A33: components["schemas"]["invAttr"];
             A34: components["schemas"]["invAttr"];
+            /** @description Computed by riskvalidation.governance.schedule.next_dates. */
             A35: components["schemas"]["invAttr"];
+            /** @description Computed by riskvalidation.governance.report.executive_counts. */
             A36: components["schemas"]["invAttr"];
+            /** @description Computed by riskvalidation.governance.findings.register_counts. */
             A37: components["schemas"]["invAttr"];
+            /** @description Computed by riskvalidation.governance.findings.due_date. */
             A38: components["schemas"]["invAttr"];
             A39: components["schemas"]["invAttr"];
             A40: components["schemas"]["invAttr"];
@@ -14228,8 +14255,11 @@ export interface components {
         /** @description C from the factor scores: the mean rounded half up, and the maximum. A factor with a null score is unscored, with its reason. */
         invComplexity: {
             factors: components["schemas"]["invFactor"][];
+            /** @description Computed by riskvalidation.governance.tiering.complexity. */
             scored: number;
+            /** @description Computed by riskvalidation.governance.tiering.complexity. */
             sum: number;
+            /** @description Computed by riskvalidation.governance.tiering.complexity. */
             mean: number;
             /** @description Computed by riskvalidation.governance.tiering.complexity. */
             c: {
@@ -14269,6 +14299,7 @@ export interface components {
                 };
                 literal: {
                     feeds_capital_provisioning_or_reporting: number;
+                    compliance_monitoring: number;
                     none: number;
                 };
             };
@@ -14329,6 +14360,7 @@ export interface components {
             fit_id: string;
             title: components["schemas"]["common-text"];
             attributes: components["schemas"]["invAttributes"];
+            variants: components["schemas"]["invVariant"][];
             components: components["schemas"]["invComponent"][];
             scope: components["schemas"]["invScope"];
             tier_block: components["schemas"]["invTier"];
@@ -14343,9 +14375,11 @@ export interface components {
             expiry: components["schemas"]["govDate"];
             reason: components["schemas"]["common-text"];
         };
-        /** @description A case left out of the inventory, with the reason (missing-data behavior). */
+        /** @description A case, or one variant of a case, left out of the inventory, with the reason (missing-data behavior). */
         invExcluded: {
             case_id: string;
+            /** @description Null when the whole case is left out; a variant id when only that variant has no determinable fit (W15-15). */
+            variant_id: string | null;
             reason: components["schemas"]["common-text"];
         };
         invExposure: {
@@ -14391,6 +14425,7 @@ export interface components {
         };
         /** @description The layered layout of the dependency map (the bake's networkx layout, a geometry and not a model value). */
         invMap: {
+            /** @description Computed by riskvalidation.governance.inventory.graph_metrics. */
             generation: number;
             x: number;
             y: number;
@@ -14496,6 +14531,11 @@ export interface components {
             /** @enum {string} */
             to: "proposed" | "in_development" | "submitted_for_validation" | "in_validation" | "approved" | "approved_with_conditions" | "in_use" | "under_monitoring_alert" | "restricted" | "in_remediation" | "material_change_pending" | "decommissioned";
             date: components["schemas"]["govDate"];
+            basis: string;
+        };
+        /** @description A variant document of the entry and the provenance rule that assigned it (W15-15): the fit whose sources the variant's provenance reads, or the single models document of the case. A variant whose fit cannot be determined is in excluded. */
+        invVariant: {
+            variant_id: string;
             basis: string;
         };
         /** @enum {unknown} */
@@ -14692,6 +14732,7 @@ export interface components {
         repOpenFinding: {
             key: string;
             severity: components["schemas"]["govSeverity"];
+            /** @description The register row's share, carried unchanged. Computed by riskvalidation.governance.findings.rwea_share_of_anchor. */
             rwea_share: number | null;
         };
         /** @description Section 11: the ECB four-level opinion, the rule that gave it, the open findings it was computed on and the labelled recommendation. */
@@ -14704,6 +14745,7 @@ export interface components {
                 id: "W15-7";
                 text: components["schemas"]["common-text"];
             };
+            /** @description Computed by riskvalidation.governance.opinion.opinion_level. */
             rwea_cut_points_applied: boolean;
             open_findings: components["schemas"]["repOpenFinding"][];
             /** @description Computed by riskvalidation.governance.opinion.recommendation. */
@@ -14731,10 +14773,15 @@ export interface components {
             reference: string;
             policy: components["schemas"]["repPolicy"];
         };
-        /** @description The policy identity of a test row (W15-6): a packaged label through the policy file, an inline battery string parsed, or unresolved with its reason. */
+        /** @description The policy identity of a test row (W15-6, W15-12): a packaged label through the policy file, an inline battery string parsed, or unresolved with its reason. */
         repPolicy: {
             label: string;
-            kind: ("p_value" | "upper_bad" | "lower_bad") | null;
+            /** @description spec(test_id).decision of the engine registry (W15-12): p_value or metric. Computed by riskvalidation.governance.policy.resolve_policy. */
+            kind: ("p_value" | "metric") | null;
+            kind_reason: string | null;
+            /** @description Read from the policy file where one resolves; null for an inline battery string. Computed by riskvalidation.governance.policy.resolve_policy. */
+            direction: ("upper_bad" | "lower_bad") | null;
+            direction_reason: string | null;
             alpha_amber: number | null;
             alpha_red: number | null;
             parameters: {
@@ -14747,7 +14794,7 @@ export interface components {
              */
             source: "packaged-policy" | "inline-battery" | "unresolved";
             reason: string | null;
-        } & unknown;
+        } & (unknown & unknown & unknown);
         /** @description I.3 section 1: Executive summary (06 l.1219-1237). */
         repSection1: {
             /** @constant */

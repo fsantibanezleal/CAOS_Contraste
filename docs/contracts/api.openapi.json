@@ -328,6 +328,7 @@
           "unit",
           "numerator",
           "denominator",
+          "register_rows",
           "reason",
           "threshold",
           "light"
@@ -396,6 +397,18 @@
               }
             ],
             "description": "Computed by riskvalidation.governance.appetite.appetite_metrics."
+          },
+          "register_rows": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The count metrics count distinct (entry, id) findings (W15-14); this is the number of register rows behind the same metric; null for a metric that counts entries or is a share or magnitude. Computed by riskvalidation.governance.appetite.appetite_metrics."
           },
           "reason": {
             "anyOf": [
@@ -59034,6 +59047,8 @@
           "evidence",
           "anchor",
           "anchor_reason",
+          "rwea_share",
+          "rwea_share_reason",
           "owner_role",
           "tier",
           "raised",
@@ -59119,6 +59134,28 @@
             "description": "Computed by riskvalidation.governance.findings.anchor_from_test_row."
           },
           "anchor_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/common-text"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rwea_share": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "A decimal share of RWEA (0.05 is 5 percent); non-null only where the anchor's metric is stated as a share of RWEA or as an RWEA amount (W15-11). Computed by riskvalidation.governance.findings.rwea_share_of_anchor."
+          },
+          "rwea_share_reason": {
             "anyOf": [
               {
                 "$ref": "#/components/schemas/common-text"
@@ -59296,6 +59333,34 @@
           {
             "if": {
               "properties": {
+                "rwea_share": {
+                  "type": "null"
+                }
+              },
+              "required": [
+                "rwea_share"
+              ]
+            },
+            "then": {
+              "properties": {
+                "rwea_share_reason": {
+                  "not": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "rwea_share_reason": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
                 "remediation": {
                   "type": "null"
                 }
@@ -59405,6 +59470,23 @@
             }
           }
         ]
+      },
+      "govAsOfBasis": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "basis"
+        ],
+        "properties": {
+          "label": {
+            "const": "convention"
+          },
+          "basis": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        },
+        "description": "Why the as-of date is the date it is (W15-13). Production rule: the date of the newest release heading of CHANGELOG.md when the bake runs, never earlier than a raised date. A fixture states that its date is chosen to exercise the overdue rule."
       },
       "govDate": {
         "type": "string",
@@ -59575,7 +59657,8 @@
               "additionalProperties": false,
               "required": [
                 "path",
-                "sha256"
+                "sha256",
+                "ref"
               ],
               "properties": {
                 "path": {
@@ -59584,11 +59667,23 @@
                 },
                 "sha256": {
                   "$ref": "#/components/schemas/govSha256"
+                },
+                "ref": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "The git ref and commit the bytes were read from when the document is not on the branch the bake runs on (the C18 documents of the fixture); null otherwise."
                 }
               }
             },
             "minItems": 1,
-            "description": "Every case document read, with the sha256 of its bytes (line endings normalised to LF)."
+            "description": "Every case document read, with the sha256 of its bytes (line endings normalised to LF) and its git ref."
           }
         },
         "description": "Where a governance document came from: code and engine versions and the sha256 of every case document it read."
@@ -59629,6 +59724,7 @@
           "governance_id",
           "schema_version",
           "as_of",
+          "as_of_basis",
           "provenance",
           "population",
           "metrics"
@@ -59650,6 +59746,9 @@
           "as_of": {
             "$ref": "#/components/schemas/govDate"
           },
+          "as_of_basis": {
+            "$ref": "#/components/schemas/govAsOfBasis"
+          },
           "provenance": {
             "$ref": "#/components/schemas/govProvenance"
           },
@@ -59659,6 +59758,7 @@
             "required": [
               "entries",
               "findings",
+              "distinct_findings",
               "tier1_entries"
             ],
             "properties": {
@@ -59670,11 +59770,16 @@
                 "type": "integer",
                 "minimum": 0
               },
+              "distinct_findings": {
+                "type": "integer",
+                "minimum": 0
+              },
               "tier1_entries": {
                 "type": "integer",
                 "minimum": 0
               }
-            }
+            },
+            "description": "Computed by riskvalidation.governance.appetite.appetite_metrics."
           },
           "metrics": {
             "type": "array",
@@ -59697,6 +59802,7 @@
           "governance_id",
           "schema_version",
           "as_of",
+          "as_of_basis",
           "provenance",
           "conventions",
           "rows",
@@ -59718,6 +59824,9 @@
           },
           "as_of": {
             "$ref": "#/components/schemas/govDate"
+          },
+          "as_of_basis": {
+            "$ref": "#/components/schemas/govAsOfBasis"
           },
           "provenance": {
             "$ref": "#/components/schemas/govProvenance"
@@ -59748,6 +59857,7 @@
           "governance_id",
           "schema_version",
           "as_of",
+          "as_of_basis",
           "provenance",
           "conventions",
           "engine_node",
@@ -59775,6 +59885,9 @@
           },
           "as_of": {
             "$ref": "#/components/schemas/govDate"
+          },
+          "as_of_basis": {
+            "$ref": "#/components/schemas/govAsOfBasis"
           },
           "provenance": {
             "$ref": "#/components/schemas/govProvenance"
@@ -59846,6 +59959,7 @@
           "governance_id",
           "schema_version",
           "as_of",
+          "as_of_basis",
           "provenance",
           "entry_key",
           "title",
@@ -59869,6 +59983,9 @@
           },
           "as_of": {
             "$ref": "#/components/schemas/govDate"
+          },
+          "as_of_basis": {
+            "$ref": "#/components/schemas/govAsOfBasis"
           },
           "provenance": {
             "$ref": "#/components/schemas/govProvenance"
@@ -60099,7 +60216,8 @@
             "$ref": "#/components/schemas/invAttr"
           },
           "A07": {
-            "$ref": "#/components/schemas/invAttr"
+            "$ref": "#/components/schemas/invAttr",
+            "description": "Computed by riskvalidation.governance.lifecycle.transition."
           },
           "A08": {
             "$ref": "#/components/schemas/invAttr"
@@ -60144,13 +60262,16 @@
             "$ref": "#/components/schemas/invAttr"
           },
           "A22": {
-            "$ref": "#/components/schemas/invAttr"
+            "$ref": "#/components/schemas/invAttr",
+            "description": "Computed by riskvalidation.governance.tiering.materiality."
           },
           "A23": {
-            "$ref": "#/components/schemas/invAttr"
+            "$ref": "#/components/schemas/invAttr",
+            "description": "Computed by riskvalidation.governance.tiering.complexity."
           },
           "A24": {
-            "$ref": "#/components/schemas/invAttr"
+            "$ref": "#/components/schemas/invAttr",
+            "description": "Computed by riskvalidation.governance.tiering.apply_override."
           },
           "A25": {
             "$ref": "#/components/schemas/invAttr"
@@ -60183,16 +60304,20 @@
             "$ref": "#/components/schemas/invAttr"
           },
           "A35": {
-            "$ref": "#/components/schemas/invAttr"
+            "$ref": "#/components/schemas/invAttr",
+            "description": "Computed by riskvalidation.governance.schedule.next_dates."
           },
           "A36": {
-            "$ref": "#/components/schemas/invAttr"
+            "$ref": "#/components/schemas/invAttr",
+            "description": "Computed by riskvalidation.governance.report.executive_counts."
           },
           "A37": {
-            "$ref": "#/components/schemas/invAttr"
+            "$ref": "#/components/schemas/invAttr",
+            "description": "Computed by riskvalidation.governance.findings.register_counts."
           },
           "A38": {
-            "$ref": "#/components/schemas/invAttr"
+            "$ref": "#/components/schemas/invAttr",
+            "description": "Computed by riskvalidation.governance.findings.due_date."
           },
           "A39": {
             "$ref": "#/components/schemas/invAttr"
@@ -60407,16 +60532,19 @@
           "scored": {
             "type": "integer",
             "minimum": 1,
-            "maximum": 7
+            "maximum": 7,
+            "description": "Computed by riskvalidation.governance.tiering.complexity."
           },
           "sum": {
             "type": "integer",
-            "minimum": 1
+            "minimum": 1,
+            "description": "Computed by riskvalidation.governance.tiering.complexity."
           },
           "mean": {
             "type": "number",
             "minimum": 1,
-            "maximum": 4
+            "maximum": 4,
+            "description": "Computed by riskvalidation.governance.tiering.complexity."
           },
           "c": {
             "type": "object",
@@ -60606,10 +60734,16 @@
                 "additionalProperties": false,
                 "required": [
                   "feeds_capital_provisioning_or_reporting",
+                  "compliance_monitoring",
                   "none"
                 ],
                 "properties": {
                   "feeds_capital_provisioning_or_reporting": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 4
+                  },
+                  "compliance_monitoring": {
                     "type": "integer",
                     "minimum": 1,
                     "maximum": 4
@@ -60838,6 +60972,7 @@
           "fit_id",
           "title",
           "attributes",
+          "variants",
           "components",
           "scope",
           "tier_block",
@@ -60865,6 +61000,13 @@
           },
           "attributes": {
             "$ref": "#/components/schemas/invAttributes"
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/invVariant"
+            },
+            "minItems": 1
           },
           "components": {
             "type": "array",
@@ -60925,6 +61067,7 @@
         "additionalProperties": false,
         "required": [
           "case_id",
+          "variant_id",
           "reason"
         ],
         "properties": {
@@ -60932,11 +61075,23 @@
             "type": "string",
             "pattern": "^C\\d{2}$"
           },
+          "variant_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null when the whole case is left out; a variant id when only that variant has no determinable fit (W15-15)."
+          },
           "reason": {
             "$ref": "#/components/schemas/common-text"
           }
         },
-        "description": "A case left out of the inventory, with the reason (missing-data behavior)."
+        "description": "A case, or one variant of a case, left out of the inventory, with the reason (missing-data behavior)."
       },
       "invExposure": {
         "type": "object",
@@ -61139,7 +61294,8 @@
         "properties": {
           "generation": {
             "type": "integer",
-            "minimum": 0
+            "minimum": 0,
+            "description": "Computed by riskvalidation.governance.inventory.graph_metrics."
           },
           "x": {
             "type": "number"
@@ -61609,6 +61765,25 @@
             "minLength": 1
           }
         }
+      },
+      "invVariant": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "variant_id",
+          "basis"
+        ],
+        "properties": {
+          "variant_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "basis": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "description": "A variant document of the entry and the provenance rule that assigned it (W15-15): the fit whose sources the variant's provenance reads, or the single models document of the case. A variant whose fit cannot be determined is in excluded."
       },
       "licenceClass": {
         "enum": [
@@ -62501,7 +62676,8 @@
               {
                 "type": "null"
               }
-            ]
+            ],
+            "description": "The register row's share, carried unchanged. Computed by riskvalidation.governance.findings.rwea_share_of_anchor."
           }
         }
       },
@@ -62544,7 +62720,8 @@
             }
           },
           "rwea_cut_points_applied": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Computed by riskvalidation.governance.opinion.opinion_level."
           },
           "open_findings": {
             "type": "array",
@@ -62693,6 +62870,9 @@
         "required": [
           "label",
           "kind",
+          "kind_reason",
+          "direction",
+          "direction_reason",
           "alpha_amber",
           "alpha_red",
           "parameters",
@@ -62711,9 +62891,44 @@
                 "type": "string",
                 "enum": [
                   "p_value",
+                  "metric"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "spec(test_id).decision of the engine registry (W15-12): p_value or metric. Computed by riskvalidation.governance.policy.resolve_policy."
+          },
+          "kind_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "direction": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
                   "upper_bad",
                   "lower_bad"
                 ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Read from the policy file where one resolves; null for an inline battery string. Computed by riskvalidation.governance.policy.resolve_policy."
+          },
+          "direction_reason": {
+            "anyOf": [
+              {
+                "type": "string"
               },
               {
                 "type": "null"
@@ -62779,8 +62994,64 @@
             ]
           }
         },
-        "description": "The policy identity of a test row (W15-6): a packaged label through the policy file, an inline battery string parsed, or unresolved with its reason.",
+        "description": "The policy identity of a test row (W15-6, W15-12): a packaged label through the policy file, an inline battery string parsed, or unresolved with its reason.",
         "allOf": [
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "type": "null"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            "then": {
+              "properties": {
+                "kind_reason": {
+                  "not": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "kind_reason": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "direction": {
+                  "type": "null"
+                }
+              },
+              "required": [
+                "direction"
+              ]
+            },
+            "then": {
+              "properties": {
+                "direction_reason": {
+                  "not": {
+                    "type": "null"
+                  }
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "direction_reason": {
+                  "type": "null"
+                }
+              }
+            }
+          },
           {
             "if": {
               "properties": {
@@ -62799,6 +63070,9 @@
                   "minLength": 1
                 },
                 "kind": {
+                  "type": "null"
+                },
+                "direction": {
                   "type": "null"
                 }
               }

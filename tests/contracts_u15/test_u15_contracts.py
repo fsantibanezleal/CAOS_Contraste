@@ -168,6 +168,13 @@ def test_the_fixture_is_labelled_as_a_fixture_and_carries_the_governance_header(
     assert doc["provenance"]["documents_read"], "the sha256 of every case document read"
     assert all(re.fullmatch(r"[0-9a-f]{64}", d["sha256"]) for d in doc["provenance"]["documents_read"])
     assert doc["as_of"] == "2026-12-31"
+    basis = doc["as_of_basis"]
+    assert basis["label"] == "convention" and "to exercise the overdue rule" in basis["basis"]["en"] and "not the date of publication" in basis["basis"]["en"]
+    assert basis["basis"]["es"].strip() and "no es la fecha de publicacion" in basis["basis"]["es"]
+    for d in doc["provenance"]["documents_read"]:      # m7: the C18 bytes come from origin/task/u13-p1, which is not the branch the bake runs on
+        assert (d["ref"] is not None) == ("/C18/" in d["path"] or d["path"].endswith("C18.json")), d["path"]
+        if d["ref"]:
+            assert re.fullmatch(r"origin/task/u13-p1@[0-9a-f]{40}", d["ref"])
 
 
 def test_every_schema_is_a_closed_object_with_a_governance_id_const_and_the_governance_case_id() -> None:
@@ -413,6 +420,9 @@ def test_the_register_applies_the_decisions_w15_2_and_w15_5() -> None:
         assert r["ageing_days"] == (as_of - iso(r["raised"])).days
         assert r["overdue"] == (r["status"] in OPEN_STATES and as_of > iso(r["due"]))
         assert r["remediation"] is None and "no remediation plan" in r["remediation_reason"]["en"]
+        assert r["rwea_share"] is None and r["rwea_share_reason"]["en"].strip()       # no committed anchor is a share of RWEA
+        entry = entry_of(load("inventory"), r["entry_key"])
+        assert r["variant_id"] in [v["variant_id"] for v in entry["variants"]]       # W15-15
         if r["status"] == "risk_accepted":
             ra = r["risk_acceptance"]
             assert ra["approver"] == "not-applicable" and ra["expiry"] is None and ra["approver_reason"]["en"] and ra["expiry_reason"]["en"]
@@ -522,6 +532,14 @@ def test_section_6_states_the_policy_identity_of_every_row_and_the_source_of_its
         if p["source"] == "unresolved":
             assert p["reason"]
     assert any(r["policy"]["source"] == "inline-battery" and r["policy"]["parameters"] for r in block["rows"])
+    decisions = ex["cases"]["C07"]["spec_decisions"]
+    assert ex["engine_commit"].startswith("2a21c0b")
+    for row in block["rows"]:
+        p = row["policy"]
+        assert p["kind"] == decisions[row["test_id"]]                                  # spec(test_id).decision, None where unregistered
+        assert (p["kind"] is None) == (p["kind_reason"] is not None)
+        if p["source"] == "inline-battery":
+            assert p["direction"] is None and p["direction_reason"] == "no policy file (BL-085)"
 
 
 # --- the appetite ------------------------------------------------------------------------------------------------------------------------
@@ -548,12 +566,17 @@ def test_the_appetite_recomputes_from_the_inventory_and_the_register() -> None:
     inv, fnd, app = load("inventory"), load("findings"), load("appetite")
     m = {x["id"]: x for x in app["metrics"]}
     rows = fnd["rows"]
-    assert m["open-high-severity"]["numerator"] == sum(1 for r in rows if r["status"] in OPEN_STATES and r["severity"] in ("S1", "S2"))
-    assert m["overdue-remediation"]["numerator"] == sum(1 for r in rows if r["overdue"])
+    high = [r for r in rows if r["status"] in OPEN_STATES and r["severity"] in ("S1", "S2")]
+    over = [r for r in rows if r["overdue"]]
+    distinct = lambda rs: len({(r["entry_key"], r["id"]) for r in rs})   # noqa: E731
+    assert m["open-high-severity"]["numerator"] == distinct(high) == 4 and m["open-high-severity"]["register_rows"] == len(high) == 8
+    assert m["overdue-remediation"]["numerator"] == distinct(over) == 3 and m["overdue-remediation"]["register_rows"] == len(over) == 7
+    assert m["open-high-severity"]["denominator"] == m["overdue-remediation"]["denominator"] == distinct(rows) == 39
+    assert all(m[k]["register_rows"] is None for k in m if k not in ("open-high-severity", "overdue-remediation"))
     assert m["entries-under-exception"]["numerator"] == sum(1 for e in inv["entries"] if e["lifecycle"]["exception"])
     assert m["entries-in-breach"]["numerator"] == sum(1 for e in inv["entries"] if e["attributes"]["A36"]["value"]["red"] > 0)
     assert m["pma-magnitude"]["value"] == pytest.approx(324129997.0 / 97592002519.53)
-    assert app["population"] == {"entries": 4, "findings": len(rows), "tier1_entries": 2}
+    assert app["population"] == {"entries": 4, "findings": len(rows), "distinct_findings": 39, "tier1_entries": 2}
 
 
 # --- the planted defects: each refused by the layer the table names ---------------------------------------------------------------------
@@ -775,6 +798,129 @@ def _plant_header(d: dict) -> None:
     d["inventory"]["governance_id"] = "findings"
 
 
+def _claim_plant(phrase: str):
+    def plant(d: dict) -> None:
+        d["findings"]["conventions"]["deadline_days"]["basis"] = phrase
+    return plant
+
+
+def _plant_approval_s1(d: dict) -> None:
+    d["reports"]["C07/banco-andino"]["sections"][0]["blocks"][1]["text"]["en"] = "Contraste approves this model for use; it is compliant with SR 26-2."
+
+
+def _plant_approval_rec(d: dict) -> None:
+    d["reports"]["C07/banco-andino"]["sections"][10]["opinion"]["recommendation"]["text"]["en"] = "Approved: the model is certified for use."
+
+
+def _plant_approval_es(d: dict) -> None:
+    d["reports"]["C18/banco-andino"]["sections"][0]["blocks"][1]["text"]["es"] = "El modelo esta aprobado y certificado; cumple con la norma."
+
+
+def _plant_a32_value(d: dict) -> None:
+    a = _inv_entry(d, "C07/banco-andino")["attributes"]["A32"]
+    a["value"] = "Chief Risk Officer"
+    a["status"] = "present"
+
+
+def _plant_report_rwea_not_in_register(d: dict) -> None:
+    d["reports"]["C18/banco-andino"]["sections"][10]["opinion"]["open_findings"][0]["rwea_share"] = 0.12
+
+
+def _plant_row_rwea_without_anchor(d: dict) -> None:
+    r = next(x for x in d["findings"]["rows"] if x["anchor"] is None)
+    r["rwea_share"], r["rwea_share_reason"] = 0.12, None
+
+
+def _plant_row_rwea_not_the_anchor(d: dict) -> None:
+    r = next(x for x in d["findings"]["rows"] if x["anchor"] is None)
+    r["anchor"] = {"metric": "metric", "test_id": "t.x", "model_id": "m", "segment": None, "value": 0.05, "unit": "share-of-rwea", "basis": "x#/tests/0/metric"}
+    r["anchor_reason"] = None
+    r["rwea_share"], r["rwea_share_reason"] = 0.2, None
+
+
+def _rwea_state(d: dict, share: float, level: int | None, outcome: str | None) -> None:
+    """Every open C18 row carries a share-of-RWEA anchor of ``share`` (register and report); the report states ``level`` and ``outcome``."""
+    rep = d["reports"]["C18/banco-andino"]
+    keys = {f["key"] for f in rep["sections"][10]["opinion"]["open_findings"]}
+    for r in d["findings"]["rows"]:
+        if r["key"] in keys:
+            r["anchor"] = {"metric": "metric", "test_id": "t.x", "model_id": "m", "segment": None, "value": share, "unit": "share-of-rwea",
+                           "basis": "x#/tests/0/metric"}
+            r["anchor_reason"] = None
+            r["rwea_share"], r["rwea_share_reason"] = share, None
+    for f in rep["sections"][10]["opinion"]["open_findings"]:
+        f["rwea_share"] = share
+    if level is not None:
+        rep["sections"][10]["opinion"]["level"] = level
+        rep["sections"][0]["opinion_level"] = level
+        rep["sections"][10]["opinion"]["recommendation"]["outcome"] = outcome
+
+
+def _plant_anchor_lowers_the_level(d: dict) -> None:
+    _rwea_state(d, 0.01, 2, "approve with conditions")      # the review's R1: an S1 finding with a 1 percent share, level 2
+
+
+def _plant_as_of_before_raised(d: dict) -> None:
+    d["findings"]["as_of"] = "2026-10-14"
+
+
+def _plant_inventory_as_of_before_validation(d: dict) -> None:
+    d["inventory"]["as_of"] = "2026-10-01"
+
+
+def _plant_as_of_basis_label(d: dict) -> None:
+    d["findings"]["as_of_basis"]["label"] = "regulatory"
+
+
+def _plant_variant_not_in_entry(d: dict) -> None:
+    e = _inv_entry(d, "C07/banco-andino")
+    e["variants"] = [v for v in e["variants"] if v["variant_id"] != "recession"]
+
+
+def _plant_excluded_variant_assigned(d: dict) -> None:
+    d["inventory"]["excluded"].append({"case_id": "C07", "variant_id": "base", "reason": {"en": "no fit determinable", "es": "ningun ajuste determinable"}})
+
+
+def _plant_duplicate_variant(d: dict) -> None:
+    e = _inv_entry(d, "C07/banco-andino")
+    e["variants"].append(dict(e["variants"][0]))
+
+
+def _plant_literal_below_graded(d: dict) -> None:
+    _inv_entry(d, "C01/german")["tier_block"]["materiality"]["regulatory_use"]["literal"] = 2
+
+
+def _plant_report_severity_differs(d: dict) -> None:
+    f = d["reports"]["C07/banco-andino"]["sections"][10]["opinion"]["open_findings"][0]
+    f["severity"] = "S4" if f["severity"] != "S4" else "S1"
+
+
+def _plant_related_unknown(d: dict) -> None:
+    d["inventory"]["related"].append({"a": "C22/generators", "b": "C99/ghost", "kind": "measures", "source": "x"})
+
+
+def _plant_edge_repeats(d: dict) -> None:
+    d["inventory"]["edges"].append(dict(d["inventory"]["edges"][0]))
+
+
+def _plant_register_rows(d: dict) -> None:
+    next(x for x in d["appetite"]["metrics"] if x["id"] == "open-high-severity")["register_rows"] += 1
+
+
+def _plant_appetite_counts_rows(d: dict) -> None:
+    m = next(x for x in d["appetite"]["metrics"] if x["id"] == "open-high-severity")
+    m["numerator"] = m["register_rows"]
+    m["value"] = m["register_rows"]
+
+
+def _plant_kind_not_a_decision(d: dict) -> None:
+    d["reports"]["C07/banco-andino"]["sections"][5]["blocks"][0]["rows"][0]["policy"]["kind"] = "upper_bad"
+
+
+def _plant_kind_without_reason(d: dict) -> None:
+    d["reports"]["C07/banco-andino"]["sections"][5]["blocks"][0]["rows"][0]["policy"]["kind_reason"] = None
+
+
 # name, mutator, the layers that must refuse it (schema, checker or cross) and a word the checker message must carry
 PLANTS: list[tuple[str, Callable[[dict], None], tuple[str, ...], str]] = [
     ("a tier that is not the matrix of its scores", _plant_tier, ("checker",), "tier"),
@@ -822,6 +968,35 @@ PLANTS: list[tuple[str, Callable[[dict], None], tuple[str, ...], str]] = [
     ("an appetite numerator the register does not give", _plant_metric_numerator, ("cross",), "open-high-severity"),
     ("an appetite threshold labelled regulatory", _plant_threshold_label, ("schema", "checker"), "regulatory"),
     ("a governance id that is not the document's", _plant_header, ("schema",), ""),
+    ("approval text in section 1", _plant_approval_s1, ("checker",), "approval"),
+    ("approval text in the recommendation", _plant_approval_rec, ("checker",), "approval"),
+    ("approval text in Spanish", _plant_approval_es, ("checker",), "approval"),
+    ("an approver with a value on A32", _plant_a32_value, ("checker",), "approval"),
+    ("a deadline basis set by the regulator", _claim_plant("these deadlines are set by the regulator (ECB TRIM)"), ("checker",), "regulatory"),
+    ("a deadline basis prescribed by the ECB", _claim_plant("the days are prescribed by the ECB"), ("checker",), "regulatory"),
+    ("a deadline basis that is a supervisory requirement", _claim_plant("the table is a supervisory requirement"), ("checker",), "regulatory"),
+    ("a deadline basis mandated by SR 26-2", _claim_plant("the interval is mandated by SR 26-2"), ("checker",), "regulatory"),
+    ("a deadline basis the PRA requires", _claim_plant("this is the frequency the PRA requires"), ("checker",), "regulatory"),
+    ("a deadline basis that is an SS1/23 minimum", _claim_plant("the days are an SS1/23 minimum"), ("checker",), "regulatory"),
+    ("a deadline basis the regulator demands in Spanish", _claim_plant("el plazo que exige el regulador"), ("checker",), "regulatory"),
+    ("an RWEA share in the report that the register does not hold", _plant_report_rwea_not_in_register, ("cross",), "rwea_share"),
+    ("an RWEA share on a row with no RWEA anchor", _plant_row_rwea_without_anchor, ("checker",), "rwea_share"),
+    ("an RWEA share that is not the anchor's value", _plant_row_rwea_not_the_anchor, ("checker",), "rwea_share"),
+    ("an anchor that lowers a level (S1 with a 1 percent share, level 2)", _plant_anchor_lowers_the_level, ("checker",), "opinion level"),
+    ("an as_of earlier than the newest raised date", _plant_as_of_before_raised, ("checker",), "as_of"),
+    ("an as_of earlier than the newest last validation", _plant_inventory_as_of_before_validation, ("checker",), "as_of"),
+    ("an as_of basis labelled regulatory", _plant_as_of_basis_label, ("schema", "checker"), "as_of_basis"),
+    ("a register row whose variant is not in its entry", _plant_variant_not_in_entry, ("cross",), "variant"),
+    ("an excluded variant that is also assigned", _plant_excluded_variant_assigned, ("checker",), "also assigned"),
+    ("a variant listed twice", _plant_duplicate_variant, ("checker",), "twice"),
+    ("a literal regulatory use below the graded one", _plant_literal_below_graded, ("checker",), "literal"),
+    ("a report open finding whose severity differs from the register's", _plant_report_severity_differs, ("cross",), "differ"),
+    ("a related link to an unknown entry", _plant_related_unknown, ("checker",), "unknown entry"),
+    ("a repeated edge", _plant_edge_repeats, ("checker",), "repeats"),
+    ("a register_rows count the register does not give", _plant_register_rows, ("cross",), "register_rows"),
+    ("an appetite count of register rows instead of distinct findings", _plant_appetite_counts_rows, ("cross",), "open-high-severity"),
+    ("a policy kind that is not a registry decision", _plant_kind_not_a_decision, ("schema",), ""),
+    ("a policy kind without its reason", _plant_kind_without_reason, ("schema",), ""),
 ]
 DOC_OF_SCHEMA = {INV: "inventory", FND: "findings", APP: "appetite"}
 
@@ -856,6 +1031,80 @@ def test_a_planted_defect_is_refused_by_the_layer_the_table_names(name: str, mut
         assert needle.lower() in " ".join(found["cross"]).lower(), f"{name}: cross messages {found['cross']}"
 
 
+def test_finding_level_is_the_maximum_of_the_severity_and_the_rwea_level_at_its_boundaries() -> None:
+    f = sm().finding_level
+    assert [f(sv) for sv in SEVERITIES] == [4, 3, 2, 2]
+    assert f("S4", 0.0499) == 2 and f("S4", 0.05) == 3 and f("S3", 0.0999) == 3 and f("S3", 0.10) == 4
+    assert f("S1", 0.0499) == 4 and f("S1", 0.05) == 4 and f("S2", 0.10) == 4 and f("S1", 0.01) == 4      # an anchor only raises a level
+    assert f("S2", 0.06) == 3 and f("S4", 0.4) == 4
+    o = sm().opinion_level
+    assert o([]) == 1 and o([{"severity": "S4"}, {"severity": "S3"}]) == 2 and o([{"severity": "S1", "rwea_share": 0.01}]) == 4
+    assert o([{"severity": "S3", "rwea_share": 0.05}]) == 3 and o([{"severity": "S4", "rwea_share": 0.10}]) == 4
+
+
+def test_the_overdue_flag_is_false_on_the_due_date_and_true_the_day_after() -> None:
+    d = date(2026, 11, 11)
+    assert sm().is_overdue("open", d, d) is False
+    assert sm().is_overdue("open", d, d + timedelta(days=1)) is True
+    assert sm().is_overdue("overdue", d, d + timedelta(days=1)) is True
+    assert sm().is_overdue("risk_accepted", d, d + timedelta(days=400)) is False
+    assert sm().is_overdue("validated_closed", d, d + timedelta(days=400)) is False
+
+
+PATTERN_SAMPLES = [   # a sample that only the pattern of that index matches (a pattern removed is a pattern found missing)
+    ("the regulatory deadline applies", 0), ("the table is regulatory", 1), ("applies as required by law", 2), ("el plazo regulatorio", 3),
+    ("el umbral es regulatorio", 4), ("prescribed by the ECB", 5), ("the PRA requires an annual review", 6), ("a supervisory requirement", 7),
+    ("an SS1/23 minimum", 8), ("el plazo que exige el regulador", 9),
+]
+
+
+@pytest.mark.parametrize("text,index", PATTERN_SAMPLES, ids=[t for t, _ in PATTERN_SAMPLES])
+def test_each_regulatory_claim_pattern_has_a_sample_only_it_catches(text: str, index: int) -> None:
+    assert sm().regulatory_claim_hits(text) == [index]
+
+
+def test_the_wider_phrasings_of_the_review_are_all_found_and_the_negation_is_not() -> None:
+    for phrase in ("prescribed by the ECB", "set by the regulator", "a supervisory requirement", "mandated by SR 26-2", "the frequency the PRA requires",
+                   "an SS1/23 minimum", "el plazo que exige el regulador", "these deadlines are set by the regulator (ECB TRIM)"):
+        assert sm().regulatory_claims(phrase), phrase
+    assert not sm().regulatory_claims("no regulatory source prescribes days; the table is a convention")
+    assert len(sm()._REG_CLAIMS) == len(PATTERN_SAMPLES)
+
+
+def test_approval_claims_are_found_in_both_languages_and_the_fixed_negations_are_exempt() -> None:
+    for text in ("Contraste approves this model for use", "the model is approved", "it is certified for use", "compliant with SR 26-2",
+                 "El modelo esta aprobado", "El modelo esta certificado", "cumple con la norma", "the approval of the board"):
+        assert sm().approval_claims(text), text
+    for text in ("Contraste approves no model", "Contraste no aprueba ningun modelo", "no approval date or authority exists", "no approver exists",
+                 "Approve with conditions: only minor findings are open", "compliance monitoring", "the approval rate on card applicants"):
+        assert not sm().approval_claims(text), text
+
+
+def test_an_empty_inventory_is_refused_with_a_stated_message() -> None:
+    doc = copy.deepcopy(load("inventory"))
+    doc["entries"] = []
+    assert sm().violations(doc) == ["the inventory holds no entry: there is nothing to check, nothing to publish"]
+
+
+def test_an_rwea_anchor_raises_the_opinion_when_the_register_and_the_report_agree() -> None:
+    d = copy.deepcopy(all_docs())
+    rep = d["reports"]["C07/banco-andino"]
+    keys = {f["key"]: f for f in rep["sections"][10]["opinion"]["open_findings"]}
+    target = next(r for r in d["findings"]["rows"] if r["key"] in keys and r["severity"] == "S3")
+    target["anchor"] = {"metric": "metric", "test_id": "t.x", "model_id": "m", "segment": None, "value": 0.12, "unit": "share-of-rwea",
+                        "basis": "x#/tests/0/metric"}
+    target["anchor_reason"], target["rwea_share"], target["rwea_share_reason"] = None, 0.12, None
+    keys[target["key"]]["rwea_share"] = 0.12
+    op = rep["sections"][10]["opinion"]
+    assert op["level"] == 3
+    op["level"], rep["sections"][0]["opinion_level"] = 4, 4
+    op["recommendation"]["outcome"], op["rwea_cut_points_applied"] = "remediate before use", True
+    found = _layers(d)
+    assert all(not v for v in found.values()), found
+    op["level"], rep["sections"][0]["opinion_level"] = 3, 3          # the level the severities alone give is now refused
+    assert any("opinion level" in m for m in _layers(d)["checker"])
+
+
 def test_every_invariant_of_the_brief_has_at_least_one_planted_defect() -> None:
     names = " | ".join(p[0] for p in PLANTS).lower()
     for phrase in ("matrix of its scores", "raised date plus the deadline", "overdue flag", "opinion that is not the rule", "unknown entry",
@@ -868,10 +1117,10 @@ def test_every_invariant_of_the_brief_has_at_least_one_planted_defect() -> None:
 
 API_MODULES: dict[str, list[str]] = {
     "scope": ["ScopeAnswers", "ScopeDecision", "scope_test", "scope_record"],
-    "inventory": ["Component", "Entry", "Edge", "Inventory", "build_inventory", "topological_order", "graph_metrics", "attribute_completeness"],
+    "inventory": ["Component", "Entry", "Edge", "Inventory", "assign_variant", "build_inventory", "topological_order", "graph_metrics", "attribute_completeness"],
     "tiering": ["exposure_band", "materiality", "complexity", "matrix_tier", "apply_override", "tier_sensitivity", "tier_counts"],
     "lifecycle": ["allowed_next", "transition"],
-    "findings": ["Finding", "severity_to_ecb", "map_product_status", "deadline_days", "due_date", "ageing_days", "is_overdue",
+    "findings": ["Finding", "rwea_share_of_anchor", "severity_to_ecb", "map_product_status", "deadline_days", "due_date", "ageing_days", "is_overdue",
                  "transition_finding", "anchor_from_test_row", "register_counts"],
     "schedule": ["add_months", "next_dates"],
     "opinion": ["finding_level", "opinion_level", "recommendation"],
@@ -943,44 +1192,41 @@ def test_the_reused_engine_functions_are_named_as_reused_and_never_restated() ->
         assert f"riskvalidation.{name}" not in set(api_sections()), f"{name} is reused, never restated"
 
 
-def test_every_computed_field_names_the_engine_function_behind_it() -> None:
+def marked_fields() -> dict[tuple[str, str | None, str], str]:
+    """Every schema property whose description ends with 'Computed by <function>.', found by walking the schema files (never a list typed here)."""
+    out: dict[tuple[str, str | None, str], str] = {}
+    rx = re.compile(r"Computed by (riskvalidation\.governance\.[a-z_0-9.]+?)\.(?:\s|$)")
+    for f in sorted(SCHEMAS.glob("*.schema.json")):
+        s = cs.load_json(f)
+        name = f.name.removesuffix(".schema.json")
+        for owner, props in [(None, s.get("properties", {}))] + [(d, v.get("properties", {})) for d, v in s["$defs"].items()]:
+            for prop, node in props.items():
+                found = rx.findall(node.get("description", "")) if isinstance(node, dict) else []
+                if found:
+                    out[(name, owner, prop)] = found[0]
+    return out
+
+
+def test_every_recomputed_field_names_the_engine_function_behind_it() -> None:
     sections = set(api_sections())
-    expected = {  # schema file -> ($defs name, property) -> the engine function named in its description (ADR-0069: the engine computes every value)
-        "governance-inventory": {
-            ("invExposure", "band"): "tiering.exposure_band", ("invMateriality", "m"): "tiering.materiality",
-            ("invComplexity", "c"): "tiering.complexity", ("invTier", "computed_tier"): "tiering.matrix_tier",
-            ("invTier", "tier"): "tiering.apply_override", ("invTier", "tier_sensitivity"): "tiering.tier_sensitivity",
-            ("invScope", "profiles"): "scope.scope_record", ("invLifecycle", "state"): "lifecycle.transition",
-            ("invSchedule", "next_review"): "schedule.next_dates", ("invGraph", "depth"): "inventory.graph_metrics",
-            ("invGraph", "fan_in"): "inventory.graph_metrics", ("invGraph", "fan_out"): "inventory.graph_metrics",
-            ("invSchedule", "next_full_revalidation"): "schedule.next_dates", ("invSchedule", "next_monitoring"): "schedule.next_dates",
-            ("invDocument", "completeness"): "inventory.attribute_completeness", ("invDocument", "tier_counts"): "tiering.tier_counts",
-            ("invDocument", "edges"): "inventory.build_inventory",
-        },
-        "governance-findings": {
-            ("fndRow", "ecb_f"): "findings.severity_to_ecb", ("fndRow", "status"): "findings.map_product_status",
-            ("fndRow", "deadline_days"): "findings.deadline_days", ("fndRow", "due"): "findings.due_date",
-            ("fndRow", "ageing_days"): "findings.ageing_days", ("fndRow", "overdue"): "findings.is_overdue",
-            ("fndRow", "anchor"): "findings.anchor_from_test_row", ("fndDocument", "counts"): "findings.register_counts",
-        },
-        "governance-report": {
-            ("repOpinion", "level"): "opinion.opinion_level", ("repOpinion", "recommendation"): "opinion.recommendation",
-            ("repDocument", "test_counts"): "report.executive_counts", ("repPolicy", "source"): "policy.resolve_policy",
-            ("repDocument", "sections"): "report.build_report",
-        },
-        "governance-appetite": {("appMetric", "value"): "appetite.appetite_metrics", ("appMetric", "light"): "appetite.light",
-                                ("appMetric", "numerator"): "appetite.appetite_metrics", ("appMetric", "denominator"): "appetite.appetite_metrics"},
-    }
-    for file, fields in expected.items():
-        s = cs.load_json(SCHEMAS / f"{file}.schema.json")
-        for (d, prop), fn in fields.items():
-            node = s["$defs"][d]["properties"][prop] if d in s["$defs"] else s["properties"][prop]
-            named = re.findall(r"Computed by (riskvalidation\.governance\.[a-z_0-9.]+?)\.(?:\s|$)", node.get("description", ""))
-            assert named == [f"riskvalidation.governance.{fn}"], (file, d, prop, node.get("description"))
-            assert named[0] in sections, named[0]
+    marked = marked_fields()
+    assert len(marked) >= 45, len(marked)
+    assert set(marked.values()) <= sections, sorted(set(marked.values()) - sections)
+    registry = sm().RECOMPUTED
+    assert len(registry) == len(set(registry)) > 40
+    missing = [k for k in registry if k not in marked]
+    assert missing == [], f"a field the checker recomputes names no engine function: {missing}"
     every = {m for f in SCHEMAS.glob("*.schema.json")
              for m in re.findall(r"Computed by (riskvalidation\.governance\.[a-z_0-9.]+?)\.(?:\s|\"|$)", f.read_text(encoding="utf-8"))}
     assert every and every <= sections, sorted(every - sections)
+
+
+def test_a_recomputed_field_that_names_no_engine_function_is_found() -> None:
+    marked = marked_fields()
+    probe = ("governance-findings", "fndRow", "due")
+    assert probe in marked
+    trimmed = {k: v for k, v in marked.items() if k != probe}
+    assert [k for k in sm().RECOMPUTED if k not in trimmed] == [probe]
 
 
 def test_the_contract_states_the_conventions_as_named_parameters_never_as_regulatory() -> None:
@@ -1094,7 +1340,8 @@ def test_golden_the_opinion_at_the_severity_rule_and_at_the_rwea_cut_points() ->
         assert text in body, text
     f = _golden_text("opinion.finding_level")
     for text in ("finding_level('S4', rwea_share=0.0499) = 2", "finding_level('S4', rwea_share=0.05) = 3", "finding_level('S3', rwea_share=0.0999) = 3",
-                 "finding_level('S3', rwea_share=0.10) = 4", "finding_level('S1', rwea_share=0.0499) = 2"):
+                 "finding_level('S3', rwea_share=0.10) = 4", "finding_level('S1', rwea_share=0.0499) = 4",
+                 "finding_level('S2', rwea_share=0.10) = 4"):
         assert text in f, text
     assert "risk_accepted" in body and "validated_closed" in body
     rec = _golden_text("opinion.recommendation")
@@ -1115,6 +1362,7 @@ def test_golden_the_policy_identity_of_a_test_row() -> None:
     assert "riskvalidation-default 2026.10.1" in body and "packaged-policy" in body
     assert "contraste-ifrs9-battery-1.0.0; nl_amber=1.0; nl_red=3.0" in body and "inline-battery" in body
     assert "unresolved" in body and "reason" in body
+    assert "spec(test_id).decision" in body and "no policy file (BL-085)" in body and "pd.jeffreys" in body and "kind `p_value`" in body
 
 
 def test_golden_the_appetite_light_rule_and_the_scope_profiles() -> None:
@@ -1147,6 +1395,7 @@ def test_the_conventions_are_labelled_and_the_tables_hold_the_contract_values() 
     inv, fnd, app = load("inventory"), load("findings"), load("appetite")
     conv = inv["conventions"]
     assert conv["exposure_band_cuts"]["cuts"] == [0.25, 0.1, 0.02]
+    assert conv["regulatory_use_grades"]["literal"]["compliance_monitoring"] == 2        # m1: C21 literal 2 in A D2
     assert conv["complexity_rounding"]["rule"] == "mean-rounded-half-up"
     assert [(t["tier"], t["review_months"], t["revalidation_months"], t["monitoring_months"]) for t in conv["frequency"]["tiers"]] == [
         (1, 12, 36, 3), (2, 12, 36, 6), (3, 24, None, 12), (4, 36, None, None)]
@@ -1170,12 +1419,13 @@ def test_golden_the_register_report_and_appetite_numbers_of_the_contract_equal_t
     counts = rep["test_counts"]
     assert json.dumps(counts) in _golden_text("report.executive_counts").replace("'", '"') or str(counts).replace("'", '"') in         _golden_text("report.executive_counts")
     m = {x["id"]: x for x in app["metrics"]}
-    assert f"({m['open-high-severity']['numerator']}, {m['open-high-severity']['denominator']}, {m['open-high-severity']['value']})" in         _golden_text("appetite.open_high_severity")
-    assert f"({m['overdue-remediation']['numerator']}, {m['overdue-remediation']['denominator']}, {m['overdue-remediation']['value']})" in         _golden_text("appetite.overdue_remediation")
+    for mid, fn in (("open-high-severity", "open_high_severity"), ("overdue-remediation", "overdue_remediation")):
+        x = m[mid]
+        assert f"({x['numerator']}, {x['denominator']}, {x['value']}, {x['register_rows']})" in _golden_text(f"appetite.{fn}")
     assert f"({m['entries-in-breach']['numerator']}, {m['entries-in-breach']['denominator']}, {m['entries-in-breach']['value']})" in         _golden_text("appetite.entries_in_breach")
     assert f"({m['pma-magnitude']['numerator']}, {m['pma-magnitude']['denominator']}, {m['pma-magnitude']['value']:.7f})" in         _golden_text("appetite.pma_magnitude")
-    assert [x["light"] for x in app["metrics"]] == ["green", "red", "red", "green", "red", "green", "red"]
-    assert "lights green, red, red, green, red, green, red" in _golden_text("appetite.appetite_metrics")
+    assert [x["light"] for x in app["metrics"]] == ["green", "red", "amber", "green", "red", "green", "red"]
+    assert "lights green, red, amber, green, red, green, red" in _golden_text("appetite.appetite_metrics")
     assert len(rep["sections"][10]["opinion"]["open_findings"]) == 29 and "29 open findings" in _golden_text("report.build_report")
 
 

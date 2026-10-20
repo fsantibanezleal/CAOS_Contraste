@@ -111,6 +111,12 @@ DATE = R("govDate")
 NUM_OR_NULL = nullable(N())
 
 
+ATTR_ENGINE = {   # the attributes whose value an engine function computes
+    "A07": "lifecycle.transition", "A22": "tiering.materiality", "A23": "tiering.complexity", "A24": "tiering.apply_override",
+    "A35": "schedule.next_dates", "A36": "report.executive_counts", "A37": "findings.register_counts", "A38": "findings.due_date",
+}
+
+
 def eng(node: dict, fn: str) -> dict:
     """Marks a property as computed by the engine function ``riskvalidation.governance.<fn>`` (ADR-0069): its description ends with
     ``Computed by <function>.``. An annotation keyword would fail the strict Ajv of the consumer test, which registers only x-location and
@@ -173,12 +179,17 @@ def shared_defs() -> dict:
                      "come from committed values (R4 of the U15 sizing); a wall-clock date never enters a document.",
                      pattern=r"^\d{4}-\d{2}-\d{2}$"),
         "govSha256": S(pattern="^[0-9a-f]{64}$"),
+        "govAsOfBasis": Ob({"label": C("convention"), "basis": TXT},
+                           "Why the as-of date is the date it is (W15-13). Production rule: the date of the newest release heading of CHANGELOG.md when the "
+                           "bake runs, never earlier than a raised date. A fixture states that its date is chosen to exercise the overdue rule."),
         "govProvenance": Ob({
             "code_version": S("The Contraste code version that wrote the document.", minLength=1),
             "riskvalidation_version": S("The engine version that computed it.", minLength=1),
             "generators": A(S(minLength=1), 1, desc="The writer of the document; a fixture is labelled fixture:u15-s-contracts."),
-            "documents_read": A(Ob({"path": S(minLength=1), "sha256": R("govSha256")}), 1,
-                                desc="Every case document read, with the sha256 of its bytes (line endings normalised to LF)."),
+            "documents_read": A(Ob({"path": S(minLength=1), "sha256": R("govSha256"),
+                                    "ref": nullable(S(minLength=1), "The git ref and commit the bytes were read from when the document is not on the "
+                                                                    "branch the bake runs on (the C18 documents of the fixture); null otherwise.")}), 1,
+                                desc="Every case document read, with the sha256 of its bytes (line endings normalised to LF) and its git ref."),
         }, "Where a governance document came from: code and engine versions and the sha256 of every case document it read."),
         "govSeverity": E(*["S1", "S2", "S3", "S4"]),
         "govEcbF": E("F1", "F2", "F3", "F4"),
@@ -210,6 +221,7 @@ def header(gid: str, extra_required: list[str], extra_props: dict) -> tuple[dict
         "governance_id": C(gid),
         "schema_version": S(pattern=r"^\d+\.\d+\.\d+$"),
         "as_of": R("govDate"),
+        "as_of_basis": R("govAsOfBasis"),
         "provenance": R("govProvenance"),
         **extra_props,
     }
@@ -225,7 +237,8 @@ def inventory_defs() -> dict:
         "invAttr": when(when(Ob({"value": {}, "status": E("present", "derivable", "convention", "not-applicable", "missing"), "basis": BASIS},
                               "A B.2 attribute: never a bare value. basis is the JSON pointer read, or the convention's or the absence's reason."),
                         "status", "missing", {"value": C(None)}), "status", "not-applicable", {"value": C(None)}),
-        "invAttributes": Ob({f"A{i:02d}": R("invAttr") for i in range(1, 41)}, "The 40 attributes of 06 B.2 (l.539-551), keyed A01 to A40."),
+        "invAttributes": Ob({f"A{i:02d}": (eng(R("invAttr"), ATTR_ENGINE[f"A{i:02d}"]) if f"A{i:02d}" in ATTR_ENGINE else R("invAttr"))
+                             for i in range(1, 41)}, "The 40 attributes of 06 B.2 (l.539-551), keyed A01 to A40."),
         "invComponent": Ob({
             "key": S("case_id/fit_id/model_id: model ids repeat across cases, so the key is the triple.", pattern=r"^[^/]+/[^/]+/[^/]+$"),
             "model_id": S(minLength=1),
@@ -250,7 +263,8 @@ def inventory_defs() -> dict:
                              "M = max(exposure band, regulatory use, decision criticality), under both readings of regulatory use."),
         "invFactor": Ob({"id": E("F1", "F2", "F3", "F4", "F5", "F6", "F7"), "name": S(minLength=1), "score": nullable(Int(1, 4)),
                          "tag": R("govTag"), "basis": BASIS}),
-        "invComplexity": Ob({"factors": A(R("invFactor"), 7, 7), "scored": Int(1, 7), "sum": Int(1), "mean": N(minimum=1, maximum=4),
+        "invComplexity": Ob({"factors": A(R("invFactor"), 7, 7), "scored": eng(Int(1, 7), "tiering.complexity"), "sum": eng(Int(1), "tiering.complexity"),
+                             "mean": eng(N(minimum=1, maximum=4), "tiering.complexity"),
                              "c": eng(Ob({"mean": Int(1, 4), "maximum": Int(1, 4)}), "tiering.complexity")},
                             "C from the factor scores: the mean rounded half up, and the maximum. A factor with a null score is unscored, with its reason."),
         "invOverride": Ob({"to_tier": R("govTier"), "rationale": S(minLength=1), "approver": S(minLength=1)},
@@ -283,13 +297,17 @@ def inventory_defs() -> dict:
         }, "The next review, full revalidation and monitoring dates from the tier and the frequency table (06 B.8)."),
         "invGraph": Ob({"depth": eng(Int(0), "inventory.graph_metrics"), "fan_in": eng(Int(0), "inventory.graph_metrics"),
                         "fan_out": eng(Int(0), "inventory.graph_metrics")}),
-        "invMap": Ob({"generation": Int(0), "x": N(), "y": N()}, "The layered layout of the dependency map (the bake's networkx layout, a geometry and not a model value)."),
+        "invMap": Ob({"generation": eng(Int(0), "inventory.graph_metrics"), "x": N(), "y": N()}, "The layered layout of the dependency map (the bake's networkx layout, a geometry and not a model value)."),
+        "invVariant": Ob({"variant_id": S(minLength=1), "basis": BASIS},
+                         "A variant document of the entry and the provenance rule that assigned it (W15-15): the fit whose sources the variant's "
+                         "provenance reads, or the single models document of the case. A variant whose fit cannot be determined is in excluded."),
         "invEntry": Ob({
             "key": S("case_id/fit_id (W15-1).", pattern=r"^C\d{2}/[a-z0-9-]+$"),
             "case_id": S(pattern=r"^C\d{2}$"),
             "fit_id": S(minLength=1),
             "title": TXT,
             "attributes": R("invAttributes"),
+            "variants": A(R("invVariant"), 1),
             "components": A(R("invComponent"), 1),
             "scope": R("invScope"),
             "tier_block": R("invTier"),
@@ -303,7 +321,10 @@ def inventory_defs() -> dict:
         "invRelated": Ob({"a": S(minLength=1), "b": S(minLength=1),
                           "kind": E("page-statement", "method", "source", "measures", "conceptual"), "source": BASIS},
                          "A link that is not a dependency: a page statement, a shared method, a shared source (A D4 5.1, 5.3)."),
-        "invExcluded": Ob({"case_id": S(pattern=r"^C\d{2}$"), "reason": TXT}, "A case left out of the inventory, with the reason (missing-data behavior)."),
+        "invExcluded": Ob({"case_id": S(pattern=r"^C\d{2}$"),
+                          "variant_id": nullable(S(minLength=1), "Null when the whole case is left out; a variant id when only that variant has no "
+                                                                 "determinable fit (W15-15)."),
+                          "reason": TXT}, "A case, or one variant of a case, left out of the inventory, with the reason (missing-data behavior)."),
         "invTierCounts": Ob({"reading": E("A", "B", "C", "D"), "counts": A(Int(0), 4, 4)}),
         "invAttrCount": Ob({"present": Int(0), "derivable": Int(0), "convention": Int(0), "not_applicable": Int(0), "missing": Int(0)}),
         "invCompleteness": Ob({"entries": Int(1), "attributes": Ob({f"A{i:02d}": R("invAttrCount") for i in range(1, 41)})}),
@@ -311,7 +332,8 @@ def inventory_defs() -> dict:
             "exposure_band_cuts": Ob({**conv_label, "cuts": A(N(minimum=0, maximum=1), 3, 3)}),
             "regulatory_use_grades": Ob({**conv_label, "graded": Ob({"reported_figure": Int(1, 4), "feeding_parameter": Int(1, 4),
                                                                      "compliance_monitoring": Int(1, 4), "none": Int(1, 4)}),
-                                         "literal": Ob({"feeds_capital_provisioning_or_reporting": Int(1, 4), "none": Int(1, 4)})}),
+                                         "literal": Ob({"feeds_capital_provisioning_or_reporting": Int(1, 4),
+                                                        "compliance_monitoring": Int(1, 4), "none": Int(1, 4)})}),
             "complexity_rounding": Ob({**conv_label, "rule": C("mean-rounded-half-up")}),
             "frequency": Ob({**conv_label, "tiers": A(Ob({"tier": R("govTier"), "review_kind": E("review", "attestation"),
                                                           "review_months": Int(1), "revalidation_months": nullable(Int(1)),
@@ -368,6 +390,9 @@ def findings_defs() -> dict:
         "evidence": A(S(minLength=1), 1),
         "anchor": eng(nullable(R("fndAnchor")), "findings.anchor_from_test_row"),
         "anchor_reason": nullable(TXT),
+        "rwea_share": eng(nullable(N(minimum=0), "A decimal share of RWEA (0.05 is 5 percent); non-null only where the anchor's metric is stated as a "
+                                                 "share of RWEA or as an RWEA amount (W15-11)."), "findings.rwea_share_of_anchor"),
+        "rwea_share_reason": nullable(TXT),
         "owner_role": S(minLength=1),
         "tier": R("govTier"),
         "raised": R("govDate"),
@@ -381,6 +406,7 @@ def findings_defs() -> dict:
     }, "One finding of one variant, enriched with the B.7 fields from committed values (R3, W15-5).")
     severity_ecb_rules(row)
     when_null(row, "anchor", ["anchor_reason"])
+    when_null(row, "rwea_share", ["rwea_share_reason"])
     when_null(row, "remediation", ["remediation_reason"])
     when(row, "status", "risk_accepted", {"risk_acceptance": R("fndRisk")}, {"risk_acceptance": {"type": "null"}})
     when(row, "product_status", "open", {"status": C("open")})
@@ -432,27 +458,34 @@ def report_defs() -> dict:
     cell = {"type": ["string", "number", "boolean", "null"]}
     policy = Ob({
         "label": S(minLength=1),
-        "kind": nullable(E("p_value", "upper_bad", "lower_bad")),
+        "kind": eng(nullable(E("p_value", "metric"), "spec(test_id).decision of the engine registry (W15-12): p_value or metric."), "policy.resolve_policy"),
+        "kind_reason": nullable(S()),
+        "direction": eng(nullable(E("upper_bad", "lower_bad"), "Read from the policy file where one resolves; null for an inline battery string."),
+                         "policy.resolve_policy"),
+        "direction_reason": nullable(S()),
         "alpha_amber": NUM_OR_NULL,
         "alpha_red": NUM_OR_NULL,
         "parameters": {"type": "object", "additionalProperties": {"type": ["number", "string"]}},
         "version": nullable(S()),
         "source": eng(E("packaged-policy", "inline-battery", "unresolved"), "policy.resolve_policy"),
         "reason": nullable(S()),
-    }, "The policy identity of a test row (W15-6): a packaged label through the policy file, an inline battery string parsed, or unresolved with its reason.")
-    when(policy, "source", "unresolved", {"reason": S(minLength=1), "kind": {"type": "null"}})
+    }, "The policy identity of a test row (W15-6, W15-12): a packaged label through the policy file, an inline battery string parsed, or unresolved with its reason.")
+    when_null(policy, "kind", ["kind_reason"])
+    when_null(policy, "direction", ["direction_reason"])
+    when(policy, "source", "unresolved", {"reason": S(minLength=1), "kind": {"type": "null"}, "direction": {"type": "null"}})
     outcome_row = Ob({
         "test_id": S(minLength=1), "model_id": nullable(S()), "segment": nullable(S()), "family": S(minLength=1),
         "statistic": NUM_OR_NULL, "p_value": NUM_OR_NULL, "metric": NUM_OR_NULL,
         "light": E("green", "amber", "red", "not_evaluated", "error"),
         "h0": S(), "reference": S(), "policy": R("repPolicy"),
     })
-    open_finding = Ob({"key": S(minLength=1), "severity": R("govSeverity"), "rwea_share": nullable(N(minimum=0))})
+    open_finding = Ob({"key": S(minLength=1), "severity": R("govSeverity"),
+                       "rwea_share": eng(nullable(N(minimum=0), "The register row's share, carried unchanged."), "findings.rwea_share_of_anchor")})
     opinion = Ob({
         "level": eng(Int(1, 4), "opinion.opinion_level"),
         "level_label": TXT,
         "rule": Ob({"id": C("W15-7"), "text": TXT}),
-        "rwea_cut_points_applied": B,
+        "rwea_cut_points_applied": eng(B, "opinion.opinion_level"),
         "open_findings": A(R("repOpenFinding")),
         "recommendation": eng(Ob({"outcome": E("approve", "approve with conditions", "remediate before use"), "text": TXT}),
                               "opinion.recommendation"),
@@ -527,6 +560,9 @@ def appetite_defs() -> dict:
         "unit": E("share", "count", "share-of-model-output"),
         "numerator": eng(NUM_OR_NULL, "appetite.appetite_metrics"),
         "denominator": eng(NUM_OR_NULL, "appetite.appetite_metrics"),
+        "register_rows": eng(nullable(Int(0), "The count metrics count distinct (entry, id) findings (W15-14); this is the number of register rows behind "
+                                              "the same metric; null for a metric that counts entries or is a share or magnitude."),
+                             "appetite.appetite_metrics"),
         "reason": nullable(TXT),
         "threshold": R("appThreshold"),
         "light": eng(E("green", "amber", "red", "not_evaluated"), "appetite.light"),
@@ -540,7 +576,8 @@ def appetite_defs() -> dict:
 def appetite_schema() -> dict:
     d = appetite_defs()
     props, _ = header("appetite", [], {
-        "population": Ob({"entries": Int(0), "findings": Int(0), "tier1_entries": Int(0)}),
+        "population": eng(Ob({"entries": Int(0), "findings": Int(0), "distinct_findings": Int(0), "tier1_entries": Int(0)}),
+                          "appetite.appetite_metrics"),
         "metrics": A(R("appMetric"), 7, 7),
     })
     root = Ob(props)

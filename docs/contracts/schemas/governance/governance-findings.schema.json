@@ -11,6 +11,7 @@
     "governance_id",
     "schema_version",
     "as_of",
+    "as_of_basis",
     "provenance",
     "conventions",
     "rows",
@@ -32,6 +33,9 @@
     },
     "as_of": {
       "$ref": "#/$defs/govDate"
+    },
+    "as_of_basis": {
+      "$ref": "#/$defs/govAsOfBasis"
     },
     "provenance": {
       "$ref": "#/$defs/govProvenance"
@@ -432,6 +436,8 @@
         "evidence",
         "anchor",
         "anchor_reason",
+        "rwea_share",
+        "rwea_share_reason",
         "owner_role",
         "tier",
         "raised",
@@ -517,6 +523,28 @@
           "description": "Computed by riskvalidation.governance.findings.anchor_from_test_row."
         },
         "anchor_reason": {
+          "anyOf": [
+            {
+              "$ref": "../common/text.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rwea_share": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "A decimal share of RWEA (0.05 is 5 percent); non-null only where the anchor's metric is stated as a share of RWEA or as an RWEA amount (W15-11). Computed by riskvalidation.governance.findings.rwea_share_of_anchor."
+        },
+        "rwea_share_reason": {
           "anyOf": [
             {
               "$ref": "../common/text.schema.json"
@@ -694,6 +722,34 @@
         {
           "if": {
             "properties": {
+              "rwea_share": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "rwea_share"
+            ]
+          },
+          "then": {
+            "properties": {
+              "rwea_share_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "rwea_share_reason": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
               "remediation": {
                 "type": "null"
               }
@@ -804,6 +860,23 @@
         }
       ]
     },
+    "govAsOfBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "label": {
+          "const": "convention"
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "Why the as-of date is the date it is (W15-13). Production rule: the date of the newest release heading of CHANGELOG.md when the bake runs, never earlier than a raised date. A fixture states that its date is chosen to exercise the overdue rule."
+    },
     "govDate": {
       "type": "string",
       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
@@ -854,7 +927,8 @@
             "additionalProperties": false,
             "required": [
               "path",
-              "sha256"
+              "sha256",
+              "ref"
             ],
             "properties": {
               "path": {
@@ -863,11 +937,23 @@
               },
               "sha256": {
                 "$ref": "#/$defs/govSha256"
+              },
+              "ref": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "The git ref and commit the bytes were read from when the document is not on the branch the bake runs on (the C18 documents of the fixture); null otherwise."
               }
             }
           },
           "minItems": 1,
-          "description": "Every case document read, with the sha256 of its bytes (line endings normalised to LF)."
+          "description": "Every case document read, with the sha256 of its bytes (line endings normalised to LF) and its git ref."
         }
       },
       "description": "Where a governance document came from: code and engine versions and the sha256 of every case document it read."

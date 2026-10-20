@@ -1,6 +1,7 @@
 {
  "c18_ref": "origin/task/u13-p1",
  "c18_commit": "cd096db05f5bdd709d2ed5ad8b35ed15217ff32c",
+ "engine_commit": "2a21c0b85578357bc7eb13e9d8ffda9ab9b300fa",
  "cases": {
   "C01": {
    "fit_id": "german",
@@ -122,6 +123,9 @@
      "sha256": "9c0ac47beecf1e5c456ea0be6997855beace3a9e9f53dd36abec031bd0d0872b",
      "code_version": "0.07.000",
      "riskvalidation_version": "0.4.3",
+     "sources": [
+      "uci-german"
+     ],
      "findings": [
       {
        "id": "F-CF-P4-lightgbm",
@@ -3415,7 +3419,24 @@
     "capital_challenger",
     "min_cost_champion",
     "min_cost_challenger"
-   ]
+   ],
+   "spec_decisions": {
+    "disc.auc": "metric",
+    "disc.auc_vs_initial": "p_value",
+    "disc.delong": "p_value",
+    "disc.ks": "metric",
+    "pd.binomial": "p_value",
+    "pd.binomial_vasicek": "p_value",
+    "pd.brier": "metric",
+    "pd.chi2_grades": "p_value",
+    "pd.ece": "metric",
+    "pd.hosmer_lemeshow": "p_value",
+    "pd.jeffreys": "p_value",
+    "pd.spiegelhalter": "p_value",
+    "rating.hhi": "p_value",
+    "stability.csi": "p_value",
+    "stability.psi": "p_value"
+   }
   },
   "C07": {
    "fit_id": "banco-andino",
@@ -3494,6 +3515,7 @@
      "sha256": "1e08b10e1d49419f86bbbc14fb06e82aba1faa99443bb4e799cd18ce4e7c13c5",
      "code_version": "0.07.000",
      "riskvalidation_version": "0.5.0",
+     "sources": [],
      "findings": [
       {
        "id": "F-GAP",
@@ -3752,6 +3774,7 @@
      "sha256": "e079dfbdd14ecec8b979ab80435964e22567aaaa657defbad6744637b03cbabb",
      "code_version": "0.07.000",
      "riskvalidation_version": "0.5.0",
+     "sources": [],
      "findings": [
       {
        "id": "F-GAP",
@@ -3910,6 +3933,7 @@
      "sha256": "f47e32bccbe450f0582b2479302cd28a428a6601d9821fd3675b75bb838aeb99",
      "code_version": "0.07.000",
      "riskvalidation_version": "0.5.0",
+     "sources": [],
      "findings": [
       {
        "id": "F-GAP",
@@ -4080,6 +4104,7 @@
      "sha256": "45fa83c963f000281ceb41a63413666d415e21db4c8ace76f6fb858e288f659a",
      "code_version": "0.07.000",
      "riskvalidation_version": "0.5.0",
+     "sources": [],
      "findings": [
       {
        "id": "F-GAP",
@@ -4250,6 +4275,7 @@
      "sha256": "b9d02ae186c431e4f43541fc779884171be9af2fe5df4357678d2e9e2a574f1c",
      "code_version": "0.07.000",
      "riskvalidation_version": "0.5.0",
+     "sources": [],
      "findings": [
       {
        "id": "F-GAP",
@@ -4420,6 +4446,7 @@
      "sha256": "24cb9ba1c6ec485fc74e6c9882c9bfe6d305a313ff08a65ac5af9909c2c8e01a",
      "code_version": "0.07.000",
      "riskvalidation_version": "0.5.0",
+     "sources": [],
      "findings": [
       {
        "id": "F-GAP",
@@ -4668,7 +4695,15 @@
     "gap_ifrs9_minus_b1",
     "ifrs9_over_b1",
     "b1_booked_total"
-   ]
+   ],
+   "spec_decisions": {
+    "ifrs9.ecl_backtest": null,
+    "ifrs9.nonlinearity": null,
+    "ifrs9.overlay_diagnostics": null,
+    "ifrs9.reconciliation_identities": null,
+    "ifrs9.scenario_sensitivity": null,
+    "ifrs9.sicr_effectiveness": null
+   }
   },
   "C18": {
    "fit_id": "banco-andino",
@@ -4743,6 +4778,13 @@
      "sha256": "b424e3f4d386478c503eff31bd1d2bc597e20089e0b872a561b4d11e7cf78921",
      "code_version": "0.12.000",
      "riskvalidation_version": "0.7.0+4193b58",
+     "sources": [
+      "fed-stress-tests",
+      "fed-chargeoff",
+      "bcch-bde",
+      "eba-esrb-stress-2025",
+      "ngfs-phase-v"
+     ],
      "findings": [
       {
        "id": "headline-simple-sum",
@@ -5103,6 +5145,13 @@
      "sha256": "2b191fb877657b8a26850a5de8458bbe4fc88454d6d3753220189b6b95e46437",
      "code_version": "0.12.000",
      "riskvalidation_version": "0.7.0+4193b58",
+     "sources": [
+      "fed-stress-tests",
+      "fed-chargeoff",
+      "bcch-bde",
+      "eba-esrb-stress-2025",
+      "ngfs-phase-v"
+     ],
      "findings": [
       {
        "id": "headline-simple-sum",
@@ -5351,6 +5400,13 @@
      "sha256": "fd614c8edf07464ec1bd266ec2f6b35506b214fcb938e62ed804d83bb5117fbd",
      "code_version": "0.12.000",
      "riskvalidation_version": "0.7.0+4193b58",
+     "sources": [
+      "fed-stress-tests",
+      "fed-chargeoff",
+      "bcch-bde",
+      "eba-esrb-stress-2025",
+      "ngfs-phase-v"
+     ],
      "findings": [
       {
        "id": "headline-simple-sum",
@@ -5599,6 +5655,13 @@
      "sha256": "5f78224b085addbc50b4c0ca823a87e150ffbefb5bbbfffe650cfddff76d57c5",
      "code_version": "0.12.000",
      "riskvalidation_version": "0.7.0+4193b58",
+     "sources": [
+      "fed-stress-tests",
+      "fed-chargeoff",
+      "bcch-bde",
+      "eba-esrb-stress-2025",
+      "ngfs-phase-v"
+     ],
      "findings": [
       {
        "id": "headline-simple-sum",
@@ -5844,6 +5907,13 @@
      "sha256": "dc5bc0dd9e74ab9a7cee4dec9425eb8b633b014e2681dd5f1db3d0e75461e40a",
      "code_version": "0.12.000",
      "riskvalidation_version": "0.7.0+4193b58",
+     "sources": [
+      "fed-stress-tests",
+      "fed-chargeoff",
+      "bcch-bde",
+      "eba-esrb-stress-2025",
+      "ngfs-phase-v"
+     ],
      "findings": [
       {
        "id": "reverse-scenario",
@@ -5876,6 +5946,13 @@
      "sha256": "bbe42eb4ba4304106ae82ff3222b88d190d545f20d541e501d03d2643d2758a2",
      "code_version": "0.12.000",
      "riskvalidation_version": "0.7.0+4193b58",
+     "sources": [
+      "fed-stress-tests",
+      "fed-chargeoff",
+      "bcch-bde",
+      "eba-esrb-stress-2025",
+      "ngfs-phase-v"
+     ],
      "findings": [
       {
        "id": "headline-simple-sum",
@@ -6077,7 +6154,20 @@
     "oi_headroom_min",
     "p2g_proxy"
    ],
-   "named_parameters_count": 12
+   "named_parameters_count": 12,
+   "spec_decisions": {
+    "aggregation.copula_choice_sensitivity": null,
+    "aggregation.correlation_stress": null,
+    "aggregation.diversification_sign": null,
+    "aggregation.horizon_confidence_consistency": null,
+    "aggregation.simple_sum_and_variance_covariance": null,
+    "aggregation.worst_case_bracket": null,
+    "portfolio.euler_additivity": null,
+    "stress.satellite_backcast": null,
+    "stress.scenario_severity": null,
+    "stress.sensitivity_monotonicity": null,
+    "stress.static_balance_sheet_rules": null
+   }
   },
   "C22": {
    "fit_id": "generators",
@@ -6199,6 +6289,7 @@
      "sha256": "1b6c6ed3a0bc5057317b2120a44ef9ed512e8fac97d323092699cd1e3a1197d8",
      "code_version": "0.07.000",
      "riskvalidation_version": "0.4.3",
+     "sources": [],
      "findings": [
       {
        "id": "F-MIGRATION-POWER",
@@ -6241,6 +6332,9 @@
      "sha256": "e755f149dfe75c49ef54ca4fae78c489f78be13370c2bbff4e93851357cc4492",
      "code_version": "0.07.000",
      "riskvalidation_version": "0.4.3",
+     "sources": [
+      "bcbs-wp14"
+     ],
      "findings": [
       {
        "id": "F-BINOM-RHO",
@@ -6297,6 +6391,7 @@
      "sha256": "35c7d65c9c7bda2131ea2fca1f339bc091419b19bac792c3c61a78fe0c1f66ae",
      "code_version": "0.07.000",
      "riskvalidation_version": "0.4.3",
+     "sources": [],
      "findings": [
       {
        "id": "F-HHI-BOUNDED",
@@ -6339,6 +6434,7 @@
      "sha256": "218ee880efa1bfdf187a50e4d1b902a6b86cefada6c598d28c6d5daca09137da",
      "code_version": "0.07.000",
      "riskvalidation_version": "0.4.3",
+     "sources": [],
      "findings": [
       {
        "id": "F-AUC-INIT-C01",
@@ -6394,6 +6490,9 @@
      "sha256": "3bb6d9bb6152b9f603ca4404d9c8d61b2f2cf779af76c93df4ec01563b7d59fa",
      "code_version": "0.07.000",
      "riskvalidation_version": "0.4.3",
+     "sources": [
+      "yurdakul-naranjo-2020"
+     ],
      "findings": [
       {
        "id": "F-PSI-BANDS",
@@ -6449,6 +6548,7 @@
      "sha256": "651c5113607b7c0cd5850837ccddf455b291918e341662632912d78ea35c419d",
      "code_version": "0.07.000",
      "riskvalidation_version": "0.4.3",
+     "sources": [],
      "findings": [
       {
        "id": "F-LEAK-SIGNAL",
@@ -6504,6 +6604,7 @@
      "sha256": "9bdf292b5933c5366d581ee45928b5845966ded5f9b04030c2c30dc9a66fd467",
      "code_version": "0.07.000",
      "riskvalidation_version": "0.4.3",
+     "sources": [],
      "findings": [
       {
        "id": "F-PROFILE-BLIND",
@@ -6577,6 +6678,7 @@
      "sha256": "0ce1fb6140678acf48d51e84c1c5bcd880cc20fbb2ab38ec6314a02667bd2dc0",
      "code_version": "0.07.000",
      "riskvalidation_version": "0.4.3",
+     "sources": [],
      "findings": [
       {
        "id": "F-HL-DOF",
@@ -6911,7 +7013,14 @@
     "size_hl_fitted",
     "size_normal",
     "psi010_false_alarm_n100"
-   ]
+   ],
+   "spec_decisions": {
+    "pd.binomial": "p_value",
+    "pd.hosmer_lemeshow": "p_value",
+    "pd.jeffreys": "p_value",
+    "pd.spiegelhalter": "p_value",
+    "stability.psi": "p_value"
+   }
   }
  }
 }

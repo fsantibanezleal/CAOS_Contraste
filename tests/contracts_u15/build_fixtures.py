@@ -30,6 +30,9 @@ EXTRACT = ROOT / "tests" / "contracts_u15" / "snapshots" / "source-extract.json"
 OUT = ROOT / "docs" / "contracts" / "fixtures" / "governance"
 
 AS_OF = "2026-12-31"
+AS_OF_BASIS = {"label": "convention", "basis": {
+    "en": "a fixture date chosen after the due dates to exercise the overdue rule; not the date of publication",
+    "es": "una fecha de fixture elegida despues de los vencimientos para ejercer la regla de vencimiento; no es la fecha de publicacion"}}
 CODE_VERSION = "0.14.000"             # the Contraste release that carries governance (sizing: Contraste 0.14.000)
 RV_VERSION = "0.9.0"                  # R1: the engine tag after v0.08.000; UNVERIFIED until the integrator cuts it
 GENERATORS = ["fixture:u15-s-contracts"]
@@ -130,9 +133,10 @@ def provenance(ex: dict) -> dict:
     docs = []
     for case, _ in ENTRIES:
         c = ex["cases"][case]
-        docs.append({"path": c["manifest"]["path"], "sha256": c["manifest"]["sha256"]})
-        docs.append({"path": c["models_document"]["path"], "sha256": c["models_document"]["sha256"]})
-        docs += [{"path": v["path"], "sha256": v["sha256"]} for v in c["variants"]]
+        ref = f"{ex['c18_ref']}@{ex['c18_commit']}" if case == "C18" else None     # C18 is not on the integration branch yet (m7)
+        docs.append({"path": c["manifest"]["path"], "sha256": c["manifest"]["sha256"], "ref": ref})
+        docs.append({"path": c["models_document"]["path"], "sha256": c["models_document"]["sha256"], "ref": ref})
+        docs += [{"path": v["path"], "sha256": v["sha256"], "ref": ref} for v in c["variants"]]
     return {"code_version": CODE_VERSION, "riskvalidation_version": RV_VERSION, "generators": GENERATORS, "documents_read": docs}
 
 
@@ -333,7 +337,11 @@ def build_inventory(ex: dict) -> dict:
         gen = depth[key]
         rank[gen] = rank.get(gen, -1) + 1
         entries.append({
-            "key": key, "case_id": case, "fit_id": fit, "title": man["title"], "attributes": a, "components": comps,
+            "key": key, "case_id": case, "fit_id": fit, "title": man["title"], "attributes": a,
+            "variants": [{"variant_id": v["variant_id"],
+                          "basis": (f"the variant's provenance reads {', '.join(v['sources'])}, the sources of the fit {fit}" if case == "C01"
+                                    else "the single models document of the case (W15-15)")} for v in c["variants"]],
+            "components": comps,
             "scope": {"answers": {"applies_theory": True, "output_is_estimate": True, "deterministic": False, "generative_or_agentic": False},
                       "profiles": profiles, "basis": scope_basis},
             "tier_block": tb,
@@ -358,7 +366,7 @@ def build_inventory(ex: dict) -> dict:
     conv = lambda basis, **kw: {"label": "convention", "basis": basis, **kw}   # noqa: E731
     return {
         "schema": "contraste.governance.inventory/v1", "case_id": "GOVERNANCE", "governance_id": "inventory", "schema_version": "1.0.0",
-        "as_of": AS_OF, "provenance": provenance(ex),
+        "as_of": AS_OF, "as_of_basis": AS_OF_BASIS, "provenance": provenance(ex),
         "conventions": {
             "exposure_band_cuts": conv("A D2 3.2 and W15-3: share of the stated balance at least 25 percent is 4, 10 percent 3, 2 percent 2, below 1; "
                                        "06 B.3 fixes no cut-offs (item 30 of the dossier UNVERIFIED list)", cuts=[0.25, 0.1, 0.02]),
@@ -366,7 +374,7 @@ def build_inventory(ex: dict) -> dict:
                                           "that feeds one, 2 for compliance monitoring, 1 for none; the literal reading gives 4 whenever the output "
                                           "feeds capital, provisioning or reporting (A D2 3.2)",
                                           graded={"reported_figure": 4, "feeding_parameter": 3, "compliance_monitoring": 2, "none": 1},
-                                          literal={"feeds_capital_provisioning_or_reporting": 4, "none": 1}),
+                                          literal={"feeds_capital_provisioning_or_reporting": 4, "compliance_monitoring": 2, "none": 1}),
             "complexity_rounding": conv("06 l.567: C is the mean of the factor scores; the rounding is not in the text, half up is used (A D2 3.3)",
                                         rule="mean-rounded-half-up"),
             "frequency": conv("06 B.8 l.636-640: Tier 1 annual review, full revalidation every 3 years, quarterly monitoring; Tier 2 annual, 3 years, "
@@ -385,7 +393,7 @@ def build_inventory(ex: dict) -> dict:
         "edges": edges,
         "related": [{"a": "C22/generators", "b": "C01/german", "kind": "measures",
                      "source": "docs/cases/C22.md:70, 157-158, 180, 182 (C22 measures the size of C01's tests); docs/cases/C01.md:69"}],
-        "excluded": [{"case_id": c, "reason": T("planned: no committed document or models record exists (A D1)",
+        "excluded": [{"case_id": c, "variant_id": None, "reason": T("planned: no committed document or models record exists (A D1)",
                                                  "planificado: no existe documento ni registro de modelos confirmado (A D1)")}
                      for c in ("C02", "C19", "C20")],
         "completeness": {"entries": len(entries), "attributes": comp},
@@ -434,6 +442,16 @@ def anchor_of(finding: dict, variant: dict) -> tuple[dict | None, dict | None]:
                    "la fila de prueba citada no tiene estadistico ni metrica (o ninguna fila coincide), por lo que el ancla es nula")
 
 
+def rwea_share_of_anchor(anchor: dict | None, rwea_total: float | None = None) -> tuple[float | None, dict | None]:
+    """(share, reason): non-null only where the anchor's unit states a share of RWEA, or an RWEA amount with the total given (W15-11)."""
+    if anchor is not None and anchor["unit"] == "share-of-rwea":
+        return anchor["value"], None
+    if anchor is not None and anchor["unit"] == "rwea-amount" and rwea_total:
+        return anchor["value"] / rwea_total, None
+    return None, T("the anchor is not stated as a share of RWEA or as an RWEA amount, so no RWEA level applies",
+                   "el ancla no se expresa como proporcion de RWEA ni como monto de RWEA, por lo que no aplica nivel RWEA")
+
+
 def findings_rows_of(ex: dict, case: str, fit: str) -> list[dict]:
     tier = tier_block(case)["tier"]
     as_of = date.fromisoformat(AS_OF)
@@ -446,6 +464,7 @@ def findings_rows_of(ex: dict, case: str, fit: str) -> list[dict]:
             days = DEADLINES[SEVERITIES.index(sev)][tier - 1]
             due = raised + timedelta(days=days)
             status = STATUS_MAP[f["status"]]
+            share, share_reason = rwea_share_of_anchor(anchor)
             risk = None
             if status == "risk_accepted":
                 risk = {"approver": "not-applicable",
@@ -457,7 +476,7 @@ def findings_rows_of(ex: dict, case: str, fit: str) -> list[dict]:
             rows.append({
                 "key": f"{case}/{v['variant_id']}/{f['id']}", "case_id": case, "variant_id": v["variant_id"], "id": f["id"],
                 "entry_key": f"{case}/{fit}", "title": f["title"], "severity": sev, "ecb_f": ECB_F[sev], "product_status": f["status"],
-                "status": status, "evidence": f["evidence"], "anchor": anchor, "anchor_reason": reason, "owner_role": OWNER[case], "tier": tier,
+                "status": status, "evidence": f["evidence"], "anchor": anchor, "anchor_reason": reason, "rwea_share": share, "rwea_share_reason": share_reason, "owner_role": OWNER[case], "tier": tier,
                 "raised": raised.isoformat(), "deadline_days": days, "due": due.isoformat(), "ageing_days": (as_of - raised).days,
                 "overdue": status in OPEN_STATES and as_of > due,
                 "remediation": None,
@@ -482,7 +501,7 @@ def build_findings(ex: dict) -> dict:
                         "overdue": sum(1 for r in sub if r["overdue"])})
     return {
         "schema": "contraste.governance.findings/v1", "case_id": "GOVERNANCE", "governance_id": "findings", "schema_version": "1.0.0",
-        "as_of": AS_OF, "provenance": provenance(ex),
+        "as_of": AS_OF, "as_of_basis": AS_OF_BASIS, "provenance": provenance(ex),
         "conventions": {
             "deadline_days": {"label": "convention",
                               "basis": "days from the raised date to the due date by severity (rows S1 to S4) and tier (columns 1 to 4); no regulatory source "
@@ -506,7 +525,7 @@ def build_findings(ex: dict) -> dict:
 
 
 def metric(mid: str, en: str, es: str, kind: str, unit: str, num, den, direction: str, green: float, amber: float, basis: str,
-           reason: tuple[str, str] | None = None) -> dict:
+           reason: tuple[str, str] | None = None, rows: int | None = None) -> dict:
     if unit == "count":
         value = num
     else:
@@ -518,6 +537,7 @@ def metric(mid: str, en: str, es: str, kind: str, unit: str, num, den, direction
     else:
         lt = "green" if value >= green else "amber" if value >= amber else "red"
     return {"id": mid, "name": T(en, es), "kind": kind, "value": value, "unit": unit, "numerator": num, "denominator": den,
+            "register_rows": rows,
             "reason": T(*reason) if (value is None and reason) else None,
             "threshold": {"label": "convention", "basis": basis, "direction": direction, "green_limit": green, "amber_limit": amber},
             "light": lt}
@@ -530,16 +550,21 @@ def build_appetite(ex: dict, inv: dict, fnd: dict) -> dict:
     pma = [e["attributes"]["A26"]["value"] for e in entries if e["attributes"]["A26"]["status"] == "present"]
     complete = [e for e in entries if all(a["status"] != "missing" for a in e["attributes"].values())]
     breach = [e for e in entries if e["attributes"]["A36"]["value"]["red"] > 0]
+    distinct_all = {(r["entry_key"], r["id"]) for r in rows}
+    high_rows = [r for r in rows if r["status"] in OPEN_STATES and r["severity"] in ("S1", "S2")]
+    over_rows = [r for r in rows if r["overdue"]]
+    high = {(r["entry_key"], r["id"]) for r in high_rows}
+    over = {(r["entry_key"], r["id"]) for r in over_rows}
     metrics = [
         metric("tier1-validated-on-time", "Share of Tier 1 entries validated on time", "Proporcion de entradas de Nivel 1 validadas a tiempo",
                "share", "share", sum(1 for e in t1 if date.fromisoformat(e["schedule"]["next_review"]) >= as_of), len(t1),
                "higher-is-better", 0.9, 0.75, "a proposal (item 30): green from 90 percent, amber from 75 percent",
                ("no Tier 1 entry exists", "no existe entrada de Nivel 1")),
         metric("open-high-severity", "Open high-severity findings (S1 and S2)", "Hallazgos abiertos de severidad alta (S1 y S2)",
-               "count", "count", sum(1 for r in rows if r["status"] in OPEN_STATES and r["severity"] in ("S1", "S2")), len(rows),
-               "lower-is-better", 0, 3, "a proposal (item 30): green at none, amber up to three register rows"),
-        metric("overdue-remediation", "Overdue remediation", "Remediacion vencida", "count", "count", sum(1 for r in rows if r["overdue"]), len(rows),
-               "lower-is-better", 0, 3, "a proposal (item 30): green at none, amber up to three register rows"),
+               "count", "count", len(high), len(distinct_all),
+               "lower-is-better", 0, 3, "a proposal (item 30): green at none, amber up to three distinct findings", rows=len(high_rows)),
+        metric("overdue-remediation", "Overdue remediation", "Remediacion vencida", "count", "count", len(over), len(distinct_all),
+               "lower-is-better", 0, 3, "a proposal (item 30): green at none, amber up to three distinct findings", rows=len(over_rows)),
         metric("entries-under-exception", "Entries used under exception", "Entradas usadas bajo excepcion", "count", "count",
                sum(1 for e in entries if e["lifecycle"]["exception"]), len(entries), "lower-is-better", 0, 1,
                "a proposal (item 30): green at none, amber at one entry"),
@@ -556,8 +581,8 @@ def build_appetite(ex: dict, inv: dict, fnd: dict) -> dict:
     ]
     return {
         "schema": "contraste.governance.appetite/v1", "case_id": "GOVERNANCE", "governance_id": "appetite", "schema_version": "1.0.0",
-        "as_of": AS_OF, "provenance": provenance(ex),
-        "population": {"entries": len(entries), "findings": len(rows), "tier1_entries": len(t1)},
+        "as_of": AS_OF, "as_of_basis": AS_OF_BASIS, "provenance": provenance(ex),
+        "population": {"entries": len(entries), "findings": len(rows), "distinct_findings": len(distinct_all), "tier1_entries": len(t1)},
         "metrics": metrics,
     }
 
@@ -565,40 +590,40 @@ def build_appetite(ex: dict, inv: dict, fnd: dict) -> dict:
 # ------------------------------------------------------------------------------------------------------------------ the reports
 
 
-def parse_policy(row: dict) -> dict:
+NO_POLICY_FILE = "no policy file (BL-085)"
+
+
+def parse_policy(row: dict, decisions: dict) -> dict:
+    """The policy identity of a row (W15-12): the kind is spec(test_id).decision where the test is registered, the direction is null for an inline
+    battery string because no policy file holds it (BL-085)."""
     pv = row["policy_version"]
     family = row["test_id"].split(".")[0]
-    kind = "p_value" if row["alpha_amber"] is not None else None
+    decision = decisions.get(row["test_id"])
+    kind = {"kind": decision, "kind_reason": None} if decision else {
+        "kind": None, "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision"}
+    base = {"label": pv, **kind, "alpha_amber": row["alpha_amber"], "alpha_red": row["alpha_red"], "_family": family}
     if pv.startswith("riskvalidation-default "):
-        return {"label": pv, "kind": kind, "alpha_amber": row["alpha_amber"], "alpha_red": row["alpha_red"], "parameters": {},
-                "version": pv.split(" ", 1)[1], "source": "packaged-policy", "reason": None, "_family": family}
+        return {**base, "direction": None, "direction_reason": "read from the policy file by the engine: the packaged threshold of the test (fixture: not resolved here)",
+                "parameters": {}, "version": pv.split(" ", 1)[1], "source": "packaged-policy", "reason": None}
     m = re.fullmatch(r"(contraste-[a-z0-9]+-battery-(\d+\.\d+\.\d+))((?:; [a-z0-9_]+=[^;]+)*)", pv)
     if not m:
-        return {"label": pv, "kind": None, "alpha_amber": row["alpha_amber"], "alpha_red": row["alpha_red"], "parameters": {}, "version": None,
-                "source": "unresolved", "reason": "the policy string matches neither a packaged label nor an inline battery string", "_family": family}
+        return {**base, "kind": None, "kind_reason": "unresolved identity", "direction": None, "direction_reason": NO_POLICY_FILE, "parameters": {},
+                "version": None, "source": "unresolved", "reason": "the policy string matches neither a packaged label nor an inline battery string"}
     params: dict = {}
-    for part in [p for p in m.group(3).split("; ") if p]:
+    for part in [x for x in m.group(3).split("; ") if x]:
         k, v = part.split("=", 1)
         try:
             params[k] = float(v)
         except ValueError:
             params[k] = v
-    nums = {k: v for k, v in params.items() if isinstance(v, float)}
-    for a, b in (("amber", "red"), ("nl_amber", "nl_red"), ("peak_amber", "peak_red"), ("share_amber", "share_red")):
-        if a in nums and b in nums:
-            kind = "upper_bad" if nums[a] < nums[b] else "lower_bad"
-    if kind is None and "minimum" in nums:
-        kind = "lower_bad"
-    if kind is None and any("tolerance" in k for k in nums):
-        kind = "upper_bad"
-    return {"label": pv, "kind": kind, "alpha_amber": row["alpha_amber"], "alpha_red": row["alpha_red"], "parameters": params,
-            "version": m.group(2), "source": "inline-battery", "reason": None, "_family": family}
+    return {**base, "direction": None, "direction_reason": NO_POLICY_FILE, "parameters": params, "version": m.group(2),
+            "source": "inline-battery", "reason": None}
 
 
-def outcome_rows(variant: dict) -> list[dict]:
+def outcome_rows(variant: dict, decisions: dict) -> list[dict]:
     out = []
     for r in variant["tests"]:
-        p = parse_policy(r)
+        p = parse_policy(r, decisions)
         family = p.pop("_family")
         out.append({"test_id": r["test_id"], "model_id": r["model_id"], "segment": r["segment"], "family": family, "statistic": r["statistic"],
                     "p_value": r["p_value"], "metric": r["metric"], "light": r["light"], "h0": r["h0"], "reference": r["reference"], "policy": p})
@@ -654,7 +679,7 @@ def build_report(ex: dict, inv: dict, fnd: dict, case: str, fit: str) -> dict:
     rows = [r for r in fnd["rows"] if r["entry_key"] == key]
     open_rows = [r for r in rows if r["status"] in OPEN_STATES]
     level = max((4 if r["severity"] == "S1" else 3 if r["severity"] == "S2" else 2 for r in open_rows), default=1)
-    outcomes = outcome_rows(default)
+    outcomes = outcome_rows(default, c["spec_decisions"])
     counts = {k: 0 for k in ("green", "amber", "red", "not_evaluated", "error")}
     for r in outcomes:
         counts[r["light"]] += 1
@@ -719,8 +744,8 @@ def build_report(ex: dict, inv: dict, fnd: dict, case: str, fit: str) -> dict:
     secs.append(section(6, "filled", inputs[6], [
         {"kind": "outcomes", "variant_id": default["variant_id"], "rows": outcomes},
     ], [(("Threshold kind for rows without a policy file", "Tipo de umbral para filas sin archivo de politica"),
-         ("the inline battery strings have no policy file to call threshold() on; the kind shown is read from the string's parameters (UNVERIFIED against the registry)",
-          "las cadenas de bateria en linea no tienen archivo de politica; el tipo mostrado se lee de los parametros de la cadena (NO VERIFICADO contra el registro)"))]))
+         ("the kind is spec(test_id).decision where the test is registered (these tests are not: spec() raises KeyError at the batch 3 head), and the direction is null for an inline battery string until a policy file exists (BL-085)",
+          "el tipo es spec(test_id).decision donde la prueba esta registrada (estas no lo estan: spec() lanza KeyError en la cabeza del lote 3), y la direccion es nula para una cadena de bateria en linea hasta que exista un archivo de politica (BL-085)"))]))
     secs.append(section(7, "filled", inputs[7], [
         table_block(("Variants as perturbations", "Variantes como perturbaciones"), [("Variant", "Variante"), ("Test rows", "Filas"), ("Red rows", "Filas rojas")],
                     [[v["variant_id"], len(v["tests"]), sum(1 for t in v["tests"] if t["light"] == "red")] for v in c["variants"]]),
@@ -752,11 +777,11 @@ def build_report(ex: dict, inv: dict, fnd: dict, case: str, fit: str) -> dict:
     opinion = {
         "level": level, "level_label": LEVEL_LABEL[level],
         "rule": {"id": "W15-7", "text": T("Level 1 with no open finding; 2 with S4 or S3 only; 3 with any S2; 4 with any S1 (open and overdue findings, not risk_accepted); "
-                                          "where an anchor is a share of RWEA, 5 to 10 percent is level 3 and 10 percent or more is level 4. A convention (item 30).",
+                                          "where an anchor is a share of RWEA, 5 to 10 percent gives level 3 and 10 percent or more level 4, and an anchor can only raise a level (the maximum of the two). A convention (item 30).",
                                           "Nivel 1 sin hallazgos abiertos; 2 con solo S4 o S3; 3 con algun S2; 4 con algun S1 (hallazgos abiertos y vencidos, no risk_accepted); "
-                                          "si el ancla es una proporcion de RWEA, de 5 a 10 por ciento es nivel 3 y 10 por ciento o mas es nivel 4. Una convencion (punto 30).")},
+                                          "si el ancla es una proporcion de RWEA, de 5 a 10 por ciento da nivel 3 y 10 por ciento o mas da nivel 4, y un ancla solo puede subir un nivel (el maximo de ambos). Una convencion (punto 30).")},
         "rwea_cut_points_applied": False,
-        "open_findings": [{"key": r["key"], "severity": r["severity"], "rwea_share": None} for r in open_rows],
+        "open_findings": [{"key": r["key"], "severity": r["severity"], "rwea_share": r["rwea_share"]} for r in open_rows],
         "recommendation": {"outcome": RECOMMENDATION[level], "text": REC_TEXT[RECOMMENDATION[level]]},
         "label": T(LABEL_EN, LABEL_ES),
     }
@@ -772,7 +797,7 @@ def build_report(ex: dict, inv: dict, fnd: dict, case: str, fit: str) -> dict:
          ("the contraste-*-battery strings have no policy file (backlog BL-085, done at the U16 re-bake)", "las cadenas contraste-*-battery no tienen archivo de politica (BL-085, en la re-ejecucion de U16)"))]))
     return {
         "schema": "contraste.governance.report/v1", "case_id": "GOVERNANCE", "governance_id": "report", "schema_version": "1.0.0",
-        "as_of": AS_OF, "provenance": provenance(ex), "entry_key": key,
+        "as_of": AS_OF, "as_of_basis": AS_OF_BASIS, "provenance": provenance(ex), "entry_key": key,
         "title": T(f"Validation report: {man['title']['en']}", f"Informe de validacion: {man['title']['es']}"),
         "tier": tb["tier"], "test_counts": counts, "sections": secs,
     }

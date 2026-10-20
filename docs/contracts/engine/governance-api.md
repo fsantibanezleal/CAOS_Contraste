@@ -17,7 +17,8 @@ D6); the rule that turns findings into a level is a convention (W15-7). UNVERIFI
 text (not diffed), the OSFI 2017 rescission, the EU AI Act Annex III 5(b) reading, a post-2019 ECB reporting instruction, the EBA draft RTS on
 material model changes. OSFI's transition is "an 18-month transition period" in OSFI's own words.
 
-Version history: 1.0.0, the first contract (2026-10-20).
+Version history: 1.0.0, the first contract (2026-10-20). Still unreleased, so the version stays 1.0.0: the fix round after the Opus review of 2026-10-20 (decisions
+W15-11 to W15-15 and the review's B1, M1 to M6, m1 to m11) amends it in place before U15-E writes its tests from it.
 
 ## Conventions (all functions)
 
@@ -31,6 +32,11 @@ Version history: 1.0.0, the first contract (2026-10-20).
 - Dataclasses are frozen. A function that cannot compute a value raises `ValueError` with the reason; nothing returns a placeholder number. The
   `gov.` validation functions return one `TestResult` (`core/result.py`), serialised by `TestResult.to_dict()` into a row that validates against
   `common/test-result`.
+- The as-of date (W15-13): every document carries `as_of` and `as_of_basis` (label `convention`, a basis in English and Spanish). The production rule is the date of the newest release
+  heading of `CHANGELOG.md` when the bake runs: committed (R4), never later than publication, never earlier than a raised date (the checker refuses an `as_of` before the newest
+  raised date or last validation date). A fixture says its date is "a fixture date chosen after the due dates to exercise the overdue rule; not the date of publication".
+- Text rules: no string of a governance document states that a model is approved, certified or compliant (the checker's `approval_claims`, English and Spanish, the fixed negations
+  "Contraste approves no model" and "no approval" exempt), and none calls a convention a requirement of a regulator or supervisor (`regulatory_claims`).
 - The named convention parameters, each labelled `convention` with its basis in the document that carries it:
   - the exposure band cut points `EXPOSURE_BAND_CUTS = (0.25, 0.10, 0.02)` (share of the stated balance: 25 percent or more is 4, 10 percent 3,
     2 percent 2, below 1; 06 B.3 fixes no cut-offs);
@@ -39,7 +45,7 @@ Version history: 1.0.0, the first contract (2026-10-20).
   - the frequency table `FREQUENCY` in months, tier to (review, full revalidation, monitoring): `1: (12, 36, 3)`, `2: (12, 36, 6)`,
     `3: (24, None, 12)`, `4: (36, None, None)` where tier 4 is an attestation (06 l.636-640);
   - the appetite thresholds, direction with a green limit and an amber limit, in `appetite_metrics`;
-  - the regulatory-use grades (graded 4, 3, 2, 1; literal 4 or 1), the complexity aggregation (the mean rounded half up) and the adopted reading B.
+  - the regulatory-use grades (graded 4, 3, 2, 1; literal 4, 2 for compliance monitoring, or 1; the literal grade is never below the graded one), the complexity aggregation (the mean rounded half up) and the adopted reading B.
 
 ## Reused engine functions
 
@@ -138,6 +144,7 @@ class Entry:
     case_id: str
     fit_id: str
     attributes: dict[str, dict]     # "A01" to "A40" -> {"value": ..., "status": ..., "basis": ...}
+    variants: tuple[tuple[str, str], ...]   # (variant_id, basis of the assignment to this fit)
     components: tuple[Component, ...]
     # key: property, f"{case_id}/{fit_id}"
 ```
@@ -146,7 +153,8 @@ class Entry:
 - Invariants: the status is one of `present`, `derivable`, `convention`, `not-applicable`, `missing`; a `present` attribute has a basis naming a JSON
   pointer (`path#/pointer`); a `not-applicable` attribute has a reason of at least eight characters; a `missing` or `not-applicable` attribute has
   value `None`; A32 (approver) and A33 (approval date and authority) are `not-applicable` with value `None` because Contraste approves no model (SDD
-  non-goal 1); `ValueError` names the attribute that breaks a rule.
+  non-goal 1); `ValueError` names the attribute that breaks a rule. `variants` lists the variant documents of the entry with the basis of each assignment (W15-15, `assign_variant`);
+  a register row's variant is always in its entry's list.
 
 ### `riskvalidation.governance.inventory.Edge`
 
@@ -175,6 +183,19 @@ class Inventory:
 - Invariants: produced only by `build_inventory`; entry keys are unique; every component key is unique across the inventory; every edge joins two
   entries; the graph is acyclic.
 
+### `riskvalidation.governance.inventory.assign_variant`
+
+```python
+def assign_variant(variant_sources: Sequence[str], fits: Mapping[str, Sequence[str]]) -> tuple[str | None, str]: ...
+```
+
+- Units: the source names the variant document's provenance reads, and the fits of its case as fit id to the source names of that fit; returns (fit id or `None`, basis or reason).
+- Rule (W15-15): a case with one fit gives its variants to that fit ("the single models document of the case"); otherwise the fit whose sources contain all the variant's sources, when exactly
+  one does. Any other variant is returned as `(None, reason)` and goes to the inventory's `excluded` list with that reason (a `variant_id` set), never assigned by guess.
+- Golden: `assign_variant(['uci-german'], {'german': ['uci-german'], 'taiwan': ['uci-taiwan']}) = ('german', "the variant's provenance reads uci-german, the sources of the fit german")`;
+  `assign_variant([], {'german': ['uci-german'], 'taiwan': ['uci-taiwan']})` is `(None, reason)`; `assign_variant(['x'], {'only': ['y']}) = ('only', 'the single models document of the case')`.
+- Invariants: deterministic; the same variant never goes to two fits; the cross check holds every register row's variant in its entry's `variants`.
+
 ### `riskvalidation.governance.inventory.build_inventory`
 
 ```python
@@ -183,9 +204,9 @@ def build_inventory(entries: Sequence[Entry], edges: Sequence[Edge]) -> Inventor
 
 - Units: entries and edges.
 - Golden: three entries with keys `A`, `B`, `C` and edges (`A`, `B`), (`B`, `C`), (`C`, `A`) raise `ValueError("dependency cycle: A, B, C, A")`: the cycle in
-  dependency order, from its smallest key, closed on that key; an edge to an absent entry raises `ValueError("edge A to Z: unknown entry Z")`; two
+  dependency order, from its smallest key, closed on that key; a related link to an absent entry raises `ValueError("related link A and Z: unknown entry Z")`; an edge to an absent entry raises `ValueError("edge A to Z: unknown entry Z")`; two
   entries whose components share a key raise `ValueError("component key 'C01/german/P0' repeats")`.
-- Invariants: a repeated entry key raises `ValueError`; a self edge raises `ValueError`; the order of entries and edges is kept; the engine node is not
+- Invariants: a repeated entry key raises `ValueError`; a repeated edge (same upstream, downstream and kind) raises `ValueError`; zero entries raise `ValueError("the inventory holds no entry")`; a self edge raises `ValueError`; the order of entries and edges is kept; the engine node is not
   an entry (the engine edges are implicit: every entry depends on `riskvalidation`, W15-8).
 
 ### `riskvalidation.governance.inventory.topological_order`
@@ -320,8 +341,8 @@ reading B: 12/6/0/1
 reading C: 18/0/0/1
 reading D: 16/2/0/1
 ```
-- Invariants: the rows are in the order A, B, C, D; each tier is `matrix_tier` of its own M and C; reading A never gives a lower tier number than reading B for the
-  same inputs; the inputs a case lacks (history against horizon) are unscored, never counted.
+- Invariants: the rows are in the order A, B, C, D; each tier is `matrix_tier` of its own M and C; reading A never gives a higher tier number than reading B for the
+  same inputs (literal regulatory use is never below graded, so `ValueError` when the literal grade is below the graded one); the inputs a case lacks (history against horizon) are unscored, never counted.
 
 ### `riskvalidation.governance.tiering.tier_counts`
 
@@ -405,6 +426,7 @@ class Finding:
     raised: date
     tier: int
     status: str                     # one of the seven B.7 states
+    rwea_share: float | None        # from rwea_share_of_anchor; None where no RWEA level applies
     # key: property, f"{case_id}/{variant_id}/{id}"
 ```
 
@@ -500,6 +522,7 @@ def transition_finding(state: str, to: str, risk_acceptance: Mapping[str, object
 
 - Units: two B.7 states and, for `risk_accepted`, the acceptance record (an `approver` field and an `expiry` field; the register writes `"not-applicable"` and
   `None` with a reason each for a stated limit of a synthetic case, W15-5).
+- The B.7 transition graph is a convention (06 l.624-628 names the seven states and no transition; the graph below is this contract's proposal, item 30), as the B.4 graph is.
 - Golden: 16 allowed pairs and 33 refused pairs of the 49 ordered pairs of the seven states (the 7 self pairs and 26 others are refused); a refused pair raises
   `ValueError("cannot move from 'validated_closed' to 'open'")`. The allowed pairs:
 - allowed: open to action_plan_agreed
@@ -538,6 +561,20 @@ def anchor_from_test_row(evidence: Sequence[str], tests: Sequence[Mapping[str, o
   row whose statistic and metric are both null gives `(None, reason)`.
 - Invariants: only evidence of the form `test_id@model_id` or `test_id@model_id@segment` is cited, the first one in the list; the basis is the pointer to the row
   and field read; the unit of a metric is the unit its test defines (the report states it), never guessed.
+
+### `riskvalidation.governance.findings.rwea_share_of_anchor`
+
+```python
+def rwea_share_of_anchor(anchor: Mapping[str, object] | None, rwea_total: float | None = None) -> tuple[float | None, str | None]: ...
+```
+
+- Units: an anchor (as `anchor_from_test_row` returns it) and, optionally, the RWEA total in the anchor's currency; returns (share, reason): exactly one is `None`. The share is a decimal (0.05 is 5 percent).
+- Rule (W15-11): non-null only where the anchor's unit states a share of RWEA (`share-of-rwea`: the share is the anchor's value) or an RWEA amount (`rwea-amount`: the value over `rwea_total`, which must be given and positive).
+  A statistic or a metric in any other unit, or no anchor, gives `(None, reason)`; the basis is the anchor's own basis. The register row carries the share and its reason; the report's open findings carry
+  the register's share, and the cross check compares them.
+- Golden: `rwea_share_of_anchor({'unit': 'share-of-rwea', 'value': 0.08}) = (0.08, None)`; `rwea_share_of_anchor({'unit': 'rwea-amount', 'value': 750000.0}, 7492853.0) = (0.1001, None)` (to 4 decimals);
+  `rwea_share_of_anchor({'unit': 'test statistic (dimensionless)', 'value': 12.5})` and `rwea_share_of_anchor(None)` are `(None, reason)`.
+- Invariants: never a share without an anchor; a share is never negative; `ValueError` for an `rwea-amount` anchor with no total.
 
 ### `riskvalidation.governance.findings.register_counts`
 
@@ -592,9 +629,10 @@ def finding_level(severity: str, rwea_share: float | None = None) -> int: ...
 
 - Units: a severity and, where the finding's anchor is a share of RWEA, that share as a decimal (0.05 is 5 percent); returns the level 2 to 4 that one open finding gives.
 - Golden: `finding_level('S1') = 4`; `finding_level('S2') = 3`; `finding_level('S3') = 2`; `finding_level('S4') = 2`; `finding_level('S4', rwea_share=0.0499) = 2`;
-  `finding_level('S4', rwea_share=0.05) = 3`; `finding_level('S3', rwea_share=0.0999) = 3`; `finding_level('S3', rwea_share=0.10) = 4`; `finding_level('S1', rwea_share=0.0499) = 2`.
-- Invariants: where an RWEA share is given it replaces the severity rule for that finding (ECB Instructions 2019, section 2.4.2: 5 percent or more and below 10 percent is level 3,
-  10 percent or more is level 4); `ValueError` for a negative share or an unknown severity.
+  `finding_level('S4', rwea_share=0.05) = 3`; `finding_level('S3', rwea_share=0.0999) = 3`; `finding_level('S3', rwea_share=0.10) = 4`; `finding_level('S1', rwea_share=0.0499) = 4`;
+  `finding_level('S2', rwea_share=0.10) = 4`.
+- Invariants (W15-11): the maximum of the severity level (S1 4, S2 3, S3 and S4 2) and the RWEA level (3 from 5 percent, 4 from 10 percent, none below 5 percent; ECB Instructions 2019,
+  section 2.4.2), so an anchor can only raise a level and a critical finding is never downgraded by a small share; `ValueError` for a negative share or an unknown severity.
 
 ### `riskvalidation.governance.opinion.opinion_level`
 
@@ -604,7 +642,7 @@ def opinion_level(open_findings: Sequence[tuple[str, float | None]]) -> int: ...
 
 - Units: the open findings as (severity, RWEA share or `None`) pairs; returns the level 1 to 4. The goldens write the severities only.
 - Golden: `opinion_level([]) = 1`; `opinion_level([S4, S3]) = 2`; `opinion_level([S3, S2]) = 3`; `opinion_level([S2, S1]) = 4`;
-  `opinion_level([(S3, 0.0499), (S4, None)]) = 2`; `opinion_level([(S3, 0.05)]) = 3`; `opinion_level([(S4, 0.10)]) = 4`.
+  `opinion_level([(S3, 0.0499), (S4, None)]) = 2`; `opinion_level([(S3, 0.05)]) = 3`; `opinion_level([(S4, 0.10)]) = 4`; `opinion_level([(S1, 0.01)]) = 4`.
 - Invariants: the maximum of the findings' levels, and 1 with none; the caller passes only the open findings: a `risk_accepted` or `validated_closed` finding is not one (W15-7),
   an `overdue` finding is; the rule is a convention (item 30).
 
@@ -649,23 +687,23 @@ def tier1_validated_on_time(entries: Sequence[Mapping], as_of: date) -> tuple[fl
 ### `riskvalidation.governance.appetite.open_high_severity`
 
 ```python
-def open_high_severity(rows: Sequence[Mapping]) -> tuple[float, float, float]: ...
+def open_high_severity(rows: Sequence[Mapping]) -> tuple[float, float, float, int]: ...
 ```
 
-- Units: register rows; returns (numerator, denominator, value): the rows with status `open`, `action_plan_agreed`, `in_progress`, `submitted_for_closure` or `overdue` and severity S1 or S2, the rows, and the
-  count (value equals the numerator).
-- Golden: for the fixture register: (8, 81, 8).
-- Invariants: a register row counts once per variant (a finding repeated in n variants counts n).
+- Units: register rows; returns (numerator, denominator, value, register rows): the distinct (entry, id) findings with a row in status `open`, `action_plan_agreed`, `in_progress`, `submitted_for_closure` or
+  `overdue` and severity S1 or S2; the distinct (entry, id) findings of the register; the count (value equals the numerator); and the number of register rows behind the numerator.
+- Golden: for the fixture register: (4, 39, 4, 8).
+- Invariants (W15-14): a finding repeated in n variants of an entry counts once (B.6 counts findings, 06 l.609-611); the row count is the secondary number in the same metric object (`register_rows`).
 
 ### `riskvalidation.governance.appetite.overdue_remediation`
 
 ```python
-def overdue_remediation(rows: Sequence[Mapping]) -> tuple[float, float, float]: ...
+def overdue_remediation(rows: Sequence[Mapping]) -> tuple[float, float, float, int]: ...
 ```
 
-- Units: register rows; returns (numerator, denominator, value): the rows with the overdue flag, the rows, the count.
-- Golden: for the fixture register: (7, 81, 7).
-- Invariants: equals the number of rows `is_overdue` flags at the as-of date.
+- Units: register rows; returns (numerator, denominator, value, register rows): the distinct (entry, id) findings with an overdue row, the distinct findings of the register, the count, and the overdue rows.
+- Golden: for the fixture register: (3, 39, 3, 7).
+- Invariants: the row count equals the number of rows `is_overdue` flags at the as-of date; a finding counts once per entry.
 
 ### `riskvalidation.governance.appetite.entries_under_exception`
 
@@ -717,10 +755,10 @@ def appetite_metrics(entries: Sequence[Mapping], rows: Sequence[Mapping], as_of:
 ```
 
 - Units: entries, register rows, the as-of date and the appetite thresholds (a convention); returns the seven metric records in the order `tier1-validated-on-time`, `open-high-severity`,
-  `overdue-remediation`, `entries-under-exception`, `entries-in-breach`, `pma-magnitude`, `owner-and-complete-record`, each with `value`, `unit`, `numerator`, `denominator`, `threshold` and `light`.
+  `overdue-remediation`, `entries-under-exception`, `entries-in-breach`, `pma-magnitude`, `owner-and-complete-record`, each with `value`, `unit`, `numerator`, `denominator`, `register_rows` (a number for the two distinct-finding count metrics, `None` for the others), `threshold` and `light`; the document's `population` holds `entries`, `findings`, `distinct_findings` and `tier1_entries`.
 - Golden, the default thresholds (direction, green limit, amber limit): tier1 `('higher-is-better', 0.9, 0.75)`; open-high-severity `('lower-is-better', 0, 3)`; overdue-remediation
   `('lower-is-better', 0, 3)`; entries-under-exception `('lower-is-better', 0, 1)`; entries-in-breach `('lower-is-better', 0, 1)`; pma-magnitude `('lower-is-better', 0.01, 0.03)`;
-  owner-and-complete-record `('higher-is-better', 0.9, 0.5)`. For the fixture: lights green, red, red, green, red, green, red.
+  owner-and-complete-record `('higher-is-better', 0.9, 0.5)`. For the fixture: lights green, red, amber, green, red, green, red.
 - Invariants: a share equals numerator over denominator, a count equals its numerator; a metric with no value has light `not_evaluated` and a reason; every threshold carries the label `convention`.
 
 ## Module `riskvalidation/governance/policy.py`
@@ -734,11 +772,14 @@ def resolve_policy(policy_version: str, test_id: str, alpha_amber: float | None 
                    alpha_red: float | None = None) -> tuple[dict | None, str | None]: ...
 ```
 
-- Units: the row's `policy_version`, its `test_id` and its alphas; returns (identity, reason): exactly one is `None`. An identity is `{"label", "kind", "alpha_amber", "alpha_red", "parameters",
-  "version", "source"}` with `source` one of `packaged-policy`, `inline-battery`.
+- Units: the row's `policy_version`, its `test_id` and its alphas; returns (identity, reason): exactly one is `None`. An identity is `{"label", "kind", "kind_reason", "direction", "direction_reason",
+  "alpha_amber", "alpha_red", "parameters", "version", "source"}` with `source` one of `packaged-policy`, `inline-battery`. The `kind` is `spec(test_id).decision`, `p_value` or `metric` (W15-12; engine
+  `core/registry.py`), and `None` with its `kind_reason` where the test is not registered (`spec` raises `KeyError`; at the batch 3 head the ifrs9, stress, aggregation and portfolio tests are not
+  registered). The `direction` (`upper_bad` or `lower_bad`) is read from the policy file where one resolves, and is `None` with `direction_reason` "no policy file (BL-085)" for an inline battery string.
 - Golden: a packaged label `"riskvalidation-default 2026.10.1"` resolves through `load_policy` and `default_policy`: source `packaged-policy`, version `2026.10.1`, the kind from the packaged
   threshold of the test; an inline string `"contraste-ifrs9-battery-1.0.0; nl_amber=1.0; nl_red=3.0"` is parsed: source `inline-battery`, version `1.0.0`, parameters
-  `{"nl_amber": 1.0, "nl_red": 3.0}`; the string `"x"` is `unresolved`: it returns `(None, reason)` with the reason stated.
+  `{"nl_amber": 1.0, "nl_red": 3.0}`, kind `None` (`ifrs9.scenario_sensitivity` is not registered) and direction `None` with "no policy file (BL-085)"; the same string for the registered `pd.jeffreys` has kind `p_value`
+  and the same null direction and reason; the string `"x"` is `unresolved`: it returns `(None, reason)` with the reason stated.
 - Invariants: a parameter value that is not a number stays a string (`rule=red-on-any`); the family is the part of the test id before the first dot; the report states the source of every threshold; a
   packaged policy file per battery is backlog BL-085, done when the cases are next re-baked (U16).
 

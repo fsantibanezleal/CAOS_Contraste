@@ -11,6 +11,7 @@
     "governance_id",
     "schema_version",
     "as_of",
+    "as_of_basis",
     "provenance",
     "entry_key",
     "title",
@@ -34,6 +35,9 @@
     },
     "as_of": {
       "$ref": "#/$defs/govDate"
+    },
+    "as_of_basis": {
+      "$ref": "#/$defs/govAsOfBasis"
     },
     "provenance": {
       "$ref": "#/$defs/govProvenance"
@@ -99,6 +103,23 @@
     }
   },
   "$defs": {
+    "govAsOfBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "label": {
+          "const": "convention"
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "Why the as-of date is the date it is (W15-13). Production rule: the date of the newest release heading of CHANGELOG.md when the bake runs, never earlier than a raised date. A fixture states that its date is chosen to exercise the overdue rule."
+    },
     "govDate": {
       "type": "string",
       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
@@ -140,7 +161,8 @@
             "additionalProperties": false,
             "required": [
               "path",
-              "sha256"
+              "sha256",
+              "ref"
             ],
             "properties": {
               "path": {
@@ -149,11 +171,23 @@
               },
               "sha256": {
                 "$ref": "#/$defs/govSha256"
+              },
+              "ref": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "The git ref and commit the bytes were read from when the document is not on the branch the bake runs on (the C18 documents of the fixture); null otherwise."
               }
             }
           },
           "minItems": 1,
-          "description": "Every case document read, with the sha256 of its bytes (line endings normalised to LF)."
+          "description": "Every case document read, with the sha256 of its bytes (line endings normalised to LF) and its git ref."
         }
       },
       "description": "Where a governance document came from: code and engine versions and the sha256 of every case document it read."
@@ -378,7 +412,8 @@
             {
               "type": "null"
             }
-          ]
+          ],
+          "description": "The register row's share, carried unchanged. Computed by riskvalidation.governance.findings.rwea_share_of_anchor."
         }
       }
     },
@@ -421,7 +456,8 @@
           }
         },
         "rwea_cut_points_applied": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Computed by riskvalidation.governance.opinion.opinion_level."
         },
         "open_findings": {
           "type": "array",
@@ -570,6 +606,9 @@
       "required": [
         "label",
         "kind",
+        "kind_reason",
+        "direction",
+        "direction_reason",
         "alpha_amber",
         "alpha_red",
         "parameters",
@@ -588,9 +627,44 @@
               "type": "string",
               "enum": [
                 "p_value",
+                "metric"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "spec(test_id).decision of the engine registry (W15-12): p_value or metric. Computed by riskvalidation.governance.policy.resolve_policy."
+        },
+        "kind_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "direction": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
                 "upper_bad",
                 "lower_bad"
               ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Read from the policy file where one resolves; null for an inline battery string. Computed by riskvalidation.governance.policy.resolve_policy."
+        },
+        "direction_reason": {
+          "anyOf": [
+            {
+              "type": "string"
             },
             {
               "type": "null"
@@ -656,8 +730,64 @@
           ]
         }
       },
-      "description": "The policy identity of a test row (W15-6): a packaged label through the policy file, an inline battery string parsed, or unresolved with its reason.",
+      "description": "The policy identity of a test row (W15-6, W15-12): a packaged label through the policy file, an inline battery string parsed, or unresolved with its reason.",
       "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "kind_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "kind_reason": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "direction": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "direction"
+            ]
+          },
+          "then": {
+            "properties": {
+              "direction_reason": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "direction_reason": {
+                "type": "null"
+              }
+            }
+          }
+        },
         {
           "if": {
             "properties": {
@@ -676,6 +806,9 @@
                 "minLength": 1
               },
               "kind": {
+                "type": "null"
+              },
+              "direction": {
                 "type": "null"
               }
             }
