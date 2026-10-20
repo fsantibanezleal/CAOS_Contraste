@@ -178,8 +178,19 @@ def main() -> None:
                   "A counterfactual generator for HMDA is not supplied by the algorithm: C21 runs the ceteris paribus comparator only.",
                   "The Policy thresholds of the four outcome-conditioned battery tests and of the situation-testing share are proposed for the main session's approval; no source gives a value."],
                  sp.FAIR_POLICY, sp.FAIR_CONVENTIONS, FAIR_NAMES, FAIR_FINDINGS)
-    (OUT / "ml-api.md").write_text(ml, encoding="utf-8", newline="\n")
-    (OUT / "fairness-api.md").write_text(fair, encoding="utf-8", newline="\n")
+    for name, text in (("ml-api.md", ml), ("fairness-api.md", fair)):
+        _write_unless_amended(OUT / name, text)
+
+
+def _write_unless_amended(path: Path, text: str) -> None:
+    """This builder writes the 1.0.0 pages of U14-S. A page amended since (its heading names a later version, for example
+    fairness-api 1.1.0 after the U14-E2 review) is the record and is kept, so a re-run never reverts a contract."""
+    if path.exists():
+        head = path.read_text(encoding="utf-8").splitlines()[0]
+        if not head.endswith(" 1.0.0"):
+            print(f"kept {path.name}: {head.split(': ')[-1]} was amended after the 1.0.0 generation")
+            return
+    path.write_text(text, encoding="utf-8", newline="\n")
 
 
 if __name__ == "__main__":
