@@ -42,26 +42,11 @@ python scripts/check_notebooks.py          # the static check: layout, mirror, l
 ```
 
 The environment is the familiar one: `pip install -r notebooks/requirements.txt` in a virtual environment. Its first line is the
-engine, `riskvalidation==0.8.0`, from PyPI; the other lines are the method libraries at the pins of `data-pipeline/requirements.txt`
+engine, `riskvalidation==0.8.1`, from PyPI; the other lines are the method libraries at the pins of `data-pipeline/requirements.txt`
 and the runtime that executes the notebooks. Only the runner writes a notebook's outputs; the committed notebooks are the
 runner's output. To read one, open it on GitHub or in any Jupyter client (select the `.venv-notebooks` kernel to run it). A
 notebook reads committed files only (`data/derived/` and `data/examples/`): it needs no raw data and no `CONTRASTE_DATA`, and it
 writes nothing into the repository.
-
-### The maintainer's route until the PyPI release
-
-`riskvalidation` 0.8.0 is the engine release `v0.08.000` and is not published on PyPI yet (backlog BL-039: the owner registers the
-trusted publisher first), so the pin `riskvalidation==0.8.0` does not resolve from the public index today. The maintainers, who
-have access to the engine repository, build the wheel of that release tag once and let pip find it there:
-
-```bash
-git clone --depth 1 --branch v0.08.000 <the engine repository> <engine folder>
-python -m pip wheel --no-deps -w <wheel folder> <engine folder>
-python -m pip install --find-links <wheel folder> -r notebooks/requirements.txt
-```
-
-This changes nothing in a notebook or in `requirements.txt`: the pin is the PyPI one, and the Contraste release that carries the
-set ships after the PyPI publication, when the plain `pip install -r notebooks/requirements.txt` works for everyone.
 
 ## Topics / Temas
 
