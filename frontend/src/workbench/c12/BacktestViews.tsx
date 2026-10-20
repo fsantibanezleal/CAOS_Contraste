@@ -38,8 +38,8 @@ export function PitView({ sel }: { sel: C12Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: `${pick(text(SUBJECT_LONG, sel.subject), 'en')}, at ${pick(text(HORIZON_LONG, sel.horizon), 'en')}. Each realised value is mapped to its PIT, the share of the simulated sample below it, by the rule ${bt.pit_rule}; if the model holds, the PITs of the back-test dates are uniform and each class holds about ${formatNumber(expected, 'en', { digits: 4 })} of the ${h.n} dates. Each date was calibrated only on data up to that date.`,
-          es: `${pick(text(SUBJECT_LONG, sel.subject), 'es')}, a ${pick(text(HORIZON_LONG, sel.horizon), 'es')}. Cada valor realizado se mapea a su PIT, la parte de la muestra simulada bajo él, con la regla ${bt.pit_rule}; si el modelo se sostiene, los PIT de las fechas del backtest son uniformes y cada clase tiene cerca de ${formatNumber(expected, 'es', { digits: 4 })} de las ${h.n} fechas. Cada fecha se calibró solo con datos hasta esa fecha.`,
+          en: `Back-tested: ${pick(text(SUBJECT_LONG, sel.subject), 'en')}, at ${pick(text(HORIZON_LONG, sel.horizon), 'en')}. Each realised value is mapped to its PIT, the share of the simulated sample below it, by the rule ${bt.pit_rule}; if the model holds, the PITs of the back-test dates are uniform and each class holds about ${formatNumber(expected, 'en', { digits: 4 })} of the ${h.n} dates. Each date was calibrated only on data up to that date.`,
+          es: `Evaluado: ${pick(text(SUBJECT_LONG, sel.subject), 'es')}, a ${pick(text(HORIZON_LONG, sel.horizon), 'es')}. Cada valor realizado se mapea a su PIT, la parte de la muestra simulada bajo él, con la regla ${bt.pit_rule}; si el modelo se sostiene, los PIT de las fechas del backtest son uniformes y cada clase tiene cerca de ${formatNumber(expected, 'es', { digits: 4 })} de las ${h.n} fechas. Cada fecha se calibró solo con datos hasta esa fecha.`,
         }}
       >
         <ChartOverTable
@@ -50,7 +50,7 @@ export function PitView({ sel }: { sel: C12Sel | null }) {
               height="fill"
               orientation="vertical"
               data={counts.map((n, i) => ({ id: `bin${i}`, label: { en: `${formatNumber(i / bins, 'en', { decimals: 1 })} to ${formatNumber((i + 1) / bins, 'en', { decimals: 1 })}`, es: `${formatNumber(i / bins, 'es', { decimals: 1 })} a ${formatNumber((i + 1) / bins, 'es', { decimals: 1 })}` }, value: n, tone: 'accent' as const }))}
-              axis={{ label: { en: 'Back-test dates', es: 'Fechas del backtest' }, format: { decimals: 0 } }}
+              axis={{ label: { en: 'Back-test dates', es: 'Fechas del backtest' }, format: { digits: 4 } }}
             />
           }
         >
@@ -111,12 +111,12 @@ export function ExceedanceView({ sel }: { sel: C12Sel | null }) {
         title={title}
         {...card}
         note={{
-          en: `${pick(text(SUBJECT_LONG, sel.subject), 'en')}, from ${bt.window_start} to ${bt.window_end}, with ${bt.paths_per_date} simulated paths per date. A bar in red is a horizon the Anderson-Darling test rejects at 5 percent against the simulated critical value. The horizons include the margin periods of 10 and 20 business days and the year, and several percentiles are counted, never one (BCBS 185 paragraphs 18, 19 and 31); the exceedance counts assume independence and are a secondary row.`,
-          es: `${pick(text(SUBJECT_LONG, sel.subject), 'es')}, de ${bt.window_start} a ${bt.window_end}, con ${bt.paths_per_date} trayectorias simuladas por fecha. Una barra roja es un horizonte que la prueba de Anderson-Darling rechaza al 5 por ciento contra el valor crítico simulado. Los horizontes incluyen los periodos de margen de 10 y 20 días hábiles y el año, y se cuentan varios percentiles, nunca uno (BCBS 185, párrafos 18, 19 y 31); los conteos de excedencias suponen independencia y son una fila secundaria.`,
+          en: `Back-tested: ${pick(text(SUBJECT_LONG, sel.subject), 'en')}, from ${bt.window_start} to ${bt.window_end}, with ${bt.paths_per_date} simulated paths per date. A bar in red is a horizon the Anderson-Darling test rejects at 5 percent against the simulated critical value. The horizons include the margin periods of 10 and 20 business days and the year, and several percentiles are counted, never one (BCBS 185 paragraphs 18, 19 and 31); the exceedance counts assume independence and are a secondary row.`,
+          es: `Evaluado: ${pick(text(SUBJECT_LONG, sel.subject), 'es')}, de ${bt.window_start} a ${bt.window_end}, con ${bt.paths_per_date} trayectorias simuladas por fecha. Una barra roja es un horizonte que la prueba de Anderson-Darling rechaza al 5 por ciento contra el valor crítico simulado. Los horizontes incluyen los periodos de margen de 10 y 20 días hábiles y el año, y se cuentan varios percentiles, nunca uno (BCBS 185, párrafos 18, 19 y 31); los conteos de excedencias suponen independencia y son una fila secundaria.`,
         }}
       >
         <ChartOverTable
-          chartMin="17rem"
+          chartMin="clamp(11rem, 20rem - 15vw, 17rem)"
           chart={
             <BarChart
               title={{ en: 'W² by horizon', es: 'W² por horizonte' }}

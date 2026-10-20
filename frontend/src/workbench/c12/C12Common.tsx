@@ -15,7 +15,7 @@ import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { T } from '../../content/bi';
 import { UnavailableCard } from '../c14/C14Common';
 import { riskWeight } from './bacva';
-import { RATING_SHORT, RATING_TEXT, SECTOR_TEXT, VARIANT_ORDER, VARIANT_TEXT, BASIS_TEXT, CASE_TEXT, HORIZON_LONG, SUBJECT_TEXT, amount, axisOf, fitOf, horizonOf, liveBaCva, liveSaCcr, outputsOf, sensitivityOf, text, gridOf, type C12Outputs, type C12Sel, type Peers } from './selection';
+import { RATING_TEXT, SECTOR_TEXT, VARIANT_ORDER, VARIANT_TEXT, BASIS_TEXT, CASE_TEXT, HORIZON_LONG, SUBJECT_TEXT, amount, axisOf, fitOf, horizonOf, liveBaCva, liveSaCcr, outputsOf, sensitivityOf, text, gridOf, type C12Outputs, type C12Sel, type Peers } from './selection';
 
 type Lang = 'en' | 'es';
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
@@ -76,14 +76,14 @@ export function C12TestsView({ sel }: { sel: C12Sel | null }) {
           <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no test row.', es: 'Esta variante no trae filas de pruebas.' }, lang)}</p>
         ) : (
           <ChartOverTable
-            chartMin="12rem"
+            chartMin="clamp(9rem, 17rem - 12vw, 14rem)"
             chart={
               <BarChart
                 title={{ en: 'Tests by light', es: 'Pruebas por luz' }}
                 height="fill"
                 orientation="horizontal"
                 data={LIGHT_ORDER.map((l) => ({ id: l, label: LIGHT_TEXT[l], value: rows.filter((t) => t.light === l).length, tone: LIGHT_TONE_BAR[l] }))}
-                axis={{ label: { en: 'Number of tests', es: 'Número de pruebas' }, format: { decimals: 0 } }}
+                axis={{ label: { en: 'Number of tests', es: 'Número de pruebas' }, format: { digits: 4 } }}
               />
             }
           >
@@ -149,7 +149,7 @@ export function C12VariantsTable({ peers, onPick, current }: { peers: Peers; onP
       }}
     >
       <ChartOverTable
-        chartMin="17rem"
+        chartMin="clamp(11rem, 20rem - 15vw, 17rem)"
         chart={
           <BarChart
             title={{ en: 'EEPE by variant', es: 'EEPE por variante' }}
@@ -541,42 +541,22 @@ export function CaseReadout({ sel }: { sel: C12Sel | null }) {
   );
 }
 
-/** The live read-out of the Collateral section: the live SA-CCR on the collateral in focus (the port of CRE52). */
-export function SaCcrReadout({ sel }: { sel: C12Sel | null }) {
-  const o = outputsOf(sel);
-  const live = liveSaCcr(o, sel?.collateral ?? null);
-  const rc = amount(live?.rc ?? null);
-  const pfe = amount(live?.pfe ?? null);
-  const ead = amount(live?.ead ?? null);
-  return (
-    <LiveReadout
-      variant={sel?.data.variant}
-      title={{ en: 'SA-CCR, live', es: 'SA-CCR, en vivo' }}
-      items={[
-        { label: { en: 'RC', es: 'RC' }, value: rc.value, unit: rc.unit, format: rc.format, hint: { en: 'The replacement cost: the larger of the value less the collateral and zero (CRE52.10).', es: 'El costo de reemplazo: el mayor entre el valor menos el colateral y cero (CRE52.10).' } },
-        { label: { en: 'Multiplier', es: 'Multiplicador' }, value: live?.multiplier ?? null, unitless: true, format: { digits: 4 }, hint: { en: 'At most 1, with a floor of 5 percent: it falls as the netting set is over-collateralised (CRE52.23).', es: 'A lo más 1, con un piso de 5 por ciento: baja cuando el conjunto está sobrecolateralizado (CRE52.23).' } },
-        { label: { en: 'PFE add-on', es: 'Add-on PFE' }, value: pfe.value, unit: pfe.unit, format: pfe.format, hint: { en: 'The multiplier times the aggregate add-on (CRE52.20).', es: 'El multiplicador por el add-on agregado (CRE52.20).' } },
-        { label: { en: 'EAD', es: 'EAD' }, value: ead.value, unit: ead.unit, format: ead.format, hint: { en: 'Alpha 1.4 times RC plus PFE (CRE52.1).', es: 'Alfa 1,4 por RC más PFE (CRE52.1).' } },
-      ]}
-    />
-  );
-}
-
-/** The live read-out of the Counterparty section: the live BA-CVA on the sector and rating in focus (the port of MAR50). */
-export function BaCvaReadout({ sel }: { sel: C12Sel | null }) {
+/** The live read-out of the Live section: the SA-CCR on the collateral in focus and the BA-CVA on the sector and rating in focus (the ports of CRE52 and MAR50). */
+export function LiveCcrReadout({ sel }: { sel: C12Sel | null }) {
   const o = outputsOf(sel);
   const sa = liveSaCcr(o, sel?.collateral ?? null);
   const ba = liveBaCva(o, sa?.ead ?? null, sel?.sector ?? 'financials', sel?.rating ?? 'investment-grade');
-  const scva = amount(ba?.scva[0] ?? null);
+  const ead = amount(sa?.ead ?? null);
   const cap = amount(ba?.capital ?? null);
   return (
     <LiveReadout
       variant={sel?.data.variant}
-      title={sel ? { en: `${pick(text(SECTOR_TEXT, sel.sector), 'en')}, ${pick(text(RATING_SHORT, sel.rating), 'en')}`, es: `${pick(text(SECTOR_TEXT, sel.sector), 'es')}, ${pick(text(RATING_SHORT, sel.rating), 'es')}` } : { en: 'The counterparty', es: 'La contraparte' }}
+      title={{ en: 'SA-CCR and BA-CVA, live', es: 'SA-CCR y BA-CVA, en vivo' }}
       items={[
+        { label: { en: 'EAD', es: 'EAD' }, value: ead.value, unit: ead.unit, format: ead.format, hint: { en: 'SA-CCR: alpha 1.4 times the replacement cost plus the PFE, on the collateral held (CRE52.1).', es: 'SA-CCR: alfa 1,4 por el costo de reemplazo más el PFE, con el colateral mantenido (CRE52.1).' } },
+        { label: { en: 'Multiplier', es: 'Multiplicador' }, value: sa?.multiplier ?? null, unitless: true, format: { digits: 4 }, hint: { en: 'At most 1, with a floor of 5 percent: it falls as the netting set is over-collateralised (CRE52.23).', es: 'A lo más 1, con un piso de 5 por ciento: baja cuando el conjunto está sobrecolateralizado (CRE52.23).' } },
         { label: { en: 'Risk weight', es: 'Ponderador' }, value: sel ? riskWeight(sel.sector, sel.rating) : null, unitless: true, format: SHARE_FORMAT, hint: { en: 'MAR50.16 Table 1: by sector and by investment grade or high yield and not rated.', es: 'Tabla 1 de MAR50.16: por sector y por grado de inversión o alto rendimiento y sin calificación.' } },
-        { label: { en: 'SCVA', es: 'SCVA' }, value: scva.value, unit: scva.unit, format: scva.format, hint: { en: 'The standalone CVA charge of the counterparty: risk weight times maturity, EAD and discount factor over alpha.', es: 'El cargo de CVA individual de la contraparte: ponderador por vencimiento, EAD y factor de descuento sobre alfa.' } },
-        { label: { en: 'Capital', es: 'Capital' }, value: cap.value, unit: cap.unit, format: cap.format, hint: { en: 'DS 0.65 times K reduced (MAR50.14); the reduced version, no hedges.', es: 'DS 0,65 por K reducido (MAR50.14); la versión reducida, sin coberturas.' } },
+        { label: { en: 'BA-CVA capital', es: 'Capital BA-CVA' }, value: cap.value, unit: cap.unit, format: cap.format, hint: { en: 'DS 0.65 times K reduced (MAR50.14) on the live EAD; the reduced version, no hedges.', es: 'DS 0,65 por K reducido (MAR50.14) sobre la EAD en vivo; la versión reducida, sin coberturas.' } },
       ]}
     />
   );
