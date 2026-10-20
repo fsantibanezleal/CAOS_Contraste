@@ -281,9 +281,7 @@ export function ShiftReadout({ sel }: { sel: C20Sel | null }) {
       variant={sel?.data.variant}
       title={{ en: 'The synthetic shift', es: 'El cambio sintético' }}
       items={[
-        { label: { en: 'AUC', es: 'AUC' }, value: s?.metric.auc ?? null, unitless: true, format: { decimals: 3 }, hint: hint('The AUC on the evaluation set under the shift.', 'El AUC en el conjunto de evaluación bajo el cambio.') },
         { label: { en: 'AUC change', es: 'Cambio del AUC' }, value: s?.metric.auc_delta ?? null, unitless: true, format: { decimals: 3 }, hint: hint('Negative is a loss against the unshifted set.', 'Negativo es una pérdida contra el conjunto sin cambio.') },
-        { label: { en: 'PSI', es: 'PSI' }, value: s?.psi ?? null, unitless: true, format: { decimals: 3 }, hint: hint('The stability index of the shifted score.', 'El índice de estabilidad del puntaje con cambio.') },
         { label: { en: 'Decisions that flip', es: 'Decisiones que cambian' }, value: s?.flip_share ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: hint('At the stated cut-off, held fixed under every shift.', 'En el corte declarado, fijo bajo todo cambio.') },
       ]}
     />
@@ -293,14 +291,12 @@ export function ShiftReadout({ sel }: { sel: C20Sel | null }) {
 export function WindowReadout({ sel }: { sel: C20Sel | null }) {
   const o = asKind(sel, 'shift');
   const w = o?.synthetic_shift.label_free.conformal.coverage_by_window.find((x) => x.window === sel?.window) ?? null;
-  const target = o?.synthetic_shift.label_free.conformal.target_coverage ?? null;
   return (
     <LiveReadout
       variant={sel?.data.variant}
       title={{ en: 'The conformal window', es: 'La ventana conforme' }}
       items={[
         { label: { en: 'Coverage', es: 'Cobertura' }, value: w?.coverage ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: hint('The share of the window the conformal set covers.', 'La parte de la ventana que cubre el conjunto conforme.') },
-        { label: { en: 'Target', es: 'Meta' }, value: target, unitless: true, format: { percent: true, decimals: 1 }, hint: hint('1 minus alpha; a loss of coverage reads as an exchangeability violation.', '1 menos alfa; una pérdida de cobertura se lee como una violación de intercambiabilidad.') },
         { label: { en: 'p (binomial)', es: 'p (binomial)' }, value: w?.binomial_p_value ?? null, unitless: true, format: { digits: 2 }, hint: hint('The binomial test of the coverage against the target.', 'La prueba binomial de la cobertura contra la meta.') },
       ]}
     />
