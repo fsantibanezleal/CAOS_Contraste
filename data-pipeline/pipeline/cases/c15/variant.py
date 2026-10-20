@@ -288,7 +288,7 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
         levels = []
         for lv in asm.LEVELS:
             got = simulation.ear_evar(nii_p, eve_p, b_nii, b_eve, lv)
-            err = simulation.ear_evar_mc_error(nii_p, eve_p, lv, asm.N_BATCHES)
+            err = simulation.ear_evar_mc_error(nii_p, eve_p, lv, asm.N_BATCHES, antithetic=True)  # whole mirror pairs per batch (BL-074)
             levels.append({"level": lv, "nii_quantile": float(b_nii - got.ear), "eve_quantile": float(b_eve - got.evar), "ear": float(got.ear),
                            "evar": float(got.evar), "ear_se": float(err.ear_se), "evar_se": float(err.evar_se)})
         ear_legs.append({"leg": n, "method": "hw1f", "n_paths": n_paths, "seed": seed, "horizon_months": asm.HORIZON_MONTHS,
