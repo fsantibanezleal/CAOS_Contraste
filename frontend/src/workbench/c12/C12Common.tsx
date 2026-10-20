@@ -4,6 +4,7 @@
 // over a real Treasury curve; the counterparty curve is a proxy (an AAA to A market spread derived from the Treasury HQM
 // curve, or a stated synthetic flat spread); initial margin is a regression proxy, never SIMM; every named parameter of the
 // book and the CSA is a convention; the wrong-way variant has no ORE reconciliation.
+import type { ReactNode } from 'react';
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import type { TestRow } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
@@ -11,6 +12,7 @@ import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
 import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
+import { T } from '../../content/bi';
 import { UnavailableCard } from '../c14/C14Common';
 import { riskWeight } from './bacva';
 import { RATING_SHORT, RATING_TEXT, SECTOR_TEXT, VARIANT_ORDER, VARIANT_TEXT, BASIS_TEXT, CASE_TEXT, HORIZON_LONG, SUBJECT_TEXT, amount, axisOf, fitOf, horizonOf, liveBaCva, liveSaCcr, outputsOf, sensitivityOf, text, gridOf, type C12Outputs, type C12Sel, type Peers } from './selection';
@@ -22,6 +24,13 @@ export const digits = (v: number | null | undefined, lang: Lang) => formatNumber
 export const SHARE = (v: number | null | undefined, lang: Lang) => formatNumber(v, lang, { percent: true, decimals: 2 });
 /** Years on a time axis or in a cell: 0.25, 1, 10. */
 export const years = (v: number | null | undefined, lang: Lang) => formatNumber(v, lang, { digits: 4 });
+
+/** The grid of a definition list in a narrow place: the term may wrap and the value keeps 60 percent, so a number never breaks over lines (G19). */
+export const DEFS_STYLE = { gridTemplateColumns: 'minmax(0, 40%) minmax(0, 1fr)' } as const;
+/** A value that must stay on one line: a number, an amount, a pair of them. */
+export function Nw({ children }: { children: ReactNode }) {
+  return <span style={{ whiteSpace: 'nowrap' }}>{children}</span>;
+}
 
 /** The unit of a column of the documents' money. */
 export const MONEY_UNIT: Bi = { en: 'USD', es: 'USD' };
@@ -43,6 +52,9 @@ const TEST_TEXT: Record<string, BiText> = {
   'ccr.pit_exposure_backtest': { en: 'PIT back-test of the exposure distribution', es: 'Backtest PIT de la distribución de exposición' },
 };
 
+const LIGHT_ORDER = ['green', 'amber', 'red', 'not_evaluated', 'error'] as const;
+const LIGHT_TONE_BAR = { green: 'good', amber: 'warn', red: 'bad', not_evaluated: 'neutral', error: 'bad' } as const;
+
 /** The rows the engine returned for the tests of this variant; a test that did not run shows its reason, not a number. */
 export function C12TestsView({ sel }: { sel: C12Sel | null }) {
   const lang = useShellLang();
@@ -63,7 +75,18 @@ export function C12TestsView({ sel }: { sel: C12Sel | null }) {
         {rows.length === 0 ? (
           <p className="ct-note" data-state="unavailable">{pick({ en: 'This variant carries no test row.', es: 'Esta variante no trae filas de pruebas.' }, lang)}</p>
         ) : (
-          <div className="ct-scroll">
+          <ChartOverTable
+            chartMin="12rem"
+            chart={
+              <BarChart
+                title={{ en: 'Tests by light', es: 'Pruebas por luz' }}
+                height="fill"
+                orientation="horizontal"
+                data={LIGHT_ORDER.map((l) => ({ id: l, label: LIGHT_TEXT[l], value: rows.filter((t) => t.light === l).length, tone: LIGHT_TONE_BAR[l] }))}
+                axis={{ label: { en: 'Number of tests', es: 'Número de pruebas' }, format: { decimals: 0 } }}
+              />
+            }
+          >
             <table className="caos-table ct-wrap-head" data-table="tests">
               <thead>
                 <tr>
@@ -89,7 +112,7 @@ export function C12TestsView({ sel }: { sel: C12Sel | null }) {
                 })}
               </tbody>
             </table>
-          </div>
+          </ChartOverTable>
         )}
       </PlotCard>
     </ViewsRow>
@@ -134,10 +157,6 @@ export function C12VariantsTable({ peers, onPick, current }: { peers: Peers; onP
             orientation="horizontal"
             data={rows.map((r) => ({ id: r.id, label: text(VARIANT_TEXT, r.id), value: r.peer.o.exposure.eepe.amount / axis.div, tone: 'accent' as const, highlight: r.peer.variantId === current }))}
             axis={{ label: { en: `Effective EPE over the first year (${pick(axis.unit, 'en')})`, es: `EPE efectiva del primer año (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
-            onSelect={(id) => {
-              const hit = rows.find((r) => r.id === id);
-              if (hit) onPick(hit.peer.variantId);
-            }}
           />
         }
       >
@@ -285,7 +304,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
         <p>
           <strong>{pick(m.title, lang)}</strong>. {pick(m.question, lang)}
         </p>
-        <dl className="ct-defs" data-table="c12-case" data-variant-id={o.variant}>
+        <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-case" data-variant-id={o.variant}>
           <dt>{pick({ en: 'Variant', es: 'Variante' }, lang)}</dt>
           <dd>{pick(text(VARIANT_TEXT, o.variant), lang)}</dd>
           <dt>{pick({ en: 'What is real and what is synthetic', es: 'Qué es real y qué es sintético' }, lang)}</dt>
@@ -330,7 +349,7 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
       </PlotCard>
       <PlotCard title={{ en: 'The Treasury curve and the calibration', es: 'La curva del Tesoro y la calibración' }} {...card} note={{ en: 'The par yields are the Treasury daily curve of the curve date; a tenor the source does not carry is listed as absent and never interpolated silently. The short-rate parameters are estimated only on data before the curve date.', es: 'Los rendimientos par son la curva diaria del Tesoro de la fecha de la curva; un plazo que la fuente no trae se lista como ausente y nunca se interpola en silencio. Los parámetros de la tasa corta se estiman solo con datos anteriores a la fecha de la curva.' }}>
         <div className="ct-scroll">
-          <dl className="ct-defs" data-table="c12-curve">
+          <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-curve">
             <dt>{pick({ en: 'Curve date', es: 'Fecha de la curva' }, lang)}</dt>
             <dd>{o.curve.curve_date}</dd>
             <dt>{pick({ en: 'Tenors present', es: 'Plazos presentes' }, lang)}</dt>
@@ -389,13 +408,17 @@ export function C12ContextView({ sel }: { sel: C12Sel | null }) {
       {fit ? (
         <PlotCard title={{ en: 'The models artifact', es: 'El artefacto de modelos' }} {...card} note={{ en: 'The short-rate model is fitted to the Treasury curve of each back-test date and its two parameters are estimated on data up to that date; the closed forms are transcribed from the engine source and their journal derivations are not verified as papers.', es: 'El modelo de tasa corta se ajusta a la curva del Tesoro de cada fecha del backtest y sus dos parámetros se estiman con datos hasta esa fecha; las formas cerradas se transcriben de la fuente del motor y sus derivaciones de la literatura no están verificadas como artículos.' }}>
           <div className="ct-scroll">
-            <dl className="ct-defs" data-table="c12-fit">
+            <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-fit">
               <dt>{pick({ en: 'Estimator', es: 'Estimador' }, lang)}</dt>
-              <dd>{fit.estimator}</dd>
+              <dd><span translate="no">{fit.estimator}</span></dd>
               <dt>{pick({ en: 'Minimum history', es: 'Historia mínima' }, lang)}</dt>
               <dd>{`${fit.min_history_years} ${pick({ en: 'years (CRE53.51)', es: 'años (CRE53.51)' }, lang)}`}</dd>
               <dt>{pick({ en: 'Closed forms', es: 'Formas cerradas' }, lang)}</dt>
-              <dd data-unverified="true">{pick({ en: `transcribed from ${fit.closed_forms_source.replace(/^QuantLib 1\.44: /, 'the QuantLib 1.44 source: ')}; the journal derivations are UNVERIFIED as papers`, es: `transcritas de ${fit.closed_forms_source.replace(/^QuantLib 1\.44: /, 'la fuente de QuantLib 1.44: ')}; las derivaciones de la literatura NO están verificadas como artículos` }, lang)}</dd>
+              <dd data-unverified="true">
+                <T en="transcribed from " es="transcritas de " />
+                <span translate="no">{fit.closed_forms_source}</span>
+                <T en="; the journal derivations are UNVERIFIED as papers" es="; las derivaciones de la literatura NO están verificadas como artículos" />
+              </dd>
               <dt>{pick({ en: 'Counterparty curve', es: 'Curva de la contraparte' }, lang)}</dt>
               <dd data-label={fit.credit_curve.label}>{`${pick({ en: 'proxy', es: 'proxy' }, lang)}: ${pick(fit.credit_curve.derivation, lang)}`}</dd>
               <dt>{pick({ en: 'Licence of the spread source', es: 'Licencia de la fuente del spread' }, lang)}</dt>

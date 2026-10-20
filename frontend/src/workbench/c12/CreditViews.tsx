@@ -8,7 +8,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { NOT_SWAP, SHARE, UnavailableCard, cell, years } from './C12Common';
+import { NOT_SWAP, SHARE, UnavailableCard, cell, years, DEFS_STYLE, Nw } from './C12Common';
 import { amount, axisOf, outputsOf, runningSum, wwrOf, VARIANT_TEXT, text, type C12Sel } from './selection';
 
 const YEARS_AXIS = { label: { en: 'Time (years)', es: 'Tiempo (años)' } as BiText, format: { decimals: 1 } };
@@ -58,9 +58,14 @@ export function CvaView({ sel }: { sel: C12Sel | null }) {
             />
           }
         >
-          <dl className="ct-defs" data-table="c12-cva">
+          <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-cva">
             <dt>{pick({ en: 'CVA, DVA and BCVA (USD)', es: 'CVA, DVA y BCVA (USD)' }, lang)}</dt>
-            <dd data-cva={c.cva.amount}>{`${cell(c.cva.amount, lang)} / ${cell(c.dva.amount, lang)} / ${cell(c.bcva.amount, lang)} (${pick({ en: 'Monte Carlo SE of the CVA', es: 'ES de Monte Carlo del CVA' }, lang)} ${formatNumber(c.cva.mc_se, lang, { digits: 4 })})`}</dd>
+            <dd data-cva={c.cva.amount}>
+              <Nw>{`${cell(c.cva.amount, lang)} / ${cell(c.dva.amount, lang)} / ${cell(c.bcva.amount, lang)}`}</Nw>
+              {` (${pick({ en: 'Monte Carlo SE of the CVA', es: 'ES de Monte Carlo del CVA' }, lang)} `}
+              <Nw>{formatNumber(c.cva.mc_se, lang, { digits: 4 })}</Nw>
+              {')'}
+            </dd>
             <dt>{pick({ en: 'Counterparty curve', es: 'Curva de la contraparte' }, lang)}</dt>
             <dd data-credit-source={c.credit_curve_source} data-label="proxy">{`${pick({ en: 'proxy', es: 'proxy' }, lang)}: ${pick(text(SOURCE_TEXT, c.credit_curve_source), lang)}`}</dd>
             <dt>{pick({ en: 'Negative spreads set to zero', es: 'Spreads negativos llevados a cero' }, lang)}</dt>
