@@ -30,10 +30,16 @@ describe('the Experiments case tabs are grouped by the question family', () => {
     });
     for (const g of groups) expect(pick(g.label, 'es').length).toBeGreaterThan(0);
   });
-  it('keeps a case of a category without a family in a group of its own, titled by its category', () => {
+  it('keeps a case that is not in the coverage registry in a group of its own', () => {
+    const g = groupCases([{ id: 'c99', label: 'C99', content: null }]);
+    expect(g).toHaveLength(1);
+    expect(pick(g[0].label, 'en')).toBe('Other cases');
+  });
+  it('joins C18 to the capital family, relabelled (batch 3 family decision, 2026-10-20)', () => {
     const g = groupCases([{ id: 'c18', label: 'C18', content: null }]);
     expect(g).toHaveLength(1);
-    expect(pick(g[0].label, 'en')).toBe('Capital and stress testing');
+    expect(g[0].id).toBe('capital');
+    expect(pick(g[0].label, 'en')).toBe('Capital, aggregation and stress');
   });
 });
 

@@ -16,7 +16,9 @@ import { C22ExperimentsSection } from './C22Sections';
 import { NoTranslateRefs } from './NoTranslateRefs';
 import { U6ExperimentsSection, U6_CASES } from './U6Sections';
 import { W2ExperimentsSection, W2_CASES } from './Wave2Sections';
+import { B3ExperimentsSection, B3_CASES, ImpactSection } from './Batch3Sections';
 
+/** The C01 scorecard table: it reads the fields of the C01 documents (`outputs.n`, `outputs.defaults`, the scorecard test rows), so it is for C01 only. */
 function CaseVariants({ manifest }: { manifest: CaseManifest }) {
   const lang = useShellLang();
   const t = useT();
@@ -101,7 +103,20 @@ function CaseFacts({ m }: { m: CaseManifest }) {
   );
 }
 
+/** Which section reads a case on this page: its own, or the generic table of its impact items; the C01 scorecard table is for C01 only. */
+export type SectionKind = 'scorecard' | 'c04' | 'c05' | 'c22' | 'u6' | 'wave2' | 'batch3' | 'generic';
+export function sectionKindOf(caseId: string): SectionKind {
+  if (caseId === 'C04') return 'c04';
+  if (caseId === 'C05') return 'c05';
+  if (caseId === 'C22') return 'c22';
+  if (U6_CASES.has(caseId)) return 'u6';
+  if (W2_CASES.has(caseId)) return 'wave2';
+  if (B3_CASES.has(caseId)) return 'batch3';
+  return caseId === 'C01' ? 'scorecard' : 'generic';
+}
+
 function CaseTopic({ m }: { m: CaseManifest }) {
+  const kind = sectionKindOf(m.case_id);
   return (
     <DocSection
       area="question"
@@ -110,7 +125,7 @@ function CaseTopic({ m }: { m: CaseManifest }) {
     >
       <P en={m.question.en} es={m.question.es} />
       <CaseFacts m={m} />
-      {U6_CASES.has(m.case_id) || W2_CASES.has(m.case_id) ? (
+      {kind !== 'scorecard' && kind !== 'c04' && kind !== 'c05' && kind !== 'c22' ? (
         <P
           en="Each variant of this case is the same question asked of different data, and the table below reads one headline row per variant from its artifact, in the measures this case declares; a number the artifact leaves out is said to be not available, with its reason, in the App."
           es="Cada variante de este caso es la misma pregunta hecha a datos distintos, y la tabla de abajo lee una fila de resultados por variante desde su artefacto, en las medidas que declara este caso; un número que el artefacto omite se dice no disponible, con su razón, en la App."
@@ -121,7 +136,7 @@ function CaseTopic({ m }: { m: CaseManifest }) {
         es="Cada variante de un caso es la misma pregunta hecha a datos distintos, y las tablas y gráficos de abajo se leen de sus artefactos: el número de registros, la tasa de incumplimiento, la discriminación del campeón y del mejor retador, y la luz de política de sus pruebas de calibración y estabilidad bajo los umbrales comprometidos. Una variante que perturba los datos tiene un efecto conocido, y una prueba sana debe detectarlo o no, según declara el caso."
       />
       )}
-      {m.case_id === 'C04' ? <C04Experiments manifest={m} /> : m.case_id === 'C05' ? <C05ExperimentsSection manifest={m} /> : m.case_id === 'C22' ? <C22ExperimentsSection manifest={m} /> : U6_CASES.has(m.case_id) ? <U6ExperimentsSection manifest={m} /> : W2_CASES.has(m.case_id) ? <W2ExperimentsSection manifest={m} /> : <CaseVariants manifest={m} />}
+      {kind === 'c04' ? <C04Experiments manifest={m} /> : kind === 'c05' ? <C05ExperimentsSection manifest={m} /> : kind === 'c22' ? <C22ExperimentsSection manifest={m} /> : kind === 'u6' ? <U6ExperimentsSection manifest={m} /> : kind === 'wave2' ? <W2ExperimentsSection manifest={m} /> : kind === 'batch3' ? <B3ExperimentsSection manifest={m} /> : kind === 'scorecard' ? <CaseVariants manifest={m} /> : <ImpactSection manifest={m} />}
     </DocSection>
   );
 }
@@ -208,8 +223,10 @@ const FAMILY: Record<string, { id: string; label: BiText }> = {
   provisions: { id: 'credit-losses', label: { en: 'Credit losses: provisions, severity and exposure', es: 'Pérdidas de crédito: provisiones, severidad y exposición' } },
   'lgd-ead': { id: 'credit-losses', label: { en: 'Credit losses: provisions, severity and exposure', es: 'Pérdidas de crédito: provisiones, severidad y exposición' } },
   validator: { id: 'validator', label: { en: 'Validating the validator', es: 'Validar al validador' } },
-  'portfolio-capital': { id: 'capital', label: { en: 'Capital models', es: 'Modelos de capital' } },
-  operational: { id: 'capital', label: { en: 'Capital models', es: 'Modelos de capital' } },
+  'portfolio-capital': { id: 'capital', label: { en: 'Capital, aggregation and stress', es: 'Capital, agregación y estrés' } },
+  operational: { id: 'capital', label: { en: 'Capital, aggregation and stress', es: 'Capital, agregación y estrés' } },
+  'capital-stress': { id: 'capital', label: { en: 'Capital, aggregation and stress', es: 'Capital, agregación y estrés' } },
+  'ml-ai-risk': { id: 'ml-ai-risk', label: { en: 'ML and AI risk', es: 'Riesgo de ML e IA' } },
   'market-ccr': { id: 'market-balance', label: { en: 'Market and balance-sheet risk', es: 'Riesgo de mercado y de balance' } },
   'balance-sheet': { id: 'market-balance', label: { en: 'Market and balance-sheet risk', es: 'Riesgo de mercado y de balance' } },
 };
