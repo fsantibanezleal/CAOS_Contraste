@@ -110,9 +110,9 @@ export function OpinionBlock({ caseId }: { caseId: string }) {
 export function FindingsWithOpinion({ caseId, children }: { caseId: string; children: ReactNode }) {
   const lang = useShellLang();
   return (
-    <div className="ct-part" data-findings-with-opinion={caseId} style={{ height: '100%' }}>
+    <div className="ct-part" data-findings-with-opinion={caseId} style={{ height: '100%', gap: 0 }}>
       <div className="ct-part ct-part-3">{children}</div>
-      <details className="ct-note" data-opinion-disclosure>
+      <details className="ct-note" data-opinion-disclosure style={{ margin: 0, fontSize: '0.78rem', lineHeight: 1.15 }}>
         <summary>{pick({ en: 'Overall opinion on the evidence (governance)', es: 'Opinión global sobre la evidencia (gobernanza)' }, lang)}</summary>
         <div style={{ maxHeight: 260, overflow: 'auto', minWidth: 0 }}>
           <OpinionBlock caseId={caseId} />
