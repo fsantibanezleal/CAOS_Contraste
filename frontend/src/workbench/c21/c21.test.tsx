@@ -125,7 +125,7 @@ describe('the C21 instrument', () => {
     expect(markup).toContain('not a credit-law threshold');
     expect(markup).toContain(`data-highest="${f.highest_rate_group}"`);
     for (const g of f.groups) expect(markup).toContain(`data-group="${g.group}" data-flag="${g.flag}"`);
-    expect(markup).toContain('four-fifths rule of 29 CFR 1607.4(D)');
+    expect(markup).toContain('<span translate="no" lang="en">29 CFR 1607.4(D)</span>; not a credit-law threshold');
     expect(markup).toContain(escapeHtml(f.rule));
     // the flag is the document's: flipping it in the document flips the view, whatever the ratio says
     const odd = clone();
@@ -302,3 +302,21 @@ describe('the C21 Findings view draws the evidence of each finding', () => {
     }
   });
 });
+
+describe('the C21 views keep the citations of the document and ranges whole (gate G11 and G19)', () => {
+  it('marks every regulation citation translate="no" and keeps ranges on one line', () => {
+    const cite = /\d+ CFR \d+\.\d+/g;
+    for (const View of [RatesView, FourFifthsView, TestsView, C21ContextView, C21FindingsView] as Array<(p: { sel: C21Sel | null }) => ReactElement>) {
+      const markup = html(<View sel={psel0} />);
+      for (const m of markup.matchAll(cite)) {
+        const before = markup.slice(Math.max(0, m.index! - 40), m.index!);
+        expect(before, m[0]).toMatch(/translate="no"[^>]*>$|<span translate="no" lang="en">$/);
+      }
+    }
+    const ctx = html(<C21ContextView sel={psel0} />);
+    expect(ctx).toContain('<span style="white-space:nowrap">36%-49%</span>');
+    expect(ctx).toContain('<span style="white-space:nowrap">35-44</span>');
+  });
+});
+
+const psel0 = withVariant(JSON.parse(readFileSync(new URL('../../../../data/derived/C21/pair-2018-19.json', import.meta.url), 'utf8')) as VariantArtifact<Outputs>);

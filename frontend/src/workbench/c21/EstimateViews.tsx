@@ -6,9 +6,10 @@
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useCard } from '../c03/U6Shared';
+import { C21TestsTable } from './Marked';
 import { Pending } from '../Pending';
 import { UnavailableCard } from '../c14/C14Common';
-import { LabelledOverTable, U14TestsTable, barMin, f2, f3, int, pc1, testsOf } from '../c20/U14Common';
+import { LabelledOverTable, barMin, f2, f3, int, pc1, testsOf } from '../c20/U14Common';
 import { LegalSentences, NoLegalClaim, legalOf } from './C21Common';
 import { CONTROL_TEXT, FIELD_TEXT, attributeFor, outputsOf, text, type C21Sel } from './selection';
 
@@ -90,7 +91,7 @@ function EstimateCard({ sel, which }: { sel: C21Sel; which: Which }) {
             {pick({ en: `Controls: ${controls(have[0].e.estimate.controls, 'en')}. Missing control: ${controls(have[0].e.estimate.missing_controls, 'en')}.`, es: `Controles: ${controls(have[0].e.estimate.controls, 'es')}. Control faltante: ${controls(have[0].e.estimate.missing_controls, 'es')}.` }, lang)}
           </p>
         ) : null}
-        <U14TestsTable tests={sel.data.variant.tests} only={testsOf(which === 'controlled' ? 'fair.conditional' : 'fair.rate_spread')} />
+        <C21TestsTable tests={sel.data.variant.tests} only={testsOf(which === 'controlled' ? 'fair.conditional' : 'fair.rate_spread')} />
         <LegalSentences legal={legalOf(sel)} />
       </LabelledOverTable>
     </PlotCard>
@@ -186,7 +187,7 @@ export function ReplicationView({ sel }: { sel: C21Sel | null }) {
               )}
             </tbody>
           </table>
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('fair.replication')} />
+          <C21TestsTable tests={sel.data.variant.tests} only={testsOf('fair.replication')} />
           <LegalSentences legal={legalOf(sel)} />
         </LabelledOverTable>
       </PlotCard>
@@ -249,7 +250,7 @@ export function SituationView({ sel }: { sel: C21Sel | null }) {
             </tbody>
           </table>
           <p className="ct-note">{s.interval}</p>
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('fair.situation')} />
+          <C21TestsTable tests={sel.data.variant.tests} only={testsOf('fair.situation')} />
           <LegalSentences legal={legalOf(sel)} />
         </LabelledOverTable>
       </PlotCard>
