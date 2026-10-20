@@ -42,7 +42,7 @@ ENGINES = {"numpy", "scipy", "scikit-learn", "optbinning", "statsmodels", "inter
 RUN_MS = 600_000.0
 #: the measured results are exact in the documents: their identities close to 1e-9 and rounding to nine digits would only add noise
 EXACT = frozenset({"outputs", "fit", "tests"})
-REQUIREMENTS = [f"CT-02{n:02d}" for n in range(1, 18)]
+REQUIREMENTS = [f"CT-02{n:02d}" for n in range(1, 19)]
 VARIANT_IDS = ("h1", "h2", "h3", "h4", "h5", cv.POOLED)
 
 #: what a reader should see, declared before the bake and wide on purpose (a result outside is a finding to read, not to tune away)
@@ -107,7 +107,7 @@ def _split_block(f: Fit, seed: int) -> dict[str, Any]:
 def _counts(f: Fit) -> dict[str, Any]:
     rows, events = int(len(f.y)), int(f.y.sum())
     return {"rows": rows, "events": events, "event_rate": events / rows, "features": len(cv.ATTRIBUTES) + (1 if f.years is None else 0),
-            "event_definition": cv.EVENT_DEFINITION}
+            "event_definition": cv.event_definition(f.years, f.file) if f.years is not None else cv.POOLED_EVENT}
 
 
 def _lineage(manifest: dict[str, Any] | None, seed: int, ev: str) -> lin.Lineage:

@@ -21,3 +21,4 @@ Adversarial checks: what was planted, and the gate that must refuse it. Each gat
 | CT-0215 | A finding that cites a row of no document is planted; the manifest builder must refuse it. | `tests/c02/test_adversarial_c02.py::test_adversarial_a_finding_citing_a_row_of_no_document_is_refused` |
 | CT-0216 | The out-of-time claim of the split is set true; the schema must refuse it. | `tests/c02/test_adversarial_c02.py::test_adversarial_an_out_of_time_claim_or_a_missing_exploratory_label_is_refused` |
 | CT-0217 | A test row is set to `not_evaluated` while it keeps its number; the schema must refuse it. | `tests/c02/test_adversarial_c02.py::test_adversarial_a_not_evaluated_row_with_a_number_is_refused` |
+| CT-0218 | The old file-name mapping (h{n} reads {n}year) is compared with the dataset definition; it must disagree for every variant but h3. | `tests/c02/test_adversarial_c02.py::test_adversarial_a_horizon_read_from_the_file_name_mapping_is_found` |

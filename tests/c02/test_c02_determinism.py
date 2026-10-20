@@ -7,7 +7,7 @@ from c02_support import SEED, Paths, planted_root
 
 from pipeline.cases.c02 import bake
 
-SMALL = (240, 240, 240, 240, 240)
+SMALL = (320, 320, 320, 320, 320)
 
 
 def files(folder: Path) -> dict[str, bytes]:
@@ -15,7 +15,7 @@ def files(folder: Path) -> dict[str, bytes]:
 
 
 def test_two_bakes_of_the_same_inputs_write_the_same_bytes(tmp_path: Path) -> None:
-    root, man = planted_root(tmp_path / "raw", rows=SMALL, shift=0.6)
+    root, man = planted_root(tmp_path / "raw", rows=SMALL, shift=-0.55)
     a, b = Paths(tmp_path / "a"), Paths(tmp_path / "b")
     ma = bake.bake_case(SEED, a, root, manifest=man, check_counts=False, strict_expect=False)
     mb = bake.bake_case(SEED, b, root, manifest=man, check_counts=False, strict_expect=False)
@@ -25,7 +25,7 @@ def test_two_bakes_of_the_same_inputs_write_the_same_bytes(tmp_path: Path) -> No
     assert expected <= set(fa)
     assert [e["variant_id"] for e in ma["artifacts"] if e["role"] == "variant"] == ["h1", "h2", "h3", "h4", "h5", "pooled"]
     # one input changed: the documents differ, so the equality above is not vacuous
-    root2, man2 = planted_root(tmp_path / "raw2", rows=SMALL, seed=SEED + 1, shift=0.6)
+    root2, man2 = planted_root(tmp_path / "raw2", rows=SMALL, seed=SEED + 1, shift=-0.55)
     c = Paths(tmp_path / "c")
     bake.bake_case(SEED, c, root2, manifest=man2, check_counts=False, strict_expect=False)
     assert files(c.root)["C02/h1.json"] != fa["C02/h1.json"]

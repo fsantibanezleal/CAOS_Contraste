@@ -17,11 +17,17 @@ def t(en: str, es: str | None = None) -> dict[str, str]:
 # --- the files ---------------------------------------------------------------------------------------------------------
 SOURCE_ID = "uci-polish"
 ZIP_NAME = "polish+companies+bankruptcy+data.zip"
-#: horizon id, years, ARFF member of the zip
-HORIZONS: tuple[tuple[str, int, str], ...] = tuple((f"h{k}", k, f"{k}year.arff") for k in range(1, 6))
+#: horizon id, years ahead, ARFF member of the zip. The dataset's own definition governs (decision G21): the UCI page labels the file kyear
+#: with the bankruptcy status after 6 - k years, so the horizon of n years ahead reads the file {6-n}year.
+HORIZONS: tuple[tuple[str, int, str], ...] = tuple((f"h{n}", n, f"{6 - n}year.arff") for n in range(1, 6))
 POOLED = "pooled"
 #: the rows and bankruptcies the UCI page and the probe of 2026-10-16 give; the reader refuses a file that differs
-EXPECTED_COUNTS: dict[int, tuple[int, int]] = {1: (7027, 271), 2: (10173, 400), 3: (10503, 495), 4: (9792, 515), 5: (5910, 410)}
+FILE_COUNTS: dict[int, tuple[int, int]] = {1: (7027, 271), 2: (10173, 400), 3: (10503, 495), 4: (9792, 515), 5: (5910, 410)}   # by file number
+
+
+def expected_counts(years: int) -> tuple[int, int]:
+    """(rows, bankruptcies) of the file that the horizon of ``years`` years ahead reads: the file {6 - years}year."""
+    return FILE_COUNTS[6 - years]
 ATTRIBUTES: tuple[str, ...] = tuple(f"Attr{k}" for k in range(1, 65))
 HORIZON_FEATURE = "horizon_years"
 
@@ -58,8 +64,16 @@ def parameters() -> list[dict[str, Any]]:
 
 
 # --- the texts every document repeats ----------------------------------------------------------------------------------------
-EVENT_DEFINITION = t("Bankruptcy of the company within the horizon of the file (the class label of the file)",
-                     "Quiebra de la empresa dentro del horizonte del archivo (la etiqueta de clase del archivo)")
+POOLED_EVENT = t("Bankruptcy of the company within the horizon of its file (h1 to h5, stacked with a horizon indicator)",
+                 "Quiebra de la empresa dentro del horizonte de su archivo (h1 a h5, apilados con un indicador de horizonte)")
+
+
+def event_definition(years: int, file: str) -> dict[str, str]:
+    """The event of a horizon document, with the file it read beside the horizon (decision G21)."""
+    return t(f"Bankruptcy of the company within {years} year{'s' if years > 1 else ''} of the financial statements (the class label of the file {file})",
+             f"Quiebra de la empresa dentro de {years} año{'s' if years > 1 else ''} de los estados financieros (la etiqueta de clase del archivo {file})")
+
+
 OVERLAP_CAVEAT = t(
     "The five files are stacked with a horizon indicator. The UCI page gives no firm identifier and no date, so whether a company appears "
     "in several files is unknown (UNVERIFIED, 08 l.855-856). No feature vector is shared by two files, but a company's ratios change from "
@@ -97,17 +111,17 @@ OBSERVATION_DATE_NOTE = t(
     "Los archivos no traen fecha. El contrato 1 exige una fecha de observación, así que el lector escribe 2013-12-31, el final del período "
     "que da la página de UCI (2000 a 2013), como convención con nombre; ningún reclamo fuera del tiempo ni orden temporal descansa en ella.")
 
-HORIZON_NOTE = t(
-    "The horizon is the file's name: the 1year file is the 1-year horizon (decision Q9, the contracts and the SDD). The UCI page reads the "
-    "other way: it describes the file named kyear as the financial rates of the k-th year of the forecasting period with the class label "
-    "'bankruptcy status after' 6 - k years (the 1year file after 5 years, the 5year file after 1 year), as read through a fetch tool on "
-    "2026-10-20 and UNVERIFIED against the paper. The event rates rise with k (3.86 to 6.94 percent), which a cumulative PD over horizons "
-    "1 to 5 would also do, but under the page's reading the rates would fall with the horizon. The mapping is an open decision for the "
-    "main session; every horizon label of this case is the file's name.",
-    "El horizonte es el nombre del archivo: el archivo 1year es el horizonte de 1 año (decisión Q9, los contratos y el SDD). La página de "
-    "UCI lo lee al revés: describe el archivo kyear como las razones financieras del k-ésimo año del período de pronóstico con la etiqueta "
-    "'estado de quiebra después de' 6 - k años (el archivo 1year después de 5 años, el 5year después de 1 año), leída con una "
-    "herramienta de descarga el 2026-10-20 y SIN VERIFICAR contra el artículo. Las tasas de evento suben con k (3,86 a 6,94 por ciento), "
-    "lo que también haría una PD acumulada en los horizontes 1 a 5, pero bajo la lectura de la página las tasas bajarían con el "
-    "horizonte. La correspondencia es una decisión abierta para la sesión principal; toda etiqueta de horizonte de este caso es el "
-    "nombre del archivo.")
+MAPPING_NOTE = t(
+    "The horizon of a document is the dataset's own definition (decision G21): the UCI page describes the file named kyear as the financial "
+    "rates of the k-th year of the forecasting period with the class label 'bankruptcy status after' 6 - k years, so the horizon of n years "
+    "ahead reads the file {6-n}year (h1 reads 5year, h5 reads 1year). The scorecard's holdout AUC falls with the horizon under this mapping "
+    "and rises with it under the file name.",
+    "El horizonte de un documento es la definición del propio conjunto de datos (decisión G21): la página de UCI describe el archivo kyear "
+    "como las razones financieras del k-ésimo año del período de pronóstico con la etiqueta 'estado de quiebra después de' 6 - k años, así "
+    "que el horizonte de n años hacia adelante lee el archivo {6-n}year (h1 lee 5year, h5 lee 1year). El AUC de la scorecard en la muestra "
+    "reservada baja con el horizonte bajo esta correspondencia y sube con él bajo el nombre del archivo.")
+PAPER_READING = t(
+    "The mapping follows the UCI page; the reading of the source paper (Zieba, Tomczak and Tomczak 2016) is UNVERIFIED against Zieba, "
+    "Tomczak and Tomczak 2016, which the bake did not open.",
+    "La correspondencia sigue la página de UCI; la lectura del artículo fuente (Zieba, Tomczak y Tomczak 2016) está SIN VERIFICAR contra "
+    "Zieba, Tomczak and Tomczak 2016, que el bake no abrió.")

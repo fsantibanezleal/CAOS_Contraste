@@ -67,7 +67,7 @@ def test_the_splits_are_disjoint_stratified_deterministic_and_the_pooled_one_is_
     assert not set(p.sp.holdout.tolist()) & set(p.sp.train.tolist())
     # the transformed slices are fitted on the training slice only, in the pooled variant too
     assert p.pp.medians["Attr1"] == float(np.nanmedian(p.X.iloc[p.sp.train]["Attr1"]))
-    assert PLANTED_ROWS and [len(built[f"h{k}"].y) for k in range(1, 6)] == [n + 1 for n in PLANTED_ROWS]
+    assert PLANTED_ROWS and [len(built[f"h{k}"].y) for k in range(1, 6)] == [n + 1 for n in reversed(PLANTED_ROWS)]
 
 
 def test_the_ladder_is_the_c01_ladder_and_the_constant_has_no_battery(planted) -> None:

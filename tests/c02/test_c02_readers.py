@@ -16,7 +16,8 @@ def test_the_reader_reads_missing_as_missing_and_refuses_a_changed_layout_or_cou
     root, _ = planted
     h = reader.read_horizons(root / "raw" / "uci-polish" / ZIP_NAME, check_counts=False)
     assert sorted(h) == [1, 2, 3, 4, 5]
-    for k, n in zip(range(1, 6), PLANTED_ROWS):
+    for k in range(1, 6):
+        n = PLANTED_ROWS[6 - k - 1]                                  # the horizon k reads the file 6 - k (decision G21)
         assert h[k].rows == n + 1 and h[k].X.shape == (n + 1, 64) and list(h[k].X.columns) == list(cv.ATTRIBUTES)
         assert h[k].X.dtypes.eq(float).all() and set(np.unique(h[k].y)) <= {0, 1}
     text = arff_text(1, PLANTED_ROWS[0])
@@ -87,3 +88,23 @@ def test_contract_1_takes_the_identity_and_date_conventions_and_counts_missing_a
     missing = sum(int(x.X.isna().to_numpy().sum()) for x in h.values())
     assert sum(v for k, v in flagged.items() if k != "C02-DUPLICATE-VECTOR") == missing           # every ? is counted as a missing flag
     assert flagged["C02-DUPLICATE-VECTOR"] == 5                                                   # the repeated first row of each file
+
+
+def test_each_horizon_reads_the_file_the_dataset_definition_gives(planted) -> None:
+    """Decision G21: the UCI page labels the file kyear with the bankruptcy status after 6 - k years, so h{n} reads the file {6-n}year."""
+    import zipfile as zf
+
+    root, _ = planted
+    path = root / "raw" / "uci-polish" / ZIP_NAME
+    h = reader.read_horizons(path, check_counts=False)
+    assert [(hid, years, member) for hid, years, member in cv.HORIZONS] == [
+        ("h1", 1, "5year.arff"), ("h2", 2, "4year.arff"), ("h3", 3, "3year.arff"), ("h4", 4, "2year.arff"), ("h5", 5, "1year.arff")]
+    with zf.ZipFile(path) as z:
+        for n in range(1, 6):
+            X, y = reader.read_arff(z.read(f"{6 - n}year.arff").decode("utf-8"), f"{6 - n}year.arff")
+            assert h[n].horizon_id == f"h{n}" and h[n].years == n and h[n].file == f"{6 - n}year.arff"
+            assert np.array_equal(h[n].y, y) and h[n].X.equals(X)
+            assert {r["id"].split("-")[0] for r in reader.contract_records(h[n])} == {f"h{n}"}
+    # the real counts follow the file: the 5year file (7 percent bankrupt) is the 1-year horizon
+    assert cv.FILE_COUNTS[5] == (5910, 410) and cv.expected_counts(1) == (5910, 410) and cv.expected_counts(5) == (7027, 271)
+    assert "6 - k" in cv.MAPPING_NOTE["en"] and "UCI" in cv.MAPPING_NOTE["en"] and "Zieba" in cv.PAPER_READING["en"] and "UNVERIFIED" in cv.PAPER_READING["en"]

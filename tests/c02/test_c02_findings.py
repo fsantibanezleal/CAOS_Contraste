@@ -10,7 +10,7 @@ RULES = (   # (id, test ids, severity when a row is red, when amber)
     ("F-STABILITY", ("stability.psi",), "S2", "S3"),
     ("F-OVERFIT", ("ml.overfit",), "S3", "S3"),
 )
-LIMITS = {"F-NO-OUT-OF-TIME": ("S4", "accepted", "design:no-date"), "F-HORIZON-MAPPING": ("S3", "open", "design:uci-horizon-mapping"),
+LIMITS = {"F-NO-OUT-OF-TIME": ("S4", "accepted", "design:no-date"), "F-PAPER-READING": ("S4", "accepted", "design:paper-reading-unverified"),
           "F-FIRM-OVERLAP": ("S4", "accepted", "design:firm-overlap-unknown")}
 
 

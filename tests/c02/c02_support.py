@@ -48,11 +48,11 @@ def values():
     return load_module(ROOT / "tests" / "contracts_u14" / "values.py", "u14_values")
 
 
-def arff_text(year: int, n: int, seed: int = SEED, *, signal: float = 1.2, duplicate: bool = True, shift: float = 0.35) -> str:
+def arff_text(year: int, n: int, seed: int = SEED, *, signal: float = 1.2, duplicate: bool = True, shift: float = -0.35) -> str:
     """One planted member: logistic in Attr1, Attr2 and Attr3, about 12 percent events, missing cells, one repeated row."""
     rng = np.random.default_rng(seed * 100 + year)
     Z = rng.normal(size=(n, 64)) * np.exp(rng.normal(0, 0.3, 64))
-    z = -2.9 + signal * Z[:, 0] - 0.8 * Z[:, 1] + 0.5 * Z[:, 2] + shift * year
+    z = -1.7 + signal * Z[:, 0] - 0.8 * Z[:, 1] + 0.5 * Z[:, 2] + shift * (year - 3)
     y = (rng.random(n) < 1 / (1 + np.exp(-z))).astype(int)
     miss = rng.random((n, 64)) < 0.01
     miss[:, 36] = rng.random(n) < 0.40          # Attr37 is heavily missing in the real files
