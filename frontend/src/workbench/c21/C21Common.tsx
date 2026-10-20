@@ -11,6 +11,7 @@ import type { VariantArtifact } from '../../lib/contract.types';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { Pending } from '../Pending';
 import { LiveReadout, useCard } from '../c03/U6Shared';
+import { Marked } from './Marked';
 import { FindingsEvidenceCard } from './FindingsEvidence';
 import { LabelledOverTable, barMin, f3, int, pc, pc1 } from '../c20/U14Common';
 import { BASIS_TEXT, FIELD_TEXT, attributeFor, contrastFor, fitOf, outputsOf, text, type C21Legal, type C21Outputs, type C21Sel } from './selection';
@@ -40,7 +41,7 @@ export function LegalSentences({ legal }: { legal: C21Legal | null }) {
       <ul className="ct-note">
         {rows.map(([id, r]) => (
           <li key={id} data-legal={id}>
-            <span translate="no" lang="en">{`"${r.quote}"`}</span> {`(${r.citation})`}
+            <span translate="no" lang="en">{`"${r.quote}"`}</span> (<Marked>{r.citation}</Marked>)
           </li>
         ))}
       </ul>
@@ -225,9 +226,9 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
             'codes',
           )}
           <dt>{pick({ en: 'Debt-to-income bins', es: 'Tramos de deuda sobre ingreso' }, lang)}</dt>
-          <dd>{`${c.dti_recode.bins.join(', ')}. ${pick(c.dti_recode.note, lang)}`}</dd>
+          <dd><Marked>{`${c.dti_recode.bins.join(', ')}. ${pick(c.dti_recode.note, lang)}`}</Marked></dd>
           <dt>{pick({ en: 'Groups left out of the pairwise tests', es: 'Grupos fuera de las pruebas de a pares' }, lang)}</dt>
-          <dd>{pick(c.group_exclusion, lang)}</dd>
+          <dd><Marked>{pick(c.group_exclusion, lang)}</Marked></dd>
           <dt>{pick({ en: 'Identifiers', es: 'Identificadores' }, lang)}</dt>
           <dd data-status={c.identifiers.label}>{`${pick(c.identifiers.note, lang)} (${c.identifiers.id}; ${c.identifiers.observation_date})`}</dd>
         </dl>
@@ -237,7 +238,7 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
           <dt>{pick({ en: 'Status', es: 'Estado' }, lang)}</dt>
           <dd>{`${l.status}: ${pick(l.note, lang)}`}</dd>
           <dt>{pick({ en: 'Platform terms', es: 'Términos de la plataforma' }, lang)}</dt>
-          <dd><span translate="no" lang="en">{`"${l.platform_terms}"`}</span> {`(${l.platform_terms_cover})`}</dd>
+          <dd><span translate="no" lang="en">{`"${l.platform_terms}"`}</span> (<Marked>{l.platform_terms_cover}</Marked>)</dd>
           <dt>{pick({ en: 'CFPB statement', es: 'Declaración de la CFPB' }, lang)}</dt>
           <dd><span translate="no" lang="en">{`"${l.modified_statement}"`}</span></dd>
         </dl>
