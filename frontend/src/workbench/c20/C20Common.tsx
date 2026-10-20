@@ -2,14 +2,14 @@
 // shows a value that moves with its controls). Every view that shows SGCD carries the dataset card's prohibited-use
 // sentence (conventions/third-party-datasets.md; 07 A.3 l.212-213): `SgcdNotice` is the one place that writes it.
 import { Fragment, type ReactElement } from 'react';
-import { PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
+import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { UnavailableCard } from '../c14/C14Common';
 import { Pending } from '../Pending';
 import { LiveReadout, useCard } from '../c03/U6Shared';
-import { ParamTable, U14TestsTable, f3, int, type NamedParam } from './U14Common';
+import { LabelledOverTable, ParamTable, barMin, f3, int, type NamedParam } from './U14Common';
 import {
   DATASET_TEXT, KIND_TEXT, SCREEN_TEXT, asKind, blockRows, fitOf, kindOf, outputsOf, text,
   type C20Kind, type C20Outputs, type C20Sel,
@@ -61,20 +61,16 @@ export function NotInVariant({ sel, title, needs }: { sel: C20Sel | null; title:
 }
 
 export function C20FindingsView({ sel }: { sel: C20Sel | null }) {
-  const card = useCard(sel?.data.variant);
   if (!sel) return <Pending />;
-  const v = sel.data.variant;
   return (
-    <ViewsRow shares={[3, 2]}>
-      <FindingsCard variant={v} />
-      <PlotCard fill title={{ en: 'The tests of the engine', es: 'Las pruebas del motor' }} {...card}>
-        <div className="ct-scroll">
-          <FixtureNotice variant={v} />
-          <SgcdNotice sel={sel} />
-          <U14TestsTable tests={v.tests} />
-        </div>
-      </PlotCard>
-    </ViewsRow>
+    <>
+      <div className="ct-stack-natural">
+        <SgcdNotice sel={sel} />
+      </div>
+      <ViewsRow>
+        <FindingsCard variant={sel.data.variant} />
+      </ViewsRow>
+    </>
   );
 }
 
@@ -106,11 +102,20 @@ function headline(o: C20Outputs, lang: 'en' | 'es'): { measure: BiText; value: s
   }
 }
 
+/** The largest AUC loss a variant shows (positive is a loss), or null for a kind that measures no AUC change. */
+function worstLoss(o: C20Outputs): number | null {
+  if (o.kind === 'shock') return o.shipped.rows.length ? Math.max(...o.shipped.rows.map((r) => -r.performance.auc_delta)) : null;
+  if (o.kind === 'shift') return o.synthetic_shift.shifts.length ? Math.max(...o.synthetic_shift.shifts.map((x) => -x.metric.auc_delta)) : null;
+  if (o.kind === 'perturbation') return o.rows.length ? Math.max(...o.rows.map((r) => -r.metric.auc_delta)) : null;
+  return null;
+}
+
 /** The six variants of C20 in rows: what each is, on which data, and its headline number. */
 export function C20VariantsTable({ variants, onPick, current }: { variants: Entry[]; onPick: (id: string) => void; current: string }) {
   const lang = useShellLang();
   const card = useCard(variants[0]?.v as unknown as VariantArtifact | undefined);
   const sgcd = variants.find((e) => e.v.outputs.dataset_id === 'sgcd');
+  const measured = variants.map((e) => ({ id: e.id, title: e.title, loss: worstLoss(e.v.outputs) })).filter((m) => m.loss !== null);
   return (
     <PlotCard
       fill
@@ -118,8 +123,22 @@ export function C20VariantsTable({ variants, onPick, current }: { variants: Entr
       {...card}
       note={{ en: 'Each variant answers one question on a locked holdout with synthetic shifts applied to the evaluation set only. Pick one to load it.', es: 'Cada variante responde una pregunta en una muestra reservada, con cambios sintéticos aplicados solo al conjunto de evaluación. Elija una para cargarla.' }}
     >
-      <div className="ct-scroll">
-        {sgcd ? <SgcdNoticeText notice={sgcd.v.outputs.sgcd_notice} /> : null}
+      <LabelledOverTable
+        chartMin={barMin(Math.max(1, measured.length))}
+        chart={
+          measured.length === 0 ? (
+            <p className="caos-pending" data-state="unavailable">{pick({ en: 'Not available: no loaded variant measures an AUC change.', es: 'No disponible: ninguna variante cargada mide un cambio del AUC.' }, lang)}</p>
+          ) : (
+            <BarChart
+              title={{ en: 'Largest AUC loss by variant', es: 'Mayor pérdida de AUC por variante' }}
+              height="fill"
+              orientation="horizontal"
+              data={measured.map((m) => ({ id: m.id, label: m.title, value: m.loss as number, highlight: m.id === current }))}
+              axis={{ label: { en: 'AUC loss (positive is a loss); the seed sweep and the leak measure other things', es: 'Pérdida de AUC (positivo es una pérdida); el barrido de semillas y la fuga miden otras cosas' }, format: { decimals: 3 } }}
+            />
+          )
+        }
+      >
         <table className="caos-table ct-wrap-head" data-table="variants-c20">
           <thead>
             <tr>
@@ -147,7 +166,8 @@ export function C20VariantsTable({ variants, onPick, current }: { variants: Entr
             })}
           </tbody>
         </table>
-      </div>
+        {sgcd ? <SgcdNoticeText notice={sgcd.v.outputs.sgcd_notice} /> : null}
+      </LabelledOverTable>
     </PlotCard>
   );
 }
@@ -237,24 +257,6 @@ export function C20ContextView({ sel }: { sel: C20Sel | null }): ReactElement {
 
 const hint = (en: string, es: string): BiText => ({ en, es });
 
-/** The live read-out of the Block section: how many records of the block reach the structured view, and the loss they cause. */
-export function BlockReadout({ sel }: { sel: C20Sel | null }) {
-  const o = asKind(sel, 'shock');
-  const rows = o && sel ? blockRows(o, sel.block) : [];
-  const total = rows.reduce((a, r) => a + r.n_records, 0);
-  const reach = rows.reduce((a, r) => a + r.n_reaching_structured_view, 0);
-  return (
-    <LiveReadout
-      variant={sel?.data.variant}
-      title={sel?.block === 'applied' ? { en: 'Contraste-applied shocks', es: 'Choques aplicados por Contraste' } : { en: 'Shocks as shipped', es: 'Choques como se entregan' }}
-      items={[
-        { label: { en: 'Records', es: 'Registros' }, value: o ? total : null, unitless: true, format: { decimals: 0 }, hint: hint('The records the shock rows of the block cover.', 'Los registros que cubren las filas de choque del bloque.') },
-        { label: { en: 'Reach the model', es: 'Llegan al modelo' }, value: o ? reach : null, unitless: true, format: { decimals: 0 }, hint: hint('The records whose structured view the shock changes: the only ones a model that reads the structured view can feel.', 'Los registros cuya vista estructurada cambia el choque: los únicos que puede sentir un modelo que lee la vista estructurada.') },
-      ]}
-    />
-  );
-}
-
 export function ShockReadout({ sel }: { sel: C20Sel | null }) {
   const o = asKind(sel, 'shock');
   const r = o && sel ? blockRows(o, sel.block).find((x) => x.shock_id === sel.shock) ?? null : null;
@@ -263,10 +265,9 @@ export function ShockReadout({ sel }: { sel: C20Sel | null }) {
       variant={sel?.data.variant}
       title={sel ? text({ F0: { en: 'F0 faithful', es: 'F0 fieles' }, F1: { en: 'F1 missing', es: 'F1 faltante' }, F2: { en: 'F2 ambiguous', es: 'F2 ambigua' }, F3: { en: 'F3 cosmetic', es: 'F3 cosmético' }, F4: { en: 'F4 contradiction', es: 'F4 contradicción' }, 'numeric-noise': { en: 'Numeric noise', es: 'Ruido numérico' } }, sel.shock) : { en: 'The shock', es: 'El choque' }}
       items={[
-        { label: { en: 'AUC', es: 'AUC' }, value: r?.performance.auc ?? null, unitless: true, format: { decimals: 3 }, hint: hint('The AUC on the shocked evaluation records.', 'El AUC en los registros de evaluación con choque.') },
         { label: { en: 'AUC change', es: 'Cambio del AUC' }, value: r?.performance.auc_delta ?? null, unitless: true, format: { decimals: 3 }, hint: hint('Against the clean evaluation set: negative is a loss.', 'Contra el conjunto de evaluación limpio: negativo es una pérdida.') },
+        { label: { en: 'Reach the model', es: 'Llegan al modelo' }, value: r?.n_reaching_structured_view ?? null, unitless: true, format: { decimals: 0 }, hint: hint('The records whose structured view the shock changes: the only ones a model that reads the structured view can feel.', 'Los registros cuya vista estructurada cambia el choque: los únicos que puede sentir un modelo que lee la vista estructurada.') },
         { label: { en: 'PSI, largest', es: 'PSI, mayor' }, value: r?.drift.psi_max ?? null, unitless: true, format: { decimals: 3 }, hint: hint('The largest population stability index over the inputs.', 'El mayor índice de estabilidad poblacional entre las entradas.') },
-        { label: { en: 'CSI, largest', es: 'CSI, mayor' }, value: r?.drift.csi_max ?? null, unitless: true, format: { decimals: 3 }, hint: hint('The largest characteristic stability index over the inputs.', 'El mayor índice de estabilidad de características entre las entradas.') },
       ]}
     />
   );

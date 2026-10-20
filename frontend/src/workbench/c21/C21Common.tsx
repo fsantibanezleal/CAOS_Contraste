@@ -5,13 +5,13 @@
 // rates are indicators only; the controlled disparity is an approximation of comparative evidence with its missing
 // controls named, and never a finding of a violation.
 import { Fragment, type ReactNode } from 'react';
-import { PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
+import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { Pending } from '../Pending';
 import { LiveReadout, useCard } from '../c03/U6Shared';
-import { U14TestsTable, f3, int, pc, pc1 } from '../c20/U14Common';
+import { LabelledOverTable, barMin, f3, int, pc, pc1 } from '../c20/U14Common';
 import { BASIS_TEXT, FIELD_TEXT, attributeFor, contrastFor, fitOf, outputsOf, text, type C21Legal, type C21Outputs, type C21Sel } from './selection';
 
 /** The short label every C21 view says before its content. */
@@ -56,21 +56,20 @@ export function legalOf(sel: Pick<C21Sel, 'data'> | null): C21Legal | null {
 }
 
 export function C21FindingsView({ sel }: { sel: C21Sel | null }) {
-  const card = useCard(sel?.data.variant);
+  const lang = useShellLang();
   if (!sel) return <Pending />;
-  const v = sel.data.variant;
+  const legal = legalOf(sel);
   return (
-    <ViewsRow shares={[3, 2]}>
-      <FindingsCard variant={v} />
-      <PlotCard fill title={{ en: 'The tests of the engine', es: 'Las pruebas del motor' }} {...card}>
-        <div className="ct-scroll">
-          <FixtureNotice variant={v} />
-          <NoLegalClaim legal={legalOf(sel)} />
-          <U14TestsTable tests={v.tests} />
-          <LegalSentences legal={legalOf(sel)} />
-        </div>
-      </PlotCard>
-    </ViewsRow>
+    <>
+      <div className="ct-stack-natural" data-block="legal-head">
+        <NoLegalClaim legal={legal} />
+        <LegalSentences legal={legal} />
+        <p className="ct-note">{pick({ en: 'The tests the engine returned sit under the view they belong to; a test that did not run shows its reason there.', es: 'Las pruebas que devolvió el motor están bajo la vista a la que pertenecen; una prueba que no corrió muestra allí su razón.' }, lang)}</p>
+      </div>
+      <ViewsRow>
+        <FindingsCard variant={sel.data.variant} />
+      </ViewsRow>
+    </>
   );
 }
 
@@ -82,6 +81,11 @@ export function C21VariantsTable({ variants, onPick, current, field }: { variant
   const card = useCard(variants[0]?.v as unknown as VariantArtifact | undefined);
   const sorted = [...variants].sort((a, b) => a.v.outputs.fit_year - b.v.outputs.fit_year);
   const legal = sorted[0]?.v.outputs.legal ?? null;
+  const lowest = sorted.flatMap(({ id, v }) => {
+    const a = v.outputs.attributes.find((x) => x.field === field) ?? v.outputs.attributes[0];
+    const g = a && a.groups.length ? a.groups.reduce((m, x) => (x.selection_rate < m.selection_rate ? x : m)) : null;
+    return g ? [{ id, fit: v.outputs.fit_year, confirm: v.outputs.confirm_year, rate: g.selection_rate, group: g.group }] : [];
+  });
   return (
     <PlotCard
       fill
@@ -92,8 +96,23 @@ export function C21VariantsTable({ variants, onPick, current, field }: { variant
         es: 'Cada par ajusta la estimación en el año t y la confirma en el año t+1. Las columnas siguen al atributo en foco. Elija un par para cargarlo.',
       }}
     >
-      <div className="ct-scroll">
-        <NoLegalClaim legal={legal} />
+      <LabelledOverTable
+        head={<NoLegalClaim legal={legal} />}
+        chartMin={barMin(Math.max(1, lowest.length))}
+        chart={
+          lowest.length === 0 ? (
+            <p className="caos-pending" data-state="unavailable">{pick({ en: 'Not available: no year pair carries a group rate.', es: 'No disponible: ningún par de años trae una tasa de grupo.' }, lang)}</p>
+          ) : (
+            <BarChart
+              title={{ en: 'Lowest approval rate by year pair', es: 'Menor tasa de aprobación por par de años' }}
+              height="fill"
+              orientation="horizontal"
+              data={lowest.map((l) => ({ id: l.id, label: { en: `${l.fit}-${l.confirm}`, es: `${l.fit}-${l.confirm}` } as BiText, value: l.rate, highlight: l.id === current, hint: { en: l.group, es: l.group } as BiText }))}
+              axis={{ label: { en: 'Lowest group approval rate (an indicator only)', es: 'Menor tasa de aprobación de un grupo (solo un indicador)' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
+            />
+          )
+        }
+      >
         <table className="caos-table ct-wrap-head" data-table="variants-c21">
           <thead>
             <tr>
@@ -127,7 +146,7 @@ export function C21VariantsTable({ variants, onPick, current, field }: { variant
           </tbody>
         </table>
         <LegalSentences legal={legal} />
-      </div>
+      </LabelledOverTable>
     </PlotCard>
   );
 }

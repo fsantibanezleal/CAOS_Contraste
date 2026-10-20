@@ -6,7 +6,7 @@
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { Labelled, LabelledOverTable, barMin, f3, f4, int, pc, pc1, sig } from './U14Common';
+import { Labelled, LabelledOverTable, U14TestsTable, barMin, f3, f4, int, pc, pc1, sig, testsOf } from './U14Common';
 import { NotInVariant, SgcdNotice } from './C20Common';
 import { RULE_OF_THUMB } from './ShockViews';
 import { PORTFOLIO_TEXT, asKind, text, type C20Sel } from './selection';
@@ -91,6 +91,7 @@ export function RealDriftView({ sel }: { sel: C20Sel | null }) {
               )}
             </tbody>
           </table>
+          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('stability.')} />
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>
@@ -106,8 +107,8 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
   if (!o) return <NotInVariant sel={sel} title={TITLE_SYNTH} needs="shift" />;
   const s = o.synthetic_shift;
   const rows = [
-    ...s.shifts.map((x) => ({ id: x.shift_id, label: { en: x.shift_id, es: x.shift_id } as BiText, value: x.metric.auc_delta, highlight: x.shift_id === sel.shift })),
-    { id: 'worst', label: { en: `Worst ${pc1(s.worst_subsample.share, 'en')} of the rows`, es: `Peor ${pc1(s.worst_subsample.share, 'es')} de las filas` } as BiText, value: s.worst_subsample.metric.auc_delta, highlight: false },
+    ...s.shifts.map((x) => ({ id: x.shift_id, label: { en: x.shift_id, es: x.shift_id } as BiText, value: -x.metric.auc_delta, highlight: x.shift_id === sel.shift })),
+    { id: 'worst', label: { en: `Worst ${pc1(s.worst_subsample.share, 'en')} of the rows`, es: `Peor ${pc1(s.worst_subsample.share, 'es')} de las filas` } as BiText, value: -s.worst_subsample.metric.auc_delta, highlight: false },
   ];
   return (
     <ViewsRow>
@@ -125,11 +126,11 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
           chartMin={barMin(rows.length)}
           chart={
             <BarChart
-              title={{ en: 'AUC change under each shift', es: 'Cambio del AUC bajo cada cambio' }}
+              title={{ en: 'AUC loss under each shift', es: 'Pérdida de AUC bajo cada cambio' }}
               height="fill"
               orientation="horizontal"
               data={rows.map((r) => ({ ...r, tone: r.value < 0 ? ('bad' as const) : ('good' as const) }))}
-              axis={{ label: { en: 'AUC change against the unshifted set', es: 'Cambio del AUC contra el conjunto sin cambio' }, format: { decimals: 3 } }}
+              axis={{ label: { en: 'AUC loss against the unshifted set (positive is a loss)', es: 'Pérdida de AUC contra el conjunto sin cambio (positivo es una pérdida)' }, format: { decimals: 3 } }}
             />
           }
         >
@@ -165,6 +166,7 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
               </tr>
             </tbody>
           </table>
+          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('ml.shift')} />
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>
@@ -234,6 +236,7 @@ export function ConformalView({ sel }: { sel: C20Sel | null }) {
               </tr>
             </tbody>
           </table>
+          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('ml.conformal')} />
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>
@@ -285,6 +288,7 @@ export function CbpeView({ sel }: { sel: C20Sel | null }) {
               <li key={a.id} data-assumption={a.id}>{pick(a.text, lang)}</li>
             ))}
           </ul>
+          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('ml.cbpe')} />
           <SgcdNotice sel={sel} />
           <p className="ct-note">{pick({ en: `Share of rows in the worst subsample: ${pc(s.worst_subsample.share, 'en')}.`, es: `Parte de las filas en la peor submuestra: ${pc(s.worst_subsample.share, 'es')}.` }, lang)}</p>
         </LabelledOverTable>

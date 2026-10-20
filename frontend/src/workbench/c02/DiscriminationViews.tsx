@@ -9,7 +9,7 @@ import { ChartOverTable, alignTo, unionX } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { UnavailableCard } from '../c14/C14Common';
-import { ParamTable, barMin, f2, f3, f4, int, pc, sig, type NamedParam } from '../c20/U14Common';
+import { ParamTable, U14TestsTable, barMin, f2, f3, f4, int, pc, sig, testsOf, type NamedParam } from '../c20/U14Common';
 import { challengerFor, outputsOf, rungFor, rungName, type C02Sel } from './selection';
 
 const COLORS = ['--color-accent', '--color-magenta', '--color-warn', '--color-good', '--color-bad', '--color-fg-subtle'] as const;
@@ -79,6 +79,7 @@ export function RocCapView({ sel }: { sel: C02Sel | null }) {
               ))}
             </tbody>
           </table>
+          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('disc.')} modelLabel={(id) => pick(rungName(sel, id), lang)} />
         </ChartOverTable>
       </PlotCard>
       <PlotCard
@@ -219,6 +220,7 @@ export function CalibrationView({ sel }: { sel: C02Sel | null }) {
               ))}
             </tbody>
           </table>
+          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('pd.')} modelLabel={(id) => pick(rungName(sel, id), lang)} />
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>
@@ -285,6 +287,7 @@ export function StabilityView({ sel }: { sel: C02Sel | null }) {
             </tbody>
           </table>
           <ParamTable params={o.parameters as unknown as NamedParam[]} only={['overfit_tolerance']} />
+          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('stability.', 'ml.')} modelLabel={(id) => pick(rungName(sel, id), lang)} />
         </ChartOverTable>
       </PlotCard>
     </ViewsRow>
