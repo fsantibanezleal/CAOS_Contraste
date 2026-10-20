@@ -7,7 +7,7 @@ import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type Bi
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { UnavailableCard } from '../c14/C14Common';
-import { LabelledOverTable, barMin, f2, f3, int, pc1, sig } from '../c20/U14Common';
+import { LabelledOverTable, U14TestsTable, barMin, f2, f3, int, pc1, sig, testsOf } from '../c20/U14Common';
 import { LegalSentences, NoLegalClaim, legalOf } from './C21Common';
 import { FIELD_TEXT, attributeFor, outputsOf, text, type C21Sel } from './selection';
 
@@ -82,6 +82,7 @@ export function RatesView({ sel }: { sel: C21Sel | null }) {
               {a.excluded_groups.map((e) => `${e.group} (${int(e.n, lang)}; ${pick(e.reason, lang)})`).join('; ')}
             </p>
           ) : null}
+          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('fair.demographic', 'fair.adverse')} />
           <LegalSentences legal={legalOf(sel)} />
         </LabelledOverTable>
       </PlotCard>
@@ -179,7 +180,22 @@ export function TestsView({ sel }: { sel: C21Sel | null }) {
           es: 'La prueba z de dos proporciones agrupada y la prueba exacta de Fisher comparan cada grupo con el grupo de referencia. Un valor p pequeño dice que las tasas difieren más de lo que explica el azar; una diferencia pequeña puede ser significativa en un archivo grande, y ninguna prueba dice por qué difieren las tasas.',
         }}
       >
-        <LabelledOverTable head={<NoLegalClaim legal={legalOf(sel)} />}>
+        <LabelledOverTable
+          head={<NoLegalClaim legal={legalOf(sel)} />}
+          chartMin={barMin(a.contrasts.length + 1)}
+          chart={
+            <BarChart
+              title={{ en: 'Approval rate of each group and of the reference', es: 'Tasa de aprobación de cada grupo y de la referencia' }}
+              height="fill"
+              orientation="horizontal"
+              data={[
+                { id: 'reference', label: { en: `${a.reference_group} (reference)`, es: `${a.reference_group} (referencia)` } as BiText, value: a.contrasts[0]?.selection_rate_reference ?? null, tone: 'neutral' as const },
+                ...a.contrasts.map((c) => ({ id: c.group, label: { en: c.group, es: c.group } as BiText, value: c.selection_rate_group, highlight: c.group === sel.group })),
+              ]}
+              axis={{ label: { en: 'Share approved (an indicator only)', es: 'Parte aprobada (solo un indicador)' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
+            />
+          }
+        >
           <table className="caos-table ct-wrap-head" data-table="rate-tests">
             <thead>
               <tr>
@@ -206,6 +222,7 @@ export function TestsView({ sel }: { sel: C21Sel | null }) {
               ))}
             </tbody>
           </table>
+          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('fair.two_proportion', 'fair.fisher')} />
           <LegalSentences legal={legalOf(sel)} />
         </LabelledOverTable>
       </PlotCard>

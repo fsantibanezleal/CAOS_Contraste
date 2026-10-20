@@ -7,7 +7,7 @@
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { LabelledOverTable, barMin, f3, f4, int, pc1, sig } from './U14Common';
+import { LabelledOverTable, U14TestsTable, barMin, f3, f4, int, pc1, sig, testsOf } from './U14Common';
 import { NotInVariant, SgcdNotice } from './C20Common';
 import { SHOCK_TEXT, asKind, blockRows, text, type Block, type C20Sel, type C20ShockRow } from './selection';
 
@@ -49,18 +49,17 @@ function BlockCard({ sel, block }: { sel: C20Sel; block: Block }) {
   return (
     <PlotCard fill title={{ en: `${t.title.en}: ${heldOut(o).en}`, es: `${t.title.es}: ${heldOut(o).es}` }} {...card} note={t.note(source)} >
       <LabelledOverTable
-        head={<SgcdNotice sel={sel} />}
         chartMin={barMin(rows.length)}
         chart={
           rows.length === 0 ? (
             <p className="caos-pending" data-state="unavailable">{pick({ en: 'Not available: the block carries no shock row.', es: 'No disponible: el bloque no trae ninguna fila de choque.' }, lang)}</p>
           ) : (
             <BarChart
-              title={{ en: 'AUC change by shock', es: 'Cambio del AUC por choque' }}
+              title={{ en: 'AUC loss by shock', es: 'Pérdida de AUC por choque' }}
               height="fill"
               orientation="horizontal"
-              data={rows.map((r) => ({ id: r.shock_id, label: text(SHOCK_TEXT, r.shock_id), value: r.performance.auc_delta, tone: r.performance.auc_delta < 0 ? ('bad' as const) : ('good' as const), highlight: r.shock_id === sel.shock }))}
-              axis={{ label: { en: 'AUC change against the clean set', es: 'Cambio del AUC contra el conjunto limpio' }, format: { decimals: 3 } }}
+              data={rows.map((r) => ({ id: r.shock_id, label: text(SHOCK_TEXT, r.shock_id), value: -r.performance.auc_delta, tone: r.performance.auc_delta < 0 ? ('bad' as const) : ('good' as const), highlight: r.shock_id === sel.shock }))}
+              axis={{ label: { en: 'AUC loss against the clean set (positive is a loss)', es: 'Pérdida de AUC contra el conjunto limpio (positivo es una pérdida)' }, format: { decimals: 3 } }}
             />
           )
         }
@@ -89,6 +88,7 @@ function BlockCard({ sel, block }: { sel: C20Sel; block: Block }) {
             ))}
           </tbody>
         </table>
+        <SgcdNotice sel={sel} />
       </LabelledOverTable>
     </PlotCard>
   );
@@ -151,7 +151,7 @@ export function DriftView({ sel }: { sel: C20Sel | null }) {
           es: 'El índice de estabilidad poblacional de la entrada que más se mueve. Las dos barras grises son la regla empírica heredada (poco cambio bajo 0,10, cambio significativo sobre 0,25): una convención, no un umbral regulatorio, y el valor p de chi-cuadrado de abajo es la prueba que conserva su tasa de error.',
         }}
       >
-        <LabelledOverTable head={<SgcdNotice sel={sel} />} chartMin={min} chart={chart('psi')}>
+        <LabelledOverTable chartMin={min} chart={chart('psi')}>
           <table className="caos-table ct-wrap-head" data-table="shock-drift" data-block={sel.block}>
             <thead>
               <tr>
@@ -176,6 +176,8 @@ export function DriftView({ sel }: { sel: C20Sel | null }) {
               ))}
             </tbody>
           </table>
+          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('stability.')} />
+          <SgcdNotice sel={sel} />
         </LabelledOverTable>
       </PlotCard>
       <PlotCard
@@ -184,7 +186,7 @@ export function DriftView({ sel }: { sel: C20Sel | null }) {
         {...card}
         note={{ en: 'The CSI applies the PSI formula to each input. The table lists every input of the shock in focus with its own PSI, CSI and chi-square p-value.', es: 'El CSI aplica la fórmula del PSI a cada entrada. La tabla lista cada entrada del choque en foco con su propio PSI, CSI y valor p de chi-cuadrado.' }}
       >
-        <LabelledOverTable head={<SgcdNotice sel={sel} />} chartMin={min} chart={chart('csi')}>
+        <LabelledOverTable chartMin={min} chart={chart('csi')}>
           <table className="caos-table ct-wrap-head" data-table="shock-inputs" data-shock={focus?.shock_id}>
             <thead>
               <tr>
@@ -205,6 +207,7 @@ export function DriftView({ sel }: { sel: C20Sel | null }) {
               ))}
             </tbody>
           </table>
+          <SgcdNotice sel={sel} />
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>
@@ -232,7 +235,6 @@ export function QualityView({ sel }: { sel: C20Sel | null }) {
         }}
       >
         <LabelledOverTable
-          head={<SgcdNotice sel={sel} />}
           chartMin={barMin(rows.length)}
           chart={
             <BarChart
@@ -282,6 +284,7 @@ export function QualityView({ sel }: { sel: C20Sel | null }) {
               ))}
             </tbody>
           </table>
+          <SgcdNotice sel={sel} />
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>

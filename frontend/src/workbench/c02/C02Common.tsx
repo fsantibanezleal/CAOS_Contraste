@@ -11,22 +11,14 @@ import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
 import { LiveReadout, useCard } from '../c03/U6Shared';
-import { ParamTable, U14TestsTable, f3, int, pc, type NamedParam } from '../c20/U14Common';
+import { ParamTable, f3, int, pc, type NamedParam } from '../c20/U14Common';
 import { HORIZON_TEXT, challengerFor, fitOf, outputsOf, rungFor, rungName, type C02Outputs, type C02Sel } from './selection';
 
 export function C02FindingsView({ sel }: { sel: C02Sel | null }) {
-  const card = useCard(sel?.data.variant);
   if (!sel) return <Pending />;
-  const v = sel.data.variant;
   return (
-    <ViewsRow shares={[3, 2]}>
-      <FindingsCard variant={v} />
-      <PlotCard fill title={{ en: 'The tests of the engine', es: 'Las pruebas del motor' }} {...card}>
-        <div className="ct-scroll">
-          <FixtureNotice variant={v} />
-          <U14TestsTable tests={v.tests} modelLabel={(id) => pick(rungName(sel, id), 'en')} />
-        </div>
-      </PlotCard>
+    <ViewsRow>
+      <FindingsCard variant={sel.data.variant} />
     </ViewsRow>
   );
 }

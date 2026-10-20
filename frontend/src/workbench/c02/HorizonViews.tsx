@@ -2,7 +2,7 @@
 // they carry no firm identifier and no date and the overlap of firms across them is unknown (UNVERIFIED, 08 l.855-856),
 // so the cross-file transfer, the term structure read from the five event rates and the ECL effect of the horizon PDs are
 // each labelled exploratory, with the reason, wherever they are drawn. A null field says "not available" with its reason.
-import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
+import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type BiText } from '@fasl-work/caos-app-shell';
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
@@ -47,7 +47,19 @@ export function TransferView({ sel }: { sel: C02Sel | null }) {
           es: 'AUC del peldaño ajustado en el archivo de la fila y puntuado en la muestra reservada del archivo de la columna. El tono es una banda de visualización (bajo 0,6, de 0,6 a 0,7, de 0,7 a 0,8, de 0,8 y más), no un umbral. Una celda que el documento no trae queda vacía.',
         }}
       >
-        <LabelledOverTable head={<Labelled label="exploratory" reason={o.transfer.reason} />}>
+        <LabelledOverTable
+          head={<Labelled label="exploratory" reason={o.transfer.reason} />}
+          chartMin={barMin(cells.length)}
+          chart={
+            <BarChart
+              title={{ en: 'AUC of the rung by fitted and scored horizon', es: 'AUC del peldaño por horizonte ajustado y puntuado' }}
+              height="fill"
+              orientation="horizontal"
+              data={cells.map((c) => ({ id: `${c.fitted_on_years}-${c.scored_on_years}`, label: { en: `Fitted on ${c.fitted_on_years}y, scored on ${c.scored_on_years}y`, es: `Ajustado en ${c.fitted_on_years}a, puntuado en ${c.scored_on_years}a` } as BiText, value: c.auc }))}
+              axis={{ label: { en: 'AUC on the scored holdout', es: 'AUC en la muestra reservada puntuada' }, format: { decimals: 2 }, range: [0, 1] }}
+            />
+          }
+        >
           <table className="caos-table ct-wrap-head ct-heat-table" data-table="transfer">
             <thead>
               <tr>

@@ -8,7 +8,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
 import { UnavailableCard } from '../c14/C14Common';
-import { LabelledOverTable, barMin, f2, f3, int, pc1 } from '../c20/U14Common';
+import { LabelledOverTable, U14TestsTable, barMin, f2, f3, int, pc1, testsOf } from '../c20/U14Common';
 import { LegalSentences, NoLegalClaim, legalOf } from './C21Common';
 import { CONTROL_TEXT, FIELD_TEXT, attributeFor, outputsOf, text, type C21Sel } from './selection';
 
@@ -90,6 +90,7 @@ function EstimateCard({ sel, which }: { sel: C21Sel; which: Which }) {
             {pick({ en: `Controls: ${controls(have[0].e.estimate.controls, 'en')}. Missing control: ${controls(have[0].e.estimate.missing_controls, 'en')}.`, es: `Controles: ${controls(have[0].e.estimate.controls, 'es')}. Control faltante: ${controls(have[0].e.estimate.missing_controls, 'es')}.` }, lang)}
           </p>
         ) : null}
+        <U14TestsTable tests={sel.data.variant.tests} only={testsOf(which === 'controlled' ? 'fair.conditional' : 'fair.rate_spread')} />
         <LegalSentences legal={legalOf(sel)} />
       </LabelledOverTable>
     </PlotCard>
@@ -143,15 +144,15 @@ export function ReplicationView({ sel }: { sel: C21Sel | null }) {
             have.length === 0 ? (
               <p className="caos-pending" data-state="unavailable">{pick({ en: 'Not available: no group carries a confirmation.', es: 'No disponible: ningún grupo trae una confirmación.' }, lang)}</p>
             ) : (
-              <BarChart
-                title={{ en: 'Coefficient in the two years', es: 'Coeficiente en los dos años' }}
+              <UPlotChart
                 height="fill"
-                orientation="horizontal"
-                data={have.flatMap((r) => [
-                  { id: `${r.c.group}-fit`, label: { en: `${r.c.group}, ${r.e!.fit_year}`, es: `${r.c.group}, ${r.e!.fit_year}` } as BiText, value: r.e!.fit_coefficient },
-                  { id: `${r.c.group}-confirm`, label: { en: `${r.c.group}, ${r.e!.confirm_year}`, es: `${r.c.group}, ${r.e!.confirm_year}` } as BiText, value: r.e!.confirm_coefficient, tone: r.e!.same_sign ? ('good' as const) : ('bad' as const) },
-                ])}
-                axis={{ label: { en: 'Coefficient (log-odds of approval)', es: 'Coeficiente (log-odds de aprobación)' }, format: { decimals: 2 } }}
+                x={{ values: have.map((_, i) => i + 1), label: { en: 'Group, in the order of the table', es: 'Grupo, en el orden de la tabla' }, format: { decimals: 0 } }}
+                y={{ label: { en: 'Coefficient (log-odds of approval)', es: 'Coeficiente (log-odds de aprobación)' }, format: { decimals: 2 } }}
+                series={[
+                  { label: { en: `Fitted on ${o.fit_year}`, es: `Ajustado en ${o.fit_year}` }, values: have.map((r) => r.e!.fit_coefficient), color: '--color-accent', mode: 'points', size: 11 },
+                  { label: { en: `Refitted on ${o.confirm_year}`, es: `Reajustado en ${o.confirm_year}` }, values: have.map((r) => r.e!.confirm_coefficient), color: '--color-magenta', mode: 'points', size: 11 },
+                  { label: { en: 'No difference', es: 'Sin diferencia' }, values: have.map(() => 0), color: '--color-fg-faint', dash: [4, 4], width: 1 },
+                ]}
               />
             )
           }
@@ -185,6 +186,7 @@ export function ReplicationView({ sel }: { sel: C21Sel | null }) {
               )}
             </tbody>
           </table>
+          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('fair.replication')} />
           <LegalSentences legal={legalOf(sel)} />
         </LabelledOverTable>
       </PlotCard>
@@ -247,6 +249,7 @@ export function SituationView({ sel }: { sel: C21Sel | null }) {
             </tbody>
           </table>
           <p className="ct-note">{s.interval}</p>
+          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('fair.situation')} />
           <LegalSentences legal={legalOf(sel)} />
         </LabelledOverTable>
       </PlotCard>

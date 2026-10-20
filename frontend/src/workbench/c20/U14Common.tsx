@@ -157,6 +157,9 @@ export function LabelledOverTable({ head, chart, children, chartMin = '15rem' }:
   );
 }
 
+/** A filter for the tests of the ids that start with one of the prefixes: each view shows the tests that belong to it. */
+export const testsOf = (...prefixes: string[]) => (t: TestRow) => prefixes.some((p) => t.test_id.startsWith(p));
+
 /** The rows the engine returned for the tests of this variant, under the drawing they belong to: a test that did not run says why and shows no number. */
 export function U14TestsTable({ tests, modelLabel, only }: { tests: TestRow[]; modelLabel?: (id: string) => string; only?: (t: TestRow) => boolean }) {
   const lang = useShellLang();

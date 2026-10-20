@@ -13,7 +13,7 @@ import type { CaseData } from '../../api/artifacts';
 import { provenanceOf } from '../model';
 import { RailSelect } from '../c06/RailSelect';
 import {
-  BlockReadout, C20ContextView, C20FindingsView, C20VariantsView, FairnessReadout, NoiseReadout, ScreenReadout, SeedReadout, ShiftReadout, ShockReadout, WindowReadout,
+  C20ContextView, C20FindingsView, C20VariantsView, FairnessReadout, NoiseReadout, ScreenReadout, SeedReadout, ShiftReadout, ShockReadout, WindowReadout,
 } from './C20Common';
 import { DecisionFlipView, FairnessView } from './FairnessViews';
 import { ExplainerView, LeakageView, PerturbationView, SeedsView } from './RobustnessViews';
@@ -115,7 +115,6 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
             onChange={setBlock}
           />
           {rows.length > 1 && <RailSelect id="c20-shock" label={{ en: 'Shock in focus', es: 'Choque en foco' }} options={rows.map((r) => ({ id: r.shock_id, label: text(SHOCK_TEXT, r.shock_id) }))} value={sel.shock} onChange={setShock} />}
-          <BlockReadout sel={sel} />
           <ShockReadout sel={sel} />
         </>
       ),

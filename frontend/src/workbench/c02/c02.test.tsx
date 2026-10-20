@@ -209,12 +209,13 @@ describe('the C02 instrument', () => {
     expect(markup).not.toContain('caos-bars');
   });
 
-  it('the findings view says a test that did not run and shows its reason, never a number', () => {
-    const markup = html(<C02FindingsView sel={sel} />);
+  it('a test that did not run sits under its view and shows its reason, never a number', () => {
+    const markup = html(<RocCapView sel={sel} />);
     expect(markup).toContain('data-test="disc.auc"');
     expect(markup).toContain(escapeHtml(h1.tests[0].notes as string));
-    expect(markup).toContain('data-fixture="true"');
     expect(markup).not.toMatch(/NaN|undefined/);
+    const findings = html(<C02FindingsView sel={sel} />);
+    expect(findings).toContain('data-fixture="true"');
   });
 
   it('the discrimination by horizon gives one row per file and the chart of the rung across the years, the pooled file apart', () => {

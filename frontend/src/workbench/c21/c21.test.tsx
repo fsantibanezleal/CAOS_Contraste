@@ -190,11 +190,12 @@ describe('the C21 instrument', () => {
     expect(markup).toContain(`${s.n_significant} (${formatNumber(s.n_significant / s.n_cases, 'en', { percent: true, decimals: 1 })})`);
   });
 
-  it('the findings view says a test that did not run and shows its reason, never a number', () => {
-    const markup = html(<C21FindingsView sel={sel} />);
+  it('a test that did not run sits under its view and shows its reason, never a number', () => {
+    const markup = html(<RatesView sel={sel} />);
     expect(markup).toContain('data-test="fair.demographic_parity"');
     expect(markup).toContain(escapeHtml(v.tests[0].notes as string));
     expect(markup).not.toMatch(/NaN|undefined/);
+    expect(html(<C21FindingsView sel={sel} />)).toContain('data-fixture="true"');
   });
 
   it('the context quotes the licence as UNVERIFIED with the platform terms and the CFPB statement, and the conventions', () => {
