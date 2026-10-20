@@ -83,9 +83,19 @@ def contract_files() -> list[str]:
     return [*(f"contract/{fam.name}.json" for fam in FAMILIES.values()), "contract/index.json"]
 
 
+#: the documents beside the cases that a page reads (the regulation page reads the regulatory parity bake, U9-P2)
+SERVED_DOCUMENTS = ("regulatory/calculators.json",)
+
+
+def served_files() -> list[str]:
+    """Every file beside the cases that the index declares, so the site build copies it: the contract-1 declarations
+    and the served documents."""
+    return [*contract_files(), *SERVED_DOCUMENTS]
+
+
 def index_document() -> dict[str, Any]:
     """The index of all 22 cases (built and planned), valid against ``common/case-index`` or it raises."""
-    doc = build_index(registry.index_entries(), registry.default_case(), contract_files())
+    doc = build_index(registry.index_entries(), registry.default_case(), served_files())
     validate_document("data/derived/manifests/index.json", doc)
     return doc
 
