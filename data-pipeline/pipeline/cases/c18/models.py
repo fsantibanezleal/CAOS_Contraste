@@ -29,22 +29,26 @@ EBA_RULES = (
 )
 
 
-def named(name: str, value: float, unit: str, label: str, basis: str) -> dict[str, Any]:
-    return {"name": name, "value": value, "unit": unit, "label": label, "basis": T(basis)}
+def named(name: str, value: float, unit: str, label: str, basis: str, basis_es: str | None = None) -> dict[str, Any]:
+    return {"name": name, "value": value, "unit": unit, "label": label, "basis": T(basis, basis_es)}
 
 
 def named_parameters(anchors: Anchors, fx: Any, op_extras: dict[str, Any], mk_scaling: dict[str, float]) -> dict[str, dict[str, Any]]:
     """Every named parameter of the case; the derived ones (the rate, the asset scaling, the market scaling) from their stated sources."""
     lf, hf = mk_scaling["level_factor"], mk_scaling["horizon_factor"]
     corr_basis = "Rosenberg and Schuermann benchmark: market-credit 0.5, market and credit with operational 0.2 (05 l.360); IRRBB is treated as a market-type risk "
+    corr_basis_es = "referencia de Rosenberg y Schuermann: mercado-crédito 0,5, mercado y crédito con operacional 0,2 (05 l.360); el IRRBB se trata como un riesgo de tipo mercado "
     return {
         "nu_set": {"name": "nu_set", "values": list(P.NU_SET), "unit": "degrees of freedom", "label": "convention",
                    "basis": T("Degrees of freedom of the t copula: 4, 8 and 30 (30 approaches the Gaussian copula); a convention of the case, G.5 asks for several nu (05 l.378)")},
         "correlation_matrix_base": {"name": "correlation_matrix_base", "order": P.CORR_ORDER, "matrix": P.CORR_BASE, "unit": "correlation", "label": "convention",
                                     "basis": T("The " + corr_basis + "(0.5 with credit and market, 0.2 with operational): UNVERIFIED, no dossier gives an IRRBB correlation; "
-                                               "the dependence band shows what it changes (decision T2)")},
+                                               "the dependence band shows what it changes (decision T2)",
+                                               "La " + corr_basis_es + "(0,5 con crédito y mercado, 0,2 con operacional): NO VERIFICADO, ningún dossier da una correlación del IRRBB; "
+                                               "la banda de dependencia muestra lo que cambia (decisión T2)")},
         "correlation_matrix_stress": {"name": "correlation_matrix_stress", "order": P.CORR_ORDER, "matrix": P.CORR_STRESS, "unit": "correlation",
-                                      "label": "convention", "basis": T("The base matrix with market-credit raised to 0.8, the upper end of the published ranges (05 l.378)")},
+                                      "label": "convention", "basis": T("The base matrix with market-credit raised to 0.8, the upper end of the published ranges (05 l.378)",
+                                                   "La matriz base con mercado-crédito elevada a 0,8, el extremo superior de los rangos publicados (05 l.378)")},
         "ppnr_fee_ratio": named("ppnr_fee_ratio", P.PPNR_FEE, "fee income over NII", "case assumption",
                                 "A stated constant ratio of the PPNR row (decision Q10, T3); not a Banco Andino or CMF figure"),
         "ppnr_cost_ratio": named("ppnr_cost_ratio", P.PPNR_COST, "operating cost over (NII + fee income)", "case assumption",
@@ -71,10 +75,13 @@ def named_parameters(anchors: Anchors, fx: Any, op_extras: dict[str, Any], mk_sc
         "market_horizon_scaling": {
             **named("market_horizon_scaling", mk_scaling["value"], "multiplier on C11's 99 percent one-day measure", "convention",
                     "From C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 times the square root of 250, "
-                    "both named conventions (W4)"),
+                    "both named conventions (W4)",
+                    "Desde las cifras a un día al 99 por ciento de C11 hasta 99,9 por ciento y un año: la razón de cuantiles normales z_0,999 / z_0,99 por la raíz cuadrada de 250, "
+                    "ambas convenciones nombradas (W4)"),
             "source_confidence_level": P.SOURCE_LEVEL, "source_horizon_days": 1, "trading_days_per_year": P.TRADING_DAYS,
             "level_factor": named("market_level_factor", lf, "ratio of normal quantiles z_0.999 / z_0.99", "convention",
-                                  "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case"),
+                                  "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case",
+                                  "La razón de cuantiles normales que lleva la medida de C11 de 99 por ciento a 99,9 por ciento: una convención del caso"),
             "horizon_factor": named("market_horizon_factor", hf, "multiplier on a one-day measure, sqrt(250)", "convention",
                                     "Square-root-of-time scaling from one day to one year with 250 trading days: a convention of the case")},
         "reverse_p2_cet1": named("reverse_p2_cet1", P.REVERSE_P2_CET1, "share of RWA", "case assumption",
