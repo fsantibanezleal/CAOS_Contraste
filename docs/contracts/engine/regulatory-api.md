@@ -1,4 +1,4 @@
-# Engine regulatory API contract: `engine-regulatory-api` 2.0.0
+# Engine regulatory API contract: `engine-regulatory-api` 2.1.0
 
 Owner: U9-S (unit sizing `plans/contraste/units/U9-sizing.md`, CAOS_MANAGE). Implemented by U9-E1 in `riskvalidation.regulatory`
 (`standardised.py`, `output_floor.py`, `sa_ccr.py`, `ba_cva.py`, `frtb.py`; repository CAOS_RiskValidation); called by the regulatory
@@ -6,6 +6,8 @@ parity bake (U9-P2), the C12 bake (U9-P1) and held by the live TypeScript ports 
 by U9-E1 against this file: a function exists with exactly the signature below, and each golden value or invariant is a test. Changing a
 signature, a unit or a golden value is a breaking change (a new major version of this contract). `regulatory/irb.py` and its contract
 are not part of it; SMA is `oprisk/sma.py`; LCR and NSFR are U11's (`regulatory/lcr_nsfr.py`, sizing decision D2).
+
+Version history: 1.0.0, the first contract; 1.1.0 and 2.0.0 after the U9-E1 review (the curvature gamma, see the catalog); 2.1.0 adds `entity_aggregate_terms`, `credit_addon_terms`, `equity_addon_terms` and `cross_bucket_charge_detail` (U9-E1 terms, engine 3d77e77), so the regulatory parity bake reads the CRE52.61 terms and the MAR21.4(5)(b) flag from the engine; the existing functions keep their signatures and results.
 Sources: dossier 01 (`wip/contraste/01-basel-pillar1-pillar2-framework-2026-10-04.md`, sections C, C.1, D.2, D.3, E.1, E.2, M.1, M.3),
 the U9 research addendum (`wip/contraste/u9-research-addendum-2026-10-17.md`, R7 and R8) and the unit sizing. The documents this contract
 feeds are `regulatory-calculators` (`docs/contracts/schemas/regulatory/calculators.schema.json`) and `c12-outputs` (`sa_ccr`, `ba_cva`,
@@ -284,6 +286,18 @@ def entity_aggregate(addons: list[float], rhos: list[float]) -> float: ...
 - Invariants: CRE52.61, CRE52.66, CRE52.70 `sqrt((sum rho_e A_e)^2 + sum (1 - rho_e^2) A_e^2)`: one entity returns its own add-on for any `rho`; every `rho = 1` returns `|sum A_e|`; every `rho = 0` returns `sqrt(sum A_e^2)`.
 - Golden: the CRE99 netting set 2 (CRE99.54): add-ons `106, -280, 168` (unrounded `105.86194, -279.91632, 168.11140`) with correlations `0.5, 0.5, 0.8` give the systematic term `(sum rho A)^2 = 2,252.635` (printed 2,253), the idiosyncratic term `sum (1 - rho^2) A^2 = 77,344.043` (printed 77,344) and `AddOn_credit = 282.128832` (printed 282), recomputed from the trade inputs.
 
+### `riskvalidation.regulatory.sa_ccr.entity_aggregate_terms` (added in 2.1.0)
+
+```python
+@dataclass(frozen=True)
+class AddonTerms: systematic: float; idiosyncratic: float; addon: float
+def entity_aggregate_terms(addons: list[float], rhos: list[float]) -> AddonTerms: ...
+```
+
+- Units: as `entity_aggregate`; `systematic` and `idiosyncratic` in money squared, `addon` in money.
+- Invariants: `systematic = (sum rho_e A_e)^2`, `idiosyncratic = sum (1 - rho_e^2) A_e^2`, `addon = sqrt(systematic + idiosyncratic) = entity_aggregate(addons, rhos)`; the refusals of `entity_aggregate`.
+- Golden: the CRE99 netting set 2 terms of `entity_aggregate` (2,252.635, 77,344.043, 282.128832).
+
 ### `riskvalidation.regulatory.sa_ccr.credit_addon`
 
 ```python
@@ -293,6 +307,16 @@ def credit_addon(entities: list[CreditEntity]) -> float: ...
 - Units: `CreditEntity(rating, is_index, effective_notional)` in one currency.
 - Invariants: CRE52.61 to CRE52.65 with the CRE52.72 factors and correlations (50 percent single name, 80 percent index): equals `entity_aggregate(addons, rhos)` of the entity add-ons `SF x EN` with `rhos` 0.5 for a single name and 0.8 for an index; the CRE99 netting set 2 add-on is 282.128832 (printed 282; dossier 01 E.2, CRE99.54).
 
+### `riskvalidation.regulatory.sa_ccr.credit_addon_terms` (added in 2.1.0)
+
+```python
+def credit_addon_terms(entities: list[CreditEntity]) -> AddonTerms: ...
+```
+
+- Units: as `credit_addon`.
+- Invariants: `entity_aggregate_terms` of the entity add-ons `SF x EN` with `rhos` 0.5 and 0.8 (CRE52.61 to CRE52.65); `addon == credit_addon(entities)`.
+- Golden: the CRE99 netting set 2 (CRE99.54): systematic 2,252.635, idiosyncratic 77,344.043, add-on 282.128832.
+
 ### `riskvalidation.regulatory.sa_ccr.equity_addon`
 
 ```python
@@ -301,6 +325,15 @@ def equity_addon(entities: list[EquityEntity]) -> float: ...
 
 - Units: `EquityEntity(is_index, effective_notional)`.
 - Invariants: CRE52.66 to CRE52.69: factors 32 percent single name and 20 percent index, correlations 50 and 80 percent; equals `entity_aggregate` of the entity add-ons.
+
+### `riskvalidation.regulatory.sa_ccr.equity_addon_terms` (added in 2.1.0)
+
+```python
+def equity_addon_terms(entities: list[EquityEntity]) -> AddonTerms: ...
+```
+
+- Units: as `equity_addon`.
+- Invariants: `entity_aggregate_terms` of the entity add-ons with the CRE52.66 to CRE52.69 factors and correlations; `addon == equity_addon(entities)`.
 
 ### `riskvalidation.regulatory.sa_ccr.commodity_addon`
 
@@ -459,6 +492,18 @@ def cross_bucket_charge(k_b: np.ndarray, s_b: np.ndarray, gamma: np.ndarray, sce
 - Units: `k_b` the bucket charges, `s_b` the signed bucket sums `sum WS` (money), `gamma` the cross-bucket correlations.
 - Invariants: MAR21.4 `sqrt(sum K_b^2 + sum_{b != c} gamma_bc S_b S_c)`; if the radicand is negative, `S_b` is replaced by `max(min(sum WS, K_b), -K_b)` and the sum recomputed (MAR21.4(5)(b)); one bucket gives its `K_b`; the result is never negative.
 - Golden: the invariant cases `sbm-bucket-and-cross-bucket-aggregation` and `sbm-cross-bucket-fallback` of `regulatory-calculators` (the second: two buckets `WS = (10, 10)` and `(-10, -10)` with within-bucket rho 0.5 and gamma 0.8 give `K_b = 17.3205`, `S_b = +-20`, a negative radicand under the medium scenario, the fallback `S_b = +-17.3205` and the charge 10.9545).
+
+### `riskvalidation.regulatory.frtb.cross_bucket_charge_detail` (added in 2.1.0)
+
+```python
+@dataclass(frozen=True)
+class CrossBucket: charge: float; fallback_used: bool
+def cross_bucket_charge_detail(k_b: np.ndarray, s_b: np.ndarray, gamma: np.ndarray, scenario: str = 'medium') -> CrossBucket: ...
+```
+
+- Units: as `cross_bucket_charge`.
+- Invariants: `charge == cross_bucket_charge(k_b, s_b, gamma, scenario)`; `fallback_used` is true exactly when the radicand with the plain `S_b` is negative and the MAR21.4(5)(b) replacement applied; the refusals of `cross_bucket_charge`.
+- Golden: the case `sbm-cross-bucket-fallback` gives charge 10.9545 with `fallback_used` true; `sbm-bucket-and-cross-bucket-aggregation` gives `fallback_used` false.
 
 ### `riskvalidation.regulatory.frtb.girr_delta_charge`
 
