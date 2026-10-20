@@ -22,8 +22,8 @@ class C12:
     slug = "swap-exposure-cva-sa-ccr"
     title = {"en": "How large is the counterparty exposure of a swap book, and what CVA does it imply?",
              "es": "¿Qué tan grande es la exposición a la contraparte de un libro de swaps y qué CVA implica?"}
-    category_id = "counterparty"
-    kind = "synthetic-on-real"
+    category_id = "market-ccr"
+    kind = "synthetic"
     question = {
         "en": "How large is the counterparty exposure of a swap book, what CVA does it imply, and would the simulated exposures have held "
               "against the curves later realised?",

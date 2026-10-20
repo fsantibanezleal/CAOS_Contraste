@@ -353,10 +353,10 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, ore_inputs_di
     (root / SUMS_REL).write_text("\n".join(sums) + "\n", encoding="utf-8", newline="\n")
     ranges = expectations.check(CASE_ID, EXPECT, built.values)
     from . import CASE
+    from ...registry import category as registry_category
 
     manifest = build_case_manifest(
-        case_id=CASE_ID, title=dict(CASE.title), category={"en": "Counterparty credit risk and the regulatory comparison",
-                                                           "es": "Riesgo de credito de contraparte y comparacion regulatoria"},
+        case_id=CASE_ID, title=dict(CASE.title), category=dict(registry_category(CASE.category_id)),
         question=dict(CASE.question), sources=list(SOURCES), seed=seed, variants=entries, default_variant=DEFAULT_VARIANT,
         contract=built.contract, expect=ranges, riskvalidation_version=engine_version(), source_details=_source_details(SOURCES))
     write_json(paths.manifests / f"{CASE_ID}.json", manifest)

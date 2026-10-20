@@ -3086,6 +3086,27 @@
           "bytes": 19098,
           "sha256": "edb7f3904e11dcaa502cdcc03ad9b1b16c893802d166ce9bc5fa1118251249d4",
           "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2024.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2024/all?type=daily_treasury_yield_curve&field_tdr_date_value=2024&_format=csv",
+          "bytes": 19098,
+          "sha256": "6775840b76cd7fd41121f61d6f6c60184eca6b2ba49954ec7372c463cbeef34d",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "daily-treasury-par-2025.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2025/all?type=daily_treasury_yield_curve&field_tdr_date_value=2025&_format=csv",
+          "bytes": 20155,
+          "sha256": "cf2fa3da7f160384b63d2ead698532b1d76cd9f789ce4911e2304db85b14e6d5",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "daily-treasury-par-2026.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2026/all?type=daily_treasury_yield_curve&field_tdr_date_value=2026&_format=csv",
+          "bytes": 16310,
+          "sha256": "0c314f652a54469083e629e2548276a9fe11adad16a0e0e194c480e3d308d71d",
+          "retrieved": "2026-10-20"
         }
       ]
     },
@@ -3404,6 +3425,38 @@
           "bytes": 4079524,
           "sha256": "601c32a73e833d3b2a2d6fa5d25a23c56eac85a6fa87558dcd5aa3e30a96f2d6",
           "retrieved": "2026-10-19"
+        }
+      ]
+    },
+    "treasury-hqm": {
+      "name": "US Treasury High Quality Market (HQM) corporate bond yield curve, end-of-month spot rates",
+      "publisher": "U.S. Department of the Treasury",
+      "landing": "https://home.treasury.gov/data/treasury-coupon-issues-and-corporate-bond-yield-curve/corporate-bond-yield-curve",
+      "class": "mirror-allowed",
+      "licence": "no licence sentence found on home.treasury.gov; FRED tags the series Public Domain: Citation Requested (the Treasury-side sentence is UNVERIFIED)",
+      "attribution": "U.S. Department of the Treasury, High Quality Market (HQM) Corporate Bond Yield Curve",
+      "access": "xls download, no key",
+      "files": [
+        {
+          "name": "hqmeom_04_08.xls",
+          "url": "https://home.treasury.gov/system/files/226/hqmeom_04_08.xls",
+          "bytes": 126464,
+          "sha256": "624f221dd9eb0952056afacaa56c91913d45b3b262c0b87171e87fa2f079756c",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "hqmeom_09_13.xls",
+          "url": "https://home.treasury.gov/system/files/226/hqmeom_09_13.xls",
+          "bytes": 140288,
+          "sha256": "caa462218d8382bfb3a8ba04164152e702538aefd600f7d9b3082c867f620f09",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "hqmeom_24_28.xls",
+          "url": "https://home.treasury.gov/system/files/226/hqmeom_24_28.xls",
+          "bytes": 71168,
+          "sha256": "0eb61af947ebb47fba029c0eadb7ddac279eaa9ca10fe552b4935a07314247ee",
+          "retrieved": "2026-10-20"
         }
       ]
     }
