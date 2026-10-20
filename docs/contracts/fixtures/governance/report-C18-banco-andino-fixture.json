@@ -1,0 +1,1738 @@
+{
+ "schema": "contraste.governance.report/v1",
+ "case_id": "GOVERNANCE",
+ "governance_id": "report",
+ "schema_version": "1.0.0",
+ "as_of": "2026-12-31",
+ "as_of_basis": {
+  "label": "convention",
+  "basis": {
+   "en": "a fixture date chosen after the due dates to exercise the overdue rule; not the date of publication",
+   "es": "una fecha de fixture elegida despues de los vencimientos para ejercer la regla de vencimiento; no es la fecha de publicacion"
+  }
+ },
+ "provenance": {
+  "code_version": "0.14.000",
+  "riskvalidation_version": "0.9.0",
+  "generators": [
+   "fixture:u15-s-contracts"
+  ],
+  "documents_read": [
+   {
+    "path": "data/derived/manifests/C01.json",
+    "sha256": "c0976c8fabc2d4cf82d076610019cc67e0def9ae8152650954c086162b070151",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C01/models-german.json",
+    "sha256": "60aadbffd7f6cba342f239be2b0b3b8661b9d5a7114cfaa6d0f133b0a99b03e6",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C01/german-twin.json",
+    "sha256": "9c0ac47beecf1e5c456ea0be6997855beace3a9e9f53dd36abec031bd0d0872b",
+    "ref": null
+   },
+   {
+    "path": "data/derived/manifests/C07.json",
+    "sha256": "bf356d3c335cebc0bad691c14ceb12d1747973335c071d87f073f5ed7709801a",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/models-banco-andino.json",
+    "sha256": "4d0f4bb96c0ef3dee6401f711f3b59fa5a0505d062141ec7cb6eebbb5b8cc2ac",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/base.json",
+    "sha256": "1e08b10e1d49419f86bbbc14fb06e82aba1faa99443bb4e799cd18ce4e7c13c5",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/combined-severe.json",
+    "sha256": "e079dfbdd14ecec8b979ab80435964e22567aaaa657defbad6744637b03cbabb",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/consumer-arrears-shock.json",
+    "sha256": "f47e32bccbe450f0582b2479302cd28a428a6601d9821fd3675b75bb838aeb99",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/house-price-fall.json",
+    "sha256": "45fa83c963f000281ceb41a63413666d415e21db4c8ace76f6fb858e288f659a",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/recession.json",
+    "sha256": "b9d02ae186c431e4f43541fc779884171be9af2fe5df4357678d2e9e2a574f1c",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/uf-inflation-spike.json",
+    "sha256": "24cb9ba1c6ec485fc74e6c9882c9bfe6d305a313ff08a65ac5af9909c2c8e01a",
+    "ref": null
+   },
+   {
+    "path": "data/derived/manifests/C18.json",
+    "sha256": "6225136025c8457bab8857501cb8b2939bd785807184f5e9f52a975299c359e5",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+   },
+   {
+    "path": "data/derived/C18/models-banco-andino.json",
+    "sha256": "4f5927257cbcca0e717753acf81e84f78b33a4906553ee571244874b9598ae3d",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+   },
+   {
+    "path": "data/derived/C18/baseline.json",
+    "sha256": "b424e3f4d386478c503eff31bd1d2bc597e20089e0b872a561b4d11e7cf78921",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+   },
+   {
+    "path": "data/derived/C18/eba-2025-adverse.json",
+    "sha256": "2b191fb877657b8a26850a5de8458bbe4fc88454d6d3753220189b6b95e46437",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+   },
+   {
+    "path": "data/derived/C18/fed-2026-severely-adverse.json",
+    "sha256": "fd614c8edf07464ec1bd266ec2f6b35506b214fcb938e62ed804d83bb5117fbd",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+   },
+   {
+    "path": "data/derived/C18/ngfs-delayed-transition.json",
+    "sha256": "5f78224b085addbc50b4c0ca823a87e150ffbefb5bbbfffe650cfddff76d57c5",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+   },
+   {
+    "path": "data/derived/C18/reverse-stress.json",
+    "sha256": "dc5bc0dd9e74ab9a7cee4dec9425eb8b633b014e2681dd5f1db3d0e75461e40a",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+   },
+   {
+    "path": "data/derived/C18/t-copula-baseline.json",
+    "sha256": "bbe42eb4ba4304106ae82ff3222b88d190d545f20d541e501d03d2643d2758a2",
+    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+   },
+   {
+    "path": "data/derived/manifests/C22.json",
+    "sha256": "db7ab2bc13ef7448e26f89d8f9af7589fbdcaebd9fb8188ceb5920db59c9fe6c",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/models-generators.json",
+    "sha256": "2d09ae0f0271b7e1de112586f22ba9f2fe48fe9866e5b61d8c71f391bf9db3b7",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/broken-monotonicity.json",
+    "sha256": "1b6c6ed3a0bc5057317b2120a44ef9ed512e8fac97d323092699cd1e3a1197d8",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/clustering.json",
+    "sha256": "e755f149dfe75c49ef54ca4fae78c489f78be13370c2bbff4e93851357cc4492",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/concentration.json",
+    "sha256": "35c7d65c9c7bda2131ea2fca1f339bc091419b19bac792c3c61a78fe0c1f66ae",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/discrimination-decay.json",
+    "sha256": "218ee880efa1bfdf187a50e4d1b902a6b86cefada6c598d28c6d5daca09137da",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/drift.json",
+    "sha256": "3bb6d9bb6152b9f603ca4404d9c8d61b2f2cf779af76c93df4ec01563b7d59fa",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/leakage.json",
+    "sha256": "651c5113607b7c0cd5850837ccddf455b291918e341662632912d78ea35c419d",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/miscalibration.json",
+    "sha256": "9bdf292b5933c5366d581ee45928b5845966ded5f9b04030c2c30dc9a66fd467",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/null.json",
+    "sha256": "0ce1fb6140678acf48d51e84c1c5bcd880cc20fbb2ab38ec6314a02667bd2dc0",
+    "ref": null
+   }
+  ]
+ },
+ "entry_key": "C18/banco-andino",
+ "title": {
+  "en": "Validation report: ICAAP and IAPE capital aggregation under macro scenarios",
+  "es": "Informe de validacion: Agregación de capital ICAAP e IAPE bajo escenarios macro"
+ },
+ "tier": 1,
+ "test_counts": {
+  "green": 6,
+  "amber": 2,
+  "red": 6,
+  "not_evaluated": 3,
+  "error": 0
+ },
+ "sections": [
+  {
+   "number": 1,
+   "key": "executive_summary",
+   "title": {
+    "en": "Executive summary",
+    "es": "Resumen ejecutivo"
+   },
+   "status": "filled",
+   "inputs": [
+    {
+     "ref": "data/derived/manifests/C18.json (manifest: question)",
+     "kind": "document"
+    },
+    {
+     "ref": "findings register rows of C18/banco-andino",
+     "kind": "document"
+    },
+    {
+     "ref": "test rows of data/derived/C18/baseline.json",
+     "kind": "document"
+    }
+   ],
+   "absent_reason": null,
+   "blocks": [
+    {
+     "kind": "text",
+     "text": {
+      "en": "Does Banco Andino hold its internal capital target for three years under each scenario once credit, market, IRRBB and operational risk are aggregated, and how much of the answer rests on the aggregation method?",
+      "es": "¿Mantiene Banco Andino su objetivo interno de capital durante tres años bajo cada escenario una vez agregados los riesgos de crédito, mercado, IRRBB y operacional, y cuánto de la respuesta depende del método de agregación?"
+     }
+    },
+    {
+     "kind": "text",
+     "text": {
+      "en": "Scope: the fit banco-andino of case C18; the full battery of the default variant (17 test rows) and the findings of its 6 variants.",
+      "es": "Alcance: el ajuste banco-andino del caso C18; la bateria completa de la variante por defecto (17 filas de prueba) y los hallazgos de sus 6 variantes."
+     }
+    },
+    {
+     "kind": "table",
+     "caption": {
+      "en": "Test lights of the default variant",
+      "es": "Luces de las pruebas de la variante por defecto"
+     },
+     "columns": [
+      {
+       "en": "Light",
+       "es": "Luz"
+      },
+      {
+       "en": "Rows",
+       "es": "Filas"
+      }
+     ],
+     "rows": [
+      [
+       "green",
+       6
+      ],
+      [
+       "amber",
+       2
+      ],
+      [
+       "red",
+       6
+      ],
+      [
+       "not_evaluated",
+       3
+      ],
+      [
+       "error",
+       0
+      ]
+     ]
+    },
+    {
+     "kind": "text",
+     "text": {
+      "en": "Overall opinion: level 4 of 4 on the ECB scale (severe deficiencies); see section 11.",
+      "es": "Opinion global: nivel 4 de 4 en la escala del BCE (deficiencias severas); ver seccion 11."
+     }
+    }
+   ],
+   "missing": [
+    {
+     "element": {
+      "en": "Conditions of use",
+      "es": "Condiciones de uso"
+     },
+     "reason": {
+      "en": "no structured list of conditions of use exists (A D5 section 1)",
+      "es": "no existe una lista estructurada de condiciones de uso (A D5 seccion 1)"
+     }
+    }
+   ],
+   "opinion_level": 4
+  },
+  {
+   "number": 2,
+   "key": "model_description",
+   "title": {
+    "en": "Model description and intended use",
+    "es": "Descripcion del modelo y uso previsto"
+   },
+   "status": "filled",
+   "inputs": [
+    {
+     "ref": "data/derived/C18/models-banco-andino.json (models document)",
+     "kind": "document"
+    },
+    {
+     "ref": "inventory entry C18/banco-andino (attributes and components)",
+     "kind": "document"
+    },
+    {
+     "ref": "tier block of the inventory entry (tiering.matrix_tier)",
+     "kind": "engine"
+    }
+   ],
+   "absent_reason": null,
+   "blocks": [
+    {
+     "kind": "text",
+     "text": {
+      "en": "ICAAP and IAPE capital aggregation under macro scenarios: 3 model records in the fit banco-andino; tier 1 (M 4, C 2, reading B).",
+      "es": "Agregación de capital ICAAP e IAPE bajo escenarios macro: 3 registros de modelo en el ajuste banco-andino; nivel 1 (M 4, C 2, lectura B)."
+     }
+    },
+    {
+     "kind": "table",
+     "caption": {
+      "en": "Components",
+      "es": "Componentes"
+     },
+     "columns": [
+      {
+       "en": "Model",
+       "es": "Modelo"
+      },
+      {
+       "en": "Role",
+       "es": "Rol"
+      },
+      {
+       "en": "Rung",
+       "es": "Peldano"
+      }
+     ],
+     "rows": [
+      [
+       "c18-satellites-us-calibrated",
+       "champion",
+       "satellite-probit-ols"
+      ],
+      [
+       "c18-aggregation-ladder",
+       "challenger",
+       "simple-sum-headline"
+      ],
+      [
+       "c18-capital-engine",
+       "champion",
+       "capital-engine-static"
+      ]
+     ]
+    },
+    {
+     "kind": "table",
+     "caption": {
+      "en": "Tier under the four readings",
+      "es": "Nivel bajo las cuatro lecturas"
+     },
+     "columns": [
+      {
+       "en": "Reading",
+       "es": "Lectura"
+      },
+      {
+       "en": "Tier",
+       "es": "Nivel"
+      }
+     ],
+     "rows": [
+      [
+       "A",
+       1
+      ],
+      [
+       "B",
+       1
+      ],
+      [
+       "C",
+       1
+      ],
+      [
+       "D",
+       1
+      ]
+     ]
+    }
+   ],
+   "missing": [
+    {
+     "element": {
+      "en": "Intended use and operating boundaries",
+      "es": "Uso previsto y limites de operacion"
+     },
+     "reason": {
+      "en": "no intended-use field exists; the boundaries are not stated for this case (A D5 section 2)",
+      "es": "no existe campo de uso previsto; los limites no se declaran para este caso (A D5 seccion 2)"
+     }
+    }
+   ]
+  },
+  {
+   "number": 3,
+   "key": "conceptual_soundness",
+   "title": {
+    "en": "Conceptual soundness",
+    "es": "Solidez conceptual"
+   },
+   "status": "filled",
+   "inputs": [
+    {
+     "ref": "data/derived/C18/models-banco-andino.json (models document: the rungs)",
+     "kind": "document"
+    },
+    {
+     "ref": "frontend/src/pages/Methodology.tsx (Methodology page)",
+     "kind": "document"
+    }
+   ],
+   "absent_reason": null,
+   "blocks": [
+    {
+     "kind": "text",
+     "text": {
+      "en": "The design alternatives are the rungs of the ladder in the models document: c18-satellites-us-calibrated, c18-aggregation-ladder, c18-capital-engine.",
+      "es": "Las alternativas de diseno son los peldanos de la escalera del documento de modelos: c18-satellites-us-calibrated, c18-aggregation-ladder, c18-capital-engine."
+     }
+    }
+   ],
+   "missing": [
+    {
+     "element": {
+      "en": "Written soundness assessment and explainability rating",
+      "es": "Evaluacion escrita de solidez y calificacion de explicabilidad"
+     },
+     "reason": {
+      "en": "no written assessment and no rating exist per case (A D5 section 3)",
+      "es": "no existe evaluacion escrita ni calificacion por caso (A D5 seccion 3)"
+     }
+    }
+   ]
+  },
+  {
+   "number": 4,
+   "key": "data",
+   "title": {
+    "en": "Data",
+    "es": "Datos"
+   },
+   "status": "filled",
+   "inputs": [
+    {
+     "ref": "data/derived/manifests/C18.json (manifest: sources)",
+     "kind": "document"
+    },
+    {
+     "ref": "provenance inputs of data/derived/C18/baseline.json",
+     "kind": "document"
+    }
+   ],
+   "absent_reason": null,
+   "blocks": [
+    {
+     "kind": "text",
+     "text": {
+      "en": "Sources: fed-stress-tests, fed-chargeoff, eba-esrb-stress-2025, ngfs-phase-v, bcch-bde.",
+      "es": "Fuentes: fed-stress-tests, fed-chargeoff, eba-esrb-stress-2025, ngfs-phase-v, bcch-bde."
+     }
+    }
+   ],
+   "missing": [
+    {
+     "element": {
+      "en": "Representativeness and bias examination",
+      "es": "Representatividad y examen de sesgo"
+     },
+     "reason": {
+      "en": "only C01-style drift tests and C21 examine them (A D5 section 4)",
+      "es": "solo las pruebas de deriva estilo C01 y C21 las examinan (A D5 seccion 4)"
+     }
+    }
+   ]
+  },
+  {
+   "number": 5,
+   "key": "implementation",
+   "title": {
+    "en": "Implementation and process verification",
+    "es": "Implementacion y verificacion del proceso"
+   },
+   "status": "filled",
+   "inputs": [
+    {
+     "ref": "provenance of data/derived/C18/models-banco-andino.json: seed, code_version, riskvalidation_version",
+     "kind": "document"
+    }
+   ],
+   "absent_reason": null,
+   "blocks": [
+    {
+     "kind": "text",
+     "text": {
+      "en": "Seed 42, code version 0.12.000, riskvalidation 0.7.0+4193b58; every document records them.",
+      "es": "Semilla 42, version de codigo 0.12.000, riskvalidation 0.7.0+4193b58; cada documento las registra."
+     }
+    }
+   ],
+   "missing": [
+    {
+     "element": {
+      "en": "Independent replication of the pipeline",
+      "es": "Replicacion independiente del pipeline"
+     },
+     "reason": {
+      "en": "no independent replication statement exists (A D5 section 5)",
+      "es": "no existe declaracion de replicacion independiente (A D5 seccion 5)"
+     }
+    }
+   ]
+  },
+  {
+   "number": 6,
+   "key": "outcomes_analysis",
+   "title": {
+    "en": "Outcomes analysis",
+    "es": "Analisis de resultados"
+   },
+   "status": "filled",
+   "inputs": [
+    {
+     "ref": "test rows of data/derived/C18/baseline.json",
+     "kind": "document"
+    },
+    {
+     "ref": "policy identity of each row (policy.resolve_policy)",
+     "kind": "engine"
+    }
+   ],
+   "absent_reason": null,
+   "blocks": [
+    {
+     "kind": "outcomes",
+     "variant_id": "baseline",
+     "rows": [
+      {
+       "test_id": "aggregation.simple_sum_and_variance_covariance",
+       "model_id": "c18-aggregation-ladder",
+       "segment": null,
+       "family": "aggregation",
+       "statistic": 0.931580292794096,
+       "p_value": null,
+       "metric": 0.7476278509282498,
+       "light": "green",
+       "h0": "the aggregate is not above the simple sum and agrees with the variance-covariance formula",
+       "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); dossier 05 G.1 (the aggregation ladder: simple sum, variance-covariance, copulas)",
+       "policy": {
+        "label": "contraste-aggregation-battery-1.0.0; amber=0.1; tolerance=1e-09",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "amber": 0.1,
+         "tolerance": 1e-09
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      },
+      {
+       "test_id": "aggregation.copula_choice_sensitivity",
+       "model_id": "c18-aggregation-ladder",
+       "segment": null,
+       "family": "aggregation",
+       "statistic": 0.12280231864558688,
+       "p_value": null,
+       "metric": 0.12280231864558688,
+       "light": "amber",
+       "h0": "the choice between the Gaussian and the t copula over the stated nu set moves the capital by less than the thresholds",
+       "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); Rosenberg and Schuermann (2006), A general approach to integrated risk management with skewed, fat-tailed risks, J. Financial Economics 79(3):569-614, doi:10.1016/j.jfineco.2005.03.001 (dossier 05 G.2)",
+       "policy": {
+        "label": "contraste-aggregation-battery-1.0.0; amber=0.05; red=0.15",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "amber": 0.05,
+         "red": 0.15
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      },
+      {
+       "test_id": "aggregation.worst_case_bracket",
+       "model_id": "c18-aggregation-ladder",
+       "segment": null,
+       "family": "aggregation",
+       "statistic": 704814.1714526084,
+       "p_value": null,
+       "metric": 1.0710712945757181,
+       "light": "green",
+       "h0": "every row of the band lies between the lower bound and the worst case",
+       "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); dossier 05 G.3 (VaR is not subadditive; worst-case VaR bounds by the rearrangement algorithm of Embrechts, Puccetti and Ruschendorf 2013, doi:10.1016/j.jbankfin.2013.03.014)",
+       "policy": {
+        "label": "contraste-aggregation-battery-1.0.0; tolerance=1e-09",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "tolerance": 1e-09
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      },
+      {
+       "test_id": "aggregation.correlation_stress",
+       "model_id": "c18-aggregation-ladder",
+       "segment": null,
+       "family": "aggregation",
+       "statistic": 0.12113490637743207,
+       "p_value": null,
+       "metric": 0.12113490637743207,
+       "light": "amber",
+       "h0": "raising the market-credit correlation does not lower the capital and raises it by less than the amber gate",
+       "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level)",
+       "policy": {
+        "label": "contraste-aggregation-battery-1.0.0; amber=0.1; tolerance=1e-09",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "amber": 0.1,
+         "tolerance": 1e-09
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      },
+      {
+       "test_id": "aggregation.diversification_sign",
+       "model_id": "c18-aggregation-ladder",
+       "segment": null,
+       "family": "aggregation",
+       "statistic": 0.8394382845062561,
+       "p_value": null,
+       "metric": 0.2523721490717502,
+       "light": "green",
+       "h0": "every diversification benefit has the right sign (DF <= 1)",
+       "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); dossier 05 G.3 (VaR is not subadditive; worst-case VaR bounds by the rearrangement algorithm of Embrechts, Puccetti and Ruschendorf 2013, doi:10.1016/j.jbankfin.2013.03.014)",
+       "policy": {
+        "label": "contraste-aggregation-battery-1.0.0; tolerance=1e-09",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "tolerance": 1e-09
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      },
+      {
+       "test_id": "aggregation.horizon_confidence_consistency",
+       "model_id": "c18-aggregation-ladder",
+       "segment": null,
+       "family": "aggregation",
+       "statistic": 0.0,
+       "p_value": null,
+       "metric": null,
+       "light": "green",
+       "h0": "one risk horizon and one confidence level apply across the marginals",
+       "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); dossier 01 l.837-839 (one horizon and one confidence level for the aggregation)",
+       "policy": {
+        "label": "contraste-aggregation-battery-1.0.0; expected_horizon=1.0; expected_level=0.999",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "expected_horizon": 1.0,
+         "expected_level": 0.999
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      },
+      {
+       "test_id": "portfolio.euler_additivity",
+       "model_id": "c18-aggregation-ladder",
+       "segment": null,
+       "family": "portfolio",
+       "statistic": 709389.9885192472,
+       "p_value": null,
+       "metric": 0.0,
+       "light": "green",
+       "h0": "the Euler contributions add up to the total",
+       "reference": "Tasche (2008), Capital allocation to business units and sub-portfolios: the Euler principle, arXiv 0708.2542 (full allocation); dossier 05 G.5 (validation tests of an economic capital model: check the allocation sums to the total, the sensitivity checks)",
+       "policy": {
+        "label": "contraste-portfolio-battery-1.0.0; tolerance=1e-06",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "tolerance": 1e-06
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      },
+      {
+       "test_id": "stress.sensitivity_monotonicity",
+       "model_id": "c18-satellites-us-calibrated",
+       "segment": null,
+       "family": "stress",
+       "statistic": 6.0,
+       "p_value": null,
+       "metric": null,
+       "light": "red",
+       "h0": "every macro sensitivity has its expected sign, so the projected loss rate is monotone in the path severity",
+       "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
+       "policy": {
+        "label": "contraste-stress-battery-1.0.0; rule=red-on-any",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "rule": "red-on-any"
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      },
+      {
+       "test_id": "stress.satellite_backcast",
+       "model_id": "c18-satellite-commercial-industrial",
+       "segment": "commercial-industrial",
+       "family": "stress",
+       "statistic": 0.005504706031024595,
+       "p_value": null,
+       "metric": 0.0,
+       "light": "red",
+       "h0": "satellites estimated before the episode back-cast it: the predicted loss-rate peak is within the thresholds of the realised peak, in size and timing",
+       "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
+       "policy": {
+        "label": "contraste-stress-battery-1.0.0; peak_amber=0.35; peak_red=0.6; timing_quarters=2",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "peak_amber": 0.35,
+         "peak_red": 0.6,
+         "timing_quarters": 2.0
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      },
+      {
+       "test_id": "stress.satellite_backcast",
+       "model_id": "c18-satellite-commercial-real-estate",
+       "segment": "commercial-real-estate",
+       "family": "stress",
+       "statistic": 0.007909458450391085,
+       "p_value": null,
+       "metric": -14.0,
+       "light": "red",
+       "h0": "satellites estimated before the episode back-cast it: the predicted loss-rate peak is within the thresholds of the realised peak, in size and timing",
+       "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
+       "policy": {
+        "label": "contraste-stress-battery-1.0.0; peak_amber=0.35; peak_red=0.6; timing_quarters=2",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "peak_amber": 0.35,
+         "peak_red": 0.6,
+         "timing_quarters": 2.0
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      },
+      {
+       "test_id": "stress.satellite_backcast",
+       "model_id": "c18-satellite-residential",
+       "segment": "residential",
+       "family": "stress",
+       "statistic": 0.006766287833192351,
+       "p_value": null,
+       "metric": -12.0,
+       "light": "red",
+       "h0": "satellites estimated before the episode back-cast it: the predicted loss-rate peak is within the thresholds of the realised peak, in size and timing",
+       "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
+       "policy": {
+        "label": "contraste-stress-battery-1.0.0; peak_amber=0.35; peak_red=0.6; timing_quarters=2",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "peak_amber": 0.35,
+         "peak_red": 0.6,
+         "timing_quarters": 2.0
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      },
+      {
+       "test_id": "stress.satellite_backcast",
+       "model_id": "c18-satellite-credit-cards",
+       "segment": "credit-cards",
+       "family": "stress",
+       "statistic": 0.037066530743549986,
+       "p_value": null,
+       "metric": -17.0,
+       "light": "red",
+       "h0": "satellites estimated before the episode back-cast it: the predicted loss-rate peak is within the thresholds of the realised peak, in size and timing",
+       "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
+       "policy": {
+        "label": "contraste-stress-battery-1.0.0; peak_amber=0.35; peak_red=0.6; timing_quarters=2",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "peak_amber": 0.35,
+         "peak_red": 0.6,
+         "timing_quarters": 2.0
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      },
+      {
+       "test_id": "stress.satellite_backcast",
+       "model_id": "c18-satellite-other-consumer",
+       "segment": "other-consumer",
+       "family": "stress",
+       "statistic": 0.00506809754521095,
+       "p_value": null,
+       "metric": -21.0,
+       "light": "red",
+       "h0": "satellites estimated before the episode back-cast it: the predicted loss-rate peak is within the thresholds of the realised peak, in size and timing",
+       "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
+       "policy": {
+        "label": "contraste-stress-battery-1.0.0; peak_amber=0.35; peak_red=0.6; timing_quarters=2",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "peak_amber": 0.35,
+         "peak_red": 0.6,
+         "timing_quarters": 2.0
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      },
+      {
+       "test_id": "stress.static_balance_sheet_rules",
+       "model_id": "c18-capital-engine",
+       "segment": null,
+       "family": "stress",
+       "statistic": 0.0,
+       "p_value": null,
+       "metric": null,
+       "light": "green",
+       "h0": "the static balance sheet rules are applied: the total is constant, stage 3 never falls, no balance is negative",
+       "reference": "EBA 2025 EU-wide stress test, Methodological Note of 2025-01-20, paras 33, 34 and 90 (static balance sheet: constant total, no cure of stage 3); dossier 05 H.4 and H.7",
+       "policy": {
+        "label": "contraste-stress-battery-1.0.0; tolerance=0.006000000000000001",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "tolerance": 0.006000000000000001
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      },
+      {
+       "test_id": "stress.scenario_severity",
+       "model_id": "c18-capital-engine",
+       "segment": "unemployment_rate",
+       "family": "stress",
+       "statistic": null,
+       "p_value": null,
+       "metric": null,
+       "light": "not_evaluated",
+       "h0": "a stress path is at least as severe as history",
+       "reference": "dossier 05 H.7: document severity relative to history (GDP and unemployment paths against the GFC, as the EBA does)",
+       "policy": {
+        "label": "contraste-stress-battery-1.0.0; minimum=0.75",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "minimum": 0.75
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      },
+      {
+       "test_id": "stress.scenario_severity",
+       "model_id": "c18-capital-engine",
+       "segment": "real_gdp_growth",
+       "family": "stress",
+       "statistic": null,
+       "p_value": null,
+       "metric": null,
+       "light": "not_evaluated",
+       "h0": "a stress path is at least as severe as history",
+       "reference": "dossier 05 H.7: document severity relative to history (GDP and unemployment paths against the GFC, as the EBA does)",
+       "policy": {
+        "label": "contraste-stress-battery-1.0.0; minimum=0.75",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "minimum": 0.75
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      },
+      {
+       "test_id": "stress.scenario_severity",
+       "model_id": "c18-capital-engine",
+       "segment": "prime_rate",
+       "family": "stress",
+       "statistic": null,
+       "p_value": null,
+       "metric": null,
+       "light": "not_evaluated",
+       "h0": "a stress path is at least as severe as history",
+       "reference": "dossier 05 H.7: document severity relative to history (GDP and unemployment paths against the GFC, as the EBA does)",
+       "policy": {
+        "label": "contraste-stress-battery-1.0.0; minimum=0.75",
+        "kind": null,
+        "kind_reason": "the test id is not in the engine registry at the batch 3 head (spec() raises KeyError), so it has no decision",
+        "alpha_amber": null,
+        "alpha_red": null,
+        "direction": null,
+        "direction_reason": "no policy file (BL-085)",
+        "parameters": {
+         "minimum": 0.75
+        },
+        "version": "1.0.0",
+        "source": "inline-battery",
+        "reason": null
+       }
+      }
+     ]
+    }
+   ],
+   "missing": [
+    {
+     "element": {
+      "en": "Threshold kind for rows without a policy file",
+      "es": "Tipo de umbral para filas sin archivo de politica"
+     },
+     "reason": {
+      "en": "the kind is spec(test_id).decision where the test is registered (these tests are not: spec() raises KeyError at the batch 3 head), and the direction is null for an inline battery string until a policy file exists (BL-085)",
+      "es": "el tipo es spec(test_id).decision donde la prueba esta registrada (estas no lo estan: spec() lanza KeyError en la cabeza del lote 3), y la direccion es nula para una cadena de bateria en linea hasta que exista un archivo de politica (BL-085)"
+     }
+    }
+   ]
+  },
+  {
+   "number": 7,
+   "key": "sensitivity_robustness_stress",
+   "title": {
+    "en": "Sensitivity, robustness and stress",
+    "es": "Sensibilidad, robustez y estres"
+   },
+   "status": "filled",
+   "inputs": [
+    {
+     "ref": "the 6 variants of the entry",
+     "kind": "document"
+    }
+   ],
+   "absent_reason": null,
+   "blocks": [
+    {
+     "kind": "table",
+     "caption": {
+      "en": "Variants as perturbations",
+      "es": "Variantes como perturbaciones"
+     },
+     "columns": [
+      {
+       "en": "Variant",
+       "es": "Variante"
+      },
+      {
+       "en": "Test rows",
+       "es": "Filas"
+      },
+      {
+       "en": "Red rows",
+       "es": "Filas rojas"
+      }
+     ],
+     "rows": [
+      [
+       "baseline",
+       17,
+       6
+      ],
+      [
+       "eba-2025-adverse",
+       17,
+       6
+      ],
+      [
+       "fed-2026-severely-adverse",
+       17,
+       6
+      ],
+      [
+       "ngfs-delayed-transition",
+       18,
+       6
+      ],
+      [
+       "reverse-stress",
+       1,
+       0
+      ],
+      [
+       "t-copula-baseline",
+       9,
+       0
+      ]
+     ]
+    }
+   ],
+   "missing": []
+  },
+  {
+   "number": 8,
+   "key": "ongoing_monitoring",
+   "title": {
+    "en": "Ongoing monitoring",
+    "es": "Monitoreo continuo"
+   },
+   "status": "absent",
+   "inputs": [],
+   "absent_reason": {
+    "en": "no monitoring pack, no overrides analysis and no PMA exists for this entry (A D5 section 8)",
+    "es": "no existe paquete de monitoreo, analisis de overrides ni PMA para esta entrada (A D5 seccion 8)"
+   },
+   "blocks": [],
+   "missing": []
+  },
+  {
+   "number": 9,
+   "key": "limitations_and_controls",
+   "title": {
+    "en": "Limitations and compensating controls",
+    "es": "Limitaciones y controles compensatorios"
+   },
+   "status": "filled",
+   "inputs": [
+    {
+     "ref": "findings register rows of C18/banco-andino with status risk_accepted",
+     "kind": "document"
+    }
+   ],
+   "absent_reason": null,
+   "blocks": [
+    {
+     "kind": "text",
+     "text": {
+      "en": "0 register rows are stated limits of the synthetic case (risk_accepted); use restrictions are the SDD non-goals.",
+      "es": "0 filas del registro son limites declarados del caso sintetico (risk_accepted); las restricciones de uso son los no-objetivos del SDD."
+     }
+    }
+   ],
+   "missing": [
+    {
+     "element": {
+      "en": "Compensating-control catalogue and use restrictions as data",
+      "es": "Catalogo de controles compensatorios y restricciones de uso como datos"
+     },
+     "reason": {
+      "en": "neither exists as data (A D5 section 9)",
+      "es": "ninguno existe como datos (A D5 seccion 9)"
+     }
+    }
+   ]
+  },
+  {
+   "number": 10,
+   "key": "findings_register",
+   "title": {
+    "en": "Findings register",
+    "es": "Registro de hallazgos"
+   },
+   "status": "filled",
+   "inputs": [
+    {
+     "ref": "findings register rows of C18/banco-andino",
+     "kind": "document"
+    }
+   ],
+   "absent_reason": null,
+   "blocks": [
+    {
+     "kind": "table",
+     "caption": {
+      "en": "Findings of the entry",
+      "es": "Hallazgos de la entrada"
+     },
+     "columns": [
+      {
+       "en": "Key",
+       "es": "Clave"
+      },
+      {
+       "en": "Severity",
+       "es": "Severidad"
+      },
+      {
+       "en": "ECB F",
+       "es": "F del BCE"
+      },
+      {
+       "en": "Status",
+       "es": "Estado"
+      },
+      {
+       "en": "Due",
+       "es": "Vence"
+      },
+      {
+       "en": "Overdue",
+       "es": "Vencido"
+      }
+     ],
+     "rows": [
+      [
+       "C18/baseline/headline-simple-sum",
+       "S4",
+       "F1",
+       "open",
+       "2027-04-14",
+       false
+      ],
+      [
+       "C18/baseline/internal-target-held",
+       "S4",
+       "F1",
+       "open",
+       "2027-04-14",
+       false
+      ],
+      [
+       "C18/baseline/satellite-sign",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/baseline/satellite-backcast",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/baseline/non-credit-losses-at-expected-loss",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/eba-2025-adverse/headline-simple-sum",
+       "S4",
+       "F1",
+       "open",
+       "2027-04-14",
+       false
+      ],
+      [
+       "C18/eba-2025-adverse/internal-target-not-held",
+       "S2",
+       "F3",
+       "open",
+       "2026-12-15",
+       true
+      ],
+      [
+       "C18/eba-2025-adverse/cet1-stack-breached",
+       "S1",
+       "F4",
+       "open",
+       "2026-11-15",
+       true
+      ],
+      [
+       "C18/eba-2025-adverse/satellite-sign",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/eba-2025-adverse/satellite-backcast",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/eba-2025-adverse/scenario-milder-than-gfc",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/eba-2025-adverse/non-credit-losses-at-expected-loss",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/fed-2026-severely-adverse/headline-simple-sum",
+       "S4",
+       "F1",
+       "open",
+       "2027-04-14",
+       false
+      ],
+      [
+       "C18/fed-2026-severely-adverse/internal-target-not-held",
+       "S2",
+       "F3",
+       "open",
+       "2026-12-15",
+       true
+      ],
+      [
+       "C18/fed-2026-severely-adverse/cet1-stack-breached",
+       "S1",
+       "F4",
+       "open",
+       "2026-11-15",
+       true
+      ],
+      [
+       "C18/fed-2026-severely-adverse/satellite-sign",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/fed-2026-severely-adverse/satellite-backcast",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/fed-2026-severely-adverse/scenario-milder-than-gfc",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/fed-2026-severely-adverse/non-credit-losses-at-expected-loss",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/ngfs-delayed-transition/headline-simple-sum",
+       "S4",
+       "F1",
+       "open",
+       "2027-04-14",
+       false
+      ],
+      [
+       "C18/ngfs-delayed-transition/internal-target-held",
+       "S4",
+       "F1",
+       "open",
+       "2027-04-14",
+       false
+      ],
+      [
+       "C18/ngfs-delayed-transition/satellite-sign",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/ngfs-delayed-transition/satellite-backcast",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/ngfs-delayed-transition/scenario-milder-than-gfc",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/ngfs-delayed-transition/non-credit-losses-at-expected-loss",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/reverse-stress/reverse-scenario",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/t-copula-baseline/headline-simple-sum",
+       "S4",
+       "F1",
+       "open",
+       "2027-04-14",
+       false
+      ],
+      [
+       "C18/t-copula-baseline/model-risk",
+       "S3",
+       "F2",
+       "open",
+       "2027-01-14",
+       false
+      ],
+      [
+       "C18/t-copula-baseline/rosenberg-schuermann-reference",
+       "S4",
+       "F1",
+       "open",
+       "2027-04-14",
+       false
+      ]
+     ]
+    }
+   ],
+   "missing": [
+    {
+     "element": {
+      "en": "Remediation plan text",
+      "es": "Texto del plan de remediacion"
+     },
+     "reason": {
+      "en": "no remediation plan exists: the findings are open results or stated limits (W15-5)",
+      "es": "no existe plan de remediacion: los hallazgos son resultados abiertos o limites declarados (W15-5)"
+     }
+    }
+   ]
+  },
+  {
+   "number": 11,
+   "key": "opinion_and_recommendation",
+   "title": {
+    "en": "Overall opinion and recommendation",
+    "es": "Opinion global y recomendacion"
+   },
+   "status": "filled",
+   "inputs": [
+    {
+     "ref": "opinion rule W15-7 (opinion.opinion_level) over the open findings",
+     "kind": "engine"
+    },
+    {
+     "ref": "recommendation text (opinion.recommendation)",
+     "kind": "engine"
+    }
+   ],
+   "absent_reason": null,
+   "blocks": [
+    {
+     "kind": "text",
+     "text": {
+      "en": "Opinion level 4: severe deficiencies. Remediate before use: a significant or critical finding is open. This is the rule's output on the evidence; Contraste approves no model.",
+      "es": "Nivel de opinion 4: deficiencias severas. Remediar antes del uso: hay un hallazgo significativo o critico abierto. Es el resultado de la regla sobre la evidencia; Contraste no aprueba ningun modelo."
+     }
+    }
+   ],
+   "missing": [],
+   "opinion": {
+    "level": 4,
+    "level_label": {
+     "en": "severe deficiencies",
+     "es": "deficiencias severas"
+    },
+    "rule": {
+     "id": "W15-7",
+     "text": {
+      "en": "Level 1 with no open finding; 2 with S4 or S3 only; 3 with any S2; 4 with any S1 (open and overdue findings, not risk_accepted); where an anchor is a share of RWEA, 5 to 10 percent gives level 3 and 10 percent or more level 4, and an anchor can only raise a level (the maximum of the two). A convention (item 30).",
+      "es": "Nivel 1 sin hallazgos abiertos; 2 con solo S4 o S3; 3 con algun S2; 4 con algun S1 (hallazgos abiertos y vencidos, no risk_accepted); si el ancla es una proporcion de RWEA, de 5 a 10 por ciento da nivel 3 y 10 por ciento o mas da nivel 4, y un ancla solo puede subir un nivel (el maximo de ambos). Una convencion (punto 30)."
+     }
+    },
+    "rwea_cut_points_applied": false,
+    "open_findings": [
+     {
+      "key": "C18/baseline/headline-simple-sum",
+      "severity": "S4",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/baseline/internal-target-held",
+      "severity": "S4",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/baseline/satellite-sign",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/baseline/satellite-backcast",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/baseline/non-credit-losses-at-expected-loss",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/eba-2025-adverse/headline-simple-sum",
+      "severity": "S4",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/eba-2025-adverse/internal-target-not-held",
+      "severity": "S2",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/eba-2025-adverse/cet1-stack-breached",
+      "severity": "S1",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/eba-2025-adverse/satellite-sign",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/eba-2025-adverse/satellite-backcast",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/eba-2025-adverse/scenario-milder-than-gfc",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/eba-2025-adverse/non-credit-losses-at-expected-loss",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/fed-2026-severely-adverse/headline-simple-sum",
+      "severity": "S4",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/fed-2026-severely-adverse/internal-target-not-held",
+      "severity": "S2",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/fed-2026-severely-adverse/cet1-stack-breached",
+      "severity": "S1",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/fed-2026-severely-adverse/satellite-sign",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/fed-2026-severely-adverse/satellite-backcast",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/fed-2026-severely-adverse/scenario-milder-than-gfc",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/fed-2026-severely-adverse/non-credit-losses-at-expected-loss",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/ngfs-delayed-transition/headline-simple-sum",
+      "severity": "S4",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/ngfs-delayed-transition/internal-target-held",
+      "severity": "S4",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/ngfs-delayed-transition/satellite-sign",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/ngfs-delayed-transition/satellite-backcast",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/ngfs-delayed-transition/scenario-milder-than-gfc",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/ngfs-delayed-transition/non-credit-losses-at-expected-loss",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/reverse-stress/reverse-scenario",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/t-copula-baseline/headline-simple-sum",
+      "severity": "S4",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/t-copula-baseline/model-risk",
+      "severity": "S3",
+      "rwea_share": null
+     },
+     {
+      "key": "C18/t-copula-baseline/rosenberg-schuermann-reference",
+      "severity": "S4",
+      "rwea_share": null
+     }
+    ],
+    "recommendation": {
+     "outcome": "remediate before use",
+     "text": {
+      "en": "Remediate before use: a significant or critical finding is open. This is the rule's output on the evidence; Contraste approves no model.",
+      "es": "Remediar antes del uso: hay un hallazgo significativo o critico abierto. Es el resultado de la regla sobre la evidencia; Contraste no aprueba ningun modelo."
+     }
+    },
+    "label": {
+     "en": "the rule's output on the evidence; Contraste approves no model",
+     "es": "resultado de la regla sobre la evidencia; Contraste no aprueba ningun modelo"
+    }
+   }
+  },
+  {
+   "number": 12,
+   "key": "appendices",
+   "title": {
+    "en": "Appendices",
+    "es": "Anexos"
+   },
+   "status": "filled",
+   "inputs": [
+    {
+     "ref": "provenance of the 8 documents read for the entry",
+     "kind": "document"
+    }
+   ],
+   "absent_reason": null,
+   "blocks": [
+    {
+     "kind": "table",
+     "caption": {
+      "en": "Documents read",
+      "es": "Documentos leidos"
+     },
+     "columns": [
+      {
+       "en": "Path",
+       "es": "Ruta"
+      },
+      {
+       "en": "sha256",
+       "es": "sha256"
+      }
+     ],
+     "rows": [
+      [
+       "data/derived/manifests/C18.json",
+       "6225136025c8457bab8857501cb8b2939bd785807184f5e9f52a975299c359e5"
+      ],
+      [
+       "data/derived/C18/models-banco-andino.json",
+       "4f5927257cbcca0e717753acf81e84f78b33a4906553ee571244874b9598ae3d"
+      ],
+      [
+       "data/derived/C18/baseline.json",
+       "b424e3f4d386478c503eff31bd1d2bc597e20089e0b872a561b4d11e7cf78921"
+      ],
+      [
+       "data/derived/C18/eba-2025-adverse.json",
+       "2b191fb877657b8a26850a5de8458bbe4fc88454d6d3753220189b6b95e46437"
+      ],
+      [
+       "data/derived/C18/fed-2026-severely-adverse.json",
+       "fd614c8edf07464ec1bd266ec2f6b35506b214fcb938e62ed804d83bb5117fbd"
+      ],
+      [
+       "data/derived/C18/ngfs-delayed-transition.json",
+       "5f78224b085addbc50b4c0ca823a87e150ffbefb5bbbfffe650cfddff76d57c5"
+      ],
+      [
+       "data/derived/C18/reverse-stress.json",
+       "dc5bc0dd9e74ab9a7cee4dec9425eb8b633b014e2681dd5f1db3d0e75461e40a"
+      ],
+      [
+       "data/derived/C18/t-copula-baseline.json",
+       "bbe42eb4ba4304106ae82ff3222b88d190d545f20d541e501d03d2643d2758a2"
+      ]
+     ]
+    }
+   ],
+   "missing": [
+    {
+     "element": {
+      "en": "Policy-file version and content hash for the inline battery strings",
+      "es": "Version y hash del archivo de politica de las cadenas en linea"
+     },
+     "reason": {
+      "en": "the contraste-*-battery strings have no policy file (backlog BL-085, done at the U16 re-bake)",
+      "es": "las cadenas contraste-*-battery no tienen archivo de politica (BL-085, en la re-ejecucion de U16)"
+     }
+    }
+   ]
+  }
+ ]
+}
