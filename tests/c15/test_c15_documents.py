@@ -6,7 +6,7 @@ import re
 import c15_docs as d
 import contract_schemas as cs
 import pytest
-import semantics
+from c15_support import semantics
 from c15_support import ROOT, VARIANT_IDS
 
 

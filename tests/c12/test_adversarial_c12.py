@@ -7,7 +7,7 @@ from pathlib import Path
 import c12_docs as d
 import numpy as np
 import pytest
-import semantics
+from c12_support import semantics
 from c12_support import data_root, requires_raw
 
 from pipeline.cases.c12 import calibration, credit, data, fetch

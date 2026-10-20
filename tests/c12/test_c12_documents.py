@@ -6,7 +6,7 @@ from pathlib import Path
 import c12_docs as d
 import contract_schemas as cs
 import numpy as np
-import semantics
+from c12_support import semantics
 from scipy.stats import norm
 
 from pipeline.cases.c12 import bake, book, ore

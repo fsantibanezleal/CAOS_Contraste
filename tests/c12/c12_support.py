@@ -9,9 +9,26 @@ import pytest
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
+
+
+def _load_checker(path: Path, name: str):
+    import importlib.util
+
+    if name in sys.modules:
+        return sys.modules[name]
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 for _p in (HERE, ROOT / "tests" / "contracts", ROOT / "tests" / "contracts_u9"):
     if str(_p) not in sys.path:
         sys.path.insert(0, str(_p))
+#: the cross-field checker of contracts_u9, loaded from its file under a name of its own: several contract folders ship a
+#: ``semantics`` module, and a plain ``import semantics`` gets whichever suite loaded first in one pytest session
+semantics = _load_checker(ROOT / "tests" / "contracts_u9" / "semantics.py", "semantics_contracts_u9")
 SEED = 42
 #: the test size: the bake at a few thousand paths and a stride of twelve months through the backtest dates (ADR-0074: local only)
 SMALL = {"n_paths": 2000, "bt_paths": 500, "crit_count": 100, "ore_samples": 300, "date_stride": 12}
