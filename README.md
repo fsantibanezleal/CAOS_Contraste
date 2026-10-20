@@ -1,6 +1,6 @@
 # Contraste
 
-**Site:** https://contraste.fasl-work.com (GitHub Pages), published with the first release from `main`; not live yet.
+**Site:** https://contraste.fasl-work.com (GitHub Pages), published from `main`.
 
 [![CI](https://img.shields.io/github/actions/workflow/status/fsantibanezleal/CAOS_Contraste/ci.yml?branch=main&label=CI)](https://github.com/fsantibanezleal/CAOS_Contraste/actions)
 [![License](https://img.shields.io/github/license/fsantibanezleal/CAOS_Contraste)](LICENSE)
@@ -18,42 +18,24 @@ detects and what it misses. It is for validators, risk modellers and supervisors
 behind a model opinion, and for students of credit risk. The tests come from the engine
 [`riskvalidation`](https://github.com/fsantibanezleal/CAOS_RiskValidation) (MIT).
 
-## What is built
+## Areas
 
-| Case | Question | Data | Status |
+The repository by areas. Each row links its folder, says whether the area is active or dormant, and points to the area's own
+document. The 22 cases (21 committed, C19 planned: `data/derived/readiness.json`) are described one page each in
+[`docs/cases/`](docs/cases/README.md), with the coverage matrix.
+
+| Area | Folder | Status | What it holds |
 |---|---|---|---|
-| [C01](docs/cases/C01.md) | Does a monotone WoE scorecard match the challengers the literature says beat it, once calibration is required, and what do the tests say when the population shifts? | UCI Taiwan credit cards (30,000), UCI Statlog German Credit (1,000), both CC BY 4.0 | built |
-| [C04](docs/cases/C04.md) | What PD does each grade carry over the cycle, under which of CEREP's default definitions, and does a Markov chain of one-year matrices describe it? | ESMA CEREP: S&P's, Moody's and Fitch's EU entities, corporate long-term, 2000 to 2025 (tables transformed by Contraste); riskvalidation's rating paths; Israel et al., Schuermann and Hanson, Engelmann (derived-only) | built |
-| [C05](docs/cases/C05.md) | How should a PD curve be carried to a new year, and what can be said about PDs with almost no defaults? | Tasche (2013) and Pluto and Tasche (2005), their tables (derived-only); a Vasicek generator | built |
-| [C22](docs/cases/C22.md) | How often does each validation test reject a right model, and which defects does it catch? | riskvalidation's generators with planted defects; BCBS WP14 and Yurdakul-Naranjo tables as published answers (derived-only) | built |
-
-C01's ladder: the constant PD and the strongest single variable (P0), the WoE scorecard (P1), L1 logistic
-regression and penalised logistic tree regression (P2), the explainable boosting machine (P3), monotone LightGBM
-with XGBoost as cross-check (P4), and TabPFN v2 on the German twin (P5). Seven variants: the holdout, moderate and
-severe covariate drift, a prior shift, label noise, a small training sample and the German twin; the IRB capital of
-each approved book under Basel III, CRR3 and Basel II.
-
-C04 reads CEREP's default, defaults and transition pages for three agencies and keeps their default counts apart:
-the transition matrix's default column gives 29% of the default page's long-run CCC to C PD for S&P and 19% for
-Fitch, and Moody's page has none. It fits the EM, diagonal, weighted and JLT generators, tests time homogeneity, the
-Markov order and momentum, checks every five-year window's lived defaults against the chained matrices (S&P's CCC to C
-cohort of 2020: 61.4% lived, 9.1% chained), measures five estimators and three intervals on rating paths of known
-truth (momentum, a recession year, informative withdrawals, thin cohorts) and recomputes three papers to their
-printed digits.
-
-C05 recomputes Tasche (2013) and Pluto and Tasche (2005) cell by cell from their PDFs, carries the 2009 S&P curve to
-2010 and 2011 by every approach of the paper, bounds low-default PDs four ways, and measures coverage, size and power
-on 20,000 generated years, each choice priced in IRB capital.
-
-C22 measures the size and power of every test with a p-value on known-truth generators: eight families (the null and
-seven planted defects), every rate with its Monte Carlo error, exact rejection probabilities where they exist, and
-three published simulation studies rerun (BCBS WP14 Tables 7 and 8, Yurdakul and Naranjo's Table 4, Demler et al.).
-Its measurements changed C01: Hosmer-Lemeshow uses as many degrees of freedom as groups on the holdout, and the test
-of the AUC against the initial AUC adds the initial estimate's variance.
-
-The other 18 cases (IFRS 9 and the Chilean provisions, LGD and EAD, portfolio capital, market risk and FRTB, IRRBB
-and liquidity, operational risk, ICAAP and IAPE stress, machine-learning and fairness validation) are planned in
-[the coverage matrix](docs/cases/README.md).
+| Web | [frontend/](frontend/) | active | The static React site on the shared CAOS app shell (`@fasl-work/caos-app-shell`, pinned exactly in `frontend/package.json`): the App workbench and the pages Introduction, Methodology, Implementation, Experiments and Benchmark, in English and Spanish, light and dark; it replays the committed artifacts and computes live what a reader changes. Run it with `cd frontend && npm ci && npm run dev`; `npm test`, `npm run build` and `npm run gate` (the measured UI gate, local only). Live at https://contraste.fasl-work.com. Design: [docs/design/features/web/](docs/design/features/web/requirements.md) |
+| API | [app/](app/) | dormant: this solution does not require a request-time backend at the moment | A FastAPI layer kept for activation on an ADR-0002 trigger: four read-only endpoints (`GET /api/cases`, `/api/cases/{case_id}/manifest`, `/api/artifacts/{path}` and `/health`) over the committed documents. See [app/README.md](app/README.md) and [the guide](docs/guides/04_run-the-api.md) |
+| Core pipelines | [data-pipeline/](data-pipeline/) | active: offline only, never in CI | Fetch with a licence manifest, contract 1 on every input record, the model ladder, the validation battery and contract 2 on every artifact: `fetch.py`, `run.py` (a sandbox bake with `--output <folder>`, the release bake without) and `validate.py` (your own scored sample). One package of code per case under `pipeline/cases/`. See [the fetch and bake guide](docs/guides/01_fetch-and-bake.md) and [the pipeline architecture](docs/architecture/05_precompute-pipeline.md) |
+| Packages | (PyPI) [riskvalidation v0.08.000](https://github.com/fsantibanezleal/CAOS_RiskValidation/releases/tag/v0.08.000) | active: one package, not yet published on PyPI | `riskvalidation`, the engine of every validation test, regulatory calculator and generator (MIT), consumed as a dependency and never copied: the notebooks pin the release v0.08.000 as `riskvalidation==0.8.0`, and the pipeline pins it in `data-pipeline/requirements.txt`. The third-party packages are pinned in the same files, in the SDD technology table and in [the framework cards](docs/frameworks.md) |
+| Notebooks | [notebooks/](notebooks/) | active | Didactic notebooks in two trees, [English](notebooks/en/README.md) and [Spanish](notebooks/es/README.md), by topic and from simple to complex (fundamentals, the method in practice, state of the art, beyond it), executed and committed. Topic 01 is here (install the engine, a first test result, policies, a battery on your own sample); the other topics follow. Run them with `./scripts/setup.sh --notebooks` and `python scripts/run_notebooks.py`. See [notebooks/README.md](notebooks/README.md) |
+| Data | [data/](data/) | active | The licence manifest of every source (`data/sources/manifest.json`), the committed derived artifacts and manifests the site replays (`data/derived/`, one folder per case, plus `readiness.json`) and two synthetic scored samples for your own-model door (`data/examples/`). Raw data never lives here: it lives under `CONTRASTE_DATA`. Every source has a licence class (mirror-allowed, derived-only, link-only, unusable). See [data/README.md](data/README.md) |
+| Contracts | [docs/contracts/](docs/contracts/) | active | The catalog of every boundary and model slot with its version, schema, producer and consumer tests; the JSON schemas, the engine API documents, the fixtures served while a case is unbuilt, the OpenAPI document and the version lock. See [the catalog](docs/contracts/catalog.md) |
+| Documentation | [docs/](docs/) | active | The software design document with every requirement and the gate that fails when it is violated, the feature folders, the architecture pages, the framework cards, the guides and the case pages. See [docs/README.md](docs/README.md) and [the design](docs/design/SDD.md) |
+| Tests and gates | [tests/](tests/), [scripts/](scripts/) | active | The pipeline, contract, guard, notebook-layer and adversarial tests (a folder per case and per contract unit), and the guards CI runs: SDD, contracts, artifacts, provenance, licences, notebooks and this README's areas. Tests run locally, not in CI. See [scripts/README.md](scripts/README.md) |
+| Deploy | [deploy/](deploy/) | active | One place: GitHub Pages with the custom domain contraste.fasl-work.com, deployed by a workflow that runs after CI succeeds on `main`, checks the committed artifacts, builds and deploys; it never rebakes. See [deploy/pages.md](deploy/pages.md) |
 
 ## The web
 
