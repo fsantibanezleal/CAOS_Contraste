@@ -1099,22 +1099,60 @@
             "type": "string",
             "enum": [
               "ASSET",
+              "CD1T3",
+              "CD1T3S",
+              "CD3LES",
+              "CD3LESS",
+              "CD3T12",
+              "CD3T12S",
+              "CDOV3",
+              "CDOV3S",
               "CERT",
               "CHBAL",
               "DEP",
               "DEPDOM",
               "DEPFOR",
+              "DEPIDOM",
+              "DEPIFOR",
               "DEPINS",
               "DEPLGAMT",
+              "DEPLGB",
+              "DEPNIDOM",
+              "DEPNIFOR",
               "DEPSMAMT",
+              "DEPSMB",
               "DEPUNA",
               "EQ",
               "FREPO",
               "FREPP",
               "LIAB",
+              "LNATRES",
+              "LNLSGR",
               "LNLSNET",
+              "LNOT1T3",
+              "LNOT3LES",
+              "LNOT3T12",
+              "LNOT3T5",
+              "LNOT5T15",
+              "LNOTOV15",
+              "LNRS1T3",
+              "LNRS3LES",
+              "LNRS3T12",
+              "LNRS3T5",
+              "LNRS5T15",
+              "LNRSOV15",
               "NAME",
+              "NTRTIME",
+              "OTBFH1T3",
+              "OTBFH3T5",
+              "OTBFHOV5",
+              "OTBOT1L",
+              "OTBOT1T3",
+              "OTBOT3T5",
+              "OTBOTOV5",
+              "OTHBFH1L",
               "OTHBFHLB",
+              "OTHBRF",
               "RBCT1J",
               "REPDTE",
               "SC",
@@ -1135,11 +1173,26 @@
               "SCHTMRES",
               "SCMTGBK",
               "SCMUNI",
+              "SCNM1T3",
+              "SCNM3LES",
+              "SCNM3T12",
+              "SCNM3T5",
+              "SCNM5T15",
+              "SCNMOV15",
+              "SCO3YLES",
+              "SCOOV3Y",
               "SCPLEDGE",
+              "SCPT1T3",
+              "SCPT3LES",
+              "SCPT3T12",
+              "SCPT3T5",
+              "SCPT5T15",
+              "SCPTOV15",
               "SCRDEBT",
               "SCSPN",
               "SCUS",
-              "SCUST"
+              "SCUST",
+              "SUBND"
             ]
           },
           "minItems": 1
@@ -1299,22 +1352,60 @@
           "type": "string",
           "enum": [
             "ASSET",
+            "CD1T3",
+            "CD1T3S",
+            "CD3LES",
+            "CD3LESS",
+            "CD3T12",
+            "CD3T12S",
+            "CDOV3",
+            "CDOV3S",
             "CERT",
             "CHBAL",
             "DEP",
             "DEPDOM",
             "DEPFOR",
+            "DEPIDOM",
+            "DEPIFOR",
             "DEPINS",
             "DEPLGAMT",
+            "DEPLGB",
+            "DEPNIDOM",
+            "DEPNIFOR",
             "DEPSMAMT",
+            "DEPSMB",
             "DEPUNA",
             "EQ",
             "FREPO",
             "FREPP",
             "LIAB",
+            "LNATRES",
+            "LNLSGR",
             "LNLSNET",
+            "LNOT1T3",
+            "LNOT3LES",
+            "LNOT3T12",
+            "LNOT3T5",
+            "LNOT5T15",
+            "LNOTOV15",
+            "LNRS1T3",
+            "LNRS3LES",
+            "LNRS3T12",
+            "LNRS3T5",
+            "LNRS5T15",
+            "LNRSOV15",
             "NAME",
+            "NTRTIME",
+            "OTBFH1T3",
+            "OTBFH3T5",
+            "OTBFHOV5",
+            "OTBOT1L",
+            "OTBOT1T3",
+            "OTBOT3T5",
+            "OTBOTOV5",
+            "OTHBFH1L",
             "OTHBFHLB",
+            "OTHBRF",
             "RBCT1J",
             "REPDTE",
             "SC",
@@ -1335,11 +1426,26 @@
             "SCHTMRES",
             "SCMTGBK",
             "SCMUNI",
+            "SCNM1T3",
+            "SCNM3LES",
+            "SCNM3T12",
+            "SCNM3T5",
+            "SCNM5T15",
+            "SCNMOV15",
+            "SCO3YLES",
+            "SCOOV3Y",
             "SCPLEDGE",
+            "SCPT1T3",
+            "SCPT3LES",
+            "SCPT3T12",
+            "SCPT3T5",
+            "SCPT5T15",
+            "SCPTOV15",
             "SCRDEBT",
             "SCSPN",
             "SCUS",
-            "SCUST"
+            "SCUST",
+            "SUBND"
           ]
         },
         "reported_amount": {
@@ -2106,22 +2212,60 @@
             "type": "string",
             "enum": [
               "ASSET",
+              "CD1T3",
+              "CD1T3S",
+              "CD3LES",
+              "CD3LESS",
+              "CD3T12",
+              "CD3T12S",
+              "CDOV3",
+              "CDOV3S",
               "CERT",
               "CHBAL",
               "DEP",
               "DEPDOM",
               "DEPFOR",
+              "DEPIDOM",
+              "DEPIFOR",
               "DEPINS",
               "DEPLGAMT",
+              "DEPLGB",
+              "DEPNIDOM",
+              "DEPNIFOR",
               "DEPSMAMT",
+              "DEPSMB",
               "DEPUNA",
               "EQ",
               "FREPO",
               "FREPP",
               "LIAB",
+              "LNATRES",
+              "LNLSGR",
               "LNLSNET",
+              "LNOT1T3",
+              "LNOT3LES",
+              "LNOT3T12",
+              "LNOT3T5",
+              "LNOT5T15",
+              "LNOTOV15",
+              "LNRS1T3",
+              "LNRS3LES",
+              "LNRS3T12",
+              "LNRS3T5",
+              "LNRS5T15",
+              "LNRSOV15",
               "NAME",
+              "NTRTIME",
+              "OTBFH1T3",
+              "OTBFH3T5",
+              "OTBFHOV5",
+              "OTBOT1L",
+              "OTBOT1T3",
+              "OTBOT3T5",
+              "OTBOTOV5",
+              "OTHBFH1L",
               "OTHBFHLB",
+              "OTHBRF",
               "RBCT1J",
               "REPDTE",
               "SC",
@@ -2142,11 +2286,26 @@
               "SCHTMRES",
               "SCMTGBK",
               "SCMUNI",
+              "SCNM1T3",
+              "SCNM3LES",
+              "SCNM3T12",
+              "SCNM3T5",
+              "SCNM5T15",
+              "SCNMOV15",
+              "SCO3YLES",
+              "SCOOV3Y",
               "SCPLEDGE",
+              "SCPT1T3",
+              "SCPT3LES",
+              "SCPT3T12",
+              "SCPT3T5",
+              "SCPT5T15",
+              "SCPTOV15",
               "SCRDEBT",
               "SCSPN",
               "SCUS",
-              "SCUST"
+              "SCUST",
+              "SUBND"
             ]
           },
           "minItems": 1
@@ -2481,6 +2640,7 @@
         "hqla",
         "l2_share",
         "l2b_share",
+        "shares_reason",
         "caps"
       ],
       "properties": {
@@ -2521,16 +2681,40 @@
           "description": "Money in USD thousands as the call report gives it (the document's `currency` and `units.money_scale`)."
         },
         "l2_share": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "description": "A share or a rate in [0, 1]."
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A share or a rate in [0, 1]."
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "l2b_share": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "description": "A share or a rate in [0, 1]."
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "A share or a rate in [0, 1]."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "shares_reason": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c16Label"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "caps": {
           "type": "object",
@@ -2549,7 +2733,35 @@
           }
         }
       },
-      "description": "HQLA by level after the caps: HQLA = L1 + L2A + L2B - Adj15 - Adj40 (LCR30.38) with the adjustments of LCR30.39."
+      "description": "HQLA by level after the caps: HQLA = L1 + L2A + L2B - Adj15 - Adj40 (LCR30.38) with the adjustments of LCR30.39. The Level 2 and Level 2B shares are over the HQLA stock: where the stock is empty they are undefined and are null together with their reason in shares_reason (never zero); where they are numbers, shares_reason is null (U11 decision X6).",
+      "oneOf": [
+        {
+          "properties": {
+            "l2_share": {
+              "type": "number"
+            },
+            "l2b_share": {
+              "type": "number"
+            },
+            "shares_reason": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "l2_share": {
+              "type": "null"
+            },
+            "l2b_share": {
+              "type": "null"
+            },
+            "shares_reason": {
+              "$ref": "#/$defs/c16Label"
+            }
+          }
+        }
+      ]
     },
     "c16Lcr": {
       "type": "object",
