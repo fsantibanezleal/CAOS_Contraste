@@ -566,7 +566,7 @@ export function FactorReadout({ sel }: { sel: C18Sel | null }) {
       variant={sel?.data.variant}
       title={f ? f.label : { en: 'The factor', es: 'El factor' }}
       items={[
-        { label: { en: 'Solved shock', es: 'Choque resuelto' }, value: r?.solution.x_star[i] ?? null, ...(unit ? { unit } : { unitless: true as const }), format: { digits: 4 }, hint: { en: 'The deviation from the baseline in the minimum-distance scenario that breaks the bank.', es: 'La desviación desde la línea base en el escenario de mínima distancia que quiebra al banco.' } },
+        { label: { en: 'Shock', es: 'Choque' }, value: r?.solution.x_star[i] ?? null, ...(unit ? { unit } : { unitless: true as const }), format: { digits: 4 }, hint: { en: 'The deviation from the baseline in the minimum-distance scenario that breaks the bank.', es: 'La desviación desde la línea base en el escenario de mínima distancia que quiebra al banco.' } },
         { label: { en: 'Standardised', es: 'Estandarizado' }, value: r?.solution.z_star[i] ?? null, unitless: true, format: { digits: 4 }, hint: { en: 'The same shock in standard deviations of the factor.', es: 'El mismo choque en desviaciones estándar del factor.' } },
         { label: { en: 'Loss per unit', es: 'Pérdida por unidad' }, value: gm.value, unit: gm.unit, format: gm.format, hint: { en: 'The gradient of the loss in this factor; not available when the loss model is nonlinear.', es: 'El gradiente de la pérdida en este factor; no disponible cuando el modelo de pérdida es no lineal.' } },
       ]}

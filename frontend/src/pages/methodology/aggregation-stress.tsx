@@ -390,11 +390,11 @@ function Body() {
       <SubTabs
         ariaLabel={t('Parts of the topic', 'Partes del tema')}
         tabs={[
-          { id: 'aggregation', label: t('The aggregation ladder and its band', 'La escalera de agregación y su banda'), content: <AggregationPart /> },
-          { id: 'allocation', label: t('Allocation, model risk and validation', 'Asignación, riesgo de modelo y validación'), content: <AllocationPart /> },
-          { id: 'satellites', label: t('Macro stress: layers and satellites', 'Estrés macro: capas y satélites'), content: <SatellitePart /> },
-          { id: 'scenarios', label: t('Scenarios and supervisory exercises', 'Escenarios y ejercicios supervisores'), content: <ScenarioPart /> },
-          { id: 'iape', label: t('The IAPE, the P2G and reverse stress', 'El IAPE, la P2G y el estrés inverso'), content: <IapePart /> },
+          { id: 'aggregation', label: t('Aggregation and its band', 'Agregación y su banda'), content: <AggregationPart /> },
+          { id: 'allocation', label: t('Allocation and validation', 'Asignación y validación'), content: <AllocationPart /> },
+          { id: 'satellites', label: t('Macro stress and satellites', 'Estrés macro y satélites'), content: <SatellitePart /> },
+          { id: 'scenarios', label: t('Scenarios and exercises', 'Escenarios y ejercicios'), content: <ScenarioPart /> },
+          { id: 'iape', label: t('The IAPE and reverse stress', 'El IAPE y el estrés inverso'), content: <IapePart /> },
         ]}
       />
       <Callout variant="honest" title={t('What is exact, what is a choice and what these views are not', 'Qué es exacto, qué es una decisión y qué no son estas vistas')}>
