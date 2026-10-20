@@ -23,7 +23,7 @@ import * as governanceSection from '../../pages/methodology/governance';
 import { setLang } from '../c03/u6-testkit';
 import { MapDrawing } from './DependencyMap';
 import { InventoryTab } from './InventoryView';
-import { FindingsWithOpinion, OpinionBlockView, OpinionCard, ReportOpinion } from './OpinionBlock';
+import { FindingsWithOpinion, OpinionBlock, OpinionBlockView, OpinionCard, ReportOpinion } from './OpinionBlock';
 import { AppetiteTable, FindingsTab, RegisterTable, SeverityStatusBars } from './RegisterView';
 import { ReportDocument, ReportReader } from './ReportView';
 import { MatrixDrawing } from './TierMatrix';
@@ -251,9 +251,18 @@ describe('the Findings group with its opinion', () => {
       const h = html(<FindingsWithOpinion caseId="C07"><p data-group-content>the findings</p></FindingsWithOpinion>);
       expect(h).toContain('data-group-content');
       expect(h).toContain('data-opinion-disclosure');
-      expect(h).toContain('data-governance-opinion="C07"');
+      // nothing is read until the disclosure is opened
+      expect(h).not.toContain('data-governance-opinion');
       expect(text(h)).toContain(lang === 'es' ? 'Opinión global sobre la evidencia' : 'Overall opinion on the evidence');
     }
+  });
+});
+
+describe('the opinion block of a case', () => {
+  it('reads the inventory when it is drawn, in the declared loading state', () => {
+    const h = html(<OpinionBlock caseId="C07" />);
+    expect(h).toContain('data-governance-opinion="C07"');
+    expect(h).toContain('data-state="loading"');
   });
 });
 
