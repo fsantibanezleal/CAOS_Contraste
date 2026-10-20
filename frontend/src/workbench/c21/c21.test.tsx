@@ -4,6 +4,7 @@
 // group and decided by the document's flag, the controlled estimate names its missing controls, the counterfactual test is
 // shown as not run with its reason, no outcome-conditioned view exists, a null estimate says why, and no view draws a
 // number the fixture does not contain.
+import { readFileSync } from 'node:fs';
 import { formatNumber } from '@fasl-work/caos-app-shell';
 import type { ReactElement } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -224,5 +225,80 @@ describe('the C21 instrument', () => {
     odd.outputs.attributes[0].groups[1].selection_rate = 0.7123;
     expect(html(<RatesView sel={withVariant(odd)} />)).toContain(formatNumber(0.7123, 'en', { percent: true, decimals: 1 }));
     expect(html(<RatesView sel={sel} />)).not.toContain(formatNumber(0.7123, 'en', { percent: true, decimals: 1 }));
+  });
+});
+
+// The Findings group draws the evidence each finding cites beside the findings table (ADR-0071 rule 8): the controlled odds
+// ratio of every cited fair.conditional_disparity row with the line at 1, the rate spread with the line at 0.
+describe('the C21 Findings view draws the evidence of each finding', () => {
+  afterEach(() => setLang('en'));
+  const pair = JSON.parse(readFileSync(new URL('../../../../data/derived/C21/pair-2018-19.json', import.meta.url), 'utf8')) as VariantArtifact<Outputs>;
+  const psel = withVariant(pair);
+  const key = (e: string) => e.split('@');
+  const cited = (test: string) =>
+    pair.findings.flatMap((f) => f.evidence.filter((e) => e.startsWith(`${test}@`)).map((e) => ({ f: f.id, e }))).map(({ f, e }) => {
+      const [t, m, s] = key(e);
+      return { f, e, row: pair.tests.find((r) => r.test_id === t && r.model_id === m && r.segment === s) };
+    });
+
+  it('renders two cards: the findings table and the evidence', () => {
+    const markup = html(<C21FindingsView sel={psel} />);
+    expect(cards(markup).length).toBe(2);
+    expect(markup).toContain('data-table="findings"');
+    expect(markup).toContain('The evidence of each finding');
+  });
+
+  it('holds one bar per cited conditional-disparity row with the odds ratio of the row, and the line at 1', () => {
+    const markup = html(<C21FindingsView sel={psel} />);
+    const rows = cited('fair.conditional_disparity');
+    expect(rows.length).toBeGreaterThan(0);
+    for (const { f, e, row } of rows) {
+      expect(row, e).toBeDefined();
+      const tag = `data-evidence-row="${escapeHtml(e)}" data-finding="${f}" data-metric="${row!.metric}"`;
+      expect(markup, e).toContain(tag);
+      expect(markup).toContain(f3(row!.metric as number));
+    }
+    expect((markup.match(/data-evidence-kind="odds-ratio"/g) ?? []).length).toBe(rows.length);
+    expect(markup).toContain('data-reference-line="1"');
+    expect(markup).toContain('data-reference-line="0"');
+    const spread = cited('fair.rate_spread_disparity');
+    expect((markup.match(/data-evidence-kind="rate-spread"/g) ?? []).length).toBe(spread.length);
+  });
+
+  it('draws nothing for a finding with design evidence only, and says so', () => {
+    const markup = html(<C21FindingsView sel={psel} />);
+    expect(markup).not.toMatch(/data-evidence-row="[^"]*" data-finding="F-LIMIT/);
+    expect(markup).toContain('data-note="design-only"');
+  });
+
+  it('lists a cited row the document lacks as not available with its id, never dropped', () => {
+    const odd = structuredClone(pair);
+    const gone = cited('fair.conditional_disparity')[0];
+    odd.tests = odd.tests.filter((r) => r !== odd.tests.find((x) => `${x.test_id}@${x.model_id}@${x.segment}` === gone.e));
+    const markup = html(<C21FindingsView sel={withVariant(odd)} />);
+    expect(markup).toContain(`data-evidence-row="${escapeHtml(gone.e)}" data-finding="${gone.f}" data-na="true"`);
+    expect(markup).not.toMatch(/NaN|undefined|\[object/);
+  });
+
+  it('a variant with no findings shows the empty state and no empty chart', () => {
+    const odd = structuredClone(pair);
+    odd.findings = [];
+    const markup = html(<C21FindingsView sel={withVariant(odd)} />);
+    expect(markup).toContain('No finding is recorded in this variant.');
+    expect(markup).not.toContain('data-evidence-kind');
+  });
+
+  it('is free of placeholder text in both languages, the Spanish page without English, and says no legal claim', () => {
+    for (const lang of ['en', 'es'] as const) {
+      setLang(lang);
+      const markup = html(<C21FindingsView sel={psel} />);
+      expect(markup).not.toMatch(/NaN|undefined|\[object/);
+      expect(markup).toContain(lang === 'en' ? 'no legal claim' : 'sin afirmación legal');
+      if (lang === 'es') {
+        expect(markup).toContain('La evidencia de cada hallazgo');
+        expect(markup).not.toContain('The evidence of each finding');
+        expect(markup).not.toContain('lower controlled odds');
+      }
+    }
   });
 });
