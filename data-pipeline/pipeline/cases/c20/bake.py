@@ -189,7 +189,9 @@ def build(seed: int, data_root: Path | str | None, *, only: tuple[str, ...] | No
     if "fed-shift" in todo:
         fetch.load_provenance(root, fetch.FED_ID)
         for name, file in fetch.FED_FILES:
-            portfolios[name] = fed.read_portfolio(fetch.path_of(root, fetch.FED_ID, file), name)
+            path = fetch.path_of(root, fetch.FED_ID, file)
+            fed.validate_portfolio(path, name)         # contract 1, as a population sample (G20); a rejected row stops the bake
+            portfolios[name] = fed.read_portfolio(path, name)
     values: dict[str, float] = {}
     for name, frame in frames.items():
         Xh, yh = frame.part("hold")
