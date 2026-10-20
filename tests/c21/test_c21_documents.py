@@ -55,7 +55,7 @@ def test_every_committed_document_validates_passes_the_checks_and_is_listed_with
     for pid, name in zip(PAIRS, VARIANTS):
         o = docs[name]["outputs"]
         assert o["pair_id"] == pid and (o["fit_year"], o["confirm_year"]) == (int(pid[:4]), int(pid[:4]) + 1)
-        assert docs[name]["provenance"]["riskvalidation_version"].endswith("+25e9538") and docs[name]["provenance"]["truth_status"] == "real-outcomes"
+        assert docs[name]["provenance"]["riskvalidation_version"].endswith("+2a21c0b") and docs[name]["provenance"]["truth_status"] == "real-outcomes"
 
 
 def test_no_outcome_conditioned_test_runs_and_only_the_allowlisted_ids_appear() -> None:
@@ -88,6 +88,32 @@ def test_every_document_carries_the_label_and_the_legal_sentences() -> None:
     quotes = " ".join(legal.QUOTES[k][1] for k in legal.QUOTES)
     assert "effects test" in quotes and "disparate-impact" in quotes and "Gross HMDA" in quotes
     assert "12 CFR 1002.6(a)" in legal.QUOTES["reg_b"][0] and "91 FR 21620" in legal.QUOTES["fha"][0]
+
+
+def test_the_reference_groups_and_the_missing_outcome_are_labelled_in_every_document() -> None:
+    """Review m5 and m6, decision G14: the reference group of each attribute is a convention, and the missing outcome has its sentence."""
+    for name, doc in all_documents().items():
+        conv = (doc["outputs"] if name != MODELS else doc["fit"])["conventions"]
+        text = conv["group_exclusion"]["en"]
+        assert "reference group" in text and "convention" in text and "customary comparison group" in text, name
+        for ref in legal.REFERENCE.values():
+            assert ref in text, (name, ref)
+        assert "35-44" in text and "no source names a reference age band" in text
+        assert "No outcome-conditioned test runs: public HMDA carries no loan outcome." in conv["outcome"]["note"]["en"]
+        assert "No hay ninguna prueba condicionada al resultado" in conv["outcome"]["note"]["es"]
+    assert legal.conventions_block() == (all_documents()[VARIANTS[0]]["outputs"]["conventions"])
+
+
+def test_the_alphas_of_the_built_documents_are_the_engines_own(built) -> None:
+    """Review m4: the alpha assertion of the committed documents, run on the documents of the planted bake too."""
+    for name in built.order:
+        for row in built.variants[name]["tests"]:
+            if row["test_id"] in ("fair.conditional_disparity", "fair.rate_spread_disparity", "fair.situation_testing"):
+                assert row["alpha_amber"] is None and row["alpha_red"] is None, (name, row["test_id"])
+            elif row["test_id"] in ("fair.two_proportion_z", "fair.fisher_exact"):
+                assert (row["alpha_amber"], row["alpha_red"]) == (0.05, 0.01), (name, row["test_id"])
+            else:
+                assert row["alpha_amber"] is None and row["alpha_red"] is None, (name, row["test_id"])
 
 
 def test_the_licence_stays_unverified_and_quotes_the_platform_terms() -> None:

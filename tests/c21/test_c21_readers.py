@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 from c21_support import API_HEADER, make_year, write_file
 
+from pipeline.cases.c21 import estimates as est
 from pipeline.cases.c21 import legal, reader
 
 SNAPSHOT_HEADER = [reader.canonical(c) for c in API_HEADER]
@@ -67,6 +68,36 @@ def test_non_attribute_categories_are_excluded_groups_and_dti_is_recoded_to_the_
     assert got == {"<20%": 0, "20%-<30%": 1, "30%-<36%": 2, "36": 3, "42": 3, "49": 3, "50%-60%": 4, ">60%": 5}
     with pytest.raises(reader.HmdaFormatError):
         reader.dti_bin("abc", "x")
+
+
+def test_the_data_notes_count_the_missing_and_the_unusable_values_of_the_planted_file(tmp_path: Path) -> None:
+    """Review m7: every n_missing of the data notes is checked against a count made on the planted file itself."""
+    rows = [list(r) for r in make_year(2022, 500)]
+    col = {c: API_HEADER.index(c) for c in API_HEADER}
+    for i, name in enumerate(("loan_to_value_ratio", "income", "loan_amount", "property_value")):
+        for k in range(3 + i):                                    # 3, 4, 5 and 6 missing cells, one marker each
+            rows[10 + 20 * i + k][col[name]] = ("NA", "Exempt", "", "NA")[i]
+    rows[400][col["income"]] = "0"                                   # present and not positive: counted apart, not missing
+    rows[401][col["income"]] = "-5"
+    y = reader.read_year(_file(tmp_path / "f.csv", 2022, rows), 2022)
+    s = reader.to_sample(y)
+    notes = {n["field"]: n for n in est.data_notes(s, y.action_counts)}
+    decided = [r for r in rows if r[col["action_taken"]] in ("1", "2", "3")]
+
+    def n_missing(name: str, keep=lambda r: True) -> int:
+        return sum(1 for r in decided if keep(r) and r[col[name]] in ("NA", "Exempt", ""))
+
+    assert notes["debt_to_income_ratio"]["n_missing"] == n_missing("debt_to_income_ratio") > 0
+    for name, field in (("loan_to_value_ratio", "combined_loan_to_value_ratio"), ("income", "income"), ("loan_amount", "loan_amount"),
+                        ("property_value", "property_value")):
+        assert notes[field]["n_missing"] == n_missing(name), field
+    assert notes["rate_spread"]["n_missing"] == n_missing("rate_spread", lambda r: r[col["action_taken"]] in ("1", "2"))
+    assert notes["applicant_age"]["n_missing"] == sum(1 for r in decided if r[col["applicant_age"]] == "8888") > 0
+    assert notes["action_taken"]["n_missing"] is None
+    non_positive = sum(1 for r in decided if r[col["income"]] not in ("NA", "Exempt", "") and float(r[col["income"]]) <= 0)
+    assert non_positive >= 1 and f"({non_positive} present values are not positive)" in notes["income"]["reason"]["en"]
+    null_notes = {n["field"]: n for n in est.data_notes()}                    # the models document: no sample, no invented count
+    assert all(n["n_missing"] is None for n in null_notes.values())
 
 
 SAMPLE = Path(__file__).resolve().parent / "data" / "sample-synthetic-api-2019.csv"

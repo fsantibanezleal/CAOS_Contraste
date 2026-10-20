@@ -2,18 +2,19 @@
 from __future__ import annotations
 
 from fractions import Fraction
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
 import statsmodels.api as sm
-from c21_support import API_HEADER, SEED, make_year, semantics
+from c21_support import API_HEADER, SEED, make_year, semantics, write_file
 from riskvalidation.fairness import metrics as rv_metrics
 from riskvalidation.fairness import situation as rv_situation
 from scipy import stats
 
 from pipeline.cases.c21 import estimates as est
-from pipeline.cases.c21 import legal
+from pipeline.cases.c21 import legal, reader
 
 PAIR = "pair-2018-19"
 Z95 = float(stats.norm.ppf(0.975))
@@ -182,20 +183,68 @@ def test_situation_testing_is_ceteris_paribus_with_range_normalization_and_categ
     doc = built.variants[PAIR]
     s = doc["outputs"]["situation_testing"]
     assert s["comparator"] == "ceteris-paribus" and s["distance_normalization"] == "range" and s["counterfactual_test"]["run"] is False
-    assert s["attribute"] == "derived_sex" and s["k"] == 30 and s["alpha"] == 0.05 and s["tau"] == 0 and s["centers"] == "excluded"
+    assert s["attribute"] == "derived_race" and s["k"] == 30 and s["alpha"] == 0.05 and s["tau"] == 0 and s["centers"] == "excluded"
     names = est.SITUATION_COLUMNS
     assert [n for n, c in zip(names, est.SITUATION_CATEGORICAL) if c] == ["loan_type", "loan_purpose", "lien_status", "occupancy_type"]
     assert "dti_bin" in names and not est.SITUATION_CATEGORICAL[names.index("dti_bin")]       # the binned ratio is ordinal: its bin index
     df = reference_frame(2018)
-    d = df[df.derived_sex.isin(["Female", "Male"]) & df.usable]
+    d = df[df.derived_race.isin(["Black or African American", "White"]) & df.usable]     # decision G15: race, not sex
     x = reference_controls(d)
     cols = [d.bin.to_numpy(float), *(x[f"ln_{c}"].to_numpy() for c in ("loan_to_value_ratio", "income", "loan_amount", "property_value")),
             *(d[c].astype(float).to_numpy() for c in ("loan_type", "loan_purpose", "lien_status", "occupancy_type"))]
-    res = rv_situation.situation_test(np.column_stack(cols), (d.derived_sex == "Female").astype(int).to_numpy(), d.y.to_numpy(), 30, tau=0.0,
+    res = rv_situation.situation_test(np.column_stack(cols), (d.derived_race == "Black or African American").astype(int).to_numpy(), d.y.to_numpy(), 30, tau=0.0,
                                       alpha=0.05, comparator="ceteris-paribus", normalization="range", categorical=est.SITUATION_CATEGORICAL)
     assert (s["n_complainants"], s["n_cases"], s["n_significant"]) == (res.n_complainants, res.n_cases, res.n_significant)
     row = next(r for r in doc["tests"] if r["test_id"] == "fair.situation_testing")
-    assert row["metric"] == pytest.approx(res.n_significant / res.n_complainants) and row["segment"] == "derived_sex"
+    assert row["metric"] == pytest.approx(res.n_significant / res.n_complainants) and row["segment"] == "derived_race"
     with pytest.raises(ValueError, match="counterfactual is required"):
-        rv_situation.situation_test(np.column_stack(cols), (d.derived_sex == "Female").astype(int).to_numpy(), d.y.to_numpy(), 30,
+        rv_situation.situation_test(np.column_stack(cols), (d.derived_race == "Black or African American").astype(int).to_numpy(), d.y.to_numpy(), 30,
                                     comparator="mutatis-mutandis")
+
+
+def _planted_file(tmp_path: Path, edit) -> "reader.Sample":
+    """The planted 2018 file with ``edit(rows)`` applied, read back through the reader and returned as a Sample."""
+    rows = [list(r) for r in make_year(2018, 2600, SEED)]
+    edit(rows)
+    write_file(tmp_path / "f.csv", rows)
+    return reader.to_sample(reader.read_year(tmp_path / "f.csv", 2018))
+
+
+def test_a_group_at_exactly_four_fifths_is_not_flagged_and_one_just_below_is(tmp_path: Path) -> None:
+    """Review m3: a float decision (0.6 / 0.75 = 0.7999999999999999) would flag the exact boundary; the planted file holds it."""
+    def edit(rows: list[list[str]]) -> None:
+        race, code = API_HEADER.index("derived_race"), API_HEADER.index("action_taken")
+        for r in rows:
+            r[race] = "Race Not Available"
+        spec = (("White", 100, 75), ("Asian", 100, 60), ("Black or African American", 100, 59))
+        i = 0
+        for group, n, approved in spec:
+            for k in range(n):
+                rows[i][race], rows[i][code] = group, "1" if k < approved else "3"
+                i += 1
+
+    s = _planted_file(tmp_path, edit)
+    d = est.build_design(s)
+    res = est.attribute_result("derived_race", s, d, s, d)
+    flags = {g["group"]: g["flag"] for g in res.block["four_fifths"]["groups"]}
+    assert res.block["four_fifths"]["highest_rate_group"] == "White" and 0.6 / 0.75 < 0.8     # the float rule would flag Asian
+    assert flags["Asian"] is False and flags["Black or African American"] is True and flags["White"] is False
+
+
+def test_an_indicator_whose_rows_all_share_one_decision_is_dropped_from_the_fit(tmp_path: Path) -> None:
+    """Review m8: the real 2023 Black against White fit drops loan_purpose=5; the planted file now holds such a level."""
+    def edit(rows: list[list[str]]) -> None:
+        purpose, code = API_HEADER.index("loan_purpose"), API_HEADER.index("action_taken")
+        for r in rows:
+            if r[purpose] == "5" and r[code] in ("1", "2"):
+                r[code] = "3"                                              # every row of loan purpose 5 is a denial
+
+    s = _planted_file(tmp_path, edit)
+    d = est.build_design(s)
+    fit = est.fit_contrast(s, d, "derived_race", "Black or African American", "White", "logistic")
+    assert fit.reason is None and fit.effect is not None
+    assert "loan_purpose=5" in fit.dropped and all(term != "loan_purpose=5" for term, _, _ in fit.terms)
+    assert all(np.isfinite(c) and abs(c) < 20 for _, c, _ in fit.terms)      # no complete separation left in the fit
+    plain = _planted_file(tmp_path, lambda rows: None)
+    kept = est.fit_contrast(plain, est.build_design(plain), "derived_race", "Black or African American", "White", "logistic")
+    assert kept.dropped == ()                                               # an ordinary file drops nothing

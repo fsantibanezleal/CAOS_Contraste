@@ -101,10 +101,11 @@ def results_block(variants: dict[str, dict[str, Any]], models: dict[str, Any]) -
                 ratio = "n/a" if cf is None else num(cf["size_ratio"])
                 w(f"| {o['pair_id']} | {FIELD_NAMES[a['field']]} | {c['group']} | {n_cell} | {orr} | {rss} | {conf} | {same} | {ratio} |")
     w("")
-    w("### Situation testing on sex, ceteris paribus comparator only")
+    w("### Situation testing of Black or African American against White applicants, ceteris paribus comparator only")
     w("")
-    w("Female applicants against male applicants, k neighbours, the range normalization; the counterfactual test is not run because public "
-      "HMDA gives no counterfactual dataset. The complainants are all women of the fit year with every control usable.")
+    w("Black or African American applicants against White applicants, k neighbours, the range normalization; the counterfactual test is not "
+      "run because public HMDA gives no counterfactual dataset. The complainants are all Black or African American applicants of the fit "
+      "year with every control usable.")
     w("")
     w("| Pair | k | Complainants | Cases (delta p above tau) | Significant | Share significant |")
     w("|---|---:|---:|---:|---:|---:|")
@@ -116,7 +117,14 @@ def results_block(variants: dict[str, dict[str, Any]], models: dict[str, Any]) -
     w("")
     w("### Lights of the test rows (green, amber, red, not evaluated)")
     w("")
-    w("An amber light says the indicator crossed its convention; none is red by contract; none is a finding of a violation.")
+    red_rows = [r for v in ids for r in variants[v]["tests"] if r["light"] == "red"]
+    all_rows = sum(len(variants[v]["tests"]) for v in ids)
+    red_tests = [t.removeprefix("fair.") for t in TEST_ORDER if any(r["test_id"] == t for r in red_rows)]
+    named = red_tests[0] if len(red_tests) == 1 else ", ".join(red_tests[:-1]) + " and " + red_tests[-1]
+    w("An amber light says the indicator crossed its convention. " + (
+        f"The {named} lights turn red below the 0.01 p-value convention ({len(red_rows)} of {all_rows} rows); the other tests are never "
+        "red by contract; " if red_rows else "No light is red in these documents; the other tests are never red by contract; ") +
+      "none is a finding of a violation.")
     w("")
     w("| Pair | " + " | ".join(t.removeprefix("fair.") for t in TEST_ORDER) + " |")
     w("|---|" + "---:|" * len(TEST_ORDER))
@@ -127,6 +135,18 @@ def results_block(variants: dict[str, dict[str, Any]], models: dict[str, Any]) -
             sel = [r["light"] for r in rows if r["test_id"] == t]
             cells.append("/".join(str(sum(1 for x in sel if x == k)) for k in ("green", "amber", "red", "not_evaluated")))
         w(f"| {variants[v]['outputs']['pair_id']} | " + " | ".join(cells) + " |")
+    w("")
+    w("### Findings of the documents (statistical findings, no legal claim)")
+    w("")
+    w("Each finding groups the test rows of its own document that show it. S2 is the most severe level used here; S4 `accepted` is a stated "
+      "limit.")
+    w("")
+    w("| Pair | Finding | Severity | Status | Test rows cited |")
+    w("|---|---|---|---|---:|")
+    for v in ids:
+        for f in variants[v]["findings"]:
+            cited = sum(1 for e in f["evidence"] if not e.startswith("design:"))
+            w(f"| {variants[v]['outputs']['pair_id']} | {f['id']} | {f['severity']} | {f['status']} | {cited if cited else 'design limit'} |")
     w("")
     w("### The fitted models")
     w("")

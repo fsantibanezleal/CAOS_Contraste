@@ -7,7 +7,7 @@ from pathlib import Path
 
 import contract_schemas as cs
 import pytest
-from c21_support import (API_HEADER, C21, DERIVED, MODELS, SEED, VARIANTS, Paths, committed, listing_problems, load, make_year, planted_downloads,
+from c21_support import (API_HEADER, C21, DERIVED, MODELS, ROOT, SEED, VARIANTS, Paths, committed, listing_problems, load, make_year, planted_downloads,
                          planted_root, semantics, values, write_file)
 from riskvalidation.fairness import metrics as rv_metrics
 
@@ -254,6 +254,37 @@ def test_adversarial_a_data_licence_sentence_is_refused() -> None:
     doc = doc_copy()
     doc["outputs"]["licence"]["status"] = "VERIFIED"
     assert schema_errors(doc)
+
+
+# --- CT-2118 -----------------------------------------------------------------------------------------------------------
+def test_adversarial_a_finding_citing_a_row_of_no_document_or_with_no_evidence_is_refused() -> None:
+    from pipeline.core.manifest import ContractViolation, _check_findings
+
+    doc = doc_copy()
+    ids = {f"{r['test_id']}@{r['model_id']}@{r['segment']}" for r in doc["tests"]}
+    _check_findings(doc["findings"], ids, "c21")                                                  # the committed findings pass
+    forged = copy.deepcopy(doc["findings"])
+    forged[0]["evidence"] = ["fair.conditional_disparity@hmda-logistic-decision@derived_race|Black or African American vs Asian-Pacific"]
+    with pytest.raises(ContractViolation, match="cites tests not in this artifact"):
+        _check_findings(forged, ids, "c21")
+    bare = copy.deepcopy(doc["findings"])
+    bare[0]["evidence"] = []
+    with pytest.raises(ContractViolation, match="names the tests that evidence it"):
+        _check_findings(bare, ids, "c21")
+
+
+# --- CT-2119 -----------------------------------------------------------------------------------------------------------
+def test_adversarial_an_engine_pin_the_sdd_does_not_name_or_a_branch_pin_is_refused() -> None:
+    from engine_pin import engine_pin_findings
+
+    req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
+    sdd = (ROOT / "docs" / "design" / "SDD.md").read_text(encoding="utf-8")
+    assert engine_pin_findings(req, sdd) == []
+    other = req.replace("2a21c0b85578357bc7eb13e9d8ffda9ab9b300fa", "25e9538faf10bfdbcde03c5adccffd8e86ec275c")
+    assert any("not the one the SDD technology row names" in m for m in engine_pin_findings(other, sdd))
+    branch = req.replace("2a21c0b85578357bc7eb13e9d8ffda9ab9b300fa", "task/0-08-000-batch3")
+    assert any("neither a release tag nor a full 40-hex commit" in m for m in engine_pin_findings(branch, sdd))
+    assert engine_pin_findings("", sdd) == ["the requirements carry no riskvalidation git pin"]
 
 
 def _write(path: Path, rows: list[list[str]]) -> Path:

@@ -1,7 +1,7 @@
 # Design: U14-P3, case C21 (fair-lending disparity testing on HMDA decisions, Delaware, 2018 to 2024)
 
 Status: live. Unit sizing `plans/contraste/units/U14-sizing.md` (CAOS_MANAGE), decisions Q1 to Q4, Q13, C1 to C7, V1 to V4, G9 to G13.
-Contracts: `c21-outputs`, `c21-models` (`docs/contracts/schemas/c21/`), `engine-fairness-api` 1.1.0
+Contracts: `c21-outputs`, `c21-models` (`docs/contracts/schemas/c21/`), `engine-fairness-api` 1.2.0
 (`docs/contracts/engine/fairness-api.md`), `contract-family-scored_sample` (bumped, `outcome: none` with `decision`).
 
 ## Question
@@ -42,7 +42,8 @@ Then per group against the reference group (a pairwise fit on the rows of those 
   The contract holds one confirmation per contrast, the controlled decision estimate; the rate-spread confirmation is the
   `fair.replication` row whose segment ends `|rate_spread`.
 
-Situation testing runs once per pair, on sex (Female against Male) in the fit year: the ceteris paribus comparator only, k = 30, alpha 0.05,
+Situation testing runs once per pair, on Black or African American applicants against White applicants in the fit year (decision G15: the
+attribute with the persistent gap; sex has none): the ceteris paribus comparator only, k = 30, alpha 0.05,
 tau 0, the range normalization (decisions V4 and C6), the nominal `loan_type`, `loan_purpose`, `lien_status` and `occupancy_type`
 marked categorical and the binned debt-to-income entering as its bin index (decision G10). The counterfactual test is not run: public
 HMDA gives no counterfactual dataset. The document holds one situation block, so one attribute is tested.
@@ -74,14 +75,35 @@ device data root under `raw/hmda/` with a provenance sidecar. Each pair document
 `tests/contracts_u14/semantics.py::check_c21` before it is written. A year that is not in the data root stops the pairs that need it,
 which are named with the URL; nothing is written for them.
 
-## One adaptation of an engine row
+## The engine rows are the engine's (`engine-fairness-api` 1.2.0)
 
-The engine writes `alpha_amber = 1 - level` (0.050000000000000044) and no red level on the rows of `conditional_disparity` and
-`rate_spread_disparity`, and the cut points of the share (0.20, and 2.0 as the never-red sentinel) in `alpha_amber` and `alpha_red` on
-`situation_testing`. Those are not p-value thresholds, and the web gates of the product (`src/lib/labels.test.ts`,
-`src/engine/parity.test.ts`) read the alphas of a row as one. The bake sets both alphas to null on those three tests and changes nothing
-else: the levels stay in `extras.thresholds` and in the policy version, and the light is the engine's. The engine owner should drop the
-alphas of these rows; the adaptation is then a no-op.
+Under engine-fairness-api 1.2.0 the rows of `conditional_disparity`, `rate_spread_disparity` and `situation_testing` carry null alphas, with the
+interval level and the share cut points in `extras.thresholds` and in the policy version, so the web gates that read the alphas of a row as
+p-value thresholds hold without any change in the product. The bake therefore alters no engine row: `estimates._segment` replaces the
+segment and appends "no legal claim" to the notes of a row that lacks it, and nothing else. The engine is pinned at the full commit
+`2a21c0b85578357bc7eb13e9d8ffda9ab9b300fa` that the technology row of the SDD names (`tests/engine_pin.py`).
+
+## The reference groups (a named convention, decision G14)
+
+The reference group of each attribute is the customary comparison group: White, Not Hispanic or Latino and Male. For age no source names
+one; 35-44 stays as the reference band. Each document states this in `conventions.group_exclusion`. The alternative, contrasting 62 and over
+with under 62 (`applicant_age_above_62`, Regulation B 1002.6(b)(2)), would change every age contrast and is not run.
+
+## The findings (decision G16)
+
+`findings.py` writes the findings of a pair document from its own test rows. A finding groups what several rows show and cites them as
+`test_id@model@segment`; a stated limit cites `design:<name>`. Every title carries "no legal claim" and none states a violation.
+
+| Id | Severity | Status | Shows | Cites |
+|---|---|---|---|---|
+| `F-CONTROLLED-REPEATS` | S2 | open | the controlled disparity of group contrasts whose 95 percent interval excludes 0 in the fit year and whose sign repeats on t + 1 | the `fair.conditional_disparity` row and its `|controlled` `fair.replication` row, per contrast |
+| `F-CONTROLLED-NOT-REPEATED` | S3 | open | the same, where the sign does not repeat | the same two rows |
+| `F-RATE-SPREAD-REPEATS` | S3 | open | the rate-spread disparity whose interval excludes 0 and whose sign repeats | the `fair.rate_spread_disparity` row and its `|rate_spread` replication row |
+| `F-UNCONDITIONAL-GAP` | S4 | open | the attributes whose parity light is not green, as an indicator only, with the sentence of the Interagency Procedures | the `fair.demographic_parity` and `fair.adverse_impact` rows of those attributes |
+| `F-LIMIT-CREDIT-SCORE` | S4 | accepted | the credit score is missing from public HMDA | `design:credit-score-missing` |
+| `F-LIMIT-COMPLETE-CASES` | S4 | accepted | the controlled fits use complete cases | `design:complete-case-selection` |
+
+A finding whose rule matches no row is not written. A rate-spread interval that excludes 0 without repeating is not a finding.
 
 ## What the documents do not say
 
