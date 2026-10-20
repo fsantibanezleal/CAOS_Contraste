@@ -153,3 +153,7 @@ table.ct-wrap-head th { white-space: normal; }
 /* the heading of a part inside one documentation section (a Methodology topic is one method section) */
 .ct-sub { margin: 1.25rem 0 0.25rem; font-size: 1.05rem; font-weight: 650; color: var(--color-fg); }
 
+
+/* a chip in a rail wraps at the rail's width instead of leaving it (ADR-0071 rule 6; a variant's short title in C15 is
+   longer than the rail in Spanish). A chip that already fits keeps its single line and its size. */
+.caos-wb-rail .chip, .caos-focus-rail .chip { white-space: normal; max-width: 100%; text-align: left; }

@@ -218,6 +218,11 @@ describe('the C02 instrument', () => {
     expect(markup).toContain('The provisions engine did not run for this file.');
     expect(markup).toContain(NA);
     expect(markup).not.toContain('caos-bars');
+    // a declared absence draws nothing: the rows are a definition list, not a table that counts as the card's drawing (G6)
+    expect(markup).not.toContain('<table');
+    expect(markup).toContain('data-table="ecl-impact"');
+    expect(markup).toContain('data-measure="ecl-12m"');
+    expect(markup).toContain(escapeHtml(odd.outputs.impact_detail.unit));
   });
 
   it('a test that did not run sits under its view and shows its reason, never a number', () => {
