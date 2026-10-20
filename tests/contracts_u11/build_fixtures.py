@@ -412,8 +412,11 @@ def sp_under(variant: str, mult: float = 1.0, uninsured_share: float | None = No
 # ------------------------------------------------------------------------------------------------------ the LCR block
 
 
-def lcr_block(central_category: str = "non_financial_corporate", detail: bool = True, rate_override: float | None = None) -> dict:
+def lcr_block(central_category: str = "non_financial_corporate", detail: bool = True, rate_override: float | None = None,
+              empty_stock: bool = False) -> dict:
     l1, l2a, l2b = 20_000_000.0, 8_000_000.0, 12_000_000.0   # fixture levels chosen to exercise the 15 percent cap
+    if empty_stock:   # an empty HQLA stock (decision X6): the Level 2 shares are undefined, null with their reason, never zero
+        l1 = l2a = l2b = 0.0
     adj15 = max(l2b - 15 / 85 * (l1 + l2a), l2b - 15 / 60 * l1, 0.0)
     adj40 = max(l2a + l2b - adj15 - 2 / 3 * l1, 0.0)
     hqla = r6(l1 + l2a + l2b - r6(adj15) - r6(adj40))
@@ -454,7 +457,10 @@ def lcr_block(central_category: str = "non_financial_corporate", detail: bool = 
                          "comportamiento sintetico de depositos: no es el LCR informado ni regulatorio del banco."),
         "hqla": {"l1": r6(l1), "l2a": r6(l2a), "l2b": r6(l2b), "adjusted_l1": r6(l1), "adjusted_l2a": r6(l2a), "adjusted_l2b": r6(l2b),
                  "adj_15": r6(adj15), "adj_40": r6(adj40), "hqla": hqla,
-                 "l2_share": r10((l2a + l2b - r6(adj15) - r6(adj40)) / hqla), "l2b_share": r10((l2b - r6(adj15)) / hqla),
+                 "l2_share": None if empty_stock else r10((l2a + l2b - r6(adj15) - r6(adj40)) / hqla),
+                 "l2b_share": None if empty_stock else r10((l2b - r6(adj15)) / hqla),
+                 "shares_reason": txt("The HQLA stock is empty: the Level 2 and Level 2B shares are undefined, not zero.",
+                                      "El stock HQLA esta vacio: las proporciones de nivel 2 y 2B no estan definidas, no son cero.") if empty_stock else None,
                  "caps": {"l2_cap": 0.4, "l2b_cap": 0.15}},
         "outflows": outs, "total_outflows": central["total_outflows"], "inflows": ins,
         "total_inflows": r6(sum(x["amount"] for x in ins)), "inflow_cap": 0.75, "inflows_counted": central["inflows_counted"],
@@ -729,7 +735,7 @@ VARIANT_LABEL = {
 # ------------------------------------------------------------------------------------------------------ the documents
 
 
-def scenario_doc(variant: str) -> dict:
+def scenario_doc(variant: str, empty_stock: bool = False) -> dict:
     h = H[variant]
     row = next(r for r in CONV["variant_scenarios"]["rows"] if r["variant"] == variant)
     basis = "fair-value" if variant == "htm-losses" else "amortised-cost"
@@ -738,7 +744,7 @@ def scenario_doc(variant: str) -> dict:
     if variant == "lcr-standard":
         # the LCR defines no daily path: the deposit segments of the central mapping carry the 30-day LCR rates as full roll-offs
         segs = []
-        lcr = lcr_block()
+        lcr = lcr_block(empty_stock=empty_stock)
         path = None
         for name, cls, bal, rate_row in (("retail-insured", "other-retail", float(FDIC["DEPINS"]), lcr["outflows"][0]),
                                          ("non-operational-corporate", "non-operational-non-financial-corporates", float(FDIC["DEPUNA"]), lcr["outflows"][1]),
@@ -1031,6 +1037,7 @@ def write(name: str, doc: dict) -> None:
 def main() -> None:
     for v in ("lcr-standard", "list-adverse", "list-extreme", "fast-run", "htm-losses"):
         write(f"variant-scenario-{v}-fixture.json", scenario_doc(v))
+    write("variant-scenario-lcr-empty-stock-fixture.json", scenario_doc("lcr-standard", empty_stock=True))
     write("variant-reverse-fixture.json", reverse_doc())
     write("models-fixture.json", models_doc())
 

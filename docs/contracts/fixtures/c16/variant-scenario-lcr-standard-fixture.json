@@ -1143,6 +1143,7 @@
         "hqla": 32941176.470588,
         "l2_share": 0.3928571429,
         "l2b_share": 0.15,
+        "shares_reason": null,
         "caps": {
           "l2_cap": 0.4,
           "l2b_cap": 0.15

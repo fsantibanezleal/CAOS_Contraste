@@ -19,9 +19,43 @@ def approx(a, b, rel=1e-9, abs_=1e-6) -> bool:
     return bool(np.isclose(a, b, rtol=rel, atol=abs_))
 
 
-def test_the_engine_is_pinned_by_its_release_tag() -> None:
+ENGINE_PIN = re.compile(r"^riskvalidation(?:\[market\])? @ git\+https://github\.com/fsantibanezleal/CAOS_RiskValidation(?:\.git)?@(?P<ref>\S+)\s*$", re.M)
+SDD_ENGINE_ROW = re.compile(r"^\|\s*engine\s*\|\s*riskvalidation\s*\|\s*(?P<ref>[^|\s]+)\s*\|", re.M)
+
+
+def engine_pin_findings(requirements: str, sdd: str) -> list[str]:
+    """The engine is pinned by a release tag, or (until the tag is cut) by a full 40-hex commit that the SDD technology row names too."""
+    pin = ENGINE_PIN.search(requirements)
+    if pin is None:
+        return ["the requirements carry no riskvalidation git pin"]
+    ref = pin.group("ref")
+    if re.fullmatch(r"v\d+\.\d+\.\d+", ref):
+        return []
+    if not re.fullmatch(r"[0-9a-f]{40}", ref):
+        return [f"the pin {ref} is neither a release tag nor a full 40-hex commit"]
+    row = SDD_ENGINE_ROW.search(sdd)
+    if row is None or row.group("ref") != ref:
+        return [f"the commit pin {ref} is not the one the SDD technology row names ({row.group('ref') if row else 'no row'})"]
+    return []
+
+
+def test_the_engine_is_pinned_by_its_release_tag_or_by_the_commit_the_sdd_names() -> None:
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
-    assert re.search(r"^riskvalidation(?:\[market\])? @ git\+https://github\.com/fsantibanezleal/CAOS_RiskValidation(?:\.git)?@v\d+\.\d+\.\d+\s*$", req, re.M)
+    sdd = (ROOT / "docs" / "design" / "SDD.md").read_text(encoding="utf-8")
+    assert engine_pin_findings(req, sdd) == []
+
+
+def test_the_pin_check_refuses_a_planted_mismatch() -> None:
+    sha, other = "25e9538faf10bfdbcde03c5adccffd8e86ec275c", "a52888e3d2b9a3331646d6fa831525e8283118b1"
+    line = "riskvalidation[market] @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation.git@{}\n"
+    row = "| engine | riskvalidation | {} | the validation tests | none |\n"
+    assert engine_pin_findings(line.format(sha), row.format(sha)) == []
+    assert engine_pin_findings(line.format("v0.07.000"), row.format("v0.07.000")) == []
+    assert engine_pin_findings(line.format(sha), row.format(other)) != []          # the SDD row names another commit
+    assert engine_pin_findings(line.format(sha), "") != []                          # no SDD row
+    assert engine_pin_findings(line.format(sha[:7]), row.format(sha[:7])) != []     # an abbreviated commit
+    assert engine_pin_findings(line.format("main"), row.format("main")) != []        # a branch
+    assert engine_pin_findings("riskvalidation==0.7.0\n", row.format(sha)) != []    # no git pin
 
 
 def test_the_pinned_engine_reproduces_the_contract_goldens() -> None:
