@@ -74,6 +74,15 @@ device data root under `raw/hmda/` with a provenance sidecar. Each pair document
 `tests/contracts_u14/semantics.py::check_c21` before it is written. A year that is not in the data root stops the pairs that need it,
 which are named with the URL; nothing is written for them.
 
+## One adaptation of an engine row
+
+The engine writes `alpha_amber = 1 - level` (0.050000000000000044) and no red level on the rows of `conditional_disparity` and
+`rate_spread_disparity`, and the cut points of the share (0.20, and 2.0 as the never-red sentinel) in `alpha_amber` and `alpha_red` on
+`situation_testing`. Those are not p-value thresholds, and the web gates of the product (`src/lib/labels.test.ts`,
+`src/engine/parity.test.ts`) read the alphas of a row as one. The bake sets both alphas to null on those three tests and changes nothing
+else: the levels stay in `extras.thresholds` and in the policy version, and the light is the engine's. The engine owner should drop the
+alphas of these rows; the adaptation is then a no-op.
+
 ## What the documents do not say
 
 They do not say that any lender discriminated. The unconditional rates are indicators only (the Interagency procedures state that gross
