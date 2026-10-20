@@ -251,7 +251,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         label: { en: 'Loan type', es: 'Tipo de préstamo' },
         content: (
           <>
-            <RailSelect id="c18-loan" label={{ en: 'Federal Reserve loan type', es: 'Tipo de préstamo de la Reserva Federal' }} options={LOAN_ORDER.map((id) => ({ id, label: text(LOAN_TEXT, id) }))} value={sel.loan} onChange={setLoan} />
+            <RailSelect id="c18-loan" label={{ en: 'Loan type', es: 'Tipo de préstamo' }} options={LOAN_ORDER.map((id) => ({ id, label: text(LOAN_TEXT, id) }))} value={sel.loan} onChange={setLoan} />
             <LoanReadout sel={sel} />
           </>
         ),

@@ -469,7 +469,6 @@ export function PathReadout({ sel }: { sel: C18Sel | null }) {
       items={[
         { label: { en: 'Jump-off', es: 'Punto de partida' }, value: p?.transposition.target.value ?? null, ...(unit ? { unit } : { unitless: true as const }), format: { digits: 4 }, hint: { en: 'The last observed value of Banco Andino, onto which the shape of the published path is transposed.', es: 'El último valor observado de Banco Andino, al que se lleva la forma de la trayectoria publicada.' } },
         { label: { en: 'Peak deviation', es: 'Desviación máxima' }, value: s?.path_peak_deviation ?? null, ...(unit ? { unit } : { unitless: true as const }), format: { digits: 4 }, hint: { en: 'The largest deviation of the path from its starting level.', es: 'La mayor desviación de la trayectoria desde su nivel inicial.' } },
-        { label: { en: 'Crisis peak', es: 'Máximo de la crisis' }, value: s?.history_peak_deviation ?? null, ...(unit ? { unit } : { unitless: true as const }), format: { digits: 4 }, hint: { en: 'The largest deviation in the global financial crisis, 2008 to 2009.', es: 'La mayor desviación en la crisis financiera global, 2008 a 2009.' } },
         { label: { en: 'Ratio', es: 'Razón' }, value: s?.ratio ?? null, unitless: true, format: { digits: 4 }, hint: { en: 'The path peak over the crisis peak; the case requires at least the minimum ratio.', es: 'El máximo de la trayectoria sobre el de la crisis; el caso exige al menos la razón mínima.' } },
       ]}
     />
@@ -487,7 +486,6 @@ export function LoanReadout({ sel }: { sel: C18Sel | null }) {
       title={sel ? text(LOAN_TEXT, sel.loan) : { en: 'The loan type', es: 'El tipo de préstamo' }}
       items={[
         rate(b?.metrics.rmse, { en: 'The root mean squared error of the predicted rate against the realised rate over 2020 to 2025.', es: 'La raíz del error cuadrático medio de la tasa predicha contra la realizada entre 2020 y 2025.' }, { en: 'Error', es: 'Error' }),
-        rate(b?.metrics.peak_predicted, { en: 'The highest rate the satellite predicted, fitted on data before 2020.', es: 'La tasa más alta que predijo el satélite, ajustado con datos anteriores a 2020.' }, { en: 'Predicted peak', es: 'Máximo predicho' }),
         rate(b?.metrics.peak_realised, { en: 'The highest rate realised in the window; a realised rate can be negative.', es: 'La tasa más alta realizada en la ventana; una tasa realizada puede ser negativa.' }, { en: 'Realised peak', es: 'Máximo realizado' }),
         { label: { en: 'Timing', es: 'Desfase' }, value: b?.metrics.peak_timing_error_quarters ?? null, unit: { en: 'quarters', es: 'trimestres' }, format: { decimals: 0 }, hint: { en: 'The quarter of the predicted peak less the quarter of the realised peak; positive when the model is late.', es: 'El trimestre del máximo predicho menos el del máximo realizado; positivo cuando el modelo llega tarde.' } },
       ]}
@@ -568,7 +566,6 @@ export function FactorReadout({ sel }: { sel: C18Sel | null }) {
       variant={sel?.data.variant}
       title={f ? f.label : { en: 'The factor', es: 'El factor' }}
       items={[
-        { label: { en: 'Spread', es: 'Dispersión' }, value: f?.sd ?? null, ...(unit ? { unit } : { unitless: true as const }), format: { digits: 4 }, hint: { en: 'The standard deviation of the factor in 1985 to 2019.', es: 'La desviación estándar del factor entre 1985 y 2019.' } },
         { label: { en: 'Solved shock', es: 'Choque resuelto' }, value: r?.solution.x_star[i] ?? null, ...(unit ? { unit } : { unitless: true as const }), format: { digits: 4 }, hint: { en: 'The deviation from the baseline in the minimum-distance scenario that breaks the bank.', es: 'La desviación desde la línea base en el escenario de mínima distancia que quiebra al banco.' } },
         { label: { en: 'Standardised', es: 'Estandarizado' }, value: r?.solution.z_star[i] ?? null, unitless: true, format: { digits: 4 }, hint: { en: 'The same shock in standard deviations of the factor.', es: 'El mismo choque en desviaciones estándar del factor.' } },
         { label: { en: 'Loss per unit', es: 'Pérdida por unidad' }, value: gm.value, unit: gm.unit, format: gm.format, hint: { en: 'The gradient of the loss in this factor; not available when the loss model is nonlinear.', es: 'El gradiente de la pérdida en este factor; no disponible cuando el modelo de pérdida es no lineal.' } },

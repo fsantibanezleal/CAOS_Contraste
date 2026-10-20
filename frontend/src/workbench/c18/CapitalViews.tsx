@@ -429,7 +429,7 @@ export function Annex3View({ sel }: { sel: C18Sel | null }) {
         }}
       >
         <ChartOverTable
-          chartMin={`${bars.length * 1.7 + 4}rem`}
+          chartMin={`${bars.length * 2.2 + 3}rem`}
           chart={
             <BarChart
               title={{ en: 'Capital needed by risk, legal requirement and internal measure', es: 'Capital necesario por riesgo, exigencia legal y medición interna' }}
