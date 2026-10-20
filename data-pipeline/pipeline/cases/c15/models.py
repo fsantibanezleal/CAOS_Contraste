@@ -20,7 +20,7 @@ from .variant import SHOCKS, SIGN, UNITS, UR_FLOOR, OTHER_FLOOR, _size, bank_blo
 EN = ["Overnight", "O/N to 1M", "1M to 3M", "3M to 6M", "6M to 9M", "9M to 1Y", "1Y to 1.5Y", "1.5Y to 2Y", "2Y to 3Y", "3Y to 4Y",
       "4Y to 5Y", "5Y to 6Y", "6Y to 7Y", "7Y to 8Y", "8Y to 9Y", "9Y to 10Y", "10Y to 15Y", "15Y to 20Y", "Over 20Y"]
 ES = ["A la vista", "Hasta 1M", "1M a 3M", "3M a 6M", "6M a 9M", "9M a 1A", "1A a 1,5A", "1,5A a 2A", "2A a 3A", "3A a 4A",
-      "4A a 5A", "5A a 6A", "6A a 7A", "7A a 8A", "8A a 9A", "9A a 10A", "10A a 15A", "15A a 20A", "Mas de 20A"]
+      "4A a 5A", "5A a 6A", "6A a 7A", "7A a 8A", "8A a 9A", "9A a 10A", "10A a 15A", "15A a 20A", "Más de 20A"]
 ANNEX1 = "RAN 21-13 Annex 1 (dossier 03 F.2)"
 THRESHOLDS = (("nii-tier1", 0.05, "Tier 1 capital"), ("eve-tier1", 0.15, "Tier 1 capital"),
               ("nii-margin", 0.18, "net interest and indexation margin, 12 months"))

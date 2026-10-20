@@ -34,10 +34,10 @@ DELTA_MAX = 6.0
 SHIFT_PERMUTATIONS = 199
 SHAP_ROWS = 2000
 ASSUMPTIONS = (
-    ("calibrated-probabilities", t("The PDs are calibrated: the isotonic map is fitted on the calibration slice", "Las PD estan calibradas: el mapa isotonico se ajusta en el tramo de calibracion")),
-    ("no-concept-drift", t("The link between the ratios and bankruptcy is unchanged by the shift", "La relacion entre las razones y la quiebra no cambia con el desplazamiento")),
-    ("no-extrapolation", t("The shifted rows stay inside the region the model was fitted on", "Las filas desplazadas permanecen dentro de la region en que se ajusto el modelo")),
-    ("adequate-sample", t("The window holds enough rows for the expected confusion to be stable", "La ventana tiene filas suficientes para que la confusion esperada sea estable")))
+    ("calibrated-probabilities", t("The PDs are calibrated: the isotonic map is fitted on the calibration slice", "Las PD están calibradas: el mapa isotónico se ajusta en el tramo de calibración")),
+    ("no-concept-drift", t("The link between the ratios and bankruptcy is unchanged by the shift", "La relación entre las razones y la quiebra no cambia con el desplazamiento")),
+    ("no-extrapolation", t("The shifted rows stay inside the region the model was fitted on", "Las filas desplazadas permanecen dentro de la región en que se ajustó el modelo")),
+    ("adequate-sample", t("The window holds enough rows for the expected confusion to be stable", "La ventana tiene filas suficientes para que la confusión esperada sea estable")))
 
 
 def psi_of(base: np.ndarray, cur: np.ndarray) -> float:
@@ -180,12 +180,12 @@ def build(frame: Frame, rungs: dict[str, Any], portfolios: dict[str, fed.Portfol
     return {"outputs": outputs, "tests": tests, "impact": impact, "models": [model_id], "anchor_psi": anchor,
             "limits": [("fed-no-outcome", t("The Fed portfolios carry no default outcome and no decision: they fix the size of a synthetic shift and show real drift, "
                                             "and no model is scored on them",
-                                            "Las carteras de la Fed no tienen resultado de incumplimiento ni decision: fijan el tamano de un desplazamiento sintetico y "
-                                            "muestran deriva real, y ningun modelo se puntua sobre ellas")),
+                                            "Las carteras de la Fed no tienen resultado de incumplimiento ni decisión: fijan el tamaño de un desplazamiento sintético y "
+                                            "muestran deriva real, y ningún modelo se puntúa sobre ellas")),
                        ("synthetic-shift", t("The shift is synthetic: a known mean displacement of five features, its size matched to the rating drift of the Fed "
                                             "higher-risk portfolio, with the labels and the concept unchanged",
-                                            "El desplazamiento es sintetico: un desplazamiento medio conocido de cinco variables, de tamano igualado a la deriva de "
-                                            "calificacion de la cartera de mayor riesgo de la Fed, con las etiquetas y el concepto sin cambio"))]}
+                                            "El desplazamiento es sintético: un desplazamiento medio conocido de cinco variables, de tamaño igualado a la deriva de "
+                                            "calificación de la cartera de mayor riesgo de la Fed, con las etiquetas y el concepto sin cambio"))]}
 
 
 def _psi_row(base: np.ndarray, cur: np.ndarray, model_id: str):

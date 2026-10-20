@@ -59,7 +59,7 @@ def calibration(rows: list[runoff.ObservedRun], rule: str) -> tuple[dict[str, An
                                  "source": "maximum of the implied daily rates of the pre-2023 Table A.1 rows (the calibration rule)"},
            "anchor": _anchor(),
            "statement": txt("Calibrated on pre-2023 rows, scored on the 2023 rows; the SVB observation is a labelled anchor, not a forecast.",
-                            "Calibrado con filas anteriores a 2023, evaluado en las filas de 2023; la observacion de SVB es un ancla rotulada.")}
+                            "Calibrado con filas anteriores a 2023, evaluado en las filas de 2023; la observación de SVB es un ancla rotulada.")}
     return blk, fit
 
 
@@ -86,8 +86,8 @@ def generator_block(report: Report, fit_rate: float, conv: dict, seed: int, n_dr
                              "p_enter_stress": P_ENTER, "p_exit_stress": P_EXIT,
                              "basis": txt(f"Share of the call-report deposits mapped to the segment ({s['field']}); no withdrawal in the calm state; {what}; the "
                                           "transition law is a convention.",
-                                          f"Proporcion de los depositos del reporte asignada al segmento ({s['field']}); sin retiros en calma; {what}; la ley de "
-                                          "transicion es una convencion.")})
+                                          f"Proporción de los depósitos del reporte asignada al segmento ({s['field']}); sin retiros en calma; {what}; la ley de "
+                                          "transición es una convención.")})
     gen = DepositorGenerator(DepositorConfig(tuple(cfg_segments), N_DEPOSITORS, GENERATOR_HORIZON))
     truth = gen.truth()["outflow_rate"]
     rows = [{"segment": k, "horizon_days": n, "true_outflow_rate": float(truth[k][n - 1])} for k in truth for n in TRUTH_HORIZONS]
@@ -137,11 +137,11 @@ def models_fit(report: Report, conv: dict, cal: dict[str, Any], generator: dict[
                 "sources": {"annex": "ECB LiST 2019 results annex", "n_banks_slide": 9, "median_slides": [15], "dossier": "dossier 05 E.1 line 240"},
                 "statement": txt("Reference points of the LiST 2019 stress test, not results of this model: 103 banks, median reported survival period 176 days "
                                  "under the Adverse and 122 days under the Extreme shock (results annex slides 9 and 15).",
-                                 "Puntos de referencia del test de estres LiST 2019, no resultados de este modelo: 103 bancos, periodo de supervivencia mediano "
-                                 "informado de 176 dias en el Adverso y 122 en el Extremo.")},
+                                 "Puntos de referencia del test de estrés LiST 2019, no resultados de este modelo: 103 bancos, periodo de supervivencia mediano "
+                                 "informado de 176 días en el Adverso y 122 en el Extremo.")},
             "calendar_note": txt("The rates are defined on the 2019 TARGET2 relevant-day calendar (125 relevant days in six months); the C16 ladder runs on the "
                                  "US business-day convention.",
-                                 "Las tasas se definen sobre el calendario TARGET2 de 2019 (125 dias en seis meses); la escalera de C16 usa dias habiles de EE.UU.")},
+                                 "Las tasas se definen sobre el calendario TARGET2 de 2019 (125 días en seis meses); la escalera de C16 usa días hábiles de EE.UU.")},
         "list_goldens": goldens,
         "table_a1": {"source": "BCBS, Report on the 2023 banking turmoil (d555), Box A, Table A.1",
                      "attribution": "Bank for International Settlements, source cited; one table within the limited-extract terms (addendum L2.1)",

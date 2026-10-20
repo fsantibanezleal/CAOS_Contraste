@@ -90,7 +90,7 @@ def engine_version() -> str:
 
 
 def _model_summaries(ev: str, a: float, sigma: float) -> list[dict[str, Any]]:
-    return [{"id": vt.MODEL_ID, "family": "ccr", "rung": "hw1f", "title": vt.text("Hull-White one factor, exposure and CVA", "Hull-White de un factor, exposicion y CVA"),
+    return [{"id": vt.MODEL_ID, "family": "ccr", "rung": "hw1f", "title": vt.text("Hull-White one factor, exposure and CVA", "Hull-White de un factor, exposición y CVA"),
              "short_title": vt.text("HW1F", "HW1F"), "engine": "riskvalidation", "engine_version": ev, "licence": "MIT", "calibration": None,
              "parameters": {"a": {"value": float(a), "unit": "per year"}, "sigma": {"value": float(sigma), "unit": "per square-root year"}},
              "checkpoint_sha256": None}]
@@ -257,7 +257,7 @@ def build(seed: int, data_root: Path | str | None, *, n_paths: int | None = None
 )
         rows = [{**r, "model_id": r.get("model_id") or vt.MODEL_ID} for r in rows]    # every row names the model it tests
         impact = {
-            "sa_ccr_ead": {"value": out["sa_ccr"]["ead"]["amount"], "unit": "USD", "label": vt.text("SA-CCR exposure at default", "Exposicion en incumplimiento SA-CCR")},
+            "sa_ccr_ead": {"value": out["sa_ccr"]["ead"]["amount"], "unit": "USD", "label": vt.text("SA-CCR exposure at default", "Exposición en incumplimiento SA-CCR")},
             "cva": {"value": out["cva_dva"]["cva"]["amount"], "unit": "USD", "label": vt.text("CVA", "CVA")},
             "eepe": {"value": out["exposure"]["eepe"]["amount"], "unit": "USD", "label": vt.text("Effective EPE", "EPE efectivo")}}
         docs[sp.variant] = build_artifact(case_id=CASE_ID, variant_id=sp.variant, model=_model_summaries(ev, fit.a, fit.sigma), outputs=out,
@@ -316,12 +316,12 @@ def _sum(root: Path, rel: str) -> str:
 
 
 TITLES = {
-    "single-swap": ("Single swap", "Un swap", "One 10 year payer swap of 10M USD, uncollateralised.", "Un swap pagador a 10 anos de 10M USD, sin colateral."),
+    "single-swap": ("Single swap", "Un swap", "One 10 year payer swap of 10M USD, uncollateralised.", "Un swap pagador a 10 años de 10M USD, sin colateral."),
     "netting-set": ("Netting set", "Conjunto de neteo", "Four swaps under one netting agreement, uncollateralised.", "Cuatro swaps bajo un acuerdo de neteo, sin colateral."),
-    "csa-mpor-10d": ("CSA, MPoR 10 days", "CSA, MPoR 10 dias", "The netting set under a CSA with a margin period of risk of 10 business days.", "El conjunto de neteo bajo un CSA con periodo de margen de riesgo de 10 dias habiles."),
-    "csa-mpor-20d": ("CSA, MPoR 20 days", "CSA, MPoR 20 dias", "The netting set under a CSA with a margin period of risk of 20 business days.", "El conjunto de neteo bajo un CSA con periodo de margen de riesgo de 20 dias habiles."),
-    "with-im": ("With initial margin", "Con margen inicial", "The 10 day CSA with a dynamic initial margin (a regression proxy, not SIMM).", "El CSA de 10 dias con margen inicial dinamico (un proxy de regresion, no SIMM)."),
-    "wrong-way-risk": ("Wrong-way risk", "Riesgo de direccion equivocada", "The netting set with a counterparty hazard that rises with the portfolio value.", "El conjunto de neteo con un hazard de la contraparte que sube con el valor del portafolio."),
+    "csa-mpor-10d": ("CSA, MPoR 10 days", "CSA, MPoR 10 días", "The netting set under a CSA with a margin period of risk of 10 business days.", "El conjunto de neteo bajo un CSA con periodo de margen de riesgo de 10 días hábiles."),
+    "csa-mpor-20d": ("CSA, MPoR 20 days", "CSA, MPoR 20 días", "The netting set under a CSA with a margin period of risk of 20 business days.", "El conjunto de neteo bajo un CSA con periodo de margen de riesgo de 20 días hábiles."),
+    "with-im": ("With initial margin", "Con margen inicial", "The 10 day CSA with a dynamic initial margin (a regression proxy, not SIMM).", "El CSA de 10 días con margen inicial dinámico (un proxy de regresión, no SIMM)."),
+    "wrong-way-risk": ("Wrong-way risk", "Riesgo de dirección equivocada", "The netting set with a counterparty hazard that rises with the portfolio value.", "El conjunto de neteo con un hazard de la contraparte que sube con el valor del portafolio."),
 }
 
 
@@ -330,7 +330,7 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, ore_inputs_di
     root = Path(paths.root)
     entries, sums = [], []
     regime = vt.text("US Treasury curves read up to the date, a synthetic USD swap book, ORE and QuantLib as references.",
-                     "Curvas del Tesoro de EE. UU. leidas hasta la fecha, un libro sintetico de swaps en USD, ORE y QuantLib como referencias.")
+                     "Curvas del Tesoro de EE. UU. leídas hasta la fecha, un libro sintético de swaps en USD, ORE y QuantLib como referencias.")
     e = _check_and_write(root, MODELS_REL, built.models, "models")
     sums.append(_sum(root, MODELS_REL))
     entries.append({"role": "models", "variant_id": f"models-{FIT_ID}", "truth_status": "synthetic-calibrated",

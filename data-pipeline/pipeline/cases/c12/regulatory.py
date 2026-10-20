@@ -81,8 +81,8 @@ def ba_cva_block(trades: list[book.Trade], ead: float) -> dict[str, Any]:
             "k_reduced": k, "capital": money(ba_cva.capital(k)),
             "limit": {"en": "No official numeric example is verified; the tests rest on the invariants of dossier 01 M.1. M is the "
                             "notional-weighted average maturity of the netting set (the paragraph was not re-read: UNVERIFIED).",
-                      "es": "No hay ejemplo numerico oficial verificado; las pruebas se apoyan en los invariantes. M es el vencimiento "
-                            "medio ponderado por nocional del conjunto (el parrafo no se releyo: UNVERIFICADO)."}}
+                      "es": "No hay ejemplo numérico oficial verificado; las pruebas se apoyan en los invariantes. M es el vencimiento "
+                            "medio ponderado por nocional del conjunto (el párrafo no se releyó: UNVERIFICADO)."}}
 
 
 def girr_sensitivities(trades: list[book.Trade], tenors: np.ndarray, zeros: np.ndarray, girr_tenors: np.ndarray) -> np.ndarray:

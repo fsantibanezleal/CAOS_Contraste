@@ -121,7 +121,7 @@ def balance_sheet(r: Report) -> dict[str, Any]:
     zero = "not reported by the FDIC for this date: taken as zero, an assumption (the residual item absorbs the difference)"
 
     def missing(what: str) -> dict:
-        return txt(f"{what} is not in the FDIC financials for this report: taken as zero.", f"{what} no esta en los estados FDIC de este reporte: se toma como cero.")
+        return txt(f"{what} is not in the FDIC financials for this report: taken as zero.", f"{what} no está en los estados FDIC de este reporte: se toma como cero.")
 
     items = [
         _item("cash", "Cash and balances due from depository institutions", "Efectivo y saldos en instituciones", "asset", "cash", "CHBAL",
@@ -134,20 +134,20 @@ def balance_sheet(r: Report) -> dict[str, Any]:
               "securities-htm", "SCHA", scha, None, "Reported at amortised cost; fair value from SCHF.", scha, None, None, None, schf),
         _item("securities-afs", "Securities available for sale (fair value)", "Valores disponibles para la venta (valor razonable)", "asset",
               "securities-afs", "SCAF", scaf, None, "Reported at fair value.", scaf, None, None, None, scaf),
-        _item("loans", "Net loans and leases", "Prestamos y arrendamientos netos", "asset", "loans", "LNLSNET", net_loans, None,
+        _item("loans", "Net loans and leases", "Préstamos y arrendamientos netos", "asset", "loans", "LNLSNET", net_loans, None,
               "Reported; not counted in the CBC.", net_loans, "non_hqla", None, None, None),
         _item("other-assets", "Other assets", "Otros activos", "asset", "other-assets", "ASSET", None,
               txt("No single FDIC item: derived as ASSET minus the items above.",
-                  "No hay una partida FDIC unica: derivada como ASSET menos las partidas anteriores."),
+                  "No hay una partida FDIC única: derivada como ASSET menos las partidas anteriores."),
               "Total assets less the listed asset items, synthetic aggregation.", other_assets, "non_hqla", None, None, None),
-        _item("deposits-insured", "Estimated insured deposits (domestic offices)", "Depositos asegurados estimados (oficinas domesticas)",
+        _item("deposits-insured", "Estimated insured deposits (domestic offices)", "Depósitos asegurados estimados (oficinas domésticas)",
               "liability", "deposits-insured", "DEPINS", depins, None, "Reported; mapped to other retail sight deposits.", depins, None, 0, True, None),
-        _item("deposits-uninsured", "Estimated uninsured deposits (domestic offices)", "Depositos no asegurados estimados (oficinas domesticas)",
+        _item("deposits-uninsured", "Estimated uninsured deposits (domestic offices)", "Depósitos no asegurados estimados (oficinas domésticas)",
               "liability", "deposits-uninsured", "DEPUNA", depuna, None, "Reported estimate; mapped to non-operational non-financial corporates.",
               depuna, None, 0, False, None),
-        _item("deposits-foreign", "Foreign-office deposits", "Depositos en oficinas extranjeras", "liability", "deposits-foreign-office", "DEPFOR",
+        _item("deposits-foreign", "Foreign-office deposits", "Depósitos en oficinas extranjeras", "liability", "deposits-foreign-office", "DEPFOR",
               fo_reported, txt("DEPFOR is not in the FDIC financials for this report: derived as DEP minus DEPDOM.",
-                               "DEPFOR no esta en los estados FDIC de este reporte: derivado como DEP menos DEPDOM.") if fo_derived else None,
+                               "DEPFOR no está en los estados FDIC de este reporte: derivado como DEP menos DEPDOM.") if fo_derived else None,
               "Foreign-office deposits mapped to non-operational other financial customers, synthetic behaviour.", fo, None, 0, None, None),
         _item("repo-borrowings", "Federal funds purchased and repurchase agreements", "Fondos federales comprados y repos", "liability",
               "repo-borrowings", "FREPP", frepp, None if frepp is not None else missing("FREPP"),
@@ -156,7 +156,7 @@ def balance_sheet(r: Report) -> dict[str, Any]:
               "Reported; its maturity bands feed the ladder." if fhlb is not None else zero, fhlb or 0.0, None, None, None, None),
         _item("other-liabilities", "Other liabilities", "Otros pasivos", "liability", "other-liabilities", "LIAB", None,
               txt("No single FDIC item: derived as ASSET minus the deposit items, repos, FHLB advances and equity.",
-                  "Derivada como ASSET menos las partidas de depositos, repos, anticipos FHLB y patrimonio."),
+                  "Derivada como ASSET menos las partidas de depósitos, repos, anticipos FHLB y patrimonio."),
               "Residual liabilities, synthetic aggregation.", other_liab, None, None, None, None),
         _item("equity", "Total equity capital", "Capital patrimonial total", "liability", "equity", "EQ", eq, None, "Reported.", eq, None, None, None, None),
     ]
@@ -169,15 +169,15 @@ def balance_sheet(r: Report) -> dict[str, Any]:
         "assumptions": [
             a("deposit-mapping", "deposits", "Deposits are mapped to LiST classes by the named mapping table of the conventions: insured to other retail, "
               "uninsured to non-operational non-financial corporates, foreign offices to non-operational other financial.",
-              "Los depositos se mapean a clases LiST por la tabla de mapeo nombrada de las convenciones."),
+              "Los depósitos se mapean a clases LiST por la tabla de mapeo nombrada de las convenciones."),
             a("pledged-pro-rata", "securities", "Pledged securities (SCPLEDGE) are encumbered pro rata across the securities types and leave the CBC.",
               "Los valores pignorados (SCPLEDGE) se gravan a prorrata entre los tipos y salen del CBC."),
             a("no-committed-lines", "off-balance-sheet", "The FDIC financials read give no undrawn commitments: no drawdown and no collateral call is "
               "modelled (a scenario input of zero, labelled).",
-              "Los estados FDIC leidos no dan compromisos no girados: no se modela giro ni llamada de colateral."),
+              "Los estados FDIC leídos no dan compromisos no girados: no se modela giro ni llamada de colateral."),
             a("no-contractual-deposits", "deposits", "Every deposit runs on the open-maturity rate of its class: the term deposits (NTRTIME) are not run on the "
               "contractual roll-off of the LiST note, because the report gives no residual maturity of the uninsured balance.",
-              "Todo deposito corre a la tasa de vencimiento abierto de su clase; los depositos a plazo no corren con el roll-off contractual."),
+              "Todo depósito corre a la tasa de vencimiento abierto de su clase; los depósitos a plazo no corren con el roll-off contractual."),
             a("lcr-hqla-levels", "lcr", "HQLA levels: reserves and Treasuries Level 1; agency and agency mortgage-backed securities Level 2A (the Level 1 part, "
               "GNMA, is not split by the report); municipal and other debt securities not HQLA. Securities enter at fair value (the whole-book loss), "
               "unencumbered.",
@@ -185,7 +185,7 @@ def balance_sheet(r: Report) -> dict[str, Any]:
             a("lcr-flows", "lcr", "Reverse repos are secured lending maturing in 30 days at 100 percent; loans of three months or less mature uniformly "
               "(a third of them in 30 days) at the 50 percent rate of retail and non-financial wholesale inflows (repricing is read as maturity: an "
               "upper bound); FHLB advances of one year or less mature uniformly (30 over 365 of them in 30 days) as other secured funding at 100 percent.",
-              "Los repos inversos vencen a 30 dias al 100 por ciento; los prestamos a tres meses o menos vencen uniformemente."),
+              "Los repos inversos vencen a 30 días al 100 por ciento; los préstamos a tres meses o menos vencen uniformemente."),
         ],
     }
 
