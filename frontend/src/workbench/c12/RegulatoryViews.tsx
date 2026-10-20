@@ -11,7 +11,7 @@ import { Pending } from '../Pending';
 import { Fragment } from 'react';
 import { BA_CVA_DS, SECTORS, baCvaMismatches, riskWeight } from './bacva';
 import { saCcr, saCcrInputFrom, saCcrMismatches } from './saccr';
-import { NOT_SWAP, SHARE, UnavailableCard, cell, digits, years } from './C12Common';
+import { NOT_SWAP, SHARE, UnavailableCard, cell, digits, years, DEFS_STYLE, Nw } from './C12Common';
 import { RATING_SHORT, RATING_TEXT, SECTOR_TEXT, amount, axisOf, collateralRange, committedCollateral, fitOf, liveBaCva, liveSaCcr, outputsOf, text, type C12Sel } from './selection';
 import { axisScale } from '../c06/format';
 
@@ -369,15 +369,15 @@ export function GirrView({ sel }: { sel: C12Sel | null }) {
             />
           }
         >
-          <dl className="ct-defs" data-table="c12-girr">
+          <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-girr">
             <dt>{pick({ en: 'Delta charge, divided and undivided (USD)', es: 'Cargo delta, dividido y sin dividir (USD)' }, lang)}</dt>
-            <dd data-girr-charge={g.delta_charge.amount}>{`${cell(g.delta_charge.amount, lang)} / ${cell(g.delta_charge_undivided.amount, lang)}`}</dd>
+            <dd data-girr-charge={g.delta_charge.amount}><Nw>{`${cell(g.delta_charge.amount, lang)} / ${cell(g.delta_charge_undivided.amount, lang)}`}</Nw></dd>
             <dt>{pick({ en: 'Division by sqrt(2)', es: 'División por raíz de 2' }, lang)}</dt>
             <dd data-status={g.sqrt2_label}>{`${g.sqrt2_division ? pick({ en: 'applied', es: 'aplicada' }, lang) : pick({ en: 'not applied', es: 'no aplicada' }, lang)} (${g.sqrt2_label === 'convention' ? pick({ en: 'convention', es: 'convención' }, lang) : g.sqrt2_label})`}</dd>
             {g.scenarios.map((s) => (
               <Fragment key={s.scenario}>
                 <dt>{pick({ en: `Scenario ${s.scenario}: bucket charge (USD)`, es: `Escenario ${{ low: 'bajo', medium: 'medio', high: 'alto' }[s.scenario]}: cargo del tramo (USD)` }, lang)}</dt>
-                <dd data-scenario={s.scenario}>{cell(s.k_b, lang)}</dd>
+                <dd data-scenario={s.scenario}><Nw>{cell(s.k_b, lang)}</Nw></dd>
               </Fragment>
             ))}
           </dl>

@@ -8,7 +8,7 @@ import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type Bi
 import { ChartOverTable } from '../c06/format';
 import { useCard, type Bi } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { NOT_SWAP, UnavailableCard, digits } from './C12Common';
+import { NOT_SWAP, UnavailableCard, digits, DEFS_STYLE, Nw } from './C12Common';
 import { HORIZON_LONG, HORIZON_SHORT, HORIZONS, SUBJECT_LONG, histogram, horizonOf, horizonsOf, outputsOf, text, type C12Sel } from './selection';
 
 const WINDOW_TEXT: Record<string, Bi> = {
@@ -54,15 +54,18 @@ export function PitView({ sel }: { sel: C12Sel | null }) {
             />
           }
         >
-          <dl className="ct-defs" data-table="c12-pit">
+          <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-pit">
             <dt>{pick({ en: 'Statistic W²', es: 'Estadístico W²' }, lang)}</dt>
-            <dd data-w2={h.w2}>{digits(h.w2, lang)}</dd>
+            <dd data-w2={h.w2}><Nw>{digits(h.w2, lang)}</Nw></dd>
             <dt>{pick({ en: 'Critical values from the simulated back-test, 5% and 1%', es: 'Valores críticos del backtest simulado, 5% y 1%' }, lang)}</dt>
-            <dd>{`${digits(h.critical_simulated.p05, lang)} / ${digits(h.critical_simulated.p01, lang)}`}</dd>
+            <dd><Nw>{`${digits(h.critical_simulated.p05, lang)} / ${digits(h.critical_simulated.p01, lang)}`}</Nw></dd>
             <dt>{pick({ en: 'Independent-sample table, 5% and 1% (reported beside, not in its place)', es: 'Tabla de muestras independientes, 5% y 1% (informada al lado, no en su lugar)' }, lang)}</dt>
-            <dd>{`${digits(h.critical_iid.p05, lang)} / ${digits(h.critical_iid.p01, lang)}`}</dd>
+            <dd><Nw>{`${digits(h.critical_iid.p05, lang)} / ${digits(h.critical_iid.p01, lang)}`}</Nw></dd>
             <dt>{pick({ en: 'Dates and effective sample size', es: 'Fechas y tamaño de muestra efectivo' }, lang)}</dt>
-            <dd>{`${h.n} / ${formatNumber(h.effective_sample_size, lang, { digits: 4 })} (${pick({ en: 'overlapping horizons share information', es: 'los horizontes que se traslapan comparten información' }, lang)})`}</dd>
+            <dd>
+              <Nw>{`${h.n} / ${formatNumber(h.effective_sample_size, lang, { digits: 4 })}`}</Nw>
+              {` (${pick({ en: 'overlapping horizons share information', es: 'los horizontes que se traslapan comparten información' }, lang)})`}
+            </dd>
             <dt>{pick({ en: 'Decision at 5%', es: 'Decisión al 5%' }, lang)}</dt>
             <dd data-reject={String(h.reject_at_5pct)}>{h.reject_at_5pct ? pick({ en: 'the distribution is rejected', es: 'la distribución se rechaza' }, lang) : pick({ en: 'the distribution is not rejected', es: 'la distribución no se rechaza' }, lang)}</dd>
           </dl>

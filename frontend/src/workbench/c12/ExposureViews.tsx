@@ -8,7 +8,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable, alignTo, unionX } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { NOT_SWAP, UnavailableCard, cell, years } from './C12Common';
+import { NOT_SWAP, UnavailableCard, cell, years, DEFS_STYLE, Nw } from './C12Common';
 import { BASIS_TEXT, CASE_ORDER, CASE_TEXT, VARIANT_TEXT, axisOf, gridOf, outputsOf, sensitivityOf, text, type C12Profile, type C12Sel } from './selection';
 
 const YEARS_AXIS = { label: { en: 'Time (years)', es: 'Tiempo (años)' } as BiText, format: { decimals: 1 } };
@@ -61,9 +61,12 @@ export function ProfileView({ sel }: { sel: C12Sel | null }) {
             />
           }
         >
-          <dl className="ct-defs" data-table="c12-profile">
+          <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-profile">
             <dt>{pick({ en: 'EPE and EEPE (USD)', es: 'EPE y EEPE (USD)' }, lang)}</dt>
-            <dd data-eepe={e.eepe.amount}>{`${cell(e.epe.amount, lang)} / ${cell(e.eepe.amount, lang)} (${pick({ en: 'first', es: 'primeros' }, lang)} ${years(e.eepe_horizon_years, lang)} ${pick({ en: 'years', es: 'años' }, lang)}; ${pick({ en: 'Monte Carlo SE', es: 'ES de Monte Carlo' }, lang)} ${cell(e.eepe.mc_se, lang)})`}</dd>
+            <dd data-eepe={e.eepe.amount}>
+              <Nw>{`${cell(e.epe.amount, lang)} / ${cell(e.eepe.amount, lang)}`}</Nw>
+              {` (${pick({ en: 'first', es: 'primeros' }, lang)} ${years(e.eepe_horizon_years, lang)} ${pick({ en: 'years', es: 'años' }, lang)}; ${pick({ en: 'Monte Carlo SE', es: 'ES de Monte Carlo' }, lang)} ${cell(e.eepe.mc_se, lang)})`}
+            </dd>
             <dt>{pick({ en: 'ORE 1.8.17.0', es: 'ORE 1.8.17.0' }, lang)}</dt>
             <dd data-ore={ore.status}>
               {ore.status === 'reconciled' && ore.eepe_agreement && ore.cva_agreement
@@ -162,7 +165,7 @@ export function CollateralView({ sel }: { sel: C12Sel | null }) {
             />
           }
         >
-          <dl className="ct-defs" data-table="c12-csa">
+          <dl className="ct-defs" style={DEFS_STYLE} data-table="c12-csa">
             <dt>{pick({ en: 'CSA of this variant', es: 'CSA de esta variante' }, lang)}</dt>
             <dd data-na={csa ? undefined : 'true'}>
               {csa
