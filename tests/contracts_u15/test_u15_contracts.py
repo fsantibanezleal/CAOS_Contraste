@@ -1477,6 +1477,9 @@ def test_the_rows_fragment_has_history_rows_for_the_integrator() -> None:
 
 
 def test_the_changelog_fragment_holds_bullet_lines_only() -> None:
+    if not CHANGES.is_file():  # a release merged and deleted it (fragments.py changelog --apply): its bullets live in the CHANGELOG
+        assert "U15-S contracts:" in (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+        return
     lines = CHANGES.read_text(encoding="utf-8").splitlines()
     assert lines and lines[0].startswith("- ")
     for ln in lines:
@@ -1485,7 +1488,8 @@ def test_the_changelog_fragment_holds_bullet_lines_only() -> None:
 
 
 def test_no_em_dash_no_arrow_and_no_emoji_in_what_this_unit_writes() -> None:
-    paths = [API, ROWS_FRAGMENT, CHANGES, THIS, *Path(__file__).parent.glob("*.py"), *FIX.glob("*.json"), *SCHEMAS.glob("*.json")]
+    fragment = CHANGES if CHANGES.is_file() else ROOT / "CHANGELOG.md"  # the release that merged the fragment holds its text
+    paths = [API, ROWS_FRAGMENT, fragment, THIS, *Path(__file__).parent.glob("*.py"), *FIX.glob("*.json"), *SCHEMAS.glob("*.json")]
     for p in paths:
         text = p.read_text(encoding="utf-8")
         for ch in (chr(0x2014), chr(0x2192), chr(0x2190), chr(0x21D2)):
