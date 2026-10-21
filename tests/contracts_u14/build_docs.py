@@ -73,7 +73,7 @@ def test_section(prefix: str, name: str, args: str, test_id: str, light: str, fa
 
 POLICY_INTRO = (
     "Lights come from the engine's `riskvalidation.core.policy.Policy`, a named, versioned set of `Threshold(kind, amber, red)` keyed by test id "
-    "(`kind` is `p_value`, `upper_bad` or `lower_bad`; engine v0.07.000 `core/policy.py`). Every validation function below takes "
+    "(`kind` is `p_value`, `upper_bad` or `lower_bad`; the engine's `core/policy.py`). Every validation function below takes "
     "`policy: Policy | None = None`, where None means `default_policy()`, and classifies with `Policy.classify`. The thresholds of this page are "
     "entries of `riskvalidation/policies/default.json` (U14-E1 adds the `ml.` keys and U14-E2 the `fair.` keys; the key sets are disjoint), each "
     "with its `source` text; a policy that lacks a key returns the `not_evaluated` light, never a colour. `Threshold.classify` is inclusive at its "
