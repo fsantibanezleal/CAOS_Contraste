@@ -19,7 +19,7 @@ from riskvalidation.validation import irrbb as rv_val
 
 from . import assumptions as asm
 from . import fits, slotting
-from .fdic import Report, realised_nii, report_at
+from ...io.fdic import Report, realised_nii, report_at
 from .slotting import Item, t
 from ...io.treasury import ParCurve, curve_as_of
 
@@ -216,7 +216,7 @@ def bake_variant(vd: str, reports: list[Report], later: list[Report], curves: di
         "horizon_months": asm.HORIZON_MONTHS,
         "balance_sheet_assumption": {"kind": "constant", "growth_annual": 0, "description": t(
             "Constant balance sheet: maturing and repricing flows are replaced by identical new ones. Non-interest items are left out.",
-            "Balance constante: los flujos que vencen o reprecian se reemplazan por otros identicos. Las partidas sin interes se omiten.")},
+            "Balance constante: los flujos que vencen o reprecian se reemplazan por otros idénticos. Las partidas sin interés se omiten.")},
         "items": dyn_items, "scenarios": dyn_sc}
 
     # ---- rung 6: EaR and EVaR under Hull-White one-factor scenarios (engine: hw1f_scenarios, ear_evar, ear_evar_mc_error)
@@ -229,7 +229,7 @@ def bake_variant(vd: str, reports: list[Report], later: list[Report], curves: di
     levels = []
     for lv in asm.LEVELS:
         got = simulation.ear_evar(nii_p, eve_p, base_nii, base_eve, lv)
-        err = simulation.ear_evar_mc_error(nii_p, eve_p, lv, asm.N_BATCHES)
+        err = simulation.ear_evar_mc_error(nii_p, eve_p, lv, asm.N_BATCHES, antithetic=True)  # whole mirror pairs per batch (BL-074)
         levels.append({"level": lv, "nii_quantile": float(base_nii - got.ear), "eve_quantile": float(base_eve - got.evar),
                        "ear": float(got.ear), "evar": float(got.evar), "ear_se": float(err.ear_se), "evar_se": float(err.evar_se)})
     ear_evar = {"method": "hw1f", "n_paths": n_paths, "seed": seed, "horizon_months": asm.HORIZON_MONTHS,
@@ -251,8 +251,8 @@ def bake_variant(vd: str, reports: list[Report], later: list[Report], curves: di
                "projected_delta_nii": None, "realised_delta_nii": None, "relative_error": None,
                "reason": t("No realised year follows this date in the call reports: the bank failed on 2023-03-10 and filed no later "
                            "report, so the 12-month projection cannot be compared with a realised one.",
-                           "Ningun anio completo posterior a esta fecha esta en los reportes: el banco quebro el 2023-03-10 y no presento "
-                           "reportes posteriores, por lo que la proyeccion a 12 meses no se compara con una realizada.")}
+                           "Ningún año completo posterior a esta fecha está en los reportes: el banco quebró el 2023-03-10 y no presentó "
+                           "reportes posteriores, por lo que la proyección a 12 meses no se compara con una realizada.")}
 
     # ---- the validation tests (engine: riskvalidation.validation.irrbb)
     dates = [d for d in sorted(set(breach_history) | {vd}) if d <= vd]
@@ -330,20 +330,20 @@ def _plain(x: Any) -> Any:
 
 SIGN = {"delta_eve": "positive-is-loss", "delta_nii": "positive-is-loss", "reference": "SRP31.129; dossier 01 H.4",
         "statement": t("A positive delta EVE or delta NII is a loss; only losses are aggregated across currencies.",
-                       "Un delta EVE o delta NII positivo es una perdida; solo las perdidas se agregan entre monedas.")}
+                       "Un delta EVE o delta NII positivo es una pérdida; solo las pérdidas se agregan entre monedas.")}
 UNITS = {"money_scale": "thousands", "rate": "decimal", "compounding": "continuous", "shock": "basis-points", "bucket_midpoint": "years",
          "dates": "ISO-8601"}
 BANK = {"name": "Silicon Valley Bank", "cert": 24735, "aggregates": "real", "behaviour": "synthetic",
         "notice": t("The call-report aggregates are the bank's own, read from the FDIC BankFind financials. Every behavioural assumption "
                     "(deposit core share and maturity, prepayment, term-deposit redemption, the slotting of the report bands) is "
                     "synthetic and stated in the document.",
-                    "Los agregados del reporte son los del banco, leidos de los estados financieros de FDIC BankFind. Todo supuesto "
-                    "de comportamiento (proporcion y plazo estables de los depositos, prepago, rescate de depositos a plazo, la "
-                    "distribucion de las bandas del reporte) es sintetico y esta declarado en el documento.")}
+                    "Los agregados del reporte son los del banco, leídos de los estados financieros de FDIC BankFind. Todo supuesto "
+                    "de comportamiento (proporción y plazo estables de los depósitos, prepago, rescate de depósitos a plazo, la "
+                    "distribución de las bandas del reporte) es sintético y está declarado en el documento.")}
 RULE = t("Call reports are read only up to the valuation date; later reports are never read for the valuation (only the out-of-sample "
          "row reads the realised year).",
-         "Los reportes se leen solo hasta la fecha de valoracion; los posteriores nunca se leen para la valoracion (solo la fila fuera "
-         "de muestra lee el anio realizado).")
+         "Los reportes se leen solo hasta la fecha de valoración; los posteriores nunca se leen para la valoración (solo la fila fuera "
+         "de muestra lee el año realizado).")
 
 
 def _impact(o: dict[str, Any]) -> dict[str, Any]:
@@ -377,10 +377,10 @@ def _findings(o: dict[str, Any], tests: list[dict[str, Any]]) -> list[dict[str, 
         f"The EVE risk measure is {beh['ratio'] * 100:.1f} percent of Tier 1 with the capped behavioural NMD and "
         f"{con['ratio'] * 100:.1f} percent with every non-maturity deposit overnight; the outlier threshold is 15 percent.",
         f"La medida de riesgo EVE es {beh['ratio'] * 100:.1f} por ciento del Tier 1 con NMD conductual con tope y "
-        f"{con['ratio'] * 100:.1f} por ciento con todos los depositos a la vista a un dia; el umbral del test es 15 por ciento.")})
+        f"{con['ratio'] * 100:.1f} por ciento con todos los depósitos a la vista a un día; el umbral del test es 15 por ciento.")})
     out.append({"id": "F2", "severity": "S3", "status": "open", "evidence": ["design:retail-share-is-a-synthetic-mapping"], "title": t(
         "The split of deposits between retail and wholesale and every core share and maturity are synthetic: the call report carries none.",
-        "La separacion de depositos entre minoristas y mayoristas y toda proporcion y plazo estables son sinteticos: el reporte no los trae.")})
+        "La separación de depósitos entre minoristas y mayoristas y toda proporción y plazo estables son sintéticos: el reporte no los trae.")})
     oos = o["out_of_sample"]
     if oos["applicable"]:
         rel = by["irrbb.nii_out_of_sample"]
@@ -396,12 +396,12 @@ def _findings(o: dict[str, Any], tests: list[dict[str, Any]]) -> list[dict[str, 
                     "evidence": ["irrbb.nmd_parameter_stability"], "title": t(
             f"The fitted replicating-portfolio weights move by up to {st['statistic']:.2f} between estimation windows and the weighted "
             f"average maturity by up to {st['metric']:.1f} years: the deposit duration the data support is not stable.",
-            f"Los pesos de la cartera replicante ajustada se mueven hasta {st['statistic']:.2f} entre ventanas de estimacion y el plazo "
-            f"promedio ponderado hasta {st['metric']:.1f} anios: la duracion de los depositos que respalda la data no es estable.")})
+            f"Los pesos de la cartera replicante ajustada se mueven hasta {st['statistic']:.2f} entre ventanas de estimación y el plazo "
+            f"promedio ponderado hasta {st['metric']:.1f} años: la duración de los depósitos que respalda la data no es estable.")})
     if ch["light"] == "red":
         out.append({"id": "F5", "severity": "S2", "status": "open", "evidence": ["irrbb.behavioural_change_at_breach"], "title": t(
             f"The fitted weighted average maturity changed at {ch['statistic']:.0f} date(s) where the standardised outlier test was breached: "
             "a deposit-duration assumption that moves with a breach is the pattern the Federal Reserve review describes.",
-            f"El plazo promedio ponderado ajustado cambio en {ch['statistic']:.0f} fecha(s) en que se supero el test de valores atipicos "
-            "estandarizado: un supuesto de duracion de depositos que se mueve con un exceso es el patron que describe la revision de la Reserva Federal.")})
+            f"El plazo promedio ponderado ajustado cambió en {ch['statistic']:.0f} fecha(s) en que se superó el test de valores atípicos "
+            "estandarizado: un supuesto de duración de depósitos que se mueve con un exceso es el patrón que describe la revisión de la Reserva Federal.")})
     return out

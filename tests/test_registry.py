@@ -17,7 +17,7 @@ from pipeline import cases as cases_pkg  # noqa: E402
 from pipeline import registry  # noqa: E402
 from pipeline.stages import export  # noqa: E402
 
-BUILT = ["C01", "C03", "C04", "C05", "C06", "C07", "C08", "C09", "C10", "C11", "C13", "C14", "C15", "C17", "C22"]
+BUILT = ["C01", "C02", "C03", "C04", "C05", "C06", "C07", "C08", "C09", "C10", "C11", "C12", "C13", "C14", "C15", "C16", "C17", "C18", "C20", "C21", "C22"]
 ALL = [f"C{n:02d}" for n in range(1, 23)]
 PLANNED = [c for c in ALL if c not in BUILT]
 UNITS = {"C10": "U7", "C11": "U8", "C13": "U8",
@@ -140,8 +140,8 @@ def test_the_committed_index_is_current_and_valid():
 def test_planned_cases_have_no_bake():
     from pipeline import pipeline
 
-    with pytest.raises(registry.PlannedCaseError, match="C02"):
-        pipeline.precompute("C02")
+    with pytest.raises(registry.PlannedCaseError, match="C19"):
+        pipeline.precompute("C19")
 
 
 def test_export_refuses_an_invalid_document_and_writes_nothing(tmp_path):

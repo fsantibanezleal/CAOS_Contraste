@@ -9,6 +9,7 @@ import numpy as np
 from pipeline.cases.c17 import replicate
 from riskvalidation.oprisk import aggregate as agg
 from riskvalidation.oprisk import sla, sma
+from engine_pin import engine_pin_findings
 
 ROOT = Path(__file__).resolve().parents[2]
 PKG = ROOT / "data-pipeline" / "pipeline" / "cases" / "c17"
@@ -16,7 +17,8 @@ PKG = ROOT / "data-pipeline" / "pipeline" / "cases" / "c17"
 
 def test_the_pinned_engine_reproduces_the_contract_goldens():
     pin = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
-    assert re.search(r"^riskvalidation(?:\[market\])? @ git\+https://github\.com/fsantibanezleal/CAOS_RiskValidation(?:\.git)?@v\d+\.\d+\.\d+\s*$", pin, re.M), "pin the engine by its release tag"
+    sdd = (ROOT / "docs" / "design" / "SDD.md").read_text(encoding="utf-8")
+    assert engine_pin_findings(pin, sdd) == [], "pin the engine by its release tag, or during a batch by the commit the SDD names"
     f = agg.discretise_severity("lognormal", (0.0, 2.0), 1.0, 6000)
     h = agg.panjer_recursion("poisson", (100.0,), f)
     assert agg.quantile_from_pmf(h, 1.0, 0.999) == 5849.0

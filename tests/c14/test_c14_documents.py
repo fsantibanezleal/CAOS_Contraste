@@ -6,7 +6,7 @@ import copy
 import c14_docs as d
 import contract_schemas as cs
 import pytest
-import semantics
+from c14_support import semantics
 from c14_support import data_root, requires_raw
 
 

@@ -7,7 +7,7 @@ import re
 import numpy as np
 import pytest
 from c17_semantic import semantic_findings
-from conftest import DERIVED, ROOT, load
+from c17_support import DERIVED, ROOT, load
 from pipeline.cases.c17 import generator, page, truth
 from pipeline.cases.c17 import params as P
 from pipeline.core.schemas import SchemaViolation, validate_document

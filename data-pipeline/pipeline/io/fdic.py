@@ -1,4 +1,5 @@
-"""The FDIC BankFind financials reader (contract family ``balance_sheet`` through ``pipeline.io.contract``).
+"""The FDIC BankFind financials reader (contract family ``balance_sheet`` through ``pipeline.io.contract``), shared by C14 and
+C16; moved here from ``pipeline/cases/c14/fdic.py`` at the batch 3 integration (U11 sizing R2, as ``io/treasury.py`` was).
 
 One file holds every quarterly call-report row of one bank (amounts in thousands of USD, ratios in percent). The reader is the
 dating rule of C14 (SDD section 5): ``up_to`` returns only the reports dated on or before a valuation date, and every function

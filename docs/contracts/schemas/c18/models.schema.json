@@ -1,0 +1,1729 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c18/models.schema.json",
+  "title": "C18 models",
+  "description": "Catalog row c18-models 2.0.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank anchors, scenario sources, capital engine rules, named parameters).",
+  "allOf": [
+    {
+      "$ref": "../common/models-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C18"
+        },
+        "fit": {
+          "$ref": "#/$defs/c18Fit"
+        }
+      },
+      "required": [
+        "case_id",
+        "fit"
+      ]
+    },
+    {
+      "properties": {
+        "provenance": {
+          "properties": {
+            "truth_status": {
+              "const": "synthetic-calibrated"
+            }
+          }
+        }
+      },
+      "required": [
+        "provenance"
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c18Named": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "enum": [
+            "convention",
+            "case assumption"
+          ],
+          "description": "Every named parameter is a convention or an assumption of the case, never a regulatory value."
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A named parameter: a required name, value and unit, the label convention or case assumption, and the basis it was taken from."
+    },
+    "c18NamedSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "values",
+        "unit",
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "enum": [
+            "convention",
+            "case assumption"
+          ],
+          "description": "Every named parameter is a convention or an assumption of the case, never a regulatory value."
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A named parameter that is a set of values (the nu set), with the same label rule."
+    },
+    "c18NamedMatrix": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "order",
+        "matrix",
+        "unit",
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "order": {
+          "type": "array",
+          "const": [
+            "credit",
+            "market",
+            "irrbb",
+            "operational"
+          ],
+          "description": "The row and column order of the matrix: credit, market, irrbb, operational."
+        },
+        "matrix": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": -1,
+              "maximum": 1
+            },
+            "minItems": 4,
+            "maxItems": 4
+          },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "unit": {
+          "const": "correlation"
+        },
+        "label": {
+          "type": "string",
+          "enum": [
+            "convention",
+            "case assumption"
+          ],
+          "description": "Every named parameter is a convention or an assumption of the case, never a regulatory value."
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A named inter-risk correlation matrix with the same label rule; symmetry, the unit diagonal and positive semi-definiteness are checked by semantics.py (the engine's check_correlation)."
+    },
+    "c18NamedConvention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "const": "convention"
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      },
+      "description": "A named parameter that is a convention by definition (the market level and horizon factors)."
+    },
+    "c18MarketScaling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "label",
+        "basis",
+        "source_confidence_level",
+        "source_horizon_days",
+        "trading_days_per_year",
+        "level_factor",
+        "horizon_factor"
+      ],
+      "properties": {
+        "name": {
+          "const": "market_horizon_scaling"
+        },
+        "value": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "The combined multiplier: the level factor times the horizon factor."
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "const": "convention"
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        },
+        "source_confidence_level": {
+          "const": 0.99,
+          "description": "C11's mixed-portfolio measure is at 99 percent (docs/contracts/schemas/c11/models.schema.json)."
+        },
+        "source_horizon_days": {
+          "const": 1,
+          "description": "C11's measure is a one-day measure."
+        },
+        "trading_days_per_year": {
+          "const": 250
+        },
+        "level_factor": {
+          "$ref": "#/$defs/c18NamedConvention"
+        },
+        "horizon_factor": {
+          "$ref": "#/$defs/c18NamedConvention"
+        }
+      },
+      "description": "The market marginal's conversion from C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 and the square root of 250, both named conventions (W4), and the combined multiplier."
+    },
+    "c18FxDerivation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "pair",
+        "observation_date",
+        "source",
+        "source_url",
+        "source_series"
+      ],
+      "properties": {
+        "kind": {
+          "const": "observed-exchange-rate"
+        },
+        "pair": {
+          "const": "EUR/CLP"
+        },
+        "observation_date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
+          "description": "An ISO date."
+        },
+        "source": {
+          "const": "Banco Central de Chile, Base de Datos Estadísticos, daily exchange rate of the euro in Chilean pesos",
+          "description": "The stated public source of the rate; the series id the bake reads is recorded in source_series (not named here: UNVERIFIED)."
+        },
+        "source_url": {
+          "const": "https://si3.bcentral.cl/Siete/es/Siete/API"
+        },
+        "source_series": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The BDE series id the bake read."
+        }
+      },
+      "description": "How the rate is derived at bake time: the observed EUR to CLP rate of the as-of date."
+    },
+    "c18AssetDerivation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "banco_andino_assets_clp_m",
+        "c17_bank_assets_eur_m",
+        "converted_at"
+      ],
+      "properties": {
+        "kind": {
+          "const": "asset-ratio"
+        },
+        "banco_andino_assets_clp_m": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Banco Andino total assets, CLP millions, from the C15 and C07 balance sheet."
+        },
+        "c17_bank_assets_eur_m": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "The stated assets of the C17 synthetic bank, EUR millions (C17 models-generator generator.assets_eur_bn times 1000)."
+        },
+        "converted_at": {
+          "const": "operational_conversion_rate"
+        }
+      },
+      "description": "How the scaling is derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, in one currency."
+    },
+    "c18DerivedFx": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "label",
+        "basis",
+        "derivation"
+      ],
+      "properties": {
+        "name": {
+          "const": "operational_conversion_rate"
+        },
+        "value": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "unit": {
+          "const": "CLP per EUR"
+        },
+        "label": {
+          "type": "string",
+          "enum": [
+            "convention",
+            "case assumption"
+          ],
+          "description": "Every named parameter is a convention or an assumption of the case, never a regulatory value."
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        },
+        "derivation": {
+          "$ref": "#/$defs/c18FxDerivation"
+        }
+      },
+      "description": "The EUR to CLP rate of the as-of date, derived at bake time from a stated public source; the contract fixes no number."
+    },
+    "c18DerivedAssets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "label",
+        "basis",
+        "derivation"
+      ],
+      "properties": {
+        "name": {
+          "const": "asset_scaling"
+        },
+        "value": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "unit": {
+          "const": "Banco Andino assets over the assets of the C17 bank"
+        },
+        "label": {
+          "type": "string",
+          "enum": [
+            "convention",
+            "case assumption"
+          ],
+          "description": "Every named parameter is a convention or an assumption of the case, never a regulatory value."
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        },
+        "derivation": {
+          "$ref": "#/$defs/c18AssetDerivation"
+        }
+      },
+      "description": "The asset scaling of the C17 generator frequency, derived at bake time; the contract fixes no number."
+    },
+    "c18Env": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "synthetic",
+        "notice",
+        "as_of"
+      ],
+      "properties": {
+        "name": {
+          "const": "Banco Andino"
+        },
+        "synthetic": {
+          "const": true
+        },
+        "notice": {
+          "$ref": "../common/text.schema.json"
+        },
+        "as_of": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
+          "description": "An ISO date."
+        }
+      },
+      "description": "The synthetic bank, labelled."
+    },
+    "c18Units": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "money",
+        "ratio",
+        "dates"
+      ],
+      "properties": {
+        "money": {
+          "const": "CLP millions"
+        },
+        "ratio": {
+          "const": "decimal"
+        },
+        "dates": {
+          "const": "ISO date; quarters as the date of the quarter end"
+        }
+      },
+      "description": "The units of the document: money in CLP millions, ratios as decimals, quarters as ISO dates of the quarter end."
+    },
+    "c18FitWindow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end"
+      ],
+      "properties": {
+        "start": {
+          "type": "string",
+          "pattern": "^(198[5-9]|199[0-9]|200[0-9]|201[0-9])-(03-31|06-30|09-30|12-31)$",
+          "description": "A quarter end between 1985-03-31 and 2019-12-31: the satellites are fitted on 1985-2019 only."
+        },
+        "end": {
+          "type": "string",
+          "pattern": "^(198[5-9]|199[0-9]|200[0-9]|201[0-9])-(03-31|06-30|09-30|12-31)$",
+          "description": "A quarter end between 1985-03-31 and 2019-12-31: the satellites are fitted on 1985-2019 only."
+        }
+      },
+      "description": "A fit window: ISO quarter ends from 1985 to 2019. A window that reaches 2020 or later does not match."
+    },
+    "c18Coef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "estimate",
+        "std_error",
+        "expected_sign"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "estimate": {
+          "type": "number"
+        },
+        "std_error": {
+          "type": "number",
+          "minimum": 0
+        },
+        "expected_sign": {
+          "type": "string",
+          "enum": [
+            "positive",
+            "negative",
+            "none"
+          ]
+        }
+      }
+    },
+    "c18Regressor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "lag",
+        "source_series",
+        "licence_class"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "real_gdp_growth",
+            "unemployment_rate",
+            "cpi_inflation",
+            "treasury_3m",
+            "treasury_5y",
+            "treasury_10y",
+            "mortgage_rate",
+            "prime_rate"
+          ]
+        },
+        "lag": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "source_series": {
+          "type": "string",
+          "minLength": 1
+        },
+        "licence_class": {
+          "const": "agency",
+          "description": "Agency series only (decision Q7): the BBB corporate yield and the third-party index levels are not read."
+        }
+      }
+    },
+    "c18SatFit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_id",
+        "fed_loan_type",
+        "series_id",
+        "link",
+        "sample_window",
+        "non_positive_quarters_in_window",
+        "ar_order",
+        "n_obs",
+        "regressors",
+        "coefficients",
+        "fit_statistics",
+        "estimation"
+      ],
+      "properties": {
+        "model_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fed_loan_type": {
+          "type": "string",
+          "enum": [
+            "commercial-industrial",
+            "commercial-real-estate",
+            "residential",
+            "credit-cards",
+            "other-consumer"
+          ]
+        },
+        "series_id": {
+          "type": "string",
+          "enum": [
+            "CI",
+            "RECI",
+            "RERES",
+            "CONCC",
+            "CONOTH"
+          ]
+        },
+        "link": {
+          "type": "string",
+          "enum": [
+            "probit",
+            "logit",
+            "identity"
+          ]
+        },
+        "sample_window": {
+          "$ref": "#/$defs/c18FitWindow"
+        },
+        "non_positive_quarters_in_window": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The number of quarters of the fit window whose rate is zero or negative (net recoveries): a probit or logit fit needs none, the identity link takes them as they are."
+        },
+        "ar_order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "n_obs": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "regressors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c18Regressor"
+          },
+          "minItems": 1
+        },
+        "coefficients": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c18Coef"
+          },
+          "minItems": 1
+        },
+        "fit_statistics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "r_squared",
+            "residual_sd"
+          ],
+          "properties": {
+            "r_squared": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "residual_sd": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        },
+        "estimation": {
+          "const": "ols-numpy-with-standard-errors"
+        }
+      },
+      "description": "One satellite: g(DR_t) = alpha + sum phi_k g(DR_(t-k)) + sum beta_l' X_(t-l) + e, fitted by OLS (04 l.785-795); g is the probit for C&I, credit cards and other consumer, and the identity for RECI and RERES, whose windows hold non-positive quarters (the linear form of the Federal Reserve's own PD regression, 05 l.399). The window ends in 2019 at the latest and starts at the first quarter the Board publishes.",
+      "oneOf": [
+        {
+          "properties": {
+            "fed_loan_type": {
+              "const": "commercial-industrial"
+            },
+            "series_id": {
+              "const": "CI"
+            },
+            "link": {
+              "type": "string",
+              "enum": [
+                "probit",
+                "logit"
+              ]
+            },
+            "sample_window": {
+              "properties": {
+                "start": {
+                  "const": "1985-03-31"
+                }
+              }
+            },
+            "non_positive_quarters_in_window": {
+              "const": 0
+            }
+          }
+        },
+        {
+          "properties": {
+            "fed_loan_type": {
+              "const": "commercial-real-estate"
+            },
+            "series_id": {
+              "const": "RECI"
+            },
+            "link": {
+              "const": "identity"
+            },
+            "sample_window": {
+              "properties": {
+                "start": {
+                  "const": "1991-03-31"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "fed_loan_type": {
+              "const": "residential"
+            },
+            "series_id": {
+              "const": "RERES"
+            },
+            "link": {
+              "const": "identity"
+            },
+            "sample_window": {
+              "properties": {
+                "start": {
+                  "const": "1991-03-31"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "fed_loan_type": {
+              "const": "credit-cards"
+            },
+            "series_id": {
+              "const": "CONCC"
+            },
+            "link": {
+              "type": "string",
+              "enum": [
+                "probit",
+                "logit"
+              ]
+            },
+            "sample_window": {
+              "properties": {
+                "start": {
+                  "const": "1985-03-31"
+                }
+              }
+            },
+            "non_positive_quarters_in_window": {
+              "const": 0
+            }
+          }
+        },
+        {
+          "properties": {
+            "fed_loan_type": {
+              "const": "other-consumer"
+            },
+            "series_id": {
+              "const": "CONOTH"
+            },
+            "link": {
+              "type": "string",
+              "enum": [
+                "probit",
+                "logit"
+              ]
+            },
+            "sample_window": {
+              "properties": {
+                "start": {
+                  "const": "1985-03-31"
+                }
+              }
+            },
+            "non_positive_quarters_in_window": {
+              "const": 0
+            }
+          }
+        }
+      ]
+    },
+    "c18ClassMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "banco_andino_class",
+        "fed_loan_types",
+        "weights",
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "banco_andino_class": {
+          "type": "string",
+          "enum": [
+            "commercial",
+            "consumer",
+            "mortgage"
+          ]
+        },
+        "fed_loan_types": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "commercial-industrial",
+              "commercial-real-estate",
+              "residential",
+              "credit-cards",
+              "other-consumer"
+            ]
+          },
+          "minItems": 1
+        },
+        "weights": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "minItems": 1
+        },
+        "label": {
+          "const": "us-calibrated-adaptation",
+          "description": "The satellites are fitted on United States charge-off rates and applied to Banco Andino: a US-calibrated adaptation (decision Q6)."
+        },
+        "basis": {
+          "$ref": "../common/text.schema.json"
+        }
+      }
+    },
+    "c18Factor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "unit",
+        "sd"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "real_gdp_growth",
+            "unemployment_rate",
+            "cpi_inflation",
+            "treasury_3m",
+            "treasury_5y",
+            "treasury_10y",
+            "mortgage_rate",
+            "prime_rate"
+          ]
+        },
+        "label": {
+          "$ref": "../common/text.schema.json"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sd": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "c18FactorSpace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "window",
+        "factors",
+        "covariance",
+        "label"
+      ],
+      "properties": {
+        "window": {
+          "$ref": "#/$defs/c18FitWindow"
+        },
+        "factors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c18Factor"
+          },
+          "minItems": 1
+        },
+        "covariance": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 1
+          },
+          "minItems": 1
+        },
+        "label": {
+          "const": "us-calibrated-adaptation",
+          "description": "The satellites are fitted on United States charge-off rates and applied to Banco Andino: a US-calibrated adaptation (decision Q6)."
+        }
+      }
+    },
+    "c18Anchors": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rwa_basis",
+        "rwa_mix",
+        "chilean_stack",
+        "loan_exposures",
+        "source",
+        "licence_class",
+        "ratios_only"
+      ],
+      "properties": {
+        "rwa_basis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "tier1_proxy_clp_m",
+            "cet1_ratio_anchor",
+            "rwa_total_clp_m"
+          ],
+          "properties": {
+            "tier1_proxy_clp_m": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Money in CLP millions, not below zero."
+            },
+            "cet1_ratio_anchor": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1,
+              "description": "The 11.0 percent anchor of the 20-F (03 l.1324), as a ratio."
+            },
+            "rwa_total_clp_m": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Money in CLP millions, not below zero."
+            }
+          },
+          "description": "RWA = the C15 Tier 1 proxy over the CET1 ratio anchor (decision Q4)."
+        },
+        "rwa_mix": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "credit",
+            "market",
+            "operational"
+          ],
+          "properties": {
+            "credit": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "market": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "operational": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "description": "The 20-F RWA mix as ratios only (credit 70.8, market 17.1, operational 12.0 percent, 03 l.1307-1328)."
+        },
+        "chilean_stack": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "cet1_min",
+            "c_ccob",
+            "c_ccyb",
+            "c_dsib",
+            "p2r",
+            "p2_cap"
+          ],
+          "properties": {
+            "cet1_min": {
+              "const": 0.045
+            },
+            "c_ccob": {
+              "const": 0.025
+            },
+            "c_ccyb": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.025
+            },
+            "c_dsib": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.015
+            },
+            "p2r": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.04,
+              "description": "Pillar 2 requirement over RWA; the cap is 4 percent of RWA (03 l.253)."
+            },
+            "p2_cap": {
+              "const": 0.04
+            }
+          },
+          "description": "The Chilean capital stack as ratios (03 l.913-920): 4.5, 2.5, 0.5 or 1, 0 to 1.5 percent, the Pillar 2 requirement."
+        },
+        "loan_exposures": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "banco_andino_class",
+              "exposure_clp_m",
+              "share"
+            ],
+            "properties": {
+              "banco_andino_class": {
+                "type": "string",
+                "enum": [
+                  "commercial",
+                  "consumer",
+                  "mortgage"
+                ]
+              },
+              "exposure_clp_m": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Money in CLP millions, not below zero."
+              },
+              "share": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "The loan book by class from the C07 targets.",
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "banco_andino_class": {
+                    "const": "commercial"
+                  }
+                },
+                "required": [
+                  "banco_andino_class"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "banco_andino_class": {
+                    "const": "consumer"
+                  }
+                },
+                "required": [
+                  "banco_andino_class"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "banco_andino_class": {
+                    "const": "mortgage"
+                  }
+                },
+                "required": [
+                  "banco_andino_class"
+                ]
+              }
+            }
+          ]
+        },
+        "source": {
+          "$ref": "../common/text.schema.json"
+        },
+        "licence_class": {
+          "const": "derived-only",
+          "description": "The Santander Chile 20-F is derived-only until the filer's own rights are read: ratios only (decision Q4, E5)."
+        },
+        "ratios_only": {
+          "const": true
+        }
+      },
+      "description": "The bank anchors (decision Q4)."
+    },
+    "c18ScenarioSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scenario_id",
+        "provider",
+        "document",
+        "url",
+        "vintage_date",
+        "licence_class",
+        "variables"
+      ],
+      "properties": {
+        "scenario_id": {
+          "type": "string",
+          "enum": [
+            "baseline",
+            "eba-2025-adverse",
+            "fed-2026-severely-adverse",
+            "ngfs-delayed-transition"
+          ]
+        },
+        "provider": {
+          "type": "string",
+          "enum": [
+            "fed",
+            "eba-esrb",
+            "ngfs"
+          ]
+        },
+        "document": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "vintage_date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
+          "description": "An ISO date."
+        },
+        "licence_class": {
+          "type": "string",
+          "enum": [
+            "mirror-allowed",
+            "derived-only"
+          ]
+        },
+        "variables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "unit"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "unit": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "NGFS only: the NiGEM variables read, named exactly; empty for the other sources."
+        }
+      }
+    },
+    "c18Rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "paragraph",
+        "page",
+        "statement"
+      ],
+      "properties": {
+        "source": {
+          "const": "EBA 2025 EU-wide stress test, Methodological Note, 2025-01-20"
+        },
+        "paragraph": {
+          "type": "string",
+          "minLength": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "c18CapitalEngine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "balance_sheet",
+        "horizon_years",
+        "rules",
+        "reversion_quarters"
+      ],
+      "properties": {
+        "balance_sheet": {
+          "const": "static"
+        },
+        "horizon_years": {
+          "const": 3
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c18Rule"
+          },
+          "minItems": 1,
+          "description": "The EBA rules the capital projection applies, by paragraph (F6 of the addendum)."
+        },
+        "reversion_quarters": {
+          "type": "number",
+          "minimum": 0,
+          "description": "The product convention of cases/c06/macro.py: a path reverts linearly to the baseline over this many quarters after its published horizon."
+        }
+      }
+    },
+    "c18NamedParameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nu_set",
+        "correlation_matrix_base",
+        "correlation_matrix_stress",
+        "ppnr_fee_ratio",
+        "ppnr_cost_ratio",
+        "c_p2",
+        "c_d",
+        "operational_conversion_rate",
+        "asset_scaling",
+        "market_rwa_share",
+        "market_horizon_scaling",
+        "reverse_p2_cet1"
+      ],
+      "properties": {
+        "nu_set": {
+          "$ref": "#/$defs/c18NamedSet"
+        },
+        "correlation_matrix_base": {
+          "$ref": "#/$defs/c18NamedMatrix"
+        },
+        "correlation_matrix_stress": {
+          "$ref": "#/$defs/c18NamedMatrix"
+        },
+        "ppnr_fee_ratio": {
+          "$ref": "#/$defs/c18Named"
+        },
+        "ppnr_cost_ratio": {
+          "$ref": "#/$defs/c18Named"
+        },
+        "c_p2": {
+          "$ref": "#/$defs/c18Named"
+        },
+        "c_d": {
+          "$ref": "#/$defs/c18Named"
+        },
+        "operational_conversion_rate": {
+          "$ref": "#/$defs/c18DerivedFx"
+        },
+        "asset_scaling": {
+          "$ref": "#/$defs/c18DerivedAssets"
+        },
+        "market_rwa_share": {
+          "$ref": "#/$defs/c18Named"
+        },
+        "market_horizon_scaling": {
+          "$ref": "#/$defs/c18MarketScaling"
+        },
+        "reverse_p2_cet1": {
+          "$ref": "#/$defs/c18Named"
+        }
+      },
+      "description": "Every named parameter of the case with its value, unit and label (convention or case assumption)."
+    },
+    "c18AggParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ladder",
+        "n_draws",
+        "seed",
+        "chunk_size",
+        "horizon_years",
+        "confidence_level",
+        "capital_basis",
+        "marginal_interpolation"
+      ],
+      "properties": {
+        "ladder": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "method",
+              "engine_function"
+            ],
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": [
+                  "lower-bound",
+                  "simple-sum",
+                  "variance-covariance",
+                  "gaussian-copula",
+                  "t-copula",
+                  "worst-case"
+                ]
+              },
+              "engine_function": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "n_draws": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "chunk_size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "horizon_years": {
+          "const": 1,
+          "description": "One horizon for every marginal: one year (decision Q5)."
+        },
+        "confidence_level": {
+          "const": 0.999,
+          "description": "One confidence level for every marginal: 99.9 percent, as a decimal (decision Q5)."
+        },
+        "capital_basis": {
+          "const": "economic-capital-var-less-el",
+          "description": "Capital of a risk and of an aggregate is EC = VaR(0.999, 1 year) less the expected loss, EC_q = VaR_q(L) - EL (dossier 04 l.652-653, BCBS 2005 explanatory note section 4.4); the expected loss is additive, so the simple sum of the marginals equals the comonotonic total. A marginal whose severity has an infinite mean has no expected loss: its EC is the VaR alone, labelled (dossier 05 l.482)."
+        },
+        "marginal_interpolation": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The rule that maps a uniform draw through a marginal sample."
+        }
+      }
+    },
+    "c18C17Set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document",
+        "variant_id",
+        "tail_index",
+        "infinite_mean",
+        "assets_eur_bn"
+      ],
+      "properties": {
+        "document": {
+          "const": "C17 models-generator"
+        },
+        "variant_id": {
+          "type": "string",
+          "enum": [
+            "xi-0-6",
+            "xi-0-8",
+            "xi-0-96",
+            "xi-1-1"
+          ]
+        },
+        "tail_index": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "The GPD tail index xi of the severity of the variant."
+        },
+        "infinite_mean": {
+          "type": "boolean"
+        },
+        "assets_eur_bn": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "The stated assets of the C17 synthetic bank, EUR billions."
+        }
+      },
+      "description": "The C17 generator parameter set the operational marginal is recomputed from (decision Q5): the variant of the C17 models-generator document (docs/contracts/schemas/c17/models.schema.json), its tail index and whether its severity has an infinite mean (xi of 1 or more)."
+    },
+    "c18MarginalSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "risk",
+        "producer",
+        "description",
+        "documents",
+        "c17_parameter_set"
+      ],
+      "properties": {
+        "risk": {
+          "type": "string",
+          "enum": [
+            "credit",
+            "market",
+            "irrbb",
+            "operational"
+          ]
+        },
+        "producer": {
+          "type": "string",
+          "enum": [
+            "credit-grouped-copula-c07-segments",
+            "market-c11-mixed-portfolio-scaled-to-market-rwa",
+            "irrbb-engine-simulation-c15-curve-and-book",
+            "operational-oprisk-aggregate-c17-parameters-scaled"
+          ]
+        },
+        "description": {
+          "$ref": "../common/text.schema.json"
+        },
+        "documents": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "c17_parameter_set": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/c18C17Set"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Operational only: the C17 parameter set; null for the other risks."
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "risk": {
+              "const": "credit"
+            },
+            "producer": {
+              "const": "credit-grouped-copula-c07-segments"
+            },
+            "c17_parameter_set": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "risk": {
+              "const": "market"
+            },
+            "producer": {
+              "const": "market-c11-mixed-portfolio-scaled-to-market-rwa"
+            },
+            "c17_parameter_set": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "risk": {
+              "const": "irrbb"
+            },
+            "producer": {
+              "const": "irrbb-engine-simulation-c15-curve-and-book"
+            },
+            "c17_parameter_set": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "risk": {
+              "const": "operational"
+            },
+            "producer": {
+              "const": "operational-oprisk-aggregate-c17-parameters-scaled"
+            },
+            "c17_parameter_set": {
+              "$ref": "#/$defs/c18C17Set"
+            }
+          }
+        }
+      ]
+    },
+    "c18Fit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "units",
+        "bank",
+        "satellites",
+        "class_mapping",
+        "factor_space",
+        "aggregation",
+        "named_parameters",
+        "bank_anchors",
+        "marginal_sources",
+        "scenario_sources",
+        "capital_engine"
+      ],
+      "properties": {
+        "currency": {
+          "const": "CLP"
+        },
+        "units": {
+          "$ref": "#/$defs/c18Units"
+        },
+        "bank": {
+          "$ref": "#/$defs/c18Env"
+        },
+        "satellites": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c18SatFit"
+          },
+          "minItems": 5,
+          "maxItems": 5,
+          "description": "One satellite per Fed loan type.",
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "fed_loan_type": {
+                    "const": "commercial-industrial"
+                  }
+                },
+                "required": [
+                  "fed_loan_type"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "fed_loan_type": {
+                    "const": "commercial-real-estate"
+                  }
+                },
+                "required": [
+                  "fed_loan_type"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "fed_loan_type": {
+                    "const": "residential"
+                  }
+                },
+                "required": [
+                  "fed_loan_type"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "fed_loan_type": {
+                    "const": "credit-cards"
+                  }
+                },
+                "required": [
+                  "fed_loan_type"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "fed_loan_type": {
+                    "const": "other-consumer"
+                  }
+                },
+                "required": [
+                  "fed_loan_type"
+                ]
+              }
+            }
+          ]
+        },
+        "class_mapping": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c18ClassMap"
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "One mapping per Banco Andino class.",
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "banco_andino_class": {
+                    "const": "commercial"
+                  }
+                },
+                "required": [
+                  "banco_andino_class"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "banco_andino_class": {
+                    "const": "consumer"
+                  }
+                },
+                "required": [
+                  "banco_andino_class"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "banco_andino_class": {
+                    "const": "mortgage"
+                  }
+                },
+                "required": [
+                  "banco_andino_class"
+                ]
+              }
+            }
+          ]
+        },
+        "factor_space": {
+          "$ref": "#/$defs/c18FactorSpace"
+        },
+        "aggregation": {
+          "$ref": "#/$defs/c18AggParams"
+        },
+        "named_parameters": {
+          "$ref": "#/$defs/c18NamedParameters"
+        },
+        "bank_anchors": {
+          "$ref": "#/$defs/c18Anchors"
+        },
+        "marginal_sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c18MarginalSource"
+          },
+          "minItems": 4,
+          "maxItems": 4,
+          "description": "One source per marginal (decision Q5).",
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "risk": {
+                    "const": "credit"
+                  }
+                },
+                "required": [
+                  "risk"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "risk": {
+                    "const": "market"
+                  }
+                },
+                "required": [
+                  "risk"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "risk": {
+                    "const": "irrbb"
+                  }
+                },
+                "required": [
+                  "risk"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "risk": {
+                    "const": "operational"
+                  }
+                },
+                "required": [
+                  "risk"
+                ]
+              }
+            }
+          ]
+        },
+        "scenario_sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/c18ScenarioSource"
+          },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "capital_engine": {
+          "$ref": "#/$defs/c18CapitalEngine"
+        }
+      },
+      "description": "C18 models: the satellite fits, the factor space, the aggregation parameters, the bank anchors, the scenario sources, the capital engine rules and the named parameters."
+    }
+  }
+}

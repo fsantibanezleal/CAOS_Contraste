@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 from c10_invariants import hash_findings, label_findings, schema_findings, violations
-from conftest import ONE_TYPE, SAMPLE, SCALE, SEED
+from c10_support import ONE_TYPE, SAMPLE, SCALE, SEED
 
 from pipeline.cases.c10 import CASE_C10, bake, fed, ladder, page, portfolios
 from pipeline.cases.c10 import documents as docs

@@ -15,7 +15,7 @@ from riskvalidation.irrbb import slotting as rv_slotting
 
 from . import assumptions as asm
 from .bands import spread
-from .fdic import Report
+from ...io.fdic import Report
 
 CATEGORIES = (
     "cash", "securities-htm", "securities-afs", "loans-fixed", "loans-floating", "other-assets", "deposits-transactional",
@@ -107,13 +107,13 @@ def build_items(r: Report, requests: dict[str, asm.Request] = asm.REQUESTS, cpr:
         items.append(Item(behavioural=beh, contractual=con, **kw))
 
     plug_a = t("Derived as total assets less the itemised assets; not a call-report line.",
-               "Derivado como activos totales menos los activos detallados; no es una linea del reporte.")
+               "Derivado como activos totales menos los activos detallados; no es una línea del reporte.")
     plug_l = t("Derived as total liabilities less the itemised liabilities; not a call-report line.",
-               "Derivado como pasivos totales menos los pasivos detallados; no es una linea del reporte.")
+               "Derivado como pasivos totales menos los pasivos detallados; no es una línea del reporte.")
     split = t("The call report has no customer-type split: the item is the reported deposits times the retail share (accounts of "
               "250 000 USD or less), a synthetic mapping.",
-              "El reporte no separa depositos por tipo de cliente: la partida es el deposito informado por la proporcion minorista "
-              "(cuentas de hasta 250 000 USD), un mapeo sintetico.")
+              "El reporte no separa depósitos por tipo de cliente: la partida es el depósito informado por la proporción minorista "
+              "(cuentas de hasta 250 000 USD), un mapeo sintético.")
     # ---- assets
     add(item_id="A1", label=t("Cash and balances due from depository institutions", "Efectivo y saldos en instituciones depositarias"),
         side="asset", category="cash", behavioural_class="none", repricing_type="floating", source_field="CHBAL",
@@ -133,27 +133,27 @@ def build_items(r: Report, requests: dict[str, asm.Request] = asm.REQUESTS, cpr:
         reported_amount=afs_amount, reason_missing=None, slotting_assumption=f"{sec_assumption}; split pro rata to the available-for-sale share",
         amount=afs_amount, contractual=afs_amount * sec_con, behavioural=afs_amount * sec_beh)
     floating = r.sum("LNOT3LES", "LNRS3LES")
-    add(item_id="A5", label=t("Loans repricing within three months", "Prestamos con reprecio dentro de tres meses"), side="asset",
+    add(item_id="A5", label=t("Loans repricing within three months", "Préstamos con reprecio dentro de tres meses"), side="asset",
         category="loans-floating", behavioural_class="none", repricing_type="floating", source_field="LNOT3LES + LNRS3LES",
         reported_amount=floating, reason_missing=None, slotting_assumption=no_flow, amount=floating,
         contractual=spread([(floating, "3m_or_less")]))
     com = [(r.get("LNOT3T12"), "3_12m"), (r.get("LNOT1T3"), "1_3y"), (r.get("LNOT3T5"), "3_5y"), (r.get("LNOT5T15"), "5_15y"),
            (r.get("LNOTOV15"), "over_15y")]
-    add(item_id="A6", label=t("Fixed-rate commercial and other loans", "Prestamos comerciales y otros de tasa fija"), side="asset",
+    add(item_id="A6", label=t("Fixed-rate commercial and other loans", "Préstamos comerciales y otros de tasa fija"), side="asset",
         category="loans-fixed", behavioural_class="none", repricing_type="fixed",
         source_field="LNOT3T12 + LNOT1T3 + LNOT3T5 + LNOT5T15 + LNOTOV15", reported_amount=sum(a for a, _ in com), reason_missing=None,
         slotting_assumption=no_flow, amount=sum(a for a, _ in com), contractual=spread(com))
     res = [(r.get("LNRS3T12"), "3_12m"), (r.get("LNRS1T3"), "1_3y"), (r.get("LNRS3T5"), "3_5y"), (r.get("LNRS5T15"), "5_15y"),
            (r.get("LNRSOV15"), "over_15y")]
     res_c = spread(res, amortising=True)
-    add(item_id="A7", label=t("Closed-end residential loans (prepayable)", "Prestamos residenciales a plazo (prepagables)"), side="asset",
+    add(item_id="A7", label=t("Closed-end residential loans (prepayable)", "Préstamos residenciales a plazo (prepagables)"), side="asset",
         category="loans-fixed", behavioural_class="prepayable-loan", repricing_type="fixed",
         source_field="LNRS3T12 + LNRS1T3 + LNRS3T5 + LNRS5T15 + LNRSOV15", reported_amount=sum(a for a, _ in res), reason_missing=None,
         slotting_assumption=f"amortising linearly over the remaining maturity band; behavioural flows prepay at the base CPR of {cpr:g} a year",
         amount=sum(a for a, _ in res), contractual=res_c, behavioural=prepaid_profile(res_c, cpr))
     others = r.get("ASSET") - sum(i.amount for i in items)
     add(item_id="A8", label=t("Other assets, net of the allowance, and loans without a repricing band",
-                              "Otros activos, netos de provision, y prestamos sin banda de reprecio"),
+                              "Otros activos, netos de provisión, y préstamos sin banda de reprecio"),
         side="asset", category="other-assets", behavioural_class="none", repricing_type="fixed", source_field="ASSET less the items above",
         reported_amount=None, reason_missing=plug_a, slotting_assumption="not interest-sensitive: overnight bucket at par",
         amount=others, contractual=overnight(others))
@@ -172,18 +172,18 @@ def build_items(r: Report, requests: dict[str, asm.Request] = asm.REQUESTS, cpr:
                                 "contractual: overnight",
             amount=amount, behavioural=-sl.flows, contractual=overnight(-amount))
 
-    nmd("L1", t("Noninterest-bearing deposits, retail", "Depositos sin interes, minoristas"), "nmd-retail-transactional",
+    nmd("L1", t("Noninterest-bearing deposits, retail", "Depósitos sin interés, minoristas"), "nmd-retail-transactional",
         "deposits-transactional", nib * r_share, "(DEPNIDOM + DEPNIFOR) x retail share")
-    nmd("L2", t("Noninterest-bearing deposits, wholesale", "Depositos sin interes, mayoristas"), "nmd-wholesale",
+    nmd("L2", t("Noninterest-bearing deposits, wholesale", "Depósitos sin interés, mayoristas"), "nmd-wholesale",
         "deposits-transactional", nib * (1 - r_share), "(DEPNIDOM + DEPNIFOR) x (1 - retail share)")
-    nmd("L3", t("Interest-bearing non-maturity deposits, retail", "Depositos a la vista con interes, minoristas"),
+    nmd("L3", t("Interest-bearing non-maturity deposits, retail", "Depósitos a la vista con interés, minoristas"),
         "nmd-retail-non-transactional", "deposits-non-transactional", ib * r_share, "(DEPIDOM + DEPIFOR - NTRTIME) x retail share")
-    nmd("L4", t("Interest-bearing non-maturity deposits, wholesale", "Depositos a la vista con interes, mayoristas"), "nmd-wholesale",
+    nmd("L4", t("Interest-bearing non-maturity deposits, wholesale", "Depósitos a la vista con interés, mayoristas"), "nmd-wholesale",
         "deposits-non-transactional", ib * (1 - r_share), "(DEPIDOM + DEPIFOR - NTRTIME) x (1 - retail share)")
     td = [(r.sum("CD3LES", "CD3LESS"), "3m_or_less"), (r.sum("CD3T12", "CD3T12S"), "3_12m"), (r.sum("CD1T3", "CD1T3S"), "1_3y"),
           (r.sum("CDOV3", "CDOV3S"), "over_3y_time_deposit")]
     td_flows = -spread(td)
-    add(item_id="L5", label=t("Time deposits", "Depositos a plazo"), side="liability", category="deposits-time",
+    add(item_id="L5", label=t("Time deposits", "Depósitos a plazo"), side="liability", category="deposits-time",
         behavioural_class="term-deposit", repricing_type="fixed", source_field="NTRTIME (bands CD3LES, CD3T12, CD1T3, CDOV3 and the small-deposit ones)",
         reported_amount=r.get("NTRTIME"), reason_missing=None, slotting_assumption=no_flow, amount=r.get("NTRTIME"), contractual=td_flows)
     fh = [(r.get("OTHBFH1L"), "up_to_1y"), (r.get("OTBFH1T3"), "1_3y"), (r.get("OTBFH3T5"), "3_5y"), (r.get("OTBFHOV5"), "over_5y_borrowing")]
@@ -194,7 +194,7 @@ def build_items(r: Report, requests: dict[str, asm.Request] = asm.REQUESTS, cpr:
     other_b = r.get("OTHBRF") - r.get("OTHBFHLB")
     if not np.isclose(sum(a for a, _ in ob), other_b, atol=1e-6) or not np.isclose(sum(a for a, _ in fh), r.get("OTHBFHLB"), atol=1e-6):
         raise ValueError(f"{r.report_date}: the borrowing bands do not add up to the reported borrowings")
-    add(item_id="L7", label=t("Other borrowed money", "Otras obligaciones por prestamos"), side="liability", category="borrowings",
+    add(item_id="L7", label=t("Other borrowed money", "Otras obligaciones por préstamos"), side="liability", category="borrowings",
         behavioural_class="none", repricing_type="fixed", source_field="OTHBRF - OTHBFHLB (bands OTBOT*)", reported_amount=other_b,
         reason_missing=None, slotting_assumption=no_flow, amount=other_b, contractual=-spread(ob))
     add(item_id="L8", label=t("Federal funds purchased and repurchase agreements", "Fondos federales comprados y pactos de retrocompra"),

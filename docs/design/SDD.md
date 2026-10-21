@@ -123,6 +123,16 @@ public site are unconfirmed, so the mortgage cases ship the SBA twin as the publ
 figures other than those of Q4 2025 are not read at the EBA. The four C's of the positioning are not defined in the
 records. The details of each dossier's own unverified list (10 items in dossier 01, 15 in dossier 03) are kept there.
 
+### Sources the notebooks cite
+
+A notebook cites only sources this document lists (`scripts/check_notebooks.py`). Besides the sources named above and in the research
+basis, the topic 01 notebooks cite:
+
+- Brown, Cai and DasGupta (2001), Interval estimation for a binomial proportion, https://doi.org/10.1214/ss/1009213286;
+- Hanley and McNeil (1982), the meaning and use of the area under a receiver operating characteristic curve,
+  https://doi.org/10.1148/radiology.143.1.7063747;
+- Spiegelhalter (1986), probabilistic prediction in patient management and clinical trials, https://doi.org/10.1002/sim.4780050506.
+
 ## Sizing and contracts
 
 The design rests on two artifacts of contract-first parallel delivery (ADR-0080): the sizing and the contract catalog.
@@ -206,8 +216,8 @@ directions by `frontend/src/lib/contract.test.ts`; a drift fails the build.
 
 ## Technology and versions
 
-Every pinned dependency of the offline lane (`data-pipeline/requirements.txt` and the optional
-`data-pipeline/requirements-tabpfn.txt`), of `requirements-dev.txt` and of `frontend/package.json`, with the version
+Every pinned dependency of the offline lane (`data-pipeline/requirements.txt`, the optional
+`data-pipeline/requirements-tabpfn.txt` and `data-pipeline/requirements-ore.txt`), of `requirements-dev.txt` and of `frontend/package.json`, with the version
 actually pinned or locked; `scripts/check_tech_matrix.py` fails when a pin and this table disagree. A `package.json`
 range is recorded at the version `frontend/package-lock.json` resolves it to. The runtimes are Python 3.13.14 on the
 development workstation and 3.12 in CI, and Node 22 in CI (24.14.1 on the workstation). The full evaluation of every
@@ -229,9 +239,16 @@ the ones the dossiers and `docs/frameworks/` record.
 | models | catboost | 1.2.10 | the gradient-boosted LGD challenger of case C08 (U6 sizing technology matrix) | lightgbm on the same features |
 | models | shap | 0.52.0 | reason codes and explanation stability of the boosted rung | none recorded (0.53.0 is current and was not adopted) |
 | data | pypdf | 6.19.0 | reading the published tables of the papers (Tasche, Pluto and Tasche, BCBS WP14) | none recorded (6.20.0 is current and was not adopted) |
-| engine | riskvalidation | v0.07.000 | the validation tests, regulatory calculators and generators (git tag until its first PyPI release) | none: no toolkit implements the ECB tests as specified |
+| data | openpyxl | 3.1.5 | reading the EBA/ESRB 2025 macro-financial scenario workbook of C18 (U13 decision Q15; MIT) | none recorded |
+| reference (optional) | open-source-risk-engine | 1.8.17.0 | ORE, run natively from its Windows wheel as the reference engine of the C12 exposure reconciliation (`data-pipeline/requirements-ore.txt`, U9 decision D4); pipeline only, never an engine dependency | none: ORE is the open reference engine the dossiers name |
+| reference (optional) | QuantLib | 1.44 | the independent check of the Hull-White closed forms in C12 (`data-pipeline/requirements-ore.txt`, U9 decision B4); pipeline only | none recorded |
+| engine | riskvalidation | 0.8.1 | the validation tests, regulatory calculators and generators (the PyPI release of the batch 3 engine, tag v0.08.001, 0.8.1 (0.8.0 with the fairness metric rows at null alphas): liquidity, aggregation and stress testing, the regulatory calculators and counterparty credit risk, ML model validation and fair lending) | none: no toolkit implements the ECB tests as specified |
 | models (optional) | torch | 2.14.1 | CPU runtime of the TabPFN extra, outside the default install | none recorded |
 | models (optional) | tabpfn | 9.1.0 | the TabPFN challenger of the small cases, weights under the Prior Labs License | none recorded |
+| notebooks | matplotlib | 3.11.2 | the figures of the notebooks (`notebooks/requirements.txt`) | none recorded |
+| notebooks | nbclient | 0.11.0 | executes the notebooks top to bottom in a fresh kernel (`scripts/run_notebooks.py`, a local release gate) | none recorded |
+| notebooks | nbformat | 5.11.1 | reads and writes the notebook documents of the runner | none recorded |
+| notebooks | ipykernel | 7.4.0 | the kernel the notebooks run in | none recorded |
 | tests | pytest | 9.1.1 | the pipeline, contract, guard and adversarial tests | none recorded |
 | lint | ruff | 0.15.18 | lint of data-pipeline, tests, scripts and app | none recorded (0.17.0 is current and was not adopted) |
 | contracts | jsonschema | 4.26.0 | validates every document against its schema file | none recorded |
@@ -280,7 +297,8 @@ touched; raw data are read from the device data root (`CONTRASTE_DATA`) and are 
 ## Lanes
 
 - **Offline (canonical).** `.venv-pipeline` with the pinned engines (optbinning, scikit-learn, LightGBM, XGBoost,
-  CatBoost, InterpretML, SHAP, lifelines, statsmodels, arch, QuantLib, pyvinecopulib, MAPIE, fairlearn; ORE in WSL;
+  CatBoost, InterpretML, SHAP, lifelines, statsmodels, arch, QuantLib, pyvinecopulib, MAPIE, fairlearn; ORE 1.8.17.0
+  natively (its CPython 3.13 Windows wheel, in `data-pipeline/requirements-ore.txt`, pipeline-only);
   TabPFN and scikit-survival as optional extras with their licence notes). The only lane that writes artifacts.
   It runs on a workstation, never in CI (ADR-0074).
 - **Replay.** The SPA reads the committed artifacts for first paint and for every value marked precomputed. GBM
@@ -461,6 +479,14 @@ gated in the engine repository.
 
 No oracle here is a model judging another model.
 
+## Beyond the state of the art
+
+None claimed. A component of Contraste that goes further than the practice its research found enters this section with the
+topic unit that demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes
+beyond, and a level 4 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches
+the package's contract and demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8)
+and enter here one by one, so no claim is stated before its demonstration exists.
+
 ## Deploy driver
 
 One place only, decided in the plan: **`github-pages` with a `CNAME` on `contraste.fasl-work.com`**
@@ -479,7 +505,7 @@ site.
 |---|---|
 | Freddie Mac terms do not allow derived aggregates in a public web | C06 and C08 publish the SBA twin; Freddie Mac results stay offline |
 | Pyodide cold start too slow | live features move to TypeScript ports with parity tests, or to replay only, per measurement |
-| ORE unusable in WSL | C12 uses QuantLib plus the analytic HW1F check only, stated |
+| ORE 1.8.17.0 will not install or run on the workstation | C12 uses QuantLib plus the analytic HW1F check only, and its ORE reconciliation rows are `not_evaluated` with the error, stated |
 | A golden value cannot be reproduced | the method or test is not shipped until it is |
 | Scope (22 cases, 17 units) | units ship vertically; nothing is presented as done until the convergence verdict |
 | Licence contamination | `scripts/check_licences.py` fails on AGPL, GPL or BSL in the default install |

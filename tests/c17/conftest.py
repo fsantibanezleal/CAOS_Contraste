@@ -7,17 +7,10 @@ from pathlib import Path
 import pytest
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
 ROOT = HERE.parents[1]
 sys.path.insert(0, str(ROOT / "tests" / "contracts_u12"))
 sys.path.insert(0, str(ROOT / "tests" / "contracts"))
-DERIVED = ROOT / "data" / "derived"
-DOCS = ("xi-0-6", "xi-0-8", "xi-0-96", "xi-1-1")
-
-
-def load(rel: str) -> dict:
-    import json
-
-    return json.loads((DERIVED / rel).read_text(encoding="utf-8"))
 
 
 @pytest.fixture(scope="session")

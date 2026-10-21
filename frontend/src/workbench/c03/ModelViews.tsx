@@ -217,8 +217,6 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
             <dd>{`${count(t.n_loans, lang)} / ${count(t.n_events, lang)}`}</dd>
             <dt>{pick({ en: 'Crisis in the training', es: 'Crisis en el entrenamiento' }, lang)}</dt>
             <dd data-crisis={String(t.crisis_included)}>{t.crisis_included ? yes : no}</dd>
-            <dt>{pick({ en: 'Why this window', es: 'Por qué esta ventana' }, lang)}</dt>
-            <dd>{pick(t.rationale, lang)}</dd>
           </dl>
           {rung ? (
             <table className="caos-table ct-wrap-head" data-table="rung-coefficients">
@@ -251,6 +249,11 @@ export function TrainingView({ sel }: { sel: C03Sel | null }) {
           ) : (
             <p className="ct-note" data-state="unavailable">{pick({ en: 'Not available: the models artifact does not list the rung in focus.', es: 'No disponible: el artefacto de modelos no lista el peldaño en foco.' }, lang)}</p>
           )}
+          {/* the rationale is a paragraph under the coefficients: as a row of the list it ran to a dozen lines in a narrow column and
+              pushed the table out of the card, which then painted 6% of its stage (G6, floor 30%) */}
+          <p className="ct-note" data-block="window-rationale">
+            <strong>{pick({ en: 'Why this window.', es: 'Por qué esta ventana.' }, lang)}</strong> {pick(t.rationale, lang)}
+          </p>
         </div>
       </PlotCard>
     </ViewsRow>

@@ -9,7 +9,7 @@ from typing import Any
 
 import c15_support  # noqa: F401  (puts the contract test folders on the path)
 import contract_schemas as cs
-import semantics
+from c15_support import semantics
 from c15_support import ROOT, SHOCKS, VARIANT_IDS  # noqa: F401
 
 DERIVED = ROOT / "data" / "derived"

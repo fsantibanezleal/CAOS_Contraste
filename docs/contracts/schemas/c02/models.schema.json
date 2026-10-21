@@ -1,0 +1,264 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contraste.fasl-work.com/contracts/c02/models.schema.json",
+  "title": "C02 models",
+  "description": "Catalog row c02-models 1.0.0: the five Polish files, the ladder and the leakage-safe protocol.",
+  "allOf": [
+    {
+      "$ref": "../common/models-envelope.schema.json"
+    },
+    {
+      "properties": {
+        "case_id": {
+          "const": "C02"
+        },
+        "fit": {
+          "$ref": "#/$defs/c02Fit"
+        }
+      },
+      "required": [
+        "case_id",
+        "fit"
+      ]
+    }
+  ],
+  "unevaluatedProperties": false,
+  "$defs": {
+    "c02Param": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "label",
+        "basis"
+      ],
+      "properties": {
+        "name": {
+          "enum": [
+            "perturbation_grid",
+            "perturbation_tolerance",
+            "n_seeds",
+            "n_bootstrap_refits",
+            "overfit_tolerance",
+            "weak_spot_multiple",
+            "shift_score",
+            "worst_subsample_share",
+            "decision_cutoff_reject_share"
+          ]
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 1
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "const": "convention",
+          "description": "Every named parameter carries this label: a convention, never a regulatory threshold (06 I.6 l.1268-1270)."
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Where the construction comes from and how the value was proposed (decision Q8)."
+        }
+      },
+      "description": "A named parameter: its value and the label convention."
+    },
+    "c02Params": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/c02Param"
+      },
+      "description": "The named parameters of the document, each once.",
+      "minItems": 1,
+      "maxItems": 1,
+      "allOf": [
+        {
+          "contains": {
+            "properties": {
+              "name": {
+                "const": "overfit_tolerance"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        }
+      ]
+    },
+    "c02Split": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "protocol",
+        "seed",
+        "train_rows",
+        "calibration_rows",
+        "holdout_rows",
+        "holdout_events",
+        "fit_on_training_slice_only",
+        "calibration_map_on_separate_slice",
+        "resampling_before_calibration",
+        "out_of_time_claim"
+      ],
+      "properties": {
+        "protocol": {
+          "const": "locked-stratified-holdout"
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "train_rows": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "calibration_rows": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "holdout_rows": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "holdout_events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fit_on_training_slice_only": {
+          "const": true,
+          "description": "Binning, imputation and selection are fitted on the training slice only (04 l.1054-1059)."
+        },
+        "calibration_map_on_separate_slice": {
+          "const": true
+        },
+        "resampling_before_calibration": {
+          "const": false
+        },
+        "out_of_time_claim": {
+          "const": false,
+          "description": "The files carry no date: no out-of-time claim."
+        }
+      }
+    },
+    "c02Fit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "files",
+        "ladder",
+        "protocol",
+        "parameters"
+      ],
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "horizon_id",
+              "years",
+              "file",
+              "rows",
+              "events"
+            ],
+            "properties": {
+              "horizon_id": {
+                "enum": [
+                  "h1",
+                  "h2",
+                  "h3",
+                  "h4",
+                  "h5"
+                ]
+              },
+              "years": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "file": {
+                "type": "string",
+                "minLength": 1
+              },
+              "rows": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "events": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "minItems": 5,
+          "maxItems": 5
+        },
+        "ladder": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rung",
+              "label",
+              "engine",
+              "reference"
+            ],
+            "properties": {
+              "rung": {
+                "enum": [
+                  "P0",
+                  "P1",
+                  "P2a",
+                  "P2b",
+                  "P3",
+                  "P4"
+                ]
+              },
+              "label": {
+                "$ref": "../common/text.schema.json"
+              },
+              "engine": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reference": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "protocol": {
+          "$ref": "#/$defs/c02Split"
+        },
+        "parameters": {
+          "$ref": "#/$defs/c02Params"
+        }
+      },
+      "description": "C02 models: the five files, the ladder reused from C01 and the leakage-safe protocol."
+    }
+  }
+}

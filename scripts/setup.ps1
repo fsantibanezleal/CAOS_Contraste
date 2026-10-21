@@ -1,5 +1,8 @@
 # The pipeline environment, isolated and pinned: .venv-pipeline with the precompute and dev requirements. The API
-# environment (.venv, requirements-api.txt) is created only when app/ is active. Idempotent; no global installs.
+# environment (.venv, requirements-api.txt) is created only when app/ is active. With -Notebooks it builds the
+# notebook environment instead, .venv-notebooks from notebooks/requirements.txt (scripts/run_notebooks.py runs in it).
+# Idempotent; no global installs.
+param([switch]$Notebooks)
 $ErrorActionPreference = "Stop"
 Set-Location (Join-Path $PSScriptRoot "..")
 $py = if ($env:PYTHON) { $env:PYTHON } else { "python" }
@@ -8,6 +11,16 @@ function Get-VenvPy($dir) {
   $p = Join-Path $dir "Scripts\python.exe"
   if (-not (Test-Path $p)) { $p = Join-Path $dir "bin/python" }
   return $p
+}
+
+if ($Notebooks) {
+  Write-Host "[setup] .venv-notebooks (the notebook environment)"
+  if (-not (Test-Path ".venv-notebooks")) { & $py -m venv .venv-notebooks }
+  $vn = Get-VenvPy ".venv-notebooks"
+  & $vn -m pip install --upgrade pip -q
+  & $vn -m pip install -q -r notebooks/requirements.txt
+  Write-Host "[setup] .venv-notebooks ready. Next: python scripts/run_notebooks.py --check"
+  exit 0
 }
 
 Write-Host "[setup] .venv-pipeline (the offline lane)"

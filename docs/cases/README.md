@@ -25,7 +25,7 @@ see, checked at bake time. The App shows one case at a time; Experiments and Ben
 | Case | Category | Data (class) | Truth status | Unit | Status |
 |---|---|---|---|---|---|
 | [C01](C01.md) retail cards PD, champion vs challenger | credit-scoring | UCI Taiwan, German twin (mirror-allowed) | real outcomes; perturbed variants as known truth | U1 | built |
-| C02 corporate PD across 1 to 5 year horizons | credit-scoring | UCI Polish bankruptcy (mirror-allowed) | real outcomes | U14 | planned |
+| [C02](C02.md) corporate PD across 1 to 5 year horizons | credit-scoring | UCI Polish bankruptcy (mirror-allowed) | real outcomes | U14 | built |
 | [C03](C03.md) SME PD by vintage through 2008 | credit-scoring | SBA 7(a) FOIA (mirror-allowed) | real outcomes | U6 | built |
 | [C04](C04.md) rating transitions and TTC PD by grade | ratings-calibration | ESMA CEREP (mirror-allowed), three papers (derived-only), a CTMC generator | real aggregates, published answers, known truth | U4 | built |
 | [C05](C05.md) low-default portfolios and PD calibration | ratings-calibration | Tasche (2013) and Pluto and Tasche (2005), their tables (derived-only); a Vasicek generator | published answers, known truth | U2 | built |
@@ -35,16 +35,16 @@ see, checked at bake time. The App shows one case at a time; Experiments and Ben
 | [C09](C09.md) EAD and CCF for revolving lines | lgd-ead | a generator shaped on the Fed card portfolios | known truth | U6 | built |
 | [C10](C10.md) portfolio credit capital: ASRF, Vasicek fit, copula MC | portfolio-capital | Fed charge-off rates, FDIC failures, a simulator | real aggregates, known truth | U7 | built |
 | [C11](C11.md) market VaR/ES backtesting across 2008, 2020, 2022, 2023 | market-ccr | Kenneth French (derived-only), Treasury, H.10 | real outcomes | U8 | built |
-| C12 swap exposure, CVA and SA-CCR | market-ccr | Treasury curves, synthetic trades; ORE | real market, synthetic trades | U9 | planned |
+| [C12](C12.md) swap exposure, CVA and SA-CCR | market-ccr | Treasury curves, synthetic trades; ORE | real market, synthetic trades | U9 | built |
 | [C13](C13.md) FRTB desk eligibility: PLA and desk backtesting | market-ccr | a generator with planted model deficiencies | known truth | U8 | built |
 | [C14](C14.md) IRRBB six shocks on a USD balance sheet (SVB 2022) | balance-sheet | FDIC call reports, the Treasury curve | real aggregates, synthetic behaviour | U10 | built |
 | [C15](C15.md) IRRBB on a CLP/UF balance sheet (RAN 21-13 Annex 1) | balance-sheet | CMF, BCCh F022, Banco Andino | real aggregates, synthetic bank | U10 | built |
-| C16 liquidity stress, LCR and the March 2023 run | balance-sheet | FDIC, H.8, the Fed SVB review, a depositor generator | real event, synthetic deposits | U11 | planned |
+| [C16](C16.md) liquidity stress, LCR and the March 2023 run | balance-sheet | FDIC, H.8, the Fed SVB review, a depositor generator | real event, synthetic deposits | U11 | built |
 | [C17](C17.md) operational risk: LDA vs SMA | operational | a generator calibrated to BCBS LDCE 2008 | synthetic calibrated | U12 | built |
-| C18 ICAAP and IAPE capital aggregation under macro scenarios | capital-stress | Fed 2026, EBA/ESRB 2025, NGFS paths; Banco Andino | real paths, synthetic bank | U13 | planned |
+| [C18](C18.md) ICAAP and IAPE capital aggregation under macro scenarios | capital-stress | Fed 2026, EBA/ESRB 2025, NGFS paths; Banco Andino | real paths, synthetic bank | U13 | built |
 | C19 supervisory stress model replication (known answer) | capital-stress | Fed hypothetical portfolios and published loss rates | published answers | U13 | planned |
-| C20 ML model validation: drift, robustness, explanation stability | ml-ai-risk | UCI, SantanderAI SGCD, Fed portfolios as shift probes | real outcomes, known shifts | U14 | planned |
-| C21 fair-lending disparity testing | ml-ai-risk | HMDA (mirror-allowed) | real decisions | U14 | planned |
+| [C20](C20.md) ML model validation: drift, robustness, explanation stability | ml-ai-risk | UCI, SantanderAI SGCD, Fed portfolios as shift probes | real outcomes, known shifts | U14 | built |
+| [C21](C21.md) fair-lending disparity testing | ml-ai-risk | HMDA (mirror-allowed) | real decisions | U14 | built |
 | [C22](C22.md) validating the validator: size and power of every test | validator | riskvalidation's generators with planted defects; WP14 and Yurdakul-Naranjo tables (derived-only) as published answers | known truth | U3 | built |
 
 A case page is written in the unit that builds the case, from [00_TEMPLATE.md](00_TEMPLATE.md).
