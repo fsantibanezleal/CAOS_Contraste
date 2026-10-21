@@ -186,7 +186,10 @@ def bake_all(output_root: Path, data_root: Path, cache_dir: Path, *, workers: in
         if record is not None:
             (Path(evidence_dir) / HYPER_FILE).write_text(hyper.dumps(record), encoding="utf-8")
     ranges = expectations.check(CASE_ID, expect if expect is not None else EXPECT, values)
+    from ._case import CASE
+
     manifest = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=C11.title, category={"en": "Market and counterparty risk", "es": "Riesgo de mercado y de contraparte"}, question=C11.question,
         sources=list(SOURCES), seed=seed, variants=entries, default_variant=DEFAULT_VARIANT, contract=contract, expect=ranges,
         riskvalidation_version=ev, source_details=source_details())

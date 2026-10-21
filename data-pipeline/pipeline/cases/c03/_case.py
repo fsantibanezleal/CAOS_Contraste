@@ -83,6 +83,16 @@ def contract_summary(loans) -> dict[str, Any]:
     return report.summary()
 
 
+#: why this case reads what it reads of other cases, keyed by the document or the module its producer names: ``depends_on`` refuses a list that differs
+#: from the source (core.manifest.derive_depends_on), so the manifest cannot state what the code does not do
+DEPENDS_REASONS: dict[str, dict[str, str]] = {
+    "pipeline.cases.c01_ladder": {"en": "Fits the C01 rungs with the C01 ladder (fit_ladder and Rung): the same fitting code, so the rungs of the two cases are the same models.",
+        "es": "Ajusta los peldaños de C01 con la escalera de C01 (fit_ladder y Rung): el mismo código de ajuste, de modo que los peldaños de ambos casos son los mismos modelos."},
+    "pipeline.cases.c06.panel": {"en": "Uses the C06 panel helpers: the sector groups, the sector index of an industry code and the whole months between two dates.",
+        "es": "Usa los auxiliares del panel de C06: los grupos de sectores, el índice de sector de un código de industria y los meses completos entre dos fechas."},
+}
+
+
 class C03:
     id = CASE_ID
     slug = "sme-pd-vintage"
@@ -95,6 +105,12 @@ class C03:
         "¿Se mantiene calibrado un modelo de PD construido con cohortes de aprobación observadas ya por cinco años para las cohortes que "
         "vivieron 2008-2010, y qué encuentra un validador en las cohortes anteriores y posteriores?")
     sources = SOURCES
+
+    def depends_on(self) -> list[dict[str, Any]]:
+        """What this case reads of other cases, as the manifest states it (``depends_on``)."""
+        from ...core.manifest import derive_depends_on
+
+        return derive_depends_on(self.id, DEPENDS_REASONS)
 
     def bake(self, seed: int, paths: Any, data_root: Path) -> dict[str, Any]:
         from ... import __version__
@@ -166,6 +182,7 @@ class C03:
             values.update(res.values)
         ranges = expectations.check(CASE_ID, EXPECT, values)
         manifest = build_case_manifest(
+            depends_on=self.depends_on(),
             case_id=CASE_ID, title=self.title, category={"en": "Credit scoring", "es": "Scoring de crédito"}, question=self.question,
             sources=list(SOURCES), seed=seed, variants=entries, default_variant=DEFAULT_VARIANT, contract=contract, expect=ranges,
             riskvalidation_version=rv, source_details=_source_details(SOURCES))

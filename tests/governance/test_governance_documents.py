@@ -19,7 +19,7 @@ MOVED_ATTRIBUTES = {
     "A13": "the fixture reads the C01 split and the C18 fit end year in its own shape; the bake reads the same pointers into its value shape",
     "A19": "the fixture counts the C18 named parameters in its own shape; the bake counts the same list",
     "A31": "the fixture names the engine version that built the case document; the bake names the validator at the pinned release (riskvalidation 0.9.0)",
-    "A16": "the fixture holds two edges; the full edge table (edges.json, E01 to E15) gives C18 four feeders and C01/german its downstream cases",
+    "A16": "the fixture holds two edges; the full edge table (the depends_on of the manifests, since U16-P1b) gives C18 four feeders and C01/german its downstream cases",
     "A38": "the fixture register holds the four fixture entries' findings under the fixture deadlines; the full register is the same rows, so the value agrees unless an entry gains a variant",
 }
 

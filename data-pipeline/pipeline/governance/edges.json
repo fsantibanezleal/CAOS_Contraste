@@ -1,60 +1,43 @@
 {
  "schema": "contraste.governance.edges/v1",
- "description": "The dependency edges of the governance inventory (decision W15-8): the document reads (kind document) and the code imports (kind code) of the U15 research addendum D4 section 5.1, each with its stated source, plus the two code imports that C02 and C20 add (built after the addendum, W15-18). A related link (a page statement, a shared method, a shared source, a measurement, a conceptual link) is listed apart and is never a dependency. Every entry also depends on the engine node riskvalidation (implicit, W15-8). An edge is written between cases; the bake expands it to entries: the upstream is the reference entry of the upstream case (the entry that holds the manifest's default variant, else the first fit by key), the downstream is every entry of the downstream case, because every fit runs the same code or reads the same documents. Each edge lists the lines the edge test checks (a downstream file that stops naming the upstream document or module, or an import line that goes away, fails the test).",
+ "description": "The related links of the governance inventory (decision W15-8): a page statement, a shared method, a shared source, a measurement or a conceptual link, each with its stated source. A related link is listed apart and is never a dependency. The dependencies are not here since U16-P1b (BL-086): every case producer states what it reads of other cases (the committed documents and the product modules) in the depends_on list of its manifest, and the bake builds the edges from those lists (pipeline.governance.edge_table.dependency_edges). Every entry also depends on the engine node riskvalidation (implicit, W15-8). A related link is written between cases; the bake expands it to the reference entry of each case (the entry that holds the manifest's default variant, else the first fit by key).",
  "tag": "doc",
- "edges": [
-  {"id": "E01", "upstream_case": "C07", "downstream_case": "C18", "kind": "document",
-   "stated_source": "data-pipeline/pipeline/cases/c18/anchors.py:102-103 loads C07/base.json and C07/models-banco-andino.json; the C18 models document fit.marginal_sources[0].documents is [\"c07-outputs\"]",
-   "verify": [{"file": "data-pipeline/pipeline/cases/c18/anchors.py", "needle": "C07/base.json"}, {"file": "data-pipeline/pipeline/cases/c18/anchors.py", "needle": "C07/models-banco-andino.json"}]},
-  {"id": "E02", "upstream_case": "C11", "downstream_case": "C18", "kind": "document",
-   "stated_source": "data-pipeline/pipeline/cases/c18/anchors.py:108 loads C11/mixed-2023.json; the C18 models document fit.marginal_sources[1].documents is [\"c11-outputs mixed-2023\"]",
-   "verify": [{"file": "data-pipeline/pipeline/cases/c18/anchors.py", "needle": "C11/mixed-2023.json"}]},
-  {"id": "E03", "upstream_case": "C15", "downstream_case": "C18", "kind": "document",
-   "stated_source": "data-pipeline/pipeline/cases/c18/anchors.py:104-106 reads the C15 manifest default variant and the C15 models document; the C18 models document fit.marginal_sources[2].documents is [\"c15-outputs\"]",
-   "verify": [{"file": "data-pipeline/pipeline/cases/c18/anchors.py", "needle": "manifests/C15.json"}, {"file": "data-pipeline/pipeline/cases/c18/anchors.py", "needle": "C15/models-banco-andino-2026-09.json"}]},
-  {"id": "E04", "upstream_case": "C17", "downstream_case": "C18", "kind": "document",
-   "stated_source": "data-pipeline/pipeline/cases/c18/anchors.py:107 loads C17/models-generator.json (variant xi-0-8); the C18 models document fit.marginal_sources[3].documents is [\"c17-models\"]",
-   "verify": [{"file": "data-pipeline/pipeline/cases/c18/anchors.py", "needle": "C17/models-generator.json"}]},
-  {"id": "E05", "upstream_case": "C10", "downstream_case": "C18", "kind": "code",
-   "stated_source": "data-pipeline/pipeline/cases/c18/fed.py:19 and data-pipeline/pipeline/cases/c18/fetch.py:25 (from ..c10 import fed as chargeoff); both read fed-chargeoff",
-   "verify": [{"file": "data-pipeline/pipeline/cases/c18/fed.py", "needle": "from ..c10 import fed as chargeoff"}, {"file": "data-pipeline/pipeline/cases/c18/fetch.py", "needle": "from ..c10 import fed as chargeoff"}]},
-  {"id": "E06", "upstream_case": "C07", "downstream_case": "C15", "kind": "code",
-   "stated_source": "data-pipeline/pipeline/cases/c15/bake.py:28 and data-pipeline/pipeline/cases/c15/targets.py:14-15 (from ..c07 import book, sources); docs/cases/C15.md:104-105 (its three loan portfolios equal the C07 total)",
-   "verify": [{"file": "data-pipeline/pipeline/cases/c15/bake.py", "needle": "from ..c07 import sources"}, {"file": "data-pipeline/pipeline/cases/c15/targets.py", "needle": "from ..c07 import book"}]},
-  {"id": "E07", "upstream_case": "C06", "downstream_case": "C03", "kind": "code",
-   "stated_source": "data-pipeline/pipeline/cases/c03/panel.py:25 (SECTOR_NAMES, sector_index) and data-pipeline/pipeline/cases/c03/variant.py:16 (months_between)",
-   "verify": [{"file": "data-pipeline/pipeline/cases/c03/panel.py", "needle": "from ..c06.panel import"}, {"file": "data-pipeline/pipeline/cases/c03/variant.py", "needle": "from ..c06.panel import"}]},
-  {"id": "E08", "upstream_case": "C06", "downstream_case": "C08", "kind": "code",
-   "stated_source": "data-pipeline/pipeline/cases/c08/panel.py:21 (from ..c06.panel import SECTOR_NAMES, sector_index)",
-   "verify": [{"file": "data-pipeline/pipeline/cases/c08/panel.py", "needle": "from ..c06.panel import"}]},
-  {"id": "E09", "upstream_case": "C01", "downstream_case": "C03", "kind": "code",
-   "stated_source": "data-pipeline/pipeline/cases/c03/fit.py:20 (from ..c01_ladder import Rung, _t, fit_ladder); docs/cases/C03.md:32 (the existing rungs of the C01 ladder)",
-   "verify": [{"file": "data-pipeline/pipeline/cases/c03/fit.py", "needle": "from ..c01_ladder import"}]},
-  {"id": "E10", "upstream_case": "C01", "downstream_case": "C04", "kind": "code",
-   "stated_source": "data-pipeline/pipeline/cases/c04_transitions.py:30 and data-pipeline/pipeline/cases/c04_families.py:91 (helpers _t and _v of c01_ladder)",
-   "verify": [{"file": "data-pipeline/pipeline/cases/c04_transitions.py", "needle": "from .c01_ladder import"}, {"file": "data-pipeline/pipeline/cases/c04_families.py", "needle": "from .c01_ladder import"}]},
-  {"id": "E11", "upstream_case": "C01", "downstream_case": "C05", "kind": "code",
-   "stated_source": "data-pipeline/pipeline/cases/c05_ldp_calibration.py:40 (helpers _t and _v of c01_ladder)",
-   "verify": [{"file": "data-pipeline/pipeline/cases/c05_ldp_calibration.py", "needle": "from .c01_ladder import"}]},
-  {"id": "E12", "upstream_case": "C01", "downstream_case": "C22", "kind": "code",
-   "stated_source": "data-pipeline/pipeline/cases/c22_validator.py:68 (helpers _t and _v of c01_ladder)",
-   "verify": [{"file": "data-pipeline/pipeline/cases/c22_validator.py", "needle": "from .c01_ladder import"}]},
-  {"id": "E13", "upstream_case": "C05", "downstream_case": "C04", "kind": "code",
-   "stated_source": "data-pipeline/pipeline/cases/c04_transitions.py:31 and data-pipeline/pipeline/cases/c04_parity.py:44 (IRB_ASSUMPTIONS, _irb_rw of c05_ldp_calibration)",
-   "verify": [{"file": "data-pipeline/pipeline/cases/c04_transitions.py", "needle": "from .c05_ldp_calibration import"}, {"file": "data-pipeline/pipeline/cases/c04_parity.py", "needle": "from .c05_ldp_calibration import"}]},
-  {"id": "E14", "upstream_case": "C01", "downstream_case": "C02", "kind": "code",
-   "stated_source": "data-pipeline/pipeline/cases/c02/fits.py:18 (from ..c01_ladder import Rung, fit_ladder); built after the addendum (W15-18)",
-   "verify": [{"file": "data-pipeline/pipeline/cases/c02/fits.py", "needle": "from ..c01_ladder import"}]},
-  {"id": "E15", "upstream_case": "C01", "downstream_case": "C20", "kind": "code",
-   "stated_source": "data-pipeline/pipeline/cases/c20/fits.py:17 (from ..c01_ladder import Rung, fit_ladder) and data-pipeline/pipeline/cases/c20/data.py:28 (c01_features); built after the addendum (W15-18)",
-   "verify": [{"file": "data-pipeline/pipeline/cases/c20/fits.py", "needle": "from ..c01_ladder import"}, {"file": "data-pipeline/pipeline/cases/c20/data.py", "needle": "c01_features"}]}
- ],
  "related": [
-  {"a_case": "C22", "b_case": "C04", "kind": "page-statement", "source": "docs/cases/C04.md:77 (the rung's seed is set with C22's helper)"},
-  {"a_case": "C22", "b_case": "C01", "kind": "measures", "source": "docs/cases/C22.md:70, 157-158, 180, 182 (C22 measures the size of C01's tests); docs/cases/C01.md:69 (C01 re-baked after C22)"},
-  {"a_case": "C22", "b_case": "C05", "kind": "measures", "source": "docs/cases/C22.md:70, 157-158, 180, 182 (C05's generator is the engine's DefaultCounts that C22 measures)"},
-  {"a_case": "C08", "b_case": "C09", "kind": "conceptual", "source": "docs/cases/C09.md:56 (C09 is the known-truth case of the LGD and EAD family; no document is read)"},
-  {"a_case": "C14", "b_case": "C15", "kind": "method", "source": "docs/cases/C15.md:385 (the Annex 1 delta NII uses the base repricing flows, shared with C14)"},
-  {"a_case": "C14", "b_case": "C16", "kind": "source", "source": "docs/cases/C16.md:70 (FDIC data fetched by C14); both list fdic-bankfind"}
+  {
+   "a_case": "C22",
+   "b_case": "C04",
+   "kind": "page-statement",
+   "source": "docs/cases/C04.md:77 (the rung's seed is set with C22's helper)"
+  },
+  {
+   "a_case": "C22",
+   "b_case": "C01",
+   "kind": "measures",
+   "source": "docs/cases/C22.md:70, 157-158, 180, 182 (C22 measures the size of C01's tests); docs/cases/C01.md:69 (C01 re-baked after C22)"
+  },
+  {
+   "a_case": "C22",
+   "b_case": "C05",
+   "kind": "measures",
+   "source": "docs/cases/C22.md:70, 157-158, 180, 182 (C05's generator is the engine's DefaultCounts that C22 measures)"
+  },
+  {
+   "a_case": "C08",
+   "b_case": "C09",
+   "kind": "conceptual",
+   "source": "docs/cases/C09.md:56 (C09 is the known-truth case of the LGD and EAD family; no document is read)"
+  },
+  {
+   "a_case": "C14",
+   "b_case": "C15",
+   "kind": "method",
+   "source": "docs/cases/C15.md:385 (the Annex 1 delta NII uses the base repricing flows, shared with C14)"
+  },
+  {
+   "a_case": "C14",
+   "b_case": "C16",
+   "kind": "source",
+   "source": "docs/cases/C16.md:69-70 and data-pipeline/pipeline/cases/c16/fetch.py:7-8 (the shared source is the Treasury files fetched by C14, read through its sidecar provenance.json; C16 fetches its own FDIC file); both list fdic-bankfind"
+  }
  ]
 }

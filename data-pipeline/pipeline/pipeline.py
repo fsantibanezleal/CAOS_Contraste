@@ -7,6 +7,7 @@ never from the repository.
     python data-pipeline/run.py                  # export the contracts, bake every case, write the index
     python data-pipeline/run.py C01 --seed 7     # one case
     python data-pipeline/run.py --output <dir>   # a sandbox bake
+    python data-pipeline/run.py all --manifests-only   # restate depends_on in the committed manifests (no fit, no document rewritten)
     python data-pipeline/run.py index            # rebuild the 22-case index from the registry (no bake)
     python data-pipeline/run.py readiness        # recompute data/derived/readiness.json (no bake)
 """
@@ -20,11 +21,11 @@ from typing import Any
 
 from . import registry
 from .core import readiness as readiness_mod
-from .core.manifest import build_index
+from .core.manifest import add_depends_on, build_index
 from .core.schemas import validate_document
 from .io.contract import FAMILIES, export_contracts
 from .io.fetch import data_root as resolve_data_root
-from .io.formats import write_json
+from .io.formats import read_json, write_json
 
 # data-pipeline/pipeline/pipeline.py -> parents[2] = repo root
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -115,6 +116,34 @@ def write_readiness(paths: PipelinePaths, *, repo_root: Path = REPO_ROOT) -> int
     return readiness_mod.write(paths.root, doc)
 
 
+def write_manifests_only(paths: PipelinePaths, case_ids: list[str] | None = None) -> list[str]:
+    """Rewrite the committed manifests from their committed documents and the producers' declared ``depends_on``, with no fit and no document rewritten.
+
+    Each manifest is read, its artifact entries are checked against the documents on disk (the file exists and has the declared size, so the manifest
+    still describes them), ``depends_on`` is stated from the case's producer (``CASE.depends_on()``, derived from its source), and the result is validated
+    against the manifest schema before it replaces the file. Every other field is carried over untouched. Returns the case ids rewritten.
+    """
+    built = [c.id for c in registry.built_cases()]
+    unknown = [c for c in (case_ids or []) if c not in built]
+    if unknown:
+        raise ValueError(f"--manifests-only: {', '.join(unknown)} is not a built case (built: {', '.join(built)})")
+    done = []
+    for case in registry.built_cases():
+        if case_ids and case.id not in case_ids:
+            continue
+        rel = paths.manifests / f"{case.id}.json"
+        manifest = read_json(rel)
+        for art in manifest["artifacts"]:
+            doc = paths.root / art["path"]
+            if not doc.is_file() or doc.stat().st_size != art["bytes"]:
+                raise FileNotFoundError(f"{rel}: the artifact {art['path']} is absent or its size differs from the {art['bytes']} bytes the manifest states")
+        rebuilt = add_depends_on(manifest, case.depends_on())
+        validate_document(f"data/derived/manifests/{case.id}.json", rebuilt)
+        write_json(rel, rebuilt)
+        done.append(case.id)
+    return done
+
+
 def run_all(seed: int = 42, *, output_root: str | Path | None = None,
             data_root: str | Path | None = None) -> list[dict[str, Any]]:
     paths = PipelinePaths.from_output(output_root)
@@ -135,9 +164,15 @@ def main() -> None:
     ap.add_argument("--output", type=Path,
                     help="sandbox output root; omit only for an intentional canonical release bake")
     ap.add_argument("--data-root", help="the device data root (default: $CONTRASTE_DATA)")
+    ap.add_argument("--manifests-only", action="store_true",
+                    help="rewrite the committed manifest of the case (or of every built case) from its committed documents and the producer's "
+                         "declared depends_on: no fit, no document rewritten, no index or readiness")
     args = ap.parse_args()
     paths = PipelinePaths.from_output(args.output)
-    if args.case == "index":
+    if args.manifests_only:
+        done = write_manifests_only(paths, None if args.case == "all" else [args.case])
+        print(f"manifests rewritten without a bake ({len(done)}): {', '.join(done)} -> {paths.manifests}")
+    elif args.case == "index":
         print(f"index ({write_index(paths):,} bytes) -> {paths.manifests / 'index.json'}")
     elif args.case == "readiness":
         print(f"readiness ({write_readiness(paths):,} bytes) -> {paths.root / 'readiness.json'}")

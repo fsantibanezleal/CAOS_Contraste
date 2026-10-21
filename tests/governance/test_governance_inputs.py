@@ -1,4 +1,4 @@
-"""U15-P: the inputs of the bake (inputs.json, edges.json) carry their basis and tag; C02 and C20 are scored under W15-18 with a document pointer for
+"""U15-P: the inputs of the bake (inputs.json, the related links of edges.json) carry their basis and tag; C02 and C20 are scored under W15-18 with a document pointer for
 each input; the premises the scores state are true of the committed documents.
 """
 from __future__ import annotations
@@ -22,7 +22,10 @@ def inputs():
 
 @pytest.fixture(scope="module")
 def edges():
-    return json.loads(gs.EDGES.read_text(encoding="utf-8"))
+    """The edge table as the bake reads it since U16-P1b: the dependencies from the manifests' depends_on, the related links from edges.json."""
+    from pipeline.governance import edge_table
+
+    return {"edges": edge_table.dependency_edges({c: manifest(c) for c in BUILT}), "related": json.loads(gs.EDGES.read_text(encoding="utf-8"))["related"]}
 
 
 def manifest(case):
@@ -119,24 +122,27 @@ def test_the_scores_state_premises_that_the_documents_confirm(inputs):
                 assert all(len(x["sha256"]) == 64 for x in inp["files"]), p.name
 
 
-def test_f5_is_the_feeder_count_of_the_addendum_and_c18_equals_its_document_feeders(inputs, edges):
-    """A D2 3.3: C18 reads four cases (document edges E01 to E04), C15 one (C07, whose edge E06 is a code import: the addendum counts it); the rest none."""
+def test_f5_is_the_feeder_count_of_the_addendum_derived_from_the_edges(inputs, edges):
+    """A D2 3.3, derived (U16-P1 review m2): the feeders of a case are the cases it reads by document, plus C15's code feeder, which the addendum counts
+    (C07 books the loans C15 calibrates); F5 is 1 plus the feeder count, capped at 4. Nothing here is pinned by case: a new document dependency of any
+    case changes its expected score and fails this test until inputs.json states it."""
     feeders: dict[str, set[str]] = {}
     for e in edges["edges"]:
-        if e["kind"] == "document":
+        if e["kind"] == "document" or (e["downstream_case"], e["upstream_case"]) == ("C15", "C07"):
             feeders.setdefault(e["downstream_case"], set()).add(e["upstream_case"])
-    assert len(feeders["C18"]) == 4
+    assert len(feeders["C18"]) == 4 and feeders["C15"] == {"C07"}
+    assert set(feeders) == {"C15", "C18"}, "a case other than C15 and C18 gained a document feeder: score its F5 in inputs.json"
     for case, c in inputs["cases"].items():
-        want = {"C15": 2, "C18": 4}.get(case, 1)
+        want = min(4, 1 + len(feeders.get(case, ())))
         assert {x["id"]: x for x in c["tier"]["factors"]}["F5"]["score"] == want, case
 
 
 def test_the_edge_table_lists_dependencies_and_keeps_the_related_links_apart(edges):
     kinds = {e["kind"] for e in edges["edges"]}
     assert kinds == {"document", "code"}
-    assert len({e["id"] for e in edges["edges"]}) == len(edges["edges"])
+    assert len({(e["upstream_case"], e["downstream_case"], e["kind"]) for e in edges["edges"]}) == len(edges["edges"])
     for e in edges["edges"]:
-        assert e["stated_source"].strip() and e["verify"], e["id"]
+        assert e["stated_source"].strip(), e
         assert e["upstream_case"] != e["downstream_case"]
     assert {r["kind"] for r in edges["related"]} <= {"page-statement", "method", "source", "measures", "conceptual"}
     dep = {(e["upstream_case"], e["downstream_case"]) for e in edges["edges"]}
