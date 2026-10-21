@@ -8,11 +8,11 @@
   "label": "convention",
   "basis": {
    "en": "a fixture date chosen after the due dates to exercise the overdue rule; not the date of publication",
-   "es": "una fecha de fixture elegida despues de los vencimientos para ejercer la regla de vencimiento; no es la fecha de publicacion"
+   "es": "una fecha de fixture elegida después de los vencimientos para ejercer la regla de vencimiento; no es la fecha de publicación"
   }
  },
  "provenance": {
-  "code_version": "0.14.000",
+  "code_version": "0.15.000",
   "riskvalidation_version": "0.9.0",
   "generators": [
    "fixture:u15-s-contracts"
@@ -75,43 +75,43 @@
    },
    {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "6225136025c8457bab8857501cb8b2939bd785807184f5e9f52a975299c359e5",
-    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+    "sha256": "69a2ab8f87d99efc2b9e6a07dd73df2b6519efacf40331a9ca102e0c0ea5b863",
+    "ref": null
    },
    {
     "path": "data/derived/C18/models-banco-andino.json",
-    "sha256": "4f5927257cbcca0e717753acf81e84f78b33a4906553ee571244874b9598ae3d",
-    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+    "sha256": "dc6683541f7a7d3ac2feb3e6b7561a2f95af4d10ee87d20236ba61f106383427",
+    "ref": null
    },
    {
     "path": "data/derived/C18/baseline.json",
-    "sha256": "b424e3f4d386478c503eff31bd1d2bc597e20089e0b872a561b4d11e7cf78921",
-    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+    "sha256": "235ba35898c452765822b51a085e6cb52d8257ddd401111f43957b820724bada",
+    "ref": null
    },
    {
     "path": "data/derived/C18/eba-2025-adverse.json",
-    "sha256": "2b191fb877657b8a26850a5de8458bbe4fc88454d6d3753220189b6b95e46437",
-    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+    "sha256": "1cd7fb0214e90d3d5f0f5897e1aeea7d2bde7efb5fd45187ab38c8c86ffb2344",
+    "ref": null
    },
    {
     "path": "data/derived/C18/fed-2026-severely-adverse.json",
-    "sha256": "fd614c8edf07464ec1bd266ec2f6b35506b214fcb938e62ed804d83bb5117fbd",
-    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+    "sha256": "22d9aeb057a9c1dc11542b62f9b6d7f42c341b16858c655f502740388c236888",
+    "ref": null
    },
    {
     "path": "data/derived/C18/ngfs-delayed-transition.json",
-    "sha256": "5f78224b085addbc50b4c0ca823a87e150ffbefb5bbbfffe650cfddff76d57c5",
-    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+    "sha256": "5a2b04c087918eb8555d874344d812c3d5a55b4f57e8c497758bea69ce006302",
+    "ref": null
    },
    {
     "path": "data/derived/C18/reverse-stress.json",
-    "sha256": "dc5bc0dd9e74ab9a7cee4dec9425eb8b633b014e2681dd5f1db3d0e75461e40a",
-    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+    "sha256": "fe60e7c9db7f8968d2001e52c08b5c6a6f0031b332bc49d2c578cf491e55fe26",
+    "ref": null
    },
    {
     "path": "data/derived/C18/t-copula-baseline.json",
-    "sha256": "bbe42eb4ba4304106ae82ff3222b88d190d545f20d541e501d03d2643d2758a2",
-    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+    "sha256": "b55d740179a39c1781e8e58b425d18aa98b31db9a21d021b12def3409ad3dcbc",
+    "ref": null
    },
    {
     "path": "data/derived/manifests/C22.json",
@@ -1445,7 +1445,7 @@
      "basis": "read at data/derived/manifests/C18.json#/title"
     },
     "A03": {
-     "value": "banco-andino@0.12.000/riskvalidation-0.7.0+4193b58",
+     "value": "banco-andino@0.13.000/riskvalidation-0.8.1",
      "status": "derivable",
      "basis": "no model version field: the fit id with the code and engine versions identify the build (A D1 A03): data/derived/C18/models-banco-andino.json#/fit_id | data/derived/C18/models-banco-andino.json#/provenance/code_version | data/derived/C18/models-banco-andino.json#/provenance/riskvalidation_version"
     },
@@ -1632,7 +1632,7 @@
      "basis": "no field: a synthetic bank has no users (A D1 A30)"
     },
     "A31": {
-     "value": "riskvalidation 0.7.0+4193b58",
+     "value": "riskvalidation 0.8.1",
      "status": "derivable",
      "basis": "riskvalidation at the pinned version; independence is not established because the pipeline and the engine are built in the same programme (W15-4, the governance finding GOV-INDEPENDENCE-NOT-ESTABLISHED)"
     },
@@ -1648,14 +1648,14 @@
     },
     "A34": {
      "value": {
-      "date": "2026-10-16",
+      "date": "2026-10-20",
       "type": "full battery"
      },
      "status": "derivable",
-     "basis": "the release date of code version 0.12.000 in CHANGELOG.md; the type is one full battery: data/derived/C18/models-banco-andino.json#/provenance/code_version"
+     "basis": "the release date of code version 0.13.000 in CHANGELOG.md; the type is one full battery: data/derived/C18/models-banco-andino.json#/provenance/code_version"
     },
     "A35": {
-     "value": "2027-10-16",
+     "value": "2027-10-20",
      "status": "convention",
      "basis": "schedule.next_dates over the frequency table (a convention, 06 B.8 l.636-640)"
     },
@@ -1682,7 +1682,7 @@
     },
     "A38": {
      "value": {
-      "earliest_due": "2026-11-15"
+      "earliest_due": "2026-11-19"
      },
      "status": "convention",
      "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
@@ -1735,7 +1735,7 @@
      "rung": "satellite-probit-ols",
      "title": {
       "en": "Macro satellites of the net charge-off rates, OLS on 1985 to 2019",
-      "es": "Satelites macro de las tasas de castigo netas, MCO sobre 1985 a 2019"
+      "es": "Satélites macro de las tasas de castigo netas, MCO sobre 1985 a 2019"
      }
     },
     {
@@ -1748,7 +1748,7 @@
      "rung": "simple-sum-headline",
      "title": {
       "en": "Aggregation ladder, the simple sum as the headline",
-      "es": "Escalera de agregacion, la suma simple como cifra principal"
+      "es": "Escalera de agregación, la suma simple como cifra principal"
      }
     },
     {
@@ -1761,7 +1761,7 @@
      "rung": "capital-engine-static",
      "title": {
       "en": "Capital engine on a static balance sheet",
-      "es": "Motor de capital sobre balance estatico"
+      "es": "Motor de capital sobre balance estático"
      }
     }
    ],
@@ -1941,13 +1941,13 @@
     "profile": "default",
     "review_kind": "review",
     "last_validation": {
-     "date": "2026-10-16",
+     "date": "2026-10-20",
      "type": "full battery",
      "basis": "A34: the release date of the code version"
     },
-    "next_review": "2027-10-16",
-    "next_full_revalidation": "2029-10-16",
-    "next_monitoring": "2027-01-16",
+    "next_review": "2027-10-20",
+    "next_full_revalidation": "2029-10-20",
+    "next_monitoring": "2027-01-20",
     "null_reason": null
    },
    "graph": {
@@ -2588,7 +2588,7 @@
    "upstream": "C07/banco-andino",
    "downstream": "C18/banco-andino",
    "kind": "document",
-   "stated_source": "data-pipeline/pipeline/cases/c18/anchors.py:102-103 loads C07/base.json and C07/models-banco-andino.json; the C18 models document $.fit.marginal_sources[0].documents is [\"c07-outputs\"] (task/u13-p1)"
+   "stated_source": "data-pipeline/pipeline/cases/c18/anchors.py:102-103 loads C07/base.json and C07/models-banco-andino.json; the C18 models document $.fit.marginal_sources[0].documents is [\"c07-outputs\"] (0.13.000)"
   },
   {
    "upstream": "C01/german",

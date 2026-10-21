@@ -967,9 +967,9 @@ def edges_acyclic(inventory: Mapping[str, Any], *, policy: Policy | None = None,
 ## Public names the engine adds
 
 Public classes and functions the implemented engine exports that the first draft of this page did not list: [c5] for `appetite_population`, `find_cycle` and `nodes_on_cycles`, and [code] with the fix they come from for the others. Each is part of the contract the way the entries
-above are (units, invariants and a golden or an invariant); the headings are one level lower than the entries above, so that the entries above stay the contract's table of functions of the sizing.
+above are (units, invariants and a golden or an invariant), and the contract tests hold them in their declared function table (decision W15-16).
 
-#### `riskvalidation.governance.inventory.find_cycle`
+### `riskvalidation.governance.inventory.find_cycle`
 
 ```python
 def find_cycle(keys: Sequence[str], edges: Sequence[tuple[str, str]]) -> list[str] | None: ...
@@ -979,7 +979,7 @@ def find_cycle(keys: Sequence[str], edges: Sequence[tuple[str, str]]) -> list[st
 - Golden: `find_cycle(['A', 'B', 'C'], [('A', 'B'), ('B', 'C'), ('C', 'A')]) = ['A', 'B', 'C', 'A']`; `find_cycle(['A', 'B'], [('A', 'B')]) = None`; a self edge `('A', 'A')` is the cycle `['A', 'A']`.
 - Invariants: the cycle through the smallest key that lies on any cycle, the shortest one, successors taken in sorted order: deterministic; it is the cycle named by the `ValueError("dependency cycle: ...")` of `topological_order` and `build_inventory` and by the notes of `gov.edges_acyclic`; an edge naming a key outside `keys` raises `ValueError`.
 
-#### `riskvalidation.governance.inventory.nodes_on_cycles`
+### `riskvalidation.governance.inventory.nodes_on_cycles`
 
 ```python
 def nodes_on_cycles(keys: Sequence[str], edges: Sequence[tuple[str, str]]) -> set[str]: ...
@@ -989,7 +989,7 @@ def nodes_on_cycles(keys: Sequence[str], edges: Sequence[tuple[str, str]]) -> se
 - Golden: for the edges (`A`, `B`), (`B`, `A`), (`B`, `C`) the keys `A`, `B`, `C` give `{'A', 'B'}`: `C` is downstream of a cycle, not on it (the test `gov.edges_acyclic` counts 2 for that inventory).
 - Invariants: a key merely downstream of a cycle is not one; no cycle gives the empty set.
 
-#### `riskvalidation.governance.appetite.appetite_population`
+### `riskvalidation.governance.appetite.appetite_population`
 
 ```python
 def appetite_population(entries: Sequence[Mapping[str, Any]], rows: Sequence[Mapping[str, Any]]) -> dict[str, int]: ...
@@ -999,7 +999,7 @@ def appetite_population(entries: Sequence[Mapping[str, Any]], rows: Sequence[Map
 - Golden: for the fixture, `{"entries": 4, "findings": 81, "distinct_findings": 39, "tier1_entries": 2}`.
 - Invariants: `distinct_findings` is the denominator of the two distinct-finding count metrics of `appetite_metrics`.
 
-#### `riskvalidation.governance.opinion.rwea_level`
+### `riskvalidation.governance.opinion.rwea_level`
 
 ```python
 def rwea_level(rwea_share: float | None) -> int: ...
@@ -1009,7 +1009,7 @@ def rwea_level(rwea_share: float | None) -> int: ...
 - Golden: `rwea_level(None) = 0`; `rwea_level(0.0499) = 0`; `rwea_level(0.05) = 3`; `rwea_level(0.0999) = 3`; `rwea_level(0.10) = 4`.
 - Invariants: the ECB's 5 and 10 percent cut points (Instructions of February 2019, section 2.4.2), inclusive; `ValueError` for a negative share and for a share that is `NaN` or infinite [F4]; `finding_level` is the maximum of the severity level and this level.
 
-#### `riskvalidation.validation.governance.GovRow`
+### `riskvalidation.validation.governance.GovRow`
 
 ```python
 @dataclass(frozen=True)
@@ -1024,7 +1024,7 @@ class GovRow:
 - Units: one `gov.` row of the validation policy; `GOV_ROWS` maps the five test ids to their `GovRow` [code, `validation/governance.py:44-101`].
 - Invariants: immutable; every `source` starts with `convention:` and names its basis; no row is presented as a value taken from a regulation.
 
-#### `riskvalidation.validation.governance.gov_threshold`
+### `riskvalidation.validation.governance.gov_threshold`
 
 ```python
 def gov_threshold(key: str) -> Threshold: ...
@@ -1034,12 +1034,12 @@ def gov_threshold(key: str) -> Threshold: ...
 - Golden: `gov_threshold("gov.inventory_completeness")` has `amber` 0.8999999999999999 and `red` 0.6999999999999998; `gov_threshold("gov.validation_due")` has `amber` 1.0 and `red` 2.0 (not strict, stored as stated).
 - Invariants: a strict row is moved one float away from the stated value with `math.nextafter`, toward minus infinity for `lower_bad` and plus infinity for `upper_bad`; `KeyError` for another key.
 
-#### `riskvalidation.validation.governance.gov_default_policy`
+### `riskvalidation.validation.governance.gov_default_policy`
 
 ```python
 def gov_default_policy() -> Policy: ...
 ```
 
 - Units: no argument; returns the packaged default policy with the five `gov.` rows added where it holds none [F6; `validation/governance.py:121-135`].
-- Golden: when the packaged policy holds none of the five keys the label is `riskvalidation-default 2026.10.1+gov-1.0.0`; when it holds all five the default policy itself is returned, label unchanged (the engine's test reaches the second case only if the packaged file holds all five keys, so it is [untested] today).
+- Golden: the packaged policy holds the five keys since engine 0.09.000, so the default policy itself is returned, label `riskvalidation-default 2026.10.1` unchanged; a packaged policy holding none of them would give the label `riskvalidation-default 2026.10.1+gov-1.0.0`.
 - Invariants: cached (one object per process); `policy.resolve_policy` resolves a label with the suffix `+gov-` through it.

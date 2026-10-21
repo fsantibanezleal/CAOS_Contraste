@@ -32,11 +32,12 @@ OUT = ROOT / "docs" / "contracts" / "fixtures" / "governance"
 AS_OF = "2026-12-31"
 AS_OF_BASIS = {"label": "convention", "basis": {
     "en": "a fixture date chosen after the due dates to exercise the overdue rule; not the date of publication",
-    "es": "una fecha de fixture elegida despues de los vencimientos para ejercer la regla de vencimiento; no es la fecha de publicacion"}}
-CODE_VERSION = "0.14.000"             # the Contraste release that carries governance (sizing: Contraste 0.14.000)
+    "es": "una fecha de fixture elegida después de los vencimientos para ejercer la regla de vencimiento; no es la fecha de publicación"}}
+CODE_VERSION = "0.15.000"             # the Contraste release that carries governance (0.14.000 carries the notebooks)
 RV_VERSION = "0.9.0"                  # R1: the engine tag after v0.08.000; UNVERIFIED until the integrator cuts it
 GENERATORS = ["fixture:u15-s-contracts"]
-RELEASE = {"0.07.000": "2026-10-12", "0.12.000": "2026-10-16"}      # CHANGELOG.md release dates (A D1 A34)
+# CHANGELOG.md release dates (A D1 A34), read from its headings "## [X.XX.XXX], YYYY-MM-DD"
+RELEASE = dict(re.findall(r"(?m)^## \[(\d\.\d\d\.\d\d\d)\], (\d{4}-\d\d-\d\d)$", (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")))
 ENTRIES = [("C01", "german"), ("C07", "banco-andino"), ("C18", "banco-andino"), ("C22", "generators")]
 SEVERITIES = ["S1", "S2", "S3", "S4"]
 ECB_F = {"S1": "F4", "S2": "F3", "S3": "F2", "S4": "F1"}
@@ -133,7 +134,7 @@ def provenance(ex: dict) -> dict:
     docs = []
     for case, _ in ENTRIES:
         c = ex["cases"][case]
-        ref = f"{ex['c18_ref']}@{ex['c18_commit']}" if case == "C18" else None     # C18 is not on the integration branch yet (m7)
+        ref = None                                                                  # every case is read from the branch (0.13.000)
         docs.append({"path": c["manifest"]["path"], "sha256": c["manifest"]["sha256"], "ref": ref})
         docs.append({"path": c["models_document"]["path"], "sha256": c["models_document"]["sha256"], "ref": ref})
         docs += [{"path": v["path"], "sha256": v["sha256"], "ref": ref} for v in c["variants"]]
@@ -188,7 +189,7 @@ def build_inventory(ex: dict) -> dict:
     edges = [
         {"upstream": "C07/banco-andino", "downstream": "C18/banco-andino", "kind": "document",
          "stated_source": "data-pipeline/pipeline/cases/c18/anchors.py:102-103 loads C07/base.json and C07/models-banco-andino.json; "
-                          "the C18 models document $.fit.marginal_sources[0].documents is [\"c07-outputs\"] (task/u13-p1)"},
+                          "the C18 models document $.fit.marginal_sources[0].documents is [\"c07-outputs\"] (0.13.000)"},
         {"upstream": "C01/german", "downstream": "C22/generators", "kind": "code",
          "stated_source": "data-pipeline/pipeline/cases/c22_validator.py:68 imports the helpers _t and _v of c01_ladder (A D4 5.1)"},
     ]

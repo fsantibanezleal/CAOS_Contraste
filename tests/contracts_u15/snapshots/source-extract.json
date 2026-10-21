@@ -1,7 +1,5 @@
 {
- "c18_ref": "origin/task/u13-p1",
- "c18_commit": "cd096db05f5bdd709d2ed5ad8b35ed15217ff32c",
- "engine_commit": "2a21c0b85578357bc7eb13e9d8ffda9ab9b300fa",
+ "engine_commit": "a8d06e857759287df21c27a94774a1ffbd76f49e",
  "cases": {
   "C01": {
    "fit_id": "german",
@@ -4697,19 +4695,19 @@
     "b1_booked_total"
    ],
    "spec_decisions": {
-    "ifrs9.ecl_backtest": null,
-    "ifrs9.nonlinearity": null,
-    "ifrs9.overlay_diagnostics": null,
-    "ifrs9.reconciliation_identities": null,
-    "ifrs9.scenario_sensitivity": null,
-    "ifrs9.sicr_effectiveness": null
+    "ifrs9.ecl_backtest": "metric",
+    "ifrs9.nonlinearity": "metric",
+    "ifrs9.overlay_diagnostics": "metric",
+    "ifrs9.reconciliation_identities": "metric",
+    "ifrs9.scenario_sensitivity": "metric",
+    "ifrs9.sicr_effectiveness": "metric"
    }
   },
   "C18": {
    "fit_id": "banco-andino",
    "manifest": {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "6225136025c8457bab8857501cb8b2939bd785807184f5e9f52a975299c359e5",
+    "sha256": "69a2ab8f87d99efc2b9e6a07dd73df2b6519efacf40331a9ca102e0c0ea5b863",
     "title": {
      "en": "ICAAP and IAPE capital aggregation under macro scenarios",
      "es": "Agregación de capital ICAAP e IAPE bajo escenarios macro"
@@ -4733,9 +4731,9 @@
    },
    "models_document": {
     "path": "data/derived/C18/models-banco-andino.json",
-    "sha256": "4f5927257cbcca0e717753acf81e84f78b33a4906553ee571244874b9598ae3d",
-    "code_version": "0.12.000",
-    "riskvalidation_version": "0.7.0+4193b58",
+    "sha256": "dc6683541f7a7d3ac2feb3e6b7561a2f95af4d10ee87d20236ba61f106383427",
+    "code_version": "0.13.000",
+    "riskvalidation_version": "0.8.1",
     "truth_status": "synthetic-calibrated",
     "models": [
      {
@@ -4745,7 +4743,7 @@
       "engine": "riskvalidation",
       "title": {
        "en": "Macro satellites of the net charge-off rates, OLS on 1985 to 2019",
-       "es": "Satelites macro de las tasas de castigo netas, MCO sobre 1985 a 2019"
+       "es": "Satélites macro de las tasas de castigo netas, MCO sobre 1985 a 2019"
       }
      },
      {
@@ -4755,7 +4753,7 @@
       "engine": "riskvalidation",
       "title": {
        "en": "Aggregation ladder, the simple sum as the headline",
-       "es": "Escalera de agregacion, la suma simple como cifra principal"
+       "es": "Escalera de agregación, la suma simple como cifra principal"
       }
      },
      {
@@ -4765,7 +4763,7 @@
       "engine": "riskvalidation",
       "title": {
        "en": "Capital engine on a static balance sheet",
-       "es": "Motor de capital sobre balance estatico"
+       "es": "Motor de capital sobre balance estático"
       }
      }
     ]
@@ -4775,9 +4773,9 @@
     {
      "variant_id": "baseline",
      "path": "data/derived/C18/baseline.json",
-     "sha256": "b424e3f4d386478c503eff31bd1d2bc597e20089e0b872a561b4d11e7cf78921",
-     "code_version": "0.12.000",
-     "riskvalidation_version": "0.7.0+4193b58",
+     "sha256": "235ba35898c452765822b51a085e6cb52d8257ddd401111f43957b820724bada",
+     "code_version": "0.13.000",
+     "riskvalidation_version": "0.8.1",
      "sources": [
       "fed-stress-tests",
       "fed-chargeoff",
@@ -4795,7 +4793,7 @@
        ],
        "title": {
         "en": "The headline capital is the simple sum, CLP 658,046 million; the Gaussian copula figure, 25.2% lower, is information and not capital. The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
-        "es": "El capital principal es la suma simple, CLP 658,046 millones; la cifra de la copula gaussiana, 25.2% menor, es informacion y no capital. La trayectoria de credito bajo tension descansa en satelites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
+        "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2% menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
        }
       },
       {
@@ -4807,7 +4805,7 @@
        ],
        "title": {
         "en": "Under this scenario the PE ratio stays 0.81% of RWA above the internal target of 14.50% at its lowest, in year 3.",
-        "es": "Bajo este escenario la razon de PE se mantiene 0.81% de los APR sobre el objetivo interno de 14.50% en su punto mas bajo, el año 3."
+        "es": "Bajo este escenario la razón de PE se mantiene 0,81% de los APR sobre el objetivo interno de 14,50% en su punto más bajo, el año 3."
        }
       },
       {
@@ -4819,7 +4817,7 @@
        ],
        "title": {
         "en": "6 satellite coefficients have the opposite of the expected sign: the stress maps through them with that caveat.",
-        "es": "6 coeficientes de los satelites tienen el signo contrario al esperado: la tension pasa por ellos con esa salvedad."
+        "es": "6 coeficientes de los satélites tienen el signo contrario al esperado: la tensión pasa por ellos con esa salvedad."
        }
       },
       {
@@ -4831,7 +4829,7 @@
        ],
        "title": {
         "en": "5 of the 5 satellites do not back-cast the 2020 to 2025 peak within the thresholds (size or timing).",
-        "es": "5 de los 5 satelites no reproducen el pico de 2020 a 2025 dentro de los umbrales (tamaño u oportunidad)."
+        "es": "5 de los 5 satélites no reproducen el pico de 2020 a 2025 dentro de los umbrales (tamaño u oportunidad)."
        }
       },
       {
@@ -4843,7 +4841,7 @@
        ],
        "title": {
         "en": "Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
-        "es": "Solo el credito responde al escenario: las perdidas de mercado, IRRBB y operacional se mantienen en su perdida esperada, por lo que la perdida bajo tension es un piso."
+        "es": "Solo el crédito responde al escenario: las pérdidas de mercado, IRRBB y operacional se mantienen en su pérdida esperada, por lo que la pérdida bajo tensión es un piso."
        }
       }
      ],
@@ -5142,9 +5140,9 @@
     {
      "variant_id": "eba-2025-adverse",
      "path": "data/derived/C18/eba-2025-adverse.json",
-     "sha256": "2b191fb877657b8a26850a5de8458bbe4fc88454d6d3753220189b6b95e46437",
-     "code_version": "0.12.000",
-     "riskvalidation_version": "0.7.0+4193b58",
+     "sha256": "1cd7fb0214e90d3d5f0f5897e1aeea7d2bde7efb5fd45187ab38c8c86ffb2344",
+     "code_version": "0.13.000",
+     "riskvalidation_version": "0.8.1",
      "sources": [
       "fed-stress-tests",
       "fed-chargeoff",
@@ -5162,7 +5160,7 @@
        ],
        "title": {
         "en": "The headline capital is the simple sum, CLP 658,046 million; the Gaussian copula figure, 25.2% lower, is information and not capital. The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
-        "es": "El capital principal es la suma simple, CLP 658,046 millones; la cifra de la copula gaussiana, 25.2% menor, es informacion y no capital. La trayectoria de credito bajo tension descansa en satelites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
+        "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2% menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
        }
       },
       {
@@ -5174,7 +5172,7 @@
        ],
        "title": {
         "en": "Under this scenario the PE ratio falls to 12.98% of RWA in year 3, 1.52% of RWA below the internal target of 14.50%.",
-        "es": "Bajo este escenario la razon de PE cae a 12.98% de los APR en el año 3, 1.52% de los APR bajo el objetivo interno de 14.50%."
+        "es": "Bajo este escenario la razón de PE cae a 12,98% de los APR en el año 3, 1,52% de los APR bajo el objetivo interno de 14,50%."
        }
       },
       {
@@ -5186,7 +5184,7 @@
        ],
        "title": {
         "en": "On the loss-only path CET1 falls to 7.09% of RWA in year 3, below the Chilean legal minimum stack of 9.06%; the labelled PPNR row, which credits earnings, is shown beside it.",
-        "es": "En la trayectoria solo de perdidas el CET1 cae a 7.09% de los APR en el año 3, bajo el minimo legal de 9.06%; la fila rotulada de PPNR, que acredita utilidades, se muestra al lado."
+        "es": "En la trayectoria solo de pérdidas el CET1 cae a 7,09% de los APR en el año 3, bajo el mínimo legal de 9,06%; la fila rotulada de PPNR, que acredita utilidades, se muestra al lado."
        }
       },
       {
@@ -5198,7 +5196,7 @@
        ],
        "title": {
         "en": "6 satellite coefficients have the opposite of the expected sign: the stress maps through them with that caveat.",
-        "es": "6 coeficientes de los satelites tienen el signo contrario al esperado: la tension pasa por ellos con esa salvedad."
+        "es": "6 coeficientes de los satélites tienen el signo contrario al esperado: la tensión pasa por ellos con esa salvedad."
        }
       },
       {
@@ -5210,7 +5208,7 @@
        ],
        "title": {
         "en": "5 of the 5 satellites do not back-cast the 2020 to 2025 peak within the thresholds (size or timing).",
-        "es": "5 de los 5 satelites no reproducen el pico de 2020 a 2025 dentro de los umbrales (tamaño u oportunidad)."
+        "es": "5 de los 5 satélites no reproducen el pico de 2020 a 2025 dentro de los umbrales (tamaño u oportunidad)."
        }
       },
       {
@@ -5222,7 +5220,7 @@
        ],
        "title": {
         "en": "1 path variables of this scenario are milder than the global financial crisis (ratio below 0.75).",
-        "es": "1 variables de trayectoria de este escenario son mas suaves que la crisis financiera global (razon bajo 0,75)."
+        "es": "1 variables de trayectoria de este escenario son más suaves que la crisis financiera global (razón bajo 0,75)."
        }
       },
       {
@@ -5234,7 +5232,7 @@
        ],
        "title": {
         "en": "Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
-        "es": "Solo el credito responde al escenario: las perdidas de mercado, IRRBB y operacional se mantienen en su perdida esperada, por lo que la perdida bajo tension es un piso."
+        "es": "Solo el crédito responde al escenario: las pérdidas de mercado, IRRBB y operacional se mantienen en su pérdida esperada, por lo que la pérdida bajo tensión es un piso."
        }
       }
      ],
@@ -5397,9 +5395,9 @@
     {
      "variant_id": "fed-2026-severely-adverse",
      "path": "data/derived/C18/fed-2026-severely-adverse.json",
-     "sha256": "fd614c8edf07464ec1bd266ec2f6b35506b214fcb938e62ed804d83bb5117fbd",
-     "code_version": "0.12.000",
-     "riskvalidation_version": "0.7.0+4193b58",
+     "sha256": "22d9aeb057a9c1dc11542b62f9b6d7f42c341b16858c655f502740388c236888",
+     "code_version": "0.13.000",
+     "riskvalidation_version": "0.8.1",
      "sources": [
       "fed-stress-tests",
       "fed-chargeoff",
@@ -5417,7 +5415,7 @@
        ],
        "title": {
         "en": "The headline capital is the simple sum, CLP 658,046 million; the Gaussian copula figure, 25.2% lower, is information and not capital. The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
-        "es": "El capital principal es la suma simple, CLP 658,046 millones; la cifra de la copula gaussiana, 25.2% menor, es informacion y no capital. La trayectoria de credito bajo tension descansa en satelites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
+        "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2% menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
        }
       },
       {
@@ -5429,7 +5427,7 @@
        ],
        "title": {
         "en": "Under this scenario the PE ratio falls to 13.25% of RWA in year 3, 1.25% of RWA below the internal target of 14.50%.",
-        "es": "Bajo este escenario la razon de PE cae a 13.25% de los APR en el año 3, 1.25% de los APR bajo el objetivo interno de 14.50%."
+        "es": "Bajo este escenario la razón de PE cae a 13,25% de los APR en el año 3, 1,25% de los APR bajo el objetivo interno de 14,50%."
        }
       },
       {
@@ -5441,7 +5439,7 @@
        ],
        "title": {
         "en": "On the loss-only path CET1 falls to 7.36% of RWA in year 3, below the Chilean legal minimum stack of 9.06%; the labelled PPNR row, which credits earnings, is shown beside it.",
-        "es": "En la trayectoria solo de perdidas el CET1 cae a 7.36% de los APR en el año 3, bajo el minimo legal de 9.06%; la fila rotulada de PPNR, que acredita utilidades, se muestra al lado."
+        "es": "En la trayectoria solo de pérdidas el CET1 cae a 7,36% de los APR en el año 3, bajo el mínimo legal de 9,06%; la fila rotulada de PPNR, que acredita utilidades, se muestra al lado."
        }
       },
       {
@@ -5453,7 +5451,7 @@
        ],
        "title": {
         "en": "6 satellite coefficients have the opposite of the expected sign: the stress maps through them with that caveat.",
-        "es": "6 coeficientes de los satelites tienen el signo contrario al esperado: la tension pasa por ellos con esa salvedad."
+        "es": "6 coeficientes de los satélites tienen el signo contrario al esperado: la tensión pasa por ellos con esa salvedad."
        }
       },
       {
@@ -5465,7 +5463,7 @@
        ],
        "title": {
         "en": "5 of the 5 satellites do not back-cast the 2020 to 2025 peak within the thresholds (size or timing).",
-        "es": "5 de los 5 satelites no reproducen el pico de 2020 a 2025 dentro de los umbrales (tamaño u oportunidad)."
+        "es": "5 de los 5 satélites no reproducen el pico de 2020 a 2025 dentro de los umbrales (tamaño u oportunidad)."
        }
       },
       {
@@ -5477,7 +5475,7 @@
        ],
        "title": {
         "en": "1 path variables of this scenario are milder than the global financial crisis (ratio below 0.75).",
-        "es": "1 variables de trayectoria de este escenario son mas suaves que la crisis financiera global (razon bajo 0,75)."
+        "es": "1 variables de trayectoria de este escenario son más suaves que la crisis financiera global (razón bajo 0,75)."
        }
       },
       {
@@ -5489,7 +5487,7 @@
        ],
        "title": {
         "en": "Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
-        "es": "Solo el credito responde al escenario: las perdidas de mercado, IRRBB y operacional se mantienen en su perdida esperada, por lo que la perdida bajo tension es un piso."
+        "es": "Solo el crédito responde al escenario: las pérdidas de mercado, IRRBB y operacional se mantienen en su pérdida esperada, por lo que la pérdida bajo tensión es un piso."
        }
       }
      ],
@@ -5652,9 +5650,9 @@
     {
      "variant_id": "ngfs-delayed-transition",
      "path": "data/derived/C18/ngfs-delayed-transition.json",
-     "sha256": "5f78224b085addbc50b4c0ca823a87e150ffbefb5bbbfffe650cfddff76d57c5",
-     "code_version": "0.12.000",
-     "riskvalidation_version": "0.7.0+4193b58",
+     "sha256": "5a2b04c087918eb8555d874344d812c3d5a55b4f57e8c497758bea69ce006302",
+     "code_version": "0.13.000",
+     "riskvalidation_version": "0.8.1",
      "sources": [
       "fed-stress-tests",
       "fed-chargeoff",
@@ -5672,7 +5670,7 @@
        ],
        "title": {
         "en": "The headline capital is the simple sum, CLP 658,046 million; the Gaussian copula figure, 25.2% lower, is information and not capital. The stressed credit path rests on satellites that fail their own 2020 to 2025 back-cast.",
-        "es": "El capital principal es la suma simple, CLP 658,046 millones; la cifra de la copula gaussiana, 25.2% menor, es informacion y no capital. La trayectoria de credito bajo tension descansa en satelites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
+        "es": "El capital principal es la suma simple, CLP 658.046 millones; la cifra de la cópula gaussiana, 25,2% menor, es información y no capital. La trayectoria de crédito bajo tensión descansa en satélites que fallan en su propia prueba retrospectiva (back-cast) de 2020 a 2025."
        }
       },
       {
@@ -5684,7 +5682,7 @@
        ],
        "title": {
         "en": "Under this scenario the PE ratio stays 0.56% of RWA above the internal target of 14.50% at its lowest, in year 3.",
-        "es": "Bajo este escenario la razon de PE se mantiene 0.56% de los APR sobre el objetivo interno de 14.50% en su punto mas bajo, el año 3."
+        "es": "Bajo este escenario la razón de PE se mantiene 0,56% de los APR sobre el objetivo interno de 14,50% en su punto más bajo, el año 3."
        }
       },
       {
@@ -5696,7 +5694,7 @@
        ],
        "title": {
         "en": "6 satellite coefficients have the opposite of the expected sign: the stress maps through them with that caveat.",
-        "es": "6 coeficientes de los satelites tienen el signo contrario al esperado: la tension pasa por ellos con esa salvedad."
+        "es": "6 coeficientes de los satélites tienen el signo contrario al esperado: la tensión pasa por ellos con esa salvedad."
        }
       },
       {
@@ -5708,7 +5706,7 @@
        ],
        "title": {
         "en": "5 of the 5 satellites do not back-cast the 2020 to 2025 peak within the thresholds (size or timing).",
-        "es": "5 de los 5 satelites no reproducen el pico de 2020 a 2025 dentro de los umbrales (tamaño u oportunidad)."
+        "es": "5 de los 5 satélites no reproducen el pico de 2020 a 2025 dentro de los umbrales (tamaño u oportunidad)."
        }
       },
       {
@@ -5720,7 +5718,7 @@
        ],
        "title": {
         "en": "4 path variables of this scenario are milder than the global financial crisis (ratio below 0.75).",
-        "es": "4 variables de trayectoria de este escenario son mas suaves que la crisis financiera global (razon bajo 0,75)."
+        "es": "4 variables de trayectoria de este escenario son más suaves que la crisis financiera global (razón bajo 0,75)."
        }
       },
       {
@@ -5732,7 +5730,7 @@
        ],
        "title": {
         "en": "Only credit responds to the scenario: market, IRRBB and operational losses are held at their expected loss, so the stressed loss is a floor.",
-        "es": "Solo el credito responde al escenario: las perdidas de mercado, IRRBB y operacional se mantienen en su perdida esperada, por lo que la perdida bajo tension es un piso."
+        "es": "Solo el crédito responde al escenario: las pérdidas de mercado, IRRBB y operacional se mantienen en su pérdida esperada, por lo que la pérdida bajo tensión es un piso."
        }
       }
      ],
@@ -5904,9 +5902,9 @@
     {
      "variant_id": "reverse-stress",
      "path": "data/derived/C18/reverse-stress.json",
-     "sha256": "dc5bc0dd9e74ab9a7cee4dec9425eb8b633b014e2681dd5f1db3d0e75461e40a",
-     "code_version": "0.12.000",
-     "riskvalidation_version": "0.7.0+4193b58",
+     "sha256": "fe60e7c9db7f8968d2001e52c08b5c6a6f0031b332bc49d2c578cf491e55fe26",
+     "code_version": "0.13.000",
+     "riskvalidation_version": "0.8.1",
      "sources": [
       "fed-stress-tests",
       "fed-chargeoff",
@@ -5924,7 +5922,7 @@
        ],
        "title": {
         "en": "On the labelled PPNR path, the most plausible scenario that takes CET1 to the legal minimum stack shifts real_gdp_growth by -2.58 and unemployment_rate by +12.42 points, a Mahalanobis distance of 8.21 (tail probability 0.0%); the loss-only baseline already ends below the stack.",
-        "es": "En la trayectoria rotulada de PPNR, el escenario mas plausible que lleva el CET1 al minimo legal desplaza real_gdp_growth en -2.58 y unemployment_rate en +12.42 puntos, a una distancia de Mahalanobis de 8.21 (probabilidad de cola 0.0%); la base de solo perdidas ya termina bajo el minimo."
+        "es": "En la trayectoria rotulada de PPNR, el escenario más plausible que lleva el CET1 al mínimo legal desplaza real_gdp_growth en -2,58 y unemployment_rate en +12,42 puntos, a una distancia de Mahalanobis de 8,21 (probabilidad de cola 0,0%); la base de solo pérdidas ya termina bajo el mínimo."
        }
       }
      ],
@@ -5943,9 +5941,9 @@
     {
      "variant_id": "t-copula-baseline",
      "path": "data/derived/C18/t-copula-baseline.json",
-     "sha256": "bbe42eb4ba4304106ae82ff3222b88d190d545f20d541e501d03d2643d2758a2",
-     "code_version": "0.12.000",
-     "riskvalidation_version": "0.7.0+4193b58",
+     "sha256": "b55d740179a39c1781e8e58b425d18aa98b31db9a21d021b12def3409ad3dcbc",
+     "code_version": "0.13.000",
+     "riskvalidation_version": "0.8.1",
      "sources": [
       "fed-stress-tests",
       "fed-chargeoff",
@@ -5963,7 +5961,7 @@
        ],
        "title": {
         "en": "The headline capital is the simple sum, CLP 658,046 million. The dependence band runs from CLP 118,518 million (best case) to CLP 823,332 million (worst case); the Gaussian copula figure is 25.2% below the sum and is information, not capital.",
-        "es": "El capital principal es la suma simple, CLP 658,046 millones. La banda de dependencia va de CLP 118,518 millones (mejor caso) a CLP 823,332 millones (peor caso); la cifra de la copula gaussiana esta 25.2% bajo la suma y es informacion, no capital."
+        "es": "El capital principal es la suma simple, CLP 658.046 millones. La banda de dependencia va de CLP 118.518 millones (mejor caso) a CLP 823.332 millones (peor caso); la cifra de la cópula gaussiana está 25,2% bajo la suma y es información, no capital."
        }
       },
       {
@@ -5975,7 +5973,7 @@
        ],
        "title": {
         "en": "The aggregation model moves the figure by up to 67.4% over the Gaussian copula (the Barrieu and Scandolo add-on): sensitivity information for the validator, never capital.",
-        "es": "El modelo de agregacion mueve la cifra hasta 67.4% sobre la copula gaussiana (el recargo de Barrieu y Scandolo): informacion de sensibilidad para el validador, nunca capital."
+        "es": "El modelo de agregación mueve la cifra hasta 67,4% sobre la cópula gaussiana (el recargo de Barrieu y Scandolo): información de sensibilidad para el validador, nunca capital."
        }
       },
       {
@@ -5987,7 +5985,7 @@
        ],
        "title": {
         "en": "The additive approximation exceeds the Gaussian copula figure by 33.8%; the published range of 30 to 40 percent is a reference and no gate.",
-        "es": "La aproximacion aditiva excede la cifra de la copula gaussiana en 33.8%; el rango publicado de 30 a 40 por ciento es una referencia y no una barrera."
+        "es": "La aproximación aditiva excede la cifra de la cópula gaussiana en 33,8%; el rango publicado de 30 a 40 por ciento es una referencia y no una barrera."
        }
       }
      ],
@@ -6129,9 +6127,9 @@
     "data/derived/C18/models-banco-andino.json#/model/2/engine": "riskvalidation",
     "data/derived/C18/models-banco-andino.json#/model/2/family": "stress",
     "data/derived/C18/models-banco-andino.json#/model/2/rung": "capital-engine-static",
-    "data/derived/C18/models-banco-andino.json#/provenance/code_version": "0.12.000",
+    "data/derived/C18/models-banco-andino.json#/provenance/code_version": "0.13.000",
     "data/derived/C18/models-banco-andino.json#/provenance/generators": [],
-    "data/derived/C18/models-banco-andino.json#/provenance/riskvalidation_version": "0.7.0+4193b58",
+    "data/derived/C18/models-banco-andino.json#/provenance/riskvalidation_version": "0.8.1",
     "data/derived/manifests/C18.json#/question": {
      "en": "Does Banco Andino hold its internal capital target for three years under each scenario once credit, market, IRRBB and operational risk are aggregated, and how much of the answer rests on the aggregation method?",
      "es": "¿Mantiene Banco Andino su objetivo interno de capital durante tres años bajo cada escenario una vez agregados los riesgos de crédito, mercado, IRRBB y operacional, y cuánto de la respuesta depende del método de agregación?"
@@ -6156,17 +6154,17 @@
    ],
    "named_parameters_count": 12,
    "spec_decisions": {
-    "aggregation.copula_choice_sensitivity": null,
-    "aggregation.correlation_stress": null,
-    "aggregation.diversification_sign": null,
-    "aggregation.horizon_confidence_consistency": null,
-    "aggregation.simple_sum_and_variance_covariance": null,
-    "aggregation.worst_case_bracket": null,
-    "portfolio.euler_additivity": null,
-    "stress.satellite_backcast": null,
-    "stress.scenario_severity": null,
-    "stress.sensitivity_monotonicity": null,
-    "stress.static_balance_sheet_rules": null
+    "aggregation.copula_choice_sensitivity": "metric",
+    "aggregation.correlation_stress": "metric",
+    "aggregation.diversification_sign": "metric",
+    "aggregation.horizon_confidence_consistency": "metric",
+    "aggregation.simple_sum_and_variance_covariance": "metric",
+    "aggregation.worst_case_bracket": "metric",
+    "portfolio.euler_additivity": "metric",
+    "stress.satellite_backcast": "metric",
+    "stress.scenario_severity": "metric",
+    "stress.sensitivity_monotonicity": "metric",
+    "stress.static_balance_sheet_rules": "metric"
    }
   },
   "C22": {
