@@ -14,6 +14,10 @@ import {
   EBM_EXPORT,
   FAMILY_CONTRACT,
   GATE,
+  GOVERNANCE_APPETITE,
+  GOVERNANCE_FINDINGS,
+  GOVERNANCE_INVENTORY,
+  GOVERNANCE_REPORT,
   INDEX,
   MANIFEST,
   MODEL_RECORD,
@@ -520,6 +524,10 @@ describe('descriptors against the schema files, at every nesting level', () => {
     ['common/provenance', { object: PROVENANCE }],
     ['common/model-summary', { object: MODEL_SUMMARY }],
     ['common/model-record', { object: MODEL_RECORD }],
+    ['governance/governance-inventory', { object: GOVERNANCE_INVENTORY }],
+    ['governance/governance-findings', { object: GOVERNANCE_FINDINGS }],
+    ['governance/governance-report', { object: GOVERNANCE_REPORT }],
+    ['governance/governance-appetite', { object: GOVERNANCE_APPETITE }],
   ];
   for (const [name, kind, ignore] of fixed) {
     it(`${name} against its descriptor (${Object.keys((kind as { object: object }).object).length} keys)`, () => {

@@ -1406,3 +1406,132 @@ export function modelsKind(doc: {
 export interface QuadratureDetails {
   quadrature: { rule: string; nodes: number[]; weights: number[] };
 }
+
+// --- the governance documents (U15; docs/contracts/schemas/governance/): the web's view of the four documents the
+// governance bake writes. Every descriptor is checked against its schema file in contract.test.ts, and against the
+// reviewed fixtures in workbench/governance/governance.test.ts.
+
+const ATTRIBUTE_IDS = Array.from({ length: 40 }, (_, i) => `A${String(i + 1).padStart(2, '0')}`);
+const GOV_DATE: Kind = 'string';
+const GOV_AS_OF_BASIS: Record<string, Kind> = { "label": 'string', "basis": 'text' };
+const GOV_SHA256: Kind = 'string';
+const GOV_PROVENANCE: Record<string, Kind> = { "code_version": 'string', "riskvalidation_version": 'string', "generators": { array: 'string' }, "documents_read": { array: { object: { "path": 'string', "sha256": GOV_SHA256, "ref": { nullable: 'string' } } } } };
+const GOV_TIER: Kind = 'integer';
+const GOV_INV_CONVENTIONS: Record<string, Kind> = { "exposure_band_cuts": { object: { "label": 'string', "basis": 'string', "cuts": { array: 'number' } } }, "regulatory_use_grades": { object: { "label": 'string', "basis": 'string', "graded": { object: { "reported_figure": 'integer', "feeding_parameter": 'integer', "compliance_monitoring": 'integer', "none": 'integer' } }, "literal": { object: { "feeds_capital_provisioning_or_reporting": 'integer', "compliance_monitoring": 'integer', "none": 'integer' } } } }, "complexity_rounding": { object: { "label": 'string', "basis": 'string', "rule": 'string' } }, "frequency": { object: { "label": 'string', "basis": 'string', "tiers": { array: { object: { "tier": GOV_TIER, "review_kind": 'string', "review_months": 'integer', "revalidation_months": { nullable: 'integer' }, "monitoring_months": { nullable: 'integer' }, "null_reason": { nullable: 'text' } } } } } }, "adopted_reading": { object: { "label": 'string', "basis": 'string', "reading": 'string' } } };
+const GOV_INV_ENGINE_NODE: Record<string, Kind> = { "key": 'string', "version": 'string', "basis": 'string' };
+const GOV_INV_ATTR: Record<string, Kind> = { "value": 'json', "status": 'string', "basis": 'string' };
+const GOV_INV_ATTRIBUTES: Record<string, Kind> = { ...Object.fromEntries(ATTRIBUTE_IDS.map((id) => [id, { object: GOV_INV_ATTR }])) };
+const GOV_INV_VARIANT: Record<string, Kind> = { "variant_id": 'string', "basis": 'string' };
+const GOV_TAG: Kind = 'string';
+const GOV_INV_COMPONENT: Record<string, Kind> = { "key": 'string', "model_id": 'string', "role": 'string', "role_tag": GOV_TAG, "role_basis": 'string', "family": { nullable: 'string' }, "rung": { nullable: 'string' }, "title": { nullable: 'text' } };
+const GOV_INV_SCOPE_ANSWERS: Record<string, Kind> = { "applies_theory": 'boolean', "output_is_estimate": 'boolean', "deterministic": 'boolean', "generative_or_agentic": 'boolean' };
+const GOV_INV_SCOPE_PROFILE: Record<string, Kind> = { "profile": 'string', "in_scope": 'boolean', "rationale": 'text' };
+const GOV_INV_SCOPE: Record<string, Kind> = { "answers": { object: GOV_INV_SCOPE_ANSWERS }, "profiles": { array: { object: GOV_INV_SCOPE_PROFILE } }, "basis": 'string' };
+const GOV_INV_EXPOSURE: Record<string, Kind> = { "share": { nullable: 'number' }, "band": 'integer', "tag": GOV_TAG, "basis": 'string' };
+const GOV_INV_REG_USE: Record<string, Kind> = { "literal": 'integer', "graded": 'integer', "tag": GOV_TAG, "basis": 'string' };
+const GOV_INV_DECISION: Record<string, Kind> = { "score": 'integer', "tag": GOV_TAG, "basis": 'string' };
+const GOV_INV_MATERIALITY: Record<string, Kind> = { "exposure": { object: GOV_INV_EXPOSURE }, "regulatory_use": { object: GOV_INV_REG_USE }, "decision_criticality": { object: GOV_INV_DECISION }, "m": { object: { "literal": 'integer', "graded": 'integer' } } };
+const GOV_INV_FACTOR: Record<string, Kind> = { "id": 'string', "name": 'string', "score": { nullable: 'integer' }, "tag": GOV_TAG, "basis": 'string' };
+const GOV_INV_COMPLEXITY: Record<string, Kind> = { "factors": { array: { object: GOV_INV_FACTOR } }, "scored": 'integer', "sum": 'integer', "mean": 'number', "c": { object: { "mean": 'integer', "maximum": 'integer' } } };
+const GOV_INV_OVERRIDE: Record<string, Kind> = { "to_tier": GOV_TIER, "rationale": 'string', "approver": 'string' };
+const GOV_INV_SENSITIVITY: Record<string, Kind> = { "reading": 'string', "regulatory_use": 'string', "complexity": 'string', "m": 'integer', "c": 'integer', "tier": GOV_TIER };
+const GOV_INV_TIER: Record<string, Kind> = { "materiality": { object: GOV_INV_MATERIALITY }, "complexity": { object: GOV_INV_COMPLEXITY }, "adopted_reading": 'string', "computed_tier": GOV_TIER, "override": { nullable: { object: GOV_INV_OVERRIDE } }, "tier": GOV_TIER, "tier_sensitivity": { array: { object: GOV_INV_SENSITIVITY } } };
+const GOV_INV_TRANSITION: Record<string, Kind> = { "from": 'string', "to": 'string', "date": GOV_DATE, "basis": 'string' };
+const GOV_INV_EXCEPTION: Record<string, Kind> = { "type": 'string', "approver": 'string', "expiry": GOV_DATE, "reason": 'text' };
+const GOV_INV_LIFECYCLE: Record<string, Kind> = { "state": 'string', "basis": 'string', "transitions": { array: { object: GOV_INV_TRANSITION } }, "exception": { nullable: { object: GOV_INV_EXCEPTION } } };
+const GOV_INV_LAST: Record<string, Kind> = { "date": GOV_DATE, "type": 'string', "basis": 'string' };
+const GOV_INV_SCHEDULE: Record<string, Kind> = { "profile": 'string', "review_kind": 'string', "last_validation": { object: GOV_INV_LAST }, "next_review": GOV_DATE, "next_full_revalidation": { nullable: GOV_DATE }, "next_monitoring": { nullable: GOV_DATE }, "null_reason": { nullable: 'text' } };
+const GOV_INV_GRAPH: Record<string, Kind> = { "depth": 'integer', "fan_in": 'integer', "fan_out": 'integer' };
+const GOV_INV_MAP: Record<string, Kind> = { "generation": 'integer', "x": 'number', "y": 'number' };
+const GOV_INV_ENTRY: Record<string, Kind> = { "key": 'string', "case_id": 'string', "fit_id": 'string', "title": 'text', "attributes": { object: GOV_INV_ATTRIBUTES }, "variants": { array: { object: GOV_INV_VARIANT } }, "components": { array: { object: GOV_INV_COMPONENT } }, "scope": { object: GOV_INV_SCOPE }, "tier_block": { object: GOV_INV_TIER }, "lifecycle": { object: GOV_INV_LIFECYCLE }, "schedule": { object: GOV_INV_SCHEDULE }, "graph": { object: GOV_INV_GRAPH }, "map": { object: GOV_INV_MAP } };
+const GOV_INV_EDGE: Record<string, Kind> = { "upstream": 'string', "downstream": 'string', "kind": 'string', "stated_source": 'string' };
+const GOV_INV_RELATED: Record<string, Kind> = { "a": 'string', "b": 'string', "kind": 'string', "source": 'string' };
+const GOV_INV_EXCLUDED: Record<string, Kind> = { "case_id": 'string', "variant_id": { nullable: 'string' }, "reason": 'text' };
+const GOV_INV_ATTR_COUNT: Record<string, Kind> = { "present": 'integer', "derivable": 'integer', "convention": 'integer', "not_applicable": 'integer', "missing": 'integer' };
+const GOV_INV_COMPLETENESS: Record<string, Kind> = { "entries": 'integer', "attributes": { object: { ...Object.fromEntries(ATTRIBUTE_IDS.map((id) => [id, { object: GOV_INV_ATTR_COUNT }])) } } };
+const GOV_INV_TIER_COUNTS: Record<string, Kind> = { "reading": 'string', "counts": { array: 'integer' } };
+const GOV_SEVERITY: Kind = 'string';
+const GOV_ECB_F: Kind = 'string';
+const GOV_GOV_FINDING: Record<string, Kind> = { "id": 'string', "severity": GOV_SEVERITY, "ecb_f": GOV_ECB_F, "status": 'string', "title": 'text', "description": 'text', "basis": 'string' };
+const GOV_FND_CONVENTIONS: Record<string, Kind> = { "deadline_days": { object: { "label": 'string', "basis": 'string', "rows": { array: { object: { "severity": GOV_SEVERITY, "days": { array: 'integer' } } } } } }, "severity_scale": { object: { "label": 'string', "basis": 'string', "rows": { array: { object: { "severity": GOV_SEVERITY, "ecb_f": GOV_ECB_F } } } } }, "status_map": { object: { "label": 'string', "basis": 'string', "rows": { array: { object: { "product": 'string', "register": 'string' } } } } } };
+const GOV_FND_ANCHOR: Record<string, Kind> = { "metric": 'string', "test_id": 'string', "model_id": 'string', "segment": { nullable: 'string' }, "value": 'number', "unit": 'string', "basis": 'string' };
+const GOV_FND_RISK: Record<string, Kind> = { "approver": 'string', "approver_reason": 'text', "expiry": { nullable: 'json' }, "expiry_reason": 'text' };
+const GOV_FND_ROW: Record<string, Kind> = { "key": 'string', "case_id": 'string', "variant_id": 'string', "id": 'string', "entry_key": 'string', "title": 'text', "severity": GOV_SEVERITY, "ecb_f": GOV_ECB_F, "product_status": 'string', "status": 'string', "evidence": { array: 'string' }, "anchor": { nullable: { object: GOV_FND_ANCHOR } }, "anchor_reason": { nullable: 'text' }, "rwea_share": { nullable: 'number' }, "rwea_share_reason": { nullable: 'text' }, "owner_role": 'string', "tier": GOV_TIER, "raised": GOV_DATE, "deadline_days": 'integer', "due": GOV_DATE, "ageing_days": 'integer', "overdue": 'boolean', "remediation": { nullable: 'text' }, "remediation_reason": { nullable: 'text' }, "risk_acceptance": { nullable: { object: GOV_FND_RISK } } };
+const GOV_FND_BY_SEVERITY: Record<string, Kind> = { "S1": 'integer', "S2": 'integer', "S3": 'integer', "S4": 'integer' };
+const GOV_FND_BY_STATUS: Record<string, Kind> = { "open": 'integer', "action_plan_agreed": 'integer', "in_progress": 'integer', "submitted_for_closure": 'integer', "validated_closed": 'integer', "overdue": 'integer', "risk_accepted": 'integer' };
+const GOV_FND_CASE_COUNT: Record<string, Kind> = { "case_id": 'string', "total": 'integer', "by_severity": { object: GOV_FND_BY_SEVERITY }, "by_status": { object: GOV_FND_BY_STATUS }, "overdue": 'integer' };
+const GOV_FND_COUNTS: Record<string, Kind> = { "total": 'integer', "by_severity": { object: GOV_FND_BY_SEVERITY }, "by_status": { object: GOV_FND_BY_STATUS }, "overdue": 'integer', "by_case": { array: { object: GOV_FND_CASE_COUNT } } };
+const GOV_REP_COUNTS: Record<string, Kind> = { "green": 'integer', "amber": 'integer', "red": 'integer', "not_evaluated": 'integer', "error": 'integer' };
+const GOV_REP_INPUT: Record<string, Kind> = { "ref": 'string', "kind": 'string' };
+const GOV_REP_POLICY: Record<string, Kind> = { "label": 'string', "kind": { nullable: 'string' }, "kind_reason": { nullable: 'string' }, "direction": { nullable: 'string' }, "direction_reason": { nullable: 'string' }, "alpha_amber": { nullable: 'number' }, "alpha_red": { nullable: 'number' }, "parameters": { map: { anyOf: ['number', 'string'] } }, "version": { nullable: 'string' }, "source": 'string', "reason": { nullable: 'string' } };
+const GOV_REP_OUTCOME_ROW: Record<string, Kind> = { "test_id": 'string', "model_id": { nullable: 'string' }, "segment": { nullable: 'string' }, "family": 'string', "statistic": { nullable: 'number' }, "p_value": { nullable: 'number' }, "metric": { nullable: 'number' }, "light": 'string', "h0": 'string', "reference": 'string', "policy": { object: GOV_REP_POLICY } };
+const GOV_REP_BLOCK: Kind = { anyOf: [{ object: { "kind": 'string', "text": 'text' } }, { object: { "kind": 'string', "items": { array: 'text' } } }, { object: { "kind": 'string', "caption": 'text', "columns": { array: 'text' }, "rows": { array: { array: { nullable: { anyOf: ['string', 'number', 'boolean'] } } } } } }, { object: { "kind": 'string', "variant_id": 'string', "rows": { array: { object: GOV_REP_OUTCOME_ROW } } } }] };
+const GOV_REP_MISSING: Record<string, Kind> = { "element": 'text', "reason": 'text' };
+/** Sections 2 to 10 and 12 share one shape; 1 adds the opinion level and 11 the opinion. */
+const GOV_REP_SECTION: Record<string, Kind> = { "number": 'integer', "key": 'string', "title": 'text', "status": 'string', "inputs": { array: { object: GOV_REP_INPUT } }, "absent_reason": { nullable: 'text' }, "blocks": { array: GOV_REP_BLOCK }, "missing": { array: { object: GOV_REP_MISSING } } };
+const GOV_REP_SECTION1: Record<string, Kind> = { ...GOV_REP_SECTION, "opinion_level": 'integer' };
+const GOV_REP_OPEN_FINDING: Record<string, Kind> = { "key": 'string', "severity": GOV_SEVERITY, "rwea_share": { nullable: 'number' } };
+const GOV_REP_OPINION: Record<string, Kind> = { "level": 'integer', "level_label": 'text', "rule": { object: { "id": 'string', "text": 'text' } }, "rwea_cut_points_applied": 'boolean', "open_findings": { array: { object: GOV_REP_OPEN_FINDING } }, "recommendation": { object: { "outcome": 'string', "text": 'text' } }, "label": 'text' };
+const GOV_REP_SECTION11: Record<string, Kind> = { ...GOV_REP_SECTION, "opinion": { object: GOV_REP_OPINION } };
+const GOV_APP_THRESHOLD: Record<string, Kind> = { "label": 'string', "basis": 'string', "direction": 'string', "green_limit": 'number', "amber_limit": 'number' };
+const GOV_APP_METRIC: Record<string, Kind> = { "id": 'string', "name": 'text', "kind": 'string', "value": { nullable: 'number' }, "unit": 'string', "numerator": { nullable: 'number' }, "denominator": { nullable: 'number' }, "register_rows": { nullable: 'integer' }, "reason": { nullable: 'text' }, "threshold": { object: GOV_APP_THRESHOLD }, "light": 'string' };
+export const GOVERNANCE_INVENTORY = {
+  "schema": 'string',
+  "case_id": 'string',
+  "governance_id": 'string',
+  "schema_version": 'string',
+  "as_of": GOV_DATE,
+  "as_of_basis": { object: GOV_AS_OF_BASIS },
+  "provenance": { object: GOV_PROVENANCE },
+  "conventions": { object: GOV_INV_CONVENTIONS },
+  "engine_node": { object: GOV_INV_ENGINE_NODE },
+  "entries": { array: { object: GOV_INV_ENTRY } },
+  "edges": { array: { object: GOV_INV_EDGE } },
+  "related": { array: { object: GOV_INV_RELATED } },
+  "excluded": { array: { object: GOV_INV_EXCLUDED } },
+  "completeness": { object: GOV_INV_COMPLETENESS },
+  "tier_counts": { array: { object: GOV_INV_TIER_COUNTS } },
+  "governance_findings": { array: { object: GOV_GOV_FINDING } },
+} satisfies Record<keyof components['schemas']['governance-governance-inventory'], Kind>;
+
+export const GOVERNANCE_FINDINGS = {
+  "schema": 'string',
+  "case_id": 'string',
+  "governance_id": 'string',
+  "schema_version": 'string',
+  "as_of": GOV_DATE,
+  "as_of_basis": { object: GOV_AS_OF_BASIS },
+  "provenance": { object: GOV_PROVENANCE },
+  "conventions": { object: GOV_FND_CONVENTIONS },
+  "rows": { array: { object: GOV_FND_ROW } },
+  "counts": { object: GOV_FND_COUNTS },
+} satisfies Record<keyof components['schemas']['governance-governance-findings'], Kind>;
+
+export const GOVERNANCE_REPORT = {
+  "schema": 'string',
+  "case_id": 'string',
+  "governance_id": 'string',
+  "schema_version": 'string',
+  "as_of": GOV_DATE,
+  "as_of_basis": { object: GOV_AS_OF_BASIS },
+  "provenance": { object: GOV_PROVENANCE },
+  "entry_key": 'string',
+  "title": 'text',
+  "tier": GOV_TIER,
+  "test_counts": { object: GOV_REP_COUNTS },
+  "sections": { array: { anyOf: [{ object: GOV_REP_SECTION1 }, { object: GOV_REP_SECTION }, { object: GOV_REP_SECTION11 }] } },
+} satisfies Record<keyof components['schemas']['governance-governance-report'], Kind>;
+
+export const GOVERNANCE_APPETITE = {
+  "schema": 'string',
+  "case_id": 'string',
+  "governance_id": 'string',
+  "schema_version": 'string',
+  "as_of": GOV_DATE,
+  "as_of_basis": { object: GOV_AS_OF_BASIS },
+  "provenance": { object: GOV_PROVENANCE },
+  "population": { object: { "entries": 'integer', "findings": 'integer', "distinct_findings": 'integer', "tier1_entries": 'integer' } },
+  "metrics": { array: { object: GOV_APP_METRIC } },
+} satisfies Record<keyof components['schemas']['governance-governance-appetite'], Kind>;
+
+
