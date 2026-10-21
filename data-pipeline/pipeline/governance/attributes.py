@@ -109,7 +109,6 @@ def build(ctx: Ctx, rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     """A01 to A40 of the entry; ``rows`` are the register rows of the entry (A37, A38)."""
     m, man, d = ctx.models_path, ctx.manifest_path, ctx.default_path
     md = ctx.models
-    n = len(md["model"])
     prov = md["provenance"]
     a: dict[str, dict[str, Any]] = {}
     a["A01"] = attr(ctx.key, "present", f"read at {m}#/case_id | {m}#/fit_id")

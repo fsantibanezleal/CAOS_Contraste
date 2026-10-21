@@ -6,7 +6,6 @@ the W15-7 recommendation outcomes exempt.
 """
 from __future__ import annotations
 
-import copy
 import json
 
 import gov_support as gs
