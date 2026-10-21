@@ -40,7 +40,7 @@ ECB's (Instructions of February 2019, section 2.4.2); the rule that turns findin
 
 <!-- governance-results:begin -->
 
-The documents were baked over the committed case documents with `riskvalidation` 0.9.0 as of 2026-10-20 (the newest release heading of the changelog; a convention, never the clock). 186 paths were read, each listed with its sha256 in the documents.
+The documents were baked over the committed case documents with `riskvalidation` 0.9.0 as of 2026-10-21 (the newest release heading of the changelog; a convention, never the clock). 186 paths were read, each listed with its sha256 in the documents.
 
 ### The inventory
 
@@ -76,9 +76,9 @@ The documents were baked over the committed case documents with `riskvalidation`
 | `C13/generator` | 2 | 3 | 1 | 3 | 6 | 17 | 0 | 2 | 8 | 0 | 2027-10-15 |
 | `C14/svb-2021-2022` | 1 | 4 | 1 | 4 | 3 | 12 | 3 | 4 | 5 | 0 | 2027-10-20 |
 | `C15/banco-andino-2026-09` | 1 | 4 | 2 | 3 | 6 | 24 | 0 | 1 | 17 | 6 | 2027-10-20 |
-| `C16/svb-liquidity` | 1 | 4 | 1 | 3 | 6 | 11 | 0 | 8 | 2 | 1 | 2027-10-20 |
+| `C16/svb-liquidity` | 1 | 4 | 1 | 3 | 6 | 11 | 0 | 8 | 2 | 1 | 2027-10-21 |
 | `C17/generator` | 1 | 4 | 1 | 3 | 4 | 13 | 0 | 5 | 8 | 0 | 2027-10-15 |
-| `C18/banco-andino` | 1 | 4 | 2 | 4 | 6 | 29 | 2 | 2 | 17 | 8 | 2027-10-20 |
+| `C18/banco-andino` | 1 | 4 | 2 | 4 | 6 | 29 | 2 | 2 | 17 | 8 | 2027-10-21 |
 | `C20/c20-ladder` | 2 | 3 | 2 | 3 | 6 | 39 | 0 | 18 | 9 | 0 | 2027-10-20 |
 | `C21/hmda-de-2018-2023` | 1 | 4 | 1 | 3 | 6 | 38 | 0 | 6 | 14 | 6 | 2027-10-20 |
 | `C22/generators` | 4 | 1 | 1 | 3 | 8 | 20 | 0 | 1 | 0 | 0 | 2029-10-12 |

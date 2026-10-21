@@ -133,6 +133,227 @@ basis, the topic 01 notebooks cite:
   https://doi.org/10.1148/radiology.143.1.7063747;
 - Spiegelhalter (1986), probabilistic prediction in patient management and clinical trials, https://doi.org/10.1002/sim.4780050506.
 
+The topic 02 notebooks (credit scoring, unit U17-B) cite, in addition:
+
+- Navas-Palencia (2020), optimal binning, weight of evidence and information value, https://arxiv.org/abs/2001.08025;
+- Siddiqi (2017), Intelligent Credit Scoring, https://doi.org/10.1002/9781119282396, and the open `skorecard` implementation of its
+  points scaling, https://github.com/ing-bank/skorecard/blob/main/skorecard/rescale/rescale.py;
+- DeLong, DeLong and Clarke-Pearson (1988), correlated ROC curves, https://doi.org/10.2307/2531595;
+- the SBA 7(a) FOIA loan data, https://data.sba.gov/dataset/7a-504-foia;
+- the UCI Polish companies bankruptcy data, https://archive.ics.uci.edu/dataset/365/polish+companies+bankruptcy+data, DOI
+  https://doi.org/10.24432/C5F600, and the UCI Statlog German credit data, https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data;
+- the credit-scoring benchmarks and challengers of dossier 04: Baesens et al. (2003), https://doi.org/10.1057/palgrave.jors.2601545;
+  Dumitrescu, Hue, Hurlin and Tokpavi (2022), https://doi.org/10.1016/j.ejor.2021.06.053; Lou, Caruana, Gehrke and Hooker (2013),
+  https://doi.org/10.1145/2487575.2487579; van den Goorbergh et al. (2022), https://doi.org/10.1093/jamia/ocac093; King and Zeng (2001),
+  https://doi.org/10.1093/oxfordjournals.pan.a004868; Zadrozny and Elkan (2002), https://doi.org/10.1145/775047.775151;
+  the monotone-constraint documentation of XGBoost, https://xgboost.readthedocs.io/en/stable/tutorials/monotonic.html, and of LightGBM,
+  https://lightgbm.readthedocs.io/en/latest/Parameters.html; the TabPFN project and its weights licences, https://github.com/PriorLabs/TabPFN;
+- Kozodoi et al. (2025), sampling bias in the training and the evaluation of credit scoring models, https://doi.org/10.1016/j.ejor.2025.01.040.
+
+The topic 04 notebooks (provisions) cite, from dossiers 02 and 03 of the persisted research:
+
+- IASB, IFRS 9 Financial Instruments as endorsed by Commission Regulation (EU) 2016/2067,
+  https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32016R2067;
+- Botha and Verster (2025), the term-structure of default risk under IFRS 9 by discrete-time survival analysis,
+  https://arxiv.org/abs/2507.15441, and Botha, Verster and Breedt (2025), the multistate framework, https://arxiv.org/abs/2502.14479;
+- GPPC (2016), The implementation of IFRS 9 impairment requirements by banks,
+  https://www.globalpublicpolicycommittee.org/wp-content/uploads/2022/12/gppc-ifrs9-implementation-considerations-20160617.pdf;
+- BCBS (2015), Guidance on credit risk and accounting for expected credit losses (d350), https://www.bis.org/bcbs/publ/d350.htm;
+- EBA (2023), IFRS 9 implementation by EU institutions, 2023 monitoring report, EBA/Rep/2023/36,
+  https://www.eba.europa.eu/sites/default/files/2023-11/25b12d35-9c28-4335-a589-166c77198920/Final%20Report%20on%20IFRS9%20implementation%20by%20EU%20institutions.pdf,
+  and EBA (2021), EBA/Rep/2021/35,
+  https://www.eba.europa.eu/sites/default/files/document_library/Publications/Reports/2021/1024609/IFRS9%20monitoring%20report.pdf;
+- ECB Banking Supervision (2024), IFRS 9 overlays and model improvements for novel risks,
+  https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.IFRS9novelrisks_202407~5e0eb30b5c.en.pdf;
+- BCBS (2005), An explanatory note on the Basel II IRB risk weight functions,
+  https://www.bis.org/publications/explanatory-note-basel-ii-irb-risk-weight-functions.pdf, and Gordy (2003), a risk-factor model
+  foundation for ratings-based bank capital rules, https://doi.org/10.1016/S1042-9573(03)00040-8;
+- Anderson and Goodman (1957), statistical inference about Markov chains, https://doi.org/10.1214/aoms/1177707039;
+- Shumway (2001), forecasting bankruptcy more accurately: a simple hazard model, https://doi.org/10.1086/209665;
+- Cox (1972), regression models and life-tables, https://doi.org/10.1111/j.2517-6161.1972.tb00899.x; Fine and Gray (1999), a
+  proportional hazards model for the subdistribution of a competing risk, https://doi.org/10.1080/01621459.1999.10474144; Breeden
+  (2016), lifecycle and environment in loan-level forecasts and stress tests, https://doi.org/10.1016/j.ejor.2016.06.008;
+- ECB Banking Supervision (2020), IFRS 9 in the context of the coronavirus pandemic, letter of 1 April 2020,
+  https://www.bankingsupervision.europa.eu/press/letterstobanks/shared/pdf/2020/ssm.2020_letter_IFRS_9_in_the_context_of_the_coronavirus_COVID-19_pandemic~4cab8e5650.en.pdf;
+- CMF Chile, Compendio de Normas Contables para Bancos (CNCB),
+  https://www.cmfchile.cl/portal/normativa/624/articles-29177_doc_pdf.pdf;
+- Banco de España, Circular 4/2017 (https://www.boe.es/buscar/act.php?id=BOE-A-2017-14334) and Circular 6/2021
+  (https://www.boe.es/buscar/doc.php?id=BOE-A-2021-21666).
+
+The topic 07 notebooks (market risk, cases C11 and C13) also cite the following, all taken from the persisted research (dossiers 01 and
+05) and from the engine's own reference strings:
+
+- Kupiec (1995), https://doi.org/10.3905/jod.1995.407942; Christoffersen (1998), https://doi.org/10.2307/2527341; Christoffersen and
+  Pelletier (2004), https://doi.org/10.1093/jjfinec/nbh004; Engle and Manganelli (2004), https://doi.org/10.1198/073500104000000370;
+- Basel Committee (1996), the backtesting framework, https://www.bis.org/publ/bcbs22.htm;
+- Du and Escanciano (2017), https://doi.org/10.1287/mnsc.2015.2342; McNeil and Frey (2000), https://doi.org/10.1016/S0927-5398(00)00012-8;
+  Moldenhauer and Pitera on the Acerbi-Szekely reference point, https://arxiv.org/abs/1709.01337;
+- Patton, Ziegel and Chen (2019), https://doi.org/10.1016/j.jeconom.2018.10.008 and https://arxiv.org/abs/1707.05108; Taylor (2019),
+  https://doi.org/10.1080/07350015.2017.1281815; the neural joint VaR and ES preprint, https://arxiv.org/abs/2606.04576;
+- Gneiting (2011), https://doi.org/10.1198/jasa.2011.r10138; Fissler and Ziegel (2016), https://doi.org/10.1214/16-AOS1439; Diebold and
+  Mariano (1995), https://doi.org/10.1080/07350015.1995.10524599; Hansen, Lunde and Nason (2011), https://doi.org/10.3982/ECTA5771;
+  Nolde and Ziegel (2017), https://doi.org/10.1214/17-AOAS1041; Kratz, Lok and McNeil (2018), https://doi.org/10.1016/j.jbankfin.2018.01.002;
+- Pritsker (2001), https://www.federalreserve.gov/Pubs/feds/2001/200127/200127pap.pdf; Boudoukh, Richardson and Whitelaw (1998),
+  https://pages.stern.nyu.edu/~rwhitela/papers/hybrid%20risk98.pdf; the RiskMetrics Technical Document (1996),
+  https://www.msci.com/documents/10199/5915b101-4206-4ba0-aee2-3449d5c7e95a; Cornish and Fisher (1938), https://doi.org/10.2307/1400905;
+  Bollerslev (1986), https://doi.org/10.1016/0304-4076(86)90063-1; Glosten, Jagannathan and Runkle (1993),
+  https://doi.org/10.1111/j.1540-6261.1993.tb05128.x; Nelson (1991), https://doi.org/10.2307/2938260; Hull and White (1998),
+  https://doi.org/10.21314/JOR.1998.001.
+
+The topic 11 (operational risk) notebooks cite, besides the BIS d424 page above:
+
+- BCBS (2009), Results from the 2008 Loss Data Collection Exercise for Operational Risk, https://www.bis.org/publ/bcbs160.htm;
+- BCBS (2016), Standardised Measurement Approach for operational risk, consultative document, https://www.bis.org/bcbs/publ/d355.htm;
+- Basel Framework, OPE25, Calculation of RWA for operational risk (the standardised approach), https://www.bis.org/basel_framework/chapter/OPE/25.htm;
+- Shevchenko (2010), Calculation of aggregate loss distributions, J. Operational Risk 5(2), https://arxiv.org/abs/1008.1108 and
+  https://doi.org/10.21314/JOP.2010.077;
+- Shevchenko and Wuthrich (2006), The structural modeling of operational risk via Bayesian inference, https://doi.org/10.21314/JOP.2006.016;
+- Panjer (1981), Recursive evaluation of a family of compound distributions, https://doi.org/10.1017/S0515036100006796;
+- Chavez-Demoulin, Embrechts and Neslehova (2006), Quantitative models for operational risk, https://doi.org/10.1016/j.jbankfin.2005.11.008;
+- Mignola and Ugoccioni (2007), Effect of a data collection threshold in the loss distribution approach,
+  https://doi.org/10.21314/JOP.2006.019;
+- Degen (2010), The calculation of minimum regulatory capital using single-loss approximations, https://doi.org/10.21314/JOP.2010.084;
+- Peters, Shevchenko, Hassani and Chapelle (2016), Should the advanced measurement approach be replaced with the standardized
+  measurement approach for operational risk?, https://arxiv.org/abs/1607.02319;
+- Mignola, Ugoccioni and Cope (2016), Comments on the Basel Committee proposal for a new standardized approach for operational risk,
+  https://doi.org/10.21314/JOP.2016.184.
+
+The topic 10 (liquidity) notebooks cite, from the research dossier 05 (section E) and the research addendum of the liquidity unit:
+
+- ECB Banking Supervision (2019), Sensitivity analysis of liquidity risk, stress test 2019, methodological note (2019-02-06),
+  https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.ECB_sensitivity_analysis_of_liquidity_risk-stress_test_2019-methodological_note_20190206~6771e88926.en.pdf,
+  and its results annex (2019-10-07), https://www.bankingsupervision.europa.eu/press/pr/date/2019/html/ssm.pr191007_annex~537c259b6d.en.pdf;
+- BCBS (2008), Principles for sound liquidity risk management and supervision, Principle 10, https://www.bis.org/publ/bcbs144.htm;
+- BCBS (2023), Report on the 2023 banking turmoil, Box A and Table A.1, https://www.bis.org/bcbs/publ/d555.htm;
+- Federal Reserve Board (2023-04-28), Review of the Federal Reserve's Supervision and Regulation of Silicon Valley Bank,
+  https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf;
+- Federal Reserve discount window, margins in force from 2022-03-14 to 2023-03-12,
+  https://www.frbdiscountwindow.org/generalpages/historical_margins/2022/03142022_03122023_securities_table;
+- the Basel Framework, LCR standard (LCR20 to LCR99), https://www.bis.org/committees/bcbs/basel-framework/standard/lcr, and NSFR standard
+  (NSF20 to NSF99), https://www.bis.org/committees/bcbs/basel-framework/standard/nsf/99/inforce/2019-12-15/published/2019-12-15;
+- Diamond and Dybvig (1983), bank runs, deposit insurance, and liquidity, https://doi.org/10.1086/261155;
+- Cookson, Fox, Gil-Bazo, Imbet and Schiller (2026), social media as a bank run catalyst, https://doi.org/10.1016/j.jfineco.2025.104218;
+- Jiang, Matvos, Piskorski and Seru (2024), monetary tightening and U.S. bank fragility in 2023: mark-to-market losses and uninsured depositor runs, https://doi.org/10.1016/j.jfineco.2024.103899.
+
+The topic 08 notebooks (counterparty credit risk and the regulatory calculators) cite, besides those:
+
+- BCBS, Basel Framework, CRE52 Standardised approach to counterparty credit risk (in force 2023-01-01, published 2020-06-05). https://www.bis.org/committees/bcbs/basel-framework/standard/cre/52/inforce/2023-01-01/published/2020-06-05
+- BCBS, Basel Framework, CRE53 Internal model method for counterparty credit risk (in force 2023-01-01, published 2020-06-05). https://www.bis.org/basel_framework/chapter/CRE/53.htm?inforce=20230101&published=20200605
+- BCBS, Basel Framework, CRE99 Illustrative examples of the standardised approach to counterparty credit risk (in force 2023-01-01). https://www.bis.org/committees/bcbs/basel-framework/standard/cre/99/inforce/2023-01-01/published/2020-03-27
+- BCBS, Basel Framework, CRE20 Standardised approach: individual exposures (in force 2023-01-01, published 2025-06-10). https://www.bis.org/committees/bcbs/basel-framework/standard/cre/20/inforce/2023-01-01/published/2025-06-10
+- BCBS, Basel Framework, MAR50 CVA risk framework (in force 2023-01-01, published 2020-07-08). https://www.bis.org/committees/bcbs/basel-framework/standard/mar/50/inforce/2023-01-01/published/2020-07-08
+- BCBS, Basel Framework, MAR21 Standardised approach: sensitivities-based method (in force 2023-01-01). https://www.bis.org/committees/bcbs/basel-framework/standard/mar/21/inforce/2023-01-01/published/2026-03-23
+- BCBS, Basel Framework, RBC20 Calculation of minimum risk-based capital requirements (in force 2023-01-01, published 2020-11-26). https://www.bis.org/committees/bcbs/basel-framework/standard/rbc/20/inforce/2023-01-01/published/2020-11-26
+- BCBS, Basel Framework, RBC90 Transitional arrangements and the output floor phase-in (in force 2023-01-01). https://www.bis.org/committees/bcbs/basel-framework/standard/rbc/90/inforce/2023-01-01/published/2020-03-27
+- BCBS (2010), Sound practices for backtesting counterparty credit risk models, publication 185. https://www.bis.org/publ/bcbs185.htm
+- Hull, J. and White, A. (2012), CVA and wrong way risk, Financial Analysts Journal 68(5), 58-69. https://doi.org/10.2469/faj.v68.n5.6
+- Hull, J. and White, A. (1990), Pricing interest-rate-derivative securities, Review of Financial Studies 3(4), 573-592. https://doi.org/10.1093/rfs/3.4.573
+- Brigo, D., Dalessandro, A., Neugebauer, M. and Triki, F. (2008), A stochastic processes toolkit for risk management, arXiv 0812.4210. https://arxiv.org/abs/0812.4210
+- Formenti, L., Spadafora, L., Terraneo, F. and Ramponi, A., Probability integral transform and Anderson-Darling backtests, arXiv 1505.04593. https://arxiv.org/abs/1505.04593
+- Andersen, L., Pykhtin, M. and Sokol, A. (2017), Rethinking the margin period of risk, Journal of Credit Risk 13(1). https://doi.org/10.21314/JCR.2016.218
+- Open Source Risk Engine, Methodology, value adjustments and margin period of risk (xva.tex at tag 1.8.17.0). https://github.com/OpenSourceRisk/Engine/blob/1.8.17.0/Docs/UserGuide/methods/xva.tex
+- Open Source Risk Engine (ORE), release 1.8.17.0. https://github.com/OpenSourceRisk/Engine
+- QuantLib, the open-source quantitative finance library. https://github.com/lballabio/QuantLib
+- U.S. Department of the Treasury, Daily Treasury Par Yield Curve Rates. https://home.treasury.gov/resource-center/data-chart-center/interest-rates/
+- U.S. Department of the Treasury, High Quality Market (HQM) Corporate Bond Yield Curve. https://home.treasury.gov/data/treasury-coupon-issues-and-corporate-bond-yield-curve/corporate-bond-yield-curve
+
+The topic 12 (capital and stress) notebooks cite, besides the above, the sources the persisted research verified for the aggregation and
+stress layers (dossiers 03, 05 and 06):
+
+- Rosenberg and Schuermann (2006), a general approach to integrated risk management with skewed, fat-tailed risks,
+  https://doi.org/10.1016/j.jfineco.2005.03.001;
+- Embrechts, Puccetti and Rueschendorf (2013), model uncertainty and VaR aggregation, https://doi.org/10.1016/j.jbankfin.2013.03.014;
+- Embrechts, McNeil and Straumann (2002), correlation and dependence in risk management, https://doi.org/10.1017/CBO9780511615337.008;
+- Tasche (2007), capital allocation to business units and sub-portfolios: the Euler principle, https://arxiv.org/abs/0708.2542;
+- Glasserman and Xu (2014), robust risk measurement and model risk, https://doi.org/10.1080/14697688.2013.822989;
+- Barrieu and Scandolo (2015), assessing financial model risk, https://doi.org/10.1016/j.ejor.2014.10.032;
+- Glasserman, Kang and Kang (2015), stress scenario selection by empirical likelihood, https://doi.org/10.1080/14697688.2014.926019;
+- Adrian, Boyarchenko and Giannone (2019), vulnerable growth, https://doi.org/10.1257/aer.20161923;
+- Litterman (1986), forecasting with Bayesian vector autoregressions, https://doi.org/10.1080/07350015.1986.10509491;
+- Banbura, Giannone and Reichlin (2010), large Bayesian vector auto regressions, https://doi.org/10.1002/jae.1137;
+- the Joint Forum (2010), developments in modelling risk aggregation, https://www.bis.org/publ/joint25.pdf (the wording the dossier takes
+  from the press release is UNVERIFIED);
+- the EBA 2025 EU-wide stress test Methodological Note of 2025-01-20,
+  https://www.eba.europa.eu/sites/default/files/2025-01/0246e2f3-fa57-47d1-99f2-7a5b80cae509/2025%20EU-wide%20stress%20test%20-%20Methodological%20Note.pdf;
+- the Federal Reserve, Supervisory Stress Test Model Documentation: Credit Risk Models, Fall 2026,
+  https://www.federalreserve.gov/supervisionreg/files/fall-2026-credit-risk-models-description.pdf, and the 2026 severely adverse scenario,
+  https://www.federalreserve.gov/supervisionreg/files/2026_Final_Supervisory_Severely_Adverse_Domestic.csv;
+- the CMF Annex 3 of the IAPE self-assessment (Circular 2.365), https://www.cmfchile.cl/portal/principal/623/articles-29808_doc_pdf.pdf;
+- the NGFS Phase V scenarios, https://www.ngfs.net/en/news/ngfs-scenarios-phase-v-launch-event and
+  https://data.ene.iiasa.ac.at/ngfs.
+
+The topic 13 notebooks (ML and AI risk) cite, in the same way, the sources below. Each is printed by a persisted research dossier or addendum
+(model risk and validation, credit risk models, the fair-lending addendum), and none is cited for more than what its line says:
+
+- ECB (2019), Instructions for reporting the validation results of internal models: IRB Pillar I models for credit risk, Annex 1 (the AUC and its variance). https://www.bankingsupervision.europa.eu/activities/internal_models/shared/pdf/instructions_validation_reporting_credit_risk.en.pdf;
+- ING (2026), probatus, `sample_similarity`: a resemblance model between two datasets. https://github.com/ing-bank/probatus;
+- EBA (2023), Follow-up report on machine learning for IRB models, EBA/REP/2023/28. https://www.eba.europa.eu/sites/default/files/document_library/Publications/Reports/2023/1061483/Follow-up%20report%20on%20machine%20learning%20for%20IRB%20models.pdf;
+- Yeh, I-C. and Lien, C-H., Default of credit card clients, UCI Machine Learning Repository (CC BY 4.0), the Taiwan cards of the C20 variants. https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients;
+- PiML-Toolbox (Apache-2.0), outcome tests WeakSpot, Overfit, Reliability, Robustness and Resilience; Sudjianto et al. (2023), arXiv 2305.04214. https://github.com/SelfExplainML/PiML-Toolbox;
+- ECB (2025), Guide to internal models, the paragraphs on the randomness of the training process, overfitting, explainability and the justification of complexity (43, 59, 60, 62, 64 to 66). https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.supervisory_guide202507.en.pdf;
+- Phipson, B. and Smyth, G. K. (2010), Permutation p-values should never be zero, Statistical Applications in Genetics and Molecular Biology 9(1). https://doi.org/10.2202/1544-6115.1585;
+- Board of Governors of the Federal Reserve System, supervisory stress test scenarios and methodology data (public domain), the three corporate portfolios of 2025. https://www.federalreserve.gov/supervisionreg/dfa-stress-tests-2026.htm;
+- Lundberg, S. M. and Lee, S.-I. (2017), A unified approach to interpreting model predictions, NeurIPS, arXiv 1705.07874. https://arxiv.org/abs/1705.07874;
+- Lundberg, S. M. et al. (2020), From local explanations to global understanding with explainable AI for trees, Nature Machine Intelligence 2(1). https://doi.org/10.1038/s42256-019-0138-9;
+- Friedman, J. H. (2001), Greedy function approximation: a gradient boosting machine, Annals of Statistics 29(5). https://doi.org/10.1214/aos/1013203451;
+- Goldstein, A., Kapelner, A., Bleich, J. and Pitkin, E. (2015), Peeking inside the black box: visualizing statistical learning with plots of individual conditional expectation, Journal of Computational and Graphical Statistics 24(1). https://doi.org/10.1080/10618600.2014.907095;
+- Apley, D. W. and Zhu, J. (2020), Visualizing the effects of predictor variables in black box supervised learning models, Journal of the Royal Statistical Society B 82(4). https://doi.org/10.1111/rssb.12377;
+- Angelopoulos, A. N. and Bates, S. (2021), A gentle introduction to conformal prediction and distribution-free uncertainty quantification, arXiv 2107.07511. https://arxiv.org/abs/2107.07511;
+- Vovk, V., Gammerman, A. and Shafer, G. (2022), Algorithmic Learning in a Random World, 2nd edition, Springer, https://doi.org/10.1007/978-3-031-06649-8;
+- NannyML, how confidence-based performance estimation (CBPE) works. https://nannyml.readthedocs.io/en/stable/how_it_works/performance_estimation.html;
+- MAPIE (BSD-3-Clause), conformal prediction for scikit-learn. https://github.com/scikit-learn-contrib/MAPIE;
+- Bank of England PRA (2023), SS1/23 Model risk management principles for banks, principle 3.3(b)(iii) on challenger comparisons. https://www.bankofengland.co.uk/prudential-regulation/publication/2023/may/model-risk-management-principles-for-banks-ss;
+- Zieba, M., Tomczak, S. K. and Tomczak, J. M., Polish companies bankruptcy data, UCI Machine Learning Repository (CC BY 4.0). https://archive.ics.uci.edu/dataset/365/polish+companies+bankruptcy+data;
+- Hardt, M., Price, E. and Srebro, N. (2016), Equality of opportunity in supervised learning, arXiv 1610.02413. https://arxiv.org/abs/1610.02413;
+- 29 CFR 1607.4(D), Uniform Guidelines on Employee Selection Procedures: the four-fifths rule, an employment benchmark. https://www.law.cornell.edu/cfr/text/29/1607.4;
+- CFPB (2026), Equal Credit Opportunity Act (Regulation B), final rule, 91 FR 21620, effective 2026-07-21. https://www.govinfo.gov/content/pkg/FR-2026-04-22/pdf/2026-07804.pdf;
+- OCC, FDIC, Federal Reserve Board, OTS and NCUA (2009), Interagency Fair Lending Examination Procedures. https://www.federalreserve.gov/boarddocs/caletters/2009/0906/09-06_attachment.pdf;
+- Kozodoi, N., Jacob, J. and Lessmann, S. (2022), Fairness in credit scoring: assessment, implementation and profit implications, European Journal of Operational Research 297(3). https://doi.org/10.1016/j.ejor.2021.06.023;
+- FFIEC and CFPB, Home Mortgage Disclosure Act data publication (the licence sentence of the data is UNVERIFIED). https://ffiec.cfpb.gov/data-publication/;
+- Alvarez, J. M. and Ruggieri, S. (2025), Counterfactual situation testing: from single to multidimensional discrimination, Journal of Artificial Intelligence Research 82, arXiv 2502.01267. https://doi.org/10.1613/jair.1.17935;
+- Alvarez, J. M. and Ruggieri, S. (2026), Mutatis mutandis: revisiting the comparator in discrimination testing, Computational Intelligence 42(4), arXiv 2405.13693. https://doi.org/10.1111/coin.70238;
+- ValidMind library (AGPL-3.0 or commercial licence): data and model validation tests and documentation. https://github.com/validmind/validmind-library;
+- BBVA mercury-robust (Apache-2.0): data and model test suites, drift and label-leakage checks. https://github.com/BBVA/mercury-robust;
+- ING popmon (MIT): population shift monitoring. https://github.com/ing-bank/popmon;
+- Evidently (Apache-2.0): drift, data quality and model quality reports. https://github.com/evidentlyai/evidently;
+- NannyML (Apache-2.0), the open implementation of CBPE. https://github.com/NannyML/nannyml;
+- fairlearn (MIT), fairness assessment and mitigation. https://github.com/fairlearn/fairlearn;
+- SHAP (MIT), the reference implementation of Shapley explanations. https://github.com/shap/shap;
+- Romano, Y., Patterson, E. and Candes, E. J. (2019), Conformalized quantile regression, arXiv 1905.03222. https://arxiv.org/abs/1905.03222;
+- Barber, R. F., Candes, E. J., Ramdas, A. and Tibshirani, R. J. (2021), Predictive inference with the jackknife+, Annals of Statistics 49(1). https://doi.org/10.1214/20-AOS1965;
+- Vovk, V. and Petej, I. (2012), Venn-Abers predictors, arXiv 1211.0025. https://arxiv.org/abs/1211.0025.
+
+The topic 06 (portfolio capital) notebooks cite, from the persisted research dossiers 04 and 05, the engine's module documentation and
+its contract:
+
+- Board of Governors of the Federal Reserve System, charge-off and delinquency rates on loans and leases at commercial banks, table
+  `chgallsa`, https://www.federalreserve.gov/releases/chargeoff/chgallsa.htm (public domain, licence class mirror-allowed);
+- BCBS, Basel Framework CRE31, the IRB risk weight functions, https://www.bis.org/basel_framework/chapter/CRE/31.htm;
+- Gordy (2003), a risk-factor model foundation for ratings-based bank capital rules, https://doi.org/10.1016/S1042-9573(03)00040-8;
+- Gordy (2000), a comparative anatomy of credit risk models, https://doi.org/10.1016/S0378-4266(99)00054-0 (the dossier records it from
+  its abstract, the wording is UNVERIFIED);
+- Gupton, Finger and Bhatia (1997), CreditMetrics technical document, as reissued in 2007 and hosted by MSCI,
+  https://www.msci.com/documents/10199/93396227-d449-4229-9143-24a94dab122f (page-level formula references UNVERIFIED);
+- Li (2000), on default correlation: a copula function approach, https://doi.org/10.3905/jfi.2000.319253;
+- Frey and McNeil (2003), dependent defaults in models of portfolio credit risk, https://doi.org/10.21314/jor.2003.089;
+- Demarta and McNeil (2005), the t copula and related copulas, https://doi.org/10.1111/j.1751-5823.2005.tb00254.x;
+- Haaf, Reiss and Schoenmakers (2004), numerically stable computation of CreditRisk+, https://doi.org/10.21314/jor.2004.097;
+- Gordy and Lutkebohmert (2013), granularity adjustment for regulatory capital assessment,
+  https://www.ijcb.org/sites/default/files/journal/v9n3/ijcb-v9n3-granularity-adjustment-regulatory-capital-assessment.pdf;
+- Tasche (2008), capital allocation to business units and sub-portfolios: the Euler principle, https://arxiv.org/abs/0708.2542;
+- Tasche (2009), capital allocation for credit portfolios with kernel estimators, https://doi.org/10.1080/14697680802620599;
+- Emmer and Tasche (2005), calculating credit risk capital charges with the one-factor model, https://arxiv.org/abs/cond-mat/0302402;
+- Glasserman and Li (2005), importance sampling for portfolio credit risk, https://doi.org/10.1287/mnsc.1050.0415 (the dossier marks its
+  transcription of the twist UNVERIFIED);
+- Glasserman, Heidelberger and Shahabuddin (2002), portfolio value-at-risk with heavy-tailed risk factors,
+  https://doi.org/10.1111/1467-9965.00141;
+- Acerbi and Tasche (2002), on the coherence of expected shortfall, https://doi.org/10.1016/S0378-4266(02)00283-2;
+- Dullmann and Masschelein (2007), a tractable model to measure sector concentration risk in credit portfolios,
+  https://doi.org/10.1007/s10693-007-0014-3;
+- BCBS (2006), studies on credit risk concentration, working paper 15, https://www.bis.org/publ/bcbs_wp15.pdf (a search summary in the
+  dossier);
+- Wilson (1927), probable inference, the law of succession, and statistical inference, https://doi.org/10.1080/01621459.1927.10502953.
+
 ## Sizing and contracts
 
 The design rests on two artifacts of contract-first parallel delivery (ADR-0080): the sizing and the contract catalog.
@@ -246,6 +467,9 @@ the ones the dossiers and `docs/frameworks/` record.
 | engine | riskvalidation | 0.9.0 | the validation tests, regulatory calculators and generators (the PyPI release 0.9.0, tag v0.09.000: the batch 3 packages of 0.8.x (liquidity, aggregation and stress testing, the regulatory calculators and counterparty credit risk, ML model validation and fair lending) and model governance, `riskvalidation.governance`) | none: no toolkit implements the ECB tests as specified |
 | models (optional) | torch | 2.14.1 | CPU runtime of the TabPFN extra, outside the default install | none recorded |
 | models (optional) | tabpfn | 9.1.0 | the TabPFN challenger of the small cases, weights under the Prior Labs License | none recorded |
+| notebooks | arch | 8.0.0 | the independent GARCH reference of the topic 07 state-of-the-art notebook, the package the engine's garch rung calls (the engine's `market` extra, `arch>=8.0,<9`; U17 sizing technology matrix) | none: the engine's own reference |
+| notebooks | mapie | 1.5.0 | the conformal reference of the topic 13 state-of-the-art notebook (the engine's `ml` extra, `mapie>=1.5,<2`; BSD-3-Clause) | none: the engine's own reference |
+| notebooks | fairlearn | 0.15.0 | the fairness-metric reference of the topic 13 state-of-the-art notebook (the engine's `ml` extra, `fairlearn>=0.15,<0.16`; MIT) | none: the engine's own reference |
 | notebooks | matplotlib | 3.11.2 | the figures of the notebooks (`notebooks/requirements.txt`) | none recorded |
 | notebooks | nbclient | 0.11.0 | executes the notebooks top to bottom in a fresh kernel (`scripts/run_notebooks.py`, a local release gate) | none recorded |
 | notebooks | nbformat | 5.11.1 | reads and writes the notebook documents of the runner | none recorded |
@@ -482,11 +706,216 @@ No oracle here is a model judging another model.
 
 ## Beyond the state of the art
 
-None claimed. A component of Contraste that goes further than the practice its research found enters this section with the
-topic unit that demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes
-beyond, and a level 4 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches
-the package's contract and demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8)
-and enter here one by one, so no claim is stated before its demonstration exists.
+A component of Contraste that goes further than the practice its research found enters this section with the topic unit that
+demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes beyond, and a level 4
+notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches the package's contract and
+demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8) and enter here one by one, so
+no claim is stated before its demonstration exists. Each claim is stated only as far as its committed evidence goes.
+
+- **BS-1** The measured size and power of the validation tests on planted defects.
+  What it adds: for each of the 21 tests with a p-value, its rejection rate under its null at 5% and 1% (its size), and for 17 of
+  them its rejection rate against defects of known severity (its power); the four transition tests (time homogeneity, Markov order,
+  matrix against a reference, downward momentum) have a size and no power. The measurement is 231 simulations and 551,000 seeded
+  repetitions in eight families, every one of its 476 rates with its Monte Carlo standard error (Morris, White and Crowther 2019,
+  https://doi.org/10.1002/sim.8086) and its Wilson interval (Brown, Cai and DasGupta 2001, https://doi.org/10.1214/ss/1009213286),
+  an exact rejection probability beside 47 of the rows, on 123 generators whose truth is known and reproduces from the committed
+  configuration. Demonstrated by `notebooks/en/14-validating-the-validator/08-beyond-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb`
+  and its Spanish counterpart.
+  Evidence: `data/derived/C22/null.json`, `data/derived/C22/miscalibration.json`, `data/derived/C22/clustering.json`,
+  `data/derived/C22/drift.json`, `data/derived/C22/discrimination-decay.json`, `data/derived/C22/leakage.json`,
+  `data/derived/C22/broken-monotonicity.json`, `data/derived/C22/concentration.json`,
+  `docs/design/features/c22-validator/requirements.md`, `tests/test_c22.py`.
+  Beyond: the ECB 2019 instructions define the tests and set no pass or fail thresholds; BCBS Working Paper 14 concludes that "no
+  really powerful tests of adequate calibration are currently available"
+  (https://www.bis.org/publications/studies-validation-internal-rating-systems-revised.pdf); the PSI bands are used without a statement
+  of their type I and type II error (Yurdakul and Naranjo 2020, https://doi.org/10.21314/JRMV.2020.227); and the validation toolkits
+  the research surveyed list tests, thresholds and traffic lights and record no measured size or power (UNVERIFIED beyond the
+  documentation the survey read).
+  Not claimed: the power of the four transition tests; that a rate holds outside the generator and the severity ladder it was
+  measured on (the ladders are design choices of Contraste, and power against them is not a probability of detecting a real bank's
+  problem); any regulatory threshold implied by a size or a power.
+
+- **BS-2** The reconciliations against reference engines that exist today.
+  What it adds: the engine's tests and estimators are held to independent implementations and to the printed digits of the papers,
+  and the gap is reported. The reconciliations that exist are the ones claimed:
+  - the printed tables and papers recomputed beside their prints (413 printed numbers of five papers in the ratings and calibration
+    cases, 296 reproduced to the printed digit, every other one listed with its cell and its explanation);
+  - the p-values of the Jeffreys and binomial tests against two recomputations that call neither of the engine's SciPy functions (a
+    quadrature of the Beta density and an exact rational sum of the binomial terms), equal within 1e-9 on a grid of 36 cases;
+  - the Hull-White exposure of the single swap and of the four-swap netting set against ORE 1.8.17.0, within two combined Monte Carlo
+    standard errors at all 33 report dates, with the EEPE and the CVA;
+  - the Hull-White closed forms against QuantLib 1.44 to a relative 1e-6;
+  - the wrong-way calibration against the printed values of the Appendix of Hull and White (2012).
+
+  Reported as gaps and not claimed: the collateralised variants (CSA with 10 and with 20 days) and the initial-margin variant against
+  ORE, with the largest EE gaps of 9.9, 7.1 and 11.7 combined standard errors, CVA gaps of 15.9 and 9.9 in the two CSA variants, and a
+  mean dynamic initial margin of ORE at 0.88 of the engine's. Not claimed: the wrong-way variant against ORE, whose example is a
+  different model, and the equality with the transition-matrix cohort estimator, which the engine tests since 0.8.0 (RV-415, backlog item BL-083, where the
+  optional `transitions` extra is installed) and no notebook of Contraste reruns.
+  Evidence: `tests/test_c04_parity.py`, `tests/test_c04_published.py`, `tests/test_c05.py`, `data/derived/C04/published.json`,
+  `data/derived/C05/ldp-published.json`, `data/derived/C05/sp-2010.json`, `data/derived/C05/sp-2011.json`,
+  `docs/frameworks/01_riskvalidation/riskvalidation.md`, `data/derived/C12/single-swap.json`, `data/derived/C12/netting-set.json`,
+  `data/derived/C12/csa-mpor-10d.json`, `data/derived/C12/csa-mpor-20d.json`, `data/derived/C12/with-im.json`,
+  `data/derived/C12/wrong-way-risk.json`.
+  Beyond: toolkits ship the estimators and leave the reconciliation to the user; the persisted research (dossier 05) lists ORE and
+  QuantLib as reference engines whose numbers Contraste must not claim as validated beyond the reconciliations actually run.
+  Demonstrated by: `notebooks/en/03-ratings-and-calibration/11-beyond-the-reconciliations-against-printed-answers.ipynb` and
+  `notebooks/en/08-counterparty-and-regulatory-calculators/08-beyond-exposure-reconciled-to-a-reference-engine.ipynb`, with their
+  Spanish counterparts.
+
+- **BS-3** The leakage-safe protocol per case, with gates.
+  What it adds: a split declared per case (a locked stratified holdout for C01 and C02, out-of-time cohorts read at their 5-year mark
+  for C03) and enforced by tests: transforms fitted on the training slice only, a calibration slice disjoint from the test slice, and
+  every fitted parameter unchanged when a value outside the training information set is perturbed. The artifacts record the split and
+  its limits (C01 has no out-of-time validation, C02 makes no out-of-time claim). The planted leak of C22 shows what the engine's tests
+  see of a leak: a drop of discrimination out of time, not a drift of the leaked feature. It is enforcement of known rules, not a new
+  method.
+  Evidence: `docs/design/features/c01-retail-pd/requirements.md` (CT-101 to CT-103), `tests/test_leakage.py` (3 passed when the claim
+  was assembled), `data/derived/C01/models-taiwan.json`, `data/derived/C02/h1.json` to `h5.json` and `pooled.json`,
+  `data/derived/C03/fy2015-17.json`, `data/derived/C03/fy2018-20.json`, `data/derived/C22/leakage.json`. Demonstrated by
+  `notebooks/en/02-credit-scoring/07-beyond-the-leakage-safe-protocol-per-case-with-gates.ipynb` and its Spanish counterpart
+  `notebooks/es/02-credit-scoring/07-beyond-the-leakage-safe-protocol-per-case-with-gates.ipynb`.
+  Beyond: the research dossier 04 states the leakage rules, and dossier 07 names the single-split evaluation of an open toolkit as the
+  counter-example; neither gives a protocol declared per case with a gate that fails when it is broken. Not claimed: a calibration
+  before the test window (the drafted text names it for a later case) and any leak by time beyond what the gate CT-103 perturbs.
+
+- **BS-4** The default definition as part of the PD, informative withdrawals and thin grades.
+  What it adds: the same agency's long-run PD of the CCC to C grade is 26.64% under the CEREP default page and 8.61% under the
+  transition page, and the IRB risk weight of the cohort mix moves from 58.0% to 47.5% with the definition; informative
+  withdrawals and thin grades are measured on rating paths of known truth (with withdrawals ten times as likely in the year before
+  default, removing them understates the PD of B by 34% and following them as EBA paragraph 76 asks by 15%, and no matrix test sees
+  it; with 50 obligors per grade the Wald interval contains the PD of AAA in 0.33% of the samples).
+  Evidence: `data/derived/C04/sp.json`, `data/derived/C04/withdrawals.json`, `data/derived/C04/thin.json`,
+  `docs/design/features/c04-transitions/requirements.md`.
+  Beyond: the ESMA CEREP publication (https://registers.esma.europa.eu/cerep-publication/) states no deterministic definition of a
+  default event, and cohort and duration estimators take the agencies' tables as given.
+  Demonstrated by: `notebooks/en/03-ratings-and-calibration/10-beyond-the-default-definition-withdrawals-and-thin-grades.ipynb` and
+  its Spanish counterpart.
+
+- **BS-5** Provisions reconciliation identities as gates, overlays apart, three regimes on one portfolio.
+  What it adds: the IFRS 7 roll-forward closes as a gate on the engine's tolerance basis, one millionth of the gross carrying amount
+  of the book, and the notebook measures the size of the smallest planted defect the gate catches; overlays are separate lines that
+  move only the total allowance; the non-linearity of the weighted ECL is reproduced, the weighted PD being at least the PD at the
+  weighted mean factor in the convex regime and able to fall below it outside; and one synthetic bank is provisioned under CMF B-1,
+  IFRS 9 and Bank of Spain Annex 9 with a gap bridge that reconciles in six scenarios.
+  Evidence: `data/derived/C06/rd-2008-12.json`, `data/derived/C07/base.json`, `docs/design/features/c06/requirements.md`,
+  `docs/design/features/c07/requirements.md`, and the level 4 notebook `notebooks/en/04-provisions/08-beyond-reconciliation-overlays-and-three-regimes.ipynb`
+  (Spanish: `notebooks/es/04-provisions/08-beyond-reconciliation-overlays-and-three-regimes.ipynb`), which extends it to the six C06 dates and the six C07 scenarios.
+  Beyond: IFRS 9 does not prescribe detailed methods; the research (dossiers 02 and 03) found no public comparison of the three
+  regimes on one portfolio, which is UNVERIFIED beyond the searches those dossiers record. The C07 bank is synthetic and labelled so.
+  Not claimed: that any regime is right or any engine figure compliant; that the weighted ECL is above the mean-path ECL on every
+  date (the committed C06 ECL-level index of 2010-12 is below zero); a tolerance of 1e-6 in units of money (the basis is relative).
+
+- **BS-6** Engines and test catalogues no open toolkit provides.
+  What it adds: the ECB 2019 IRB validation-reporting tests as specified, a copula and CreditRisk+ portfolio engine and a bank IRRBB
+  engine, with golden values reproduced from the primary sources. It is an absence claim: on 2026-10-04 a search of GitHub and PyPI
+  found no toolkit that implements these tests as specified. Topic 06 (portfolio capital) demonstrates the portfolio engine: the
+  closed forms and the published test vector it is held to, the committed Gaussian copula rung regenerated bit for bit by the
+  released engine, and the engine's estimator measured against a simulator with a known truth. The ECB tests and the IRRBB engine
+  are demonstrated by the units of their own topics.
+  Evidence: `docs/frameworks/01_riskvalidation/riskvalidation.md`, `data/derived/C01/holdout.json`, `data/derived/C10/grid-22.json`,
+  `data/derived/C10/grid-40.json`, `data/derived/C10/commercial-industrial.json`, `data/derived/C10/credit-cards.json`,
+  `data/derived/C14/vd-2022-q2.json`, `notebooks/en/06-portfolio-capital/08-beyond-an-engine-reconciled-to-its-anchors.ipynb`.
+  Beyond: the research dossiers 04, 05 and 06 record no maintained permissive implementation of these families. Scope of the
+  record: for the portfolio engines, dossier 04 section H.8 records a search of 2026-10-04 on CRAN and GitHub (archived CRAN
+  packages, a GPL-2 CRAN package, a GPL-2.0 repository and small educational repositories), and the search of GitHub and PyPI is
+  dossier 06's, for the validation toolkits; no record states that PyPI was searched for CreditMetrics or CreditRisk+. The claim is
+  about maintained, permissively licensed implementations on those dates and is UNVERIFIED beyond them. Not claimed: equality with a
+  reference engine (the research found none), freedom from defects (the anchors are necessary conditions), and the Student t
+  importance sampler, which the engine records as a rung that did not run.
+
+- **BS-7** The UF as its own currency in IRRBB.
+  What it adds: the reajustabilidad risk of CMF RAN 21-13 Annex 1 as a separate currency (the UR) with its own curve, its own shock sizes (200/250/150 bp for the EVE and 300 bp for the NII, against 300/400/200 bp and 300 bp for the peso), its own floor (-2 percent, against 0 for the peso), the indexation charge (2.5% of the absolute net UF position) and the 50% offset of the gain leg against the loss leg. On the committed Banco Andino variants the charge is 55.9% of the delta NII of the short-UF variant, and a single-currency treatment of the same flows (peso curve, peso sizes, zero floor, no charge) gives a delta NII 6.8 to 8.8 times smaller and a delta EVE 10 to 27% smaller in the three variants whose net UF position is 30% of Tier 1.
+  Evidence: `data/derived/C15/long-uf.json`, `data/derived/C15/short-uf.json`, `data/derived/C15/floors-active.json`, `data/derived/C15/offset-on-off.json`, `docs/design/features/c15/requirements.md`, `notebooks/en/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`, `notebooks/es/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`.
+  Beyond: the BCBS standard (https://www.bis.org/basel_framework/chapter/SRP/31.htm, with the 2016 calibration https://www.bis.org/bcbs/publ/d368.htm and the 2024 recalibration https://www.bis.org/publications/202407-standards-recalibration-shocks-interest-rate-risk-banking-book.pdf) has 21 currencies in its shock table, neither the peso nor a UF-like unit; the Chilean treatment is the Annex 1 of chapter 21-13 of the CMF (https://www.cmfchile.cl/portal/principal/623/articles-29808_doc_pdf.pdf). The claim is regional: no public implementation of Annex 1 was found, which is UNVERIFIED beyond the dossier's search. Limits: the floors are implemented and tested but none binds on the committed curves (the closest post-shock rate is 20.48 bp from its floor in every variant), so their effect on a number is not demonstrated; there is no second implementation to reconcile with; the bank is synthetic.
+
+- **BS-8** A test that flags a behavioural assumption changed at a limit breach.
+  What it adds: `irrbb.behavioural_change_at_breach` turns the Federal Reserve's finding on Silicon Valley Bank into a test: it counts the dates at which a behavioural parameter changed while a limit was breached. On the committed C14 balance sheet it is not evaluated at 2021-Q4 (one date), red at 2022-Q2 with "1 change(s) coincide with a breach" and red at 2022-Q4 with two. The parameter it flags is the weighted average maturity of the fitted replicating portfolio; the core share and the core maturity that Contraste states are held fixed and are not flagged. On constructed histories it is green for a parameter held through a breach, for a change with no breach and for a change before the breach, and red for a change at the breach; the committed series with the breach flags set to false is green.
+  Evidence: `data/derived/C14/vd-2021-q4.json`, `data/derived/C14/vd-2022-q2.json`, `data/derived/C14/vd-2022-q4.json`, `data/derived/C14/models-svb-2021-2022.json`, `docs/design/features/c14/requirements.md`, `notebooks/en/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`, `notebooks/es/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`.
+  Beyond: the supervisor's review (https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf) states the practice as a finding and the research dossier 05 proposes the test; it cites no tool that implements it, which is UNVERIFIED beyond the dossier's search. The bank of C14 is real in aggregate and synthetic in behaviour, and its outlier test is breached at the three dates, so the breach flag does not vary and the flagged parameter is a fitted one, re-estimated at each date: the red rows show that the test operates on those parameters, not that the bank did it in these numbers.
+
+- **BS-9** The dependence band shown with every aggregate.
+  What it adds: every aggregate capital figure of C18 is shown with the band of aggregation methods over the same marginals, one
+  horizon and one confidence level, and never as one diversified number: the lower bound, the simple sum (the only row labelled headline
+  capital), the square-root rule, the Gaussian copula, one t copula for each degree of freedom of the named set and the sharp worst case
+  by the rearrangement algorithm, in that order, with every row but the headline labelled information and not capital. The Euler
+  allocation of the aggregate expected shortfall adds up to it, and the model-risk measures of the band are labelled information too.
+  Evidence: `data/derived/C18/baseline.json`, `data/derived/C18/eba-2025-adverse.json`, `data/derived/C18/fed-2026-severely-adverse.json`
+  and `data/derived/C18/ngfs-delayed-transition.json` (`outputs.aggregation.band`, eight rows in each), `data/derived/C18/t-copula-baseline.json`
+  (the band again and the band under the market-credit correlation stress), `docs/design/features/c18/requirements.md` (CT-1811 and
+  CT-1812, each with its gate), and the engine's `riskvalidation.aggregation.band.dependence_band`, which returns the whole band and
+  never a scalar. Notebook 09 of topic 12 checks the structure and recomputes the closed-form rows of the two distinct committed
+  aggregates (the five documents carry one and the same aggregation block, shown by its hash, and the market-credit 0.8 stress is the
+  second); notebook 03 reproduces the engine's published worst-case example (the rearrangement bounds of eight Pareto marginals) and
+  runs the band on the marginals rebuilt from the committed quantile grids (`data/derived/C18/models-banco-andino.json`,
+  `fit.aggregation.quantile_grid`).
+  Beyond: the research (dossier 05, G.3) prescribes the band, "instead of a single diversified number", and warns against claiming that
+  diversification benefits are robust; Rosenberg and Schuermann report the sensitivity of the aggregate to the copula choice and the
+  additive overestimate of 30 to 40 percent as a study result (https://doi.org/10.1016/j.jfineco.2005.03.001); Embrechts, Puccetti and
+  Rueschendorf give the sharp worst-case bounds (https://doi.org/10.1016/j.jbankfin.2013.03.014); the Joint Forum found aggregation models
+  "a work in progress" on which supervisors generally do not rely (https://www.bis.org/publ/joint25.pdf; the press release of
+  21 October 2010, https://www.bis.org/press/p101021.htm, gives both phrases). Those are the ingredients and the recommendation; what the case adds is to compose them and show the band with every aggregate
+  as a gated rule. The claim is about what the case does: that no maintained toolkit or published practice ships the band beside every
+  aggregate is UNVERIFIED beyond the dossier's own search. The committed band rests on marginals that the pipeline simulates; the documents commit
+  their EL, VaR, ES and EC and, since c18-models 3.0.0, each marginal's quantile function on a named grid (the simulated samples
+  themselves are not committed), and Banco Andino is synthetic.
+
+- **BS-10** The batch 3 test corrections, with the error rate each one removes measured on planted data.
+  What it adds: the split-conformal coverage test reads the Beta-Binomial law of the covered count given the calibration size (the coverage of
+  the set is Beta(k, n_cal + 1 - k) distributed) instead of the binomial the dossier names, and keeps the binomial p-value beside it; the
+  shift-resilience light reads an exact permutation reference built from the development rows (199 draws by default) instead of a fixed AUC
+  drop; the situation-testing amber cut is 0.20, set on a measured size and power. The level 4 notebooks measure, with the engine's own
+  functions on seeded plants and with the standard error of every rate, the rejection rate each correction changes: the binomial coverage
+  test rejects 0.1587 and 0.3893 of exchangeable replications at test-to-calibration ratios of 1 and 4 against about 0.044 for the
+  Beta-Binomial one, a fixed drop of 0.05 or 0.10 AUC points fires on 0.2000 and 0.0833 of no-shift replications against 0.0667 for the
+  permutation reference (which pays in power in that small design), and the situation cut 0.10 fires on 0.0850 of null replications against
+  0.0150 for 0.20.
+  Evidence: `data/derived/C20/fed-shift.json` (the conformal rows carry the Beta-Binomial `p_value` and `extras.p_value_binomial` side by
+  side with `n_cal` and `k`; the resilience row carries its 199 draws and the null summary), `data/derived/C21/pair-2018-19.json` (the
+  situation-testing row with its cut point), `docs/design/features/c20/requirements.md` (CT-2009), `tests/c20/test_c20_documents.py`.
+  Beyond: the dossier prescribes "a binomial test on coverage indicators" (dossier 06 C.7 l.1025-1026) and PiML's worst-subsample resilience
+  (l.1013-1015) without their error rates; Angelopoulos and Bates (https://arxiv.org/abs/2107.07511) give the coverage guarantee, not the size
+  of a validation test built on a finite calibration window. Not claimed: the sizes measured in the engine's review (0.1055 for the
+  worst-subsample rule, the size and power page of the engine) live in the coordination and engine repositories and are not reproduced by the
+  notebook, whose simulations are smaller (1,500, 60 and 200 replications); the measurement shows the direction and the order of magnitude,
+  not those figures.
+
+- **BS-11** Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run.
+  What it adds: the multiplier on the daily run-off rates of every segment at which the survival period first falls to a target of 30
+  days, capped so that no rate exceeds 1 and solved as a threshold (the survival period is at most the target at the multiplier and
+  longer just below it): 2.118175 on the LiST Adverse base and 1.383141 on the Extreme base. A target that cannot be bracketed is
+  refused with its reason and no number is returned (the fast-run base has a horizon of 5 days, below the target of 30). The fast-run
+  base is calibrated on the rows of Table A.1 dated before 2023 only, the engine refuses a 2023 row in a scored call, and the 2023 rows
+  score it, with the 85% of Silicon Valley Bank in 2 days as a labelled anchor and never a forecast: the modelled loss in those two days
+  is 0.1708 against 0.85.
+  Evidence: `data/derived/C16/reverse-stress.json`, `data/derived/C16/fast-run.json`, `data/derived/C16/models-svb-liquidity.json`,
+  `docs/design/features/c16/requirements.md`.
+  Beyond: the research dossier 05 lists reverse liquidity stress as the last rung of its liquidity model ladder ("the run-off multiplier
+  at which the survival period falls below a target, for example 30 days") without a measured case, and the ECB's LiST fixes smooth
+  scenarios first and reports the survival period they give; the research found no tool that implements the multiplier, which is
+  UNVERIFIED beyond the dossier's search. The bank is real in aggregate and synthetic in behaviour and deposits: the multipliers show
+  the method on those parameters, not the headroom of the bank.
+
+- **BS-12** The instability of the operational-risk capital, measured on independent histories of known truth.
+  What it adds: for four tail indices (0.6, 0.8, 0.96 and 1.1), two history lengths (5 and 10 years) and two collection thresholds
+  (EUR 10,000 and 20,000), 1,000 independent simulated histories per cell on disjoint seed ranges (16,000 histories). For each rung
+  of a six-rung estimation ladder and for the standardised approach it records the 99.9% capital against the true annual-loss
+  quantile of the generator, as the median over the truth, the interquartile range over the truth, the share of histories that
+  underestimate and the number of histories on which the rung is defined, and the share of histories whose fitted tail index
+  reaches 1, that is, that would conclude an infinite mean. On the committed grid the interquartile range of the splice rung is
+  1.35 to 3.30 times the truth, all 92 `oprisk.capital_stability` rows are red against stated internal gates, 27% to 34% of the
+  histories of the variant with tail index 0.96 conclude an infinite mean that does not exist, and 9% to 27% of those of the
+  variant with tail index 1.1 conclude a finite one.
+  Evidence: `data/derived/C17/xi-0-6.json`, `data/derived/C17/xi-0-8.json`, `data/derived/C17/xi-0-96.json`,
+  `data/derived/C17/xi-1-1.json`, `docs/design/features/c17/requirements.md`, `tests/c17/test_c17_documents.py`.
+  Beyond: the research dossier 05 presents the instability near a tail index of 1 as a teaching case from one illustrative
+  calibration of the 2008 loss data medians, with caveats; the Basel Committee's consultative document
+  (https://www.bis.org/bcbs/publ/d355.htm) gives complexity and lack of comparability, not a measurement of error, as its reasons
+  for removing the advanced approach, and the academic critique of the standardised approach (https://arxiv.org/abs/1607.02319)
+  argues its instability and risk insensitivity. None of the sources found measures the dispersion of the LDA capital against a
+  known truth over independent histories; that absence is UNVERIFIED beyond the dossier's search. The claim is about a synthetic
+  bank whose severity is drawn from the family the tail estimators assume (which favours them) and whose lights use Contraste's
+  internal gates; it says nothing about the capital of any real bank.
 
 ## Deploy driver
 

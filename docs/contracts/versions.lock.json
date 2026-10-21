@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "12.0.0",
+    "version": "13.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "a0df66f201be76124cf0c73fee8b2179a70c7fd9b10e71fe5a2b8177fb29eaaa"
+    "sha256": "485e68b57ca3f59a78620e1e238243a709432790a3899740577329a54e97a737"
   },
   "readiness": {
     "version": "1.0.0",
@@ -365,9 +365,9 @@
     "sha256": "119980489deba24a4b7bff6854dda49e3eb561edbc5b0920f541dd4bae507f95"
   },
   "c18-models": {
-    "version": "2.0.0",
+    "version": "3.0.0",
     "schema": "docs/contracts/schemas/c18/models.schema.json",
-    "sha256": "fc32bf28c8adb8aa4d34ac6ef4321f6200c3aeb6586009a066fd9db4de9532b2"
+    "sha256": "3019d5fbad45596c67e7c966277fd9afb7b7f924d395ed11f23a74f05dfede56"
   },
   "engine-aggregation-api": {
     "version": "1.1.0",
