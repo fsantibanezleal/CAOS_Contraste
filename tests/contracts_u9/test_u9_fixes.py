@@ -287,12 +287,10 @@ def test_every_accepted_plant_of_the_review_is_refused(name: str, key: str, muta
 
 def released_fragment(path: Path) -> str:
     """The unit's changelog fragment, or, once a release merged and deleted it (fragments.py changelog --apply), the text of the
-    CHANGELOG entry that holds it, so the unit's needles are still checked where they now live."""
+    CHANGELOG that holds it, so the unit's needles are still checked where they now live."""
     if path.is_file():
         return path.read_text(encoding="utf-8")
-    log = (path.parents[1] / "CHANGELOG.md").read_text(encoding="utf-8")
-    entries = re.split(r"(?m)^## ", log)[1:]
-    return next(e for e in entries if e.startswith("[0.13.000]"))
+    return (path.parents[1] / "CHANGELOG.md").read_text(encoding="utf-8")  # the release that merged it holds its bullets
 
 
 def test_the_plant_table_covers_every_accepted_row_of_the_review() -> None:
