@@ -133,6 +133,36 @@ basis, the topic 01 notebooks cite:
   https://doi.org/10.1148/radiology.143.1.7063747;
 - Spiegelhalter (1986), probabilistic prediction in patient management and clinical trials, https://doi.org/10.1002/sim.4780050506.
 
+The topic 04 notebooks (provisions) cite, from dossiers 02 and 03 of the persisted research:
+
+- IASB, IFRS 9 Financial Instruments as endorsed by Commission Regulation (EU) 2016/2067,
+  https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32016R2067;
+- Botha and Verster (2025), the term-structure of default risk under IFRS 9 by discrete-time survival analysis,
+  https://arxiv.org/abs/2507.15441, and Botha, Verster and Breedt (2025), the multistate framework, https://arxiv.org/abs/2502.14479;
+- GPPC (2016), The implementation of IFRS 9 impairment requirements by banks,
+  https://www.globalpublicpolicycommittee.org/wp-content/uploads/2022/12/gppc-ifrs9-implementation-considerations-20160617.pdf;
+- BCBS (2015), Guidance on credit risk and accounting for expected credit losses (d350), https://www.bis.org/bcbs/publ/d350.htm;
+- EBA (2023), IFRS 9 implementation by EU institutions, 2023 monitoring report, EBA/Rep/2023/36,
+  https://www.eba.europa.eu/sites/default/files/2023-11/25b12d35-9c28-4335-a589-166c77198920/Final%20Report%20on%20IFRS9%20implementation%20by%20EU%20institutions.pdf,
+  and EBA (2021), EBA/Rep/2021/35,
+  https://www.eba.europa.eu/sites/default/files/document_library/Publications/Reports/2021/1024609/IFRS9%20monitoring%20report.pdf;
+- ECB Banking Supervision (2024), IFRS 9 overlays and model improvements for novel risks,
+  https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.IFRS9novelrisks_202407~5e0eb30b5c.en.pdf;
+- BCBS (2005), An explanatory note on the Basel II IRB risk weight functions,
+  https://www.bis.org/publications/explanatory-note-basel-ii-irb-risk-weight-functions.pdf, and Gordy (2003), a risk-factor model
+  foundation for ratings-based bank capital rules, https://doi.org/10.1016/S1042-9573(03)00040-8;
+- Anderson and Goodman (1957), statistical inference about Markov chains, https://doi.org/10.1214/aoms/1177707039;
+- Shumway (2001), forecasting bankruptcy more accurately: a simple hazard model, https://doi.org/10.1086/209665;
+- Cox (1972), regression models and life-tables, https://doi.org/10.1111/j.2517-6161.1972.tb00899.x; Fine and Gray (1999), a
+  proportional hazards model for the subdistribution of a competing risk, https://doi.org/10.1080/01621459.1999.10474144; Breeden
+  (2016), lifecycle and environment in loan-level forecasts and stress tests, https://doi.org/10.1016/j.ejor.2016.06.008;
+- ECB Banking Supervision (2020), IFRS 9 in the context of the coronavirus pandemic, letter of 1 April 2020,
+  https://www.bankingsupervision.europa.eu/press/letterstobanks/shared/pdf/2020/ssm.2020_letter_IFRS_9_in_the_context_of_the_coronavirus_COVID-19_pandemic~4cab8e5650.en.pdf;
+- CMF Chile, Compendio de Normas Contables para Bancos (CNCB),
+  https://www.cmfchile.cl/portal/normativa/624/articles-29177_doc_pdf.pdf;
+- Banco de España, Circular 4/2017 (https://www.boe.es/buscar/act.php?id=BOE-A-2017-14334) and Circular 6/2021
+  (https://www.boe.es/buscar/doc.php?id=BOE-A-2021-21666).
+
 ## Sizing and contracts
 
 The design rests on two artifacts of contract-first parallel delivery (ADR-0080): the sizing and the contract catalog.
@@ -481,11 +511,25 @@ No oracle here is a model judging another model.
 
 ## Beyond the state of the art
 
-None claimed. A component of Contraste that goes further than the practice its research found enters this section with the
+A component of Contraste that goes further than the practice its research found enters this section with the
 topic unit that demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes
 beyond, and a level 4 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches
 the package's contract and demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8)
 and enter here one by one, so no claim is stated before its demonstration exists.
+
+- **BS-5** Provisions reconciliation identities as gates, overlays apart, three regimes on one portfolio.
+  What it adds: the IFRS 7 roll-forward closes as a gate on the engine's tolerance basis, one millionth of the gross carrying amount
+  of the book, and the notebook measures the size of the smallest planted defect the gate catches; overlays are separate lines that
+  move only the total allowance; the non-linearity of the weighted ECL is reproduced, the weighted PD being at least the PD at the
+  weighted mean factor in the convex regime and able to fall below it outside; and one synthetic bank is provisioned under CMF B-1,
+  IFRS 9 and Bank of Spain Annex 9 with a gap bridge that reconciles in six scenarios.
+  Evidence: `data/derived/C06/rd-2008-12.json`, `data/derived/C07/base.json`, `docs/design/features/c06/requirements.md`,
+  `docs/design/features/c07/requirements.md`, and the level 4 notebook `notebooks/en/04-provisions/08-beyond-reconciliation-overlays-and-three-regimes.ipynb`
+  (Spanish: `notebooks/es/04-provisions/08-beyond-reconciliation-overlays-and-three-regimes.ipynb`), which extends it to the six C06 dates and the six C07 scenarios.
+  Beyond: IFRS 9 does not prescribe detailed methods; the research (dossiers 02 and 03) found no public comparison of the three
+  regimes on one portfolio, which is UNVERIFIED beyond the searches those dossiers record. The C07 bank is synthetic and labelled so.
+  Not claimed: that any regime is right or any engine figure compliant; that the weighted ECL is above the mean-path ECL on every
+  date (the committed C06 ECL-level index of 2010-12 is below zero); a tolerance of 1e-6 in units of money (the basis is relative).
 
 ## Deploy driver
 
