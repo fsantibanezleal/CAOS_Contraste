@@ -691,23 +691,23 @@
       "in_scope": true,
       "rationale": {
        "en": "In scope: it applies a quantitative method (SS1/23 Principle 1.1).",
-       "es": "En alcance: aplica un metodo cuantitativo (SS1/23 Principio 1.1)."
+       "es": "En alcance: aplica un método cuantitativo (SS1/23 Principio 1.1)."
       }
      },
      {
       "profile": "osfi-2027",
       "in_scope": true,
       "rationale": {
-       "en": "In scope: it processes input data into results (OSFI E-23).",
-       "es": "En alcance: procesa datos de entrada en resultados (OSFI E-23)."
+       "en": "In scope: it applies theory and its output is an estimate (OSFI E-23).",
+       "es": "En alcance: aplica teoría y su resultado es una estimación (OSFI E-23)."
       }
      },
      {
       "profile": "ecb",
       "in_scope": true,
       "rationale": {
-       "en": "In scope: it is a quantitative estimate used in a validated risk process.",
-       "es": "En alcance: es una estimacion cuantitativa usada en un proceso de riesgo validado."
+       "en": "In scope: it applies theory and its output is an estimate (ECB).",
+       "es": "En alcance: aplica teoría y su resultado es una estimación (BCE)."
       }
      }
     ],
@@ -1247,23 +1247,23 @@
       "in_scope": true,
       "rationale": {
        "en": "In scope: it applies a quantitative method (SS1/23 Principle 1.1).",
-       "es": "En alcance: aplica un metodo cuantitativo (SS1/23 Principio 1.1)."
+       "es": "En alcance: aplica un método cuantitativo (SS1/23 Principio 1.1)."
       }
      },
      {
       "profile": "osfi-2027",
       "in_scope": true,
       "rationale": {
-       "en": "In scope: it processes input data into results (OSFI E-23).",
-       "es": "En alcance: procesa datos de entrada en resultados (OSFI E-23)."
+       "en": "In scope: it applies theory and its output is an estimate (OSFI E-23).",
+       "es": "En alcance: aplica teoría y su resultado es una estimación (OSFI E-23)."
       }
      },
      {
       "profile": "ecb",
       "in_scope": true,
       "rationale": {
-       "en": "In scope: it is a quantitative estimate used in a validated risk process.",
-       "es": "En alcance: es una estimacion cuantitativa usada en un proceso de riesgo validado."
+       "en": "In scope: it applies theory and its output is an estimate (ECB).",
+       "es": "En alcance: aplica teoría y su resultado es una estimación (BCE)."
       }
      }
     ],
@@ -1786,23 +1786,23 @@
       "in_scope": true,
       "rationale": {
        "en": "In scope: it applies a quantitative method (SS1/23 Principle 1.1).",
-       "es": "En alcance: aplica un metodo cuantitativo (SS1/23 Principio 1.1)."
+       "es": "En alcance: aplica un método cuantitativo (SS1/23 Principio 1.1)."
       }
      },
      {
       "profile": "osfi-2027",
       "in_scope": true,
       "rationale": {
-       "en": "In scope: it processes input data into results (OSFI E-23).",
-       "es": "En alcance: procesa datos de entrada en resultados (OSFI E-23)."
+       "en": "In scope: it applies theory and its output is an estimate (OSFI E-23).",
+       "es": "En alcance: aplica teoría y su resultado es una estimación (OSFI E-23)."
       }
      },
      {
       "profile": "ecb",
       "in_scope": true,
       "rationale": {
-       "en": "In scope: it is a quantitative estimate used in a validated risk process.",
-       "es": "En alcance: es una estimacion cuantitativa usada en un proceso de riesgo validado."
+       "en": "In scope: it applies theory and its output is an estimate (ECB).",
+       "es": "En alcance: aplica teoría y su resultado es una estimación (BCE)."
       }
      }
     ],
@@ -2404,23 +2404,23 @@
       "in_scope": true,
       "rationale": {
        "en": "In scope: it applies a quantitative method (SS1/23 Principle 1.1).",
-       "es": "En alcance: aplica un metodo cuantitativo (SS1/23 Principio 1.1)."
+       "es": "En alcance: aplica un método cuantitativo (SS1/23 Principio 1.1)."
       }
      },
      {
       "profile": "osfi-2027",
       "in_scope": true,
       "rationale": {
-       "en": "In scope: it processes input data into results (OSFI E-23).",
-       "es": "En alcance: procesa datos de entrada en resultados (OSFI E-23)."
+       "en": "In scope: it applies theory and its output is an estimate (OSFI E-23).",
+       "es": "En alcance: aplica teoría y su resultado es una estimación (OSFI E-23)."
       }
      },
      {
       "profile": "ecb",
       "in_scope": true,
       "rationale": {
-       "en": "In scope: it is a quantitative estimate used in a validated risk process.",
-       "es": "En alcance: es una estimacion cuantitativa usada en un proceso de riesgo validado."
+       "en": "In scope: it applies theory and its output is an estimate (ECB).",
+       "es": "En alcance: aplica teoría y su resultado es una estimación (BCE)."
       }
      }
     ],
