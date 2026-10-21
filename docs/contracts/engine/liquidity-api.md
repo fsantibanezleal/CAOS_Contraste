@@ -1,4 +1,4 @@
-# Engine liquidity API contract: `engine-liquidity-api` 1.2.0
+# Engine liquidity API contract: `engine-liquidity-api` 1.2.1
 
 Owner: U11-S (unit sizing `plans/contraste/units/U11-sizing.md`, CAOS_MANAGE). Implemented by U11-E in `riskvalidation.liquidity`,
 `riskvalidation.regulatory.lcr_nsfr` and `riskvalidation.validation.liquidity` (repository CAOS_RiskValidation); called by the C16 bake
@@ -17,7 +17,7 @@ is transcribed from the dossier or the addendum named on its line; an item they 
 do not settle, is marked UNVERIFIED here and is not silently decided (list at the end). No official LCR or NSFR worked example exists
 (01 lines 1045 to 1046), so none is claimed: the LCR and NSFR carry constructed tests and invariants (01 M.1).
 
-Version history: 1.0.0, the first contract; 1.1.0 after U11-E (the `scored` keyword of `fast_run_scenario`, the FastRun class, the shared depositor chain); 1.2.0 after the U11-E review (the reverse-stress threshold multiplier, the inflow cap ceiling, the empty-stock shares, the RSF key `operational_deposits_held`, the cap wording of the reverse curve and the HQLA share basis).
+Version history: 1.0.0, the first contract; 1.1.0 after U11-E (the `scored` keyword of `fast_run_scenario`, the FastRun class, the shared depositor chain); 1.2.0 after the U11-E review (the reverse-stress threshold multiplier, the inflow cap ceiling, the empty-stock shares, the RSF key `operational_deposits_held`, the cap wording of the reverse curve and the HQLA share basis). 1.2.1, a patch at the 0.13.000 release: the engine-repository files this page cites are named as `CAOS_RiskValidation/<path>`; no clause changes.
 
 ## Conventions (all functions)
 
@@ -674,7 +674,7 @@ def nsfr_ratio(asf: float, rsf: float) -> float: ...
 
 The tests of the Problem section of the unit sizing, each a `TestResult` with `reference`, `h0`, the policy label `contraste-liquidity-battery-1.0.0` and its thresholds in `policy_version` and `extras["thresholds"]`, as
 `validation/irrbb.py` and `validation/oprisk.py` do (plain functions that do not read the default policy); the lights are conventions and are never presented as regulatory. The tests of
-`lcr_nsfr.py` are constructed tests and invariants (`tests/liquidity/test_lcr_nsfr.py`, since U9-E1 owns `tests/regulatory/`), not `TestResult` functions.
+`lcr_nsfr.py` are constructed tests and invariants (`CAOS_RiskValidation/tests/liquidity/test_lcr_nsfr.py`, since U9-E1 owns `tests/regulatory/`), not `TestResult` functions.
 
 ### `riskvalidation.validation.liquidity.list_compounding_golden`
 

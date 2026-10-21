@@ -1,4 +1,4 @@
-# Engine regulatory API contract: `engine-regulatory-api` 2.2.0
+# Engine regulatory API contract: `engine-regulatory-api` 2.2.1
 
 Owner: U9-S (unit sizing `plans/contraste/units/U9-sizing.md`, CAOS_MANAGE). Implemented by U9-E1 in `riskvalidation.regulatory`
 (`standardised.py`, `output_floor.py`, `sa_ccr.py`, `ba_cva.py`, `frtb.py`; repository CAOS_RiskValidation); called by the regulatory
@@ -11,7 +11,7 @@ Version history: 1.0.0, the first contract; 1.1.0 and 2.0.0 after the U9-E1 revi
 Sources: dossier 01 (`wip/contraste/01-basel-pillar1-pillar2-framework-2026-10-04.md`, sections C, C.1, D.2, D.3, E.1, E.2, M.1, M.3),
 the U9 research addendum (`wip/contraste/u9-research-addendum-2026-10-17.md`, R7 and R8) and the unit sizing. The documents this contract
 feeds are `regulatory-calculators` (`docs/contracts/schemas/regulatory/calculators.schema.json`) and `c12-outputs` (`sa_ccr`, `ba_cva`,
-`girr`, `regulatory_comparison`).
+`girr`, `regulatory_comparison`). 2.2.1, a patch at the 0.13.000 release: the engine-repository files this page cites are named as `CAOS_RiskValidation/<path>`; no clause changes.
 
 The engine computes; it states no compliance claim (dossier 01 M.4). Every constant and table is transcribed from the dossier line named;
 an item the dossiers mark UNVERIFIED is marked so here and is not silently decided (list at the end).
@@ -542,7 +542,7 @@ def curvature_charge(cvr_plus: np.ndarray, cvr_minus: np.ndarray, rho: np.ndarra
 ```
 
 - Units: `cvr_plus` and `cvr_minus` (B, K) curvature risk positions per bucket and factor (money).
-- Invariants: MAR21.5 with `psi(x, y) = 0` if both are negative and 1 otherwise, `K_b = max(K_b+, K_b-)`, the within-bucket correlations the squares of the delta ones (MAR21.100) and the cross-bucket ones too: `gamma` is the DELTA cross-bucket correlation and the function squares it (MAR21.101, transcribed verbatim in the engine's `docs/regulatory/u9/05_frtb-sbm-and-cascade.md`; 1.1.0, U9 decision H2), so a caller never passes it squared; when `K_b+ = K_b-` the upward scenario is selected if and only if the sum of `CVR+` exceeds the sum of `CVR-` (MAR21.5(3)(a)(iii); 1.1.0, U9 decision H3); `S_b` is the sum of the CVR of the scenario that selected `K_b`; all-negative CVR give 0; the result is never negative. The GIRR curvature shock is 0.017 (MAR21.99).
+- Invariants: MAR21.5 with `psi(x, y) = 0` if both are negative and 1 otherwise, `K_b = max(K_b+, K_b-)`, the within-bucket correlations the squares of the delta ones (MAR21.100) and the cross-bucket ones too: `gamma` is the DELTA cross-bucket correlation and the function squares it (MAR21.101, transcribed verbatim in the engine's `CAOS_RiskValidation/docs/regulatory/u9/05_frtb-sbm-and-cascade.md`; 1.1.0, U9 decision H2), so a caller never passes it squared; when `K_b+ = K_b-` the upward scenario is selected if and only if the sum of `CVR+` exceeds the sum of `CVR-` (MAR21.5(3)(a)(iii); 1.1.0, U9 decision H3); `S_b` is the sum of the CVR of the scenario that selected `K_b`; all-negative CVR give 0; the result is never negative. The GIRR curvature shock is 0.017 (MAR21.99).
 
 ### `riskvalidation.regulatory.frtb.sbm_capital`
 

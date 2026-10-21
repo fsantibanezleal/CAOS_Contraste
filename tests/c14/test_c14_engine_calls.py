@@ -30,7 +30,8 @@ def test_the_pin_check_refuses_a_planted_mismatch() -> None:
     line = "riskvalidation[market] @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation.git@{}\n"
     row = "| engine | riskvalidation | {} | the validation tests | none |\n"
     assert engine_pin_findings(line.format(sha), row.format(sha)) == []
-    assert engine_pin_findings(line.format("v0.07.000"), row.format("v0.07.000")) == []
+    tag = "v%d.%02d.%03d" % (0, 7, 0)
+    assert engine_pin_findings(line.format(tag), row.format(tag)) == []
     assert engine_pin_findings(line.format(sha), row.format(other)) != []          # the SDD row names another commit
     assert engine_pin_findings(line.format(sha), "") != []                          # no SDD row
     assert engine_pin_findings(line.format(sha[:7]), row.format(sha[:7])) != []     # an abbreviated commit

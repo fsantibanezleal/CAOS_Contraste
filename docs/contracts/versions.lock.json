@@ -285,9 +285,9 @@
     "sha256": "28cb79c4ad81bee24e63714b2e8c0e7dab3e5dd7138bea01caac2d700f8bd22f"
   },
   "engine-liquidity-api": {
-    "version": "1.2.0",
+    "version": "1.2.1",
     "schema": "docs/contracts/engine/liquidity-api.md",
-    "sha256": "b3dffb40d35f2f42237b4172aae8b1135056ce562a539f24aed5472e92eda56a"
+    "sha256": "d896bad767499f006ebf026250ea0c36867086462b298ce1ad32d34d6e651480"
   },
   "c02-outputs": {
     "version": "1.1.0",
@@ -340,9 +340,9 @@
     "sha256": "6716f81fd33c1b14df380f3a60dc4b75aa928877a3f65f330d173bf381dfcb6b"
   },
   "engine-ml-api": {
-    "version": "2.0.0",
+    "version": "2.0.1",
     "schema": "docs/contracts/engine/ml-api.md",
-    "sha256": "53e8f60619f6092c7c82b74bf6d4f988a0f045ae73800b695a71bc712b655c3b"
+    "sha256": "8ce0844deff02efd9a10fbb2b90000cc780d19bf8731c3681f33a84951fe643a"
   },
   "engine-fairness-api": {
     "version": "1.3.0",
@@ -395,9 +395,9 @@
     "sha256": "97b6f7bf06ae540821aa57d91fadbbd820e385ea32524f0bbb081319c0f5a749"
   },
   "engine-regulatory-api": {
-    "version": "2.2.0",
+    "version": "2.2.1",
     "schema": "docs/contracts/engine/regulatory-api.md",
-    "sha256": "eccc272db27d66b1dcb705f8064dce2dd7108ce77d01dea4c64141bcc19ec2a9"
+    "sha256": "0bc142aab87e4ec43422a023559183063e6bc4b59737a998aadc99003a87eae4"
   },
   "engine-ccr-api": {
     "version": "2.0.0",
