@@ -11,11 +11,16 @@ the manifest recorded a test run rather than the release bake. Two defences:
 """
 from __future__ import annotations
 
-import hashlib
-import pathlib
-import sys
+import os
 
-import pytest
+for _var in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS"):  # D16-18: the pipeline's pinned thread count, before numpy loads
+    os.environ[_var] = "4"
+
+import hashlib  # noqa: E402
+import pathlib  # noqa: E402
+import sys  # noqa: E402
+
+import pytest  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "data-pipeline"))

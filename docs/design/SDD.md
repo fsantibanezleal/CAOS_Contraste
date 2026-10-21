@@ -498,6 +498,8 @@ the ones the dossiers and `docs/frameworks/` record.
 
 ## Resources
 
+Every bake pins its thread counts (`OPENBLAS_NUM_THREADS`, `OMP_NUM_THREADS`, `MKL_NUM_THREADS` = 4, set by `data-pipeline/pipeline/__init__.py` and `data-pipeline/run.py` before numpy or a model library loads; `tests/test_pinned_threads.py`), because the BLAS summation order and LightGBM's OpenMP split follow the thread count: a bake writes the same bytes on any device. The one stated exception is the wall-clock `run_seconds` of the C12 ORE reconciliation, which the C12 determinism test excludes.
+
 What each stage needs on the development workstation (Windows 11, 2026-10-12; Python 3.13.14, Node 24.14.1; 16 GB of RAM
 free at the preflight of 2026-10-11; no GPU is used by any stage listed). Every value not marked otherwise was measured by running the
 command in the `where it runs` column's first cell with the process tree polled every 20 ms: memory is the largest
