@@ -706,7 +706,6 @@ No oracle here is a model judging another model.
 ## Beyond the state of the art
 
 A component of Contraste that goes further than the practice its research found enters this section with the topic unit that
-A component of Contraste that goes further than the practice its research found enters this section with the topic unit that
 demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes beyond, and a level 4
 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches the package's contract and
 demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8) and enter here one by one, so
