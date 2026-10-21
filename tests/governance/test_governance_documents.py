@@ -10,7 +10,6 @@ import json
 import re
 
 import gov_support as gs
-import pytest
 
 SEVERITIES = ["S1", "S2", "S3", "S4"]
 OPEN = ("open", "action_plan_agreed", "in_progress", "submitted_for_closure", "overdue")

@@ -4,8 +4,6 @@ and never assigns a variant to a fit by guess.
 from __future__ import annotations
 
 import json
-import shutil
-from pathlib import Path
 
 import gov_support as gs
 import pytest

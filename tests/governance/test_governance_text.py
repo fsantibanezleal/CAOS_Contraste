@@ -7,7 +7,6 @@ from __future__ import annotations
 import re
 
 import gov_support as gs
-import pytest
 
 
 def everything(baked):
