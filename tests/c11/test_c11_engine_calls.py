@@ -123,7 +123,7 @@ def test_the_engine_pin_and_stamp_follow_the_requirements_file(tmp_path):
                    encoding="utf-8")
     assert b.engine_pin(req) == "344ec9ac5d6c553541a6f8cfa2aa7347582b6dee"
     req.write_text("riskvalidation[market]==0.8.1\n", encoding="utf-8")
-    assert b.engine_pin(req) == "v0.08.001"                                # a PyPI release is stamped as its tag
+    assert b.engine_pin(req) == "v%d.%02d.%03d" % (0, 8, 1)                # a PyPI release is stamped as its tag
     req.write_text("numpy==2.4.6\n", encoding="utf-8")
     with pytest.raises(RuntimeError, match="no riskvalidation pin"):
         b.engine_pin(req)
