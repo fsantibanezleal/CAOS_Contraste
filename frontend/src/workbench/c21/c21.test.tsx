@@ -220,6 +220,29 @@ describe('the C21 instrument', () => {
     expect(html(<GroupReadout sel={race} />)).toContain(formatNumber(0.7, 'en', { percent: true, decimals: 1 }).replace('%', ''));
   });
 
+  it('lists the 62 contrast where it lists the age bands, naming its groups in both languages (BL-087)', () => {
+    const doc = clone();
+    const base = structuredClone(doc.outputs.attributes.find((x) => x.field === 'derived_sex')!) as unknown as Record<string, unknown>;
+    const text = JSON.stringify(base).replaceAll('Female', '62 or over').replaceAll('Male', 'under 62').replace('"derived_sex"', '"applicant_age_above_62"');
+    const age62 = JSON.parse(text) as Outputs['attributes'][number];
+    age62.excluded_groups = [{ group: 'NA', n: 5, reason: { en: 'Not a protected group', es: 'No es un grupo protegido' } }] as never;
+    doc.outputs.attributes.push(age62);
+    const pick62 = { ...withVariant(doc), field: 'applicant_age_above_62', group: '62 or over' } as C21Sel;
+    for (const [name, View] of VIEWS.slice(0, 5)) {
+      const en = html(<View sel={pick62} />);
+      expect(en, name).toContain('data-group="62 or over"');
+    }
+    expect(html(<RatesView sel={pick62} />)).toContain('62 or over');
+    expect(html(<AttributeReadout sel={pick62} />)).toContain('Age, 62 or over');
+    setLang('es');
+    const es = html(<RatesView sel={pick62} />);
+    expect(es).toContain('62 o más');
+    expect(es).toContain('menores de 62');
+    expect(es).toContain('Edad, 62 o más'.toLowerCase());
+    expect(html(<AttributeReadout sel={pick62} />)).toContain('Edad, 62 o más');
+    expect(html(<ControlledView sel={pick62} />)).toContain('62 o más / menores de 62');
+  });
+
   it('a changed fixture field changes the markup: the views read the document and nothing else', () => {
     const odd = clone();
     odd.outputs.attributes[0].groups[1].selection_rate = 0.7123;

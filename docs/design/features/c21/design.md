@@ -25,7 +25,7 @@ modified. Everything else that shapes a number and is not in a source is a named
 - the debt-to-income field is recoded to six published bins (`<20%`, `20%-<30%`, `30%-<36%`, `36%-49%`, `50%-60%`, `>60%`; the exact
   whole percents 36 to 49 are one bin);
 - the reference group of each attribute: White, Not Hispanic or Latino, Male and, for age, 35-44 (the contract fixture's choice; no
-  source names a reference age band);
+  source names a reference age band), and `under 62` for the 62 contrast;
 - the design of the controls, below.
 
 ## The estimates (all `riskvalidation`, ADR-0069)
@@ -83,11 +83,31 @@ p-value thresholds hold without any change in the product. The bake therefore al
 segment and appends "no legal claim" to the notes of a row that lacks it, and nothing else. The engine is pinned at the release tag
 `v0.08.001` (since the 0.13.000 integration) that the technology row of the SDD names (`tests/engine_pin.py`).
 
-## The reference groups (a named convention, decision G14)
+## The reference groups (a named convention, decision G14; the 62 contrast, BL-087)
 
-The reference group of each attribute is the customary comparison group: White, Not Hispanic or Latino and Male. For age no source names
-one; 35-44 stays as the reference band. Each document states this in `conventions.group_exclusion`. The alternative, contrasting 62 and over
-with under 62 (`applicant_age_above_62`, Regulation B 1002.6(b)(2)), would change every age contrast and is not run.
+The reference group of each attribute is the customary comparison group: White, Not Hispanic or Latino and Male. For the age bands no
+source names one; 35-44 stays as the reference band. Each document states this in `conventions.group_exclusion`.
+
+Beside the bands every pair document carries the contrast of applicants 62 and over with applicants under 62 on the HMDA field
+`applicant_age_above_62` (Regulation B 1002.6(b)(2); BL-087). Its groups are `62 or over` (`Yes`) and `under 62` (`No`); the reference group is
+`under 62`, a convention, and `NA` is its own excluded group, counted in the exclusion table and never in a pairwise test (decision C2). The
+basis is age, ECOA only, and the Fair Housing Act does not apply, as for the bands. The contrast takes every row the other attributes get,
+through the same engine calls: the adverse impact ratio, the four-fifths flag, the pooled z-test and the Fisher test, the controlled odds ratio, the
+rate-spread coefficient and their confirmation on the next year. The situation test stays on race (decision G15).
+
+The `legal.note` of that attribute transcribes the paragraphs of Regulation B that the contrast touches, read from the eCFR text of
+2026-09-01 (`https://www.ecfr.gov/current/title-12/chapter-X/part-1002/section-1002.6`): 1002.6(b)(2)(ii) permits the use of age as a
+predictive variable in an empirically derived, demonstrably and statistically sound scoring system, provided the age of an elderly applicant is
+not assigned a negative factor or value; 1002.6(b)(2)(iv) permits a creditor to consider the age of an elderly applicant when it is used to
+favour that applicant; and 1002.2(o) defines elderly as age 62 or older. The quotations keep their English wording in both languages. The
+contrast is a measurement, with no legal claim.
+
+A pair whose fit year has no decision row for `62 or over` or for `under 62` is not evaluated: it carries no block for the attribute, no
+test runs on the empty group, and the data note of `applicant_age_above_62` says so with its reason in both languages. The public release derives
+the field from the exact age, which it does not publish (the addendum lists it as binned); its data note is `binned`.
+
+The age bands and every other contrast are unchanged: the 62 contrast adds rows and blocks and alters no existing number
+(`tests/c21/test_c21_age62.py` compares digests made from the documents before BL-087).
 
 ## The findings (decision G16)
 

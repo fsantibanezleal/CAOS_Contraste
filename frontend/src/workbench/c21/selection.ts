@@ -49,6 +49,7 @@ export const FIELD_TEXT: Record<string, Bi> = {
   derived_ethnicity: { en: 'Ethnicity', es: 'Etnicidad' },
   derived_sex: { en: 'Sex', es: 'Sexo' },
   applicant_age: { en: 'Age', es: 'Edad' },
+  applicant_age_above_62: { en: 'Age, 62 or over', es: 'Edad, 62 o más' },
 };
 
 export const BASIS_TEXT: Record<string, Bi> = {
@@ -72,6 +73,14 @@ export const CONTROL_TEXT: Record<string, Bi> = {
 };
 
 export const text = (map: Record<string, Bi>, id: string): Bi => map[id] ?? { en: id, es: id };
+
+/** The groups the bake names in its own words (the 62 contrast, BL-087); every other group is a source label and reads the same in both languages. */
+export const GROUP_TEXT: Record<string, Bi> = {
+  '62 or over': { en: '62 or over', es: '62 o más' },
+  'under 62': { en: 'under 62', es: 'menores de 62' },
+};
+
+export const groupBi = (group: string): Bi => text(GROUP_TEXT, group);
 
 /** The selection a variant opens on: the first attribute and its first contrast group. */
 export function defaultSel(data: CaseData | null): C21Sel | null {

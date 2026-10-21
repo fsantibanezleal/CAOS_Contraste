@@ -68,7 +68,7 @@ def data_root() -> Path | None:
 # --- the planted HMDA files ----------------------------------------------------------------------------------------------
 API_HEADER = ["activity_year", "state_code", "derived_ethnicity", "derived_race", "derived_sex", "applicant_age", "action_taken",
               "loan_type", "loan_purpose", "lien_status", "occupancy_type", "loan_amount", "loan_to_value_ratio", "property_value",
-              "income", "debt_to_income_ratio", "rate_spread", "applicant_ethnicity-1", "co-applicant_sex"]
+              "income", "debt_to_income_ratio", "rate_spread", "applicant_ethnicity-1", "co-applicant_sex", "applicant_age_above_62"]
 RACES = (("White", .52), ("Black or African American", .22), ("Asian", .08), ("American Indian or Alaska Native", .04),
          ("Native Hawaiian or Other Pacific Islander", .03), ("2 or more minority races", .03), ("Joint", .03), ("Race Not Available", .04),
          ("Free Form Text Only", .01))
@@ -77,6 +77,8 @@ ETHNICITIES = (("Not Hispanic or Latino", .78), ("Hispanic or Latino", .12), ("J
 SEXES = (("Male", .42), ("Female", .36), ("Joint", .14), ("Sex Not Available", .08))
 AGES = (("<25", .05), ("25-34", .2), ("35-44", .25), ("45-54", .22), ("55-64", .14), ("65-74", .08), (">74", .04), ("8888", .02))
 DTI_LABELS = ["<20%", "20%-<30%", "30%-<36%", *(str(v) for v in range(36, 50)), "50%-60%", ">60%"]
+#: the applicant_age_above_62 value planted for an age band: 65 and over is Yes, the 55-64 band is split (62 to 64 is Yes), 8888 is NA
+AGE62_OF_BAND = {"<25": "No", "25-34": "No", "35-44": "No", "45-54": "No", ">74": "Yes", "65-74": "Yes", "8888": "NA"}
 PLANTED_BLACK = -0.8   # the log-odds effect planted on the approval of the Black or African American group
 
 
@@ -104,12 +106,14 @@ def make_year(year: int, n: int = 2600, seed: int = SEED, planted: float = PLANT
     approve = rng.random(n) < 1 / (1 + np.exp(-z))
     code = np.where(approve, np.where(rng.random(n) < 0.9, 1, 2), 3)
     spread = rng.normal(0.2, 0.5, n) + 0.1 * (race == "Black or African American")
+    split = np.random.default_rng(seed * 1000 + year + 62).random(n) < 0.4   # a separate stream: the draws above are unchanged
     rows: list[list[str]] = []
     for i in range(n):
         sp = f"{spread[i]:.3f}" if code[i] in (1, 2) else "NA"
         d = DTI_LABELS[dti[i]] if rng.random() > 0.04 else "NA"
         rows.append([str(year), "DE", eth[i], race[i], sex[i], age[i], str(code[i]), str(ltype[i]), str(purpose[i]), str(lien[i]), str(occ[i]),
-                     f"{loan[i]:.1f}", f"{ltv[i]:.2f}", f"{value[i]:.0f}", f"{income[i]:.0f}", d, sp, "2", "5"])
+                     f"{loan[i]:.1f}", f"{ltv[i]:.2f}", f"{value[i]:.0f}", f"{income[i]:.0f}", d, sp, "2", "5",
+                     ("Yes" if split[i] else "No") if age[i] == "55-64" else AGE62_OF_BAND[age[i]]])
     tail = int(n * 0.12)
     for _ in range(tail):  # the codes without a decision: withdrawn, incomplete, purchased and the preapprovals
         base = list(rows[int(rng.integers(0, n))])
