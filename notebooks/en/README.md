@@ -14,7 +14,7 @@ A topic without a level 3 notebook says why on its row; every topic from 02 to 1
 |---|---|---|
 | [01-getting-started](01-getting-started/) | none, this is the entry topic | No level 3: the topic teaches the engine's contract and the walk through the committed data, no research dossier holds state-of-the-art work on it, and the state of the art of the tests it calls is presented in topics 02, 03 and 14 |
 | [02-credit-scoring](02-credit-scoring/) | topic 01 | Level 3: State of the art: penalised trees, glass-box boosting, monotone boosting and a foundation model against the scorecard |
-| [03-ratings-and-calibration](03-ratings-and-calibration/) | topics 01 and 02 | Level 3: State of the art: duration and EM estimators, macro-conditioned matrices and a reference library; State of the art: the calibration approaches of Tasche compared on S&P 2010 and 2011 |
+| [03-ratings-and-calibration](03-ratings-and-calibration/) | topic 01 | Level 3: State of the art: duration and EM estimators, macro-conditioned matrices and a reference library; State of the art: the calibration approaches of Tasche compared on S&P 2010 and 2011 |
 | [04-provisions](04-provisions/) | topics 01 and 03 | Level 3: State of the art: lifetime PD by survival, competing risks and macro satellites |
 | [05-lgd-and-ead](05-lgd-and-ead/) | topics 01 and 04 | Level 3: State of the art: LGD and EAD models against the benchmark evidence |
 | [06-portfolio-capital](06-portfolio-capital/) | topic 03 | Level 3: State of the art: structural, actuarial and rare-event portfolio models, and the open-source gap |

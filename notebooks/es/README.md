@@ -14,7 +14,7 @@ Un tema sin cuaderno de nivel 3 explica por qué en su fila; todos los temas del
 |---|---|---|
 | [01-getting-started](01-getting-started/) | ninguno, es el tema de entrada | Sin nivel 3: el tema enseña el contrato del motor y el recorrido por los datos versionados, ningún dosier de investigación trae trabajo de estado del arte sobre él, y el estado del arte de las pruebas que llama se presenta en los temas 02, 03 y 14 |
 | [02-credit-scoring](02-credit-scoring/) | tema 01 | Nivel 3: Estado del arte: árboles penalizados, boosting transparente, boosting monótono y un modelo fundacional frente a la tarjeta de puntaje |
-| [03-ratings-and-calibration](03-ratings-and-calibration/) | temas 01 y 02 | Nivel 3: Estado del arte: estimadores de duración y EM, matrices condicionadas a la macro y una biblioteca de referencia; Estado del arte: los enfoques de calibración de Tasche comparados sobre S&P 2010 y 2011 |
+| [03-ratings-and-calibration](03-ratings-and-calibration/) | tema 01 | Nivel 3: Estado del arte: estimadores de duración y EM, matrices condicionadas a la macro y una biblioteca de referencia; Estado del arte: los enfoques de calibración de Tasche comparados sobre S&P 2010 y 2011 |
 | [04-provisions](04-provisions/) | temas 01 y 03 | Nivel 3: Estado del arte: PD de vida completa por supervivencia, riesgos competitivos y satélites macroeconómicos |
 | [05-lgd-and-ead](05-lgd-and-ead/) | temas 01 y 04 | Nivel 3: Estado del arte: modelos de LGD y EAD frente a la evidencia comparada |
 | [06-portfolio-capital](06-portfolio-capital/) | tema 03 | Nivel 3: Estado del arte: modelos de cartera estructurales, actuariales y de eventos raros, y la brecha de código abierto |
