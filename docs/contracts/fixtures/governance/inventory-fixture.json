@@ -2588,7 +2588,7 @@
    "upstream": "C07/banco-andino",
    "downstream": "C18/banco-andino",
    "kind": "document",
-   "stated_source": "data-pipeline/pipeline/cases/c18/anchors.py:102-103 loads C07/base.json and C07/models-banco-andino.json; the C18 models document $.fit.marginal_sources[0].documents is [\"c07-outputs\"] (0.13.000)"
+   "stated_source": "data-pipeline/pipeline/cases/c18/anchors.py:102-103 loads C07/base.json and C07/models-banco-andino.json; the C18 models document $.fit.marginal_sources[0].documents is [\"c07-outputs\"] (the batch 3 release)"
   },
   {
    "upstream": "C01/german",

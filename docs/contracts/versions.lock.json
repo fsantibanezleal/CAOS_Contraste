@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "11.0.0",
+    "version": "12.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "55811bb1634f87ba6838b1c91e62ec588ea5687b89851a8f451713b2933ae5da"
+    "sha256": "a0df66f201be76124cf0c73fee8b2179a70c7fd9b10e71fe5a2b8177fb29eaaa"
   },
   "readiness": {
     "version": "1.0.0",
@@ -403,5 +403,30 @@
     "version": "2.0.0",
     "schema": "docs/contracts/engine/ccr-api.md",
     "sha256": "e17a654161a1432a994ec95ca48947222dbb4b725d1954ce032fcd5361228671"
+  },
+  "governance-inventory": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/governance/governance-inventory.schema.json",
+    "sha256": "b82bfaf0a4ac5e334e4dee3cb26b6ede35fdef3835104c40d09ad7e78ea5c7a8"
+  },
+  "governance-findings": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/governance/governance-findings.schema.json",
+    "sha256": "8527e935efd2a4be3e1e53bfbd218577497d98816bcdd1ea8fb2a9b413f7922c"
+  },
+  "governance-report": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/governance/governance-report.schema.json",
+    "sha256": "0a29354e88e1377d3511e173efafc3739fadc9f48db573273e1311802e098d71"
+  },
+  "governance-appetite": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/governance/governance-appetite.schema.json",
+    "sha256": "680130edb702d5e248314c9fc553780c02594231bdd49384346cff7a40001e80"
+  },
+  "engine-governance-api": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/engine/governance-api.md",
+    "sha256": "a027f32bafac3d5469ba168ecd9e5afd680b872ad51e4ed03a2c8b84b9c1693b"
   }
 }
