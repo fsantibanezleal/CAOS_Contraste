@@ -903,7 +903,7 @@ def reverse_doc() -> dict:
 
 
 def quantile_grid_fixture() -> dict:
-    """The c18-models 2.1.0 quantile grid in the fixture's shape: 1,961 probabilities Phi(z), z = -4.9 to 4.9 in steps of 0.005, and a made-up
+    """The c18-models 3.0.0 quantile grid in the fixture's shape: 1,961 probabilities Phi(z), z = -4.9 to 4.9 in steps of 0.005, and a made-up
     smooth, increasing quantile function per marginal (a fixture value, never a result of a bake)."""
     zs = [k * 0.005 for k in range(-980, 981)]
     probs = [ND.cdf(z) for z in zs]

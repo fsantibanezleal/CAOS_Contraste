@@ -856,7 +856,7 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   21 October 2010, https://www.bis.org/press/p101021.htm, gives both phrases). Those are the ingredients and the recommendation; what the case adds is to compose them and show the band with every aggregate
   as a gated rule. The claim is about what the case does: that no maintained toolkit or published practice ships the band beside every
   aggregate is UNVERIFIED beyond the dossier's own search. The committed band rests on marginals that the pipeline simulates; the documents commit
-  their EL, VaR, ES and EC and, since c18-models 2.1.0, each marginal's quantile function on a named grid (the simulated samples
+  their EL, VaR, ES and EC and, since c18-models 3.0.0, each marginal's quantile function on a named grid (the simulated samples
   themselves are not committed), and Banco Andino is synthetic.
 
 - **BS-10** The batch 3 test corrections, with the error rate each one removes measured on planted data.

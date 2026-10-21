@@ -1,4 +1,4 @@
-"""The quantile grids of the C18 models document (c18-models 2.1.0, review MA5 of the U17 sample): the contract test of the produced boundary.
+"""The quantile grids of the C18 models document (c18-models 3.0.0, review MA5 of the U17 sample): the contract test of the produced boundary.
 
 The committed models document carries, for each of the four marginals, its quantile function at a named probability grid, so a notebook
 rebuilds the marginals the band was run on from the repository alone. The tests hold the grid to its convention, to the marginal's own
@@ -67,11 +67,12 @@ def test_each_quantile_function_is_non_decreasing_and_agrees_with_the_marginals_
             assert mean == pytest.approx(m["el_clp_m"], rel=0.03), q["risk"]
 
 
-def test_a_2_0_0_document_without_the_grid_still_validates_and_each_planted_defect_is_refused() -> None:
+def test_a_document_without_the_grid_is_refused_and_each_planted_defect_is_refused() -> None:
     doc = committed()
     without = copy.deepcopy(doc)
     del without["fit"]["aggregation"]["quantile_grid"]
-    validate_document(REL, without)
+    with pytest.raises(Exception):                    # required since c18-models 3.0.0 (every object closed, nothing optional)
+        validate_document(REL, without)
     defects = {
         "a point fewer": lambda g: g["probabilities"].pop(),
         "a quantile list too short": lambda g: g["marginals"][0]["quantiles"].pop(),
