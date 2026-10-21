@@ -10,8 +10,9 @@ as policy, never as regulation. A product never re-implements a statistic: the S
 a test is reviewed once, in the engine, against the published worked example or an independent reference, and every
 case reads the same implementation.
 
-Its core depends only on NumPy and SciPy, so the same wheel runs in the pipeline and, once published, in the browser
-under Pyodide (the live lane, [04_live-lane.md](../../architecture/04_live-lane.md)).
+Its core depends only on NumPy and SciPy and the package is published on PyPI; the pipeline installs it from there. The live lane runs
+TypeScript ports held to the engine by parity tests, not the wheel (decision D16-9; Pyodide is admitted only by measurement, and none is
+planned: [04_live-lane.md](../../architecture/04_live-lane.md)).
 
 ## Install (exact, verified)
 
@@ -75,6 +76,6 @@ other retail) with C01.
 
 ## Caveats and licence
 
-MIT. The repository stays private until its first PyPI release (backlog BL-039); until then the Pyodide lane is not
-wired: the live views re-light committed results (C01) or run the TypeScript ports of the calculators (C05). Migration-matrix tests and the
+MIT. The package is published on PyPI (first release 0.8.0, 2026-10-20). No Pyodide lane is wired: the live views re-light committed
+results or run the TypeScript ports of the calculators, held to the engine by parity tests (decision D16-9). Migration-matrix tests and the
 multi-period tests are in the engine but not run on C01, whose data are one snapshot and one period.
