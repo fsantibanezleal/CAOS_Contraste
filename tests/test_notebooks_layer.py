@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
 LANGS = ("en", "es")
 TOPIC_01 = "01-getting-started"
-CLAIMS: frozenset[str] = frozenset({"BS-2", "BS-3", "BS-4", "BS-5", "BS-7", "BS-8", "BS-12"})  # the BS- claims the SDD states (decision N8: each enters with its level 4 notebook)
+CLAIMS: frozenset[str] = frozenset({"BS-1", "BS-2", "BS-3", "BS-4", "BS-5", "BS-7", "BS-8", "BS-12"})  # the BS- claims the SDD states (decision N8: each enters with its level 4 notebook)
 PENDING_CLAIMS: frozenset[str] = frozenset()
 ENGINE_PIN = "0.8.1"  # the PyPI pin of the notebooks; the engine release tag is the same number, zero-padded (X.XX.XXX)
 ENGINE_TAG = "v%d.%02d.%03d" % tuple(int(part) for part in ENGINE_PIN.split("."))
@@ -452,7 +452,7 @@ def test_adversarial_a_claim_with_no_level_four_notebook_and_a_notebook_claiming
     text = sdd.read_text(encoding="utf-8")
     start = text.index("## Beyond the state of the art\n")
     end = text.index("\n## ", start + 5)
-    planted = "## Beyond the state of the art\n\n- **BS-1** A planted claim.\n  Evidence: `docs/design/SDD.md`.\n"
+    planted = "## Beyond the state of the art\n\n- **BS-98** A planted claim.\n  Evidence: `docs/design/SDD.md`.\n"
     sdd.write_text(text[:start] + planted + text[end:], encoding="utf-8")
     edit_both(repo, notebooks(repo)[0].name, lambda nb: nb["metadata"]["caos"].update({"level": 4, "beyond": ["BS-99"]}))
     found = NOTEBOOKS.findings_of(repo)
