@@ -12,3 +12,7 @@
 | 8 | Fetch every direct-download source a case of U1 to U3 reads, and record it in the manifest | CT-008 | the four UCI datasets fetched and pinned (2026-10-05); each later unit fetches its own sources |
 | 9 | Remove the template's example from the pipeline, the tests and the data | (residue guard) | done (the web example went with U1) |
 | 10 | The bring-your-own-model door: `data-pipeline/validate.py` (contract 1, the master scale and the battery on a reader's scored sample, an optional development sample, the report outside the repository) and the two known-truth examples in `data/examples/` | CT-012, CT-013, CT-014 | done |
+
+## Convergence verdict
+
+The verdict of this feature is generated, never written by hand. Every requirement of [`requirements.md`](requirements.md) has its row, with its gate and the gate's result in the release run, in [`../release-1-0/verdict.md`](../release-1-0/verdict.md) (filter the `feature` column by `contracts`). `scripts/convergence_verdict.py` writes that document from the result files of the release run; the procedure is in [`../release-1-0/design.md`](../release-1-0/design.md).

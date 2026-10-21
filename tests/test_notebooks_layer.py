@@ -30,7 +30,9 @@ LANGS = ("en", "es")
 TOPIC_01 = "01-getting-started"
 CLAIMS: frozenset[str] = frozenset()  # the BS- claims the SDD states (decision N8: each enters with its level 4 notebook)
 PENDING_CLAIMS: frozenset[str] = frozenset()
-ENGINE_PIN = "0.8.1"  # the PyPI pin of the notebooks; the engine release tag is the same number, zero-padded (X.XX.XXX)
+# The PyPI pin of the pipeline, read from its requirements file (never a literal: the integration repins it); the engine release tag is
+# the same number, zero-padded (X.XX.XXX).
+ENGINE_PIN = re.search(r"^riskvalidation(?:\[market\])?==(\d+\.\d+\.\d+)\s*$", (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8"), re.M).group(1)
 ENGINE_TAG = "v%d.%02d.%03d" % tuple(int(part) for part in ENGINE_PIN.split("."))
 ENGINE_RELEASE = f"https://pypi.org/project/riskvalidation/{ENGINE_PIN}/"  # the README Packages row links the PyPI release
 
@@ -703,10 +705,12 @@ def test_every_folder_and_document_an_area_row_links_exists():
 
 
 def test_the_packages_row_links_the_engine_release():
-    section = (ROOT / "README.md").read_text(encoding="utf-8").split("## Areas", 1)[1].split("\n## ", 1)[0]
+    section = (ROOT / "README.md").read_text(encoding="utf-8").split("## Areas", 1)[1].split(chr(10) + "## ", 1)[0]
     row = next(ln for ln in section.splitlines() if ln.startswith("| Packages"))
     assert ENGINE_RELEASE in row and "riskvalidation" in row
-    assert "published on PyPI" in row and "not yet" not in row
+    assert "published on PyPI" in row and "not yet" not in row and "not published" not in row
+    first = (ROOT / "notebooks" / "en" / TOPIC_01 / "01-install-the-engine-and-open-an-artifact.ipynb").read_text(encoding="utf-8")
+    assert f"pip install riskvalidation=={ENGINE_PIN}" in first  # the install line of the published release
 
 
 def test_the_areas_section_follows_the_purpose_and_the_live_urls():
