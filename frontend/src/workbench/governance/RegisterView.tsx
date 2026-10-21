@@ -72,7 +72,7 @@ export function RegisterTable({ rows }: { rows: FindingRow[] }) {
   const [sort, setSort] = useState<{ key: SortKey; dir: 'asc' | 'desc' }>({ key: 'severity', dir: 'asc' });
   const sorted = useMemo(() => sortRows(rows, sort.key, sort.dir), [rows, sort]);
   return (
-    <div className="ct-scroll-y" style={{ maxHeight: 520, overflow: 'auto', minWidth: 0 }}>
+    <div style={{ maxHeight: 520, overflow: 'auto', minWidth: 0 }}>
       <table className="caos-table" data-state="ready" data-register data-rows={rows.length}>
         <thead>
           <tr>
@@ -201,7 +201,7 @@ function thresholdText(m: AppetiteMetric, lang: 'en' | 'es'): string {
 export function AppetiteTable({ appetite }: { appetite: GovAppetite }) {
   const lang = useShellLang();
   return (
-    <div className="ct-scroll-x" style={{ overflowX: 'auto', minWidth: 0 }}>
+    <div style={{ overflowX: 'auto', minWidth: 0 }}>
       <table className="caos-table" data-state="ready" data-appetite data-metrics={appetite.metrics.length}>
         <thead>
           <tr>
