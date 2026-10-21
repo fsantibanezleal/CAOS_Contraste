@@ -200,6 +200,24 @@ The topic 07 notebooks (market risk, cases C11 and C13) also cite the following,
   https://doi.org/10.1111/j.1540-6261.1993.tb05128.x; Nelson (1991), https://doi.org/10.2307/2938260; Hull and White (1998),
   https://doi.org/10.21314/JOR.1998.001.
 
+The topic 11 (operational risk) notebooks cite, besides the BIS d424 page above:
+
+- BCBS (2009), Results from the 2008 Loss Data Collection Exercise for Operational Risk, https://www.bis.org/publ/bcbs160.htm;
+- BCBS (2016), Standardised Measurement Approach for operational risk, consultative document, https://www.bis.org/bcbs/publ/d355.htm;
+- Basel Framework, OPE25, Calculation of RWA for operational risk (the standardised approach), https://www.bis.org/basel_framework/chapter/OPE/25.htm;
+- Shevchenko (2010), Calculation of aggregate loss distributions, J. Operational Risk 5(2), https://arxiv.org/abs/1008.1108 and
+  https://doi.org/10.21314/JOP.2010.077;
+- Shevchenko and Wuthrich (2006), The structural modeling of operational risk via Bayesian inference, https://doi.org/10.21314/JOP.2006.016;
+- Panjer (1981), Recursive evaluation of a family of compound distributions, https://doi.org/10.1017/S0515036100006796;
+- Chavez-Demoulin, Embrechts and Neslehova (2006), Quantitative models for operational risk, https://doi.org/10.1016/j.jbankfin.2005.11.008;
+- Mignola and Ugoccioni (2007), Effect of a data collection threshold in the loss distribution approach,
+  https://doi.org/10.21314/JOP.2006.019;
+- Degen (2010), The calculation of minimum regulatory capital using single-loss approximations, https://doi.org/10.21314/JOP.2010.084;
+- Peters, Shevchenko, Hassani and Chapelle (2016), Should the advanced measurement approach be replaced with the standardized
+  measurement approach for operational risk?, https://arxiv.org/abs/1607.02319;
+- Mignola, Ugoccioni and Cope (2016), Comments on the Basel Committee proposal for a new standardized approach for operational risk,
+  https://doi.org/10.21314/JOP.2016.184.
+
 ## Sizing and contracts
 
 The design rests on two artifacts of contract-first parallel delivery (ADR-0080): the sizing and the contract catalog.
@@ -549,6 +567,7 @@ No oracle here is a model judging another model.
 ## Beyond the state of the art
 
 A component of Contraste that goes further than the practice its research found enters this section with the topic unit that
+A component of Contraste that goes further than the practice its research found enters this section with the topic unit that
 demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes beyond, and a level 4
 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches the package's contract and
 demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8) and enter here one by one, so
@@ -621,6 +640,27 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   What it adds: `irrbb.behavioural_change_at_breach` turns the Federal Reserve's finding on Silicon Valley Bank into a test: it counts the dates at which a behavioural parameter changed while a limit was breached. On the committed C14 balance sheet it is not evaluated at 2021-Q4 (one date), red at 2022-Q2 with "1 change(s) coincide with a breach" and red at 2022-Q4 with two. The parameter it flags is the weighted average maturity of the fitted replicating portfolio; the core share and the core maturity that Contraste states are held fixed and are not flagged. On constructed histories it is green for a parameter held through a breach, for a change with no breach and for a change before the breach, and red for a change at the breach; the committed series with the breach flags set to false is green.
   Evidence: `data/derived/C14/vd-2021-q4.json`, `data/derived/C14/vd-2022-q2.json`, `data/derived/C14/vd-2022-q4.json`, `data/derived/C14/models-svb-2021-2022.json`, `docs/design/features/c14/requirements.md`, `notebooks/en/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`, `notebooks/es/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`.
   Beyond: the supervisor's review (https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf) states the practice as a finding and the research dossier 05 proposes the test; it cites no tool that implements it, which is UNVERIFIED beyond the dossier's search. The bank of C14 is real in aggregate and synthetic in behaviour, and its outlier test is breached at the three dates, so the breach flag does not vary and the flagged parameter is a fitted one, re-estimated at each date: the red rows show that the test operates on those parameters, not that the bank did it in these numbers.
+
+- **BS-12** The instability of the operational-risk capital, measured on independent histories of known truth.
+  What it adds: for four tail indices (0.6, 0.8, 0.96 and 1.1), two history lengths (5 and 10 years) and two collection thresholds
+  (EUR 10,000 and 20,000), 1,000 independent simulated histories per cell on disjoint seed ranges (16,000 histories). For each rung
+  of a six-rung estimation ladder and for the standardised approach it records the 99.9% capital against the true annual-loss
+  quantile of the generator, as the median over the truth, the interquartile range over the truth, the share of histories that
+  underestimate and the number of histories on which the rung is defined, and the share of histories whose fitted tail index
+  reaches 1, that is, that would conclude an infinite mean. On the committed grid the interquartile range of the splice rung is
+  1.35 to 3.30 times the truth, all 92 `oprisk.capital_stability` rows are red against stated internal gates, 27% to 34% of the
+  histories of the variant with tail index 0.96 conclude an infinite mean that does not exist, and 9% to 27% of those of the
+  variant with tail index 1.1 conclude a finite one.
+  Evidence: `data/derived/C17/xi-0-6.json`, `data/derived/C17/xi-0-8.json`, `data/derived/C17/xi-0-96.json`,
+  `data/derived/C17/xi-1-1.json`, `docs/design/features/c17/requirements.md`, `tests/c17/test_c17_documents.py`.
+  Beyond: the research dossier 05 presents the instability near a tail index of 1 as a teaching case from one illustrative
+  calibration of the 2008 loss data medians, with caveats; the Basel Committee's consultative document
+  (https://www.bis.org/bcbs/publ/d355.htm) gives complexity and lack of comparability, not a measurement of error, as its reasons
+  for removing the advanced approach, and the academic critique of the standardised approach (https://arxiv.org/abs/1607.02319)
+  argues its instability and risk insensitivity. None of the sources found measures the dispersion of the LDA capital against a
+  known truth over independent histories; that absence is UNVERIFIED beyond the dossier's search. The claim is about a synthetic
+  bank whose severity is drawn from the family the tail estimators assume (which favours them) and whose lights use Contraste's
+  internal gates; it says nothing about the capital of any real bank.
 
 ## Deploy driver
 
