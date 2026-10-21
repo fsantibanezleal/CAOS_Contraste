@@ -37,7 +37,8 @@ def oracle(doc: dict) -> dict[str, set[str]]:
             est, conf = c["controlled"]["estimate"], c["confirmation"]["estimate"]
             if est is not None and conf is not None and excludes_zero(est["ci"]):
                 key = "not-repeated" if not conf["same_sign"] else ("lower" if est["odds_ratio"] < 1 else "higher")
-                out[key] |= {f"fair.conditional_disparity@{LOGIT}@{seg}", f"fair.replication@{LOGIT}@{seg}|controlled"}
+                if not (key == "higher" and a["field"] == "applicant_age_above_62"):     # 1002.6(b)(2)(iv) permits favouring the elderly
+                    out[key] |= {f"fair.conditional_disparity@{LOGIT}@{seg}", f"fair.replication@{LOGIT}@{seg}|controlled"}
             rs = c["rate_spread"]["estimate"]
             rep = rows.get(f"fair.replication@{OLS}@{seg}|rate_spread")
             if rs is not None and rep is not None and excludes_zero(rs["ci"]) and rep["extras"]["same_sign"]:

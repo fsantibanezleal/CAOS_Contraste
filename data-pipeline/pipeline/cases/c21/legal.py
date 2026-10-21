@@ -64,6 +64,8 @@ FHA_DISPARATE_IMPACT_AGE = "not applicable (age is a prohibited basis under ECOA
 #: https://www.ecfr.gov/api/versioner/v1/full/2026-09-01/title-12.xml?part=1002&section=1002.6, and section=1002.2); the quotations keep
 #: their English wording in both languages
 AGE62_SOURCE = "https://www.ecfr.gov/current/title-12/chapter-X/part-1002/section-1002.6"
+AGE62_TEXT_DATE = "2026-09-01"
+AGE62_SOURCE_DATED = "https://www.ecfr.gov/on/2026-09-01/title-12/chapter-X/part-1002/section-1002.6"
 AGE62_QUOTES = {
     "1002.6(b)(2)(ii)": "In an empirically derived, demonstrably and statistically sound, credit scoring system, a creditor may use an "
                         "applicant's age as a predictive variable, provided that the age of an elderly applicant is not assigned a negative "
@@ -77,15 +79,22 @@ AGE62_QUOTES = {
 def age62_note() -> dict[str, str]:
     q = AGE62_QUOTES
     quotes = (f"12 CFR 1002.6(b)(2)(ii): \"{q['1002.6(b)(2)(ii)']}\" 12 CFR 1002.6(b)(2)(iv): \"{q['1002.6(b)(2)(iv)']}\" "
-              f"12 CFR 1002.2(o): \"{q['1002.2(o)']}\" (eCFR, {AGE62_SOURCE}).")
+              f"12 CFR 1002.2(o): \"{q['1002.2(o)']}\"")
     return t(f"Contrast of applicants 62 and over with applicants under 62, beside the age bands. Regulation B permits the use of age in "
-             f"an empirically derived and statistically sound scoring system and the favourable treatment of an elderly applicant. {quotes} "
-             "The reference group, under 62, is a convention. The contrast is a measurement of statistical disparity in public decisions; no "
-             "legal claim",
+             f"an empirically derived and statistically sound scoring system, provided the age of an elderly applicant is not assigned a "
+             f"negative factor or value, and the favourable treatment of an elderly applicant. {quotes} (eCFR, text of {AGE62_TEXT_DATE}: "
+             f"{AGE62_SOURCE_DATED}; current page: {AGE62_SOURCE}). The reference group, under 62, is a convention. The contrast is a "
+             "measurement of statistical disparity in public decisions. Because 1002.6(b)(2)(iv) permits favouring an elderly applicant, a "
+             "controlled disparity that favours the group 62 or over is measured and shown but raises no finding; a disparity against that "
+             "group raises a finding as for any group; no legal claim",
              f"Contraste de los solicitantes de 62 años o más con los menores de 62, junto a los tramos de edad. La Regulación B permite "
-             f"usar la edad en un sistema de puntaje empírico y estadísticamente sólido y el trato favorable al solicitante de edad "
-             f"avanzada. {quotes} El grupo de referencia, menores de 62, es una convención. El contraste es una medición de disparidad "
-             "estadística en decisiones públicas; sin afirmación legal")
+             f"usar la edad en un sistema de puntaje empírico y estadísticamente sólido, siempre que a la edad de un solicitante de edad "
+             f"avanzada no se le asigne un factor o valor negativo, y el trato favorable al solicitante de edad avanzada. {quotes} "
+             f"(eCFR, cita en inglés, texto del {AGE62_TEXT_DATE}: {AGE62_SOURCE_DATED}; página vigente: {AGE62_SOURCE}). El grupo de "
+             "referencia, menores de 62, es una convención. El contraste es una medición de disparidad estadística en decisiones públicas. "
+             "Como 1002.6(b)(2)(iv) permite favorecer al solicitante de edad avanzada, una disparidad controlada que favorece al grupo de "
+             "62 años o más se mide y se muestra pero no genera un hallazgo; una disparidad en contra de ese grupo genera un hallazgo como "
+             "en cualquier grupo; sin afirmación legal")
 
 
 def attribute_legal(field: str) -> dict[str, Any]:

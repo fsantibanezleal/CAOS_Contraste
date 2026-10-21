@@ -96,7 +96,7 @@ through the same engine calls: the adverse impact ratio, the four-fifths flag, t
 rate-spread coefficient and their confirmation on the next year. The situation test stays on race (decision G15).
 
 The `legal.note` of that attribute transcribes the paragraphs of Regulation B that the contrast touches, read from the eCFR text of
-2026-09-01 (`https://www.ecfr.gov/current/title-12/chapter-X/part-1002/section-1002.6`): 1002.6(b)(2)(ii) permits the use of age as a
+2026-09-01 (`https://www.ecfr.gov/on/2026-09-01/title-12/chapter-X/part-1002/section-1002.6`; the current page is `https://www.ecfr.gov/current/title-12/chapter-X/part-1002/section-1002.6`): 1002.6(b)(2)(ii) permits the use of age as a
 predictive variable in an empirically derived, demonstrably and statistically sound scoring system, provided the age of an elderly applicant is
 not assigned a negative factor or value; 1002.6(b)(2)(iv) permits a creditor to consider the age of an elderly applicant when it is used to
 favour that applicant; and 1002.2(o) defines elderly as age 62 or older. The quotations keep their English wording in both languages. The
@@ -105,6 +105,11 @@ contrast is a measurement, with no legal claim.
 A pair whose fit year has no decision row for `62 or over` or for `under 62` is not evaluated: it carries no block for the attribute, no
 test runs on the empty group, and the data note of `applicant_age_above_62` says so with its reason in both languages. The public release derives
 the field from the exact age, which it does not publish (the addendum lists it as binned); its data note is `binned`.
+
+Because 1002.6(b)(2)(iv) permits favouring an elderly applicant, a controlled disparity of this contrast whose odds favour the group `62 or over`
+(odds ratio above 1) is measured and shown but is not cited by `F-CONTROLLED-HIGHER-ODDS`; the attribute's `legal.note` says so beside the
+contrast. A disparity against the group (odds ratio below 1) raises `F-CONTROLLED-LOWER-ODDS` as for any group, and a controlled disparity
+that does not repeat on the next year raises `F-CONTROLLED-NOT-REPEATED` in either direction.
 
 The age bands and every other contrast are unchanged: the 62 contrast adds rows and blocks and alters no existing number
 (`tests/c21/test_c21_age62.py` compares digests made from the documents before BL-087).

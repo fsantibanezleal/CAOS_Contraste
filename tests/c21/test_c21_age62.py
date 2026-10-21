@@ -24,6 +24,7 @@ OLD_FIELDS = ("derived_race", "derived_ethnicity", "derived_sex", "applicant_age
 SEG = f"{FIELD}|62 or over vs under 62"
 BASELINE = json.loads((Path(__file__).resolve().parent / "data" / "age62-baseline.json").read_text(encoding="utf-8"))
 ECFR = "https://www.ecfr.gov/current/title-12/chapter-X/part-1002/section-1002.6"
+ECFR_DATED = "https://www.ecfr.gov/on/2026-09-01/title-12/chapter-X/part-1002/section-1002.6"
 QUOTE_II = ("In an empirically derived, demonstrably and statistically sound, credit scoring system, a creditor may use an applicant's age "
             "as a predictive variable, provided that the age of an elderly applicant is not assigned a negative factor or value.")
 QUOTE_IV = ("In any system of evaluating creditworthiness, a creditor may consider the age of an elderly applicant when such age is used "
@@ -162,10 +163,12 @@ def test_the_regulation_text_is_transcribed_from_the_ecfr_with_its_url_in_both_l
         note = attr(committed(name), FIELD)["legal"]["note"]
         for lang in ("en", "es"):
             text = note[lang]
-            assert ECFR in text and QUOTE_II in text and QUOTE_IV in text and ELDERLY in text, (name, lang)
+            assert ECFR in text and ECFR_DATED in text and "2026-09-01" in text and QUOTE_II in text and QUOTE_IV in text and ELDERLY in text, (name, lang)
             assert "1002.6(b)(2)" in text
+            assert "negative factor or value" in text or "factor o valor negativo" in text   # the proviso of (b)(2)(ii) stays in the summary
         assert "no legal claim" in note["en"] and "convention" in note["en"] and "convención" in note["es"] and "sin afirmación legal" in note["es"]
         assert "mide" in note["es"] or "medición" in note["es"]
+        assert "cita en inglés" in note["es"] and "no genera un hallazgo" in note["es"] and "raises no finding" in note["en"]
 
 
 def test_the_models_document_names_the_field_as_an_attribute() -> None:
@@ -231,3 +234,38 @@ def test_the_bake_stops_naming_the_file_when_a_raw_file_is_absent(tmp_path: Path
     with pytest.raises(FileNotFoundError, match="2019"):
         bake.build(1, root)
     assert not (tmp_path / "derived").exists()
+
+
+# --- the findings: favouring the elderly is permitted (1002.6(b)(2)(iv)) ------------------------------------------------------------
+def _rows(segment: str, odds_ratio: float, same_sign: bool = True) -> list[dict]:
+    effect = {"coefficient": 0.0 if odds_ratio == 1 else (1 if odds_ratio > 1 else -1) * abs(odds_ratio - 1), "odds_ratio": odds_ratio, "lo": 0.1 if odds_ratio > 1 else -0.9, "hi": 0.3 if odds_ratio > 1 else -0.1}
+    logit = {"test_id": "fair.conditional_disparity", "model_id": "hmda-logistic-decision", "segment": segment, "light": "amber",
+             "extras": {"effect": effect}}
+    rep = {"test_id": "fair.replication", "model_id": "hmda-logistic-decision", "segment": f"{segment}|controlled", "light": "green",
+           "extras": {"same_sign": same_sign}}
+    return [logit, rep]
+
+
+def test_a_disparity_that_favours_the_62_group_raises_no_finding_and_one_against_it_does() -> None:
+    from pipeline.cases.c21 import findings
+
+    seg62 = f"{FIELD}|62 or over vs under 62"
+    ids = {f["id"]: f for f in findings.build(_rows(seg62, 1.2))}
+    assert "F-CONTROLLED-HIGHER-ODDS" not in ids and "F-CONTROLLED-LOWER-ODDS" not in ids          # favoured: measured, not raised
+    ids = {f["id"]: f for f in findings.build(_rows(seg62, 0.8))}
+    assert ids["F-CONTROLLED-LOWER-ODDS"]["evidence"] == [f"fair.conditional_disparity@hmda-logistic-decision@{seg62}",
+                                                          f"fair.replication@hmda-logistic-decision@{seg62}|controlled"]
+    ids = {f["id"]: f for f in findings.build(_rows(seg62, 1.2, same_sign=False))}
+    assert "F-CONTROLLED-NOT-REPEATED" in ids and "F-CONTROLLED-HIGHER-ODDS" not in ids          # no repeat: raised in either direction
+    other = "derived_sex|Female vs Male"
+    ids = {f["id"]: f for f in findings.build(_rows(other, 1.2) + _rows(seg62, 1.2))}
+    assert len(ids["F-CONTROLLED-HIGHER-ODDS"]["evidence"]) == 2 and other in ids["F-CONTROLLED-HIGHER-ODDS"]["evidence"][0]   # other groups as before
+
+
+def test_the_committed_documents_do_not_cite_the_62_contrast_in_the_higher_odds_finding() -> None:
+    for name in VARIANTS:
+        doc = committed(name)
+        c = attr(doc, FIELD)["contrasts"][0]["controlled"]["estimate"]
+        assert c["odds_ratio"] > 1                              # the elderly are favoured in every pair of the real data
+        cited = [e for f in doc["findings"] for e in f["evidence"] if FIELD in e and f["id"] == "F-CONTROLLED-HIGHER-ODDS"]
+        assert cited == [], name
