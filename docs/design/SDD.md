@@ -481,11 +481,39 @@ No oracle here is a model judging another model.
 
 ## Beyond the state of the art
 
-None claimed. A component of Contraste that goes further than the practice its research found enters this section with the
+A component of Contraste that goes further than the practice its research found enters this section with the
 topic unit that demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes
 beyond, and a level 4 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches
 the package's contract and demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8)
-and enter here one by one, so no claim is stated before its demonstration exists.
+and enter here one by one, so no claim is stated before its demonstration exists. Topic 03 (ratings and calibration)
+demonstrates BS-2 and BS-4, each stated only as far as its committed evidence goes.
+
+- **BS-2** The reconciliations against reference engines that exist today.
+  What it adds: the engine's tests and estimators are held to independent implementations and to the printed digits of the papers,
+  and the gap is reported. The reconciliations that exist are the ones claimed: the printed tables and papers recomputed beside their
+  prints (413 printed numbers of five papers in the ratings and calibration cases, 296 reproduced to the printed digit, every other
+  one listed with its cell and its explanation), and the SciPy distributions behind the test statistics (the Jeffreys and binomial
+  p-values equal SciPy's on a grid). Not claimed: the Hull-White swap against ORE, which is not run, and the equality with the
+  transition-matrix cohort estimator, which has no engine test (backlog item BL-083).
+  Evidence: `tests/test_c04_parity.py`, `tests/test_c04_published.py`, `tests/test_c05.py`, `data/derived/C04/published.json`,
+  `data/derived/C05/ldp-published.json`, `data/derived/C05/sp-2010.json`, `data/derived/C05/sp-2011.json`,
+  `docs/frameworks/01_riskvalidation/riskvalidation.md`.
+  Beyond: toolkits ship the estimators and leave the reconciliation to the user; the persisted research (dossier 05) lists ORE and
+  QuantLib as reference engines whose numbers may be claimed only beyond the reconciliations actually run.
+  Demonstrated by: `notebooks/en/03-ratings-and-calibration/11-beyond-the-reconciliations-against-printed-answers.ipynb` and its
+  Spanish counterpart.
+- **BS-4** The default definition as part of the PD, informative withdrawals and thin grades.
+  What it adds: the same agency's long-run PD of the CCC to C grade is 26.64% under the CEREP default page and 8.61% under the
+  transition page, and the IRB risk weight of the cohort mix moves from 58.0% to 47.5% with the definition; informative
+  withdrawals and thin grades are measured on rating paths of known truth (with withdrawals ten times as likely in the year before
+  default, removing them understates the PD of B by 34% and following them as EBA paragraph 76 asks by 15%, and no matrix test sees
+  it; with 50 obligors per grade the Wald interval contains the PD of AAA in 0.33% of the samples).
+  Evidence: `data/derived/C04/sp.json`, `data/derived/C04/withdrawals.json`, `data/derived/C04/thin.json`,
+  `docs/design/features/c04-transitions/requirements.md`.
+  Beyond: the ESMA CEREP publication (https://registers.esma.europa.eu/cerep-publication/) states no deterministic definition of a
+  default event, and cohort and duration estimators take the agencies' tables as given.
+  Demonstrated by: `notebooks/en/03-ratings-and-calibration/10-beyond-the-default-definition-withdrawals-and-thin-grades.ipynb` and
+  its Spanish counterpart.
 
 ## Deploy driver
 
