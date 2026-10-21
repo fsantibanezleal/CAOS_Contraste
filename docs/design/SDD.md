@@ -133,6 +133,23 @@ basis, the topic 01 notebooks cite:
   https://doi.org/10.1148/radiology.143.1.7063747;
 - Spiegelhalter (1986), probabilistic prediction in patient management and clinical trials, https://doi.org/10.1002/sim.4780050506.
 
+The topic 10 (liquidity) notebooks cite, from the research dossier 05 (section E) and the research addendum of the liquidity unit:
+
+- ECB Banking Supervision (2019), Sensitivity analysis of liquidity risk, stress test 2019, methodological note (2019-02-06),
+  https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.ECB_sensitivity_analysis_of_liquidity_risk-stress_test_2019-methodological_note_20190206~6771e88926.en.pdf,
+  and its results annex (2019-10-07), https://www.bankingsupervision.europa.eu/press/pr/date/2019/html/ssm.pr191007_annex~537c259b6d.en.pdf;
+- BCBS (2008), Principles for sound liquidity risk management and supervision, Principle 10, https://www.bis.org/publ/bcbs144.htm;
+- BCBS (2023), Report on the 2023 banking turmoil, Box A and Table A.1, https://www.bis.org/bcbs/publ/d555.htm;
+- Federal Reserve Board (2023-04-28), Review of the Federal Reserve's Supervision and Regulation of Silicon Valley Bank,
+  https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf;
+- Federal Reserve discount window, margins in force from 2022-03-14 to 2023-03-12,
+  https://www.frbdiscountwindow.org/generalpages/historical_margins/2022/03142022_03122023_securities_table;
+- the Basel Framework, LCR standard (LCR20 to LCR99), https://www.bis.org/committees/bcbs/basel-framework/standard/lcr, and NSFR standard
+  (NSF20 to NSF99), https://www.bis.org/committees/bcbs/basel-framework/standard/nsf/99/inforce/2019-12-15/published/2019-12-15;
+- Diamond and Dybvig (1983), bank runs, deposit insurance, and liquidity, https://doi.org/10.1086/261155;
+- Cookson, Fox, Gil-Bazo, Imbet and Schiller (2026), social media as a bank run catalyst, https://doi.org/10.1016/j.jfineco.2025.104218;
+- Jiang, Matvos, Piskorski and Seru (2024), monetary tightening and U.S. bank fragility in 2023: mark-to-market losses and uninsured depositor runs, https://doi.org/10.1016/j.jfineco.2024.103899.
+
 ## Sizing and contracts
 
 The design rests on two artifacts of contract-first parallel delivery (ADR-0080): the sizing and the contract catalog.
@@ -481,11 +498,27 @@ No oracle here is a model judging another model.
 
 ## Beyond the state of the art
 
-None claimed. A component of Contraste that goes further than the practice its research found enters this section with the
+A component of Contraste that goes further than the practice its research found enters this section with the
 topic unit that demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes
 beyond, and a level 4 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches
 the package's contract and demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8)
 and enter here one by one, so no claim is stated before its demonstration exists.
+
+- **BS-11** Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run.
+  What it adds: the multiplier on the daily run-off rates of every segment at which the survival period first falls to a target of 30
+  days, capped so that no rate exceeds 1 and solved as a threshold (the survival period is at most the target at the multiplier and
+  longer just below it): 2.118175 on the LiST Adverse base and 1.383141 on the Extreme base. A target that cannot be bracketed is
+  refused with its reason and no number is returned (the fast-run base has a horizon of 5 days, below the target of 30). The fast-run
+  base is calibrated on the rows of Table A.1 dated before 2023 only, the engine refuses a 2023 row in a scored call, and the 2023 rows
+  score it, with the 85% of Silicon Valley Bank in 2 days as a labelled anchor and never a forecast: the modelled loss in those two days
+  is 0.1708 against 0.85.
+  Evidence: `data/derived/C16/reverse-stress.json`, `data/derived/C16/fast-run.json`, `data/derived/C16/models-svb-liquidity.json`,
+  `docs/design/features/c16/requirements.md`.
+  Beyond: the research dossier 05 lists reverse liquidity stress as the last rung of its liquidity model ladder ("the run-off multiplier
+  at which the survival period falls below a target, for example 30 days") without a measured case, and the ECB's LiST fixes smooth
+  scenarios first and reports the survival period they give; the research found no tool that implements the multiplier, which is
+  UNVERIFIED beyond the dossier's search. The bank is real in aggregate and synthetic in behaviour and deposits: the multipliers show
+  the method on those parameters, not the headroom of the bank.
 
 ## Deploy driver
 
