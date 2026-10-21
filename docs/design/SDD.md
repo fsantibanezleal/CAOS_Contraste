@@ -133,6 +133,47 @@ basis, the topic 01 notebooks cite:
   https://doi.org/10.1148/radiology.143.1.7063747;
 - Spiegelhalter (1986), probabilistic prediction in patient management and clinical trials, https://doi.org/10.1002/sim.4780050506.
 
+The topic 13 notebooks (ML and AI risk) cite, in the same way, the sources below. Each is printed by a persisted research dossier or addendum
+(model risk and validation, credit risk models, the fair-lending addendum), and none is cited for more than what its line says:
+
+- ECB (2019), Instructions for reporting the validation results of internal models: IRB Pillar I models for credit risk, Annex 1 (the AUC and its variance). https://www.bankingsupervision.europa.eu/activities/internal_models/shared/pdf/instructions_validation_reporting_credit_risk.en.pdf;
+- ING (2026), probatus, `sample_similarity`: a resemblance model between two datasets. https://github.com/ing-bank/probatus;
+- EBA (2023), Follow-up report on machine learning for IRB models, EBA/REP/2023/28. https://www.eba.europa.eu/sites/default/files/document_library/Publications/Reports/2023/1061483/Follow-up%20report%20on%20machine%20learning%20for%20IRB%20models.pdf;
+- Yeh, I-C. and Lien, C-H., Default of credit card clients, UCI Machine Learning Repository (CC BY 4.0), the Taiwan cards of the C20 variants. https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients;
+- PiML-Toolbox (Apache-2.0), outcome tests WeakSpot, Overfit, Reliability, Robustness and Resilience; Sudjianto et al. (2023), arXiv 2305.04214. https://github.com/SelfExplainML/PiML-Toolbox;
+- ECB (2025), Guide to internal models, the paragraphs on the randomness of the training process, overfitting, explainability and the justification of complexity (43, 59, 60, 62, 64 to 66). https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.supervisory_guide202507.en.pdf;
+- Phipson, B. and Smyth, G. K. (2010), Permutation p-values should never be zero, Statistical Applications in Genetics and Molecular Biology 9(1). https://doi.org/10.2202/1544-6115.1585;
+- Board of Governors of the Federal Reserve System, supervisory stress test scenarios and methodology data (public domain), the three corporate portfolios of 2025. https://www.federalreserve.gov/supervisionreg/dfa-stress-tests-2026.htm;
+- Lundberg, S. M. and Lee, S.-I. (2017), A unified approach to interpreting model predictions, NeurIPS, arXiv 1705.07874. https://arxiv.org/abs/1705.07874;
+- Lundberg, S. M. et al. (2020), From local explanations to global understanding with explainable AI for trees, Nature Machine Intelligence 2(1). https://doi.org/10.1038/s42256-019-0138-9;
+- Friedman, J. H. (2001), Greedy function approximation: a gradient boosting machine, Annals of Statistics 29(5). https://doi.org/10.1214/aos/1013203451;
+- Goldstein, A., Kapelner, A., Bleich, J. and Pitkin, E. (2015), Peeking inside the black box: visualizing statistical learning with plots of individual conditional expectation, Journal of Computational and Graphical Statistics 24(1). https://doi.org/10.1080/10618600.2014.907095;
+- Apley, D. W. and Zhu, J. (2020), Visualizing the effects of predictor variables in black box supervised learning models, Journal of the Royal Statistical Society B 82(4). https://doi.org/10.1111/rssb.12377;
+- Angelopoulos, A. N. and Bates, S. (2021), A gentle introduction to conformal prediction and distribution-free uncertainty quantification, arXiv 2107.07511. https://arxiv.org/abs/2107.07511;
+- Vovk, V., Gammerman, A. and Shafer, G. (2022), Algorithmic Learning in a Random World, 2nd edition, Springer, https://doi.org/10.1007/978-3-031-06649-8;
+- NannyML, how confidence-based performance estimation (CBPE) works. https://nannyml.readthedocs.io/en/stable/how_it_works/performance_estimation.html;
+- MAPIE (BSD-3-Clause), conformal prediction for scikit-learn. https://github.com/scikit-learn-contrib/MAPIE;
+- Bank of England PRA (2023), SS1/23 Model risk management principles for banks, principle 3.3(b)(iii) on challenger comparisons. https://www.bankofengland.co.uk/prudential-regulation/publication/2023/may/model-risk-management-principles-for-banks-ss;
+- Zieba, M., Tomczak, S. K. and Tomczak, J. M., Polish companies bankruptcy data, UCI Machine Learning Repository (CC BY 4.0). https://archive.ics.uci.edu/dataset/365/polish+companies+bankruptcy+data;
+- Hardt, M., Price, E. and Srebro, N. (2016), Equality of opportunity in supervised learning, arXiv 1610.02413. https://arxiv.org/abs/1610.02413;
+- 29 CFR 1607.4(D), Uniform Guidelines on Employee Selection Procedures: the four-fifths rule, an employment benchmark. https://www.law.cornell.edu/cfr/text/29/1607.4;
+- CFPB (2026), Equal Credit Opportunity Act (Regulation B), final rule, 91 FR 21620, effective 2026-07-21. https://www.govinfo.gov/content/pkg/FR-2026-04-22/pdf/2026-07804.pdf;
+- OCC, FDIC, Federal Reserve Board, OTS and NCUA (2009), Interagency Fair Lending Examination Procedures. https://www.federalreserve.gov/boarddocs/caletters/2009/0906/09-06_attachment.pdf;
+- Kozodoi, N., Jacob, J. and Lessmann, S. (2022), Fairness in credit scoring: assessment, implementation and profit implications, European Journal of Operational Research 297(3). https://doi.org/10.1016/j.ejor.2021.06.023;
+- FFIEC and CFPB, Home Mortgage Disclosure Act data publication (the licence sentence of the data is UNVERIFIED). https://ffiec.cfpb.gov/data-publication/;
+- Alvarez, J. M. and Ruggieri, S. (2025), Counterfactual situation testing: from single to multidimensional discrimination, Journal of Artificial Intelligence Research 82, arXiv 2502.01267. https://doi.org/10.1613/jair.1.17935;
+- Alvarez, J. M. and Ruggieri, S. (2026), Mutatis mutandis: revisiting the comparator in discrimination testing, Computational Intelligence 42(4), arXiv 2405.13693. https://doi.org/10.1111/coin.70238;
+- ValidMind library (AGPL-3.0 or commercial licence): data and model validation tests and documentation. https://github.com/validmind/validmind-library;
+- BBVA mercury-robust (Apache-2.0): data and model test suites, drift and label-leakage checks. https://github.com/BBVA/mercury-robust;
+- ING popmon (MIT): population shift monitoring. https://github.com/ing-bank/popmon;
+- Evidently (Apache-2.0): drift, data quality and model quality reports. https://github.com/evidentlyai/evidently;
+- NannyML (Apache-2.0), the open implementation of CBPE. https://github.com/NannyML/nannyml;
+- fairlearn (MIT), fairness assessment and mitigation. https://github.com/fairlearn/fairlearn;
+- SHAP (MIT), the reference implementation of Shapley explanations. https://github.com/shap/shap;
+- Romano, Y., Patterson, E. and Candes, E. J. (2019), Conformalized quantile regression, arXiv 1905.03222. https://arxiv.org/abs/1905.03222;
+- Barber, R. F., Candes, E. J., Ramdas, A. and Tibshirani, R. J. (2021), Predictive inference with the jackknife+, Annals of Statistics 49(1). https://doi.org/10.1214/20-AOS1965;
+- Vovk, V. and Petej, I. (2012), Venn-Abers predictors, arXiv 1211.0025. https://arxiv.org/abs/1211.0025.
+
 ## Sizing and contracts
 
 The design rests on two artifacts of contract-first parallel delivery (ADR-0080): the sizing and the contract catalog.
@@ -481,11 +522,30 @@ No oracle here is a model judging another model.
 
 ## Beyond the state of the art
 
-None claimed. A component of Contraste that goes further than the practice its research found enters this section with the
-topic unit that demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes
-beyond, and a level 4 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches
-the package's contract and demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8)
-and enter here one by one, so no claim is stated before its demonstration exists.
+A component of Contraste that goes further than the practice its research found enters this section with the topic unit that demonstrates
+it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes beyond, and a level 4 notebook in each
+language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). The candidate claims and their evidence are drafted in the U17 sizing
+(decision N8) and enter here one by one, so no claim is stated before its demonstration exists.
+
+- **BS-10** The batch 3 test corrections, with the error rate each one removes measured on planted data.
+  What it adds: the split-conformal coverage test reads the Beta-Binomial law of the covered count given the calibration size (the coverage of
+  the set is Beta(k, n_cal + 1 - k) distributed) instead of the binomial the dossier names, and keeps the binomial p-value beside it; the
+  shift-resilience light reads an exact permutation reference built from the development rows (199 draws by default) instead of a fixed AUC
+  drop; the situation-testing amber cut is 0.20, set on a measured size and power. The level 4 notebooks measure, with the engine's own
+  functions on seeded plants and with the standard error of every rate, the rejection rate each correction changes: the binomial coverage
+  test rejects 0.1587 and 0.3893 of exchangeable replications at test-to-calibration ratios of 1 and 4 against about 0.044 for the
+  Beta-Binomial one, a fixed drop of 0.05 or 0.10 AUC points fires on 0.2000 and 0.0833 of no-shift replications against 0.0667 for the
+  permutation reference (which pays in power in that small design), and the situation cut 0.10 fires on 0.0850 of null replications against
+  0.0150 for 0.20.
+  Evidence: `data/derived/C20/fed-shift.json` (the conformal rows carry the Beta-Binomial `p_value` and `extras.p_value_binomial` side by
+  side with `n_cal` and `k`; the resilience row carries its 199 draws and the null summary), `data/derived/C21/pair-2018-19.json` (the
+  situation-testing row with its cut point), `docs/design/features/c20/requirements.md` (CT-2009), `tests/c20/test_c20_documents.py`.
+  Beyond: the dossier prescribes "a binomial test on coverage indicators" (dossier 06 C.7 l.1025-1026) and PiML's worst-subsample resilience
+  (l.1013-1015) without their error rates; Angelopoulos and Bates (https://arxiv.org/abs/2107.07511) give the coverage guarantee, not the size
+  of a validation test built on a finite calibration window. Not claimed: the sizes measured in the engine's review (0.1055 for the
+  worst-subsample rule, the size and power page of the engine) live in the coordination and engine repositories and are not reproduced by the
+  notebook, whose simulations are smaller (1,500, 60 and 200 replications); the measurement shows the direction and the order of magnitude,
+  not those figures.
 
 ## Deploy driver
 
