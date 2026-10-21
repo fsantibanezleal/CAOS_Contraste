@@ -357,6 +357,15 @@ def _findings_conventions(E: SimpleNamespace) -> dict[str, Any]:
     }
 
 
+def _own_findings_note(metrics: list[dict[str, Any]], own: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """The metrics that count findings say in the basis of their threshold that the count includes the inventory's own findings, with their ids."""
+    ids = ", ".join(f["id"] for f in own)
+    for m in metrics:
+        if m["id"] in ("open-high-severity", "overdue-remediation"):
+            m["threshold"]["basis"] += f"; the count includes the inventory's own findings ({ids}; W15-3, W15-4)"
+    return metrics
+
+
 def _filtered_provenance(prov: dict[str, Any], keep: set[str]) -> dict[str, Any]:
     return {**prov, "documents_read": [d for d in prov["documents_read"] if d["path"] in keep]}
 
@@ -486,10 +495,14 @@ def build(root: Path | str = REPO_ROOT) -> Baked:
         "schema": "contraste.governance.findings/v1", "governance_id": "findings", **head, "provenance": provenance,
         "conventions": _findings_conventions(E), "rows": all_rows, "counts": E.findings.register_counts(all_rows),
     }
+    # B.6 counts the inventory's own findings (W15-3, W15-4) too: the findings schema admits only a case entry, so they go to the engine's appetite
+    # functions beside the register rows, under the entry key GOVERNANCE
+    own = [{"entry_key": "GOVERNANCE", "id": f["id"], "severity": f["severity"], "status": f["status"], "overdue": False} for f in inventory["governance_findings"]]
+    counted = all_rows + own
     appetite = {
         "schema": "contraste.governance.appetite/v1", "governance_id": "appetite", **head, "provenance": provenance,
-        "population": E.appetite.appetite_population(entries, all_rows),
-        "metrics": list(E.appetite.appetite_metrics(entries, all_rows, as_of)),
+        "population": E.appetite.appetite_population(entries, counted),
+        "metrics": _own_findings_note(list(E.appetite.appetite_metrics(entries, counted, as_of)), inventory["governance_findings"]),
     }
     reports: dict[str, dict[str, Any]] = {}
     for d, e in zip(draft, entries):

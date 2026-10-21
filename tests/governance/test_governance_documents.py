@@ -274,18 +274,45 @@ def test_one_report_per_entry_of_twelve_sections(baked):
         assert [s["number"] for s in rep["sections"]] == list(range(1, 13))
 
 
+def _own_rows(inv):
+    return [{"entry_key": "GOVERNANCE", "id": f["id"], "severity": f["severity"], "status": f["status"], "overdue": False} for f in inv["governance_findings"]]
+
+
 def test_the_appetite_is_the_engines_over_the_inventory_and_the_register(baked):
     from datetime import date
 
     from riskvalidation.governance import appetite
 
     inv, fnd = baked.inventory, baked.findings
-    want = appetite.appetite_metrics(inv["entries"], fnd["rows"], date.fromisoformat(inv["as_of"]))
+    counted = fnd["rows"] + _own_rows(inv)
+    want = appetite.appetite_metrics(inv["entries"], counted, date.fromisoformat(inv["as_of"]))
     assert [m["id"] for m in baked.appetite["metrics"]] == [m["id"] for m in want]
     for got, exp in zip(baked.appetite["metrics"], want):
         assert got["value"] == exp["value"] and got["numerator"] == exp["numerator"] and got["denominator"] == exp["denominator"]
         assert got["light"] == exp["light"] and got["register_rows"] == exp["register_rows"]
-    assert baked.appetite["population"] == appetite.appetite_population(inv["entries"], fnd["rows"])
+    assert baked.appetite["population"] == appetite.appetite_population(inv["entries"], counted)
+
+
+def test_the_appetite_counts_the_inventorys_own_findings_and_says_so(baked):
+    """Decision of the main session: the open S2 GOV-INDEPENDENCE-NOT-ESTABLISHED and the open S3 GOV-RUBRIC-BLIND-SPOT are findings, so B.6 counts them."""
+    from riskvalidation.governance import appetite
+
+    reg = baked.findings["rows"]
+    own = _own_rows(baked.inventory)
+    assert {f["id"] for f in own} == {"GOV-RUBRIC-BLIND-SPOT", "GOV-INDEPENDENCE-NOT-ESTABLISHED"}
+    m = {x["id"]: x for x in baked.appetite["metrics"]}
+    without = appetite.open_high_severity(reg)
+    assert m["open-high-severity"]["numerator"] == without[0] + 1                     # the open S2 is counted, the open S3 is not high severity
+    assert m["open-high-severity"]["denominator"] == without[1] + 2
+    assert m["open-high-severity"]["register_rows"] == without[3] + 1
+    pop = baked.appetite["population"]
+    assert pop["findings"] == len(reg) + 2 and pop["distinct_findings"] == len({(r["entry_key"], r["id"]) for r in reg}) + 2
+    for mid in ("open-high-severity", "overdue-remediation"):
+        basis = m[mid]["threshold"]["basis"]
+        assert "includes the inventory's own findings" in basis and "GOV-INDEPENDENCE-NOT-ESTABLISHED" in basis and "GOV-RUBRIC-BLIND-SPOT" in basis
+    assert "includes the inventory's own findings" not in m["entries-in-breach"]["threshold"]["basis"]
+    # the register itself stays the case rows: the findings schema admits a case entry only
+    assert all(r["case_id"].startswith("C") for r in reg)
 
 
 def test_the_engine_computes_the_values_the_bake_writes(baked):

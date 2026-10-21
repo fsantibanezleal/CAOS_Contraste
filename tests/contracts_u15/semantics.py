@@ -773,6 +773,10 @@ def cross_violations(docs: dict) -> list[str]:
     return out
 
 
+#: the phrase an appetite metric's threshold basis carries when its count includes the inventory's own findings
+OWN_FINDINGS_NOTE = "includes the inventory's own findings"
+
+
 def _distinct(rows: list[dict], pick) -> tuple[int, int]:
     """(distinct (entry, id) findings with a row that ``pick`` selects, rows that ``pick`` selects)."""
     sel = [r for r in rows if pick(r)]
@@ -782,7 +786,11 @@ def _distinct(rows: list[dict], pick) -> tuple[int, int]:
 def _appetite_cross(inv: dict, fnd: dict, app: dict) -> list[str]:
     out = []
     entries = inv["entries"]
-    rows = fnd["rows"]
+    rows = list(fnd["rows"])
+    if any(OWN_FINDINGS_NOTE in m["threshold"]["basis"] for m in app["metrics"]):
+        # the appetite counts the inventory's own findings (W15-3, W15-4) beside the register rows, and says so in the basis of the metrics that count findings
+        rows += [{"entry_key": "GOVERNANCE", "id": f["id"], "severity": f["severity"], "status": f["status"], "overdue": False}
+                 for f in inv["governance_findings"]]
     as_of = iso(inv["as_of"])
     t1 = [e for e in entries if e["tier_block"]["tier"] == 1]
     pma = [e["attributes"]["A26"]["value"] for e in entries if e["attributes"]["A26"]["status"] == "present"]
