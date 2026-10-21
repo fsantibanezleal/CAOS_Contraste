@@ -5,6 +5,7 @@
   "python": {
     "numpy": {"licence": "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0", "source": "package metadata (License-Expression), numpy 2.4.6", "verified": "2026-10-05"},
     "scipy": {"licence": "BSD-3-Clause", "source": "package metadata (License classifier: BSD License), scipy 1.18.1", "verified": "2026-10-05"},
+    "networkx": {"licence": "BSD-3-Clause", "source": "package metadata (License-Expression), networkx 3.7, https://pypi.org/pypi/networkx/3.7/json", "verified": "2026-10-21"},
     "pandas": {"licence": "BSD-3-Clause", "source": "package metadata (License: BSD 3-Clause License), pandas 3.0.6", "verified": "2026-10-05"},
     "xlrd": {"licence": "BSD", "source": "package metadata (License: BSD), xlrd 2.0.2", "verified": "2026-10-05"},
     "scikit-learn": {"licence": "BSD-3-Clause", "source": "package metadata (License-Expression), scikit-learn 1.9.1", "verified": "2026-10-05"},

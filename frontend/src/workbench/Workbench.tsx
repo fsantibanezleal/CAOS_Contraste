@@ -28,6 +28,7 @@ import { COMMITTED, LIGHT_TEXT, LIGHT_TONE, relight, type PolicyAlphas } from '.
 import { ebmLogit, scoreScorecard, sigmoid } from '../engine/scorer';
 import { ContextView } from './ContextView';
 import { FindingsView } from './FindingsView';
+import { FindingsWithOpinion } from './governance/OpinionBlock';
 import { ImpactGroup } from './ImpactView';
 import { atApproval, CHAMPION, challengers, defaultChallenger, provenanceOf, rung, shortName, test, type Selection } from './model';
 import { ModelGroup } from './ModelViews';
@@ -328,7 +329,7 @@ export function Workbench() {
     compare: { label: { en: 'Variants', es: 'Variantes' }, lane: 'replay' as const, provenance: prov, content: <VariantsView sel={sel} onPick={setVariantId} /> },
     context: { content: <ContextView sel={sel} /> },
   };
-  const groups = own.groups.map((g) => ({ ...g, content: noted(g.content) }));
+  const groups = own.groups.map((g) => ({ ...g, content: g.id === 'findings' && selected ? <FindingsWithOpinion caseId={selected}>{noted(g.content)}</FindingsWithOpinion> : noted(g.content) }));
   const compare = { ...own.compare, content: noted(own.compare.content) };
   const context = { content: noted(own.context.content) };
   return (

@@ -14,6 +14,7 @@ import { C04Experiments } from './C04Sections';
 import { C05ExperimentsSection } from './C05Sections';
 import { C22ExperimentsSection } from './C22Sections';
 import { NoTranslateRefs } from './NoTranslateRefs';
+import { DESIGN_GROUP_LABEL, governanceTabs } from './experiments/governanceTabs';
 import { U6ExperimentsSection, U6_CASES } from './U6Sections';
 import { W2ExperimentsSection, W2_CASES } from './Wave2Sections';
 import { B3ExperimentsSection, B3_CASES, ImpactSection } from './Batch3Sections';
@@ -253,7 +254,7 @@ const DESIGN_CASE_LABEL: Record<string, BiText> = { c22: { en: 'Validating the v
 export function topRow(designTabs: TabDef[], caseTabs: TabDef[], lang: 'en' | 'es'): Array<{ id: string; label: string; tabs: TabDef[] }> {
   const design = caseTabs.filter((c) => DESIGN_CASES.has(c.id)).map((c) => ({ ...c, label: pick(DESIGN_CASE_LABEL[c.id] ?? { en: c.label, es: c.label }, lang) }));
   return [
-    { id: 'design', label: lang === 'es' ? '¿Cómo se diseñan los experimentos?' : 'How are the experiments designed?', tabs: [...designTabs, ...design] },
+    { id: 'design', label: pick(DESIGN_GROUP_LABEL, lang), tabs: [...designTabs, ...design] },
     ...groupCases(caseTabs.filter((c) => !DESIGN_CASES.has(c.id))).map((g) => ({ id: g.id, label: pick(g.label, lang), tabs: g.tabs })),
   ];
 }
@@ -284,8 +285,17 @@ export function Experiments() {
         ];
   const designTabs = [
     { id: 'coverage', label: t('Coverage', 'Cobertura'), content: <Coverage built={built} /> },
-    { id: 'protocol', label: t('Protocol', 'Protocolo'), content: <Protocol /> },
-    { id: 'metrics', label: t('Metrics', 'Métricas'), content: <Metrics /> },
+    {
+      id: 'protocol-metrics',
+      label: t('Protocol and metrics', 'Protocolo y métricas'),
+      content: (
+        <>
+          <Protocol />
+          <Metrics />
+        </>
+      ),
+    },
+    ...governanceTabs(lang),
   ];
   return (
     <DocPage
@@ -303,7 +313,7 @@ export function Experiments() {
           all.state === 'ready'
             ? topRow(designTabs, caseTabs, lang)
             : [
-                { id: 'design', label: t('How are the experiments designed?', '¿Cómo se diseñan los experimentos?'), tabs: designTabs },
+                { id: 'design', label: pick(DESIGN_GROUP_LABEL, lang), tabs: designTabs },
                 { id: 'cases', label: t('What did each built case find?', '¿Qué encontró cada caso construido?'), tabs: caseTabs },
               ]
         }
