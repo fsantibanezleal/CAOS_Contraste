@@ -21,6 +21,11 @@ from typing import Any
 CASE_ID = "C10"
 
 
+#: why this case reads what it reads of other cases, keyed by the document or the module its producer names: ``depends_on`` refuses a list that differs
+#: from the source (core.manifest.derive_depends_on), so the manifest cannot state what the code does not do
+DEPENDS_REASONS: dict[str, dict[str, str]] = {}
+
+
 class C10:
     id = CASE_ID
     slug = "portfolio-credit-capital"
@@ -33,6 +38,12 @@ class C10:
                 "es": "¿Coinciden la fórmula ASRF, un modelo de Vasicek ajustado y una simulación con cópula en el capital de crédito "
                       "de cartera, incluida la cola de 2007 a 2012?"}
     sources = ("fed-chargeoff",)
+
+    def depends_on(self) -> list[dict[str, Any]]:
+        """What this case reads of other cases, as the manifest states it (``depends_on``)."""
+        from ...core.manifest import derive_depends_on
+
+        return derive_depends_on(self.id, DEPENDS_REASONS)
 
     def bake(self, seed: int, paths: Any, data_root: Path | None, scale: float = 1.0, page: Path | None = None,
              only: tuple[str, ...] | None = None, lengths: tuple[int, ...] | None = None) -> dict[str, Any]:

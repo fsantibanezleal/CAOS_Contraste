@@ -2,7 +2,7 @@
 
 ``build`` makes the documents in memory, ``check_documents`` refuses them if the schema or the cross-field checker of U15-S (``tests/contracts_u15/semantics.py``)
 finds anything, and ``bake`` writes them (and ``docs/governance.md``). Every computed value is the return value of an engine function of
-``riskvalidation.governance`` (0.9.0, ADR-0069); the product holds the inputs (``inputs.json``, ``edges.json``), the texts and the counting of what the
+``riskvalidation.governance`` (0.9.0, ADR-0069); the product holds the inputs (``inputs.json``, the related links of ``edges.json``; the dependency edges are the ``depends_on`` of the case manifests, U16-P1b), the texts and the counting of what the
 documents already say. A case document that is absent or invalid stops the bake with the file named and nothing is written. Deterministic: no clock, no random
 draw, every list in a fixed order.
 """
@@ -375,11 +375,11 @@ def build(root: Path | str = REPO_ROOT) -> Baked:
     E = _engine()
     reader = Reader(root)
     inputs = reader.json(INPUTS_REL)
-    table = edge_table.load_edges(reader)
     dates = release_dates(reader)
     as_of_version, as_of_iso = newest_release(dates)
     as_of = date.fromisoformat(as_of_iso)
     cases, planned = read_corpus(reader)
+    table = edge_table.load_edges(reader, {cid: c.manifest for cid, c in cases.items()})
     _validate_inputs(inputs, cases)
     extensions = inputs["variant_assignment"]["extensions"]
     rv = E.version

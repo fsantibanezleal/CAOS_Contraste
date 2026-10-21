@@ -20,7 +20,7 @@
   "documents_read": [
    {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "c0976c8fabc2d4cf82d076610019cc67e0def9ae8152650954c086162b070151",
+    "sha256": "007ccc71174e1a51f66d817c2681f8d3ac19cca5a84620a0ac800198b564abda",
     "ref": null
    },
    {
@@ -35,7 +35,7 @@
    },
    {
     "path": "data/derived/manifests/C07.json",
-    "sha256": "bf356d3c335cebc0bad691c14ceb12d1747973335c071d87f073f5ed7709801a",
+    "sha256": "2aa1c2297982bd0a760d5a8391220a7e9953d4a5df8b1572e5528f9f3b82a003",
     "ref": null
    },
    {
@@ -75,7 +75,7 @@
    },
    {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "e795d3078b15c0be1787eed46a7b1ad0fb65d0c654dc3420a3f47dc274223061",
+    "sha256": "4a5bdc5985eb9efc6bc6729fe1cc87d8cdceb294bec84f21b9201cfd04e818b9",
     "ref": null
    },
    {
@@ -115,7 +115,7 @@
    },
    {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "db7ab2bc13ef7448e26f89d8f9af7589fbdcaebd9fb8188ceb5920db59c9fe6c",
+    "sha256": "cbc12d1978f2fb05d596f363bb98a79f391b028357c4b14bee45995a2dc523ea",
     "ref": null
    },
    {
@@ -1491,7 +1491,7 @@
      "rows": [
       [
        "data/derived/manifests/C07.json",
-       "bf356d3c335cebc0bad691c14ceb12d1747973335c071d87f073f5ed7709801a"
+       "2aa1c2297982bd0a760d5a8391220a7e9953d4a5df8b1572e5528f9f3b82a003"
       ],
       [
        "data/derived/C07/models-banco-andino.json",

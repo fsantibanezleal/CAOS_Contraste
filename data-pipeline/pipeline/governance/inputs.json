@@ -91,7 +91,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case: no document read and no import of another case's code (A D4)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -190,7 +190,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case by document read; the code import from C01 (E14) is not counted (A D2 3.3: document reads only)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -289,7 +289,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case by document read; the code import from C06 (E07), C01 (E09) is not counted (A D2 3.3: document reads only)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -388,7 +388,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case by document read; the code import from C01 (E10), C05 (E13) is not counted (A D2 3.3: document reads only)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -479,7 +479,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case by document read; the code import from C01 (E11) is not counted (A D2 3.3: document reads only)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -573,7 +573,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case: no document read and no import of another case's code (A D4)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -661,7 +661,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case: no document read and no import of another case's code (A D4)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -759,7 +759,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case by document read; the code import from C06 (E08) is not counted (A D2 3.3: document reads only)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -850,7 +850,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case: no document read and no import of another case's code (A D4)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -939,7 +939,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case: no document read and no import of another case's code (A D4)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -1028,7 +1028,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case: no document read and no import of another case's code (A D4)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -1116,7 +1116,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case: no document read and no import of another case's code (A D4)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -1198,7 +1198,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case: no document read and no import of another case's code (A D4)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -1279,7 +1279,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case: no document read and no import of another case's code (A D4)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -1373,7 +1373,7 @@
       "score": 2,
       "tag": "convention",
       "basis": "one feeder, C07, by code import (E06), counted as addendum 3.3 counts it (feeder count 1)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -1461,7 +1461,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case: no document read and no import of another case's code (A D4)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -1543,7 +1543,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case: no document read and no import of another case's code (A D4)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -1639,7 +1639,7 @@
       "score": 4,
       "tag": "convention",
       "basis": "four feeders by document read (C07, C11, C15, C17); the code import from C10 (E05) is not counted (A D2 3.3: document reads only)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -1737,7 +1737,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case by document read; the code import from C01 (E15) is not counted (A D2 3.3: document reads only)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -1837,7 +1837,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case: no document read and no import of another case's code (A D4)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",
@@ -1925,7 +1925,7 @@
       "score": 1,
       "tag": "convention",
       "basis": "no feeding case by document read; the code import from C01 (E12) is not counted (A D2 3.3: document reads only)",
-      "pointer": "data-pipeline/pipeline/governance/edges.json"
+      "pointer": "{manifest}#/depends_on"
      },
      {
       "id": "F6",

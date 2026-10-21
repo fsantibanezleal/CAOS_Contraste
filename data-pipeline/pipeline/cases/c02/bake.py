@@ -256,6 +256,7 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, *, manifest: 
     wanted = expect_ranges(built.values) if strict_expect else {k: (-1.0, 1.0) for k in built.values}
     ranges = expectations.check(CASE_ID, wanted, built.values)
     manifest_doc = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=dict(CASE.title), category={"en": "Credit scoring", "es": "Scoring de crédito"}, question=dict(CASE.question),
         sources=list(SOURCES), seed=seed, variants=entries, default_variant="h1", contract={cv.SOURCE_ID: built.contract},
         expect=ranges, riskvalidation_version=engine_version(), source_details=_source_details())

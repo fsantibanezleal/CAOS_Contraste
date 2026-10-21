@@ -356,6 +356,7 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, ore_inputs_di
     from ...registry import category as registry_category
 
     manifest = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=dict(CASE.title), category=dict(registry_category(CASE.category_id)),
         question=dict(CASE.question), sources=list(SOURCES), seed=seed, variants=entries, default_variant=DEFAULT_VARIANT,
         contract=built.contract, expect=ranges, riskvalidation_version=engine_version(), source_details=_source_details(SOURCES))

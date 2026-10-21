@@ -15,6 +15,16 @@ CASE_ID = "C15"
 SOURCES = ("bcch-bde",)
 
 
+#: why this case reads what it reads of other cases, keyed by the document or the module its producer names: ``depends_on`` refuses a list that differs
+#: from the source (core.manifest.derive_depends_on), so the manifest cannot state what the code does not do
+DEPENDS_REASONS: dict[str, dict[str, str]] = {
+    "pipeline.cases.c07.book": {"en": "Reads the C07 book parameters (the total exposure of Banco Andino) that size the C15 loan book.",
+        "es": "Lee los parámetros de la cartera de C07 (la exposición total de Banco Andino) que dimensionan la cartera de préstamos de C15."},
+    "pipeline.cases.c07.sources": {"en": "Reads the C07 publication, the as-of date and the calibration targets that the C15 book is calibrated to.",
+        "es": "Lee la publicación, la fecha de corte y los objetivos de calibración de C07 a los que se calibra la cartera de C15."},
+}
+
+
 class C15:
     id = CASE_ID
     slug = "irrbb-clp-uf-annex1"
@@ -28,6 +38,12 @@ class C15:
         "es": "¿Cuánto EVE y NII pierde un banco chileno sintético bajo los choques prescritos por la CMF sobre las curvas del Banco Central, "
               "cuánto de eso es la reajustabilidad de su posición en UF, y qué cambia la compensación de 50 por ciento entre pesos y UF?"}
     sources = SOURCES
+
+    def depends_on(self) -> list[dict[str, Any]]:
+        """What this case reads of other cases, as the manifest states it (``depends_on``)."""
+        from ...core.manifest import derive_depends_on
+
+        return derive_depends_on(self.id, DEPENDS_REASONS)
 
     def bake(self, seed: int, paths: Any, data_root: Path | None) -> dict[str, Any]:
         from .bake import bake_case

@@ -1065,6 +1065,14 @@ def _models(seed: int, rv: str, paths: Any) -> dict[str, Any]:
     return {"rel": rel, **write_artifact(paths.root, rel, doc, exact=frozenset({"details", "parity"}), engines=ENGINES, run_ms=RUN_MS)}
 
 
+#: why this case reads what it reads of other cases, keyed by the document or the module its producer names: ``depends_on`` refuses a list that differs
+#: from the source (core.manifest.derive_depends_on), so the manifest cannot state what the code does not do
+DEPENDS_REASONS: dict[str, dict[str, str]] = {
+    "pipeline.cases.c01_ladder": {"en": "Uses the text and package-version helpers of the C01 ladder module (_t and _v), so the bilingual labels and the version records are built one way.",
+        "es": "Usa los auxiliares de texto y de versión de paquete del módulo de la escalera de C01 (_t y _v), de modo que las etiquetas bilingües y los registros de versión se construyen de una sola manera."},
+}
+
+
 class C22:
     id = CASE_ID
     slug = "validator"
@@ -1074,6 +1082,12 @@ class C22:
     question = _t("How often does each validation test reject a right model, and which defects does it catch?",
                   "¿Con qué frecuencia cada prueba de validación rechaza un modelo correcto, y qué defectos detecta?")
     sources = SOURCES
+
+    def depends_on(self) -> list[dict[str, Any]]:
+        """What this case reads of other cases, as the manifest states it (``depends_on``)."""
+        from ..core.manifest import derive_depends_on
+
+        return derive_depends_on(self.id, DEPENDS_REASONS)
 
     def bake(self, seed: int, paths: Any, data_root: Path, only: tuple[str, ...] | None = None) -> dict[str, Any]:
         from ..io import sources as registry
@@ -1128,6 +1142,7 @@ class C22:
         expect = EXPECT if only is None else {k: r for k, r in EXPECT.items() if k in values}
         ranges = expectations.check(CASE_ID, expect, values)
         manifest = build_case_manifest(
+            depends_on=self.depends_on(),
             case_id=CASE_ID, title=self.title, category={"en": "Validating the validator", "es": "Validar al validador"},
             question=self.question, sources=list(SOURCES), seed=seed, variants=entries,
             default_variant="null" if any(e["variant_id"] == "null" for e in entries) else entries[1]["variant_id"],

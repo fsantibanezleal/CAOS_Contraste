@@ -1,8 +1,7 @@
-"""U15-P: the dependency edges (decision W15-8): each edge is checked against the downstream package, and the entry graph is what the table says."""
+"""U15-P: the dependency edges (decision W15-8): each edge is what a downstream manifest states in its depends_on (U16-P1b), and the entry graph is what the table says."""
 from __future__ import annotations
 
 import json
-import shutil
 
 import gov_support as gs
 import pytest
@@ -10,32 +9,66 @@ import pytest
 
 @pytest.fixture(scope="module")
 def table():
-    return json.loads(gs.EDGES.read_text(encoding="utf-8"))
-
-
-def test_every_edge_is_still_stated_in_the_downstream_package(table):
-    """A document edge fails when the downstream package stops naming the upstream document, a code edge when the import line goes away."""
+    """The edge table as the bake reads it: the dependency edges of the manifests' depends_on (U16-P1b), the related links of edges.json."""
     from pipeline.governance import edge_table
 
+    mans = {p.stem: gs.read(f"data/derived/manifests/{p.name}") for p in sorted((gs.DERIVED / "manifests").glob("C[0-9][0-9].json"))}
+    return {"edges": edge_table.dependency_edges(mans), "related": json.loads(gs.EDGES.read_text(encoding="utf-8"))["related"], "manifests": mans}
+
+
+def test_every_edge_is_stated_by_the_downstream_producer_in_its_manifest(table):
+    """An edge exists only because the downstream manifest lists a document or a module of the upstream case, with the producer's reason."""
+    assert table["edges"]
     for edge in table["edges"]:
-        assert edge_table.verify_edge(edge, gs.ROOT) == [], edge["id"]
+        listed = [d for d in table["manifests"][edge["downstream_case"]]["depends_on"] if d["kind"] == edge["kind"]]
+        assert listed and all(d["reason"]["en"] in edge["stated_source"] for d in listed if gs_case(d["ref"]) == edge["upstream_case"]), edge
+        assert f"data/derived/manifests/{edge['downstream_case']}.json depends_on" in edge["stated_source"]
 
 
-def test_adversarial_an_edge_whose_downstream_file_stops_naming_the_upstream_fails_the_check(table, tmp_path):
+def gs_case(ref: str) -> str:
+    from pipeline.core.manifest import dependency_case
+
+    return dependency_case(ref)
+
+
+def test_adversarial_a_manifest_without_depends_on_stops_the_edges_naming_it(table):
     from pipeline.governance import edge_table
+    from pipeline.governance.readers import BakeError
 
-    edge = next(e for e in table["edges"] if e["id"] == "E01")
-    for v in edge["verify"]:
-        target = tmp_path / v["file"]
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(gs.ROOT / v["file"], target)
-    assert edge_table.verify_edge(edge, tmp_path) == []
-    f = tmp_path / edge["verify"][0]["file"]
-    f.write_text(f.read_text(encoding="utf-8").replace(edge["verify"][0]["needle"], "removed"), encoding="utf-8")
-    found = edge_table.verify_edge(edge, tmp_path)
-    assert found and edge["verify"][0]["needle"] in found[0]
-    f.unlink()
-    assert "absent" in edge_table.verify_edge(edge, tmp_path)[0]
+    mans = {c: dict(m) for c, m in table["manifests"].items()}
+    del mans["C18"]["depends_on"]
+    with pytest.raises(BakeError, match=r"manifests/C18\.json.*depends_on"):
+        edge_table.dependency_edges(mans)
+
+
+def test_adversarial_a_dependency_of_a_case_on_itself_or_an_unknown_kind_is_refused(table):
+    from pipeline.governance import edge_table
+    from pipeline.governance.readers import BakeError
+
+    reason = {"en": "x", "es": "y"}
+    mans = {"C18": {"depends_on": [{"kind": "code", "ref": "pipeline.cases.c18.fed", "reason": reason}]}}
+    with pytest.raises(BakeError, match="itself"):
+        edge_table.dependency_edges(mans)
+    mans = {"C18": {"depends_on": [{"kind": "page", "ref": "C07/base.json", "reason": reason}]}}
+    with pytest.raises(BakeError, match="kind"):
+        edge_table.dependency_edges(mans)
+
+
+def test_adversarial_a_related_link_in_the_direction_of_a_dependency_is_refused(table, tmp_path):
+    from pipeline.governance import edge_table
+    from pipeline.governance.readers import BakeError, Reader
+
+    bad = json.loads(gs.EDGES.read_text(encoding="utf-8"))
+    bad["related"].append({"a_case": "C07", "b_case": "C18", "kind": "method", "source": "planted"})
+    target = tmp_path / "data-pipeline/pipeline/governance/edges.json"
+    target.parent.mkdir(parents=True)
+    target.write_text(json.dumps(bad), encoding="utf-8")
+    with pytest.raises(BakeError, match="never one"):
+        edge_table.load_edges(Reader(tmp_path), table["manifests"])
+    bad2 = dict(bad, edges=[])
+    target.write_text(json.dumps(bad2), encoding="utf-8")
+    with pytest.raises(BakeError, match="only the related links"):
+        edge_table.load_edges(Reader(tmp_path), table["manifests"])
 
 
 def test_the_inventory_edges_are_the_table_expanded_to_entries(baked, table):
@@ -83,19 +116,3 @@ def test_every_entry_depends_on_the_engine_node_and_the_graph_is_layered(baked):
             assert e["graph"]["depth"] == 0
         assert e["map"]["generation"] == e["graph"]["depth"]
         assert -1.0 <= e["map"]["x"] <= 1.0 and -1.0 <= e["map"]["y"] <= 1.0
-
-
-def test_adversarial_a_commented_out_import_does_not_state_an_edge(table, tmp_path):
-    """Review m9: the needle must sit on a line that is not a comment."""
-    from pipeline.governance import edge_table
-
-    edge = next(e for e in table["edges"] if e["id"] == "E06")
-    for v in edge["verify"]:
-        target = tmp_path / v["file"]
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(gs.ROOT / v["file"], target)
-    assert edge_table.verify_edge(edge, tmp_path) == []
-    for v in edge["verify"]:
-        f = tmp_path / v["file"]
-        f.write_text("\n".join("# " + line if v["needle"] in line else line for line in f.read_text(encoding="utf-8").splitlines()), encoding="utf-8")
-    assert len(edge_table.verify_edge(edge, tmp_path)) == len(edge["verify"])

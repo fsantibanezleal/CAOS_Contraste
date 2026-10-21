@@ -1,56 +1,66 @@
-"""The dependency edges of the inventory (decision W15-8): read from ``edges.json``, checked against the downstream package, expanded to entries.
+"""The dependency edges of the inventory (decision W15-8): built from the ``depends_on`` list of every case manifest, checked, expanded to entries.
 
-An edge is written between cases. ``expand`` turns it into entry edges: the upstream is the reference entry of the upstream case (the entry that holds the
-manifest's default variant, else the first fit by key), the downstream is every entry of the downstream case, because every fit runs the same code and
-reads the same documents. ``verify_edge`` is the check behind the edge test: a document edge fails when the downstream file stops naming the upstream
-document, a code edge when the import line goes away. A related link (a page statement, a shared method, a shared source, a measurement, a conceptual
-link) is never an edge.
+A case producer states what it reads of other cases in its manifest (``core.manifest.derive_depends_on``, BL-086): the committed documents it opens (kind
+``document``) and the product modules it imports (kind ``code``). The bake groups a manifest's list by upstream case and kind into an edge between cases.
+``expand`` turns it into entry edges: the upstream is the reference entry of the upstream case (the entry that holds the manifest's default variant, else
+the first fit by key), the downstream is every entry of the downstream case, because every fit runs the same code and reads the same documents. Every entry
+also depends on the engine (implicit, W15-8), and a manifest without ``depends_on`` stops the bake naming it.
+
+``edges.json`` keeps only what no producer can state: the related links (a page statement, a shared method, a shared source, a measurement, a conceptual
+link). A related link is never an edge.
 """
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
+from ..core.manifest import DEPENDENCY_KINDS, dependency_case
 from .readers import BakeError, Reader
 
 EDGES_REL = "data-pipeline/pipeline/governance/edges.json"
-KINDS = ("document", "code")
+KINDS = DEPENDENCY_KINDS
 RELATED_KINDS = ("page-statement", "method", "source", "measures", "conceptual")
 
 
-def load_edges(reader: Reader) -> dict[str, Any]:
-    """The edge table, validated: every edge has a kind, a stated source and at least one line to check."""
+def dependency_edges(manifests: dict[str, dict[str, Any]]) -> list[dict[str, str]]:
+    """The edges between cases, from the ``depends_on`` of each manifest: ``{upstream_case, downstream_case, kind, stated_source}``, sorted.
+
+    ``stated_source`` is what the downstream producer states: the manifest that holds the list, then each reference with its reason.
+    """
+    edges = []
+    for cid in sorted(manifests):
+        rel = f"data/derived/manifests/{cid}.json"
+        if "depends_on" not in manifests[cid]:
+            raise BakeError(f"{rel}: the manifest states no depends_on (case-manifest 2.0.0 requires it, empty when the case reads nothing of another case)")
+        grouped: dict[tuple[str, str], list[dict[str, Any]]] = {}
+        for d in manifests[cid]["depends_on"]:
+            if d["kind"] not in KINDS:
+                raise BakeError(f"{rel}: depends_on {d['ref']!r} has the kind {d['kind']!r}, expected one of {KINDS}")
+            try:
+                up = dependency_case(d["ref"])
+            except ValueError as exc:
+                raise BakeError(f"{rel}: {exc}") from exc
+            if up == cid:
+                raise BakeError(f"{rel}: depends_on {d['ref']!r} joins the case to itself")
+            grouped.setdefault((up, d["kind"]), []).append(d)
+        for (up, kind), items in sorted(grouped.items()):
+            said = "; ".join(f"{d['ref']}: {d['reason']['en']}" for d in sorted(items, key=lambda x: x["ref"]))
+            edges.append({"upstream_case": up, "downstream_case": cid, "kind": kind, "stated_source": f"{rel} depends_on (stated by the {cid} producer): {said}"})
+    return edges
+
+
+def load_edges(reader: Reader, manifests: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    """The edge table: the dependency edges of the manifests and the related links of ``edges.json``, validated."""
     table = reader.json(EDGES_REL)
-    ids = [e["id"] for e in table["edges"]]
-    if len(set(ids)) != len(ids):
-        raise BakeError(f"{EDGES_REL}: the edge ids repeat")
-    for e in table["edges"]:
-        if e["kind"] not in KINDS:
-            raise BakeError(f"{EDGES_REL}: edge {e['id']} has the kind {e['kind']!r}, expected one of {KINDS}")
-        if not e["stated_source"].strip() or not e["verify"]:
-            raise BakeError(f"{EDGES_REL}: edge {e['id']} has no stated source or nothing to verify")
-        if e["upstream_case"] == e["downstream_case"]:
-            raise BakeError(f"{EDGES_REL}: edge {e['id']} joins a case to itself")
-    dep = {(e["upstream_case"], e["downstream_case"]) for e in table["edges"]}
+    if set(table) != {"schema", "description", "tag", "related"}:
+        raise BakeError(f"{EDGES_REL}: holds {sorted(table)}; only the related links stay here, the dependencies are the manifests' depends_on")
+    edges = dependency_edges(manifests)
+    dep = {(e["upstream_case"], e["downstream_case"]) for e in edges}
     for r in table["related"]:
         if r["kind"] not in RELATED_KINDS:
             raise BakeError(f"{EDGES_REL}: a related link has the kind {r['kind']!r}, expected one of {RELATED_KINDS}")
         if (r["a_case"], r["b_case"]) in dep:
             raise BakeError(f"{EDGES_REL}: the related link {r['a_case']} to {r['b_case']} is also a dependency edge in the same direction: a related link is never one")
-    return table
-
-
-def verify_edge(edge: dict[str, Any], root: Path | str) -> list[str]:
-    """The problems of one edge against the downstream package under ``root`` (empty when the edge still holds)."""
-    problems = []
-    for v in edge["verify"]:
-        path = Path(root) / v["file"]
-        if not path.is_file():
-            problems.append(f"{edge['id']}: {v['file']} is absent, so {edge['upstream_case']} to {edge['downstream_case']} ({edge['kind']}) is not stated")
-        elif not any(v["needle"] in line for line in path.read_text(encoding="utf-8").splitlines() if not line.lstrip().startswith("#")):
-            problems.append(f"{edge['id']}: {v['file']} no longer contains {v['needle']!r} outside a comment, so {edge['upstream_case']} to {edge['downstream_case']} "
-                            f"({edge['kind']}) is not stated")
-    return problems
+    return {"edges": edges, "related": table["related"]}
 
 
 def reference_entry(case_id: str, entries_of_case: list[dict[str, Any]], default_variant: str) -> str:
