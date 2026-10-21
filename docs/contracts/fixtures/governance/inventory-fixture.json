@@ -75,42 +75,42 @@
    },
    {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "69a2ab8f87d99efc2b9e6a07dd73df2b6519efacf40331a9ca102e0c0ea5b863",
+    "sha256": "bbdcdbddf2c8501cf4f97307719f652a05dbca101c4795ba7c7bfca44d1a41d0",
     "ref": null
    },
    {
     "path": "data/derived/C18/models-banco-andino.json",
-    "sha256": "dc6683541f7a7d3ac2feb3e6b7561a2f95af4d10ee87d20236ba61f106383427",
+    "sha256": "9b0d70aa2e7444e183fabee7805284bace96e5b8e35418698efec295d1503a3c",
     "ref": null
    },
    {
     "path": "data/derived/C18/baseline.json",
-    "sha256": "235ba35898c452765822b51a085e6cb52d8257ddd401111f43957b820724bada",
+    "sha256": "9c2307b8868186d4726511a33bb87c6653ded58ea174ffb78428ed6ced7db391",
     "ref": null
    },
    {
     "path": "data/derived/C18/eba-2025-adverse.json",
-    "sha256": "1cd7fb0214e90d3d5f0f5897e1aeea7d2bde7efb5fd45187ab38c8c86ffb2344",
+    "sha256": "0c55443438a42d22e8d251916bc4f43bfa040b85c91c6a6c85ee869074309957",
     "ref": null
    },
    {
     "path": "data/derived/C18/fed-2026-severely-adverse.json",
-    "sha256": "22d9aeb057a9c1dc11542b62f9b6d7f42c341b16858c655f502740388c236888",
+    "sha256": "880f90daa31677e5279bed93166b1fd49be4dddf55de885844fdef79977ba657",
     "ref": null
    },
    {
     "path": "data/derived/C18/ngfs-delayed-transition.json",
-    "sha256": "5a2b04c087918eb8555d874344d812c3d5a55b4f57e8c497758bea69ce006302",
+    "sha256": "beb8dbf9acbe154b677884fc4405f1b3f2bb1b396d83158b3b6caf5123f14486",
     "ref": null
    },
    {
     "path": "data/derived/C18/reverse-stress.json",
-    "sha256": "fe60e7c9db7f8968d2001e52c08b5c6a6f0031b332bc49d2c578cf491e55fe26",
+    "sha256": "d30a47f71b84cc6d54efa9aef32c098b5f66e13fa1f08a4b1b681b9a5db92136",
     "ref": null
    },
    {
     "path": "data/derived/C18/t-copula-baseline.json",
-    "sha256": "b55d740179a39c1781e8e58b425d18aa98b31db9a21d021b12def3409ad3dcbc",
+    "sha256": "ef9576810ef26dd327a14649a1c774ecc034079f084cdb8badc9cb1fe1867f31",
     "ref": null
    },
    {
@@ -1445,7 +1445,7 @@
      "basis": "read at data/derived/manifests/C18.json#/title"
     },
     "A03": {
-     "value": "banco-andino@0.13.000/riskvalidation-0.8.1",
+     "value": "banco-andino@0.13.000/riskvalidation-0.9.0",
      "status": "derivable",
      "basis": "no model version field: the fit id with the code and engine versions identify the build (A D1 A03): data/derived/C18/models-banco-andino.json#/fit_id | data/derived/C18/models-banco-andino.json#/provenance/code_version | data/derived/C18/models-banco-andino.json#/provenance/riskvalidation_version"
     },
@@ -1632,7 +1632,7 @@
      "basis": "no field: a synthetic bank has no users (A D1 A30)"
     },
     "A31": {
-     "value": "riskvalidation 0.8.1",
+     "value": "riskvalidation 0.9.0",
      "status": "derivable",
      "basis": "riskvalidation at the pinned version; independence is not established because the pipeline and the engine are built in the same programme (W15-4, the governance finding GOV-INDEPENDENCE-NOT-ESTABLISHED)"
     },
