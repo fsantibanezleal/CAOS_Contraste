@@ -325,11 +325,11 @@ def build_inventory(ex: dict) -> dict:
                 "In scope: it applies statistical or economic theory, its output is an estimate and it is not generative or agentic (SR 26-2).",
                 "En alcance: aplica teoria estadistica o economica, su resultado es una estimacion y no es generativo ni agentico (SR 26-2).")},
             {"profile": "pra", "in_scope": True, "rationale": T("In scope: it applies a quantitative method (SS1/23 Principle 1.1).",
-                                                                 "En alcance: aplica un metodo cuantitativo (SS1/23 Principio 1.1).")},
-            {"profile": "osfi-2027", "in_scope": True, "rationale": T("In scope: it processes input data into results (OSFI E-23).",
-                                                                      "En alcance: procesa datos de entrada en resultados (OSFI E-23).")},
-            {"profile": "ecb", "in_scope": True, "rationale": T("In scope: it is a quantitative estimate used in a validated risk process.",
-                                                                "En alcance: es una estimacion cuantitativa usada en un proceso de riesgo validado.")},
+                                                                 "En alcance: aplica un método cuantitativo (SS1/23 Principio 1.1).")},
+            {"profile": "osfi-2027", "in_scope": True, "rationale": T("In scope: it applies theory and its output is an estimate (OSFI E-23).",
+                                                                      "En alcance: aplica teoría y su resultado es una estimación (OSFI E-23).")},
+            {"profile": "ecb", "in_scope": True, "rationale": T("In scope: it applies theory and its output is an estimate (ECB).",
+                                                                "En alcance: aplica teoría y su resultado es una estimación (BCE).")},
         ]
         scope_basis = ("B.1 (06 l.523-537); the four answers are read from the models document; the profile rules are a reading of the B.1 table "
                        "(UNVERIFIED beyond it)" + ("; the components B1-standard and BDE-annex9 are deterministic rule sets, the entry as a whole is not"
