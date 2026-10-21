@@ -841,18 +841,21 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   and `data/derived/C18/ngfs-delayed-transition.json` (`outputs.aggregation.band`, eight rows in each), `data/derived/C18/t-copula-baseline.json`
   (the band again and the band under the market-credit correlation stress), `docs/design/features/c18/requirements.md` (CT-1811 and
   CT-1812, each with its gate), and the engine's `riskvalidation.aggregation.band.dependence_band`, which returns the whole band and
-  never a scalar. Notebook 09 of topic 12 checks the structure and recomputes the closed-form rows of all six committed aggregates;
-  notebook 03 reproduces the engine's published worst-case example (the rearrangement bounds of eight Pareto marginals) and checks the
-  band's structure and ordering on stand-in marginals.
+  never a scalar. Notebook 09 of topic 12 checks the structure and recomputes the closed-form rows of the two distinct committed
+  aggregates (the five documents carry one and the same aggregation block, shown by its hash, and the market-credit 0.8 stress is the
+  second); notebook 03 reproduces the engine's published worst-case example (the rearrangement bounds of eight Pareto marginals) and
+  runs the band on the marginals rebuilt from the committed quantile grids (`data/derived/C18/models-banco-andino.json`,
+  `fit.aggregation.quantile_grid`).
   Beyond: the research (dossier 05, G.3) prescribes the band, "instead of a single diversified number", and warns against claiming that
   diversification benefits are robust; Rosenberg and Schuermann report the sensitivity of the aggregate to the copula choice and the
   additive overestimate of 30 to 40 percent as a study result (https://doi.org/10.1016/j.jfineco.2005.03.001); Embrechts, Puccetti and
   Rueschendorf give the sharp worst-case bounds (https://doi.org/10.1016/j.jbankfin.2013.03.014); the Joint Forum found aggregation models
-  "a work in progress" on which supervisors generally do not rely (https://www.bis.org/publ/joint25.pdf, the wording is UNVERIFIED in the
-  dossier). Those are the ingredients and the recommendation; what the case adds is to compose them and show the band with every aggregate
+  "a work in progress" on which supervisors generally do not rely (https://www.bis.org/publ/joint25.pdf; the press release of
+  21 October 2010, https://www.bis.org/press/p101021.htm, gives both phrases). Those are the ingredients and the recommendation; what the case adds is to compose them and show the band with every aggregate
   as a gated rule. The claim is about what the case does: that no maintained toolkit or published practice ships the band beside every
-  aggregate is UNVERIFIED beyond the dossier's own search. The committed band rests on marginals that the pipeline simulates and does not
-  commit (only their EL, VaR, ES and EC), and Banco Andino is synthetic.
+  aggregate is UNVERIFIED beyond the dossier's own search. The committed band rests on marginals that the pipeline simulates; the documents commit
+  their EL, VaR, ES and EC and, since c18-models 2.1.0, each marginal's quantile function on a named grid (the simulated samples
+  themselves are not committed), and Banco Andino is synthetic.
 
 - **BS-10** The batch 3 test corrections, with the error rate each one removes measured on planted data.
   What it adds: the split-conformal coverage test reads the Beta-Binomial law of the covered count given the calibration size (the coverage of

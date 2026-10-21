@@ -902,6 +902,19 @@ def reverse_doc() -> dict:
     return envelope("fixture-reverse-stress", outputs, ["stress.reverse_solution_check"], impact)
 
 
+def quantile_grid_fixture() -> dict:
+    """The c18-models 2.1.0 quantile grid in the fixture's shape: 1,961 probabilities Phi(z), z = -4.9 to 4.9 in steps of 0.005, and a made-up
+    smooth, increasing quantile function per marginal (a fixture value, never a result of a bake)."""
+    zs = [k * 0.005 for k in range(-980, 981)]
+    probs = [ND.cdf(z) for z in zs]
+    scale = {"credit": 40_000.0, "market": 30_000.0, "irrbb": 12_000.0, "operational": 6_000.0}
+    return {
+        "convention": {"name": "standard-normal-z-grid", "z_min": -4.9, "z_max": 4.9, "z_step": 0.005, "points": 1961, "unit": "CLP millions",
+                       "statement": txt("The probabilities are Phi(z) for z from -4.9 to 4.9 in steps of 0.005 (a fixture of the convention).")},
+        "probabilities": probs,
+        "marginals": [{"risk": r, "quantiles": [r6(scale[r] * math.exp(0.5 * z)) for z in zs]} for r in RISKS]}
+
+
 def models_doc(op_infinite: bool = False) -> dict:
     sats = []
     for t, sid in FED:
@@ -942,6 +955,7 @@ def models_doc(op_infinite: bool = False) -> dict:
             "n_draws": 1_000_000, "seed": 18, "chunk_size": 100_000, "horizon_years": 1, "confidence_level": 0.999,
             "capital_basis": "economic-capital-var-less-el",
             "marginal_interpolation": "np.interp on the Hazen positions (i - 0.5) / n of the sorted sample, clamped at the ends",
+            "quantile_grid": quantile_grid_fixture(),
         },
         "named_parameters": NAMED,
         "bank_anchors": {
