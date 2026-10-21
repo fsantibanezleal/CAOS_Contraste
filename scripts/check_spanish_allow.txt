@@ -1,0 +1,12 @@
+# Findings of check_spanish.py that are right as written, or owned by another unit: "path :: word  # reason" (U16-P1a).
+# An entry that matches no finding fails the guard, so this list cannot outlive its reasons.
+data-pipeline/pipeline/cases/c07/sources.py :: Desempeno  # English-text title of a CMF publication, quoted as the file names it
+data-pipeline/pipeline/cases/c07/sources.py :: dias  # English-text locator quoting the CMF source line (not a Spanish text)
+data-pipeline/pipeline/cases/c07/sources.py :: mas  # same locator
+data-pipeline/pipeline/cases/c07/sources.py :: creditos  # same locator
+data-pipeline/pipeline/cases/c07/sources.py :: participacion  # same locator
+data-pipeline/pipeline/cases/c07/documents.py :: Desempeno  # English calibration_source text naming the CMF publication
+data-pipeline/pipeline/cases/c15/targets.py :: Depositos  # English locator quoting the CMF table row
+data-pipeline/pipeline/cases/c12/models.py :: revalua  # batch 3 producer outside the U16-P1a write scope; reported to the main session
+data-pipeline/pipeline/io/bcch.py :: Codigo  # the BDE answer key "Codigo" and "Descripcion" as the API spells them
+data-pipeline/pipeline/io/contract.py :: decision  # the dataset field named decision, written in the Spanish notes as a code token

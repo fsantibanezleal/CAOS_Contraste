@@ -107,8 +107,8 @@ LDCE_TARGETS: dict[str, Any] = {'currency': 'EUR',
                           {'p': 0.95, 'loss_eur': 418400}],
  'caveat': {'en': 'Medians of per-bank percentiles are not the percentiles of any one bank; the statistics calibrate a synthetic bank and '
                   'describe no real one.',
-            'es': 'Las medianas de percentiles por banco no son los percentiles de ningun banco; las estadisticas calibran un banco '
-                  'sintetico y no describen a uno real.'}}
+            'es': 'Las medianas de percentiles por banco no son los percentiles de ningún banco; las estadísticas calibran un banco '
+                  'sintético y no describen a uno real.'}}
 
 LADDER: list[dict[str, Any]] = [{'rung_id': 'lda-lognormal',
   'label': {'en': 'Poisson-lognormal LDA ignoring the collection threshold', 'es': 'El LDA Poisson-lognormal que ignora el umbral'},
@@ -132,21 +132,21 @@ LADDER: list[dict[str, Any]] = [{'rung_id': 'lda-lognormal',
   'status': 'verified',
   'reference': 'dossier 05 F.2, rung 3'},
  {'rung_id': 'sla',
-  'label': {'en': 'Single loss approximation', 'es': 'Aproximacion de una perdida'},
+  'label': {'en': 'Single loss approximation', 'es': 'Aproximación de una pérdida'},
   'severity_law': 'gpd',
   'truncated': True,
   'aggregation': 'closed-form',
   'status': 'verified',
   'reference': 'dossier 05 F.4, Shevchenko eq. 70'},
  {'rung_id': 'sla-mean-corrected',
-  'label': {'en': 'Single loss approximation with the mean correction', 'es': 'Aproximacion de una perdida con correccion por media'},
+  'label': {'en': 'Single loss approximation with the mean correction', 'es': 'Aproximación de una pérdida con corrección por media'},
   'severity_law': 'gpd',
   'truncated': True,
   'aggregation': 'closed-form',
   'status': 'UNVERIFIED',
   'reference': 'dossier 05 F.4: the form is not checked against Bocker and Sprittulla (2006) or Degen (2010)'},
  {'rung_id': 'scenario',
-  'label': {'en': 'Scenario combination by Bayesian credibility', 'es': 'Combinacion de escenarios por credibilidad bayesiana'},
+  'label': {'en': 'Scenario combination by Bayesian credibility', 'es': 'Combinación de escenarios por credibilidad bayesiana'},
   'severity_law': 'lognormal-gpd-splice',
   'truncated': True,
   'aggregation': 'panjer',
@@ -164,17 +164,17 @@ SMA_SPEC: dict[str, Any] = {'currency': 'EUR',
  'rwa_factor': 12.5,
  'discretions': [{'id': 'bucket-1-ilm-one',
                   'description': {'en': 'Bucket 1 banks have ILM = 1 unless national discretion includes their losses.',
-                                  'es': 'Los bancos del tramo 1 tienen ILM = 1 salvo que la discrecion nacional incluya sus perdidas.'},
+                                  'es': 'Los bancos del tramo 1 tienen ILM = 1 salvo que la discreción nacional incluya sus pérdidas.'},
                   'reference': 'OPE25.11'},
                  {'id': 'national-ilm-one',
                   'description': {'en': 'Supervisors may set ILM = 1 for every bank of the jurisdiction; disclosure stays.',
-                                  'es': 'Los supervisores pueden fijar ILM = 1 para todos los bancos de la jurisdiccion; la divulgacion se '
+                                  'es': 'Los supervisores pueden fijar ILM = 1 para todos los bancos de la jurisdicción; la divulgación se '
                                         'mantiene.'},
                   'reference': 'OPE25.11'},
                  {'id': 'transitional-bic-only',
                   'description': {'en': 'Under 5 years of loss data (10 are required, 5 are the transitional minimum) capital is the BIC '
                                         'only.',
-                                  'es': 'Con menos de 5 anos de datos de perdida (se piden 10, 5 es el minimo transitorio) el capital es '
+                                  'es': 'Con menos de 5 años de datos de pérdida (se piden 10, 5 es el mínimo transitorio) el capital es '
                                         'solo el BIC.'},
                   'reference': 'OPE25.10, OPE25.15'}],
  'golden': {'bi_eur': 35000000000.0, 'bic_eur': 5370000000.0, 'reference': 'OPE25.7 footnote 2'},
