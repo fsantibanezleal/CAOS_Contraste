@@ -90,7 +90,9 @@ SERVED_DOCUMENTS = ("regulatory/calculators.json",)
 def served_files() -> list[str]:
     """Every file beside the cases that the index declares, so the site build copies it: the contract-1 declarations
     and the served documents."""
-    return [*contract_files(), *SERVED_DOCUMENTS]
+    from .governance import served_files as governance_files
+
+    return [*contract_files(), *SERVED_DOCUMENTS, *governance_files(DERIVED)]
 
 
 def index_document() -> dict[str, Any]:

@@ -228,6 +228,7 @@ the ones the dossiers and `docs/frameworks/` record.
 |---|---|---|---|---|
 | engine | numpy | 2.4.6 | arrays, the generators and every estimator | none: the base of the stack (2.5.4 is current and was not adopted in 0.07.000) |
 | engine | scipy | 1.18.1 | distributions and special functions; the reference for every test statistic | none recorded |
+| pipeline | networkx | 3.7 | the layered layout of the governance dependency map (`topological_generations`, `multipartite_layout`; U15-P); BSD-3-Clause, pipeline only, never an engine dependency; https://pypi.org/pypi/networkx/json read on 2026-10-20 | a hand-written layering, rejected: the library's layout is tested and the map is not a method of the product |
 | data | pandas | 3.0.6 | tabular reading, the splits and the case frames | none recorded |
 | data | xlrd | 2.0.2 | reading the legacy Excel files of the UCI Taiwan dataset | none recorded |
 | models | scikit-learn | 1.9.1 | penalised logistic regression, splits, isotonic and Platt calibration | none recorded |
