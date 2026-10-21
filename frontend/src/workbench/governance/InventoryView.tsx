@@ -38,7 +38,7 @@ function InventoryTable({ inv, entries, onClear, filtered }: { inv: GovInventory
           </button>
         </p>
       )}
-      <div className="ct-scroll-x" style={{ overflowX: 'auto', minWidth: 0 }}>
+      <div style={{ overflowX: 'auto', minWidth: 0 }}>
         <table className="caos-table" data-state="ready" data-inventory>
           <thead>
             <tr>
