@@ -148,7 +148,7 @@ def build(seed: int, data_root: Path | str | None, *, n_draws: int | None = None
     agg_stress = agg.aggregation_block(marg, named, "correlation_matrix_stress", band_stress, n_draws, seed)
     _log("band: " + ", ".join(f"{r.method}{'' if r.nu is None else r.nu} {r.capital:,.0f}" for r in band_base.rows))
     target = cap.internal_target(named, anchors)
-    fit = models.fit_block(anchors, sats, space, named, marg[0].statement, n_draws, seed)
+    fit = models.fit_block(anchors, sats, space, named, marg[0].statement, n_draws, seed, mg.quantile_grid(marg))
     recs = [dict(m, details={"engine_commit": ev}) for m in models.model_summaries(ev)]
     backcasts = {lt: sat.backcast(s) for lt, s in sats.items()}
     flat = [r for rows in prov.values() for r in rows]
@@ -312,7 +312,10 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, n_draws: int 
     sums.append(_sum(root, P.RAW_REL))
     (root / P.SUMS_REL).write_text("\n".join(sums) + "\n", encoding="utf-8", newline="\n")
     ranges = expectations.check(CASE_ID, EXPECT, built.values)
+    from . import CASE
+
     manifest = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=_title(), category=CATEGORIES["capital-stress"], question=_question(),
         sources=[s for s in SOURCES if s in built.raw_sources["sources"]], seed=seed, variants=entries, default_variant=P.DEFAULT_VARIANT,
         contract=built.contract, expect=ranges, riskvalidation_version=engine_version(),

@@ -5,9 +5,9 @@
     "sha256": "edcce7f1f7ba474096bc66c30f49f52053166a0d9a253143e3a9789b07e93f48"
   },
   "case-manifest": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/common/case-manifest.schema.json",
-    "sha256": "3a8866194225d51b05712e3700092643ec1340b7f205554711d32b38c971e1f6"
+    "sha256": "06ba366dda7bcbda54ed6e8ed39dd1a7bfed14690aef340ef684771af7276925"
   },
   "variant-envelope": {
     "version": "1.0.0",
@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "13.0.0",
+    "version": "16.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "efc7fb7cfe82b8ab20e98a3c007a115f6b85582dba7267b54ed69eb7473e8ed3"
+    "sha256": "441adaa8c0b5741f39c673f5548c45c88097023f4dd5230556cfc1e08da081a2"
   },
   "readiness": {
     "version": "1.0.0",
@@ -330,14 +330,14 @@
     "sha256": "f584731f90dc64b9bf075cfc7faca3550075508c9031979bfc683b11167c629a"
   },
   "c21-outputs": {
-    "version": "2.0.0",
+    "version": "3.0.0",
     "schema": "docs/contracts/schemas/c21/variant-year-pair.schema.json",
-    "sha256": "9a89796c2494e25415afbdbd17e3b3d92962f8ecbfbf5f1a07ee2d0385f64f5f"
+    "sha256": "195981203642e16544340b7e9591287566a22d87eeb80416423df1310453b9d7"
   },
   "c21-models": {
-    "version": "2.0.0",
+    "version": "3.0.0",
     "schema": "docs/contracts/schemas/c21/models.schema.json",
-    "sha256": "6716f81fd33c1b14df380f3a60dc4b75aa928877a3f65f330d173bf381dfcb6b"
+    "sha256": "1f3414f49df059c31d7f5edd10d6c3184b8e6a9c2e2d925f3e217bcf564dfdbf"
   },
   "engine-ml-api": {
     "version": "2.0.1",
@@ -365,9 +365,9 @@
     "sha256": "119980489deba24a4b7bff6854dda49e3eb561edbc5b0920f541dd4bae507f95"
   },
   "c18-models": {
-    "version": "2.0.0",
+    "version": "3.0.0",
     "schema": "docs/contracts/schemas/c18/models.schema.json",
-    "sha256": "fc32bf28c8adb8aa4d34ac6ef4321f6200c3aeb6586009a066fd9db4de9532b2"
+    "sha256": "3019d5fbad45596c67e7c966277fd9afb7b7f924d395ed11f23a74f05dfede56"
   },
   "engine-aggregation-api": {
     "version": "1.1.0",

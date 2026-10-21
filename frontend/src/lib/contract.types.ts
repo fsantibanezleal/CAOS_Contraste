@@ -249,6 +249,8 @@ export const MANIFEST = {
   artifacts: { array: 'json' },
   contract: { map: { object: CONTRACT_SUMMARY } },
   expect: { map: nums },
+  // what the producer reads of other cases (case-manifest 2.0.0, U16-P1b)
+  depends_on: { array: { object: { kind: 'string', ref: 'string', reason: 'text' } } },
 } satisfies Record<keyof CaseManifest, Kind>;
 
 export const MODEL_SUMMARY = {

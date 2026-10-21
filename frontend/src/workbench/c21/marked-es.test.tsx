@@ -16,8 +16,8 @@ describe('Marked marks only the source reference', () => {
     expect(html('la fila 10.2 del Anexo 3 es N/A')).toBe('la <span translate="no" lang="es">fila 10.2</span> del Anexo 3 es N/A');
   });
   it('marks the sum of rows a label names, not the label', () => {
-    expect(html('Cuantificacion del capital necesario por riesgos no cubiertos en pilar 1 (4.4+4.5+4.6)')).toBe(
-      'Cuantificacion del capital necesario por riesgos no cubiertos en pilar 1 <span translate="no">(4.4+4.5+4.6)</span>',
+    expect(html('Cuantificación del capital necesario por riesgos no cubiertos en pilar 1 (4.4+4.5+4.6)')).toBe(
+      'Cuantificación del capital necesario por riesgos no cubiertos en pilar 1 <span translate="no">(4.4+4.5+4.6)</span>',
     );
   });
   it('marks the row arithmetic of the Annex 3 labels but keeps a short percent range a plain no-break range', () => {

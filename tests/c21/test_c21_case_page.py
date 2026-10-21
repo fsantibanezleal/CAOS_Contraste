@@ -22,7 +22,7 @@ def test_the_case_page_results_block_is_generated_from_the_committed_documents()
 
 
 def test_the_lights_sentence_agrees_with_the_red_rows_of_the_committed_documents() -> None:
-    """Review M1: the page said that no light is red by contract, and 112 of 522 rows are red."""
+    """Review M1: the page said that no light is red by contract, and 116 of 570 rows are red."""
     docs = {v: committed(v) for v in VARIANTS}
     red: dict[str, int] = {}
     for d in docs.values():
@@ -31,11 +31,11 @@ def test_the_lights_sentence_agrees_with_the_red_rows_of_the_committed_documents
     block = page.block_of(PAGE.read_text(encoding="utf-8"))
     sentence = next(line for line in block.splitlines() if line.startswith("An amber light"))
     assert "none is red by contract" not in block
-    assert sum(red.values()) == 112 and {t for t, n in red.items() if n} == {"fair.two_proportion_z", "fair.fisher_exact"}
+    assert sum(red.values()) == 116 and {t for t, n in red.items() if n} == {"fair.two_proportion_z", "fair.fisher_exact"}
     for test_id, n in red.items():
         name = test_id.removeprefix("fair.")
         assert (name in sentence.split("never red by contract")[0]) == bool(n), (name, sentence)
-    assert "red below the 0.01 p-value convention" in sentence and "112 of 522 rows" in sentence
+    assert "red below the 0.01 p-value convention" in sentence and "116 of 570 rows" in sentence
     assert "the other tests are never red by contract" in sentence and "none is a finding of a violation" in sentence
 
 
@@ -68,12 +68,12 @@ def test_the_executive_brief_and_the_row_table_carry_the_figures_of_the_document
     excluded = sum(1 for c in contrasts if c["controlled"]["estimate"]["ci"]["lo"] > 0 or c["controlled"]["estimate"]["ci"]["hi"] < 0)
     same = sum(1 for c in contrasts if c["confirmation"]["estimate"]["same_sign"])
     assert f"in {excluded} of {len(contrasts)} group contrasts" in brief and f"same sign in {same} of {len(contrasts)} contrasts" in brief
-    # review M3: the 61 contrasts point both ways, so the proof point says how many sit below 1 and how many above, and leads with the
+    # review M3: the 67 contrasts point both ways, so the proof point says how many sit below 1 and how many above, and leads with the
     # Black against White comparison, whose unconditional and controlled odds ratios agree
     kept = [c for c in contrasts if c["controlled"]["estimate"]["ci"]["lo"] > 0 or c["controlled"]["estimate"]["ci"]["hi"] < 0]
     below = sum(1 for c in kept if c["controlled"]["estimate"]["odds_ratio"] < 1)
     above = len(kept) - below
-    assert (below, above) == (37, 24) and f"{below} with an odds ratio below 1 and {above} above 1" in brief
+    assert (below, above) == (37, 30) and f"{below} with an odds ratio below 1 and {above} above 1" in brief
     assert "Most of the gap survives" not in brief and "For Black applicants the gap survives the permitted controls" in brief
     fisher = [black_white(v)[3]["fisher_exact"]["odds_ratio"] for v in VARIANTS]
     assert f"unconditional odds ratio {min(fisher):.2f} to {max(fisher):.2f}" in brief

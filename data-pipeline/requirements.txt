@@ -21,3 +21,5 @@ pypdf==6.19.0
 riskvalidation[market]==0.9.0
 # reads the EBA/ESRB 2025 macro-financial scenario workbook (C18, decision Q15 of the U13 sizing); MIT
 openpyxl==3.1.5
+# the layered layout of the governance dependency map (BSD-3-Clause; pipeline only, not an engine dependency; U15-P)
+networkx==3.7

@@ -31,6 +31,13 @@ def _id(row: dict[str, Any]) -> str:
     return f"{row['test_id']}@{row['model_id']}@{row['segment']}"
 
 
+def favours_elderly(row: dict[str, Any]) -> bool:
+    """The controlled row of the 62 contrast whose odds favour the group 62 or over (odds ratio above 1): Regulation B 1002.6(b)(2)(iv)
+    permits favourable treatment of an elderly applicant, so the contrast is measured and shown but does not raise the finding of higher
+    controlled odds. A disparity against the group (odds ratio below 1) raises its finding as for any group."""
+    return row["segment"].startswith(f"{legal.AGE62}|{legal.GROUPS[legal.AGE62][0]} vs ") and row["extras"]["effect"]["odds_ratio"] > 1
+
+
 def _excludes_zero(row: dict[str, Any]) -> bool:
     effect = (row.get("extras") or {}).get("effect")
     return effect is not None and (effect["lo"] > 0 or effect["hi"] < 0)
@@ -55,8 +62,10 @@ def build(tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 continue
             if not rep["extras"]["same_sign"]:
                 not_repeated.append((r, rep))
-            else:
-                (lower if r["extras"]["effect"]["odds_ratio"] < 1 else higher).append((r, rep))
+            elif r["extras"]["effect"]["odds_ratio"] < 1:
+                lower.append((r, rep))
+            elif not favours_elderly(r):                  # 1002.6(b)(2)(iv) permits favouring the elderly: measured, not raised
+                higher.append((r, rep))
         elif r["test_id"] == "fair.rate_spread_disparity" and r["model_id"] == MODEL_OLS and _excludes_zero(r):
             rep = by_key.get(f"fair.replication@{MODEL_OLS}@{r['segment']}|rate_spread")
             if rep is not None and rep["extras"]["same_sign"]:
@@ -96,6 +105,7 @@ def build(tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "reference group, the interval excluding 0",
             f"Disparidad del diferencial de tasa que se repite el año siguiente en {n} contrastes de grupos donde el grupo tiene un "
             "diferencial de tasa mayor que su grupo de referencia, con el intervalo excluyendo 0"))
+    n_attributes = sum(1 for r in tests if r["test_id"] == "fair.demographic_parity")
     gap = [r["segment"] for r in tests if r["test_id"] == "fair.demographic_parity" and r["light"] != "green"]
     if gap or spread_lower:
         evidence = [f"{tid}@{MODEL_RATES}@{seg}" for seg in gap for tid in ("fair.demographic_parity", "fair.adverse_impact")]
@@ -107,9 +117,9 @@ def build(tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     "grupo de referencia") if spread_lower else ""
         out.append(_finding(
             "F-UNCONDITIONAL-GAP", "S4", "open", evidence,
-            f"Unconditional approval-rate gaps in {len(gap)} of the 4 attributes{extra_en} are an indicator only: \"{quote}\" "
+            f"Unconditional approval-rate gaps in {len(gap)} of the {n_attributes} attributes{extra_en} are an indicator only: \"{quote}\" "
             "(Interagency Fair Lending Examination Procedures)",
-            f"Las brechas incondicionales de tasa de aprobación en {len(gap)} de los 4 atributos{extra_es} son solo un indicador: "
+            f"Las brechas incondicionales de tasa de aprobación en {len(gap)} de los {n_attributes} atributos{extra_es} son solo un indicador: "
             f"\"{quote}\" (Interagency Fair Lending Examination Procedures, cita en inglés)"))
     out.append(_finding(
         "F-LIMIT-CREDIT-SCORE", "S4", "accepted", ["design:credit-score-missing"],

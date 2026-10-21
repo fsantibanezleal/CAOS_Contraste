@@ -31,6 +31,8 @@ const withVariant = (x: VariantArtifact<Outputs>): C21Sel => defaultSel({ ...dat
 const clone = () => structuredClone(v) as VariantArtifact<Outputs>;
 const f3 = (x: number, lang: 'en' | 'es' = 'en') => formatNumber(x, lang, { decimals: 3 });
 const NA = formatNumber(null, 'en');
+/** The text a reader sees: the markup without its tags and attributes (data-group keeps the document's own group key). */
+const visible = (markup: string): string => markup.replace(/<[^>]+>/g, ' ');
 const SENTENCES = [
   'The Act does not provide that the &#x27;effects test&#x27; applies for determining whether there is discrimination in violation of the Act.',
   'disparate-impact claims are cognizable under the Fair Housing Act (FHA).',
@@ -220,6 +222,34 @@ describe('the C21 instrument', () => {
     expect(html(<GroupReadout sel={race} />)).toContain(formatNumber(0.7, 'en', { percent: true, decimals: 1 }).replace('%', ''));
   });
 
+  it('lists the 62 contrast where it lists the age bands, naming its groups in both languages (BL-087)', () => {
+    const doc = clone();
+    const base = structuredClone(doc.outputs.attributes.find((x) => x.field === 'derived_sex')!) as unknown as Record<string, unknown>;
+    const text = JSON.stringify(base).replaceAll('Female', '62 or over').replaceAll('Male', 'under 62').replace('"derived_sex"', '"applicant_age_above_62"');
+    const age62 = JSON.parse(text) as Outputs['attributes'][number];
+    age62.excluded_groups = [{ group: 'NA', n: 5, reason: { en: 'Not a protected group', es: 'No es un grupo protegido' } }] as never;
+    doc.outputs.attributes.push(age62);
+    const pick62 = { ...withVariant(doc), field: 'applicant_age_above_62', group: '62 or over' } as C21Sel;
+    for (const [name, View] of VIEWS.slice(0, 5)) {
+      const en = html(<View sel={pick62} />);
+      expect(en, name).toContain('data-group="62 or over"');
+    }
+    expect(html(<RatesView sel={pick62} />)).toContain('62 or over');
+    expect(html(<AttributeReadout sel={pick62} />)).toContain('Age, 62 or over');
+    setLang('es');
+    const es = html(<RatesView sel={pick62} />);
+    expect(es).toContain('62 o más');
+    expect(es).toContain('menores de 62');
+    expect(es).toContain('Edad, 62 o más'.toLowerCase());
+    expect(html(<AttributeReadout sel={pick62} />)).toContain('Edad, 62 o más');
+    expect(html(<ControlledView sel={pick62} />)).toContain('62 o más / menores de 62');
+    // the raw English group names reach no Spanish view of the contrast (the read-out, the four-fifths note, every other view)
+    for (const [name, View] of VIEWS.slice(0, 5)) expect(visible(html(<View sel={pick62} />)), name).not.toMatch(/62 or over|under 62/);
+    expect(visible(html(<AttributeReadout sel={pick62} />))).not.toMatch(/62 or over|under 62/);
+    expect(visible(html(<GroupReadout sel={pick62} />))).not.toMatch(/62 or over|under 62/);
+    expect(html(<FourFifthsView sel={pick62} />)).toContain('(menores de 62)');
+  });
+
   it('a changed fixture field changes the markup: the views read the document and nothing else', () => {
     const odd = clone();
     odd.outputs.attributes[0].groups[1].selection_rate = 0.7123;
@@ -240,6 +270,20 @@ describe('the C21 Findings view draws the evidence of each finding', () => {
       const [t, m, s] = key(e);
       return { f, e, row: pair.tests.find((r) => r.test_id === t && r.model_id === m && r.segment === s) };
     });
+
+  it('the Spanish evidence table names the groups of the 62 contrast in Spanish', () => {
+    const odd = structuredClone(pair) as VariantArtifact<Outputs>;
+    const seg = 'applicant_age_above_62|62 or over vs under 62';
+    odd.findings = [{ id: 'F-CONTROLLED-LOWER-ODDS', severity: 'S2', status: 'open', title: odd.findings[0].title,
+      evidence: [`fair.conditional_disparity@hmda-logistic-decision@${seg}`, `fair.replication@hmda-logistic-decision@${seg}|controlled`] }] as never;
+    setLang('es');
+    const es = html(<C21FindingsView sel={withVariant(odd)} />);
+    expect(es).toContain('62 o más vs menores de 62');
+    // the test-row ids a finding cites are the document's own identifiers and stay as written; nothing else may name the groups in English
+    expect(visible(es).replaceAll(`@${seg}`, '')).not.toMatch(/62 or over|under 62/);
+    setLang('en');
+    expect(html(<C21FindingsView sel={withVariant(odd)} />)).toContain('62 or over vs under 62');
+  });
 
   it('renders two cards: the findings table and the evidence', () => {
     const markup = html(<C21FindingsView sel={psel} />);

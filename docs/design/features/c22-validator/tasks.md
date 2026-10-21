@@ -11,7 +11,11 @@
 | 7 | Docs: the case page, the SDD map, the changelog; the canonical bake twice; the measured gate; screenshots read | CT-306, CT-310 | done |
 | 8 | U16-P2 (BL-091, BL-075): the 21 p-value tests of the other seven families join the null variant (the engine's named studies, 4,000 repetitions) and the `other-families` variant measures their power against the stated alternatives; c22-variant and c22-models 2.0.0; the credit families' numbers unchanged; the engine's documented excess shown | CT-301, CT-309, CT-314 to CT-316 | done |
 
-## Convergence verdict (2026-10-06)
+## Convergence verdict
+
+The verdict of this feature is generated, never written by hand. Every requirement of [`requirements.md`](requirements.md) has its row, with its gate and the gate's result in the release run, in [`../release-1-0/verdict.md`](../release-1-0/verdict.md) (filter the `feature` column by `c22-validator`). `scripts/convergence_verdict.py` writes that document from the result files of the release run; the procedure is in [`../release-1-0/design.md`](../release-1-0/design.md).
+
+### History: the verdict written by hand on 2026-10-06
 
 Converged. Two C22 bakes are byte-identical, file by file; C05's artifacts differ from 0.03.000 only in their version
 fields; C01 changed as the two corrections predict (Hosmer-Lemeshow's p rises with G degrees of freedom, the AUC test's

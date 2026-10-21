@@ -51,8 +51,8 @@ def sign_convention() -> dict:
     return {"engine_convention": "return-negative", "document_convention": "positive-loss",
             "definition": t("The engine stores VaR and ES in the return convention (negative numbers at the tail level alpha); this "
                             "document stores positive loss numbers, as decimals of the portfolio value.",
-                            "El motor guarda VaR y ES en la convencion de retornos (numeros negativos al nivel alfa); este "
-                            "documento guarda perdidas positivas, como decimales del valor de la cartera.")}
+                            "El motor guarda VaR y ES en la convención de retornos (números negativos al nivel alfa); este "
+                            "documento guarda pérdidas positivas, como decimales del valor de la cartera.")}
 
 
 def refit_days(spec: Spec, hp: Hyper) -> int:
@@ -245,13 +245,13 @@ def portfolio_block(p: pf.Portfolio) -> dict:
         klass, transform, (en, es) = pf.COMPONENT_META[s.series_id]
         comps.append({"series_id": s.series_id, "label": t(en, es), "source_class": klass, "weight": p.weights[s.series_id], "transform": transform})
     names = {"equity": ("A long position in the US equity market, the daily return of the Fama-French market factor plus the risk-free rate.",
-                        "Posicion larga en el mercado accionario de EE. UU.: el retorno diario del factor de mercado de Fama-French mas la tasa libre de riesgo."),
+                        "Posición larga en el mercado accionario de EE. UU.: el retorno diario del factor de mercado de Fama-French más la tasa libre de riesgo."),
              "rates": ("A long position in the 10-year US Treasury par bond: the daily return is minus the modified duration times the yield change.",
-                       "Posicion larga en el bono par del Tesoro de EE. UU. a 10 anos: el retorno diario es menos la duracion modificada por el cambio del rendimiento."),
+                       "Posición larga en el bono par del Tesoro de EE. UU. a 10 años: el retorno diario es menos la duración modificada por el cambio del rendimiento."),
              "fx": ("A long position in the euro against the US dollar: the simple daily return of US dollars per euro (H.10).",
-                    "Posicion larga en el euro frente al dolar: el retorno simple diario de dolares por euro (H.10)."),
+                    "Posición larga en el euro frente al dólar: el retorno simple diario de dólares por euro (H.10)."),
              "mixed": ("A mixed book of 50 percent US equity, 30 percent 10-year Treasury par bond and 20 percent euro, rebalanced daily to constant weights.",
-                       "Una cartera mixta de 50 por ciento renta variable de EE. UU., 30 por ciento bono par a 10 anos y 20 por ciento euro, reequilibrada a diario a pesos constantes.")}
+                       "Una cartera mixta de 50 por ciento renta variable de EE. UU., 30 por ciento bono par a 10 años y 20 por ciento euro, reequilibrada a diario a pesos constantes.")}
     en, es = names[w.asset_class]
     return {"description": t(en, es), "value_unit": "decimal-of-portfolio-value", "currency": "USD",
             "weighting": "constant-weights-daily-rebalanced", "components": comps}
@@ -313,9 +313,9 @@ def build_window(p: pf.Portfolio, runs: dict[str, ModelRun], hp: Hyper, *, code_
     fz_of = {(m["model_id"], lv["alpha"]): lv["fz0_mean"] for m in models for lv in m["by_level"]}
     impact = {
         "champion_fz0_1pct": {"value": fz_of.get((champ[0.01], 0.01)) if champ[0.01] else None, "unit": "fz0-loss",
-                              "label": t("Champion average FZ0 at 1 percent", "FZ0 medio del campeon al 1 por ciento")},
+                              "label": t("Champion average FZ0 at 1 percent", "FZ0 medio del campeón al 1 por ciento")},
         "champion_fz0_2_5pct": {"value": fz_of.get((champ[0.025], 0.025)) if champ[0.025] else None, "unit": "fz0-loss",
-                                "label": t("Champion average FZ0 at 2.5 percent", "FZ0 medio del campeon al 2,5 por ciento")},
+                                "label": t("Champion average FZ0 at 2.5 percent", "FZ0 medio del campeón al 2,5 por ciento")},
         "eligible_models": {"value": float(sum(eligible.values())), "unit": "models",
                             "label": t("Models passing every eligibility gate", "Modelos que pasan todas las compuertas de elegibilidad")}}
     outputs = {
@@ -398,25 +398,25 @@ def build_models(portfolios: dict[str, pf.Portfolio], runs: dict[str, dict[str, 
             "ladder": ladder, "traffic_light": traffic,
             "es_reference": {"statistic": "Z2", "n_days": 250, "alpha": 0.025, "yellow": -0.7, "red": -1.8,
                              "status": t("A published reference point (Acerbi and Szekely), not a regulatory threshold; each model's own simulated critical values are in the outputs.",
-                                         "Un punto de referencia publicado (Acerbi y Szekely), no un umbral regulatorio; los valores criticos simulados de cada modelo estan en los resultados.")},
+                                         "Un punto de referencia publicado (Acerbi y Szekely), no un umbral regulatorio; los valores críticos simulados de cada modelo están en los resultados.")},
             "scoring": {"fz0_formula": "-(1/(alpha*e))*1{y<=v}*(v-y) + v/e + log(-e) - 1", "tick_formula": "(alpha - 1{y<v})*(y - v)",
                         "hac_kernel": "bartlett", "mcs_confidence": MCS_CONFIDENCE, "mcs_statistic": MCS_STATISTIC,
                         "selection_rule": t("Traditional back-tests (POF, conditional coverage, Z2) are eligibility gates; the champion is the lowest average FZ0 among the eligible models with an ES on every day; Diebold-Mariano and the model confidence set rank the ladder. The Z2 null is tail-consistent: an exponential excess over the VaR with mean ES minus VaR.",
-                                            "Los back-tests tradicionales (POF, cobertura condicional, Z2) son compuertas de elegibilidad; el campeon es el menor FZ0 medio entre los elegibles con ES todos los dias; Diebold-Mariano y el conjunto de confianza de modelos ordenan la escalera. La nula de Z2 es consistente con la cola: un exceso exponencial sobre el VaR con media ES menos VaR.")},
+                                            "Los back-tests tradicionales (POF, cobertura condicional, Z2) son compuertas de elegibilidad; el campeón es el menor FZ0 medio entre los elegibles con ES todos los días; Diebold-Mariano y el conjunto de confianza de modelos ordenan la escalera. La nula de Z2 es consistente con la cola: un exceso exponencial sobre el VaR con media ES menos VaR.")},
             "eligibility_gates": [
                 {"test_id": "market.kupiec_pof", "rule": t("Red at the 5 percent level at either tail level: ineligible.", "Rojo al 5 por ciento en cualquiera de los dos niveles: inelegible.")},
                 {"test_id": "market.christoffersen_conditional_coverage", "rule": t("Red at the 5 percent level at either tail level: ineligible.", "Rojo al 5 por ciento en cualquiera de los dos niveles: inelegible.")},
-                {"test_id": "market.acerbi_szekely", "rule": t("Red against the model's own simulated critical value: ineligible; not evaluated is not red.", "Rojo frente al valor critico simulado propio: inelegible; no evaluado no es rojo.")}],
+                {"test_id": "market.acerbi_szekely", "rule": t("Red against the model's own simulated critical value: ineligible; not evaluated is not red.", "Rojo frente al valor crítico simulado propio: inelegible; no evaluado no es rojo.")}],
             "data_sources": [
                 {"series_id": "french-daily", "title": t("Kenneth French data library, daily factor returns", "Biblioteca de datos de Kenneth French, retornos diarios de factores"),
                  "source_class": "derived-only", "url": "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html",
                  "licence_note": t("Copyright Eugene F. Fama and Kenneth R. French; only derived results are committed (dossier 08 C.5).", "Copyright Eugene F. Fama y Kenneth R. French; solo se publican resultados derivados (dossier 08 C.5).")},
                 {"series_id": "treasury-par", "title": t("US Treasury daily par yield curve", "Curva de rendimientos par diaria del Tesoro de EE. UU."),
                  "source_class": "mirror-allowed", "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/",
-                 "licence_note": t("Work of US federal employees (17 U.S.C. 105; page statement UNVERIFIED, dossier 08 C.2).", "Obra de empleados federales de EE. UU. (17 U.S.C. 105; la declaracion de la pagina no esta verificada, dossier 08 C.2).")},
+                 "licence_note": t("Work of US federal employees (17 U.S.C. 105; page statement UNVERIFIED, dossier 08 C.2).", "Obra de empleados federales de EE. UU. (17 U.S.C. 105; la declaración de la página no está verificada, dossier 08 C.2).")},
                 {"series_id": "h10-fx", "title": t("Federal Reserve H.10 foreign exchange rates, euro", "Tipos de cambio H.10 de la Reserva Federal, euro"),
                  "source_class": "mirror-allowed", "url": "https://www.federalreserve.gov/releases/h10/",
-                 "licence_note": t("Board publication under the Board's public-domain statement (dossier 08 C.8); the euro series starts 2000-01-03.", "Publicacion de la Junta bajo su declaracion de dominio publico (dossier 08 C.8); la serie del euro comienza el 2000-01-03.")}]},
+                 "licence_note": t("Board publication under the Board's public-domain statement (dossier 08 C.8); the euro series starts 2000-01-03.", "Publicación de la Junta bajo su declaración de dominio público (dossier 08 C.8); la serie del euro comienza el 2000-01-03.")}]},
         "provenance": provenance, "lane": {"lane": "precompute", "reasons": []}}
 
 

@@ -321,7 +321,10 @@ def write_documents(root: Path | str, built: Built, manifests: Path | str | None
     (root / SUMS_REL).write_text("\n".join(sums) + "\n", encoding="utf-8", newline="\n")
     ranges = expectations.check(CASE_ID, EXPECT, built.values)
     default = DEFAULT_VARIANT if DEFAULT_VARIANT in {e["variant_id"] for e in entries} else next(e["variant_id"] for e in entries if e["role"] == "variant")
+    from . import CASE
+
     manifest = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=_title(), category={"en": "Balance sheet: IRRBB and liquidity", "es": "Balance: IRRBB y liquidez"}, question=_question(),
         sources=list(SOURCES), seed=built.models["provenance"]["seed"], variants=entries, default_variant=default, contract=built.contract,
         expect=ranges, riskvalidation_version=engine_version(), source_details=_source_details(SOURCES))

@@ -24,7 +24,7 @@ def _manifest(**over):
               question={"en": "Does the challenger beat the champion?", "es": "¿Supera el retador al campeón?"},
               sources=["uci-taiwan"], seed=42, variants=[MODELS, VARIANT], default_variant="holdout",
               contract={"family": "scored_sample", "counts": {"input": 1}}, expect={"auc": (0.70, 0.80)},
-              riskvalidation_version="0.1.0", source_details={"uci-taiwan": {"name": "x", "publisher": "y", "landing": "https://x", "licence": "CC BY 4.0", "class": "mirror-allowed", "attribution": "z"}}) | over
+              riskvalidation_version="0.1.0", depends_on=[], source_details={"uci-taiwan": {"name": "x", "publisher": "y", "landing": "https://x", "licence": "CC BY 4.0", "class": "mirror-allowed", "attribution": "z"}}) | over
     return m.build_case_manifest(**kw)
 
 
@@ -46,6 +46,24 @@ def test_manifest_shape_and_checks():
         _manifest(question={"en": "only English"})
     with pytest.raises(m.ContractViolation, match="no expected range"):
         _manifest(expect={})
+
+
+def test_depends_on_is_required_sorted_and_about_other_cases():
+    reason = {"en": "Reads it.", "es": "Lo lee."}
+    dep = [{"kind": "code", "ref": "pipeline.cases.c01_ladder", "reason": reason}, {"kind": "document", "ref": "C07/base.json", "reason": reason}]
+    assert _manifest(case_id="C02", depends_on=dep)["depends_on"] == dep
+    assert _manifest()["depends_on"] == []
+    with pytest.raises(TypeError):
+        m.build_case_manifest(**{k: v for k, v in dict(case_id="C01", title=T, category=T, question=T, sources=[], seed=1, variants=[MODELS, VARIANT],
+                                                        default_variant="holdout", contract={}, expect={"a": (0, 1)}, riskvalidation_version=None).items()})
+    with pytest.raises(m.ContractViolation, match="sorted by kind then ref"):
+        _manifest(case_id="C02", depends_on=dep[::-1])
+    with pytest.raises(m.ContractViolation, match="not a document of another case"):
+        _manifest(depends_on=[dict(dep[1], ref="C01/holdout.json")])
+    with pytest.raises(m.ContractViolation, match="not a code of another case"):
+        _manifest(case_id="C02", depends_on=[dict(dep[0], ref="C07/base.json")])
+    with pytest.raises(m.ContractViolation, match="both non-empty"):
+        _manifest(case_id="C02", depends_on=[dict(dep[0], reason={"en": "only"})])
 
 
 def test_index_names_a_baked_default_case():

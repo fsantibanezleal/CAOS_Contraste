@@ -11,7 +11,8 @@ from typing import Any
 
 BEGIN = "<!-- c21-results:begin -->"
 END = "<!-- c21-results:end -->"
-FIELD_NAMES = {"derived_race": "Race", "derived_ethnicity": "Ethnicity", "derived_sex": "Sex", "applicant_age": "Age"}
+FIELD_NAMES = {"derived_race": "Race", "derived_ethnicity": "Ethnicity", "derived_sex": "Sex", "applicant_age": "Age",
+               "applicant_age_above_62": "Age, 62 or over"}
 TEST_ORDER = ("fair.demographic_parity", "fair.adverse_impact", "fair.two_proportion_z", "fair.fisher_exact", "fair.conditional_disparity",
               "fair.rate_spread_disparity", "fair.replication", "fair.situation_testing")
 

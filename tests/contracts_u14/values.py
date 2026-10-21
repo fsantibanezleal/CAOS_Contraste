@@ -20,10 +20,10 @@ C20_NAMES = list(NAMED)
 C02_NAMES = ["overfit_tolerance"]
 
 # U14 research addendum H1 (sections 2.2 and 2.4), snapshot spellings.
-ATTRIBUTE_FIELDS = ["derived_race", "derived_ethnicity", "derived_sex", "applicant_age"]
+ATTRIBUTE_FIELDS = ["derived_race", "derived_ethnicity", "derived_sex", "applicant_age", "applicant_age_above_62"]
 CONTROL_FIELDS = ["debt_to_income_ratio", "combined_loan_to_value_ratio", "income", "loan_amount", "property_value", "loan_type",
                   "loan_purpose", "lien_status", "occupancy_type"]
-OTHER_FIELDS = ["applicant_age_above_62", "action_taken", "rate_spread", "denial_reason_1", "denial_reason_2", "denial_reason_3",
+OTHER_FIELDS = ["action_taken", "rate_spread", "denial_reason_1", "denial_reason_2", "denial_reason_3",
                 "denial_reason_4"]
 HMDA_FIELDS = ATTRIBUTE_FIELDS + CONTROL_FIELDS + OTHER_FIELDS
 # H3 section 5: field, basis, ecoa, fha (age is ECOA only; ethnicity maps to national origin by convention, UNVERIFIED).
@@ -32,24 +32,28 @@ LEGAL = {
     "derived_ethnicity": ("national_origin_nearest_UNVERIFIED", True, True),
     "derived_sex": ("sex", True, True),
     "applicant_age": ("age_ecoa_only", True, False),
+    "applicant_age_above_62": ("age_ecoa_only", True, False),
 }
 # H3 section 5, column "Theory and role": "disparate impact under the FHA only" for race, ethnicity and sex; age is ECOA only.
 FHA_DI = ("not assessed (disparate impact under the FHA only; gross HMDA disparities are not appropriate for disproportionate adverse "
           "impact analysis, Interagency Procedures appendix, printed page 26)")
 FHA_DI_AGE = "not applicable (age is a prohibited basis under ECOA only, not in 42 U.S.C. 3605(a))"
-FHA_DISPARATE_IMPACT = {"derived_race": FHA_DI, "derived_ethnicity": FHA_DI, "derived_sex": FHA_DI, "applicant_age": FHA_DI_AGE}
+FHA_DISPARATE_IMPACT = {"derived_race": FHA_DI, "derived_ethnicity": FHA_DI, "derived_sex": FHA_DI, "applicant_age": FHA_DI_AGE,
+                        "applicant_age_above_62": FHA_DI_AGE}
 GROUPS = {
     "derived_race": ["American Indian or Alaska Native", "Asian", "Black or African American",
                      "Native Hawaiian or Other Pacific Islander", "White", "2 or more minority races"],
     "derived_ethnicity": ["Hispanic or Latino", "Not Hispanic or Latino"],
     "derived_sex": ["Male", "Female"],
     "applicant_age": ["<25", "25-34", "35-44", "45-54", "55-64", "65-74", ">74"],
+    "applicant_age_above_62": ["62 or over", "under 62"],
 }
 NON_GROUPS = {
     "derived_race": ["Joint", "Free Form Text Only", "Race Not Available"],
     "derived_ethnicity": ["Joint", "Free Form Text Only", "Ethnicity Not Available"],
     "derived_sex": ["Joint", "Sex Not Available"],
     "applicant_age": ["8888"],
+    "applicant_age_above_62": ["NA"],
 }
 TREATMENTS = ["unmodified", "binned", "rounded", "top-coded", "bottom-coded", "withheld", "not-applicable"]
 

@@ -259,5 +259,30 @@ def operational(anchors: Anchors, fx_rate: float, n_points: int = 1 << 21) -> Ma
                      "infinite_mean": infinite, "fx_rate": fx_rate, "tail_index": xi})
 
 
+def quantile_probabilities() -> np.ndarray:
+    """The probability grid of the committed quantile functions: Phi(z) for z = -4.9 to 4.9 in steps of 0.005 (a named convention, ``P.GRID_*``)."""
+    k = np.arange(-(P.GRID_POINTS // 2), P.GRID_POINTS // 2 + 1)
+    return stats.norm.cdf(k * P.GRID_Z_STEP)
+
+
+def quantile_grid(marginals: list[Marginal]) -> dict[str, Any]:
+    """Each marginal's quantile function at the grid probabilities, in CLP millions: what a reader needs to rebuild the marginals the copulas
+    and the bounds are run on (a notebook interpolates linearly in the probability, the rule the aggregation applies to the sorted sample)."""
+    probs = quantile_probabilities()
+    return {
+        "convention": {"name": "standard-normal-z-grid", "z_min": -P.GRID_Z_MAX, "z_max": P.GRID_Z_MAX, "z_step": P.GRID_Z_STEP, "points": int(probs.size),
+                       "unit": "CLP millions",
+                       "statement": T("The probabilities are Phi(z) for z from -4.9 to 4.9 in steps of 0.005, the standard normal distribution function: "
+                                      "dense in both tails, where a quantile function bends, and as far out as the first and last of the 10^6 draws (5e-7). "
+                                      "Each marginal's quantile at a probability is the quantile function the aggregation reads, linear in the probability "
+                                      "between two points.",
+                                      "Las probabilidades son Phi(z) para z de -4,9 a 4,9 en pasos de 0,005, la función de distribución normal estándar: "
+                                      "densas en ambas colas, donde una función de cuantiles se curva, y hasta la primera y la última de las 10^6 simulaciones (5e-7). "
+                                      "El cuantil de cada marginal en una probabilidad es la función de cuantiles que lee la agregación, lineal en la probabilidad "
+                                      "entre dos puntos.")},
+        "probabilities": [float(x) for x in probs],
+        "marginals": [{"risk": m.risk, "quantiles": [float(x) for x in np.asarray(m.ppf(probs), dtype=float)]} for m in marginals]}
+
+
 def all_marginals(anchors: Anchors, fx_rate: float, n_draws: int = P.N_DRAWS, n_paths: int = P.N_PATHS_IRRBB) -> list[Marginal]:
     return [credit(anchors, n_draws), market(anchors, n_draws), irrbb(anchors, n_paths), operational(anchors, fx_rate)]

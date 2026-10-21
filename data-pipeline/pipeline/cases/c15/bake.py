@@ -261,7 +261,10 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None) -> dict[str, 
     (root / SUMS_REL).write_text("\n".join(sums) + "\n", encoding="utf-8", newline="\n")
     ranges = expectations.check(CASE_ID, EXPECT, built.values)
     contract = {k: v for k, v in built.contract[DEFAULT_VARIANT].items() if k != "_book"}
+    from . import CASE
+
     manifest = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=_title(), category={"en": "Balance sheet: IRRBB and liquidity", "es": "Balance: IRRBB y liquidez"},
         question=_question(), sources=list(SOURCES), seed=seed, variants=entries, default_variant=DEFAULT_VARIANT, contract=contract,
         expect=ranges, riskvalidation_version=engine_version(), source_details=_source_details(SOURCES))

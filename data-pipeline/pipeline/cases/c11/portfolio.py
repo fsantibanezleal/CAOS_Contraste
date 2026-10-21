@@ -28,9 +28,9 @@ COMPONENT_META = {
     "french-daily": ("derived-only", "simple-daily-return-of-the-us-equity-market (Mkt-RF plus RF)",
                      ("US equity market (Kenneth French)", "Mercado accionario de EE. UU. (Kenneth French)")),
     "treasury-par": ("mirror-allowed", "negative-modified-duration-times-yield-change",
-                     ("10-year US Treasury par bond", "Bono par del Tesoro de EE. UU. a 10 anos")),
+                     ("10-year US Treasury par bond", "Bono par del Tesoro de EE. UU. a 10 años")),
     "h10-fx": ("mirror-allowed", "simple-return-of-us-dollars-per-euro",
-               ("Euro against the US dollar (Federal Reserve H.10)", "Euro frente al dolar de EE. UU. (H.10 de la Reserva Federal)")),
+               ("Euro against the US dollar (Federal Reserve H.10)", "Euro frente al dólar de EE. UU. (H.10 de la Reserva Federal)")),
 }
 
 
