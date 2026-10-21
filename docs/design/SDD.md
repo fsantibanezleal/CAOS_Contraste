@@ -481,11 +481,34 @@ No oracle here is a model judging another model.
 
 ## Beyond the state of the art
 
-None claimed. A component of Contraste that goes further than the practice its research found enters this section with the
+A component of Contraste that goes further than the practice its research found enters this section with the
 topic unit that demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes
 beyond, and a level 4 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches
 the package's contract and demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8)
 and enter here one by one, so no claim is stated before its demonstration exists.
+
+- **BS-1** The measured size and power of the validation tests on planted defects.
+  What it adds: for each of the 21 tests with a p-value, its rejection rate under its null at 5% and 1% (its size), and for 17 of
+  them its rejection rate against defects of known severity (its power); the four transition tests (time homogeneity, Markov order,
+  matrix against a reference, downward momentum) have a size and no power. The measurement is 231 simulations and 551,000 seeded
+  repetitions in eight families, every one of its 476 rates with its Monte Carlo standard error (Morris, White and Crowther 2019,
+  https://doi.org/10.1002/sim.8086) and its Wilson interval (Brown, Cai and DasGupta 2001, https://doi.org/10.1214/ss/1009213286),
+  an exact rejection probability beside 47 of the rows, on 123 generators whose truth is known and reproduces from the committed
+  configuration. Demonstrated by `notebooks/en/14-validating-the-validator/08-beyond-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb`
+  and its Spanish counterpart.
+  Evidence: `data/derived/C22/null.json`, `data/derived/C22/miscalibration.json`, `data/derived/C22/clustering.json`,
+  `data/derived/C22/drift.json`, `data/derived/C22/discrimination-decay.json`, `data/derived/C22/leakage.json`,
+  `data/derived/C22/broken-monotonicity.json`, `data/derived/C22/concentration.json`,
+  `docs/design/features/c22-validator/requirements.md`, `tests/test_c22.py`.
+  Beyond: the ECB 2019 instructions define the tests and set no pass or fail thresholds; BCBS Working Paper 14 concludes that "no
+  really powerful tests of adequate calibration are currently available"
+  (https://www.bis.org/publications/studies-validation-internal-rating-systems-revised.pdf); the PSI bands are used without a statement
+  of their type I and type II error (Yurdakul and Naranjo 2020, https://doi.org/10.21314/JRMV.2020.227); and the validation toolkits
+  the research surveyed list tests, thresholds and traffic lights and record no measured size or power (UNVERIFIED beyond the
+  documentation the survey read).
+  Not claimed: the power of the four transition tests; that a rate holds outside the generator and the severity ladder it was
+  measured on (the ladders are design choices of Contraste, and power against them is not a probability of detecting a real bank's
+  problem); any regulatory threshold implied by a size or a power.
 
 ## Deploy driver
 
