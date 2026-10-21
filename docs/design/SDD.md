@@ -235,6 +235,28 @@ The topic 10 (liquidity) notebooks cite, from the research dossier 05 (section E
 - Cookson, Fox, Gil-Bazo, Imbet and Schiller (2026), social media as a bank run catalyst, https://doi.org/10.1016/j.jfineco.2025.104218;
 - Jiang, Matvos, Piskorski and Seru (2024), monetary tightening and U.S. bank fragility in 2023: mark-to-market losses and uninsured depositor runs, https://doi.org/10.1016/j.jfineco.2024.103899.
 
+The topic 08 notebooks (counterparty credit risk and the regulatory calculators) cite, besides those:
+
+- BCBS, Basel Framework, CRE52 Standardised approach to counterparty credit risk (in force 2023-01-01, published 2020-06-05). https://www.bis.org/committees/bcbs/basel-framework/standard/cre/52/inforce/2023-01-01/published/2020-06-05
+- BCBS, Basel Framework, CRE53 Internal model method for counterparty credit risk (in force 2023-01-01, published 2020-06-05). https://www.bis.org/basel_framework/chapter/CRE/53.htm?inforce=20230101&published=20200605
+- BCBS, Basel Framework, CRE99 Illustrative examples of the standardised approach to counterparty credit risk (in force 2023-01-01). https://www.bis.org/committees/bcbs/basel-framework/standard/cre/99/inforce/2023-01-01/published/2020-03-27
+- BCBS, Basel Framework, CRE20 Standardised approach: individual exposures (in force 2023-01-01, published 2025-06-10). https://www.bis.org/committees/bcbs/basel-framework/standard/cre/20/inforce/2023-01-01/published/2025-06-10
+- BCBS, Basel Framework, MAR50 CVA risk framework (in force 2023-01-01, published 2020-07-08). https://www.bis.org/committees/bcbs/basel-framework/standard/mar/50/inforce/2023-01-01/published/2020-07-08
+- BCBS, Basel Framework, MAR21 Standardised approach: sensitivities-based method (in force 2023-01-01). https://www.bis.org/committees/bcbs/basel-framework/standard/mar/21/inforce/2023-01-01/published/2026-03-23
+- BCBS, Basel Framework, RBC20 Calculation of minimum risk-based capital requirements (in force 2023-01-01, published 2020-11-26). https://www.bis.org/committees/bcbs/basel-framework/standard/rbc/20/inforce/2023-01-01/published/2020-11-26
+- BCBS, Basel Framework, RBC90 Transitional arrangements and the output floor phase-in (in force 2023-01-01). https://www.bis.org/committees/bcbs/basel-framework/standard/rbc/90/inforce/2023-01-01/published/2020-03-27
+- BCBS (2010), Sound practices for backtesting counterparty credit risk models, publication 185. https://www.bis.org/publ/bcbs185.htm
+- Hull, J. and White, A. (2012), CVA and wrong way risk, Financial Analysts Journal 68(5), 58-69. https://doi.org/10.2469/faj.v68.n5.6
+- Hull, J. and White, A. (1990), Pricing interest-rate-derivative securities, Review of Financial Studies 3(4), 573-592. https://doi.org/10.1093/rfs/3.4.573
+- Brigo, D., Dalessandro, A., Neugebauer, M. and Triki, F. (2008), A stochastic processes toolkit for risk management, arXiv 0812.4210. https://arxiv.org/abs/0812.4210
+- Formenti, L., Spadafora, L., Terraneo, F. and Ramponi, A., Probability integral transform and Anderson-Darling backtests, arXiv 1505.04593. https://arxiv.org/abs/1505.04593
+- Andersen, L., Pykhtin, M. and Sokol, A. (2017), Rethinking the margin period of risk, Journal of Credit Risk 13(1). https://doi.org/10.21314/JCR.2016.218
+- Open Source Risk Engine, Methodology, value adjustments and margin period of risk (xva.tex at tag 1.8.17.0). https://github.com/OpenSourceRisk/Engine/blob/1.8.17.0/Docs/UserGuide/methods/xva.tex
+- Open Source Risk Engine (ORE), release 1.8.17.0. https://github.com/OpenSourceRisk/Engine
+- QuantLib, the open-source quantitative finance library. https://github.com/lballabio/QuantLib
+- U.S. Department of the Treasury, Daily Treasury Par Yield Curve Rates. https://home.treasury.gov/resource-center/data-chart-center/interest-rates/
+- U.S. Department of the Treasury, High Quality Market (HQM) Corporate Bond Yield Curve. https://home.treasury.gov/data/treasury-coupon-issues-and-corporate-bond-yield-curve/corporate-bond-yield-curve
+
 ## Sizing and contracts
 
 The design rests on two artifacts of contract-first parallel delivery (ADR-0080): the sizing and the contract catalog.
@@ -614,18 +636,29 @@ no claim is stated before its demonstration exists. Each claim is stated only as
 
 - **BS-2** The reconciliations against reference engines that exist today.
   What it adds: the engine's tests and estimators are held to independent implementations and to the printed digits of the papers,
-  and the gap is reported. The reconciliations that exist are the ones claimed: the printed tables and papers recomputed beside their
-  prints (413 printed numbers of five papers in the ratings and calibration cases, 296 reproduced to the printed digit, every other
-  one listed with its cell and its explanation), and the SciPy distributions behind the test statistics (the Jeffreys and binomial
-  p-values equal SciPy's on a grid). Not claimed: the Hull-White swap against ORE, which is not run, and the equality with the
-  transition-matrix cohort estimator, which has no engine test (backlog item BL-083).
+  and the gap is reported. The reconciliations that exist are the ones claimed:
+  - the printed tables and papers recomputed beside their prints (413 printed numbers of five papers in the ratings and calibration
+    cases, 296 reproduced to the printed digit, every other one listed with its cell and its explanation);
+  - the SciPy distributions behind the test statistics (the Jeffreys and binomial p-values equal SciPy's on a grid);
+  - the Hull-White exposure of the single swap and of the four-swap netting set against ORE 1.8.17.0, within two combined Monte Carlo
+    standard errors at all 33 report dates, with the EEPE and the CVA;
+  - the Hull-White closed forms against QuantLib 1.44 to a relative 1e-6;
+  - the wrong-way calibration against the printed values of the Appendix of Hull and White (2012).
+
+  Reported as gaps and not claimed: the collateralised variants (CSA with 10 and with 20 days) and the initial-margin variant against
+  ORE, with the largest EE gaps of 9.9, 7.1 and 11.7 combined standard errors, CVA gaps of 15.9 and 9.9 in the two CSA variants, and a
+  mean dynamic initial margin of ORE at 0.88 of the engine's. Not claimed: the wrong-way variant against ORE, whose example is a
+  different model, and the equality with the transition-matrix cohort estimator, which has no engine test (backlog item BL-083).
   Evidence: `tests/test_c04_parity.py`, `tests/test_c04_published.py`, `tests/test_c05.py`, `data/derived/C04/published.json`,
   `data/derived/C05/ldp-published.json`, `data/derived/C05/sp-2010.json`, `data/derived/C05/sp-2011.json`,
-  `docs/frameworks/01_riskvalidation/riskvalidation.md`.
+  `docs/frameworks/01_riskvalidation/riskvalidation.md`, `data/derived/C12/single-swap.json`, `data/derived/C12/netting-set.json`,
+  `data/derived/C12/csa-mpor-10d.json`, `data/derived/C12/csa-mpor-20d.json`, `data/derived/C12/with-im.json`,
+  `data/derived/C12/wrong-way-risk.json`.
   Beyond: toolkits ship the estimators and leave the reconciliation to the user; the persisted research (dossier 05) lists ORE and
-  QuantLib as reference engines whose numbers may be claimed only beyond the reconciliations actually run.
-  Demonstrated by: `notebooks/en/03-ratings-and-calibration/11-beyond-the-reconciliations-against-printed-answers.ipynb` and its
-  Spanish counterpart.
+  QuantLib as reference engines whose numbers Contraste must not claim as validated beyond the reconciliations actually run.
+  Demonstrated by: `notebooks/en/03-ratings-and-calibration/11-beyond-the-reconciliations-against-printed-answers.ipynb` and
+  `notebooks/en/08-counterparty-and-regulatory-calculators/08-beyond-exposure-reconciled-to-a-reference-engine.ipynb`, with their
+  Spanish counterparts.
 
 - **BS-3** The leakage-safe protocol per case, with gates.
   What it adds: a split declared per case (a locked stratified holdout for C01 and C02, out-of-time cohorts read at their 5-year mark
@@ -680,6 +713,22 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   Evidence: `data/derived/C14/vd-2021-q4.json`, `data/derived/C14/vd-2022-q2.json`, `data/derived/C14/vd-2022-q4.json`, `data/derived/C14/models-svb-2021-2022.json`, `docs/design/features/c14/requirements.md`, `notebooks/en/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`, `notebooks/es/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`.
   Beyond: the supervisor's review (https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf) states the practice as a finding and the research dossier 05 proposes the test; it cites no tool that implements it, which is UNVERIFIED beyond the dossier's search. The bank of C14 is real in aggregate and synthetic in behaviour, and its outlier test is breached at the three dates, so the breach flag does not vary and the flagged parameter is a fitted one, re-estimated at each date: the red rows show that the test operates on those parameters, not that the bank did it in these numbers.
 
+- **BS-11** Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run.
+  What it adds: the multiplier on the daily run-off rates of every segment at which the survival period first falls to a target of 30
+  days, capped so that no rate exceeds 1 and solved as a threshold (the survival period is at most the target at the multiplier and
+  longer just below it): 2.118175 on the LiST Adverse base and 1.383141 on the Extreme base. A target that cannot be bracketed is
+  refused with its reason and no number is returned (the fast-run base has a horizon of 5 days, below the target of 30). The fast-run
+  base is calibrated on the rows of Table A.1 dated before 2023 only, the engine refuses a 2023 row in a scored call, and the 2023 rows
+  score it, with the 85% of Silicon Valley Bank in 2 days as a labelled anchor and never a forecast: the modelled loss in those two days
+  is 0.1708 against 0.85.
+  Evidence: `data/derived/C16/reverse-stress.json`, `data/derived/C16/fast-run.json`, `data/derived/C16/models-svb-liquidity.json`,
+  `docs/design/features/c16/requirements.md`.
+  Beyond: the research dossier 05 lists reverse liquidity stress as the last rung of its liquidity model ladder ("the run-off multiplier
+  at which the survival period falls below a target, for example 30 days") without a measured case, and the ECB's LiST fixes smooth
+  scenarios first and reports the survival period they give; the research found no tool that implements the multiplier, which is
+  UNVERIFIED beyond the dossier's search. The bank is real in aggregate and synthetic in behaviour and deposits: the multipliers show
+  the method on those parameters, not the headroom of the bank.
+
 - **BS-12** The instability of the operational-risk capital, measured on independent histories of known truth.
   What it adds: for four tail indices (0.6, 0.8, 0.96 and 1.1), two history lengths (5 and 10 years) and two collection thresholds
   (EUR 10,000 and 20,000), 1,000 independent simulated histories per cell on disjoint seed ranges (16,000 histories). For each rung
@@ -700,22 +749,6 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   known truth over independent histories; that absence is UNVERIFIED beyond the dossier's search. The claim is about a synthetic
   bank whose severity is drawn from the family the tail estimators assume (which favours them) and whose lights use Contraste's
   internal gates; it says nothing about the capital of any real bank.
-
-- **BS-11** Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run.
-  What it adds: the multiplier on the daily run-off rates of every segment at which the survival period first falls to a target of 30
-  days, capped so that no rate exceeds 1 and solved as a threshold (the survival period is at most the target at the multiplier and
-  longer just below it): 2.118175 on the LiST Adverse base and 1.383141 on the Extreme base. A target that cannot be bracketed is
-  refused with its reason and no number is returned (the fast-run base has a horizon of 5 days, below the target of 30). The fast-run
-  base is calibrated on the rows of Table A.1 dated before 2023 only, the engine refuses a 2023 row in a scored call, and the 2023 rows
-  score it, with the 85% of Silicon Valley Bank in 2 days as a labelled anchor and never a forecast: the modelled loss in those two days
-  is 0.1708 against 0.85.
-  Evidence: `data/derived/C16/reverse-stress.json`, `data/derived/C16/fast-run.json`, `data/derived/C16/models-svb-liquidity.json`,
-  `docs/design/features/c16/requirements.md`.
-  Beyond: the research dossier 05 lists reverse liquidity stress as the last rung of its liquidity model ladder ("the run-off multiplier
-  at which the survival period falls below a target, for example 30 days") without a measured case, and the ECB's LiST fixes smooth
-  scenarios first and reports the survival period they give; the research found no tool that implements the multiplier, which is
-  UNVERIFIED beyond the dossier's search. The bank is real in aggregate and synthetic in behaviour and deposits: the multipliers show
-  the method on those parameters, not the headroom of the bank.
 
 ## Deploy driver
 
