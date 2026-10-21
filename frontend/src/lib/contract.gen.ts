@@ -10606,7 +10606,7 @@ export interface components {
         });
         /**
          * C18 models
-         * @description Catalog row c18-models 2.0.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank anchors, scenario sources, capital engine rules, named parameters).
+         * @description Catalog row c18-models 2.1.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank anchors, scenario sources, capital engine rules, named parameters).
          */
         "c18-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -10731,6 +10731,7 @@ export interface components {
             capital_basis: "economic-capital-var-less-el";
             /** @description The rule that maps a uniform draw through a marginal sample. */
             marginal_interpolation: string;
+            quantile_grid?: components["schemas"]["c18QuantileGrid"];
         };
         /** @description The aggregation block: the simple sum as the headline, the band with the model risk measures beside it, the Euler allocation and the diversification (both information), one horizon and one confidence level, the source and scaling of every marginal. */
         c18Aggregation: {
@@ -11757,6 +11758,46 @@ export interface components {
             /** @description A quarter end as an ISO date. */
             date: string;
             value: number;
+        };
+        /** @description The quantile function of each marginal at the grid probabilities (c18-models 2.1.0): a reader rebuilds the marginals the copulas and the bounds were run on by linear interpolation in the probability. Ascending probabilities, non-decreasing quantiles and the agreement with the marginal's VaR are checked by tests/c18/test_c18_quantile_grid.py. */
+        c18QuantileGrid: {
+            /** @description The named convention of the probability grid: p = Phi(z) for z from z_min to z_max in steps of z_step. */
+            convention: {
+                /** @constant */
+                name: "standard-normal-z-grid";
+                /**
+                 * @description The lowest standard normal quantile of the grid.
+                 * @constant
+                 */
+                z_min: -4.9;
+                /**
+                 * @description The highest standard normal quantile of the grid.
+                 * @constant
+                 */
+                z_max: 4.9;
+                /**
+                 * @description The step of z between two points.
+                 * @constant
+                 */
+                z_step: 0.005;
+                /**
+                 * @description The number of points: z from -4.9 to 4.9 in steps of 0.005.
+                 * @constant
+                 */
+                points: 1961;
+                /** @constant */
+                unit: "CLP millions";
+                statement: components["schemas"]["common-text"];
+            };
+            /** @description Phi(z) at the grid points, ascending. */
+            probabilities: number[];
+            /** @description One quantile function per marginal, in the order of the band's marginals. */
+            marginals: {
+                /** @enum {string} */
+                risk: "credit" | "market" | "irrbb" | "operational";
+                /** @description The marginal's quantile at each probability, CLP millions, non-decreasing. */
+                quantiles: number[];
+            }[] & (unknown & unknown & unknown & unknown);
         };
         /** @description A reference to a row of the band: its method and, for a t copula, its degrees of freedom. */
         c18Ref: {

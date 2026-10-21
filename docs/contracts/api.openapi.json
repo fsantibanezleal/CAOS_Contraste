@@ -43906,7 +43906,7 @@
       },
       "c18-models": {
         "title": "C18 models",
-        "description": "Catalog row c18-models 2.0.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank anchors, scenario sources, capital engine rules, named parameters).",
+        "description": "Catalog row c18-models 2.1.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank anchors, scenario sources, capital engine rules, named parameters).",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-models-envelope"
@@ -44642,6 +44642,9 @@
             "type": "string",
             "minLength": 1,
             "description": "The rule that maps a uniform draw through a marginal sample."
+          },
+          "quantile_grid": {
+            "$ref": "#/components/schemas/c18QuantileGrid"
           }
         }
       },
@@ -49498,6 +49501,154 @@
             "type": "number"
           }
         }
+      },
+      "c18QuantileGrid": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "convention",
+          "probabilities",
+          "marginals"
+        ],
+        "properties": {
+          "convention": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "z_min",
+              "z_max",
+              "z_step",
+              "points",
+              "unit",
+              "statement"
+            ],
+            "properties": {
+              "name": {
+                "const": "standard-normal-z-grid"
+              },
+              "z_min": {
+                "const": -4.9,
+                "description": "The lowest standard normal quantile of the grid."
+              },
+              "z_max": {
+                "const": 4.9,
+                "description": "The highest standard normal quantile of the grid."
+              },
+              "z_step": {
+                "const": 0.005,
+                "description": "The step of z between two points."
+              },
+              "points": {
+                "const": 1961,
+                "description": "The number of points: z from -4.9 to 4.9 in steps of 0.005."
+              },
+              "unit": {
+                "const": "CLP millions"
+              },
+              "statement": {
+                "$ref": "#/components/schemas/common-text"
+              }
+            },
+            "description": "The named convention of the probability grid: p = Phi(z) for z from z_min to z_max in steps of z_step."
+          },
+          "probabilities": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1
+            },
+            "minItems": 1961,
+            "maxItems": 1961,
+            "description": "Phi(z) at the grid points, ascending."
+          },
+          "marginals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "risk",
+                "quantiles"
+              ],
+              "properties": {
+                "risk": {
+                  "type": "string",
+                  "enum": [
+                    "credit",
+                    "market",
+                    "irrbb",
+                    "operational"
+                  ]
+                },
+                "quantiles": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "minItems": 1961,
+                  "maxItems": 1961,
+                  "description": "The marginal's quantile at each probability, CLP millions, non-decreasing."
+                }
+              }
+            },
+            "minItems": 4,
+            "maxItems": 4,
+            "description": "One quantile function per marginal, in the order of the band's marginals.",
+            "allOf": [
+              {
+                "contains": {
+                  "properties": {
+                    "risk": {
+                      "const": "credit"
+                    }
+                  },
+                  "required": [
+                    "risk"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "risk": {
+                      "const": "market"
+                    }
+                  },
+                  "required": [
+                    "risk"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "risk": {
+                      "const": "irrbb"
+                    }
+                  },
+                  "required": [
+                    "risk"
+                  ]
+                }
+              },
+              {
+                "contains": {
+                  "properties": {
+                    "risk": {
+                      "const": "operational"
+                    }
+                  },
+                  "required": [
+                    "risk"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "description": "The quantile function of each marginal at the grid probabilities (c18-models 2.1.0): a reader rebuilds the marginals the copulas and the bounds were run on by linear interpolation in the probability. Ascending probabilities, non-decreasing quantiles and the agreement with the marginal's VaR are checked by tests/c18/test_c18_quantile_grid.py."
       },
       "c18Ref": {
         "type": "object",

@@ -872,12 +872,28 @@ def fit_defs() -> dict:
         "market_horizon_scaling": R("c18MarketScaling"),
         "reverse_p2_cet1": R("c18Named"),
     }, "Every named parameter of the case with its value, unit and label (convention or case assumption).")
+    d["c18QuantileGrid"] = Ob({
+        "convention": Ob({
+            "name": C("standard-normal-z-grid"),
+            "z_min": C(-4.9, "The lowest standard normal quantile of the grid."), "z_max": C(4.9, "The highest standard normal quantile of the grid."),
+            "z_step": C(0.005, "The step of z between two points."), "points": C(1961, "The number of points: z from -4.9 to 4.9 in steps of 0.005."),
+            "unit": C("CLP millions"), "statement": TXT,
+        }, "The named convention of the probability grid: p = Phi(z) for z from z_min to z_max in steps of z_step."),
+        "probabilities": A(N(exclusiveMinimum=0, exclusiveMaximum=1), 1961, 1961, "Phi(z) at the grid points, ascending."),
+        "marginals": exact_rows(Ob({"risk": E(*RISKS), "quantiles": A(N(), 1961, 1961, "The marginal's quantile at each probability, CLP millions, "
+                                                                                  "non-decreasing.")}), "risk", RISKS,
+                                "One quantile function per marginal, in the order of the band's marginals."),
+    }, "The quantile function of each marginal at the grid probabilities (c18-models 2.1.0): a reader rebuilds the marginals the copulas and the "
+       "bounds were run on by linear interpolation in the probability. Ascending probabilities, non-decreasing quantiles and the agreement with "
+       "the marginal's VaR are checked by tests/c18/test_c18_quantile_grid.py.")
     d["c18AggParams"] = Ob({
         "ladder": A(Ob({"method": E(*BAND_METHODS), "engine_function": S(minLength=1)}), 6, 6),
         "n_draws": Int(1), "seed": Int(), "chunk_size": Int(1),
         "horizon_years": HORIZON, "confidence_level": LEVEL, "capital_basis": BASIS,
         "marginal_interpolation": S("The rule that maps a uniform draw through a marginal sample.", minLength=1),
     })
+    # optional, added at 2.1.0: a 2.0.0 document (without the grid) still validates
+    d["c18AggParams"]["properties"]["quantile_grid"] = R("c18QuantileGrid")
     d["c18C17Set"] = Ob({
         "document": C("C17 models-generator"),
         "variant_id": E("xi-0-6", "xi-0-8", "xi-0-96", "xi-1-1"),
@@ -987,7 +1003,7 @@ def main() -> None:
                    "Catalog row c18-outputs-reverse 1.0.0: the reverse stress variant (outputs.kind reverse), the minimum Mahalanobis distance scenario "
                    "that takes CET1 to the Chilean legal minimum stack.", "c18RevOutputs", rd)
     models_schema("C18 models",
-                  "Catalog row c18-models 2.0.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank "
+                  "Catalog row c18-models 2.1.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank "
                   "anchors, scenario sources, capital engine rules, named parameters).", "c18Fit", fd)
 
 

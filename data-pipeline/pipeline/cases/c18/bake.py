@@ -148,7 +148,7 @@ def build(seed: int, data_root: Path | str | None, *, n_draws: int | None = None
     agg_stress = agg.aggregation_block(marg, named, "correlation_matrix_stress", band_stress, n_draws, seed)
     _log("band: " + ", ".join(f"{r.method}{'' if r.nu is None else r.nu} {r.capital:,.0f}" for r in band_base.rows))
     target = cap.internal_target(named, anchors)
-    fit = models.fit_block(anchors, sats, space, named, marg[0].statement, n_draws, seed)
+    fit = models.fit_block(anchors, sats, space, named, marg[0].statement, n_draws, seed, mg.quantile_grid(marg))
     recs = [dict(m, details={"engine_commit": ev}) for m in models.model_summaries(ev)]
     backcasts = {lt: sat.backcast(s) for lt, s in sats.items()}
     flat = [r for rows in prov.values() for r in rows]
