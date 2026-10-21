@@ -257,6 +257,31 @@ The topic 08 notebooks (counterparty credit risk and the regulatory calculators)
 - U.S. Department of the Treasury, Daily Treasury Par Yield Curve Rates. https://home.treasury.gov/resource-center/data-chart-center/interest-rates/
 - U.S. Department of the Treasury, High Quality Market (HQM) Corporate Bond Yield Curve. https://home.treasury.gov/data/treasury-coupon-issues-and-corporate-bond-yield-curve/corporate-bond-yield-curve
 
+The topic 12 (capital and stress) notebooks cite, besides the above, the sources the persisted research verified for the aggregation and
+stress layers (dossiers 03, 05 and 06):
+
+- Rosenberg and Schuermann (2006), a general approach to integrated risk management with skewed, fat-tailed risks,
+  https://doi.org/10.1016/j.jfineco.2005.03.001;
+- Embrechts, Puccetti and Rueschendorf (2013), model uncertainty and VaR aggregation, https://doi.org/10.1016/j.jbankfin.2013.03.014;
+- Embrechts, McNeil and Straumann (2002), correlation and dependence in risk management, https://doi.org/10.1017/CBO9780511615337.008;
+- Tasche (2007), capital allocation to business units and sub-portfolios: the Euler principle, https://arxiv.org/abs/0708.2542;
+- Glasserman and Xu (2014), robust risk measurement and model risk, https://doi.org/10.1080/14697688.2013.822989;
+- Barrieu and Scandolo (2015), assessing financial model risk, https://doi.org/10.1016/j.ejor.2014.10.032;
+- Glasserman, Kang and Kang (2015), stress scenario selection by empirical likelihood, https://doi.org/10.1080/14697688.2014.926019;
+- Adrian, Boyarchenko and Giannone (2019), vulnerable growth, https://doi.org/10.1257/aer.20161923;
+- Litterman (1986), forecasting with Bayesian vector autoregressions, https://doi.org/10.1080/07350015.1986.10509491;
+- Banbura, Giannone and Reichlin (2010), large Bayesian vector auto regressions, https://doi.org/10.1002/jae.1137;
+- the Joint Forum (2010), developments in modelling risk aggregation, https://www.bis.org/publ/joint25.pdf (the wording the dossier takes
+  from the press release is UNVERIFIED);
+- the EBA 2025 EU-wide stress test Methodological Note of 2025-01-20,
+  https://www.eba.europa.eu/sites/default/files/2025-01/0246e2f3-fa57-47d1-99f2-7a5b80cae509/2025%20EU-wide%20stress%20test%20-%20Methodological%20Note.pdf;
+- the Federal Reserve, Supervisory Stress Test Model Documentation: Credit Risk Models, Fall 2026,
+  https://www.federalreserve.gov/supervisionreg/files/fall-2026-credit-risk-models-description.pdf, and the 2026 severely adverse scenario,
+  https://www.federalreserve.gov/supervisionreg/files/2026_Final_Supervisory_Severely_Adverse_Domestic.csv;
+- the CMF Annex 3 of the IAPE self-assessment (Circular 2.365), https://www.cmfchile.cl/portal/principal/623/articles-29808_doc_pdf.pdf;
+- the NGFS Phase V scenarios, https://www.ngfs.net/en/news/ngfs-scenarios-phase-v-launch-event and
+  https://data.ene.iiasa.ac.at/ngfs.
+
 ## Sizing and contracts
 
 The design rests on two artifacts of contract-first parallel delivery (ADR-0080): the sizing and the contract catalog.
@@ -607,6 +632,8 @@ No oracle here is a model judging another model.
 
 A component of Contraste that goes further than the practice its research found enters this section with the topic unit that
 demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes beyond, and a level 4
+A component of Contraste that goes further than the practice its research found enters this section with the topic unit that
+demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes beyond, and a level 4
 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches the package's contract and
 demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8) and enter here one by one, so
 no claim is stated before its demonstration exists. Each claim is stated only as far as its committed evidence goes.
@@ -712,6 +739,29 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   What it adds: `irrbb.behavioural_change_at_breach` turns the Federal Reserve's finding on Silicon Valley Bank into a test: it counts the dates at which a behavioural parameter changed while a limit was breached. On the committed C14 balance sheet it is not evaluated at 2021-Q4 (one date), red at 2022-Q2 with "1 change(s) coincide with a breach" and red at 2022-Q4 with two. The parameter it flags is the weighted average maturity of the fitted replicating portfolio; the core share and the core maturity that Contraste states are held fixed and are not flagged. On constructed histories it is green for a parameter held through a breach, for a change with no breach and for a change before the breach, and red for a change at the breach; the committed series with the breach flags set to false is green.
   Evidence: `data/derived/C14/vd-2021-q4.json`, `data/derived/C14/vd-2022-q2.json`, `data/derived/C14/vd-2022-q4.json`, `data/derived/C14/models-svb-2021-2022.json`, `docs/design/features/c14/requirements.md`, `notebooks/en/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`, `notebooks/es/09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb`.
   Beyond: the supervisor's review (https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf) states the practice as a finding and the research dossier 05 proposes the test; it cites no tool that implements it, which is UNVERIFIED beyond the dossier's search. The bank of C14 is real in aggregate and synthetic in behaviour, and its outlier test is breached at the three dates, so the breach flag does not vary and the flagged parameter is a fitted one, re-estimated at each date: the red rows show that the test operates on those parameters, not that the bank did it in these numbers.
+
+- **BS-9** The dependence band shown with every aggregate.
+  What it adds: every aggregate capital figure of C18 is shown with the band of aggregation methods over the same marginals, one
+  horizon and one confidence level, and never as one diversified number: the lower bound, the simple sum (the only row labelled headline
+  capital), the square-root rule, the Gaussian copula, one t copula for each degree of freedom of the named set and the sharp worst case
+  by the rearrangement algorithm, in that order, with every row but the headline labelled information and not capital. The Euler
+  allocation of the aggregate expected shortfall adds up to it, and the model-risk measures of the band are labelled information too.
+  Evidence: `data/derived/C18/baseline.json`, `data/derived/C18/eba-2025-adverse.json`, `data/derived/C18/fed-2026-severely-adverse.json`
+  and `data/derived/C18/ngfs-delayed-transition.json` (`outputs.aggregation.band`, eight rows in each), `data/derived/C18/t-copula-baseline.json`
+  (the band again and the band under the market-credit correlation stress), `docs/design/features/c18/requirements.md` (CT-1811 and
+  CT-1812, each with its gate), and the engine's `riskvalidation.aggregation.band.dependence_band`, which returns the whole band and
+  never a scalar. Notebook 09 of topic 12 checks the structure and recomputes the closed-form rows of all six committed aggregates;
+  notebook 03 reproduces the engine's published worst-case example (the rearrangement bounds of eight Pareto marginals) and checks the
+  band's structure and ordering on stand-in marginals.
+  Beyond: the research (dossier 05, G.3) prescribes the band, "instead of a single diversified number", and warns against claiming that
+  diversification benefits are robust; Rosenberg and Schuermann report the sensitivity of the aggregate to the copula choice and the
+  additive overestimate of 30 to 40 percent as a study result (https://doi.org/10.1016/j.jfineco.2005.03.001); Embrechts, Puccetti and
+  Rueschendorf give the sharp worst-case bounds (https://doi.org/10.1016/j.jbankfin.2013.03.014); the Joint Forum found aggregation models
+  "a work in progress" on which supervisors generally do not rely (https://www.bis.org/publ/joint25.pdf, the wording is UNVERIFIED in the
+  dossier). Those are the ingredients and the recommendation; what the case adds is to compose them and show the band with every aggregate
+  as a gated rule. The claim is about what the case does: that no maintained toolkit or published practice ships the band beside every
+  aggregate is UNVERIFIED beyond the dossier's own search. The committed band rests on marginals that the pipeline simulates and does not
+  commit (only their EL, VaR, ES and EC), and Banco Andino is synthetic.
 
 - **BS-11** Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run.
   What it adds: the multiplier on the daily run-off rates of every segment at which the survival period first falls to a target of 30
