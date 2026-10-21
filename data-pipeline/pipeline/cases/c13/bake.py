@@ -131,7 +131,10 @@ def bake_case(seed: int, paths: Any, data_root: Path | None, scale: float, title
                         "models_ref": MODELS_REL, **e})
     (Path(paths.root) / SUMS_REL).write_text("\n".join(sums) + "\n", encoding="utf-8", newline="\n")
     ranges = expectations.check(CASE_ID, EXPECT, built["values"])
+    from . import CASE
+
     manifest = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=title, category={"en": "Market and counterparty risk", "es": "Riesgo de mercado y de contraparte"},
         question=question, sources=[], seed=seed, variants=entries, default_variant=DEFAULT_VARIANT, contract={}, expect=ranges,
         riskvalidation_version=docs.rv_version(), source_details={})

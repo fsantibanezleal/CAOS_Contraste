@@ -16,8 +16,12 @@ the seed (no wall-clock), so a re-bake of the same release leaves git clean.
 """
 from __future__ import annotations
 
+import ast
+import functools
 import math
+import re
 from collections.abc import Mapping, Sequence
+from pathlib import Path
 from typing import Any
 
 from .. import __version__
@@ -186,6 +190,169 @@ def build_models_artifact(
             "fit": dict(fit), "provenance": lineage.provenance(), "lane": dict(lane)}
 
 
+#: what a case can depend on: a committed document of another case it reads, or a product module of another case it imports (the engine is implicit, W15-8)
+DEPENDENCY_KINDS = ("document", "code")
+_CASES_DIR = Path(__file__).resolve().parents[1] / "cases"
+#: a document of another case as the producers name it: ``C07/base.json``, or a case manifest, ``manifests/C15.json``
+DOCUMENT_REF = re.compile(r"^(?:(C\d\d)/[A-Za-z0-9._-]+\.json|manifests/(C\d\d)\.json)$")
+MODULE_REF = re.compile(r"^pipeline\.cases\.c(\d\d)[a-z0-9_.]*$")
+
+
+def dependency_case(ref: str) -> str:
+    """The case a ``depends_on`` reference belongs to (``C07/base.json``, ``manifests/C15.json`` or ``pipeline.cases.c10.fed``)."""
+    m = DOCUMENT_REF.match(ref)
+    if m:
+        return m.group(1) or m.group(2)
+    m = MODULE_REF.match(ref)
+    if m:
+        return f"C{m.group(1)}"
+    raise ContractViolation(f"depends_on: {ref!r} is neither a document of a case nor a module of a case")
+
+
+def case_sources(case_id: str) -> list[Path]:
+    """The files of a case's producer: its package ``cases/c<NN>/`` and its flat modules ``cases/c<NN>_*.py``."""
+    n = case_id[1:]
+    pkg = _CASES_DIR / f"c{n}"
+    return [*(sorted(pkg.rglob("*.py")) if pkg.is_dir() else []), *sorted(_CASES_DIR.glob(f"c{n}_*.py"))]
+
+
+def _import_targets(path: Path, node: ast.ImportFrom | ast.Import) -> list[list[str]]:
+    """The dotted modules (as lists of parts) one import statement of ``path`` names, relative imports resolved against the file's package."""
+    parts = list(path.relative_to(_CASES_DIR.parents[1]).with_suffix("").parts)     # ['pipeline', 'cases', 'c18', 'fed']
+    package = parts[:-1]                                                            # the file's package (for __init__.py, its own directory)
+    if isinstance(node, ast.Import):
+        return [a.name.split(".") for a in node.names]
+    base = package[: len(package) - (node.level - 1)] if node.level else []
+    base = base + (node.module.split(".") if node.module else [])
+    out = []
+    for a in node.names:
+        candidate = base + [a.name]
+        # ``from ..c10 import fed`` names the module c10.fed when that file or package exists; ``from ..c01_ladder import Rung`` names c01_ladder
+        exists = (_CASES_DIR.parents[1] / Path(*candidate)).with_suffix(".py").is_file() or (_CASES_DIR.parents[1] / Path(*candidate)).is_dir()
+        out.append(candidate if exists else base)
+    return out
+
+
+def _source_nodes(tree: ast.AST):
+    """Every node of a producer's source but the ``DEPENDS_REASONS`` table: its keys name what the producer reads, they are not a read."""
+    stack = [tree]
+    while stack:
+        node = stack.pop()
+        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name) and node.target.id == "DEPENDS_REASONS":
+            continue
+        yield node
+        stack.extend(ast.iter_child_nodes(node))
+
+
+_CASE_ID = re.compile(r"^C\d\d$")
+_CASE_PREFIX = re.compile(r"^(C\d\d)/")
+
+#: the flagged occurrences that are not reads (module relative to ``cases/``, the literal): a case id used in a message or a label. Every other flagged
+#: occurrence of a producer (a case id, or a string starting with another case's id and a slash that is not a whole document reference, which is how a path
+#: built at run time shows in the source) makes ``derive_depends_on`` raise. The scan of the 21 producers found one (U16-P1b fix round).
+NOT_READS: dict[tuple[str, str], dict[str, str]] = {
+    ("c18/anchors.py", "C17/models-generator.json has no variant "): {
+        "en": "The text of the error raised when the C17 generator variant is absent; the document itself is read through the literal C17/models-generator.json.",
+        "es": "El texto del error que se levanta cuando falta la variante del generador de C17; el documento se lee mediante el literal C17/models-generator.json."},
+}
+
+
+def scan_source(case_id: str, module: str, source: str) -> tuple[set[str], list[str]]:
+    """What one producer module names of other cases: (the documents it names whole, the flagged literals it names otherwise).
+
+    A flagged literal is a string constant equal to another case id, or a string constant or f-string part that starts with another case id and a slash and is
+    not a whole document reference: ``derived / "C14" / "x.json"`` and ``f"C15/{name}.json"`` both show so. The derivation cannot say which document such a
+    read opens, so it refuses it (``refuse_unnamed``) unless the literal is a label listed in ``NOT_READS``.
+    """
+    docs: set[str] = set()
+    flagged: list[str] = []
+    for node in _source_nodes(ast.parse(source)):
+        if not (isinstance(node, ast.Constant) and isinstance(node.value, str)):
+            continue
+        v = node.value
+        if DOCUMENT_REF.match(v):
+            if dependency_case(v) != case_id:
+                docs.add(v)
+            continue
+        m = _CASE_PREFIX.match(v)
+        other = v if _CASE_ID.match(v) else (m.group(1) if m else None)
+        if other and other != case_id:
+            flagged.append(v)
+    return docs, flagged
+
+
+def refuse_unnamed(case_id: str, flagged: Sequence[tuple[str, str]], reasons: Mapping[str, Any]) -> None:
+    """Raise, naming the module and the literal, for each flagged occurrence that is neither a reason key nor in ``NOT_READS``."""
+    bad = sorted((m, lit) for m, lit in set(flagged) if (m, lit) not in NOT_READS and lit not in reasons)
+    if bad:
+        shown = "; ".join(f"{m}: {lit!r}" for m, lit in bad)
+        raise ContractViolation(
+            f"{case_id}: the producer names another case in a way depends_on cannot state as a read ({shown}). Read the document through a literal whole path "
+            f"(C07/base.json) and give it a reason, or, if it is a label and not a read, add it to NOT_READS with its reason")
+
+
+@functools.lru_cache(maxsize=None)
+def _reads(case_id: str) -> tuple[frozenset[str], frozenset[str], frozenset[tuple[str, str]]]:
+    docs: set[str] = set()
+    mods: set[str] = set()
+    flagged: set[tuple[str, str]] = set()
+    for path in case_sources(case_id):
+        source = path.read_text(encoding="utf-8")
+        for node in _source_nodes(ast.parse(source)):
+            if isinstance(node, (ast.Import, ast.ImportFrom)):
+                for target in _import_targets(path, node):
+                    ref = ".".join(target)
+                    if MODULE_REF.match(ref) and dependency_case(ref) != case_id:
+                        mods.add(ref)
+        d, f = scan_source(case_id, path.relative_to(_CASES_DIR).as_posix(), source)
+        docs |= d
+        flagged |= {(path.relative_to(_CASES_DIR).as_posix(), lit) for lit in f}
+    return frozenset(docs), frozenset(mods), frozenset(flagged)
+
+
+def derive_depends_on(case_id: str, reasons: Mapping[str, Mapping[str, str]]) -> list[dict[str, Any]]:
+    """The ``depends_on`` list of a case, built from what its producer reads: the committed documents of other cases that its sources name (a string
+    literal ``C07/base.json`` or ``manifests/C15.json``) and the modules of other cases they import. ``reasons`` gives the bilingual reason of each,
+    keyed by the document reference or the module name: a read without a reason, or a reason for something the producer does not read, is refused, so a
+    list cannot drift from the code. A path to another case's document built at run time (``derived / "C14" / name``, ``f"C15/{name}.json"``) cannot be
+    named, so it is refused too (``refuse_unnamed``). Sorted by kind then reference; an empty list says the case reads nothing of another case."""
+    docs, mods, flagged = _reads(case_id)
+    refuse_unnamed(case_id, sorted(flagged), reasons)
+    read = docs | mods
+    missing = sorted(read - set(reasons))
+    if missing:
+        raise ContractViolation(f"{case_id}: no reason is stated for what the producer reads: {missing}")
+    extra = sorted(set(reasons) - read)
+    if extra:
+        raise ContractViolation(f"{case_id}: a reason is stated for what the producer does not read (not read: {extra})")
+    out = [{"kind": "document" if ref in docs else "code", "ref": ref, "reason": dict(reasons[ref])} for ref in read]
+    out.sort(key=lambda d: (d["kind"], d["ref"]))
+    _check_depends_on(case_id, out)
+    return out
+
+
+def _check_depends_on(case_id: str, depends_on: Sequence[Mapping[str, Any]]) -> None:
+    keys = []
+    for d in depends_on:
+        if set(d) != {"kind", "ref", "reason"} or d["kind"] not in DEPENDENCY_KINDS:
+            raise ContractViolation(f"{case_id}: a depends_on entry is {{kind in {list(DEPENDENCY_KINDS)}, ref, reason}}")
+        if (d["kind"] == "document") != bool(DOCUMENT_REF.match(d["ref"])) or dependency_case(d["ref"]) == case_id:
+            raise ContractViolation(f"{case_id}: depends_on {d['ref']!r} is not a {d['kind']} of another case")
+        _text(d["reason"], f"{case_id} depends_on {d['ref']} reason")
+        keys.append((d["kind"], d["ref"]))
+    if keys != sorted(set(keys)):
+        raise ContractViolation(f"{case_id}: depends_on is sorted by kind then ref, without repeats")
+
+
+def add_depends_on(manifest: Mapping[str, Any], depends_on: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """A committed manifest with its ``depends_on`` stated (the manifests-only step): the other fields are untouched, the list goes where
+    ``build_case_manifest`` puts it (last)."""
+    _check_depends_on(manifest["case_id"], depends_on)
+    out = {k: v for k, v in manifest.items() if k != "depends_on"}
+    out["depends_on"] = [dict(d, reason=dict(d["reason"])) for d in depends_on]
+    return out
+
+
 def build_case_manifest(
     *,
     case_id: str,
@@ -199,11 +366,14 @@ def build_case_manifest(
     contract: Mapping[str, Any],
     expect: Mapping[str, Sequence[float]],
     riskvalidation_version: str | None,
+    depends_on: Sequence[Mapping[str, Any]],
     source_details: Mapping[str, Mapping[str, str]] | None = None,
 ) -> dict[str, Any]:
     """The case manifest. ``variants`` are the artifact entries: ``{role, variant_id, title, short_title, regime,
     truth_status, path, bytes, lane, gate}``, with ``models_ref`` (the path of a models entry) on every variant entry.
-    ``short_title`` is the label a chip shows; ``title`` the full name."""
+    ``short_title`` is the label a chip shows; ``title`` the full name. ``depends_on`` is what the producer reads of other cases
+    (``derive_depends_on``), possibly empty."""
+    _check_depends_on(case_id, depends_on)
     for name, v in (("title", title), ("category", category), ("question", question)):
         _text(v, f"{case_id} {name}")
     if any(v.get("role") not in ROLES for v in variants):
@@ -244,6 +414,7 @@ def build_case_manifest(
         "artifacts": [dict(v) for v in variants],
         "contract": dict(contract),
         "expect": {k: [float(lo), float(hi)] for k, (lo, hi) in sorted(expect.items())},
+        "depends_on": [dict(d, reason=dict(d["reason"])) for d in depends_on],
     }
 
 

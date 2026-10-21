@@ -199,6 +199,16 @@ def _published_models(rv: str) -> list[dict[str, Any]]:
 # the bake
 
 
+#: why this case reads what it reads of other cases, keyed by the document or the module its producer names: ``depends_on`` refuses a list that differs
+#: from the source (core.manifest.derive_depends_on), so the manifest cannot state what the code does not do
+DEPENDS_REASONS: dict[str, dict[str, str]] = {
+    "pipeline.cases.c01_ladder": {"en": "Uses the text and package-version helpers of the C01 ladder module (_t and _v), so the bilingual labels and the version records are built one way.",
+        "es": "Usa los auxiliares de texto y de versión de paquete del módulo de la escalera de C01 (_t y _v), de modo que las etiquetas bilingües y los registros de versión se construyen de una sola manera."},
+    "pipeline.cases.c05_ldp_calibration": {"en": "Computes the capital impact with the C05 IRB assumptions and risk-weight function (IRB_ASSUMPTIONS and _irb_rw).",
+        "es": "Calcula el impacto en capital con los supuestos IRB y la función de ponderador de riesgo de C05 (IRB_ASSUMPTIONS y _irb_rw)."},
+}
+
+
 class C04:
     id = CASE_ID
     slug = "rating-transitions"
@@ -208,6 +218,12 @@ class C04:
     question = _t("What do the agencies' published migrations say about PDs by grade, and how far can a migration matrix be trusted to give them, project them, or show the chain is Markov and stable?",
                   "¿Qué dicen las migraciones publicadas por las agencias sobre las PD por grado, y cuánto se puede confiar en una matriz de migración para darlas, proyectarlas o mostrar que la cadena es de Markov y estable?")
     sources = SOURCES
+
+    def depends_on(self) -> list[dict[str, Any]]:
+        """What this case reads of other cases, as the manifest states it (``depends_on``)."""
+        from ..core.manifest import derive_depends_on
+
+        return derive_depends_on(self.id, DEPENDS_REASONS)
 
     def bake(self, seed: int, paths: Any, data_root: Path) -> dict[str, Any]:
         from ..io import sources as registry
@@ -282,6 +298,7 @@ class C04:
 
         ranges = expectations.check(CASE_ID, EXPECT, values)
         manifest = build_case_manifest(
+            depends_on=self.depends_on(),
             case_id=CASE_ID, title=self.title, category={"en": "Ratings and calibration", "es": "Calificaciones y calibración"},
             question=self.question, sources=list(SOURCES), seed=seed, variants=entries, default_variant=DEFAULT_VARIANT,
             # no contract-1 family: CEREP's answers are checked by pipeline.io.cerep (labels, tab 2 against tab 4) and the

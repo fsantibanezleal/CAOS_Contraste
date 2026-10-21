@@ -21,7 +21,7 @@ documents with the engine `riskvalidation.governance` (0.9.0, ADR-0069): it comp
 4. **Register** (`bake._register_rows`): the severity map, the status map, the deadline, due date, ageing, overdue flag, anchor and RWEA share through the engine,
    the raised date from the changelog release of the document's code version.
 5. **Attributes** (`attributes.py`): A01 to A40, each with a value, a status and a basis; none invented.
-6. **Graph** (`edge_table.py`, `bake._layout`): the case edges of `edges.json` expand to entries; the engine checks the graph is acyclic and gives depth and
+6. **Graph** (`edge_table.py`, `bake._layout`): the case edges are built from the `depends_on` list of every case manifest (the producer states what it reads, U16-P1b) and expand to entries, with the related links of `edges.json`; the engine checks the graph is acyclic and gives depth and
    fan; networkx lays the columns (`topological_generations` must agree with the engine's generations; `multipartite_layout` over sorted layers).
 7. **Appetite and reports**: the engine's seven metrics and its twelve-section report per entry; the Spanish accents are restored (`spanish.py`).
 8. **Check and write**: the schema and the U15-S checker over every document; any finding refuses all of them. The page `docs/governance.md` and
@@ -43,3 +43,23 @@ documents with the engine `riskvalidation.governance` (0.9.0, ADR-0069): it comp
 ## Limits
 
 The scores of the tier inputs are conventions; the register carries no remediation plan; the tests of the bake read the committed documents only (no fit, no CI).
+
+## The `depends_on` derivation and its refusal table (U16-P1b fix round)
+
+`core.manifest.derive_depends_on` reads the source of a case's producer (its package `cases/c<NN>/` and its flat modules `cases/c<NN>_*.py`) and states what it
+finds of other cases:
+
+- a `document` read is a string constant that is a whole document reference (`C07/base.json`, the C15 manifest), in a literal path;
+- a `code` read is an import of a product module of another case;
+- every reference needs a bilingual reason in the case's `DEPENDS_REASONS` (a read without one, or a reason for something not read, is refused).
+
+A path to another case's document built at run time cannot be named, so the derivation refuses it instead of missing it. A **flagged occurrence** is a string
+constant equal to another case id (`derived / "C14" / "x.json"`), or a string constant or f-string part that starts with another case id and a slash and is not a
+whole document reference (`f"C15/{name}.json"`). A flagged occurrence that is neither a key of the case's reasons nor in the **refusal table** (`NOT_READS`, keyed by
+module and literal, each with a bilingual reason) raises, naming the module and the literal. The table holds only occurrences that are not reads: today one, the text of
+the missing-variant error of `c18/anchors.py`. A case that must read a document whose name depends on another case's data (C18 and the default variant of C15) reads the
+concrete file through a literal (`C15/long-uf.json`), checks at run time that it is still the default variant of the C15 manifest, and a test asserts the same, so a
+change of C15's default stops C18 instead of drifting. The test scan in `tests/test_depends_on.py` is written apart from the helper and compares its flagged set with the table.
+
+An edge whose upstream case has no manifest in the inventory (planned or unknown) stops the governance bake naming the edge; an edge from a built case whose every
+variant the rule leaves out (W15-15) contributes no edge and its exclusion is recorded.

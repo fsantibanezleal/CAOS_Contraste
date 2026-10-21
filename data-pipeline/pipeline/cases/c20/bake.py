@@ -330,6 +330,7 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, *, only: tupl
     from . import CASE
 
     manifest = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=dict(CASE.title), category={"en": "ML and AI model risk", "es": "Riesgo de modelos de ML e IA"},
         question=dict(CASE.question), sources=used, seed=seed, variants=entries, default_variant=built.order[0], contract=built.contract,
         expect=ranges, riskvalidation_version=engine_version(), source_details=_source_details(used))
