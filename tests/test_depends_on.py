@@ -141,9 +141,9 @@ def test_every_producer_builds_its_manifest_with_the_list_its_case_derives(case_
 
 
 def test_the_scan_sees_the_known_producers():
-    """The scan itself is not blind: C18 reads five documents and imports one module of C10; C01 reads nothing of another case."""
+    """The scan itself is not blind: C18 reads seven documents (six before the literal read of C15/long-uf.json) and imports one module of C10; C01 reads nothing of another case."""
     assert scan_imports("C18") == {"pipeline.cases.c10.fed"}
-    assert len(scan_documents("C18")) == 6
+    assert len(scan_documents("C18")) == 7
     assert scan_imports("C01") == set() and scan_documents("C01") == set()
     assert scan_imports("C20") == {"pipeline.cases.c01_features", "pipeline.cases.c01_ladder"}
 
@@ -251,3 +251,103 @@ def test_adversarial_the_manifests_only_step_refuses_a_manifest_that_no_longer_d
     victim.write_bytes(victim.read_bytes() + b" ")
     with pytest.raises(FileNotFoundError, match="size differs"):
         write_manifests_only(paths, ["C15"])
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------------------------
+# U16-P1b fix round (review M1): a cross-case read the derivation cannot name is refused, a run-time built path included
+# ---------------------------------------------------------------------------------------------------------------------------------------------------
+_CASE_ID = re.compile(r"^C\d\d$")
+_CASE_PREFIX = re.compile(r"^(C\d\d)/")
+
+
+def scan_unnamed(source: str, case_id: str) -> list[str]:
+    """The test's own flag rule (written here, not imported from the helper): a string equal to another case id, or a string part of a literal or an
+    f-string that starts with another case id and a slash without being a whole document reference. Walks `Constant` nodes, which includes the parts of an f-string."""
+    out = []
+    for node in ast.walk(ast.parse(source)):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str) and not DOC_REF.match(node.value):
+            v = node.value
+            other = v if _CASE_ID.match(v) else (m.group(1) if (m := _CASE_PREFIX.match(v)) else None)
+            if other and other != case_id:
+                out.append(v)
+    return out
+
+
+PLANTED_ARGS = [
+    ('def f(derived):\n    return derived / "C14" / "svb-2021-2022.json"\n', "C14"),
+    ("def f(derived, name):\n    return derived / f\"C15/{name}.json\"\n", "C15/"),
+    ('def f(load, name):\n    return load("C15/" + name + ".json")\n', "C15/"),
+]
+
+
+@pytest.mark.parametrize("source,literal", PLANTED_ARGS)
+def test_adversarial_a_cross_case_read_built_at_run_time_is_flagged_by_the_test_scan_and_refused_by_the_derivation(source, literal):
+    """The D1.5 mutant of the review: the source is built here and scanned; no producer is edited."""
+    from pipeline.core.manifest import ContractViolation, scan_source
+
+    assert literal in scan_unnamed(source, "C16")
+    docs, unnamed = scan_source("C16", "c16/planted.py", source)
+    assert docs == set() and literal in unnamed
+    with pytest.raises(ContractViolation, match=rf"c16/planted\.py.*{re.escape(literal)}"):
+        from pipeline.core.manifest import refuse_unnamed
+
+        refuse_unnamed("C16", [("c16/planted.py", u) for u in unnamed], {})
+
+
+def test_a_flagged_occurrence_that_is_a_label_is_accepted_only_through_the_refusal_table():
+    from pipeline.core import manifest as m
+
+    src = 'MSG = "C17/models-generator.json has no variant x"\n'
+    _, unnamed = m.scan_source("C18", "c18/anchors.py", src)
+    assert unnamed == ["C17/models-generator.json has no variant x"]
+    assert m.refuse_unnamed("C18", [("c18/anchors.py", "C17/models-generator.json has no variant ")], {}) is None
+    with pytest.raises(m.ContractViolation, match="c18/other.py"):
+        m.refuse_unnamed("C18", [("c18/other.py", "C17/models-generator.json has no variant ")], {})
+
+
+def test_the_refusal_table_is_what_the_independent_scan_finds_in_the_producers():
+    """Every flagged occurrence of the 21 producers is in the table with a reason, and every table entry occurs in its module (none is a stale entry)."""
+    from pipeline.core.manifest import NOT_READS
+
+    found = {}
+    for case_id in BUILT:
+        for f in producer_files(case_id):
+            tree_src = f.read_text(encoding="utf-8")
+            for lit in scan_unnamed(tree_src, case_id):
+                found[(f.relative_to(CASES_DIR).as_posix(), lit)] = case_id
+    # the DEPENDS_REASONS keys are whole refs (not flagged); a flagged literal outside the table is a read the derivation cannot name
+    assert set(found) == set(NOT_READS), f"scan only: {sorted(set(found) - set(NOT_READS))}; table only: {sorted(set(NOT_READS) - set(found))}"
+    for (module, literal), reason in NOT_READS.items():
+        assert (CASES_DIR / module).is_file() and literal in (CASES_DIR / module).read_text(encoding="utf-8")
+        assert reason["en"].strip() and reason["es"].strip()
+
+
+def test_c18_names_the_concrete_c15_document_it_reads_and_it_is_the_default_variant_of_c15():
+    refs = {d["ref"] for d in manifest("C18")["depends_on"]}
+    assert "C15/long-uf.json" in refs
+    assert manifest("C15")["default_variant"] == "long-uf", "C15 changed its default variant: C18 reads C15/long-uf.json and must be changed with it"
+
+
+def test_adversarial_c18_stops_when_the_default_variant_of_c15_is_no_longer_the_one_it_reads(tmp_path):
+    import shutil
+
+    from pipeline.cases.c18 import anchors
+
+    for rel in ("C07", "C11", "C15", "C17", "manifests"):
+        shutil.copytree(ROOT / "data" / "derived" / rel, tmp_path / rel, ignore=shutil.ignore_patterns("index.json"))
+    man = json.loads((tmp_path / "manifests" / "C15.json").read_text(encoding="utf-8"))
+    man["default_variant"] = [a["variant_id"] for a in man["artifacts"] if a["role"] == "variant" and a["variant_id"] != "long-uf"][0]
+    (tmp_path / "manifests" / "C15.json").write_text(json.dumps(man), encoding="utf-8")
+    with pytest.raises(anchors.MissingDocument, match="long-uf"):
+        anchors.load_anchors(tmp_path)
+
+
+def test_adversarial_manifests_only_on_an_unknown_or_unbuilt_case_exits_non_zero_naming_it(tmp_path):
+    import subprocess
+    import sys
+
+    for case in ("C19", "C99"):
+        r = subprocess.run([sys.executable, str(ROOT / "data-pipeline" / "run.py"), case, "--manifests-only", "--output", str(tmp_path)],
+                           capture_output=True, text=True, cwd=ROOT / "data-pipeline", timeout=120)
+        assert r.returncode != 0, r.stdout
+        assert case in r.stderr + r.stdout

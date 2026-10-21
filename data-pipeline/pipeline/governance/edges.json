@@ -37,7 +37,7 @@
    "a_case": "C14",
    "b_case": "C16",
    "kind": "source",
-   "source": "docs/cases/C16.md:70 (FDIC data fetched by C14); both list fdic-bankfind"
+   "source": "docs/cases/C16.md:69-70 and data-pipeline/pipeline/cases/c16/fetch.py:7-8 (the shared source is the Treasury files fetched by C14, read through its sidecar provenance.json; C16 fetches its own FDIC file); both list fdic-bankfind"
   }
  ]
 }

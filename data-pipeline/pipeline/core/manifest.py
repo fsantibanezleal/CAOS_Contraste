@@ -244,29 +244,80 @@ def _source_nodes(tree: ast.AST):
         stack.extend(ast.iter_child_nodes(node))
 
 
+_CASE_ID = re.compile(r"^C\d\d$")
+_CASE_PREFIX = re.compile(r"^(C\d\d)/")
+
+#: the flagged occurrences that are not reads (module relative to ``cases/``, the literal): a case id used in a message or a label. Every other flagged
+#: occurrence of a producer (a case id, or a string starting with another case's id and a slash that is not a whole document reference, which is how a path
+#: built at run time shows in the source) makes ``derive_depends_on`` raise. The scan of the 21 producers found one (U16-P1b fix round).
+NOT_READS: dict[tuple[str, str], dict[str, str]] = {
+    ("c18/anchors.py", "C17/models-generator.json has no variant "): {
+        "en": "The text of the error raised when the C17 generator variant is absent; the document itself is read through the literal C17/models-generator.json.",
+        "es": "El texto del error que se levanta cuando falta la variante del generador de C17; el documento se lee mediante el literal C17/models-generator.json."},
+}
+
+
+def scan_source(case_id: str, module: str, source: str) -> tuple[set[str], list[str]]:
+    """What one producer module names of other cases: (the documents it names whole, the flagged literals it names otherwise).
+
+    A flagged literal is a string constant equal to another case id, or a string constant or f-string part that starts with another case id and a slash and is
+    not a whole document reference: ``derived / "C14" / "x.json"`` and ``f"C15/{name}.json"`` both show so. The derivation cannot say which document such a
+    read opens, so it refuses it (``refuse_unnamed``) unless the literal is a label listed in ``NOT_READS``.
+    """
+    docs: set[str] = set()
+    flagged: list[str] = []
+    for node in _source_nodes(ast.parse(source)):
+        if not (isinstance(node, ast.Constant) and isinstance(node.value, str)):
+            continue
+        v = node.value
+        if DOCUMENT_REF.match(v):
+            if dependency_case(v) != case_id:
+                docs.add(v)
+            continue
+        m = _CASE_PREFIX.match(v)
+        other = v if _CASE_ID.match(v) else (m.group(1) if m else None)
+        if other and other != case_id:
+            flagged.append(v)
+    return docs, flagged
+
+
+def refuse_unnamed(case_id: str, flagged: Sequence[tuple[str, str]], reasons: Mapping[str, Any]) -> None:
+    """Raise, naming the module and the literal, for each flagged occurrence that is neither a reason key nor in ``NOT_READS``."""
+    bad = sorted((m, lit) for m, lit in set(flagged) if (m, lit) not in NOT_READS and lit not in reasons)
+    if bad:
+        shown = "; ".join(f"{m}: {lit!r}" for m, lit in bad)
+        raise ContractViolation(
+            f"{case_id}: the producer names another case in a way depends_on cannot state as a read ({shown}). Read the document through a literal whole path "
+            f"(C07/base.json) and give it a reason, or, if it is a label and not a read, add it to NOT_READS with its reason")
+
+
 @functools.lru_cache(maxsize=None)
-def _reads(case_id: str) -> tuple[frozenset[str], frozenset[str]]:
+def _reads(case_id: str) -> tuple[frozenset[str], frozenset[str], frozenset[tuple[str, str]]]:
     docs: set[str] = set()
     mods: set[str] = set()
+    flagged: set[tuple[str, str]] = set()
     for path in case_sources(case_id):
-        for node in _source_nodes(ast.parse(path.read_text(encoding="utf-8"))):
+        source = path.read_text(encoding="utf-8")
+        for node in _source_nodes(ast.parse(source)):
             if isinstance(node, (ast.Import, ast.ImportFrom)):
                 for target in _import_targets(path, node):
                     ref = ".".join(target)
                     if MODULE_REF.match(ref) and dependency_case(ref) != case_id:
                         mods.add(ref)
-            elif isinstance(node, ast.Constant) and isinstance(node.value, str) and DOCUMENT_REF.match(node.value):
-                if dependency_case(node.value) != case_id:
-                    docs.add(node.value)
-    return frozenset(docs), frozenset(mods)
+        d, f = scan_source(case_id, path.relative_to(_CASES_DIR).as_posix(), source)
+        docs |= d
+        flagged |= {(path.relative_to(_CASES_DIR).as_posix(), lit) for lit in f}
+    return frozenset(docs), frozenset(mods), frozenset(flagged)
 
 
 def derive_depends_on(case_id: str, reasons: Mapping[str, Mapping[str, str]]) -> list[dict[str, Any]]:
     """The ``depends_on`` list of a case, built from what its producer reads: the committed documents of other cases that its sources name (a string
     literal ``C07/base.json`` or ``manifests/C15.json``) and the modules of other cases they import. ``reasons`` gives the bilingual reason of each,
     keyed by the document reference or the module name: a read without a reason, or a reason for something the producer does not read, is refused, so a
-    list cannot drift from the code. Sorted by kind then reference; an empty list says the case reads nothing of another case."""
-    docs, mods = _reads(case_id)
+    list cannot drift from the code. A path to another case's document built at run time (``derived / "C14" / name``, ``f"C15/{name}.json"``) cannot be
+    named, so it is refused too (``refuse_unnamed``). Sorted by kind then reference; an empty list says the case reads nothing of another case."""
+    docs, mods, flagged = _reads(case_id)
+    refuse_unnamed(case_id, sorted(flagged), reasons)
     read = docs | mods
     missing = sorted(read - set(reasons))
     if missing:

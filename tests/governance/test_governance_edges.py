@@ -116,3 +116,29 @@ def test_every_entry_depends_on_the_engine_node_and_the_graph_is_layered(baked):
             assert e["graph"]["depth"] == 0
         assert e["map"]["generation"] == e["graph"]["depth"]
         assert -1.0 <= e["map"]["x"] <= 1.0 and -1.0 <= e["map"]["y"] <= 1.0
+
+
+def test_adversarial_an_edge_to_a_case_with_no_inventory_entry_stops_the_bake_naming_the_edge():
+    """m4 of the U16-P1 review: an upstream case with no entry (planned or excluded) was dropped without a word."""
+    from pipeline.governance import edge_table
+    from pipeline.governance.readers import BakeError
+
+    entries = [{"key": "C18/a", "case_id": "C18", "variants": [{"variant_id": "v"}]}]
+    tbl = {"edges": [{"upstream_case": "C99", "downstream_case": "C18", "kind": "document", "stated_source": "x"}], "related": []}
+    with pytest.raises(BakeError, match=r"C99.*C18"):
+        edge_table.expand(tbl, entries, {"C18": "v"})
+
+
+def test_the_related_link_c14_c16_names_the_treasury_files_c16_shares_with_c14():
+    link = [r for r in json.loads(gs.EDGES.read_text(encoding="utf-8"))["related"] if (r["a_case"], r["b_case"]) == ("C14", "C16")]
+    assert len(link) == 1 and link[0]["kind"] == "source"
+    assert "Treasury" in link[0]["source"] and "FDIC data fetched by C14" not in link[0]["source"]
+    assert len(json.loads(gs.EDGES.read_text(encoding="utf-8"))["related"]) == 6
+
+
+def test_no_dangling_edge_id_is_published_in_the_inputs_or_the_inventory():
+    """m1: the edge ids E01 to E15 no longer exist (edges.json dropped them); a basis cites the downstream manifest instead."""
+    import re
+
+    for rel in (gs.INPUTS, gs.DERIVED / "governance" / "inventory.json"):
+        assert not re.search(r"\(E\d\d\)", rel.read_text(encoding="utf-8")), rel

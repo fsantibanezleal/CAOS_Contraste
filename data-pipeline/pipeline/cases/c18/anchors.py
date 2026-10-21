@@ -26,6 +26,11 @@ REPO = Path(__file__).resolve().parents[4]
 DERIVED = REPO / "data" / "derived"
 
 
+#: the variant of C15 that C18 reads, through the literal ``C15/long-uf.json`` below (depends_on must name a concrete document); it is checked against
+#: the default variant of the C15 manifest at every run and by a test
+C15_VARIANT = "long-uf"
+
+
 class MissingDocument(FileNotFoundError):
     """A committed document C18 reads is not there: C18 stops whole, naming it."""
 
@@ -102,7 +107,10 @@ def load_anchors(derived: Path | None = None) -> Anchors:
     c07 = load("C07/base.json", derived)
     c07m = load("C07/models-banco-andino.json", derived)
     c15_man = load("manifests/C15.json", derived)
-    c15 = load(f"C15/{c15_man['default_variant']}.json", derived)["outputs"]
+    if c15_man["default_variant"] != C15_VARIANT:
+        raise MissingDocument(f"manifests/C15.json: the default variant of C15 is {c15_man['default_variant']!r}, no longer {C15_VARIANT!r}, the document C18 reads "
+                              f"(C15/{C15_VARIANT}.json): change the read and the depends_on reason of C18 together")
+    c15 = load("C15/long-uf.json", derived)["outputs"]
     c15m = load("C15/models-banco-andino-2026-09.json", derived)
     c17m = load("C17/models-generator.json", derived)
     c11 = load("C11/mixed-2023.json", derived)

@@ -189,7 +189,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case by document read; the code import from C01 (E14) is not counted (A D2 3.3: document reads only)",
+      "basis": "no feeding case by document read; the code import from C01 (data/derived/manifests/C02.json#/depends_on) is not counted (A D2 3.3: document reads only)",
       "pointer": "{manifest}#/depends_on"
      },
      {
@@ -288,7 +288,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case by document read; the code import from C06 (E07), C01 (E09) is not counted (A D2 3.3: document reads only)",
+      "basis": "no feeding case by document read; the code import from C06, C01 (data/derived/manifests/C03.json#/depends_on) is not counted (A D2 3.3: document reads only)",
       "pointer": "{manifest}#/depends_on"
      },
      {
@@ -387,7 +387,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case by document read; the code import from C01 (E10), C05 (E13) is not counted (A D2 3.3: document reads only)",
+      "basis": "no feeding case by document read; the code import from C01, C05 (data/derived/manifests/C04.json#/depends_on) is not counted (A D2 3.3: document reads only)",
       "pointer": "{manifest}#/depends_on"
      },
      {
@@ -478,7 +478,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case by document read; the code import from C01 (E11) is not counted (A D2 3.3: document reads only)",
+      "basis": "no feeding case by document read; the code import from C01 (data/derived/manifests/C05.json#/depends_on) is not counted (A D2 3.3: document reads only)",
       "pointer": "{manifest}#/depends_on"
      },
      {
@@ -758,7 +758,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case by document read; the code import from C06 (E08) is not counted (A D2 3.3: document reads only)",
+      "basis": "no feeding case by document read; the code import from C06 (data/derived/manifests/C08.json#/depends_on) is not counted (A D2 3.3: document reads only)",
       "pointer": "{manifest}#/depends_on"
      },
      {
@@ -1372,7 +1372,7 @@
       "name": "dependency depth",
       "score": 2,
       "tag": "convention",
-      "basis": "one feeder, C07, by code import (E06), counted as addendum 3.3 counts it (feeder count 1)",
+      "basis": "one feeder, C07, by code import (data/derived/manifests/C15.json#/depends_on), counted as addendum 3.3 counts it (feeder count 1)",
       "pointer": "{manifest}#/depends_on"
      },
      {
@@ -1638,7 +1638,7 @@
       "name": "dependency depth",
       "score": 4,
       "tag": "convention",
-      "basis": "four feeders by document read (C07, C11, C15, C17); the code import from C10 (E05) is not counted (A D2 3.3: document reads only)",
+      "basis": "four feeders by document read (C07, C11, C15, C17); the code import from C10 (data/derived/manifests/C18.json#/depends_on) is not counted (A D2 3.3: document reads only)",
       "pointer": "{manifest}#/depends_on"
      },
      {
@@ -1736,7 +1736,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case by document read; the code import from C01 (E15) is not counted (A D2 3.3: document reads only)",
+      "basis": "no feeding case by document read; the code import from C01 (data/derived/manifests/C20.json#/depends_on) is not counted (A D2 3.3: document reads only)",
       "pointer": "{manifest}#/depends_on"
      },
      {
@@ -1924,7 +1924,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case by document read; the code import from C01 (E12) is not counted (A D2 3.3: document reads only)",
+      "basis": "no feeding case by document read; the code import from C01 (data/derived/manifests/C22.json#/depends_on) is not counted (A D2 3.3: document reads only)",
       "pointer": "{manifest}#/depends_on"
      },
      {

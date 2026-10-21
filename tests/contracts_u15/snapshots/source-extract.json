@@ -4707,7 +4707,7 @@
    "fit_id": "banco-andino",
    "manifest": {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "4a5bdc5985eb9efc6bc6729fe1cc87d8cdceb294bec84f21b9201cfd04e818b9",
+    "sha256": "7a822eabcb64a596792f8c10fdb38d77f2f4e48bc95f1f0e74344fa2280cf133",
     "title": {
      "en": "ICAAP and IAPE capital aggregation under macro scenarios",
      "es": "Agregación de capital ICAAP e IAPE bajo escenarios macro"
