@@ -785,11 +785,41 @@ export type C22Parity = components['schemas']['c22Parity'];
 
 export type C22Fit = components['schemas']['c22Fit'];
 
+/** The engine's named study behind a simulation of a test outside the five credit families (U16-P2); null for the credit
+ * families' simulations. */
+export type C22Study = components['schemas']['c22Study'];
+
+/** A size above its bound that the engine documents on its own page. */
+export type C22Excess = components['schemas']['c22Excess'];
+
+/** One named study of the engine, as the models artifact records it. */
+export type C22StudyRecord = components['schemas']['c22StudyRecord'];
+
 const C22_RATE = {
   object: { rejections: 'integer', n: 'integer', undefined: 'integer', rate: num, se: num, wilson_low: num, wilson_high: num } satisfies Record<
     keyof C22Rate,
     Kind
   >,
+} as const;
+
+const C22_STUDY = {
+  object: {
+    index: 'integer',
+    label: 'text',
+    rule: 'string',
+    rule_label: 'string',
+    arm: 'string',
+    text: 'text',
+    departure: 'string',
+    excess: {
+      nullable: {
+        object: { page: 'string', repository: 'string', level: num, measured: num, bound: num, excess: num, exceeds: 'boolean', engine: 'text' } satisfies Record<
+          keyof C22Excess,
+          Kind
+        >,
+      },
+    },
+  } satisfies Record<keyof C22Study, Kind>,
 } as const;
 
 export const C22_OUTPUTS = {
@@ -815,6 +845,7 @@ export const C22_OUTPUTS = {
         seed: 'integer',
         n_rep: 'integer',
         generator: 'string',
+        study: { nullable: C22_STUDY },
       } satisfies Record<keyof C22Simulation, Kind>,
     },
   },
@@ -879,6 +910,24 @@ export const MODELS_C22 = {
         },
       },
       levels: nums,
+      studies: {
+        array: {
+          object: {
+            test_id: 'string',
+            index: 'integer',
+            label: 'text',
+            rule: 'string',
+            null_generator: 'string',
+            alternative_generator: 'string',
+            pipeline: { nullable: 'string' },
+            test_kwargs: 'json',
+            engine_n_rep: 'integer',
+            engine_power_n_rep: nInt,
+            engine_seed: 'integer',
+            engine_power_seed: 'integer',
+          } satisfies Record<keyof C22StudyRecord, Kind>,
+        },
+      },
     } satisfies Record<keyof C22Fit, Kind>,
   },
 } satisfies Record<keyof ModelsArtifact, Kind>;

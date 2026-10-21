@@ -37,23 +37,23 @@ def variants(manifest) -> dict[str, dict]:
     return {a["variant_id"]: _read(a["path"]) for a in manifest["artifacts"] if a["role"] == "variant"}
 
 
-#: the engine families whose p-value tests C22 simulates (CT-301). Engine 0.8.0 registers every validation test; the size of
-#: the p-value tests of the other families is measured by the engine's own size suites or pinned as a gap there (its
-#: tests/test_size.py, BL-088), and C22 extends to them in U16 (BL-091)
+#: the five credit families C22 measured before U16-P2 (CT-301); since U16-P2 the null variant holds every registered
+#: p-value test, the 21 of the other seven families included (BL-091, BL-075), and `other-families` their power
 C22_FAMILIES = frozenset({"discrimination", "pd-calibration", "rating-system", "stability", "transitions"})
 
 
 def test_size_of_every_test_reported(variants):
-    """CT-301: every registered riskvalidation test with a p-value in the families C22 covers, at its null, 4,000
-    repetitions, both levels, with the Monte Carlo SE, the Wilson interval and the p-value histogram."""
+    """CT-301: every registered riskvalidation test with a p-value, in any family, at its null, 4,000 repetitions, both
+    levels, with the Monte Carlo SE, the Wilson interval and the p-value histogram."""
     import riskvalidation.validation  # noqa: F401  (registers every test)
     from riskvalidation.core.registry import catalogue
 
     null = variants["null"]["outputs"]
     assert {p["measures"] for p in null["panels"]} == {"size"}
-    measured = {s["test_id"] for s in null["simulations"] if s["key"].endswith("@null")}
-    registered = {s.test_id for s in catalogue() if s.decision == "p_value" and s.family in C22_FAMILIES}
+    measured = {s["test_id"] for s in null["simulations"] if s["key"].split("#")[0].endswith("@null")}
+    registered = {s.test_id for s in catalogue() if s.decision == "p_value"}
     assert measured == registered, measured ^ registered
+    assert {s.family for s in catalogue() if s.decision == "p_value"} > C22_FAMILIES
     for s in null["simulations"]:
         assert s["n_rep"] >= 4000 and s["p_histogram"] and sum(s["p_histogram"]) <= s["n_rep"]
         for rule in c22.RULES:
@@ -65,7 +65,8 @@ def test_size_of_every_test_reported(variants):
 def test_power_curves_complete(variants):
     """CT-302: each defect family measures its tests at severities 0 to 5, at both levels, with its ladder and unit, and
     the generator of every simulation is committed with its configuration and truth."""
-    families = {v["id"] for v in c22.VARIANTS} - {"null"}
+    # `other-families` has its own two-point design (tests/test_c22_all_families.py)
+    families = {v["id"] for v in c22.VARIANTS} - {"null", "other-families"}
     assert families <= set(variants)
     for fam in families:
         o = variants[fam]["outputs"]
