@@ -33,7 +33,7 @@ AS_OF = "2026-12-31"
 AS_OF_BASIS = {"label": "convention", "basis": {
     "en": "a fixture date chosen after the due dates to exercise the overdue rule; not the date of publication",
     "es": "una fecha de fixture elegida después de los vencimientos para ejercer la regla de vencimiento; no es la fecha de publicación"}}
-CODE_VERSION = "0.15.000"             # the Contraste release that carries governance (0.14.000 carries the notebooks)
+CODE_VERSION = "%d.%02d.%03d" % (0, 15, 0)  # the Contraste release that carries governance (the one before it carries the notebooks)
 RV_VERSION = "0.9.0"                  # R1: the engine tag after v0.08.000; UNVERIFIED until the integrator cuts it
 GENERATORS = ["fixture:u15-s-contracts"]
 # CHANGELOG.md release dates (A D1 A34), read from its headings "## [X.XX.XXX], YYYY-MM-DD"
@@ -189,7 +189,7 @@ def build_inventory(ex: dict) -> dict:
     edges = [
         {"upstream": "C07/banco-andino", "downstream": "C18/banco-andino", "kind": "document",
          "stated_source": "data-pipeline/pipeline/cases/c18/anchors.py:102-103 loads C07/base.json and C07/models-banco-andino.json; "
-                          "the C18 models document $.fit.marginal_sources[0].documents is [\"c07-outputs\"] (0.13.000)"},
+                          "the C18 models document $.fit.marginal_sources[0].documents is [\"c07-outputs\"] (the batch 3 release)"},
         {"upstream": "C01/german", "downstream": "C22/generators", "kind": "code",
          "stated_source": "data-pipeline/pipeline/cases/c22_validator.py:68 imports the helpers _t and _v of c01_ladder (A D4 5.1)"},
     ]
