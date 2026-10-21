@@ -9,7 +9,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import type { Finding, TestRow, VariantArtifact } from '../../lib/contract.types';
 import { useCard } from '../c03/U6Shared';
 import { f3 } from '../c20/U14Common';
-import { FIELD_TEXT, text } from './selection';
+import { FIELD_TEXT, contrastText, text } from './selection';
 
 export type EvidenceKind = 'odds-ratio' | 'rate-spread';
 export interface EvidenceRow {
@@ -130,7 +130,7 @@ export function FindingsEvidenceCard({ variant, footer }: { variant: VariantArti
                       <tr key={`${r.finding}|${r.id}`} data-evidence-kind={kind} data-evidence-row={r.id} data-finding={r.finding} data-metric={r.metric ?? undefined} data-na={r.metric === null ? 'true' : undefined}>
                         <td>{`${kind === 'odds-ratio' ? 'OR' : 'pp'} ${i + 1}`}</td>
                         <td className="ct-text ct-wide-only">{r.finding}</td>
-                        <td className="ct-text">{`${pick(text(FIELD_TEXT, r.field), lang)}: ${r.contrast}`}</td>
+                        <td className="ct-text">{`${pick(text(FIELD_TEXT, r.field), lang)}: ${contrastText(r.contrast, lang)}`}</td>
                         <td>{r.metric === null ? `${formatNumber(null, lang)} (${r.id})` : f3(r.metric, lang)}</td>
                       </tr>
                     )),

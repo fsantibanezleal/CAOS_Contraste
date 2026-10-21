@@ -82,6 +82,10 @@ export const GROUP_TEXT: Record<string, Bi> = {
 
 export const groupBi = (group: string): Bi => text(GROUP_TEXT, group);
 
+/** A contrast label ("62 or over vs under 62") with the groups the bake names in its own words in the language asked. */
+export const contrastText = (label: string, lang: 'en' | 'es'): string =>
+  Object.entries(GROUP_TEXT).reduce((acc, [g, bi]) => acc.replaceAll(g, bi[lang]), label);
+
 /** The selection a variant opens on: the first attribute and its first contrast group. */
 export function defaultSel(data: CaseData | null): C21Sel | null {
   if (!data || data.manifest.case_id !== 'C21') return null;

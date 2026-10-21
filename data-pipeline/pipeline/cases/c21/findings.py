@@ -31,6 +31,13 @@ def _id(row: dict[str, Any]) -> str:
     return f"{row['test_id']}@{row['model_id']}@{row['segment']}"
 
 
+def favours_elderly(row: dict[str, Any]) -> bool:
+    """The controlled row of the 62 contrast whose odds favour the group 62 or over (odds ratio above 1): Regulation B 1002.6(b)(2)(iv)
+    permits favourable treatment of an elderly applicant, so the contrast is measured and shown but does not raise the finding of higher
+    controlled odds. A disparity against the group (odds ratio below 1) raises its finding as for any group."""
+    return row["segment"].startswith(f"{legal.AGE62}|{legal.GROUPS[legal.AGE62][0]} vs ") and row["extras"]["effect"]["odds_ratio"] > 1
+
+
 def _excludes_zero(row: dict[str, Any]) -> bool:
     effect = (row.get("extras") or {}).get("effect")
     return effect is not None and (effect["lo"] > 0 or effect["hi"] < 0)
@@ -55,8 +62,10 @@ def build(tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 continue
             if not rep["extras"]["same_sign"]:
                 not_repeated.append((r, rep))
-            else:
-                (lower if r["extras"]["effect"]["odds_ratio"] < 1 else higher).append((r, rep))
+            elif r["extras"]["effect"]["odds_ratio"] < 1:
+                lower.append((r, rep))
+            elif not favours_elderly(r):                  # 1002.6(b)(2)(iv) permits favouring the elderly: measured, not raised
+                higher.append((r, rep))
         elif r["test_id"] == "fair.rate_spread_disparity" and r["model_id"] == MODEL_OLS and _excludes_zero(r):
             rep = by_key.get(f"fair.replication@{MODEL_OLS}@{r['segment']}|rate_spread")
             if rep is not None and rep["extras"]["same_sign"]:

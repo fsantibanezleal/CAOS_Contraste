@@ -286,7 +286,7 @@ export function AttributeReadout({ sel }: { sel: C21Sel | null }) {
       items={[
         { label: { en: 'Basis', es: 'Base' }, text: a ? text(BASIS_TEXT, a.legal.basis) : na, unitless: true, hint: hint('The prohibited basis the field maps to in the research addendum; no legal claim.', 'La base prohibida a la que se asigna el campo en el anexo de investigación; sin afirmación legal.') },
         { label: { en: 'Reference', es: 'Referencia' }, text: a ? groupBi(a.reference_group) : na, unitless: true, hint: hint('The group the contrasts compare with.', 'El grupo con el que comparan los contrastes.') },
-        { label: { en: 'Highest rate', es: 'Mayor tasa' }, text: a ? { en: a.four_fifths.highest_rate_group, es: a.four_fifths.highest_rate_group } : na, unitless: true, hint: hint('The group the four-fifths line is measured against.', 'El grupo contra el que se mide la línea de cuatro quintos.') },
+        { label: { en: 'Highest rate', es: 'Mayor tasa' }, text: a ? groupBi(a.four_fifths.highest_rate_group) : na, unitless: true, hint: hint('The group the four-fifths line is measured against.', 'El grupo contra el que se mide la línea de cuatro quintos.') },
       ]}
     />
   );
