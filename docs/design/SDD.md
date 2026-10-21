@@ -466,6 +466,9 @@ the ones the dossiers and `docs/frameworks/` record.
 | engine | riskvalidation | 0.8.1 | the validation tests, regulatory calculators and generators (the PyPI release of the batch 3 engine, tag v0.08.001, 0.8.1 (0.8.0 with the fairness metric rows at null alphas): liquidity, aggregation and stress testing, the regulatory calculators and counterparty credit risk, ML model validation and fair lending) | none: no toolkit implements the ECB tests as specified |
 | models (optional) | torch | 2.14.1 | CPU runtime of the TabPFN extra, outside the default install | none recorded |
 | models (optional) | tabpfn | 9.1.0 | the TabPFN challenger of the small cases, weights under the Prior Labs License | none recorded |
+| notebooks | arch | 8.0.0 | the independent GARCH reference of the topic 07 state-of-the-art notebook, the package the engine's garch rung calls (the engine's `market` extra, `arch>=8.0,<9`; U17 sizing technology matrix) | none: the engine's own reference |
+| notebooks | mapie | 1.5.0 | the conformal reference of the topic 13 state-of-the-art notebook (the engine's `ml` extra, `mapie>=1.5,<2`; BSD-3-Clause) | none: the engine's own reference |
+| notebooks | fairlearn | 0.15.0 | the fairness-metric reference of the topic 13 state-of-the-art notebook (the engine's `ml` extra, `fairlearn>=0.15,<0.16`; MIT) | none: the engine's own reference |
 | notebooks | matplotlib | 3.11.2 | the figures of the notebooks (`notebooks/requirements.txt`) | none recorded |
 | notebooks | nbclient | 0.11.0 | executes the notebooks top to bottom in a fresh kernel (`scripts/run_notebooks.py`, a local release gate) | none recorded |
 | notebooks | nbformat | 5.11.1 | reads and writes the notebook documents of the runner | none recorded |
