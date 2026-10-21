@@ -170,11 +170,9 @@ def test_the_fixture_is_labelled_as_a_fixture_and_carries_the_governance_header(
     assert doc["as_of"] == "2026-12-31"
     basis = doc["as_of_basis"]
     assert basis["label"] == "convention" and "to exercise the overdue rule" in basis["basis"]["en"] and "not the date of publication" in basis["basis"]["en"]
-    assert basis["basis"]["es"].strip() and "no es la fecha de publicacion" in basis["basis"]["es"]
-    for d in doc["provenance"]["documents_read"]:      # m7: the C18 bytes come from origin/task/u13-p1, which is not the branch the bake runs on
-        assert (d["ref"] is not None) == ("/C18/" in d["path"] or d["path"].endswith("C18.json")), d["path"]
-        if d["ref"]:
-            assert re.fullmatch(r"origin/task/u13-p1@[0-9a-f]{40}", d["ref"])
+    assert basis["basis"]["es"].strip() and "no es la fecha de publicación" in basis["basis"]["es"]
+    for d in doc["provenance"]["documents_read"]:      # every case document is read from the branch the bake runs on (0.13.000)
+        assert d["ref"] is None, d["path"]
 
 
 def test_every_schema_is_a_closed_object_with_a_governance_id_const_and_the_governance_case_id() -> None:
@@ -213,8 +211,7 @@ def test_the_fixture_holds_the_four_entries_and_their_fit_ids_come_from_the_comm
     for e in inv["entries"]:
         assert e["fit_id"] == ex["cases"][e["case_id"]]["fit_id"]
         assert e["key"] == f"{e['case_id']}/{e['fit_id']}"
-    assert ex["cases"]["C18"]["fit_id"] == "banco-andino"          # git show origin/task/u13-p1:data/derived/C18/models-banco-andino.json
-    assert ex["c18_ref"] == "origin/task/u13-p1" and re.fullmatch(r"[0-9a-f]{40}", ex["c18_commit"])
+    assert ex["cases"]["C18"]["fit_id"] == "banco-andino"          # data/derived/C18/models-banco-andino.json
 
 
 def test_the_provenance_hashes_are_the_sha256_of_the_committed_documents() -> None:
@@ -316,6 +313,12 @@ def test_the_owner_is_a_synthetic_role_the_developer_the_module_and_the_validato
     assert entry_of(inv, "C22/generators")["attributes"]["A31"]["basis"].count("exact") >= 1   # the validator of the validator, W15-4
 
 
+def release_dates() -> dict[str, str]:
+    """Code version -> release date, from the headings of CHANGELOG.md (A D1 A34)."""
+    log = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    return dict(re.findall(r"(?m)^## \[(\d\.\d\d\.\d\d\d)\], (\d{4}-\d\d-\d\d)$", log))
+
+
 def test_the_attribute_values_equal_the_committed_facts_of_the_extract() -> None:
     inv = load("inventory")
     ex = cs.load_json(EXTRACT)
@@ -324,7 +327,7 @@ def test_the_attribute_values_equal_the_committed_facts_of_the_extract() -> None
         assert e["attributes"]["A01"]["value"] == e["key"]
         assert e["attributes"]["A02"]["value"] == c["manifest"]["title"]
         assert e["attributes"]["A04"]["value"] == c["manifest"]["question"]
-        assert e["attributes"]["A34"]["value"]["date"] == {"0.07.000": "2026-10-12", "0.12.000": "2026-10-16"}[c["models_document"]["code_version"]]
+        assert e["attributes"]["A34"]["value"]["date"] == release_dates()[c["models_document"]["code_version"]]
         assert [x["model_id"] for x in e["components"]] == [m["id"] for m in c["models_document"]["models"]]
     pma = entry_of(inv, "C07/banco-andino")["attributes"]["A26"]
     assert pma["status"] == "present" and pma["value"]["overlays_total"] == ex["cases"]["C07"]["pma"]["overlays_total"]
@@ -407,7 +410,8 @@ def test_the_register_applies_the_decisions_w15_2_and_w15_5() -> None:
     fnd = load("findings")
     scale = {"S1": "F4", "S2": "F3", "S3": "F2", "S4": "F1"}
     mapped = {"open": "open", "accepted": "risk_accepted", "closed": "validated_closed"}
-    release = {"C01": "2026-10-12", "C07": "2026-10-12", "C22": "2026-10-12", "C18": "2026-10-16"}
+    ex = cs.load_json(EXTRACT)
+    release = {case: release_dates()[c["models_document"]["code_version"]] for case, c in ex["cases"].items()}
     days = {"S1": [30, 45, 60, 90], "S2": [60, 90, 120, 180], "S3": [90, 120, 180, 270], "S4": [180, 270, 365, 365]}
     inv = load("inventory")
     tier = {e["key"]: e["tier_block"]["tier"] for e in inv["entries"]}
@@ -533,7 +537,7 @@ def test_section_6_states_the_policy_identity_of_every_row_and_the_source_of_its
             assert p["reason"]
     assert any(r["policy"]["source"] == "inline-battery" and r["policy"]["parameters"] for r in block["rows"])
     decisions = ex["cases"]["C07"]["spec_decisions"]
-    assert ex["engine_commit"].startswith("2a21c0b")
+    assert re.fullmatch(r"[0-9a-f]{40}", ex["engine_commit"])
     for row in block["rows"]:
         p = row["policy"]
         assert p["kind"] == decisions[row["test_id"]]                                  # spec(test_id).decision, None where unregistered
@@ -918,7 +922,8 @@ def _plant_kind_not_a_decision(d: dict) -> None:
 
 
 def _plant_kind_without_reason(d: dict) -> None:
-    d["reports"]["C07/banco-andino"]["sections"][5]["blocks"][0]["rows"][0]["policy"]["kind_reason"] = None
+    policy = d["reports"]["C07/banco-andino"]["sections"][5]["blocks"][0]["rows"][0]["policy"]
+    policy["kind"], policy["kind_reason"] = None, None
 
 
 # name, mutator, the layers that must refuse it (schema, checker or cross) and a word the checker message must carry
@@ -1117,20 +1122,22 @@ def test_every_invariant_of_the_brief_has_at_least_one_planted_defect() -> None:
 
 API_MODULES: dict[str, list[str]] = {
     "scope": ["ScopeAnswers", "ScopeDecision", "scope_test", "scope_record"],
-    "inventory": ["Component", "Entry", "Edge", "Inventory", "assign_variant", "build_inventory", "topological_order", "graph_metrics", "attribute_completeness"],
+    "inventory": ["Component", "Entry", "Edge", "Inventory", "assign_variant", "build_inventory", "topological_order", "graph_metrics", "attribute_completeness",
+                  "find_cycle", "nodes_on_cycles"],
     "tiering": ["exposure_band", "materiality", "complexity", "matrix_tier", "apply_override", "tier_sensitivity", "tier_counts"],
     "lifecycle": ["allowed_next", "transition"],
     "findings": ["Finding", "rwea_share_of_anchor", "severity_to_ecb", "map_product_status", "deadline_days", "due_date", "ageing_days", "is_overdue",
                  "transition_finding", "anchor_from_test_row", "register_counts"],
     "schedule": ["add_months", "next_dates"],
-    "opinion": ["finding_level", "opinion_level", "recommendation"],
+    "opinion": ["finding_level", "opinion_level", "recommendation", "rwea_level"],
     "appetite": ["light", "tier1_validated_on_time", "open_high_severity", "overdue_remediation", "entries_under_exception",
-                 "entries_in_breach", "pma_magnitude", "owner_and_complete_record", "appetite_metrics"],
+                 "entries_in_breach", "pma_magnitude", "owner_and_complete_record", "appetite_metrics", "appetite_population"],
     "policy": ["resolve_policy"],
     "report": ["executive_counts", "build_report"],
 }
 VALIDATION = ["inventory_completeness", "findings_overdue", "validation_due", "tier_override_documented", "edges_acyclic"]
-DATACLASSES = {"ScopeAnswers", "ScopeDecision", "Component", "Entry", "Edge", "Inventory", "Finding"}
+VALIDATION_HELPERS = ["GovRow", "gov_threshold", "gov_default_policy"]  # the policy rows of the gov. tests; no TestResult (W15-16)
+DATACLASSES = {"ScopeAnswers", "ScopeDecision", "Component", "Entry", "Edge", "Inventory", "Finding", "GovRow"}
 REUSED = ["core.result.TestResult", "core.policy.Policy", "core.policy.Threshold", "core.policy.load_policy", "core.policy.default_policy",
           "core.registry.catalogue", "core.registry.spec", "core.suite.SuiteRun", "core.hashing.inputs_hash"]
 
@@ -1138,6 +1145,7 @@ REUSED = ["core.result.TestResult", "core.policy.Policy", "core.policy.Threshold
 def declared() -> dict[str, str]:
     out = {f"riskvalidation.governance.{m}.{n}": m for m, names in API_MODULES.items() for n in names}
     out.update({f"riskvalidation.validation.governance.{n}": "validation" for n in VALIDATION})
+    out.update({f"riskvalidation.validation.governance.{n}": "validation-helper" for n in VALIDATION_HELPERS})
     return out
 
 

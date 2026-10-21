@@ -1,8 +1,7 @@
 """Extracts the committed facts the U15-S fixtures are written from, into tests/contracts_u15/snapshots/source-extract.json.
 
-Run: ``python tests/contracts_u15/extract_sources.py [--c18-ref origin/task/u13-p1]``. Reads the committed case documents of the four fixture
-entries (C01/german, C07/banco-andino, C18/banco-andino, C22/generators) from ``data/derived`` (C18 is not on the integration branch yet: it is
-read with ``git show`` from the ref given) and writes one compact JSON file, so that ``build_fixtures.py`` is deterministic and reproducible
+Run: ``python tests/contracts_u15/extract_sources.py --engine-src <engine checkout>/src``. Reads the committed case documents of the four fixture
+entries (C01/german, C07/banco-andino, C18/banco-andino, C22/generators) from ``data/derived`` (all four on the branch since Contraste 0.13.000) and writes one compact JSON file, so that ``build_fixtures.py`` is deterministic and reproducible
 anywhere without the case branches. The sha256 of a document is taken over its bytes with line endings normalised to LF (a Windows checkout
 hashes as a Linux one). Standard library only.
 
@@ -33,7 +32,7 @@ CASES = {
             ["base", "combined-severe", "consumer-arrears-shock", "house-price-fall", "recession", "uf-inflation-spike"], "base", "tree"),
     "C18": ("banco-andino", "models-banco-andino.json",
             ["baseline", "eba-2025-adverse", "fed-2026-severely-adverse", "ngfs-delayed-transition", "reverse-stress", "t-copula-baseline"],
-            "baseline", "git"),
+            "baseline", "tree"),
     "C22": ("generators", "models-generators.json",
             ["broken-monotonicity", "clustering", "concentration", "discrimination-decay", "drift", "leakage", "miscalibration", "null"],
             "null", "tree"),
@@ -46,14 +45,9 @@ def sha256_lf(raw: bytes) -> str:
     return hashlib.sha256(raw.replace(b"\r\n", b"\n")).hexdigest()
 
 
-def read(rel: str, source: str, ref: str) -> bytes:
-    if source == "git":
-        return subprocess.run(["git", "show", f"{ref}:{rel}"], cwd=ROOT, check=True, capture_output=True).stdout
-    return (ROOT / rel).read_bytes()
-
-
-def load(rel: str, source: str, ref: str) -> tuple[dict, str]:
-    raw = read(rel, source, ref)
+def load(rel: str, source: str) -> tuple[dict, str]:
+    assert source == "tree", source
+    raw = (ROOT / rel).read_bytes()
     return json.loads(raw.decode("utf-8")), sha256_lf(raw)
 
 
@@ -70,16 +64,14 @@ def registry_decisions(src: Path) -> dict[str, str]:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--c18-ref", default="origin/task/u13-p1")
     ap.add_argument("--engine-src", required=True, help="the src folder of the engine checkout (the batch 3 integration head) whose registry gives spec(test_id).decision")
     args = ap.parse_args()
     engine_commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=Path(args.engine_src).parent, check=True, capture_output=True, text=True).stdout.strip()
     decisions = registry_decisions(Path(args.engine_src))
-    commit = subprocess.run(["git", "rev-parse", args.c18_ref], cwd=ROOT, check=True, capture_output=True, text=True).stdout.strip()
-    out: dict = {"c18_ref": args.c18_ref, "c18_commit": commit, "engine_commit": engine_commit, "cases": {}}
+    out: dict = {"engine_commit": engine_commit, "cases": {}}
     for case, (fit, models_name, variants, default, source) in CASES.items():
-        models, models_hash = load(f"data/derived/{case}/{models_name}", source, args.c18_ref)
-        manifest, manifest_hash = load(f"data/derived/manifests/{case}.json", source, args.c18_ref)
+        models, models_hash = load(f"data/derived/{case}/{models_name}", source)
+        manifest, manifest_hash = load(f"data/derived/manifests/{case}.json", source)
         assert models["case_id"] == case and models["fit_id"] == fit, (case, models["fit_id"])
         docs: dict[str, dict] = {f"data/derived/{case}/{models_name}": models, f"data/derived/manifests/{case}.json": manifest}
         entry = {
@@ -98,7 +90,7 @@ def main() -> None:
             "variants": [],
         }
         for v in variants:
-            doc, h = load(f"data/derived/{case}/{v}.json", source, args.c18_ref)
+            doc, h = load(f"data/derived/{case}/{v}.json", source)
             docs[f"data/derived/{case}/{v}.json"] = doc
             keys = DEFAULT_KEYS if v == default else ROW_KEYS
             entry["variants"].append({
@@ -110,7 +102,7 @@ def main() -> None:
                 "tests": [{k: r[k] for k in keys} for r in doc["tests"]],
             })
         if case == "C07":   # the one PMA of the fixture entries (A26 of the addendum): the overlays of the default variant
-            base, _ = load(f"data/derived/{case}/{default}.json", source, args.c18_ref)
+            base, _ = load(f"data/derived/{case}/{default}.json", source)
             entry["pma"] = {"pointer": f"data/derived/{case}/{default}.json#/outputs/ifrs9_detail/overlays_total",
                             "overlays_total": base["outputs"]["ifrs9_detail"]["overlays_total"],
                             "model_output": base["impact"]["provision_ifrs9"]["value"],

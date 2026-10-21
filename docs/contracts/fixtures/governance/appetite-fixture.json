@@ -8,11 +8,11 @@
   "label": "convention",
   "basis": {
    "en": "a fixture date chosen after the due dates to exercise the overdue rule; not the date of publication",
-   "es": "una fecha de fixture elegida despues de los vencimientos para ejercer la regla de vencimiento; no es la fecha de publicacion"
+   "es": "una fecha de fixture elegida después de los vencimientos para ejercer la regla de vencimiento; no es la fecha de publicación"
   }
  },
  "provenance": {
-  "code_version": "0.14.000",
+  "code_version": "0.15.000",
   "riskvalidation_version": "0.9.0",
   "generators": [
    "fixture:u15-s-contracts"
@@ -75,43 +75,43 @@
    },
    {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "6225136025c8457bab8857501cb8b2939bd785807184f5e9f52a975299c359e5",
-    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+    "sha256": "69a2ab8f87d99efc2b9e6a07dd73df2b6519efacf40331a9ca102e0c0ea5b863",
+    "ref": null
    },
    {
     "path": "data/derived/C18/models-banco-andino.json",
-    "sha256": "4f5927257cbcca0e717753acf81e84f78b33a4906553ee571244874b9598ae3d",
-    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+    "sha256": "dc6683541f7a7d3ac2feb3e6b7561a2f95af4d10ee87d20236ba61f106383427",
+    "ref": null
    },
    {
     "path": "data/derived/C18/baseline.json",
-    "sha256": "b424e3f4d386478c503eff31bd1d2bc597e20089e0b872a561b4d11e7cf78921",
-    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+    "sha256": "235ba35898c452765822b51a085e6cb52d8257ddd401111f43957b820724bada",
+    "ref": null
    },
    {
     "path": "data/derived/C18/eba-2025-adverse.json",
-    "sha256": "2b191fb877657b8a26850a5de8458bbe4fc88454d6d3753220189b6b95e46437",
-    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+    "sha256": "1cd7fb0214e90d3d5f0f5897e1aeea7d2bde7efb5fd45187ab38c8c86ffb2344",
+    "ref": null
    },
    {
     "path": "data/derived/C18/fed-2026-severely-adverse.json",
-    "sha256": "fd614c8edf07464ec1bd266ec2f6b35506b214fcb938e62ed804d83bb5117fbd",
-    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+    "sha256": "22d9aeb057a9c1dc11542b62f9b6d7f42c341b16858c655f502740388c236888",
+    "ref": null
    },
    {
     "path": "data/derived/C18/ngfs-delayed-transition.json",
-    "sha256": "5f78224b085addbc50b4c0ca823a87e150ffbefb5bbbfffe650cfddff76d57c5",
-    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+    "sha256": "5a2b04c087918eb8555d874344d812c3d5a55b4f57e8c497758bea69ce006302",
+    "ref": null
    },
    {
     "path": "data/derived/C18/reverse-stress.json",
-    "sha256": "dc5bc0dd9e74ab9a7cee4dec9425eb8b633b014e2681dd5f1db3d0e75461e40a",
-    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+    "sha256": "fe60e7c9db7f8968d2001e52c08b5c6a6f0031b332bc49d2c578cf491e55fe26",
+    "ref": null
    },
    {
     "path": "data/derived/C18/t-copula-baseline.json",
-    "sha256": "bbe42eb4ba4304106ae82ff3222b88d190d545f20d541e501d03d2643d2758a2",
-    "ref": "origin/task/u13-p1@cd096db05f5bdd709d2ed5ad8b35ed15217ff32c"
+    "sha256": "b55d740179a39c1781e8e58b425d18aa98b31db9a21d021b12def3409ad3dcbc",
+    "ref": null
    },
    {
     "path": "data/derived/manifests/C22.json",
