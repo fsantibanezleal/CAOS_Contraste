@@ -8,8 +8,7 @@ Levels: 1 fundamentals, 2 the method in practice, 3 state of the art, 4 beyond t
 
 ## Topics
 
-A topic without a level 3 notebook says why on its row. The topics after 01 are listed with the unit that writes them and appear as
-links when their folder lands.
+A topic without a level 3 notebook says why on its row; every topic from 02 to 14 has one.
 
 | Topic | Needs | Level 3 |
 |---|---|---|
@@ -147,15 +146,15 @@ links when their folder lands.
 
 Each claim of the SDD's section Beyond the state of the art, with the level 4 notebooks that demonstrate it in this language; the committed evidence of each claim is in the SDD.
 
-- **BS-1** The measured size and power of the validation tests on planted defects. Demonstrated by: [14-validating-the-validator/08-beyond-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb](14-validating-the-validator/08-beyond-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb).
-- **BS-2** The reconciliations against reference engines that exist today. Demonstrated by: [03-ratings-and-calibration/11-beyond-the-reconciliations-against-printed-answers.ipynb](03-ratings-and-calibration/11-beyond-the-reconciliations-against-printed-answers.ipynb), [08-counterparty-and-regulatory-calculators/08-beyond-exposure-reconciled-to-a-reference-engine.ipynb](08-counterparty-and-regulatory-calculators/08-beyond-exposure-reconciled-to-a-reference-engine.ipynb).
-- **BS-3** The leakage-safe protocol per case, with gates. Demonstrated by: [02-credit-scoring/07-beyond-the-leakage-safe-protocol-per-case-with-gates.ipynb](02-credit-scoring/07-beyond-the-leakage-safe-protocol-per-case-with-gates.ipynb).
-- **BS-4** The default definition as part of the PD, informative withdrawals and thin grades. Demonstrated by: [03-ratings-and-calibration/10-beyond-the-default-definition-withdrawals-and-thin-grades.ipynb](03-ratings-and-calibration/10-beyond-the-default-definition-withdrawals-and-thin-grades.ipynb).
-- **BS-5** Provisions reconciliation identities as gates, overlays apart, three regimes on one portfolio. Demonstrated by: [04-provisions/08-beyond-reconciliation-overlays-and-three-regimes.ipynb](04-provisions/08-beyond-reconciliation-overlays-and-three-regimes.ipynb).
-- **BS-6** Engines and test catalogues no open toolkit provides. Demonstrated by: [06-portfolio-capital/08-beyond-an-engine-reconciled-to-its-anchors.ipynb](06-portfolio-capital/08-beyond-an-engine-reconciled-to-its-anchors.ipynb).
-- **BS-7** The UF as its own currency in IRRBB. Demonstrated by: [09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb](09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb).
-- **BS-8** A test that flags a behavioural assumption changed at a limit breach. Demonstrated by: [09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb](09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb).
-- **BS-9** The dependence band shown with every aggregate. Demonstrated by: [12-capital-and-stress/09-beyond-the-dependence-band-and-an-honest-verdict.ipynb](12-capital-and-stress/09-beyond-the-dependence-band-and-an-honest-verdict.ipynb).
-- **BS-10** The batch 3 test corrections, with the error rate each one removes measured on planted data. Demonstrated by: [13-ml-and-ai-risk/09-beyond-measured-size-and-power-of-the-corrected-tests.ipynb](13-ml-and-ai-risk/09-beyond-measured-size-and-power-of-the-corrected-tests.ipynb).
-- **BS-11** Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run. Demonstrated by: [10-liquidity/08-beyond-reverse-stress-as-a-multiplier.ipynb](10-liquidity/08-beyond-reverse-stress-as-a-multiplier.ipynb).
-- **BS-12** The instability of the operational-risk capital, measured on independent histories of known truth. Demonstrated by: [11-operational-risk/08-beyond-capital-stability-measured-on-independent-histories-of-known-truth.ipynb](11-operational-risk/08-beyond-capital-stability-measured-on-independent-histories-of-known-truth.ipynb).
+- **BS-1** The measured size and power of the validation tests on planted defects.. Demonstrated by: [14-validating-the-validator/08-beyond-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb](14-validating-the-validator/08-beyond-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb).
+- **BS-2** The reconciliations against reference engines that exist today.. Demonstrated by: [03-ratings-and-calibration/11-beyond-the-reconciliations-against-printed-answers.ipynb](03-ratings-and-calibration/11-beyond-the-reconciliations-against-printed-answers.ipynb), [08-counterparty-and-regulatory-calculators/08-beyond-exposure-reconciled-to-a-reference-engine.ipynb](08-counterparty-and-regulatory-calculators/08-beyond-exposure-reconciled-to-a-reference-engine.ipynb).
+- **BS-3** The leakage-safe protocol per case, with gates.. Demonstrated by: [02-credit-scoring/07-beyond-the-leakage-safe-protocol-per-case-with-gates.ipynb](02-credit-scoring/07-beyond-the-leakage-safe-protocol-per-case-with-gates.ipynb).
+- **BS-4** The default definition as part of the PD, informative withdrawals and thin grades.. Demonstrated by: [03-ratings-and-calibration/10-beyond-the-default-definition-withdrawals-and-thin-grades.ipynb](03-ratings-and-calibration/10-beyond-the-default-definition-withdrawals-and-thin-grades.ipynb).
+- **BS-5** Provisions reconciliation identities as gates, overlays apart, three regimes on one portfolio.. Demonstrated by: [04-provisions/08-beyond-reconciliation-overlays-and-three-regimes.ipynb](04-provisions/08-beyond-reconciliation-overlays-and-three-regimes.ipynb).
+- **BS-6** Engines and test catalogues no open toolkit provides.. Demonstrated by: [06-portfolio-capital/08-beyond-an-engine-reconciled-to-its-anchors.ipynb](06-portfolio-capital/08-beyond-an-engine-reconciled-to-its-anchors.ipynb).
+- **BS-7** The UF as its own currency in IRRBB.. Demonstrated by: [09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb](09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb).
+- **BS-8** A test that flags a behavioural assumption changed at a limit breach.. Demonstrated by: [09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb](09-irrbb/08-beyond-the-uf-and-the-breach-test.ipynb).
+- **BS-9** The dependence band shown with every aggregate.. Demonstrated by: [12-capital-and-stress/09-beyond-the-dependence-band-and-an-honest-verdict.ipynb](12-capital-and-stress/09-beyond-the-dependence-band-and-an-honest-verdict.ipynb).
+- **BS-10** The batch 3 test corrections, with the error rate each one removes measured on planted data.. Demonstrated by: [13-ml-and-ai-risk/09-beyond-measured-size-and-power-of-the-corrected-tests.ipynb](13-ml-and-ai-risk/09-beyond-measured-size-and-power-of-the-corrected-tests.ipynb).
+- **BS-11** Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run.. Demonstrated by: [10-liquidity/08-beyond-reverse-stress-as-a-multiplier.ipynb](10-liquidity/08-beyond-reverse-stress-as-a-multiplier.ipynb).
+- **BS-12** The instability of the operational-risk capital, measured on independent histories of known truth.. Demonstrated by: [11-operational-risk/08-beyond-capital-stability-measured-on-independent-histories-of-known-truth.ipynb](11-operational-risk/08-beyond-capital-stability-measured-on-independent-histories-of-known-truth.ipynb).
