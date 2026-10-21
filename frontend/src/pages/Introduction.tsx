@@ -8,7 +8,6 @@ import type { ReactNode } from 'react';
 import { OverviewFigure } from '../architecture/figures';
 import { L, P, T, useT } from '../content/bi';
 import executive from '../../../content/executive.json';
-import { NoTranslateRefs } from './NoTranslateRefs';
 
 /** One list item written in both languages. */
 const Li = ({ en, es }: { en: ReactNode; es: ReactNode }) => (
@@ -191,7 +190,6 @@ export function Introduction() {
         'El problema de la industria de defender ante los supervisores los modelos internos de riesgo, planteado para quienes deciden: el problema, su contexto, la situación actual, las tendencias y una propuesta. La vista técnica muestra luego cómo lo explora el trabajo.',
       )}
     >
-      <NoTranslateRefs />
       <Tabs
         ariaLabel={t('Views of the introduction', 'Vistas de la introducción')}
         initial="executive"
