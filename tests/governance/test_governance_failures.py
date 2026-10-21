@@ -28,7 +28,7 @@ def test_adversarial_a_variant_document_the_manifest_names_but_is_absent_stops_t
     assert not out.exists() or not any(out.rglob("*"))
 
 
-def test_a_models_document_that_is_not_valid_json_stops_the_bake_naming_the_file(tree, tmp_path):
+def test_adversarial_a_models_document_that_is_not_valid_json_stops_the_bake_naming_the_file(tree, tmp_path):
     from pipeline.governance import bake
     from pipeline.governance.readers import BakeError
 
