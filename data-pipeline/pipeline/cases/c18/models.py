@@ -106,7 +106,7 @@ def model_summaries(ev: str) -> list[dict[str, Any]]:
 
 
 def fit_block(anchors: Anchors, sats: dict[str, sat.Satellite], space: dict[str, Any], named_p: dict[str, Any], credit_description: dict[str, str], n_draws: int = P.N_DRAWS,
-              seed: int = P.SEED) -> dict[str, Any]:
+              seed: int = P.SEED, grid: dict[str, Any] | None = None) -> dict[str, Any]:
     exp = [{"banco_andino_class": c, "exposure_clp_m": anchors.class_exposure_clp_m[c], "share": anchors.class_exposure_clp_m[c] / anchors.loans_clp_m}
            for c in P.CLASSES]
     return {
@@ -125,7 +125,8 @@ def fit_block(anchors: Anchors, sats: dict[str, sat.Satellite], space: dict[str,
                        {"method": "worst-case", "engine_function": "aggregation.bounds.worst_var_bounds"}],
             "n_draws": n_draws, "seed": seed, "chunk_size": P.CHUNK, "horizon_years": P.HORIZON_YEARS, "confidence_level": P.LEVEL,
             "capital_basis": "economic-capital-var-less-el",
-            "marginal_interpolation": "np.interp on the Hazen positions (i - 0.5) / n of the sorted sample, clamped at the ends"},
+            "marginal_interpolation": "np.interp on the Hazen positions (i - 0.5) / n of the sorted sample, clamped at the ends",
+            **({"quantile_grid": grid} if grid is not None else {})},
         "named_parameters": named_p,
         "bank_anchors": {
             "rwa_basis": {"tier1_proxy_clp_m": anchors.tier1_clp_m, "cet1_ratio_anchor": P.CMF_ANCHOR_CET1, "rwa_total_clp_m": anchors.rwa_clp_m},

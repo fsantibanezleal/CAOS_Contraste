@@ -365,9 +365,9 @@
     "sha256": "119980489deba24a4b7bff6854dda49e3eb561edbc5b0920f541dd4bae507f95"
   },
   "c18-models": {
-    "version": "2.0.0",
+    "version": "2.1.0",
     "schema": "docs/contracts/schemas/c18/models.schema.json",
-    "sha256": "fc32bf28c8adb8aa4d34ac6ef4321f6200c3aeb6586009a066fd9db4de9532b2"
+    "sha256": "af37a339993a53af6c0f747c6ffbb583c5ec9510335333a3d223f54fb9094789"
   },
   "engine-aggregation-api": {
     "version": "1.1.0",
