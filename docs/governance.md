@@ -163,13 +163,13 @@ Cases with no finding row in the committed documents: none.
 
 ### The model risk appetite
 
-The seven metrics of 06 B.6 with their thresholds. Every limit is a convention (item 30 of the dossier UNVERIFIED list); a metric with no population has no value.
+The seven metrics of 06 B.6 with their thresholds. Every limit is a convention (item 30 of the dossier UNVERIFIED list); a metric with no population has no value. The metrics that count findings include the inventory's own findings (GOV-RUBRIC-BLIND-SPOT, GOV-INDEPENDENCE-NOT-ESTABLISHED), beside the register rows.
 
 | Metric | Value | Numerator | Denominator | Light |
 |---|---:|---:|---:|---:|
 | Share of Tier 1 entries validated on time | 1 | 18 | 18 | green |
-| Open high-severity findings (S1 and S2) | 90 | 90 | 259 | red |
-| Overdue remediation | 0 | 0 | 259 | green |
+| Open high-severity findings (S1 and S2) | 91 | 91 | 261 | red |
+| Overdue remediation | 0 | 0 | 261 | green |
 | Entries used under exception | 0 | 0 | 34 | green |
 | Entries in breach of their thresholds (a red test row) | 32 | 32 | 34 | red |
 | PMA magnitude relative to the model output | 0.0033 | 324129997.0 | 97592002519.53 | green |

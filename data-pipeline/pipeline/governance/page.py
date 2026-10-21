@@ -89,7 +89,8 @@ def results_block(inv: dict[str, Any], fnd: dict[str, Any], app: dict[str, Any],
           [[x["case_id"], x["total"], *[x["by_severity"][s] for s in SEVERITIES], x["overdue"]] for x in c["by_case"]], 1)
     w("### The model risk appetite")
     w("")
-    w("The seven metrics of 06 B.6 with their thresholds. Every limit is a convention (item 30 of the dossier UNVERIFIED list); a metric with no population has no value.")
+    w("The seven metrics of 06 B.6 with their thresholds. Every limit is a convention (item 30 of the dossier UNVERIFIED list); a metric with no population has no value. "
+      "The metrics that count findings include the inventory's own findings (" + ", ".join(f["id"] for f in inv["governance_findings"]) + "), beside the register rows.")
     w("")
     table(w, ["Metric", "Value", "Numerator", "Denominator", "Light"],
           [[m["name"]["en"], "not evaluated" if m["value"] is None else (f"{m['value']:.4f}".rstrip("0").rstrip(".") if isinstance(m["value"], float) else m["value"]),
