@@ -1,0 +1,457 @@
+{
+  "schema": "contraste.case/v1",
+  "case_id": "C20",
+  "variant_id": "fixture-seeds",
+  "model": [
+    {
+      "id": "fixture-p1",
+      "family": "ml",
+      "rung": "P1",
+      "title": {
+        "en": "Fixture model fixture-p1",
+        "es": "Fixture model fixture-p1"
+      },
+      "short_title": {
+        "en": "fixture-p1",
+        "es": "fixture-p1"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    }
+  ],
+  "outputs": {
+    "kind": "seeds",
+    "dataset_id": "uci-taiwan",
+    "model_dataset": "uci-taiwan",
+    "sgcd_notice": null,
+    "parameters": [
+      {
+        "name": "perturbation_grid",
+        "value": [
+          0.05,
+          0.1,
+          0.25,
+          0.5,
+          1.0
+        ],
+        "unit": "multiple of each feature's standard deviation",
+        "label": "convention",
+        "basis": "Noise scales for the perturbation robustness grid (06 C.7 l.1009-1012 gives the construction, no values)."
+      },
+      {
+        "name": "perturbation_tolerance",
+        "value": 0.02,
+        "unit": "AUC points",
+        "label": "convention",
+        "basis": "Degradation of AUC tolerated at the preset scale 0.1; about 2.5 standard errors of an AUC on the Taiwan holdout (about 6,000 holdout rows)."
+      },
+      {
+        "name": "n_seeds",
+        "value": 20,
+        "unit": "retraining seeds",
+        "label": "convention",
+        "basis": "Seeds of the seed sweep (06 I.1 l.1191 gives none); 20 gives a standard deviation of the AUC with a relative error near 16 percent."
+      },
+      {
+        "name": "n_bootstrap_refits",
+        "value": 100,
+        "unit": "bootstrap refits",
+        "label": "convention",
+        "basis": "Refits of the reason-code stability (04 J.2 l.881-883 gives none)."
+      },
+      {
+        "name": "overfit_tolerance",
+        "value": 0.05,
+        "unit": "AUC points",
+        "label": "convention",
+        "basis": "Train minus test AUC gap beyond which the overfit flag is raised (06 C.7 l.1016-1018 gives no value)."
+      },
+      {
+        "name": "weak_spot_multiple",
+        "value": 2.0,
+        "unit": "multiple of the average test error",
+        "label": "convention",
+        "basis": "k: a slice is a weak spot when its test error exceeds k times the average (06 C.7 l.1016-1018)."
+      },
+      {
+        "name": "shift_score",
+        "value": "resemblance-classifier-probability",
+        "unit": "name of the score",
+        "label": "convention",
+        "basis": "The shift score ranking subsamples; a classifier of development against evaluation rows (06 C.7 l.1048-1051 resemblance AUC)."
+      },
+      {
+        "name": "worst_subsample_share",
+        "value": 0.1,
+        "unit": "share of the evaluation rows",
+        "label": "convention",
+        "basis": "The dossier's example is the worst 10 percent (06 C.7 l.1013-1014)."
+      },
+      {
+        "name": "decision_cutoff_reject_share",
+        "value": 0.2,
+        "unit": "share of baseline decisions declined",
+        "label": "convention",
+        "basis": "The cut-off is the baseline score quantile that declines this share; held fixed under every shift (decision Q10)."
+      }
+    ],
+    "fairness_battery": {
+      "label": "labelled-fairness-battery",
+      "model": "uci-taiwan",
+      "notice": {
+        "en": "Fixture rows. The battery is labelled evidence on the Taiwan model, not a compliance statement",
+        "es": "Fixture rows. The battery is labelled evidence on the Taiwan model, not a compliance statement"
+      },
+      "rows": [
+        {
+          "test_id": "fair.equalized_odds",
+          "attribute": "sex",
+          "value": 0.03,
+          "groups": [
+            {
+              "group": "g1",
+              "n": 1000,
+              "value": 0.7
+            },
+            {
+              "group": "g2",
+              "n": 900,
+              "value": 0.67
+            }
+          ],
+          "light": "green"
+        },
+        {
+          "test_id": "fair.equalized_odds",
+          "attribute": "age",
+          "value": 0.03,
+          "groups": [
+            {
+              "group": "g1",
+              "n": 1000,
+              "value": 0.7
+            },
+            {
+              "group": "g2",
+              "n": 900,
+              "value": 0.67
+            }
+          ],
+          "light": "green"
+        },
+        {
+          "test_id": "fair.equalized_odds",
+          "attribute": "marital_status",
+          "value": 0.03,
+          "groups": [
+            {
+              "group": "g1",
+              "n": 1000,
+              "value": 0.7
+            },
+            {
+              "group": "g2",
+              "n": 900,
+              "value": 0.67
+            }
+          ],
+          "light": "green"
+        },
+        {
+          "test_id": "fair.equal_opportunity",
+          "attribute": "sex",
+          "value": 0.03,
+          "groups": [
+            {
+              "group": "g1",
+              "n": 1000,
+              "value": 0.7
+            },
+            {
+              "group": "g2",
+              "n": 900,
+              "value": 0.67
+            }
+          ],
+          "light": "green"
+        },
+        {
+          "test_id": "fair.equal_opportunity",
+          "attribute": "age",
+          "value": 0.03,
+          "groups": [
+            {
+              "group": "g1",
+              "n": 1000,
+              "value": 0.7
+            },
+            {
+              "group": "g2",
+              "n": 900,
+              "value": 0.67
+            }
+          ],
+          "light": "green"
+        },
+        {
+          "test_id": "fair.equal_opportunity",
+          "attribute": "marital_status",
+          "value": 0.03,
+          "groups": [
+            {
+              "group": "g1",
+              "n": 1000,
+              "value": 0.7
+            },
+            {
+              "group": "g2",
+              "n": 900,
+              "value": 0.67
+            }
+          ],
+          "light": "green"
+        },
+        {
+          "test_id": "fair.calibration_within_groups",
+          "attribute": "sex",
+          "value": 0.03,
+          "groups": [
+            {
+              "group": "g1",
+              "n": 1000,
+              "value": 0.7
+            },
+            {
+              "group": "g2",
+              "n": 900,
+              "value": 0.67
+            }
+          ],
+          "light": "green"
+        },
+        {
+          "test_id": "fair.calibration_within_groups",
+          "attribute": "age",
+          "value": 0.03,
+          "groups": [
+            {
+              "group": "g1",
+              "n": 1000,
+              "value": 0.7
+            },
+            {
+              "group": "g2",
+              "n": 900,
+              "value": 0.67
+            }
+          ],
+          "light": "green"
+        },
+        {
+          "test_id": "fair.calibration_within_groups",
+          "attribute": "marital_status",
+          "value": 0.03,
+          "groups": [
+            {
+              "group": "g1",
+              "n": 1000,
+              "value": 0.7
+            },
+            {
+              "group": "g2",
+              "n": 900,
+              "value": 0.67
+            }
+          ],
+          "light": "green"
+        },
+        {
+          "test_id": "fair.auc_by_group",
+          "attribute": "sex",
+          "value": 0.03,
+          "groups": [
+            {
+              "group": "g1",
+              "n": 1000,
+              "value": 0.7
+            },
+            {
+              "group": "g2",
+              "n": 900,
+              "value": 0.67
+            }
+          ],
+          "light": "green"
+        },
+        {
+          "test_id": "fair.auc_by_group",
+          "attribute": "age",
+          "value": 0.03,
+          "groups": [
+            {
+              "group": "g1",
+              "n": 1000,
+              "value": 0.7
+            },
+            {
+              "group": "g2",
+              "n": 900,
+              "value": 0.67
+            }
+          ],
+          "light": "green"
+        },
+        {
+          "test_id": "fair.auc_by_group",
+          "attribute": "marital_status",
+          "value": 0.03,
+          "groups": [
+            {
+              "group": "g1",
+              "n": 1000,
+              "value": 0.7
+            },
+            {
+              "group": "g2",
+              "n": 900,
+              "value": 0.67
+            }
+          ],
+          "light": "green"
+        }
+      ]
+    },
+    "impact_detail": {
+      "label": "decision-flip",
+      "cutoff": {
+        "rule": "reject-worst-share-of-baseline-scores",
+        "reject_share": 0.2,
+        "label": "convention"
+      },
+      "rows": [
+        {
+          "shift_id": "fixture-shift",
+          "flip_share": 0.07,
+          "n_decisions": 1000
+        }
+      ]
+    },
+    "requirements": [
+      "CT-2001"
+    ],
+    "rows": [
+      {
+        "rung": "P4",
+        "n_seeds": 20,
+        "auc": {
+          "mean": 0.77,
+          "sd": 0.004,
+          "min": 0.76,
+          "max": 0.78
+        },
+        "grade_assignment_changed_share": 0.1,
+        "attribution_rank_tau": {
+          "mean": 0.9,
+          "min": 0.8
+        },
+        "reason_code_overlap": {
+          "top_k": 4,
+          "n_refits": 100,
+          "mean": 0.85,
+          "p05": 0.7
+        }
+      }
+    ],
+    "explainer_agreement": [
+      {
+        "rung": "P4",
+        "effect_reference": "ale",
+        "n_features": 23,
+        "rank_correlation": 0.82,
+        "reason_if_null": null,
+        "top_features": [
+          {
+            "feature": "PAY_0",
+            "shap_importance": 0.41,
+            "effect_range": 0.22,
+            "ale": {
+              "edges": [
+                -2.0,
+                0.0,
+                1.0,
+                2.0
+              ],
+              "effect": [
+                -0.05,
+                0.02,
+                0.09
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "tests": [
+    {
+      "test_id": "stability.psi",
+      "model_id": "fixture-p1",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    }
+  ],
+  "impact": {
+    "decision_flip_share": {
+      "value": 0.07,
+      "unit": "share",
+      "label": {
+        "en": "Decisions that flip at the stated cut-off",
+        "es": "Decisions that flip at the stated cut-off"
+      }
+    }
+  },
+  "findings": [],
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u14-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

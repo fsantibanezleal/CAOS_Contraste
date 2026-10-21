@@ -19,9 +19,11 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 def test_the_pin_carries_the_market_extra() -> None:
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
+    if re.search(r"^riskvalidation\[market\]==\d+\.\d+\.\d+$", req, re.MULTILINE):  # the PyPI release, with its market extra
+        return
     m = re.search(r"^riskvalidation\[market\] @ git\+https://github\.com/fsantibanezleal/CAOS_RiskValidation(?:\.git)?@([0-9a-f]{40}|v\d+\.\d+\.\d+)$",
                   req, re.MULTILINE)
-    assert m is not None, "the engine is pinned with its market extra to a commit or a tag"
+    assert m is not None, "the engine is pinned with its market extra to its PyPI release, a commit or a tag"
     direct = distribution("riskvalidation").read_text("direct_url.json")
     if direct and not m.group(1).startswith("v"):                   # an editable or local install has no VCS record to compare
         info = json.loads(direct).get("vcs_info", {})

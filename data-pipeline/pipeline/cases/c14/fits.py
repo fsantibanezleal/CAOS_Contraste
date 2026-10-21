@@ -16,7 +16,7 @@ import numpy as np
 from riskvalidation.irrbb import behavioural as rv_beh
 
 from . import assumptions as asm
-from .fdic import Report
+from ...io.fdic import Report
 from ...io.treasury import ParCurve, curve_as_of
 
 

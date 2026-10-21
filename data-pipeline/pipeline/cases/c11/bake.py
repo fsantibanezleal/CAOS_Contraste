@@ -43,6 +43,9 @@ def engine_pin(requirements: Path = REQUIREMENTS) -> str:
         m = re.match(r"^riskvalidation(?:\[[^\]]*\])?\s*@\s*git\+\S+?@(\S+)\s*$", line.strip())
         if m:
             return m.group(1)
+        m = re.match(r"^riskvalidation(?:\[[^\]]*\])?\s*==\s*(\d+)\.(\d+)\.(\d+)\s*$", line.strip())
+        if m:  # the PyPI release, stamped as its tag (0.8.1 is v0.08.001)
+            return "v%d.%02d.%03d" % tuple(int(x) for x in m.groups())
     raise RuntimeError(f"{requirements}: no riskvalidation pin")
 
 

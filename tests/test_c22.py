@@ -37,15 +37,22 @@ def variants(manifest) -> dict[str, dict]:
     return {a["variant_id"]: _read(a["path"]) for a in manifest["artifacts"] if a["role"] == "variant"}
 
 
+#: the engine families whose p-value tests C22 simulates (CT-301). Engine 0.8.0 registers every validation test; the size of
+#: the p-value tests of the other families is measured by the engine's own size suites or pinned as a gap there (its
+#: tests/test_size.py, BL-088), and C22 extends to them in U16 (BL-090)
+C22_FAMILIES = frozenset({"discrimination", "pd-calibration", "rating-system", "stability", "transitions"})
+
+
 def test_size_of_every_test_reported(variants):
-    """CT-301: every registered riskvalidation test with a p-value at its null, 4,000 repetitions, both levels, with the
-    Monte Carlo SE, the Wilson interval and the p-value histogram."""
+    """CT-301: every registered riskvalidation test with a p-value in the families C22 covers, at its null, 4,000
+    repetitions, both levels, with the Monte Carlo SE, the Wilson interval and the p-value histogram."""
+    import riskvalidation.validation  # noqa: F401  (registers every test)
     from riskvalidation.core.registry import catalogue
 
     null = variants["null"]["outputs"]
     assert {p["measures"] for p in null["panels"]} == {"size"}
     measured = {s["test_id"] for s in null["simulations"] if s["key"].endswith("@null")}
-    registered = {s.test_id for s in catalogue() if s.decision == "p_value" and s.family != "selftest"}
+    registered = {s.test_id for s in catalogue() if s.decision == "p_value" and s.family in C22_FAMILIES}
     assert measured == registered, measured ^ registered
     for s in null["simulations"]:
         assert s["n_rep"] >= 4000 and s["p_histogram"] and sum(s["p_histogram"]) <= s["n_rep"]

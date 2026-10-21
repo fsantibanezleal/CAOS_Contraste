@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<CurveConfiguration>
+  <YieldCurves>
+    <YieldCurve>
+      <CurveId>C12_ZERO</CurveId>
+      <CurveDescription>USD zero curve of C12 (single curve: discounting and forecasting)</CurveDescription>
+      <Currency>USD</Currency>
+      <DiscountCurve/>
+      <Segments>
+        <Direct>
+          <Type>Zero</Type>
+          <Quotes>
+            <Quote>ZERO/RATE/USD/C12_ZERO/T360/1M</Quote>
+            <Quote>ZERO/RATE/USD/C12_ZERO/T360/2M</Quote>
+            <Quote>ZERO/RATE/USD/C12_ZERO/T360/3M</Quote>
+            <Quote>ZERO/RATE/USD/C12_ZERO/T360/4M</Quote>
+            <Quote>ZERO/RATE/USD/C12_ZERO/T360/6M</Quote>
+            <Quote>ZERO/RATE/USD/C12_ZERO/T360/1Y</Quote>
+            <Quote>ZERO/RATE/USD/C12_ZERO/T360/2Y</Quote>
+            <Quote>ZERO/RATE/USD/C12_ZERO/T360/3Y</Quote>
+            <Quote>ZERO/RATE/USD/C12_ZERO/T360/5Y</Quote>
+            <Quote>ZERO/RATE/USD/C12_ZERO/T360/7Y</Quote>
+            <Quote>ZERO/RATE/USD/C12_ZERO/T360/10Y</Quote>
+            <Quote>ZERO/RATE/USD/C12_ZERO/T360/20Y</Quote>
+            <Quote>ZERO/RATE/USD/C12_ZERO/T360/30Y</Quote>
+          </Quotes>
+          <Conventions>USD-ZERO-C12</Conventions>
+        </Direct>
+      </Segments>
+      <InterpolationVariable>Zero</InterpolationVariable>
+      <InterpolationMethod>Linear</InterpolationMethod>
+      <YieldCurveDayCounter>T360</YieldCurveDayCounter>
+      <Tolerance>1.0e-12</Tolerance>
+      <Extrapolation>true</Extrapolation>
+    </YieldCurve>
+  </YieldCurves>
+  <SwaptionVolatilities>
+    <SwaptionVolatility>
+      <CurveId>USD_SW_N</CurveId>
+      <CurveDescription>USD normal swaption volatilities (flat; the LGM is not calibrated, the surface only completes the market)</CurveDescription>
+      <Dimension>ATM</Dimension>
+      <VolatilityType>Normal</VolatilityType>
+      <Extrapolation>Flat</Extrapolation>
+      <DayCounter>A365</DayCounter>
+      <Calendar>NullCalendar</Calendar>
+      <BusinessDayConvention>Following</BusinessDayConvention>
+      <OptionTenors>1Y,5Y,10Y</OptionTenors>
+      <SwapTenors>1Y,5Y,10Y</SwapTenors>
+      <ShortSwapIndexBase>USD-CMS-1Y</ShortSwapIndexBase>
+      <SwapIndexBase>USD-CMS-30Y</SwapIndexBase>
+    </SwaptionVolatility>
+  </SwaptionVolatilities>
+</CurveConfiguration>

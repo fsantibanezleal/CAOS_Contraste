@@ -9,10 +9,27 @@ import pytest
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
+
+
 SAMPLES = HERE / "samples"
+def _load_checker(path: Path, name: str):
+    import importlib.util
+
+    if name in sys.modules:
+        return sys.modules[name]
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 for _p in (HERE, ROOT / "tests" / "contracts", ROOT / "tests" / "contracts_u10"):
     if str(_p) not in sys.path:
         sys.path.insert(0, str(_p))
+#: the cross-field checker of contracts_u10, loaded from its file under a name of its own: several contract folders ship a
+#: ``semantics`` module, and a plain ``import semantics`` gets whichever suite loaded first in one pytest session
+semantics = _load_checker(ROOT / "tests" / "contracts_u10" / "semantics.py", "semantics_contracts_u10")
 SEED = 42
 VARIANT_IDS = ("long-uf", "short-uf", "cpi-surprise", "clp-steepener", "offset-on-off", "floors-active")
 SHOCKS = ("parallel-up", "parallel-down", "steepener", "flattener", "short-up", "short-down")

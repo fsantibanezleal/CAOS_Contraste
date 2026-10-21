@@ -2,7 +2,6 @@
 inputs the document carries (the checks of ``semantics.py`` recompute with their own formulas; this test recomputes with the engine)."""
 from __future__ import annotations
 
-import re
 from functools import lru_cache
 
 import c14_docs as d
@@ -10,6 +9,7 @@ import numpy as np
 import pytest
 from riskvalidation.irrbb import curves, eve_nii, shocks, simulation, slotting
 from riskvalidation.validation import irrbb as vi
+from engine_pin import engine_pin_findings
 
 ROOT = d.ROOT
 MID = slotting.bucket_grid().midpoints
@@ -19,9 +19,24 @@ def approx(a, b, rel=1e-9, abs_=1e-6) -> bool:
     return bool(np.isclose(a, b, rtol=rel, atol=abs_))
 
 
-def test_the_engine_is_pinned_by_its_release_tag() -> None:
+def test_the_engine_is_pinned_by_its_release_tag_or_by_the_commit_the_sdd_names() -> None:
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
-    assert re.search(r"^riskvalidation(?:\[market\])? @ git\+https://github\.com/fsantibanezleal/CAOS_RiskValidation(?:\.git)?@v\d+\.\d+\.\d+\s*$", req, re.M)
+    sdd = (ROOT / "docs" / "design" / "SDD.md").read_text(encoding="utf-8")
+    assert engine_pin_findings(req, sdd) == []
+
+
+def test_the_pin_check_refuses_a_planted_mismatch() -> None:
+    sha, other = "25e9538faf10bfdbcde03c5adccffd8e86ec275c", "a52888e3d2b9a3331646d6fa831525e8283118b1"
+    line = "riskvalidation[market] @ git+https://github.com/fsantibanezleal/CAOS_RiskValidation.git@{}\n"
+    row = "| engine | riskvalidation | {} | the validation tests | none |\n"
+    assert engine_pin_findings(line.format(sha), row.format(sha)) == []
+    tag = "v%d.%02d.%03d" % (0, 7, 0)
+    assert engine_pin_findings(line.format(tag), row.format(tag)) == []
+    assert engine_pin_findings(line.format(sha), row.format(other)) != []          # the SDD row names another commit
+    assert engine_pin_findings(line.format(sha), "") != []                          # no SDD row
+    assert engine_pin_findings(line.format(sha[:7]), row.format(sha[:7])) != []     # an abbreviated commit
+    assert engine_pin_findings(line.format("main"), row.format("main")) != []        # a branch
+    assert engine_pin_findings("riskvalidation==0.7.0\n", row.format(sha)) != []    # no git pin
 
 
 def test_the_pinned_engine_reproduces_the_contract_goldens() -> None:
@@ -99,7 +114,7 @@ def engine_findings(out: dict, ear: bool = True) -> list[str]:
         nii, eve_p = simulated(out["valuation_date"], out)
         for lv in ee["levels"]:
             got = simulation.ear_evar(nii, eve_p, ee["base_nii"], ee["base_eve"], lv["level"])
-            err = simulation.ear_evar_mc_error(nii, eve_p, lv["level"], ee["n_batches"])
+            err = simulation.ear_evar_mc_error(nii, eve_p, lv["level"], ee["n_batches"], antithetic=True)
             need(approx(lv["ear"], got.ear) and approx(lv["evar"], got.evar), f"ear or evar at {lv['level']} differs from the engine")
             need(approx(lv["ear_se"], err.ear_se) and approx(lv["evar_se"], err.evar_se), f"a Monte Carlo error at {lv['level']} differs from the engine")
     return bad

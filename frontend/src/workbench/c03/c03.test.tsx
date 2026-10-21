@@ -124,6 +124,9 @@ describe('the C03 instrument', () => {
     expect(markup).toContain(`data-training="${o.cohort.id}"`);
     expect(markup).toContain(formatNumber(o.training.n_loans, 'en', { decimals: 0 }));
     expect(markup).toContain(escapeHtml(o.training.rationale.en));
+    // the rationale is a paragraph under the coefficients, not a row of the list that pushes the table out of its card (G6)
+    expect(markup).toMatch(/data-block="window-rationale"[^>]*><strong>Why this window\.<\/strong>/);
+    expect(markup.indexOf('data-table="rung-coefficients"')).toBeLessThan(markup.indexOf('data-block="window-rationale"'));
     const windows = (models as unknown as { fit: components['schemas']['c03Fit'] }).fit.cohort_windows;
     for (const w of windows) {
       expect(markup).toContain(`data-window="${w.id}"`);

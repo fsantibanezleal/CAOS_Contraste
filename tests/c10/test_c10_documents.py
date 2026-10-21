@@ -3,12 +3,12 @@ and name the Board's page; the small bake validates the same way."""
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 
 from c10_invariants import DERIVED, ROOT, hash_findings, label_findings, schema_findings, violations
 
 from pipeline.cases.c10 import params as P
+from engine_pin import engine_pin_findings, pinned_ref
 
 LOAN_TYPES = [lt["id"] for lt in P.LOAN_TYPES]
 VARIANTS = (*LOAN_TYPES, "grid-22", "grid-40")
@@ -74,4 +74,6 @@ def test_the_provenance_pins_the_board_page_and_the_truth_statuses() -> None:
         prov = load(DERIVED / "C10" / f"{vid}.json")["provenance"]
         assert prov["truth_status"] == "synthetic-known-truth" and prov["inputs"] == [] and prov["generators"] == [P.GENERATOR]
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
-    assert len(re.findall(r"^riskvalidation(?:\[market\])? @ git\+https://github\.com/fsantibanezleal/CAOS_RiskValidation(?:\.git)?@v\d+\.\d+\.\d+\s*$", req, re.M)) == 1               # one engine line, pinned to its release tag
+    sdd = (ROOT / "docs" / "design" / "SDD.md").read_text(encoding="utf-8")
+    engine_lines = [ln for ln in req.splitlines() if ln.startswith("riskvalidation")]
+    assert len(engine_lines) == 1 and pinned_ref(req) is not None and engine_pin_findings(req, sdd) == []  # one engine line, pinned as tests/engine_pin.py says
