@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
 LANGS = ("en", "es")
 TOPIC_01 = "01-getting-started"
-CLAIMS: frozenset[str] = frozenset()  # the BS- claims the SDD states (decision N8: each enters with its level 4 notebook)
+CLAIMS: frozenset[str] = frozenset({"BS-1"})  # the BS- claims the SDD states (decision N8: each enters with its level 4 notebook)
 PENDING_CLAIMS: frozenset[str] = frozenset()
 ENGINE_PIN = "0.8.1"  # the PyPI pin of the notebooks; the engine release tag is the same number, zero-padded (X.XX.XXX)
 ENGINE_TAG = "v%d.%02d.%03d" % tuple(int(part) for part in ENGINE_PIN.split("."))
@@ -194,8 +194,9 @@ def test_topics_and_notebooks_are_numbered_without_gaps():
 
 
 def test_levels_never_decrease_and_every_topic_has_levels_one_and_two():
-    levels = [read_nb(p)["metadata"]["caos"]["level"] for p in notebooks(ROOT)]
-    assert levels == sorted(levels) and {1, 2} <= set(levels)
+    for topic in sorted({p.parent.name for p in notebooks(ROOT)}):  # the reading order and the levels are those of one topic
+        levels = [read_nb(p)["metadata"]["caos"]["level"] for p in notebooks(ROOT) if p.parent.name == topic]
+        assert levels == sorted(levels) and {1, 2} <= set(levels), topic
     assert kind(findings_of(ROOT), "levels") == []
 
 
@@ -236,7 +237,8 @@ def test_every_notebook_has_the_anatomy_of_its_level():
             nb = read_nb(path)
             assert nb["cells"][0]["cell_type"] == "markdown"
             sections = [ln for c in markdown_cells(nb) for ln in "".join(c["source"]).splitlines() if ln.startswith("## ")]
-            assert len(sections) == 7, (path.name, sections)
+            expected = {1: 7, 2: 7, 3: 8, 4: 9}[nb["metadata"]["caos"]["level"]]  # level 3 adds the state of the art, level 4 the beyond
+            assert len(sections) == expected, (path.name, sections)
 
 
 def test_the_metadata_agrees_with_the_tree_the_pins_and_the_repository():
@@ -448,7 +450,7 @@ def test_adversarial_a_claim_with_no_level_four_notebook_and_a_notebook_claiming
     text = sdd.read_text(encoding="utf-8")
     start = text.index("## Beyond the state of the art\n")
     end = text.index("\n## ", start + 5)
-    planted = "## Beyond the state of the art\n\n- **BS-1** A planted claim.\n  Evidence: `docs/design/SDD.md`.\n"
+    planted = "## Beyond the state of the art\n\n- **BS-98** A planted claim.\n  Evidence: `docs/design/SDD.md`.\n"
     sdd.write_text(text[:start] + planted + text[end:], encoding="utf-8")
     edit_both(repo, notebooks(repo)[0].name, lambda nb: nb["metadata"]["caos"].update({"level": 4, "beyond": ["BS-99"]}))
     found = NOTEBOOKS.findings_of(repo)
@@ -619,7 +621,8 @@ def test_adversarial_topic_one_with_a_dropped_notebook_loses_its_plan(repo):
 
 
 def test_no_index_states_a_claim_while_the_sdd_claims_none():
-    assert CLAIMS == frozenset()
+    if CLAIMS:
+        pytest.skip("the SDD states claims (decision N8): the indexes list them with their topic unit")
     for rel, phrase in (("README.md", "no claim is stated yet"), ("en/README.md", "no claim is stated yet"), ("es/README.md", "todavía no se afirma ninguna")):
         text = (ROOT / "notebooks" / rel).read_text(encoding="utf-8")
         assert not re.search(r"BS-\d", text), f"notebooks/{rel} states a BS- claim the SDD does not make"
