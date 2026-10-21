@@ -96,6 +96,7 @@ def build(tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "reference group, the interval excluding 0",
             f"Disparidad del diferencial de tasa que se repite el año siguiente en {n} contrastes de grupos donde el grupo tiene un "
             "diferencial de tasa mayor que su grupo de referencia, con el intervalo excluyendo 0"))
+    n_attributes = sum(1 for r in tests if r["test_id"] == "fair.demographic_parity")
     gap = [r["segment"] for r in tests if r["test_id"] == "fair.demographic_parity" and r["light"] != "green"]
     if gap or spread_lower:
         evidence = [f"{tid}@{MODEL_RATES}@{seg}" for seg in gap for tid in ("fair.demographic_parity", "fair.adverse_impact")]
@@ -107,9 +108,9 @@ def build(tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     "grupo de referencia") if spread_lower else ""
         out.append(_finding(
             "F-UNCONDITIONAL-GAP", "S4", "open", evidence,
-            f"Unconditional approval-rate gaps in {len(gap)} of the 4 attributes{extra_en} are an indicator only: \"{quote}\" "
+            f"Unconditional approval-rate gaps in {len(gap)} of the {n_attributes} attributes{extra_en} are an indicator only: \"{quote}\" "
             "(Interagency Fair Lending Examination Procedures)",
-            f"Las brechas incondicionales de tasa de aprobación en {len(gap)} de los 4 atributos{extra_es} son solo un indicador: "
+            f"Las brechas incondicionales de tasa de aprobación en {len(gap)} de los {n_attributes} atributos{extra_es} son solo un indicador: "
             f"\"{quote}\" (Interagency Fair Lending Examination Procedures, cita en inglés)"))
     out.append(_finding(
         "F-LIMIT-CREDIT-SCORE", "S4", "accepted", ["design:credit-score-missing"],

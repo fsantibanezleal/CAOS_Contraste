@@ -16,7 +16,10 @@ def t(en: str, es: str | None = None) -> dict[str, str]:
 
 
 # --- the attributes, their groups and the reference group of each ----------------------------------------------------
-ATTRIBUTES = ("derived_race", "derived_ethnicity", "derived_sex", "applicant_age")
+ATTRIBUTES = ("derived_race", "derived_ethnicity", "derived_sex", "applicant_age", "applicant_age_above_62")
+#: the age contrast of Regulation B 1002.6(b)(2), beside the bands (BL-087); the only attribute that can be not evaluated in a pair
+AGE62 = "applicant_age_above_62"
+AGE_FIELDS = ("applicant_age", AGE62)
 
 #: the groups of each attribute (addendum H1 2.2), in the order the documents list them
 GROUPS: dict[str, tuple[str, ...]] = {
@@ -25,38 +28,75 @@ GROUPS: dict[str, tuple[str, ...]] = {
     "derived_ethnicity": ("Hispanic or Latino", "Not Hispanic or Latino"),
     "derived_sex": ("Male", "Female"),
     "applicant_age": ("<25", "25-34", "35-44", "45-54", "55-64", "65-74", ">74"),
+    AGE62: ("62 or over", "under 62"),
 }
+#: the raw HMDA values of a field whose groups are named apart from them (a value outside the map is refused)
+RAW_VALUES: dict[str, dict[str, str]] = {AGE62: {"Yes": "62 or over", "No": "under 62", "NA": "NA"}}
+#: the Spanish name of a group where it is a phrase and not a source label
+GROUP_ES = {"62 or over": "62 o más", "under 62": "menores de 62"}
 #: the categories that are not a protected group: their own excluded groups, never in a pairwise test (decision C2)
 NON_GROUPS: dict[str, tuple[str, ...]] = {
     "derived_race": ("Joint", "Free Form Text Only", "Race Not Available"),
     "derived_ethnicity": ("Joint", "Free Form Text Only", "Ethnicity Not Available"),
     "derived_sex": ("Joint", "Sex Not Available"),
     "applicant_age": ("8888",),
+    AGE62: ("NA",),
 }
 #: the group every other group of the attribute is contrasted with: the customary comparison group (a convention). For age the
 #: contract's fixture names 35-44; no source names a reference age band.
+#: For the 62 contrast the reference is the applicants under 62 (a convention, BL-087).
 REFERENCE: dict[str, str] = {"derived_race": "White", "derived_ethnicity": "Not Hispanic or Latino", "derived_sex": "Male",
-                             "applicant_age": "35-44"}
+                             "applicant_age": "35-44", AGE62: "under 62"}
 #: the field-to-basis table of addendum H3 section 5: basis, ECOA, FHA (age is ECOA only; ethnicity maps to national origin by convention)
 BASIS: dict[str, tuple[str, bool, bool]] = {
     "derived_race": ("race_color", True, True),
     "derived_ethnicity": ("national_origin_nearest_UNVERIFIED", True, True),
     "derived_sex": ("sex", True, True),
     "applicant_age": ("age_ecoa_only", True, False),
+    AGE62: ("age_ecoa_only", True, False),
 }
 FHA_DISPARATE_IMPACT = ("not assessed (disparate impact under the FHA only; gross HMDA disparities are not appropriate for "
                         "disproportionate adverse impact analysis, Interagency Procedures appendix, printed page 26)")
 FHA_DISPARATE_IMPACT_AGE = "not applicable (age is a prohibited basis under ECOA only, not in 42 U.S.C. 3605(a))"
 
 
+#: Regulation B 1002.6(b)(2) and 1002.2(o), transcribed from the eCFR text of 2026-09-01 (read for this unit with
+#: https://www.ecfr.gov/api/versioner/v1/full/2026-09-01/title-12.xml?part=1002&section=1002.6, and section=1002.2); the quotations keep
+#: their English wording in both languages
+AGE62_SOURCE = "https://www.ecfr.gov/current/title-12/chapter-X/part-1002/section-1002.6"
+AGE62_QUOTES = {
+    "1002.6(b)(2)(ii)": "In an empirically derived, demonstrably and statistically sound, credit scoring system, a creditor may use an "
+                        "applicant's age as a predictive variable, provided that the age of an elderly applicant is not assigned a negative "
+                        "factor or value.",
+    "1002.6(b)(2)(iv)": "In any system of evaluating creditworthiness, a creditor may consider the age of an elderly applicant when such "
+                        "age is used to favor the elderly applicant in extending credit.",
+    "1002.2(o)": "Elderly means age 62 or older.",
+}
+
+
+def age62_note() -> dict[str, str]:
+    q = AGE62_QUOTES
+    quotes = (f"12 CFR 1002.6(b)(2)(ii): \"{q['1002.6(b)(2)(ii)']}\" 12 CFR 1002.6(b)(2)(iv): \"{q['1002.6(b)(2)(iv)']}\" "
+              f"12 CFR 1002.2(o): \"{q['1002.2(o)']}\" (eCFR, {AGE62_SOURCE}).")
+    return t(f"Contrast of applicants 62 and over with applicants under 62, beside the age bands. Regulation B permits the use of age in "
+             f"an empirically derived and statistically sound scoring system and the favourable treatment of an elderly applicant. {quotes} "
+             "The reference group, under 62, is a convention. The contrast is a measurement of statistical disparity in public decisions; no "
+             "legal claim",
+             f"Contraste de los solicitantes de 62 años o más con los menores de 62, junto a los tramos de edad. La Regulación B permite "
+             f"usar la edad en un sistema de puntaje empírico y estadísticamente sólido y el trato favorable al solicitante de edad "
+             f"avanzada. {quotes} El grupo de referencia, menores de 62, es una convención. El contraste es una medición de disparidad "
+             "estadística en decisiones públicas; sin afirmación legal")
+
+
 def attribute_legal(field: str) -> dict[str, Any]:
     basis, ecoa, fha = BASIS[field]
+    note = age62_note() if field == AGE62 else t(
+        "Mapping taken from the research addendum H3 section 5; the ethnicity field maps to national origin by convention "
+        "(UNVERIFIED); no legal claim",
+        "Correspondencia tomada del adendum de investigación H3 sección 5; el campo de etnia corresponde a origen nacional "
+        "por convención (SIN VERIFICAR); sin afirmación legal")
     return {"basis": basis, "ecoa": ecoa, "fha": fha, "theory": "comparative-evidence-of-disparate-treatment",
-            "fha_disparate_impact": FHA_DISPARATE_IMPACT_AGE if field == "applicant_age" else FHA_DISPARATE_IMPACT,
-            "note": t("Mapping taken from the research addendum H3 section 5; the ethnicity field maps to national origin by convention "
-                      "(UNVERIFIED); no legal claim",
-                      "Correspondencia tomada del adendum de investigación H3 sección 5; el campo de etnia corresponde a origen nacional "
-                      "por convención (SIN VERIFICAR); sin afirmación legal")}
+            "fha_disparate_impact": FHA_DISPARATE_IMPACT_AGE if field in AGE_FIELDS else FHA_DISPARATE_IMPACT, "note": note}
 
 
 # --- the legal label (decision C4) and the licence (decision C7) ----------------------------------------------------------
@@ -118,6 +158,7 @@ LOAN_PURPOSES = (1, 2, 31, 32, 4, 5)
 LIEN_STATUSES = (1, 2)
 OCCUPANCY_TYPES = (1, 2, 3)
 AGE_VALUES = (*GROUPS["applicant_age"], *NON_GROUPS["applicant_age"])
+AGE62_RAW = tuple(RAW_VALUES[AGE62])
 
 #: the nine permitted controls the schema enumerates (the controls HMDA publishes since 2018; credit score is absent)
 CONTROLS = ("debt_to_income_ratio", "combined_loan_to_value_ratio", "income", "loan_amount", "property_value", "loan_type",
@@ -152,11 +193,11 @@ def conventions_block() -> dict[str, Any]:
         "group_exclusion": t("The Joint, Not Available and Free Form Text Only categories are carried as their own groups and excluded "
                              "from the pairwise tests; a convention. The reference group of each attribute is the customary comparison group, a "
                              "convention too: White, Not Hispanic or Latino and Male, and 35-44 for age, where no source names a reference "
-                             "age band.",
+                             "age band, and under 62 for the contrast of applicants 62 and over.",
                              "Las categorías Joint, Not Available y Free Form Text Only se llevan como grupos propios y se excluyen de "
                              "las pruebas por pares; una convención. El grupo de referencia de cada atributo es el grupo de comparación habitual, "
                              "también una convención: White, Not Hispanic or Latino y Male, y 35-44 para la edad, donde ninguna fuente "
-                             "nombra un tramo de edad de referencia."),
+                             "nombra un tramo de edad de referencia, y menores de 62 para el contraste de los solicitantes de 62 años o más."),
         "identifiers": {"id": ID_RULE, "observation_date": DATE_RULE, "label": "convention",
                         "note": t("Public HMDA withholds the loan identifier and the application and action dates: id is the row "
                                   "position in the source file within its activity year, and the observation date is the activity "
