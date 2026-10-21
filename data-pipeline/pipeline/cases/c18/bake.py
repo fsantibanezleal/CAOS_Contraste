@@ -312,7 +312,10 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None, n_draws: int 
     sums.append(_sum(root, P.RAW_REL))
     (root / P.SUMS_REL).write_text("\n".join(sums) + "\n", encoding="utf-8", newline="\n")
     ranges = expectations.check(CASE_ID, EXPECT, built.values)
+    from . import CASE
+
     manifest = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=_title(), category=CATEGORIES["capital-stress"], question=_question(),
         sources=[s for s in SOURCES if s in built.raw_sources["sources"]], seed=seed, variants=entries, default_variant=P.DEFAULT_VARIANT,
         contract=built.contract, expect=ranges, riskvalidation_version=engine_version(),

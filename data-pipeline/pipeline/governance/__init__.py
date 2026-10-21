@@ -2,7 +2,8 @@
 appetite and one twelve-section validation report per inventory entry, written to ``data/derived/governance/``.
 
 The bake reads every committed case document (the manifests, the models documents and the variant documents named by the manifests'
-``artifacts``), the product inputs of ``inputs.json`` and the dependency edges of ``edges.json``, and calls ``riskvalidation.governance``
+``artifacts``), the product inputs of ``inputs.json``, the dependency edges (the ``depends_on`` list of each manifest, U16-P1b) and the related links of
+``edges.json``, and calls ``riskvalidation.governance``
 (engine 0.9.0) for every computed value: the scope test, the exposure band, the materiality, the complexity, the tier and its sensitivity
 to the rubric's readings, the next review dates, the deadlines, the ageing, the overdue flag, the quantitative anchor, the opinion, the
 appetite metrics and the report. The product derives none of them (ADR-0069). It approves no model and certifies none (SDD non-goal 1).

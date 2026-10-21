@@ -37,6 +37,14 @@ def _t(en: str, es: str) -> dict:
     return {"en": en, "es": es}
 
 
+#: why this case reads what it reads of other cases, keyed by the document or the module its producer names: ``depends_on`` refuses a list that differs
+#: from the source (core.manifest.derive_depends_on), so the manifest cannot state what the code does not do
+DEPENDS_REASONS: dict[str, dict[str, str]] = {
+    "pipeline.cases.c06.panel": {"en": "Uses the C06 panel helpers: the sector groups and the sector index of an industry code.",
+        "es": "Usa los auxiliares del panel de C06: los grupos de sectores y el índice de sector de un código de industria."},
+}
+
+
 class C08:
     id = CASE_ID
     slug = "lgd-downturn"
@@ -47,6 +55,12 @@ class C08:
         "How does loss given default move across default cohorts, and what does a downturn LGD add?",
         "¿Cómo se mueve la pérdida dado el incumplimiento entre cohortes de incumplimiento, y qué agrega una LGD de recesión?")
     sources = SOURCES
+
+    def depends_on(self) -> list[dict[str, Any]]:
+        """What this case reads of other cases, as the manifest states it (``depends_on``)."""
+        from ...core.manifest import derive_depends_on
+
+        return derive_depends_on(self.id, DEPENDS_REASONS)
 
     def bake(self, seed: int, paths: Any, data_root: Path) -> dict[str, Any]:
         from ... import __version__
@@ -116,6 +130,7 @@ class C08:
             del res
         ranges = expectations.check(CASE_ID, bd.EXPECT, values)
         manifest = build_case_manifest(
+            depends_on=self.depends_on(),
             case_id=CASE_ID, title=self.title, category={"en": "LGD and EAD", "es": "LGD y EAD"}, question=self.question,
             sources=list(SOURCES), seed=seed, variants=entries, default_variant=DEFAULT_VARIANT, contract=contract, expect=ranges,
             riskvalidation_version=rv, source_details=_source_details(SOURCES))

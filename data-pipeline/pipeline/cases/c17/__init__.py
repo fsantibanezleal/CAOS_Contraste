@@ -15,6 +15,11 @@ from typing import Any
 CASE_ID = "C17"
 
 
+#: why this case reads what it reads of other cases, keyed by the document or the module its producer names: ``depends_on`` refuses a list that differs
+#: from the source (core.manifest.derive_depends_on), so the manifest cannot state what the code does not do
+DEPENDS_REASONS: dict[str, dict[str, str]] = {}
+
+
 class C17:
     id = CASE_ID
     slug = "operational-risk-lda-sma"
@@ -24,6 +29,12 @@ class C17:
     question = {"en": "How do the loss distribution approach and the standardised measurement approach differ on heavy-tailed operational losses?",
                 "es": "¿En qué difieren el enfoque de distribución de pérdidas y el enfoque de medición estandarizado con pérdidas operacionales de cola pesada?"}
     sources: tuple[str, ...] = ()  # no registered input file: the LDCE medians are committed in params with their source
+
+    def depends_on(self) -> list[dict[str, Any]]:
+        """What this case reads of other cases, as the manifest states it (``depends_on``)."""
+        from ...core.manifest import derive_depends_on
+
+        return derive_depends_on(self.id, DEPENDS_REASONS)
 
     def bake(self, seed: int, paths: Any, data_root: Path | None, scale: float = 1.0) -> dict[str, Any]:
         from .bake import bake_case

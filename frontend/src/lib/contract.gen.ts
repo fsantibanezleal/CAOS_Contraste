@@ -13482,7 +13482,7 @@ export interface components {
         };
         /**
          * Case manifest
-         * @description Catalog row case-manifest 1.0.0: one case (data/derived/manifests/<case>.json): its question, sources, artifacts and the contract-1 reports.
+         * @description Catalog row case-manifest 2.0.0: one case (data/derived/manifests/<case>.json): its question, sources, artifacts, the contract-1 reports and what the case reads of other cases (depends_on).
          */
         "common-case-manifest": {
             /** @constant */
@@ -13514,6 +13514,17 @@ export interface components {
                     number
                 ];
             };
+            /** @description What the producer reads of other cases, stated by the producer from the paths it opens and the modules it imports (never by hand), sorted by kind then ref; empty when the case reads nothing of another case. The engine is never listed: every case depends on it. */
+            depends_on: {
+                /**
+                 * @description document: a committed document of another case the producer reads; code: a product module of another case it imports.
+                 * @enum {unknown}
+                 */
+                kind: "document" | "code";
+                /** @description <case>/<file>.json or manifests/<case>.json for a document; pipeline.cases.<module> for code. */
+                ref: string;
+                reason: components["schemas"]["common-text"];
+            }[];
         };
         /**
          * Contract family

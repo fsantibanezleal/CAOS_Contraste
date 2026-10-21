@@ -21,7 +21,7 @@ documents with the engine `riskvalidation.governance` (0.9.0, ADR-0069): it comp
 4. **Register** (`bake._register_rows`): the severity map, the status map, the deadline, due date, ageing, overdue flag, anchor and RWEA share through the engine,
    the raised date from the changelog release of the document's code version.
 5. **Attributes** (`attributes.py`): A01 to A40, each with a value, a status and a basis; none invented.
-6. **Graph** (`edge_table.py`, `bake._layout`): the case edges of `edges.json` expand to entries; the engine checks the graph is acyclic and gives depth and
+6. **Graph** (`edge_table.py`, `bake._layout`): the case edges are built from the `depends_on` list of every case manifest (the producer states what it reads, U16-P1b) and expand to entries, with the related links of `edges.json`; the engine checks the graph is acyclic and gives depth and
    fan; networkx lays the columns (`topological_generations` must agree with the engine's generations; `multipartite_layout` over sorted layers).
 7. **Appetite and reports**: the engine's seven metrics and its twelve-section report per entry; the Spanish accents are restored (`spanish.py`).
 8. **Check and write**: the schema and the U15-S checker over every document; any finding refuses all of them. The page `docs/governance.md` and

@@ -5,9 +5,9 @@
     "sha256": "edcce7f1f7ba474096bc66c30f49f52053166a0d9a253143e3a9789b07e93f48"
   },
   "case-manifest": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/common/case-manifest.schema.json",
-    "sha256": "3a8866194225d51b05712e3700092643ec1340b7f205554711d32b38c971e1f6"
+    "sha256": "06ba366dda7bcbda54ed6e8ed39dd1a7bfed14690aef340ef684771af7276925"
   },
   "variant-envelope": {
     "version": "1.0.0",
@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "14.0.0",
+    "version": "15.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "64e764dfcc48b3d50f8ca0d7ebe0e2a2a138371dedce192fc869dfa1fca32a5a"
+    "sha256": "545867803ff668e342d03e4821775cff4ec0ccfa2dcaab88e1ceb185567d059c"
   },
   "readiness": {
     "version": "1.0.0",

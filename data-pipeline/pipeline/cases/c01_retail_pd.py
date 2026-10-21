@@ -322,6 +322,11 @@ def _models_doc(fit: Fit, *, seed: int, lineage) -> dict[str, Any]:
                                  lane={"lane": "precompute", "reasons": []})
 
 
+#: why this case reads what it reads of other cases, keyed by the document or the module its producer names: ``depends_on`` refuses a list that differs
+#: from the source (core.manifest.derive_depends_on), so the manifest cannot state what the code does not do
+DEPENDS_REASONS: dict[str, dict[str, str]] = {}
+
+
 class C01:
     id = CASE_ID
     slug = "retail-cards-pd"
@@ -333,6 +338,12 @@ class C01:
                   "¿Iguala una scorecard WoE monótona a los retadores que según la literatura pueden superarla, "
                   "cuando se exige calibración, y qué dicen las pruebas de validación cuando la población cambia?")
     sources = SOURCES
+
+    def depends_on(self) -> list[dict[str, Any]]:
+        """What this case reads of other cases, as the manifest states it (``depends_on``)."""
+        from ..core.manifest import derive_depends_on
+
+        return derive_depends_on(self.id, DEPENDS_REASONS)
 
     def bake(self, *, seed: int, paths, data_root: Path) -> dict[str, Any]:
         tw, tw_rep = _load_taiwan(data_root)
@@ -433,6 +444,7 @@ class C01:
                 values["transactor_effect_P1-scorecard_holdout"] = (rev - trn) / rev
         ranges = expectations.check(CASE_ID, EXPECT, values)
         manifest = build_case_manifest(
+            depends_on=self.depends_on(),
             case_id=CASE_ID, title=self.title, category={"en": "Credit scoring", "es": "Scoring de crédito"},
             question=self.question, sources=list(SOURCES), seed=seed, variants=entries, default_variant="holdout",
             contract={"uci-taiwan": tw_rep.summary(), "uci-german": de_rep.summary()}, expect=ranges,

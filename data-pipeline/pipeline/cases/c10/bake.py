@@ -248,7 +248,10 @@ def bake_case(seed: int, paths: Any, data_root: Path | None, scale: float, title
     # the declared ranges are checked on the full bake; a reduced run (tests) writes them and does not judge its small numbers by them
     ranges = (expectations.check(CASE_ID, EXPECT, built["values"]) if scale >= 1.0 and only is None
               else {k: [float(lo), float(hi)] for k, (lo, hi) in sorted(EXPECT.items())})
+    from . import CASE_C10 as CASE
+
     manifest = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=title, category={"en": "Portfolio capital", "es": "Capital de cartera"}, question=question,
         sources=[P.RAW["source"]], seed=seed, variants=entries, default_variant=built["default"], contract={}, expect=ranges,
         riskvalidation_version=docs.rv_version(), source_details={P.RAW["source"]: _source_details()})
