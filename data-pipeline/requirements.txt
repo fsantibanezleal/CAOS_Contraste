@@ -18,6 +18,6 @@ pypdf==6.19.0
 # the engine: the validation tests, the regulatory calculators and the reference engines, at its PyPI release (during a batch, before
 # the release, a full commit of the engine's integration branch that the SDD names; tests/engine_pin.py); the `market` extra brings
 # `arch` for C11 and C13
-riskvalidation[market]==0.8.1
+riskvalidation[market]==0.9.0
 # reads the EBA/ESRB 2025 macro-financial scenario workbook (C18, decision Q15 of the U13 sizing); MIT
 openpyxl==3.1.5
