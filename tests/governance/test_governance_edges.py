@@ -83,3 +83,19 @@ def test_every_entry_depends_on_the_engine_node_and_the_graph_is_layered(baked):
             assert e["graph"]["depth"] == 0
         assert e["map"]["generation"] == e["graph"]["depth"]
         assert -1.0 <= e["map"]["x"] <= 1.0 and -1.0 <= e["map"]["y"] <= 1.0
+
+
+def test_adversarial_a_commented_out_import_does_not_state_an_edge(table, tmp_path):
+    """Review m9: the needle must sit on a line that is not a comment."""
+    from pipeline.governance import edge_table
+
+    edge = next(e for e in table["edges"] if e["id"] == "E06")
+    for v in edge["verify"]:
+        target = tmp_path / v["file"]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(gs.ROOT / v["file"], target)
+    assert edge_table.verify_edge(edge, tmp_path) == []
+    for v in edge["verify"]:
+        f = tmp_path / v["file"]
+        f.write_text("\n".join("# " + line if v["needle"] in line else line for line in f.read_text(encoding="utf-8").splitlines()), encoding="utf-8")
+    assert len(edge_table.verify_edge(edge, tmp_path)) == len(edge["verify"])

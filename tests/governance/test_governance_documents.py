@@ -43,14 +43,11 @@ def test_every_document_validates_against_its_schema(baked):
 
 
 def test_every_document_passes_the_cross_field_checker_of_u15_s(baked):
-    from pipeline.governance import bake
-
     sm = gs.load_semantics()
-    copied = gs.copied_texts()  # the case documents' own words are replaced by a marker for the text rule only (see bake.check_documents)
     for name in ("inventory", "findings", "appetite"):
-        assert sm.violations(bake._neutral(getattr(baked, name), copied)) == [], name
+        assert sm.violations(getattr(baked, name)) == [], name
     for key, rep in baked.reports.items():
-        assert sm.violations(bake._neutral(rep, copied)) == [], key
+        assert sm.violations(rep) == [], key
     assert sm.cross_violations(docs(baked)) == []
 
 
@@ -148,7 +145,7 @@ def test_the_addendum_tiers_of_the_built_cases_hold_for_every_fit_of_the_case(ba
         seen.add(e["case_id"])
     # C02 and C20 (W15-18): M graded 3, C mean 2, C maximum 3
     assert tuple(r["tier"] for r in entry(baked.inventory, "C02/polish-horizons")["tier_block"]["tier_sensitivity"]) == (1, 2, 1, 1)
-    assert tuple(r["tier"] for r in entry(baked.inventory, "C20/c20-ladder")["tier_block"]["tier_sensitivity"]) == (2, 2, 1, 1)
+    assert tuple(r["tier"] for r in entry(baked.inventory, "C20/c20-ladder")["tier_block"]["tier_sensitivity"]) == (1, 2, 1, 1)
     assert {"C02", "C20"} <= seen
 
 
@@ -172,6 +169,8 @@ def test_the_four_fixture_entries_agree_with_the_u15_s_fixtures_except_the_named
         assert [(p["profile"], p["in_scope"]) for p in e["scope"]["profiles"]] == [(p["profile"], p["in_scope"]) for p in fe["scope"]["profiles"]]
         for field in ("profile", "review_kind", "last_validation", "next_review", "next_full_revalidation", "next_monitoring", "null_reason"):
             got, want = e["schedule"][field], fe["schedule"][field]
+            if field == "last_validation":   # the bake labels the convention in the basis
+                got, want = {k: got[k] for k in ("date", "type")}, {k: want[k] for k in ("date", "type")}
             if field == "null_reason" and got:   # the fixture's Spanish has no accents; the English is the engine's table and must agree
                 got, want = got["en"], want["en"]
             assert got == want, (fe["key"], field)

@@ -47,8 +47,8 @@ def verify_edge(edge: dict[str, Any], root: Path | str) -> list[str]:
         path = Path(root) / v["file"]
         if not path.is_file():
             problems.append(f"{edge['id']}: {v['file']} is absent, so {edge['upstream_case']} to {edge['downstream_case']} ({edge['kind']}) is not stated")
-        elif v["needle"] not in path.read_text(encoding="utf-8"):
-            problems.append(f"{edge['id']}: {v['file']} no longer contains {v['needle']!r}, so {edge['upstream_case']} to {edge['downstream_case']} "
+        elif not any(v["needle"] in line for line in path.read_text(encoding="utf-8").splitlines() if not line.lstrip().startswith("#")):
+            problems.append(f"{edge['id']}: {v['file']} no longer contains {v['needle']!r} outside a comment, so {edge['upstream_case']} to {edge['downstream_case']} "
                             f"({edge['kind']}) is not stated")
     return problems
 

@@ -68,18 +68,38 @@ _REG_CLAIMS = [
     re.compile(r"\b(SR\s?\d+-\d+|SS1/23|E-23)\s+(minimum|requirement|threshold|deadline|interval|limit)s?\b", re.I),
     re.compile(r"\b(exige|impone|establece|fija|prescribe)\s+(el|la|los|las)\s+(regulador|supervisor|BCE|PRA|OSFI)\w*", re.I),
 ]
-# a statement that Contraste approves, certifies or finds a model compliant (SDD non-goal 1; 06 I.6); the fixed negations are removed first
+# a statement that Contraste approves, certifies or finds a model compliant (SDD non-goal 1; 06 I.6); the fixed negations and the allowed phrases are removed first
 _APPROVAL_CLAIMS = [
-    re.compile(r"\bapprov(es|ed|ing|al)\b", re.I),
+    re.compile(r"\bapprov(es|ed|ing|al|e)\b", re.I),
     re.compile(r"\bcertif(y|ies|ied|ication)\b", re.I),
     re.compile(r"\b(compliant|complies|complying)\b|\bcompliance\s+with\b|\bin\s+compliance\b", re.I),
-    re.compile(r"\baprob(ado|ada|ados|adas|amos|[oó])\b", re.I),
+    re.compile(r"\baprob(ado|ada|ados|adas|amos|ar|[oó])\b|\baprueb\w*|\baprobaci[oó]n\b", re.I),
     re.compile(r"\bcertificad[oa]s?\b|\bcertifica\b", re.I),
     re.compile(r"\bcumple\b|\bcumplimiento\s+(de|con)\b|\bconforme\s+a\b", re.I),
 ]
+# the fixed negations: statements that Contraste does NOT approve, and the names of the W15-7 recommendation outcomes, which are labelled the rule's output
 _APPROVAL_NEGATIONS = re.compile(
     r"Contraste approves no model|Contraste no aprueba ning[uú]n modelo|\b(no|without)\s+(an?\s+)?(approval|approver)\b|approval date or (the )?authority|"
-    r"\bsin\s+(aprobaci[oó]n|aprobador)\b|\bnon-goal\b|\bapproval[ _]rate\b", re.I)
+    r"\bsin\s+(aprobaci[oó]n|aprobador)\b|\bnon-goal\b|"
+    r"\bApprove(?: with conditions)?:|\bAprobar(?: con condiciones)?:|^\s*approve(?: with conditions)?\s*$", re.I)
+# phrases of a credit decision on a loan, never a statement about a model: a metric, a cohort or an applicant outcome of the case documents (each with its reason).
+# A new phrase needs its reason here and a test sample in tests/contracts_u15; a claim about a model never matches one of them.
+APPROVAL_ALLOWED: list[tuple[re.Pattern, str]] = [
+    (re.compile(r"\bapproval[ _-]rates?\b|\btasas?\s+de\s+aprobaci[oó]n\b", re.I), "the share of applications a lender approves: a metric of the credit decision (HMDA, C01, C21)"),
+    (re.compile(r"\bapproval\s+cohorts?\b|\bcohortes?\s+de\s+aprobaci[oó]n\b", re.I), "the loans approved in one period, the unit of a vintage analysis (C03)"),
+    (re.compile(r"\bapproval\s+fiscal\s+years?\b|\bfirst approval of FY\S+|\bwithin \d+ months of approval\b|\ba[nñ]os?\s+fiscales?\s+de\s+aprobaci[oó]n\b", re.I),
+     "the date a loan was approved, a field of the SBA data (C03, C06, C08)"),
+    (re.compile(r"\blines? at their approval\b|\bat its full approval\b|\ba su monto aprobado\b|\b(gross|bruto)?\s*(approved amount|monto (bruto )?aprobado)\b", re.I),
+     "the approved amount of a loan or line: the exposure at approval (C06, C08, C09)"),
+    (re.compile(r"\b(of|among|entre)\s+the\s+approved\b|\bde\s+los\s+aprobados\b|\bentre\s+aprobados\b|\bapproved\s+by\s+the\s+(challenger|champion)\s+only\b|"
+                r"\baprobados\s+solo\s+por\b|\bapproved\s+defaulters\b|\baprobados\s+que\s+incumplen\b", re.I),
+     "the applicants a scorecard approves, as a population whose loss or bad rate is measured (C01)"),
+    (re.compile(r"\bgroup is approved at (higher|lower)\b|\bgrupo es aprobado con (mayores|menores)\b", re.I), "a protected group's approval odds in a disparity test (C21)"),
+    (re.compile(r"\bapplications? approved but not accepted\b|\bsolicitudes? aprobadas? pero no aceptadas?\b|\bsolicitudes? aprobadas? no aceptadas?\b|\bapproved applications not accepted\b|"
+                r"\b1 approval \(HMDA\b|\bApproval is action taken\b", re.I), "an HMDA action taken: the lender's decision on one application (C21)"),
+    (re.compile(r"\bapproved as decision V\d+\b", re.I), "a parameter value of the case, approved as a design decision of the build (decision V6), not a model"),
+]
+_ALLOWED_RX = re.compile("|".join(f"(?:{rx.pattern})" for rx, _ in APPROVAL_ALLOWED), re.I)
 
 
 def regulatory_claim_hits(text: str) -> list[int]:
@@ -97,7 +117,7 @@ def regulatory_claims(text: str) -> list[str]:
 
 def approval_claims(text: str) -> list[str]:
     """The phrases of ``text`` that state an approval, a certification or a compliance of a model, the fixed negations exempt."""
-    clean = _APPROVAL_NEGATIONS.sub(" ", text)
+    clean = _ALLOWED_RX.sub(" ", _APPROVAL_NEGATIONS.sub(" ", text))
     out = []
     for rx in _APPROVAL_CLAIMS:
         out += [m.group(0) for m in rx.finditer(clean)]

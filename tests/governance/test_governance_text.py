@@ -20,14 +20,9 @@ def everything(baked):
 
 def test_no_string_states_an_approval_a_certification_or_a_compliance_in_either_language(baked):
     sm = gs.load_semantics()
-    from pipeline.governance import bake
-    from pipeline.governance.readers import Reader, read_corpus
-
-    copied = bake._copied_texts(read_corpus(Reader())[0])  # the case documents' own words ('approval cohorts', 'approval rate') are not Contraste's statement
     for name, doc in everything(baked):
         for s in gs.all_strings(doc):
-            if s not in copied:
-                assert sm.approval_claims(s) == [], (name, s[:120])
+            assert sm.approval_claims(s) == [], (name, s[:120])
     for s in (gs.PAGE.read_text(encoding="utf-8"), baked.page_block):
         for line in s.splitlines():
             assert sm.approval_claims(line) == [], line[:120]
@@ -117,3 +112,15 @@ def test_adversarial_an_unaccented_spanish_text_is_found_by_the_check_and_restor
     assert {m.group(0).lower() for m in UNACCENTED.finditer(planted)} >= {"descripcion", "diseno", "implementacion", "politica", "peldanos"}
     fixed = spanish.restore(planted)
     assert not list(UNACCENTED.finditer(fixed)) and "diseño" in fixed and "peldaños" in fixed
+
+
+#: unaccented spellings of common Spanish words, listed here independently of the restoration table (review m1)
+INDEPENDENT = re.compile(r"\b(mas|segun|aqui|asi|ademas|tambien|despues|ultimo|ultima|unico|numero|periodo|indice)\b", re.I)
+
+
+def test_no_common_unaccented_spanish_word_is_left_in_an_authored_text(baked):
+    """The check does not read the restoration table: 'o mas' in the opinion rule of all 34 reports was missed once."""
+    bad = [(n, m.group(0), p["es"][:90]) for n, p in es_texts(baked) for m in INDEPENDENT.finditer(p["es"])]
+    assert bad == [], bad[:6]
+    rep = next(iter(baked.reports.values()))
+    assert "o más" in rep["sections"][10]["opinion"]["rule"]["text"]["es"]

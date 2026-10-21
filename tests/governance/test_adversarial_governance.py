@@ -64,15 +64,15 @@ def test_adversarial_an_approval_text_planted_in_any_document_is_refused(baked):
     inv = copy.deepcopy(baked.inventory)
     inv["entries"][0]["lifecycle"]["basis"] = "The model is approved by Contraste."
     with pytest.raises(BakeError, match="approv"):
-        bake.check_documents(inv, baked.findings, baked.appetite, baked.reports, gs.copied_texts())
+        bake.check_documents(inv, baked.findings, baked.appetite, baked.reports)
     inv = copy.deepcopy(baked.inventory)
     inv["entries"][0]["title"]["es"] = "Modelo aprobado y certificado"
     with pytest.raises(BakeError):
-        bake.check_documents(inv, baked.findings, baked.appetite, baked.reports, gs.copied_texts())
+        bake.check_documents(inv, baked.findings, baked.appetite, baked.reports)
     inv = copy.deepcopy(baked.inventory)
     inv["entries"][0]["scope"]["basis"] = "The entry is compliant with SR 26-2."
     with pytest.raises(BakeError, match="compliance"):
-        bake.check_documents(inv, baked.findings, baked.appetite, baked.reports, gs.copied_texts())
+        bake.check_documents(inv, baked.findings, baked.appetite, baked.reports)
 
 
 def test_adversarial_a_convention_called_regulatory_is_refused(baked):
@@ -82,11 +82,11 @@ def test_adversarial_a_convention_called_regulatory_is_refused(baked):
     inv = copy.deepcopy(baked.inventory)
     inv["conventions"]["frequency"]["label"] = "regulatory"
     with pytest.raises(BakeError, match="regulatory"):
-        bake.check_documents(inv, baked.findings, baked.appetite, baked.reports, gs.copied_texts())
+        bake.check_documents(inv, baked.findings, baked.appetite, baked.reports)
     inv = copy.deepcopy(baked.inventory)
     inv["conventions"]["frequency"]["basis"] = "a regulatory requirement of the supervisor"
     with pytest.raises(BakeError):
-        bake.check_documents(inv, baked.findings, baked.appetite, baked.reports, gs.copied_texts())
+        bake.check_documents(inv, baked.findings, baked.appetite, baked.reports)
 
 
 def test_adversarial_a_wall_clock_as_of_date_is_refused(baked):
@@ -97,11 +97,11 @@ def test_adversarial_a_wall_clock_as_of_date_is_refused(baked):
     fnd = copy.deepcopy(baked.findings)
     fnd["as_of"] = "2020-01-01"
     with pytest.raises(BakeError):
-        bake.check_documents(baked.inventory, fnd, baked.appetite, baked.reports, gs.copied_texts())
+        bake.check_documents(baked.inventory, fnd, baked.appetite, baked.reports)
     inv = copy.deepcopy(baked.inventory)
     inv["as_of"] = (date.fromisoformat(inv["as_of"]) + timedelta(days=30)).isoformat()
     with pytest.raises(BakeError, match="as_of"):
-        bake.check_documents(inv, baked.findings, baked.appetite, baked.reports, gs.copied_texts())
+        bake.check_documents(inv, baked.findings, baked.appetite, baked.reports)
 
 
 def test_adversarial_an_edge_to_an_unknown_entry_or_a_cycle_is_refused(baked):
@@ -111,12 +111,12 @@ def test_adversarial_an_edge_to_an_unknown_entry_or_a_cycle_is_refused(baked):
     inv = copy.deepcopy(baked.inventory)
     inv["edges"].append({"upstream": inv["entries"][0]["key"], "downstream": "C99/none", "kind": "code", "stated_source": "planted"})
     with pytest.raises(BakeError, match="C99/none"):
-        bake.check_documents(inv, baked.findings, baked.appetite, baked.reports, gs.copied_texts())
+        bake.check_documents(inv, baked.findings, baked.appetite, baked.reports)
     inv = copy.deepcopy(baked.inventory)
     e = inv["edges"][0]
     inv["edges"].append({"upstream": e["downstream"], "downstream": e["upstream"], "kind": "code", "stated_source": "planted"})
     with pytest.raises(BakeError, match="cycle"):
-        bake.check_documents(inv, baked.findings, baked.appetite, baked.reports, gs.copied_texts())
+        bake.check_documents(inv, baked.findings, baked.appetite, baked.reports)
 
 
 def test_adversarial_a_variant_assigned_to_a_fit_by_name_similarity_alone_stays_excluded(baked):
