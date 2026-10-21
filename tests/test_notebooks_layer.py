@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
 LANGS = ("en", "es")
 TOPIC_01 = "01-getting-started"
-CLAIMS: frozenset[str] = frozenset({"BS-2", "BS-3", "BS-4", "BS-5"})  # the BS- claims the SDD states (decision N8: each enters with its level 4 notebook)
+CLAIMS: frozenset[str] = frozenset({"BS-2", "BS-3", "BS-4", "BS-5", "BS-7", "BS-8"})  # the BS- claims the SDD states (decision N8: each enters with its level 4 notebook)
 PENDING_CLAIMS: frozenset[str] = frozenset()
 ENGINE_PIN = "0.8.1"  # the PyPI pin of the notebooks; the engine release tag is the same number, zero-padded (X.XX.XXX)
 ENGINE_TAG = "v%d.%02d.%03d" % tuple(int(part) for part in ENGINE_PIN.split("."))
@@ -194,8 +194,11 @@ def test_topics_and_notebooks_are_numbered_without_gaps():
 
 
 def test_levels_never_decrease_and_every_topic_has_levels_one_and_two():
-    levels = [read_nb(p)["metadata"]["caos"]["level"] for p in notebooks(ROOT)]
-    assert levels == sorted(levels) and {1, 2} <= set(levels)
+    by_topic: dict[str, list[int]] = {}
+    for path in notebooks(ROOT):
+        by_topic.setdefault(path.parent.name, []).append(read_nb(path)["metadata"]["caos"]["level"])
+    for topic, levels in by_topic.items():  # the order is held inside a topic: every topic starts again at level 1
+        assert levels == sorted(levels) and {1, 2} <= set(levels), topic
     assert kind(findings_of(ROOT), "levels") == []
 
 
@@ -236,7 +239,8 @@ def test_every_notebook_has_the_anatomy_of_its_level():
             nb = read_nb(path)
             assert nb["cells"][0]["cell_type"] == "markdown"
             sections = [ln for c in markdown_cells(nb) for ln in "".join(c["source"]).splitlines() if ln.startswith("## ")]
-            assert len(sections) == 7, (path.name, sections)
+            level = nb["metadata"]["caos"]["level"]
+            assert len(sections) == 7 + (level >= 3) + (level == 4), (path.name, sections)  # level 3 adds the state of the art, level 4 what goes beyond it
 
 
 def test_the_metadata_agrees_with_the_tree_the_pins_and_the_repository():
@@ -618,12 +622,14 @@ def test_adversarial_topic_one_with_a_dropped_notebook_loses_its_plan(repo):
 # ---- the review round (U17-A fixes): the index wording, the level 2 equations and the policy scope -------------------------
 
 
-def test_no_index_states_a_claim_while_the_sdd_claims_none():
-    assert CLAIMS == frozenset()
+def test_no_index_states_a_claim_the_sdd_does_not_make():
+    # while the SDD claims nothing the indexes say so; once it claims some, an index names only claims the SDD makes
     for rel, phrase in (("README.md", "no claim is stated yet"), ("en/README.md", "no claim is stated yet"), ("es/README.md", "todavía no se afirma ninguna")):
         text = (ROOT / "notebooks" / rel).read_text(encoding="utf-8")
-        assert not re.search(r"BS-\d", text), f"notebooks/{rel} states a BS- claim the SDD does not make"
-        assert phrase in text.lower(), f"notebooks/{rel} does not say that no claim is stated yet"
+        stated = set(re.findall(r"BS-\d+", text))
+        assert stated <= CLAIMS, f"notebooks/{rel} states a BS- claim the SDD does not make"
+        if not CLAIMS:
+            assert phrase in text.lower(), f"notebooks/{rel} does not say that no claim is stated yet"
 
 
 def level_two(lang: str) -> dict:
