@@ -710,10 +710,12 @@ def test_every_folder_and_document_an_area_row_links_exists():
 
 
 def test_the_packages_row_links_the_engine_release():
-    section = (ROOT / "README.md").read_text(encoding="utf-8").split("## Areas", 1)[1].split("\n## ", 1)[0]
+    section = (ROOT / "README.md").read_text(encoding="utf-8").split("## Areas", 1)[1].split(chr(10) + "## ", 1)[0]
     row = next(ln for ln in section.splitlines() if ln.startswith("| Packages"))
     assert ENGINE_RELEASE in row and "riskvalidation" in row
-    assert "published on PyPI" in row and "not yet" not in row
+    assert "published on PyPI" in row and "not yet" not in row and "not published" not in row
+    first = (ROOT / "notebooks" / "en" / TOPIC_01 / "01-install-the-engine-and-open-an-artifact.ipynb").read_text(encoding="utf-8")
+    assert f"pip install riskvalidation=={ENGINE_PIN}" in first  # the install line of the published release
 
 
 def test_the_areas_section_follows_the_purpose_and_the_live_urls():

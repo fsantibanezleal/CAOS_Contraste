@@ -10,7 +10,11 @@
 | 6 | The live scorers (points table, EBM) held to the pipeline, and policy lights re-computed with the engine's rule | CT-104, CT-105 | done |
 | 7 | The case page, the framework cards and the guides, from the dossiers | - | done |
 
-## Convergence verdict (2026-10-05)
+## Convergence verdict
+
+The verdict of this feature is generated, never written by hand. Every requirement of [`requirements.md`](requirements.md) has its row, with its gate and the gate's result in the release run, in [`../release-1-0/verdict.md`](../release-1-0/verdict.md) (filter the `feature` column by `c01-retail-pd`). `scripts/convergence_verdict.py` writes that document from the result files of the release run; the procedure is in [`../release-1-0/design.md`](../release-1-0/design.md).
+
+### History: the verdict written by hand on 2026-10-05
 
 Converged. The canonical bake reproduces itself exactly (two bakes, identical values); the 68 pipeline tests, the 59
 web tests and every guard pass; the expected ranges hold on every variant. Open for later units: out-of-time

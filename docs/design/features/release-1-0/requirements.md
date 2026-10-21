@@ -1,0 +1,26 @@
+# Requirements: the generated convergence verdict of release 1.0 (unit U16-V)
+
+Status: live
+
+EARS (Mavin et al., RE'09, doi:10.1109/RE.2009.9). Every requirement names the gate that fails when it is violated. ADR-0075
+section 4 makes convergence an explicit check against the SDD: it enumerates each requirement, names its gate and records the gate's
+result. This feature makes that check a generated document (decision D16-2): `scripts/convergence_verdict.py` reads the requirement rows
+of this repository and of the engine, the result files of the release run and the scripts the gates name, and writes
+[`verdict.md`](verdict.md). The format and the release procedure are in [`design.md`](design.md); the adversarial checks are in
+[`validation.md`](validation.md). The verdict runs locally at the release and never in CI (ADR-0074).
+
+| ID | Requirement | Gate |
+|---|---|---|
+| CV-001 | THE verdict SHALL list every requirement row of both repositories exactly once, sorted by repository, feature and ID, with the gate the row names and the result of that gate in the release run. | `tests/test_convergence_verdict.py::test_every_requirement_row_of_both_repositories_is_listed_once` |
+| CV-002 | A GATE that names several tests SHALL pass only if all of them pass, a parametrized test SHALL count as passed only if every parameter passed, and a name that is only the prefix of a test that ran SHALL read as absent. | `tests/test_convergence_verdict.py::test_a_gate_that_names_several_tests_passes_only_if_all_of_them_pass` and `tests/test_convergence_verdict.py::test_a_parametrized_test_counts_as_passed_only_if_every_parameter_passed` |
+| CV-003 | A SKIPPED gate SHALL be listed with its reason and SHALL never count as passed, and a skip whose reason is a device precondition SHALL be allowed only when the release run states the device. | `tests/test_convergence_verdict.py::test_a_skipped_gate_never_counts_as_passed` and `tests/test_convergence_verdict.py::test_a_skip_for_a_device_precondition_is_allowed_only_when_the_run_states_the_device` |
+| CV-004 | A FAILED or an absent gate SHALL make the verdict NOT CONVERGED and the script SHALL exit 1; a gate is absent when it is in no result file. | `tests/test_convergence_verdict.py::test_a_passed_a_failed_a_skipped_and_an_absent_gate_are_each_listed_with_their_result` |
+| CV-005 | A GATE that is a script SHALL be run by the verdict with a timeout, its exit code SHALL be its result, and a script that does not exist SHALL read as absent. | `tests/test_convergence_verdict.py::test_a_script_gate_is_run_by_the_verdict_and_its_exit_code_is_the_result` and `tests/test_convergence_verdict.py::test_a_script_gate_that_is_missing_on_disk_is_absent` |
+| CV-006 | AN engine requirement SHALL be judged on the engine's result file and its scripts run in the engine repository, never on the product's. | `tests/test_convergence_verdict.py::test_an_engine_gate_is_looked_up_in_the_engines_file_never_the_products` and `tests/test_convergence_verdict.py::test_an_engine_script_gate_runs_in_the_engine_repository` |
+| CV-007 | THE same result files SHALL give the same verdict bytes, on any working folder, and the run date SHALL be the latest date in the result files and never the clock. | `tests/test_convergence_verdict.py::test_the_same_result_files_give_the_same_bytes_and_the_date_comes_from_them` |
+| CV-008 | A MISSING result file or repository SHALL make the script exit 2, name the file and the command that writes it, and write no verdict. | `tests/test_convergence_verdict.py::test_a_missing_result_file_exits_2_names_the_file_and_the_command_and_writes_no_verdict` |
+| CV-009 | A FEATURE folder with no requirement rows SHALL be reported in the verdict and SHALL make it NOT CONVERGED. | `tests/test_convergence_verdict.py::test_a_feature_folder_with_no_rows_is_reported_and_the_verdict_is_not_converged` |
+| CV-010 | THE requirement rows and their gates SHALL be read by `scripts/check_sdd.py`, imported by the verdict, and the verdict SHALL hold no copy of that parser. | `tests/test_convergence_verdict.py::test_the_requirement_rows_come_from_check_sdd_by_import_never_a_copy` |
+| CV-011 | THE release verdict SHALL run the skeleton check on the contract catalog, which lists every boundary still served by a provider, and the readiness check, which holds the declared absences (C19), and a nonzero exit of either SHALL be a failed row. | `scripts/check_skeleton.py` and `scripts/check_readiness.py` and `tests/test_convergence_verdict.py::test_the_script_argument_table_names_only_scripts_that_exist` |
+| CV-012 | THE committed `verdict.md` SHALL be the generated document, marked a sample until the release run replaces it, with counts that equal its rows and a verdict that follows from them. | `tests/test_convergence_verdict.py::test_the_committed_verdict_is_self_consistent_and_a_hand_edit_is_found` and `tests/test_convergence_verdict.py::test_the_release_folder_states_the_requirements_the_format_and_the_sample_verdict` |
+| CV-013 | EVERY feature folder SHALL carry a `tasks.md` with a section Convergence verdict that points at the release verdict. | `tests/test_convergence_verdict.py::test_every_feature_task_list_points_at_the_release_verdict` |
