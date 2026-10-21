@@ -75,42 +75,42 @@
    },
    {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "bbdcdbddf2c8501cf4f97307719f652a05dbca101c4795ba7c7bfca44d1a41d0",
+    "sha256": "e795d3078b15c0be1787eed46a7b1ad0fb65d0c654dc3420a3f47dc274223061",
     "ref": null
    },
    {
     "path": "data/derived/C18/models-banco-andino.json",
-    "sha256": "9b0d70aa2e7444e183fabee7805284bace96e5b8e35418698efec295d1503a3c",
+    "sha256": "7dec4ba3a341857bc287864a36f29bf7a499c96b0bb5bce57bc2019d1c088e97",
     "ref": null
    },
    {
     "path": "data/derived/C18/baseline.json",
-    "sha256": "9c2307b8868186d4726511a33bb87c6653ded58ea174ffb78428ed6ced7db391",
+    "sha256": "72d34f5ef298348e160e9906896f62358a9fdb834d9880fc1b42b3c3f35fd49e",
     "ref": null
    },
    {
     "path": "data/derived/C18/eba-2025-adverse.json",
-    "sha256": "0c55443438a42d22e8d251916bc4f43bfa040b85c91c6a6c85ee869074309957",
+    "sha256": "faac328a421c19a0d5e8b270817f3133a595c2aca3de47e1e50b7da2b23d33ac",
     "ref": null
    },
    {
     "path": "data/derived/C18/fed-2026-severely-adverse.json",
-    "sha256": "880f90daa31677e5279bed93166b1fd49be4dddf55de885844fdef79977ba657",
+    "sha256": "115e2da5bc7b17eee23e3493680422b14fedb51a51fbadf2972f01001ca94dcf",
     "ref": null
    },
    {
     "path": "data/derived/C18/ngfs-delayed-transition.json",
-    "sha256": "beb8dbf9acbe154b677884fc4405f1b3f2bb1b396d83158b3b6caf5123f14486",
+    "sha256": "070d8a654f2b1ebe121f1c5148d2bfadc7a8012b9c6eb0b9d8fc803ae4098b91",
     "ref": null
    },
    {
     "path": "data/derived/C18/reverse-stress.json",
-    "sha256": "d30a47f71b84cc6d54efa9aef32c098b5f66e13fa1f08a4b1b681b9a5db92136",
+    "sha256": "d70016268d16468539d54bc0dda162e355e38ffff47cae28e580d34afb388531",
     "ref": null
    },
    {
     "path": "data/derived/C18/t-copula-baseline.json",
-    "sha256": "ef9576810ef26dd327a14649a1c774ecc034079f084cdb8badc9cb1fe1867f31",
+    "sha256": "fb71dfeaf70e11a8704b191534468dd5c606aed688149b9e29cb21ff763dfed1",
     "ref": null
    },
    {
@@ -497,8 +497,8 @@
     {
      "kind": "text",
      "text": {
-      "en": "Seed 42, code version 0.13.000, riskvalidation 0.9.0; every document records them.",
-      "es": "Semilla 42, version de codigo 0.13.000, riskvalidation 0.9.0; cada documento las registra."
+      "en": "Seed 42, code version 0.15.000, riskvalidation 0.9.0; every document records them.",
+      "es": "Semilla 42, version de codigo 0.15.000, riskvalidation 0.9.0; cada documento las registra."
      }
     }
    ],
@@ -1207,7 +1207,7 @@
        "S4",
        "F1",
        "open",
-       "2027-04-18",
+       "2027-04-19",
        false
       ],
       [
@@ -1215,7 +1215,7 @@
        "S4",
        "F1",
        "open",
-       "2027-04-18",
+       "2027-04-19",
        false
       ],
       [
@@ -1223,7 +1223,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1231,7 +1231,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1239,7 +1239,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1247,7 +1247,7 @@
        "S4",
        "F1",
        "open",
-       "2027-04-18",
+       "2027-04-19",
        false
       ],
       [
@@ -1255,7 +1255,7 @@
        "S2",
        "F3",
        "open",
-       "2026-12-19",
+       "2026-12-20",
        true
       ],
       [
@@ -1263,7 +1263,7 @@
        "S1",
        "F4",
        "open",
-       "2026-11-19",
+       "2026-11-20",
        true
       ],
       [
@@ -1271,7 +1271,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1279,7 +1279,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1287,7 +1287,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1295,7 +1295,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1303,7 +1303,7 @@
        "S4",
        "F1",
        "open",
-       "2027-04-18",
+       "2027-04-19",
        false
       ],
       [
@@ -1311,7 +1311,7 @@
        "S2",
        "F3",
        "open",
-       "2026-12-19",
+       "2026-12-20",
        true
       ],
       [
@@ -1319,7 +1319,7 @@
        "S1",
        "F4",
        "open",
-       "2026-11-19",
+       "2026-11-20",
        true
       ],
       [
@@ -1327,7 +1327,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1335,7 +1335,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1343,7 +1343,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1351,7 +1351,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1359,7 +1359,7 @@
        "S4",
        "F1",
        "open",
-       "2027-04-18",
+       "2027-04-19",
        false
       ],
       [
@@ -1367,7 +1367,7 @@
        "S4",
        "F1",
        "open",
-       "2027-04-18",
+       "2027-04-19",
        false
       ],
       [
@@ -1375,7 +1375,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1383,7 +1383,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1391,7 +1391,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1399,7 +1399,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1407,7 +1407,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1415,7 +1415,7 @@
        "S4",
        "F1",
        "open",
-       "2027-04-18",
+       "2027-04-19",
        false
       ],
       [
@@ -1423,7 +1423,7 @@
        "S3",
        "F2",
        "open",
-       "2027-01-18",
+       "2027-01-19",
        false
       ],
       [
@@ -1431,7 +1431,7 @@
        "S4",
        "F1",
        "open",
-       "2027-04-18",
+       "2027-04-19",
        false
       ]
      ]
@@ -1688,35 +1688,35 @@
      "rows": [
       [
        "data/derived/manifests/C18.json",
-       "bbdcdbddf2c8501cf4f97307719f652a05dbca101c4795ba7c7bfca44d1a41d0"
+       "e795d3078b15c0be1787eed46a7b1ad0fb65d0c654dc3420a3f47dc274223061"
       ],
       [
        "data/derived/C18/models-banco-andino.json",
-       "9b0d70aa2e7444e183fabee7805284bace96e5b8e35418698efec295d1503a3c"
+       "7dec4ba3a341857bc287864a36f29bf7a499c96b0bb5bce57bc2019d1c088e97"
       ],
       [
        "data/derived/C18/baseline.json",
-       "9c2307b8868186d4726511a33bb87c6653ded58ea174ffb78428ed6ced7db391"
+       "72d34f5ef298348e160e9906896f62358a9fdb834d9880fc1b42b3c3f35fd49e"
       ],
       [
        "data/derived/C18/eba-2025-adverse.json",
-       "0c55443438a42d22e8d251916bc4f43bfa040b85c91c6a6c85ee869074309957"
+       "faac328a421c19a0d5e8b270817f3133a595c2aca3de47e1e50b7da2b23d33ac"
       ],
       [
        "data/derived/C18/fed-2026-severely-adverse.json",
-       "880f90daa31677e5279bed93166b1fd49be4dddf55de885844fdef79977ba657"
+       "115e2da5bc7b17eee23e3493680422b14fedb51a51fbadf2972f01001ca94dcf"
       ],
       [
        "data/derived/C18/ngfs-delayed-transition.json",
-       "beb8dbf9acbe154b677884fc4405f1b3f2bb1b396d83158b3b6caf5123f14486"
+       "070d8a654f2b1ebe121f1c5148d2bfadc7a8012b9c6eb0b9d8fc803ae4098b91"
       ],
       [
        "data/derived/C18/reverse-stress.json",
-       "d30a47f71b84cc6d54efa9aef32c098b5f66e13fa1f08a4b1b681b9a5db92136"
+       "d70016268d16468539d54bc0dda162e355e38ffff47cae28e580d34afb388531"
       ],
       [
        "data/derived/C18/t-copula-baseline.json",
-       "ef9576810ef26dd327a14649a1c774ecc034079f084cdb8badc9cb1fe1867f31"
+       "fb71dfeaf70e11a8704b191534468dd5c606aed688149b9e29cb21ff763dfed1"
       ]
      ]
     }

@@ -92,7 +92,9 @@ def served_files() -> list[str]:
     and the served documents."""
     from .governance import served_files as governance_files
 
-    return [*contract_files(), *SERVED_DOCUMENTS, *governance_files(DERIVED)]
+    # the committed governance documents (the governance bake writes them), listed wherever the index is computed: a
+    # redirected DERIVED (the test sandbox) never holds them, so the list reads the repository's own derived root
+    return [*contract_files(), *SERVED_DOCUMENTS, *governance_files(REPO_ROOT / "data" / "derived")]
 
 
 def index_document() -> dict[str, Any]:
