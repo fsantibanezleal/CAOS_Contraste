@@ -39,7 +39,7 @@ def variants(manifest) -> dict[str, dict]:
 
 #: the engine families whose p-value tests C22 simulates (CT-301). Engine 0.8.0 registers every validation test; the size of
 #: the p-value tests of the other families is measured by the engine's own size suites or pinned as a gap there (its
-#: tests/test_size.py, BL-088), and C22 extends to them in U16 (BL-090)
+#: tests/test_size.py, BL-088), and C22 extends to them in U16 (BL-091)
 C22_FAMILIES = frozenset({"discrimination", "pd-calibration", "rating-system", "stability", "transitions"})
 
 

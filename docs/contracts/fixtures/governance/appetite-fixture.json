@@ -1,0 +1,330 @@
+{
+ "schema": "contraste.governance.appetite/v1",
+ "case_id": "GOVERNANCE",
+ "governance_id": "appetite",
+ "schema_version": "1.0.0",
+ "as_of": "2026-12-31",
+ "as_of_basis": {
+  "label": "convention",
+  "basis": {
+   "en": "a fixture date chosen after the due dates to exercise the overdue rule; not the date of publication",
+   "es": "una fecha de fixture elegida después de los vencimientos para ejercer la regla de vencimiento; no es la fecha de publicación"
+  }
+ },
+ "provenance": {
+  "code_version": "0.15.000",
+  "riskvalidation_version": "0.9.0",
+  "generators": [
+   "fixture:u15-s-contracts"
+  ],
+  "documents_read": [
+   {
+    "path": "data/derived/manifests/C01.json",
+    "sha256": "c0976c8fabc2d4cf82d076610019cc67e0def9ae8152650954c086162b070151",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C01/models-german.json",
+    "sha256": "60aadbffd7f6cba342f239be2b0b3b8661b9d5a7114cfaa6d0f133b0a99b03e6",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C01/german-twin.json",
+    "sha256": "9c0ac47beecf1e5c456ea0be6997855beace3a9e9f53dd36abec031bd0d0872b",
+    "ref": null
+   },
+   {
+    "path": "data/derived/manifests/C07.json",
+    "sha256": "bf356d3c335cebc0bad691c14ceb12d1747973335c071d87f073f5ed7709801a",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/models-banco-andino.json",
+    "sha256": "4d0f4bb96c0ef3dee6401f711f3b59fa5a0505d062141ec7cb6eebbb5b8cc2ac",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/base.json",
+    "sha256": "1e08b10e1d49419f86bbbc14fb06e82aba1faa99443bb4e799cd18ce4e7c13c5",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/combined-severe.json",
+    "sha256": "e079dfbdd14ecec8b979ab80435964e22567aaaa657defbad6744637b03cbabb",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/consumer-arrears-shock.json",
+    "sha256": "f47e32bccbe450f0582b2479302cd28a428a6601d9821fd3675b75bb838aeb99",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/house-price-fall.json",
+    "sha256": "45fa83c963f000281ceb41a63413666d415e21db4c8ace76f6fb858e288f659a",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/recession.json",
+    "sha256": "b9d02ae186c431e4f43541fc779884171be9af2fe5df4357678d2e9e2a574f1c",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C07/uf-inflation-spike.json",
+    "sha256": "24cb9ba1c6ec485fc74e6c9882c9bfe6d305a313ff08a65ac5af9909c2c8e01a",
+    "ref": null
+   },
+   {
+    "path": "data/derived/manifests/C18.json",
+    "sha256": "e795d3078b15c0be1787eed46a7b1ad0fb65d0c654dc3420a3f47dc274223061",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C18/models-banco-andino.json",
+    "sha256": "7dec4ba3a341857bc287864a36f29bf7a499c96b0bb5bce57bc2019d1c088e97",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C18/baseline.json",
+    "sha256": "72d34f5ef298348e160e9906896f62358a9fdb834d9880fc1b42b3c3f35fd49e",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C18/eba-2025-adverse.json",
+    "sha256": "faac328a421c19a0d5e8b270817f3133a595c2aca3de47e1e50b7da2b23d33ac",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C18/fed-2026-severely-adverse.json",
+    "sha256": "115e2da5bc7b17eee23e3493680422b14fedb51a51fbadf2972f01001ca94dcf",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C18/ngfs-delayed-transition.json",
+    "sha256": "070d8a654f2b1ebe121f1c5148d2bfadc7a8012b9c6eb0b9d8fc803ae4098b91",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C18/reverse-stress.json",
+    "sha256": "d70016268d16468539d54bc0dda162e355e38ffff47cae28e580d34afb388531",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C18/t-copula-baseline.json",
+    "sha256": "fb71dfeaf70e11a8704b191534468dd5c606aed688149b9e29cb21ff763dfed1",
+    "ref": null
+   },
+   {
+    "path": "data/derived/manifests/C22.json",
+    "sha256": "db7ab2bc13ef7448e26f89d8f9af7589fbdcaebd9fb8188ceb5920db59c9fe6c",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/models-generators.json",
+    "sha256": "2d09ae0f0271b7e1de112586f22ba9f2fe48fe9866e5b61d8c71f391bf9db3b7",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/broken-monotonicity.json",
+    "sha256": "1b6c6ed3a0bc5057317b2120a44ef9ed512e8fac97d323092699cd1e3a1197d8",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/clustering.json",
+    "sha256": "e755f149dfe75c49ef54ca4fae78c489f78be13370c2bbff4e93851357cc4492",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/concentration.json",
+    "sha256": "35c7d65c9c7bda2131ea2fca1f339bc091419b19bac792c3c61a78fe0c1f66ae",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/discrimination-decay.json",
+    "sha256": "218ee880efa1bfdf187a50e4d1b902a6b86cefada6c598d28c6d5daca09137da",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/drift.json",
+    "sha256": "3bb6d9bb6152b9f603ca4404d9c8d61b2f2cf779af76c93df4ec01563b7d59fa",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/leakage.json",
+    "sha256": "651c5113607b7c0cd5850837ccddf455b291918e341662632912d78ea35c419d",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/miscalibration.json",
+    "sha256": "9bdf292b5933c5366d581ee45928b5845966ded5f9b04030c2c30dc9a66fd467",
+    "ref": null
+   },
+   {
+    "path": "data/derived/C22/null.json",
+    "sha256": "0ce1fb6140678acf48d51e84c1c5bcd880cc20fbb2ab38ec6314a02667bd2dc0",
+    "ref": null
+   }
+  ]
+ },
+ "population": {
+  "entries": 4,
+  "findings": 81,
+  "distinct_findings": 39,
+  "tier1_entries": 2
+ },
+ "metrics": [
+  {
+   "id": "tier1-validated-on-time",
+   "name": {
+    "en": "Share of Tier 1 entries validated on time",
+    "es": "Proporcion de entradas de Nivel 1 validadas a tiempo"
+   },
+   "kind": "share",
+   "value": 1.0,
+   "unit": "share",
+   "numerator": 2,
+   "denominator": 2,
+   "register_rows": null,
+   "reason": null,
+   "threshold": {
+    "label": "convention",
+    "basis": "a proposal (item 30): green from 90 percent, amber from 75 percent",
+    "direction": "higher-is-better",
+    "green_limit": 0.9,
+    "amber_limit": 0.75
+   },
+   "light": "green"
+  },
+  {
+   "id": "open-high-severity",
+   "name": {
+    "en": "Open high-severity findings (S1 and S2)",
+    "es": "Hallazgos abiertos de severidad alta (S1 y S2)"
+   },
+   "kind": "count",
+   "value": 4,
+   "unit": "count",
+   "numerator": 4,
+   "denominator": 39,
+   "register_rows": 8,
+   "reason": null,
+   "threshold": {
+    "label": "convention",
+    "basis": "a proposal (item 30): green at none, amber up to three distinct findings",
+    "direction": "lower-is-better",
+    "green_limit": 0,
+    "amber_limit": 3
+   },
+   "light": "red"
+  },
+  {
+   "id": "overdue-remediation",
+   "name": {
+    "en": "Overdue remediation",
+    "es": "Remediacion vencida"
+   },
+   "kind": "count",
+   "value": 3,
+   "unit": "count",
+   "numerator": 3,
+   "denominator": 39,
+   "register_rows": 7,
+   "reason": null,
+   "threshold": {
+    "label": "convention",
+    "basis": "a proposal (item 30): green at none, amber up to three distinct findings",
+    "direction": "lower-is-better",
+    "green_limit": 0,
+    "amber_limit": 3
+   },
+   "light": "amber"
+  },
+  {
+   "id": "entries-under-exception",
+   "name": {
+    "en": "Entries used under exception",
+    "es": "Entradas usadas bajo excepcion"
+   },
+   "kind": "count",
+   "value": 0,
+   "unit": "count",
+   "numerator": 0,
+   "denominator": 4,
+   "register_rows": null,
+   "reason": null,
+   "threshold": {
+    "label": "convention",
+    "basis": "a proposal (item 30): green at none, amber at one entry",
+    "direction": "lower-is-better",
+    "green_limit": 0,
+    "amber_limit": 1
+   },
+   "light": "green"
+  },
+  {
+   "id": "entries-in-breach",
+   "name": {
+    "en": "Entries in breach of their thresholds (a red test row)",
+    "es": "Entradas que incumplen sus umbrales (una fila de prueba roja)"
+   },
+   "kind": "count",
+   "value": 3,
+   "unit": "count",
+   "numerator": 3,
+   "denominator": 4,
+   "register_rows": null,
+   "reason": null,
+   "threshold": {
+    "label": "convention",
+    "basis": "a proposal (item 30): green at none, amber at one entry",
+    "direction": "lower-is-better",
+    "green_limit": 0,
+    "amber_limit": 1
+   },
+   "light": "red"
+  },
+  {
+   "id": "pma-magnitude",
+   "name": {
+    "en": "PMA magnitude relative to the model output",
+    "es": "Magnitud de PMA relativa al resultado del modelo"
+   },
+   "kind": "magnitude",
+   "value": 0.003321276217640226,
+   "unit": "share-of-model-output",
+   "numerator": 324129997.0,
+   "denominator": 97592002519.53,
+   "register_rows": null,
+   "reason": null,
+   "threshold": {
+    "label": "convention",
+    "basis": "a proposal (item 30): green up to 1 percent of the model output, amber up to 3 percent",
+    "direction": "lower-is-better",
+    "green_limit": 0.01,
+    "amber_limit": 0.03
+   },
+   "light": "green"
+  },
+  {
+   "id": "owner-and-complete-record",
+   "name": {
+    "en": "Share of entries with an owner role and a complete record",
+    "es": "Proporcion de entradas con rol de propietario y registro completo"
+   },
+   "kind": "share",
+   "value": 0.0,
+   "unit": "share",
+   "numerator": 0,
+   "denominator": 4,
+   "register_rows": null,
+   "reason": null,
+   "threshold": {
+    "label": "convention",
+    "basis": "a proposal (item 30): green from 90 percent, amber from 50 percent; complete means no attribute is missing",
+    "direction": "higher-is-better",
+    "green_limit": 0.9,
+    "amber_limit": 0.5
+   },
+   "light": "red"
+  }
+ ]
+}

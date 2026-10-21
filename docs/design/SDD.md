@@ -449,6 +449,7 @@ the ones the dossiers and `docs/frameworks/` record.
 |---|---|---|---|---|
 | engine | numpy | 2.4.6 | arrays, the generators and every estimator | none: the base of the stack (2.5.4 is current and was not adopted in 0.07.000) |
 | engine | scipy | 1.18.1 | distributions and special functions; the reference for every test statistic | none recorded |
+| pipeline | networkx | 3.7 | the layered layout of the governance dependency map (`topological_generations`, `multipartite_layout`; U15-P); BSD-3-Clause, pipeline only, never an engine dependency; https://pypi.org/pypi/networkx/json read on 2026-10-20 | a hand-written layering, rejected: the library's layout is tested and the map is not a method of the product |
 | data | pandas | 3.0.6 | tabular reading, the splits and the case frames | none recorded |
 | data | xlrd | 2.0.2 | reading the legacy Excel files of the UCI Taiwan dataset | none recorded |
 | models | scikit-learn | 1.9.1 | penalised logistic regression, splits, isotonic and Platt calibration | none recorded |
@@ -463,7 +464,7 @@ the ones the dossiers and `docs/frameworks/` record.
 | data | openpyxl | 3.1.5 | reading the EBA/ESRB 2025 macro-financial scenario workbook of C18 (U13 decision Q15; MIT) | none recorded |
 | reference (optional) | open-source-risk-engine | 1.8.17.0 | ORE, run natively from its Windows wheel as the reference engine of the C12 exposure reconciliation (`data-pipeline/requirements-ore.txt`, U9 decision D4); pipeline only, never an engine dependency | none: ORE is the open reference engine the dossiers name |
 | reference (optional) | QuantLib | 1.44 | the independent check of the Hull-White closed forms in C12 (`data-pipeline/requirements-ore.txt`, U9 decision B4); pipeline only | none recorded |
-| engine | riskvalidation | 0.8.1 | the validation tests, regulatory calculators and generators (the PyPI release of the batch 3 engine, tag v0.08.001, 0.8.1 (0.8.0 with the fairness metric rows at null alphas): liquidity, aggregation and stress testing, the regulatory calculators and counterparty credit risk, ML model validation and fair lending) | none: no toolkit implements the ECB tests as specified |
+| engine | riskvalidation | 0.9.0 | the validation tests, regulatory calculators and generators (the PyPI release 0.9.0, tag v0.09.000: the batch 3 packages of 0.8.x (liquidity, aggregation and stress testing, the regulatory calculators and counterparty credit risk, ML model validation and fair lending) and model governance, `riskvalidation.governance`) | none: no toolkit implements the ECB tests as specified |
 | models (optional) | torch | 2.14.1 | CPU runtime of the TabPFN extra, outside the default install | none recorded |
 | models (optional) | tabpfn | 9.1.0 | the TabPFN challenger of the small cases, weights under the Prior Labs License | none recorded |
 | notebooks | arch | 8.0.0 | the independent GARCH reference of the topic 07 state-of-the-art notebook, the package the engine's garch rung calls (the engine's `market` extra, `arch>=8.0,<9`; U17 sizing technology matrix) | none: the engine's own reference |
