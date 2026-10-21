@@ -173,12 +173,10 @@ def test_the_fixture_is_labelled_as_a_fixture(key: str) -> None:
 
 def released_fragment(path: Path) -> str:
     """The unit's changelog fragment, or, once a release merged and deleted it (fragments.py changelog --apply), the text of the
-    CHANGELOG entry that holds it, so the unit's needles are still checked where they now live."""
+    CHANGELOG that holds it, so the unit's needles are still checked where they now live."""
     if path.is_file():
         return path.read_text(encoding="utf-8")
-    log = (path.parents[1] / "CHANGELOG.md").read_text(encoding="utf-8")
-    entries = re.split(r"(?m)^## ", log)[1:]
-    return next(e for e in entries if e.startswith("[0.13.000]"))
+    return (path.parents[1] / "CHANGELOG.md").read_text(encoding="utf-8")  # the release that merged it holds its bullets
 
 
 def test_every_u11_schema_is_case_folder_conformant_and_case_prefixed() -> None:
@@ -993,7 +991,7 @@ def test_the_rows_fragment_has_the_four_rows_in_the_catalog_columns_and_every_ci
     me = Path(__file__).read_text(encoding="utf-8")
     for rid, cells in rows.items():
         # engine-liquidity-api 1.1.0 after U11-E (additive: the `scored` keyword of fast_run_scenario), at the batch 3 integration
-        assert cells[1] == {"engine-liquidity-api": "1.2.0", "c16-outputs-reverse": "1.0.1", "c16-outputs": "2.1.0"}.get(rid, "1.0.0") and cells[11] == ("active" if rid.startswith("engine-") else "real")  # the case rows are real since C16 merged
+        assert cells[1] == {"engine-liquidity-api": "1.2.1", "c16-outputs-reverse": "1.0.1", "c16-outputs": "2.1.0"}.get(rid, "1.0.0") and cells[11] == ("active" if rid.startswith("engine-") else "real")  # the case rows are real since C16 merged
         assert cells[8].startswith("fixture:docs/contracts/fixtures/c16/") or cells[8].startswith("fixture:docs/contracts/engine/")
         for cell in (cells[5], cells[6], cells[10]):
             for ref in cell.split(", "):

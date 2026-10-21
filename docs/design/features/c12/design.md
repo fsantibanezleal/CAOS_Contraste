@@ -52,4 +52,4 @@ own a, so overlapping horizons share increments.
 
 `C12/<variant>.json` for the six variants (`c12-outputs`), `C12/models-hw1f-treasury-2000-2025.json` (`c12-models`: the calibration of
 every backtest date, the counterparty curve, the GIRR parameters, the limits), `C12/SHA256SUMS.txt`, `C12/raw-sources.txt` and
-`manifests/C12.json`. The ORE XML inputs of every run are committed under `data-pipeline/pipeline/cases/c12/ore_inputs/`.
+`data/derived/manifests/C12.json`. The ORE XML inputs of every run are committed under `data-pipeline/pipeline/cases/c12/ore_inputs/`.
