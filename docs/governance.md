@@ -40,11 +40,11 @@ ECB's (Instructions of February 2019, section 2.4.2); the rule that turns findin
 
 <!-- governance-results:begin -->
 
-The documents were baked over the committed case documents with `riskvalidation` 0.9.0 as of 2026-10-21 (the newest release heading of the changelog; a convention, never the clock). 186 paths were read, each listed with its sha256 in the documents.
+The documents were baked over the committed case documents with `riskvalidation` 0.9.0 as of 2026-10-21 (the newest release heading of the changelog; a convention, never the clock). 187 paths were read, each listed with its sha256 in the documents.
 
 ### The inventory
 
-34 entries (one per fit) for 21 built cases, holding 124 variant documents and 230 model records. 21 dependency edges join the entries, in 3 generations; every entry also depends on the engine node.
+34 entries (one per fit) for 21 built cases, holding 125 variant documents and 244 model records. 21 dependency edges join the entries, in 3 generations; every entry also depends on the engine node.
 
 | Entry | Tier | M | C | Opinion level | Variants | Register rows | Open S1 | Open S2 | Open S3 | Open S4 | Next review |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -81,7 +81,7 @@ The documents were baked over the committed case documents with `riskvalidation`
 | `C18/banco-andino` | 1 | 4 | 2 | 4 | 6 | 29 | 2 | 2 | 17 | 8 | 2027-10-21 |
 | `C20/c20-ladder` | 2 | 3 | 2 | 3 | 6 | 39 | 0 | 18 | 9 | 0 | 2027-10-20 |
 | `C21/hmda-de-2018-2023` | 1 | 4 | 1 | 3 | 6 | 38 | 0 | 6 | 14 | 6 | 2027-10-20 |
-| `C22/generators` | 4 | 1 | 1 | 3 | 8 | 20 | 0 | 1 | 0 | 0 | 2029-10-12 |
+| `C22/generators` | 4 | 1 | 1 | 3 | 9 | 25 | 0 | 2 | 0 | 0 | 2029-10-20 |
 
 ### Tier counts under the four readings
 
@@ -124,16 +124,16 @@ A document edge means the downstream package reads the upstream case's committed
 
 ### The findings register
 
-572 rows from the 34 entries' variant documents (0 overdue). The register enriches the five fields of a finding with its owner role, deadline, ageing, anchor and workflow state; no case document is rewritten.
+577 rows from the 34 entries' variant documents (0 overdue). The register enriches the five fields of a finding with its owner role, deadline, ageing, anchor and workflow state; no case document is rewritten.
 
 | Severity | ECB F | open | action_plan_agreed | in_progress | submitted_for_closure | validated_closed | overdue | risk_accepted |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | S1 | F4 | 5 | 0 | 0 | 0 | 0 | 0 | 0 |
-| S2 | F3 | 162 | 0 | 0 | 0 | 3 | 0 | 5 |
-| S3 | F2 | 200 | 0 | 0 | 0 | 0 | 0 | 35 |
-| S4 | F1 | 25 | 0 | 0 | 0 | 4 | 0 | 133 |
+| S2 | F3 | 163 | 0 | 0 | 0 | 3 | 0 | 5 |
+| S3 | F2 | 200 | 0 | 0 | 0 | 0 | 0 | 37 |
+| S4 | F1 | 25 | 0 | 0 | 0 | 4 | 0 | 135 |
 
-Finding rows in the variant documents: 588; in the register: 572; in the variants no fit could be determined for: 16.
+Finding rows in the variant documents: 593; in the register: 577; in the variants no fit could be determined for: 16.
 
 Cases with no finding row in the committed documents: none.
 
@@ -159,7 +159,7 @@ Cases with no finding row in the committed documents: none.
 | C18 | 29 | 2 | 2 | 17 | 8 | 0 |
 | C20 | 39 | 0 | 18 | 9 | 12 | 0 |
 | C21 | 38 | 0 | 6 | 14 | 18 | 0 |
-| C22 | 20 | 0 | 9 | 7 | 4 | 0 |
+| C22 | 25 | 0 | 10 | 9 | 6 | 0 |
 
 ### The model risk appetite
 
@@ -168,8 +168,8 @@ The seven metrics of 06 B.6 with their thresholds. Every limit is a convention (
 | Metric | Value | Numerator | Denominator | Light |
 |---|---:|---:|---:|---:|
 | Share of Tier 1 entries validated on time | 1 | 18 | 18 | green |
-| Open high-severity findings (S1 and S2) | 91 | 91 | 261 | red |
-| Overdue remediation | 0 | 0 | 261 | green |
+| Open high-severity findings (S1 and S2) | 92 | 92 | 266 | red |
+| Overdue remediation | 0 | 0 | 266 | green |
 | Entries used under exception | 0 | 0 | 34 | green |
 | Entries in breach of their thresholds (a red test row) | 32 | 32 | 34 | red |
 | PMA magnitude relative to the model output | 0.0033 | 324129997.0 | 97592002519.53 | green |
