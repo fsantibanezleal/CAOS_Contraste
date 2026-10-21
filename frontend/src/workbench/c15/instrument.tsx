@@ -12,7 +12,7 @@ import { C15ContextView, C15FindingsView, C15VariantsView, LegReadout, OffsetRea
 import { FloorsView, ThresholdsView } from './FloorViews';
 import { DynamicLegView, EarEvarLegView, EveByLegView, PositionsView } from './LegViews';
 import { IndexationView, NiiView } from './RateViews';
-import { LEG_SHORT, LEG_TEXT, OFFSET_LONG, OFFSET_TEXT, SHOCK_ORDER, SHOCK_TEXT, defaultSel, outputsOf, text, type C15Sel, type LegId, type OffsetChoice, type ShockId } from './selection';
+import { LEG_SHORT, LEG_TEXT, OFFSET_LONG, OFFSET_SHORT, SHOCK_ORDER, SHOCK_TEXT, defaultSel, outputsOf, text, type C15Sel, type LegId, type OffsetChoice, type ShockId } from './selection';
 
 export interface C15Instrument {
   sel: C15Sel | null;
@@ -68,7 +68,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
         <ChipGroup
           id="c15-offset"
           label={{ en: 'CLP and CLF offset', es: 'Compensación CLP y CLF' }}
-          options={(['on', 'off'] as const).map((k) => ({ id: k, label: text(OFFSET_TEXT, k), hint: text(OFFSET_LONG, k) }))}
+          options={(['on', 'off'] as const).map((k) => ({ id: k, label: text(OFFSET_SHORT, k), hint: text(OFFSET_LONG, k) }))}
           value={sel.offset}
           onChange={setOffset}
         />

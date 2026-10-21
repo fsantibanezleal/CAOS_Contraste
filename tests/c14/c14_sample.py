@@ -21,6 +21,6 @@ VALUES = {
 
 
 def report():
-    from pipeline.cases.c14.fdic import Report
+    from pipeline.io.fdic import Report
 
     return Report(REPORT_DATE, dict(VALUES))

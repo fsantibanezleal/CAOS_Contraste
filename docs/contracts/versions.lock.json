@@ -85,7 +85,7 @@
     "sha256": "3828606a7f05a6d930a44c7c8d54774a82f1945c14fc00fab94417d571071b7c"
   },
   "contract-family": {
-    "version": "1.0.0",
+    "version": "1.3.0",
     "schema": "docs/contracts/schemas/common/contract-family.schema.json",
     "sha256": "7131847ba47985b793908a00a00a90a7bcb9103350c65aeae568ae23afbb44a5"
   },
@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "5.0.0",
+    "version": "11.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "9012338f94b9ed2ef8968d436d8bd22b1708d6ee04f44285b2307ec9e64838f0"
+    "sha256": "55811bb1634f87ba6838b1c91e62ec588ea5687b89851a8f451713b2933ae5da"
   },
   "readiness": {
     "version": "1.0.0",
@@ -268,5 +268,140 @@
     "version": "1.0.0",
     "schema": "docs/contracts/engine/market-api.md",
     "sha256": "f3ccfb534c825d7ef38bade60a0be0a5aa5bdcb48dd2ceeb391c39b78922c6a5"
+  },
+  "c16-outputs": {
+    "version": "2.1.0",
+    "schema": "docs/contracts/schemas/c16/variant-scenario.schema.json",
+    "sha256": "fde0b45911836ca9297ce1711082076f9aaade5fc0d338cc030ffa46b6e74b4d"
+  },
+  "c16-outputs-reverse": {
+    "version": "1.0.1",
+    "schema": "docs/contracts/schemas/c16/variant-reverse.schema.json",
+    "sha256": "c742ef05e5a03e63ce3ff26819b123a092f805d10d2188a329d58bde638d42e5"
+  },
+  "c16-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c16/models.schema.json",
+    "sha256": "28cb79c4ad81bee24e63714b2e8c0e7dab3e5dd7138bea01caac2d700f8bd22f"
+  },
+  "engine-liquidity-api": {
+    "version": "1.2.0",
+    "schema": "docs/contracts/engine/liquidity-api.md",
+    "sha256": "b3dffb40d35f2f42237b4172aae8b1135056ce562a539f24aed5472e92eda56a"
+  },
+  "c02-outputs": {
+    "version": "1.1.0",
+    "schema": "docs/contracts/schemas/c02/variant-horizon.schema.json",
+    "sha256": "d92efeb8bca3aa79a21d2c82e78d145d864bb2154d4ae08ab23c11f4738c8d91"
+  },
+  "c02-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c02/models.schema.json",
+    "sha256": "2b10c30a02f4071792edc6b07c8ce5e782403c553488d09149fd1b02e0ac62a5"
+  },
+  "c20-outputs": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c20/variant-shock.schema.json",
+    "sha256": "51033adc205fdb31ace5f775f396f8b794d0e735316c077be63cdbebbe3d9b33"
+  },
+  "c20-outputs-shift": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c20/variant-shift.schema.json",
+    "sha256": "df52a383a218f127948e2dcc676f0beb71049be231508ec1ebbf6c17a95c75f8"
+  },
+  "c20-outputs-seeds": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c20/variant-seeds.schema.json",
+    "sha256": "639c8f2e4dba6c8c2dcc80bc3b9322612d30a64b221f969e36a0d07da0315dbd"
+  },
+  "c20-outputs-perturbation": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c20/variant-perturbation.schema.json",
+    "sha256": "bb5194a4acec1025edf3be105fa6467d8171d31fe24142e432e15d21133fceda"
+  },
+  "c20-outputs-leakage": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c20/variant-leakage.schema.json",
+    "sha256": "38c0c76dff6d43ddd65912208315d74c9df08562c83bb2359ff71a36e5d377ca"
+  },
+  "c20-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c20/models.schema.json",
+    "sha256": "f584731f90dc64b9bf075cfc7faca3550075508c9031979bfc683b11167c629a"
+  },
+  "c21-outputs": {
+    "version": "2.0.0",
+    "schema": "docs/contracts/schemas/c21/variant-year-pair.schema.json",
+    "sha256": "9a89796c2494e25415afbdbd17e3b3d92962f8ecbfbf5f1a07ee2d0385f64f5f"
+  },
+  "c21-models": {
+    "version": "2.0.0",
+    "schema": "docs/contracts/schemas/c21/models.schema.json",
+    "sha256": "6716f81fd33c1b14df380f3a60dc4b75aa928877a3f65f330d173bf381dfcb6b"
+  },
+  "engine-ml-api": {
+    "version": "2.0.0",
+    "schema": "docs/contracts/engine/ml-api.md",
+    "sha256": "53e8f60619f6092c7c82b74bf6d4f988a0f045ae73800b695a71bc712b655c3b"
+  },
+  "engine-fairness-api": {
+    "version": "1.3.0",
+    "schema": "docs/contracts/engine/fairness-api.md",
+    "sha256": "2875050343ccf88a432ae12de45bb79db63c16a3db9d61be6e5bec6497ddf6fc"
+  },
+  "c18-outputs": {
+    "version": "2.0.0",
+    "schema": "docs/contracts/schemas/c18/variant-scenario.schema.json",
+    "sha256": "3be05fb7e6780ae3d8ef219bee5c7acb699ea6e0a26ef0d93109119285bebe9d"
+  },
+  "c18-outputs-aggregation": {
+    "version": "2.0.0",
+    "schema": "docs/contracts/schemas/c18/variant-aggregation.schema.json",
+    "sha256": "9e1393ba11748ef571d186897c45e459df2ea21fcf6f6239374617d49a8a21ea"
+  },
+  "c18-outputs-reverse": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c18/variant-reverse.schema.json",
+    "sha256": "119980489deba24a4b7bff6854dda49e3eb561edbc5b0920f541dd4bae507f95"
+  },
+  "c18-models": {
+    "version": "2.0.0",
+    "schema": "docs/contracts/schemas/c18/models.schema.json",
+    "sha256": "fc32bf28c8adb8aa4d34ac6ef4321f6200c3aeb6586009a066fd9db4de9532b2"
+  },
+  "engine-aggregation-api": {
+    "version": "1.1.0",
+    "schema": "docs/contracts/engine/aggregation-api.md",
+    "sha256": "c558e86eeaece18d126c1b0aab46f315d81872057693f824cc579b704e84341e"
+  },
+  "engine-stress-api": {
+    "version": "2.0.0",
+    "schema": "docs/contracts/engine/stress-api.md",
+    "sha256": "4ccbff4cfd1b8842372b3717326bdd97c1a43f336807c372204d93fd1b0d5216"
+  },
+  "c12-outputs": {
+    "version": "1.1.0",
+    "schema": "docs/contracts/schemas/c12/variant-swap-exposure.schema.json",
+    "sha256": "7a046f4fa48b5059e5049f98dac8c99c539f0dd86868884fd10a430bb419035c"
+  },
+  "c12-models": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/c12/models.schema.json",
+    "sha256": "9a2988050a173dc98aa1001385864480ba6e7d264ca35092501c02508c7c3d0e"
+  },
+  "regulatory-calculators": {
+    "version": "1.0.0",
+    "schema": "docs/contracts/schemas/regulatory/calculators.schema.json",
+    "sha256": "97b6f7bf06ae540821aa57d91fadbbd820e385ea32524f0bbb081319c0f5a749"
+  },
+  "engine-regulatory-api": {
+    "version": "2.2.0",
+    "schema": "docs/contracts/engine/regulatory-api.md",
+    "sha256": "eccc272db27d66b1dcb705f8064dce2dd7108ce77d01dea4c64141bcc19ec2a9"
+  },
+  "engine-ccr-api": {
+    "version": "2.0.0",
+    "schema": "docs/contracts/engine/ccr-api.md",
+    "sha256": "e17a654161a1432a994ec95ca48947222dbb4b725d1954ce032fcd5361228671"
   }
 }

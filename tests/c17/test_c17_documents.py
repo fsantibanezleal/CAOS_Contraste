@@ -7,7 +7,7 @@ import json
 import numpy as np
 import pytest
 from c17_semantic import semantic_findings
-from conftest import DERIVED, DOCS, load
+from c17_support import DERIVED, DOCS, load
 from pipeline.cases.c17 import replicate
 from pipeline.core.schemas import validate_document
 from riskvalidation.oprisk import sma

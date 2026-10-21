@@ -1,0 +1,157 @@
+{
+  "schema": "contraste.models/v1",
+  "case_id": "C20",
+  "fit_id": "fixture-ladder",
+  "model": [
+    {
+      "id": "fixture-p1",
+      "family": "ml",
+      "rung": "P1",
+      "title": {
+        "en": "Fixture model fixture-p1",
+        "es": "Fixture model fixture-p1"
+      },
+      "short_title": {
+        "en": "fixture-p1",
+        "es": "fixture-p1"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "details": {}
+    }
+  ],
+  "fit": {
+    "datasets": [
+      {
+        "id": "sgcd",
+        "rows": 1000,
+        "role": "shock evaluation"
+      },
+      {
+        "id": "uci-taiwan",
+        "rows": 30000,
+        "role": "fit"
+      }
+    ],
+    "ladder": [
+      {
+        "rung": "P4",
+        "engine": "fixture",
+        "dataset": "uci-taiwan"
+      }
+    ],
+    "sgcd": {
+      "commit": "8403fa9048f7159d51a0cec5a2d9a2e9712662bd",
+      "seed": 42,
+      "notice": {
+        "kind": "dataset-card-prohibition",
+        "quote": "It is provided for research and benchmarking only and must not be used for real-world credit scoring or any production decision-making about individuals.",
+        "commit": "8403fa9048f7159d51a0cec5a2d9a2e9712662bd",
+        "text": {
+          "en": "The SGCD dataset card forbids real-world credit scoring and production decisions about individuals",
+          "es": "The SGCD dataset card forbids real-world credit scoring and production decisions about individuals"
+        }
+      }
+    },
+    "parameters": [
+      {
+        "name": "perturbation_grid",
+        "value": [
+          0.05,
+          0.1,
+          0.25,
+          0.5,
+          1.0
+        ],
+        "unit": "multiple of each feature's standard deviation",
+        "label": "convention",
+        "basis": "Noise scales for the perturbation robustness grid (06 C.7 l.1009-1012 gives the construction, no values)."
+      },
+      {
+        "name": "perturbation_tolerance",
+        "value": 0.02,
+        "unit": "AUC points",
+        "label": "convention",
+        "basis": "Degradation of AUC tolerated at the preset scale 0.1; about 2.5 standard errors of an AUC on the Taiwan holdout (about 6,000 holdout rows)."
+      },
+      {
+        "name": "n_seeds",
+        "value": 20,
+        "unit": "retraining seeds",
+        "label": "convention",
+        "basis": "Seeds of the seed sweep (06 I.1 l.1191 gives none); 20 gives a standard deviation of the AUC with a relative error near 16 percent."
+      },
+      {
+        "name": "n_bootstrap_refits",
+        "value": 100,
+        "unit": "bootstrap refits",
+        "label": "convention",
+        "basis": "Refits of the reason-code stability (04 J.2 l.881-883 gives none)."
+      },
+      {
+        "name": "overfit_tolerance",
+        "value": 0.05,
+        "unit": "AUC points",
+        "label": "convention",
+        "basis": "Train minus test AUC gap beyond which the overfit flag is raised (06 C.7 l.1016-1018 gives no value)."
+      },
+      {
+        "name": "weak_spot_multiple",
+        "value": 2.0,
+        "unit": "multiple of the average test error",
+        "label": "convention",
+        "basis": "k: a slice is a weak spot when its test error exceeds k times the average (06 C.7 l.1016-1018)."
+      },
+      {
+        "name": "shift_score",
+        "value": "resemblance-classifier-probability",
+        "unit": "name of the score",
+        "label": "convention",
+        "basis": "The shift score ranking subsamples; a classifier of development against evaluation rows (06 C.7 l.1048-1051 resemblance AUC)."
+      },
+      {
+        "name": "worst_subsample_share",
+        "value": 0.1,
+        "unit": "share of the evaluation rows",
+        "label": "convention",
+        "basis": "The dossier's example is the worst 10 percent (06 C.7 l.1013-1014)."
+      },
+      {
+        "name": "decision_cutoff_reject_share",
+        "value": 0.2,
+        "unit": "share of baseline decisions declined",
+        "label": "convention",
+        "basis": "The cut-off is the baseline score quantile that declines this share; held fixed under every shift (decision Q10)."
+      }
+    ]
+  },
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u14-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

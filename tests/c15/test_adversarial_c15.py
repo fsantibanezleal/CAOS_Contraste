@@ -9,7 +9,7 @@ import c15_docs as d
 import contract_schemas as cs
 import numpy as np
 import pytest
-import semantics
+from c15_support import semantics
 from c15_support import SEED, VARIANT_IDS, make_series, world
 from test_c15_documents import credential_findings
 from test_c15_engine_calls import engine_findings

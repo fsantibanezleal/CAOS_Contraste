@@ -73,8 +73,8 @@ SPECS: dict[str, VariantSpec] = {s.id: s for s in (
     _spec("clp-steepener", "CLP steepener", "Empinamiento CLP",
           "A near-flat UF position and a CLP book with 35 percent of its fixed loans and securities moved to the long end, so the "
           "long-end rise of the steepener acts on it.",
-          "Posicion en UF casi plana y libro en pesos con 35 por ciento de sus créditos fijos y valores en el tramo largo, de modo que el alza "
-          "del tramo largo del empinamiento actua sobre el.",
+          "Posición en UF casi plana y libro en pesos con 35 por ciento de sus créditos fijos y valores en el tramo largo, de modo que el alza "
+          "del tramo largo del empinamiento actúa sobre el.",
           net_uf_share_tier1=0.05, clp_long_asset_share=0.35),
     _spec("offset-on-off", "CLP/CLF offset on and off", "Compensación CLP/CLF activada y desactivada",
           "A long UF book funded in long CLP bonds (twice the maturity), so the two legs move in opposite directions and the 50 percent "
@@ -84,7 +84,7 @@ SPECS: dict[str, VariantSpec] = {s.id: s for s in (
           offset="compared", net_uf_share_tier1=0.30, clp_bond_years_scale=2.0),
     _spec("floors-active", "Floors active", "Pisos activos",
           "A near-flat UF position with 70 percent of the UF commercial loans floating, the book most exposed to the UR post-shock floor.",
-          "Posicion en UF casi plana con 70 por ciento de los créditos comerciales en UF a tasa variable: el libro mas expuesto al piso "
+          "Posición en UF casi plana con 70 por ciento de los créditos comerciales en UF a tasa variable: el libro más expuesto al piso "
           "posterior al choque de la UR.",
           net_uf_share_tier1=0.05, ur_floating_share=0.70),
 )}
@@ -308,7 +308,7 @@ def build_book(seed: int, spec: VariantSpec, uf_value: float) -> Book:
         legs[leg].items.append(Item(item_id, t(en, es), side, category, bclass, source, float(amount), _slot(amount, sign, times, weights), dyn))
 
     syn = "profile and currency split synthetic (assumptions.item_profiles, assumptions.currency_split)"
-    cmf = "CMF, Informe del Desempeno del Sistema Bancario y Cooperativas, agosto 2026, Cuadro N 1 (Bancos)"
+    cmf = "CMF, Informe del Desempeño del Sistema Bancario y Cooperativas, agosto 2026, Cuadro N 1 (Bancos)"
     lw = p["clp_long_asset_share"]
     fl = p["ur_floating_share"]
     # ---- assets, CLP

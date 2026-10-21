@@ -61,6 +61,9 @@ REGIME = t("Real Banco Central de Chile F022 curves of the valuation date; synth
            "sintético, declarado en el documento.")
 
 
+#: the Spanish chip labels that a rail line cannot hold (the variant title keeps the full wording)
+SHORT_ES = {"offset-on-off": "Compensación CLP/CLF"}
+
 def _log(msg: str) -> None:
     print(f"[C15 {time.perf_counter() - _T0:7.1f}s] {msg}", file=sys.stderr, flush=True)
 
@@ -99,7 +102,7 @@ def _model_summaries(ev: str) -> list[dict[str, Any]]:
         rec("irrbb-curves-nelson-siegel", "curve-fit", "Nelson-Siegel zero curves", "Curvas cero Nelson-Siegel", {"coupon_frequency": (2.0, "per year")}),
         rec("irrbb-ear-evar-hw1f", "ear-evar", "EaR and EVaR, Hull-White one factor", "EaR y EVaR, Hull-White un factor",
             {"a": (asm.HW1F_A, "per year"), "n_paths": (float(asm.N_PATHS), "paths")}),
-        rec("irrbb-dynamic-nii", "dynamic-nii", "Dynamic NII, constant balance sheet", "NII dinamico, balance constante",
+        rec("irrbb-dynamic-nii", "dynamic-nii", "Dynamic NII, constant balance sheet", "NII dinámico, balance constante",
             {"horizon_months": (float(asm.HORIZON_MONTHS), "months")}),
     ]
 
@@ -247,7 +250,10 @@ def bake_case(seed: int, paths: Any, data_root: Path | str | None) -> dict[str, 
         e = _check_and_write(root, rel, doc)
         sums.append(_sum(root, rel))
         label = doc["outputs"]["variant"]["label"]
-        entries.append({"role": "variant", "variant_id": vid, "truth_status": "synthetic-calibrated", "title": label, "short_title": label,
+        # the chip of the variant in the rail is one line of the rail's width (ADR-0071 rule 6): the Spanish title of the offset
+        # variant is 43 characters and left the rail by 68 px, so its chip carries the shorter wording; the title stays whole
+        short = {**label, "es": SHORT_ES[vid]} if vid in SHORT_ES else label
+        entries.append({"role": "variant", "variant_id": vid, "truth_status": "synthetic-calibrated", "title": label, "short_title": short,
                         "regime": REGIME, "models_ref": MODELS_REL, **e})
         _log(f"{vid}: {e['bytes']:,} bytes")
     write_json(root / RAW_REL, built.raw_sources)

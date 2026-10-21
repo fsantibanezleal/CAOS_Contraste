@@ -4,7 +4,7 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-from conftest import ONE_TYPE, SAMPLE
+from c10_support import ONE_TYPE, SAMPLE
 
 from pipeline.cases.c10 import CASE_C10
 from pipeline.pipeline import PipelinePaths

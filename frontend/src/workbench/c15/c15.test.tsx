@@ -426,6 +426,17 @@ describe('the C15 rail', () => {
     expect(railHtml(2)).toMatch(/data-control="c15-leg"[^>]*><span[^>]*>Leg of the book<\/span><div class="caos-chip-row"/);
   });
 
+  it('keeps the rail inside 1280 x 800 in Spanish: the offset chips are one short word each, and a read-out names its money unit once, in its title', () => {
+    const es = railHtml(1, 'es');
+    expect(es).toMatch(/<button[^>]*>Activa<\/button>/);
+    expect(es).toMatch(/<button[^>]*>Inactiva<\/button>/);
+    expect(railHtml(1)).toMatch(/<button[^>]*>On<\/button>/);
+    for (const at of [0, 1]) {
+      expect(railHtml(at), `section ${at}`).toContain('(bn CLP)');
+      expect(railHtml(at).match(/bn CLP/g)?.length, `section ${at}`).toBe(1);
+    }
+  });
+
   it('names shocks in words, never an internal id, and prints no raw amount', () => {
     expect(railHtml(0)).toContain('Parallel up');
     expect(railHtml(0)).not.toContain('>parallel-up<');

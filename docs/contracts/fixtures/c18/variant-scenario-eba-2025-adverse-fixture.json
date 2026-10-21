@@ -1,0 +1,3741 @@
+{
+  "schema": "contraste.case/v1",
+  "case_id": "C18",
+  "variant_id": "fixture-eba-2025-adverse",
+  "model": [
+    {
+      "id": "c18-satellites-us-calibrated",
+      "family": "stress",
+      "rung": "satellite-probit-ols",
+      "title": {
+        "en": "Fixture model c18-satellites-us-calibrated",
+        "es": "Modelo de ejemplo c18-satellites-us-calibrated"
+      },
+      "short_title": {
+        "en": "c18-satellites-us-calibrated",
+        "es": "c18-satellites-us-calibrated"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    },
+    {
+      "id": "c18-aggregation-ladder",
+      "family": "aggregation",
+      "rung": "simple-sum-headline",
+      "title": {
+        "en": "Fixture model c18-aggregation-ladder",
+        "es": "Modelo de ejemplo c18-aggregation-ladder"
+      },
+      "short_title": {
+        "en": "c18-aggregation-ladder",
+        "es": "c18-aggregation-ladder"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    },
+    {
+      "id": "c18-capital-engine",
+      "family": "stress",
+      "rung": "capital-engine-static",
+      "title": {
+        "en": "Fixture model c18-capital-engine",
+        "es": "Modelo de ejemplo c18-capital-engine"
+      },
+      "short_title": {
+        "en": "c18-capital-engine",
+        "es": "c18-capital-engine"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    }
+  ],
+  "outputs": {
+    "kind": "scenario",
+    "currency": "CLP",
+    "units": {
+      "money": "CLP millions",
+      "ratio": "decimal",
+      "dates": "ISO date; quarters as the date of the quarter end"
+    },
+    "bank": {
+      "name": "Banco Andino",
+      "synthetic": true,
+      "as_of": "2026-08-31",
+      "notice": {
+        "en": "Banco Andino is a synthetic bank. Its book and capital are calibrated to public aggregates; every figure here is a fixture and no result.",
+        "es": "Banco Andino is a synthetic bank. Its book and capital are calibrated to public aggregates; every figure here is a fixture and no result. (es)"
+      }
+    },
+    "capital_start": {
+      "rwa_clp_m": 20000000.0,
+      "rwa_by_risk": {
+        "credit": 14168160.0,
+        "market": 3425100.0,
+        "operational": 2406740.0
+      },
+      "cet1_clp_m": 2200000.0,
+      "at1_clp_m": 250000.0,
+      "t2_clp_m": 500000.0,
+      "pe_clp_m": 2950000.0,
+      "cet1_ratio": 0.11,
+      "pe_ratio": 0.1475,
+      "basis": {
+        "en": "RWA is the C15 Tier 1 proxy over the 11.0 percent anchor, split by the 20-F mix; the capital stock is the proxy (decision Q4). Fixture values.",
+        "es": "RWA is the C15 Tier 1 proxy over the 11.0 percent anchor, split by the 20-F mix; the capital stock is the proxy (decision Q4). Fixture values. (es)"
+      }
+    },
+    "scenario": {
+      "scenario_id": "eba-2025-adverse",
+      "title": {
+        "en": "EBA and ESRB 2025 adverse scenario",
+        "es": "Escenario adverso EBA y ESRB 2025"
+      },
+      "provider": "eba-esrb",
+      "source_document": "2025 EU-wide stress test - Macro financial scenario (updated 26 February 2025)",
+      "source_url": "https://www.eba.europa.eu/sites/default/files/2025-03/d0668400-aed7-40d7-b668-1f77eb24b934/2025%20EU-wide%20stress%20test%20-%20Macro%20financial%20scenario%20%28updated%2026%20February%202025%29-incl%20disclaimer%20for%20EBA%20%285%29.xlsx",
+      "vintage_date": "2025-02-26",
+      "adaptation_label": "us-calibrated-adaptation",
+      "adaptation_statement": {
+        "en": "A country-year path for 2025 to 2027 from year-end 2024, transposed onto the United States last observed value; the satellites are US-calibrated.",
+        "es": "A country-year path for 2025 to 2027 from year-end 2024, transposed onto the United States last observed value; the satellites are US-calibrated. (es)"
+      },
+      "paths": [
+        {
+          "variable": "Real GDP growth",
+          "unit": "percent",
+          "maps_to_regressor": "real_gdp_growth",
+          "frequency": "annual",
+          "vintage_date": "2025-02-26",
+          "level_rule": {
+            "kind": "level",
+            "baseline": null
+          },
+          "source": [
+            {
+              "date": "2025-12-31",
+              "value": -1.5
+            },
+            {
+              "date": "2026-12-31",
+              "value": -2.0
+            },
+            {
+              "date": "2027-12-31",
+              "value": 0.5
+            }
+          ],
+          "levels": [
+            {
+              "date": "2025-12-31",
+              "value": -1.5
+            },
+            {
+              "date": "2026-12-31",
+              "value": -2.0
+            },
+            {
+              "date": "2027-12-31",
+              "value": 0.5
+            }
+          ],
+          "transposition": {
+            "label": "transposed-onto-banco-andino-jump-off",
+            "rule": "shape-onto-last-observed-then-revert-to-baseline",
+            "source_jump_off": {
+              "date": "2024-12-31",
+              "value": 1.2
+            },
+            "target": {
+              "date": "2025-12-31",
+              "value": 2.0
+            },
+            "reversion": "none-within-horizon"
+          },
+          "transposed": [
+            {
+              "date": "2026-03-31",
+              "value": 1.325
+            },
+            {
+              "date": "2026-06-30",
+              "value": 0.65
+            },
+            {
+              "date": "2026-09-30",
+              "value": -0.025
+            },
+            {
+              "date": "2026-12-31",
+              "value": -0.7
+            },
+            {
+              "date": "2027-03-31",
+              "value": -0.825
+            },
+            {
+              "date": "2027-06-30",
+              "value": -0.95
+            },
+            {
+              "date": "2027-09-30",
+              "value": -1.075
+            },
+            {
+              "date": "2027-12-31",
+              "value": -1.2
+            },
+            {
+              "date": "2028-03-31",
+              "value": -0.575
+            },
+            {
+              "date": "2028-06-30",
+              "value": 0.05
+            },
+            {
+              "date": "2028-09-30",
+              "value": 0.675
+            },
+            {
+              "date": "2028-12-31",
+              "value": 1.3
+            }
+          ]
+        },
+        {
+          "variable": "Unemployment rate",
+          "unit": "percent",
+          "maps_to_regressor": "unemployment_rate",
+          "frequency": "annual",
+          "vintage_date": "2025-02-26",
+          "level_rule": {
+            "kind": "level",
+            "baseline": null
+          },
+          "source": [
+            {
+              "date": "2025-12-31",
+              "value": 7.0
+            },
+            {
+              "date": "2026-12-31",
+              "value": 8.5
+            },
+            {
+              "date": "2027-12-31",
+              "value": 8.0
+            }
+          ],
+          "levels": [
+            {
+              "date": "2025-12-31",
+              "value": 7.0
+            },
+            {
+              "date": "2026-12-31",
+              "value": 8.5
+            },
+            {
+              "date": "2027-12-31",
+              "value": 8.0
+            }
+          ],
+          "transposition": {
+            "label": "transposed-onto-banco-andino-jump-off",
+            "rule": "shape-onto-last-observed-then-revert-to-baseline",
+            "source_jump_off": {
+              "date": "2024-12-31",
+              "value": 6.0
+            },
+            "target": {
+              "date": "2025-12-31",
+              "value": 4.5
+            },
+            "reversion": "none-within-horizon"
+          },
+          "transposed": [
+            {
+              "date": "2026-03-31",
+              "value": 4.75
+            },
+            {
+              "date": "2026-06-30",
+              "value": 5.0
+            },
+            {
+              "date": "2026-09-30",
+              "value": 5.25
+            },
+            {
+              "date": "2026-12-31",
+              "value": 5.5
+            },
+            {
+              "date": "2027-03-31",
+              "value": 5.875
+            },
+            {
+              "date": "2027-06-30",
+              "value": 6.25
+            },
+            {
+              "date": "2027-09-30",
+              "value": 6.625
+            },
+            {
+              "date": "2027-12-31",
+              "value": 7.0
+            },
+            {
+              "date": "2028-03-31",
+              "value": 6.875
+            },
+            {
+              "date": "2028-06-30",
+              "value": 6.75
+            },
+            {
+              "date": "2028-09-30",
+              "value": 6.625
+            },
+            {
+              "date": "2028-12-31",
+              "value": 6.5
+            }
+          ]
+        },
+        {
+          "variable": "Long-term interest rate",
+          "unit": "percent",
+          "maps_to_regressor": "treasury_10y",
+          "frequency": "annual",
+          "vintage_date": "2025-02-26",
+          "level_rule": {
+            "kind": "level",
+            "baseline": null
+          },
+          "source": [
+            {
+              "date": "2025-12-31",
+              "value": 3.0
+            },
+            {
+              "date": "2026-12-31",
+              "value": 3.8
+            },
+            {
+              "date": "2027-12-31",
+              "value": 3.5
+            }
+          ],
+          "levels": [
+            {
+              "date": "2025-12-31",
+              "value": 3.0
+            },
+            {
+              "date": "2026-12-31",
+              "value": 3.8
+            },
+            {
+              "date": "2027-12-31",
+              "value": 3.5
+            }
+          ],
+          "transposition": {
+            "label": "transposed-onto-banco-andino-jump-off",
+            "rule": "shape-onto-last-observed-then-revert-to-baseline",
+            "source_jump_off": {
+              "date": "2024-12-31",
+              "value": 2.6
+            },
+            "target": {
+              "date": "2025-12-31",
+              "value": 4.1
+            },
+            "reversion": "none-within-horizon"
+          },
+          "transposed": [
+            {
+              "date": "2026-03-31",
+              "value": 4.2
+            },
+            {
+              "date": "2026-06-30",
+              "value": 4.3
+            },
+            {
+              "date": "2026-09-30",
+              "value": 4.4
+            },
+            {
+              "date": "2026-12-31",
+              "value": 4.5
+            },
+            {
+              "date": "2027-03-31",
+              "value": 4.7
+            },
+            {
+              "date": "2027-06-30",
+              "value": 4.9
+            },
+            {
+              "date": "2027-09-30",
+              "value": 5.1
+            },
+            {
+              "date": "2027-12-31",
+              "value": 5.3
+            },
+            {
+              "date": "2028-03-31",
+              "value": 5.225
+            },
+            {
+              "date": "2028-06-30",
+              "value": 5.15
+            },
+            {
+              "date": "2028-09-30",
+              "value": 5.075
+            },
+            {
+              "date": "2028-12-31",
+              "value": 5.0
+            }
+          ]
+        }
+      ],
+      "policy_shock_window": null
+    },
+    "satellites": {
+      "fed_loan_types": [
+        {
+          "fed_loan_type": "commercial-industrial",
+          "series_id": "CI",
+          "model_id": "c18-satellite-commercial-industrial",
+          "link": "probit",
+          "quarters": [
+            {
+              "quarter_end": "2026-03-31",
+              "rate": 0.0058675544,
+              "link_value": -2.5200112368
+            },
+            {
+              "quarter_end": "2026-06-30",
+              "rate": 0.0074591235,
+              "link_value": -2.4343576368
+            },
+            {
+              "quarter_end": "2026-09-30",
+              "rate": 0.0102721661,
+              "link_value": -2.316255322
+            },
+            {
+              "quarter_end": "2026-12-31",
+              "rate": 0.0141460851,
+              "link_value": -2.1932111413
+            },
+            {
+              "quarter_end": "2027-03-31",
+              "rate": 0.0194809665,
+              "link_value": -2.0645887037
+            },
+            {
+              "quarter_end": "2027-06-30",
+              "rate": 0.0211034791,
+              "link_value": -2.0314737653
+            },
+            {
+              "quarter_end": "2027-09-30",
+              "rate": 0.0194809665,
+              "link_value": -2.0645887037
+            },
+            {
+              "quarter_end": "2027-12-31",
+              "rate": 0.0166005846,
+              "link_value": -2.1296421402
+            },
+            {
+              "quarter_end": "2028-03-31",
+              "rate": 0.0141460851,
+              "link_value": -2.1932111413
+            },
+            {
+              "quarter_end": "2028-06-30",
+              "rate": 0.0120544985,
+              "link_value": -2.2553878135
+            },
+            {
+              "quarter_end": "2028-09-30",
+              "rate": 0.0102721661,
+              "link_value": -2.316255322
+            },
+            {
+              "quarter_end": "2028-12-31",
+              "rate": 0.0094824044,
+              "link_value": -2.3462219817
+            }
+          ]
+        },
+        {
+          "fed_loan_type": "commercial-real-estate",
+          "series_id": "RECI",
+          "model_id": "c18-satellite-commercial-real-estate",
+          "link": "identity",
+          "quarters": [
+            {
+              "quarter_end": "2026-03-31",
+              "rate": 0.0034,
+              "link_value": 0.0034
+            },
+            {
+              "quarter_end": "2026-06-30",
+              "rate": 0.004,
+              "link_value": 0.004
+            },
+            {
+              "quarter_end": "2026-09-30",
+              "rate": 0.0048,
+              "link_value": 0.0048
+            },
+            {
+              "quarter_end": "2026-12-31",
+              "rate": 0.0056,
+              "link_value": 0.0056
+            },
+            {
+              "quarter_end": "2027-03-31",
+              "rate": 0.0064,
+              "link_value": 0.0064
+            },
+            {
+              "quarter_end": "2027-06-30",
+              "rate": 0.0066,
+              "link_value": 0.0066
+            },
+            {
+              "quarter_end": "2027-09-30",
+              "rate": 0.0064,
+              "link_value": 0.0064
+            },
+            {
+              "quarter_end": "2027-12-31",
+              "rate": 0.006,
+              "link_value": 0.006
+            },
+            {
+              "quarter_end": "2028-03-31",
+              "rate": 0.0056,
+              "link_value": 0.0056
+            },
+            {
+              "quarter_end": "2028-06-30",
+              "rate": 0.0052,
+              "link_value": 0.0052
+            },
+            {
+              "quarter_end": "2028-09-30",
+              "rate": 0.0048,
+              "link_value": 0.0048
+            },
+            {
+              "quarter_end": "2028-12-31",
+              "rate": 0.0046,
+              "link_value": 0.0046
+            }
+          ]
+        },
+        {
+          "fed_loan_type": "residential",
+          "series_id": "RERES",
+          "model_id": "c18-satellite-residential",
+          "link": "identity",
+          "quarters": [
+            {
+              "quarter_end": "2026-03-31",
+              "rate": -8e-05,
+              "link_value": -8e-05
+            },
+            {
+              "quarter_end": "2026-06-30",
+              "rate": 0.0001,
+              "link_value": 0.0001
+            },
+            {
+              "quarter_end": "2026-09-30",
+              "rate": 0.00034,
+              "link_value": 0.00034
+            },
+            {
+              "quarter_end": "2026-12-31",
+              "rate": 0.00058,
+              "link_value": 0.00058
+            },
+            {
+              "quarter_end": "2027-03-31",
+              "rate": 0.00082,
+              "link_value": 0.00082
+            },
+            {
+              "quarter_end": "2027-06-30",
+              "rate": 0.00088,
+              "link_value": 0.00088
+            },
+            {
+              "quarter_end": "2027-09-30",
+              "rate": 0.00082,
+              "link_value": 0.00082
+            },
+            {
+              "quarter_end": "2027-12-31",
+              "rate": 0.0007,
+              "link_value": 0.0007
+            },
+            {
+              "quarter_end": "2028-03-31",
+              "rate": 0.00058,
+              "link_value": 0.00058
+            },
+            {
+              "quarter_end": "2028-06-30",
+              "rate": 0.00046,
+              "link_value": 0.00046
+            },
+            {
+              "quarter_end": "2028-09-30",
+              "rate": 0.00034,
+              "link_value": 0.00034
+            },
+            {
+              "quarter_end": "2028-12-31",
+              "rate": 0.00028,
+              "link_value": 0.00028
+            }
+          ]
+        },
+        {
+          "fed_loan_type": "credit-cards",
+          "series_id": "CONCC",
+          "model_id": "c18-satellite-credit-cards",
+          "link": "probit",
+          "quarters": [
+            {
+              "quarter_end": "2026-03-31",
+              "rate": 0.0437669713,
+              "link_value": -1.7085521283
+            },
+            {
+              "quarter_end": "2026-06-30",
+              "rate": 0.0500929086,
+              "link_value": -1.6439534546
+            },
+            {
+              "quarter_end": "2026-09-30",
+              "rate": 0.0599721,
+              "link_value": -1.555007849
+            },
+            {
+              "quarter_end": "2026-12-31",
+              "rate": 0.0717996394,
+              "link_value": -1.4625181339
+            },
+            {
+              "quarter_end": "2027-03-31",
+              "rate": 0.085959775,
+              "link_value": -1.3660618539
+            },
+            {
+              "quarter_end": "2027-06-30",
+              "rate": 0.0899163195,
+              "link_value": -1.3412705156
+            },
+            {
+              "quarter_end": "2027-09-30",
+              "rate": 0.085959775,
+              "link_value": -1.3660618539
+            },
+            {
+              "quarter_end": "2027-12-31",
+              "rate": 0.078561319,
+              "link_value": -1.4148153646
+            },
+            {
+              "quarter_end": "2028-03-31",
+              "rate": 0.0717996394,
+              "link_value": -1.4625181339
+            },
+            {
+              "quarter_end": "2028-06-30",
+              "rate": 0.0656199296,
+              "link_value": -1.5092306144
+            },
+            {
+              "quarter_end": "2028-09-30",
+              "rate": 0.0599721,
+              "link_value": -1.555007849
+            },
+            {
+              "quarter_end": "2028-12-31",
+              "rate": 0.0573331766,
+              "link_value": -1.5775616296
+            }
+          ]
+        },
+        {
+          "fed_loan_type": "other-consumer",
+          "series_id": "CONOTH",
+          "model_id": "c18-satellite-other-consumer",
+          "link": "probit",
+          "quarters": [
+            {
+              "quarter_end": "2026-03-31",
+              "rate": 0.0221034184,
+              "link_value": -2.0121242897
+            },
+            {
+              "quarter_end": "2026-06-30",
+              "rate": 0.0256805083,
+              "link_value": -1.9484510492
+            },
+            {
+              "quarter_end": "2026-09-30",
+              "rate": 0.0313662437,
+              "link_value": -1.8610827813
+            },
+            {
+              "quarter_end": "2026-12-31",
+              "rate": 0.0383108166,
+              "link_value": -1.7706337056
+            },
+            {
+              "quarter_end": "2027-03-31",
+              "rate": 0.046792937,
+              "link_value": -1.6767781396
+            },
+            {
+              "quarter_end": "2027-06-30",
+              "rate": 0.0491920622,
+              "link_value": -1.652738357
+            },
+            {
+              "quarter_end": "2027-09-30",
+              "rate": 0.046792937,
+              "link_value": -1.6767781396
+            },
+            {
+              "quarter_end": "2027-12-31",
+              "rate": 0.0423400003,
+              "link_value": -1.7241542505
+            },
+            {
+              "quarter_end": "2028-03-31",
+              "rate": 0.0383108166,
+              "link_value": -1.7706337056
+            },
+            {
+              "quarter_end": "2028-06-30",
+              "rate": 0.0346650604,
+              "link_value": -1.8162624605
+            },
+            {
+              "quarter_end": "2028-09-30",
+              "rate": 0.0313662437,
+              "link_value": -1.8610827813
+            },
+            {
+              "quarter_end": "2028-12-31",
+              "rate": 0.029836494,
+              "link_value": -1.8832020747
+            }
+          ]
+        }
+      ],
+      "banco_andino_classes": [
+        {
+          "banco_andino_class": "commercial",
+          "maps_from": [
+            "commercial-industrial",
+            "commercial-real-estate"
+          ],
+          "weights": [
+            0.6,
+            0.4
+          ],
+          "exposure_clp_m": 7566585.068,
+          "label": "us-calibrated-adaptation",
+          "quarters": [
+            {
+              "quarter_end": "2026-03-31",
+              "rate": 0.0048805326
+            },
+            {
+              "quarter_end": "2026-06-30",
+              "rate": 0.0060754741
+            },
+            {
+              "quarter_end": "2026-09-30",
+              "rate": 0.0080832997
+            },
+            {
+              "quarter_end": "2026-12-31",
+              "rate": 0.0107276511
+            },
+            {
+              "quarter_end": "2027-03-31",
+              "rate": 0.0142485799
+            },
+            {
+              "quarter_end": "2027-06-30",
+              "rate": 0.0153020875
+            },
+            {
+              "quarter_end": "2027-09-30",
+              "rate": 0.0142485799
+            },
+            {
+              "quarter_end": "2027-12-31",
+              "rate": 0.0123603508
+            },
+            {
+              "quarter_end": "2028-03-31",
+              "rate": 0.0107276511
+            },
+            {
+              "quarter_end": "2028-06-30",
+              "rate": 0.0093126991
+            },
+            {
+              "quarter_end": "2028-09-30",
+              "rate": 0.0080832997
+            },
+            {
+              "quarter_end": "2028-12-31",
+              "rate": 0.0075294426
+            }
+          ]
+        },
+        {
+          "banco_andino_class": "consumer",
+          "maps_from": [
+            "credit-cards",
+            "other-consumer"
+          ],
+          "weights": [
+            0.5,
+            0.5
+          ],
+          "exposure_clp_m": 1595207.1828,
+          "label": "us-calibrated-adaptation",
+          "quarters": [
+            {
+              "quarter_end": "2026-03-31",
+              "rate": 0.0329351949
+            },
+            {
+              "quarter_end": "2026-06-30",
+              "rate": 0.0378867085
+            },
+            {
+              "quarter_end": "2026-09-30",
+              "rate": 0.0456691718
+            },
+            {
+              "quarter_end": "2026-12-31",
+              "rate": 0.055055228
+            },
+            {
+              "quarter_end": "2027-03-31",
+              "rate": 0.066376356
+            },
+            {
+              "quarter_end": "2027-06-30",
+              "rate": 0.0695541909
+            },
+            {
+              "quarter_end": "2027-09-30",
+              "rate": 0.066376356
+            },
+            {
+              "quarter_end": "2027-12-31",
+              "rate": 0.0604506597
+            },
+            {
+              "quarter_end": "2028-03-31",
+              "rate": 0.055055228
+            },
+            {
+              "quarter_end": "2028-06-30",
+              "rate": 0.050142495
+            },
+            {
+              "quarter_end": "2028-09-30",
+              "rate": 0.0456691718
+            },
+            {
+              "quarter_end": "2028-12-31",
+              "rate": 0.0435848353
+            }
+          ]
+        },
+        {
+          "banco_andino_class": "mortgage",
+          "maps_from": [
+            "residential"
+          ],
+          "weights": [
+            1.0
+          ],
+          "exposure_clp_m": 4838207.7478,
+          "label": "us-calibrated-adaptation",
+          "quarters": [
+            {
+              "quarter_end": "2026-03-31",
+              "rate": -8e-05
+            },
+            {
+              "quarter_end": "2026-06-30",
+              "rate": 0.0001
+            },
+            {
+              "quarter_end": "2026-09-30",
+              "rate": 0.00034
+            },
+            {
+              "quarter_end": "2026-12-31",
+              "rate": 0.00058
+            },
+            {
+              "quarter_end": "2027-03-31",
+              "rate": 0.00082
+            },
+            {
+              "quarter_end": "2027-06-30",
+              "rate": 0.00088
+            },
+            {
+              "quarter_end": "2027-09-30",
+              "rate": 0.00082
+            },
+            {
+              "quarter_end": "2027-12-31",
+              "rate": 0.0007
+            },
+            {
+              "quarter_end": "2028-03-31",
+              "rate": 0.00058
+            },
+            {
+              "quarter_end": "2028-06-30",
+              "rate": 0.00046
+            },
+            {
+              "quarter_end": "2028-09-30",
+              "rate": 0.00034
+            },
+            {
+              "quarter_end": "2028-12-31",
+              "rate": 0.00028
+            }
+          ]
+        }
+      ]
+    },
+    "losses": {
+      "scenario_losses": [
+        {
+          "year": 1,
+          "period_end": "2026-12-31",
+          "credit": 125858.506617,
+          "market": 60000.0,
+          "irrbb": 25000.0,
+          "operational": 28000.0,
+          "total": 238858.506617
+        },
+        {
+          "year": 2,
+          "period_end": "2027-12-31",
+          "credit": 214917.039138,
+          "market": 30000.0,
+          "irrbb": 30000.0,
+          "operational": 30000.0,
+          "total": 304917.039138
+        },
+        {
+          "year": 3,
+          "period_end": "2028-12-31",
+          "credit": 146998.594691,
+          "market": 20000.0,
+          "irrbb": 28000.0,
+          "operational": 30000.0,
+          "total": 224998.594691
+        }
+      ],
+      "basis": {
+        "en": "Expected losses of the scenario by risk and year: credit from the satellite projections times the book of each class, the other risks from the marginal scaling of the variant. Fixture values.",
+        "es": "Expected losses of the scenario by risk and year: credit from the satellite projections times the book of each class, the other risks from the marginal scaling of the variant. Fixture values. (es)"
+      }
+    },
+    "internal_capital_target": {
+      "formula": "OI >= 8% + c_DSIB + c_P2 + c_CCoB + c_CCyB + c_d, as percent of RWA (RAN 21-13 section I; 03 l.152-169)",
+      "horizon_years": 3,
+      "min_pe": 0.08,
+      "c_dsib": 0.015,
+      "c_p2": {
+        "name": "c_p2",
+        "value": 0.01,
+        "unit": "share of RWA",
+        "label": "case assumption",
+        "basis": {
+          "en": "The bank's own capital for risks outside Pillar 1, at least the art. 66 quinquies requirement (03 l.152-169, decision Q4)",
+          "es": "The bank's own capital for risks outside Pillar 1, at least the art. 66 quinquies requirement (03 l.152-169, decision Q4) (es)"
+        }
+      },
+      "c_ccob": 0.025,
+      "c_ccyb": 0.005,
+      "c_d": {
+        "name": "c_d",
+        "value": 0.01,
+        "unit": "share of RWA",
+        "label": "case assumption",
+        "basis": {
+          "en": "The voluntary stress buffer, component d of the internal target (03 l.152-169, decision Q4)",
+          "es": "The voluntary stress buffer, component d of the internal target (03 l.152-169, decision Q4) (es)"
+        }
+      },
+      "oi": 0.145
+    },
+    "capital_plan": {
+      "cases": [
+        {
+          "case": "base",
+          "years": [
+            {
+              "year": 1,
+              "period_end": "2026-12-31",
+              "rwa_clp_m": 20000000.0,
+              "cet1": {
+                "pct_of_rwa": 0.1232790884,
+                "need_clp_m": null,
+                "available_clp_m": 2465581.76878
+              },
+              "at1": {
+                "pct_of_rwa": 0.0125,
+                "need_clp_m": null,
+                "available_clp_m": 250000.0
+              },
+              "t2": {
+                "pct_of_rwa": 0.025,
+                "need_clp_m": null,
+                "available_clp_m": 500000.0
+              },
+              "pe": {
+                "pct_of_rwa": 0.1607790884,
+                "need_clp_m": 2900000.0,
+                "available_clp_m": 3215581.76878
+              },
+              "requirement": {
+                "basis": "internal-target",
+                "pct_of_rwa": 0.14500000000000002
+              },
+              "headroom_pct_of_rwa": 0.0157790884,
+              "deficit_clp_m": 0.0
+            },
+            {
+              "year": 2,
+              "period_end": "2027-12-31",
+              "rwa_clp_m": 20000000.0,
+              "cet1": {
+                "pct_of_rwa": 0.1365581769,
+                "need_clp_m": null,
+                "available_clp_m": 2731163.53756
+              },
+              "at1": {
+                "pct_of_rwa": 0.0125,
+                "need_clp_m": null,
+                "available_clp_m": 250000.0
+              },
+              "t2": {
+                "pct_of_rwa": 0.025,
+                "need_clp_m": null,
+                "available_clp_m": 500000.0
+              },
+              "pe": {
+                "pct_of_rwa": 0.1740581769,
+                "need_clp_m": 2900000.0,
+                "available_clp_m": 3481163.53756
+              },
+              "requirement": {
+                "basis": "internal-target",
+                "pct_of_rwa": 0.14500000000000002
+              },
+              "headroom_pct_of_rwa": 0.0290581769,
+              "deficit_clp_m": 0.0
+            },
+            {
+              "year": 3,
+              "period_end": "2028-12-31",
+              "rwa_clp_m": 20000000.0,
+              "cet1": {
+                "pct_of_rwa": 0.1498372653,
+                "need_clp_m": null,
+                "available_clp_m": 2996745.30634
+              },
+              "at1": {
+                "pct_of_rwa": 0.0125,
+                "need_clp_m": null,
+                "available_clp_m": 250000.0
+              },
+              "t2": {
+                "pct_of_rwa": 0.025,
+                "need_clp_m": null,
+                "available_clp_m": 500000.0
+              },
+              "pe": {
+                "pct_of_rwa": 0.1873372653,
+                "need_clp_m": 2900000.0,
+                "available_clp_m": 3746745.30634
+              },
+              "requirement": {
+                "basis": "internal-target",
+                "pct_of_rwa": 0.14500000000000002
+              },
+              "headroom_pct_of_rwa": 0.0423372653,
+              "deficit_clp_m": 0.0
+            }
+          ]
+        },
+        {
+          "case": "stress-without-mitigation",
+          "years": [
+            {
+              "year": 1,
+              "period_end": "2026-12-31",
+              "rwa_clp_m": 20000000.0,
+              "cet1": {
+                "pct_of_rwa": 0.0980570747,
+                "need_clp_m": null,
+                "available_clp_m": 1961141.493383
+              },
+              "at1": {
+                "pct_of_rwa": 0.0125,
+                "need_clp_m": null,
+                "available_clp_m": 250000.0
+              },
+              "t2": {
+                "pct_of_rwa": 0.025,
+                "need_clp_m": null,
+                "available_clp_m": 500000.0
+              },
+              "pe": {
+                "pct_of_rwa": 0.1355570747,
+                "need_clp_m": 1925000.0,
+                "available_clp_m": 2711141.493383
+              },
+              "requirement": {
+                "basis": "legal-minimum",
+                "pct_of_rwa": 0.09625
+              },
+              "headroom_pct_of_rwa": 0.0393070747,
+              "deficit_clp_m": 0.0
+            },
+            {
+              "year": 2,
+              "period_end": "2027-12-31",
+              "rwa_clp_m": 20000000.0,
+              "cet1": {
+                "pct_of_rwa": 0.0828112227,
+                "need_clp_m": null,
+                "available_clp_m": 1656224.454245
+              },
+              "at1": {
+                "pct_of_rwa": 0.0125,
+                "need_clp_m": null,
+                "available_clp_m": 250000.0
+              },
+              "t2": {
+                "pct_of_rwa": 0.025,
+                "need_clp_m": null,
+                "available_clp_m": 500000.0
+              },
+              "pe": {
+                "pct_of_rwa": 0.1203112227,
+                "need_clp_m": 1925000.0,
+                "available_clp_m": 2406224.454245
+              },
+              "requirement": {
+                "basis": "legal-minimum",
+                "pct_of_rwa": 0.09625
+              },
+              "headroom_pct_of_rwa": 0.0240612227,
+              "deficit_clp_m": 0.0
+            },
+            {
+              "year": 3,
+              "period_end": "2028-12-31",
+              "rwa_clp_m": 20000000.0,
+              "cet1": {
+                "pct_of_rwa": 0.071561293,
+                "need_clp_m": null,
+                "available_clp_m": 1431225.859554
+              },
+              "at1": {
+                "pct_of_rwa": 0.0125,
+                "need_clp_m": null,
+                "available_clp_m": 250000.0
+              },
+              "t2": {
+                "pct_of_rwa": 0.025,
+                "need_clp_m": null,
+                "available_clp_m": 500000.0
+              },
+              "pe": {
+                "pct_of_rwa": 0.109061293,
+                "need_clp_m": 1925000.0,
+                "available_clp_m": 2181225.859554
+              },
+              "requirement": {
+                "basis": "legal-minimum",
+                "pct_of_rwa": 0.09625
+              },
+              "headroom_pct_of_rwa": 0.012811293,
+              "deficit_clp_m": 0.0
+            }
+          ]
+        },
+        {
+          "case": "stress-with-mitigation",
+          "years": [
+            {
+              "year": 1,
+              "period_end": "2026-12-31",
+              "rwa_clp_m": 20000000.0,
+              "cet1": {
+                "pct_of_rwa": 0.0990570747,
+                "need_clp_m": null,
+                "available_clp_m": 1981141.493383
+              },
+              "at1": {
+                "pct_of_rwa": 0.0125,
+                "need_clp_m": null,
+                "available_clp_m": 250000.0
+              },
+              "t2": {
+                "pct_of_rwa": 0.025,
+                "need_clp_m": null,
+                "available_clp_m": 500000.0
+              },
+              "pe": {
+                "pct_of_rwa": 0.1365570747,
+                "need_clp_m": 1925000.0,
+                "available_clp_m": 2731141.493383
+              },
+              "requirement": {
+                "basis": "legal-minimum",
+                "pct_of_rwa": 0.09625
+              },
+              "headroom_pct_of_rwa": 0.0403070747,
+              "deficit_clp_m": 0.0
+            },
+            {
+              "year": 2,
+              "period_end": "2027-12-31",
+              "rwa_clp_m": 20000000.0,
+              "cet1": {
+                "pct_of_rwa": 0.0908112227,
+                "need_clp_m": null,
+                "available_clp_m": 1816224.454245
+              },
+              "at1": {
+                "pct_of_rwa": 0.0125,
+                "need_clp_m": null,
+                "available_clp_m": 250000.0
+              },
+              "t2": {
+                "pct_of_rwa": 0.025,
+                "need_clp_m": null,
+                "available_clp_m": 500000.0
+              },
+              "pe": {
+                "pct_of_rwa": 0.1283112227,
+                "need_clp_m": 1925000.0,
+                "available_clp_m": 2566224.454245
+              },
+              "requirement": {
+                "basis": "legal-minimum",
+                "pct_of_rwa": 0.09625
+              },
+              "headroom_pct_of_rwa": 0.0320612227,
+              "deficit_clp_m": 0.0
+            },
+            {
+              "year": 3,
+              "period_end": "2028-12-31",
+              "rwa_clp_m": 20000000.0,
+              "cet1": {
+                "pct_of_rwa": 0.086561293,
+                "need_clp_m": null,
+                "available_clp_m": 1731225.859554
+              },
+              "at1": {
+                "pct_of_rwa": 0.0125,
+                "need_clp_m": null,
+                "available_clp_m": 250000.0
+              },
+              "t2": {
+                "pct_of_rwa": 0.025,
+                "need_clp_m": null,
+                "available_clp_m": 500000.0
+              },
+              "pe": {
+                "pct_of_rwa": 0.124061293,
+                "need_clp_m": 1925000.0,
+                "available_clp_m": 2481225.859554
+              },
+              "requirement": {
+                "basis": "legal-minimum",
+                "pct_of_rwa": 0.09625
+              },
+              "headroom_pct_of_rwa": 0.027811293,
+              "deficit_clp_m": 0.0
+            }
+          ]
+        }
+      ],
+      "mitigation": {
+        "applies": true,
+        "reason": null,
+        "actions": [
+          {
+            "id": "capital-increase",
+            "description": {
+              "en": "A CET1 capital increase in years 2 and 3",
+              "es": "A CET1 capital increase in years 2 and 3 (es)"
+            },
+            "label": "case assumption",
+            "cet1_effect_clp_m": [
+              0.0,
+              100000.0,
+              100000.0
+            ]
+          },
+          {
+            "id": "cost-reduction-programme",
+            "description": {
+              "en": "A cost reduction programme that retains earnings",
+              "es": "A cost reduction programme that retains earnings (es)"
+            },
+            "label": "case assumption",
+            "cet1_effect_clp_m": [
+              20000.0,
+              40000.0,
+              40000.0
+            ]
+          }
+        ]
+      },
+      "alternative_sources": []
+    },
+    "p2g_proxy": {
+      "label": "contraste-approximation",
+      "formula": "max over t of [(CET1/RWA)_0 - (CET1/RWA)_t severe] less the usable buffers and mitigation, floored at zero (03 l.1001-1005, FAQ 24)",
+      "peak_depletion": 0.038438707,
+      "peak_year": 3,
+      "usable_buffers_and_mitigation": 0.02,
+      "value": 0.018438707,
+      "statement": {
+        "en": "A Contraste approximation consistent with FAQ 24: the CMF calibration grid is not public and this is not a P2G requirement.",
+        "es": "A Contraste approximation consistent with FAQ 24: the CMF calibration grid is not public and this is not a P2G requirement. (es)"
+      },
+      "cmf_calibration_public": false
+    },
+    "annex3": {
+      "entity": "Banco Andino",
+      "report_date": "2026-08-31",
+      "consolidation": "local",
+      "money_unit": "CLP millions",
+      "rows": [
+        {
+          "row_id": "1",
+          "label_cmf": "Ratios de capital",
+          "a": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "1.1",
+          "label_cmf": "PE / APR",
+          "a": {
+            "value": 0.1475,
+            "status": "value"
+          },
+          "b": {
+            "value": 2950000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "1.2",
+          "label_cmf": "T1 / APR",
+          "a": {
+            "value": 0.1225,
+            "status": "value"
+          },
+          "b": {
+            "value": 2450000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "1.3",
+          "label_cmf": "CET1 / APR",
+          "a": {
+            "value": 0.11,
+            "status": "value"
+          },
+          "b": {
+            "value": 2200000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "2",
+          "label_cmf": "Patrimonio efectivo",
+          "a": {
+            "value": 0.1475,
+            "status": "value"
+          },
+          "b": {
+            "value": 2950000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "2.T2",
+          "label_cmf": "T2",
+          "a": {
+            "value": 0.025,
+            "status": "value"
+          },
+          "b": {
+            "value": 500000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "2.AT1",
+          "label_cmf": "AT1",
+          "a": {
+            "value": 0.0125,
+            "status": "value"
+          },
+          "b": {
+            "value": 250000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "2.CET1",
+          "label_cmf": "CET1",
+          "a": {
+            "value": 0.11,
+            "status": "value"
+          },
+          "b": {
+            "value": 2200000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "3",
+          "label_cmf": "APR",
+          "a": {
+            "value": 1.0,
+            "status": "value"
+          },
+          "b": {
+            "value": 20000000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "4",
+          "label_cmf": "Cuantificacion del capital necesario",
+          "a": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": 1600000.0,
+            "status": "value"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "4.1",
+          "label_cmf": "Riesgo de credito",
+          "a": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": 1133452.8,
+            "status": "value"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "4.1.1",
+          "label_cmf": "Metodo estandar",
+          "a": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": 1133452.8,
+            "status": "value"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "4.1.2",
+          "label_cmf": "Modelo interno",
+          "a": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": 1312500.0,
+            "status": "value"
+          }
+        },
+        {
+          "row_id": "4.2",
+          "label_cmf": "Riesgo de mercado (ME)",
+          "a": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": 274008.0,
+            "status": "value"
+          },
+          "d": {
+            "value": null,
+            "status": "not-to-be-filled"
+          }
+        },
+        {
+          "row_id": "4.3",
+          "label_cmf": "Riesgo operacional (ME)",
+          "a": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": 192539.2,
+            "status": "value"
+          },
+          "d": {
+            "value": null,
+            "status": "not-to-be-filled"
+          }
+        },
+        {
+          "row_id": "4.4",
+          "label_cmf": "Riesgo de concentracion",
+          "a": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "4.4.1",
+          "label_cmf": "Individual",
+          "a": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "RI"
+          }
+        },
+        {
+          "row_id": "4.4.2",
+          "label_cmf": "Sectorial",
+          "a": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "RI"
+          }
+        },
+        {
+          "row_id": "4.4.3",
+          "label_cmf": "Otro tipo",
+          "a": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "RI"
+          }
+        },
+        {
+          "row_id": "4.5",
+          "label_cmf": "RMLB",
+          "a": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": 207000.0,
+            "status": "value"
+          }
+        },
+        {
+          "row_id": "4.6",
+          "label_cmf": "Riesgo estrategico",
+          "a": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "RI"
+          }
+        },
+        {
+          "row_id": "4.7",
+          "label_cmf": "Riesgo reputacional",
+          "a": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "RI"
+          }
+        },
+        {
+          "row_id": "4.8",
+          "label_cmf": "Otros riesgos materiales",
+          "a": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "RI"
+          }
+        },
+        {
+          "row_id": "5",
+          "label_cmf": "OI",
+          "a": {
+            "value": 0.145,
+            "status": "value"
+          },
+          "b": {
+            "value": 2900000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "6",
+          "label_cmf": "Cuantificacion del capital necesario por riesgos no cubiertos en pilar 1 (4.4+4.5+4.6+4.7+4.8)",
+          "a": {
+            "value": 0.01035,
+            "status": "value"
+          },
+          "b": {
+            "value": 207000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "7",
+          "label_cmf": "Exigencia minima de PE, en periodo de planificacion (8%+7.1+7.2)",
+          "a": {
+            "value": 0.09625,
+            "status": "value"
+          },
+          "b": {
+            "value": 1925000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "7.1",
+          "label_cmf": "Exigencia adicional de PE por art.66 quater (banco sistemico)",
+          "a": {
+            "value": 0.015,
+            "status": "value"
+          },
+          "b": {
+            "value": 300000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "7.2",
+          "label_cmf": "Exigencia adicional de PE por art.66 quinquies",
+          "a": {
+            "value": 0.00125,
+            "status": "value"
+          },
+          "b": {
+            "value": 25000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "8",
+          "label_cmf": "Cuantificacion del capital necesario por riesgos no cubiertos en pilar 1, y no exigidos por art.66 quinquies (6-7.2)",
+          "a": {
+            "value": 0.0091,
+            "status": "value"
+          },
+          "b": {
+            "value": 182000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "9",
+          "label_cmf": "Colchones de conservacion y contra ciclico, en periodo de planificacion (art.66 bis y 66 ter)",
+          "a": {
+            "value": 0.03,
+            "status": "value"
+          },
+          "b": {
+            "value": 600000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "10.1",
+          "label_cmf": "Impacto en indice de capital basico de las pruebas de tension severas, sin mitigacion",
+          "a": {
+            "value": 0.038438707,
+            "status": "value"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "10.2",
+          "label_cmf": "Impacto en indice de capital basico de las pruebas de tension severas, con mitigacion",
+          "a": {
+            "value": 0.023438707,
+            "status": "value"
+          },
+          "b": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "11",
+          "label_cmf": "Componente d) del OI",
+          "a": {
+            "value": 0.01,
+            "status": "value"
+          },
+          "b": {
+            "value": 200000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        },
+        {
+          "row_id": "12",
+          "label_cmf": "Holgura de indice de patrimonio efectivo respecto del OI (1.1 - 5)",
+          "a": {
+            "value": 0.0025,
+            "status": "value"
+          },
+          "b": {
+            "value": 50000.0,
+            "status": "value"
+          },
+          "c": {
+            "value": null,
+            "status": "not-applicable"
+          },
+          "d": {
+            "value": null,
+            "status": "not-applicable"
+          }
+        }
+      ]
+    },
+    "headline_cet1": {
+      "method": "loss-only-depletion",
+      "statement": {
+        "en": "CET1 at the jump-off less the cumulative stressed losses; no revenue is invented. The row with PPNR is labelled and is not the headline.",
+        "es": "CET1 at the jump-off less the cumulative stressed losses; no revenue is invented. The row with PPNR is labelled and is not the headline. (es)"
+      },
+      "rows": [
+        {
+          "year": 1,
+          "period_end": "2026-12-31",
+          "cet1_start_clp_m": 2200000.0,
+          "cumulative_loss_clp_m": 238858.506617,
+          "cet1_clp_m": 1961141.493383,
+          "rwa_clp_m": 20000000.0,
+          "cet1_ratio": 0.0980570747
+        },
+        {
+          "year": 2,
+          "period_end": "2027-12-31",
+          "cet1_start_clp_m": 1961141.493383,
+          "cumulative_loss_clp_m": 543775.545755,
+          "cet1_clp_m": 1656224.454245,
+          "rwa_clp_m": 20000000.0,
+          "cet1_ratio": 0.0828112227
+        },
+        {
+          "year": 3,
+          "period_end": "2028-12-31",
+          "cet1_start_clp_m": 1656224.454245,
+          "cumulative_loss_clp_m": 768774.140446,
+          "cet1_clp_m": 1431225.859554,
+          "rwa_clp_m": 20000000.0,
+          "cet1_ratio": 0.071561293
+        }
+      ],
+      "ppnr": {
+        "label": "ppnr-labelled-row",
+        "statement": {
+          "en": "PPNR from the C15 dynamic NII plus a stated fee ratio and cost ratio, both assumptions of the case.",
+          "es": "PPNR from the C15 dynamic NII plus a stated fee ratio and cost ratio, both assumptions of the case. (es)"
+        },
+        "nii_source": "c15-dynamic-nii",
+        "fee_ratio": {
+          "name": "ppnr_fee_ratio",
+          "value": 0.25,
+          "unit": "fee income over NII",
+          "label": "case assumption",
+          "basis": {
+            "en": "A stated constant ratio of the PPNR row (decision Q10); not a Banco Andino or CMF figure",
+            "es": "A stated constant ratio of the PPNR row (decision Q10); not a Banco Andino or CMF figure (es)"
+          }
+        },
+        "cost_ratio": {
+          "name": "ppnr_cost_ratio",
+          "value": 0.55,
+          "unit": "operating cost over (NII + fee income)",
+          "label": "case assumption",
+          "basis": {
+            "en": "A stated constant cost-to-income ratio of the PPNR row (decision Q10)",
+            "es": "A stated constant cost-to-income ratio of the PPNR row (decision Q10) (es)"
+          }
+        },
+        "rows": [
+          {
+            "year": 1,
+            "period_end": "2026-12-31",
+            "nii_clp_m": 636075.0,
+            "fee_income_clp_m": 159018.75,
+            "operating_cost_clp_m": 437301.5625,
+            "ppnr_clp_m": 357792.1875,
+            "cet1_with_ppnr_clp_m": 2318933.680883,
+            "cet1_ratio_with_ppnr": 0.115946684
+          },
+          {
+            "year": 2,
+            "period_end": "2027-12-31",
+            "nii_clp_m": 604725.0,
+            "fee_income_clp_m": 151181.25,
+            "operating_cost_clp_m": 415748.4375,
+            "ppnr_clp_m": 340157.8125,
+            "cet1_with_ppnr_clp_m": 2354174.454245,
+            "cet1_ratio_with_ppnr": 0.1177087227
+          },
+          {
+            "year": 3,
+            "period_end": "2028-12-31",
+            "nii_clp_m": 626175.0,
+            "fee_income_clp_m": 156543.75,
+            "operating_cost_clp_m": 430495.3125,
+            "ppnr_clp_m": 352223.4375,
+            "cet1_with_ppnr_clp_m": 2481399.297054,
+            "cet1_ratio_with_ppnr": 0.1240699649
+          }
+        ]
+      }
+    },
+    "severity": {
+      "reference_episode": {
+        "name": "global-financial-crisis",
+        "start": "2008-03-31",
+        "end": "2009-12-31",
+        "source": {
+          "en": "2008 to 2009, the episode the satellites are back-cast through and the EBA documents severity against (05 l.422)",
+          "es": "2008 to 2009, the episode the satellites are back-cast through and the EBA documents severity against (05 l.422) (es)"
+        }
+      },
+      "minimum_ratio": 0.75,
+      "rows": [
+        {
+          "variable": "Real GDP growth",
+          "maps_to_regressor": "real_gdp_growth",
+          "unit": "percent",
+          "path_peak_deviation": 3.2,
+          "path_peak_quarter": "2027-12-31",
+          "history_peak_deviation": 6.0,
+          "history_window": {
+            "start": "2008-03-31",
+            "end": "2009-12-31"
+          },
+          "history_source": {
+            "en": "Fixture value: the bake reads the peak deviation of the global financial crisis from the Board's historic table",
+            "es": "Fixture value: the bake reads the peak deviation of the global financial crisis from the Board's historic table (es)"
+          },
+          "ratio": 0.5333333333,
+          "is_stress": true
+        },
+        {
+          "variable": "Unemployment rate",
+          "maps_to_regressor": "unemployment_rate",
+          "unit": "percent",
+          "path_peak_deviation": 2.5,
+          "path_peak_quarter": "2027-12-31",
+          "history_peak_deviation": 5.5,
+          "history_window": {
+            "start": "2008-03-31",
+            "end": "2009-12-31"
+          },
+          "history_source": {
+            "en": "Fixture value: the bake reads the peak deviation of the global financial crisis from the Board's historic table",
+            "es": "Fixture value: the bake reads the peak deviation of the global financial crisis from the Board's historic table (es)"
+          },
+          "ratio": 0.4545454545,
+          "is_stress": true
+        },
+        {
+          "variable": "Long-term interest rate",
+          "maps_to_regressor": "treasury_10y",
+          "unit": "percent",
+          "path_peak_deviation": 1.2,
+          "path_peak_quarter": "2027-12-31",
+          "history_peak_deviation": 2.0,
+          "history_window": {
+            "start": "2008-03-31",
+            "end": "2009-12-31"
+          },
+          "history_source": {
+            "en": "Fixture value: the bake reads the peak deviation of the global financial crisis from the Board's historic table",
+            "es": "Fixture value: the bake reads the peak deviation of the global financial crisis from the Board's historic table (es)"
+          },
+          "ratio": 0.6,
+          "is_stress": true
+        }
+      ]
+    },
+    "backcast": {
+      "window": {
+        "start": "2020-03-31",
+        "end": "2025-12-31"
+      },
+      "per_loan_type": [
+        {
+          "fed_loan_type": "commercial-industrial",
+          "series_id": "CI",
+          "link": "probit",
+          "fit_window": {
+            "start": "1985-03-31",
+            "end": "2019-12-31"
+          },
+          "quarters": [
+            {
+              "quarter_end": "2020-03-31",
+              "predicted": 0.0056056896,
+              "realised": 0.0062986099
+            },
+            {
+              "quarter_end": "2020-06-30",
+              "predicted": 0.006219709,
+              "realised": 0.0074261226
+            },
+            {
+              "quarter_end": "2020-09-30",
+              "predicted": 0.0070109601,
+              "realised": 0.0085299876
+            },
+            {
+              "quarter_end": "2020-12-31",
+              "predicted": 0.0077145123,
+              "realised": 0.009
+            },
+            {
+              "quarter_end": "2021-03-31",
+              "predicted": 0.008,
+              "realised": 0.0085299876
+            },
+            {
+              "quarter_end": "2021-06-30",
+              "predicted": 0.0077145123,
+              "realised": 0.0074261226
+            },
+            {
+              "quarter_end": "2021-09-30",
+              "predicted": 0.0070109601,
+              "realised": 0.0062986099
+            },
+            {
+              "quarter_end": "2021-12-31",
+              "predicted": 0.006219709,
+              "realised": 0.0055413411
+            },
+            {
+              "quarter_end": "2022-03-31",
+              "predicted": 0.0056056896,
+              "realised": 0.0051757477
+            },
+            {
+              "quarter_end": "2022-06-30",
+              "predicted": 0.005246255,
+              "realised": 0.005044436
+            },
+            {
+              "quarter_end": "2022-09-30",
+              "predicted": 0.0050819712,
+              "realised": 0.00500875
+            },
+            {
+              "quarter_end": "2022-12-31",
+              "predicted": 0.0050223397,
+              "realised": 0.0050013419
+            },
+            {
+              "quarter_end": "2023-03-31",
+              "predicted": 0.0050049847,
+              "realised": 0.0050001603
+            },
+            {
+              "quarter_end": "2023-06-30",
+              "predicted": 0.0050009106,
+              "realised": 0.0050000149
+            },
+            {
+              "quarter_end": "2023-09-30",
+              "predicted": 0.0050001362,
+              "realised": 0.0050000011
+            },
+            {
+              "quarter_end": "2023-12-31",
+              "predicted": 0.0050000167,
+              "realised": 0.0050000001
+            },
+            {
+              "quarter_end": "2024-03-31",
+              "predicted": 0.0050000017,
+              "realised": 0.005
+            },
+            {
+              "quarter_end": "2024-06-30",
+              "predicted": 0.0050000001,
+              "realised": 0.005
+            },
+            {
+              "quarter_end": "2024-09-30",
+              "predicted": 0.005,
+              "realised": 0.005
+            },
+            {
+              "quarter_end": "2024-12-31",
+              "predicted": 0.005,
+              "realised": 0.005
+            },
+            {
+              "quarter_end": "2025-03-31",
+              "predicted": 0.005,
+              "realised": 0.005
+            },
+            {
+              "quarter_end": "2025-06-30",
+              "predicted": 0.005,
+              "realised": 0.005
+            },
+            {
+              "quarter_end": "2025-09-30",
+              "predicted": 0.005,
+              "realised": 0.005
+            },
+            {
+              "quarter_end": "2025-12-31",
+              "predicted": 0.005,
+              "realised": 0.005
+            }
+          ],
+          "metrics": {
+            "rmse": 0.0005574714,
+            "peak_predicted": 0.008,
+            "peak_predicted_quarter": "2021-03-31",
+            "peak_realised": 0.009,
+            "peak_realised_quarter": "2020-12-31",
+            "peak_timing_error_quarters": 1
+          }
+        },
+        {
+          "fed_loan_type": "commercial-real-estate",
+          "series_id": "RECI",
+          "link": "identity",
+          "fit_window": {
+            "start": "1991-03-31",
+            "end": "2019-12-31"
+          },
+          "quarters": [
+            {
+              "quarter_end": "2020-03-31",
+              "predicted": 0.0033634137,
+              "realised": 0.0037791659
+            },
+            {
+              "quarter_end": "2020-06-30",
+              "predicted": 0.0037318254,
+              "realised": 0.0044556736
+            },
+            {
+              "quarter_end": "2020-09-30",
+              "predicted": 0.0042065761,
+              "realised": 0.0051179926
+            },
+            {
+              "quarter_end": "2020-12-31",
+              "predicted": 0.0046287074,
+              "realised": 0.0054
+            },
+            {
+              "quarter_end": "2021-03-31",
+              "predicted": 0.0048,
+              "realised": 0.0051179926
+            },
+            {
+              "quarter_end": "2021-06-30",
+              "predicted": 0.0046287074,
+              "realised": 0.0044556736
+            },
+            {
+              "quarter_end": "2021-09-30",
+              "predicted": 0.0042065761,
+              "realised": 0.0037791659
+            },
+            {
+              "quarter_end": "2021-12-31",
+              "predicted": 0.0037318254,
+              "realised": 0.0033248047
+            },
+            {
+              "quarter_end": "2022-03-31",
+              "predicted": 0.0033634137,
+              "realised": 0.0031054486
+            },
+            {
+              "quarter_end": "2022-06-30",
+              "predicted": 0.003147753,
+              "realised": 0.0030266616
+            },
+            {
+              "quarter_end": "2022-09-30",
+              "predicted": 0.0030491827,
+              "realised": 0.0
+            },
+            {
+              "quarter_end": "2022-12-31",
+              "predicted": 0.0030134038,
+              "realised": 0.0030008051
+            },
+            {
+              "quarter_end": "2023-03-31",
+              "predicted": 0.0030029908,
+              "realised": 0.0030000962
+            },
+            {
+              "quarter_end": "2023-06-30",
+              "predicted": 0.0030005464,
+              "realised": 0.0030000089
+            },
+            {
+              "quarter_end": "2023-09-30",
+              "predicted": 0.0030000817,
+              "realised": 0.0030000006
+            },
+            {
+              "quarter_end": "2023-12-31",
+              "predicted": 0.00300001,
+              "realised": 0.003
+            },
+            {
+              "quarter_end": "2024-03-31",
+              "predicted": 0.003000001,
+              "realised": 0.003
+            },
+            {
+              "quarter_end": "2024-06-30",
+              "predicted": 0.0030000001,
+              "realised": 0.003
+            },
+            {
+              "quarter_end": "2024-09-30",
+              "predicted": 0.003,
+              "realised": 0.003
+            },
+            {
+              "quarter_end": "2024-12-31",
+              "predicted": 0.003,
+              "realised": 0.003
+            },
+            {
+              "quarter_end": "2025-03-31",
+              "predicted": 0.003,
+              "realised": 0.003
+            },
+            {
+              "quarter_end": "2025-06-30",
+              "predicted": 0.003,
+              "realised": 0.003
+            },
+            {
+              "quarter_end": "2025-09-30",
+              "predicted": 0.003,
+              "realised": 0.003
+            },
+            {
+              "quarter_end": "2025-12-31",
+              "predicted": 0.003,
+              "realised": 0.003
+            }
+          ],
+          "metrics": {
+            "rmse": 0.0007065372,
+            "peak_predicted": 0.0048,
+            "peak_predicted_quarter": "2021-03-31",
+            "peak_realised": 0.0054,
+            "peak_realised_quarter": "2020-12-31",
+            "peak_timing_error_quarters": 1
+          }
+        },
+        {
+          "fed_loan_type": "residential",
+          "series_id": "RERES",
+          "link": "identity",
+          "fit_window": {
+            "start": "1991-03-31",
+            "end": "2019-12-31"
+          },
+          "quarters": [
+            {
+              "quarter_end": "2020-03-31",
+              "predicted": -0.0001192414,
+              "realised": -0.0003
+            },
+            {
+              "quarter_end": "2020-06-30",
+              "predicted": -3.73721e-05,
+              "realised": 0.0
+            },
+            {
+              "quarter_end": "2020-09-30",
+              "predicted": 6.8128e-05,
+              "realised": 0.0
+            },
+            {
+              "quarter_end": "2020-12-31",
+              "predicted": 0.000161935,
+              "realised": -0.0003
+            },
+            {
+              "quarter_end": "2021-03-31",
+              "predicted": 0.0002,
+              "realised": -0.0004
+            },
+            {
+              "quarter_end": "2021-06-30",
+              "predicted": 0.000161935,
+              "realised": -0.0004
+            },
+            {
+              "quarter_end": "2021-09-30",
+              "predicted": 6.8128e-05,
+              "realised": -0.0004
+            },
+            {
+              "quarter_end": "2021-12-31",
+              "predicted": -3.73721e-05,
+              "realised": -0.0002
+            },
+            {
+              "quarter_end": "2022-03-31",
+              "predicted": -0.0001192414,
+              "realised": -0.0003
+            },
+            {
+              "quarter_end": "2022-06-30",
+              "predicted": -0.000167166,
+              "realised": -0.0002
+            },
+            {
+              "quarter_end": "2022-09-30",
+              "predicted": -0.0001890705,
+              "realised": -0.0002
+            },
+            {
+              "quarter_end": "2022-12-31",
+              "predicted": -0.0001970214,
+              "realised": -0.0002
+            },
+            {
+              "quarter_end": "2023-03-31",
+              "predicted": -0.0001993354,
+              "realised": -0.0001
+            },
+            {
+              "quarter_end": "2023-06-30",
+              "predicted": -0.0001998786,
+              "realised": 0.0001
+            },
+            {
+              "quarter_end": "2023-09-30",
+              "predicted": -0.0001999818,
+              "realised": -0.0
+            },
+            {
+              "quarter_end": "2023-12-31",
+              "predicted": -0.0001999978,
+              "realised": -0.0
+            },
+            {
+              "quarter_end": "2024-03-31",
+              "predicted": -0.0001999998,
+              "realised": -0.0
+            },
+            {
+              "quarter_end": "2024-06-30",
+              "predicted": -0.0002,
+              "realised": -0.0001
+            },
+            {
+              "quarter_end": "2024-09-30",
+              "predicted": -0.0002,
+              "realised": -0.0001
+            },
+            {
+              "quarter_end": "2024-12-31",
+              "predicted": -0.0002,
+              "realised": -0.0
+            },
+            {
+              "quarter_end": "2025-03-31",
+              "predicted": -0.0002,
+              "realised": -0.0
+            },
+            {
+              "quarter_end": "2025-06-30",
+              "predicted": -0.0002,
+              "realised": -0.0
+            },
+            {
+              "quarter_end": "2025-09-30",
+              "predicted": -0.0002,
+              "realised": -0.0
+            },
+            {
+              "quarter_end": "2025-12-31",
+              "predicted": -0.0002,
+              "realised": -0.0
+            }
+          ],
+          "metrics": {
+            "rmse": 0.0002619737,
+            "peak_predicted": 0.0002,
+            "peak_predicted_quarter": "2021-03-31",
+            "peak_realised": 0.0001,
+            "peak_realised_quarter": "2023-06-30",
+            "peak_timing_error_quarters": -9
+          }
+        },
+        {
+          "fed_loan_type": "credit-cards",
+          "series_id": "CONCC",
+          "link": "probit",
+          "fit_window": {
+            "start": "1985-03-31",
+            "end": "2019-12-31"
+          },
+          "quarters": [
+            {
+              "quarter_end": "2020-03-31",
+              "predicted": 0.0448455164,
+              "realised": 0.050388879
+            },
+            {
+              "quarter_end": "2020-06-30",
+              "predicted": 0.0497576718,
+              "realised": 0.0594089811
+            },
+            {
+              "quarter_end": "2020-09-30",
+              "predicted": 0.0560876811,
+              "realised": 0.0682399009
+            },
+            {
+              "quarter_end": "2020-12-31",
+              "predicted": 0.061716098,
+              "realised": 0.072
+            },
+            {
+              "quarter_end": "2021-03-31",
+              "predicted": 0.064,
+              "realised": 0.0682399009
+            },
+            {
+              "quarter_end": "2021-06-30",
+              "predicted": 0.061716098,
+              "realised": 0.0594089811
+            },
+            {
+              "quarter_end": "2021-09-30",
+              "predicted": 0.0560876811,
+              "realised": 0.050388879
+            },
+            {
+              "quarter_end": "2021-12-31",
+              "predicted": 0.0497576718,
+              "realised": 0.0443307291
+            },
+            {
+              "quarter_end": "2022-03-31",
+              "predicted": 0.0448455164,
+              "realised": 0.0414059819
+            },
+            {
+              "quarter_end": "2022-06-30",
+              "predicted": 0.04197004,
+              "realised": 0.0403554879
+            },
+            {
+              "quarter_end": "2022-09-30",
+              "predicted": 0.0406557693,
+              "realised": 0.0400699997
+            },
+            {
+              "quarter_end": "2022-12-31",
+              "predicted": 0.040178718,
+              "realised": 0.0400107348
+            },
+            {
+              "quarter_end": "2023-03-31",
+              "predicted": 0.0400398774,
+              "realised": 0.0400012821
+            },
+            {
+              "quarter_end": "2023-06-30",
+              "predicted": 0.0400072849,
+              "realised": 0.0400001193
+            },
+            {
+              "quarter_end": "2023-09-30",
+              "predicted": 0.0400010896,
+              "realised": 0.0400000086
+            },
+            {
+              "quarter_end": "2023-12-31",
+              "predicted": 0.0400001334,
+              "realised": 0.0400000005
+            },
+            {
+              "quarter_end": "2024-03-31",
+              "predicted": 0.0400000134,
+              "realised": 0.04
+            },
+            {
+              "quarter_end": "2024-06-30",
+              "predicted": 0.0400000011,
+              "realised": 0.04
+            },
+            {
+              "quarter_end": "2024-09-30",
+              "predicted": 0.0400000001,
+              "realised": 0.04
+            },
+            {
+              "quarter_end": "2024-12-31",
+              "predicted": 0.04,
+              "realised": 0.04
+            },
+            {
+              "quarter_end": "2025-03-31",
+              "predicted": 0.04,
+              "realised": 0.04
+            },
+            {
+              "quarter_end": "2025-06-30",
+              "predicted": 0.04,
+              "realised": 0.04
+            },
+            {
+              "quarter_end": "2025-09-30",
+              "predicted": 0.04,
+              "realised": 0.04
+            },
+            {
+              "quarter_end": "2025-12-31",
+              "predicted": 0.04,
+              "realised": 0.04
+            }
+          ],
+          "metrics": {
+            "rmse": 0.0044597711,
+            "peak_predicted": 0.064,
+            "peak_predicted_quarter": "2021-03-31",
+            "peak_realised": 0.072,
+            "peak_realised_quarter": "2020-12-31",
+            "peak_timing_error_quarters": 1
+          }
+        },
+        {
+          "fed_loan_type": "other-consumer",
+          "series_id": "CONOTH",
+          "link": "probit",
+          "fit_window": {
+            "start": "1985-03-31",
+            "end": "2019-12-31"
+          },
+          "quarters": [
+            {
+              "quarter_end": "2020-03-31",
+              "predicted": 0.0224227582,
+              "realised": 0.0251944395
+            },
+            {
+              "quarter_end": "2020-06-30",
+              "predicted": 0.0248788359,
+              "realised": 0.0297044906
+            },
+            {
+              "quarter_end": "2020-09-30",
+              "predicted": 0.0280438406,
+              "realised": 0.0341199504
+            },
+            {
+              "quarter_end": "2020-12-31",
+              "predicted": 0.030858049,
+              "realised": 0.036
+            },
+            {
+              "quarter_end": "2021-03-31",
+              "predicted": 0.032,
+              "realised": 0.0341199504
+            },
+            {
+              "quarter_end": "2021-06-30",
+              "predicted": 0.030858049,
+              "realised": 0.0297044906
+            },
+            {
+              "quarter_end": "2021-09-30",
+              "predicted": 0.0280438406,
+              "realised": 0.0251944395
+            },
+            {
+              "quarter_end": "2021-12-31",
+              "predicted": 0.0248788359,
+              "realised": 0.0221653645
+            },
+            {
+              "quarter_end": "2022-03-31",
+              "predicted": 0.0224227582,
+              "realised": 0.0207029909
+            },
+            {
+              "quarter_end": "2022-06-30",
+              "predicted": 0.02098502,
+              "realised": 0.0201777439
+            },
+            {
+              "quarter_end": "2022-09-30",
+              "predicted": 0.0203278847,
+              "realised": 0.0200349999
+            },
+            {
+              "quarter_end": "2022-12-31",
+              "predicted": 0.020089359,
+              "realised": 0.0200053674
+            },
+            {
+              "quarter_end": "2023-03-31",
+              "predicted": 0.0200199387,
+              "realised": 0.020000641
+            },
+            {
+              "quarter_end": "2023-06-30",
+              "predicted": 0.0200036425,
+              "realised": 0.0200000596
+            },
+            {
+              "quarter_end": "2023-09-30",
+              "predicted": 0.0200005448,
+              "realised": 0.0200000043
+            },
+            {
+              "quarter_end": "2023-12-31",
+              "predicted": 0.0200000667,
+              "realised": 0.0200000002
+            },
+            {
+              "quarter_end": "2024-03-31",
+              "predicted": 0.0200000067,
+              "realised": 0.02
+            },
+            {
+              "quarter_end": "2024-06-30",
+              "predicted": 0.0200000005,
+              "realised": 0.02
+            },
+            {
+              "quarter_end": "2024-09-30",
+              "predicted": 0.02,
+              "realised": 0.02
+            },
+            {
+              "quarter_end": "2024-12-31",
+              "predicted": 0.02,
+              "realised": 0.02
+            },
+            {
+              "quarter_end": "2025-03-31",
+              "predicted": 0.02,
+              "realised": 0.02
+            },
+            {
+              "quarter_end": "2025-06-30",
+              "predicted": 0.02,
+              "realised": 0.02
+            },
+            {
+              "quarter_end": "2025-09-30",
+              "predicted": 0.02,
+              "realised": 0.02
+            },
+            {
+              "quarter_end": "2025-12-31",
+              "predicted": 0.02,
+              "realised": 0.02
+            }
+          ],
+          "metrics": {
+            "rmse": 0.0022298855,
+            "peak_predicted": 0.032,
+            "peak_predicted_quarter": "2021-03-31",
+            "peak_realised": 0.036,
+            "peak_realised_quarter": "2020-12-31",
+            "peak_timing_error_quarters": 1
+          }
+        }
+      ],
+      "descriptive_2026": [
+        {
+          "quarter_end": "2026-03-31",
+          "realised_rates": [
+            {
+              "fed_loan_type": "commercial-industrial",
+              "rate": 0.0055
+            },
+            {
+              "fed_loan_type": "commercial-real-estate",
+              "rate": 0.0033
+            },
+            {
+              "fed_loan_type": "residential",
+              "rate": 0.0
+            },
+            {
+              "fed_loan_type": "credit-cards",
+              "rate": 0.044
+            },
+            {
+              "fed_loan_type": "other-consumer",
+              "rate": 0.022
+            }
+          ],
+          "label": "rate-only-descriptive",
+          "forecast_claim": false
+        },
+        {
+          "quarter_end": "2026-06-30",
+          "realised_rates": [
+            {
+              "fed_loan_type": "commercial-industrial",
+              "rate": 0.0055
+            },
+            {
+              "fed_loan_type": "commercial-real-estate",
+              "rate": 0.0033
+            },
+            {
+              "fed_loan_type": "residential",
+              "rate": 0.0
+            },
+            {
+              "fed_loan_type": "credit-cards",
+              "rate": 0.044
+            },
+            {
+              "fed_loan_type": "other-consumer",
+              "rate": 0.022
+            }
+          ],
+          "label": "rate-only-descriptive",
+          "forecast_claim": false
+        }
+      ],
+      "statement": {
+        "en": "Satellites fitted on 1985 to 2019, predicted against the realised charge-off rates of 2020 Q1 to 2025 Q4; 2026 Q1 and Q2 are shown as realised rates only, with no forecast claim.",
+        "es": "Satellites fitted on 1985 to 2019, predicted against the realised charge-off rates of 2020 Q1 to 2025 Q4; 2026 Q1 and Q2 are shown as realised rates only, with no forecast claim. (es)"
+      }
+    },
+    "aggregation": {
+      "capital_basis": "economic-capital-var-less-el",
+      "horizon_years": 1,
+      "confidence_level": 0.999,
+      "correlation": {
+        "name": "correlation_matrix_base",
+        "order": [
+          "credit",
+          "market",
+          "irrbb",
+          "operational"
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.5,
+            0.5,
+            0.2
+          ],
+          [
+            0.5,
+            1.0,
+            0.5,
+            0.2
+          ],
+          [
+            0.5,
+            0.5,
+            1.0,
+            0.2
+          ],
+          [
+            0.2,
+            0.2,
+            0.2,
+            1.0
+          ]
+        ],
+        "unit": "correlation",
+        "label": "convention",
+        "basis": {
+          "en": "The Rosenberg and Schuermann benchmark: market-credit 0.5, market and credit with operational 0.2 (05 l.360); IRRBB is treated as a market-type risk (0.5 with credit and market, 0.2 with operational): UNVERIFIED, no dossier gives an IRRBB correlation",
+          "es": "The Rosenberg and Schuermann benchmark: market-credit 0.5, market and credit with operational 0.2 (05 l.360); IRRBB is treated as a market-type risk (0.5 with credit and market, 0.2 with operational): UNVERIFIED, no dossier gives an IRRBB correlation (es)"
+        }
+      },
+      "nu_set": {
+        "name": "nu_set",
+        "values": [
+          4.0,
+          8.0,
+          30.0
+        ],
+        "unit": "degrees of freedom",
+        "label": "convention",
+        "basis": {
+          "en": "Degrees of freedom of the t copula: 4, 8 and 30 (30 approaches the Gaussian copula); a convention of the case, G.5 asks for several nu (05 l.378)",
+          "es": "Degrees of freedom of the t copula: 4, 8 and 30 (30 approaches the Gaussian copula); a convention of the case, G.5 asks for several nu (05 l.378) (es)"
+        }
+      },
+      "marginals": [
+        {
+          "risk": "credit",
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "el_clp_m": 175000.0,
+          "el_status": "finite",
+          "var_clp_m": 1487500.0,
+          "es_clp_m": 1625000.0,
+          "ec_clp_m": 1312500.0,
+          "ec_basis": "var-less-el",
+          "ec_label": null,
+          "var_se_clp_m": 2975.0,
+          "producer": "credit-grouped-copula-c07-segments",
+          "source_documents": [
+            "c07-outputs",
+            "riskvalidation.portfolio.portfolio.portfolio_from_groups"
+          ],
+          "scaling": {
+            "statement": {
+              "en": "No scaling: the grouped copula runs on the C07 segments of Banco Andino.",
+              "es": "No scaling: the grouped copula runs on the C07 segments of Banco Andino. (es)"
+            },
+            "parameters": []
+          }
+        },
+        {
+          "risk": "market",
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "el_clp_m": 5500.0,
+          "el_status": "finite",
+          "var_clp_m": 247500.0,
+          "es_clp_m": 288200.0,
+          "ec_clp_m": 242000.0,
+          "ec_basis": "var-less-el",
+          "ec_label": null,
+          "var_se_clp_m": 495.0,
+          "producer": "market-c11-mixed-portfolio-scaled-to-market-rwa",
+          "source_documents": [
+            "c11-outputs mixed-2023",
+            "market share of RWA from the 20-F mix (ratio)"
+          ],
+          "scaling": {
+            "statement": {
+              "en": "C11's mixed-portfolio VaR and ES scaled to the market share of RWA, with the horizon scaling stated as an assumption.",
+              "es": "C11's mixed-portfolio VaR and ES scaled to the market share of RWA, with the horizon scaling stated as an assumption. (es)"
+            },
+            "parameters": [
+              {
+                "name": "market_rwa_share",
+                "value": 0.171255,
+                "unit": "share of RWA",
+                "label": "case assumption",
+                "basis": {
+                  "en": "The market share of the 20-F RWA mix, as a ratio (decision Q5, Q4); C11's mixed-portfolio VaR and ES are scaled to it",
+                  "es": "The market share of the 20-F RWA mix, as a ratio (decision Q5, Q4); C11's mixed-portfolio VaR and ES are scaled to it (es)"
+                }
+              },
+              {
+                "name": "market_horizon_scaling",
+                "value": 21.0032486873,
+                "unit": "multiplier on C11's 99 percent one-day measure",
+                "label": "convention",
+                "basis": {
+                  "en": "From C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 times the square root of 250, both named conventions (W4)",
+                  "es": "From C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 times the square root of 250, both named conventions (W4) (es)"
+                },
+                "source_confidence_level": 0.99,
+                "source_horizon_days": 1,
+                "trading_days_per_year": 250,
+                "level_factor": {
+                  "name": "market_level_factor",
+                  "value": 1.3283620823,
+                  "unit": "ratio of normal quantiles z_0.999 / z_0.99",
+                  "label": "convention",
+                  "basis": {
+                    "en": "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case",
+                    "es": "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case (es)"
+                  }
+                },
+                "horizon_factor": {
+                  "name": "market_horizon_factor",
+                  "value": 15.8113883008,
+                  "unit": "multiplier on a one-day measure, sqrt(250)",
+                  "label": "convention",
+                  "basis": {
+                    "en": "Square-root-of-time scaling from one day to one year with 250 trading days: a convention of the case",
+                    "es": "Square-root-of-time scaling from one day to one year with 250 trading days: a convention of the case (es)"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "risk": "irrbb",
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "el_clp_m": 2300.0,
+          "el_status": "finite",
+          "var_clp_m": 209300.0,
+          "es_clp_m": 241500.0,
+          "ec_clp_m": 207000.0,
+          "ec_basis": "var-less-el",
+          "ec_label": null,
+          "var_se_clp_m": null,
+          "producer": "irrbb-engine-simulation-c15-curve-and-book",
+          "source_documents": [
+            "c15-outputs",
+            "riskvalidation.irrbb.simulation.ear_evar"
+          ],
+          "scaling": {
+            "statement": {
+              "en": "No scaling: the engine simulation runs on the C15 curve and book of Banco Andino.",
+              "es": "No scaling: the engine simulation runs on the C15 curve and book of Banco Andino. (es)"
+            },
+            "parameters": []
+          }
+        },
+        {
+          "risk": "operational",
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "el_clp_m": 20000.0,
+          "el_status": "finite",
+          "var_clp_m": 280000.0,
+          "es_clp_m": 345000.0,
+          "ec_clp_m": 260000.0,
+          "ec_basis": "var-less-el",
+          "ec_label": null,
+          "var_se_clp_m": 560.0,
+          "producer": "operational-oprisk-aggregate-c17-parameters-scaled",
+          "source_documents": [
+            "c17-models generator parameters",
+            "riskvalidation.oprisk.aggregate"
+          ],
+          "scaling": {
+            "statement": {
+              "en": "The C17 generator frequency scaled by assets, the loss distribution recomputed through oprisk.aggregate and converted at a stated rate.",
+              "es": "The C17 generator frequency scaled by assets, the loss distribution recomputed through oprisk.aggregate and converted at a stated rate. (es)"
+            },
+            "parameters": [
+              {
+                "name": "asset_scaling",
+                "value": 0.8,
+                "unit": "Banco Andino assets over the assets of the C17 bank",
+                "label": "case assumption",
+                "basis": {
+                  "en": "Derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, converted at the rate (decision Q5, W5); this value is a fixture value",
+                  "es": "Derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, converted at the rate (decision Q5, W5); this value is a fixture value (es)"
+                },
+                "derivation": {
+                  "kind": "asset-ratio",
+                  "banco_andino_assets_clp_m": 40000000.0,
+                  "c17_bank_assets_eur_m": 50000.0,
+                  "converted_at": "operational_conversion_rate"
+                }
+              },
+              {
+                "name": "operational_conversion_rate",
+                "value": 1000.0,
+                "unit": "CLP per EUR",
+                "label": "case assumption",
+                "basis": {
+                  "en": "Derived at bake time: the EUR to CLP rate of the as-of date from the Banco Central de Chile (decision Q5, W5); this value is a fixture value",
+                  "es": "Derived at bake time: the EUR to CLP rate of the as-of date from the Banco Central de Chile (decision Q5, W5); this value is a fixture value (es)"
+                },
+                "derivation": {
+                  "kind": "observed-exchange-rate",
+                  "pair": "EUR/CLP",
+                  "observation_date": "2026-08-31",
+                  "source": "Banco Central de Chile, Base de Datos Estadísticos, daily exchange rate of the euro in Chilean pesos",
+                  "source_url": "https://si3.bcentral.cl/Siete/es/Siete/API",
+                  "source_series": "fixture-series-id"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "headline": {
+        "method": "simple-sum",
+        "capital_clp_m": 2021500.0,
+        "label": {
+          "en": "The headline capital of C18 is the simple sum: the IAPE adds up the capital needed for each risk and the ECB does not recognise inter-risk diversification in the SREP",
+          "es": "The headline capital of C18 is the simple sum: the IAPE adds up the capital needed for each risk and the ECB does not recognise inter-risk diversification in the SREP (es)"
+        }
+      },
+      "band": [
+        {
+          "method": "lower-bound",
+          "nu": null,
+          "capital_clp_m": 1253330.0,
+          "diversification_factor": 0.62,
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: a diversified or bound figure shown for the validator",
+            "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+          },
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "mc_se_clp_m": null
+        },
+        {
+          "method": "simple-sum",
+          "nu": null,
+          "capital_clp_m": 2021500.0,
+          "diversification_factor": 1.0,
+          "status": "headline-capital",
+          "label": {
+            "en": "Headline capital: the simple sum of the four marginals",
+            "es": "Headline capital: the simple sum of the four marginals (es)"
+          },
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "mc_se_clp_m": null
+        },
+        {
+          "method": "variance-covariance",
+          "nu": null,
+          "capital_clp_m": 1647504.70409,
+          "diversification_factor": 0.8149911967,
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: a diversified or bound figure shown for the validator",
+            "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+          },
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "mc_se_clp_m": null
+        },
+        {
+          "method": "gaussian-copula",
+          "nu": null,
+          "capital_clp_m": 1696929.845213,
+          "diversification_factor": 0.8394409326,
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: a diversified or bound figure shown for the validator",
+            "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+          },
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "mc_se_clp_m": 5090.79
+        },
+        {
+          "method": "t-copula",
+          "nu": 4.0,
+          "capital_clp_m": 1815714.934378,
+          "diversification_factor": 0.8982017979,
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: a diversified or bound figure shown for the validator",
+            "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+          },
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "mc_se_clp_m": 5447.14
+        },
+        {
+          "method": "t-copula",
+          "nu": 8.0,
+          "capital_clp_m": 1756322.389795,
+          "diversification_factor": 0.8688213652,
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: a diversified or bound figure shown for the validator",
+            "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+          },
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "mc_se_clp_m": 5268.97
+        },
+        {
+          "method": "t-copula",
+          "nu": 30.0,
+          "capital_clp_m": 1713899.143665,
+          "diversification_factor": 0.8478353419,
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: a diversified or bound figure shown for the validator",
+            "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+          },
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "mc_se_clp_m": 5141.7
+        },
+        {
+          "method": "worst-case",
+          "nu": null,
+          "capital_clp_m": 2385370.0,
+          "diversification_factor": 1.18,
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: a diversified or bound figure shown for the validator",
+            "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+          },
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "mc_se_clp_m": null
+        }
+      ],
+      "model_risk": {
+        "status": "information-not-capital",
+        "label": {
+          "en": "Information, not capital: model risk measures are sensitivity information for the validator",
+          "es": "Information, not capital: model risk measures are sensitivity information for the validator (es)"
+        },
+        "set_of_models": "band-rows",
+        "reference_model": {
+          "method": "gaussian-copula",
+          "nu": null
+        },
+        "barrieu_scandolo": {
+          "rho_x0_clp_m": 1696929.845213,
+          "rho_max_clp_m": 2385370.0,
+          "rho_min_clp_m": 1253330.0,
+          "am": 0.4056974758,
+          "rm": 0.6081411918
+        },
+        "glasserman_xu": {
+          "quantity": {
+            "en": "Expected loss of the aggregate in the 99.9 percent tail under the Gaussian copula",
+            "es": "Expected loss of the aggregate in the 99.9 percent tail under the Gaussian copula (es)"
+          },
+          "relative_entropy_budget": 0.05,
+          "theta": 0.8,
+          "baseline_clp_m": 2324721.0,
+          "worst_case_clp_m": 2603687.52
+        }
+      },
+      "euler": {
+        "status": "information-not-capital",
+        "label": {
+          "en": "Information, not capital: an allocation of the aggregate expected shortfall shown for the validator",
+          "es": "Information, not capital: an allocation of the aggregate expected shortfall shown for the validator (es)"
+        },
+        "risk_measure": "es",
+        "level": 0.999,
+        "horizon_years": 1,
+        "copula": {
+          "family": "gaussian",
+          "nu": null
+        },
+        "es_total_clp_m": 2324721.0,
+        "allocation": [
+          {
+            "risk": "credit",
+            "contribution_clp_m": 1617770.31,
+            "share": 0.6958986949
+          },
+          {
+            "risk": "market",
+            "contribution_clp_m": 229534.23,
+            "share": 0.0987362483
+          },
+          {
+            "risk": "irrbb",
+            "contribution_clp_m": 168297.89,
+            "share": 0.0723948766
+          },
+          {
+            "risk": "operational",
+            "contribution_clp_m": 309118.57,
+            "share": 0.1329701801
+          }
+        ],
+        "additivity": {
+          "sum_clp_m": 2324721.0,
+          "relative_error": 0.0,
+          "tolerance": 1e-06
+        }
+      },
+      "diversification": {
+        "status": "information-not-capital",
+        "label": {
+          "en": "Information, not capital: the diversification of the Gaussian copula row against the simple sum",
+          "es": "Information, not capital: the diversification of the Gaussian copula row against the simple sum (es)"
+        },
+        "reference_row": {
+          "method": "gaussian-copula",
+          "nu": null
+        },
+        "factor": 0.8394409326,
+        "benefit": 0.1605590674,
+        "euler_benefit_by_risk": [
+          {
+            "risk": "credit",
+            "benefit": 0.00444904
+          },
+          {
+            "risk": "market",
+            "benefit": 0.2035592297
+          },
+          {
+            "risk": "irrbb",
+            "benefit": 0.3031143271
+          },
+          {
+            "risk": "operational",
+            "benefit": 0.1040041449
+          }
+        ]
+      }
+    }
+  },
+  "tests": [
+    {
+      "test_id": "aggregation.simple_sum_and_variance_covariance",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "aggregation.copula_choice_sensitivity",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "aggregation.worst_case_bracket",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "aggregation.correlation_stress",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "aggregation.diversification_sign",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "aggregation.horizon_confidence_consistency",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "portfolio.euler_additivity",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "stress.satellite_backcast",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "stress.sensitivity_monotonicity",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "stress.static_balance_sheet_rules",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "stress.scenario_severity",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    }
+  ],
+  "impact": {
+    "capital_simple_sum": {
+      "value": 2021500.0,
+      "unit": "CLP millions",
+      "label": {
+        "en": "Headline capital: the simple sum of the four marginals",
+        "es": "Headline capital: the simple sum of the four marginals (es)"
+      }
+    },
+    "cet1_ratio_end_stress": {
+      "value": 0.071561293,
+      "unit": "share of RWA",
+      "label": {
+        "en": "CET1 ratio at the end of year 3 under the stress without mitigation",
+        "es": "CET1 ratio at the end of year 3 under the stress without mitigation (es)"
+      }
+    },
+    "oi_headroom_min": {
+      "value": -0.035938707,
+      "unit": "share of RWA",
+      "label": {
+        "en": "Smallest headroom of the PE ratio over the internal target in the stress without mitigation",
+        "es": "Smallest headroom of the PE ratio over the internal target in the stress without mitigation (es)"
+      }
+    },
+    "p2g_proxy": {
+      "value": 0.018438707,
+      "unit": "share of RWA",
+      "label": {
+        "en": "P2G proxy, a Contraste approximation",
+        "es": "P2G proxy, a Contraste approximation (es)"
+      }
+    }
+  },
+  "findings": [
+    {
+      "id": "fixture-finding-1",
+      "severity": "S4",
+      "status": "open",
+      "evidence": [
+        "fixture"
+      ],
+      "title": {
+        "en": "Fixture finding, not a result",
+        "es": "Fixture finding, not a result (es)"
+      }
+    }
+  ],
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u13-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

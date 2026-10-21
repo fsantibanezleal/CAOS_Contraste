@@ -1,0 +1,125 @@
+"""The findings of a C21 pair document (decision G16 of the U14 sizing, review M4): statistical findings about the document's evidence.
+
+A finding groups what several test rows show; it is never one finding per row. Each cites the rows of its own document as
+``test_id@model@segment`` (the check of ``core/manifest.py``), or a stated design limit as ``design:<name>``. Every title says
+"no legal claim" and none states a violation: the subject of a finding is the public data and the estimate, never a lender. The
+severities run in the product's direction, S1 critical to S4 minor:
+
+- S2 ``open``: a controlled disparity whose 95 percent interval excludes 0 in the fit year and whose sign repeats on t + 1, where the
+  protected group's controlled odds ratio is below 1 (approved at lower controlled odds than its reference group);
+- S3 ``open``: the repeating ones above 1 (approved at higher controlled odds), a controlled disparity that does not repeat, and a
+  repeating rate-spread disparity with a higher spread for the protected group;
+- S4 ``open``: the unconditional gap, as an indicator only, with the sentence of the Interagency Procedures, which also takes the
+  repeating rate-spread disparities with a lower spread for the protected group;
+- S4 ``accepted``: the stated limits (the credit score is missing; the complete-case selection).
+
+The rules read the rows of the document (the interval in ``extras.effect`` and ``same_sign`` of the replication row); no number is
+computed here.
+"""
+from __future__ import annotations
+
+from typing import Any
+
+from . import legal
+from .legal import t
+
+LABEL_EN, LABEL_ES = "no legal claim", "sin afirmación legal"
+MODEL_RATES, MODEL_LOGIT, MODEL_OLS = "hmda-selection-rates", "hmda-logistic-decision", "hmda-linear-rate-spread"
+
+
+def _id(row: dict[str, Any]) -> str:
+    return f"{row['test_id']}@{row['model_id']}@{row['segment']}"
+
+
+def _excludes_zero(row: dict[str, Any]) -> bool:
+    effect = (row.get("extras") or {}).get("effect")
+    return effect is not None and (effect["lo"] > 0 or effect["hi"] < 0)
+
+
+def _finding(fid: str, severity: str, status: str, evidence: list[str], en: str, es: str) -> dict[str, Any]:
+    return {"id": fid, "severity": severity, "status": status, "evidence": evidence, "title": t(f"{en}; {LABEL_EN}", f"{es}; {LABEL_ES}")}
+
+
+def build(tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """The findings of one pair document, from its test rows (as dicts), in a fixed order."""
+    by_key = {_id(r): r for r in tests}
+    lower: list[tuple[dict[str, Any], dict[str, Any]]] = []
+    higher: list[tuple[dict[str, Any], dict[str, Any]]] = []
+    not_repeated: list[tuple[dict[str, Any], dict[str, Any]]] = []
+    spread_higher: list[tuple[dict[str, Any], dict[str, Any]]] = []
+    spread_lower: list[tuple[dict[str, Any], dict[str, Any]]] = []
+    for r in tests:
+        if r["test_id"] == "fair.conditional_disparity" and r["model_id"] == MODEL_LOGIT and _excludes_zero(r):
+            rep = by_key.get(f"fair.replication@{MODEL_LOGIT}@{r['segment']}|controlled")
+            if rep is None:
+                continue
+            if not rep["extras"]["same_sign"]:
+                not_repeated.append((r, rep))
+            else:
+                (lower if r["extras"]["effect"]["odds_ratio"] < 1 else higher).append((r, rep))
+        elif r["test_id"] == "fair.rate_spread_disparity" and r["model_id"] == MODEL_OLS and _excludes_zero(r):
+            rep = by_key.get(f"fair.replication@{MODEL_OLS}@{r['segment']}|rate_spread")
+            if rep is not None and rep["extras"]["same_sign"]:
+                (spread_higher if r["extras"]["effect"]["coefficient"] > 0 else spread_lower).append((r, rep))
+    out: list[dict[str, Any]] = []
+
+    def pairs(items: list[tuple[dict[str, Any], dict[str, Any]]]) -> list[str]:
+        return [_id(x) for pair in items for x in pair]
+
+    if lower:
+        n = len(lower)
+        out.append(_finding(
+            "F-CONTROLLED-LOWER-ODDS", "S2", "open", pairs(lower),
+            f"Controlled disparity repeated on the next year in {n} group contrasts where the group is approved at lower controlled odds "
+            "than its reference group (odds ratio below 1): an approximation of comparative evidence on public data",
+            f"Disparidad controlada que se repite el año siguiente en {n} contrastes de grupos donde el grupo es aprobado con menores odds "
+            "controlados que su grupo de referencia (razón de odds bajo 1): una aproximación de evidencia comparativa sobre datos públicos"))
+    if higher:
+        n = len(higher)
+        out.append(_finding(
+            "F-CONTROLLED-HIGHER-ODDS", "S3", "open", pairs(higher),
+            f"Controlled disparity repeated on the next year in {n} group contrasts where the group is approved at higher controlled odds "
+            "than its reference group (odds ratio above 1): an approximation of comparative evidence on public data",
+            f"Disparidad controlada que se repite el año siguiente en {n} contrastes de grupos donde el grupo es aprobado con mayores odds "
+            "controlados que su grupo de referencia (razón de odds sobre 1): una aproximación de evidencia comparativa sobre datos públicos"))
+    if not_repeated:
+        n = len(not_repeated)
+        out.append(_finding(
+            "F-CONTROLLED-NOT-REPEATED", "S3", "open", pairs(not_repeated),
+            f"Controlled disparity that does not repeat on the next year in {n} group contrasts: the sign differs between the two years",
+            f"Disparidad controlada que no se repite el año siguiente en {n} contrastes de grupos: el signo difiere entre los dos años"))
+    if spread_higher:
+        n = len(spread_higher)
+        out.append(_finding(
+            "F-RATE-SPREAD-HIGHER", "S3", "open", pairs(spread_higher),
+            f"Rate-spread disparity repeated on the next year in {n} group contrasts where the group has a higher rate spread than its "
+            "reference group, the interval excluding 0",
+            f"Disparidad del diferencial de tasa que se repite el año siguiente en {n} contrastes de grupos donde el grupo tiene un "
+            "diferencial de tasa mayor que su grupo de referencia, con el intervalo excluyendo 0"))
+    gap = [r["segment"] for r in tests if r["test_id"] == "fair.demographic_parity" and r["light"] != "green"]
+    if gap or spread_lower:
+        evidence = [f"{tid}@{MODEL_RATES}@{seg}" for seg in gap for tid in ("fair.demographic_parity", "fair.adverse_impact")]
+        evidence += pairs(spread_lower)
+        quote = legal.QUOTES["procedures"][1]
+        extra_en = (f" and {len(spread_lower)} repeating rate-spread contrasts where the group has a lower rate spread than its reference "
+                    "group") if spread_lower else ""
+        extra_es = (f" y {len(spread_lower)} contrastes repetidos del diferencial de tasa donde el grupo tiene un diferencial menor que su "
+                    "grupo de referencia") if spread_lower else ""
+        out.append(_finding(
+            "F-UNCONDITIONAL-GAP", "S4", "open", evidence,
+            f"Unconditional approval-rate gaps in {len(gap)} of the 4 attributes{extra_en} are an indicator only: \"{quote}\" "
+            "(Interagency Fair Lending Examination Procedures)",
+            f"Las brechas incondicionales de tasa de aprobación en {len(gap)} de los 4 atributos{extra_es} son solo un indicador: "
+            f"\"{quote}\" (Interagency Fair Lending Examination Procedures, cita en inglés)"))
+    out.append(_finding(
+        "F-LIMIT-CREDIT-SCORE", "S4", "accepted", ["design:credit-score-missing"],
+        "Limit of the evidence: the credit score is not in public HMDA, so every controlled estimate may be confounded by it",
+        "Límite de la evidencia: el puntaje de crédito no está en el HMDA público, de modo que toda estimación controlada puede estar "
+        "confundida por él"))
+    out.append(_finding(
+        "F-LIMIT-COMPLETE-CASES", "S4", "accepted", ["design:complete-case-selection"],
+        "Limit of the evidence: the controlled fits use the complete cases, and denied applications miss a control more often than "
+        "originated loans",
+        "Límite de la evidencia: los ajustes controlados usan los casos completos, y las solicitudes rechazadas carecen de un control "
+        "con más frecuencia que los préstamos originados"))
+    return out

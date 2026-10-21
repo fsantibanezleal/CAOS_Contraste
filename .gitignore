@@ -7,6 +7,8 @@
 **/.venv*
 venv/
 **/venv/
+# the notebook environment (scripts/setup.sh --notebooks), never committed
+.venv-notebooks/
 
 # --- Python caches / build ---
 __pycache__/

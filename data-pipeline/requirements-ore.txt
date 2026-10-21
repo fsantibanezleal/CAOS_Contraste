@@ -1,0 +1,4 @@
+# The reference engines of the C12 reconciliation (unit U9-P1). Pipeline only, never engine dependencies (ADR-0069): ORE runs natively from
+# its Windows wheel (a cp313-win_amd64 build, decision D4), QuantLib is the independent check of the Hull-White closed forms (B4).
+open-source-risk-engine==1.8.17.0
+QuantLib==1.44

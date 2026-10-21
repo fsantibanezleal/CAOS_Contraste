@@ -13,6 +13,7 @@ from riskvalidation.provisions import local_cl as cl
 from riskvalidation.provisions import local_es as es
 from riskvalidation.provisions import overlays as ov
 from riskvalidation.provisions import term_structure as ts
+from engine_pin import engine_pin_findings, released_version
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
@@ -21,9 +22,11 @@ def test_the_pin_is_the_released_engine() -> None:
     from importlib.metadata import version
 
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
-    tag = re.search(r"CAOS_RiskValidation@v(\d+)\.(\d+)\.(\d+)", req)
-    assert tag is not None
-    assert version("riskvalidation") == ".".join(str(int(g)) for g in tag.groups())     # tag v0.05.000 is release 0.5.0
+    sdd = (ROOT / "docs" / "design" / "SDD.md").read_text(encoding="utf-8")
+    assert engine_pin_findings(req, sdd) == []  # a release tag, or during a batch the commit the SDD names (tests/engine_pin.py)
+    rel = released_version(req)
+    if rel is not None:  # tag v0.05.000 is release 0.5.0
+        assert version("riskvalidation") == ".".join(map(str, rel))
 
 
 def test_the_pinned_engine_reproduces_the_contract_goldens() -> None:

@@ -1,0 +1,1688 @@
+{
+  "schema": "contraste.case/v1",
+  "case_id": "C16",
+  "variant_id": "fixture-lcr-standard",
+  "model": [
+    {
+      "id": "liquidity-ladder",
+      "family": "liquidity",
+      "rung": "behavioural-ladder",
+      "title": {
+        "en": "Fixture model liquidity-ladder",
+        "es": "Modelo de ejemplo liquidity-ladder"
+      },
+      "short_title": {
+        "en": "liquidity-ladder",
+        "es": "liquidity-ladder"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    }
+  ],
+  "outputs": {
+    "kind": "scenario",
+    "valuation_date": "2022-12-31",
+    "currency": "USD",
+    "units": {
+      "money_scale": "thousands",
+      "rate": "decimal-per-day",
+      "horizon": "days",
+      "dates": "ISO-8601"
+    },
+    "bank": {
+      "name": "Silicon Valley Bank (CERT 24735), failed 2023-03-10",
+      "cert": 24735,
+      "aggregates": "real",
+      "behaviour": "synthetic",
+      "deposits": "synthetic",
+      "notice": {
+        "en": "Real FDIC call-report aggregates used as public aggregates only, with synthetic behaviour and synthetic deposits: the case does not represent the bank and certifies no model.",
+        "es": "Agregados reales del reporte de llamada FDIC usados solo como agregados publicos, con comportamiento y depositos sinteticos: el caso no representa al banco ni certifica ningun modelo."
+      }
+    },
+    "variant": {
+      "id": "lcr-standard",
+      "label": {
+        "en": "LCR standard run-off",
+        "es": "LCR con salidas estandar"
+      },
+      "description": {
+        "en": "The Basel LCR of the call-report balance sheet over the 30-day combined stress.",
+        "es": "El LCR de Basilea del balance del reporte de llamada bajo el estres combinado a 30 dias."
+      },
+      "scenario_family": "combined",
+      "phase": "lcr-30-day",
+      "parameter_set": "basel-lcr",
+      "horizon_days": 30,
+      "axis": "calendar-days"
+    },
+    "conventions": {
+      "deposit_category_mapping": {
+        "status": "convention",
+        "rows": [
+          {
+            "basis": "insured",
+            "role": "central",
+            "lcr_category": "retail_less_stable",
+            "list_class": "other-retail",
+            "label": {
+              "en": "Insured deposits (DEPINS) as retail, less stable",
+              "es": "Depositos asegurados (DEPINS) como minoristas menos estables"
+            }
+          },
+          {
+            "basis": "uninsured",
+            "role": "central",
+            "lcr_category": "non_financial_corporate",
+            "list_class": "non-operational-non-financial-corporates",
+            "label": {
+              "en": "Uninsured deposits (DEPUNA) as non-operational non-financial corporates",
+              "es": "Depositos no asegurados (DEPUNA) como corporativos no financieros no operacionales"
+            }
+          }
+        ],
+        "sensitivity_band": [
+          {
+            "basis": "uninsured",
+            "role": "band",
+            "lcr_category": "operational",
+            "list_class": "operational",
+            "label": {
+              "en": "Uninsured balance as operational deposits",
+              "es": "Saldo no asegurado como depositos operacionales"
+            }
+          },
+          {
+            "basis": "uninsured",
+            "role": "band",
+            "lcr_category": "non_financial_corporate",
+            "list_class": "non-operational-non-financial-corporates",
+            "label": {
+              "en": "Uninsured balance as non-financial corporates",
+              "es": "Saldo no asegurado como corporativos no financieros"
+            }
+          },
+          {
+            "basis": "uninsured",
+            "role": "band",
+            "lcr_category": "other_legal_entity",
+            "list_class": "non-operational-other-financial",
+            "label": {
+              "en": "Uninsured balance as other legal entities",
+              "es": "Saldo no asegurado como otras personas juridicas"
+            }
+          }
+        ],
+        "basis": {
+          "en": "The call report carries no customer type: the mapping is an assumption, proposed by U11-S from dossier 05 E.5 and 01 G.1 (Q13); the band is the dossier's plausible classes. A convention, never a regulatory classification.",
+          "es": "El reporte de llamada no trae tipo de cliente: el mapeo es un supuesto propuesto por U11-S (Q13). Una convencion, nunca una clasificacion regulatoria."
+        }
+      },
+      "variant_scenarios": {
+        "status": "convention",
+        "rows": [
+          {
+            "variant": "lcr-standard",
+            "scenario_family": "combined",
+            "phase": "lcr-30-day",
+            "parameter_set": "basel-lcr",
+            "horizon_days": 30,
+            "axis": "calendar-days"
+          },
+          {
+            "variant": "list-adverse",
+            "scenario_family": "idiosyncratic",
+            "phase": "protracted",
+            "parameter_set": "list-adverse",
+            "horizon_days": 125,
+            "axis": "relevant-days"
+          },
+          {
+            "variant": "list-extreme",
+            "scenario_family": "idiosyncratic",
+            "phase": "protracted",
+            "parameter_set": "list-extreme",
+            "horizon_days": 125,
+            "axis": "relevant-days"
+          },
+          {
+            "variant": "fast-run",
+            "scenario_family": "idiosyncratic",
+            "phase": "acute",
+            "parameter_set": "fast-run",
+            "horizon_days": 5,
+            "axis": "relevant-days"
+          },
+          {
+            "variant": "htm-losses",
+            "scenario_family": "idiosyncratic",
+            "phase": "protracted",
+            "parameter_set": "list-adverse",
+            "horizon_days": 125,
+            "axis": "relevant-days"
+          }
+        ],
+        "basis": {
+          "en": "Dossier 05 E.2 asks for three families and two horizons and the SDD names none: the LCR is the combined stress over 30 calendar days (LCR20.2), a phase of its own, lcr-30-day, outside the acute (1 to 5 days) and protracted (6 to 12 months) wording of 05 l.277; the LiST 2019 shocks are idiosyncratic only (annex slide 5) and protracted; the fast run is acute.",
+          "es": "El dossier 05 E.2 pide tres familias y dos horizontes y el SDD no nombra ninguno: el LCR es el estres combinado a 30 dias corridos (LCR20.2), una fase propia, lcr-30-day, fuera de lo agudo (1 a 5 dias) y lo prolongado (6 a 12 meses) del dossier 05 l.277; los choques LiST 2019 son solo idiosincraticos y prolongados; la corrida rapida es aguda."
+        }
+      },
+      "day_calendar": {
+        "status": "convention",
+        "kind": "us-business-days",
+        "first_day": "2023-01-03",
+        "excluded_weekdays": [
+          "saturday",
+          "sunday"
+        ],
+        "holidays": [
+          "2023-01-02",
+          "2023-01-16",
+          "2023-02-20",
+          "2023-05-29",
+          "2023-06-19",
+          "2023-07-04",
+          "2023-09-04",
+          "2023-10-09",
+          "2023-11-10",
+          "2023-11-23",
+          "2023-12-25"
+        ],
+        "holiday_rule": "2023 US federal holidays as observed on weekdays (a proposed convention, not read from a source)",
+        "basis": {
+          "en": "The LiST rates are defined on the 2019 TARGET2 relevant-day calendar (A2); the ladder of the 2022-12-31 balance sheet runs on US business days from the day after the valuation date.",
+          "es": "Las tasas LiST se definen sobre el calendario TARGET2 de 2019 (A2); la escalera corre sobre dias habiles de EE.UU. desde el dia siguiente a la fecha de valoracion."
+        }
+      },
+      "cbc_securities_mapping": {
+        "status": "convention",
+        "rows": [
+          {
+            "class_id": "cash-and-balances",
+            "fed_category": "not applicable: nominal value (LiST para 73)",
+            "duration_bucket": "none",
+            "margin": null,
+            "haircut": 0.0,
+            "haircut_low": 0.0,
+            "haircut_high": 0.05,
+            "rule": "nominal-value",
+            "source": "ECB LiST 2019 methodological note para 74 (addendum L1.6)"
+          },
+          {
+            "class_id": "treasury",
+            "fed_category": "U.S. Treasuries and fully guaranteed agencies: Bills, Notes, Bonds",
+            "duration_bucket": ">3-5",
+            "margin": 0.98,
+            "haircut": 0.02,
+            "haircut_low": 0.0,
+            "haircut_high": 0.07,
+            "rule": "central-bank-framework",
+            "source": "Federal Reserve discount window securities margins effective 2022-03-14 to 2023-03-12 (addendum L4)"
+          },
+          {
+            "class_id": "mortgage-backed",
+            "fed_category": "Agency backed mortgages: pass-throughs, CMOs, commercial MBS",
+            "duration_bucket": ">5-10",
+            "margin": 0.96,
+            "haircut": 0.04,
+            "haircut_low": 0.0,
+            "haircut_high": 0.09,
+            "rule": "central-bank-framework",
+            "source": "Federal Reserve discount window securities margins effective 2022-03-14 to 2023-03-12 (addendum L4)"
+          },
+          {
+            "class_id": "other-agency",
+            "fed_category": "Government Sponsored Enterprises: Bills, Notes, Bonds",
+            "duration_bucket": ">3-5",
+            "margin": 0.97,
+            "haircut": 0.03,
+            "haircut_low": 0.0,
+            "haircut_high": 0.08,
+            "rule": "central-bank-framework",
+            "source": "Federal Reserve discount window securities margins effective 2022-03-14 to 2023-03-12 (addendum L4)"
+          },
+          {
+            "class_id": "municipal",
+            "fed_category": "Municipal bonds: AAA-BBB USD",
+            "duration_bucket": ">5-10",
+            "margin": 0.95,
+            "haircut": 0.05,
+            "haircut_low": 0.0,
+            "haircut_high": 0.1,
+            "rule": "central-bank-framework",
+            "source": "Federal Reserve discount window securities margins effective 2022-03-14 to 2023-03-12 (addendum L4)"
+          },
+          {
+            "class_id": "other-debt",
+            "fed_category": "no framework row: fallback",
+            "duration_bucket": "none",
+            "margin": null,
+            "haircut": 0.5,
+            "haircut_low": 0.45,
+            "haircut_high": 0.55,
+            "rule": "fifty-percent-fallback",
+            "source": "ECB LiST 2019 methodological note para 74 (addendum L1.6)"
+          }
+        ],
+        "basis": {
+          "en": "The securities book split by type at the FDIC carrying values (A3); the duration bucket is an assumption (the call report gives maturity buckets, not durations); a class with no framework row takes the fallback.",
+          "es": "El libro de valores por tipo a valores contables FDIC (A3); el tramo de duracion es un supuesto; una clase sin fila del marco toma el respaldo."
+        }
+      },
+      "monetisation_schedule": {
+        "status": "convention",
+        "points": [
+          {
+            "day": 1,
+            "cumulative_share": 0.5
+          },
+          {
+            "day": 2,
+            "cumulative_share": 0.8
+          },
+          {
+            "day": 3,
+            "cumulative_share": 1.0
+          }
+        ],
+        "sensitivity_band": [
+          {
+            "id": "immediate",
+            "points": [
+              {
+                "day": 1,
+                "cumulative_share": 1.0
+              }
+            ]
+          },
+          {
+            "id": "slow",
+            "points": [
+              {
+                "day": 1,
+                "cumulative_share": 0.25
+              },
+              {
+                "day": 5,
+                "cumulative_share": 0.6
+              },
+              {
+                "day": 10,
+                "cumulative_share": 1.0
+              }
+            ]
+          }
+        ],
+        "basis": {
+          "en": "Dossier 05 E.5 names the monetisation capacity per day with no value (Q6): a step schedule of the share of the liquidity value usable by day, with an immediate and a slow bound.",
+          "es": "El dossier 05 E.5 nombra la capacidad de monetizacion por dia sin valor (Q6): un calendario escalonado con cotas inmediata y lenta."
+        }
+      },
+      "fast_run_calibration_rule": {
+        "status": "convention",
+        "rule": "maximum-implied-daily-rate",
+        "basis": {
+          "en": "The dossiers give no calibration method (Q4): the fast run takes the fastest implied daily rate of the pre-2023 Table A.1 rows, a severe-scenario choice.",
+          "es": "Los dossiers no dan metodo de calibracion (Q4): la corrida rapida toma la mayor tasa diaria implicita de las filas de la Tabla A.1 anteriores a 2023."
+        }
+      },
+      "cliff_days": {
+        "status": "convention",
+        "near": 30,
+        "far": 35,
+        "day_basis": "relevant-days",
+        "basis": {
+          "en": "The days of the cliff diagnostic are 30 and 35 (05 E.1); the LiST note does not say whether they count calendar or relevant days (UNVERIFIED), so the basis is a convention.",
+          "es": "Los dias del diagnostico son 30 y 35 (05 E.1); la nota LiST no dice si son corridos o habiles (SIN VERIFICAR)."
+        }
+      },
+      "contractual_bucket_edges_days": {
+        "values": [
+          1,
+          7,
+          30,
+          90,
+          180,
+          365
+        ],
+        "unit": "days",
+        "status": "convention",
+        "basis": {
+          "en": "Upper edges of the contractual maturity buckets, a convention (SRP50 names no buckets for the mismatch tool).",
+          "es": "Bordes superiores de los tramos de vencimiento contractual, una convencion."
+        }
+      },
+      "event_horizon_days": {
+        "value": 2,
+        "unit": "days",
+        "status": "convention",
+        "basis": {
+          "en": "The event horizon of the March 2023 run: SVB's 85 percent in 2 days (05 E.2, Table A.1).",
+          "es": "El horizonte del evento de marzo 2023: 85 por ciento de SVB en 2 dias (05 E.2, Tabla A.1)."
+        }
+      },
+      "uninsured_share_grid": {
+        "values": [
+          0.5,
+          0.55,
+          0.6,
+          0.65,
+          0.7,
+          0.75,
+          0.8,
+          0.85,
+          0.9,
+          0.95
+        ],
+        "unit": "share of domestic deposits",
+        "status": "convention",
+        "basis": {
+          "en": "The grid of the uninsured share for the sensitivity of the survival period (05 E.5 rung 4).",
+          "es": "La grilla de la proporcion no asegurada para la sensibilidad del periodo de supervivencia."
+        }
+      },
+      "htm_loss_multiple_grid": {
+        "values": [
+          0.0,
+          0.5,
+          1.0,
+          1.5,
+          2.0
+        ],
+        "unit": "multiple of the reported HTM unrealised loss",
+        "status": "convention",
+        "basis": {
+          "en": "The grid of the HTM unrealised loss for the sensitivity (05 E.5 rung 4); 1 is the reported loss.",
+          "es": "La grilla de la perdida no realizada HTM para la sensibilidad; 1 es la perdida informada."
+        }
+      },
+      "runoff_multiplier_grid": {
+        "values": [
+          1.0,
+          1.25,
+          1.5,
+          2.0,
+          3.0,
+          5.0,
+          8.0,
+          13.0,
+          21.0,
+          34.0,
+          55.0,
+          89.0,
+          144.0
+        ],
+        "unit": "multiple of the daily rates",
+        "status": "convention",
+        "basis": {
+          "en": "The grid of the reverse-stress multiplier; a point beyond a scenario's cap (every rate below 1) is omitted from its curve.",
+          "es": "La grilla del multiplicador del estres inverso; un punto sobre el tope del escenario se omite de su curva."
+        }
+      },
+      "reverse_target_days": {
+        "value": 30,
+        "unit": "days",
+        "status": "convention",
+        "basis": {
+          "en": "The dossier's example target of the reverse stress (05 E.5 rung 5).",
+          "es": "El objetivo de ejemplo del dossier para el estres inverso (05 E.5)."
+        }
+      },
+      "list_compounding_tolerance": {
+        "value": 5e-07,
+        "unit": "share, absolute",
+        "status": "convention",
+        "basis": {
+          "en": "A golden stated to six decimals holds to 5e-7 (the engine contract's rule).",
+          "es": "Un valor dorado a seis decimales se cumple a 5e-7."
+        }
+      },
+      "monotonicity_tolerance_days": {
+        "value": 0,
+        "unit": "days",
+        "status": "convention",
+        "basis": {
+          "en": "The survival period must not lengthen as severity rises: no tolerance.",
+          "es": "El periodo de supervivencia no debe alargarse al subir la severidad: sin tolerancia."
+        }
+      },
+      "nlp_identity_tolerance": {
+        "value": 1e-06,
+        "unit": "USD thousands",
+        "status": "convention",
+        "basis": {
+          "en": "The NLP identity of 05 E.1 holds to the rounding of six decimals.",
+          "es": "La identidad del NLP se cumple al redondeo de seis decimales."
+        }
+      },
+      "cliff_amber_threshold": {
+        "value": -0.01,
+        "unit": "share of total assets",
+        "status": "convention",
+        "basis": {
+          "en": "The dossier defines the cliff diagnostic and no limit (05 E.1): amber below minus 1 percent of total assets.",
+          "es": "El dossier define el diagnostico y ningun limite: ambar bajo menos 1 por ciento de los activos."
+        }
+      },
+      "cliff_red_threshold": {
+        "value": -0.03,
+        "unit": "share of total assets",
+        "status": "convention",
+        "basis": {
+          "en": "Red below minus 3 percent of total assets (a convention).",
+          "es": "Rojo bajo menos 3 por ciento de los activos (una convencion)."
+        }
+      },
+      "scoring_ratio_green": {
+        "value": 0.8,
+        "unit": "modelled over realised cumulative outflow",
+        "status": "convention",
+        "basis": {
+          "en": "Green when the model reaches 80 percent of the realised outflow at the event horizon (Q5, a descriptive score).",
+          "es": "Verde cuando el modelo alcanza 80 por ciento de la salida realizada en el horizonte del evento."
+        }
+      },
+      "scoring_ratio_amber": {
+        "value": 0.5,
+        "unit": "modelled over realised cumulative outflow",
+        "status": "convention",
+        "basis": {
+          "en": "Amber from 50 percent of the realised outflow; red below.",
+          "es": "Ambar desde 50 por ciento de la salida realizada; rojo bajo ello."
+        }
+      },
+      "generator_truth_se_green": {
+        "value": 2.0,
+        "unit": "Monte Carlo standard errors",
+        "status": "convention",
+        "basis": {
+          "en": "Green when the model's rate is within 2 Monte Carlo standard errors of the generator's truth (Q5).",
+          "es": "Verde cuando la tasa del modelo esta a menos de 2 errores estandar Monte Carlo de la verdad del generador."
+        }
+      },
+      "generator_truth_se_red": {
+        "value": 3.0,
+        "unit": "Monte Carlo standard errors",
+        "status": "convention",
+        "basis": {
+          "en": "Red beyond 3 Monte Carlo standard errors.",
+          "es": "Rojo sobre 3 errores estandar Monte Carlo."
+        }
+      },
+      "htm_revaluation_green": {
+        "value": 0.05,
+        "unit": "share of the reported unrealised loss",
+        "status": "convention",
+        "basis": {
+          "en": "Green when the revalued HTM book is within 5 percent of the reported unrealised loss (Q11).",
+          "es": "Verde cuando el libro HTM revaluado esta a menos de 5 por ciento de la perdida no realizada informada."
+        }
+      },
+      "htm_revaluation_amber": {
+        "value": 0.15,
+        "unit": "share of the reported unrealised loss",
+        "status": "convention",
+        "basis": {
+          "en": "Amber within 15 percent; red beyond.",
+          "es": "Ambar a menos de 15 por ciento; rojo sobre ello."
+        }
+      },
+      "round_trip_tolerance_days": {
+        "value": 0,
+        "unit": "days",
+        "status": "convention",
+        "basis": {
+          "en": "The solved multiplier must return the target survival period exactly.",
+          "es": "El multiplicador resuelto debe devolver exactamente el periodo objetivo."
+        }
+      },
+      "cbc_haircut_band": {
+        "value": 0.05,
+        "unit": "share, added to and taken from each haircut",
+        "status": "convention",
+        "basis": {
+          "en": "The width of the sensitivity band of the central bank haircuts (Q6, A4).",
+          "es": "El ancho de la banda de sensibilidad de los recortes del banco central."
+        }
+      }
+    },
+    "data": {
+      "call_reports": [
+        {
+          "report_date": "2022-12-31",
+          "source": "https://api.fdic.gov/banks/financials (CERT 24735; fixture: not read by this document)",
+          "fields": [
+            "ASSET",
+            "DEP",
+            "DEPDOM",
+            "DEPUNA",
+            "DEPINS",
+            "DEPSMAMT",
+            "DEPLGAMT",
+            "SC",
+            "SCHA",
+            "SCHF",
+            "SCAA",
+            "SCAF",
+            "CHBAL",
+            "FREPO",
+            "FREPP",
+            "OTHBFHLB",
+            "LNLSNET",
+            "EQ",
+            "SCUST",
+            "SCMTGBK",
+            "SCASPNSUM",
+            "SCMUNI",
+            "SCDOMO",
+            "SCFORD",
+            "SCPLEDGE"
+          ]
+        },
+        {
+          "report_date": "2022-06-30",
+          "source": "https://api.fdic.gov/banks/financials (CERT 24735; fixture: not read by this document)",
+          "fields": [
+            "DEP",
+            "DEPDOM",
+            "DEPUNA",
+            "DEPINS",
+            "SCHA",
+            "SCHF",
+            "SCAA",
+            "SCAF"
+          ]
+        },
+        {
+          "report_date": "2021-12-31",
+          "source": "https://api.fdic.gov/banks/financials (CERT 24735; fixture: not read by this document)",
+          "fields": [
+            "DEP",
+            "DEPDOM",
+            "DEPUNA",
+            "DEPINS",
+            "SCHA",
+            "SCHF",
+            "SCAA",
+            "SCAF"
+          ]
+        }
+      ],
+      "data_cutoff": "2022-12-31",
+      "read_up_to_valuation_date": true,
+      "rule": {
+        "en": "No call report dated after the valuation date is read.",
+        "es": "No se lee ningun reporte de llamada posterior a la fecha de valoracion."
+      }
+    },
+    "aggregate_record": null,
+    "aggregate_record_reason": {
+      "en": "Fixture: the H.8 release tables are not read; the aggregate record is omitted with this statement.",
+      "es": "Ejemplo: las tablas H.8 no se leen; el registro agregado se omite con esta declaracion."
+    },
+    "balance_sheet": {
+      "as_of": "2022-12-31",
+      "items": [
+        {
+          "item_id": "cash",
+          "label": {
+            "en": "Cash and balances due from depository institutions",
+            "es": "Efectivo y saldos en instituciones"
+          },
+          "side": "asset",
+          "category": "cash",
+          "source_field": "CHBAL",
+          "reported_amount": 12511000.0,
+          "reason_missing": null,
+          "assumption": "Reported by the FDIC financials, taken as reserves at nominal value.",
+          "amount": 12511000.0,
+          "liquidity_class": "level_1",
+          "residual_days": 0,
+          "insured": null,
+          "fair_value": 12511000.0
+        },
+        {
+          "item_id": "reverse-repo",
+          "label": {
+            "en": "Federal funds sold and reverse repurchase agreements",
+            "es": "Fondos federales vendidos y repos inversos"
+          },
+          "side": "asset",
+          "category": "reverse-repo",
+          "source_field": "FREPO",
+          "reported_amount": 707000.0,
+          "reason_missing": null,
+          "assumption": "Reported; an asset (addendum L3.1); assumed overnight, synthetic behaviour.",
+          "amount": 707000.0,
+          "liquidity_class": "non_hqla",
+          "residual_days": 1,
+          "insured": null,
+          "fair_value": 707000.0
+        },
+        {
+          "item_id": "securities-htm",
+          "label": {
+            "en": "Securities held to maturity (amortised cost)",
+            "es": "Valores mantenidos al vencimiento (costo amortizado)"
+          },
+          "side": "asset",
+          "category": "securities-htm",
+          "source_field": "SCHA",
+          "reported_amount": 91327000.0,
+          "reason_missing": null,
+          "assumption": "Reported at amortised cost; fair value from SCHF.",
+          "amount": 91327000.0,
+          "liquidity_class": null,
+          "residual_days": null,
+          "insured": null,
+          "fair_value": 76168000.0
+        },
+        {
+          "item_id": "securities-afs",
+          "label": {
+            "en": "Securities available for sale (fair value)",
+            "es": "Valores disponibles para la venta (valor razonable)"
+          },
+          "side": "asset",
+          "category": "securities-afs",
+          "source_field": "SCAF",
+          "reported_amount": 25976000.0,
+          "reason_missing": null,
+          "assumption": "Reported at fair value.",
+          "amount": 25976000.0,
+          "liquidity_class": null,
+          "residual_days": null,
+          "insured": null,
+          "fair_value": 25976000.0
+        },
+        {
+          "item_id": "loans",
+          "label": {
+            "en": "Net loans and leases",
+            "es": "Prestamos y arrendamientos netos"
+          },
+          "side": "asset",
+          "category": "loans",
+          "source_field": "LNLSNET",
+          "reported_amount": 73613000.0,
+          "reason_missing": null,
+          "assumption": "Reported; not counted in the CBC.",
+          "amount": 73613000.0,
+          "liquidity_class": "non_hqla",
+          "residual_days": null,
+          "insured": null,
+          "fair_value": null
+        },
+        {
+          "item_id": "other-assets",
+          "label": {
+            "en": "Other assets",
+            "es": "Otros activos"
+          },
+          "side": "asset",
+          "category": "other-assets",
+          "source_field": "ASSET",
+          "reported_amount": null,
+          "reason_missing": {
+            "en": "No single FDIC item: derived as ASSET minus the items above.",
+            "es": "No hay una partida FDIC unica: derivada como ASSET menos las partidas anteriores."
+          },
+          "assumption": "Total assets less the listed asset items, synthetic aggregation.",
+          "amount": 4892000.0,
+          "liquidity_class": "non_hqla",
+          "residual_days": null,
+          "insured": null,
+          "fair_value": null
+        },
+        {
+          "item_id": "deposits-insured",
+          "label": {
+            "en": "Estimated insured deposits (domestic offices)",
+            "es": "Depositos asegurados estimados (oficinas domesticas)"
+          },
+          "side": "liability",
+          "category": "deposits-insured",
+          "source_field": "DEPINS",
+          "reported_amount": 9990000.0,
+          "reason_missing": null,
+          "assumption": "Reported; mapped to other retail sight deposits.",
+          "amount": 9990000.0,
+          "liquidity_class": null,
+          "residual_days": 0,
+          "insured": true,
+          "fair_value": null
+        },
+        {
+          "item_id": "deposits-uninsured",
+          "label": {
+            "en": "Estimated uninsured deposits (domestic offices)",
+            "es": "Depositos no asegurados estimados (oficinas domesticas)"
+          },
+          "side": "liability",
+          "category": "deposits-uninsured",
+          "source_field": "DEPUNA",
+          "reported_amount": 151592000.0,
+          "reason_missing": null,
+          "assumption": "Reported estimate; mapped to non-operational non-financial corporates.",
+          "amount": 151592000.0,
+          "liquidity_class": null,
+          "residual_days": 0,
+          "insured": false,
+          "fair_value": null
+        },
+        {
+          "item_id": "deposits-foreign",
+          "label": {
+            "en": "Foreign-office deposits",
+            "es": "Depositos en oficinas extranjeras"
+          },
+          "side": "liability",
+          "category": "deposits-foreign-office",
+          "source_field": "DEPFOR",
+          "reported_amount": null,
+          "reason_missing": {
+            "en": "DEPFOR was not read: taken as DEP minus DEPDOM.",
+            "es": "DEPFOR no se leyo: tomado como DEP menos DEPDOM."
+          },
+          "assumption": "Foreign-office deposits mapped to non-operational other financial customers, synthetic behaviour.",
+          "amount": 13899000.0,
+          "liquidity_class": null,
+          "residual_days": 0,
+          "insured": null,
+          "fair_value": null
+        },
+        {
+          "item_id": "repo-borrowings",
+          "label": {
+            "en": "Federal funds purchased and repurchase agreements",
+            "es": "Fondos federales comprados y repos"
+          },
+          "side": "liability",
+          "category": "repo-borrowings",
+          "source_field": "FREPP",
+          "reported_amount": 524000.0,
+          "reason_missing": null,
+          "assumption": "Reported; a liability (addendum L3.1).",
+          "amount": 524000.0,
+          "liquidity_class": null,
+          "residual_days": 1,
+          "insured": null,
+          "fair_value": null
+        },
+        {
+          "item_id": "fhlb",
+          "label": {
+            "en": "FHLB advances",
+            "es": "Anticipos FHLB"
+          },
+          "side": "liability",
+          "category": "fhlb-advances",
+          "source_field": "OTHBFHLB",
+          "reported_amount": 15000000.0,
+          "reason_missing": null,
+          "assumption": "Reported; maturity profile not modelled.",
+          "amount": 15000000.0,
+          "liquidity_class": null,
+          "residual_days": null,
+          "insured": null,
+          "fair_value": null
+        },
+        {
+          "item_id": "other-liabilities",
+          "label": {
+            "en": "Other liabilities",
+            "es": "Otros pasivos"
+          },
+          "side": "liability",
+          "category": "other-liabilities",
+          "source_field": "LIAB",
+          "reported_amount": null,
+          "reason_missing": {
+            "en": "No single FDIC item: derived as ASSET minus deposits, repos, FHLB advances and equity.",
+            "es": "Derivada como ASSET menos depositos, repos, anticipos FHLB y patrimonio."
+          },
+          "assumption": "Residual liabilities, synthetic aggregation.",
+          "amount": 2668000.0,
+          "liquidity_class": null,
+          "residual_days": null,
+          "insured": null,
+          "fair_value": null
+        },
+        {
+          "item_id": "equity",
+          "label": {
+            "en": "Total equity capital",
+            "es": "Capital patrimonial total"
+          },
+          "side": "liability",
+          "category": "equity",
+          "source_field": "EQ",
+          "reported_amount": 15456000.0,
+          "reason_missing": null,
+          "assumption": "Reported.",
+          "amount": 15456000.0,
+          "liquidity_class": null,
+          "residual_days": null,
+          "insured": null,
+          "fair_value": null
+        }
+      ],
+      "total_assets": 209026000.0,
+      "deposits": {
+        "dep": 175378000.0,
+        "depdom": 161479000.0,
+        "depuna": 151592000.0,
+        "depins": 9990000.0,
+        "depsmamt": 4778000.0,
+        "deplgamt": 156747000.0,
+        "denominators": {
+          "insured_uninsured": "DEPDOM",
+          "total": "DEP"
+        },
+        "uninsured_share_of_dep": 0.8643729544,
+        "uninsured_share_of_depdom": 0.9387722243,
+        "size_threshold": {
+          "value": 250000,
+          "unit": "USD",
+          "source": "FDIC BankFind definitions (addendum L3.1): the 250,000 USD threshold applies at 2022-12-31"
+        }
+      },
+      "assumptions": [
+        {
+          "assumption_id": "deposit-mapping",
+          "behaviour": "synthetic",
+          "applies_to": "deposits",
+          "statement": {
+            "en": "Deposits are mapped to LiST classes by the named mapping table of the conventions: insured to other retail, uninsured to non-operational non-financial corporates, foreign offices to non-operational other financial.",
+            "es": "Los depositos se mapean a clases LiST por la tabla de mapeo nombrada de las convenciones."
+          }
+        },
+        {
+          "assumption_id": "pledged-pro-rata",
+          "behaviour": "synthetic",
+          "applies_to": "securities",
+          "statement": {
+            "en": "Pledged securities (SCPLEDGE) are encumbered pro rata across the securities types and leave the CBC.",
+            "es": "Los valores pignorados (SCPLEDGE) se gravan a prorrata entre los tipos y salen del CBC."
+          }
+        },
+        {
+          "assumption_id": "no-committed-lines",
+          "behaviour": "synthetic",
+          "applies_to": "off-balance-sheet",
+          "statement": {
+            "en": "The FDIC financials read give no undrawn commitments: no drawdown and no collateral call is modelled (a scenario input of zero, labelled).",
+            "es": "Los estados FDIC leidos no dan compromisos no girados: no se modela giro ni llamada de colateral."
+          }
+        }
+      ]
+    },
+    "cbc": {
+      "as_of": "2022-12-31",
+      "htm_valuation_basis": "amortised-cost",
+      "haircut_framework": {
+        "label": {
+          "en": "Federal Reserve discount window margins in force on 2023-03-10",
+          "es": "Margenes de la ventana de descuento de la Reserva Federal vigentes el 2023-03-10"
+        },
+        "central_bank": "Federal Reserve discount window",
+        "effective_from": "2022-03-14",
+        "effective_to": "2023-03-12",
+        "source": "https://www.frbdiscountwindow.org/generalpages/historical_margins/2022/03142022_03122023_securities_table"
+      },
+      "classes": [
+        {
+          "class_id": "cash-and-balances",
+          "label": {
+            "en": "Cash and balances due",
+            "es": "Efectivo y saldos"
+          },
+          "source_fields": [
+            "CHBAL"
+          ],
+          "carrying_value": 12511000.0,
+          "fair_value": null,
+          "value_used": 12511000.0,
+          "encumbered": 0.0,
+          "haircut": {
+            "value": 0.0,
+            "rule": "nominal-value"
+          },
+          "liquidity_value": 12511000.0
+        },
+        {
+          "class_id": "treasury",
+          "label": {
+            "en": "Treasury securities",
+            "es": "Valores del Tesoro"
+          },
+          "source_fields": [
+            "SCUST"
+          ],
+          "carrying_value": 16043000.0,
+          "fair_value": null,
+          "value_used": 16043000.0,
+          "encumbered": 7571450.199067,
+          "haircut": {
+            "value": 0.02,
+            "rule": "central-bank-framework"
+          },
+          "liquidity_value": 8302118.804914
+        },
+        {
+          "class_id": "mortgage-backed",
+          "label": {
+            "en": "Mortgage-backed securities",
+            "es": "Valores respaldados por hipotecas"
+          },
+          "source_fields": [
+            "SCMTGBK"
+          ],
+          "carrying_value": 91460000.0,
+          "fair_value": null,
+          "value_used": 91460000.0,
+          "encumbered": 43164298.149143,
+          "haircut": {
+            "value": 0.04,
+            "rule": "central-bank-framework"
+          },
+          "liquidity_value": 46363873.776823
+        },
+        {
+          "class_id": "other-agency",
+          "label": {
+            "en": "Other agency securities",
+            "es": "Otros valores de agencias"
+          },
+          "source_fields": [
+            "SCASPNSUM"
+          ],
+          "carrying_value": 587000.0,
+          "fair_value": null,
+          "value_used": 587000.0,
+          "encumbered": 277033.052849,
+          "haircut": {
+            "value": 0.03,
+            "rule": "central-bank-framework"
+          },
+          "liquidity_value": 300667.938736
+        },
+        {
+          "class_id": "municipal",
+          "label": {
+            "en": "Municipal securities",
+            "es": "Valores municipales"
+          },
+          "source_fields": [
+            "SCMUNI"
+          ],
+          "carrying_value": 7417000.0,
+          "fair_value": null,
+          "value_used": 7417000.0,
+          "encumbered": 3500432.9693,
+          "haircut": {
+            "value": 0.05,
+            "rule": "central-bank-framework"
+          },
+          "liquidity_value": 3720738.679165
+        },
+        {
+          "class_id": "other-debt",
+          "label": {
+            "en": "Other debt securities",
+            "es": "Otros valores de deuda"
+          },
+          "source_fields": [
+            "SCDOMO",
+            "SCFORD"
+          ],
+          "carrying_value": 1796000.0,
+          "fair_value": null,
+          "value_used": 1796000.0,
+          "encumbered": 847617.313316,
+          "haircut": {
+            "value": 0.5,
+            "rule": "fifty-percent-fallback"
+          },
+          "liquidity_value": 474191.343342
+        }
+      ],
+      "pledged": {
+        "field": "SCPLEDGE",
+        "amount": 55360831.683675,
+        "share_of_securities": 0.4719472791
+      },
+      "total_liquidity_value": 71672590.54298
+    },
+    "contractual_ladder": {
+      "buckets": [
+        {
+          "from_day": 0,
+          "to_day": 1,
+          "inflows": 15000000.0,
+          "outflows": 150000000.0,
+          "gap": -135000000.0,
+          "cumulative_gap": -135000000.0
+        },
+        {
+          "from_day": 1,
+          "to_day": 7,
+          "inflows": 2000000.0,
+          "outflows": 8000000.0,
+          "gap": -6000000.0,
+          "cumulative_gap": -141000000.0
+        },
+        {
+          "from_day": 7,
+          "to_day": 30,
+          "inflows": 6000000.0,
+          "outflows": 5000000.0,
+          "gap": 1000000.0,
+          "cumulative_gap": -140000000.0
+        },
+        {
+          "from_day": 30,
+          "to_day": 90,
+          "inflows": 12000000.0,
+          "outflows": 4000000.0,
+          "gap": 8000000.0,
+          "cumulative_gap": -132000000.0
+        },
+        {
+          "from_day": 90,
+          "to_day": 180,
+          "inflows": 15000000.0,
+          "outflows": 3000000.0,
+          "gap": 12000000.0,
+          "cumulative_gap": -120000000.0
+        },
+        {
+          "from_day": 180,
+          "to_day": 365,
+          "inflows": 18000000.0,
+          "outflows": 2000000.0,
+          "gap": 16000000.0,
+          "cumulative_gap": -104000000.0
+        },
+        {
+          "from_day": 365,
+          "to_day": null,
+          "inflows": 80000000.0,
+          "outflows": 3378000.0,
+          "gap": 76622000.0,
+          "cumulative_gap": -27378000.0
+        }
+      ],
+      "reference": "dossier 05 E.5 rung 1; SRP50 contractual maturity mismatch (01 G.3 lines 642-643); fixture values"
+    },
+    "path": null,
+    "path_reason": {
+      "en": "The LCR is a 30-day aggregate ratio: its formula gives no daily path, so no ladder, survival period or cliff is stated.",
+      "es": "El LCR es una razon agregada a 30 dias: su formula no da trayectoria diaria."
+    },
+    "lcr": {
+      "label": "basel-formula-on-call-report-aggregates",
+      "reported_or_regulatory": false,
+      "statement": {
+        "en": "A Basel LCR formula applied to FDIC call-report aggregates with stated assumptions and synthetic deposit behaviour: not the bank's reported or regulatory LCR.",
+        "es": "Una formula LCR de Basilea aplicada a agregados del reporte de llamada FDIC con supuestos declarados y comportamiento sintetico de depositos: no es el LCR informado ni regulatorio del banco."
+      },
+      "hqla": {
+        "l1": 0.0,
+        "l2a": 0.0,
+        "l2b": 0.0,
+        "adjusted_l1": 0.0,
+        "adjusted_l2a": 0.0,
+        "adjusted_l2b": 0.0,
+        "adj_15": 0.0,
+        "adj_40": 0.0,
+        "hqla": 0.0,
+        "l2_share": null,
+        "l2b_share": null,
+        "shares_reason": {
+          "en": "The HQLA stock is empty: the Level 2 and Level 2B shares are undefined, not zero.",
+          "es": "El stock HQLA esta vacio: las proporciones de nivel 2 y 2B no estan definidas, no son cero."
+        },
+        "caps": {
+          "l2_cap": 0.4,
+          "l2b_cap": 0.15
+        }
+      },
+      "outflows": [
+        {
+          "category": "retail_less_stable",
+          "balance": 9990000.0,
+          "rate": 0.1,
+          "amount": 999000.0,
+          "reference": "LCR99: retail less stable deposits 10 percent"
+        },
+        {
+          "category": "non_financial_corporate",
+          "balance": 151592000.0,
+          "rate": 0.4,
+          "amount": 60636800.0,
+          "reference": "LCR99: non-financial corporates 40 percent"
+        },
+        {
+          "category": "other_legal_entity",
+          "balance": 13899000.0,
+          "rate": 1.0,
+          "amount": 13899000.0,
+          "reference": "LCR99: other legal entity customers 100 percent (foreign-office deposits, an assumption)"
+        },
+        {
+          "category": "secured_other",
+          "balance": 524000.0,
+          "rate": 1.0,
+          "amount": 524000.0,
+          "reference": "LCR99: all other secured funding 100 percent"
+        }
+      ],
+      "total_outflows": 76058800.0,
+      "inflows": [
+        {
+          "category": "secured_lending_other",
+          "balance": 707000.0,
+          "rate": 1.0,
+          "amount": 707000.0,
+          "reference": "LCR99: maturing secured lending on other collateral 100 percent (reverse repos, FREPO)"
+        },
+        {
+          "category": "retail_and_nonfinancial_wholesale",
+          "balance": 120000000.0,
+          "rate": 0.5,
+          "amount": 60000000.0,
+          "reference": "LCR99: retail and non-financial wholesale inflows 50 percent; fixture row, the balance is above the call-report loan book on purpose to exercise the 75 percent cap"
+        }
+      ],
+      "total_inflows": 60707000.0,
+      "inflow_cap": 0.75,
+      "inflows_counted": 57044100.0,
+      "net_outflows": 19014700.0,
+      "ratio": 0.0,
+      "mapping_sensitivity": [
+        {
+          "mapping_id": "central",
+          "lcr_category": "non_financial_corporate",
+          "uninsured_outflow": 60636800.0,
+          "total_outflows": 76058800.0,
+          "inflows_counted": 57044100.0,
+          "net_outflows": 19014700.0,
+          "ratio": 0.0
+        },
+        {
+          "mapping_id": "band-operational",
+          "lcr_category": "operational",
+          "uninsured_outflow": 37898000.0,
+          "total_outflows": 53320000.0,
+          "inflows_counted": 39990000.0,
+          "net_outflows": 13330000.0,
+          "ratio": 0.0
+        },
+        {
+          "mapping_id": "band-other-legal-entity",
+          "lcr_category": "other_legal_entity",
+          "uninsured_outflow": 151592000.0,
+          "total_outflows": 167014000.0,
+          "inflows_counted": 60707000.0,
+          "net_outflows": 106307000.0,
+          "ratio": 0.0
+        }
+      ],
+      "below_100_note": {
+        "en": "A ratio below 100 percent under stress is not a breach: the institution is expected to monitor its decline (ECB ILAAP guide, dossier 01 J.3).",
+        "es": "Una razon bajo 100 por ciento bajo estres no es un incumplimiento: se espera monitorear su caida."
+      }
+    },
+    "lcr_reason": null,
+    "htm": null,
+    "htm_reason": {
+      "en": "Only the HTM variant takes the held-to-maturity book at fair value.",
+      "es": "Solo la variante HTM toma el libro a valor razonable."
+    },
+    "scoring": {
+      "event": {
+        "label": {
+          "en": "The deposit run of 9 and 10 March 2023, the bank that failed on 2023-03-10",
+          "es": "La corrida de depositos del 9 y 10 de marzo de 2023"
+        },
+        "event_date": "2023-03-10",
+        "horizon_days": 2,
+        "source": "Federal Reserve review of SVB supervision, 2023-04-28"
+      },
+      "model_deposit_base": 175481000.0,
+      "modelled_outflow": {
+        "at_event_horizon": null,
+        "at_event_horizon_reason": {
+          "en": "The LCR defines one 30-day aggregate and no daily path, so no outflow exists at the 2-day event horizon: the comparison is at the model's own horizon.",
+          "es": "El LCR define un agregado a 30 dias sin trayectoria diaria: la comparacion es en el horizonte propio del modelo."
+        },
+        "at_model_horizon": {
+          "horizon_days": 30,
+          "amount": 75534800.0,
+          "share_of_model_base": 0.4304443216
+        }
+      },
+      "denominators": [
+        {
+          "id": "board-stated-share",
+          "label": {
+            "en": "Board review: roughly 85 percent of the deposit base",
+            "es": "Revision de la Junta: cerca de 85 por ciento de la base de depositos"
+          },
+          "denominator_amount": null,
+          "realised_amount": null,
+          "realised_share": 0.85,
+          "source": "Federal Reserve, Review of the Federal Reserve's Supervision and Regulation of SVB, 2023-04-28",
+          "modelled_share": 0.4304443216,
+          "compared_at": "model-horizon",
+          "shortfall": 0.4195556784,
+          "ratio": 0.5064050842,
+          "light": "amber"
+        },
+        {
+          "id": "call-report-dep",
+          "label": {
+            "en": "Over 40 plus 100 billion USD against the call report's DEP",
+            "es": "Mas de 40 mas 100 mil millones de USD contra el DEP del reporte de llamada"
+          },
+          "denominator_amount": 175378000.0,
+          "realised_amount": 140000000.0,
+          "realised_share": 0.7982757244,
+          "source": "Federal Reserve review (the amounts) and FDIC call report 2022-12-31 (DEP)",
+          "modelled_share": 0.4306971228,
+          "compared_at": "model-horizon",
+          "shortfall": 0.3675786016,
+          "ratio": 0.5395342858,
+          "light": "amber"
+        }
+      ],
+      "svb_anchor": {
+        "label": {
+          "en": "Labelled anchor, not a forecast: SVB's observed 85 percent in 2 days (Table A.1) and the daily rate it implies",
+          "es": "Ancla rotulada, no un pronostico: el 85 por ciento en 2 dias observado en SVB y la tasa diaria implicita"
+        },
+        "source": "BCBS d555 Box A Table A.1 (SVB 2023); Federal Reserve review of SVB supervision, 2023-04-28",
+        "outflow_share": 0.85,
+        "days": 2,
+        "implied_daily_rate": 0.612702,
+        "forecast_claim": false
+      },
+      "table_a1_scoring": [
+        {
+          "row_id": "svb-2023",
+          "bank": "SVB",
+          "year": 2023,
+          "horizon_days": 2,
+          "observed_share": 0.85,
+          "modelled_share": null,
+          "error": null,
+          "role": "reference",
+          "reason": {
+            "en": "The horizon of this row is beyond the model's ladder (or the variant has no daily path).",
+            "es": "El horizonte de esta fila excede la escalera del modelo (o la variante no tiene trayectoria diaria)."
+          }
+        },
+        {
+          "row_id": "first-republic-2023",
+          "bank": "First Republic",
+          "year": 2023,
+          "horizon_days": 90,
+          "observed_share": 0.57,
+          "modelled_share": null,
+          "error": null,
+          "role": "reference",
+          "reason": {
+            "en": "The horizon of this row is beyond the model's ladder (or the variant has no daily path).",
+            "es": "El horizonte de esta fila excede la escalera del modelo (o la variante no tiene trayectoria diaria)."
+          }
+        },
+        {
+          "row_id": "svb-uk-2023",
+          "bank": "SVB UK",
+          "year": 2023,
+          "horizon_days": 1,
+          "observed_share": 0.3,
+          "modelled_share": null,
+          "error": null,
+          "role": "reference",
+          "reason": {
+            "en": "The horizon of this row is beyond the model's ladder (or the variant has no daily path).",
+            "es": "El horizonte de esta fila excede la escalera del modelo (o la variante no tiene trayectoria diaria)."
+          }
+        },
+        {
+          "row_id": "credit-suisse-2023",
+          "bank": "Credit Suisse",
+          "year": 2023,
+          "horizon_days": 90,
+          "observed_share": 0.21,
+          "modelled_share": null,
+          "error": null,
+          "role": "reference",
+          "reason": {
+            "en": "The horizon of this row is beyond the model's ladder (or the variant has no daily path).",
+            "es": "El horizonte de esta fila excede la escalera del modelo (o la variante no tiene trayectoria diaria)."
+          }
+        },
+        {
+          "row_id": "signature-2023",
+          "bank": "Signature",
+          "year": 2023,
+          "horizon_days": 1,
+          "observed_share": 0.2,
+          "modelled_share": null,
+          "error": null,
+          "role": "reference",
+          "reason": {
+            "en": "The horizon of this row is beyond the model's ladder (or the variant has no daily path).",
+            "es": "El horizonte de esta fila excede la escalera del modelo (o la variante no tiene trayectoria diaria)."
+          }
+        },
+        {
+          "row_id": "icesave-2008",
+          "bank": "Icesave",
+          "year": 2008,
+          "horizon_days": 75,
+          "observed_share": 0.2,
+          "modelled_share": null,
+          "error": null,
+          "role": "reference",
+          "reason": {
+            "en": "The horizon of this row is beyond the model's ladder (or the variant has no daily path).",
+            "es": "El horizonte de esta fila excede la escalera del modelo (o la variante no tiene trayectoria diaria)."
+          }
+        },
+        {
+          "row_id": "northern-rock-2007",
+          "bank": "Northern Rock",
+          "year": 2007,
+          "horizon_days": 4,
+          "observed_share": 0.2,
+          "modelled_share": null,
+          "error": null,
+          "role": "reference",
+          "reason": {
+            "en": "The horizon of this row is beyond the model's ladder (or the variant has no daily path).",
+            "es": "El horizonte de esta fila excede la escalera del modelo (o la variante no tiene trayectoria diaria)."
+          }
+        },
+        {
+          "row_id": "wamu-2008",
+          "bank": "WaMu",
+          "year": 2008,
+          "horizon_days": 10,
+          "observed_share": 0.1,
+          "modelled_share": null,
+          "error": null,
+          "role": "reference",
+          "reason": {
+            "en": "The horizon of this row is beyond the model's ladder (or the variant has no daily path).",
+            "es": "El horizonte de esta fila excede la escalera del modelo (o la variante no tiene trayectoria diaria)."
+          }
+        },
+        {
+          "row_id": "indymac-2008",
+          "bank": "IndyMac",
+          "year": 2008,
+          "horizon_days": 14,
+          "observed_share": 0.08,
+          "modelled_share": null,
+          "error": null,
+          "role": "reference",
+          "reason": {
+            "en": "The horizon of this row is beyond the model's ladder (or the variant has no daily path).",
+            "es": "El horizonte de esta fila excede la escalera del modelo (o la variante no tiene trayectoria diaria)."
+          }
+        }
+      ]
+    },
+    "sensitivities": {
+      "uninsured_share": null,
+      "uninsured_share_reason": {
+        "en": "The LCR defines a 30-day aggregate ratio and no daily path, so there is no survival period to put against this grid.",
+        "es": "El LCR define una razon agregada a 30 dias sin trayectoria diaria: no hay periodo de supervivencia para esta grilla."
+      },
+      "htm_loss": null,
+      "htm_loss_reason": {
+        "en": "The LCR defines a 30-day aggregate ratio and no daily path, so there is no survival period to put against this grid.",
+        "es": "El LCR define una razon agregada a 30 dias sin trayectoria diaria: no hay periodo de supervivencia para esta grilla."
+      }
+    },
+    "time_block": [
+      {
+        "as_of": "2021-12-31",
+        "report_date": "2021-12-31",
+        "deposits": {
+          "dep": 200000000.0,
+          "depdom": 180000000.0,
+          "depuna": 140000000.0,
+          "depins": 10000000.0,
+          "depsmamt": 5400000.0,
+          "deplgamt": 174600000.0,
+          "denominators": {
+            "insured_uninsured": "DEPDOM",
+            "total": "DEP"
+          },
+          "uninsured_share_of_dep": 0.7,
+          "uninsured_share_of_depdom": 0.7777777778,
+          "size_threshold": {
+            "value": 250000,
+            "unit": "USD",
+            "source": "FDIC BankFind definitions (addendum L3.1): the 250,000 USD threshold applies at 2022-12-31"
+          }
+        },
+        "htm_unrealised_loss": -975000.0,
+        "cbc_amortised_basis": 90000000.0,
+        "cbc_fair_value_basis": 89000000.0,
+        "survival": null,
+        "lcr_ratio": 2.5
+      },
+      {
+        "as_of": "2022-06-30",
+        "report_date": "2022-06-30",
+        "deposits": {
+          "dep": 190000000.0,
+          "depdom": 170000000.0,
+          "depuna": 150000000.0,
+          "depins": 10000000.0,
+          "depsmamt": 5100000.0,
+          "deplgamt": 164900000.0,
+          "denominators": {
+            "insured_uninsured": "DEPDOM",
+            "total": "DEP"
+          },
+          "uninsured_share_of_dep": 0.7894736842,
+          "uninsured_share_of_depdom": 0.8823529412,
+          "size_threshold": {
+            "value": 250000,
+            "unit": "USD",
+            "source": "FDIC BankFind definitions (addendum L3.1): the 250,000 USD threshold applies at 2022-12-31"
+          }
+        },
+        "htm_unrealised_loss": -11239000.0,
+        "cbc_amortised_basis": 80000000.0,
+        "cbc_fair_value_basis": 70000000.0,
+        "survival": null,
+        "lcr_ratio": 1.9
+      }
+    ]
+  },
+  "tests": [
+    {
+      "test_id": "liq.list_compounding_golden",
+      "model_id": "liquidity-ladder",
+      "segment": null,
+      "statistic": 3.657e-07,
+      "p_value": null,
+      "metric": 0.1211483657,
+      "h0": "the compounding reproduces the LiST example",
+      "alternative": "it does not",
+      "policy_version": "contraste-liquidity-battery-1.0.0",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "green",
+      "n": 125,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "dossier 05 E.1 line 237: 1 - (1 - 0.00103258)^125 = 0.121148",
+      "notes": "fixture row: the golden of the example",
+      "extras": {
+        "thresholds": {
+          "tolerance": 5e-07
+        },
+        "fixture": true
+      }
+    },
+    {
+      "test_id": "liq.cbc_haircut_rules",
+      "model_id": "liquidity-ladder",
+      "segment": null,
+      "statistic": 0.0,
+      "p_value": null,
+      "metric": 7.0,
+      "h0": "the haircut rules are applied exactly",
+      "alternative": "a rule deviates",
+      "policy_version": "contraste-liquidity-battery-1.0.0",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "green",
+      "n": 7,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "dossier 05 E.1 line 238 (ECB LiST note para 74)",
+      "notes": "fixture row",
+      "extras": {
+        "thresholds": {
+          "tolerance": 1e-12
+        },
+        "fixture": true
+      }
+    },
+    {
+      "test_id": "liq.runoff_adequacy_back_test",
+      "model_id": "liquidity-ladder",
+      "segment": "board-stated-share",
+      "statistic": 0.5064050842,
+      "p_value": null,
+      "metric": 0.4195556784,
+      "h0": "the modelled outflow reaches the realised outflow",
+      "alternative": "the model under-states the run",
+      "policy_version": "contraste-liquidity-battery-1.0.0",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "amber",
+      "n": 1,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "dossier 08 E.3 lines 566-568; Q5",
+      "notes": "fixture row: compared at the model-horizon",
+      "extras": {
+        "thresholds": {
+          "ratio_green": 0.8,
+          "ratio_amber": 0.5
+        },
+        "fixture": true
+      }
+    },
+    {
+      "test_id": "liq.runoff_adequacy_back_test",
+      "model_id": "liquidity-ladder",
+      "segment": "call-report-dep",
+      "statistic": 0.5395342858,
+      "p_value": null,
+      "metric": 0.3675786016,
+      "h0": "the modelled outflow reaches the realised outflow",
+      "alternative": "the model under-states the run",
+      "policy_version": "contraste-liquidity-battery-1.0.0",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "amber",
+      "n": 1,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "dossier 08 E.3 lines 566-568; Q5",
+      "notes": "fixture row: compared at the model-horizon",
+      "extras": {
+        "thresholds": {
+          "ratio_green": 0.8,
+          "ratio_amber": 0.5
+        },
+        "fixture": true
+      }
+    }
+  ],
+  "impact": {
+    "lcr": {
+      "value": 0.0,
+      "unit": "ratio",
+      "label": {
+        "en": "LCR, a Basel formula on call-report aggregates",
+        "es": "LCR, una formula de Basilea sobre agregados del reporte de llamada"
+      }
+    },
+    "survival_days": {
+      "value": null,
+      "unit": "relevant days",
+      "label": {
+        "en": "The LCR formula gives no daily path, so no survival period.",
+        "es": "Sin trayectoria diaria."
+      }
+    }
+  },
+  "findings": [
+    {
+      "id": "F-liq-adequacy-board-stated-share",
+      "severity": "S3",
+      "status": "open",
+      "evidence": [
+        "liq.runoff_adequacy_back_test"
+      ],
+      "title": {
+        "en": "The modelled outflow is 0.506 of the realised outflow (board-stated-share)",
+        "es": "La salida modelada es 0.506 de la realizada (board-stated-share)"
+      }
+    },
+    {
+      "id": "F-liq-adequacy-call-report-dep",
+      "severity": "S3",
+      "status": "open",
+      "evidence": [
+        "liq.runoff_adequacy_back_test"
+      ],
+      "title": {
+        "en": "The modelled outflow is 0.540 of the realised outflow (call-report-dep)",
+        "es": "La salida modelada es 0.540 de la realizada (call-report-dep)"
+      }
+    }
+  ],
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u11-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

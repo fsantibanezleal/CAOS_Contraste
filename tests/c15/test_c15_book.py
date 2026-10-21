@@ -5,7 +5,7 @@ import math
 
 import numpy as np
 import pytest
-import semantics
+from c15_support import semantics
 from c15_support import SEED, VARIANT_IDS
 
 from pipeline.cases.c07 import book as c07_book

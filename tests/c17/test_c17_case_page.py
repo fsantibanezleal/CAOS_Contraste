@@ -1,7 +1,7 @@
 """CT-1715: the results block of docs/cases/C17.md is generated from the committed documents."""
 from __future__ import annotations
 
-from conftest import DERIVED, ROOT
+from c17_support import DERIVED, ROOT
 from pipeline.cases.c17 import page
 
 
