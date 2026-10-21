@@ -209,4 +209,4 @@ def mta0_row(c0: vt.Core, out0: dict[str, Any], seconds: float) -> dict[str, Any
     r = vc.reconcile_ee_profile(c0.mx["ee"], c0.mx["ee_se"], out0["epe"] / p0r, out0["se"] / p0r, K_SE)
     return vt.tr(r, segment="minimum-transfer-amount-0", reference=ORE_REFERENCE,
                  notes=(r.notes + " " if r.notes else "") + "diagnostic: the minimum transfer amount is zero in both engines "
-                 f"(ORE run {seconds:.0f} s, {out0['samples']} samples)")
+                 f"({out0['samples']} ORE samples)")  # the wall-clock time is in run_seconds only: a note is part of the deterministic document
