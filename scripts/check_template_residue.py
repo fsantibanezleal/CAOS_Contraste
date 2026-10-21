@@ -49,6 +49,7 @@ FORBIDDEN_FILES = ("STRUCTURE.md", ".vscode/")
 TEXT_SUFFIXES = {
     ".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".py", ".md", ".json", ".css", ".html", ".svg",
     ".yml", ".yaml", ".toml", ".txt", ".cfg", ".ini", ".sh", ".ps1",
+    ".ipynb",  # the example notebooks (template 0.10.000): JSON text, scanned line by line
 }
 
 

@@ -5,7 +5,6 @@ import { Callout, DocPage, DocSection, Equation, Figure, TabGroups, useShellLang
 import { ContractsFigure, FlowFigure, OverviewFigure } from '../architecture/figures';
 import { L, P, T, useT } from '../content/bi';
 import { ReadinessTable } from '../readiness/ReadinessTable';
-import { NoTranslateRefs } from './NoTranslateRefs';
 
 const THIS_REPO = { en: 'Describes this repository.', es: 'Describe este repositorio.' };
 
@@ -225,7 +224,6 @@ export function Implementation() {
         'Cómo está construido Contraste: el pipeline, los contratos, los datos y sus licencias, los motores, los carriles, qué es real en esta versión, las compuertas y el despliegue, cada uno en su propio tema con el algoritmo exacto, el contrato o la regla que sigue.',
       )}
     >
-      <NoTranslateRefs />
       <TabGroups
         ariaLabel={lang === 'es' ? 'Partes de la implementación' : 'Parts of the implementation'}
         groups={[

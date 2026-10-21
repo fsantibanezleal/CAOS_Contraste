@@ -477,7 +477,7 @@ the ones the dossiers and `docs/frameworks/` record.
 | tests | pytest | 9.1.1 | the pipeline, contract, guard and adversarial tests | none recorded |
 | lint | ruff | 0.15.18 | lint of data-pipeline, tests, scripts and app | none recorded (0.17.0 is current and was not adopted) |
 | contracts | jsonschema | 4.26.0 | validates every document against its schema file | none recorded |
-| shell | @fasl-work/caos-app-shell | 0.15.0 | the shared app shell, pinned exactly (ADR-0078) | a hand-rolled shell, forbidden by ADR-0078 |
+| shell | @fasl-work/caos-app-shell | 0.18.0 | the shared app shell, pinned exactly (ADR-0078) | a hand-rolled shell, forbidden by ADR-0078 |
 | web | react | 19.3.0 | the UI | none: the shell requires it |
 | web | react-dom | 19.3.0 | the UI renderer | none: the shell requires it |
 | web | react-router | 8.4.0 | the six routes | none: the shell requires it |
@@ -988,6 +988,7 @@ Where the ADRs fit as written:
 | ADR-0061 and the no-internal-packages rule | fits: `riskvalidation` is the separate engine repository; this product declares no package |
 | ADR-0065 to ADR-0068 community files, English, no em-dash, versioning | fit: `scripts/check_content_standards.py`, `scripts/check_version_coherence.py` |
 | ADR-0074 CI budget | fits: the product CI runs no pipeline suite; the engine's unit tests are cheap and run in its own CI |
+| ADR-0070 | fits: the App is a workbench with Focus mode (`CaseWorkbench` `focus`, `frontend/src/workbench/Workbench.tsx`); `npm run gate` runs with `--require-focus` (G18); the App's kind is `product.json` `app` (default workbench), and only a surface App without simulation waives Focus, with its reason here as "not applicable: <reason>" |
 | Product quality bar, section 0 (one selected case on App, real action capability, honesty) | fits strongly: thresholds, policy, segments, windows and scenario weights are real live inputs |
 | Units gate | applies from the second observable on: PD in (0, 1), LGD in [0, 1], CCF by stated convention, VaR and ES in the portfolio's units |
 | One deploy place | fits: GitHub Pages (`Deploy driver`) |

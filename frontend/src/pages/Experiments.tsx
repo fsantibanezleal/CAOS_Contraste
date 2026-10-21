@@ -13,7 +13,6 @@ import { CHAMPION, test, value } from '../workbench/model';
 import { C04Experiments } from './C04Sections';
 import { C05ExperimentsSection } from './C05Sections';
 import { C22ExperimentsSection } from './C22Sections';
-import { NoTranslateRefs } from './NoTranslateRefs';
 import { DESIGN_GROUP_LABEL, governanceTabs } from './experiments/governanceTabs';
 import { U6ExperimentsSection, U6_CASES } from './U6Sections';
 import { W2ExperimentsSection, W2_CASES } from './Wave2Sections';
@@ -306,7 +305,6 @@ export function Experiments() {
         'La cobertura de los 22 casos, el protocolo con muestra reservada que sigue todo experimento, las métricas que lee, y cada caso construido variante por variante, todo leído de los artefactos comprometidos: ningún número de esta página está escrito a mano, y un caso planificado lo dice.',
       )}
     >
-      <NoTranslateRefs />
       <TabGroups
         ariaLabel={lang === 'es' ? 'Partes de los experimentos' : 'Parts of the experiments'}
         groups={
