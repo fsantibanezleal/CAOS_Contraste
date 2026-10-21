@@ -531,6 +531,22 @@ export const C18_FIT = { object: {
     confidence_level: 'number',
     capital_basis: 'string',
     marginal_interpolation: 'string',
+    quantile_grid: { object: {
+      convention: { object: {
+        name: 'string',
+        z_min: 'number',
+        z_max: 'number',
+        z_step: 'number',
+        points: 'number',
+        unit: 'string',
+        statement: 'text',
+      } },
+      probabilities: { array: 'number' },
+      marginals: { array: { object: {
+        risk: 'string',
+        quantiles: { array: 'number' },
+      } } },
+    } },
   } },
   named_parameters: { object: {
     nu_set: NAMED_SET,

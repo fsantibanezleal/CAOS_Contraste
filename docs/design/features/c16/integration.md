@@ -24,7 +24,7 @@ What the unit leaves to the integrator because the files are outside its write s
    integrator repoints it to the release tag when it is cut. The documents name the engine as `0.7.0+a52888e`; a re-bake after the repoint
    changes that string in `provenance` and the manifest only if the version differs.
 7. **Shared registries.** The C16 registry line, the readiness row, the catalog rows `c16-*` and `CHANGELOG.md` are the integrator's; the
-   change fragment is `changes/U11-P.md`.
+   change fragment of U11-P is merged into the CHANGELOG entry of the release that carried it.
 
 ## Resolved at the batch 3 integration (task/u11-p-int)
 
