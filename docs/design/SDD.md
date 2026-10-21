@@ -274,7 +274,7 @@ the ones the dossiers and `docs/frameworks/` record.
 ## Resources
 
 What each stage needs on the development workstation (Windows 11, 2026-10-12; Python 3.13.14, Node 24.14.1; 16 GB of RAM
-free at the preflight of 2026-10-11; no GPU is used by any stage listed). Every value was measured by running the
+free at the preflight of 2026-10-11; no GPU is used by any stage listed). Every value not marked otherwise was measured by running the
 command in the `where it runs` column's first cell with the process tree polled every 20 ms: memory is the largest
 summed working set of the tree, time is the wall clock, disk is what the stage leaves behind. The commands and their
 outputs are in the CF-D report. Bakes were run with `--output` into a temporary root, so `data/derived/` is never
@@ -287,12 +287,12 @@ touched; raw data are read from the device data root (`CONTRASTE_DATA`) and are 
 | bake C04 (`run.py C04`, nine variants: three agencies, five families, the papers) | 157 MB peak | 856,267 bytes | 296.4 s | workstation, never CI |
 | bake C05 (`run.py C05`, six variants) | 212 MB peak | 561,195 bytes | 32.0 s | workstation, never CI |
 | bake C22 (`run.py C22`, the size and power runs of all eight variants, at least 4,000 repetitions per test) | 231 MB peak | 523,182 bytes | 1,096.8 s | workstation, never CI |
-| tests (`pytest tests`, 385 passed and 2 skipped: the pipeline, contract, guard and bake-artifact tests) | 435 MB peak (300 MB the largest process) | none outside the temporary directory | 125.6 s | workstation, never CI |
-| tests (`pytest tests/adversarial`, the plants of this document's validation files, including two browser-gate plants) | 677 MB peak (282 MB the largest process) | temporary copies of the repository's committed files, about 10 MB each | 1,344.9 s for 88 plants (the two gate plants take 424 s, the leakage plants 30 to 186 s each) | workstation; the Python plants alone also fit CI (ADR-0074) |
-| tests (`npm test` in `frontend/`, 22 files, 560 tests) | 1,872 MB peak summed over the vitest workers (294 MB the largest process) | none | 3.9 s | workstation and CI web job |
-| build (`npm run build`, the four built cases, measured in a copy whose index lists them: the branch's own index lists 22 and its build stops before the web reads the readiness) | 566 MB peak | 6,727,923 bytes in `frontend/dist`, 123 files | 16.0 s | workstation and CI web job |
-| gate (`npm run gate`, every route, tab, sub-tab and case at five sizes, both themes and both languages, on that build) | 910 MB peak | 14,285,565 bytes of captures in `gate-output` | 427.4 s, 868 measured states | workstation, never CI |
-| deploy payload (GitHub Pages) | none | at most 7.7 MB: the 6,727,923 bytes measured for the four built cases plus under 1 MB for the provider documents of the 18 planned cases (36 empty-envelope files; the one example in `docs/contracts/fixtures` is 368 bytes) | at most the 15-minute timeout of the CI web job; one Pages deploy after CI on main | CI after main |
+| tests (`pytest tests`, 3,998 tests collected on 2026-10-21 at the wave 3 integration line, 21 of the 22 cases built: the pipeline, contract, guard, bake-artifact and case tests; the full run is made by the release run that writes the convergence verdict, `docs/design/features/release-1-0/design.md`) | not re-measured here: 435 MB peak (300 MB the largest process) when the suite had 387 tests | none outside the temporary directory | not re-measured here: 125.6 s at 387 tests | workstation, never CI |
+| tests (`pytest tests/adversarial`, 88 tests collected on 2026-10-21 the plants of this document's validation files, including two browser-gate plants) | 677 MB peak (282 MB the largest process) | temporary copies of the repository's committed files, about 10 MB each | 1,344.9 s for 88 plants (the two gate plants take 424 s, the leakage plants 30 to 186 s each) | workstation; the Python plants alone also fit CI (ADR-0074) |
+| tests (`npm test` in `frontend/`, 57 files, 1,913 tests, all passed on 2026-10-21 at the wave 3 integration line) | 1,872 MB peak summed over the vitest workers when the suite had 560 tests | none | measured by the release run (3.9 s at 560 tests) | workstation and CI web job |
+| build (`npm run build`; 21 of the 22 cases are built and C19 is planned, so the build reads the index of the 21 manifests) | 566 MB peak, measured at four built cases | 6,727,923 bytes in `frontend/dist`, 123 files, measured at four built cases | 16.0 s, measured at four built cases | workstation and CI web job; UNVERIFIED at 21 built cases until the release run measures it |
+| gate (`npm run gate`, every route, tab, sub-tab and case at five sizes, both themes and both languages, on that build) | 910 MB peak, measured at 868 states | 14,285,565 bytes of captures in `gate-output`, measured at 868 states | 427.4 s at 868 states | workstation, never CI. The last full gate log is the 0.12.000 release: 2,069 measured states, 0 failures, 15 cases built. The 0.13.000 gate walked all 21 built cases with no failure (`CHANGELOG.md`, 0.13.000); its state count is UNVERIFIED here and the release run records it |
+| deploy payload (GitHub Pages) | none | UNVERIFIED at 21 built cases: 6,727,923 bytes of `frontend/dist` were measured at four built cases, and the 21 built cases add their documents under `data/derived/`; the release run measures the payload | at most the 15-minute timeout of the CI web job; one Pages deploy after CI on main | CI after main |
 
 ## Lanes
 
@@ -449,9 +449,11 @@ both languages) before any deploy.
 
 ### Requirements map
 
-EARS (Mavin et al., RE'09, doi:10.1109/RE.2009.9). Product requirements (`CT-`) are stated with their gates in the
-feature folders; the hundreds digit is the unit (0 for U0, 1 for U1). Engine requirements (`RV-`) are stated and
-gated in the engine repository.
+EARS (Mavin et al., RE'09, doi:10.1109/RE.2009.9). Product requirements (`CT-`, plus `NB-`, `RP-` and `CV-` for the notebooks, the
+README and the verdict) are stated with their gates in the 27 feature folders of `docs/design/features/`. Engine requirements (`RV-`)
+are stated and gated in the engine repository. Convergence is generated, not written here: `scripts/convergence_verdict.py` lists every
+requirement of both repositories with its gate and the gate's result in the release run (ADR-0075 section 4;
+`docs/design/features/release-1-0/`).
 
 | Unit | Feature folder | Requirements |
 |---|---|---|
@@ -461,7 +463,28 @@ gated in the engine repository.
 | U2 | `docs/design/features/c05-ldp-calibration/` | CT-201 to CT-211: the paper readers checked against their own print; every golden cell within the engine's tolerance; the generator's truth recovered; coverage and power; the capital's assumptions; expected ranges; no derived-only counts published; live parity; the C05 instrument; the measured gate |
 | U2 | `docs/design/features/c01-irb-capital/` | CT-212 to CT-217: C01's IRB capital along every cut-off under three regimes with its stated assumptions; each point the engine's sum; every card a revolver, the six-month full payers as the sensitivity; the live capital linear in the LGD and the retail functions at parity; the Basel III LGD floor flagged; the measured gate |
 | U3 | `docs/design/features/c22-validator/` | CT-301 to CT-313: the size of every test with a p-value on its null; power against seven planted defects at severities 0 to 5; exact rejection probabilities beside the simulated ones; WP14, Yurdakul-Naranjo and Demler et al. reproduced cell by cell; findings evidenced by measured rates; known truth and determinism; expected ranges; the live exact size and power at parity; the C22 instrument; the measured gate; C05 on the engine's generator; C01's Hosmer-Lemeshow with G degrees of freedom and its AUC test with the development variance |
-| engine | `CAOS_RiskValidation` `docs/design/` | RV-001 to RV-007 (the `TestResult` record, the policy, the suite runner) and RV-101 to RV-114 (PD and stability tests), converged in `riskvalidation` 0.01.000; RV-901 (regulatory parameters with paragraph and in-force date) lands in U9 |
+| U4 | `docs/design/features/c04-transitions/` | CT-401 to CT-414 (15 requirements): case C04 (rating transitions and TTC PD by grade) |
+| U5-P1 | `docs/design/features/c06/` | CT-501 to CT-517 (17 requirements): case C06 (lifetime PD, IFRS 9 staging and ECL on the SBA 7(a) twin) |
+| U5-P2 | `docs/design/features/c07/` | CT-701 to CT-713 (13 requirements): case C07 (the Chile provisions trilogy) |
+| U6-P1 | `docs/design/features/c03/` | CT-801 to CT-812 (12 requirements): case C03 (SME PD by vintage through 2008, on the SBA 7(a) loans) |
+| U6-P2 | `docs/design/features/c08/` | CT-901 to CT-917 (17 requirements): case C08 (LGD and downturn LGD on the SBA 7(a) charge-off twin) |
+| U6-P3 | `docs/design/features/c09/` | CT-1001 to CT-1013 (13 requirements): case C09 (EAD and CCF for revolving lines) |
+| U7-P | `docs/design/features/c10/` | CT-1101 to CT-1112 (12 requirements): case C10 (portfolio credit capital) |
+| U8-P1 | `docs/design/features/c11/` | CT-601 to CT-615 (15 requirements): case C11 (market VaR and ES back-testing across 2008, 2020, 2022 and 2023) |
+| U8-P2 | `docs/design/features/c13/` | CT-1301 to CT-1313 (13 requirements): case C13 (FRTB desk eligibility: PLA and desk back-testing) |
+| U9-P1 | `docs/design/features/c12/` | CT-1201 to CT-1221 (21 requirements): case C12 (swap exposure, CVA and SA-CCR on a synthetic USD swap book) |
+| U10-P1 | `docs/design/features/c14/` | CT-1401 to CT-1414 (14 requirements): case C14 (IRRBB six shocks on a USD balance sheet, SVB 2022) |
+| U10-P2 | `docs/design/features/c15/` | CT-1501 to CT-1517 (17 requirements): case C15 (IRRBB on a CLP and UF balance sheet, RAN 21-13 Annex 1) |
+| U11-P | `docs/design/features/c16/` | CT-1601 to CT-1623 (23 requirements): case C16 (liquidity stress, LCR and the March 2023 run, on the call reports of the bank that failed on 2023-03-10) |
+| U12-P | `docs/design/features/c17/` | CT-1701 to CT-1715 (15 requirements): case C17 (operational risk: LDA against SMA) |
+| U13-P1 | `docs/design/features/c18/` | CT-1801 to CT-1825 (25 requirements): case C18 (ICAAP and IAPE capital aggregation under macro scenarios) |
+| U14-P1 | `docs/design/features/c02/` | CT-0201 to CT-0218 (18 requirements): case C02 (corporate PD across the 1 to 5 year horizons on the UCI Polish bankruptcy files) |
+| U14-P2 | `docs/design/features/c20/` | CT-2001 to CT-2025 (25 requirements): case C20 (ML model validation: drift, robustness, explanation stability) |
+| U14-P3 | `docs/design/features/c21/` | CT-2101 to CT-2119 (19 requirements): case C21 (fair-lending disparity testing on HMDA decisions, Delaware, 2018 to 2024) |
+| U16 | `docs/design/features/release-1-0/` | CV-001 to CV-013 (13 requirements): the generated convergence verdict of release 1.0 |
+| U17 | `docs/design/features/notebooks/` | NB-001 to NB-021 (21 requirements): the product notebooks |
+| U17 | `docs/design/features/repository/` | RP-001 to RP-005 (5 requirements): the README states the repository by areas |
+| engine | `CAOS_RiskValidation` `docs/design/features/` | RV- requirements (21 feature folders, 514 requirement rows at the engine head of 2026-10-21), stated and gated in the engine repository; the verdict lists them beside the product's (`docs/design/features/release-1-0/`) |
 
 ## Oracles
 
