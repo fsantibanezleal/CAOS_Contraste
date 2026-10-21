@@ -133,6 +133,23 @@ basis, the topic 01 notebooks cite:
   https://doi.org/10.1148/radiology.143.1.7063747;
 - Spiegelhalter (1986), probabilistic prediction in patient management and clinical trials, https://doi.org/10.1002/sim.4780050506.
 
+The topic 02 notebooks (credit scoring, unit U17-B) cite, in addition:
+
+- Navas-Palencia (2020), optimal binning, weight of evidence and information value, https://arxiv.org/abs/2001.08025;
+- Siddiqi (2017), Intelligent Credit Scoring, https://doi.org/10.1002/9781119282396, and the open `skorecard` implementation of its
+  points scaling, https://github.com/ing-bank/skorecard/blob/main/skorecard/rescale/rescale.py;
+- DeLong, DeLong and Clarke-Pearson (1988), correlated ROC curves, https://doi.org/10.2307/2531595;
+- the SBA 7(a) FOIA loan data, https://data.sba.gov/dataset/7a-504-foia;
+- the UCI Polish companies bankruptcy data, https://archive.ics.uci.edu/dataset/365/polish+companies+bankruptcy+data, DOI
+  https://doi.org/10.24432/C5F600, and the UCI Statlog German credit data, https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data;
+- the credit-scoring benchmarks and challengers of dossier 04: Baesens et al. (2003), https://doi.org/10.1057/palgrave.jors.2601545;
+  Dumitrescu, Hue, Hurlin and Tokpavi (2022), https://doi.org/10.1016/j.ejor.2021.06.053; Lou, Caruana, Gehrke and Hooker (2013),
+  https://doi.org/10.1145/2487575.2487579; van den Goorbergh et al. (2022), https://doi.org/10.1093/jamia/ocac093; King and Zeng (2001),
+  https://doi.org/10.1093/oxfordjournals.pan.a004868; Zadrozny and Elkan (2002), https://doi.org/10.1145/775047.775151;
+  the monotone-constraint documentation of XGBoost, https://xgboost.readthedocs.io/en/stable/tutorials/monotonic.html, and of LightGBM,
+  https://lightgbm.readthedocs.io/en/latest/Parameters.html; the TabPFN project and its weights licences, https://github.com/PriorLabs/TabPFN;
+- Kozodoi et al. (2025), sampling bias in the training and the evaluation of credit scoring models, https://doi.org/10.1016/j.ejor.2025.01.040.
+
 ## Sizing and contracts
 
 The design rests on two artifacts of contract-first parallel delivery (ADR-0080): the sizing and the contract catalog.
@@ -481,11 +498,26 @@ No oracle here is a model judging another model.
 
 ## Beyond the state of the art
 
-None claimed. A component of Contraste that goes further than the practice its research found enters this section with the
-topic unit that demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes
-beyond, and a level 4 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches
-the package's contract and demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8)
-and enter here one by one, so no claim is stated before its demonstration exists.
+A component of Contraste that goes further than the practice its research found enters this section with the topic unit that
+demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes beyond, and a level 4
+notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). The candidate claims and their evidence are
+drafted in the U17 sizing (decision N8) and enter here one by one, so no claim is stated before its demonstration exists.
+
+- **BS-3** The leakage-safe protocol per case, with gates.
+  What it adds: a split declared per case (a locked stratified holdout for C01 and C02, out-of-time cohorts read at their 5-year mark
+  for C03) and enforced by tests: transforms fitted on the training slice only, a calibration slice disjoint from the test slice, and
+  every fitted parameter unchanged when a value outside the training information set is perturbed. The artifacts record the split and
+  its limits (C01 has no out-of-time validation, C02 makes no out-of-time claim). The planted leak of C22 shows what the engine's tests
+  see of a leak: a drop of discrimination out of time, not a drift of the leaked feature. It is enforcement of known rules, not a new
+  method.
+  Evidence: `docs/design/features/c01-retail-pd/requirements.md` (CT-101 to CT-103), `tests/test_leakage.py` (3 passed when the claim
+  was assembled), `data/derived/C01/models-taiwan.json`, `data/derived/C02/h1.json` to `h5.json` and `pooled.json`,
+  `data/derived/C03/fy2015-17.json`, `data/derived/C03/fy2018-20.json`, `data/derived/C22/leakage.json`. Demonstrated by
+  `notebooks/en/02-credit-scoring/07-beyond-the-leakage-safe-protocol-per-case-with-gates.ipynb` and its Spanish counterpart
+  `notebooks/es/02-credit-scoring/07-beyond-the-leakage-safe-protocol-per-case-with-gates.ipynb`.
+  Beyond: the research dossier 04 states the leakage rules, and dossier 07 names the single-split evaluation of an open toolkit as the
+  counter-example; neither gives a protocol declared per case with a gate that fails when it is broken. Not claimed: a calibration
+  before the test window (the drafted text names it for a later case) and any leak by time beyond what the gate CT-103 perturbs.
 
 ## Deploy driver
 
