@@ -280,6 +280,21 @@ describe('every batch 3 case has an Experiments table with one headline row per 
     expect(markup.replace(/<span translate="no"[^>]*>[^<]*<\/span>/g, '')).not.toMatch(/CFR/);
     expect(cellText(t.rows[i][3])).toMatch(/referencia de empleo/);
   });
+  it('C21: the 62 contrast is named in Spanish on the Spanish page, attribute and groups, with no English left (BL-087)', () => {
+    const vs = load('C21');
+    const v = clone(vs[0]) as unknown as { outputs: { attributes: Array<Record<string, any>> } };
+    const base = clone(v.outputs.attributes.find((x) => x.field === 'derived_sex')!);
+    const age62 = JSON.parse(JSON.stringify(base).replaceAll('Female', '62 or over').replaceAll('Male', 'under 62').replace('"derived_sex"', '"applicant_age_above_62"'));
+    v.outputs.attributes.push(age62);
+    const withIt = [v as unknown as (typeof vs)[number]];
+    const es = flat(batch3ExperimentTables(manifestOf('C21', withIt), withIt, 'es'));
+    expect(es).toContain('Edad, 62 o más, 62 o más:');
+    expect(es).toContain('Edad, 62 o más: ');
+    expect(es).not.toMatch(/applicant_age_above_62|Age, 62|62 or over|under 62/);
+    const en = flat(batch3ExperimentTables(manifestOf('C21', withIt), withIt, 'en'));
+    expect(en).toContain('Age, 62 or over, 62 or over:');
+  });
+
   it('C21: a confirmation the document leaves null shows not available with its reason', () => {
     const vs = load('C21');
     const v = clone(vs[0]) as VariantArtifact<{ attributes: Array<{ contrasts: Array<{ confirmation: { estimate: unknown; reason: unknown } }> }> }>;

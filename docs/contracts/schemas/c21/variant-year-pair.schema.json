@@ -92,6 +92,7 @@
         "derived_ethnicity",
         "derived_sex",
         "applicant_age",
+        "applicant_age_above_62",
         "debt_to_income_ratio",
         "combined_loan_to_value_ratio",
         "income",
@@ -101,7 +102,6 @@
         "loan_purpose",
         "lien_status",
         "occupancy_type",
-        "applicant_age_above_62",
         "action_taken",
         "rate_spread",
         "denial_reason_1",
@@ -890,7 +890,8 @@
             "derived_race",
             "derived_ethnicity",
             "derived_sex",
-            "applicant_age"
+            "applicant_age",
+            "applicant_age_above_62"
           ]
         },
         "legal": {
@@ -910,6 +911,7 @@
                 "race_color",
                 "national_origin_nearest_UNVERIFIED",
                 "sex",
+                "age_ecoa_only",
                 "age_ecoa_only"
               ]
             },
@@ -1388,6 +1390,98 @@
               }
             }
           }
+        },
+        {
+          "properties": {
+            "field": {
+              "const": "applicant_age_above_62"
+            },
+            "legal": {
+              "properties": {
+                "basis": {
+                  "const": "age_ecoa_only"
+                },
+                "ecoa": {
+                  "const": true
+                },
+                "fha": {
+                  "const": false
+                },
+                "fha_disparate_impact": {
+                  "const": "not applicable (age is a prohibited basis under ECOA only, not in 42 U.S.C. 3605(a))"
+                }
+              }
+            },
+            "reference_group": {
+              "enum": [
+                "62 or over",
+                "under 62"
+              ]
+            },
+            "groups": {
+              "items": {
+                "properties": {
+                  "group": {
+                    "enum": [
+                      "62 or over",
+                      "under 62"
+                    ]
+                  }
+                }
+              }
+            },
+            "excluded_groups": {
+              "items": {
+                "properties": {
+                  "group": {
+                    "enum": [
+                      "NA"
+                    ]
+                  }
+                }
+              }
+            },
+            "four_fifths": {
+              "properties": {
+                "highest_rate_group": {
+                  "enum": [
+                    "62 or over",
+                    "under 62"
+                  ]
+                },
+                "groups": {
+                  "items": {
+                    "properties": {
+                      "group": {
+                        "enum": [
+                          "62 or over",
+                          "under 62"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "contrasts": {
+              "items": {
+                "properties": {
+                  "group": {
+                    "enum": [
+                      "62 or over",
+                      "under 62"
+                    ]
+                  },
+                  "reference_group": {
+                    "enum": [
+                      "62 or over",
+                      "under 62"
+                    ]
+                  }
+                }
+              }
+            }
+          }
         }
       ]
     },
@@ -1614,7 +1708,8 @@
             "derived_race",
             "derived_ethnicity",
             "derived_sex",
-            "applicant_age"
+            "applicant_age",
+            "applicant_age_above_62"
           ]
         },
         "k": {

@@ -10,7 +10,7 @@ import { Pending } from '../Pending';
 import { UnavailableCard } from '../c14/C14Common';
 import { LabelledOverTable, barMin, f2, f3, int, pc1, sig, testsOf } from '../c20/U14Common';
 import { LegalSentences, NoLegalClaim, legalOf } from './C21Common';
-import { FIELD_TEXT, attributeFor, outputsOf, text, type C21Sel } from './selection';
+import { FIELD_TEXT, attributeFor, groupBi, outputsOf, text, type C21Sel } from './selection';
 
 const noAttribute = (sel: C21Sel | null, title: BiText) => (
   <UnavailableCard sel={sel} title={title} reason={{ en: 'Not available: this document carries no protected attribute.', es: 'No disponible: este documento no trae ningún atributo protegido.' }} />
@@ -33,8 +33,8 @@ export function RatesView({ sel }: { sel: C21Sel | null }) {
         title={{ en: `${title.en}: ${text(FIELD_TEXT, a.field).en.toLowerCase()}`, es: `${title.es}: ${text(FIELD_TEXT, a.field).es.toLowerCase()}` }}
         {...card}
         note={{
-          en: `The share of the decided applications that were approved, by group of ${text(FIELD_TEXT, a.field).en.toLowerCase()}, for ${o.fit_year}. The reference group is ${a.reference_group}. The rates are indicators only: gross HMDA disparities are not an adverse-impact finding.`,
-          es: `La parte de las solicitudes decididas que se aprobó, por grupo de ${text(FIELD_TEXT, a.field).es.toLowerCase()}, en ${o.fit_year}. El grupo de referencia es ${a.reference_group}. Las tasas son solo indicadores: las disparidades brutas de HMDA no son una constatación de impacto adverso.`,
+          en: `The share of the decided applications that were approved, by group of ${text(FIELD_TEXT, a.field).en.toLowerCase()}, for ${o.fit_year}. The reference group is ${groupBi(a.reference_group).en}. The rates are indicators only: gross HMDA disparities are not an adverse-impact finding.`,
+          es: `La parte de las solicitudes decididas que se aprobó, por grupo de ${text(FIELD_TEXT, a.field).es.toLowerCase()}, en ${o.fit_year}. El grupo de referencia es ${groupBi(a.reference_group).es}. Las tasas son solo indicadores: las disparidades brutas de HMDA no son una constatación de impacto adverso.`,
         }}
       >
         <LabelledOverTable
@@ -45,7 +45,7 @@ export function RatesView({ sel }: { sel: C21Sel | null }) {
               title={{ en: 'Approval rate by group', es: 'Tasa de aprobación por grupo' }}
               height="fill"
               orientation="horizontal"
-              data={a.groups.map((g) => ({ id: g.group, label: { en: g.group, es: g.group } as BiText, value: g.selection_rate, highlight: g.group === a.reference_group, hint: { en: `${int(g.n, 'en')} decided applications`, es: `${int(g.n, 'es')} solicitudes decididas` } as BiText }))}
+              data={a.groups.map((g) => ({ id: g.group, label: groupBi(g.group) as BiText, value: g.selection_rate, highlight: g.group === a.reference_group, hint: { en: `${int(g.n, 'en')} decided applications`, es: `${int(g.n, 'es')} solicitudes decididas` } as BiText }))}
               axis={{ label: { en: 'Share approved', es: 'Parte aprobada' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
             />
           }
@@ -66,7 +66,7 @@ export function RatesView({ sel }: { sel: C21Sel | null }) {
                 const c = a.contrasts.find((x) => x.group === g.group);
                 return (
                   <tr key={g.group} data-group={g.group} data-reference={g.group === a.reference_group} className={g.group === sel.group ? 'ct-current' : undefined}>
-                    <td className="ct-text">{g.group}{g.group === a.reference_group ? ` (${pick({ en: 'reference', es: 'referencia' }, lang)})` : ''}</td>
+                    <td className="ct-text">{pick(groupBi(g.group), lang)}{g.group === a.reference_group ? ` (${pick({ en: 'reference', es: 'referencia' }, lang)})` : ''}</td>
                     <td>{int(g.n, lang)}</td>
                     <td className="ct-wide-only">{int(g.n_approved, lang)}</td>
                     <td className="ct-wide-only">{int(g.n_denied, lang)}</td>
@@ -108,8 +108,8 @@ export function FourFifthsView({ sel }: { sel: C21Sel | null }) {
         title={{ en: `${title.en}: ${text(FIELD_TEXT, a.field).en.toLowerCase()}`, es: `${title.es}: ${text(FIELD_TEXT, a.field).es.toLowerCase()}` }}
         {...card}
         note={{
-          en: `Each group's rate over the rate of the highest-rate group (${f.highest_rate_group}). The line at ${formatNumber(f.threshold, 'en', { decimals: 1 })} is the four-fifths rule (its citation is above the chart), an employment-selection benchmark and not a credit-law threshold. The flag is decided on the counts in exact arithmetic: ${f.rule}.`,
-          es: `La tasa de cada grupo sobre la del grupo de mayor tasa (${f.highest_rate_group}). La línea en ${formatNumber(f.threshold, 'es', { decimals: 1 })} es la regla de cuatro quintos (su cita está sobre el gráfico), una referencia de selección laboral y no un umbral de la ley de crédito. La alerta se decide sobre los conteos en aritmética exacta: ${f.rule}.`,
+          en: `Each group's rate over the rate of the highest-rate group (${groupBi(f.highest_rate_group).en}). The line at ${formatNumber(f.threshold, 'en', { decimals: 1 })} is the four-fifths rule (its citation is above the chart), an employment-selection benchmark and not a credit-law threshold. The flag is decided on the counts in exact arithmetic: ${f.rule}.`,
+          es: `La tasa de cada grupo sobre la del grupo de mayor tasa (${groupBi(f.highest_rate_group).es}). La línea en ${formatNumber(f.threshold, 'es', { decimals: 1 })} es la regla de cuatro quintos (su cita está sobre el gráfico), una referencia de selección laboral y no un umbral de la ley de crédito. La alerta se decide sobre los conteos en aritmética exacta: ${f.rule}.`,
         }}
       >
         <LabelledOverTable
@@ -129,7 +129,7 @@ export function FourFifthsView({ sel }: { sel: C21Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={[
-                ...f.groups.map((g) => ({ id: g.group, label: { en: g.group, es: g.group } as BiText, value: g.ratio_to_highest, tone: g.flag ? ('bad' as const) : ('good' as const), highlight: g.group === sel.group })),
+                ...f.groups.map((g) => ({ id: g.group, label: groupBi(g.group) as BiText, value: g.ratio_to_highest, tone: g.flag ? ('bad' as const) : ('good' as const), highlight: g.group === sel.group })),
                 { id: 'line', label: { en: 'Four-fifths line (employment benchmark)', es: 'Línea de cuatro quintos (referencia laboral)' } as BiText, value: f.threshold, tone: 'neutral' as const },
               ]}
               axis={{ label: { en: 'Rate over the highest group rate', es: 'Tasa sobre la mayor tasa de grupo' }, format: { decimals: 2 }, range: [0, 1.1] }}
@@ -147,7 +147,7 @@ export function FourFifthsView({ sel }: { sel: C21Sel | null }) {
             <tbody>
               {f.groups.map((g) => (
                 <tr key={g.group} data-group={g.group} data-flag={g.flag} className={g.group === sel.group ? 'ct-current' : undefined}>
-                  <td className="ct-text">{g.group}{g.group === f.highest_rate_group ? ` (${pick({ en: 'highest', es: 'mayor' }, lang)})` : ''}</td>
+                  <td className="ct-text">{pick(groupBi(g.group), lang)}{g.group === f.highest_rate_group ? ` (${pick({ en: 'highest', es: 'mayor' }, lang)})` : ''}</td>
                   <td data-na={g.ratio_to_highest === null ? 'true' : undefined}>{g.ratio_to_highest === null ? formatNumber(null, lang) : f3(g.ratio_to_highest, lang)}</td>
                   <td className="ct-text">{pick(g.flag ? { en: 'below four-fifths', es: 'bajo cuatro quintos' } : { en: 'not flagged', es: 'sin alerta' }, lang)}</td>
                 </tr>
@@ -190,8 +190,8 @@ export function TestsView({ sel }: { sel: C21Sel | null }) {
               height="fill"
               orientation="horizontal"
               data={[
-                { id: 'reference', label: { en: `${a.reference_group} (reference)`, es: `${a.reference_group} (referencia)` } as BiText, value: a.contrasts[0]?.selection_rate_reference ?? null, tone: 'neutral' as const },
-                ...a.contrasts.map((c) => ({ id: c.group, label: { en: c.group, es: c.group } as BiText, value: c.selection_rate_group, highlight: c.group === sel.group })),
+                { id: 'reference', label: { en: `${groupBi(a.reference_group).en} (reference)`, es: `${groupBi(a.reference_group).es} (referencia)` } as BiText, value: a.contrasts[0]?.selection_rate_reference ?? null, tone: 'neutral' as const },
+                ...a.contrasts.map((c) => ({ id: c.group, label: groupBi(c.group) as BiText, value: c.selection_rate_group, highlight: c.group === sel.group })),
               ]}
               axis={{ label: { en: 'Share approved (an indicator only)', es: 'Parte aprobada (solo un indicador)' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
             />
@@ -212,7 +212,7 @@ export function TestsView({ sel }: { sel: C21Sel | null }) {
             <tbody>
               {a.contrasts.map((c) => (
                 <tr key={c.group} data-group={c.group} className={c.group === sel.group ? 'ct-current' : undefined}>
-                  <td className="ct-text">{`${c.group} / ${c.reference_group}`}</td>
+                  <td className="ct-text">{`${pick(groupBi(c.group), lang)} / ${pick(groupBi(c.reference_group), lang)}`}</td>
                   <td>{pc1(c.parity_gap, lang)}</td>
                   <td className="ct-wide-only" data-na={c.parity_ratio === null ? 'true' : undefined}>{c.parity_ratio === null ? formatNumber(null, lang) : f3(c.parity_ratio, lang)}</td>
                   <td>{f2(c.z_test.statistic, lang)}</td>

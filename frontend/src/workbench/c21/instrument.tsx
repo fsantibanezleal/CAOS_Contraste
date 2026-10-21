@@ -14,7 +14,7 @@ import { RailSelect } from '../c06/RailSelect';
 import { AttributeReadout, C21ContextView, C21FindingsView, C21VariantsView, GroupReadout } from './C21Common';
 import { ControlledView, RateSpreadView, ReplicationView, SituationView } from './EstimateViews';
 import { FourFifthsView, RatesView, TestsView } from './RateViews';
-import { FIELD_TEXT, attributeOf, defaultSel, outputsOf, text, type C21Sel } from './selection';
+import { FIELD_TEXT, attributeOf, defaultSel, groupBi, outputsOf, text, type C21Sel } from './selection';
 
 export interface C21Instrument {
   sel: C21Sel | null;
@@ -65,7 +65,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     content: (
       <>
         {/* a choice only when there is one to make (a one-option select changes nothing, gate G9) */}
-        {a && a.contrasts.length > 1 && <RailSelect id="c21-group" label={{ en: 'Group against the reference', es: 'Grupo contra la referencia' }} options={a.contrasts.map((c) => ({ id: c.group, label: { en: c.group, es: c.group } }))} value={sel.group} onChange={setGroup} />}
+        {a && a.contrasts.length > 1 && <RailSelect id="c21-group" label={{ en: 'Group against the reference', es: 'Grupo contra la referencia' }} options={a.contrasts.map((c) => ({ id: c.group, label: groupBi(c.group) }))} value={sel.group} onChange={setGroup} />}
         <GroupReadout sel={sel} />
       </>
     ),

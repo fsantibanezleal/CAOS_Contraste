@@ -12760,11 +12760,11 @@ export interface components {
         };
         c21Attribute: {
             /** @enum {unknown} */
-            field: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age";
+            field: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age" | "applicant_age_above_62";
             /** @description The legal mapping of the attribute, from the addendum H3 section 5 table only. */
             legal: {
                 /** @enum {unknown} */
-                basis: "race_color" | "national_origin_nearest_UNVERIFIED" | "sex" | "age_ecoa_only";
+                basis: "race_color" | "national_origin_nearest_UNVERIFIED" | "sex" | "age_ecoa_only" | "age_ecoa_only";
                 ecoa: boolean;
                 fha: boolean;
                 note: components["schemas"]["common-text"];
@@ -12866,6 +12866,29 @@ export interface components {
             four_fifths?: {
                 /** @enum {unknown} */
                 highest_rate_group?: "<25" | "25-34" | "35-44" | "45-54" | "55-64" | "65-74" | ">74";
+                groups?: unknown;
+            };
+            contrasts?: unknown;
+        } | {
+            /** @constant */
+            field?: "applicant_age_above_62";
+            legal?: {
+                /** @constant */
+                basis?: "age_ecoa_only";
+                /** @constant */
+                ecoa?: true;
+                /** @constant */
+                fha?: false;
+                /** @constant */
+                fha_disparate_impact?: "not applicable (age is a prohibited basis under ECOA only, not in 42 U.S.C. 3605(a))";
+            };
+            /** @enum {unknown} */
+            reference_group?: "62 or over" | "under 62";
+            groups?: unknown;
+            excluded_groups?: unknown;
+            four_fifths?: {
+                /** @enum {unknown} */
+                highest_rate_group?: "62 or over" | "under 62";
                 groups?: unknown;
             };
             contrasts?: unknown;
@@ -13045,7 +13068,7 @@ export interface components {
             selection_rate: number;
         };
         /** @enum {unknown} */
-        c21Hmda: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age" | "debt_to_income_ratio" | "combined_loan_to_value_ratio" | "income" | "loan_amount" | "property_value" | "loan_type" | "loan_purpose" | "lien_status" | "occupancy_type" | "applicant_age_above_62" | "action_taken" | "rate_spread" | "denial_reason_1" | "denial_reason_2" | "denial_reason_3" | "denial_reason_4";
+        c21Hmda: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age" | "applicant_age_above_62" | "debt_to_income_ratio" | "combined_loan_to_value_ratio" | "income" | "loan_amount" | "property_value" | "loan_type" | "loan_purpose" | "lien_status" | "occupancy_type" | "action_taken" | "rate_spread" | "denial_reason_1" | "denial_reason_2" | "denial_reason_3" | "denial_reason_4";
         /** @description The required label, on every C21 document. */
         c21Label: {
             /** @constant */
@@ -13231,7 +13254,7 @@ export interface components {
                 reason: components["schemas"]["common-text"];
             };
             /** @enum {unknown} */
-            attribute: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age";
+            attribute: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age" | "applicant_age_above_62";
             k: number;
             /** @constant */
             alpha: 0.05;
