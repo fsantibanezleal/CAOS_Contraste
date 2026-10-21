@@ -8,8 +8,16 @@ outputs of one name are coalesced into one (as nbconvert does), so the committed
 
     python scripts/run_notebooks.py                 # every notebook, in place
     python scripts/run_notebooks.py --only notebooks/en/01-getting-started/01-first-run.ipynb
-    python scripts/run_notebooks.py --check         # executes copies under a temporary folder, writes nothing, fails on any error
-                                                    # and on committed bytes that differ from a fresh run (stale outputs)
+    python scripts/run_notebooks.py --check --tmp DIR   # executes copies under DIR, writes nothing in the repository, fails on any
+                                                        # error and on committed bytes that differ from a fresh run (stale outputs)
+    CAOS_TEMP_ROOT=DIR python scripts/run_notebooks.py --check      # the same, the temp root from the environment
+
+``--check`` writes its copies to a fresh folder under the temp root the caller names (``--tmp DIR``, else ``CAOS_TEMP_ROOT``;
+the device's temp root, never a path written in the repository) and removes it after the run; without a temp root it stops
+with exit 2, and the system temp folder is never used. A product that declares method packages (``product.json``
+``method_packages``, PyPI distributions) must have them installed here, each with an exact pin in ``notebooks/requirements.txt``,
+and no notebook may define a name they define: the run stops before any notebook executes (``scripts/check_notebooks.py`` holds
+the same names statically when the packages are installed).
 
 It runs in ``.venv-notebooks`` (``scripts/setup.sh --notebooks`` or ``scripts/setup.ps1 -Notebooks``, built from
 ``notebooks/requirements.txt``): started with another interpreter, it re-runs itself in that venv. A local release gate, never CI
@@ -21,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import importlib.util
 import json
 import os
 import shutil
@@ -141,12 +150,47 @@ def same_bytes(a: Path, b: Path) -> bool:
     return a.read_bytes().replace(b"\r\n", b"\n") == b.read_bytes().replace(b"\r\n", b"\n")
 
 
+def method_problems() -> list[str]:
+    """What stops the run before any notebook executes: a method package of ``product.json`` that is not installed here or has no
+    exact pin, and a notebook cell that defines a name a method package defines. The rules are the static check's, which this
+    runner loads from the folder it lives in."""
+    checker = Path(__file__).resolve().parent / "check_notebooks.py"
+    if not checker.is_file():
+        product = ROOT / "product.json"
+        return ["scripts/check_notebooks.py is missing next to the runner, so the method packages cannot be checked"] if (
+            product.is_file() and "method_packages" in product.read_text(encoding="utf-8")) else []
+    spec = importlib.util.spec_from_file_location("check_notebooks_for_runner", checker)
+    module = importlib.util.module_from_spec(spec)
+    sys.dont_write_bytecode = True  # --check writes nothing in the repository, not even a bytecode cache of the checker
+    spec.loader.exec_module(module)
+    methods, problems = module.method_state(ROOT, strict=True)
+    for path in sorted(NOTEBOOKS.glob("*/*/*.ipynb")) if methods else []:
+        try:
+            cells = json.loads(path.read_text(encoding="utf-8")).get("cells", [])
+        except (OSError, ValueError):
+            continue
+        problems.extend(module.method_copy_findings(path.relative_to(ROOT).as_posix(), cells, methods))
+    return problems
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(prog="run_notebooks", description=__doc__.split("\n")[0])
-    ap.add_argument("--check", action="store_true", help="execute copies under a temporary folder; write nothing, fail on any error")
+    ap.add_argument("--check", action="store_true", help="execute copies under the temp root; write nothing, fail on any error")
+    ap.add_argument("--tmp", metavar="DIR", help="the temp root of --check (default: the environment variable CAOS_TEMP_ROOT)")
     ap.add_argument("--only", metavar="PATH", help="run one notebook (a path from the repository root)")
     ap.add_argument("--inner", action="store_true", help=argparse.SUPPRESS)
     a = ap.parse_args()
+
+    temp_root: Path | None = None
+    if a.check:
+        named = a.tmp or os.environ.get("CAOS_TEMP_ROOT") or ""
+        if not named.strip():
+            print("run_notebooks: --check needs a temp root: pass --tmp DIR or set CAOS_TEMP_ROOT (the device's temp root)")
+            return 2
+        temp_root = Path(named).expanduser().resolve()
+        if temp_root.exists() and not temp_root.is_dir():
+            print(f"run_notebooks: the temp root {temp_root} is not a folder")
+            return 2
 
     py = venv_python()
     if not a.inner and py is not None and Path(sys.prefix).resolve() != VENV.resolve():
@@ -162,13 +206,22 @@ def main() -> int:
     if stray:
         print(f"run_notebooks: no notebook ran; a notebook lives at {LAYOUT}: {', '.join(stray)}")
         return 1
+    problems = method_problems()
+    if problems:
+        print("run_notebooks: no notebook ran; the method packages of the product do not hold:")
+        for line in problems:
+            print(f"  - {line}")
+        return 1
     books = discover(a.only)
     if not books:
         print(f"run_notebooks: no notebook to run ({a.only or 'notebooks/*/*/*.ipynb'})")
         return 2
     os.environ.setdefault("PYTHONDONTWRITEBYTECODE", "1")  # the kernels import data-pipeline/ by path: leave no cache behind
     warm_matplotlib()
-    tmp_root = Path(tempfile.mkdtemp(prefix="run-notebooks-")) if a.check else None
+    tmp_root = None
+    if temp_root is not None:
+        temp_root.mkdir(parents=True, exist_ok=True)
+        tmp_root = Path(tempfile.mkdtemp(prefix="run-notebooks-", dir=temp_root))
     failures: list[str] = []
     try:
         for book in books:
