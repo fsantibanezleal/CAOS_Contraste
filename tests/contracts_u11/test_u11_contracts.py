@@ -171,6 +171,16 @@ def test_the_fixture_is_labelled_as_a_fixture(key: str) -> None:
     assert doc["provenance"]["truth_status"] in ("synthetic-known-truth", "synthetic-calibrated")
 
 
+def released_fragment(path: Path) -> str:
+    """The unit's changelog fragment, or, once a release merged and deleted it (fragments.py changelog --apply), the text of the
+    CHANGELOG entry that holds it, so the unit's needles are still checked where they now live."""
+    if path.is_file():
+        return path.read_text(encoding="utf-8")
+    log = (path.parents[1] / "CHANGELOG.md").read_text(encoding="utf-8")
+    entries = re.split(r"(?m)^## ", log)[1:]
+    return next(e for e in entries if e.startswith("[0.13.000]"))
+
+
 def test_every_u11_schema_is_case_folder_conformant_and_case_prefixed() -> None:
     assert cs.case_folder_violations() == []
     files = sorted((SCHEMAS / "c16").glob("*.schema.json"))
@@ -1021,12 +1031,13 @@ def test_the_rows_fragment_carries_no_row_already_in_the_catalog_and_names_the_f
 
 
 def test_the_changelog_fragment_holds_bullet_lines_only_and_names_the_bump() -> None:
-    lines = [ln for ln in CHANGES.read_text(encoding="utf-8").splitlines() if ln.strip()]
-    assert lines and lines[0].startswith("- ")
-    for ln in lines:
-        assert ln.startswith("- ") or ln.startswith("  "), ln
-        assert not ln.startswith("#")
-    text = CHANGES.read_text(encoding="utf-8")
+    text = released_fragment(CHANGES)
+    if CHANGES.is_file():  # the format rule binds the fragment; after the release its bullets sit in the CHANGELOG entry
+        lines = [ln for ln in text.splitlines() if ln.strip()]
+        assert lines and lines[0].startswith("- ")
+        for ln in lines:
+            assert ln.startswith("- ") or ln.startswith("  "), ln
+            assert not ln.startswith("#")
     for needle in ("c16-outputs", "c16-models", "engine-liquidity-api", "contract-family", "balance_sheet", "liquidity_class"):
         assert needle in text, needle
     assert chr(0x2014) not in text and chr(0x2192) not in text

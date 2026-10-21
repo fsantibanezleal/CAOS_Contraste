@@ -117,6 +117,16 @@ def test_the_fixture_is_labelled_as_a_fixture(key: str) -> None:
     assert str(ident).startswith("fixture-")
 
 
+def released_fragment(path: Path) -> str:
+    """The unit's changelog fragment, or, once a release merged and deleted it (fragments.py changelog --apply), the text of the
+    CHANGELOG entry that holds it, so the unit's needles are still checked where they now live."""
+    if path.is_file():
+        return path.read_text(encoding="utf-8")
+    log = (path.parents[1] / "CHANGELOG.md").read_text(encoding="utf-8")
+    entries = re.split(r"(?m)^## ", log)[1:]
+    return next(e for e in entries if e.startswith("[0.13.000]"))
+
+
 def test_there_are_six_c12_variants_with_one_kind_and_distinct_variant_names() -> None:
     names = [load(k)["outputs"]["variant"] for k in VARIANTS]
     assert names == VARIANTS
@@ -963,11 +973,13 @@ def test_the_rows_fragment_carries_no_row_already_in_the_catalog_and_names_the_i
 
 
 def test_the_changelog_fragment_is_bullets_only() -> None:
-    lines = [ln for ln in CHANGES.read_text(encoding="utf-8").splitlines() if ln.strip()]
-    assert lines and lines[0].startswith("- ")
-    for ln in lines:
-        assert ln.startswith("- ") or ln.startswith("  "), ln
-        assert chr(0x2014) not in ln and chr(0x2192) not in ln
+    text = released_fragment(CHANGES)
+    lines = [ln for ln in text.splitlines() if ln.strip()]
+    if CHANGES.is_file():  # the format rule binds the fragment; after the release its bullets sit in the CHANGELOG entry
+        assert lines and lines[0].startswith("- ")
+        for ln in lines:
+            assert ln.startswith("- ") or ln.startswith("  "), ln
+    assert chr(0x2014) not in text and chr(0x2192) not in text
 
 
 # --- the engine API contracts -------------------------------------------------------------------------------------------

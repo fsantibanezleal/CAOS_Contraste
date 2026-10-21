@@ -141,6 +141,16 @@ def test_the_fixture_is_labelled_as_a_fixture(key: str) -> None:
     assert doc["case_id"] == "C18"
 
 
+def released_fragment(path: Path) -> str:
+    """The unit's changelog fragment, or, once a release merged and deleted it (fragments.py changelog --apply), the text of the
+    CHANGELOG entry that holds it, so the unit's needles are still checked where they now live."""
+    if path.is_file():
+        return path.read_text(encoding="utf-8")
+    log = (path.parents[1] / "CHANGELOG.md").read_text(encoding="utf-8")
+    entries = re.split(r"(?m)^## ", log)[1:]
+    return next(e for e in entries if e.startswith("[0.13.000]"))
+
+
 def test_every_u13_schema_is_case_folder_conformant_and_case_prefixed() -> None:
     assert cs.case_folder_violations() == []
     files = sorted((SCHEMAS / "c18").glob("*.schema.json"))
@@ -1071,10 +1081,11 @@ def test_the_schema_rows_name_their_schema_file_and_the_engine_rows_their_markdo
 
 
 def test_the_changelog_fragment_has_bullet_lines_only_and_names_the_unit() -> None:
-    lines = CHANGES.read_text(encoding="utf-8").splitlines()
-    assert lines and all(ln.startswith("- ") or ln.startswith("  ") or ln == "" for ln in lines)
-    assert not any(ln.startswith("#") for ln in lines)
-    text = "\n".join(lines)
+    text = released_fragment(CHANGES)
+    lines = text.splitlines()
+    if CHANGES.is_file():  # the format rule binds the fragment; after the release its bullets sit in the CHANGELOG entry
+        assert lines and all(ln.startswith("- ") or ln.startswith("  ") or ln == "" for ln in lines)
+        assert not any(ln.startswith("#") for ln in lines)
     assert "U13-S" in text and "C18" in text and "C19" in text and "E1" in text
     assert chr(0x2014) not in text and chr(0x2192) not in text
 

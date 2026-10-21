@@ -96,6 +96,16 @@ def test_the_fixture_is_labelled_as_a_fixture(ref: str, path: Path) -> None:
     assert str(doc[key]).startswith("fixture-")
 
 
+def released_fragment(path: Path) -> str:
+    """The unit's changelog fragment, or, once a release merged and deleted it (fragments.py changelog --apply), the text of the
+    CHANGELOG entry that holds it, so the unit's needles are still checked where they now live."""
+    if path.is_file():
+        return path.read_text(encoding="utf-8")
+    log = (path.parents[1] / "CHANGELOG.md").read_text(encoding="utf-8")
+    entries = re.split(r"(?m)^## ", log)[1:]
+    return next(e for e in entries if e.startswith("[0.13.000]"))
+
+
 def test_every_u14_schema_is_case_folder_conformant_case_prefixed_and_declares_its_kind() -> None:
     assert cs.case_folder_violations() == []
     assert cs.default_violations() == []
@@ -671,12 +681,14 @@ def test_the_rows_fragment_has_the_twelve_rows_in_the_catalog_columns() -> None:
 
 
 def test_the_changes_fragment_is_bullets_only() -> None:
-    lines = CHANGES.read_text(encoding="utf-8").splitlines()
-    assert lines and lines[0].startswith("- ")
-    for ln in lines:
-        assert ln.startswith("- ") or ln.startswith("  ") or ln == "", ln
-    assert not any(ln.startswith("#") for ln in lines)
-    assert "1.1.0" in "\n".join(lines) and "scored_sample" in "\n".join(lines)
+    text = released_fragment(CHANGES)
+    lines = text.splitlines()
+    if CHANGES.is_file():  # the format rule binds the fragment; after the release its bullets sit in the CHANGELOG entry
+        assert lines and lines[0].startswith("- ")
+        for ln in lines:
+            assert ln.startswith("- ") or ln.startswith("  ") or ln == "", ln
+        assert not any(ln.startswith("#") for ln in lines)
+    assert "1.1.0" in text and "scored_sample" in text
 
 
 # --- the engine contracts -------------------------------------------------------------------------------------------
@@ -757,7 +769,8 @@ def test_the_ml_contract_names_every_planted_defect_the_sizing_lists() -> None:
 
 
 def test_the_new_files_have_no_em_dash_and_no_emoji() -> None:
-    files = [ENGINE / "ml-api.md", ENGINE / "fairness-api.md", ROWS, CHANGES, *sorted(Path(__file__).parent.glob("*.py"))]
+    files = [ENGINE / "ml-api.md", ENGINE / "fairness-api.md", ROWS, *([CHANGES] if CHANGES.is_file() else []),
+             *sorted(Path(__file__).parent.glob("*.py"))]
     for c in ("c02", "c20", "c21"):
         files += sorted((SCHEMAS / c).glob("*.json")) + sorted((FIXTURES / c).glob("*.json"))
     for f in files:
