@@ -1,4 +1,4 @@
-- Contract c18-models 2.1.0 (minor, additive): the aggregation block of the C18 models document gains the optional `quantile_grid`, the
+- Contract c18-models 3.0.0 (major: a required key): the aggregation block of the C18 models document gains the required `quantile_grid`, the
   quantile function of each of the four marginals on a named probability grid (1,961 points, p = Phi(z) for z from -4.9 to 4.9 in steps of
   0.005, in CLP millions), so the marginals the band was run on can be rebuilt from the repository alone (review MA5 of the U17 sample).
   The schema generator, the fixture generator, the catalog and History rows, the c18-models entry of `versions.lock.json`, the generated

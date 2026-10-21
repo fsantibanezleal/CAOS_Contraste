@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contraste.fasl-work.com/contracts/c18/models.schema.json",
   "title": "C18 models",
-  "description": "Catalog row c18-models 2.1.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank anchors, scenario sources, capital engine rules, named parameters).",
+  "description": "Catalog row c18-models 3.0.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank anchors, scenario sources, capital engine rules, named parameters).",
   "allOf": [
     {
       "$ref": "../common/models-envelope.schema.json"
@@ -1421,7 +1421,7 @@
           ]
         }
       },
-      "description": "The quantile function of each marginal at the grid probabilities (c18-models 2.1.0): a reader rebuilds the marginals the copulas and the bounds were run on by linear interpolation in the probability. Ascending probabilities, non-decreasing quantiles and the agreement with the marginal's VaR are checked by tests/c18/test_c18_quantile_grid.py."
+      "description": "The quantile function of each marginal at the grid probabilities (c18-models 3.0.0): a reader rebuilds the marginals the copulas and the bounds were run on by linear interpolation in the probability. Ascending probabilities, non-decreasing quantiles and the agreement with the marginal's VaR are checked by tests/c18/test_c18_quantile_grid.py."
     },
     "c18AggParams": {
       "type": "object",
@@ -1434,7 +1434,8 @@
         "horizon_years",
         "confidence_level",
         "capital_basis",
-        "marginal_interpolation"
+        "marginal_interpolation",
+        "quantile_grid"
       ],
       "properties": {
         "ladder": {

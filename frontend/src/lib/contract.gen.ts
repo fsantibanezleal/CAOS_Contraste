@@ -10606,7 +10606,7 @@ export interface components {
         });
         /**
          * C18 models
-         * @description Catalog row c18-models 2.1.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank anchors, scenario sources, capital engine rules, named parameters).
+         * @description Catalog row c18-models 3.0.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank anchors, scenario sources, capital engine rules, named parameters).
          */
         "c18-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -10731,7 +10731,7 @@ export interface components {
             capital_basis: "economic-capital-var-less-el";
             /** @description The rule that maps a uniform draw through a marginal sample. */
             marginal_interpolation: string;
-            quantile_grid?: components["schemas"]["c18QuantileGrid"];
+            quantile_grid: components["schemas"]["c18QuantileGrid"];
         };
         /** @description The aggregation block: the simple sum as the headline, the band with the model risk measures beside it, the Euler allocation and the diversification (both information), one horizon and one confidence level, the source and scaling of every marginal. */
         c18Aggregation: {
@@ -11759,7 +11759,7 @@ export interface components {
             date: string;
             value: number;
         };
-        /** @description The quantile function of each marginal at the grid probabilities (c18-models 2.1.0): a reader rebuilds the marginals the copulas and the bounds were run on by linear interpolation in the probability. Ascending probabilities, non-decreasing quantiles and the agreement with the marginal's VaR are checked by tests/c18/test_c18_quantile_grid.py. */
+        /** @description The quantile function of each marginal at the grid probabilities (c18-models 3.0.0): a reader rebuilds the marginals the copulas and the bounds were run on by linear interpolation in the probability. Ascending probabilities, non-decreasing quantiles and the agreement with the marginal's VaR are checked by tests/c18/test_c18_quantile_grid.py. */
         c18QuantileGrid: {
             /** @description The named convention of the probability grid: p = Phi(z) for z from z_min to z_max in steps of z_step. */
             convention: {

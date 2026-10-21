@@ -883,7 +883,7 @@ def fit_defs() -> dict:
         "marginals": exact_rows(Ob({"risk": E(*RISKS), "quantiles": A(N(), 1961, 1961, "The marginal's quantile at each probability, CLP millions, "
                                                                                   "non-decreasing.")}), "risk", RISKS,
                                 "One quantile function per marginal, in the order of the band's marginals."),
-    }, "The quantile function of each marginal at the grid probabilities (c18-models 2.1.0): a reader rebuilds the marginals the copulas and the "
+    }, "The quantile function of each marginal at the grid probabilities (c18-models 3.0.0): a reader rebuilds the marginals the copulas and the "
        "bounds were run on by linear interpolation in the probability. Ascending probabilities, non-decreasing quantiles and the agreement with "
        "the marginal's VaR are checked by tests/c18/test_c18_quantile_grid.py.")
     d["c18AggParams"] = Ob({
@@ -892,8 +892,9 @@ def fit_defs() -> dict:
         "horizon_years": HORIZON, "confidence_level": LEVEL, "capital_basis": BASIS,
         "marginal_interpolation": S("The rule that maps a uniform draw through a marginal sample.", minLength=1),
     })
-    # optional, added at 2.1.0: a 2.0.0 document (without the grid) still validates
+    # required since 3.0.0 (every object closed, nothing optional): the models document commits the grid (review MA5)
     d["c18AggParams"]["properties"]["quantile_grid"] = R("c18QuantileGrid")
+    d["c18AggParams"]["required"].append("quantile_grid")
     d["c18C17Set"] = Ob({
         "document": C("C17 models-generator"),
         "variant_id": E("xi-0-6", "xi-0-8", "xi-0-96", "xi-1-1"),
@@ -1003,7 +1004,7 @@ def main() -> None:
                    "Catalog row c18-outputs-reverse 1.0.0: the reverse stress variant (outputs.kind reverse), the minimum Mahalanobis distance scenario "
                    "that takes CET1 to the Chilean legal minimum stack.", "c18RevOutputs", rd)
     models_schema("C18 models",
-                  "Catalog row c18-models 2.1.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank "
+                  "Catalog row c18-models 3.0.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank "
                   "anchors, scenario sources, capital engine rules, named parameters).", "c18Fit", fd)
 
 
