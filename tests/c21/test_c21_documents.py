@@ -4,7 +4,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import contract_schemas as cs
-from c21_support import C21, DERIVED, MODELS, PAIRS, VARIANTS, all_documents, listing_problems, load, semantics, values
+from c21_support import C21, DERIVED, MODELS, PAIRS, ROOT, VARIANTS, all_documents, listing_problems, load, semantics, values
+from engine_pin import pinned_ref
 
 from pipeline.cases.c21 import legal
 
@@ -55,7 +56,7 @@ def test_every_committed_document_validates_passes_the_checks_and_is_listed_with
     for pid, name in zip(PAIRS, VARIANTS):
         o = docs[name]["outputs"]
         assert o["pair_id"] == pid and (o["fit_year"], o["confirm_year"]) == (int(pid[:4]), int(pid[:4]) + 1)
-        assert docs[name]["provenance"]["riskvalidation_version"] == "0.8.1" and docs[name]["provenance"]["truth_status"] == "real-outcomes"
+        assert docs[name]["provenance"]["riskvalidation_version"] == pinned_ref((ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")) and docs[name]["provenance"]["truth_status"] == "real-outcomes"
 
 
 def test_no_outcome_conditioned_test_runs_and_only_the_allowlisted_ids_appear() -> None:
