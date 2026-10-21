@@ -133,6 +133,37 @@ basis, the topic 01 notebooks cite:
   https://doi.org/10.1148/radiology.143.1.7063747;
 - Spiegelhalter (1986), probabilistic prediction in patient management and clinical trials, https://doi.org/10.1002/sim.4780050506.
 
+The topic 06 (portfolio capital) notebooks cite, from the persisted research dossiers 04 and 05, the engine's module documentation and
+its contract:
+
+- Board of Governors of the Federal Reserve System, charge-off and delinquency rates on loans and leases at commercial banks, table
+  `chgallsa`, https://www.federalreserve.gov/releases/chargeoff/chgallsa.htm (public domain, licence class mirror-allowed);
+- BCBS, Basel Framework CRE31, the IRB risk weight functions, https://www.bis.org/basel_framework/chapter/CRE/31.htm;
+- Gordy (2003), a risk-factor model foundation for ratings-based bank capital rules, https://doi.org/10.1016/S1042-9573(03)00040-8;
+- Gordy (2000), a comparative anatomy of credit risk models, https://doi.org/10.1016/S0378-4266(99)00054-0 (the dossier records it from
+  its abstract, the wording is UNVERIFIED);
+- Gupton, Finger and Bhatia (1997), CreditMetrics technical document, as reissued in 2007 and hosted by MSCI,
+  https://www.msci.com/documents/10199/93396227-d449-4229-9143-24a94dab122f (page-level formula references UNVERIFIED);
+- Li (2000), on default correlation: a copula function approach, https://doi.org/10.3905/jfi.2000.319253;
+- Frey and McNeil (2003), dependent defaults in models of portfolio credit risk, https://doi.org/10.21314/jor.2003.089;
+- Demarta and McNeil (2005), the t copula and related copulas, https://doi.org/10.1111/j.1751-5823.2005.tb00254.x;
+- Haaf, Reiss and Schoenmakers (2004), numerically stable computation of CreditRisk+, https://doi.org/10.21314/jor.2004.097;
+- Gordy and Lutkebohmert (2013), granularity adjustment for regulatory capital assessment,
+  https://www.ijcb.org/sites/default/files/journal/v9n3/ijcb-v9n3-granularity-adjustment-regulatory-capital-assessment.pdf;
+- Tasche (2008), capital allocation to business units and sub-portfolios: the Euler principle, https://arxiv.org/abs/0708.2542;
+- Tasche (2009), capital allocation for credit portfolios with kernel estimators, https://doi.org/10.1080/14697680802620599;
+- Emmer and Tasche (2005), calculating credit risk capital charges with the one-factor model, https://arxiv.org/abs/cond-mat/0302402;
+- Glasserman and Li (2005), importance sampling for portfolio credit risk, https://doi.org/10.1287/mnsc.1050.0415 (the dossier marks its
+  transcription of the twist UNVERIFIED);
+- Glasserman, Heidelberger and Shahabuddin (2002), portfolio value-at-risk with heavy-tailed risk factors,
+  https://doi.org/10.1111/1467-9965.00141;
+- Acerbi and Tasche (2002), on the coherence of expected shortfall, https://doi.org/10.1016/S0378-4266(02)00283-2;
+- Dullmann and Masschelein (2007), a tractable model to measure sector concentration risk in credit portfolios,
+  https://doi.org/10.1007/s10693-007-0014-3;
+- BCBS (2006), studies on credit risk concentration, working paper 15, https://www.bis.org/publ/bcbs_wp15.pdf (a search summary in the
+  dossier);
+- Wilson (1927), probable inference, the law of succession, and statistical inference, https://doi.org/10.1080/01621459.1927.10502953.
+
 ## Sizing and contracts
 
 The design rests on two artifacts of contract-first parallel delivery (ADR-0080): the sizing and the contract catalog.
@@ -481,11 +512,29 @@ No oracle here is a model judging another model.
 
 ## Beyond the state of the art
 
-None claimed. A component of Contraste that goes further than the practice its research found enters this section with the
-topic unit that demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes
-beyond, and a level 4 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches
-the package's contract and demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8)
-and enter here one by one, so no claim is stated before its demonstration exists.
+A component of Contraste that goes further than the practice its research found enters this section with the topic unit that
+demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes beyond, and a
+level 4 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). A claim is stated only as far as
+its evidence goes. Topic 01 teaches the package's contract and demonstrates none. The candidate claims and their evidence are
+drafted in the U17 sizing (decision N8) and enter here one by one, so no claim is stated before its demonstration exists.
+
+- **BS-6** Engines and test catalogues no open toolkit provides.
+  What it adds: the ECB 2019 IRB validation-reporting tests as specified, a copula and CreditRisk+ portfolio engine and a bank IRRBB
+  engine, with golden values reproduced from the primary sources. It is an absence claim: on 2026-10-04 a search of GitHub and PyPI
+  found no toolkit that implements these tests as specified. Topic 06 (portfolio capital) demonstrates the portfolio engine: the
+  closed forms and the published test vector it is held to, the committed Gaussian copula rung regenerated bit for bit by the
+  released engine, and the engine's estimator measured against a simulator with a known truth. The ECB tests and the IRRBB engine
+  are demonstrated by the units of their own topics.
+  Evidence: `docs/frameworks/01_riskvalidation/riskvalidation.md`, `data/derived/C01/holdout.json`, `data/derived/C10/grid-22.json`,
+  `data/derived/C10/grid-40.json`, `data/derived/C10/commercial-industrial.json`, `data/derived/C10/credit-cards.json`,
+  `data/derived/C14/vd-2022-q2.json`, `notebooks/en/06-portfolio-capital/08-beyond-an-engine-reconciled-to-its-anchors.ipynb`.
+  Beyond: the research dossiers 04, 05 and 06 record no maintained permissive implementation of these families. Scope of the
+  record: for the portfolio engines, dossier 04 section H.8 records a search of 2026-10-04 on CRAN and GitHub (archived CRAN
+  packages, a GPL-2 CRAN package, a GPL-2.0 repository and small educational repositories), and the search of GitHub and PyPI is
+  dossier 06's, for the validation toolkits; no record states that PyPI was searched for CreditMetrics or CreditRisk+. The claim is
+  about maintained, permissively licensed implementations on those dates and is UNVERIFIED beyond them. Not claimed: equality with a
+  reference engine (the research found none), freedom from defects (the anchors are necessary conditions), and the Student t
+  importance sampler, which the engine records as a rung that did not run.
 
 ## Deploy driver
 
