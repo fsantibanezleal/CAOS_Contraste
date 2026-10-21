@@ -18,6 +18,14 @@ CASE_ID = "C02"
 SOURCES = ("uci-polish",)
 
 
+#: why this case reads what it reads of other cases, keyed by the document or the module its producer names: ``depends_on`` refuses a list that differs
+#: from the source (core.manifest.derive_depends_on), so the manifest cannot state what the code does not do
+DEPENDS_REASONS: dict[str, dict[str, str]] = {
+    "pipeline.cases.c01_ladder": {"en": "Fits the C01 rungs with the C01 ladder (fit_ladder and Rung): the same fitting code, so the rungs of the two cases are the same models.",
+        "es": "Ajusta los peldaños de C01 con la escalera de C01 (fit_ladder y Rung): el mismo código de ajuste, de modo que los peldaños de ambos casos son los mismos modelos."},
+}
+
+
 class C02:
     id = CASE_ID
     slug = "corporate-pd-horizons-polish"
@@ -30,6 +38,12 @@ class C02:
         "es": "¿Qué tan rápido cae la discriminación del horizonte de 1 año al de 5 años, superan los escalones de aprendizaje al scorecard "
               "por un margen que respalda una prueba pareada y se mantienen calibrados?"}
     sources = SOURCES
+
+    def depends_on(self) -> list[dict[str, Any]]:
+        """What this case reads of other cases, as the manifest states it (``depends_on``)."""
+        from ...core.manifest import derive_depends_on
+
+        return derive_depends_on(self.id, DEPENDS_REASONS)
 
     def bake(self, seed: int, paths: Any, data_root: Path | None) -> dict[str, Any]:
         from .bake import bake_case

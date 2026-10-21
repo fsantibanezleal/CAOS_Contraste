@@ -3,6 +3,146 @@
 All notable changes to this product. Versions are X.XX.XXX (VERSION is the single source); every release is
 tagged.
 
+## [0.15.000], 2026-10-21
+
+Model governance (U15):
+- **The inventory and its register:** every fit of the 21 built cases is an inventory entry, 34 in all, with its tier under the four readings of the rubric. A findings register holds 572 rows, beside the model risk appetite and one twelve-section validation report per entry, all computed by `riskvalidation.governance`.
+- **The views:** the Experiments design group gains Inventory and tiers, Findings and appetite, and Reports; each case's Findings group gains its opinion; the Methodology page gains Model governance.
+- **Engine 0.9.0:** the cases run on `riskvalidation` 0.9.0 from PyPI. The cases that record the engine were re-baked, and only their engine-version fields changed, plus the run seconds of the C12 ORE reconciliation.
+- **The catalog:** every contract boundary is real (`scripts/check_skeleton.py`). The seven engine API rows shipped in 0.8.x and the five governance rows moved from their fixtures to their producers; api 13.0.0.
+- **The notebooks:** all 220 run on `riskvalidation` 0.9.0.
+
+- Contraste governance bake (U15-P): `python -m pipeline.governance` from `data-pipeline/` reads every committed case document and calls `riskvalidation.governance` (0.9.0) for every computed value, then writes `data/derived/governance/` (the model inventory with its dependency map and tiers, the findings register, the model risk appetite, one twelve-section validation report per entry and `SHA256SUMS.txt`) and the generated block of `docs/governance.md`. One entry per fit; the tier under the four readings of the rubric; the register enriches the 572 finding rows without rewriting a case document; C02 and C20 are scored by the same rubric (W15-18). The bake is deterministic, reads no clock and stops, writing nothing, when a case document is absent or a check of the U15-S contracts finds anything.
+- Governance after the Opus review (U15-P fix round): the no-approval rule reads every string, copied case text included, with a
+  named allow list of credit-decision phrases; C20 is scored by its model type (regulatory use 4 and 3); the appetite counts the
+  inventory's own findings (independence not established, S2; the rubric's fan-out blind spot, S3) and says so in its basis.
+- U15-S contracts: the JSON Schemas of the four governance documents under docs/contracts/schemas/governance (governance-inventory, governance-findings, governance-report and governance-appetite; case_id GOVERNANCE, a governance_id const, schema_version, the committed as_of date and a provenance with the sha256 of every case document read), with plainly labelled fixtures under docs/contracts/fixtures/governance that validate by discovery. The inventory holds one entry per fit (case_id/fit_id; four in the fixture: C01/german, C07/banco-andino, C18/banco-andino, C22/generators) with the 40 B.2 attributes as objects (value, a status of present, derivable, convention, not-applicable or missing, and a basis that is a JSON pointer or a reason), the components with their role, the B.1 scope record per profile, the tier block (M, C, the factor scores tagged doc or convention, the tier, the override and the tier under four readings), the lifecycle state, the schedule dates, the dependency edges (kind document or code, each with its stated source, apart from the related links), the engine node and the two governance findings of the inventory itself (the rubric blind spot S3, independence not established S2). The register keys a finding case_id/variant_id/id with its ECB F equivalent, the mapped B.7 status, the anchor or its reason, the owner role, the dates, the ageing and the overdue flag; a report has the twelve I.3 sections, each filled with its inputs or absent with its reason, and section 11 holds the opinion level, the rule and the recommendation labelled "the rule's output on the evidence; Contraste approves no model"; the appetite holds the seven B.6 metrics with a light under a stated convention threshold. Every table that is a convention carries the label convention and its basis, never called regulatory; no approval date or approver exists (SDD non-goal 1).
+- U15-S engine contract: docs/contracts/engine/governance-api.md (engine-governance-api 1.0.0), the signatures, units, invariants and goldens of riskvalidation.governance (scope, inventory, tiering, lifecycle, findings, schedule, opinion, appetite, policy, report) and of the five gov. tests of riskvalidation.validation.governance: the addendum D2 tiers of the 19 built cases under the four readings, the tier matrix at its boundaries, every allowed and refused B.7 and B.4 transition, the deadline, ageing and schedule arithmetic on dates, the opinion at the RWEA cut points 5 and 10 percent and a refused cycle. Every computed field of a schema names its engine function in its description. The catalog rows are in docs/contracts/rows/U15.md for the integrator to merge.
+- U15-S checker and tests: tests/contracts_u15/semantics.py holds the cross-field checks (the tier is the matrix of its scores under its reading, the due date is the raised date plus the deadline of its severity and tier, the overdue flag agrees with as_of, the opinion is the rule's level for the open findings, every edge joins two entries, a cycle is refused, a component key does not repeat, a present attribute names a pointer, a not-applicable attribute states a reason, an approval date holds no value, no convention is called regulatory) and the cross-document checks; the fixtures are written by build_fixtures.py from snapshots/source-extract.json, which extract_sources.py reads from the committed case documents (C18 from origin/task/u13-p1).
+- U15-S fix round after the Opus review (the contracts stay 1.0.0, unreleased): the RWEA branch has a source (decision W15-11): the register row carries `rwea_share` and its reason, set by the engine function `findings.rwea_share_of_anchor` from an anchor stated as a share of RWEA or an RWEA amount, the open findings of a report carry the register's share and the cross check compares them, and an anchor can only raise a level (the maximum of the severity level and the RWEA level). The policy `kind` is `spec(test_id).decision` (`p_value` or `metric`, null with its reason where the test is not registered, as the ifrs9, stress, aggregation and portfolio tests are at the batch 3 head), the direction is null with "no policy file (BL-085)" for an inline battery string (W15-12). Every document carries `as_of_basis` (label convention, English and Spanish) and the checker refuses an `as_of` earlier than the newest raised date (W15-13). The appetite count metrics count distinct (entry, id) findings with the register-row count beside them (W15-14: 4 of 39 open high-severity findings on 8 rows, 3 on 7 rows overdue). An entry lists its variants with the basis of each assignment, `assign_variant` states the provenance rule, an excluded variant carries its id, and the cross check holds every register row's variant in its entry (W15-15). Also: the `tier_sensitivity` invariant reads "never a higher tier number than reading B" and the literal regulatory use is never below the graded one, an approval, certification or compliance text rule over every string in both languages, ten regulatory-claim patterns each with a sample only it catches, the B.7 graph named a convention, the literal grade for compliance monitoring, the git ref of the C18 documents read, an empty inventory refused with a stated message, every computed field names its engine function (the test derives the list from the schemas), and plants that kill the eight surviving mutants of the review.
+- Contraste governance views (U15-W) on the reviewed fixtures: the Inventory and tiers tab (dependency map, 4 by 4 tier matrix, rubric sensitivity), the Findings and appetite tab (register with each severity beside its ECB F equivalent, severity by status, ageing, the seven B.6 metrics), the Reports tab (the twelve I.3 sections of one entry), the opinion block of each case's Findings group and the Methodology section on model governance. Every number is read from a governance document; a document the bake has not written shows "not available yet" with the reason. U15-P's real documents replace the fixtures with no view change.
+- The Experiments design group holds Coverage, Protocol and metrics, the three governance tabs and C22 (six tabs), relabelled
+  "How are the experiments designed and governed?"; each case's Findings group shows its opinion in a one-line disclosure; the
+  governance Methodology section joins "The models and their risk" beside Model risk, and Provisions moves to the loss group,
+  relabelled "Expected loss, severity and exposure".
+
+## [0.14.000], 2026-10-21
+
+The notebooks (U17):
+- **The set:** 220 notebooks, in thirteen topics from simple to complex and in English and Spanish at identical paths, on the product's own committed data and `riskvalidation` 0.8.1 from PyPI. Levels 1 to 4 cover the fundamentals, the method in practice, the state of the art, and the twelve claims beyond it (BS-1 to BS-12), each with its level 4 notebook.
+- **The review:** an Opus sample review of topics 03 and 12, and three fix rounds over every topic. All 220 notebooks run top to bottom in a fresh kernel and reproduce their committed outputs (`scripts/run_notebooks.py --check`).
+- **c18-models 3.0.0:** the C18 models document commits a quantile grid per marginal (review MA5), required by the closed-object rule, so notebooks 12-02, 12-03 and 12-08 rebuild the copula and bound runs from the repository alone; api 12.0.0.
+- **The indexes:** `notebooks/en/README.md` and `notebooks/es/README.md` are built from the notebooks' metadata, with each claim named in its tree's language.
+
+- Notebooks, topic 02 credit-scoring, in English and Spanish: seven notebooks per language (levels 1, 2, 2, 2, 2, 3 and 4), executed
+  and committed, on the committed artifacts of C01, C03 and C02 and `riskvalidation` 0.8.1: the scorecard idea (WoE, IV and points), the
+  leakage-safe fit read back, the validation battery on the ladder of models, the out-of-time cohorts of C03, the corporate PD across
+  horizons of C02, the state of the art against the scorecard, and the level 4 notebook of claim BS-3.
+- SDD: the claim BS-3 (the leakage-safe protocol per case, with gates) enters the section Beyond the state of the art with its
+  committed evidence, and the sources the topic 02 notebooks cite enter the sources the notebooks cite.
+- Notebooks, topic 03-ratings-and-calibration (U17-C): eleven notebooks in English and in Spanish on the committed artifacts of C04 and C05, riskvalidation 0.8.1: the master scale and the through-the-cycle PD (1), the cohort, duration, Aalen-Johansen and EM estimators (2), the embedding problem and generators (3), the Markov, momentum and ECB stability tests (4), carrying a PD curve to a new year (5), low-default portfolios (6), from a PD to capital (7), two level 3 notebooks on the transition estimators and the calibration approaches (8, 9) and two level 4 notebooks (10, 11).
+- Claims BS-2 (the reconciliations against reference engines that exist today) and BS-4 (the default definition as part of the PD, informative withdrawals and thin grades) enter the SDD section Beyond the state of the art with their level 4 notebooks, and the ids enter `CLAIMS` of `tests/test_notebooks_layer.py`.
+- Notebooks, topic 04-provisions, in English and Spanish, executed and mirrored: expected credit loss of one account (level 1),
+  staging and the significant increase in credit risk, scenarios and the non-linearity of ECL, overlays and the allowance
+  roll-forward, the IFRS 9 validation battery on six reporting dates, CMF B-1, IFRS 9 and Bank of Spain Annex 9 on one synthetic
+  bank (level 2), the state of the art of lifetime PD by survival (level 3) and the level 4 notebook of claim BS-5.
+- SDD: claim BS-5 enters the section Beyond the state of the art with its evidence and its limits (the gate's tolerance is relative,
+  the weighted-over-average inequality holds in the convex regime), and the sources the topic 04 notebooks cite are listed.
+- Tests: BS-5 is listed in CLAIMS of tests/test_notebooks_layer.py.
+- **Notebooks, topic 05 (U17-E):** `notebooks/en/05-lgd-and-ead/` and `notebooks/es/05-lgd-and-ead/` hold seven notebooks in each language, executed on the committed artifacts of C08 and C09 with `riskvalidation` 0.8.1: workout LGD and the C08 charge-off proxy (level 1), EAD and the credit conversion factor (level 1), the LGD ladder from OLS to Tobit, downturn LGD and the regulatory floors, the CCF estimators on a generator with a known truth, the EAD back-test and the LGD and EAD battery (level 2), and the LGD and EAD models against the benchmark evidence (level 3).
+  Every recomputation of a committed result prints the engine version that baked it beside the installed one; the committed EAD back-test of the eight C09 models is reproduced exactly from its band totals.
+  The topic has no level 4 notebook and states no claim in the SDD: the CCF reference-date result rests on a truth defined at the generator's own twelve-month horizon, and its claim text is returned to the integrator as a proposal.
+- Notebooks, topic 06 portfolio capital, in English and Spanish, on the committed C10 artifacts and `riskvalidation` 0.8.1: eight
+  notebooks from the Vasicek loss distribution of a large portfolio (level 1) through the fit of the asset correlation, the copula
+  Monte Carlo and its errors, CreditRisk+ and the granularity adjustment, the Euler contributions and importance sampling, and the
+  portfolio validation battery (level 2), the state of the art of portfolio credit models (level 3), and a level 4 notebook that
+  demonstrates the claim BS-6 for the portfolio engine.
+- SDD: the section "Beyond the state of the art" states the claim BS-6 (engines and test catalogues no open toolkit provides), with
+  the scope of its search record and what it does not claim, and the research sources the topic 06 notebooks cite are listed in
+  "Sources the notebooks cite".
+- Notebooks, topics 02 to 07, fix round after the Opus sample review: the Spanish trees print "sí" and "no" where they printed Python's
+  `True` and `False`, and the engine's traffic lights and data statuses in Spanish; the Spanish tables follow the English numbers
+  (labels with a dot, a variable no longer named like an English label); every notebook re-executed on `riskvalidation` 0.8.1.
+- Notebook 11 of topic 03 (claim BS-2): the p-values of the Jeffreys and binomial tests are checked against a quadrature of the Beta
+  density and an exact rational sum, not against the SciPy calls the engine makes (the earlier difference of 0 held by construction);
+  the Hull-White reconciliation against ORE is no longer called "not run" (topic 08 demonstrates it); the equality of the cohort
+  estimator with `transitionMatrix` is reported as an engine test (RV-415) that no notebook reruns; the Schuermann and Hanson gap is
+  printed in basis points.
+- Notebook 08 of topic 03: the same correction on `transitionMatrix` (the engine's tests do reconcile with it since 0.8.0).
+- Notebook 10 of topic 03 (claim BS-4): the standard error of the mean of the 26 yearly rates beside the Jeffreys interval, the
+  reading of the bias at k = 0, and the LGD and correlation of the IRB example stated against CRE32.6 and CRE31.7.
+- Notebook 07 of topic 03: the LGD note of the IRB assumptions (45% is the financial-institutions value; CRE31.7 multiplier absent).
+- Notebook 05 of topic 07: the model confidence set of the two windows that commit their returns is recomputed with `arch` (seed 42)
+  and equals the committed p-values; the notebook declares `arch` and `pandas`. Notebook 02 of topic 07, 02 and 06 of topic 02: the
+  sentences about packages the notebook environment lacks are corrected against `notebooks/requirements.txt`.
+- SDD: the claim BS-2 names the independent recomputations of the p-values and the engine test against `transitionMatrix`.
+- Notebooks, fix round FR-B (topics 08, 09, 10, 11, 13 and 14), after the Opus sample review: 41 notebooks of the Spanish tree print
+  "sí" and "no" where they printed Python's `True` and `False` (and "ninguno" for `None`, "origen" for `origin`); the code comments of
+  topics 10 and 11 in the Spanish tree are written in Spanish (138 comment lines); the English messages of the engine printed in
+  topic 09 are labelled "mensaje del motor, en inglés". No printed number changes.
+- Topic 08, notebook 07 in both languages re-executed on the re-baked C12 documents (the ORE run times of the committed
+  documents changed with the re-bake 19656f8). The statements about what the engine does not implement (SA-CCR, FRTB, SIMM, the
+  IRRBB model families, the label-free estimate) were re-read against `riskvalidation` 0.8.1 and hold; the claim blocks BS-1, BS-7,
+  BS-8, BS-10, BS-11 and BS-12 agree with the numbers the level 4 notebooks print.
+- Contract c18-models 3.0.0 (major: a required key): the aggregation block of the C18 models document gains the required `quantile_grid`, the
+  quantile function of each of the four marginals on a named probability grid (1,961 points, p = Phi(z) for z from -4.9 to 4.9 in steps of
+  0.005, in CLP millions), so the marginals the band was run on can be rebuilt from the repository alone (review MA5 of the U17 sample).
+  The schema generator, the fixture generator, the catalog and History rows, the c18-models entry of `versions.lock.json`, the generated
+  `docs/contracts/api.openapi.json` and `frontend/src/lib/contract.gen.ts` and the contract test `tests/c18/test_c18_quantile_grid.py`
+  follow; the integrator bumps the api catalog row (additive, minor) and runs `scripts/check_contract_versions.py --update`.
+- C18 re-baked with `python data-pipeline/run.py C18`: the six variant documents are unchanged field by field; only the models document
+  gains `fit.aggregation.quantile_grid`, and its bytes, its checksum line and the manifest's size fields follow.
+- Notebooks of topic 12, in English and Spanish: notebooks 02, 03 and 08 rebuild the marginals from the committed quantile grids instead of
+  fitting stand-ins (decision N3 holds), and reproduce the committed copula rows, the lower bound, the worst case and the
+  Glasserman-Xu worst case; notebook 09 shows that the five documents carry one and the same aggregation block, so BS-9 rests on two
+  distinct aggregates and not six (review MA4); the `\nu` of two result lists that a newline had replaced is restored; the lower bound is
+  described as the best possible VaR of the sum (m11); the Joint Forum wording cites the BIS press release and no longer says UNVERIFIED
+  (m8).
+- Spanish tree of topic 12: Python's True and False print as sí and no; the engine's English messages and the EBA paragraphs print in
+  Spanish through a table in the notebook that fails if the engine changes its text (review m10 and the English-in-Spanish pattern).
+- SDD, the BS-9 claim block: two distinct aggregates, the marginals' quantile grids, the BIS press release.
+- Notebooks, topic 07-market-risk, in English and Spanish: seven notebooks per language on the committed artifacts of C11 and C13 and `riskvalidation` 0.8.1 (VaR and ES with the sign convention, the estimator ladder, the exceedance backtests and the Basel light, the ES backtests, model comparison under FZ0, FRTB desk eligibility, and the state of the art of dynamic semiparametric ES), executed and mirrored.
+- The SDD research basis lists the sources the topic 07 notebooks cite; no claim is added to "Beyond the state of the art" by this topic (BS-6 rests on C01, C10 and C14).
+- Notebooks, topic 09 (IRRBB), in English and Spanish: eight notebooks per language, executed and committed (level 1: a balance sheet in 19 time bands; level 2: the six BCBS shocks, EVE with behavioural assumptions, dynamic NII with EaR and EVaR, the IRRBB validation tests, Chile RAN 21-13 Annex 1; level 3: state of the art; level 4: the UF as its own currency and the breach test), on the committed artifacts of C14 and C15 and `riskvalidation` 0.8.1.
+- SDD, section `## Beyond the state of the art`: BS-7 (the UF as its own currency in IRRBB) and BS-8 (a test that flags a behavioural assumption changed at a limit breach), each with its committed evidence, its limit and its level 4 notebook; `CLAIMS` of `tests/test_notebooks_layer.py` lists both.
+- `tests/test_notebooks_layer.py`: the section count follows the level (7, plus one at level 3, plus one at level 4), the level order is held inside a topic, and the index test accepts the claims the SDD makes.
+- Notebooks, topic 11 operational-risk, in English and Spanish: eight notebooks per language (levels 1, 2, 2, 2, 2, 2, 3 and 4), executed
+  and committed, on the committed artifacts of C17 and `riskvalidation` 0.8.1: the annual loss as frequency times severity, the truncated
+  severity, the splice and the threshold, Panjer, FFT and Monte Carlo against Shevchenko's benchmark, the single-loss approximation and
+  the infinite-mean zone, scenarios, credibility and the standardised measurement approach, the five operational-risk tests, the state of
+  the art on the removal of the AMA and the SMA debate, and the level 4 notebook of claim BS-12.
+- SDD: the claim BS-12 (the instability of the operational-risk capital, measured on independent histories of known truth) enters the
+  section Beyond the state of the art with its committed evidence, and the sources the topic 11 notebooks cite enter the list of sources
+  the notebooks cite; `CLAIMS` of `tests/test_notebooks_layer.py` lists BS-12.
+- Notebooks, topic 14 `14-validating-the-validator` (U17-J), in English and Spanish, eight notebooks each, executed and committed on the C22 artifacts with
+  `riskvalidation` 0.8.1: level 1 why a test is measured (ADEMP, the Monte Carlo error, a committed row replayed from its seed), level 2 the size of the twenty-one
+  tests, the power against underestimated PDs with the exact rejection probabilities, default clustering with BCBS Working Paper 14 rerun (143 of 144 cells and
+  Figure 9), drift with the PSI rules and Yurdakul and Naranjo Table 4 (50 of 54), and discrimination decay, leakage, broken monotonicity and concentration,
+  level 3 what the literature measured and what the toolkits leave out (194 of 199 published cells), level 4 the claim BS-1.
+- SDD: the section `Beyond the state of the art` states BS-1, the measured size and power of the validation tests on planted defects (21 tests with a size,
+  17 with a power, 231 simulations, 551,000 repetitions, 476 rates each with its Monte Carlo error, 123 generators with a known truth), with its committed evidence,
+  the practice it goes beyond and what it does not claim; `CLAIMS` of `tests/test_notebooks_layer.py` lists it.
+- **Notebooks, topic 10 (U17-K):** `notebooks/en/10-liquidity/` and `notebooks/es/10-liquidity/` hold eight notebooks in each language, executed on the committed artifacts of C16 with `riskvalidation` 0.8.1: the liquidity ladder, the net liquidity position and the survival period (level 1); run-off by daily compounding and the LiST golden, the counterbalancing capacity and the held-to-maturity loss, scenarios and the depositor generator, the LCR and the NSFR, and reverse liquidity stress (level 2); the smooth run-offs against the run speeds of 2023 (level 3); and the reverse stress as a multiplier (level 4).
+  Every recomputation of a committed result prints the engine version that baked it beside the installed one; no notebook reruns a heavy simulation (the depositor generator check uses 2,000 seeded draws and the committed 20,000-draw verification is only read).
+  The SDD section `## Beyond the state of the art` states the claim BS-11 (reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run), covered by the level 4 notebook in each language, and `### Sources the notebooks cite` lists the sources of the topic.
+  `tests/test_notebooks_layer.py` lists BS-11 in `CLAIMS`, counts the sections of a notebook by its level (level 3 adds State of the art, level 4 also Beyond the state of the art), checks that the levels never decrease inside each topic instead of across the whole tree, and no longer expects the indexes to say that no claim is stated once the SDD states one.
+- Notebooks topic 08, counterparty credit risk and the regulatory calculators, in English and Spanish (U17-L): eight notebooks per language, executed and committed, on the committed C12 documents and the regulatory calculators document, calling riskvalidation 0.8.1. Level 1: the exposure of one swap (Hull-White paths, EE, PFE, EEPE and netting, rebuilt to the last digit of the committed profiles). Level 2: collateral, the margin period of risk and the regression initial margin; CVA, DVA and wrong-way risk with the Hull and White Appendix example; SA-CCR on the five CRE99 netting sets (34 of 34 printed intermediates); the other regulatory calculators (CRE20 grid, BA-CVA, GIRR delta, liquidity cascade, output floor); validating an exposure engine (analytic EE, martingale, recomputation, convergence, PIT back-test, Kupiec). Level 3: the reference engine ORE, QuantLib and what stays offline. Level 4: exposure reconciled to ORE within Monte Carlo error, with the gaps reported.
+- SDD: claim BS-2 (the reconciliations against reference engines that exist today) enters the section Beyond the state of the art with its level 4 notebook in each language, corrected where the evidence differs from the drafted text (the Hull-White exposure against ORE is now run: two variants reconcile, three report gaps); the topic 08 sources are listed in Sources the notebooks cite; `CLAIMS` of the notebooks layer test lists BS-2.
+- Notebooks, topic 12-capital-and-stress, in English and Spanish: nine notebooks on the committed C18 documents with `riskvalidation` 0.8.1: adding risks (level 1), copula aggregation and the Euler allocation, the dependence band and the worst-case VaR bounds, macro paths and satellites, the capital plan and the Chilean stack, reverse stress testing, validating aggregation and stress (level 2), the state of the art and model risk (level 3), and the level 4 notebook of claim BS-9.
+- SDD: claim BS-9, the dependence band shown with every aggregate, enters the section Beyond the state of the art with its committed evidence; the sources the topic 12 notebooks cite are listed with the other notebook sources. `CLAIMS` of `tests/test_notebooks_layer.py` lists BS-9.
+- Case C19 stays planned: its notebook treatment is the record, in notebook 09, that the three records of the product agree on it.
+- Notebooks, topic 13-ml-and-ai-risk, in English and Spanish (nine each, levels 1 to 4): leakage screens and data quality; robustness, resilience and overfitting; explanations that stay put (seeds, reason codes, additivity, PDP, ICE, ALE); conformal coverage and label-free estimation (CBPE); champion and challenger; fair-lending disparity testing; conditional disparity, replication and situation testing; the state of the art of the outcome-testing toolkits; and, at level 4, the measured size and power of the corrected tests, which demonstrates the claim BS-10 now stated in the SDD section "Beyond the state of the art".
+  Every notebook reads committed files only (the C20, C21 and C02 artifacts) and calls riskvalidation 0.8.1, printing the engine version that baked each artifact it reads.
+- Notebook environment: `notebooks/requirements.txt` pins `arch==8.0.0`, `pandas==3.0.6`, `mapie==1.5.0` and `fairlearn==0.15.0` (the engine's own
+  test references) and `scikit-learn==1.9.1` (the interface both need); the SDD technology table gains the rows for `arch`, `mapie` and `fairlearn`.
+- Notebook 07 of topic 07 (state of the art, dynamic semiparametric ES), in English and Spanish: step 3 fits the GARCH-t on the committed
+  realised returns of `fx-2008` with the engine and with a direct `arch` call (identical to the printed digits, stable to the optimiser's start),
+  and states that `rates-2022` commits 249 returns, one below the engine's minimum, and that the committed GARCH-t forecasts cannot be reproduced.
+- Notebook 08 of topic 13 (state of the art, outcome-testing toolkits), in English and Spanish: the split-conformal quantile is compared with the
+  MAPIE 1.5.0 package run (227 of 38,567 answered pairs differ, each by the naive float rule's score, one order statistic above), which corrects the
+  earlier attribution of the NumPy `higher` call to MAPIE; the selection rates, parity difference and parity ratio are compared with fairlearn
+  0.15.0 on the committed HMDA counts (difference at most 5.6e-17).
+
 ## [0.13.000], 2026-10-20
 
 Wave 2, batch 3:

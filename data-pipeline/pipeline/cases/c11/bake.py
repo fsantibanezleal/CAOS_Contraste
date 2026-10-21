@@ -156,7 +156,7 @@ def bake_all(output_root: Path, data_root: Path, cache_dir: Path, *, workers: in
                              engine_version=ev, provenance=lineage.provenance(), model_ids=model_ids) if len(windows) == len(WINDOWS) else None
     rel_m = f"{CASE_ID}/models-ladder.json"
     regime = _t("Rolling one-step forecasts on public daily series; hyperparameters fixed on 1995 to 2003 and never tuned on a test window.",
-                "Pronosticos moviles a un dia sobre series diarias publicas; hiperparametros fijados en 1995 a 2003 y nunca ajustados en una ventana de prueba.")
+                "Pronósticos móviles a un día sobre series diarias públicas; hiperparámetros fijados en 1995 a 2003 y nunca ajustados en una ventana de prueba.")
     if mdoc is not None:
         models_art = build_models_artifact(case_id=CASE_ID, fit_id="ladder", model=mdoc["model"], fit=mdoc["fit"], lineage=lineage, lane=lane)
         e_m = write_artifact(root, rel_m, models_art, engines=ENGINES, run_ms=RUN_MS)
@@ -186,7 +186,10 @@ def bake_all(output_root: Path, data_root: Path, cache_dir: Path, *, workers: in
         if record is not None:
             (Path(evidence_dir) / HYPER_FILE).write_text(hyper.dumps(record), encoding="utf-8")
     ranges = expectations.check(CASE_ID, expect if expect is not None else EXPECT, values)
+    from ._case import CASE
+
     manifest = build_case_manifest(
+        depends_on=CASE.depends_on(),
         case_id=CASE_ID, title=C11.title, category={"en": "Market and counterparty risk", "es": "Riesgo de mercado y de contraparte"}, question=C11.question,
         sources=list(SOURCES), seed=seed, variants=entries, default_variant=DEFAULT_VARIANT, contract=contract, expect=ranges,
         riskvalidation_version=ev, source_details=source_details())

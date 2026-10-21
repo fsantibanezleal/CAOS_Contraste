@@ -10641,7 +10641,7 @@ export interface components {
         });
         /**
          * C18 models
-         * @description Catalog row c18-models 2.0.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank anchors, scenario sources, capital engine rules, named parameters).
+         * @description Catalog row c18-models 3.0.0: the C18 models artifact (satellite fits on 1985-2019, factor space, aggregation parameters, bank anchors, scenario sources, capital engine rules, named parameters).
          */
         "c18-models": components["schemas"]["common-models-envelope"] & {
             /** @constant */
@@ -10766,6 +10766,7 @@ export interface components {
             capital_basis: "economic-capital-var-less-el";
             /** @description The rule that maps a uniform draw through a marginal sample. */
             marginal_interpolation: string;
+            quantile_grid: components["schemas"]["c18QuantileGrid"];
         };
         /** @description The aggregation block: the simple sum as the headline, the band with the model risk measures beside it, the Euler allocation and the diversification (both information), one horizon and one confidence level, the source and scaling of every marginal. */
         c18Aggregation: {
@@ -11793,6 +11794,46 @@ export interface components {
             date: string;
             value: number;
         };
+        /** @description The quantile function of each marginal at the grid probabilities (c18-models 3.0.0): a reader rebuilds the marginals the copulas and the bounds were run on by linear interpolation in the probability. Ascending probabilities, non-decreasing quantiles and the agreement with the marginal's VaR are checked by tests/c18/test_c18_quantile_grid.py. */
+        c18QuantileGrid: {
+            /** @description The named convention of the probability grid: p = Phi(z) for z from z_min to z_max in steps of z_step. */
+            convention: {
+                /** @constant */
+                name: "standard-normal-z-grid";
+                /**
+                 * @description The lowest standard normal quantile of the grid.
+                 * @constant
+                 */
+                z_min: -4.9;
+                /**
+                 * @description The highest standard normal quantile of the grid.
+                 * @constant
+                 */
+                z_max: 4.9;
+                /**
+                 * @description The step of z between two points.
+                 * @constant
+                 */
+                z_step: 0.005;
+                /**
+                 * @description The number of points: z from -4.9 to 4.9 in steps of 0.005.
+                 * @constant
+                 */
+                points: 1961;
+                /** @constant */
+                unit: "CLP millions";
+                statement: components["schemas"]["common-text"];
+            };
+            /** @description Phi(z) at the grid points, ascending. */
+            probabilities: number[];
+            /** @description One quantile function per marginal, in the order of the band's marginals. */
+            marginals: {
+                /** @enum {string} */
+                risk: "credit" | "market" | "irrbb" | "operational";
+                /** @description The marginal's quantile at each probability, CLP millions, non-decreasing. */
+                quantiles: number[];
+            }[] & (unknown & unknown & unknown & unknown);
+        };
         /** @description A reference to a row of the band: its method and, for a t copula, its degrees of freedom. */
         c18Ref: {
             /** @enum {string} */
@@ -12719,11 +12760,11 @@ export interface components {
         };
         c21Attribute: {
             /** @enum {unknown} */
-            field: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age";
+            field: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age" | "applicant_age_above_62";
             /** @description The legal mapping of the attribute, from the addendum H3 section 5 table only. */
             legal: {
                 /** @enum {unknown} */
-                basis: "race_color" | "national_origin_nearest_UNVERIFIED" | "sex" | "age_ecoa_only";
+                basis: "race_color" | "national_origin_nearest_UNVERIFIED" | "sex" | "age_ecoa_only" | "age_ecoa_only";
                 ecoa: boolean;
                 fha: boolean;
                 note: components["schemas"]["common-text"];
@@ -12825,6 +12866,29 @@ export interface components {
             four_fifths?: {
                 /** @enum {unknown} */
                 highest_rate_group?: "<25" | "25-34" | "35-44" | "45-54" | "55-64" | "65-74" | ">74";
+                groups?: unknown;
+            };
+            contrasts?: unknown;
+        } | {
+            /** @constant */
+            field?: "applicant_age_above_62";
+            legal?: {
+                /** @constant */
+                basis?: "age_ecoa_only";
+                /** @constant */
+                ecoa?: true;
+                /** @constant */
+                fha?: false;
+                /** @constant */
+                fha_disparate_impact?: "not applicable (age is a prohibited basis under ECOA only, not in 42 U.S.C. 3605(a))";
+            };
+            /** @enum {unknown} */
+            reference_group?: "62 or over" | "under 62";
+            groups?: unknown;
+            excluded_groups?: unknown;
+            four_fifths?: {
+                /** @enum {unknown} */
+                highest_rate_group?: "62 or over" | "under 62";
                 groups?: unknown;
             };
             contrasts?: unknown;
@@ -13004,7 +13068,7 @@ export interface components {
             selection_rate: number;
         };
         /** @enum {unknown} */
-        c21Hmda: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age" | "debt_to_income_ratio" | "combined_loan_to_value_ratio" | "income" | "loan_amount" | "property_value" | "loan_type" | "loan_purpose" | "lien_status" | "occupancy_type" | "applicant_age_above_62" | "action_taken" | "rate_spread" | "denial_reason_1" | "denial_reason_2" | "denial_reason_3" | "denial_reason_4";
+        c21Hmda: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age" | "applicant_age_above_62" | "debt_to_income_ratio" | "combined_loan_to_value_ratio" | "income" | "loan_amount" | "property_value" | "loan_type" | "loan_purpose" | "lien_status" | "occupancy_type" | "action_taken" | "rate_spread" | "denial_reason_1" | "denial_reason_2" | "denial_reason_3" | "denial_reason_4";
         /** @description The required label, on every C21 document. */
         c21Label: {
             /** @constant */
@@ -13190,7 +13254,7 @@ export interface components {
                 reason: components["schemas"]["common-text"];
             };
             /** @enum {unknown} */
-            attribute: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age";
+            attribute: "derived_race" | "derived_ethnicity" | "derived_sex" | "applicant_age" | "applicant_age_above_62";
             k: number;
             /** @constant */
             alpha: 0.05;
@@ -13468,7 +13532,7 @@ export interface components {
         };
         /**
          * Case manifest
-         * @description Catalog row case-manifest 1.0.0: one case (data/derived/manifests/<case>.json): its question, sources, artifacts and the contract-1 reports.
+         * @description Catalog row case-manifest 2.0.0: one case (data/derived/manifests/<case>.json): its question, sources, artifacts, the contract-1 reports and what the case reads of other cases (depends_on).
          */
         "common-case-manifest": {
             /** @constant */
@@ -13500,6 +13564,17 @@ export interface components {
                     number
                 ];
             };
+            /** @description What the producer reads of other cases, stated by the producer from the paths it opens and the modules it imports (never by hand), sorted by kind then ref; empty when the case reads nothing of another case. The engine is never listed: every case depends on it. */
+            depends_on: {
+                /**
+                 * @description document: a committed document of another case the producer reads; code: a product module of another case it imports.
+                 * @enum {unknown}
+                 */
+                kind: "document" | "code";
+                /** @description <case>/<file>.json or manifests/<case>.json for a document; pipeline.cases.<module> for code. */
+                ref: string;
+                reason: components["schemas"]["common-text"];
+            }[];
         };
         /**
          * Contract family

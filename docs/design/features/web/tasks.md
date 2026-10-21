@@ -8,7 +8,11 @@
 | 4 | The layout that fills the panel at 1280x800 and fits at 390 and 768 | CT-106 | done |
 | 5 | The measured gate over the whole matrix | CT-107 | done |
 
-## Convergence verdict (2026-10-05)
+## Convergence verdict
+
+The verdict of this feature is generated, never written by hand. Every requirement of [`requirements.md`](requirements.md) has its row, with its gate and the gate's result in the release run, in [`../release-1-0/verdict.md`](../release-1-0/verdict.md) (filter the `feature` column by `web`). `scripts/convergence_verdict.py` writes that document from the result files of the release run; the procedure is in [`../release-1-0/design.md`](../release-1-0/design.md).
+
+### History: the verdict written by hand on 2026-10-05
 
 Converged on the build: `caos-shell-gate: OK, 655 measured states` (five sizes, both themes, both languages; every
 route, group, sub-tab, rail section and variant). The first run failed 583 states and found 13 base defects, fixed

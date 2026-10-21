@@ -20,7 +20,7 @@
   "documents_read": [
    {
     "path": "data/derived/manifests/C01.json",
-    "sha256": "c0976c8fabc2d4cf82d076610019cc67e0def9ae8152650954c086162b070151",
+    "sha256": "007ccc71174e1a51f66d817c2681f8d3ac19cca5a84620a0ac800198b564abda",
     "ref": null
    },
    {
@@ -35,7 +35,7 @@
    },
    {
     "path": "data/derived/manifests/C07.json",
-    "sha256": "bf356d3c335cebc0bad691c14ceb12d1747973335c071d87f073f5ed7709801a",
+    "sha256": "2aa1c2297982bd0a760d5a8391220a7e9953d4a5df8b1572e5528f9f3b82a003",
     "ref": null
    },
    {
@@ -75,47 +75,47 @@
    },
    {
     "path": "data/derived/manifests/C18.json",
-    "sha256": "69a2ab8f87d99efc2b9e6a07dd73df2b6519efacf40331a9ca102e0c0ea5b863",
+    "sha256": "7a822eabcb64a596792f8c10fdb38d77f2f4e48bc95f1f0e74344fa2280cf133",
     "ref": null
    },
    {
     "path": "data/derived/C18/models-banco-andino.json",
-    "sha256": "dc6683541f7a7d3ac2feb3e6b7561a2f95af4d10ee87d20236ba61f106383427",
+    "sha256": "7dec4ba3a341857bc287864a36f29bf7a499c96b0bb5bce57bc2019d1c088e97",
     "ref": null
    },
    {
     "path": "data/derived/C18/baseline.json",
-    "sha256": "235ba35898c452765822b51a085e6cb52d8257ddd401111f43957b820724bada",
+    "sha256": "72d34f5ef298348e160e9906896f62358a9fdb834d9880fc1b42b3c3f35fd49e",
     "ref": null
    },
    {
     "path": "data/derived/C18/eba-2025-adverse.json",
-    "sha256": "1cd7fb0214e90d3d5f0f5897e1aeea7d2bde7efb5fd45187ab38c8c86ffb2344",
+    "sha256": "faac328a421c19a0d5e8b270817f3133a595c2aca3de47e1e50b7da2b23d33ac",
     "ref": null
    },
    {
     "path": "data/derived/C18/fed-2026-severely-adverse.json",
-    "sha256": "22d9aeb057a9c1dc11542b62f9b6d7f42c341b16858c655f502740388c236888",
+    "sha256": "115e2da5bc7b17eee23e3493680422b14fedb51a51fbadf2972f01001ca94dcf",
     "ref": null
    },
    {
     "path": "data/derived/C18/ngfs-delayed-transition.json",
-    "sha256": "5a2b04c087918eb8555d874344d812c3d5a55b4f57e8c497758bea69ce006302",
+    "sha256": "070d8a654f2b1ebe121f1c5148d2bfadc7a8012b9c6eb0b9d8fc803ae4098b91",
     "ref": null
    },
    {
     "path": "data/derived/C18/reverse-stress.json",
-    "sha256": "fe60e7c9db7f8968d2001e52c08b5c6a6f0031b332bc49d2c578cf491e55fe26",
+    "sha256": "d70016268d16468539d54bc0dda162e355e38ffff47cae28e580d34afb388531",
     "ref": null
    },
    {
     "path": "data/derived/C18/t-copula-baseline.json",
-    "sha256": "b55d740179a39c1781e8e58b425d18aa98b31db9a21d021b12def3409ad3dcbc",
+    "sha256": "fb71dfeaf70e11a8704b191534468dd5c606aed688149b9e29cb21ff763dfed1",
     "ref": null
    },
    {
     "path": "data/derived/manifests/C22.json",
-    "sha256": "db7ab2bc13ef7448e26f89d8f9af7589fbdcaebd9fb8188ceb5920db59c9fe6c",
+    "sha256": "cbc12d1978f2fb05d596f363bb98a79f391b028357c4b14bee45995a2dc523ea",
     "ref": null
    },
    {
@@ -1445,7 +1445,7 @@
      "basis": "read at data/derived/manifests/C18.json#/title"
     },
     "A03": {
-     "value": "banco-andino@0.13.000/riskvalidation-0.8.1",
+     "value": "banco-andino@0.15.000/riskvalidation-0.9.0",
      "status": "derivable",
      "basis": "no model version field: the fit id with the code and engine versions identify the build (A D1 A03): data/derived/C18/models-banco-andino.json#/fit_id | data/derived/C18/models-banco-andino.json#/provenance/code_version | data/derived/C18/models-banco-andino.json#/provenance/riskvalidation_version"
     },
@@ -1632,7 +1632,7 @@
      "basis": "no field: a synthetic bank has no users (A D1 A30)"
     },
     "A31": {
-     "value": "riskvalidation 0.8.1",
+     "value": "riskvalidation 0.9.0",
      "status": "derivable",
      "basis": "riskvalidation at the pinned version; independence is not established because the pipeline and the engine are built in the same programme (W15-4, the governance finding GOV-INDEPENDENCE-NOT-ESTABLISHED)"
     },
@@ -1648,14 +1648,14 @@
     },
     "A34": {
      "value": {
-      "date": "2026-10-20",
+      "date": "2026-10-21",
       "type": "full battery"
      },
      "status": "derivable",
-     "basis": "the release date of code version 0.13.000 in CHANGELOG.md; the type is one full battery: data/derived/C18/models-banco-andino.json#/provenance/code_version"
+     "basis": "the release date of code version 0.15.000 in CHANGELOG.md; the type is one full battery: data/derived/C18/models-banco-andino.json#/provenance/code_version"
     },
     "A35": {
-     "value": "2027-10-20",
+     "value": "2027-10-21",
      "status": "convention",
      "basis": "schedule.next_dates over the frequency table (a convention, 06 B.8 l.636-640)"
     },
@@ -1682,7 +1682,7 @@
     },
     "A38": {
      "value": {
-      "earliest_due": "2026-11-19"
+      "earliest_due": "2026-11-20"
      },
      "status": "convention",
      "basis": "the earliest due date of the entry's open findings in the register (the deadline table is a convention, W15-5)"
@@ -1941,13 +1941,13 @@
     "profile": "default",
     "review_kind": "review",
     "last_validation": {
-     "date": "2026-10-20",
+     "date": "2026-10-21",
      "type": "full battery",
      "basis": "A34: the release date of the code version"
     },
-    "next_review": "2027-10-20",
-    "next_full_revalidation": "2029-10-20",
-    "next_monitoring": "2027-01-20",
+    "next_review": "2027-10-21",
+    "next_full_revalidation": "2029-10-21",
+    "next_monitoring": "2027-01-21",
     "null_reason": null
    },
    "graph": {

@@ -60,7 +60,7 @@ LIMITS = [
     text("The stressed Effective EPE re-estimates a and sigma on 2007-01-01 to 2009-12-31 (2.996 years of observations; the floor of "
          "the engine is lowered to 2.99 for this window only) and re-prices the same book on the curve date.",
          "El EPE efectivo bajo estrés re-estima a y sigma en 2007-01-01 a 2009-12-31 (2,996 años de observaciones; el piso del motor se "
-         "baja a 2,99 solo para esta ventana) y revalua el mismo libro en la fecha de la curva."),
+         "baja a 2,99 solo para esta ventana) y revalúa el mismo libro en la fecha de la curva."),
     text("The counterparty curve is a market proxy (HQM minus Treasury, AAA to A), a floor for lower ratings; the base-credit "
          "spread of the BA-CVA rating and the sensitivity rows is the synthetic flat 0.0125.",
          "La curva de la contraparte es un proxy de mercado (HQM menos Tesoro, AAA a A), un piso para calificaciones menores; el spread "

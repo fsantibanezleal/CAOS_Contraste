@@ -10,7 +10,11 @@
 | 6 | Docs: the C01 case page and design, the SDD map, the framework card, the changelog | - | done |
 | 7 | The canonical bake, the measured gate over the whole matrix, screenshots read in light and dark | CT-217 | done |
 
-## Convergence verdict (2026-10-05)
+## Convergence verdict
+
+The verdict of this feature is generated, never written by hand. Every requirement of [`requirements.md`](requirements.md) has its row, with its gate and the gate's result in the release run, in [`../release-1-0/verdict.md`](../release-1-0/verdict.md) (filter the `feature` column by `c01-irb-capital`). `scripts/convergence_verdict.py` writes that document from the result files of the release run; the procedure is in [`../release-1-0/design.md`](../release-1-0/design.md).
+
+### History: the verdict written by hand on 2026-10-05
 
 Converged. The canonical bake gives every rung of every variant its capital at unit LGD under the three regimes; the
 expected ranges hold (the scorecard's whole holdout book needs 8.0% of its EAD at LGD 50%; the transactor effect is

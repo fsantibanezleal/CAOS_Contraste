@@ -13,6 +13,11 @@ from typing import Any
 CASE_ID = "C09"
 
 
+#: why this case reads what it reads of other cases, keyed by the document or the module its producer names: ``depends_on`` refuses a list that differs
+#: from the source (core.manifest.derive_depends_on), so the manifest cannot state what the code does not do
+DEPENDS_REASONS: dict[str, dict[str, str]] = {}
+
+
 class C09:
     id = CASE_ID
     slug = "ead-ccf-revolving-lines"
@@ -22,6 +27,12 @@ class C09:
     question = {"en": "Can exposure at default and the credit conversion factor of revolving lines be recovered when utilisation accelerates?",
                 "es": "¿Se pueden recuperar la exposición al incumplimiento y el factor de conversión de crédito de líneas rotativas cuando se acelera la utilización?"}
     sources: tuple[str, ...] = ()  # no registered input file: the Fed marginals are committed in params with their hashes
+
+    def depends_on(self) -> list[dict[str, Any]]:
+        """What this case reads of other cases, as the manifest states it (``depends_on``)."""
+        from ...core.manifest import derive_depends_on
+
+        return derive_depends_on(self.id, DEPENDS_REASONS)
 
     def bake(self, seed: int, paths: Any, data_root: Path | None, scale: float = 1.0) -> dict[str, Any]:
         from .bake import bake_case

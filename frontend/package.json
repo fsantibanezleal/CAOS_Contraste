@@ -1,7 +1,7 @@
 {
   "name": "contraste-frontend",
   "private": true,
-  "version": "0.13.0",
+  "version": "0.15.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -12,6 +12,7 @@
     "preview": "node scripts/serve.mjs",
     "test": "vitest run",
     "gate": "node scripts/gate.mjs",
+    "capture": "node scripts/capture.mjs",
     "gen:contracts": "node scripts/gen-contract-types.mjs",
     "check:contracts": "node scripts/gen-contract-types.mjs --check"
   },
