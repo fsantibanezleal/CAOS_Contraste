@@ -180,6 +180,26 @@ The topic 04 notebooks (provisions) cite, from dossiers 02 and 03 of the persist
 - Banco de España, Circular 4/2017 (https://www.boe.es/buscar/act.php?id=BOE-A-2017-14334) and Circular 6/2021
   (https://www.boe.es/buscar/doc.php?id=BOE-A-2021-21666).
 
+The topic 07 notebooks (market risk, cases C11 and C13) also cite the following, all taken from the persisted research (dossiers 01 and
+05) and from the engine's own reference strings:
+
+- Kupiec (1995), https://doi.org/10.3905/jod.1995.407942; Christoffersen (1998), https://doi.org/10.2307/2527341; Christoffersen and
+  Pelletier (2004), https://doi.org/10.1093/jjfinec/nbh004; Engle and Manganelli (2004), https://doi.org/10.1198/073500104000000370;
+- Basel Committee (1996), the backtesting framework, https://www.bis.org/publ/bcbs22.htm;
+- Du and Escanciano (2017), https://doi.org/10.1287/mnsc.2015.2342; McNeil and Frey (2000), https://doi.org/10.1016/S0927-5398(00)00012-8;
+  Moldenhauer and Pitera on the Acerbi-Szekely reference point, https://arxiv.org/abs/1709.01337;
+- Patton, Ziegel and Chen (2019), https://doi.org/10.1016/j.jeconom.2018.10.008 and https://arxiv.org/abs/1707.05108; Taylor (2019),
+  https://doi.org/10.1080/07350015.2017.1281815; the neural joint VaR and ES preprint, https://arxiv.org/abs/2606.04576;
+- Gneiting (2011), https://doi.org/10.1198/jasa.2011.r10138; Fissler and Ziegel (2016), https://doi.org/10.1214/16-AOS1439; Diebold and
+  Mariano (1995), https://doi.org/10.1080/07350015.1995.10524599; Hansen, Lunde and Nason (2011), https://doi.org/10.3982/ECTA5771;
+  Nolde and Ziegel (2017), https://doi.org/10.1214/17-AOAS1041; Kratz, Lok and McNeil (2018), https://doi.org/10.1016/j.jbankfin.2018.01.002;
+- Pritsker (2001), https://www.federalreserve.gov/Pubs/feds/2001/200127/200127pap.pdf; Boudoukh, Richardson and Whitelaw (1998),
+  https://pages.stern.nyu.edu/~rwhitela/papers/hybrid%20risk98.pdf; the RiskMetrics Technical Document (1996),
+  https://www.msci.com/documents/10199/5915b101-4206-4ba0-aee2-3449d5c7e95a; Cornish and Fisher (1938), https://doi.org/10.2307/1400905;
+  Bollerslev (1986), https://doi.org/10.1016/0304-4076(86)90063-1; Glosten, Jagannathan and Runkle (1993),
+  https://doi.org/10.1111/j.1540-6261.1993.tb05128.x; Nelson (1991), https://doi.org/10.2307/2938260; Hull and White (1998),
+  https://doi.org/10.21314/JOR.1998.001.
+
 ## Sizing and contracts
 
 The design rests on two artifacts of contract-first parallel delivery (ADR-0080): the sizing and the contract catalog.
