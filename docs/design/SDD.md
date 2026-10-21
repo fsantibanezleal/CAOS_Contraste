@@ -133,6 +133,28 @@ basis, the topic 01 notebooks cite:
   https://doi.org/10.1148/radiology.143.1.7063747;
 - Spiegelhalter (1986), probabilistic prediction in patient management and clinical trials, https://doi.org/10.1002/sim.4780050506.
 
+The topic 08 notebooks (counterparty credit risk and the regulatory calculators) cite, besides those:
+
+- BCBS, Basel Framework, CRE52 Standardised approach to counterparty credit risk (in force 2023-01-01, published 2020-06-05). https://www.bis.org/committees/bcbs/basel-framework/standard/cre/52/inforce/2023-01-01/published/2020-06-05
+- BCBS, Basel Framework, CRE53 Internal model method for counterparty credit risk (in force 2023-01-01, published 2020-06-05). https://www.bis.org/basel_framework/chapter/CRE/53.htm?inforce=20230101&published=20200605
+- BCBS, Basel Framework, CRE99 Illustrative examples of the standardised approach to counterparty credit risk (in force 2023-01-01). https://www.bis.org/committees/bcbs/basel-framework/standard/cre/99/inforce/2023-01-01/published/2020-03-27
+- BCBS, Basel Framework, CRE20 Standardised approach: individual exposures (in force 2023-01-01, published 2025-06-10). https://www.bis.org/committees/bcbs/basel-framework/standard/cre/20/inforce/2023-01-01/published/2025-06-10
+- BCBS, Basel Framework, MAR50 CVA risk framework (in force 2023-01-01, published 2020-07-08). https://www.bis.org/committees/bcbs/basel-framework/standard/mar/50/inforce/2023-01-01/published/2020-07-08
+- BCBS, Basel Framework, MAR21 Standardised approach: sensitivities-based method (in force 2023-01-01). https://www.bis.org/committees/bcbs/basel-framework/standard/mar/21/inforce/2023-01-01/published/2026-03-23
+- BCBS, Basel Framework, RBC20 Calculation of minimum risk-based capital requirements (in force 2023-01-01, published 2020-11-26). https://www.bis.org/committees/bcbs/basel-framework/standard/rbc/20/inforce/2023-01-01/published/2020-11-26
+- BCBS, Basel Framework, RBC90 Transitional arrangements and the output floor phase-in (in force 2023-01-01). https://www.bis.org/committees/bcbs/basel-framework/standard/rbc/90/inforce/2023-01-01/published/2020-03-27
+- BCBS (2010), Sound practices for backtesting counterparty credit risk models, publication 185. https://www.bis.org/publ/bcbs185.htm
+- Hull, J. and White, A. (2012), CVA and wrong way risk, Financial Analysts Journal 68(5), 58-69. https://doi.org/10.2469/faj.v68.n5.6
+- Hull, J. and White, A. (1990), Pricing interest-rate-derivative securities, Review of Financial Studies 3(4), 573-592. https://doi.org/10.1093/rfs/3.4.573
+- Brigo, D., Dalessandro, A., Neugebauer, M. and Triki, F. (2008), A stochastic processes toolkit for risk management, arXiv 0812.4210. https://arxiv.org/abs/0812.4210
+- Formenti, L., Spadafora, L., Terraneo, F. and Ramponi, A., Probability integral transform and Anderson-Darling backtests, arXiv 1505.04593. https://arxiv.org/abs/1505.04593
+- Andersen, L., Pykhtin, M. and Sokol, A. (2017), Rethinking the margin period of risk, Journal of Credit Risk 13(1). https://doi.org/10.21314/JCR.2016.218
+- Open Source Risk Engine, Methodology, value adjustments and margin period of risk (xva.tex at tag 1.8.17.0). https://github.com/OpenSourceRisk/Engine/blob/1.8.17.0/Docs/UserGuide/methods/xva.tex
+- Open Source Risk Engine (ORE), release 1.8.17.0. https://github.com/OpenSourceRisk/Engine
+- QuantLib, the open-source quantitative finance library. https://github.com/lballabio/QuantLib
+- U.S. Department of the Treasury, Daily Treasury Par Yield Curve Rates. https://home.treasury.gov/resource-center/data-chart-center/interest-rates/
+- U.S. Department of the Treasury, High Quality Market (HQM) Corporate Bond Yield Curve. https://home.treasury.gov/data/treasury-coupon-issues-and-corporate-bond-yield-curve/corporate-bond-yield-curve
+
 ## Sizing and contracts
 
 The design rests on two artifacts of contract-first parallel delivery (ADR-0080): the sizing and the contract catalog.
@@ -481,11 +503,28 @@ No oracle here is a model judging another model.
 
 ## Beyond the state of the art
 
-None claimed. A component of Contraste that goes further than the practice its research found enters this section with the
-topic unit that demonstrates it: an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes
-beyond, and a level 4 notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches
-the package's contract and demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8)
-and enter here one by one, so no claim is stated before its demonstration exists.
+A component of Contraste that goes further than the practice its research found enters this section with the topic unit that demonstrates it:
+an identifier of the form BS-<n>, the committed evidence a reader can open, the practice it goes beyond, and a level 4 notebook in each
+language (`notebooks/`, CAOS_MANAGE `conventions/product-notebooks.md`). Topic 01 teaches the package's contract and demonstrates none.
+The other candidate claims and their evidence are drafted in the U17 sizing (decision N8) and enter here one by one, so no claim is stated
+before its demonstration exists.
+
+- **BS-2** The reconciliations against reference engines that exist today.
+  What it adds: the engine's tests and estimators are held to independent implementations and to the printed digits of the papers, and the
+  gap is reported. The reconciliations that exist are the ones claimed: the printed tables and papers recomputed beside their prints; the
+  SciPy distributions behind the test statistics; the Hull-White exposure of the single swap and of the four-swap netting set against ORE
+  1.8.17.0, within two combined Monte Carlo standard errors at all 33 report dates, with the EEPE and the CVA; the Hull-White closed forms
+  against QuantLib 1.44 to a relative 1e-6; and the wrong-way calibration against the printed values of the Appendix of Hull and White (2012).
+  Reported as gaps and not claimed: the collateralised variants (CSA with 10 and with 20 days) and the initial-margin variant against ORE,
+  with the largest EE gaps of 9.9, 7.1 and 11.7 combined standard errors, CVA gaps of 15.9 and 9.9 in the two CSA variants, and a mean dynamic
+  initial margin of ORE at 0.88 of the engine's. Not claimed: the wrong-way variant against ORE, whose example is a different model, and the
+  equality with the transition-matrix cohort estimator, which has no engine test (backlog item BL-083).
+  Evidence: `tests/test_c04_parity.py`, `tests/test_c04_published.py`, `data/derived/C04/published.json`,
+  `data/derived/C05/ldp-published.json`, `docs/frameworks/01_riskvalidation/riskvalidation.md`, `data/derived/C12/single-swap.json`,
+  `data/derived/C12/netting-set.json`, `data/derived/C12/csa-mpor-10d.json`, `data/derived/C12/csa-mpor-20d.json`,
+  `data/derived/C12/with-im.json`, `data/derived/C12/wrong-way-risk.json`.
+  Beyond: toolkits ship the estimators and leave the reconciliation to the user; the persisted research (dossier 05) lists ORE and QuantLib
+  as reference engines whose numbers Contraste must not claim as validated beyond the reconciliations actually run.
 
 ## Deploy driver
 
