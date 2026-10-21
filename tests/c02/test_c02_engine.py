@@ -5,7 +5,7 @@ from c02_support import ROOT, all_documents
 
 from engine_pin import engine_pin_findings, pinned_ref
 
-RELEASE = "0.8.1"
+RELEASE = pinned_ref((ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8"))  # the engine release the pipeline pins
 
 
 def test_the_engine_is_pinned_at_the_release_tag_that_the_sdd_names() -> None:

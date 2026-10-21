@@ -1,0 +1,2099 @@
+{
+ "schema": "contraste.governance.inputs/v1",
+ "description": "Inputs of the governance bake (unit U15-P): the product's own inputs, each with its basis and its tag (doc: read in a committed document; convention: a stated convention). No output of the engine is written here: the tier, the dates, the opinion and the appetite are computed by riskvalidation.governance. Sources: U15 research addendum D1 to D5, decisions W15-1 to W15-19 of the U15 unit sizing, and W15-18 for C02 and C20.",
+ "release": {
+  "code_version": "0.15.000",
+  "tag": "convention",
+  "basis": "W15-19: governance ships in Contraste 0.15.000, the release that carries these documents"
+ },
+ "as_of": {
+  "rule": "newest-changelog-release-heading",
+  "tag": "convention",
+  "basis": {
+   "en": "W15-13: the date of the newest release heading of CHANGELOG.md when the bake runs; committed, never a wall-clock date, never earlier than a raised date",
+   "es": "W15-13: la fecha del encabezado de versión más reciente de CHANGELOG.md cuando corre el bake; confirmada, nunca una fecha del reloj, nunca anterior a una fecha de levantamiento"
+  }
+ },
+ "synthetic_inventory": {
+  "tag": "convention",
+  "basis": "W15-4: the owner is a named role of the synthetic bank per risk area, labelled synthetic; the developer is the producing pipeline module; the validator is riskvalidation at the pinned version; there is no approver and no approval date (SDD non-goal 1)"
+ },
+ "variant_assignment": {
+  "extensions": [
+   "model-record-ids",
+   "variant-id-equals-fit-id"
+  ],
+  "basis": "W15-15 assigns a variant to the fit whose sources its provenance reads, or to the single models document of the case, through riskvalidation.governance.inventory.assign_variant. Where the engine returns no fit because several fits read the same sources, the bake tries two committed identities in this order: the variant's model records carry the ids of exactly one fit (model-record-ids), then the variant id equals the fit id (variant-id-equals-fit-id). A variant neither rule places stays in the excluded list with the engine's reason. An empty list restores the pure W15-15 rule."
+ },
+ "cases": {
+  "C01": {
+   "owner_role": "Head of PD models (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c01_retail_pd.py",
+   "tier": {
+    "exposure": {
+     "kind": "c07-segment-share",
+     "segments": [
+      "consumer-cards"
+     ],
+     "pointer": "data/derived/C07/models-banco-andino.json#/fit/segments",
+     "tag": "convention",
+     "basis": "consumer-cards segment of the C07 book (a mapping convention, A D2 3.1)"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 3,
+     "tag": "doc",
+     "basis": "impact.capital_champion and capital_challenger (IRB capital) in C01/holdout.json; the approval rate on card applicants",
+     "pointer": "data/derived/C01/holdout.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 3,
+     "tag": "doc",
+     "basis": "automated credit decision on natural persons (06 B.3): impact.approval_rate, swap_in, swap_out",
+     "pointer": "data/derived/C01/holdout.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 4,
+      "tag": "convention",
+      "basis": "P5-tabpfn (a foundation model) in models-german.json; P4-lightgbm and P4-xgboost score 3 in models-taiwan.json (the most complex rung exercised, A D2 3.1)",
+      "pointer": "data/derived/C01/models-german.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 2,
+      "tag": "doc",
+      "basis": "external sources: uci-taiwan, uci-german",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 3,
+      "tag": "doc",
+      "basis": "post hoc explanation for P4 and P5; P3-ebm is glass-box",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "challenger",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the simplest rungs are benchmarks, the rest challengers",
+    "rules": [
+     {
+      "role": "benchmark",
+      "match": [
+       "P0-*"
+      ]
+     },
+     {
+      "role": "champion",
+      "match": [
+       "P1-scorecard"
+      ],
+      "tag": "doc",
+      "basis": "the champion P1-scorecard (frontend/src/workbench/model.ts:8)"
+     }
+    ]
+   }
+  },
+  "C02": {
+   "owner_role": "Head of PD models (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c02/",
+   "tier": {
+    "exposure": {
+     "kind": "c07-segment-share",
+     "segments": [
+      "commercial-group"
+     ],
+     "pointer": "data/derived/C07/models-banco-andino.json#/fit/segments",
+     "tag": "convention",
+     "basis": "commercial-group segment of the C07 book (a mapping convention as for C03: a corporate PD ladder on the UCI Polish firms; W15-18)"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 3,
+     "tag": "convention",
+     "basis": "impact.ecl_12m_effect and ecl_lifetime_effect exist and are null with their reason (no ECL is computed, decision G22), so the committed impact holds no regulatory figure; a PD ladder feeds IRB capital or ECL by model type (the C03 convention)",
+     "pointer": "data/derived/C02/h1.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case (a corporate PD on firm-level financial ratios)",
+     "pointer": "data/derived/C02/h1.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 3,
+      "tag": "convention",
+      "basis": "P3-ebm, P4-lightgbm and P4-xgboost in every horizon (tree ensembles and boosted additive models score 3)",
+      "pointer": "data/derived/C02/models-polish-horizons.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 2,
+      "tag": "doc",
+      "basis": "external source: uci-polish",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 3,
+      "tag": "doc",
+      "basis": "post hoc explanation for P4; P3-ebm is glass-box",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case by document read; the code import from C01 (E14) is not counted (A D2 3.3: document reads only)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "challenger",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the simplest rungs are benchmarks, the rest challengers; the C02 ladder is the C01 ladder per horizon",
+    "rules": [
+     {
+      "role": "benchmark",
+      "match": [
+       "*-P0-*"
+      ]
+     },
+     {
+      "role": "champion",
+      "match": [
+       "*-P1-scorecard"
+      ],
+      "tag": "convention",
+      "basis": "the scorecard rung is the champion of the C01 ladder (frontend/src/workbench/model.ts:8) and C02 reuses the ladder"
+     }
+    ]
+   }
+  },
+  "C03": {
+   "owner_role": "Head of PD models (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c03/",
+   "tier": {
+    "exposure": {
+     "kind": "c07-segment-share",
+     "segments": [
+      "commercial-group"
+     ],
+     "pointer": "data/derived/C07/models-banco-andino.json#/fit/segments",
+     "tag": "convention",
+     "basis": "commercial-group (SME) segment of the C07 book (a mapping convention)"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 3,
+     "tag": "convention",
+     "basis": "impact holds only observed_5y_pd, predicted_5y_pd and calibration_gap_5y; a PD feeds IRB capital or ECL by model type",
+     "pointer": "data/derived/C03/fy2008-10.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C03/fy2008-10.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 3,
+      "tag": "convention",
+      "basis": "P4-lightgbm and P3-ebm in models-sba-7a.json",
+      "pointer": "data/derived/C03/models-sba-7a.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 2,
+      "tag": "doc",
+      "basis": "external source: sba-foia",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 3,
+      "tag": "doc",
+      "basis": "post hoc explanation for P4",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case by document read; the code import from C06 (E07), C01 (E09) is not counted (A D2 3.3: document reads only)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "challenger",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the simplest rungs are benchmarks, the rest challengers",
+    "rules": [
+     {
+      "role": "benchmark",
+      "match": [
+       "P0-*"
+      ]
+     },
+     {
+      "role": "champion",
+      "match": [
+       "P1-scorecard"
+      ],
+      "tag": "doc",
+      "basis": "the existing rungs of the C01 ladder, champion P1-scorecard (docs/cases/C03.md:32)"
+     }
+    ]
+   }
+  },
+  "C04": {
+   "owner_role": "Head of PD models (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c04_transitions.py",
+   "tier": {
+    "exposure": {
+     "kind": "c07-segment-share",
+     "segments": [
+      "commercial-individual"
+     ],
+     "pointer": "data/derived/C07/models-banco-andino.json#/fit/segments",
+     "tag": "convention",
+     "basis": "commercial-individual segment of the C07 book (a mapping convention)"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 3,
+     "tag": "doc",
+     "basis": "impact.rw_d2, rw_d4 and rw_em (IRB risk weights), C04/sp.json",
+     "pointer": "data/derived/C04/sp.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C04/sp.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 2,
+      "tag": "convention",
+      "basis": "M5-jlt and the M2-em generator embeddings (fitted parametric and hazard models score 2)",
+      "pointer": "data/derived/C04/models-transitions.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 2,
+      "tag": "doc",
+      "basis": "external source: esma-cerep and the cited papers",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 1,
+      "tag": "doc",
+      "basis": "intrinsically interpretable (06 B.3 l.567-570)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case by document read; the code import from C01 (E10), C05 (E13) is not counted (A D2 3.3: document reads only)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "challenger",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the cohort estimator is the benchmark",
+    "rules": [
+     {
+      "role": "benchmark",
+      "match": [
+       "M1-cohort"
+      ]
+     }
+    ]
+   }
+  },
+  "C05": {
+   "owner_role": "Head of PD models (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c05_ldp_calibration.py",
+   "tier": {
+    "exposure": {
+     "kind": "c07-segment-share",
+     "segments": [
+      "commercial-individual"
+     ],
+     "pointer": "data/derived/C07/models-banco-andino.json#/fit/segments",
+     "tag": "convention",
+     "basis": "commercial-individual segment of the C07 book (a mapping convention)"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 3,
+     "tag": "doc",
+     "basis": "impact.rw_A1-idp to rw_C4-ilr (IRB risk weights), C05/sp-2010.json",
+     "pointer": "data/derived/C05/sp-2010.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C05/sp-2010.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 2,
+      "tag": "convention",
+      "basis": "M1-qmm-2009 and L0-methods (calibration methods on fitted parameters score 2)",
+      "pointer": "data/derived/C05/models-sp2009.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 2,
+      "tag": "doc",
+      "basis": "external source: published tables",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 1,
+      "tag": "doc",
+      "basis": "intrinsically interpretable (06 B.3 l.567-570)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case by document read; the code import from C01 (E11) is not counted (A D2 3.3: document reads only)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "reference",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the observed rate is the benchmark, the smoothed estimate the champion, the calibration methods the reference",
+    "rules": [
+     {
+      "role": "benchmark",
+      "match": [
+       "M0-observed-2009"
+      ]
+     },
+     {
+      "role": "champion",
+      "match": [
+       "M1-qmm-2009"
+      ]
+     }
+    ]
+   }
+  },
+  "C06": {
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c06/",
+   "tier": {
+    "exposure": {
+     "kind": "whole",
+     "pointer": null,
+     "tag": "convention",
+     "basis": "the whole C07 loan book (IFRS 9 scope, 6,000,000 CLP million)"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 4,
+     "tag": "doc",
+     "basis": "impact.ecl_total and ecl_stage1 to ecl_stage3 (the provision is the reported figure), C06/rd-2020-06.json",
+     "pointer": "data/derived/C06/rd-2020-06.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C06/rd-2020-06.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 2,
+      "tag": "convention",
+      "basis": "L2-cox and L1-dth (hazard models score 2)",
+      "pointer": "data/derived/C06/models-rd-2020-06.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 2,
+      "tag": "doc",
+      "basis": "external sources: sba-foia, fed-stress-tests",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 1,
+      "tag": "doc",
+      "basis": "intrinsically interpretable (06 B.3 l.567-570)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "challenger",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the Kaplan-Meier estimate is the benchmark",
+    "rules": [
+     {
+      "role": "benchmark",
+      "match": [
+       "L0-km"
+      ]
+     }
+    ]
+   }
+  },
+  "C07": {
+   "owner_role": "Head of provisioning models (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c07/",
+   "tier": {
+    "exposure": {
+     "kind": "whole",
+     "pointer": null,
+     "tag": "convention",
+     "basis": "the whole C07 loan book (6,000,000 CLP million, IFRS 9 scope)"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 4,
+     "tag": "doc",
+     "basis": "impact.provision_cmf_b1, provision_ifrs9, provision_bde (the provisions are the reported figures)",
+     "pointer": "data/derived/C07/base.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C07/base.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 2,
+      "tag": "convention",
+      "basis": "IFRS9-ecl is a fitted hazard model (B1-standard scores 1)",
+      "pointer": "data/derived/C07/models-banco-andino.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 1,
+      "tag": "doc",
+      "basis": "no outside file: sources is empty, the book is generated",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 1,
+      "tag": "doc",
+      "basis": "intrinsically interpretable (06 B.3 l.567-570)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "reference",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role",
+    "rules": [
+     {
+      "role": "benchmark",
+      "match": [
+       "B1-standard",
+       "BDE-annex9"
+      ]
+     },
+     {
+      "role": "champion",
+      "match": [
+       "IFRS9-ecl"
+      ]
+     }
+    ]
+   }
+  },
+  "C08": {
+   "owner_role": "Head of LGD and EAD models (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c08/",
+   "tier": {
+    "exposure": {
+     "kind": "c07-segment-share",
+     "segments": [
+      "commercial-group"
+     ],
+     "pointer": "data/derived/C07/models-banco-andino.json#/fit/segments",
+     "tag": "convention",
+     "basis": "commercial-group (SME) segment of the C07 book (a mapping convention)"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 3,
+     "tag": "convention",
+     "basis": "impact.mean_lgd_proxy and downturn_add_on; LGD and downturn LGD are IRB and ECL inputs by model type",
+     "pointer": "data/derived/C08/dc-2009-10.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C08/dc-2009-10.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 3,
+      "tag": "convention",
+      "basis": "L5-gradient-boosted (CatBoost)",
+      "pointer": "data/derived/C08/models-dc-2009-10.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 2,
+      "tag": "doc",
+      "basis": "external source: sba-foia",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 3,
+      "tag": "doc",
+      "basis": "post hoc explanation for the boosted rung",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case by document read; the code import from C06 (E08) is not counted (A D2 3.3: document reads only)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "challenger",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the ordinary least squares rung is the benchmark",
+    "rules": [
+     {
+      "role": "benchmark",
+      "match": [
+       "L1-ols"
+      ]
+     }
+    ]
+   }
+  },
+  "C09": {
+   "owner_role": "Head of LGD and EAD models (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c09/",
+   "tier": {
+    "exposure": {
+     "kind": "c07-segment-share",
+     "segments": [
+      "consumer-cards"
+     ],
+     "pointer": "data/derived/C07/models-banco-andino.json#/fit/segments",
+     "tag": "convention",
+     "basis": "consumer-cards segment of the C07 book (a mapping convention)"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 3,
+     "tag": "convention",
+     "basis": "impact.true_ccf, ccf_bias_* and ead_worst_band_gap_*; CCF and EAD are IRB inputs by model type",
+     "pointer": "data/derived/C09/level-3.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C09/level-3.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 1,
+      "tag": "convention",
+      "basis": "ccf-* and direct-ead regressions",
+      "pointer": "data/derived/C09/models-generator.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 1,
+      "tag": "doc",
+      "basis": "generated data: sources is empty, the portfolio is a generator",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 1,
+      "tag": "doc",
+      "basis": "intrinsically interpretable (06 B.3 l.567-570)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "challenger",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the direct EAD model is the benchmark",
+    "rules": [
+     {
+      "role": "benchmark",
+      "match": [
+       "direct-ead"
+      ]
+     }
+    ]
+   }
+  },
+  "C10": {
+   "owner_role": "Head of capital planning (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c10/",
+   "tier": {
+    "exposure": {
+     "kind": "c18-rwa-share",
+     "risk": "credit",
+     "pointer": "data/derived/C18/baseline.json#/outputs/capital_start/rwa_by_risk",
+     "tag": "convention",
+     "basis": "the credit share of the C18 RWA at 2026-08-31"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 3,
+     "tag": "doc",
+     "basis": "impact.ec_lhp_999_share and ec_ratio_fitted_to_irb (economic capital against IRB capital)",
+     "pointer": "data/derived/C10/commercial-industrial.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C10/commercial-industrial.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 2,
+      "tag": "convention",
+      "basis": "m-student-t and m-creditrisk-plus (fitted copula and mixture models score 2)",
+      "pointer": "data/derived/C10/models-c10.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 2,
+      "tag": "doc",
+      "basis": "external source: fed-chargeoff",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 1,
+      "tag": "doc",
+      "basis": "intrinsically interpretable (06 B.3 l.567-570)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "challenger",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the large homogeneous portfolio model is the benchmark",
+    "rules": [
+     {
+      "role": "benchmark",
+      "match": [
+       "m-lhp"
+      ]
+     }
+    ]
+   }
+  },
+  "C11": {
+   "owner_role": "Head of market risk models (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c11/",
+   "tier": {
+    "exposure": {
+     "kind": "c18-rwa-share",
+     "risk": "market",
+     "pointer": "data/derived/C18/baseline.json#/outputs/capital_start/rwa_by_risk",
+     "tag": "convention",
+     "basis": "the market share of the C18 RWA at 2026-08-31"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 3,
+     "tag": "doc",
+     "basis": "impact.champion_fz0_* and eligible_models; the Basel traffic light is named at docs/cases/C11.md:131",
+     "pointer": "data/derived/C11/rates-2022.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C11/rates-2022.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 2,
+      "tag": "convention",
+      "basis": "garch-t, gjr-t, egarch-t, fhs, evt-mf, caviar-* and gas-* (nn-fz is declared and not run)",
+      "pointer": "data/derived/C11/models-ladder.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 2,
+      "tag": "doc",
+      "basis": "external sources: french-data-library, treasury-par-curve, fred-public-domain",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 1,
+      "tag": "doc",
+      "basis": "intrinsically interpretable (06 B.3 l.567-570)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 4,
+      "tag": "doc",
+      "basis": "parameters.refit_every_days: a scheduled rolling refit inside the backtest (a boundary case against the SS1/23 dynamic model wording)",
+      "pointer": "data/derived/C11/models-ladder.json#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "challenger",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the historical simulations are the benchmarks",
+    "rules": [
+     {
+      "role": "benchmark",
+      "match": [
+       "hs-*"
+      ]
+     }
+    ]
+   }
+  },
+  "C12": {
+   "owner_role": "Head of counterparty credit risk models (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c12/",
+   "tier": {
+    "exposure": {
+     "kind": "none",
+     "pointer": null,
+     "tag": "convention",
+     "basis": "no balance exists: the C12 swap book has no Banco Andino anchor (A D2 3.1 caveat e)"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 4,
+     "tag": "doc",
+     "basis": "impact.sa_ccr_ead, cva and eepe",
+     "pointer": "data/derived/C12/netting-set.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C12/netting-set.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 2,
+      "tag": "convention",
+      "basis": "hw1f-exposure (a fitted one-factor model)",
+      "pointer": "data/derived/C12/models-hw1f-treasury-2000-2025.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 2,
+      "tag": "doc",
+      "basis": "external sources: treasury-par-curve, treasury-hqm",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 1,
+      "tag": "doc",
+      "basis": "intrinsically interpretable (06 B.3 l.567-570)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "champion",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the entry holds one model",
+    "rules": []
+   }
+  },
+  "C13": {
+   "owner_role": "Head of market risk models (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c13/",
+   "tier": {
+    "exposure": {
+     "kind": "c18-rwa-share",
+     "risk": "market",
+     "pointer": "data/derived/C18/baseline.json#/outputs/capital_start/rwa_by_risk",
+     "tag": "convention",
+     "basis": "the market share of the C18 RWA at 2026-08-31"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 3,
+     "tag": "doc",
+     "basis": "impact.share_caught and share_desk_over_limit_99; FRTB desk eligibility (docs/cases/C13.md:8)",
+     "pointer": "data/derived/C13/missing-basis.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C13/missing-basis.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 2,
+      "tag": "convention",
+      "basis": "desk-risk-model",
+      "pointer": "data/derived/C13/models-generator.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 1,
+      "tag": "doc",
+      "basis": "generated data: sources is empty, the desk is a generator",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 1,
+      "tag": "doc",
+      "basis": "intrinsically interpretable (06 B.3 l.567-570)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "champion",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the entry holds one model",
+    "rules": []
+   }
+  },
+  "C14": {
+   "owner_role": "Head of balance sheet risk models (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c14/",
+   "tier": {
+    "exposure": {
+     "kind": "whole",
+     "pointer": null,
+     "tag": "convention",
+     "basis": "the whole banking book of SVB (call-report aggregates)"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 4,
+     "tag": "doc",
+     "basis": "impact.outlier_ratio_behavioural and eve_risk_measure_* (the supervisory outlier test)",
+     "pointer": "data/derived/C14/vd-2022-q4.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C14/vd-2022-q4.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 2,
+      "tag": "convention",
+      "basis": "irrbb-nmd-replicating and irrbb-ear-evar-hw1f",
+      "pointer": "data/derived/C14/models-svb-2021-2022.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 2,
+      "tag": "doc",
+      "basis": "external sources: fdic-bankfind, treasury-par-curve",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 1,
+      "tag": "doc",
+      "basis": "intrinsically interpretable (06 B.3 l.567-570)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "challenger",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the repricing and duration gap is the benchmark",
+    "rules": [
+     {
+      "role": "benchmark",
+      "match": [
+       "irrbb-gap-duration"
+      ]
+     },
+     {
+      "role": "reference",
+      "match": [
+       "irrbb-eve-standardised"
+      ]
+     }
+    ]
+   }
+  },
+  "C15": {
+   "owner_role": "Head of balance sheet risk models (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c15/",
+   "tier": {
+    "exposure": {
+     "kind": "whole",
+     "pointer": null,
+     "tag": "convention",
+     "basis": "the whole banking book of Banco Andino"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 4,
+     "tag": "doc",
+     "basis": "impact.delta_eve and delta_nii against the CMF thresholds (docs/cases/C15.md:15-22)",
+     "pointer": "data/derived/C15/long-uf.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C15/long-uf.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 2,
+      "tag": "convention",
+      "basis": "irrbb-curves-nelson-siegel and irrbb-ear-evar-hw1f",
+      "pointer": "data/derived/C15/models-banco-andino-2026-09.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 2,
+      "tag": "doc",
+      "basis": "external source: bcch-bde",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 1,
+      "tag": "doc",
+      "basis": "intrinsically interpretable (06 B.3 l.567-570)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 2,
+      "tag": "convention",
+      "basis": "one feeder, C07, by code import (E06), counted as addendum 3.3 counts it (feeder count 1)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "challenger",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the CMF Annex 1 method is the reference",
+    "rules": [
+     {
+      "role": "reference",
+      "match": [
+       "irrbb-annex1"
+      ]
+     }
+    ]
+   }
+  },
+  "C16": {
+   "owner_role": "Head of balance sheet risk models (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c16/",
+   "tier": {
+    "exposure": {
+     "kind": "whole",
+     "pointer": null,
+     "tag": "convention",
+     "basis": "the whole funding base of SVB"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 4,
+     "tag": "doc",
+     "basis": "impact.lcr and survival_days",
+     "pointer": "data/derived/C16/list-adverse.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C16/list-adverse.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 1,
+      "tag": "convention",
+      "basis": "liquidity-ladder (prescribed run-off rates)",
+      "pointer": "data/derived/C16/models-svb-liquidity.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 2,
+      "tag": "doc",
+      "basis": "external sources: fdic-bankfind, fed-h8, fed-svb-review, treasury-par-curve",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 1,
+      "tag": "doc",
+      "basis": "intrinsically interpretable (06 B.3 l.567-570)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "champion",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the entry holds one model",
+    "rules": []
+   }
+  },
+  "C17": {
+   "owner_role": "Head of operational risk models (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c17/",
+   "tier": {
+    "exposure": {
+     "kind": "c18-rwa-share",
+     "risk": "operational",
+     "pointer": "data/derived/C18/baseline.json#/outputs/capital_start/rwa_by_risk",
+     "tag": "convention",
+     "basis": "the operational share of the C18 RWA at 2026-08-31"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 4,
+     "tag": "doc",
+     "basis": "impact.lda_capital_999 and sma_orc (operational risk capital)",
+     "pointer": "data/derived/C17/xi-0-8.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C17/xi-0-8.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 2,
+      "tag": "convention",
+      "basis": "lda-lognormal and lda-splice (fitted severity distributions)",
+      "pointer": "data/derived/C17/models-generator.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 1,
+      "tag": "doc",
+      "basis": "generated data: sources is empty, the losses are a generator",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 1,
+      "tag": "doc",
+      "basis": "intrinsically interpretable (06 B.3 l.567-570)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "challenger",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the basic and standardised measures are the benchmarks",
+    "rules": [
+     {
+      "role": "benchmark",
+      "match": [
+       "sma",
+       "sla",
+       "sla-mean-corrected"
+      ]
+     },
+     {
+      "role": "reference",
+      "match": [
+       "scenario"
+      ]
+     }
+    ]
+   }
+  },
+  "C18": {
+   "owner_role": "Head of capital planning (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c18/",
+   "tier": {
+    "exposure": {
+     "kind": "whole",
+     "pointer": null,
+     "tag": "convention",
+     "basis": "the whole capital of Banco Andino (RWA 7,492,853 CLP million at 2026-08-31)"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 4,
+     "tag": "doc",
+     "basis": "impact.capital_simple_sum, cet1_ratio_end_stress and p2g_proxy (the capital plan)",
+     "pointer": "data/derived/C18/fed-2026-severely-adverse.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C18/fed-2026-severely-adverse.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 2,
+      "tag": "convention",
+      "basis": "c18-satellites-us-calibrated and c18-aggregation-ladder (fitted parametric models)",
+      "pointer": "data/derived/C18/models-banco-andino.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 2,
+      "tag": "doc",
+      "basis": "five external sources",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 1,
+      "tag": "doc",
+      "basis": "intrinsically interpretable (06 B.3 l.567-570)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 4,
+      "tag": "convention",
+      "basis": "four feeders by document read (C07, C11, C15, C17); the code import from C10 (E05) is not counted (A D2 3.3: document reads only)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "reference",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role",
+    "rules": [
+     {
+      "role": "champion",
+      "match": [
+       "c18-satellites-us-calibrated",
+       "c18-capital-engine"
+      ]
+     },
+     {
+      "role": "challenger",
+      "match": [
+       "c18-aggregation-ladder"
+      ]
+     }
+    ]
+   }
+  },
+  "C20": {
+   "owner_role": "Head of machine-learning model risk (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c20/",
+   "tier": {
+    "exposure": {
+     "kind": "c07-segment-share",
+     "segments": [
+      "consumer-cards"
+     ],
+     "pointer": "data/derived/C07/models-banco-andino.json#/fit/segments",
+     "tag": "convention",
+     "basis": "consumer-cards segment of the C07 book (a mapping convention: the German and Taiwan models score natural persons, the Polish model firms; W15-18)"
+    },
+    "regulatory_use": {
+     "literal": 4,
+     "graded": 3,
+     "tag": "doc",
+     "basis": "scored by model type like C01 to C03 (decision M2 of the U15-P review): the C20 ladder is the C01 ladder of PD scoring rungs (P0 to P4) fitted on the German, Taiwan and Polish files, and a PD ladder feeds IRB capital or ECL by model type; impact holds only decision_flip_share, no regulatory figure",
+     "pointer": "data/derived/C20/models-c20-ladder.json#/fit/ladder"
+    },
+    "decision_criticality": {
+     "score": 3,
+     "tag": "doc",
+     "basis": "impact.decision_flip_share: the decisions of the scored models that flip at the stated cut-off (natural persons, 06 B.3)",
+     "pointer": "data/derived/C20/sgcd-seen.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 3,
+      "tag": "convention",
+      "basis": "P3-ebm and P4-lightgbm on the German, Polish and Taiwan files and P4-xgboost on the Taiwan file (tree ensembles and boosted additive models score 3; TabPFN is not run)",
+      "pointer": "data/derived/C20/models-c20-ladder.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 2,
+      "tag": "doc",
+      "basis": "external sources: santanderai-sgcd, uci-taiwan, uci-polish, fed-stress-tests",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 3,
+      "tag": "doc",
+      "basis": "post hoc explanation for P4 (TreeSHAP reason codes are measured by the case); P3-ebm is glass-box",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case by document read; the code import from C01 (E15) is not counted (A D2 3.3: document reads only)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "challenger",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the simplest rungs are benchmarks, the rest challengers; the C20 ladder is the C01 ladder per dataset",
+    "rules": [
+     {
+      "role": "benchmark",
+      "match": [
+       "P0-*"
+      ]
+     },
+     {
+      "role": "champion",
+      "match": [
+       "P1-scorecard-*"
+      ],
+      "tag": "convention",
+      "basis": "the scorecard rung is the champion of the C01 ladder (frontend/src/workbench/model.ts:8) and C20 reuses the ladder"
+     }
+    ]
+   }
+  },
+  "C21": {
+   "owner_role": "Head of model fairness and conduct risk (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c21/",
+   "tier": {
+    "exposure": {
+     "kind": "c07-segment-share",
+     "segments": [
+      "mortgage-ltv-le80",
+      "mortgage-ltv-gt80"
+     ],
+     "pointer": "data/derived/C07/models-banco-andino.json#/fit/segments",
+     "tag": "convention",
+     "basis": "the mortgage segments of the C07 book (a mapping convention)"
+    },
+    "regulatory_use": {
+     "literal": 2,
+     "graded": 2,
+     "tag": "doc",
+     "basis": "impact is empty (data/derived/C21/pair-2023-24.json#/impact); compliance monitoring (ECOA, HMDA), outside the rubric's list, scored 2; the decisions audited are on natural persons",
+     "pointer": "data/derived/C21/pair-2023-24.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 3,
+     "tag": "doc",
+     "basis": "decisions audited are on natural persons (06 B.3): the HMDA mortgage decisions",
+     "pointer": "data/derived/C21/models-hmda-de-2018-2023.json#/fit/decision_models"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 2,
+      "tag": "convention",
+      "basis": "hmda-situation-testing (hmda-logistic-decision scores 1)",
+      "pointer": "data/derived/C21/models-hmda-de-2018-2023.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 2,
+      "tag": "doc",
+      "basis": "external source: hmda",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 1,
+      "tag": "doc",
+      "basis": "intrinsically interpretable (06 B.3 l.567-570)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "reference",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the logistic decision model is the audited model",
+    "rules": [
+     {
+      "role": "champion",
+      "match": [
+       "hmda-logistic-decision"
+      ]
+     }
+    ]
+   }
+  },
+  "C22": {
+   "owner_role": "Head of validation tooling (synthetic role)",
+   "developer": "data-pipeline/pipeline/cases/c22_validator.py",
+   "tier": {
+    "exposure": {
+     "kind": "none",
+     "pointer": null,
+     "tag": "convention",
+     "basis": "not a bank balance: C22 tests the tests of the other cases"
+    },
+    "regulatory_use": {
+     "literal": 1,
+     "graded": 1,
+     "tag": "doc",
+     "basis": "no regulatory number: it tests the tests of the other cases",
+     "pointer": "data/derived/C22/null.json#/impact"
+    },
+    "decision_criticality": {
+     "score": 1,
+     "tag": "convention",
+     "basis": "no rubric rule names an automated decision on natural persons in this case",
+     "pointer": "data/derived/C22/null.json#/impact"
+    },
+    "factors": [
+     {
+      "id": "F1",
+      "name": "methodology",
+      "score": 2,
+      "tag": "convention",
+      "basis": "the G1 to G7 generators and the X1-exact harness",
+      "pointer": "data/derived/C22/models-generators.json#/model"
+     },
+     {
+      "id": "F2",
+      "name": "data",
+      "score": 1,
+      "tag": "doc",
+      "basis": "generated data: the samples are drawn by the generators",
+      "pointer": "{manifest}#/sources"
+     },
+     {
+      "id": "F3",
+      "name": "explainability",
+      "score": 1,
+      "tag": "doc",
+      "basis": "intrinsically interpretable (06 B.3 l.567-570)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F4",
+      "name": "dynamic updating",
+      "score": 1,
+      "tag": "doc",
+      "basis": "static fit per fit_id (A D1 A21)",
+      "pointer": "{models}#/model"
+     },
+     {
+      "id": "F5",
+      "name": "dependency depth",
+      "score": 1,
+      "tag": "convention",
+      "basis": "no feeding case by document read; the code import from C01 (E12) is not counted (A D2 3.3: document reads only)",
+      "pointer": "data-pipeline/pipeline/governance/edges.json"
+     },
+     {
+      "id": "F6",
+      "name": "reproducibility",
+      "score": 1,
+      "tag": "convention",
+      "basis": "seed, code version, engine version and file hashes are in every document of the case",
+      "pointer": "{default}#/provenance"
+     }
+    ]
+   },
+   "roles": {
+    "default": "reference",
+    "tag": "convention",
+    "basis": "convention by rung: the model records carry no role; the exact harness is the benchmark",
+    "rules": [
+     {
+      "role": "benchmark",
+      "match": [
+       "X1-exact"
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "scope_notes": {
+  "tag": "doc",
+  "basis": "U15 research addendum D1 S1: the candidates for the SR 26-2 exclusion of deterministic rule-based processes (06 l.126-130, confirmed in A D6); the four answers of the scope test stay those of the entry as a whole",
+  "cases": {
+   "C07": "the components B1-standard and BDE-annex9 are deterministic rule sets, the entry as a whole is not",
+   "C14": "the component irrbb-gap-duration is a candidate for the deterministic rule exclusion, the entry as a whole is not",
+   "C15": "the component irrbb-annex1 is a candidate for the deterministic rule exclusion, the entry as a whole is not",
+   "C16": "the component liquidity-ladder applies prescribed run-off rates: a candidate for the deterministic rule exclusion, kept in scope because its run-off behaviour is calibrated"
+  }
+ },
+ "scope_answers": {
+  "applies_theory": true,
+  "output_is_estimate": true,
+  "deterministic": false,
+  "generative_or_agentic": false,
+  "basis": "B.1 (06 l.523-537): every case applies statistical, economic or financial theory and returns an estimate; none is a generative or agentic AI model (SDD non-goal 9)",
+  "tag": "doc"
+ },
+ "attribute_sources": {
+  "tag": "doc",
+  "basis": "U15 research addendum D1: where a committed document holds the attribute (the pointer is resolved in every fit of the case; a pointer that no longer resolves stops the bake)",
+  "A09": {
+   "C06": {
+    "status": "derivable",
+    "mode": "ids",
+    "pointers": [
+     "{models}#/fit/segments"
+    ],
+    "note": "the book segments of the C06 fit"
+   },
+   "C07": {
+    "status": "derivable",
+    "mode": "ids",
+    "pointers": [
+     "{models}#/fit/segments"
+    ],
+    "note": "the book segments of the C07 fit"
+   },
+   "C18": {
+    "status": "derivable",
+    "mode": "values",
+    "pointers": [
+     "{models}#/fit/class_mapping"
+    ],
+    "note": "the class mapping of the C18 fit"
+   }
+  },
+  "A13": {
+   "C01": {
+    "status": "derivable",
+    "mode": "values",
+    "pointers": [
+     "{models}#/fit/split",
+     "{models}#/fit/train_rows"
+    ],
+    "note": "the training span is the split of the fit; no sample range per risk driver"
+   },
+   "C03": {
+    "status": "derivable",
+    "mode": "count",
+    "pointers": [
+     "{models}#/fit/cohort_windows"
+    ],
+    "note": "the cohort windows of the fit; no sample range per risk driver"
+   },
+   "C08": {
+    "status": "derivable",
+    "mode": "values",
+    "pointers": [
+     "{models}#/fit/training"
+    ],
+    "note": "the training window of the fit; no sample range per risk driver"
+   },
+   "C10": {
+    "status": "derivable",
+    "mode": "count",
+    "pointers": [
+     "{models}#/fit/windows"
+    ],
+    "note": "the estimation windows of the fit; no sample range per risk driver"
+   },
+   "C11": {
+    "status": "derivable",
+    "mode": "count",
+    "pointers": [
+     "{models}#/fit/windows"
+    ],
+    "note": "the estimation windows of the fit; no sample range per risk driver"
+   },
+   "C12": {
+    "status": "derivable",
+    "mode": "values",
+    "pointers": [
+     "{models}#/fit/calibrations",
+     "{models}#/fit/min_history_years"
+    ],
+    "note": "the calibration windows and the minimum history; no sample range per risk driver"
+   },
+   "C18": {
+    "status": "derivable",
+    "mode": "values",
+    "pointers": [
+     "{models}#/model/0/parameters/fit_end_year/value"
+    ],
+    "note": "the satellite fit window ends in 2019"
+   }
+  },
+  "A16": {
+   "C18": {
+    "pointers": [
+     "{models}#/fit/marginal_sources"
+    ],
+    "note": "the edge table agrees with the feeders the models document holds as data"
+   }
+  },
+  "A19": {
+   "C12": {
+    "status": "present",
+    "mode": "count",
+    "pointers": [
+     "{default}#/outputs/named_parameters"
+    ],
+    "note": "labelled parameters of the default variant"
+   },
+   "C18": {
+    "status": "present",
+    "mode": "count",
+    "pointers": [
+     "{models}#/fit/named_parameters"
+    ],
+    "note": "labelled parameters of the fit"
+   }
+  },
+  "A26": {
+   "C07": {
+    "overlays_total": "{default}#/outputs/ifrs9_detail/overlays_total",
+    "model_output": "{default}#/impact/provision_ifrs9/value",
+    "currency": "{default}#/outputs/ifrs9_detail/currency"
+   },
+   "C06": {
+    "not_applicable": "no PMA is in force: the C06 overlays list is empty and impact.overlay_total is 0.0 USD in the six variants, and the PMA magnitude metric sums amounts of one currency without converting (the C07 amounts are CLP)"
+   }
+  }
+ }
+}

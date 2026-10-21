@@ -90,7 +90,11 @@ SERVED_DOCUMENTS = ("regulatory/calculators.json",)
 def served_files() -> list[str]:
     """Every file beside the cases that the index declares, so the site build copies it: the contract-1 declarations
     and the served documents."""
-    return [*contract_files(), *SERVED_DOCUMENTS]
+    from .governance import served_files as governance_files
+
+    # the committed governance documents (the governance bake writes them), listed wherever the index is computed: a
+    # redirected DERIVED (the test sandbox) never holds them, so the list reads the repository's own derived root
+    return [*contract_files(), *SERVED_DOCUMENTS, *governance_files(REPO_ROOT / "data" / "derived")]
 
 
 def index_document() -> dict[str, Any]:

@@ -342,7 +342,7 @@ export function Methodology() {
             ],
           },
           ...(registered('loss', lang).length > 0
-            ? [{ id: 'loss', label: t('Loss severity and exposure', 'Severidad de pérdida y exposición'), tabs: registered('loss', lang) }]
+            ? [{ id: 'loss', label: t('Expected loss, severity and exposure', 'Pérdida esperada, severidad y exposición'), tabs: registered('loss', lang) }]
             : []),
           ...(registered('capital', lang).length > 0
             ? [{ id: 'capital', label: t('Capital models', 'Modelos de capital'), tabs: registered('capital', lang) }]
