@@ -218,6 +218,23 @@ The topic 11 (operational risk) notebooks cite, besides the BIS d424 page above:
 - Mignola, Ugoccioni and Cope (2016), Comments on the Basel Committee proposal for a new standardized approach for operational risk,
   https://doi.org/10.21314/JOP.2016.184.
 
+The topic 10 (liquidity) notebooks cite, from the research dossier 05 (section E) and the research addendum of the liquidity unit:
+
+- ECB Banking Supervision (2019), Sensitivity analysis of liquidity risk, stress test 2019, methodological note (2019-02-06),
+  https://www.bankingsupervision.europa.eu/ecb/pub/pdf/ssm.ECB_sensitivity_analysis_of_liquidity_risk-stress_test_2019-methodological_note_20190206~6771e88926.en.pdf,
+  and its results annex (2019-10-07), https://www.bankingsupervision.europa.eu/press/pr/date/2019/html/ssm.pr191007_annex~537c259b6d.en.pdf;
+- BCBS (2008), Principles for sound liquidity risk management and supervision, Principle 10, https://www.bis.org/publ/bcbs144.htm;
+- BCBS (2023), Report on the 2023 banking turmoil, Box A and Table A.1, https://www.bis.org/bcbs/publ/d555.htm;
+- Federal Reserve Board (2023-04-28), Review of the Federal Reserve's Supervision and Regulation of Silicon Valley Bank,
+  https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf;
+- Federal Reserve discount window, margins in force from 2022-03-14 to 2023-03-12,
+  https://www.frbdiscountwindow.org/generalpages/historical_margins/2022/03142022_03122023_securities_table;
+- the Basel Framework, LCR standard (LCR20 to LCR99), https://www.bis.org/committees/bcbs/basel-framework/standard/lcr, and NSFR standard
+  (NSF20 to NSF99), https://www.bis.org/committees/bcbs/basel-framework/standard/nsf/99/inforce/2019-12-15/published/2019-12-15;
+- Diamond and Dybvig (1983), bank runs, deposit insurance, and liquidity, https://doi.org/10.1086/261155;
+- Cookson, Fox, Gil-Bazo, Imbet and Schiller (2026), social media as a bank run catalyst, https://doi.org/10.1016/j.jfineco.2025.104218;
+- Jiang, Matvos, Piskorski and Seru (2024), monetary tightening and U.S. bank fragility in 2023: mark-to-market losses and uninsured depositor runs, https://doi.org/10.1016/j.jfineco.2024.103899.
+
 ## Sizing and contracts
 
 The design rests on two artifacts of contract-first parallel delivery (ADR-0080): the sizing and the contract catalog.
@@ -572,6 +589,29 @@ notebook in each language (`notebooks/`, CAOS_MANAGE `conventions/product-notebo
 demonstrates none. The candidate claims and their evidence are drafted in the U17 sizing (decision N8) and enter here one by one, so
 no claim is stated before its demonstration exists. Each claim is stated only as far as its committed evidence goes.
 
+- **BS-1** The measured size and power of the validation tests on planted defects.
+  What it adds: for each of the 21 tests with a p-value, its rejection rate under its null at 5% and 1% (its size), and for 17 of
+  them its rejection rate against defects of known severity (its power); the four transition tests (time homogeneity, Markov order,
+  matrix against a reference, downward momentum) have a size and no power. The measurement is 231 simulations and 551,000 seeded
+  repetitions in eight families, every one of its 476 rates with its Monte Carlo standard error (Morris, White and Crowther 2019,
+  https://doi.org/10.1002/sim.8086) and its Wilson interval (Brown, Cai and DasGupta 2001, https://doi.org/10.1214/ss/1009213286),
+  an exact rejection probability beside 47 of the rows, on 123 generators whose truth is known and reproduces from the committed
+  configuration. Demonstrated by `notebooks/en/14-validating-the-validator/08-beyond-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb`
+  and its Spanish counterpart.
+  Evidence: `data/derived/C22/null.json`, `data/derived/C22/miscalibration.json`, `data/derived/C22/clustering.json`,
+  `data/derived/C22/drift.json`, `data/derived/C22/discrimination-decay.json`, `data/derived/C22/leakage.json`,
+  `data/derived/C22/broken-monotonicity.json`, `data/derived/C22/concentration.json`,
+  `docs/design/features/c22-validator/requirements.md`, `tests/test_c22.py`.
+  Beyond: the ECB 2019 instructions define the tests and set no pass or fail thresholds; BCBS Working Paper 14 concludes that "no
+  really powerful tests of adequate calibration are currently available"
+  (https://www.bis.org/publications/studies-validation-internal-rating-systems-revised.pdf); the PSI bands are used without a statement
+  of their type I and type II error (Yurdakul and Naranjo 2020, https://doi.org/10.21314/JRMV.2020.227); and the validation toolkits
+  the research surveyed list tests, thresholds and traffic lights and record no measured size or power (UNVERIFIED beyond the
+  documentation the survey read).
+  Not claimed: the power of the four transition tests; that a rate holds outside the generator and the severity ladder it was
+  measured on (the ladders are design choices of Contraste, and power against them is not a probability of detecting a real bank's
+  problem); any regulatory threshold implied by a size or a power.
+
 - **BS-2** The reconciliations against reference engines that exist today.
   What it adds: the engine's tests and estimators are held to independent implementations and to the printed digits of the papers,
   and the gap is reported. The reconciliations that exist are the ones claimed: the printed tables and papers recomputed beside their
@@ -661,28 +701,21 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   bank whose severity is drawn from the family the tail estimators assume (which favours them) and whose lights use Contraste's
   internal gates; it says nothing about the capital of any real bank.
 
-- **BS-1** The measured size and power of the validation tests on planted defects.
-  What it adds: for each of the 21 tests with a p-value, its rejection rate under its null at 5% and 1% (its size), and for 17 of
-  them its rejection rate against defects of known severity (its power); the four transition tests (time homogeneity, Markov order,
-  matrix against a reference, downward momentum) have a size and no power. The measurement is 231 simulations and 551,000 seeded
-  repetitions in eight families, every one of its 476 rates with its Monte Carlo standard error (Morris, White and Crowther 2019,
-  https://doi.org/10.1002/sim.8086) and its Wilson interval (Brown, Cai and DasGupta 2001, https://doi.org/10.1214/ss/1009213286),
-  an exact rejection probability beside 47 of the rows, on 123 generators whose truth is known and reproduces from the committed
-  configuration. Demonstrated by `notebooks/en/14-validating-the-validator/08-beyond-the-size-and-power-of-every-test-measured-on-planted-defects.ipynb`
-  and its Spanish counterpart.
-  Evidence: `data/derived/C22/null.json`, `data/derived/C22/miscalibration.json`, `data/derived/C22/clustering.json`,
-  `data/derived/C22/drift.json`, `data/derived/C22/discrimination-decay.json`, `data/derived/C22/leakage.json`,
-  `data/derived/C22/broken-monotonicity.json`, `data/derived/C22/concentration.json`,
-  `docs/design/features/c22-validator/requirements.md`, `tests/test_c22.py`.
-  Beyond: the ECB 2019 instructions define the tests and set no pass or fail thresholds; BCBS Working Paper 14 concludes that "no
-  really powerful tests of adequate calibration are currently available"
-  (https://www.bis.org/publications/studies-validation-internal-rating-systems-revised.pdf); the PSI bands are used without a statement
-  of their type I and type II error (Yurdakul and Naranjo 2020, https://doi.org/10.21314/JRMV.2020.227); and the validation toolkits
-  the research surveyed list tests, thresholds and traffic lights and record no measured size or power (UNVERIFIED beyond the
-  documentation the survey read).
-  Not claimed: the power of the four transition tests; that a rate holds outside the generator and the severity ladder it was
-  measured on (the ladders are design choices of Contraste, and power against them is not a probability of detecting a real bank's
-  problem); any regulatory threshold implied by a size or a power.
+- **BS-11** Reverse liquidity stress as a run-off multiplier with a refusal rule, scored against a labelled run.
+  What it adds: the multiplier on the daily run-off rates of every segment at which the survival period first falls to a target of 30
+  days, capped so that no rate exceeds 1 and solved as a threshold (the survival period is at most the target at the multiplier and
+  longer just below it): 2.118175 on the LiST Adverse base and 1.383141 on the Extreme base. A target that cannot be bracketed is
+  refused with its reason and no number is returned (the fast-run base has a horizon of 5 days, below the target of 30). The fast-run
+  base is calibrated on the rows of Table A.1 dated before 2023 only, the engine refuses a 2023 row in a scored call, and the 2023 rows
+  score it, with the 85% of Silicon Valley Bank in 2 days as a labelled anchor and never a forecast: the modelled loss in those two days
+  is 0.1708 against 0.85.
+  Evidence: `data/derived/C16/reverse-stress.json`, `data/derived/C16/fast-run.json`, `data/derived/C16/models-svb-liquidity.json`,
+  `docs/design/features/c16/requirements.md`.
+  Beyond: the research dossier 05 lists reverse liquidity stress as the last rung of its liquidity model ladder ("the run-off multiplier
+  at which the survival period falls below a target, for example 30 days") without a measured case, and the ECB's LiST fixes smooth
+  scenarios first and reports the survival period they give; the research found no tool that implements the multiplier, which is
+  UNVERIFIED beyond the dossier's search. The bank is real in aggregate and synthetic in behaviour and deposits: the multipliers show
+  the method on those parameters, not the headroom of the bank.
 
 ## Deploy driver
 
