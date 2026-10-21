@@ -396,7 +396,14 @@ const ATTRIBUTE_TEXT: Record<string, BiText> = {
   derived_ethnicity: { en: 'Ethnicity', es: 'Etnia' },
   derived_sex: { en: 'Sex', es: 'Sexo' },
   applicant_age: { en: 'Age', es: 'Edad' },
+  applicant_age_above_62: { en: 'Age, 62 or over', es: 'Edad, 62 o más' },
 };
+// the groups the C21 bake names in its own words (the 62 contrast); every other group is a source label, the same in both languages
+const GROUP_NAME: Record<string, BiText> = {
+  '62 or over': { en: '62 or over', es: '62 o más' },
+  'under 62': { en: 'under 62', es: 'menores de 62' },
+};
+const groupName = (group: string, lang: Lang): string => bi(GROUP_NAME[group] ?? { en: group, es: group }, lang);
 const BENCHMARK_LABEL_TEXT: Record<string, BiText> = { 'employment benchmark': { en: 'employment benchmark', es: 'referencia de empleo' } };
 const attrName = (field: string, lang: Lang): string => bi(ATTRIBUTE_TEXT[field] ?? { en: field, es: field }, lang);
 
@@ -404,7 +411,7 @@ function c21Row(name: string, v: Variant, lang: Lang): Cell[] {
   const t = T(lang);
   const o = v.outputs as C21Outputs;
   const per = (f: (a: C21Outputs['attributes'][number], c: C21Outputs['attributes'][number]['contrasts'][number]) => string): string =>
-    join(o.attributes.flatMap((a) => a.contrasts.map((c) => `${attrName(a.field, lang)}, ${c.group}: ${f(a, c)}`)));
+    join(o.attributes.flatMap((a) => a.contrasts.map((c) => `${attrName(a.field, lang)}, ${groupName(c.group, lang)}: ${f(a, c)}`)));
   return [
     name,
     `${o.fit_year} ${t('to', 'a')} ${o.confirm_year}`,
@@ -412,7 +419,7 @@ function c21Row(name: string, v: Variant, lang: Lang): Cell[] {
     // the regulation's own citation ("29 CFR 1607.4") is kept as the source writes it, marked by the C21 helper
     <Marked key="four-fifths">{join(
       o.attributes.map((a) => {
-        const flagged = a.four_fifths.groups.filter((g) => g.flag).map((g) => g.group);
+        const flagged = a.four_fifths.groups.filter((g) => g.flag).map((g) => groupName(g.group, lang));
         const label = bi(BENCHMARK_LABEL_TEXT[a.four_fifths.label] ?? { en: a.four_fifths.label, es: a.four_fifths.label }, lang);
         return `${attrName(a.field, lang)}: ${flagged.length ? t(`flagged ${flagged.join(', ')}`, `marcado ${flagged.join(', ')}`) : t('no group flagged', 'ningún grupo marcado')} (${label}, ${a.four_fifths.citation})`;
       }),

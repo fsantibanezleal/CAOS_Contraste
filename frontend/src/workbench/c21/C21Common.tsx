@@ -14,7 +14,7 @@ import { LiveReadout, useCard } from '../c03/U6Shared';
 import { Marked } from './Marked';
 import { FindingsEvidenceCard } from './FindingsEvidence';
 import { LabelledOverTable, barMin, f3, int, pc, pc1 } from '../c20/U14Common';
-import { BASIS_TEXT, FIELD_TEXT, attributeFor, contrastFor, fitOf, outputsOf, text, type C21Legal, type C21Outputs, type C21Sel } from './selection';
+import { BASIS_TEXT, FIELD_TEXT, attributeFor, contrastFor, fitOf, groupBi, outputsOf, text, type C21Legal, type C21Outputs, type C21Sel } from './selection';
 
 /** The short label every C21 view says before its content. */
 export function NoLegalClaim({ legal }: { legal: C21Legal | null }) {
@@ -119,7 +119,7 @@ export function C21VariantsTable({ variants, onPick, current, field }: { variant
               title={{ en: 'Lowest approval rate by year pair', es: 'Menor tasa de aprobación por par de años' }}
               height="fill"
               orientation="horizontal"
-              data={lowest.map((l) => ({ id: l.id, label: { en: `${l.fit}-${l.confirm}`, es: `${l.fit}-${l.confirm}` } as BiText, value: l.rate, highlight: l.id === current, hint: { en: l.group, es: l.group } as BiText }))}
+              data={lowest.map((l) => ({ id: l.id, label: { en: `${l.fit}-${l.confirm}`, es: `${l.fit}-${l.confirm}` } as BiText, value: l.rate, highlight: l.id === current, hint: groupBi(l.group) as BiText }))}
               axis={{ label: { en: 'Lowest group approval rate (an indicator only)', es: 'Menor tasa de aprobación de un grupo (solo un indicador)' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
             />
           )
@@ -148,7 +148,7 @@ export function C21VariantsTable({ variants, onPick, current, field }: { variant
                     <span className="ct-note">{` ${o.fit_year} - ${o.confirm_year}`}</span>
                   </td>
                   <td className="ct-wide-only">{int(o.scope.rows_fit, lang)}</td>
-                  <td data-na={lowest ? undefined : 'true'}>{lowest ? `${pc1(lowest.selection_rate, lang)} (${lowest.group})` : formatNumber(null, lang)}</td>
+                  <td data-na={lowest ? undefined : 'true'}>{lowest ? `${pc1(lowest.selection_rate, lang)} (${pick(groupBi(lowest.group), lang)})` : formatNumber(null, lang)}</td>
                   <td className="ct-text" data-same-sign={same === null ? 'none' : same}>
                     {same === null ? formatNumber(null, lang) : pick(same ? { en: 'same sign', es: 'mismo signo' } : { en: 'sign changed', es: 'signo cambiado' }, lang)}
                   </td>
@@ -285,8 +285,8 @@ export function AttributeReadout({ sel }: { sel: C21Sel | null }) {
       title={sel && a ? text(FIELD_TEXT, a.field) : { en: 'The attribute', es: 'El atributo' }}
       items={[
         { label: { en: 'Basis', es: 'Base' }, text: a ? text(BASIS_TEXT, a.legal.basis) : na, unitless: true, hint: hint('The prohibited basis the field maps to in the research addendum; no legal claim.', 'La base prohibida a la que se asigna el campo en el anexo de investigación; sin afirmación legal.') },
-        { label: { en: 'Reference', es: 'Referencia' }, text: a ? { en: a.reference_group, es: a.reference_group } : na, unitless: true, hint: hint('The group the contrasts compare with.', 'El grupo con el que comparan los contrastes.') },
-        { label: { en: 'Highest rate', es: 'Mayor tasa' }, text: a ? { en: a.four_fifths.highest_rate_group, es: a.four_fifths.highest_rate_group } : na, unitless: true, hint: hint('The group the four-fifths line is measured against.', 'El grupo contra el que se mide la línea de cuatro quintos.') },
+        { label: { en: 'Reference', es: 'Referencia' }, text: a ? groupBi(a.reference_group) : na, unitless: true, hint: hint('The group the contrasts compare with.', 'El grupo con el que comparan los contrastes.') },
+        { label: { en: 'Highest rate', es: 'Mayor tasa' }, text: a ? groupBi(a.four_fifths.highest_rate_group) : na, unitless: true, hint: hint('The group the four-fifths line is measured against.', 'El grupo contra el que se mide la línea de cuatro quintos.') },
       ]}
     />
   );
@@ -298,7 +298,7 @@ export function GroupReadout({ sel }: { sel: C21Sel | null }) {
   return (
     <LiveReadout
       variant={sel?.data.variant}
-      title={c ? { en: c.group, es: c.group } : { en: 'The group', es: 'El grupo' }}
+      title={c ? groupBi(c.group) : { en: 'The group', es: 'El grupo' }}
       items={[
         { label: { en: 'Approval rate', es: 'Tasa de aprobación' }, value: c?.selection_rate_group ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: hint('The share of the decided applications that were approved: an indicator only.', 'La parte de las solicitudes decididas que se aprobó: solo un indicador.') },
         { label: { en: 'Parity gap', es: 'Brecha de paridad' }, value: c?.parity_gap ?? null, unitless: true, format: { percent: true, decimals: 1 }, hint: hint('The rate of the group minus the rate of the reference group.', 'La tasa del grupo menos la tasa del grupo de referencia.') },

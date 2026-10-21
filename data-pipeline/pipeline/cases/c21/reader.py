@@ -23,7 +23,8 @@ from . import legal
 
 STATE = "DE"
 #: the columns the bake reads, under the snapshot spellings
-REQUIRED = ("activity_year", "state_code", "derived_ethnicity", "derived_race", "derived_sex", "applicant_age", "action_taken",
+REQUIRED = ("activity_year", "state_code", "derived_ethnicity", "derived_race", "derived_sex", "applicant_age", "applicant_age_above_62",
+            "action_taken",
             "loan_type", "loan_purpose", "lien_status", "occupancy_type", "loan_amount", "combined_loan_to_value_ratio",
             "property_value", "income", "debt_to_income_ratio", "rate_spread")
 MISSING_MARKERS = frozenset({"", "NA", "Exempt"})
@@ -139,7 +140,12 @@ def read_year(path: str | Path, year: int, state: str = STATE) -> YearRows:
             row: dict[str, Any] = {"row": n, "action_taken": action, "decision": 1 if action in legal.APPROVAL_CODES else 0}
             for f in legal.ATTRIBUTES:
                 v = rec[ix[f]].strip()
-                if v not in ATTRIBUTE_VALUES[f]:
+                raw = legal.RAW_VALUES.get(f)
+                if raw is not None:                       # a field whose groups are named apart from its raw values (the 62 contrast)
+                    if v not in raw:
+                        raise HmdaFormatError(f"{where}: {f} {v!r} is outside the dictionary {list(raw)}")
+                    v = raw[v]
+                elif v not in ATTRIBUTE_VALUES[f]:
                     raise HmdaFormatError(f"{where}: {f} {v!r} is outside the dictionary {list(ATTRIBUTE_VALUES[f])}")
                 row[f] = v
             for f in NOMINAL:

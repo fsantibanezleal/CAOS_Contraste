@@ -11,7 +11,7 @@ import { Pending } from '../Pending';
 import { UnavailableCard } from '../c14/C14Common';
 import { LabelledOverTable, barMin, f2, f3, int, pc1, testsOf } from '../c20/U14Common';
 import { LegalSentences, NoLegalClaim, legalOf } from './C21Common';
-import { CONTROL_TEXT, FIELD_TEXT, attributeFor, outputsOf, text, type C21Sel } from './selection';
+import { CONTROL_TEXT, FIELD_TEXT, attributeFor, groupBi, outputsOf, text, type C21Sel } from './selection';
 
 const controls = (ids: string[], lang: 'en' | 'es') => ids.map((c) => pick(text(CONTROL_TEXT, c), lang)).join(', ');
 
@@ -71,7 +71,7 @@ function EstimateCard({ sel, which }: { sel: C21Sel; which: Which }) {
             {rows.map(({ c, e }) =>
               e.estimate ? (
                 <tr key={c.group} data-group={c.group} data-label={e.estimate.label} className={c.group === sel.group ? 'ct-current' : undefined}>
-                  <td className="ct-text">{`${c.group} / ${c.reference_group}`}</td>
+                  <td className="ct-text">{`${pick(groupBi(c.group), lang)} / ${pick(groupBi(c.reference_group), lang)}`}</td>
                   <td>{f3(e.estimate.coefficient, lang)}</td>
                   <td>{`${f3(e.estimate.ci.lo, lang)} - ${f3(e.estimate.ci.hi, lang)}`}</td>
                   <td className="ct-wide-only">{'odds_ratio' in e.estimate ? f3(e.estimate.odds_ratio, lang) : e.estimate.unit}</td>
@@ -79,7 +79,7 @@ function EstimateCard({ sel, which }: { sel: C21Sel; which: Which }) {
                 </tr>
               ) : (
                 <tr key={c.group} data-group={c.group} data-na="true">
-                  <td className="ct-text">{`${c.group} / ${c.reference_group}`}</td>
+                  <td className="ct-text">{`${pick(groupBi(c.group), lang)} / ${pick(groupBi(c.reference_group), lang)}`}</td>
                   <td colSpan={4} className="ct-text">{`${formatNumber(null, lang)} (${e.reason ?? pick({ en: 'no reason given', es: 'sin razón dada' }, lang)})`}</td>
                 </tr>
               ),
@@ -172,7 +172,7 @@ export function ReplicationView({ sel }: { sel: C21Sel | null }) {
               {rows.map(({ c, e }) =>
                 e ? (
                   <tr key={c.group} data-group={c.group} data-same-sign={e.same_sign} className={c.group === sel.group ? 'ct-current' : undefined}>
-                    <td className="ct-text">{c.group}</td>
+                    <td className="ct-text">{pick(groupBi(c.group), lang)}</td>
                     <td>{f3(e.fit_coefficient, lang)}</td>
                     <td>{f3(e.confirm_coefficient, lang)}</td>
                     <td className="ct-text">{pick(e.same_sign ? { en: 'held', es: 'se mantuvo' } : { en: 'changed', es: 'cambió' }, lang)}</td>
@@ -180,7 +180,7 @@ export function ReplicationView({ sel }: { sel: C21Sel | null }) {
                   </tr>
                 ) : (
                   <tr key={c.group} data-group={c.group} data-na="true">
-                    <td className="ct-text">{c.group}</td>
+                    <td className="ct-text">{pick(groupBi(c.group), lang)}</td>
                     <td colSpan={4} className="ct-text">{`${formatNumber(null, lang)} (${c.confirmation.reason ?? pick({ en: 'no reason given', es: 'sin razón dada' }, lang)})`}</td>
                   </tr>
                 ),
