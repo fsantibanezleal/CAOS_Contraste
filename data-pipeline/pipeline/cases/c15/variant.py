@@ -33,7 +33,7 @@ CONV_NOTE = "UR amounts are CLF (UF) millions in the legs and CLP millions where
 
 SIGN = {"delta_eve": "positive-is-loss", "delta_nii": "positive-is-loss", "reference": "SRP31.129; dossier 01 H.4",
         "statement": t("A positive delta EVE or delta NII is a loss; only losses are aggregated across currencies.",
-                       "Un delta EVE o delta NII positivo es una pérdida; solo las perdidas se agregan entre monedas.")}
+                       "Un delta EVE o delta NII positivo es una pérdida; solo las pérdidas se agregan entre monedas.")}
 UNITS = {"money_scale": "millions", "rate": "decimal", "compounding": "continuous", "shock": "basis-points", "bucket_midpoint": "years",
          "dates": "ISO-8601"}
 
@@ -48,9 +48,9 @@ def bank_block(seed: int, calibration_source: str) -> dict[str, Any]:
             "notice": t("Banco Andino is a synthetic bank. Its balance-sheet aggregates are calibrated to the CMF system aggregates of August 2026; "
                         "the UF share, the repricing profile of each item, the deposit split and every behavioural assumption are synthetic and "
                         "stated in the document. The curves are real: the Banco Central de Chile F022 yields of the valuation date.",
-                        "Banco Andino es un banco sintético. Los agregados de su balance estan calibrados a los agregados del sistema de la CMF de "
-                        "agosto de 2026; la proporcion en UF, el perfil de reprecio de cada partida, la separacion de depósitos y todo supuesto de "
-                        "comportamiento son sintéticos y estan declarados en el documento. Las curvas son reales: los rendimientos F022 del Banco "
+                        "Banco Andino es un banco sintético. Los agregados de su balance están calibrados a los agregados del sistema de la CMF de "
+                        "agosto de 2026; la proporción en UF, el perfil de reprecio de cada partida, la separación de depósitos y todo supuesto de "
+                        "comportamiento son sintéticos y están declarados en el documento. Las curvas son reales: los rendimientos F022 del Banco "
                         "Central de Chile de la fecha de valoración.")}
 
 
@@ -58,7 +58,7 @@ UR_BLOCK = {"label": "UR", "code": "CLF", "treated_as_one_currency": True,
             "definition": t("All CLP-indexed (UF) flows are treated as one currency, UR (RAN 21-13 Annex 1).",
                             "Todos los flujos reajustables (UF) se tratan como una sola moneda, UR (RAN 21-13 Anexo 1).")}
 OFFSET_RULE = t("When delta CLP and delta CLF have opposite signs, half of the CLP is offset against the CLF (or the reverse), floored at zero.",
-                "Si los deltas CLP y CLF tienen signos opuestos, se compensa la mitad del CLP contra el CLF (o al reves), con piso en cero.")
+                "Si los deltas CLP y CLF tienen signos opuestos, se compensa la mitad del CLP contra el CLF (o al revés), con piso en cero.")
 
 
 @dataclass
@@ -272,7 +272,7 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
                "balance_sheet_assumption": {"kind": "constant", "growth_annual": 0, "description": t(
                    "Constant balance sheet: maturing and repricing flows are replaced by identical new ones. The UR leg carries the real rate only "
                    "(balances in CLP million at the UF value); the indexation income is outside it.",
-                   "Balance constante: los flujos que vencen o reprecian se reemplazan por otros identicos. El tramo UR lleva solo la tasa real "
+                   "Balance constante: los flujos que vencen o reprecian se reemplazan por otros idénticos. El tramo UR lleva solo la tasa real "
                    "(saldos en millones de CLP al valor de la UF); el ingreso por reajuste queda fuera.")},
                "legs": dyn_legs}
     n_paths = asm.N_PATHS if n_paths is None else n_paths
@@ -288,7 +288,7 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
         levels = []
         for lv in asm.LEVELS:
             got = simulation.ear_evar(nii_p, eve_p, b_nii, b_eve, lv)
-            err = simulation.ear_evar_mc_error(nii_p, eve_p, lv, asm.N_BATCHES)
+            err = simulation.ear_evar_mc_error(nii_p, eve_p, lv, asm.N_BATCHES, antithetic=True)  # whole mirror pairs per batch (BL-074)
             levels.append({"level": lv, "nii_quantile": float(b_nii - got.ear), "eve_quantile": float(b_eve - got.evar), "ear": float(got.ear),
                            "evar": float(got.evar), "ear_se": float(err.ear_se), "evar_se": float(err.evar_se)})
         ear_legs.append({"leg": n, "method": "hw1f", "n_paths": n_paths, "seed": seed, "horizon_months": asm.HORIZON_MONTHS,
@@ -384,11 +384,11 @@ def _findings(o: dict[str, Any], th: dict[str, Any], dist: float, where: str, ef
         out.append({"id": "F3", "severity": "S4", "status": "open", "evidence": ["irrbb.cmf_annex1_goldens"], "title": t(
             f"No post-shock floor binds on the curves of the valuation date: the smallest distance to a floor is {dist:.1f} bp ({where}); the floors would "
             "matter only at lower rates.",
-            f"Ningún piso posterior al choque actua sobre las curvas de la fecha de valoración: la menor distancia a un piso es {es(dist)} pb ({where}); los "
-            "pisos importarian solo con tasas mas bajas.")})
+            f"Ningún piso posterior al choque actúa sobre las curvas de la fecha de valoración: la menor distancia a un piso es {es(dist)} pb ({where}); los "
+            "pisos importarían solo con tasas más bajas.")})
     out.append({"id": "F4", "severity": "S3", "status": "open", "evidence": ["design:clp-curve-fourth-point"], "title": t(
         "The pesos curve has three published tenors and the engine's Nelson-Siegel fit needs four: the monetary policy rate is its overnight point, a "
         "policy rate and not a secondary-market yield.",
-        "La curva en pesos tiene tres plazos publicados y el ajuste Nelson-Siegel del motor necesita cuatro: la tasa de politica monetaria es su punto "
-        "a un dia, una tasa de politica y no un rendimiento de mercado secundario.")})
+        "La curva en pesos tiene tres plazos publicados y el ajuste Nelson-Siegel del motor necesita cuatro: la tasa de política monetaria es su punto "
+        "a un día, una tasa de política y no un rendimiento de mercado secundario.")})
     return out

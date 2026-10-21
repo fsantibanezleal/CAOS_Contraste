@@ -1,10 +1,9 @@
-# Vendored from fsantibanezleal/CAOS_PRODUCT_TEMPLATE at tag v0.05.000, path scripts/check_tech_matrix.py. Update from the source, never edit here.
 #!/usr/bin/env python3
 """The technology matrix of the SDD is the pinned dependencies, exactly (ADR-0075, ADR-0080; rule 11 section 12).
 
 The SDD section ``Technology and versions`` holds one table ``| component | package | version | use | alternative
 considered |``. This guard reads every pin of the Python requirements (every ``requirements*.txt`` at the root,
-``data-pipeline/requirements*.txt``, each ``-r`` include followed, and ``[project].dependencies`` of ``pyproject.toml``
+``data-pipeline/requirements*.txt``, ``notebooks/requirements*.txt``, each ``-r`` include followed, and ``[project].dependencies`` of ``pyproject.toml``
 when present) and of ``frontend/package.json`` (``dependencies``, ``devDependencies``, ``optionalDependencies``,
 ``peerDependencies`` and ``overrides``) and fails, naming each one, when
 
@@ -22,7 +21,13 @@ when present) and of ``frontend/package.json`` (``dependencies``, ``devDependenc
 
 Python pins stay exact (``==``); only ``package.json`` may carry ranges, and only with a lock that agrees. The range
 check implements npm's comparators (exact, ``^``, ``~``, ``>``, ``>=``, ``<``, ``<=``, ``=``, ``x`` and partial versions,
-hyphen ranges, ``||``) and rejects a spec it cannot read (a tag, a URL, an ``npm:`` alias) rather than assuming it holds.
+hyphen ranges, ``||``) and rejects a spec it cannot read (a tag, a URL) rather than assuming it holds.
+
+An npm alias, ``"zz-typescript5": "npm:typescript@5.9.3"`` (0.09.000: a product on TypeScript 7 keeps the TypeScript 5 compiler
+API that ``openapi-typescript`` needs under another name), is read as ``npm:<package>@<version>``. The version must be exact like
+any other pin (an alias with a range is a finding), the lock must record the same spec at its root and the same version at
+``node_modules/<alias>`` (under the alias's own name), and the SDD technology table must carry the alias's own name with that
+version, in the ``package`` column, like any other package.
 
 Pins are compared by normalised name (lower case, ``_`` and ``.`` as ``-``, extras dropped). Standard library only
 (CI installs nothing; ``tomllib`` is in Python 3.11 and later).
@@ -45,6 +50,7 @@ PIN = re.compile(rf"^(?P<name>{NAME_RE})(?:\[[^\]]*\])?\s*==\s*(?P<version>[^\s;
 GIT = re.compile(rf"^(?P<name>{NAME_RE})(?:\[[^\]]*\])?\s*@\s*git\+\S+?@(?P<ref>[^\s#;]+)")
 NAME = re.compile(rf"^(?P<name>{NAME_RE})")
 PY_VERSION = re.compile(r"^[0-9][0-9A-Za-z.+!_-]*$")
+ALIAS = re.compile(r"^npm:(?P<package>(?:@[^/@\s]+/)?[^/@\s]+)@(?P<version>\S+)$")
 NODE_SECTIONS = ("dependencies", "devDependencies", "optionalDependencies", "peerDependencies")
 
 
@@ -79,7 +85,8 @@ def add_pin(pins: dict[str, tuple[str, str]], name: str, version: str, source: s
 
 
 def python_files() -> list[Path]:
-    found = sorted(ROOT.glob("requirements*.txt")) + sorted((ROOT / "data-pipeline").glob("requirements*.txt"))
+    found = (sorted(ROOT.glob("requirements*.txt")) + sorted((ROOT / "data-pipeline").glob("requirements*.txt"))
+             + sorted((ROOT / "notebooks").glob("requirements*.txt")))  # the notebook environment (template 0.10.000)
     return [p.resolve() for p in found]
 
 
@@ -289,7 +296,18 @@ def node_pins(findings: list[str]) -> dict[str, tuple[str, str]]:
             if not locked:
                 findings.append(f"{name} is unpinned ({spec!r}): frontend/package-lock.json has no node_modules/{name} entry")
                 continue
-            ok = locked == spec if EXACT.match(spec) else satisfies(locked, spec)
+            alias = ALIAS.match(spec)
+            if alias:
+                target = packages.get(f"node_modules/{name}", {}).get("name")
+                if not EXACT.match(alias["version"]):
+                    findings.append(f"{name}: the alias {spec!r} in {here} must pin an exact version (npm:<package>@X.Y.Z), not a range")
+                    continue
+                if target not in (None, alias["package"]):
+                    findings.append(f"{name}: the alias {spec!r} in {here} names {alias['package']}, the lock installs {target}")
+                    continue
+                ok = locked == alias["version"]
+            else:
+                ok = locked == spec if EXACT.match(spec) else satisfies(locked, spec)
             if ok is None:
                 findings.append(f"{name}: the spec {spec!r} in {here} is not a version range this guard can check")
             elif not ok:

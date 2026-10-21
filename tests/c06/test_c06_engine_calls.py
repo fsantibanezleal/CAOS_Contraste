@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import importlib.metadata as md
 import json
-import re
 from pathlib import Path
 
 import numpy as np
@@ -19,6 +18,7 @@ from riskvalidation.provisions import term_structure as T
 from riskvalidation.validation import ifrs9 as V
 
 from c06_helpers import engine_logic_findings
+from engine_pin import engine_pin_findings, released_version
 
 ROOT = Path(__file__).resolve().parents[2]
 PACKAGE = ROOT / "data-pipeline" / "pipeline" / "cases" / "c06"
@@ -27,10 +27,11 @@ FIXTURE = ROOT / "docs" / "contracts" / "fixtures" / "c06" / "variant-reporting-
 
 def test_the_pin_is_the_released_engine():
     req = (ROOT / "data-pipeline" / "requirements.txt").read_text(encoding="utf-8")
-    tag = re.search(r"CAOS_RiskValidation@v(\d+)\.(\d+)\.(\d+)", req)
-    assert tag, "the engine is pinned to its release tag"
-    released = ".".join(str(int(x)) for x in tag.groups())  # the tag v0.05.000 is the release 0.5.0 of the package
-    assert md.version("riskvalidation") == released
+    sdd = (ROOT / "docs" / "design" / "SDD.md").read_text(encoding="utf-8")
+    assert engine_pin_findings(req, sdd) == []  # a release tag, or during a batch the commit the SDD names (tests/engine_pin.py)
+    rel = released_version(req)
+    if rel is not None:  # the tag v0.05.000 is the release 0.5.0 of the package
+        assert md.version("riskvalidation") == ".".join(map(str, rel))
 
 
 def test_the_engine_golden_values_reproduce_through_the_pin():

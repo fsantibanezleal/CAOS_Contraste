@@ -2604,6 +2604,27 @@
           "sha256": "45c2859ae7246c071b69df8623854751f0629b04393957e14fe28bc33c04ebbb",
           "bytes": 1824,
           "retrieved": "2026-10-12"
+        },
+        {
+          "name": "corporate-typical-risk-2025.csv",
+          "url": "https://www.federalreserve.gov/supervisionreg/files/corporate-typical-risk-2025.csv",
+          "bytes": 10184,
+          "sha256": "eb2f9714ba14b363f8a241ea9894cd8b25bf86658ac127ebe36afa2ef1f919b4",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "corporate-high-risk-2025.csv",
+          "url": "https://www.federalreserve.gov/supervisionreg/files/corporate-high-risk-2025.csv",
+          "bytes": 10139,
+          "sha256": "5010dcbf475500309aaec7c57ce5f4ff039f79957bd53c0c9949bb96c4d6f21f",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "corporate-low-risk-2025.csv",
+          "url": "https://www.federalreserve.gov/supervisionreg/files/corporate-low-risk-2025.csv",
+          "bytes": 10156,
+          "sha256": "e1e8fcf7fdca27bae799aa947749069d6b0ba8447f1cc8177f6d55dd97783f89",
+          "retrieved": "2026-10-20"
         }
       ]
     },
@@ -2830,6 +2851,13 @@
           "bytes": 59831,
           "sha256": "03b036abc5ffb89dc2c685d57ad76b4479bd3808e59957df6e219076044f41e4",
           "retrieved": "2026-10-14"
+        },
+        {
+          "name": "financials-cert24735-20091231-20221231.json",
+          "url": "https://api.fdic.gov/banks/financials?filters=CERT%3A24735%20AND%20REPDTE%3A%5B20091231%20TO%2020221231%5D&fields=CERT%2CREPDTE%2CNAME%2CASSET%2CLIAB%2CEQ%2CRBCT1J%2CDEP%2CDEPDOM%2CDEPFOR%2CDEPNIDOM%2CDEPIDOM%2CDEPNIFOR%2CDEPIFOR%2CDEPINS%2CDEPUNA%2CDEPSMAMT%2CDEPSMB%2CDEPLGAMT%2CDEPLGB%2CNTRTIME%2CCD3LES%2CCD3T12%2CCD1T3%2CCDOV3%2CCD3LESS%2CCD3T12S%2CCD1T3S%2CCDOV3S%2CCHBAL%2CFREPO%2CFREPP%2CSC%2CSCRDEBT%2CSCAF%2CSCAA%2CSCHA%2CSCHF%2CSCUST%2CSCUS%2CSCAGE%2CSCASPNSUM%2CSCASPNHA%2CSCASPNAF%2CSCSPN%2CSCMTGBK%2CSCGTY%2CSCCOL%2CSCCMOT%2CSCMUNI%2CSCDOMO%2CSCFORD%2CSCEQFV%2CSCPLEDGE%2CSCHTMRES%2CSCNM3LES%2CSCNM3T12%2CSCNM1T3%2CSCNM3T5%2CSCNM5T15%2CSCNMOV15%2CSCPT3LES%2CSCPT3T12%2CSCPT1T3%2CSCPT3T5%2CSCPT5T15%2CSCPTOV15%2CSCO3YLES%2CSCOOV3Y%2CLNLSGR%2CLNLSNET%2CLNATRES%2CLNRS3LES%2CLNRS3T12%2CLNRS1T3%2CLNRS3T5%2CLNRS5T15%2CLNRSOV15%2CLNOT3LES%2CLNOT3T12%2CLNOT1T3%2CLNOT3T5%2CLNOT5T15%2CLNOTOV15%2COTHBFHLB%2COTHBFH1L%2COTBFH1T3%2COTBFH3T5%2COTBFHOV5%2COTHBRF%2COTBOT1L%2COTBOT1T3%2COTBOT3T5%2COTBOTOV5%2CSUBND&sort_by=REPDTE&sort_order=ASC&limit=100",
+          "bytes": 84462,
+          "sha256": "6dd598f7c0f93bb00054d8fecbe970a7a07636c3c5eda6687249e8d615d68b65",
+          "retrieved": "2026-10-19"
         }
       ]
     },
@@ -3079,6 +3107,27 @@
           "bytes": 19098,
           "sha256": "edb7f3904e11dcaa502cdcc03ad9b1b16c893802d166ce9bc5fa1118251249d4",
           "retrieved": "2026-10-14"
+        },
+        {
+          "name": "daily-treasury-par-2024.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2024/all?type=daily_treasury_yield_curve&field_tdr_date_value=2024&_format=csv",
+          "bytes": 19098,
+          "sha256": "6775840b76cd7fd41121f61d6f6c60184eca6b2ba49954ec7372c463cbeef34d",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "daily-treasury-par-2025.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2025/all?type=daily_treasury_yield_curve&field_tdr_date_value=2025&_format=csv",
+          "bytes": 20155,
+          "sha256": "cf2fa3da7f160384b63d2ead698532b1d76cd9f789ce4911e2304db85b14e6d5",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "daily-treasury-par-2026.csv",
+          "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2026/all?type=daily_treasury_yield_curve&field_tdr_date_value=2026&_format=csv",
+          "bytes": 16310,
+          "sha256": "0c314f652a54469083e629e2548276a9fe11adad16a0e0e194c480e3d308d71d",
+          "retrieved": "2026-10-20"
         }
       ]
     },
@@ -3235,6 +3284,349 @@
           "bytes": 3799,
           "sha256": "8ccec5a4c8499dc3ae591077ec58778ded86a4a749db4f90b63edf0bc8bd1df0",
           "retrieved": "2026-10-16"
+        },
+        {
+          "name": "F072.CLP.EUR.N.O.D-2026-08-01-2026-08-31.json",
+          "url": "https://si3.bcentral.cl/SieteRestWS/SieteRestWS.ashx?function=GetSeries&timeseries=F072.CLP.EUR.N.O.D&firstdate=2026-08-01&lastdate=2026-08-31",
+          "bytes": 3639,
+          "sha256": "55d603d5a63ddfbff81aaffcca422a09de0d3877ca30dafd8ef769360f1f8e53",
+          "retrieved": "2026-10-20"
+        }
+      ]
+    },
+    "fed-h8": {
+      "name": "Federal Reserve H.8 (assets and liabilities of commercial banks)",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "landing": "https://www.federalreserve.gov/releases/h8/current/default.htm",
+      "class": "mirror-allowed",
+      "licence": "information on Board's website is in the public domain and may be copied and distributed without permission",
+      "attribution": "Board of Governors of the Federal Reserve System, H.8",
+      "access": "web, DDP (retiring), FRED",
+      "files": [
+        {
+          "name": "h8-20220304.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20220304/",
+          "bytes": 678050,
+          "sha256": "97b6f5da1c0409cbcc60469043bafef4bb2b6337c0e5713cbbe8f9fcc9831a43",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20220401.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20220401/",
+          "bytes": 678130,
+          "sha256": "72a622b01f673301009a0dfc4317174eac1c544836d014da9bd971560ae24dec",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20220429.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20220429/",
+          "bytes": 653024,
+          "sha256": "46fdef7ac7d135b65ebc7396acce2021d644ae06ac35146e250eba671de47605",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20220527.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20220527/",
+          "bytes": 653243,
+          "sha256": "f385c81e6c51534e6a21850198a5cb928dbccb69c282960c1b366959fcc3ab40",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20220624.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20220624/",
+          "bytes": 653078,
+          "sha256": "d60ec91569d67c3a21bbc17675256146e1e1adc549884f0cde8f7e67eb7349dc",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20220722.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20220722/",
+          "bytes": 658195,
+          "sha256": "e73bfc04a901585031633c22af4db80a92741bdfefb4d29b05c88a2fc88b203f",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20220819.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20220819/",
+          "bytes": 658237,
+          "sha256": "83a39db280dc5386b56587b7b5831828426e052a056c272dbe7ae1b0ab1ac2aa",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20220916.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20220916/",
+          "bytes": 658253,
+          "sha256": "32b8bedcdba42d221ef332fd2dbca97d095028a48ef6e80426907f4477b7a61a",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20221014.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20221014/",
+          "bytes": 658887,
+          "sha256": "bce984677dabe43da6227002ed679123a133b2b1cd4048805b4dc9e7537b9f9a",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20221110.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20221110/",
+          "bytes": 658462,
+          "sha256": "997fa083e3821d5235cc9b40706f5e01913d9578b22b2986c2822146d3f3044c",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20221209.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20221209/",
+          "bytes": 658278,
+          "sha256": "03774e3e9e151aa05511e223efb2a97759c6838d1707999667bf82685e8a74ca",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20230106.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20230106/",
+          "bytes": 658311,
+          "sha256": "ed46a5a80746c405c0f7fb3cc1276583b95423cb8ebf964cf6966aed5cb619b5",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20230203.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20230203/",
+          "bytes": 658579,
+          "sha256": "22a57bb4d1e61f094a283f99c22edd336c8e40e77f4ac7f98769580c48c7b5ba",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20230303.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20230303/",
+          "bytes": 658355,
+          "sha256": "d0a30f6b85cf14690369310182c4d90ad48bc987d0517cf1e1cc2a0c844d70a0",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20230310.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20230310/",
+          "bytes": 658347,
+          "sha256": "e175363d6a7fb56a3e083ec0835e7d18a33cc35ba9bc8ef96bafcb15633c0988",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20230317.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20230317/",
+          "bytes": 658342,
+          "sha256": "bbe81914dcaa266dd1b8f88c835a9d56c49da9f05e347ddaf5d4995c97950dca",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20230324.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20230324/",
+          "bytes": 661502,
+          "sha256": "27f8ec36f4a63c0695aedfb0727bb45e177d280e1a0246ab6c261a2f1bd3d157",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20230331.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20230331/",
+          "bytes": 658798,
+          "sha256": "d431a03d04a814c1deabf15f877ec0760e508510c0ce31d313a57c61d98bf942",
+          "retrieved": "2026-10-19"
+        },
+        {
+          "name": "h8-20230407.html",
+          "url": "https://www.federalreserve.gov/releases/h8/20230407/",
+          "bytes": 658991,
+          "sha256": "57eb5ac33d0301c4e3fd5c9537875af87c7cc2490519746d5364a2ee128465fa",
+          "retrieved": "2026-10-19"
+        }
+      ]
+    },
+    "fed-svb-review": {
+      "name": "Federal Reserve review of the supervision and regulation of Silicon Valley Bank",
+      "publisher": "Board of Governors of the Federal Reserve System",
+      "landing": "https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf",
+      "class": "mirror-allowed",
+      "licence": "information on Board's website is in the public domain and may be copied and distributed without permission",
+      "attribution": "Board of Governors of the Federal Reserve System, Review of the Federal Reserve's Supervision and Regulation of Silicon Valley Bank (2023-04-28)",
+      "access": "pdf",
+      "files": [
+        {
+          "name": "svb-review-20230428.pdf",
+          "url": "https://www.federalreserve.gov/publications/files/svb-review-20230428.pdf",
+          "bytes": 4079524,
+          "sha256": "601c32a73e833d3b2a2d6fa5d25a23c56eac85a6fa87558dcd5aa3e30a96f2d6",
+          "retrieved": "2026-10-19"
+        }
+      ]
+    },
+    "treasury-hqm": {
+      "name": "US Treasury High Quality Market (HQM) corporate bond yield curve, end-of-month spot rates",
+      "publisher": "U.S. Department of the Treasury",
+      "landing": "https://home.treasury.gov/data/treasury-coupon-issues-and-corporate-bond-yield-curve/corporate-bond-yield-curve",
+      "class": "mirror-allowed",
+      "licence": "no licence sentence found on home.treasury.gov; FRED tags the series Public Domain: Citation Requested (the Treasury-side sentence is UNVERIFIED)",
+      "attribution": "U.S. Department of the Treasury, High Quality Market (HQM) Corporate Bond Yield Curve",
+      "access": "xls download, no key",
+      "files": [
+        {
+          "name": "hqmeom_04_08.xls",
+          "url": "https://home.treasury.gov/system/files/226/hqmeom_04_08.xls",
+          "bytes": 126464,
+          "sha256": "624f221dd9eb0952056afacaa56c91913d45b3b262c0b87171e87fa2f079756c",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "hqmeom_09_13.xls",
+          "url": "https://home.treasury.gov/system/files/226/hqmeom_09_13.xls",
+          "bytes": 140288,
+          "sha256": "caa462218d8382bfb3a8ba04164152e702538aefd600f7d9b3082c867f620f09",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "hqmeom_24_28.xls",
+          "url": "https://home.treasury.gov/system/files/226/hqmeom_24_28.xls",
+          "bytes": 71168,
+          "sha256": "0eb61af947ebb47fba029c0eadb7ddac279eaa9ca10fe552b4935a07314247ee",
+          "retrieved": "2026-10-20"
+        }
+      ]
+    },
+    "eba-esrb-stress-2025": {
+      "name": "EBA / ESRB 2025 EU-wide stress test scenario",
+      "publisher": "ESRB (scenario), EBA (host)",
+      "landing": "https://www.eba.europa.eu/eu-wide-stress-test-2025",
+      "class": "mirror-allowed",
+      "licence": "Reproduction of all EBA material on this site is authorised, provided the source is acknowledged; ESRB: transformations must be stated explicitly",
+      "attribution": "Source: EBA and ESRB, 2025 EU-wide stress test; transformations by Contraste stated",
+      "access": "direct download",
+      "files": [
+        {
+          "name": "macro-financial-scenario-updated-2025-02-26.xlsx",
+          "url": "https://www.eba.europa.eu/sites/default/files/2025-03/d0668400-aed7-40d7-b668-1f77eb24b934/2025%20EU-wide%20stress%20test%20-%20Macro%20financial%20scenario%20%28updated%2026%20February%202025%29-incl%20disclaimer%20for%20EBA%20%285%29.xlsx",
+          "bytes": 279436,
+          "sha256": "26877a4f3ba576703955f766b104bc02ce2bac8b427f5150afabeb9cc9f383c9",
+          "retrieved": "2026-10-20"
+        }
+      ]
+    },
+    "ngfs-phase-v": {
+      "name": "NGFS climate scenarios, Phase V",
+      "publisher": "NGFS, IIASA and partners",
+      "landing": "https://zenodo.org/records/13989530",
+      "class": "derived-only",
+      "licence": "custom CC BY 4.0-based licence; may share parts as long as this does not constitute a reproduction of a substantial portion",
+      "attribution": "NGFS Phase V scenarios (IIASA Scenario Explorer)",
+      "access": "IIASA explorer, guest login",
+      "files": [
+        {
+          "name": "nigem-run-137.json",
+          "url": "https://db1.ene.iiasa.ac.at/ngfs-phase-5-api/rest/v2.1/runs/137/ts",
+          "bytes": 7902367,
+          "sha256": "8572cfcf37b0d1706fb243a868d85a3143b037eec4289fea912e3ac5ffad0bee",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "nigem-run-140.json",
+          "url": "https://db1.ene.iiasa.ac.at/ngfs-phase-5-api/rest/v2.1/runs/140/ts",
+          "bytes": 38819812,
+          "sha256": "c9bca9eba2c8e2ef7459b8eaa9dfa39911e311c26ebafc903efbcfc338a9cbb6",
+          "retrieved": "2026-10-20"
+        }
+      ]
+    },
+    "hmda": {
+      "name": "Home Mortgage Disclosure Act data",
+      "publisher": "FFIEC / CFPB",
+      "landing": "https://ffiec.cfpb.gov/data-publication/",
+      "class": "mirror-allowed",
+      "licence": "statutory public release; explicit licence UNVERIFIED",
+      "attribution": "FFIEC and CFPB, HMDA data",
+      "access": "Data Browser API (no key), snapshot files",
+      "files": [
+        {
+          "name": "hmda-de-2018.csv",
+          "url": "https://ffiec.cfpb.gov/v2/data-browser-api/view/csv?states=DE&years=2018&actions_taken=1,2,3,4,5,6,7,8",
+          "bytes": 21015556,
+          "sha256": "c2dcf908eeb1602e3e090da7115e825872ea884e04b0cfb7db2be94f319049bd",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "hmda-de-2019.csv",
+          "url": "https://ffiec.cfpb.gov/v2/data-browser-api/view/csv?states=DE&years=2019&actions_taken=1,2,3,4,5,6,7,8",
+          "bytes": 24178525,
+          "sha256": "4cfa7c88712a195d3fecf490cc506e5d365abec73bce4c562714acc4fa72bb08",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "hmda-de-2020.csv",
+          "url": "https://ffiec.cfpb.gov/v2/data-browser-api/view/csv?states=DE&years=2020&actions_taken=1,2,3,4,5,6,7,8",
+          "bytes": 34668608,
+          "sha256": "9a3c18e4d1d46640592dc19d59c0a97cdfc1996d25532ef1beddecd3ec67eb33",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "hmda-de-2021.csv",
+          "url": "https://ffiec.cfpb.gov/v2/data-browser-api/view/csv?states=DE&years=2021&actions_taken=1,2,3,4,5,6,7,8",
+          "bytes": 39368952,
+          "sha256": "2fa1e4ab609d99e562a841e04d63c816a2c4bbd60e84da2070cbb83321cd6d30",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "hmda-de-2022.csv",
+          "url": "https://ffiec.cfpb.gov/v2/data-browser-api/view/csv?states=DE&years=2022&actions_taken=1,2,3,4,5,6,7,8",
+          "bytes": 23662513,
+          "sha256": "a36e386c4230e1c20754138a8b58ea01b1e80d294f6059981923a9b020ef6c96",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "hmda-de-2023.csv",
+          "url": "https://ffiec.cfpb.gov/v2/data-browser-api/view/csv?states=DE&years=2023&actions_taken=1,2,3,4,5,6,7,8",
+          "bytes": 16925399,
+          "sha256": "d5968c7b78e469271e9ff0a8befab0ab7c278059ba3a8f411f0d09cc81dc03cf",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "hmda-de-2024.csv",
+          "url": "https://ffiec.cfpb.gov/v2/data-browser-api/view/csv?states=DE&years=2024&actions_taken=1,2,3,4,5,6,7,8",
+          "bytes": 18605360,
+          "sha256": "82672845bea20b6e33246a7ac083baa5ef12dd6c169ed09c77bdf52c105ecd84",
+          "retrieved": "2026-10-20"
+        }
+      ]
+    },
+    "santanderai-sgcd": {
+      "name": "Stressed German Credit Dataset (SGCD-v0.1)",
+      "publisher": "Santander AI Lab",
+      "landing": "https://github.com/SantanderAI/sota-stressed-datasets",
+      "class": "mirror-allowed",
+      "licence": "data CC BY 4.0 (same as the mother dataset, Statlog German Credit); validation tooling Apache-2.0; the dataset card forbids real-world credit scoring use",
+      "attribution": "Santander AI Lab, sota-stressed-datasets, SGCD-v0.1 (CC BY 4.0), derived from Statlog German Credit, UCI, https://doi.org/10.24432/C5NC77",
+      "access": "GitHub repository",
+      "files": [
+        {
+          "name": "SGCDataset.jsonl",
+          "url": "https://raw.githubusercontent.com/SantanderAI/sota-stressed-datasets/8403fa9048f7159d51a0cec5a2d9a2e9712662bd/datasets/stressed_german_credit_dataset/data/SGCDataset.jsonl",
+          "bytes": 1356305,
+          "sha256": "d096d71e3e7b4f97d0e7fd5d292d2f4323518110e63142e4ea934e2178d7f6c5",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "SGCDataset_metadata.json",
+          "url": "https://raw.githubusercontent.com/SantanderAI/sota-stressed-datasets/8403fa9048f7159d51a0cec5a2d9a2e9712662bd/datasets/stressed_german_credit_dataset/data/SGCDataset_metadata.json",
+          "bytes": 1906,
+          "sha256": "4d98e4523b4e267d9ef187538ff369a74444a175137e63835668bd6a6f6d5202",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "codebook.md",
+          "url": "https://raw.githubusercontent.com/SantanderAI/sota-stressed-datasets/8403fa9048f7159d51a0cec5a2d9a2e9712662bd/datasets/stressed_german_credit_dataset/data/codebook.md",
+          "bytes": 3466,
+          "sha256": "1038b02212e3252799b17db054e66cc6c00135e59adeabcc4370c6c7cb445785",
+          "retrieved": "2026-10-20"
+        },
+        {
+          "name": "README.md",
+          "url": "https://raw.githubusercontent.com/SantanderAI/sota-stressed-datasets/8403fa9048f7159d51a0cec5a2d9a2e9712662bd/datasets/stressed_german_credit_dataset/README.md",
+          "bytes": 4236,
+          "sha256": "2e1369a8ef3955f67054701882965cce393371463ebd7ded3d90e0f3e636f087",
+          "retrieved": "2026-10-20"
         }
       ]
     }

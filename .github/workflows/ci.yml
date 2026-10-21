@@ -56,6 +56,10 @@ jobs:
         run: python scripts/check_sdd.py
       - name: One deploy place
         run: python scripts/check_deploy_place.py
+      - name: The notebooks, layout, English and Spanish mirror, levels, anatomy, metadata and cleanliness (static; the execution is a local gate, ADR-0074)
+        run: python scripts/check_notebooks.py
+      - name: The README states the repository by areas
+        run: python scripts/check_readme_areas.py
 
   web:
     runs-on: ubuntu-latest

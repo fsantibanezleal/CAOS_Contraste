@@ -7,6 +7,7 @@ import { useMemo, useState, type ReactElement } from 'react';
 import type { CaseData } from '../../api/artifacts';
 import type { VariantArtifact } from '../../lib/contract.types';
 import { provenanceOf } from '../model';
+import { RailSelect } from '../c06/RailSelect';
 import { GeneratorsView, MatrixView } from './AgencyModelViews';
 import { MobilityView, SemestersView, TestsView } from './AgencyTestsViews';
 import { ByYearView, DefinitionsView, LifetimeView, PdByGradeView } from './AgencyValidationViews';
@@ -49,7 +50,7 @@ const DEFINITION_CHIP: Record<Definition, BiText> = {
   d2: { en: 'D2', es: 'D2' },
   d3: { en: 'D3', es: 'D3' },
   d4: { en: 'D4', es: 'D4' },
-  keep: { en: 'Keep', es: 'Con retiros' },
+  keep: { en: 'Keep', es: 'Con W' },
 };
 
 const GRADE_HINT: Partial<Record<string, BiText>> = {
@@ -172,7 +173,8 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
     label: { en: 'Projection', es: 'Proyección' },
     content: (
       <>
-        <ChipGroup
+        {/* a select, not four chips: in Spanish the chips took two rows and the Projection section scrolled the rail at 1280 x 800 (ADR-0071 rule 6); every portfolio stays one pick away */}
+        <RailSelect
           id="c04-start"
           label={{ en: 'Starting portfolio', es: 'Cartera inicial' }}
           options={STARTS.map((s) => ({ id: s, label: START_LABEL[s], hint: START_HINT[s] }))}

@@ -1,0 +1,2298 @@
+{
+  "schema": "contraste.case/v1",
+  "case_id": "C12",
+  "variant_id": "fixture-with-im",
+  "model": [
+    {
+      "id": "hw1f-exposure",
+      "family": "ccr",
+      "rung": "hw1f",
+      "title": {
+        "en": "Fixture model hw1f-exposure",
+        "es": "Modelo de ejemplo hw1f-exposure"
+      },
+      "short_title": {
+        "en": "hw1f-exposure",
+        "es": "hw1f-exposure"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    }
+  ],
+  "outputs": {
+    "kind": "swap-exposure",
+    "variant": "with-im",
+    "sign_convention": {
+      "ee": "positive-exposure-to-the-counterparty",
+      "ene": "bank-own-exposure-reported-positive",
+      "cva": "positive-is-cost",
+      "dva": "positive-is-benefit",
+      "statement": {
+        "en": "EE is the positive exposure to the counterparty, ENE the bank's own, CVA a positive cost.",
+        "es": "EE es la exposicion positiva a la contraparte, ENE la propia del banco, CVA un costo positivo."
+      }
+    },
+    "units": {
+      "money": "amount with its ISO 4217 currency code, USD in this case",
+      "rate": "decimal",
+      "compounding": "continuous",
+      "time": "years-from-the-valuation-date",
+      "mpor": "business-days",
+      "dates": "ISO-8601"
+    },
+    "named_parameters": {
+      "notionals": {
+        "value": [
+          10000000.0,
+          6000000.0,
+          4000000.0,
+          2000000.0
+        ],
+        "unit": "USD",
+        "label": "convention"
+      },
+      "maturities_years": {
+        "value": [
+          10.0,
+          5.0,
+          3.0,
+          0.5
+        ],
+        "unit": "years",
+        "label": "convention"
+      },
+      "sides": {
+        "value": [
+          "payer",
+          "receiver",
+          "payer",
+          "receiver"
+        ],
+        "unit": "payer or receiver",
+        "label": "convention"
+      },
+      "netting_set_members": {
+        "value": [
+          "SW-1",
+          "SW-2",
+          "SW-3",
+          "SW-4"
+        ],
+        "unit": "trade ids",
+        "label": "convention"
+      },
+      "single_swap_member": {
+        "value": "SW-1",
+        "unit": "trade id",
+        "label": "convention"
+      },
+      "fixed_rate_rule": {
+        "value": "the par yield at the swap's maturity on the curve date, rounded to 10 bp",
+        "unit": "rule",
+        "label": "convention"
+      },
+      "csa_threshold": {
+        "value": 0.0,
+        "unit": "USD",
+        "label": "convention"
+      },
+      "csa_minimum_transfer_amount": {
+        "value": 10000.0,
+        "unit": "USD",
+        "label": "convention"
+      },
+      "csa_independent_amount": {
+        "value": 0.0,
+        "unit": "USD",
+        "label": "convention"
+      },
+      "mpor_business_days_short": {
+        "value": 10,
+        "unit": "business days",
+        "label": "convention"
+      },
+      "mpor_business_days_long": {
+        "value": 20,
+        "unit": "business days",
+        "label": "convention"
+      },
+      "counterparty_spread": {
+        "value": 0.0125,
+        "unit": "decimal per year",
+        "label": "convention"
+      },
+      "counterparty_lgd": {
+        "value": 0.6,
+        "unit": "decimal",
+        "label": "convention"
+      },
+      "bank_spread": {
+        "value": 0.008,
+        "unit": "decimal per year",
+        "label": "convention"
+      },
+      "bank_lgd": {
+        "value": 0.6,
+        "unit": "decimal",
+        "label": "convention"
+      },
+      "pfe_quantile": {
+        "value": 0.95,
+        "unit": "decimal",
+        "label": "convention"
+      },
+      "path_count": {
+        "value": 10000,
+        "unit": "paths",
+        "label": "convention"
+      },
+      "seed": {
+        "value": 20260101,
+        "unit": "integer",
+        "label": "convention"
+      },
+      "time_grid_years": {
+        "value": [
+          0.25,
+          0.5,
+          1.0,
+          2.0,
+          3.0,
+          5.0,
+          7.0,
+          10.0
+        ],
+        "unit": "years",
+        "label": "convention"
+      },
+      "wwr_b_grid": {
+        "value": [
+          -2.0,
+          0.0,
+          1.0,
+          2.0,
+          4.0
+        ],
+        "unit": "per USD million",
+        "label": "convention"
+      },
+      "im_quantile": {
+        "value": 0.99,
+        "unit": "decimal",
+        "label": "convention"
+      },
+      "im_horizon_calendar_days": {
+        "value": 14,
+        "unit": "calendar days (10 business days)",
+        "label": "convention"
+      },
+      "im_mpor_calendar_days": {
+        "value": 14,
+        "unit": "calendar days (10 business days)",
+        "label": "convention"
+      },
+      "im_regression_order": {
+        "value": 2,
+        "unit": "polynomial order",
+        "label": "convention"
+      },
+      "ba_cva_sector": {
+        "value": "financials",
+        "unit": "MAR50.16 Table 1 sector",
+        "label": "convention"
+      },
+      "ba_cva_rating": {
+        "value": "investment-grade",
+        "unit": "class",
+        "label": "convention"
+      },
+      "stress_window_start": {
+        "value": "2007-01-01",
+        "unit": "date",
+        "label": "convention"
+      },
+      "stress_window_end": {
+        "value": "2009-12-31",
+        "unit": "date",
+        "label": "convention"
+      },
+      "backtest_window_start": {
+        "value": "2000-01",
+        "unit": "month",
+        "label": "convention"
+      },
+      "backtest_paths_per_date": {
+        "value": 2000,
+        "unit": "paths",
+        "label": "convention"
+      },
+      "backtest_simulated_critical_count": {
+        "value": 1000,
+        "unit": "simulated backtests",
+        "label": "convention"
+      },
+      "reconciliation_se_threshold": {
+        "value": 2,
+        "unit": "combined standard errors",
+        "label": "convention"
+      },
+      "ee_check_k_se": {
+        "value": 3,
+        "unit": "standard errors",
+        "label": "convention"
+      }
+    },
+    "book": {
+      "netting_set_id": "NS-1",
+      "currency": "USD",
+      "trades": [
+        {
+          "trade_id": "SW-1",
+          "notional": {
+            "amount": 10000000.0,
+            "currency": "USD"
+          },
+          "fixed_rate": 0.019,
+          "side": "payer",
+          "start_years": 0.0,
+          "maturity_years": 10.0,
+          "fixed_frequency_per_year": 2,
+          "floating_leg": "USD floating leg on the single curve of the case",
+          "label": "convention"
+        },
+        {
+          "trade_id": "SW-2",
+          "notional": {
+            "amount": 6000000.0,
+            "currency": "USD"
+          },
+          "fixed_rate": 0.017,
+          "side": "receiver",
+          "start_years": 0.0,
+          "maturity_years": 5.0,
+          "fixed_frequency_per_year": 2,
+          "floating_leg": "USD floating leg on the single curve of the case",
+          "label": "convention"
+        },
+        {
+          "trade_id": "SW-3",
+          "notional": {
+            "amount": 4000000.0,
+            "currency": "USD"
+          },
+          "fixed_rate": 0.016,
+          "side": "payer",
+          "start_years": 0.0,
+          "maturity_years": 3.0,
+          "fixed_frequency_per_year": 2,
+          "floating_leg": "USD floating leg on the single curve of the case",
+          "label": "convention"
+        },
+        {
+          "trade_id": "SW-4",
+          "notional": {
+            "amount": 2000000.0,
+            "currency": "USD"
+          },
+          "fixed_rate": 0.016,
+          "side": "receiver",
+          "start_years": 0.0,
+          "maturity_years": 0.5,
+          "fixed_frequency_per_year": 2,
+          "floating_leg": "USD floating leg on the single curve of the case",
+          "label": "convention"
+        }
+      ]
+    },
+    "curve": {
+      "curve_date": "2019-12-31",
+      "source": "US Treasury daily par yield curve (home.treasury.gov)",
+      "licence_class": "mirror-allowed",
+      "par_yield_unit": "decimal, bond-equivalent",
+      "zero_compounding": "continuous",
+      "points": [
+        {
+          "tenor_years": 0.25,
+          "par_yield": 0.0154,
+          "zero_rate": 0.0154
+        },
+        {
+          "tenor_years": 0.5,
+          "par_yield": 0.0155,
+          "zero_rate": 0.0154
+        },
+        {
+          "tenor_years": 1.0,
+          "par_yield": 0.0155,
+          "zero_rate": 0.0153
+        },
+        {
+          "tenor_years": 2.0,
+          "par_yield": 0.0158,
+          "zero_rate": 0.0155
+        },
+        {
+          "tenor_years": 3.0,
+          "par_yield": 0.0162,
+          "zero_rate": 0.0158
+        },
+        {
+          "tenor_years": 5.0,
+          "par_yield": 0.0169,
+          "zero_rate": 0.0164
+        },
+        {
+          "tenor_years": 7.0,
+          "par_yield": 0.0178,
+          "zero_rate": 0.0172
+        },
+        {
+          "tenor_years": 10.0,
+          "par_yield": 0.0186,
+          "zero_rate": 0.0179
+        }
+      ],
+      "tenors_present": [
+        0.25,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        5.0,
+        7.0,
+        10.0
+      ],
+      "tenors_absent": [
+        0.333333
+      ],
+      "interpolated_silently": false
+    },
+    "calibration_used": {
+      "backtest_date": "2019-12-31",
+      "model": "hw1f",
+      "estimator": "exact AR(1) OLS on the shortest Treasury zero rate (Brigo et al., arXiv 0812.4210, equations 55 to 57)",
+      "proxy_tenor_years": 0.25,
+      "sample_start": "2016-01-02",
+      "sample_end": "2019-12-30",
+      "n_obs": 750,
+      "history_years": 3.0,
+      "a": 0.08,
+      "sigma": 0.011,
+      "a_se": 0.02,
+      "sigma_se": 0.0005,
+      "fit_to_curve": "phi(t) = f(0,t) + sigma^2 (1 - exp(-a t))^2 / (2 a^2), the QuantLib 1.44 fitting parameter"
+    },
+    "exposure": {
+      "basis": "collateralised-vm-im",
+      "time_grid_years": [
+        0.25,
+        0.5,
+        1.0,
+        2.0,
+        3.0,
+        5.0,
+        7.0,
+        10.0
+      ],
+      "ee": {
+        "currency": "USD",
+        "values": [
+          2520.0,
+          3415.325753,
+          4620.0,
+          5939.696962,
+          5819.690713,
+          4695.742753,
+          4815.267386,
+          0.0
+        ],
+        "mc_se": [
+          25.2,
+          34.153258,
+          46.2,
+          59.39697,
+          58.196907,
+          46.957428,
+          48.152674,
+          0.0
+        ]
+      },
+      "ee_discounted": {
+        "currency": "USD",
+        "values": [
+          2510.567697,
+          3389.806626,
+          4551.217161,
+          5764.152387,
+          5563.609667,
+          4356.444752,
+          4335.303311,
+          0.0
+        ],
+        "mc_se": [
+          25.105677,
+          33.898066,
+          45.512172,
+          57.641524,
+          55.636097,
+          43.564448,
+          43.353033,
+          0.0
+        ]
+      },
+      "ene": {
+        "currency": "USD",
+        "values": [
+          2016.0,
+          2732.260603,
+          3696.0,
+          4751.75757,
+          4655.752571,
+          3756.594202,
+          3852.213909,
+          0.0
+        ],
+        "mc_se": [
+          20.16,
+          27.322606,
+          36.96,
+          47.517576,
+          46.557526,
+          37.565942,
+          38.522139,
+          0.0
+        ]
+      },
+      "ene_discounted": {
+        "currency": "USD",
+        "values": [
+          2008.454157,
+          2711.845301,
+          3640.973729,
+          4611.32191,
+          4450.887734,
+          3485.155802,
+          3468.242648,
+          0.0
+        ],
+        "mc_se": [
+          20.084542,
+          27.118453,
+          36.409737,
+          46.113219,
+          44.508877,
+          34.851558,
+          34.682426,
+          0.0
+        ]
+      },
+      "pfe_quantile": 0.95,
+      "pfe": {
+        "currency": "USD",
+        "values": [
+          7560.0,
+          10245.977259,
+          13860.0,
+          17819.090886,
+          17459.07214,
+          14087.228258,
+          14445.802158,
+          0.0
+        ],
+        "mc_se": [
+          75.6,
+          102.459773,
+          138.6,
+          178.190909,
+          174.590721,
+          140.872283,
+          144.458022,
+          0.0
+        ]
+      },
+      "effective_ee": {
+        "currency": "USD",
+        "values": [
+          2520.0,
+          3415.325753,
+          4620.0,
+          5939.696962,
+          5939.696962,
+          5939.696962,
+          5939.696962,
+          5939.696962
+        ],
+        "mc_se": [
+          25.2,
+          34.153258,
+          46.2,
+          59.39697,
+          59.39697,
+          59.39697,
+          59.39697,
+          59.39697
+        ]
+      },
+      "epe": {
+        "amount": 3457.523939,
+        "currency": "USD",
+        "mc_se": 15.0
+      },
+      "eepe": {
+        "amount": 3793.831438,
+        "currency": "USD",
+        "mc_se": 20.0
+      },
+      "eepe_horizon_years": 1.0,
+      "measure_note": {
+        "en": "EE and ENE are undiscounted (Basel style); the discounted profiles feed the CVA.",
+        "es": "EE y ENE no estan descontados (estilo Basilea); los perfiles descontados alimentan el CVA."
+      }
+    },
+    "netting_benefit": {
+      "per_trade_ee": [
+        {
+          "trade_id": "SW-1",
+          "ee": {
+            "currency": "USD",
+            "values": [
+              19750.0,
+              27577.164466,
+              38000.0,
+              50911.688245,
+              58889.727457,
+              67082.039325,
+              68789.534088,
+              0.0
+            ],
+            "mc_se": [
+              197.5,
+              275.771645,
+              380.0,
+              509.116882,
+              588.897275,
+              670.820393,
+              687.895341,
+              0.0
+            ]
+          }
+        },
+        {
+          "trade_id": "SW-2",
+          "ee": {
+            "currency": "USD",
+            "values": [
+              9750.0,
+              13435.028843,
+              18000.0,
+              22627.416998,
+              24248.711306,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "mc_se": [
+              97.5,
+              134.350288,
+              180.0,
+              226.27417,
+              242.487113,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        {
+          "trade_id": "SW-3",
+          "ee": {
+            "currency": "USD",
+            "values": [
+              5750.0,
+              7778.174593,
+              10000.0,
+              11313.708499,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "mc_se": [
+              57.5,
+              77.781746,
+              100.0,
+              113.137085,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        {
+          "trade_id": "SW-4",
+          "ee": {
+            "currency": "USD",
+            "values": [
+              750.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "mc_se": [
+              7.5,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      ],
+      "sum_of_single_trade_ee": {
+        "currency": "USD",
+        "values": [
+          36000.0,
+          48790.367902,
+          66000.0,
+          84852.813742,
+          83138.438763,
+          67082.039325,
+          68789.534088,
+          0.0
+        ],
+        "mc_se": [
+          360.0,
+          487.903679,
+          660.0,
+          848.528137,
+          831.384388,
+          670.820393,
+          687.895341,
+          0.0
+        ]
+      },
+      "netted_ee": {
+        "currency": "USD",
+        "values": [
+          25200.0,
+          34153.257531,
+          46200.0,
+          59396.96962,
+          58196.907134,
+          46957.427527,
+          48152.673861,
+          0.0
+        ],
+        "mc_se": [
+          252.0,
+          341.532575,
+          462.0,
+          593.969696,
+          581.969071,
+          469.574275,
+          481.526739,
+          0.0
+        ]
+      },
+      "benefit": {
+        "currency": "USD",
+        "values": [
+          10800.0,
+          14637.110371,
+          19800.0,
+          25455.844123,
+          24941.531629,
+          20124.611797,
+          20636.860226,
+          0.0
+        ],
+        "mc_se": [
+          108.0,
+          146.371104,
+          198.0,
+          254.558441,
+          249.415316,
+          201.246118,
+          206.368602,
+          0.0
+        ]
+      }
+    },
+    "collateral": {
+      "csa": {
+        "threshold": {
+          "amount": 0.0,
+          "currency": "USD"
+        },
+        "minimum_transfer_amount": {
+          "amount": 10000.0,
+          "currency": "USD"
+        },
+        "independent_amount": {
+          "amount": 0.0,
+          "currency": "USD"
+        },
+        "mpor_business_days": 10,
+        "remargining_days": 1,
+        "closeout": "sticky-date close-out grid (ORE, R3)",
+        "floor_reference": "CRE53.24: 10 business days floor, 20 for illiquid or large netting sets"
+      },
+      "uncollateralised_ee": {
+        "currency": "USD",
+        "values": [
+          25200.0,
+          34153.257531,
+          46200.0,
+          59396.96962,
+          58196.907134,
+          46957.427527,
+          48152.673861,
+          0.0
+        ],
+        "mc_se": [
+          252.0,
+          341.532575,
+          462.0,
+          593.969696,
+          581.969071,
+          469.574275,
+          481.526739,
+          0.0
+        ]
+      },
+      "collateral_balance": {
+        "currency": "USD",
+        "values": [
+          18900.0,
+          25614.943148,
+          34650.0,
+          44547.727215,
+          43647.680351,
+          35218.070646,
+          36114.505396,
+          0.0
+        ],
+        "mc_se": [
+          189.0,
+          256.149431,
+          346.5,
+          445.477272,
+          436.476804,
+          352.180706,
+          361.145054,
+          0.0
+        ]
+      },
+      "limit": {
+        "en": "The Andersen, Pykhtin and Sokol timelines are not modelled.",
+        "es": "No se modelan las cronologias de Andersen, Pykhtin y Sokol."
+      }
+    },
+    "initial_margin": {
+      "method": "ORE dynamic initial margin by regression (R2)",
+      "labelled": "regression proxy, not SIMM",
+      "simm_used": false,
+      "quantile": 0.99,
+      "alpha": 2.3263478740408408,
+      "horizon_calendar_days": 14,
+      "mpor_calendar_days": 14,
+      "regression_order": 2,
+      "dim": {
+        "currency": "USD",
+        "values": [
+          3780.0,
+          5122.98863,
+          6930.0,
+          8909.545443,
+          8729.53607,
+          7043.614129,
+          7222.901079,
+          0.0
+        ],
+        "mc_se": [
+          37.8,
+          51.229886,
+          69.3,
+          89.095454,
+          87.295361,
+          70.436141,
+          72.229011,
+          0.0
+        ]
+      },
+      "ee_vm_only": {
+        "currency": "USD",
+        "values": [
+          6300.0,
+          8538.314383,
+          11550.0,
+          14849.242405,
+          14549.226784,
+          11739.356882,
+          12038.168465,
+          0.0
+        ],
+        "mc_se": [
+          63.0,
+          85.383144,
+          115.5,
+          148.492424,
+          145.492268,
+          117.393569,
+          120.381685,
+          0.0
+        ]
+      },
+      "limit": {
+        "en": "A regression proxy, never SIMM; compared with ORE's DIM on the same netting set.",
+        "es": "Un proxy de regresion, nunca SIMM; se compara con el DIM de ORE sobre el mismo conjunto."
+      }
+    },
+    "cva_dva": {
+      "credit_curve_source": "synthetic-flat",
+      "credit_curve_label": "proxy: an AAA to A market spread, a floor for lower ratings (R10)",
+      "survival_formula": "S(t) = exp(-s t / LGD)",
+      "negative_spread_rule": "a negative HQM-minus-Treasury spread is set to zero and counted in spreads_floored_at_zero",
+      "spreads_floored_at_zero": 0,
+      "lgd": 0.6,
+      "bank_lgd": 0.6,
+      "buckets": [
+        {
+          "t_start": 0.0,
+          "t_end": 0.25,
+          "spread": 0.0125,
+          "survival": 0.994805207,
+          "pd_counterparty": 0.005194793,
+          "pd_bank": 0.003327784,
+          "epe_discounted": 2510.567697,
+          "ene_discounted": 2008.454157,
+          "cva_term": 7.825128424,
+          "dva_term": 4.0102209
+        },
+        {
+          "t_start": 0.25,
+          "t_end": 0.5,
+          "spread": 0.0125,
+          "survival": 0.989637399,
+          "pd_counterparty": 0.005167808,
+          "pd_bank": 0.00331671,
+          "epe_discounted": 3389.806626,
+          "ene_discounted": 2711.845301,
+          "cva_term": 10.510721073,
+          "dva_term": 5.396642331
+        },
+        {
+          "t_start": 0.5,
+          "t_end": 1.0,
+          "spread": 0.0125,
+          "survival": 0.979382181,
+          "pd_counterparty": 0.010255218,
+          "pd_bank": 0.006600344,
+          "epe_discounted": 4551.217161,
+          "ene_discounted": 3640.973729,
+          "cva_term": 28.004233354,
+          "dva_term": 14.419008441
+        },
+        {
+          "t_start": 1.0,
+          "t_end": 2.0,
+          "spread": 0.0125,
+          "survival": 0.959189457,
+          "pd_counterparty": 0.020192724,
+          "pd_bank": 0.013069412,
+          "epe_discounted": 5764.152387,
+          "ene_discounted": 4611.32191,
+          "cva_term": 69.836363719,
+          "dva_term": 36.160360799
+        },
+        {
+          "t_start": 2.0,
+          "t_end": 3.0,
+          "spread": 0.0125,
+          "survival": 0.939413063,
+          "pd_counterparty": 0.019776394,
+          "pd_bank": 0.01289631,
+          "epe_discounted": 5563.609667,
+          "ene_discounted": 4450.887734,
+          "cva_term": 66.01688309,
+          "dva_term": 34.440017329
+        },
+        {
+          "t_start": 3.0,
+          "t_end": 5.0,
+          "spread": 0.0125,
+          "survival": 0.901075106,
+          "pd_counterparty": 0.038337957,
+          "pd_bank": 0.025282454,
+          "epe_discounted": 4356.444752,
+          "ene_discounted": 3485.155802,
+          "cva_term": 100.210315194,
+          "dva_term": 52.867974999
+        },
+        {
+          "t_start": 5.0,
+          "t_end": 7.0,
+          "spread": 0.0125,
+          "survival": 0.864301741,
+          "pd_counterparty": 0.036773364,
+          "pd_bank": 0.024617165,
+          "epe_discounted": 4335.303311,
+          "ene_discounted": 3468.242648,
+          "cva_term": 95.654212664,
+          "dva_term": 51.226981517
+        },
+        {
+          "t_start": 7.0,
+          "t_end": 10.0,
+          "spread": 0.0125,
+          "survival": 0.811936346,
+          "pd_counterparty": 0.052365395,
+          "pd_bank": 0.035716501,
+          "epe_discounted": 0.0,
+          "ene_discounted": 0.0,
+          "cva_term": 0.0,
+          "dva_term": 0.0
+        }
+      ],
+      "cva": {
+        "amount": 378.057858,
+        "currency": "USD",
+        "mc_se": 0.5
+      },
+      "dva": {
+        "amount": 198.521206,
+        "currency": "USD",
+        "mc_se": 0.4
+      },
+      "bcva": {
+        "amount": 179.536651,
+        "currency": "USD"
+      }
+    },
+    "wrong_way_risk": null,
+    "sa_ccr": {
+      "paragraph": "CRE52",
+      "in_force_date": "2023-01-01",
+      "margined": true,
+      "v": {
+        "amount": 80000.0,
+        "currency": "USD"
+      },
+      "c": {
+        "amount": 60000.0,
+        "currency": "USD"
+      },
+      "th": {
+        "amount": 0.0,
+        "currency": "USD"
+      },
+      "mta": {
+        "amount": 10000.0,
+        "currency": "USD"
+      },
+      "nica": {
+        "amount": 0.0,
+        "currency": "USD"
+      },
+      "mpor_business_days": 10,
+      "rc": {
+        "amount": 20000.0,
+        "currency": "USD"
+      },
+      "trades": [
+        {
+          "trade_id": "SW-1",
+          "hedging_set": "USD",
+          "start_years": 0.0,
+          "end_years": 10.0,
+          "notional": {
+            "amount": 10000000.0,
+            "currency": "USD"
+          },
+          "supervisory_duration": 7.869386806,
+          "adjusted_notional": {
+            "amount": 78693868.057473,
+            "currency": "USD"
+          },
+          "delta": 1,
+          "maturity_factor": 0.3,
+          "bucket": "B3",
+          "effective_notional": 23608160.417242
+        },
+        {
+          "trade_id": "SW-2",
+          "hedging_set": "USD",
+          "start_years": 0.0,
+          "end_years": 5.0,
+          "notional": {
+            "amount": 6000000.0,
+            "currency": "USD"
+          },
+          "supervisory_duration": 4.423984339,
+          "adjusted_notional": {
+            "amount": 26543906.031431,
+            "currency": "USD"
+          },
+          "delta": -1,
+          "maturity_factor": 0.3,
+          "bucket": "B2",
+          "effective_notional": -7963171.809429
+        },
+        {
+          "trade_id": "SW-3",
+          "hedging_set": "USD",
+          "start_years": 0.0,
+          "end_years": 3.0,
+          "notional": {
+            "amount": 4000000.0,
+            "currency": "USD"
+          },
+          "supervisory_duration": 2.785840471,
+          "adjusted_notional": {
+            "amount": 11143361.885995,
+            "currency": "USD"
+          },
+          "delta": 1,
+          "maturity_factor": 0.3,
+          "bucket": "B2",
+          "effective_notional": 3343008.565799
+        },
+        {
+          "trade_id": "SW-4",
+          "hedging_set": "USD",
+          "start_years": 0.0,
+          "end_years": 0.5,
+          "notional": {
+            "amount": 2000000.0,
+            "currency": "USD"
+          },
+          "supervisory_duration": 0.493801759,
+          "adjusted_notional": {
+            "amount": 987603.518867,
+            "currency": "USD"
+          },
+          "delta": -1,
+          "maturity_factor": 0.3,
+          "bucket": "B1",
+          "effective_notional": -296281.05566
+        }
+      ],
+      "hedging_sets": [
+        {
+          "hedging_set": "USD",
+          "d_b1": -296281.05566,
+          "d_b2": -4620163.243631,
+          "d_b3": 23608160.417242,
+          "offset": true,
+          "effective_notional": 20586295.81301,
+          "supervisory_factor": 0.005,
+          "addon": 102931.479065
+        }
+      ],
+      "addon_by_class": {
+        "interest_rate": 102931.479065,
+        "fx": 0.0,
+        "credit": 0.0,
+        "equity": 0.0,
+        "commodity": 0.0
+      },
+      "addon_aggregate": {
+        "amount": 102931.479065,
+        "currency": "USD"
+      },
+      "multiplier_floor": 0.05,
+      "multiplier": 1.0,
+      "pfe": {
+        "amount": 102931.479065,
+        "currency": "USD"
+      },
+      "alpha": 1.4,
+      "ead": {
+        "amount": 172104.070691,
+        "currency": "USD"
+      }
+    },
+    "ba_cva": {
+      "paragraph": "MAR50.14 to MAR50.16",
+      "in_force_date": "2023-01-01",
+      "imm_bank": false,
+      "ds": 0.65,
+      "rho": 0.5,
+      "alpha": 1.4,
+      "counterparties": [
+        {
+          "counterparty_id": "CPTY-1",
+          "sector": "financials",
+          "rating_class": "investment-grade",
+          "risk_weight": 0.05,
+          "ead": {
+            "amount": 172104.070691,
+            "currency": "USD"
+          },
+          "m_years": 10.0,
+          "discount_factor": 0.786938681,
+          "scva": 48369.767968256
+        }
+      ],
+      "k_reduced": 48369.767968256,
+      "capital": {
+        "amount": 31440.349179,
+        "currency": "USD"
+      },
+      "limit": {
+        "en": "No official numeric example is verified; the tests rest on the invariants of dossier 01 M.1.",
+        "es": "No hay ejemplo numerico oficial verificado; las pruebas se apoyan en los invariantes."
+      }
+    },
+    "regulatory_comparison": {
+      "alpha": 1.4,
+      "alpha_paragraph": "CRE53.14",
+      "effective_maturity_years": 3.2,
+      "alpha_times_eepe": {
+        "amount": 5311.364014,
+        "currency": "USD"
+      },
+      "sa_ccr_ead": {
+        "amount": 172104.070691,
+        "currency": "USD"
+      },
+      "sa_ccr_over_alpha_eepe": 32.402989185,
+      "stressed": {
+        "window_start": "2007-01-01",
+        "window_end": "2009-12-31",
+        "label": "convention",
+        "effective_epe": {
+          "amount": 4931.98087,
+          "currency": "USD"
+        },
+        "hqm_spread_start": 0.0063,
+        "hqm_spread_peak": 0.031,
+        "spread_rose": true,
+        "paragraph": "CRE53.7 and CRE53.51"
+      }
+    },
+    "girr": {
+      "paragraph": "MAR21.42 to MAR21.50",
+      "in_force_date": "2023-01-01",
+      "currency": "USD",
+      "sqrt2_division": true,
+      "sqrt2_label": "convention",
+      "sensitivities": [
+        0.0,
+        -1000000.0,
+        0.0,
+        0.0,
+        11600000.0,
+        -27000000.0,
+        80000000.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weighted_sensitivities": [
+        0.0,
+        -12020.81528,
+        0.0,
+        0.0,
+        98429.263941,
+        -210010.714012,
+        622253.967444,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scenarios": [
+        {
+          "scenario": "low",
+          "k_b": 506396.079616
+        },
+        {
+          "scenario": "medium",
+          "k_b": 504595.280002
+        },
+        {
+          "scenario": "high",
+          "k_b": 502788.030635
+        }
+      ],
+      "delta_charge": {
+        "amount": 506396.079616,
+        "currency": "USD"
+      },
+      "delta_charge_undivided": {
+        "amount": 716152.203726,
+        "currency": "USD"
+      }
+    },
+    "backtest": {
+      "window_start": "2000-01",
+      "window_end": "2025-09",
+      "dates": [
+        "2019-10-31",
+        "2019-11-29",
+        "2019-12-31"
+      ],
+      "calibration_rule": "each initialisation date is calibrated on data up to that date only",
+      "pit_rule": "(i + 1) / (N + 2)",
+      "statistic": "Anderson-Darling W^2",
+      "paths_per_date": 2000,
+      "book_horizons": [
+        {
+          "horizon": "10bd",
+          "n": 6,
+          "pits": [
+            0.135,
+            0.235,
+            0.395,
+            0.495,
+            0.64,
+            0.74
+          ],
+          "exceedances": [
+            {
+              "quantile": 0.95,
+              "count": 0,
+              "expected": 0.3
+            },
+            {
+              "quantile": 0.99,
+              "count": 0,
+              "expected": 0.06
+            }
+          ],
+          "w2": 0.432392968,
+          "critical_iid": {
+            "p05": 2.492,
+            "p01": 3.88
+          },
+          "critical_simulated": {
+            "p05": 2.7,
+            "p01": 4.3
+          },
+          "effective_sample_size": 3.5,
+          "reject_at_5pct": false
+        },
+        {
+          "horizon": "20bd",
+          "n": 6,
+          "pits": [
+            0.11,
+            0.27,
+            0.37,
+            0.515,
+            0.615,
+            0.76
+          ],
+          "exceedances": [
+            {
+              "quantile": 0.95,
+              "count": 0,
+              "expected": 0.3
+            },
+            {
+              "quantile": 0.99,
+              "count": 0,
+              "expected": 0.06
+            }
+          ],
+          "w2": 0.400476387,
+          "critical_iid": {
+            "p05": 2.492,
+            "p01": 3.88
+          },
+          "critical_simulated": {
+            "p05": 2.7,
+            "p01": 4.3
+          },
+          "effective_sample_size": 3.5,
+          "reject_at_5pct": false
+        },
+        {
+          "horizon": "1m",
+          "n": 6,
+          "pits": [
+            0.145,
+            0.245,
+            0.39,
+            0.49,
+            0.635,
+            0.735
+          ],
+          "exceedances": [
+            {
+              "quantile": 0.95,
+              "count": 0,
+              "expected": 0.3
+            },
+            {
+              "quantile": 0.99,
+              "count": 0,
+              "expected": 0.06
+            }
+          ],
+          "w2": 0.459472613,
+          "critical_iid": {
+            "p05": 2.492,
+            "p01": 3.88
+          },
+          "critical_simulated": {
+            "p05": 2.7,
+            "p01": 4.3
+          },
+          "effective_sample_size": 3.5,
+          "reject_at_5pct": false
+        },
+        {
+          "horizon": "3m",
+          "n": 6,
+          "pits": [
+            0.12,
+            0.265,
+            0.365,
+            0.51,
+            0.61,
+            0.77
+          ],
+          "exceedances": [
+            {
+              "quantile": 0.95,
+              "count": 0,
+              "expected": 0.3
+            },
+            {
+              "quantile": 0.99,
+              "count": 0,
+              "expected": 0.06
+            }
+          ],
+          "w2": 0.399668965,
+          "critical_iid": {
+            "p05": 2.492,
+            "p01": 3.88
+          },
+          "critical_simulated": {
+            "p05": 2.7,
+            "p01": 4.3
+          },
+          "effective_sample_size": 3.5,
+          "reject_at_5pct": false
+        },
+        {
+          "horizon": "6m",
+          "n": 6,
+          "pits": [
+            0.14,
+            0.24,
+            0.385,
+            0.485,
+            0.645,
+            0.745
+          ],
+          "exceedances": [
+            {
+              "quantile": 0.95,
+              "count": 0,
+              "expected": 0.3
+            },
+            {
+              "quantile": 0.99,
+              "count": 0,
+              "expected": 0.06
+            }
+          ],
+          "w2": 0.43219221,
+          "critical_iid": {
+            "p05": 2.492,
+            "p01": 3.88
+          },
+          "critical_simulated": {
+            "p05": 2.7,
+            "p01": 4.3
+          },
+          "effective_sample_size": 3.5,
+          "reject_at_5pct": false
+        },
+        {
+          "horizon": "12m",
+          "n": 6,
+          "pits": [
+            0.115,
+            0.26,
+            0.36,
+            0.52,
+            0.62,
+            0.765
+          ],
+          "exceedances": [
+            {
+              "quantile": 0.95,
+              "count": 0,
+              "expected": 0.3
+            },
+            {
+              "quantile": 0.99,
+              "count": 0,
+              "expected": 0.06
+            }
+          ],
+          "w2": 0.389558159,
+          "critical_iid": {
+            "p05": 2.492,
+            "p01": 3.88
+          },
+          "critical_simulated": {
+            "p05": 2.7,
+            "p01": 4.3
+          },
+          "effective_sample_size": 3.5,
+          "reject_at_5pct": false
+        }
+      ],
+      "risk_factor": {
+        "proxy_tenor_years": 0.25,
+        "horizons": [
+          {
+            "horizon": "10bd",
+            "n": 6,
+            "pits": [
+              0.145,
+              0.245,
+              0.39,
+              0.49,
+              0.635,
+              0.735
+            ],
+            "exceedances": [
+              {
+                "quantile": 0.95,
+                "count": 0,
+                "expected": 0.3
+              },
+              {
+                "quantile": 0.99,
+                "count": 0,
+                "expected": 0.06
+              }
+            ],
+            "w2": 0.459472613,
+            "critical_iid": {
+              "p05": 2.492,
+              "p01": 3.88
+            },
+            "critical_simulated": {
+              "p05": 2.7,
+              "p01": 4.3
+            },
+            "effective_sample_size": 3.5,
+            "reject_at_5pct": false
+          },
+          {
+            "horizon": "20bd",
+            "n": 6,
+            "pits": [
+              0.12,
+              0.265,
+              0.365,
+              0.51,
+              0.61,
+              0.77
+            ],
+            "exceedances": [
+              {
+                "quantile": 0.95,
+                "count": 0,
+                "expected": 0.3
+              },
+              {
+                "quantile": 0.99,
+                "count": 0,
+                "expected": 0.06
+              }
+            ],
+            "w2": 0.399668965,
+            "critical_iid": {
+              "p05": 2.492,
+              "p01": 3.88
+            },
+            "critical_simulated": {
+              "p05": 2.7,
+              "p01": 4.3
+            },
+            "effective_sample_size": 3.5,
+            "reject_at_5pct": false
+          },
+          {
+            "horizon": "1m",
+            "n": 6,
+            "pits": [
+              0.14,
+              0.24,
+              0.385,
+              0.485,
+              0.645,
+              0.745
+            ],
+            "exceedances": [
+              {
+                "quantile": 0.95,
+                "count": 0,
+                "expected": 0.3
+              },
+              {
+                "quantile": 0.99,
+                "count": 0,
+                "expected": 0.06
+              }
+            ],
+            "w2": 0.43219221,
+            "critical_iid": {
+              "p05": 2.492,
+              "p01": 3.88
+            },
+            "critical_simulated": {
+              "p05": 2.7,
+              "p01": 4.3
+            },
+            "effective_sample_size": 3.5,
+            "reject_at_5pct": false
+          },
+          {
+            "horizon": "3m",
+            "n": 6,
+            "pits": [
+              0.115,
+              0.26,
+              0.36,
+              0.52,
+              0.62,
+              0.765
+            ],
+            "exceedances": [
+              {
+                "quantile": 0.95,
+                "count": 0,
+                "expected": 0.3
+              },
+              {
+                "quantile": 0.99,
+                "count": 0,
+                "expected": 0.06
+              }
+            ],
+            "w2": 0.389558159,
+            "critical_iid": {
+              "p05": 2.492,
+              "p01": 3.88
+            },
+            "critical_simulated": {
+              "p05": 2.7,
+              "p01": 4.3
+            },
+            "effective_sample_size": 3.5,
+            "reject_at_5pct": false
+          },
+          {
+            "horizon": "6m",
+            "n": 6,
+            "pits": [
+              0.135,
+              0.235,
+              0.395,
+              0.495,
+              0.64,
+              0.74
+            ],
+            "exceedances": [
+              {
+                "quantile": 0.95,
+                "count": 0,
+                "expected": 0.3
+              },
+              {
+                "quantile": 0.99,
+                "count": 0,
+                "expected": 0.06
+              }
+            ],
+            "w2": 0.432392968,
+            "critical_iid": {
+              "p05": 2.492,
+              "p01": 3.88
+            },
+            "critical_simulated": {
+              "p05": 2.7,
+              "p01": 4.3
+            },
+            "effective_sample_size": 3.5,
+            "reject_at_5pct": false
+          },
+          {
+            "horizon": "12m",
+            "n": 6,
+            "pits": [
+              0.11,
+              0.27,
+              0.37,
+              0.515,
+              0.615,
+              0.76
+            ],
+            "exceedances": [
+              {
+                "quantile": 0.95,
+                "count": 0,
+                "expected": 0.3
+              },
+              {
+                "quantile": 0.99,
+                "count": 0,
+                "expected": 0.06
+              }
+            ],
+            "w2": 0.400476387,
+            "critical_iid": {
+              "p05": 2.492,
+              "p01": 3.88
+            },
+            "critical_simulated": {
+              "p05": 2.7,
+              "p01": 4.3
+            },
+            "effective_sample_size": 3.5,
+            "reject_at_5pct": false
+          }
+        ]
+      },
+      "sub_windows": [
+        {
+          "window": "before-2008",
+          "start": "2000-01-31",
+          "end": "2007-12-31",
+          "results": [
+            {
+              "horizon": "10bd",
+              "n": 6,
+              "w2": 0.432392968
+            },
+            {
+              "horizon": "20bd",
+              "n": 6,
+              "w2": 0.400476387
+            }
+          ]
+        },
+        {
+          "window": "2008-2019",
+          "start": "2008-01-31",
+          "end": "2019-12-31",
+          "results": [
+            {
+              "horizon": "10bd",
+              "n": 6,
+              "w2": 0.432392968
+            },
+            {
+              "horizon": "20bd",
+              "n": 6,
+              "w2": 0.400476387
+            }
+          ]
+        },
+        {
+          "window": "from-2020",
+          "start": "2020-01-31",
+          "end": "2025-09-30",
+          "results": [
+            {
+              "horizon": "10bd",
+              "n": 6,
+              "w2": 0.432392968
+            },
+            {
+              "horizon": "20bd",
+              "n": 6,
+              "w2": 0.400476387
+            }
+          ]
+        }
+      ]
+    },
+    "calibration_sensitivity": [
+      {
+        "case": "base",
+        "a": 0.08,
+        "sigma": 0.011,
+        "eepe": {
+          "amount": 3793.831438,
+          "currency": "USD"
+        },
+        "pfe_peak": {
+          "amount": 17819.090886,
+          "currency": "USD"
+        },
+        "ee": {
+          "currency": "USD",
+          "values": [
+            2520.0,
+            3415.325753,
+            4620.0,
+            5939.696962,
+            5819.690713,
+            4695.742753,
+            4815.267386,
+            0.0
+          ],
+          "mc_se": [
+            25.2,
+            34.153258,
+            46.2,
+            59.39697,
+            58.196907,
+            46.957428,
+            48.152674,
+            0.0
+          ]
+        },
+        "pfe": {
+          "currency": "USD",
+          "values": [
+            7560.0,
+            10245.977259,
+            13860.0,
+            17819.090886,
+            17459.07214,
+            14087.228258,
+            14445.802158,
+            0.0
+          ],
+          "mc_se": [
+            75.6,
+            102.459773,
+            138.6,
+            178.190909,
+            174.590721,
+            140.872283,
+            144.458022,
+            0.0
+          ]
+        }
+      },
+      {
+        "case": "a-plus-1se",
+        "a": 0.1,
+        "sigma": 0.011,
+        "eepe": {
+          "amount": 3771.06845,
+          "currency": "USD"
+        },
+        "pfe_peak": {
+          "amount": 17712.176341,
+          "currency": "USD"
+        },
+        "ee": {
+          "currency": "USD",
+          "values": [
+            2504.88,
+            3394.833798,
+            4592.28,
+            5904.05878,
+            5784.772569,
+            4667.568296,
+            4786.375782,
+            0.0
+          ],
+          "mc_se": [
+            25.0488,
+            33.948338,
+            45.9228,
+            59.040588,
+            57.847726,
+            46.675683,
+            47.863758,
+            0.0
+          ]
+        },
+        "pfe": {
+          "currency": "USD",
+          "values": [
+            7514.64,
+            10184.501395,
+            13776.84,
+            17712.176341,
+            17354.317707,
+            14002.704888,
+            14359.127345,
+            0.0
+          ],
+          "mc_se": [
+            75.1464,
+            101.845014,
+            137.7684,
+            177.121763,
+            173.543177,
+            140.027049,
+            143.591273,
+            0.0
+          ]
+        }
+      },
+      {
+        "case": "a-minus-1se",
+        "a": 0.06,
+        "sigma": 0.011,
+        "eepe": {
+          "amount": 3816.594427,
+          "currency": "USD"
+        },
+        "pfe_peak": {
+          "amount": 17926.005431,
+          "currency": "USD"
+        },
+        "ee": {
+          "currency": "USD",
+          "values": [
+            2535.12,
+            3435.817708,
+            4647.72,
+            5975.335144,
+            5854.608857,
+            4723.91721,
+            4844.15899,
+            0.0
+          ],
+          "mc_se": [
+            25.3512,
+            34.358177,
+            46.4772,
+            59.753351,
+            58.546089,
+            47.239172,
+            48.44159,
+            0.0
+          ]
+        },
+        "pfe": {
+          "currency": "USD",
+          "values": [
+            7605.36,
+            10307.453123,
+            13943.16,
+            17926.005431,
+            17563.826573,
+            14171.751628,
+            14532.476971,
+            0.0
+          ],
+          "mc_se": [
+            76.0536,
+            103.074531,
+            139.4316,
+            179.260054,
+            175.638266,
+            141.717516,
+            145.32477,
+            0.0
+          ]
+        }
+      },
+      {
+        "case": "sigma-plus-1se",
+        "a": 0.08,
+        "sigma": 0.0115,
+        "eepe": {
+          "amount": 3831.769753,
+          "currency": "USD"
+        },
+        "pfe_peak": {
+          "amount": 17997.281795,
+          "currency": "USD"
+        },
+        "ee": {
+          "currency": "USD",
+          "values": [
+            2545.2,
+            3449.479011,
+            4666.2,
+            5999.093932,
+            5877.88762,
+            4742.700181,
+            4863.42006,
+            0.0
+          ],
+          "mc_se": [
+            25.452,
+            34.49479,
+            46.662,
+            59.990939,
+            58.778876,
+            47.427002,
+            48.634201,
+            0.0
+          ]
+        },
+        "pfe": {
+          "currency": "USD",
+          "values": [
+            7635.6,
+            10348.437032,
+            13998.6,
+            17997.281795,
+            17633.662861,
+            14228.100541,
+            14590.26018,
+            0.0
+          ],
+          "mc_se": [
+            76.356,
+            103.48437,
+            139.986,
+            179.972818,
+            176.336629,
+            142.281005,
+            145.902602,
+            0.0
+          ]
+        }
+      },
+      {
+        "case": "sigma-minus-1se",
+        "a": 0.08,
+        "sigma": 0.0105,
+        "eepe": {
+          "amount": 3755.893124,
+          "currency": "USD"
+        },
+        "pfe_peak": {
+          "amount": 17640.899977,
+          "currency": "USD"
+        },
+        "ee": {
+          "currency": "USD",
+          "values": [
+            2494.8,
+            3381.172495,
+            4573.8,
+            5880.299992,
+            5761.493806,
+            4648.785325,
+            4767.114712,
+            0.0
+          ],
+          "mc_se": [
+            24.948,
+            33.811725,
+            45.738,
+            58.803,
+            57.614938,
+            46.487853,
+            47.671147,
+            0.0
+          ]
+        },
+        "pfe": {
+          "currency": "USD",
+          "values": [
+            7484.4,
+            10143.517486,
+            13721.4,
+            17640.899977,
+            17284.481419,
+            13946.355975,
+            14301.344136,
+            0.0
+          ],
+          "mc_se": [
+            74.844,
+            101.435175,
+            137.214,
+            176.409,
+            172.844814,
+            139.46356,
+            143.013441,
+            0.0
+          ]
+        }
+      }
+    ],
+    "ore_reconciliation": {
+      "status": "reconciled",
+      "ore_version": "1.8.17.0",
+      "platform": "fixture: not an ORE run",
+      "run_seconds": 0.0,
+      "ore_ee": {
+        "currency": "USD",
+        "values": [
+          2530.08,
+          3428.987056,
+          4638.48,
+          5963.45575,
+          5842.969476,
+          4714.525724,
+          4834.528456,
+          0.0
+        ],
+        "mc_se": [
+          25.3008,
+          34.289871,
+          46.3848,
+          59.634557,
+          58.429695,
+          47.145257,
+          48.345285,
+          0.0
+        ]
+      },
+      "ore_ee_discounted": {
+        "currency": "USD",
+        "values": [
+          2520.609967,
+          3403.365853,
+          4569.42203,
+          5787.208997,
+          5585.864106,
+          4373.870531,
+          4352.644524,
+          0.0
+        ],
+        "mc_se": [
+          25.2061,
+          34.033659,
+          45.69422,
+          57.87209,
+          55.858641,
+          43.738705,
+          43.526445,
+          0.0
+        ]
+      },
+      "ore_eepe": {
+        "amount": 3809.006764,
+        "currency": "USD"
+      },
+      "ore_cva": {
+        "amount": 379.570088,
+        "currency": "USD"
+      },
+      "ore_dim": {
+        "currency": "USD",
+        "values": [
+          3795.12,
+          5143.480585,
+          6957.72,
+          8945.183625,
+          8764.454214,
+          7071.788586,
+          7251.792683,
+          0.0
+        ],
+        "mc_se": [
+          37.9512,
+          51.434806,
+          69.5772,
+          89.451836,
+          87.644542,
+          70.717886,
+          72.517927,
+          0.0
+        ]
+      },
+      "agreement": [
+        {
+          "t": 0.25,
+          "difference": 10.08,
+          "combined_se": 35.280001,
+          "within_two_se": true
+        },
+        {
+          "t": 0.5,
+          "difference": 13.661303,
+          "combined_se": 47.814562,
+          "within_two_se": true
+        },
+        {
+          "t": 1.0,
+          "difference": 18.48,
+          "combined_se": 64.680001,
+          "within_two_se": true
+        },
+        {
+          "t": 2.0,
+          "difference": 23.758788,
+          "combined_se": 83.155758,
+          "within_two_se": true
+        },
+        {
+          "t": 3.0,
+          "difference": 23.278763,
+          "combined_se": 81.475671,
+          "within_two_se": true
+        },
+        {
+          "t": 5.0,
+          "difference": 18.782971,
+          "combined_se": 65.7404,
+          "within_two_se": true
+        },
+        {
+          "t": 7.0,
+          "difference": 19.26107,
+          "combined_se": 67.413744,
+          "within_two_se": true
+        },
+        {
+          "t": 10.0,
+          "difference": 0.0,
+          "combined_se": 1e-06,
+          "within_two_se": true
+        }
+      ],
+      "eepe_agreement": {
+        "python": 3793.831438,
+        "ore": 3809.006764,
+        "difference": 15.175326,
+        "combined_se": 53.113641,
+        "within_two_se": true
+      },
+      "cva_agreement": {
+        "python": 378.057858,
+        "ore": 379.570088,
+        "difference": 1.51223,
+        "combined_se": 5.292811,
+        "within_two_se": true
+      },
+      "dim_agreement": [
+        {
+          "t": 0.25,
+          "difference": 15.12,
+          "combined_se": 52.920001,
+          "within_two_se": true
+        },
+        {
+          "t": 0.5,
+          "difference": 20.491955,
+          "combined_se": 71.721842,
+          "within_two_se": true
+        },
+        {
+          "t": 1.0,
+          "difference": 27.72,
+          "combined_se": 97.020001,
+          "within_two_se": true
+        },
+        {
+          "t": 2.0,
+          "difference": 35.638182,
+          "combined_se": 124.733637,
+          "within_two_se": true
+        },
+        {
+          "t": 3.0,
+          "difference": 34.918144,
+          "combined_se": 122.213506,
+          "within_two_se": true
+        },
+        {
+          "t": 5.0,
+          "difference": 28.174457,
+          "combined_se": 98.610599,
+          "within_two_se": true
+        },
+        {
+          "t": 7.0,
+          "difference": 28.891604,
+          "combined_se": 101.120616,
+          "within_two_se": true
+        },
+        {
+          "t": 10.0,
+          "difference": 0.0,
+          "combined_se": 1e-06,
+          "within_two_se": true
+        }
+      ],
+      "all_within_two_se": true,
+      "reason": null
+    }
+  },
+  "tests": [
+    {
+      "test_id": "ccr.ee_analytic_vs_simulated",
+      "model_id": "hw1f-exposure",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "ccr.cva_recomputed",
+      "model_id": "hw1f-exposure",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    }
+  ],
+  "impact": {},
+  "findings": [],
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u9-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

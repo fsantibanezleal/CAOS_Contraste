@@ -9,7 +9,7 @@ from typing import Any
 
 import c14_support  # noqa: F401  (puts the contract test folders on the path)
 import contract_schemas as cs
-import semantics
+from c14_support import semantics
 
 ROOT = Path(__file__).resolve().parents[2]
 DERIVED = ROOT / "data" / "derived"

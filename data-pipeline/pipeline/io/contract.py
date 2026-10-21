@@ -18,6 +18,7 @@ Table 2; the loss collection threshold, OPE25.18. All transcribed from the resea
 """
 from __future__ import annotations
 
+import dataclasses
 import datetime as dt
 import math
 from collections.abc import Callable, Iterable, Mapping, Sequence
@@ -52,6 +53,9 @@ NMD_CAPS: dict[str, tuple[float, float]] = {
     "nmd_retail_non_transactional": (0.70, 4.5),
     "nmd_wholesale": (0.50, 4.0),
 }
+
+#: LCR30: the HQLA levels, and the assets that are not HQLA (the optional liquidity fields of the balance_sheet family).
+LIQUIDITY_CLASSES: tuple[str, ...] = ("level_1", "level_2a", "level_2b", "non_hqla")
 
 BEHAVIOURAL_CLASSES: tuple[str, ...] = (
     "contractual", *NMD_CAPS, "prepayable_fixed_rate_loan", "redeemable_term_deposit",
@@ -91,6 +95,7 @@ class Field:
     values_param: str = ""  # the allowed values come from a dataset parameter (a declared grade scale)
     required: bool = True
     on_missing: str = "reject"
+    sparse: bool = False  # an absent value leaves the key out of the accepted record (a field added after the family's first release)
 
     def __post_init__(self) -> None:
         if self.kind not in KINDS:
@@ -412,6 +417,13 @@ def validate(
     params = dict(params or {})
     _check_params(fam, params)
     fields = (*fam.fields, *extra_fields)
+    if fam.name == "scored_sample" and params.get("outcome") == "population":
+        # a population sample (a shift probe): neither target nor decision is required; SS-POPULATION-NO-OUTCOME rejects a row that carries one (G20)
+        fields = tuple(dataclasses.replace(f, required=False) if f.name == "target" else f for f in fields)
+    elif fam.name == "scored_sample" and params.get("outcome") == "none":
+        # no outcome: target is optional and the lender's decision is the case's required output (decision V3)
+        fields = tuple(dataclasses.replace(f, required=False) if f.name == "target"
+                       else dataclasses.replace(f, required=True) if f.name == "decision" else f for f in fields)
     names = {f.name for f in fields}
     if len(names) != len(fields):
         raise ContractError(f"{fam.name}: a field is declared twice")
@@ -427,7 +439,8 @@ def validate(
         for f in fields:
             raw_v = raw.get(f.name)
             if _is_missing(raw_v):
-                rec[f.name] = None
+                if not f.sparse:
+                    rec[f.name] = None
                 if f.required:
                     entry = {"field": f.name, "value": None, "expected": f.expected(params),
                              "policy": f.on_missing, "reason": "missing"}
@@ -517,6 +530,13 @@ def _key(fam: Family, rec: Mapping[str, Any]) -> str:
 
 def _unique(members: Sequence[tuple[int, Mapping[str, Any]]], _params: Mapping[str, Any]) -> list[tuple[int, str]]:
     return [(i, "duplicate of an earlier record") for i, _ in members[1:]]
+
+
+def _population_has_no_outcome(rec: Mapping[str, Any], params: Mapping[str, Any]) -> str | None:
+    if params.get("outcome") != "population":
+        return None
+    carried = [n for n in ("target", "decision") if rec.get(n) is not None]
+    return f"carries {' and '.join(carried)}" if carried else None
 
 
 def _months_between(a: dt.date, b: dt.date) -> int:
@@ -688,6 +708,9 @@ SCORED_SAMPLE = Family(
                                              "Fecha en que se observan las variables")),
         Field("target", "flag", _t("Default (1) or not (0) over the case's horizon",
                                    "Incumplimiento (1) o no (0) en el horizonte del caso")),
+        Field("decision", "flag", _t("The lender's decision: 1 approval (HMDA action taken 1 or 2), 0 denial (action taken 3); a named convention, not a legal classification",
+                                     "La decisión del prestamista: 1 aprobación (acción HMDA 1 o 2), 0 rechazo (acción 3); una convención con nombre, no una clasificación legal"),
+              required=False, sparse=True),
         Field("score", "float", _t("Model score, in the units the case declares", "Puntaje del modelo, en las unidades que declara el caso"),
               required=False),
         Field("pd", "float", _t("Probability of default", "Probabilidad de incumplimiento"), unit="probability",
@@ -705,11 +728,24 @@ SCORED_SAMPLE = Family(
              _t("Each identifier appears once per observation date.",
                 "Cada identificador aparece una vez por fecha de observación."),
              _unique, group_by=("id", "observation_date")),
+        Rule("SS-POPULATION-NO-OUTCOME", "record", "reject", "target",
+             _t("A population sample carries neither an outcome nor a decision; its role is a shift probe.",
+                "Una muestra de población no lleva ni resultado ni decisión; su papel es el de una sonda de desplazamiento."),
+             _population_has_no_outcome),
     ),
     params=(Param("grades", "list", _t("The grade scale, best to worst", "La escala de grados, de mejor a peor"),
-                  required=False),),
+                  required=False),
+            Param("outcome", "enum", _t("Whether the case declares an outcome: target (default, required), none (a decision sample such as HMDA: target becomes optional and decision becomes required) or population (a population sample such as the Fed portfolios, a shift probe: target and decision are optional and a row that carries either is rejected)",
+                                        "Si el caso declara un resultado: target (por defecto, obligatorio), none (una muestra de decisiones como HMDA: target pasa a ser opcional y decision pasa a ser obligatorio) o population (una muestra de población como las carteras de la Fed, una sonda de desplazamiento: target y decision son opcionales y se rechaza la fila que lleve alguno)"),
+                  required=False, values=("target", "none", "population"))),
     open_fields=True,
-    notes=(_t("The case declares its features with their units; a missing feature is flagged, and imputation is "
+    notes=(_t("A case that declares no outcome sets the dataset parameter outcome to none; target is then optional and the decision field becomes required and carries the lender's decision. Several protected attributes are the case's declared open fields.",
+              "Un caso que no declara resultado fija el parametro outcome en none; target pasa a ser opcional y el campo decision pasa a ser obligatorio y lleva la decision del prestamista. Varios atributos protegidos son campos abiertos declarados por el caso."),
+           _t("A case whose data carries loan or obligor variables only, with neither an outcome nor a decision (the Federal Reserve hypothetical portfolios of C20), sets the dataset parameter outcome to population: its role is a shift probe, target and decision are optional and a row that carries either is rejected by SS-POPULATION-NO-OUTCOME. A population sample is never validated as a scored one.",
+              "Un caso cuyos datos llevan solo variables de préstamo o de deudor, sin resultado ni decisión (las carteras hipotéticas de la Reserva Federal de C20), fija el parámetro outcome en population: su papel es el de una sonda de desplazamiento, target y decision son opcionales y la regla SS-POPULATION-NO-OUTCOME rechaza la fila que lleve alguno. Una muestra de población nunca se valida como una puntuada."),
+           _t("Public HMDA withholds the loan identifier and the application and action dates (U14 research addendum H1 2.5), so its reader writes two named conventions: id is the row position in the source file within its activity year, written <activity_year>-<row>, and observation_date is the activity year's 12-31, written <activity_year>-12-31. Both are conventions, not source values.",
+              "El HMDA publico omite el identificador del prestamo y las fechas de solicitud y de accion (adendum de investigacion U14 H1 2.5), de modo que su lector escribe dos convenciones con nombre: id es la posicion de la fila en el archivo fuente dentro de su ano de actividad, escrita <activity_year>-<row>, y observation_date es el 12-31 del ano de actividad, escrita <activity_year>-12-31. Ambas son convenciones, no valores de la fuente."),
+           _t("The case declares its features with their units; a missing feature is flagged, and imputation is "
               "fitted on the training slice only.",
               "El caso declara sus variables con sus unidades; una variable faltante se marca, y la imputación se "
               "ajusta solo con el tramo de entrenamiento."),),
@@ -869,6 +905,19 @@ BALANCE_SHEET = Family(
               unit="fraction", lo=0.0, hi=1.0, required=False),
         Field("core_avg_maturity_years", "float", _t("Average maturity of the core", "Plazo promedio de la porción estable"),
               unit="years", lo=0.0, required=False),
+        Field("liquidity_class", "enum", _t("Liquidity class: the HQLA level of an asset, or not HQLA (LCR30)",
+                                            "Clase de liquidez: el nivel HQLA de un activo, o no HQLA (LCR30)"),
+              values=LIQUIDITY_CLASSES, required=False),
+        Field("residual_days", "int", _t("Residual contractual maturity in days", "Plazo contractual residual en días"),
+              unit="days", lo=0.0, required=False),
+        Field("insured", "flag", _t("Insured by a deposit insurance scheme (a deposit): 1 insured, 0 not insured; a boolean is refused, "
+                                    "the producer maps it to 1 or 0",
+                                    "Asegurado por un esquema de seguro de depósitos: 1 asegurado, 0 no asegurado; se rechaza un "
+                                    "booleano, el productor lo traduce a 1 o 0"),
+              required=False),
+        Field("fair_value", "float", _t("Fair value beside the carrying amount, in the same sign convention as amount",
+                                        "Valor razonable junto al monto contable, con el mismo signo que amount"),
+              unit="currency", required=False),
     ),
     rules=(
         Rule("BS-NMD-CAPS", "record", "flag", "core_share",
@@ -878,7 +927,11 @@ BALANCE_SHEET = Family(
     ),
     notes=(_t("Band midpoints in years, SRP31.96 Table 3: " + ", ".join(f"{b} {m:g}" for b, m in REPRICING_BANDS) + ".",
               "Puntos medios de las bandas en años, SRP31.96 Tabla 3: "
-              + ", ".join(f"{b} {str(m).replace('.', ',')}" for b, m in REPRICING_BANDS) + "."),),
+              + ", ".join(f"{b} {str(m).replace('.', ',')}" for b, m in REPRICING_BANDS) + "."),
+           _t("Liquidity items add four optional fields: liquidity_class (the HQLA level or non_hqla), residual_days, insured (a "
+              "deposit) and fair_value beside amount; a record without them validates as before.",
+              "Las partidas de liquidez agregan cuatro campos opcionales: liquidity_class, residual_days, insured y fair_value "
+              "junto a amount; un registro sin ellos valida como antes."),),
 )
 
 LOSS_EVENTS = Family(

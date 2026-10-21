@@ -1,0 +1,141 @@
+{
+  "schema": "contraste.models/v1",
+  "case_id": "C02",
+  "fit_id": "fixture-ladder",
+  "model": [
+    {
+      "id": "fixture-p1",
+      "family": "ml",
+      "rung": "P1",
+      "title": {
+        "en": "Fixture model fixture-p1",
+        "es": "Fixture model fixture-p1"
+      },
+      "short_title": {
+        "en": "fixture-p1",
+        "es": "fixture-p1"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "details": {}
+    }
+  ],
+  "fit": {
+    "files": [
+      {
+        "horizon_id": "h1",
+        "years": 1,
+        "file": "fixture-1year",
+        "rows": 1000,
+        "events": 40
+      },
+      {
+        "horizon_id": "h2",
+        "years": 2,
+        "file": "fixture-2year",
+        "rows": 2000,
+        "events": 80
+      },
+      {
+        "horizon_id": "h3",
+        "years": 3,
+        "file": "fixture-3year",
+        "rows": 3000,
+        "events": 120
+      },
+      {
+        "horizon_id": "h4",
+        "years": 4,
+        "file": "fixture-4year",
+        "rows": 4000,
+        "events": 160
+      },
+      {
+        "horizon_id": "h5",
+        "years": 5,
+        "file": "fixture-5year",
+        "rows": 5000,
+        "events": 200
+      }
+    ],
+    "ladder": [
+      {
+        "rung": "P0",
+        "label": {
+          "en": "Fixture rung P0",
+          "es": "Fixture rung P0"
+        },
+        "engine": "fixture",
+        "reference": "04 B"
+      },
+      {
+        "rung": "P1",
+        "label": {
+          "en": "Fixture rung P1",
+          "es": "Fixture rung P1"
+        },
+        "engine": "fixture",
+        "reference": "04 B"
+      },
+      {
+        "rung": "P4",
+        "label": {
+          "en": "Fixture rung P4",
+          "es": "Fixture rung P4"
+        },
+        "engine": "fixture",
+        "reference": "04 B"
+      }
+    ],
+    "protocol": {
+      "protocol": "locked-stratified-holdout",
+      "seed": 0,
+      "train_rows": 3000,
+      "calibration_rows": 1000,
+      "holdout_rows": 1000,
+      "holdout_events": 60,
+      "fit_on_training_slice_only": true,
+      "calibration_map_on_separate_slice": true,
+      "resampling_before_calibration": false,
+      "out_of_time_claim": false
+    },
+    "parameters": [
+      {
+        "name": "overfit_tolerance",
+        "value": 0.05,
+        "unit": "AUC points",
+        "label": "convention",
+        "basis": "Train minus test AUC gap beyond which the overfit flag is raised (06 C.7 l.1016-1018 gives no value)."
+      }
+    ]
+  },
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u14-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}

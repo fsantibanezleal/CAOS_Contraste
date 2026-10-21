@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 
 import pytest
-from conftest import SAMPLE
+from c10_support import SAMPLE
 
 from pipeline.cases.c10 import documents as docs
 from pipeline.cases.c10 import fed

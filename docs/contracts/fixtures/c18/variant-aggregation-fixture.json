@@ -1,0 +1,1314 @@
+{
+  "schema": "contraste.case/v1",
+  "case_id": "C18",
+  "variant_id": "fixture-t-copula-aggregation",
+  "model": [
+    {
+      "id": "c18-satellites-us-calibrated",
+      "family": "stress",
+      "rung": "satellite-probit-ols",
+      "title": {
+        "en": "Fixture model c18-satellites-us-calibrated",
+        "es": "Modelo de ejemplo c18-satellites-us-calibrated"
+      },
+      "short_title": {
+        "en": "c18-satellites-us-calibrated",
+        "es": "c18-satellites-us-calibrated"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    },
+    {
+      "id": "c18-aggregation-ladder",
+      "family": "aggregation",
+      "rung": "simple-sum-headline",
+      "title": {
+        "en": "Fixture model c18-aggregation-ladder",
+        "es": "Modelo de ejemplo c18-aggregation-ladder"
+      },
+      "short_title": {
+        "en": "c18-aggregation-ladder",
+        "es": "c18-aggregation-ladder"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    },
+    {
+      "id": "c18-capital-engine",
+      "family": "stress",
+      "rung": "capital-engine-static",
+      "title": {
+        "en": "Fixture model c18-capital-engine",
+        "es": "Modelo de ejemplo c18-capital-engine"
+      },
+      "short_title": {
+        "en": "c18-capital-engine",
+        "es": "c18-capital-engine"
+      },
+      "engine": "riskvalidation",
+      "engine_version": "fixture",
+      "licence": "MIT",
+      "calibration": null,
+      "parameters": {},
+      "checkpoint_sha256": null
+    }
+  ],
+  "outputs": {
+    "kind": "aggregation",
+    "currency": "CLP",
+    "units": {
+      "money": "CLP millions",
+      "ratio": "decimal",
+      "dates": "ISO date; quarters as the date of the quarter end"
+    },
+    "bank": {
+      "name": "Banco Andino",
+      "synthetic": true,
+      "as_of": "2026-08-31",
+      "notice": {
+        "en": "Banco Andino is a synthetic bank. Its book and capital are calibrated to public aggregates; every figure here is a fixture and no result.",
+        "es": "Banco Andino is a synthetic bank. Its book and capital are calibrated to public aggregates; every figure here is a fixture and no result. (es)"
+      }
+    },
+    "scenario_id": "baseline",
+    "aggregation": {
+      "capital_basis": "economic-capital-var-less-el",
+      "horizon_years": 1,
+      "confidence_level": 0.999,
+      "correlation": {
+        "name": "correlation_matrix_base",
+        "order": [
+          "credit",
+          "market",
+          "irrbb",
+          "operational"
+        ],
+        "matrix": [
+          [
+            1.0,
+            0.5,
+            0.5,
+            0.2
+          ],
+          [
+            0.5,
+            1.0,
+            0.5,
+            0.2
+          ],
+          [
+            0.5,
+            0.5,
+            1.0,
+            0.2
+          ],
+          [
+            0.2,
+            0.2,
+            0.2,
+            1.0
+          ]
+        ],
+        "unit": "correlation",
+        "label": "convention",
+        "basis": {
+          "en": "The Rosenberg and Schuermann benchmark: market-credit 0.5, market and credit with operational 0.2 (05 l.360); IRRBB is treated as a market-type risk (0.5 with credit and market, 0.2 with operational): UNVERIFIED, no dossier gives an IRRBB correlation",
+          "es": "The Rosenberg and Schuermann benchmark: market-credit 0.5, market and credit with operational 0.2 (05 l.360); IRRBB is treated as a market-type risk (0.5 with credit and market, 0.2 with operational): UNVERIFIED, no dossier gives an IRRBB correlation (es)"
+        }
+      },
+      "nu_set": {
+        "name": "nu_set",
+        "values": [
+          4.0,
+          8.0,
+          30.0
+        ],
+        "unit": "degrees of freedom",
+        "label": "convention",
+        "basis": {
+          "en": "Degrees of freedom of the t copula: 4, 8 and 30 (30 approaches the Gaussian copula); a convention of the case, G.5 asks for several nu (05 l.378)",
+          "es": "Degrees of freedom of the t copula: 4, 8 and 30 (30 approaches the Gaussian copula); a convention of the case, G.5 asks for several nu (05 l.378) (es)"
+        }
+      },
+      "marginals": [
+        {
+          "risk": "credit",
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "el_clp_m": 140000.0,
+          "el_status": "finite",
+          "var_clp_m": 1190000.0,
+          "es_clp_m": 1300000.0,
+          "ec_clp_m": 1050000.0,
+          "ec_basis": "var-less-el",
+          "ec_label": null,
+          "var_se_clp_m": 2380.0,
+          "producer": "credit-grouped-copula-c07-segments",
+          "source_documents": [
+            "c07-outputs",
+            "riskvalidation.portfolio.portfolio.portfolio_from_groups"
+          ],
+          "scaling": {
+            "statement": {
+              "en": "No scaling: the grouped copula runs on the C07 segments of Banco Andino.",
+              "es": "No scaling: the grouped copula runs on the C07 segments of Banco Andino. (es)"
+            },
+            "parameters": []
+          }
+        },
+        {
+          "risk": "market",
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "el_clp_m": 5000.0,
+          "el_status": "finite",
+          "var_clp_m": 225000.0,
+          "es_clp_m": 262000.0,
+          "ec_clp_m": 220000.0,
+          "ec_basis": "var-less-el",
+          "ec_label": null,
+          "var_se_clp_m": 450.0,
+          "producer": "market-c11-mixed-portfolio-scaled-to-market-rwa",
+          "source_documents": [
+            "c11-outputs mixed-2023",
+            "market share of RWA from the 20-F mix (ratio)"
+          ],
+          "scaling": {
+            "statement": {
+              "en": "C11's mixed-portfolio VaR and ES scaled to the market share of RWA, with the horizon scaling stated as an assumption.",
+              "es": "C11's mixed-portfolio VaR and ES scaled to the market share of RWA, with the horizon scaling stated as an assumption. (es)"
+            },
+            "parameters": [
+              {
+                "name": "market_rwa_share",
+                "value": 0.171255,
+                "unit": "share of RWA",
+                "label": "case assumption",
+                "basis": {
+                  "en": "The market share of the 20-F RWA mix, as a ratio (decision Q5, Q4); C11's mixed-portfolio VaR and ES are scaled to it",
+                  "es": "The market share of the 20-F RWA mix, as a ratio (decision Q5, Q4); C11's mixed-portfolio VaR and ES are scaled to it (es)"
+                }
+              },
+              {
+                "name": "market_horizon_scaling",
+                "value": 21.0032486873,
+                "unit": "multiplier on C11's 99 percent one-day measure",
+                "label": "convention",
+                "basis": {
+                  "en": "From C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 times the square root of 250, both named conventions (W4)",
+                  "es": "From C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 times the square root of 250, both named conventions (W4) (es)"
+                },
+                "source_confidence_level": 0.99,
+                "source_horizon_days": 1,
+                "trading_days_per_year": 250,
+                "level_factor": {
+                  "name": "market_level_factor",
+                  "value": 1.3283620823,
+                  "unit": "ratio of normal quantiles z_0.999 / z_0.99",
+                  "label": "convention",
+                  "basis": {
+                    "en": "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case",
+                    "es": "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case (es)"
+                  }
+                },
+                "horizon_factor": {
+                  "name": "market_horizon_factor",
+                  "value": 15.8113883008,
+                  "unit": "multiplier on a one-day measure, sqrt(250)",
+                  "label": "convention",
+                  "basis": {
+                    "en": "Square-root-of-time scaling from one day to one year with 250 trading days: a convention of the case",
+                    "es": "Square-root-of-time scaling from one day to one year with 250 trading days: a convention of the case (es)"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "risk": "irrbb",
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "el_clp_m": 2000.0,
+          "el_status": "finite",
+          "var_clp_m": 182000.0,
+          "es_clp_m": 210000.0,
+          "ec_clp_m": 180000.0,
+          "ec_basis": "var-less-el",
+          "ec_label": null,
+          "var_se_clp_m": null,
+          "producer": "irrbb-engine-simulation-c15-curve-and-book",
+          "source_documents": [
+            "c15-outputs",
+            "riskvalidation.irrbb.simulation.ear_evar"
+          ],
+          "scaling": {
+            "statement": {
+              "en": "No scaling: the engine simulation runs on the C15 curve and book of Banco Andino.",
+              "es": "No scaling: the engine simulation runs on the C15 curve and book of Banco Andino. (es)"
+            },
+            "parameters": []
+          }
+        },
+        {
+          "risk": "operational",
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "el_clp_m": 20000.0,
+          "el_status": "finite",
+          "var_clp_m": 280000.0,
+          "es_clp_m": 345000.0,
+          "ec_clp_m": 260000.0,
+          "ec_basis": "var-less-el",
+          "ec_label": null,
+          "var_se_clp_m": 560.0,
+          "producer": "operational-oprisk-aggregate-c17-parameters-scaled",
+          "source_documents": [
+            "c17-models generator parameters",
+            "riskvalidation.oprisk.aggregate"
+          ],
+          "scaling": {
+            "statement": {
+              "en": "The C17 generator frequency scaled by assets, the loss distribution recomputed through oprisk.aggregate and converted at a stated rate.",
+              "es": "The C17 generator frequency scaled by assets, the loss distribution recomputed through oprisk.aggregate and converted at a stated rate. (es)"
+            },
+            "parameters": [
+              {
+                "name": "asset_scaling",
+                "value": 0.8,
+                "unit": "Banco Andino assets over the assets of the C17 bank",
+                "label": "case assumption",
+                "basis": {
+                  "en": "Derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, converted at the rate (decision Q5, W5); this value is a fixture value",
+                  "es": "Derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, converted at the rate (decision Q5, W5); this value is a fixture value (es)"
+                },
+                "derivation": {
+                  "kind": "asset-ratio",
+                  "banco_andino_assets_clp_m": 40000000.0,
+                  "c17_bank_assets_eur_m": 50000.0,
+                  "converted_at": "operational_conversion_rate"
+                }
+              },
+              {
+                "name": "operational_conversion_rate",
+                "value": 1000.0,
+                "unit": "CLP per EUR",
+                "label": "case assumption",
+                "basis": {
+                  "en": "Derived at bake time: the EUR to CLP rate of the as-of date from the Banco Central de Chile (decision Q5, W5); this value is a fixture value",
+                  "es": "Derived at bake time: the EUR to CLP rate of the as-of date from the Banco Central de Chile (decision Q5, W5); this value is a fixture value (es)"
+                },
+                "derivation": {
+                  "kind": "observed-exchange-rate",
+                  "pair": "EUR/CLP",
+                  "observation_date": "2026-08-31",
+                  "source": "Banco Central de Chile, Base de Datos Estadísticos, daily exchange rate of the euro in Chilean pesos",
+                  "source_url": "https://si3.bcentral.cl/Siete/es/Siete/API",
+                  "source_series": "fixture-series-id"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "headline": {
+        "method": "simple-sum",
+        "capital_clp_m": 1710000.0,
+        "label": {
+          "en": "The headline capital of C18 is the simple sum: the IAPE adds up the capital needed for each risk and the ECB does not recognise inter-risk diversification in the SREP",
+          "es": "The headline capital of C18 is the simple sum: the IAPE adds up the capital needed for each risk and the ECB does not recognise inter-risk diversification in the SREP (es)"
+        }
+      },
+      "band": [
+        {
+          "method": "lower-bound",
+          "nu": null,
+          "capital_clp_m": 1060200.0,
+          "diversification_factor": 0.62,
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: a diversified or bound figure shown for the validator",
+            "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+          },
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "mc_se_clp_m": null
+        },
+        {
+          "method": "simple-sum",
+          "nu": null,
+          "capital_clp_m": 1710000.0,
+          "diversification_factor": 1.0,
+          "status": "headline-capital",
+          "label": {
+            "en": "Headline capital: the simple sum of the four marginals",
+            "es": "Headline capital: the simple sum of the four marginals (es)"
+          },
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "mc_se_clp_m": null
+        },
+        {
+          "method": "variance-covariance",
+          "nu": null,
+          "capital_clp_m": 1364294.689574,
+          "diversification_factor": 0.7978331518,
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: a diversified or bound figure shown for the validator",
+            "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+          },
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "mc_se_clp_m": null
+        },
+        {
+          "method": "gaussian-copula",
+          "nu": null,
+          "capital_clp_m": 1405223.530261,
+          "diversification_factor": 0.8217681464,
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: a diversified or bound figure shown for the validator",
+            "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+          },
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "mc_se_clp_m": 4215.67
+        },
+        {
+          "method": "t-copula",
+          "nu": 4.0,
+          "capital_clp_m": 1503589.177379,
+          "diversification_factor": 0.8792919166,
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: a diversified or bound figure shown for the validator",
+            "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+          },
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "mc_se_clp_m": 4510.77
+        },
+        {
+          "method": "t-copula",
+          "nu": 8.0,
+          "capital_clp_m": 1454406.35382,
+          "diversification_factor": 0.8505300315,
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: a diversified or bound figure shown for the validator",
+            "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+          },
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "mc_se_clp_m": 4363.22
+        },
+        {
+          "method": "t-copula",
+          "nu": 30.0,
+          "capital_clp_m": 1419275.765564,
+          "diversification_factor": 0.8299858278,
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: a diversified or bound figure shown for the validator",
+            "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+          },
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "mc_se_clp_m": 4257.83
+        },
+        {
+          "method": "worst-case",
+          "nu": null,
+          "capital_clp_m": 2017800.0,
+          "diversification_factor": 1.18,
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: a diversified or bound figure shown for the validator",
+            "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+          },
+          "horizon_years": 1,
+          "confidence_level": 0.999,
+          "mc_se_clp_m": null
+        }
+      ],
+      "model_risk": {
+        "status": "information-not-capital",
+        "label": {
+          "en": "Information, not capital: model risk measures are sensitivity information for the validator",
+          "es": "Information, not capital: model risk measures are sensitivity information for the validator (es)"
+        },
+        "set_of_models": "band-rows",
+        "reference_model": {
+          "method": "gaussian-copula",
+          "nu": null
+        },
+        "barrieu_scandolo": {
+          "rho_x0_clp_m": 1405223.530261,
+          "rho_max_clp_m": 2017800.0,
+          "rho_min_clp_m": 1060200.0,
+          "am": 0.4359281328,
+          "rm": 0.6396997387
+        },
+        "glasserman_xu": {
+          "quantity": {
+            "en": "Expected loss of the aggregate in the 99.9 percent tail under the Gaussian copula",
+            "es": "Expected loss of the aggregate in the 99.9 percent tail under the Gaussian copula (es)"
+          },
+          "relative_entropy_budget": 0.05,
+          "theta": 0.8,
+          "baseline_clp_m": 1968810.0,
+          "worst_case_clp_m": 2205067.2
+        }
+      },
+      "euler": {
+        "status": "information-not-capital",
+        "label": {
+          "en": "Information, not capital: an allocation of the aggregate expected shortfall shown for the validator",
+          "es": "Information, not capital: an allocation of the aggregate expected shortfall shown for the validator (es)"
+        },
+        "risk_measure": "es",
+        "level": 0.999,
+        "horizon_years": 1,
+        "copula": {
+          "family": "gaussian",
+          "nu": null
+        },
+        "es_total_clp_m": 1968810.0,
+        "allocation": [
+          {
+            "risk": "credit",
+            "contribution_clp_m": 1301130.09,
+            "share": 0.6608713334
+          },
+          {
+            "risk": "market",
+            "contribution_clp_m": 209782.21,
+            "share": 0.1065527959
+          },
+          {
+            "risk": "irrbb",
+            "contribution_clp_m": 147127.79,
+            "share": 0.0747292984
+          },
+          {
+            "risk": "operational",
+            "contribution_clp_m": 310769.91,
+            "share": 0.1578465723
+          }
+        ],
+        "additivity": {
+          "sum_clp_m": 1968810.0,
+          "relative_error": 0.0,
+          "tolerance": 1e-06
+        }
+      },
+      "diversification": {
+        "status": "information-not-capital",
+        "label": {
+          "en": "Information, not capital: the diversification of the Gaussian copula row against the simple sum",
+          "es": "Information, not capital: the diversification of the Gaussian copula row against the simple sum (es)"
+        },
+        "reference_row": {
+          "method": "gaussian-copula",
+          "nu": null
+        },
+        "factor": 0.8217681464,
+        "benefit": 0.1782318536,
+        "euler_benefit_by_risk": [
+          {
+            "risk": "credit",
+            "benefit": -0.0008693
+          },
+          {
+            "risk": "market",
+            "benefit": 0.199304542
+          },
+          {
+            "risk": "irrbb",
+            "benefit": 0.2993914762
+          },
+          {
+            "risk": "operational",
+            "benefit": 0.0992176522
+          }
+        ]
+      }
+    },
+    "correlation_stress": {
+      "pair": {
+        "a": "market",
+        "b": "credit",
+        "value": 0.8
+      },
+      "aggregation": {
+        "capital_basis": "economic-capital-var-less-el",
+        "horizon_years": 1,
+        "confidence_level": 0.999,
+        "correlation": {
+          "name": "correlation_matrix_stress",
+          "order": [
+            "credit",
+            "market",
+            "irrbb",
+            "operational"
+          ],
+          "matrix": [
+            [
+              1.0,
+              0.8,
+              0.5,
+              0.2
+            ],
+            [
+              0.8,
+              1.0,
+              0.5,
+              0.2
+            ],
+            [
+              0.5,
+              0.5,
+              1.0,
+              0.2
+            ],
+            [
+              0.2,
+              0.2,
+              0.2,
+              1.0
+            ]
+          ],
+          "unit": "correlation",
+          "label": "convention",
+          "basis": {
+            "en": "The base matrix with market-credit raised to 0.8, the upper end of the published ranges (05 l.378)",
+            "es": "The base matrix with market-credit raised to 0.8, the upper end of the published ranges (05 l.378) (es)"
+          }
+        },
+        "nu_set": {
+          "name": "nu_set",
+          "values": [
+            4.0,
+            8.0,
+            30.0
+          ],
+          "unit": "degrees of freedom",
+          "label": "convention",
+          "basis": {
+            "en": "Degrees of freedom of the t copula: 4, 8 and 30 (30 approaches the Gaussian copula); a convention of the case, G.5 asks for several nu (05 l.378)",
+            "es": "Degrees of freedom of the t copula: 4, 8 and 30 (30 approaches the Gaussian copula); a convention of the case, G.5 asks for several nu (05 l.378) (es)"
+          }
+        },
+        "marginals": [
+          {
+            "risk": "credit",
+            "horizon_years": 1,
+            "confidence_level": 0.999,
+            "el_clp_m": 140000.0,
+            "el_status": "finite",
+            "var_clp_m": 1190000.0,
+            "es_clp_m": 1300000.0,
+            "ec_clp_m": 1050000.0,
+            "ec_basis": "var-less-el",
+            "ec_label": null,
+            "var_se_clp_m": 2380.0,
+            "producer": "credit-grouped-copula-c07-segments",
+            "source_documents": [
+              "c07-outputs",
+              "riskvalidation.portfolio.portfolio.portfolio_from_groups"
+            ],
+            "scaling": {
+              "statement": {
+                "en": "No scaling: the grouped copula runs on the C07 segments of Banco Andino.",
+                "es": "No scaling: the grouped copula runs on the C07 segments of Banco Andino. (es)"
+              },
+              "parameters": []
+            }
+          },
+          {
+            "risk": "market",
+            "horizon_years": 1,
+            "confidence_level": 0.999,
+            "el_clp_m": 5000.0,
+            "el_status": "finite",
+            "var_clp_m": 225000.0,
+            "es_clp_m": 262000.0,
+            "ec_clp_m": 220000.0,
+            "ec_basis": "var-less-el",
+            "ec_label": null,
+            "var_se_clp_m": 450.0,
+            "producer": "market-c11-mixed-portfolio-scaled-to-market-rwa",
+            "source_documents": [
+              "c11-outputs mixed-2023",
+              "market share of RWA from the 20-F mix (ratio)"
+            ],
+            "scaling": {
+              "statement": {
+                "en": "C11's mixed-portfolio VaR and ES scaled to the market share of RWA, with the horizon scaling stated as an assumption.",
+                "es": "C11's mixed-portfolio VaR and ES scaled to the market share of RWA, with the horizon scaling stated as an assumption. (es)"
+              },
+              "parameters": [
+                {
+                  "name": "market_rwa_share",
+                  "value": 0.171255,
+                  "unit": "share of RWA",
+                  "label": "case assumption",
+                  "basis": {
+                    "en": "The market share of the 20-F RWA mix, as a ratio (decision Q5, Q4); C11's mixed-portfolio VaR and ES are scaled to it",
+                    "es": "The market share of the 20-F RWA mix, as a ratio (decision Q5, Q4); C11's mixed-portfolio VaR and ES are scaled to it (es)"
+                  }
+                },
+                {
+                  "name": "market_horizon_scaling",
+                  "value": 21.0032486873,
+                  "unit": "multiplier on C11's 99 percent one-day measure",
+                  "label": "convention",
+                  "basis": {
+                    "en": "From C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 times the square root of 250, both named conventions (W4)",
+                    "es": "From C11's 99 percent one-day figures to 99.9 percent and one year: the normal quantile ratio z_0.999 / z_0.99 times the square root of 250, both named conventions (W4) (es)"
+                  },
+                  "source_confidence_level": 0.99,
+                  "source_horizon_days": 1,
+                  "trading_days_per_year": 250,
+                  "level_factor": {
+                    "name": "market_level_factor",
+                    "value": 1.3283620823,
+                    "unit": "ratio of normal quantiles z_0.999 / z_0.99",
+                    "label": "convention",
+                    "basis": {
+                      "en": "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case",
+                      "es": "The normal quantile ratio that moves C11's 99 percent measure to 99.9 percent: a convention of the case (es)"
+                    }
+                  },
+                  "horizon_factor": {
+                    "name": "market_horizon_factor",
+                    "value": 15.8113883008,
+                    "unit": "multiplier on a one-day measure, sqrt(250)",
+                    "label": "convention",
+                    "basis": {
+                      "en": "Square-root-of-time scaling from one day to one year with 250 trading days: a convention of the case",
+                      "es": "Square-root-of-time scaling from one day to one year with 250 trading days: a convention of the case (es)"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "risk": "irrbb",
+            "horizon_years": 1,
+            "confidence_level": 0.999,
+            "el_clp_m": 2000.0,
+            "el_status": "finite",
+            "var_clp_m": 182000.0,
+            "es_clp_m": 210000.0,
+            "ec_clp_m": 180000.0,
+            "ec_basis": "var-less-el",
+            "ec_label": null,
+            "var_se_clp_m": null,
+            "producer": "irrbb-engine-simulation-c15-curve-and-book",
+            "source_documents": [
+              "c15-outputs",
+              "riskvalidation.irrbb.simulation.ear_evar"
+            ],
+            "scaling": {
+              "statement": {
+                "en": "No scaling: the engine simulation runs on the C15 curve and book of Banco Andino.",
+                "es": "No scaling: the engine simulation runs on the C15 curve and book of Banco Andino. (es)"
+              },
+              "parameters": []
+            }
+          },
+          {
+            "risk": "operational",
+            "horizon_years": 1,
+            "confidence_level": 0.999,
+            "el_clp_m": 20000.0,
+            "el_status": "finite",
+            "var_clp_m": 280000.0,
+            "es_clp_m": 345000.0,
+            "ec_clp_m": 260000.0,
+            "ec_basis": "var-less-el",
+            "ec_label": null,
+            "var_se_clp_m": 560.0,
+            "producer": "operational-oprisk-aggregate-c17-parameters-scaled",
+            "source_documents": [
+              "c17-models generator parameters",
+              "riskvalidation.oprisk.aggregate"
+            ],
+            "scaling": {
+              "statement": {
+                "en": "The C17 generator frequency scaled by assets, the loss distribution recomputed through oprisk.aggregate and converted at a stated rate.",
+                "es": "The C17 generator frequency scaled by assets, the loss distribution recomputed through oprisk.aggregate and converted at a stated rate. (es)"
+              },
+              "parameters": [
+                {
+                  "name": "asset_scaling",
+                  "value": 0.8,
+                  "unit": "Banco Andino assets over the assets of the C17 bank",
+                  "label": "case assumption",
+                  "basis": {
+                    "en": "Derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, converted at the rate (decision Q5, W5); this value is a fixture value",
+                    "es": "Derived at bake time: Banco Andino's total assets over the C17 synthetic bank's stated assets, converted at the rate (decision Q5, W5); this value is a fixture value (es)"
+                  },
+                  "derivation": {
+                    "kind": "asset-ratio",
+                    "banco_andino_assets_clp_m": 40000000.0,
+                    "c17_bank_assets_eur_m": 50000.0,
+                    "converted_at": "operational_conversion_rate"
+                  }
+                },
+                {
+                  "name": "operational_conversion_rate",
+                  "value": 1000.0,
+                  "unit": "CLP per EUR",
+                  "label": "case assumption",
+                  "basis": {
+                    "en": "Derived at bake time: the EUR to CLP rate of the as-of date from the Banco Central de Chile (decision Q5, W5); this value is a fixture value",
+                    "es": "Derived at bake time: the EUR to CLP rate of the as-of date from the Banco Central de Chile (decision Q5, W5); this value is a fixture value (es)"
+                  },
+                  "derivation": {
+                    "kind": "observed-exchange-rate",
+                    "pair": "EUR/CLP",
+                    "observation_date": "2026-08-31",
+                    "source": "Banco Central de Chile, Base de Datos Estadísticos, daily exchange rate of the euro in Chilean pesos",
+                    "source_url": "https://si3.bcentral.cl/Siete/es/Siete/API",
+                    "source_series": "fixture-series-id"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "headline": {
+          "method": "simple-sum",
+          "capital_clp_m": 1710000.0,
+          "label": {
+            "en": "The headline capital of C18 is the simple sum: the IAPE adds up the capital needed for each risk and the ECB does not recognise inter-risk diversification in the SREP",
+            "es": "The headline capital of C18 is the simple sum: the IAPE adds up the capital needed for each risk and the ECB does not recognise inter-risk diversification in the SREP (es)"
+          }
+        },
+        "band": [
+          {
+            "method": "lower-bound",
+            "nu": null,
+            "capital_clp_m": 1060200.0,
+            "diversification_factor": 0.62,
+            "status": "information-not-capital",
+            "label": {
+              "en": "Information, not capital: a diversified or bound figure shown for the validator",
+              "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+            },
+            "horizon_years": 1,
+            "confidence_level": 0.999,
+            "mc_se_clp_m": null
+          },
+          {
+            "method": "simple-sum",
+            "nu": null,
+            "capital_clp_m": 1710000.0,
+            "diversification_factor": 1.0,
+            "status": "headline-capital",
+            "label": {
+              "en": "Headline capital: the simple sum of the four marginals",
+              "es": "Headline capital: the simple sum of the four marginals (es)"
+            },
+            "horizon_years": 1,
+            "confidence_level": 0.999,
+            "mc_se_clp_m": null
+          },
+          {
+            "method": "variance-covariance",
+            "nu": null,
+            "capital_clp_m": 1414178.206592,
+            "diversification_factor": 0.8270047992,
+            "status": "information-not-capital",
+            "label": {
+              "en": "Information, not capital: a diversified or bound figure shown for the validator",
+              "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+            },
+            "horizon_years": 1,
+            "confidence_level": 0.999,
+            "mc_se_clp_m": null
+          },
+          {
+            "method": "gaussian-copula",
+            "nu": null,
+            "capital_clp_m": 1456603.55279,
+            "diversification_factor": 0.8518149432,
+            "status": "information-not-capital",
+            "label": {
+              "en": "Information, not capital: a diversified or bound figure shown for the validator",
+              "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+            },
+            "horizon_years": 1,
+            "confidence_level": 0.999,
+            "mc_se_clp_m": 4369.81
+          },
+          {
+            "method": "t-copula",
+            "nu": 4.0,
+            "capital_clp_m": 1558565.801485,
+            "diversification_factor": 0.9114419892,
+            "status": "information-not-capital",
+            "label": {
+              "en": "Information, not capital: a diversified or bound figure shown for the validator",
+              "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+            },
+            "horizon_years": 1,
+            "confidence_level": 0.999,
+            "mc_se_clp_m": 4675.7
+          },
+          {
+            "method": "t-copula",
+            "nu": 8.0,
+            "capital_clp_m": 1507584.677138,
+            "diversification_factor": 0.8816284662,
+            "status": "information-not-capital",
+            "label": {
+              "en": "Information, not capital: a diversified or bound figure shown for the validator",
+              "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+            },
+            "horizon_years": 1,
+            "confidence_level": 0.999,
+            "mc_se_clp_m": 4522.75
+          },
+          {
+            "method": "t-copula",
+            "nu": 30.0,
+            "capital_clp_m": 1471169.588318,
+            "diversification_factor": 0.8603330926,
+            "status": "information-not-capital",
+            "label": {
+              "en": "Information, not capital: a diversified or bound figure shown for the validator",
+              "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+            },
+            "horizon_years": 1,
+            "confidence_level": 0.999,
+            "mc_se_clp_m": 4413.51
+          },
+          {
+            "method": "worst-case",
+            "nu": null,
+            "capital_clp_m": 2017800.0,
+            "diversification_factor": 1.18,
+            "status": "information-not-capital",
+            "label": {
+              "en": "Information, not capital: a diversified or bound figure shown for the validator",
+              "es": "Information, not capital: a diversified or bound figure shown for the validator (es)"
+            },
+            "horizon_years": 1,
+            "confidence_level": 0.999,
+            "mc_se_clp_m": null
+          }
+        ],
+        "model_risk": {
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: model risk measures are sensitivity information for the validator",
+            "es": "Information, not capital: model risk measures are sensitivity information for the validator (es)"
+          },
+          "set_of_models": "band-rows",
+          "reference_model": {
+            "method": "gaussian-copula",
+            "nu": null
+          },
+          "barrieu_scandolo": {
+            "rho_x0_clp_m": 1456603.55279,
+            "rho_max_clp_m": 2017800.0,
+            "rho_min_clp_m": 1060200.0,
+            "am": 0.3852774121,
+            "rm": 0.5860447444
+          },
+          "glasserman_xu": {
+            "quantity": {
+              "en": "Expected loss of the aggregate in the 99.9 percent tail under the Gaussian copula",
+              "es": "Expected loss of the aggregate in the 99.9 percent tail under the Gaussian copula (es)"
+            },
+            "relative_entropy_budget": 0.05,
+            "theta": 0.8,
+            "baseline_clp_m": 2040796.77,
+            "worst_case_clp_m": 2285692.38
+          }
+        },
+        "euler": {
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: an allocation of the aggregate expected shortfall shown for the validator",
+            "es": "Information, not capital: an allocation of the aggregate expected shortfall shown for the validator (es)"
+          },
+          "risk_measure": "es",
+          "level": 0.999,
+          "horizon_years": 1,
+          "copula": {
+            "family": "gaussian",
+            "nu": null
+          },
+          "es_total_clp_m": 2040796.77,
+          "allocation": [
+            {
+              "risk": "credit",
+              "contribution_clp_m": 1348704.08,
+              "share": 0.6608713321
+            },
+            {
+              "risk": "market",
+              "contribution_clp_m": 217452.6,
+              "share": 0.1065527951
+            },
+            {
+              "risk": "irrbb",
+              "contribution_clp_m": 152507.31,
+              "share": 0.074729298
+            },
+            {
+              "risk": "operational",
+              "contribution_clp_m": 322132.78,
+              "share": 0.1578465748
+            }
+          ],
+          "additivity": {
+            "sum_clp_m": 2040796.77,
+            "relative_error": 0.0,
+            "tolerance": 1e-06
+          }
+        },
+        "diversification": {
+          "status": "information-not-capital",
+          "label": {
+            "en": "Information, not capital: the diversification of the Gaussian copula row against the simple sum",
+            "es": "Information, not capital: the diversification of the Gaussian copula row against the simple sum (es)"
+          },
+          "reference_row": {
+            "method": "gaussian-copula",
+            "nu": null
+          },
+          "factor": 0.8518149432,
+          "benefit": 0.1481850568,
+          "euler_benefit_by_risk": [
+            {
+              "risk": "credit",
+              "benefit": -0.0374646769
+            },
+            {
+              "risk": "market",
+              "benefit": 0.1700282443
+            },
+            {
+              "risk": "irrbb",
+              "benefit": 0.2737747143
+            },
+            {
+              "risk": "operational",
+              "benefit": 0.0662817971
+            }
+          ]
+        }
+      }
+    },
+    "copula_sensitivity": [
+      {
+        "nu": 4.0,
+        "gaussian_capital_clp_m": 1405223.530261,
+        "t_capital_clp_m": 1503589.177379,
+        "relative_difference": 0.07
+      },
+      {
+        "nu": 8.0,
+        "gaussian_capital_clp_m": 1405223.530261,
+        "t_capital_clp_m": 1454406.35382,
+        "relative_difference": 0.035
+      },
+      {
+        "nu": 30.0,
+        "gaussian_capital_clp_m": 1405223.530261,
+        "t_capital_clp_m": 1419275.765564,
+        "relative_difference": 0.01
+      }
+    ],
+    "rosenberg_schuermann": {
+      "role": "reference-not-a-gate",
+      "weights": {
+        "market": 0.041,
+        "credit": 0.264,
+        "operational": 0.695
+      },
+      "correlations": {
+        "market_credit": 0.5,
+        "market_operational": 0.2,
+        "credit_operational": 0.2
+      },
+      "published_additive_overestimate": {
+        "low": 0.3,
+        "high": 0.4
+      },
+      "case_additive_overestimate": 0.2168882482,
+      "within_published_range": false
+    }
+  },
+  "tests": [
+    {
+      "test_id": "aggregation.simple_sum_and_variance_covariance",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "aggregation.copula_choice_sensitivity",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "aggregation.worst_case_bracket",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "aggregation.correlation_stress",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "aggregation.diversification_sign",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "aggregation.horizon_confidence_consistency",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "aggregation.elliptical_mc_agreement",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "aggregation.rosenberg_schuermann_reference",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    },
+    {
+      "test_id": "portfolio.euler_additivity",
+      "model_id": "c18-aggregation-ladder",
+      "segment": null,
+      "statistic": null,
+      "p_value": null,
+      "metric": null,
+      "h0": "fixture row",
+      "alternative": "fixture row",
+      "policy_version": "fixture",
+      "alpha_amber": null,
+      "alpha_red": null,
+      "light": "not_evaluated",
+      "n": null,
+      "n_events": null,
+      "inputs_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "reference": "fixture, not a result",
+      "notes": "fixture: the test did not run, no number stands in for it",
+      "extras": {}
+    }
+  ],
+  "impact": {
+    "capital_simple_sum": {
+      "value": 1710000.0,
+      "unit": "CLP millions",
+      "label": {
+        "en": "Headline capital: the simple sum of the four marginals",
+        "es": "Headline capital: the simple sum of the four marginals (es)"
+      }
+    },
+    "cet1_ratio_end_stress": {
+      "value": 0.11,
+      "unit": "share of RWA",
+      "label": {
+        "en": "CET1 ratio at the jump-off (this variant runs the baseline, not a stress)",
+        "es": "CET1 ratio at the jump-off (this variant runs the baseline, not a stress) (es)"
+      }
+    },
+    "oi_headroom_min": {
+      "value": 0.0025,
+      "unit": "share of RWA",
+      "label": {
+        "en": "Headroom of the PE ratio over the internal target at the jump-off",
+        "es": "Headroom of the PE ratio over the internal target at the jump-off (es)"
+      }
+    },
+    "p2g_proxy": {
+      "value": 0.0,
+      "unit": "share of RWA",
+      "label": {
+        "en": "Not computed in this variant (it runs the aggregation only)",
+        "es": "Not computed in this variant (it runs the aggregation only) (es)"
+      }
+    }
+  },
+  "findings": [
+    {
+      "id": "fixture-finding-1",
+      "severity": "S4",
+      "status": "open",
+      "evidence": [
+        "fixture"
+      ],
+      "title": {
+        "en": "Fixture finding, not a result",
+        "es": "Fixture finding, not a result (es)"
+      }
+    }
+  ],
+  "provenance": {
+    "truth_status": "synthetic-calibrated",
+    "inputs": [
+      {
+        "source": "fixture-not-a-result",
+        "class": "fixture",
+        "files": []
+      }
+    ],
+    "licence_classes": {
+      "fixture-not-a-result": "fixture"
+    },
+    "generators": [
+      "fixture:u13-s-contracts"
+    ],
+    "seed": 0,
+    "code_version": "fixture",
+    "riskvalidation_version": null
+  },
+  "lane": {
+    "lane": "precompute",
+    "reasons": [
+      "fixture"
+    ]
+  }
+}
