@@ -14,7 +14,7 @@ from pathlib import Path
 
 import contract_schemas as cs
 import pytest
-from c21_support import API_HEADER, C21, MODELS, PAIRS, ROOT, VARIANTS, committed, make_year, semantics, write_file
+from c21_support import API_HEADER, C21, MODELS, VARIANTS, committed, make_year, semantics, write_file
 
 from pipeline.cases.c21 import bake, legal, reader
 
