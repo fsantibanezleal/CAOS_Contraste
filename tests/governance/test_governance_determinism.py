@@ -4,7 +4,6 @@ from __future__ import annotations
 import re
 
 import gov_support as gs
-import pytest
 
 
 def test_two_bakes_write_the_same_bytes(tmp_path):
