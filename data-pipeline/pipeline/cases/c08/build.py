@@ -68,7 +68,7 @@ def lgd_proxy_block() -> dict[str, Any]:
             "after charge-off, so the proxy ignores recoveries and costs and overstates the loss net of recoveries; it can also "
             "exceed 1 when capitalised interest or fees are charged off. The stated direction is the denominator effect "
             "(decision D2).",
-            "El proxy tiene sesgo a la baja: el monto aprobado sobreestima la exposición al incumplimiento de un credito que se "
+            "El proxy tiene sesgo a la baja: el monto aprobado sobreestima la exposición al incumplimiento de un crédito que se "
             "amortiza, de modo que el denominador es demasiado grande. Un segundo efecto va en sentido contrario: el archivo "
             "público SBA 7(a) no tiene flujos de recuperación posteriores al castigo, de modo que el proxy ignora recuperaciones y "
             "costos y sobreestima la pérdida neta de recuperaciones; también puede superar 1 si se castigan intereses "
