@@ -140,3 +140,10 @@ def year_ends(n_years: int = 3) -> list[str]:
 
 def asdict(**kw: Any) -> dict[str, Any]:
     return dict(kw)
+
+#: the probability grid of the quantile function each marginal commits (review MA5 of the U17 sample): the points where the standard normal
+#: quantile z runs from -4.9 to 4.9 in steps of 0.005 (1,961 points), p = Phi(z). It is dense where a quantile function bends (both tails:
+#: the spacing in 1 - p is about 2.5 percent of 1 - p at z = 5) and reaches the first and last Hazen position of the 10^6 draws, 5e-7.
+GRID_Z_MAX = 4.9
+GRID_Z_STEP = 0.005
+GRID_POINTS = 1961
