@@ -56172,7 +56172,7 @@
       },
       "c22-models": {
         "title": "C22 models",
-        "description": "Catalog row c22-models 1.0.0: the C22 models artifact with the exact-probability parity points.",
+        "description": "Catalog row c22-models 2.0.0: the C22 models artifact with the exact-probability parity points of the three count tests and the engine's 25 named size and power studies (U16-P2).",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-models-envelope"
@@ -56196,7 +56196,7 @@
       },
       "c22-variant": {
         "title": "C22 validator variant",
-        "description": "Catalog row c22-variant 1.0.0: one validation harness run (outputs.kind validator).",
+        "description": "Catalog row c22-variant 2.0.0: one validation harness run (outputs.kind validator). The test ids, the families (variants) and the panels are closed enums; the simulations of the engine's named studies carry a study block, every other simulation a null one.",
         "allOf": [
           {
             "$ref": "#/components/schemas/common-variant-envelope"
@@ -56284,12 +56284,54 @@
           }
         }
       },
+      "c22Excess": {
+        "description": "A size above its bound that the engine documents on its own page (DOCUMENTED_EXCESS in the engine's size suites): the page, the level, the measured size, the bound, the excess (measured minus bound), whether it exceeds in this run, and the engine's statement.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "page",
+          "repository",
+          "level",
+          "measured",
+          "bound",
+          "excess",
+          "exceeds",
+          "engine"
+        ],
+        "properties": {
+          "page": {
+            "type": "string"
+          },
+          "repository": {
+            "type": "string"
+          },
+          "level": {
+            "type": "number"
+          },
+          "measured": {
+            "type": "number"
+          },
+          "bound": {
+            "type": "number"
+          },
+          "excess": {
+            "type": "number"
+          },
+          "exceeds": {
+            "type": "boolean"
+          },
+          "engine": {
+            "$ref": "#/components/schemas/common-text"
+          }
+        }
+      },
       "c22Fit": {
         "type": "object",
         "additionalProperties": false,
         "required": [
           "parity",
-          "levels"
+          "levels",
+          "studies"
         ],
         "properties": {
           "parity": {
@@ -56302,6 +56344,12 @@
             "type": "array",
             "items": {
               "type": "number"
+            }
+          },
+          "studies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/c22StudyRecord"
             }
           }
         }
@@ -56426,7 +56474,18 @@
             "const": "validator"
           },
           "family": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "null",
+              "miscalibration",
+              "clustering",
+              "drift",
+              "discrimination-decay",
+              "leakage",
+              "broken-monotonicity",
+              "concentration",
+              "other-families"
+            ]
           },
           "ladder": {
             "anyOf": [
@@ -56473,7 +56532,36 @@
               ],
               "properties": {
                 "id": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "calibration",
+                    "discrimination",
+                    "stability",
+                    "rating",
+                    "transitions",
+                    "settings",
+                    "portfolio",
+                    "grades",
+                    "obligors",
+                    "years",
+                    "ecb",
+                    "delong",
+                    "development",
+                    "auc",
+                    "feature",
+                    "migration-500",
+                    "migration-2000",
+                    "curve",
+                    "counts",
+                    "ccr",
+                    "ifrs9",
+                    "lgd-ead",
+                    "market-var",
+                    "market-es",
+                    "portfolio-credit",
+                    "fairness",
+                    "ml"
+                  ]
                 },
                 "label": {
                   "$ref": "#/components/schemas/common-text"
@@ -56589,7 +56677,12 @@
         ],
         "properties": {
           "test_id": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "pd.binomial",
+              "pd.jeffreys",
+              "pd.binomial_vasicek"
+            ]
           },
           "n": {
             "type": "integer",
@@ -56684,14 +56777,59 @@
           "p_histogram",
           "seed",
           "n_rep",
-          "generator"
+          "generator",
+          "study"
         ],
         "properties": {
           "key": {
             "type": "string"
           },
           "test_id": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "ccr.pfe_exceedance_backtest",
+              "disc.auc_vs_initial",
+              "disc.delong",
+              "fair.fisher_exact",
+              "fair.two_proportion_z",
+              "ifrs9.stage_migration_backtest",
+              "lgd_ead.downturn_coverage",
+              "lgd_ead.lgd_calibration_by_segment",
+              "lgd_ead.lgd_calibration_over_time",
+              "market.acerbi_szekely",
+              "market.christoffersen_conditional_coverage",
+              "market.christoffersen_independence",
+              "market.du_escanciano_conditional",
+              "market.du_escanciano_unconditional",
+              "market.duration_test",
+              "market.dynamic_quantile_test",
+              "market.kupiec_pof",
+              "market.mcneil_frey_residual_test",
+              "ml.conformal_coverage",
+              "ml.shift_resilience",
+              "pd.binomial",
+              "pd.binomial_vasicek",
+              "pd.chi2_grades",
+              "pd.default_profile",
+              "pd.hosmer_lemeshow",
+              "pd.jeffreys",
+              "pd.normal_multiperiod",
+              "pd.spiegelhalter",
+              "pd.traffic_lights",
+              "portfolio.crp_recursion_vs_mc",
+              "portfolio.mc_convergence",
+              "portfolio.tail_backtest",
+              "rating.hhi",
+              "rating.markov_order",
+              "rating.matrix_reference",
+              "rating.migration_ztests",
+              "rating.momentum",
+              "rating.time_homogeneity",
+              "stability.chi2",
+              "stability.csi",
+              "stability.ks",
+              "stability.psi"
+            ]
           },
           "label": {
             "$ref": "#/components/schemas/common-text"
@@ -56700,7 +56838,36 @@
             "$ref": "#/components/schemas/common-text"
           },
           "panel": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "calibration",
+              "discrimination",
+              "stability",
+              "rating",
+              "transitions",
+              "settings",
+              "portfolio",
+              "grades",
+              "obligors",
+              "years",
+              "ecb",
+              "delong",
+              "development",
+              "auc",
+              "feature",
+              "migration-500",
+              "migration-2000",
+              "curve",
+              "counts",
+              "ccr",
+              "ifrs9",
+              "lgd-ead",
+              "market-var",
+              "market-es",
+              "portfolio-credit",
+              "fairness",
+              "ml"
+            ]
           },
           "severity": {
             "type": "integer"
@@ -56762,6 +56929,179 @@
           },
           "generator": {
             "type": "string"
+          },
+          "study": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c22Study"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "c22Study": {
+        "description": "The engine's named study behind a simulation of a test outside the five credit families (riskvalidation.generators.size_studies, U16-E2): its index among the test's studies, its label, the rule of its rejection, which generator ran (the null or the stated alternative) with its text, whether the design is the null alone or the two points of the other-families variant (no study exposes its departure as a parameter), and the engine's documented excess where there is one.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "index",
+          "label",
+          "rule",
+          "rule_label",
+          "arm",
+          "text",
+          "departure",
+          "excess"
+        ],
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "rule": {
+            "type": "string",
+            "enum": [
+              "p",
+              "p_le",
+              "red",
+              "alarm"
+            ]
+          },
+          "rule_label": {
+            "type": "string",
+            "enum": [
+              "p<0.05",
+              "p<=0.05",
+              "red",
+              "alarm"
+            ]
+          },
+          "arm": {
+            "type": "string",
+            "enum": [
+              "null",
+              "alternative"
+            ]
+          },
+          "text": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "departure": {
+            "type": "string",
+            "enum": [
+              "null",
+              "two-point"
+            ]
+          },
+          "excess": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/c22Excess"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "c22StudyRecord": {
+        "description": "One named study of the engine (riskvalidation.generators.size_studies.STUDIES): the test, its index among the test's studies, the generators of the null and of the stated alternative, the pipeline that runs the test where it is not the test itself, the fixed arguments of the test, and the engine's own repetitions and seeds (C22 runs the study with its own seeds and repetitions).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "test_id",
+          "index",
+          "label",
+          "rule",
+          "null_generator",
+          "alternative_generator",
+          "pipeline",
+          "test_kwargs",
+          "engine_n_rep",
+          "engine_power_n_rep",
+          "engine_seed",
+          "engine_power_seed"
+        ],
+        "properties": {
+          "test_id": {
+            "type": "string",
+            "enum": [
+              "ccr.pfe_exceedance_backtest",
+              "fair.fisher_exact",
+              "fair.two_proportion_z",
+              "ifrs9.stage_migration_backtest",
+              "lgd_ead.downturn_coverage",
+              "lgd_ead.lgd_calibration_by_segment",
+              "lgd_ead.lgd_calibration_over_time",
+              "market.acerbi_szekely",
+              "market.christoffersen_conditional_coverage",
+              "market.christoffersen_independence",
+              "market.du_escanciano_conditional",
+              "market.du_escanciano_unconditional",
+              "market.duration_test",
+              "market.dynamic_quantile_test",
+              "market.kupiec_pof",
+              "market.mcneil_frey_residual_test",
+              "ml.conformal_coverage",
+              "ml.shift_resilience",
+              "portfolio.crp_recursion_vs_mc",
+              "portfolio.mc_convergence",
+              "portfolio.tail_backtest"
+            ]
+          },
+          "index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "label": {
+            "$ref": "#/components/schemas/common-text"
+          },
+          "rule": {
+            "type": "string",
+            "enum": [
+              "p",
+              "p_le",
+              "red",
+              "alarm"
+            ]
+          },
+          "null_generator": {
+            "type": "string"
+          },
+          "alternative_generator": {
+            "type": "string"
+          },
+          "pipeline": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "test_kwargs": {
+            "type": "object"
+          },
+          "engine_n_rep": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "engine_power_n_rep": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "engine_seed": {
+            "type": "integer"
+          },
+          "engine_power_seed": {
+            "type": "integer"
           }
         }
       },

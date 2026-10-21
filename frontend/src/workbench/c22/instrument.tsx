@@ -106,7 +106,8 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
             : { id: 'power', label: { en: 'Power', es: 'Potencia' }, content: <PowerView sel={sel} /> },
           { id: 'rates', label: { en: 'Rates', es: 'Tasas' }, content: <RatesTableView sel={sel} /> },
           ...(c22.outputs.golden.length ? [{ id: 'paper', label: { en: 'Papers', es: 'Artículos' }, content: <PaperView sel={sel} /> }] : []),
-          { id: 'report', label: { en: 'One report', es: 'Un reporte' }, content: <SpecimenView sel={sel} /> },
+          // the other-families variant measures the engine's named studies, which draw no single dataset: no report to read
+          ...(c22.tests.length ? [{ id: 'report', label: { en: 'One report', es: 'Un reporte' }, content: <SpecimenView sel={sel} /> }] : []),
         ],
         { en: 'Views of the measurements', es: 'Vistas de las mediciones' },
         `validation-${c22.variant_id}`,

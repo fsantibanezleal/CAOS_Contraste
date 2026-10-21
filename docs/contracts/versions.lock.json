@@ -75,14 +75,14 @@
     "sha256": "6fa37bbe589a031456581bd0335aabb9d8cd7c68315603447d472f13b853acc1"
   },
   "c22-variant": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c22/variant.schema.json",
-    "sha256": "3b79e0a7c9c2b4921e3fc4261ea6201dd373beacd33d824ea75cc760e4c45060"
+    "sha256": "3e281956241f3aca1977f1978f9f3516131466d74ff4e77cb2e158ae44685db5"
   },
   "c22-models": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c22/models.schema.json",
-    "sha256": "3828606a7f05a6d930a44c7c8d54774a82f1945c14fc00fab94417d571071b7c"
+    "sha256": "997bd7b694c27401ad992eea4a5aa611d9a5ea14f2593438c178e59d7fef5189"
   },
   "contract-family": {
     "version": "1.3.0",
@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "12.0.0",
+    "version": "13.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "a0df66f201be76124cf0c73fee8b2179a70c7fd9b10e71fe5a2b8177fb29eaaa"
+    "sha256": "efc7fb7cfe82b8ab20e98a3c007a115f6b85582dba7267b54ed69eb7473e8ed3"
   },
   "readiness": {
     "version": "1.0.0",

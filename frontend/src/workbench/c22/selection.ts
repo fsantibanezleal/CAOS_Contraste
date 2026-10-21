@@ -50,6 +50,14 @@ export function seriesStyle(i: number): { color: ShellColorToken; dash?: number[
 
 export const rule = (level: number) => `p<${level}`;
 
+/** The engine's documented excess of a simulation (a size above its bound that the engine's own page states), or null:
+ * only the simulations of the engine's named studies carry one (U16-P2). */
+export const excessOf = (s: C22Simulation) => s.study?.excess ?? null;
+
+/** The row key a simulation of a study has in the detection matrix: its key without the variant's suffix (`@null`, `@d1`),
+ * so a test with several studies keeps one row per study. */
+export const rowKeyOf = (s: C22Simulation) => s.key.slice(0, s.key.indexOf('@'));
+
 /** The rate of a simulation at the selected level (or a named rule), and its exact value where one exists. */
 export function rateOf(s: C22Simulation, ruleKey: string) {
   const r = s.rates[ruleKey];
