@@ -9,5 +9,6 @@
   "visibility": "public",
   "license": "MIT",
   "holder": "Felipe Santibáñez-Leal",
-  "year": 2026
+  "year": 2026,
+  "method_packages": ["riskvalidation"]
 }

@@ -27,8 +27,10 @@ as a local release gate (ADR-0074). It fails, naming the file and the rule, on
 - **sources**: every link of ``caos.sources`` must be a source the SDD lists (its research basis summarises the persisted
   research claim by claim, each with its source; a notebook cites nothing else);
 - **no re-implementation**: a code cell that defines a function or a class the pipeline's engine modules
-  (``data-pipeline/**/model/*.py``) or oracles (``data-pipeline/**/oracles.py``) already define (a notebook imports a method,
-  never copies it); a code cell that runs ``pip`` or ``conda`` (the Setup text shows the install command, a notebook never
+  (``data-pipeline/**/model/*.py``) or oracles (``data-pipeline/**/oracles.py``) already define, or that a method package of
+  the product (``product.json`` ``method_packages``, a PyPI distribution) already defines (a notebook imports a method,
+  never copies it; a method package not installed here is an info line, ``run_notebooks.py`` checks its names; one with no
+  exact ``name==version`` line in ``notebooks/requirements.txt`` is a finding); a code cell that runs ``pip`` or ``conda`` (the Setup text shows the install command, a notebook never
   runs it);
 - **clean**: execution counts that are not 1, 2, 3 in order; an error output, a traceback printed to stdout or a stderr
   stream; an absolute or machine path (a drive letter in any literal form, a home folder, the POSIX roots ``/opt/``,
@@ -37,16 +39,23 @@ as a local release gate (ADR-0074). It fails, naming the file and the rule, on
   (guide 08, section 5);
 - **CI**: ``.github/workflows/ci.yml`` runs this check and ``check_readme_areas.py``, and no workflow executes the notebooks.
 
-Usage: ``python scripts/check_notebooks.py [repo_root]``. Exit 0 clean, 1 on any finding.
+Usage: ``python scripts/check_notebooks.py [repo_root] [--pypi]``. Exit 0 clean, 1 on any finding. ``--pypi`` is opt-in and never
+runs in CI (ADR-0074): it reads ``https://pypi.org/pypi/<name>/<version>/json`` for the pin of each method package and fails on
+anything but HTTP 200, so a Setup cell never tells a reader to install a version that is not published.
 """
 from __future__ import annotations
 
+import argparse
 import ast
+import importlib.metadata
+import importlib.util
 import io
 import json
 import re
 import sys
 import tokenize
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 # the size limits of a committed notebook: the whole file (outputs included) and each embedded image, so the set stays
@@ -75,7 +84,7 @@ BEYOND_SECTION = "Beyond the state of the art"
 SLUG = re.compile(r"^(\d{2})-([a-z0-9]+(?:-[a-z0-9]+)*)$")
 NOTEBOOK = re.compile(r"^(\d{2})-([a-z0-9]+(?:-[a-z0-9]+)*)\.ipynb$")
 BS_ID = re.compile(r"\bBS-\d+\b")
-PIN = re.compile(r"^([A-Za-z0-9][A-Za-z0-9._-]*)==(\d[0-9A-Za-z.+!_-]*)$")
+PIN = re.compile(r"^([A-Za-z0-9][A-Za-z0-9._-]*)(?:\[[A-Za-z0-9._,-]+\])?==(\d[0-9A-Za-z.+!_-]*)$")
 # a package installed from its release tag (convention section 5, decided 2026-10-20): name @ git+https://github.com/<owner>/<repo>.git@<tag>
 GIT_PIN = re.compile(r"^([A-Za-z0-9][A-Za-z0-9._-]*) @ (git\+https://github\.com/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+\.git)@(v?\d[0-9A-Za-z.+_-]*)$")
 TAG_SENTENCE = {"en": "not yet published on PyPI; installed from its release tag",
@@ -167,6 +176,152 @@ def defined_names(code: str) -> set[str]:
         return {n.name for n in ast.parse(clean).body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))}
     except SyntaxError:
         return set()
+
+
+PYPI_TIMEOUT_SECONDS = 20
+PYPI_URL = "https://pypi.org/pypi/{name}/{version}/json"
+
+
+def normalized(name: str) -> str:
+    """A distribution name as PEP 503 compares it."""
+    return re.sub(r"[-_.]+", "-", name).lower()
+
+
+def method_packages(root: Path, findings: list[str] | None = None) -> list[str]:
+    """The distributions ``product.json`` declares as the product's method packages (optional key ``method_packages``, a list of
+    names; absent or empty: none). A key of another shape is a finding; a missing or unreadable file declares none."""
+    try:
+        doc = json.loads((root / "product.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    value = doc.get("method_packages") if isinstance(doc, dict) else None
+    if value is None:
+        return []
+    if not (isinstance(value, list) and all(isinstance(x, str) and x.strip() for x in value)):
+        if findings is not None:
+            findings.append("product.json: method_packages: must be a list of strings (PyPI distribution names)")
+        return []
+    return list(dict.fromkeys(x.strip() for x in value))
+
+
+def import_name(dist: str) -> str:
+    """The top-level module of a distribution: its ``top_level.txt``, else the first folder or module of its files, else the
+    distribution name with ``-`` read as ``_``."""
+    try:
+        d = importlib.metadata.distribution(dist)
+    except importlib.metadata.PackageNotFoundError:
+        return dist.replace("-", "_")
+    top = (d.read_text("top_level.txt") or "").split()
+    if top:
+        return top[0]
+    for f in d.files or []:
+        first = f.parts[0] if f.parts else ""
+        if first and first != ".." and not first.endswith((".dist-info", ".egg-info", ".data")) and first != "__pycache__":
+            return first[:-3] if first.endswith(".py") else first
+    return dist.replace("-", "_")
+
+
+def package_public_names(module: str) -> set[str] | None:
+    """The top-level ``def``, ``async def`` and ``class`` names, not starting with ``_``, of every ``.py`` file under the
+    installed folder of ``module``; None when it is not installed. Files under a ``tests`` folder and modules whose name starts
+    with ``_`` are left out (``__init__.py`` stays). The folder is found without importing the package and its source is read
+    with ``ast``, never executed."""
+    try:
+        spec = importlib.util.find_spec(module)
+    except (ImportError, ValueError):
+        spec = None
+    if spec is None:
+        return None
+    if spec.submodule_search_locations:
+        bases = [Path(loc) for loc in spec.submodule_search_locations]
+        files = [p for b in bases for p in sorted(b.rglob("*.py"))]
+    elif spec.origin and spec.origin.endswith(".py"):
+        bases, files = [Path(spec.origin).parent], [Path(spec.origin)]
+    else:
+        return None
+    names: set[str] = set()
+    for path in files:
+        rel = next((path.relative_to(b) for b in bases if b in path.parents), Path(path.name))
+        if "tests" in rel.parts[:-1] or (path.stem.startswith("_") and path.name != "__init__.py"):
+            continue
+        try:
+            tree = ast.parse(path.read_text(encoding="utf-8"))
+        except (OSError, SyntaxError, UnicodeDecodeError):
+            continue
+        names.update(n.name for n in tree.body
+                     if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and not n.name.startswith("_"))
+    return names
+
+
+def method_pin(root: Path, dist: str) -> str | None:
+    """The version of the exact ``name==version`` line (extras allowed) that pins ``dist`` in ``notebooks/requirements.txt``."""
+    for line in requirement_lines(root):
+        m = PIN.match(line)
+        if m and normalized(m[1]) == normalized(dist):
+            return m[2]
+    return None
+
+
+def method_state(root: Path, infos: list[str] | None = None, strict: bool = False) -> tuple[dict[str, str], list[str]]:
+    """The names the method packages define (name to distribution) and the findings about the packages themselves: a package
+    with no exact pin and, when ``strict`` (the runner), a package not installed. The static check reports the latter as an
+    info line and leaves its names to ``run_notebooks.py``."""
+    findings: list[str] = []
+    names: dict[str, str] = {}
+    for dist in method_packages(root, findings):
+        if method_pin(root, dist) is None:
+            findings.append(f"notebooks/requirements.txt: pins: method package {dist!r} (product.json method_packages) has no exact pin "
+                            f"({dist}==version)")
+        public = package_public_names(import_name(dist))
+        if public is None:
+            if strict:
+                findings.append(f"product.json: method_packages: {dist!r} is not installed in this environment; build it from "
+                                "notebooks/requirements.txt (scripts/setup.sh --notebooks)")
+            elif infos is not None:
+                infos.append(f"check_notebooks: {dist} not installed here; its names are checked by run_notebooks.py")
+            continue
+        for name in public:
+            names.setdefault(name, dist)
+    return names, findings
+
+
+def http_status(url: str) -> int:
+    """The HTTP status of a GET of ``url``; the one network call of this script, made only under ``--pypi``."""
+    req = urllib.request.Request(url, headers={"User-Agent": "caos-check-notebooks"})
+    try:
+        with urllib.request.urlopen(req, timeout=PYPI_TIMEOUT_SECONDS) as response:
+            return int(response.status)
+    except urllib.error.HTTPError as e:
+        return int(e.code)
+
+
+def pypi_findings(root: Path) -> list[str]:
+    """The pin of each method package must exist on PyPI: anything but HTTP 200 is a finding naming the URL and the status."""
+    out: list[str] = []
+    for dist in method_packages(root):
+        version = method_pin(root, dist)
+        if version is None:
+            continue  # the missing pin is already a finding of the static check
+        url = PYPI_URL.format(name=dist, version=version)
+        try:
+            status: object = http_status(url)
+        except OSError as e:
+            status = f"unreachable ({e})"
+        if status != 200:
+            out.append(f"{url}: pypi: the pin {dist}=={version} of notebooks/requirements.txt is not published (answer: {status}); "
+                       "a Setup cell would tell a reader to install a version that does not exist")
+    return out
+
+
+def method_copy_findings(rel: str, cells: list, methods: dict[str, str]) -> list[str]:
+    """A code cell that defines a name a method package defines: the notebook imports it and never copies it."""
+    out: list[str] = []
+    for i, c in enumerate(cells, 1):
+        if isinstance(c, dict) and c.get("cell_type") == "code":
+            for copied in sorted(defined_names(text_of(c.get("source", ""))) & set(methods)):
+                out.append(f"{rel}: engine: code cell {i} defines {copied!r}, which the method package {methods[copied]!r} already defines; "
+                           "import it instead of re-implementing it")
+    return out
 
 
 DOI = re.compile(r"10\.\d{4,9}/[^\s)>\]|`]+")
@@ -552,7 +707,7 @@ def ci_findings(root: Path, findings: list[str]) -> None:
             findings.append(f"{CI}/{wf.name}: ci: runs the notebooks; the execution is a local release gate, never CI (ADR-0074)")
 
 
-def findings_of(root: Path) -> list[str]:
+def findings_of(root: Path, infos: list[str] | None = None) -> list[str]:
     findings: list[str] = []
     nb = root / "notebooks"
     for rel in ("README.md", "requirements.txt", "en/README.md", "es/README.md"):
@@ -571,6 +726,8 @@ def findings_of(root: Path) -> list[str]:
         findings.append(f"docs/design/SDD.md: beyond: {problem}")
     pins = read_pins(root)
     engine = engine_names(root)
+    methods, method_findings = method_state(root, infos)
+    findings.extend(method_findings)
     listed = sdd_sources(root)
     trees = {lang: Tree(root, lang) for lang in LANGS}
     for lang in LANGS:
@@ -598,6 +755,7 @@ def findings_of(root: Path) -> list[str]:
                     continue
                 docs[lang][f"{topic}/{name}"] = doc
                 check_notebook(root, lang, topic, name, doc, pins, claims or set(), engine, listed, findings)
+                findings.extend(method_copy_findings(f"notebooks/{lang}/{topic}/{name}", doc["cells"], methods))
                 caos = doc["metadata"].get("caos")
                 lv = caos.get("level") if isinstance(caos, dict) else None
                 if isinstance(lv, int) and not isinstance(lv, bool):
@@ -621,15 +779,26 @@ def findings_of(root: Path) -> list[str]:
 
 
 def main() -> int:
-    root = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
-    findings = findings_of(root)
+    ap = argparse.ArgumentParser(prog="check_notebooks", description=__doc__.split(chr(10))[0])
+    ap.add_argument("root", nargs="?", help="the repository root (default: this script's repository)")
+    ap.add_argument("--pypi", action="store_true",
+                    help="also read PyPI for the pin of each method package (opt-in, needs the network, never CI)")
+    a = ap.parse_args()
+    root = Path(a.root).resolve() if a.root else Path(__file__).resolve().parents[1]
+    infos: list[str] = []
+    findings = findings_of(root, infos)
+    if a.pypi:
+        findings.extend(pypi_findings(root))
+    for line in infos:
+        print(line)
     if findings:
         print("NOTEBOOKS CHECK FAILED:")
         for f in findings:
             print(f"  - {f}")
         return 1
     count = sum(1 for _ in (root / "notebooks").rglob("*.ipynb"))
-    print(f"check_notebooks: OK, {count} notebooks in two trees, mirrored, ordered, annotated and clean")
+    print(f"check_notebooks: OK, {count} notebooks in two trees, mirrored, ordered, annotated and clean"
+          + (", method-package pins published on PyPI" if a.pypi and method_packages(root) else ""))
     return 0
 
 

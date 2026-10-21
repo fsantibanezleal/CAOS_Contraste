@@ -26,6 +26,7 @@ import { loadCase, loadIndex, useArtifact, type CaseData } from '../api/artifact
 import type { EbmExport, ScorecardDetails } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT, LIGHT_TONE, relight, type PolicyAlphas } from '../lib/policy';
 import { ebmLogit, scoreScorecard, sigmoid } from '../engine/scorer';
+import { caseLabel } from './caseLabels';
 import { ContextView } from './ContextView';
 import { FindingsView } from './FindingsView';
 import { FindingsWithOpinion } from './governance/OpinionBlock';
@@ -185,7 +186,7 @@ export function Workbench() {
   const PLANNED_MARK = { en: ' (planned)', es: ' (planificado)' };
   const cases: CaseDef[] = entries.map((c) => ({
     id: c.case_id,
-    name: c.title[lang] + (isPlanned(readiness ?? null, c) ? PLANNED_MARK[lang] : ''),
+    name: caseLabel(c.case_id, c.title, lang) + (isPlanned(readiness ?? null, c) ? PLANNED_MARK[lang] : ''),
     category: c.category[lang],
     kind: c.kind,
   }));
