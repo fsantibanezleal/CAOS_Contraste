@@ -122,15 +122,18 @@ def test_the_scores_state_premises_that_the_documents_confirm(inputs):
                 assert all(len(x["sha256"]) == 64 for x in inp["files"]), p.name
 
 
-def test_f5_is_the_feeder_count_of_the_addendum_and_c18_equals_its_document_feeders(inputs, edges):
-    """A D2 3.3: C18 reads four cases (the four document edges), C15 one (C07, whose edge is a code import: the addendum counts it); the rest none."""
+def test_f5_is_the_feeder_count_of_the_addendum_derived_from_the_edges(inputs, edges):
+    """A D2 3.3, derived (U16-P1 review m2): the feeders of a case are the cases it reads by document, plus C15's code feeder, which the addendum counts
+    (C07 books the loans C15 calibrates); F5 is 1 plus the feeder count, capped at 4. Nothing here is pinned by case: a new document dependency of any
+    case changes its expected score and fails this test until inputs.json states it."""
     feeders: dict[str, set[str]] = {}
     for e in edges["edges"]:
-        if e["kind"] == "document":
+        if e["kind"] == "document" or (e["downstream_case"], e["upstream_case"]) == ("C15", "C07"):
             feeders.setdefault(e["downstream_case"], set()).add(e["upstream_case"])
-    assert len(feeders["C18"]) == 4
+    assert len(feeders["C18"]) == 4 and feeders["C15"] == {"C07"}
+    assert set(feeders) == {"C15", "C18"}, "a case other than C15 and C18 gained a document feeder: score its F5 in inputs.json"
     for case, c in inputs["cases"].items():
-        want = {"C15": 2, "C18": 4}.get(case, 1)
+        want = min(4, 1 + len(feeders.get(case, ())))
         assert {x["id"]: x for x in c["tier"]["factors"]}["F5"]["score"] == want, case
 
 

@@ -123,6 +123,10 @@ def write_manifests_only(paths: PipelinePaths, case_ids: list[str] | None = None
     still describes them), ``depends_on`` is stated from the case's producer (``CASE.depends_on()``, derived from its source), and the result is validated
     against the manifest schema before it replaces the file. Every other field is carried over untouched. Returns the case ids rewritten.
     """
+    built = [c.id for c in registry.built_cases()]
+    unknown = [c for c in (case_ids or []) if c not in built]
+    if unknown:
+        raise ValueError(f"--manifests-only: {', '.join(unknown)} is not a built case (built: {', '.join(built)})")
     done = []
     for case in registry.built_cases():
         if case_ids and case.id not in case_ids:

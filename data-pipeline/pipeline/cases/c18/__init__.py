@@ -30,8 +30,10 @@ DEPENDS_REASONS: dict[str, dict[str, str]] = {
         "es": "Lee el documento de modelos de C15: los objetivos de calibración del banco (patrimonio sobre activos totales)."},
     "C17/models-generator.json": {"en": "Reads the C17 models document: the generator parameter set of the operational loss variant xi-0-8.",
         "es": "Lee el documento de modelos de C17: el conjunto de parámetros del generador de la variante de pérdida operacional xi-0-8."},
-    "manifests/C15.json": {"en": "Reads the C15 manifest for its default variant, then the outputs of that variant (the Tier 1 threshold).",
-        "es": "Lee el manifiesto de C15 para su variante por defecto y luego las salidas de esa variante (el umbral de Tier 1)."},
+    "C15/long-uf.json": {"en": "Reads the C15 long-uf variant, the default variant of C15: the outputs that hold the Tier 1 threshold and the net interest margin.",
+        "es": "Lee la variante long-uf de C15, su variante por defecto: las salidas que contienen el umbral de Tier 1 y el margen neto de intereses."},
+    "manifests/C15.json": {"en": "Reads the C15 manifest to check that its default variant is still long-uf, the variant C18 reads; C18 stops if C15 changes it.",
+        "es": "Lee el manifiesto de C15 para comprobar que su variante por defecto sigue siendo long-uf, la que lee C18; C18 se detiene si C15 la cambia."},
     "pipeline.cases.c10.fed": {"en": "Reads the Fed charge-off table with the C10 reader (read_table and URL), so the two cases parse the file the same way.",
         "es": "Lee la tabla de castigos de la Fed con el lector de C10 (read_table y URL), de modo que ambos casos interpretan el archivo de la misma manera."},
 }

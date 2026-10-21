@@ -72,15 +72,20 @@ def reference_entry(case_id: str, entries_of_case: list[dict[str, Any]], default
 
 
 def expand(table: dict[str, Any], entries: list[dict[str, Any]], defaults: dict[str, str]) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
-    """(the entry edges, the entry related links). A case with no entry contributes no edge (its documents are not in the inventory)."""
+    """(the entry edges, the entry related links). An edge whose upstream case is not a case of the inventory (no manifest: planned or unknown) stops the
+    bake naming the edge (U16-P1 review m4); a built case whose variants the rule leaves out contributes no edge, its exclusion is recorded; a related link
+    with an end that has no entry is left out, it states no dependency."""
     by_case: dict[str, list[dict[str, Any]]] = {}
     for e in entries:
         by_case.setdefault(e["case_id"], []).append(e)
     edges = []
     for ed in table["edges"]:
         up_entries = by_case.get(ed["upstream_case"])
+        if ed["upstream_case"] not in defaults:
+            raise BakeError(f"the edge {ed['upstream_case']} to {ed['downstream_case']} ({ed['kind']}) names the upstream case {ed['upstream_case']}, which has no manifest "
+                            f"in the inventory: a dependency on a planned or unknown case cannot be placed in the graph, so the bake stops instead of dropping it")
         if not up_entries:
-            continue
+            continue            # a built case whose every variant the rule leaves out (W15-15): its exclusion is recorded in ``excluded``
         up = reference_entry(ed["upstream_case"], up_entries, defaults[ed["upstream_case"]])
         for d in sorted(by_case.get(ed["downstream_case"], []), key=lambda x: x["key"]):
             edges.append({"upstream": up, "downstream": d["key"], "kind": ed["kind"], "stated_source": ed["stated_source"]})
