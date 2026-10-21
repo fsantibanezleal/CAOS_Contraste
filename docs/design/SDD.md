@@ -739,7 +739,8 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   and the gap is reported. The reconciliations that exist are the ones claimed:
   - the printed tables and papers recomputed beside their prints (413 printed numbers of five papers in the ratings and calibration
     cases, 296 reproduced to the printed digit, every other one listed with its cell and its explanation);
-  - the SciPy distributions behind the test statistics (the Jeffreys and binomial p-values equal SciPy's on a grid);
+  - the p-values of the Jeffreys and binomial tests against two recomputations that call neither of the engine's SciPy functions (a
+    quadrature of the Beta density and an exact rational sum of the binomial terms), equal within 1e-9 on a grid of 36 cases;
   - the Hull-White exposure of the single swap and of the four-swap netting set against ORE 1.8.17.0, within two combined Monte Carlo
     standard errors at all 33 report dates, with the EEPE and the CVA;
   - the Hull-White closed forms against QuantLib 1.44 to a relative 1e-6;
@@ -748,7 +749,8 @@ no claim is stated before its demonstration exists. Each claim is stated only as
   Reported as gaps and not claimed: the collateralised variants (CSA with 10 and with 20 days) and the initial-margin variant against
   ORE, with the largest EE gaps of 9.9, 7.1 and 11.7 combined standard errors, CVA gaps of 15.9 and 9.9 in the two CSA variants, and a
   mean dynamic initial margin of ORE at 0.88 of the engine's. Not claimed: the wrong-way variant against ORE, whose example is a
-  different model, and the equality with the transition-matrix cohort estimator, which has no engine test (backlog item BL-083).
+  different model, and the equality with the transition-matrix cohort estimator, which the engine tests since 0.8.0 (RV-415, backlog item BL-083, where the
+  optional `transitions` extra is installed) and no notebook of Contraste reruns.
   Evidence: `tests/test_c04_parity.py`, `tests/test_c04_published.py`, `tests/test_c05.py`, `data/derived/C04/published.json`,
   `data/derived/C05/ldp-published.json`, `data/derived/C05/sp-2010.json`, `data/derived/C05/sp-2011.json`,
   `docs/frameworks/01_riskvalidation/riskvalidation.md`, `data/derived/C12/single-swap.json`, `data/derived/C12/netting-set.json`,
