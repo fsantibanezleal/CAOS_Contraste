@@ -11,3 +11,14 @@ matplotlib==3.11.2
 nbclient==0.11.0
 nbformat==5.11.1
 ipykernel==7.4.0
+# the independent references of the two state-of-the-art notebooks (topics 07 and 13), the engine's own test references
+# arch: the GARCH reference the engine's garch rung calls; notebook 07 of topic 07 compares the engine's fit with a direct call (the `market` extra, arch>=8.0,<9)
+arch==8.0.0
+# pandas: the data type arch returns and needs, at the pin of data-pipeline/requirements.txt
+pandas==3.0.6
+# mapie: the conformal reference of notebook 08 of topic 13 (the `ml` extra, mapie>=1.5,<2)
+mapie==1.5.0
+# fairlearn: the fairness-metric reference of notebook 08 of topic 13 (the `ml` extra, fairlearn>=0.15,<0.16)
+fairlearn==0.15.0
+# scikit-learn: the estimator interface mapie and fairlearn need, imported by notebook 08 of topic 13 (the pin of data-pipeline/requirements.txt)
+scikit-learn==1.9.1
