@@ -5,6 +5,7 @@ compares the committed block with a fresh render. The page states the rule's out
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -77,6 +78,9 @@ def results_block(inv: dict[str, Any], fnd: dict[str, Any], app: dict[str, Any],
     w("")
     table(w, ["Severity", "ECB F", *STATES], [[s, fnd["conventions"]["severity_scale"]["rows"][i]["ecb_f"], *[sum(1 for r in rows if r["severity"] == s and r["status"] == st) for st in STATES]]
                                                 for i, s in enumerate(SEVERITIES)], 2)
+    left = sum(int(m) for x in inv["excluded"] if x["variant_id"] for m in re.findall(r"its (\d+) finding rows", x["reason"]["en"]))
+    w(f"Finding rows in the variant documents: {c['total'] + left}; in the register: {c['total']}; in the variants no fit could be determined for: {left}.")
+    w("")
     held = {r["case_id"] for r in rows}
     none = [cs for cs in cases if cs not in held]
     w("Cases with no finding row in the committed documents: " + (", ".join(none) if none else "none") + ".")

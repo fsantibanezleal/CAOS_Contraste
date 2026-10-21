@@ -89,7 +89,7 @@ The tier is the matrix of materiality and complexity (06 B.3). Two inputs of the
 
 | Reading | Regulatory use | Complexity | Entries in Tier 1/2/3/4 |
 |---|---:|---:|---:|
-| A | literal | mean | 32/1/0/1 |
+| A | literal | mean | 33/0/0/1 |
 | B | graded | mean | 18/15/0/1 |
 | C | literal | maximum | 33/0/0/1 |
 | D | graded | maximum | 31/2/0/1 |
@@ -132,6 +132,8 @@ A document edge means the downstream package reads the upstream case's committed
 | S2 | F3 | 162 | 0 | 0 | 0 | 3 | 0 | 5 |
 | S3 | F2 | 200 | 0 | 0 | 0 | 0 | 0 | 35 |
 | S4 | F1 | 25 | 0 | 0 | 0 | 4 | 0 | 133 |
+
+Finding rows in the variant documents: 588; in the register: 572; in the variants no fit could be determined for: 16.
 
 Cases with no finding row in the committed documents: none.
 
@@ -190,9 +192,9 @@ Planned cases with no committed document: C19.
 
 Variants no fit could be determined for (decision W15-15: never assigned by guess), each with the engine's reason:
 
-- `C05/ldp-sim-0`: no fit can be assigned to the variant: the variant's provenance names no source, so no fit can be determined
-- `C05/ldp-sim-1`: no fit can be assigned to the variant: the variant's provenance names no source, so no fit can be determined
-- `C05/ldp-sim-3`: no fit can be assigned to the variant: the variant's provenance names no source, so no fit can be determined
+- `C05/ldp-sim-0`: no fit can be assigned to the variant: the variant's provenance names no source, so no fit can be determined; its 5 finding rows are not in the register
+- `C05/ldp-sim-1`: no fit can be assigned to the variant: the variant's provenance names no source, so no fit can be determined; its 5 finding rows are not in the register
+- `C05/ldp-sim-3`: no fit can be assigned to the variant: the variant's provenance names no source, so no fit can be determined; its 6 finding rows are not in the register
 
 <!-- governance-results:end -->
 

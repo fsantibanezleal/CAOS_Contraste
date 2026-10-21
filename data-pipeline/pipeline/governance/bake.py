@@ -153,8 +153,8 @@ def _assign(case: Case, extensions: list[str], E: SimpleNamespace) -> tuple[dict
                     found = (same[0], f"the variant's model records carry the ids of the fit {same[0]} and of no other fit of the case (W15-15, extension "
                                       f"model-record-ids; the engine found no fit by sources: {reason})")
             if found is None and "variant-id-equals-fit-id" in extensions and vid in fits:
-                found = (vid, f"the variant id equals the fit id {vid} of the models document (W15-15, extension variant-id-equals-fit-id; the engine found "
-                              f"no fit by sources: {reason})")
+                found = (vid, f"the variant id equals the fit id {vid} of the models document (W15-15, extension variant-id-equals-fit-id: the producers write the models "
+                              f"document with fit_id equal to the variant id, c06/_case.py:103 and c08/_case.py:99; the engine found no fit by sources: {reason})")
         if found:
             placed[found[0]].append((vid, found[1]))
         else:
@@ -209,7 +209,7 @@ def _schedule(E: SimpleNamespace, tier: int, last: str) -> dict[str, Any]:
     stated = full is not None and monitor is not None
     return {
         "profile": "default", "review_kind": "attestation" if tier in ATTESTATION_TIERS else "review",
-        "last_validation": {"date": last, "type": "full battery", "basis": "A34: the release date of the code version"},
+        "last_validation": {"date": last, "type": "full battery", "basis": "convention (A34): the release date of the code version in CHANGELOG.md is read as the date of the last validation"},
         "next_review": iso(review), "next_full_revalidation": iso(full), "next_monitoring": iso(monitor),
         "null_reason": None if stated else T("the frequency table of this tier states no full revalidation or no monitoring interval (06 l.636-640)",
                                              "la tabla de frecuencias de este nivel no fija una revalidación completa o un monitoreo (06 l.636-640)"),
@@ -386,8 +386,10 @@ def build(root: Path | str = REPO_ROOT) -> Baked:
         case = cases[cid]
         placed, left = _assign(case, extensions, E)
         for vid, why in left:
-            excluded.append({"case_id": cid, "variant_id": vid,
-                             "reason": T(f"no fit can be assigned to the variant: {why}", f"no se puede asignar un ajuste a la variante: {spanish.translate(why)}")})
+            n = len(case.variants[vid].doc["findings"])
+            excluded.append({"case_id": cid, "variant_id": vid, "reason": T(
+                f"no fit can be assigned to the variant: {why}; its {n} finding rows are not in the register",
+                f"no se puede asignar un ajuste a la variante: {spanish.translate(why)}; sus {n} filas de hallazgos no están en el registro")})
         order = list(case.variants)
         for fit in sorted(case.models):
             mine = sorted(placed[fit], key=lambda p: order.index(p[0]))
@@ -438,8 +440,8 @@ def build(root: Path | str = REPO_ROOT) -> Baked:
         draft.append({"key": key, "case_id": cid, "fit_id": fit, "title": case.manifest["title"], "attributes": attrs,
                       "variants": [{"variant_id": v, "basis": b} for v, b in p["variants"]],
                       "components": _components(cid, fit, models.doc, inp["roles"]), "scope": _scope(E, inputs, cid), "tier_block": tb,
-                      "lifecycle": {"state": "in_validation", "basis": "the full battery has run and no approval exists (SDD non-goal 1); transitions are not "
-                                                                        "recorded in the committed documents", "transitions": [], "exception": None},
+                      "lifecycle": {"state": "in_validation", "basis": "convention: the state in_validation reads the committed documents (the full battery has run and no approval exists, SDD non-goal 1); "
+                                                                        "transitions are not recorded in them", "transitions": [], "exception": None},
                       "schedule": sched, "_default": default_id, "_models": models, "_case": case, "_variants": variants})
         all_rows += rows
 
@@ -505,18 +507,16 @@ def build(root: Path | str = REPO_ROOT) -> Baked:
     copied = _copied_texts(cases)
     for doc in (inventory, findings, appetite, *reports.values()):
         spanish.restore_document(doc, copied)
-    check_documents(inventory, findings, appetite, reports, copied)
+    check_documents(inventory, findings, appetite, reports)
     from . import page
 
     return Baked(inventory, findings, appetite, reports, page.results_block(inventory, findings, appetite, reports), docs_read)
 
 
-VERBATIM = "[verbatim text of a committed case document]"
-
-
 def _copied_texts(cases: dict[str, Case]) -> frozenset[str]:
     """The texts the documents copy unchanged from the case documents (a case question and title, a finding title, a model record title): the case's own words, such as
-    'approval cohorts' or 'approval rate' in a credit model, are not a statement by Contraste about any model."""
+    'approval cohorts' or 'approval rate' in a credit model, stay as the case wrote them (the Spanish is not restored). The checker's text rule reads them
+    too: its allow list names the phrases that are metrics or cohorts."""
     out: set[str] = set()
     for case in cases.values():
         for field_ in ("question", "title"):
@@ -533,22 +533,11 @@ def _copied_texts(cases: dict[str, Case]) -> frozenset[str]:
     return frozenset(x for x in out if isinstance(x, str) and " " in x)  # an identifier is never a text
 
 
-def _neutral(node: Any, copied: frozenset[str]) -> Any:
-    if isinstance(node, str):
-        return VERBATIM if node in copied else node
-    if isinstance(node, dict):
-        return {k: _neutral(v, copied) for k, v in node.items()}
-    if isinstance(node, list):
-        return [_neutral(v, copied) for v in node]
-    return node
-
-
-def check_documents(inventory: dict[str, Any], findings: dict[str, Any], appetite: dict[str, Any], reports: dict[str, dict[str, Any]],
-                    copied: frozenset[str] = frozenset()) -> None:
+def check_documents(inventory: dict[str, Any], findings: dict[str, Any], appetite: dict[str, Any], reports: dict[str, dict[str, Any]]) -> None:
     """The schema and the cross-field checker of U15-S over the documents; any finding refuses them all (nothing is published).
 
-    ``copied`` holds the texts copied verbatim from the case documents: the checker's text rule (no approval, certification or compliance text) reads the
-    governance-authored strings, so a copied text is replaced by a neutral marker for that rule only (open question for U15-S, in the report)."""
+    The checker's text rule reads every string, the copied case texts included; its allow list (``semantics.APPROVAL_ALLOWED``) names the phrases of a credit
+    decision that are metrics or cohorts and never a claim about a model."""
     from ..core.schemas import SchemaViolation, validate_document
 
     sm = _semantics()
@@ -559,7 +548,7 @@ def check_documents(inventory: dict[str, Any], findings: dict[str, Any], appetit
             validate_document(f"data/derived/{rel}", doc)
         except SchemaViolation as exc:
             problems.append(str(exc))
-        problems += [f"{rel}: {m}" for m in sm.violations(_neutral(doc, copied) if copied else doc)]
+        problems += [f"{rel}: {m}" for m in sm.violations(doc)]
     problems += [f"across the documents: {m}" for m in sm.cross_violations(
         {"inventory": inventory, "findings": findings, "appetite": appetite, "reports": reports})]
     if problems:

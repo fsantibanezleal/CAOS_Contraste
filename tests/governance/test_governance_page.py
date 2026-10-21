@@ -48,3 +48,20 @@ def test_adversarial_the_page_block_is_regenerated_not_typed(baked):
     assert planted != block
     nl = chr(10)
     assert block_of(BEGIN + nl + planted + nl + END) != block_of(BEGIN + nl + baked.page_block + nl + END)
+
+
+def test_the_page_reconciles_the_finding_rows_of_the_variant_documents(baked):
+    """Review m5: the variant documents hold 588 finding rows; the register holds the rows of the assigned variants and the excluded variants state theirs."""
+    import json
+
+    on_disk = 0
+    for p in gs.DERIVED.glob("C*/*.json"):
+        d = json.loads(p.read_text(encoding="utf-8"))
+        if d.get("schema") == "contraste.case/v1":
+            on_disk += len(d["findings"])
+    rows = len(baked.findings["rows"])
+    left = on_disk - rows
+    assert f"Finding rows in the variant documents: {on_disk}; in the register: {rows}; in the variants no fit could be determined for: {left}." in baked.page_block
+    for x in baked.inventory["excluded"]:
+        if x["variant_id"]:
+            assert "finding rows are not in the register" in x["reason"]["en"] and "filas de hallazgos no están en el registro" in x["reason"]["es"]

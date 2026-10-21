@@ -90,7 +90,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -189,7 +189,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case by document read; the code import from C01 (E14) is not counted (A D2 3.3: document reads only)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -288,7 +288,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case by document read; the code import from C06 (E07), C01 (E09) is not counted (A D2 3.3: document reads only)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -387,7 +387,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case by document read; the code import from C01 (E10), C05 (E13) is not counted (A D2 3.3: document reads only)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -478,7 +478,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case by document read; the code import from C01 (E11) is not counted (A D2 3.3: document reads only)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -572,7 +572,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -660,7 +660,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -758,7 +758,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case by document read; the code import from C06 (E08) is not counted (A D2 3.3: document reads only)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -849,7 +849,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -938,7 +938,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -1027,7 +1027,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -1115,7 +1115,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -1197,7 +1197,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -1278,7 +1278,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -1372,7 +1372,7 @@
       "name": "dependency depth",
       "score": 2,
       "tag": "convention",
-      "basis": "reads the C07 loan book (feeder count 1, document reads only)",
+      "basis": "one feeder, C07, by code import (E06), counted as addendum 3.3 counts it (feeder count 1)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -1460,7 +1460,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -1542,7 +1542,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -1638,7 +1638,7 @@
       "name": "dependency depth",
       "score": 4,
       "tag": "convention",
-      "basis": "reads C07, C11, C15 and C17 (four feeding cases, document reads only)",
+      "basis": "four feeders by document read (C07, C11, C15, C17); the code import from C10 (E05) is not counted (A D2 3.3: document reads only)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -1686,11 +1686,11 @@
      "basis": "consumer-cards segment of the C07 book (a mapping convention: the German and Taiwan models score natural persons, the Polish model firms; W15-18)"
     },
     "regulatory_use": {
-     "literal": 2,
-     "graded": 2,
+     "literal": 4,
+     "graded": 3,
      "tag": "doc",
-     "basis": "compliance monitoring of learned credit models (the ECB guide on the randomness of the training process, paragraphs 43 and 59, and the EU AI Act Annex III 5(b), named in the case page executive brief); impact holds only decision_flip_share, no capital, provision or reporting figure",
-     "pointer": "docs/cases/C20.md#executive-brief"
+     "basis": "scored by model type like C01 to C03 (decision M2 of the U15-P review): the C20 ladder is the C01 ladder of PD scoring rungs (P0 to P4) fitted on the German, Taiwan and Polish files, and a PD ladder feeds IRB capital or ECL by model type; impact holds only decision_flip_share, no regulatory figure",
+     "pointer": "data/derived/C20/models-c20-ladder.json#/fit/ladder"
     },
     "decision_criticality": {
      "score": 3,
@@ -1704,7 +1704,7 @@
       "name": "methodology",
       "score": 3,
       "tag": "convention",
-      "basis": "P3-ebm, P4-lightgbm and P4-xgboost on the German, Taiwan and Polish files (tree ensembles and boosted additive models score 3; TabPFN is not run)",
+      "basis": "P3-ebm and P4-lightgbm on the German, Polish and Taiwan files and P4-xgboost on the Taiwan file (tree ensembles and boosted additive models score 3; TabPFN is not run)",
       "pointer": "data/derived/C20/models-c20-ladder.json#/model"
      },
      {
@@ -1736,7 +1736,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case by document read; the code import from C01 (E15) is not counted (A D2 3.3: document reads only)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -1836,7 +1836,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case: no document read and no import of another case's code (A D4)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {
@@ -1924,7 +1924,7 @@
       "name": "dependency depth",
       "score": 1,
       "tag": "convention",
-      "basis": "no feeding case (A D4: feeder count 0, document reads only)",
+      "basis": "no feeding case by document read; the code import from C01 (E12) is not counted (A D2 3.3: document reads only)",
       "pointer": "data-pipeline/pipeline/governance/edges.json"
      },
      {

@@ -1,4 +1,5 @@
-"""The Spanish of the governance documents.
+"""The Spanish of the governance documents. STOPGAP for 0.15.000: the engine 1.0 (U16-E1) returns its bilingual texts and reasons with their accents, and U16
+removes this module and its table (see `changes/U15-P.md`); nothing else depends on it.
 
 The engine writes its Spanish texts without accents and without the eñe ("as the product's documents write it" in the first draft of the contract), and
 returns some reasons in English only (the contract: ``scope_test``, ``assign_variant``, ``anchor_from_test_row``, ``rwea_share_of_anchor``). The product's
@@ -43,6 +44,7 @@ WORDS = {k: v for k, v in WORDS.items() if k != v}
 PHRASES = [
     (re.compile(r"\b(no )?(esta)( (?:(?:establecid|registrad|determinad|declarad|definid|listad|incluid|asignad|calculad|encontrad|nombrad)[oa]s?|presente|vigente|disponible|vac[ií]a|vac[ií]o|cerrad[oa]))", re.I), None),
     (re.compile(r"\b(no lo )(estan)\b", re.I), None),
+    (re.compile(r"\b(o )(mas)\b", re.I), None),
     (re.compile(r"\b(estan)( (?:(?:establecid|registrad|determinad|declarad|definid|listad|incluid|asignad|calculad|encontrad|nombrad)[oa]s?|presentes|vigentes|disponibles|abiertos|cerrados))", re.I), None),
 ]
 #: an identifier (``.decision``, ``spec(...)``, ``a_version``, a path) is never a word of the prose
@@ -70,6 +72,8 @@ def restore(text: str) -> str:
                 p = _case(p, "está")
             elif p.lower() == "estan":
                 p = _case(p, "están")
+            elif p.lower() == "mas":
+                p = _case(p, "más")
             out += p
         return out
 
