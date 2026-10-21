@@ -154,7 +154,7 @@ function Body() {
 
 export const methodologySection: MethodologySection = {
   id: 'provisions',
-  group: 'models',
+  group: 'loss',
   order: 100,
   title: { en: 'Provisions', es: 'Provisiones' },
   Body,

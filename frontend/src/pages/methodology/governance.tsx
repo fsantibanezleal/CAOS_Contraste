@@ -126,7 +126,7 @@ function Body() {
 
 export const methodologySection: MethodologySection = {
   id: 'governance',
-  group: 'capital',
+  group: 'models',
   order: 300,
   title: { en: 'Model governance', es: 'Gobernanza de modelos' },
   Body,

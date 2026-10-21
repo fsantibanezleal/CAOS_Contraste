@@ -356,6 +356,7 @@ describe('the Methodology section', () => {
   it('registers as a method section of an existing group', () => {
     const [s] = collectSections({ './methodology/governance.tsx': governanceSection }, ['models', 'tests', 'loss', 'capital', 'market', 'balance']);
     expect(s.id).toBe('governance');
+    expect(s.group).toBe('models');                       // beside Model risk; the group holds six tabs (ADR-0071)
     expect(s.title).toBeTruthy();
   });
   it('states the tier rule, the opinion rule and the labels in both languages, and cites the sources', () => {
