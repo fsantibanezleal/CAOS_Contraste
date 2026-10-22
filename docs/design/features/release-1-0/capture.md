@@ -38,6 +38,7 @@ and, in Git Bash, `MSYS_NO_PATHCONV=1`.
 | `--cases C01,C02` | those cases only, and no documentation route (a reviewer batch) |
 | `--routes /methodology,/benchmark` | those routes only (add `/app` to walk the cases as well; `--routes none` for no route) |
 | `--captures 1280x800:light:en` | the captures named, `WxH:theme:lang`, comma separated, instead of the three |
+| `--variants all` or `--variants id,id` | every variant of each case (or those named), not only the default one (decision D16-20; see below) |
 | `--url https://<domain>` | the deployed origin instead of `dist/` |
 | `--dist <dir>`, `--base-path /Repo/` | another build, or a project-page base path |
 | `--settle-ms 15000`, `--workers 4`, `--full-page true` | the settle time (the gate's default), parallel pages, whole-page captures |
@@ -48,13 +49,32 @@ and, in Git Bash, `MSYS_NO_PATHCONV=1`.
 - Exit code 0 when every view was walked, 1 when a walk failed (listed after the summary line), 2 on a wrong option or an
   output folder inside the repository.
 
+## The variant walk (decision D16-20)
+
+The capture review also walks every variant of each case at 1280 x 800 light English, so the views that exist only on some variants
+(C18 reverse stress, C20 Fed shift) and the numbers of every variant are read. The three captures of D16-3 stay on the default
+variant (no `--variants`). The workbench keeps the variant in React state, not in the URL, so the tool selects it through the
+rendered control, as a reader does.
+
+- **A variant walk** is one case and one variant: load `?case=<id>`, click the variant's chip in the rail (`[data-control="variant"]`,
+  the chips in the order of the case manifest's `variant` artifacts), wait for the shell's idle state, check the chip is checked,
+  then walk every group and sub-view as on the default walk. The default variant is already selected and is not clicked.
+- `--variants all` walks every variant of every selected case; `--variants id,id` walks the ids named, where a case has them. An id
+  that no selected case offers is a wrong option (exit 2). A case with one variant walks it once. A variant whose view set differs
+  is walked as it renders. A variant that does not settle is captured and flagged `settled: false`; a variant document that
+  answers 404 is captured and its path is in `not_found`.
+- A chip that cannot be clicked, or that is not checked after the click, is a failure of that variant's walk (listed after the
+  summary line, exit 1); nothing is captured for it as another variant.
+- Without `--variants` the output is the same as before, with the added `variant` field (the default variant's id).
+
 ## What it writes
 
 ```
 <out>/index.json     the index: one row per view and capture, plus one row per planned case (a JSON array)
 <out>/index.html     a grid by case and by route: one row per view, one thumbnail per capture, the documents of the view
 <out>/run.json       the run: the build (version, commit), the captures, the cases, the counts, the wall time, the failures
-<out>/shots/<capture>/<route>/<case>/<group>__<sub-view>.png
+<out>/shots/<capture>/<route>/<case>/<group>__<sub-view>.png             default walk (no --variants)
+<out>/shots/<capture>/app/<case>/<variant>/<group>__<sub-view>.png     variant walk (--variants)
 ```
 
 File names are deterministic from the view's identity: `<capture>` is `1280x800-light-en`, `<route>` is the route without its
@@ -68,8 +88,9 @@ the language, so the three captures of one view share their name in three folder
 
 | Field | Meaning |
 |---|---|
-| `id` | `<capture>`, `<route>`, `<case or ->` and the tab keys, joined by a vertical bar; unique |
+| `id` | `<capture>`, `<route>`, `<case or ->`, `v:<variant>` (variant walk only) and the tab keys, joined by a vertical bar; unique |
 | `route`, `case`, `case_title` | the route, the case id (null off the App) and the case's English title |
+| `variant` | the variant id; on the default walk the case's default variant (`default_variant` of its manifest); null off the App |
 | `group` | `{id, label, key}` of the top group: the tab id, its text in the capture's language, its file-name part; null on a route with no tab list |
 | `sub_view` | the same for the sub-view; null when the group has none |
 | `deeper` | the same for any further level, a list |

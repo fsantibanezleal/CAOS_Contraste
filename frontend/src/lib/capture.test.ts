@@ -22,6 +22,7 @@ interface Row {
   case: string | null;
   group: { id: string; label: string; key: string } | null;
   sub_view: { id: string; label: string; key: string } | null;
+  variant?: string | null;
   capture: { id: string; size: string; theme: string; lang: string };
   built: boolean;
   captured: boolean;
@@ -61,7 +62,7 @@ function listing(dir: string, skip: Set<string> = new Set()): string[] {
 }
 
 /** The groups and sub-views of a case, read straight from the page with plain selectors (independent of the tool). */
-async function expectedViews(caseId: string): Promise<string[]> {
+async function expectedViews(caseId: string, variantIndex: number | null = null): Promise<string[]> {
   const serveModule = '@fasl-work/caos-app-shell/serve'; // plain JavaScript in the shell, no types
   const { servePages } = (await import(/* @vite-ignore */ serveModule)) as { servePages: (dir: string, base: string) => Promise<{ url: string; close: () => Promise<void> }> };
   const server = await servePages(dist, '/');
@@ -70,6 +71,11 @@ async function expectedViews(caseId: string): Promise<string[]> {
     const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
     await page.goto(`${server.url}app?case=${caseId}`, { waitUntil: 'load' });
     await page.waitForSelector('[data-case-workbench] .tablist [role="tab"]');
+    if (variantIndex !== null) {
+      await page.locator('[data-control="variant"] [role="radio"]').nth(variantIndex).click();
+      await page.waitForTimeout(1500);
+      await page.waitForSelector('[data-case-workbench] .tablist [role="tab"]');
+    }
     const groups = await page.$$eval('[data-case-workbench] .tablist [role="tab"]', (ts) => ts.map((t) => t.getAttribute('data-tab') ?? ''));
     const views: string[] = [];
     for (const g of groups) {
@@ -202,4 +208,70 @@ describe.skipIf(!runnable)('the capture tool on two cases at one capture', () =>
     expect(hit.every((x) => existsSync(join(o, x.file as string)))).toBe(true);
     expect(got.length).toBeGreaterThan(3);
   }, 240_000);
+
+  it('without --variants, every row carries the default variant and the file names are the old ones', () => {
+    for (const r of rows.filter((x) => x.captured)) {
+      expect(typeof r.variant).toBe('string');
+      expect(r.file).not.toContain(`/${r.variant}/`);
+    }
+  });
+
+  describe('--variants all', () => {
+    const vout = join(work, 'variants');
+    let vrows: Row[] = [];
+    let vrun = { code: -1 as number | null, out: '' };
+    let vbefore: string[] = [];
+    let vafter: string[] = [];
+    const manifest = (c: string) => JSON.parse(readFileSync(join(dist, 'data', 'manifests', `${c}.json`), 'utf8')) as { default_variant: string; artifacts: { role: string; variant_id: string }[] };
+    const variantIds = (c: string) => manifest(c).artifacts.filter((a) => a.role === 'variant').map((a) => a.variant_id);
+
+    it('runs on C18 and C20 and exits 0', () => {
+      const skip = new Set(['node_modules', '.git']);
+      vbefore = [...listing(frontend, skip), ...listing(join(repo, 'data'))];
+      vrun = run(['--out', vout, '--cases', 'C18,C20', '--captures', '1280x800:light:en', '--variants', 'all']);
+      vafter = [...listing(frontend, skip), ...listing(join(repo, 'data'))];
+      expect(vrun.out).toMatch(/capture: \d+ views, \d+ PNGs/);
+      expect(vrun.code).toBe(0);
+      vrows = JSON.parse(readFileSync(join(vout, 'index.json'), 'utf8')) as Row[];
+    }, 600_000);
+
+    it('has every variant of each case, with every group and sub-view it renders', async () => {
+      for (const c of ['C18', 'C20']) {
+        const ids = variantIds(c);
+        expect(ids.length).toBeGreaterThan(1);
+        expect(new Set(vrows.filter((r) => r.case === c).map((r) => r.variant))).toEqual(new Set(ids));
+        for (let i = 0; i < ids.length; i += 1) {
+          const expected = await expectedViews(c, i);
+          const got = vrows.filter((r) => r.case === c && r.variant === ids[i] && r.captured).map((r) => `${r.group?.id ?? ''}|${r.sub_view?.id ?? ''}`);
+          expect(got, `${c} ${ids[i]}`).toEqual(expected);
+        }
+      }
+    }, 300_000);
+
+    it('names an existing PNG per row at <capture>/app/<case>/<variant>/<view>.png, unique ids and files', () => {
+      for (const r of vrows.filter((x) => x.captured)) {
+        const p = join(vout, r.file as string);
+        expect(existsSync(p), p).toBe(true);
+        expect(r.file).toBe(`shots/1280x800-light-en/app/${r.case}/${r.variant}/${[r.group?.key, r.sub_view?.key].filter(Boolean).join('__')}.png`);
+      }
+      expect(new Set(vrows.map((r) => r.file)).size).toBe(vrows.length);
+      expect(new Set(vrows.map((r) => r.id)).size).toBe(vrows.length);
+    });
+
+    it('wrote nothing into the repository', () => {
+      expect(vafter).toEqual(vbefore);
+    });
+
+    it('--variants <id> walks only that variant, and refuses an unknown one', () => {
+      const id = variantIds('C18')[1];
+      const o = join(work, 'one-variant');
+      const r = run(['--out', o, '--cases', 'C18', '--captures', '1280x800:light:en', '--variants', id]);
+      expect(r.code).toBe(0);
+      const got = JSON.parse(readFileSync(join(o, 'index.json'), 'utf8')) as Row[];
+      expect(new Set(got.map((x) => x.variant))).toEqual(new Set([id]));
+      const bad = run(['--out', join(work, 'bad-variant'), '--cases', 'C18', '--captures', '1280x800:light:en', '--variants', 'no-such-variant']);
+      expect(bad.code).toBe(2);
+      expect(bad.out).toMatch(/no-such-variant/);
+    }, 300_000);
+  });
 });
