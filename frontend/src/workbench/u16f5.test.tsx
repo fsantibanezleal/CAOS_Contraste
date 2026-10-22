@@ -17,6 +17,12 @@ import { MatrixDrawing, SensitivityTable } from './governance/TierMatrix';
 import { tierColor } from './governance/DependencyMap';
 import { tierOf, type GovInventory, type GovReport } from './governance/model';
 import { ReportDocument } from './governance/ReportView';
+import { ImpactView } from './ImpactView';
+import { LadderView } from './ModelViews';
+import { BatteryView, CalibrationView, DiscriminationView, StabilityView } from './ValidationViews';
+import { COMMITTED } from '../lib/policy';
+import { defaultChallenger } from './model';
+import type { ModelsArtifact } from '../lib/contract.types';
 
 const here = (rel: string) => new URL(rel, import.meta.url);
 const text = (rel: string) => readFileSync(here(rel), 'utf8');
@@ -309,4 +315,44 @@ describe('b12 m10: the BdE annex is "Anexo 9" in Spanish on every page, as the C
   for (const f of ['../pages/Benchmark.tsx', '../pages/methodology/provisions.tsx', '../pages/U6Sections.tsx', '../content/coverage/U5.ts', '../content/coverage/base.ts']) {
     it(`${f.replace('../', '')} has no "Anejo 9"`, () => expect(text(f)).not.toContain('Anejo 9'));
   }
+});
+
+describe('b01 m6, b04 m6, b10 m13: the disclosure line of the governance opinion is not clipped', () => {
+  const src = text('./governance/OpinionBlock.tsx');
+  it('has a line height that keeps the descenders, and its box fades like the others', () => {
+    expect(src).not.toMatch(/lineHeight: 1,/);
+    expect(src).toMatch(/lineHeight: 1\.[3-9]/);
+    expect(src).toContain('ct-fade-scroll');
+  });
+});
+
+describe('b01 m1, m3, m4, m5, m16: the C01 views of the Model and Validation groups', () => {
+  const c01 = read<CaseManifest>('manifests/C01.json');
+  const entry = c01.artifacts.find((a) => a.role === 'variant' && a.variant_id === 'holdout')!;
+  const variant = read<VariantArtifact>(entry.path);
+  const models = read<ModelsArtifact>(entry.models_ref as string);
+  const sel = { data: { manifest: c01, variant, models }, challenger: defaultChallenger(variant), alphas: COMMITTED, approval: 0.8, lgd: 0.5, applicant: 0 } as never;
+  const view = (el: ReactElement, lang: Lang) => plain(html(el, lang));
+  it('m1: the Impact decision says why the live figure differs from the applicant-by-applicant one', () => {
+    expect(view(<ImpactView sel={sel} />, 'en')).toContain('The live figures above interpolate the cut-off curve');
+    expect(view(<ImpactView sel={sel} />, 'es')).toContain('Las cifras en vivo de arriba interpolan la curva de corte');
+  });
+  it('m3: the DeLong cell of the battery names the direction of the difference, not only a red light', () => {
+    expect(view(<BatteryView sel={sel} />, 'en')).toMatch(/AUC (higher|lower)/);
+    expect(view(<BatteryView sel={sel} />, 'es')).toMatch(/AUC (mayor|menor)/);
+  });
+  it('m4: the interval and the ECE the ladder note names are shown at every width', () => {
+    const markup = html(<LadderView sel={sel} />, 'en');
+    expect((markup.match(/ct-narrow-only/g) ?? []).length).toBeGreaterThanOrEqual(2 * 7);
+  });
+  it('m4: the calibration note says the posterior interval is shown where there is room', () => {
+    expect(view(<CalibrationView sel={sel} />, 'en')).toMatch(/on a wide screen/i);
+  });
+  it('m5: the PSI note says that ties merge deciles', () => {
+    expect(view(<StabilityView sel={sel} />, 'en')).toMatch(/ties[^.]*merge/i);
+    expect(view(<StabilityView sel={sel} />, 'es')).toMatch(/empates[^.]*(fusionan|unen)/i);
+  });
+  it('m16: the AUC and its interval are written to the same four decimals', () => {
+    expect(view(<DiscriminationView sel={sel} />, 'en')).toMatch(/0\.\d{4} \(0\.\d{4} - 0\.\d{4}\)/);
+  });
 });
