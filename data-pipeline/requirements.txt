@@ -19,7 +19,7 @@ pypdf==6.19.0
 # the release, a full commit of the engine's integration branch that the SDD names; tests/engine_pin.py); the `market` extra brings
 # `arch` for C11 and C13; the `ml` and `stress` extras bring fairlearn, MAPIE and statsmodels, which the engine's size studies of the
 # fair., ml. and stress. tests import, for C22 (U16-P2; the bake stops naming the extra when one is absent)
-riskvalidation[market,ml,stress]==1.0.0
+riskvalidation[market,ml,stress]==1.0.1
 # reads the EBA/ESRB 2025 macro-financial scenario workbook (C18, decision Q15 of the U13 sizing); MIT
 openpyxl==3.1.5
 # the layered layout of the governance dependency map (BSD-3-Clause; pipeline only, not an engine dependency; U15-P)
