@@ -1,11 +1,38 @@
 // U16-F5: the shared views and the pages, fix round 2. One describe per row or minor of the U16-R2 triage that this unit
 // owns; each fails on the defect the second capture review found, in both languages where the defect is a language one.
+import { CitationsProvider, useLangStore } from '@fasl-work/caos-app-shell';
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { MemoryRouter } from 'react-router';
+import type { ReactElement } from 'react';
+import { afterEach, describe, expect, it } from 'vitest';
+import { C04VariantsProvider } from '../content/cases/C04Results';
+import { CITATIONS } from '../content/citations';
+import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
+import { C04Benchmark, C04Experiments } from '../pages/C04Sections';
 
 const here = (rel: string) => new URL(rel, import.meta.url);
 const text = (rel: string) => readFileSync(here(rel), 'utf8');
 const css = text('../styles/contraste.css');
+const derived = new URL('../../../data/derived/', import.meta.url);
+const read = <T,>(rel: string): T => JSON.parse(readFileSync(new URL(rel, derived), 'utf8')) as T;
+
+type Lang = 'en' | 'es';
+function setLang(lang: Lang) {
+  (useLangStore.getInitialState() as { lang: Lang }).lang = lang;
+  useLangStore.setState({ lang });
+}
+afterEach(() => setLang('en'));
+/** A server render as the app mounts it, in one language. */
+const html = (el: ReactElement, lang: Lang = 'en', extra: ReactElement | null = null): string => {
+  setLang(lang);
+  return renderToStaticMarkup(
+    <MemoryRouter>
+      <CitationsProvider items={CITATIONS}>{extra ?? el}</CitationsProvider>
+    </MemoryRouter>,
+  );
+};
+const plain = (markup: string) => markup.replace(/<[^>]*>/g, ' ').replace(/&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\s+/g, ' ');
 
 /** The rules inside every `@media (<feature>: <px>px)` block of the product stylesheet, braces balanced. */
 function media(feature: 'max-width' | 'min-width', px: number): string {
@@ -52,6 +79,22 @@ describe('V21-5: a scroll box never ends in a line cut through its middle', () =
       const rules = (wide.match(rule) ?? []).join('\n');
       expect(rules).toMatch(/mask-image:\s*linear-gradient/);
       expect(rules).toMatch(/padding-bottom:/);
+    });
+  }
+});
+
+describe('PR-C04: the Experiments and Benchmark copy of C04 in Spanish carries the Spanish attribution', () => {
+  const manifest = read<CaseManifest>('manifests/C04.json');
+  const variants = manifest.artifacts.filter((a) => a.role === 'variant').map((a) => read<VariantArtifact>(a.path));
+  const page = (el: ReactElement, lang: Lang) => html(el, lang, <C04VariantsProvider variants={variants}>{el}</C04VariantsProvider>);
+  for (const [name, el] of [['Experiments', <C04Experiments manifest={manifest} />], ['Benchmark', <C04Benchmark manifest={manifest} />]] as const) {
+    it(`${name}: no English attribution sentence in the Spanish view, the Spanish one in its place`, () => {
+      const es = plain(page(el, 'es'));
+      expect(es).not.toContain('Source: ESMA CEREP');
+      expect(es).toContain('Fuente: ESMA CEREP; tablas transformadas por Contraste');
+    });
+    it(`${name}: the English view keeps the source registry's wording`, () => {
+      expect(plain(page(el, 'en'))).toContain('Source: ESMA CEREP; tables transformed by Contraste');
     });
   }
 });
