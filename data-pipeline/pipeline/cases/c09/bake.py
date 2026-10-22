@@ -17,6 +17,7 @@ from ... import __version__
 from ...core import expect as expectations
 from ...core import lineage as lin
 from ...core.manifest import build_artifact, build_case_manifest, build_models_artifact
+from ..reference_text import with_reference_text
 from ...io.formats import write_json
 from ...stages.export import write_artifact
 from . import calibration, documents as docs
@@ -111,7 +112,7 @@ def build(seed: int, scale: float = 1.0, *, log: bool = False) -> dict[str, Any]
         outs[k] = out
         lineage = _lineage(seed, rv)
         variants[f"level-{k}"] = build_artifact(
-            case_id=CASE_ID, variant_id=f"level-{k}", model=docs.model_summaries(k, data[k], rv), outputs=out, tests=tests,
+            case_id=CASE_ID, variant_id=f"level-{k}", model=docs.model_summaries(k, data[k], rv), outputs=out, tests=with_reference_text(tests),
             impact=docs.impact(out), findings=docs.findings(out), lineage=lineage, lane={"lane": "precompute", "reasons": []})
         say(f"level {k}: known CCF {params.known_ccf(k):.4f}")
     models = docs.models_document(pl, data, rv)

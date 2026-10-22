@@ -27,6 +27,7 @@ from ... import __version__
 from ...core import expect as expectations
 from ...core import lineage as lin
 from ...core.manifest import build_artifact, build_case_manifest, build_models_artifact
+from ..reference_text import with_reference_text
 from ...core.schemas import validate_document
 from ...io import contract as c1
 from ...io import sources as registry
@@ -261,7 +262,7 @@ def build(seed: int, data_root: Path | str | None, *, n_paths: int | None = None
             "cva": {"value": out["cva_dva"]["cva"]["amount"], "unit": "USD", "label": vt.text("CVA", "CVA")},
             "eepe": {"value": out["exposure"]["eepe"]["amount"], "unit": "USD", "label": vt.text("Effective EPE", "EPE efectivo")}}
         docs[sp.variant] = build_artifact(case_id=CASE_ID, variant_id=sp.variant, model=_model_summaries(ev, fit.a, fit.sigma), outputs=out,
-                                          tests=rows, impact=impact, findings=vt.findings_of(rows), lineage=lineage, lane=lane)
+                                          tests=with_reference_text(rows), impact=impact, findings=vt.findings_of(rows), lineage=lineage, lane=lane)
         values[f"sa_ccr_ead_{sp.variant.replace('-', '_')}_usd"] = out["sa_ccr"]["ead"]["amount"]
         values[f"eepe_{sp.variant.replace('-', '_')}_usd"] = out["exposure"]["eepe"]["amount"]
         values[f"cva_{sp.variant.replace('-', '_')}_usd"] = out["cva_dva"]["cva"]["amount"]

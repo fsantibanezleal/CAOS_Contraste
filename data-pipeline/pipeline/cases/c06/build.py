@@ -240,10 +240,10 @@ def findings(tests: list[dict[str, Any]], run: DateRun, ecl_by_scen_total: np.nd
     lb = [r for r in by.get("ifrs9.lifetime_pd_backtest", []) if r["model_id"] == "L1-dth" and r["segment"] == "all"]
     if lb and lb[0]["light"] in ("amber", "red") and lb[0]["metric"] is not None:
         add("F-LIFETIME-GAP", "S2" if lb[0]["light"] == "red" else "S3", "open", [key(lb[0])],
-            f"The lifetime PD of the hazard rung misses the observed cumulative default by up to {100 * lb[0]['metric']:.1f} points ({lb[0]['light']})",
-            f"La PD de vida completa del hazard se aparta del incumplimiento acumulado observado hasta {tx.number(100 * lb[0]['metric'], 1, lang='es')} puntos ({tx.light(lb[0]['light'], 'es')})")
+            f"The lifetime PD of the hazard rung misses the observed cumulative default by up to {100 * lb[0]['metric']:.1f} points over all loans pooled ({lb[0]['light']})",
+            f"La PD de vida completa del hazard se aparta del incumplimiento acumulado observado hasta {tx.number(100 * lb[0]['metric'], 1, lang='es')} puntos con todos los préstamos agrupados ({tx.light(lb[0]['light'], 'es')})")
     for tid, fid, en, es in (
-        ("ifrs9.sicr_effectiveness", "F-SICR", "The Stage 2 flag separates defaults from performing loans", "La marca de Etapa 2 separa los incumplimientos de los préstamos sanos"),
+        ("ifrs9.sicr_effectiveness", "F-SICR", "The Stage 2 flag against defaults and performing loans", "La marca de Etapa 2 frente a los incumplimientos y los préstamos sanos"),
         ("ifrs9.ecl_backtest", "F-ECL-BACKTEST", "The 12-month ECL against the losses realised after the date", "La PCE a 12 meses frente a las pérdidas realizadas después de la fecha"),
         ("ifrs9.stage_migration_backtest", "F-MIGRATION", "The predicted stage migration against the observed one", "La migración de etapas prevista frente a la observada"),
     ):

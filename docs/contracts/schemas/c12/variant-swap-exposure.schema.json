@@ -73,6 +73,23 @@
           }
         }
       }
+    },
+    {
+      "properties": {
+        "tests": {
+          "items": {
+            "properties": {
+              "extras": {
+                "properties": {
+                  "reference_text": {
+                    "$ref": "../common/text.schema.json"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   ],
   "unevaluatedProperties": false,

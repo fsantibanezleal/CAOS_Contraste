@@ -154,6 +154,14 @@ NOT_EVALUATED_RULE = {
     }}},
 }
 
+# The Spanish of a test row's reference (U16-F6: the citation as published, the locators and remarks translated) rides in the
+# row's open `extras`, typed here; the Spanish views read it and fall back to `reference`.
+REFERENCE_TEXT_RULE = {
+    "properties": {"tests": {"items": {"properties": {"extras": {"properties": {
+        "reference_text": {"$ref": "../common/text.schema.json"}}}}}}},
+}
+REFERENCE_TEXT_CASES = frozenset({"C03", "C08", "C09"})
+
 
 def variant_schema(case: str, ref: str, kind: str, title: str, desc: str, root: str, defs: dict) -> None:
     doc = {
@@ -167,6 +175,7 @@ def variant_schema(case: str, ref: str, kind: str, title: str, desc: str, root: 
                             "outputs": {"$ref": f"#/$defs/{root}", "properties": {"kind": {"const": kind}}}},
              "required": ["case_id", "outputs"]},
             NOT_EVALUATED_RULE,
+            *([REFERENCE_TEXT_RULE] if case in REFERENCE_TEXT_CASES else []),
         ],
         "unevaluatedProperties": False,
         "$defs": reachable(root, defs),
