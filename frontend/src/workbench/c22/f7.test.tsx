@@ -8,7 +8,7 @@ import { html, setLang } from '../c03/u6-testkit';
 import { visibleText } from '../c14/testkit';
 import { START } from './instrument';
 import type { C22Sel } from './selection';
-import { LiveCalculatorView, PValuesView, RatesTableView, SizeView, SpecimenView } from './Views';
+import { C22ContextView, LiveCalculatorView, PValuesView, RatesTableView, SizeView, SpecimenView } from './Views';
 
 const derived = new URL('../../../../data/derived/', import.meta.url);
 const read = <T,>(rel: string): T => JSON.parse(readFileSync(new URL(rel, derived), 'utf8')) as T;
@@ -61,5 +61,11 @@ describe('U16-F7 C22 (b10 minors)', () => {
     expect(text(<LiveCalculatorView sel={selOf(ids[0])} />)).toContain('the Jeffreys line lies over the Binomial one');
     setLang('es');
     expect(text(<LiveCalculatorView sel={selOf(ids[0])} />)).toContain('la línea de Jeffreys cubre a la Binomial');
+  });
+
+  it('m11: the context names the truth status in words, in both languages', () => {
+    expect(text(<C22ContextView sel={selOf(ids[0])} />)).not.toMatch(/synthetic-known-truth/);
+    setLang('es');
+    expect(text(<C22ContextView sel={selOf(ids[0])} />)).not.toMatch(/synthetic-known-truth/);
   });
 });

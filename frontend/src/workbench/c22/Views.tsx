@@ -7,6 +7,7 @@ import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import { loadAllVariants, useArtifact } from '../../api/artifacts';
 import { C22WriteUp } from '../../content/cases/C22';
+import { TRUTH_TEXT } from '../../content/cases/C04Results';
 import type { C22Simulation, Finding, VariantArtifact } from '../../lib/contract.types';
 import { useFindingsShares } from '../../lib/useMedia';
 import { LightCell } from '../ValidationViews';
@@ -925,8 +926,8 @@ export function C22ContextView({ sel }: { sel: C22Sel | null }) {
         <p className="ct-note">
           {pick(
             {
-              en: `Truth status of this variant: ${v.provenance.truth_status}. The readers check each paper against its own print (WP14's Tables 5 to 8 name its eight scenarios, each with its 16 parameters and every rate in [0, 1], and Table 6 repeats Table 5's forecasts; Yurdakul and Naranjo's Table 4 has its six pairs of sample sizes and a benchmark near 5% without a shift) and refuse the bake otherwise. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
-              es: `Estado de verdad de esta variante: ${v.provenance.truth_status}. Los lectores verifican cada artículo contra su propia impresión (las tablas 5 a 8 de WP14 nombran sus ocho escenarios, cada uno con sus 16 parámetros y cada tasa en [0, 1], y la tabla 6 repite los pronósticos de la tabla 5; la tabla 4 de Yurdakul y Naranjo tiene sus seis pares de tamaños de muestra y una referencia cercana al 5% sin desplazamiento) y si no, rechazan el horneado. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              en: `Truth status of this variant: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'en')}. The readers check each paper against its own print (WP14's Tables 5 to 8 name its eight scenarios, each with its 16 parameters and every rate in [0, 1], and Table 6 repeats Table 5's forecasts; Yurdakul and Naranjo's Table 4 has its six pairs of sample sizes and a benchmark near 5% without a shift) and refuse the bake otherwise. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              es: `Estado de verdad de esta variante: ${pick(TRUTH_TEXT[v.provenance.truth_status] ?? { en: v.provenance.truth_status, es: v.provenance.truth_status }, 'es')}. Los lectores verifican cada artículo contra su propia impresión (las tablas 5 a 8 de WP14 nombran sus ocho escenarios, cada uno con sus 16 parámetros y cada tasa en [0, 1], y la tabla 6 repite los pronósticos de la tabla 5; la tabla 4 de Yurdakul y Naranjo tiene sus seis pares de tamaños de muestra y una referencia cercana al 5% sin desplazamiento) y si no, rechazan el horneado. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
             },
             lang,
           )}
