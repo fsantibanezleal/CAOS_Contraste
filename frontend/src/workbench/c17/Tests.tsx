@@ -6,6 +6,7 @@ import type { TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { humanize } from '../c03/U6Shared';
 import { TEST_TEXT, TEST_VIEW } from './selection';
+import { es } from './localise';
 
 export type TestHost = 'exceedance' | 'tail' | 'method' | 'response' | 'scenario' | 'ladder';
 
@@ -45,7 +46,7 @@ export function C17TestsTable({ variant, host }: { variant: VariantArtifact; hos
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ?? t.reference}</td>
+                  <td className="ct-text">{t.notes === null || t.notes === undefined ? t.reference : es(t.notes, lang)}</td>
                 </tr>
               );
             })}

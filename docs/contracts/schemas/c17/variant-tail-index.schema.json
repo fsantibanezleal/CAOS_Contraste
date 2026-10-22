@@ -1396,10 +1396,13 @@
             "exceedance": {
               "type": "array",
               "items": {
-                "type": "number",
+                "type": [
+                  "number",
+                  "null"
+                ],
                 "minimum": 0,
                 "maximum": 1,
-                "description": "A share in [0, 1]."
+                "description": "A share in [0, 1], or null past the last node of the Panjer recursion grid (the recursion computes no probability there; the nulls are a suffix of the axis)."
               },
               "minItems": 3
             }

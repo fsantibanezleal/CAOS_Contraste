@@ -21,16 +21,18 @@ C22_CREDIT_FAMILIES = frozenset({"discrimination", "pd-calibration", "rating-sys
 #: what U16-P2 adds to a document carries one of these prefixes, so the credit view leaves it out
 NEW_PREFIXES = ("F-OTHER-", "other_")
 
-#: sha256 of the canonical JSON of credit_view(document), per variant, from the artifacts before U16-P2
+#: sha256 of the canonical JSON of credit_view(document), per variant, from the artifacts before U16-P2. Re-pinned at U16-F4 (2026-10-22): the
+#: only change is the last binary digit of the generators' exact truth.auc_model (about 1e-16, riskvalidation 1.0 on the bake host); checked
+#: path by path against the documents of bd42589, no rate, seed, histogram or count moved.
 BASELINE = {
     "broken-monotonicity": "1353430545beba524d04b5869e8006e4348be47e083f54d7645408a99a9aa986",
-    "clustering": "2aa9d4da8794f24b634dbc2a102d9347286e7b50fe77cc658a39735e300dc514",
+    "clustering": "14ef54b5b8e450ba644850964f444fcf00b383a664300974e59c12af1a7e412f",
     "concentration": "b854fa1e8ab1455aba25c2152dd1da0c1ee2a46512254eddaad2ac12254ff37f",
     "discrimination-decay": "0a7f17d26796dee90bb8f615ba72f06e0bf4ed4856d5480f13a0564287582f02",
-    "drift": "0441b15ded9c33985616eeceedd28d168844f34a0045c1c64ba2c3270d502322",
+    "drift": "46a6974a98addf80803a775db2edbbb09f7e69e96523b732b6b98870267255b4",
     "leakage": "ad0ce3fdfb19516b3cbab87dd3ff99cb7761ff6033410c2c2f4a5db614fac1e1",
-    "miscalibration": "ab7395f04b164acb759a0986f3c89a9c89f238e4ff61819e799bbdb9d31f5bf4",
-    "null": "8ea69556fe2efc1bb1319c6d59d2b758a3cf1ffd127e3465603e82f55d8dfffb",
+    "miscalibration": "bbeb3090c2bb034cf8892b4814d2a7be771d39fc93f5c3b8b2f212dd7195621f",
+    "null": "538b97efd13b301c0af4ad4552f999fbe8c3159b548896c75e22af2a739a30eb",
 }
 
 

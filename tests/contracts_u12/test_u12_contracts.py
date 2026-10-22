@@ -666,7 +666,7 @@ def test_the_rows_fragment_has_the_three_rows_in_the_catalog_columns() -> None:
     for r in data:
         assert len(r) == len(header), r[0]
         d = dict(zip(header, r))
-        assert d["version"] == "1.0.0"
+        assert d["version"] == ("2.0.0" if d["id"] == "c17-outputs" else "1.0.0")  # c17-outputs 2.0.0: the nullable Panjer exceedance (U16-F4)
         assert d["status"] == "real"                         # the integrator set real when the bake landed (0.11.000)
         assert d["provider"].startswith("fixture:")
         assert (ROOT / d["schema file"]).is_file(), d["schema file"]

@@ -10,6 +10,7 @@ import { Pending } from '../Pending';
 import { LabelledOverTable, U14TestsTable, barMin, f3, f4, int, pc1, sig, testsOf } from './U14Common';
 import { NotInVariant, SgcdNotice } from './C20Common';
 import { SHOCK_TEXT, asKind, blockRows, text, type Block, type C20Sel, type C20ShockRow } from './selection';
+import { localTests } from './localise';
 
 const TITLE_DEGRADATION: BiText = { en: 'Degradation by shock', es: 'Degradación por choque' };
 const TITLE_DRIFT: BiText = { en: 'Drift by shock', es: 'Deriva por choque' };
@@ -176,7 +177,7 @@ export function DriftView({ sel }: { sel: C20Sel | null }) {
               ))}
             </tbody>
           </table>
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('stability.')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('stability.')} />
           <SgcdNotice sel={sel} />
         </LabelledOverTable>
       </PlotCard>

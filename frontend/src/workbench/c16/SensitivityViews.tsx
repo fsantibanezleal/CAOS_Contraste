@@ -36,7 +36,6 @@ export function UninsuredShareView({ sel }: { sel: C16Sel | null }) {
   const rows = o.sensitivities.uninsured_share;
   if (!rows) return <UnavailableCard sel={sel} title={title} reason={o.sensitivities.uninsured_share_reason ?? { en: 'Not available: this variant has no daily path.', es: 'No disponible: esta variante no tiene trayectoria diaria.' }} />;
   const days = rows.map((r) => survivalDay(r.survival));
-  const horizon = rows[0]?.survival.horizon_days ?? o.variant.horizon_days;
   const own = o.balance_sheet.deposits.uninsured_share_of_depdom;
   const drawn = days.some((d) => d !== null);
   return (
@@ -56,7 +55,7 @@ export function UninsuredShareView({ sel }: { sel: C16Sel | null }) {
               <UPlotChart
                 height="fill"
                 x={{ values: rows.map((r) => r.share), label: { en: 'Uninsured share of the domestic deposits', es: 'Parte no asegurada de los depósitos domésticos' }, format: { percent: true, decimals: 0 } }}
-                y={{ label: { en: `Survival period, days (horizon ${horizon})`, es: `Periodo de supervivencia, días (horizonte ${horizon})` }, format: { decimals: 0 } }}
+                y={{ label: { en: 'Survival period (days)', es: 'Supervivencia (días)' }, format: { decimals: 0 } }}
                 series={[{ label: { en: 'Survival period', es: 'Periodo de supervivencia' }, values: days, color: '--color-accent', width: 2.6, mode: 'points', size: 10 }]}
                 marks={own >= rows[0].share && own <= rows[rows.length - 1].share ? [{ x: own, label: { en: `This document: ${SHARE(own, 'en')}`, es: `Este documento: ${SHARE(own, 'es')}` } }] : []}
               />
@@ -99,7 +98,6 @@ export function HtmLossView({ sel }: { sel: C16Sel | null }) {
   const rows = o.sensitivities.htm_loss;
   if (!rows) return <UnavailableCard sel={sel} title={title} reason={o.sensitivities.htm_loss_reason ?? { en: 'Not available: this variant has no daily path.', es: 'No disponible: esta variante no tiene trayectoria diaria.' }} />;
   const days = rows.map((r) => survivalDay(r.survival));
-  const horizon = rows[0]?.survival.horizon_days ?? o.variant.horizon_days;
   const drawn = days.some((d) => d !== null);
   const axis = axisOf(rows.flatMap((r) => [r.cbc, r.unrealised_loss]));
   return (
@@ -119,7 +117,7 @@ export function HtmLossView({ sel }: { sel: C16Sel | null }) {
               <UPlotChart
                 height="fill"
                 x={{ values: rows.map((r) => r.multiple), label: { en: 'Multiple of the reported HTM loss', es: 'Múltiplo de la pérdida HTM reportada' }, format: { digits: 3 } }}
-                y={{ label: { en: `Survival period, days (horizon ${horizon})`, es: `Periodo de supervivencia, días (horizonte ${horizon})` }, format: { decimals: 0 } }}
+                y={{ label: { en: 'Survival period (days)', es: 'Supervivencia (días)' }, format: { decimals: 0 } }}
                 series={[{ label: { en: 'Survival period', es: 'Periodo de supervivencia' }, values: days, color: '--color-bad', width: 2.6, mode: 'points', size: 10 }]}
                 marks={[{ x: 1, label: { en: 'Reported loss', es: 'Pérdida reportada' } }]}
               />
@@ -187,7 +185,7 @@ export function ReverseCurveView({ sel }: { sel: C16Sel | null }) {
               <UPlotChart
                 height="fill"
                 x={{ values: b.curve.map((p) => p.multiplier), log: true, label: { en: 'Multiplier of the daily run-off rates (logarithmic)', es: 'Multiplicador de las tasas diarias de salida (logarítmico)' }, format: { digits: 3 } }}
-                y={{ label: { en: 'Survival period, days', es: 'Periodo de supervivencia, días' }, format: { decimals: 0 } }}
+                y={{ label: { en: 'Survival period (days)', es: 'Supervivencia (días)' }, format: { decimals: 0 } }}
                 series={[{ label: { en: 'Survival period under the multiplier', es: 'Periodo de supervivencia bajo el multiplicador' }, values: days, color: '--color-accent', width: 2.6, mode: 'points', size: 9 }]}
                 marks={[
                   ...(solved !== null ? [{ x: solved, label: { en: `Solved: ${formatNumber(solved, 'en', { digits: 4 })}`, es: `Resuelto: ${formatNumber(solved, 'es', { digits: 4 })}` } }] : []),

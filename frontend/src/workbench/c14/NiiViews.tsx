@@ -133,7 +133,7 @@ export function DynamicNiiView({ sel }: { sel: C14Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: months, label: { en: 'Month of the projection', es: 'Mes de la proyección' }, format: { decimals: 0 } }}
-              y={{ label: { en: `Net interest income per month (${pick(axis.unit, 'en')})`, es: `Margen financiero neto por mes (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
+              y={{ label: { en: `NII per month (${pick(axis.unit, 'en')})`, es: `NII por mes (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
               series={d.scenarios.map((s, i) => ({ label: DYN_TEXT[s.scenario], values: s.monthly_nii.map((v) => v / axis.div), color: colors[i % colors.length], width: 2.4, ...(i === 0 ? {} : { dash: [6, 3] }) }))}
             />
           }
@@ -312,7 +312,7 @@ function Param({ name, value, unit }: { name: string; value: number; unit: strin
   return (
     <>
       <dt>{pick({ en: 'Parameter', es: 'Parámetro' }, lang)}</dt>
-      <dd data-parameter={name}>{`${name} = ${formatNumber(value, lang, { digits: 4 })} (${lang === 'es' && unit === 'per year' ? 'por año' : unit})`}</dd>
+      <dd data-parameter={name}>{`${name} = ${formatNumber(value, lang, { digits: 4 })} (${lang === 'es' ? (unit === 'per year' ? 'por año' : unit === 'per square-root year' ? 'por raíz cuadrada del año' : unit) : unit})`}</dd>
     </>
   );
 }

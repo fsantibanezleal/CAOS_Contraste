@@ -148,7 +148,7 @@ export function PositionsView({ sel }: { sel: C15Sel | null }) {
               <UPlotChart
                 height="fill"
                 x={{ values: x, label: buckets ? { en: 'Bucket midpoint', es: 'Punto medio del tramo' } : { en: 'Time bucket', es: 'Tramo' }, ...(buckets ? { unit: { en: 'years', es: 'años' } } : {}), format: { digits: 3 } }}
-                y={{ label: { en: `Net repricing cash flow (${pick(axis.unit, 'en')})`, es: `Flujo neto de repreciación (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
+                y={{ label: { en: `Net cash flow (${pick(axis.unit, 'en')})`, es: `Flujo neto (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
                 series={[
                   { label: LEG_TEXT.CLP, values: row.clp.net_cash_flows.map((v) => v / axis.div), color: '--color-accent', width: 2.4 },
                   { label: LEG_TEXT.UR, values: row.ur.net_cash_flows.map((v) => v / axis.div), color: '--color-magenta', width: 2.4, dash: [6, 3] },
@@ -189,7 +189,7 @@ export function PositionsView({ sel }: { sel: C15Sel | null }) {
                   <th className="ct-text">{pick({ en: `Items of the leg: ${text(LEG_SHORT, leg.leg).en}`, es: `Partidas del tramo: ${text(LEG_SHORT, leg.leg).es}` }, lang)}</th>
                   <th className="ct-text ct-wide-only">{pick({ en: 'Category', es: 'Categoría' }, lang)}</th>
                   <th className="ct-text ct-wide-only">{pick({ en: 'Side', es: 'Lado' }, lang)}</th>
-                  <th>{pick({ en: `Amount (${leg.currency})`, es: `Monto (${leg.currency})` }, lang)}</th>
+                  <th>{pick({ en: `Amount (${pick(scaleUnit({ ...doc, currency: leg.currency }), 'en')})`, es: `Monto (${pick(scaleUnit({ ...doc, currency: leg.currency }), 'es')})` }, lang)}</th>
                 </tr>
               </thead>
               <tbody>
@@ -244,7 +244,7 @@ export function DynamicLegView({ sel }: { sel: C15Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: months, label: { en: 'Month of the projection', es: 'Mes de la proyección' }, format: { decimals: 0 } }}
-              y={{ label: { en: `Net interest income per month (${pick(axis.unit, 'en')})`, es: `Margen financiero neto por mes (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
+              y={{ label: { en: `NII per month (${pick(axis.unit, 'en')})`, es: `NII por mes (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
               series={leg.scenarios.map((s, i) => ({ label: DYN_TEXT[s.scenario], values: s.monthly_nii.map((v) => v / axis.div), color: colors[i % colors.length], width: 2.4, ...(i === 0 ? {} : { dash: [6, 3] }) }))}
             />
           }
@@ -385,7 +385,7 @@ export function EarEvarLegView({ sel }: { sel: C15Sel | null }) {
             {e.parameters.map((p) => (
               <Fragment key={p.name}>
                 <dt>{pick({ en: 'Parameter', es: 'Parámetro' }, lang)}</dt>
-                <dd data-parameter={p.name}>{`${p.name} = ${formatNumber(p.value, lang, { digits: 4 })} (${lang === 'es' && p.unit === 'per year' ? 'por año' : p.unit})`}</dd>
+                <dd data-parameter={p.name}>{`${p.name} = ${formatNumber(p.value, lang, { digits: 4 })} (${lang === 'es' ? (p.unit === 'per year' ? 'por año' : p.unit === 'per square-root year' ? 'por raíz cuadrada del año' : p.unit) : p.unit})`}</dd>
               </Fragment>
             ))}
             <dt>{pick({ en: 'Paths', es: 'Trayectorias' }, lang)}</dt>

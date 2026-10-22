@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .spanish import SPANISH
+
 CASE_ID = "C18"
 FIT_ID = "banco-andino"
 AS_OF = "2026-08-31"                      # the observation date: the CMF aggregates of August 2026 (C07, C15)
@@ -100,7 +102,15 @@ DERIVED = "data/derived"
 
 
 def text(en: str, es: str | None = None) -> dict[str, str]:
-    return {"en": en, "es": es if es is not None else en}
+    """A bilingual text. Without a Spanish the one in ``spanish.SPANISH`` is used; a sentence (three words or more) with none is refused,
+    so the English never fills the Spanish slot of a document (U16-R2, b09 B1)."""
+    if es is None:
+        es = SPANISH.get(en)
+        if es is None:
+            if len(en.split()) >= 3:
+                raise ValueError(f"no Spanish for the text {en!r}: add it to pipeline/cases/c18/spanish.py")
+            es = en
+    return {"en": en, "es": es}
 
 
 def es_num(formatted: str) -> str:

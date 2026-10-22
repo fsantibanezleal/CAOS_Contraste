@@ -16,6 +16,7 @@ import {
   CALIBRATION_TEXT, CATEGORY_TEXT, NMD_LONG, NMD_TEXT, ORIGIN_TEXT, SOURCE_KIND_TEXT, SHOCK_TEXT, amount, axisOf, cell, categoriesOf, fitOf, nmdModelOf,
   outputsOf, scaleUnit, scenarioFor, scenarioOf, shockOf, text, type C14Outputs, type C14Sel,
 } from './selection';
+import { IRRBB_SOURCE_RULES, TEST_NOTE_RULES, localise } from './localise';
 
 /** The words of the tests the IRRBB engine returns for C14 and C15; an id without an entry is shown as it is. */
 const TEST_TEXT: Record<string, BiText> = {
@@ -62,7 +63,7 @@ export function IrrbbTestsTable({ variant, only }: { variant: VariantArtifact; o
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ?? t.reference}</td>
+                  <td className="ct-text">{t.notes === null || t.notes === undefined ? t.reference : localise(t.notes, lang, TEST_NOTE_RULES)}</td>
                 </tr>
               );
             })}
@@ -253,9 +254,9 @@ export function C14ContextView({ sel }: { sel: C14Sel | null }) {
             </Fragment>
           ))}
           <dt>{pick({ en: 'Treasury curve', es: 'Curva del Tesoro' }, lang)}</dt>
-          <dd>{`${o.curve.source} (${o.curve.date})`}</dd>
+          <dd>{`${localise(o.curve.source, lang, IRRBB_SOURCE_RULES)} (${o.curve.date})`}</dd>
           <dt>{pick({ en: 'Interpolation', es: 'Interpolación' }, lang)}</dt>
-          <dd>{o.curve.interpolation}</dd>
+          <dd>{localise(o.curve.interpolation, lang, IRRBB_SOURCE_RULES)}</dd>
           <dt>{pick({ en: 'Tenors the date lacks', es: 'Plazos que la fecha no trae' }, lang)}</dt>
           <dd data-missing-tenors={o.curve.missing_tenors.length}>{o.curve.missing_tenors.length === 0 ? pick({ en: 'none', es: 'ninguno' }, lang) : o.curve.missing_tenors.map((t) => `${formatNumber(t, lang, { digits: 4 })} ${lang === 'es' ? 'años' : 'y'}`).join(', ')}</dd>
         </dl>
@@ -279,7 +280,7 @@ export function C14ContextView({ sel }: { sel: C14Sel | null }) {
                     <td className="ct-text">{pick(text(ASSUMPTION_TEXT, k), lang)}</td>
                     <td>{assumptionValue(a.value, a.unit, lang)}</td>
                     <td className="ct-text">{pick(text(SOURCE_KIND_TEXT, a.source_kind), lang)}</td>
-                    <td className="ct-text ct-wide-only">{a.source}</td>
+                    <td className="ct-text ct-wide-only">{localise(a.source, lang, IRRBB_SOURCE_RULES)}</td>
                   </tr>
                 );
               })}
@@ -315,7 +316,7 @@ export function C14ContextView({ sel }: { sel: C14Sel | null }) {
                     )}
                   </td>
                   <td>{cell(i.amount, lang)}</td>
-                  <td className="ct-text ct-wide-only">{i.slotting_assumption}</td>
+                  <td className="ct-text ct-wide-only">{localise(i.slotting_assumption, lang, IRRBB_SOURCE_RULES)}</td>
                 </tr>
               ))}
             </tbody>

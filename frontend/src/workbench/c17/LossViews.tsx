@@ -10,11 +10,12 @@ import { Pending } from '../Pending';
 import { KeyTable } from './KeyTable';
 import { C17TestsTable } from './Tests';
 import { AGGREGATION_TEXT, cellLabel, cellOf, outputsOf, text, whole, type C17Outputs, type C17Sel } from './selection';
+import { es } from './localise';
 
 type Chart = Pick<UPlotChartProps, 'x' | 'y' | 'series' | 'marks' | 'yMarks'>;
 
 /** A probability on a log axis: a zero has no place there, so it is left out (a gap), never drawn as a number. */
-const positive = (v: number): number | null => (v > 0 ? v : null);
+const positive = (v: number | null): number | null => (v !== null && v > 0 ? v : null);
 
 /**
  * The exceedance chart of the true annual loss: P(annual loss > x) on log-log axes with the three aggregations
@@ -61,6 +62,9 @@ export function ExceedanceView({ sel }: { sel: C17Sel | null }) {
   const t = o.truth;
   const q = t.annual_loss_quantile;
   const chart = exceedanceChart(e, t);
+  // the Panjer recursion computes the probabilities up to the end of its grid only: the points after it are absent in the document
+  const lastPanjer = e.panjer.exceedance.map((v) => v !== null).lastIndexOf(true);
+  const panjerEnd = lastPanjer >= 0 && lastPanjer < e.grid_eur.length - 1 ? e.grid_eur[lastPanjer] : null;
   const rows: Array<{ id: string; label: BiText; value: number; how: BiText }> = [
     {
       id: 'true',
@@ -72,7 +76,7 @@ export function ExceedanceView({ sel }: { sel: C17Sel | null }) {
       },
     },
     { id: 'monte-carlo', label: { en: 'Monte Carlo', es: 'Monte Carlo' }, value: e.quantile_999_eur.monte_carlo, how: { en: `${whole(e.monte_carlo.n_years, 'en')} simulated years, seed ${e.monte_carlo.seed}`, es: `${whole(e.monte_carlo.n_years, 'es')} años simulados, semilla ${e.monte_carlo.seed}` } },
-    { id: 'panjer', label: { en: 'Panjer recursion', es: 'Recursión de Panjer' }, value: e.quantile_999_eur.panjer, how: { en: `step ${whole(e.panjer.step_eur, 'en')} EUR`, es: `paso de ${whole(e.panjer.step_eur, 'es')} EUR` } },
+    { id: 'panjer', label: { en: 'Panjer recursion', es: 'Recursión de Panjer' }, value: e.quantile_999_eur.panjer, how: { en: `step ${whole(e.panjer.step_eur, 'en')} EUR${panjerEnd === null ? '' : `; the recursion grid ends at ${whole(panjerEnd, 'en')} EUR and the curve stops there`}`, es: `paso de ${whole(e.panjer.step_eur, 'es')} EUR${panjerEnd === null ? '' : `; la grilla de la recursión termina en ${whole(panjerEnd, 'es')} EUR y la curva se detiene ahí`}` } },
     { id: 'fft', label: { en: 'FFT', es: 'FFT' }, value: e.quantile_999_eur.fft, how: { en: `${whole(e.fft.n_points, 'en')} points, padding factor ${e.fft.padding_factor}, tilt ${formatNumber(e.fft.tilt, 'en', { digits: 3 })}`, es: `${whole(e.fft.n_points, 'es')} puntos, factor de relleno ${e.fft.padding_factor}, inclinación ${formatNumber(e.fft.tilt, 'es', { digits: 3 })}` } },
     { id: 'sla', label: { en: 'Single loss approximation', es: 'Aproximación de una pérdida' }, value: e.quantile_999_eur.sla, how: { en: 'closed form, from the true severity and frequency', es: 'forma cerrada, desde la severidad y la frecuencia verdaderas' } },
   ];
@@ -211,7 +215,7 @@ export function TailIndexView({ sel }: { sel: C17Sel | null }) {
                 {
                   id: 'mean',
                   label: { en: 'True annual mean', es: 'Media anual verdadera' },
-                  value: mean.value_eur === null ? `${formatNumber(null, lang)} (${mean.reason ?? ''})` : `${whole(mean.value_eur, lang)} EUR`,
+                  value: mean.value_eur === null ? `${formatNumber(null, lang)} (${es(mean.reason, lang)})` : `${whole(mean.value_eur, lang)} EUR`,
                   attrs: { 'data-mean': mean.value_eur === null ? 'not-available' : 'available' },
                 },
               ]}
