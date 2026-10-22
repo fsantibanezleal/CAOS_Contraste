@@ -28,11 +28,11 @@ export function rocChart(sel: C02Sel | null, kind: 'roc' | 'cap'): UPlotChartPro
       ? { values: x, label: { en: 'False positive rate', es: 'Tasa de falsos positivos' }, format: { decimals: 2 } }
       : { values: x, label: { en: 'Share of the firms, riskiest first', es: 'Parte de las empresas, las más riesgosas primero' }, format: { decimals: 2 } },
     y: kind === 'roc'
-      ? { label: { en: 'True positive rate', es: 'Tasa de verdaderos positivos' }, range: [0, 1], format: { decimals: 2 } }
-      : { label: { en: 'Share of the bankruptcies captured', es: 'Parte de las quiebras capturadas' }, range: [0, 1], format: { decimals: 2 } },
+      ? { label: { en: 'True positive rate', es: 'Verdaderos positivos' }, range: [0, 1], format: { decimals: 2 } }
+      : { label: { en: 'Share of the bankruptcies captured', es: 'Quiebras capturadas' }, range: [0, 1], format: { decimals: 2 } },
     series: [
       { label: { en: 'Random ranking', es: 'Orden al azar' }, values: x, color: '--color-fg-faint', dash: [4, 4], width: 1 },
-      ...o.rungs.map((r, i) => ({ label: rungName(sel, r.model_id), values: alignTo(xs(r), ys(r), x), color: COLORS[i % COLORS.length], width: r.model_id === focus ? 3 : 1.6 })),
+      ...o.rungs.map((r, i) => ({ label: rungName(sel, r.model_id), values: alignTo(xs(r), ys(r), x), color: COLORS[i % COLORS.length], dash: i >= COLORS.length ? [6, 3] : undefined, width: r.model_id === focus ? 3 : 1.6 })),
     ],
   };
 }
@@ -56,7 +56,7 @@ export function RocCapView({ sel }: { sel: C02Sel | null }) {
           es: 'AUC con su intervalo DeLong de 95%, Gini = 2 AUC - 1 y la distancia de Kolmogorov-Smirnov, en la muestra reservada del archivo. Los archivos no traen fecha, así que esto es una muestra reservada dentro del archivo y nunca una prueba fuera del tiempo.',
         }}
       >
-        <ChartOverTable chart={<UPlotChart {...roc} />}>
+        <ChartOverTable chartMin="18rem" chart={<UPlotChart {...roc} />}>
           <table className="caos-table ct-wrap-head" data-table="discrimination">
             <thead>
               <tr>

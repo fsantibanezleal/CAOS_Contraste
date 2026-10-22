@@ -31,7 +31,7 @@ import {
   rateChart,
   rungText,
 } from './C04Common';
-import { GRADES, isAgency, isFamily, isPublished, makeSel, P_FLOOR, type C04Sel } from './selection';
+import { GRADES, attributionIn, isAgency, isFamily, isPublished, makeSel, P_FLOOR, type C04Sel } from './selection';
 import { esDecimals } from './esDecimals';
 
 type Lang = 'en' | 'es';
@@ -131,7 +131,7 @@ describe('C04 Findings', () => {
         }
         if (isAgency(v)) {
           expect(markup).toContain(esc(v.outputs.agency.name));
-          expect(markup).toContain(esc(v.outputs.attribution));
+          expect(markup).toContain(esc(attributionIn(v.outputs.attribution, lang)));
         }
         expect(markup).toContain(lang === 'es' ? 'Lo que encontró la validación' : 'What the validation found');
       });

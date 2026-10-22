@@ -62,7 +62,7 @@ function GroupedBars({ o, sel }: { o: C07Outputs; sel: C07Sel }) {
           const top2 = Math.max(hi, ticks[ticks.length - 1]);
           const sy = (v: number) => top + plotH - (v / top2) * plotH;
           const gw = plotW / Math.max(segs.length, 1);
-          const bw = Math.min((gw * 0.8) / 3, 40);
+          const bw = Math.max(Math.min((gw * 0.8) / 3, 40), 3);
           return (
             <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={pick({ en: 'Provision by segment under the three regimes', es: 'Provisión por segmento bajo los tres regímenes' }, lang)}>
               {ticks.map((t) => (
@@ -83,7 +83,7 @@ function GroupedBars({ o, sel }: { o: C07Outputs; sel: C07Sel }) {
                           key={id}
                           x={x0 + bi * bw}
                           y={sy(v)}
-                          width={bw - 2}
+                          width={Math.max(bw - 2, 1)}
                           height={Math.max(sy(0) - sy(v), 1)}
                           style={{ fill: colorOf(REGIME_COLOR[id]), stroke: picked === key ? 'var(--color-fg)' : 'none', strokeWidth: 2, opacity: sel.regime === id ? 1 : 0.78 }}
                           role="button"
@@ -91,7 +91,9 @@ function GroupedBars({ o, sel }: { o: C07Outputs; sel: C07Sel }) {
                           aria-label={`${label(r.segment_id)}, ${id}: ${money(v, lang, cur)}`}
                           onClick={() => setPicked(picked === key ? null : key)}
                           onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setPicked(picked === key ? null : key)}
-                        />
+                        >
+                          <title>{`${label(r.segment_id)}, ${id}: ${money(v, lang, cur)}`}</title>
+                        </rect>
                       );
                     })}
                     {(() => {
@@ -224,7 +226,7 @@ export function SegmentsView({ sel }: { sel: C07Sel | null }) {
               <th className="ct-text">{pick({ en: 'Segment', es: 'Segmento' }, lang)}</th>
               <th>{`CMF B-1 (${cur})`}</th>
               <th>{pick({ en: 'IFRS 9 (weighted)', es: 'IFRS 9 (ponderada)' }, lang)}</th>
-              <th>BdE Annex 9</th>
+              <th>{pick({ en: 'BdE Annex 9', es: 'Anexo 9 del BdE' }, lang)}</th>
               <th>{pick({ en: 'IFRS 9 minus B-1', es: 'IFRS 9 menos B-1' }, lang)}</th>
               <th>{pick({ en: 'BdE minus B-1', es: 'BdE menos B-1' }, lang)}</th>
             </tr>
@@ -428,7 +430,7 @@ export function B1View({ sel }: { sel: C07Sel | null }) {
                   <td className="ct-text">{pick(segmentName(o, g.segment_id), lang)}</td>
                   <td>{money(g.standard, lang, cur)}</td>
                   <td>
-                    <MaybeNumber value={g.internal} reason={g.internal_reason} format={(v) => money(v, lang, cur)} />
+                    <MaybeNumber value={g.internal} reason={null} format={(v) => money(v, lang, cur)} />
                   </td>
                   <td>{money(g.applied, lang, cur)}</td>
                   <td className="ct-text ct-wide-only">{pick(METHOD[g.method], lang)}</td>
@@ -436,6 +438,10 @@ export function B1View({ sel }: { sel: C07Sel | null }) {
               ))}
             </tbody>
           </table>
+          {/* the reason is the same for every row: said once under the table, not in every cell (U16-R2 b04 M8) */}
+          {d.group_max_rule.find((g) => g.internal_reason) ? (
+            <p className="ct-note" data-note="internal-reason">{pick(d.group_max_rule.find((g) => g.internal_reason)!.internal_reason!, lang)}</p>
+          ) : null}
           <table className="caos-table" data-table="b1-minimum" data-binding={String(d.minimum_check.binding)}>
             <tbody>
               <tr>
@@ -734,7 +740,7 @@ export function DeltaView({ sel }: { sel: C07Sel | null }) {
                 <td>{money(dv.ifrs9_delta, lang, dv.currency)}</td>
               </tr>
               <tr data-delta="bde-annex9">
-                <td className="ct-text">BdE Annex 9</td>
+                <td className="ct-text">{pick({ en: 'BdE Annex 9', es: 'Anexo 9 del BdE' }, lang)}</td>
                 <td>{money(dv.bde_annex9_delta, lang, dv.currency)}</td>
               </tr>
             </tbody>

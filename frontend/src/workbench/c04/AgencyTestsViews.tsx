@@ -15,6 +15,7 @@ import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { useMemo } from 'react';
 import type { C04AgencyOutputs, C04Cohort, C04Homogeneity, Light, TestRow, Text, VariantArtifact } from '../../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT, LIGHT_TONE, relight } from '../../lib/policy';
+import { ChartOverTable } from '../c06/format';
 import { LightCell } from '../ValidationViews';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
@@ -952,13 +953,20 @@ export function SemestersView({ sel }: { sel: C04Sel | null }) {
       empty,
       credit(o, true),
     );
+    // the drawn chart keeps the numbers it draws beside it (a chart with no table is a picture only: U16-R2 b02 M7)
     pdBody = (
-      <UPlotChart
-        height="fill"
-        x={{ values: built.pd.x, label: built.pd.axis, format: YEAR_FORMAT }}
-        y={{ label: { en: `PD of ${g} (%, log scale)`, es: `PD de ${g} (%, escala log.)` }, log: true, format: { percent: true, digits: 2 } }}
-        series={built.pd.series}
-      />
+      <ChartOverTable
+        chart={
+          <UPlotChart
+            height="fill"
+            x={{ values: built.pd.x, label: built.pd.axis, format: YEAR_FORMAT }}
+            y={{ label: { en: `PD of ${g} (%, log scale)`, es: `PD de ${g} (%, escala log.)` }, log: true, format: { percent: true, digits: 2 } }}
+            series={built.pd.series}
+          />
+        }
+      >
+        {pdTable}
+      </ChartOverTable>
     );
   }
   return (
@@ -972,13 +980,19 @@ export function SemestersView({ sel }: { sel: C04Sel | null }) {
         note={built.l1.drawn ? l1Note : join({ en: 'No year has a distance to draw: the table gives what the artifact holds.', es: 'Ningún año tiene una distancia que dibujar: la tabla da lo que contiene el artefacto.' }, credit(o))}
       >
         {built.l1.drawn ? (
-          <UPlotChart
-            height="fill"
-            x={{ values: built.l1.x, label: built.l1.axis, format: YEAR_FORMAT }}
-            y={{ label: { en: 'L1 distance (sum over the cells)', es: 'Distancia L1 (suma sobre las celdas)' }, format: { decimals: 2 } }}
-            series={built.l1.series}
-            marks={built.l1.marks}
-          />
+          <ChartOverTable
+            chart={
+              <UPlotChart
+                height="fill"
+                x={{ values: built.l1.x, label: built.l1.axis, format: YEAR_FORMAT }}
+                y={{ label: { en: 'L1 distance (sum over the cells)', es: 'Distancia L1 (suma sobre las celdas)' }, format: { decimals: 2 } }}
+                series={built.l1.series}
+                marks={built.l1.marks}
+              />
+            }
+          >
+            <SeriesTable x={built.l1.x} columns={built.l1.all} show={shows(FMT.l1)} name="semesters-l1" />
+          </ChartOverTable>
         ) : (
           <SeriesTable x={built.l1.x} columns={built.l1.all} show={shows(FMT.l1)} name="semesters-l1" />
         )}

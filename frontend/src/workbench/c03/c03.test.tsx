@@ -115,7 +115,7 @@ describe('the C03 instrument', () => {
   it('the calibration gives every decile, its interval and the scope of the vintages it covers', () => {
     const markup = html(<CalibrationView sel={sel} />);
     for (const d of o.calibration.rows) expect(markup).toContain(`data-decile="${d.decile}"`);
-    expect(markup).toContain(escapeHtml(o.calibration.scope));
+    expect(markup).toContain(escapeHtml(o.calibration.scope.en));
     expect(markup).toContain(pct(o.calibration.rows[0].ci_high));
   });
 

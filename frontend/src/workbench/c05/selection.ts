@@ -25,6 +25,45 @@ export interface C05Sel {
   lgd: number;
 }
 
+/** The words for a variant's truth status (the document's id is never printed in a sentence, U16-R2 b03 B1). */
+export const TRUTH_STATUS_TEXT: Record<string, Text> = {
+  'real-outcomes': { en: 'real outcomes', es: 'resultados reales' },
+  'synthetic-known-truth': { en: 'synthetic, known truth', es: 'sintético, verdad conocida' },
+  'synthetic-calibrated': { en: 'synthetic, calibrated', es: 'sintético, calibrado' },
+  'published-answer': { en: 'published answer', es: 'respuesta publicada' },
+};
+export const truthStatusText = (id: string): Text => TRUTH_STATUS_TEXT[id] ?? { en: id, es: id };
+
+/** The Spanish of the descriptive part of a source's licence and attribution (names, URLs and the citation stay verbatim), kept with the
+ * English it translates: a registry wording that has moved on is shown as declared, never as a stale translation. */
+export const SOURCE_TEXT_ES: Record<string, { licence: [string, string]; attribution: [string, string] }> = {
+  'tasche-2013': {
+    licence: [
+      'arXiv.org perpetual, non-exclusive license to distribute (http://arxiv.org/licenses/nonexclusive-distrib/1.0/); Table 2 quotes the S&P annual global corporate default studies for 2009 to 2011 (S&P 2010, 2011, 2012)',
+      'Licencia de arXiv.org perpetua y no exclusiva para distribuir (http://arxiv.org/licenses/nonexclusive-distrib/1.0/); la Tabla 2 cita los estudios anuales de incumplimiento corporativo global de S&P de 2009 a 2011 (S&P 2010, 2011, 2012)',
+    ],
+    attribution: [
+      'Tasche, D. (2013). The art of probability-of-default curve calibration. Journal of Credit Risk 9(4):63-103. https://doi.org/10.21314/jcr.2013.169. Table 2 data: S&P annual global corporate default studies 2009 to 2011.',
+      'Tasche, D. (2013). The art of probability-of-default curve calibration. Journal of Credit Risk 9(4):63-103. https://doi.org/10.21314/jcr.2013.169. Datos de la Tabla 2: estudios anuales de incumplimiento corporativo global de S&P, 2009 a 2011.',
+    ],
+  },
+  'pluto-tasche-2005': {
+    licence: [
+      "arXiv assumed license, 1991-2003 (http://arxiv.org/licenses/assumed-1991-2003/): distribution by arXiv; the tables are the paper's own computations on a hypothetical portfolio",
+      'Licencia supuesta de arXiv, 1991-2003 (http://arxiv.org/licenses/assumed-1991-2003/): distribución por arXiv; las tablas son los cálculos propios del artículo sobre una cartera hipotética',
+    ],
+    attribution: [
+      'Pluto, K. and Tasche, D. (2005). Estimating probabilities of default for low default portfolios. arXiv:cond-mat/0411699v3. https://doi.org/10.48550/arXiv.cond-mat/0411699',
+      'Pluto, K. y Tasche, D. (2005). Estimating probabilities of default for low default portfolios. arXiv:cond-mat/0411699v3. https://doi.org/10.48550/arXiv.cond-mat/0411699',
+    ],
+  },
+};
+/** A source's licence or attribution in the language: the Spanish of the known wording, else the wording as declared. */
+export function sourceText(id: string, field: 'licence' | 'attribution', declared: string, l: 'en' | 'es'): string {
+  const known = SOURCE_TEXT_ES[id]?.[field];
+  return l === 'es' && known && known[0] === declared ? known[1] : declared;
+}
+
 export const isSp = (v: VariantArtifact<unknown>): v is SpVariant => (v.outputs as { kind?: string }).kind === 'sp-calibration';
 export const isLdp = (v: VariantArtifact<unknown>): v is LdpVariant => (v.outputs as { kind?: string }).kind === 'ldp';
 

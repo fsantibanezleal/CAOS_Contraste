@@ -12,6 +12,7 @@ import type { components } from '../../lib/contract.gen';
 import type { CaseManifest, ModelsArtifact, VariantArtifact } from '../../lib/contract.types';
 import { useC06Instrument } from './instrument';
 import { axisScale, compactMoney } from './format';
+import { truthStatusText } from '../c05/selection';
 import { defaultSel, liveEcl, outputsOf, rescaled, scenarioEcl, type C06Sel } from './selection';
 import { C06ContextView, C06FindingsView, C06VariantsTable, CurveReadout, WeightReadout } from './C06Common';
 import { NonLinearityView, SicrView, TermStructureView } from './TermViews';
@@ -171,14 +172,14 @@ describe('the C06 instrument', () => {
     expect(markup).toContain('the cohort is younger than the horizon');
     expect(markup).toContain('not available');
     const rungs = html(<RungsView sel={sel} />);
-    for (const r of o.rung_comparison) if (r.reason) expect(rungs).toContain(r.reason);
+    for (const r of o.rung_comparison) if (r.reason) expect(rungs).toContain(r.reason.en);
   });
 
   it('the context says the data is a fixture and why Freddie Mac is not there', () => {
     const markup = html(<C06ContextView sel={sel} />);
-    expect(markup).toContain(o.data_status.freddie_mac_reason as string);
+    expect(markup).toContain(o.data_status.freddie_mac_reason!.en);
     expect(markup).toContain(o.data_status.notice.en);
-    expect(markup).toContain(variant.provenance.truth_status);
+    expect(markup).toContain(truthStatusText(variant.provenance.truth_status).en);
   });
 
   it('the identities close on the one tolerance basis', () => {

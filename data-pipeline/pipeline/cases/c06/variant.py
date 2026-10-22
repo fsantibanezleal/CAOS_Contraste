@@ -22,6 +22,8 @@ from .run import LIFETIME_CAP_MONTHS, PERIOD_MONTHS, RHO, STAGE1_MONTHS, DateRun
 from ...io import contract as c1
 
 WINDOW_MONTHS = 12
+#: the Spanish of ``io.sba.FREDDIE_REASON`` (the registry of the readers keeps the English; the name Freddie Mac stays)
+FREDDIE_REASON_ES = "Freddie Mac: falta la cuenta del titular; se publica el gemelo de la SBA"
 
 
 def opening_date(reporting_date: np.datetime64) -> np.datetime64:
@@ -130,7 +132,7 @@ def bake_variant(loans: Loans, fed: FedTables, reporting_date: np.datetime64, se
         "kind": "reporting-date", "reporting_date": iso, "currency": bd.CURRENCY, "period_months": PERIOD_MONTHS,
         "horizon": {"stage1_months": STAGE1_MONTHS, "lifetime_cap_months": LIFETIME_CAP_MONTHS},
         "settings": bd.settings_block(),
-        "data_status": {"primary_source": "sba-7a", "freddie_mac_available": False, "freddie_mac_reason": FREDDIE_REASON,
+        "data_status": {"primary_source": "sba-7a", "freddie_mac_available": False, "freddie_mac_reason": {"en": FREDDIE_REASON, "es": FREDDIE_REASON_ES},
                         "notice": bd.NOTICE},
         "scenarios": [{"id": sid, "label": bd.t(mc.SCENARIO_LABELS[sid]["en"], mc.SCENARIO_LABELS[sid]["es"]), "weight": float(run1.weights[k]),
                        "z_mean": float(zm[k])} for k, sid in enumerate(ids)],

@@ -28,7 +28,7 @@ import {
   pdTable,
   widestYears,
 } from './AgencyValidationViews';
-import { DEFINITION_LABEL, ESMA_DEFINITIONS, GRADES, definitionsOf, gradeCounts, isAgency, makeSel, type AgencyVariant, type C04Sel } from './selection';
+import { DEFINITION_LABEL, ESMA_DEFINITIONS, attributionIn, GRADES, definitionsOf, gradeCounts, isAgency, makeSel, type AgencyVariant, type C04Sel } from './selection';
 
 /** A value the artifact must hold: a null fails the test instead of reaching a comparison as 0. */
 const nn = (x: number | null | undefined): number => {
@@ -152,7 +152,7 @@ describe('the agency variants: PD by grade, By year, Definitions, Lifetime', () 
             expect(card.provenance, `${what} ${card.title}: provenance`).toBe('real');
             expect(card.body, `${what} ${card.title}: lane badge`).toMatch(/class="badge caos-lane caos-lane-(replay|live)"/);
             expect(card.note.length, `${what} ${card.title}: a card without its note`).toBeGreaterThan(80);
-            expect(card.note, `${what} ${card.title}: attribution`).toContain(o.attribution);
+            expect(card.note, `${what} ${card.title}: attribution`).toContain(attributionIn(o.attribution, lang));
             expect(card.note, `${what} ${card.title}: entity`).toContain(`${o.agency.name} (${o.agency.code}`);
           }
           const drawn = charts(markup);

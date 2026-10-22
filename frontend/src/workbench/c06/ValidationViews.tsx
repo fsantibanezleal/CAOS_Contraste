@@ -7,10 +7,11 @@ import type { TestRow, VariantArtifact } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
-import { ChartOverTable, MaybeNumber, alignTo, money, pct, unionX } from './format';
-import { fitOf, outputsOf, type C06Sel } from './selection';
+import { STAGE_TEXT, ChartOverTable, MaybeNumber, alignTo, money, pct, segmentLabel, unionX } from './format';
+import { cohortText, fitOf, movementText, outputsOf, type C06Sel } from './selection';
 
-const COLORS: ShellColorToken[] = ['--color-accent', '--color-magenta', '--color-warn', '--color-good'];
+// seven cohorts are seven curves: seven distinct colour tokens (the predicted line of each stays dashed)
+const COLORS: ShellColorToken[] = ['--color-accent', '--color-magenta', '--color-warn', '--color-good', '--color-bad', '--color-fg-subtle', '--color-fg'];
 
 const ESTIMATOR = { 'kaplan-meier': 'Kaplan-Meier', 'aalen-johansen': 'Aalen-Johansen' } as const;
 
@@ -65,8 +66,7 @@ export function LadderView({ sel }: { sel: C06Sel | null }) {
               <tr>
                 <th className="ct-text">{pick({ en: 'Rung', es: 'Peldaño' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Covariates', es: 'Covariables' }, lang)}</th>
-                <th className="ct-text ct-wide-only">{pick({ en: 'Macro', es: 'Macro' }, lang)}</th>
-                <th className="ct-text ct-wide-only">{pick({ en: 'Prepayment competes', es: 'Prepago compite' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Prepayment competes', es: 'Prepago compite' }, lang)}</th>
                 <th>{pick({ en: 'Cut-off', es: 'Corte' }, lang)}</th>
               </tr>
             </thead>
@@ -74,9 +74,18 @@ export function LadderView({ sel }: { sel: C06Sel | null }) {
               {fit.ladder.map((r) => (
                 <tr key={r.rung_id} data-rung={r.rung_id}>
                   <td className="ct-text">{r.rung_id}</td>
-                  <td className="ct-text">{r.covariates.length ? r.covariates.join(', ') : pick({ en: 'none', es: 'ninguna' }, lang)}</td>
-                  <td className="ct-text ct-wide-only">{r.macro_covariates.length ? r.macro_covariates.join(', ') : pick({ en: 'none', es: 'ninguna' }, lang)}</td>
-                  <td className="ct-text ct-wide-only">{r.competing_prepayment ? pick({ en: 'yes', es: 'sí' }, lang) : pick({ en: 'no', es: 'no' }, lang)}</td>
+                  <td className="ct-text">
+                    {r.covariates.length || r.macro_covariates.length ? (
+                      <details data-covariates={r.rung_id}>
+                        <summary>{pick({ en: `${r.covariates.length} covariates, ${r.macro_covariates.length} macro`, es: `${r.covariates.length} covariables, ${r.macro_covariates.length} macro` }, lang)}</summary>
+                        <p className="ct-note">{r.covariates.join(', ')}</p>
+                        {r.macro_covariates.length ? <p className="ct-note">{`${pick({ en: 'Macro', es: 'Macro' }, lang)}: ${r.macro_covariates.join(', ')}`}</p> : null}
+                      </details>
+                    ) : (
+                      pick({ en: 'none', es: 'ninguna' }, lang)
+                    )}
+                  </td>
+                  <td className="ct-text">{r.competing_prepayment ? pick({ en: 'yes', es: 'sí' }, lang) : pick({ en: 'no', es: 'no' }, lang)}</td>
                   <td>{r.training_cutoff}</td>
                 </tr>
               ))}
@@ -120,8 +129,8 @@ export function BacktestView({ sel }: { sel: C06Sel | null }) {
     const mine = rows.filter((r) => r.origination_cohort === c);
     const at = (field: 'predicted_cumulative_pd' | 'observed_cumulative_pd') => grid.map((m) => mine.find((r) => r.months === m)?.[field] ?? null);
     return [
-      { label: { en: `Predicted, ${c}`, es: `Predicha, ${c}` }, values: at('predicted_cumulative_pd'), color: COLORS[i % COLORS.length], width: 1.8, dash: [6, 3] },
-      { label: { en: `Observed, ${c}`, es: `Observada, ${c}` }, values: at('observed_cumulative_pd'), color: COLORS[i % COLORS.length], width: 2.6 },
+      { label: { en: `Predicted, ${cohortText(c).en}`, es: `Predicha, ${cohortText(c).es}` }, values: at('predicted_cumulative_pd'), color: COLORS[i % COLORS.length], width: 1.8, dash: [6, 3] },
+      { label: { en: `Observed, ${cohortText(c).en}`, es: `Observada, ${cohortText(c).es}` }, values: at('observed_cumulative_pd'), color: COLORS[i % COLORS.length], width: 2.6 },
     ];
   });
   return (
@@ -161,7 +170,7 @@ export function BacktestView({ sel }: { sel: C06Sel | null }) {
             <tbody>
               {rows.map((r) => (
                 <tr key={`${r.origination_cohort}-${r.months}`} data-cohort={r.origination_cohort} data-months={r.months}>
-                  <td className="ct-text">{r.origination_cohort}</td>
+                  <td className="ct-text">{pick(cohortText(r.origination_cohort), lang)}</td>
                   <td>{r.months}</td>
                   <td>{pct(r.predicted_cumulative_pd, lang, 3)}</td>
                   <td>
@@ -207,7 +216,7 @@ export function DecileView({ sel }: { sel: C06Sel | null }) {
     <ViewsRow shares={[3, 2]}>
       <PlotCard
         fill
-        title={{ en: `Calibration by risk decile, rung ${d.rung_id}${cohort ? `, cohort ${cohort}` : ''}`, es: `Calibración por decil de riesgo, peldaño ${d.rung_id}${cohort ? `, cohorte ${cohort}` : ''}` }}
+        title={{ en: `Calibration by risk decile, rung ${d.rung_id}${cohort ? `, cohort ${cohortText(cohort).en}` : ''}`, es: `Calibración por decil de riesgo, peldaño ${d.rung_id}${cohort ? `, cohorte ${cohortText(cohort).es}` : ''}` }}
         lane={REPLAY}
         provenance={prov}
         dataKey={stateKey}
@@ -236,7 +245,7 @@ export function DecileView({ sel }: { sel: C06Sel | null }) {
             <tbody>
               {d.rows.map((r) => (
                 <tr key={`${r.origination_cohort}-${r.months}-${r.decile}`} data-cohort={r.origination_cohort} data-months={r.months} data-decile={r.decile}>
-                  <td className="ct-text">{r.origination_cohort}</td>
+                  <td className="ct-text">{pick(cohortText(r.origination_cohort), lang)}</td>
                   <td>{r.months}</td>
                   <td>{r.decile}</td>
                   <td>{formatNumber(r.n, lang, { decimals: 0 })}</td>
@@ -289,13 +298,15 @@ export function RungsView({ sel }: { sel: C06Sel | null }) {
                 <th>{pick({ en: 'Concordance index', es: 'Índice de concordancia' }, lang)}</th>
                 <th>{pick({ en: 'Integrated Brier', es: 'Brier integrado' }, lang)}</th>
                 <th>{pick({ en: '12-month gap', es: 'Brecha a 12 meses' }, lang)}</th>
-                <th className="ct-text">{pick({ en: 'Note', es: 'Nota' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
               {o.rung_comparison.map((r) => (
                 <tr key={r.rung_id} data-rung={r.rung_id}>
-                  <td className="ct-text">{r.rung_id}</td>
+                  <td className="ct-text">
+                    {r.rung_id}
+                    {r.reason ? <span className="ct-note" data-reason="rung" style={{ display: 'block', whiteSpace: 'normal' }}>{pick(r.reason, lang)}</span> : null}
+                  </td>
                   <td>
                     <MaybeNumber value={r.c_index} reason={null} format={(v) => formatNumber(v, lang, { digits: 3 })} />
                   </td>
@@ -305,7 +316,6 @@ export function RungsView({ sel }: { sel: C06Sel | null }) {
                   <td>
                     <MaybeNumber value={r.calibration_gap_12m} reason={null} format={(v) => pct(v, lang, 3)} />
                   </td>
-                  <td className="ct-text">{r.reason ?? ''}</td>
                 </tr>
               ))}
             </tbody>
@@ -359,9 +369,9 @@ export function IdentitiesView({ sel }: { sel: C06Sel | null }) {
                 const closes = Math.abs(row.residual) <= basis;
                 return (
                   <tr key={row.stage} data-stage={stage(row.stage)} data-closes={String(closes)}>
-                    <td className="ct-text">{row.stage}</td>
+                    <td className="ct-text">{pick(STAGE_TEXT[row.stage] ?? { en: row.stage, es: row.stage }, lang)}</td>
                     <td>{money(row.opening, lang, cur)}</td>
-                    <td>{row.movements.map((m) => `${m.line_id} ${money(m.amount, lang, cur)}`).join('; ')}</td>
+                    <td>{row.movements.map((m) => `${pick(movementText(m.line_id), lang)} ${money(m.amount, lang, cur)}`).join('; ')}</td>
                     <td>{money(row.closing, lang, cur)}</td>
                     <td>{formatNumber(row.residual, lang, { digits: 3 })}</td>
                     <td className="ct-text">{closes ? yes : no}</td>
@@ -386,9 +396,9 @@ export function IdentitiesView({ sel }: { sel: C06Sel | null }) {
                 const closes = Math.abs(row.residual) <= basis;
                 return (
                   <tr key={row.stage} data-gca-stage={row.stage} data-closes={String(closes)}>
-                    <td className="ct-text">{row.stage}</td>
+                    <td className="ct-text">{pick(STAGE_TEXT[row.stage] ?? { en: row.stage, es: row.stage }, lang)}</td>
                     <td>{money(row.opening, lang, cur)}</td>
-                    <td>{row.movements.map((m) => `${m.line_id} ${money(m.amount, lang, cur)}`).join('; ')}</td>
+                    <td>{row.movements.map((m) => `${pick(movementText(m.line_id), lang)} ${money(m.amount, lang, cur)}`).join('; ')}</td>
                     <td>{money(row.closing, lang, cur)}</td>
                     <td>{formatNumber(row.residual, lang, { digits: 3 })}</td>
                     <td className="ct-text">{closes ? yes : no}</td>
@@ -424,7 +434,7 @@ export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov
             <thead>
               <tr>
                 <th className="ct-text">{pick({ en: 'Test', es: 'Prueba' }, lang)}</th>
-                <th className="ct-text ct-wide-only">{pick({ en: 'Model', es: 'Modelo' }, lang)}</th>
+                <th className="ct-text">{pick({ en: 'Model', es: 'Modelo' }, lang)}</th>
                 <th>{pick({ en: 'Statistic', es: 'Estadístico' }, lang)}</th>
                 <th>p</th>
                 <th className="ct-text">{pick({ en: 'Light', es: 'Luz' }, lang)}</th>
@@ -434,8 +444,11 @@ export function TestRowsCard({ variant, prov }: { variant: VariantArtifact; prov
             <tbody>
               {rows.map((t, i) => (
                 <tr key={`${t.test_id}-${t.model_id}-${t.segment}-${i}`} data-test={t.test_id} data-light={t.light}>
-                  <td className="ct-text">{t.test_id}</td>
-                  <td className="ct-text ct-wide-only">{t.model_id ?? '-'}</td>
+                  <td className="ct-text">
+                    {t.test_id}
+                    {t.segment ? <span className="ct-note" style={{ display: 'block', whiteSpace: 'normal' }}>{pick(segmentLabel(t.segment), lang)}</span> : null}
+                  </td>
+                  <td className="ct-text">{t.model_id ?? '-'}</td>
                   <td>{formatNumber(t.statistic, lang, { digits: 4 })}</td>
                   <td>{t.p_value === null ? formatNumber(null, lang) : formatNumber(t.p_value, lang, { digits: 2 })}</td>
                   <td className={`ct-text ct-light ct-light-${t.light}`}>

@@ -8,6 +8,7 @@ import { ChartOverTable, compactMoney, money } from '../c06/format';
 import { CalibrationView, TestsView } from './ValidationViews';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
+import { truthStatusText } from '../c05/selection';
 import { componentLabel, fitOf, liveIfrs9, outputsOf, type C07Outputs, type C07Sel } from './selection';
 
 const LIVE = 'live' as const;
@@ -41,8 +42,8 @@ export function C07VariantsTable({ variants, onPick, current }: { variants: Arra
             title={{ en: 'IFRS 9 total by scenario (probability-weighted)', es: 'Total IFRS 9 por escenario (ponderada por probabilidad)' }}
             height="fill"
             orientation="vertical"
-            data={variants.map(({ id, title, v }) => ({ id, label: title, value: v.outputs.regimes.find((r) => r.regime === 'ifrs9')?.total_provision ?? null, tone: 'warn' as const, highlight: id === current }))}
-            axis={{ label: { en: `IFRS 9 total (${first?.outputs.currency ?? ''})`, es: `Total IFRS 9 (${first?.outputs.currency ?? ''})` }, format: { digits: 3 } }}
+            data={variants.map(({ id, title, v }) => ({ id, label: title, value: ((v.outputs.regimes.find((r) => r.regime === 'ifrs9')?.total_provision) ?? null) === null ? null : (v.outputs.regimes.find((r) => r.regime === 'ifrs9')!.total_provision / 1e9), tone: 'warn' as const, highlight: id === current }))}
+            axis={{ label: { en: `IFRS 9 total (bn ${first?.outputs.currency ?? ''})`, es: `Total IFRS 9 (mil M ${first?.outputs.currency ?? ''})` }, format: { digits: 3 } }}
           />
         }
       >
@@ -52,7 +53,7 @@ export function C07VariantsTable({ variants, onPick, current }: { variants: Arra
               <th className="ct-text">{pick({ en: 'Scenario', es: 'Escenario' }, lang)}</th>
               <th>CMF B-1</th>
               <th>{pick({ en: 'IFRS 9 (weighted)', es: 'IFRS 9 (ponderada)' }, lang)}</th>
-              <th>BdE Annex 9</th>
+              <th>{pick({ en: 'BdE Annex 9', es: 'Anexo 9 del BdE' }, lang)}</th>
               <th className="ct-wide-only">{pick({ en: 'IFRS 9 change vs base', es: 'Cambio IFRS 9 vs base' }, lang)}</th>
             </tr>
           </thead>
@@ -120,12 +121,12 @@ export function C07ContextView({ sel }: { sel: C07Sel | null }) {
           <dt>{pick({ en: 'Bank', es: 'Banco' }, lang)}</dt>
           <dd data-bank={fit?.bank.name ?? ''}>{fit ? `${fit.bank.name} (${pick({ en: 'synthetic', es: 'sintético' }, lang)})` : pick({ en: 'Not available: the models artifact carries no bank.', es: 'No disponible: el artefacto de modelos no trae el banco.' }, lang)}</dd>
           <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>
-          <dd>{v.provenance.truth_status}</dd>
+          <dd>{pick(truthStatusText(v.provenance.truth_status), lang)}</dd>
           <dt>CMF B-1</dt>
           <dd>{pick({ en: 'The statutory provision on loans in Chile: IFRS 9 5.5 is carved out for loans in the CMF compendium.', es: 'La provisión estatutaria sobre créditos en Chile: IFRS 9 5.5 está excluida para créditos en el compendio de la CMF.' }, lang)}</dd>
           <dt>IFRS 9</dt>
           <dd>{pick({ en: 'A comparison measure: the probability-weighted ECL of the same portfolio, not what Chilean banks book on loans.', es: 'Una medida de comparación: la PCE ponderada por probabilidad de la misma cartera, no lo que los bancos chilenos constituyen sobre los créditos.' }, lang)}</dd>
-          <dt>BdE Annex 9</dt>
+          <dt>{pick({ en: 'BdE Annex 9', es: 'Anexo 9 del BdE' }, lang)}</dt>
           <dd>{pick({ en: 'Spanish GAAP, the alternative solutions, aligned with IFRS 9.', es: 'PGC español, las soluciones alternativas, alineadas con IFRS 9.' }, lang)}</dd>
         </dl>
       </PlotCard>

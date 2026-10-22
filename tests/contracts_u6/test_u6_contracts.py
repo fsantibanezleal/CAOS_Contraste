@@ -508,7 +508,7 @@ def test_the_rows_fragment_has_the_seven_rows_in_the_catalog_columns() -> None:
     for r in data:
         assert len(r) == len(header), r[0]
         d = dict(zip(header, r))
-        assert d["version"] == "1.0.0"
+        assert d["version"] == ("2.0.0" if r[0] == "c03-outputs" else "1.0.0")      # U16-F2 moved c03-outputs to 2.0.0
         # the producers are built (U5 in 0.08.000, U6 in 0.10.000): each row is real, with a committed example
         assert d["status"] == "real"
         assert (ROOT / d["example"]).is_file(), d["example"]

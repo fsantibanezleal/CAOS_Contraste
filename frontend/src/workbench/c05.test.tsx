@@ -12,7 +12,7 @@ import { COMMITTED } from '../lib/policy';
 import { BoundsReadout, C05ContextView, C05FindingsView, C05PolicyReadout, CalibrationReadout, CapitalReadout } from './c05/C05Common';
 import { useC05Instrument } from './c05/instrument';
 import { BoundsView, KnownTruthView, LdpImpactView, LdpTestsView, ScalingView } from './c05/LdpViews';
-import { isSp, type C05Sel } from './c05/selection';
+import { isSp, truthStatusText, type C05Sel } from './c05/selection';
 import { ApproachesView, CurvesView, DefaultProfileView, GoldenSpView, GradeTestsView, ProfilesView, SpImpactView } from './c05/SpViews';
 
 const derived = new URL('../../../data/derived/', import.meta.url);
@@ -83,7 +83,7 @@ describe('the C05 instrument', () => {
         expect(markup).toContain(`data-licence-class="${manifest.source_details[id].class}"`);
       }
       expect(markup).toContain('data-licence-class="generator"');
-      expect(markup).toContain(c.data.variant.provenance.truth_status);
+      expect(markup).toContain(truthStatusText(c.data.variant.provenance.truth_status).en);      // in words, never the document's id (U16-F2 V05-1)
     }
   });
 

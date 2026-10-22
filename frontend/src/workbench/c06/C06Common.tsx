@@ -7,7 +7,8 @@ import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
 import { ChartOverTable, compactMoney, money, pct } from './format';
 import { IdentitiesView, TestRowsCard } from './ValidationViews';
-import { fitOf, liveEcl, nearestPoint, outputsOf, rescaled, type C06Outputs, type C06Sel } from './selection';
+import { truthStatusText } from '../c05/selection';
+import { fitOf, liveEcl, nearestPoint, outputsOf, rescaled, settingText, type C06Outputs, type C06Sel } from './selection';
 
 const LIVE = 'live' as const;
 
@@ -226,18 +227,18 @@ export function C06ContextView({ sel }: { sel: C06Sel | null }) {
           <dd data-primary-source={d.primary_source}>{d.primary_source}</dd>
           <dt>Freddie Mac</dt>
           <dd data-freddie-mac={String(d.freddie_mac_available)}>
-            {d.freddie_mac_available ? pick({ en: 'available', es: 'disponible' }, lang) : `${pick({ en: 'not available', es: 'no disponible' }, lang)}: ${d.freddie_mac_reason ?? ''}`}
+            {d.freddie_mac_available ? pick({ en: 'available', es: 'disponible' }, lang) : `${pick({ en: 'not available', es: 'no disponible' }, lang)}: ${d.freddie_mac_reason ? pick(d.freddie_mac_reason, lang) : ''}`}
           </dd>
           <dt>{pick({ en: 'Notice of the document', es: 'Aviso del documento' }, lang)}</dt>
           <dd>{pick(d.notice, lang)}</dd>
           <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>
-          <dd>{v.provenance.truth_status}</dd>
+          <dd>{pick(truthStatusText(v.provenance.truth_status), lang)}</dd>
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The policy of the run', es: 'La política de la corrida' }} lane={REPLAY} provenance={prov} dataKey={stateKey} note={{ en: 'Only the 30 dpd and 90 dpd presumptions are in IFRS 9. The multipliers, the floor, the probation and the discounting convention are documented model settings, not requirements of the standard.', es: 'Solo las presunciones de 30 y 90 dpd están en IFRS 9. Los multiplicadores, el piso, la prueba y la convención de descuento son parámetros documentados del modelo, no requisitos de la norma.' }}>
         <dl className="ct-defs" data-table="c06-settings">
           <dt>{pick({ en: 'Discounting', es: 'Descuento' }, lang)}</dt>
-          <dd>{`${s.discount_convention}; ${pick({ en: 'EIR basis', es: 'base de la TIE' }, lang)} ${s.eir_basis}`}</dd>
+          <dd>{`${pick(settingText(s.discount_convention), lang)}; ${pick({ en: 'EIR basis', es: 'base de la TIE' }, lang)} ${pick(settingText(s.eir_basis), lang)}`}</dd>
           <dt>{pick({ en: 'Probation', es: 'Prueba de cura' }, lang)}</dt>
           <dd>{pick({ en: `${s.probation_months} months`, es: `${s.probation_months} meses` }, lang)}</dd>
           <dt>{pick({ en: 'Low credit risk exemption', es: 'Exención de bajo riesgo' }, lang)}</dt>

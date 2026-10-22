@@ -135,7 +135,7 @@ def results_block(variants: dict[str, dict[str, Any]], models: dict[str, Any]) -
     w("")
     im = docs["h1"]["outputs"]["impact_detail"]
     if im["ecl_12m_effect"] is None:
-        w(f"No ECL is computed: {im['reason_if_null']}.")
+        w(f"No ECL is computed: {im['reason_if_null']['en']}.")
     else:
         w(f"With a loss given default of {im['lgd']['value'] * 100:.0f} percent (an assumption) and no discounting, the 12-month ECL is "
           f"{im['ecl_12m_effect'] * 100:.3f} percent of the exposure and the lifetime ECL is {im['ecl_lifetime_effect'] * 100:.3f} percent, a ratio of "

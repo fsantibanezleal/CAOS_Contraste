@@ -25,11 +25,13 @@ export function C03FindingsView({ sel }: { sel: C03Sel | null }) {
 }
 
 /** The test cohorts side by side: the training window, the crisis in it and the champion rung's numbers. Pick one to load it. */
-export function C03VariantsTable({ variants, onPick, current }: { variants: Array<{ id: string; title: BiText; v: VariantArtifact<C03Outputs> }>; onPick: (id: string) => void; current: string }) {
+export function C03VariantsTable({ variants, onPick, current, label }: { variants: Array<{ id: string; title: BiText; v: VariantArtifact<C03Outputs> }>; onPick: (id: string) => void; current: string; label?: (rungId: string) => BiText }) {
   const lang = useShellLang();
   const first = variants[0]?.v;
   const card = useCard(first as unknown as VariantArtifact | undefined);
-  const champion = (v: VariantArtifact<C03Outputs>) => v.outputs.rung_comparison[0];
+  // the champion is the rung the calibration and the vintage views are drawn for (outputs.calibration.rung_id); the first row of the comparison is the constant
+  const champion = (v: VariantArtifact<C03Outputs>) => v.outputs.rung_comparison.find((r) => r.rung_id === v.outputs.calibration.rung_id) ?? v.outputs.rung_comparison[0];
+  const rungName = (id: string): string => pick(label ? label(id) : { en: id, es: id }, lang);
   const yes = pick({ en: 'yes', es: 'sí' }, lang);
   const no = pick({ en: 'no', es: 'no' }, lang);
   return (
@@ -42,7 +44,7 @@ export function C03VariantsTable({ variants, onPick, current }: { variants: Arra
       <ChartOverTable
         chart={
           <BarChart
-            title={{ en: 'AUC of the first rung by test cohort', es: 'AUC del primer peldaño por cohorte de prueba' }}
+            title={{ en: 'AUC of the champion by test cohort', es: 'AUC del campeón por cohorte de prueba' }}
             height="fill"
             orientation="vertical"
             data={variants.map(({ id, title, v }) => ({ id, label: title, value: champion(v)?.auc ?? null, tone: 'accent' as const, highlight: id === current }))}
@@ -56,7 +58,7 @@ export function C03VariantsTable({ variants, onPick, current }: { variants: Arra
               <th className="ct-text">{pick({ en: 'Test cohort', es: 'Cohorte de prueba' }, lang)}</th>
               <th>{pick({ en: 'Trained on', es: 'Entrenada con' }, lang)}</th>
               <th className="ct-wide-only">{pick({ en: 'Crisis in training', es: 'Crisis en el entrenamiento' }, lang)}</th>
-              <th className="ct-text ct-wide-only">{pick({ en: 'First rung', es: 'Primer peldaño' }, lang)}</th>
+              <th className="ct-text ct-wide-only">{pick({ en: 'Champion', es: 'Campeón' }, lang)}</th>
               <th>AUC</th>
               <th className="ct-wide-only">{pick({ en: 'Gap at 5 years', es: 'Brecha a 5 años' }, lang)}</th>
             </tr>
@@ -71,7 +73,7 @@ export function C03VariantsTable({ variants, onPick, current }: { variants: Arra
                   </td>
                   <td>{fyRange(v.outputs.training.first_fy, v.outputs.training.last_fy)}</td>
                   <td className="ct-wide-only">{v.outputs.training.crisis_included ? yes : no}</td>
-                  <td className="ct-text ct-wide-only">{c ? c.rung_id : '-'}</td>
+                  <td className="ct-text ct-wide-only">{c ? rungName(c.rung_id) : '-'}</td>
                   <td>
                     <MaybeNumber value={c?.auc ?? null} reason={c?.reason ?? null} format={(x) => formatNumber(x, lang, { digits: 3 })} />
                   </td>
@@ -98,7 +100,7 @@ export function C03VariantsView({ sel, onPick }: { sel: C03Sel | null; onPick: (
     .map((v) => ({ id: v.variant_id, title: entries.find((e) => e.variant_id === v.variant_id)?.short_title ?? { en: v.variant_id, es: v.variant_id }, v }));
   return (
     <ViewsRow>
-      <C03VariantsTable variants={variants} onPick={onPick} current={sel.data.variant.variant_id} />
+      <C03VariantsTable variants={variants} onPick={onPick} current={sel.data.variant.variant_id} label={(id) => rungLabel(sel, id)} />
     </ViewsRow>
   );
 }

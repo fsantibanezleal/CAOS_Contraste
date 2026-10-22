@@ -16,7 +16,7 @@ import type { CaseData } from '../../api/artifacts';
 import type { C04AgencyOutputs, CaseManifest, ModelsArtifact, TestRow, VariantArtifact } from '../../lib/contract.types';
 import { COMMITTED } from '../../lib/policy';
 import { FMT, LOG_FLOOR, MobilityView, SemestersView, TestsView, YEAR0, YEAR_FORMAT } from './AgencyTestsViews';
-import { DEFINITION_LABEL, isAgency, makeSel, type AgencyVariant, type C04Sel } from './selection';
+import { DEFINITION_LABEL, attributionIn, isAgency, makeSel, type AgencyVariant, type C04Sel } from './selection';
 
 /** A value the artifact must hold: a null fails the test instead of reaching a comparison as 0. */
 const nn = (x: number | null | undefined): number => {
@@ -233,7 +233,7 @@ describe('C04 agency views: Tests, Mobility, Semesters', () => {
               expect(c.lane, `${where} ${c.title}`).toBe('replay');
               expect(c.provenance, `${where} ${c.title}`).toBe('real');
               expect(c.note, `${where} ${c.title}: the entity`).toContain(a.o.agency.name);
-              expect(c.note, `${where} ${c.title}: the attribution`).toContain(a.o.attribution);
+              expect(c.note, `${where} ${c.title}: the attribution`).toContain(attributionIn(a.o.attribution, lang));
             }
             for (const ch of hostCharts(markup)) {
               expect(ch.series, `${where}: a chart without series`).toBeGreaterThan(0);
@@ -242,7 +242,7 @@ describe('C04 agency views: Tests, Mobility, Semesters', () => {
             }
             // no em-dash, en-dash or arrow anywhere; Spanish without English left in it (the attribution is verbatim)
             expect(markup).not.toMatch(DASHES);
-            if (lang === 'es') expect(text(markup).replace(a.o.attribution, ''), `${where}: English in the Spanish view`).not.toMatch(/\b(the|and|of)\b/);
+            if (lang === 'es') expect(text(markup).replace(attributionIn(a.o.attribution, lang), ''), `${where}: English in the Spanish view`).not.toMatch(/\b(the|and|of)\b/);
             if (lang === 'en') expect(text(markup), `${where}: Spanish in the English view`).not.toMatch(/\b(el|los|las|del|año)\b/);
           }
         }
