@@ -40,7 +40,7 @@ ECB's (Instructions of February 2019, section 2.4.2); the rule that turns findin
 
 <!-- governance-results:begin -->
 
-The documents were baked over the committed case documents with `riskvalidation` 1.0.0 as of 2026-10-22 (the newest release heading of the changelog; a convention, never the clock). 187 paths were read, each listed with its sha256 in the documents.
+The documents were baked over the committed case documents with `riskvalidation` 1.0.1 as of 2026-10-22 (the newest release heading of the changelog; a convention, never the clock). 187 paths were read, each listed with its sha256 in the documents.
 
 ### The inventory
 
