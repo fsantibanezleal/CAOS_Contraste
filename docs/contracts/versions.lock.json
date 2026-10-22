@@ -115,7 +115,7 @@
     "sha256": "0ec6ff181028f7afc30c1aa6a436ff305f100f620e23605f3994b83a6d73794f"
   },
   "readiness": {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "schema": "docs/contracts/schemas/common/readiness.schema.json",
     "sha256": "da9a02b4900dfba0fb24ec2ec7340533af0926b092529e32d9134d435fc5571f"
   },
