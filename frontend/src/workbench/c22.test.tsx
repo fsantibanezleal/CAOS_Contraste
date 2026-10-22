@@ -166,3 +166,22 @@ describe('the C22 instrument', () => {
     expect(html(<PortfolioReadout sel={{ ...s0, portfolio: { ...s0.portfolio, ratio: 2 } }} />)).toMatch(/Power \(exact\)/);
   });
 });
+
+describe('b10 m16: a rejection panel of more than three series carries the solo key', () => {
+  it('every panel with four series or more renders the key as toggle buttons; a panel of three or fewer does not need it', () => {
+    let many = 0;
+    for (const c of cases) {
+      const v = variantOf(c.data);
+      if (v.outputs.ladder === null) continue;
+      const markup = html(<PowerView sel={base(c.data)} />);
+      for (const panel of markup.split('data-panel="').slice(1)) {
+        const series = (panel.match(/<li class="caos-chart-key"/g) ?? []).length;
+        if (series > 3) {
+          many += 1;
+          expect(panel, `${c.id} panel ${panel.slice(0, 40)}`).toMatch(/aria-pressed/);
+        }
+      }
+    }
+    expect(many).toBeGreaterThan(0);
+  });
+});
