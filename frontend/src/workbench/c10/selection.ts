@@ -73,6 +73,16 @@ export const ESTIMATOR_SHORT: Record<string, Bi> = {
   'maximum-likelihood': { en: 'Max. likelihood', es: 'Máx. verosimilitud' },
   moments: { en: 'Moments', es: 'Momentos' },
 };
+/** The estimator on a chart mark: short enough to sit beside a line at 390 px (U16-R2 b05 M6). */
+export const MARK_SHORT: Record<string, Bi> = {
+  'maximum-likelihood': { en: 'ML', es: 'MV' },
+  moments: { en: 'MoM', es: 'MM' },
+};
+/** The y-axis titles of the two fit charts: short, so the rotated title is never cut. */
+export const DENSITY_TITLE: Bi = { en: 'Density', es: 'Densidad' };
+export const LIKELIHOOD_TITLE: Bi = { en: 'Log-likelihood', es: 'Log-verosimilitud' };
+/** The cutoff of the profile likelihood, as the label of its line. */
+export const cutoffLabel = (value: string, lang: 'en' | 'es'): string => (lang === 'en' ? `Cutoff ${value}` : `Corte ${value}`);
 export const ESTIMATOR_HINT: Record<string, Bi> = {
   'maximum-likelihood': { en: 'Maximises the likelihood of the yearly loss rates under the Vasicek distribution; the interval is the profile likelihood.', es: 'Maximiza la verosimilitud de las tasas de pérdida anuales bajo la distribución de Vasicek; el intervalo es la verosimilitud perfilada.' },
   moments: { en: 'Matches the mean and the variance of the yearly loss rates; the interval is a parametric bootstrap.', es: 'Iguala la media y la varianza de las tasas de pérdida anuales; el intervalo es un bootstrap paramétrico.' },
@@ -113,7 +123,49 @@ export const REGIME_TEXT: Record<string, Bi> = {
 export const SECTOR_TEXT: Record<string, Bi> = {
   prime: { en: 'prime', es: 'preferente' },
   'near-prime': { en: 'near-prime', es: 'casi preferente' },
+  core: { en: 'core', es: 'núcleo' },
+  periphery: { en: 'periphery', es: 'periferia' },
 };
+
+/** The source of the Federal Reserve series and the generator of the simulator. */
+export const SOURCE_TEXT: Record<string, Bi> = {
+  'fed-chargeoff': { en: 'Federal Reserve charge-off and delinquency rates', es: 'Tasas de castigo y morosidad de la Reserva Federal' },
+};
+export const GENERATOR_TEXT: Record<string, Bi> = {
+  'vasicek-lhp-simulator': { en: 'Vasicek large-homogeneous-portfolio simulator', es: 'Simulador de Vasicek de una cartera homogénea grande' },
+};
+
+/** The diagnostics a rung reports and the parameters it takes, in words (the document gives their snake_case names). */
+export const DIAGNOSTIC_TEXT: Record<string, Bi> = {
+  n_max: { en: 'maximum loss units', es: 'máximo de unidades de pérdida' },
+  tail_mass_left_out: { en: 'tail mass left out', es: 'masa de cola omitida' },
+  expected_loss: { en: 'expected loss', es: 'pérdida esperada' },
+  unit_rounding: { en: 'unit rounding', es: 'redondeo de la unidad' },
+  variance_ratio_vs_plain_mc: { en: 'variance ratio against plain Monte Carlo', es: 'razón de varianza frente a Monte Carlo simple' },
+  variance_ratio_es_vs_plain_mc: { en: 'ES variance ratio against plain Monte Carlo', es: 'razón de varianza del ES frente a Monte Carlo simple' },
+  effective_sample_share: { en: 'effective sample share', es: 'proporción de muestra efectiva' },
+};
+export const PARAMETER_TEXT: Record<string, Bi> = {
+  pd: { en: 'PD', es: 'PD' },
+  lgd: { en: 'LGD', es: 'LGD' },
+  n_factors: { en: 'factors', es: 'factores' },
+  factor_correlation: { en: 'factor correlation', es: 'correlación entre factores' },
+  loss_unit: { en: 'loss unit', es: 'unidad de pérdida' },
+  threshold: { en: 'threshold', es: 'umbral' },
+  factor_shift: { en: 'factor shift', es: 'desplazamiento del factor' },
+};
+export const UNIT_TEXT: Record<string, Bi> = {
+  'loss units': { en: 'loss units', es: 'unidades de pérdida' },
+  ratio: { en: 'ratio', es: 'razón' },
+  share: { en: 'share', es: 'proporción' },
+  decimal: { en: 'decimal', es: 'decimal' },
+};
+
+/** A diagnostic or a parameter with its value and unit in the language: "variance ratio 388,7 razón". */
+export function measureText(map: Record<string, Bi>, name: string, value: number, unit: string, lang: 'en' | 'es'): string {
+  const unitText = unit === '-' ? '' : (UNIT_TEXT[unit]?.[lang] ?? unit);
+  return `${(map[name] ?? { en: name, es: name })[lang]} ${formatNumber(value, lang, { digits: 4 })} ${unitText}`.trim();
+}
 export const EULER_METHOD_TEXT: Record<string, Bi> = {
   'gaussian-copula-one-factor': METHOD_TEXT['gaussian-copula-one-factor'],
   'gaussian-copula-multi-factor': METHOD_TEXT['gaussian-copula-multi-factor'],

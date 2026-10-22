@@ -8,7 +8,8 @@ import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable, compactMoney } from '../c06/format';
 import { Pending } from '../Pending';
 import { Flagged, LiveReadout, flaggedItem, p2, useCard } from '../c03/U6Shared';
-import { bandLabel, bandsOf, ccfRow, fitOf, kindText, outputsOf, type C09Outputs, type C09Sel } from './selection';
+import { truthText } from '../c08/words';
+import { SHAPED_ON_TEXT, bandLabel, bandsOf, ccfRow, fitOf, kindText, outputsOf, text, type C09Outputs, type C09Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
@@ -126,13 +127,13 @@ export function C09ContextView({ sel }: { sel: C09Sel | null }) {
           <dt>{pick({ en: 'In US terms', es: 'En términos de EE.UU.' }, lang)}</dt>
           <dd>{pick(o.convention.us_terms, lang)}</dd>
           <dt>{pick({ en: 'Truth status of this variant', es: 'Estado de verdad de esta variante' }, lang)}</dt>
-          <dd>{v.provenance.truth_status}</dd>
+          <dd data-truth-status={v.provenance.truth_status}>{truthText(v.provenance.truth_status, lang)}</dd>
         </dl>
       </PlotCard>
       <PlotCard title={{ en: 'The generator and the replications', es: 'El generador y las replicaciones' }} {...card} note={{ en: 'The truth is the CCF the generator draws balances with. Development and test replications use independent seeds.', es: 'La verdad es el CCF con que el generador simula los saldos. Las replicaciones de desarrollo y de prueba usan semillas independientes.' }}>
         <dl className="ct-defs" data-table="c09-generator">
           <dt>{pick({ en: 'Shaped on', es: 'Con la forma de' }, lang)}</dt>
-          <dd data-shaped-on={g.shaped_on}>{g.shaped_on}</dd>
+          <dd data-shaped-on={g.shaped_on}>{pick(text(SHAPED_ON_TEXT, g.shaped_on), lang)}</dd>
           <dt>{pick({ en: 'Known CCF', es: 'CCF conocido' }, lang)}</dt>
           <dd>
             <Flagged value={g.true_ccf.value} flag={g.true_ccf.flag} />

@@ -17,6 +17,7 @@ from riskvalidation.lgd_ead import floors as rv_floors
 from riskvalidation.lgd_ead import workout as rv_work
 from riskvalidation.validation import lgd_ead as rv_val
 
+from ...core.text import number
 from . import build as bd
 from .cutoff import cutoff_for, open_workout_mask, training_mask
 from .downturn import DownturnPlan
@@ -219,7 +220,7 @@ def _findings(cal: dict[str, Any], rung_id: str, seg: str, down: DownturnPlan) -
         out.append({"id": f"F-cal-{rung_id}", "severity": "S2" if cal["light"] == "red" else "S3", "status": "open",
                     "evidence": [f"lgd_ead.lgd_calibration_by_segment@{rung_id}@{seg}"],
                     "title": bd.t(f"{rung_id} {sign_en} the realised LGD proxy of the cohort by {abs(cal['metric']) * 100:.1f} points",
-                                  f"{rung_id} {sign_es} la LGD proxy realizada de la cohorte en {abs(cal['metric']) * 100:.1f} puntos")})
+                                  f"{rung_id} {sign_es} la LGD proxy realizada de la cohorte en {number(abs(cal['metric']) * 100, 1, lang='es')} puntos")})
     uncovered = [r for r in down.rows if not r["covered"]]
     if uncovered:
         ids = ", ".join(r["cohort_id"] for r in uncovered)

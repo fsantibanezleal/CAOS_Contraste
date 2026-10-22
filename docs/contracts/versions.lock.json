@@ -110,9 +110,9 @@
     "sha256": "39a0664d7d0414f9fa2ecb1fe578d2ca1c79b8d4a4efc6c7ffae0ba2b48c84f1"
   },
   "api": {
-    "version": "18.0.0",
+    "version": "19.0.0",
     "schema": "docs/contracts/api.openapi.json",
-    "sha256": "693729a3597ae12780e51b819be63430876c195ab7c434f9b8b1adb60b61b83c"
+    "sha256": "17d90d47ae65f6d633beb00cf6982b89d9c1ad96cf2746cdabad313fc3f855af"
   },
   "readiness": {
     "version": "1.0.0",
@@ -160,19 +160,19 @@
     "sha256": "ee07f14472df56680ee59e90cec8c4f999ffeb080cac6569ad8d792d88eebd68"
   },
   "c08-outputs": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c08/variant-default-cohort.schema.json",
-    "sha256": "eb69b3fa898e539099de071bd895a7e6120e563d9d278e3e404c935c04fdeb47"
+    "sha256": "02396785215cef352e2392bc38dc1056a343916fd8adbc60d96f1fe48154c860"
   },
   "c08-models": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c08/models.schema.json",
-    "sha256": "9edf6f09ee9cd6ee09757e8b92336b53df58aef51aa64ff94e891a312dfb4e83"
+    "sha256": "9dd4daec36839c052147b4ed2fef43b037588aa4bc683d9dd445bcc5c3cfbcc4"
   },
   "c09-outputs": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "schema": "docs/contracts/schemas/c09/variant-acceleration-level.schema.json",
-    "sha256": "1e621f8efe6309ea13d2c4c18a13a9afec186ab81af9dd1895245a9525642180"
+    "sha256": "c0addbff41c1b6a38c97051aa5b4891f9df41fe00bc3a565dbdcdfc97a972523"
   },
   "c09-models": {
     "version": "1.0.0",

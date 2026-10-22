@@ -266,11 +266,11 @@ describe('the back-tests', () => {
     expect(drawn.map(([, y]) => y)).toEqual(es.histogram.counts);
     const marks = c.marks ?? [];
     const at = (x: number) => marks.find((m) => m.x === x);
-    expect(en(at(es.realised)?.label)).toContain('Realised');
+    expect(en(at(es.realised)?.label)).toContain('Z2');
     expect(en(at(es.critical_5pct)?.label)).toContain('5%');
     expect(en(at(es.critical_0_01pct)?.label)).toContain('0.01%');
-    expect(en(at(fit.es_reference.yellow)?.label)).toContain('reference');
-    expect(en(at(fit.es_reference.red)?.label)).toContain('reference');
+    expect(en(at(fit.es_reference.yellow)?.label)).toContain('Ref.');
+    expect(en(at(fit.es_reference.red)?.label)).toContain('Ref.');
     expect(markup).toContain(formatNumber(es.critical_5pct, 'en', { digits: 4 }));
     expect(markup).toContain(formatNumber(es.critical_0_01pct, 'en', { digits: 4 }));
     expect(markup).toContain(count(es.n_draws));

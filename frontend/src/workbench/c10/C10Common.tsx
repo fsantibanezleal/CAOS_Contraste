@@ -9,9 +9,10 @@ import { LIGHT_TEXT } from '../../lib/policy';
 import { FindingsCard, FixtureNotice } from '../c06/C06Common';
 import { ChartOverTable, compactMoney } from '../c06/format';
 import { Pending } from '../Pending';
+import { adjustmentText, noteText, seriesText } from '../c08/notes';
 import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import {
-  ESTIMATOR_TEXT, INTERVAL_TEXT, estimatorFit, estimatorOf, eulerLevelOf, eulerOf, cellOf, gridOf, groupLabel, levelBi, measureOf, outputsOf, rungOf, text,
+  ESTIMATOR_TEXT, GENERATOR_TEXT, INTERVAL_TEXT, SOURCE_TEXT, estimatorFit, estimatorOf, eulerLevelOf, eulerOf, cellOf, gridOf, groupLabel, levelBi, measureOf, outputsOf, rungOf, text,
   type C10Estimator, type C10GridOutputs, type C10Outputs, type C10Sel,
 } from './selection';
 
@@ -85,7 +86,7 @@ export function C10TestsTable({ variant, only }: { variant: VariantArtifact; onl
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ?? t.reference}</td>
+                  <td className="ct-text">{t.notes ? noteText(t.notes, lang) : t.reference}</td>
                 </tr>
               );
             })}
@@ -257,13 +258,13 @@ export function C10ContextView({ sel, children }: { sel: C10Sel | null; children
         <PlotCard title={{ en: 'The Federal Reserve series', es: 'La serie de la Reserva Federal' }} {...card} note={{ en: 'A quarter the table lacks is a missing quarter with its reason: it is never interpolated, and the year it belongs to has no rate.', es: 'Un trimestre que la tabla no tiene es un trimestre faltante con su razón: nunca se interpola, y el año al que pertenece no tiene tasa.' }}>
           <dl className="ct-defs" data-table="c10-series">
             <dt>{pick({ en: 'Source', es: 'Fuente' }, lang)}</dt>
-            <dd>{o.data_status.source}</dd>
+            <dd>{pick(text(SOURCE_TEXT, o.data_status.source), lang)}</dd>
             <dt>{pick({ en: 'Table', es: 'Tabla' }, lang)}</dt>
             <dd translate="no">{o.data_status.table}</dd>
             <dt>{pick({ en: 'Series', es: 'Serie' }, lang)}</dt>
-            <dd>{o.data_status.series}</dd>
+            <dd>{seriesText(o.data_status.series, lang)}</dd>
             <dt>{pick({ en: 'Adjustment and scope', es: 'Ajuste y alcance' }, lang)}</dt>
-            <dd>{`${o.data_status.seasonal_adjustment}, ${o.data_status.bank_scope}`}</dd>
+            <dd>{`${adjustmentText(o.data_status.seasonal_adjustment, lang)}, ${adjustmentText(o.data_status.bank_scope, lang)}`}</dd>
             <dt>{pick({ en: 'Files as of', es: 'Archivos al' }, lang)}</dt>
             <dd>{o.data_status.files_as_of}</dd>
             <dt>{pick({ en: 'Quarters expected', es: 'Trimestres esperados' }, lang)}</dt>
@@ -285,7 +286,7 @@ export function C10ContextView({ sel, children }: { sel: C10Sel | null; children
                 {o.data_status.missing_quarters.map((q) => (
                   <tr key={q.quarter} data-quarter={q.quarter}>
                     <td className="ct-text">{q.quarter}</td>
-                    <td className="ct-text">{q.reason}</td>
+                    <td className="ct-text">{noteText(q.reason, lang)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -297,9 +298,9 @@ export function C10ContextView({ sel, children }: { sel: C10Sel | null; children
         <PlotCard title={{ en: 'The simulator', es: 'El simulador' }} {...card} note={{ en: 'The truth is the correlation the generator draws the yearly factor with. Every replication uses an independent seeded stream.', es: 'La verdad es la correlación con que el generador simula el factor anual. Cada replicación usa una corriente con semilla independiente.' }}>
           <dl className="ct-defs" data-table="c10-generator">
             <dt>{pick({ en: 'Generator', es: 'Generador' }, lang)}</dt>
-            <dd>{g.generator.name}</dd>
+            <dd>{pick(text(GENERATOR_TEXT, g.generator.name), lang)}</dd>
             <dt>{pick({ en: 'Shaped on', es: 'Con la forma de' }, lang)}</dt>
-            <dd data-shaped-on={g.generator.shaped_on}>{g.generator.shaped_on}</dd>
+            <dd data-shaped-on={g.generator.shaped_on}>{noteText(g.generator.shaped_on, lang)}</dd>
             <dt>{pick({ en: 'Known PD', es: 'PD conocida' }, lang)}</dt>
             <dd>{formatNumber(g.generator.known_pd, lang, { percent: true, decimals: 2 })}</dd>
             <dt>{pick({ en: 'Years in the series', es: 'Años de la serie' }, lang)}</dt>
@@ -360,7 +361,7 @@ export function RungReadout({ sel }: { sel: C10Sel | null }) {
   const level = sel ? levelBi(sel.level) : { en: '', es: '' };
   const why: BiText = r && !r.evaluated ? { en: 'This rung did not run, so it has no number.', es: 'Este escalón no corrió, así que no tiene número.' } : { en: 'Not in this document.', es: 'No está en este documento.' };
   const [elM, varM, esM, seM] = moneySet([m?.el ?? null, m?.var ?? null, m?.es ?? null, m?.var_se ?? null], ccy);
-  const esWhy: BiText = m && m.es === null ? { en: m.es_reason ?? '', es: m.es_reason ?? '' } : { en: 'The expected shortfall: the mean loss beyond the VaR.', es: 'El déficit esperado: la pérdida media más allá del VaR.' };
+  const esWhy: BiText = m && m.es === null ? { en: noteText(m.es_reason, 'en'), es: noteText(m.es_reason, 'es') } : { en: 'The expected shortfall: the mean loss beyond the VaR.', es: 'El déficit esperado: la pérdida media más allá del VaR.' };
   return (
     <LiveReadout
       variant={sel?.data.variant}

@@ -436,7 +436,10 @@
     },
     "ead_floor": {
       "currency": "USD",
-      "rule": "on-balance amount + 50% of the off-balance exposure at the SA CCF (CRE32.36, CRE32.64)",
+      "rule": {
+        "en": "on-balance amount + 50% of the off-balance exposure at the SA CCF (CRE32.36, CRE32.64)",
+        "es": "monto en balance + 50 % de la exposición fuera de balance al CCF del método estandarizado (CRE32.36, CRE32.64)"
+      },
       "off_balance_share": 0.5,
       "rows": [
         {

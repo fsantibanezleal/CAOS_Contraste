@@ -6,6 +6,7 @@ import type { TestRow } from '../../lib/contract.types';
 import { LIGHT_TEXT } from '../../lib/policy';
 import type { Bi } from '../c03/U6Shared';
 import { MaybeNumber } from '../c06/format';
+import { noteText } from '../c08/notes';
 import { CONVENTION_LINE, testName, ZONE_TEXT, text } from './selection';
 
 /** The sign convention, said once per view (dossier 05 A.0): the engine stores returns, the documents positive losses. */
@@ -28,20 +29,40 @@ export const zoneText = (zone: string): Bi => text(ZONE_TEXT, zone);
 export const lightWord = (light: TestRow['light']): BiText => LIGHT_TEXT[light];
 
 /**
+ * The policy alphas of the rows, one clause per distinct pair with the tests it applies to: the Acerbi-Szekely rows carry their own alphas,
+ * which are not those of the Kupiec and Christoffersen rows (U16-R2 b05 M1).
+ */
+export function policyOf(rows: TestRow[], lang: 'en' | 'es'): string {
+  const groups = new Map<string, string[]>();
+  for (const r of rows) {
+    if (r.alpha_amber === null || r.alpha_red === null) continue;
+    const key = `${r.alpha_amber}|${r.alpha_red}`;
+    const name = pick(testName(r.test_id), lang);
+    groups.set(key, [...new Set([...(groups.get(key) ?? []), name])]);
+  }
+  const clause = (key: string, names: string[]) => {
+    const [a, b] = key.split('|').map(Number);
+    const alphas = lang === 'en' ? `amber below ${formatNumber(a, lang, { digits: 3 })}, red below ${formatNumber(b, lang, { digits: 3 })}` : `ámbar bajo ${formatNumber(a, lang, { digits: 3 })}, rojo bajo ${formatNumber(b, lang, { digits: 3 })}`;
+    return groups.size === 1 ? alphas : `${names.join(', ')}: ${alphas}`;
+  };
+  return [...groups].map(([k, n]) => clause(k, n)).join('; ');
+}
+
+/**
  * The back-test rows of one model and level: the test in words, its statistic and p-value (or "not available"), the light
  * under the committed policy and the note, which for a test that did not run is the reason. The p-value that lights a row
  * is the engine's; the policy alphas are in the row (`alpha_amber`, `alpha_red`) and printed in the header note.
  */
 export function MarketTestsTable({ rows, table }: { rows: TestRow[]; table: string }) {
   const lang = useShellLang();
-  const policy = rows.find((r) => r.alpha_amber !== null && r.alpha_red !== null);
+  const policy = policyOf(rows, lang);
   return (
     <div data-block="tests">
       <p className="ct-note">
         {pick(
           {
-            en: `The tests the engine returned: the statistic and p-value when it ran and the light under the committed policy${policy ? ` (amber below ${formatNumber(policy.alpha_amber, 'en', { decimals: 2 })}, red below ${formatNumber(policy.alpha_red, 'en', { decimals: 2 })})` : ''}. A test that did not run says why and shows no number.`,
-            es: `Las pruebas que devolvió el motor: el estadístico y el valor p cuando corrió y la luz bajo la política comprometida${policy ? ` (ámbar bajo ${formatNumber(policy.alpha_amber, 'es', { decimals: 2 })}, rojo bajo ${formatNumber(policy.alpha_red, 'es', { decimals: 2 })})` : ''}. Una prueba que no corrió dice por qué y no muestra número.`,
+            en: `The tests the engine returned: the statistic and p-value when it ran and the light under the committed policy${policy ? ` (${policyOf(rows, 'en')})` : ''}. A test that did not run says why and shows no number.`,
+            es: `Las pruebas que devolvió el motor: el estadístico y el valor p cuando corrió y la luz bajo la política comprometida${policy ? ` (${policy})` : ''}. Una prueba que no corrió dice por qué y no muestra número.`,
           },
           lang,
         )}
@@ -76,7 +97,7 @@ export function MarketTestsTable({ rows, table }: { rows: TestRow[]; table: stri
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(lightWord(t.light), lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes ?? t.reference}</td>
+                  <td className="ct-text">{t.notes ? noteText(t.notes, lang) : t.reference}</td>
                 </tr>
               );
             })}

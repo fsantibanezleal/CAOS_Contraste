@@ -86,7 +86,7 @@ def fit_block(res: VariantResult, freddie_reason: str, down) -> dict[str, Any]:
                      "closure_rule": bd.closure_rule()},
         "workout": bd.workout_block(), "ladder": ladder_block(res),
         "downturn": {"approach": dict(down.approach), "period": dict(down.period)},
-        "floors": {"regime": bd.REGIME, "cells": bd.floor_cells_block(), "source": bd.FLOOR_SOURCE},
+        "floors": {"regime": bd.REGIME, "cells": bd.floor_cells_block(), "source": dict(bd.FLOOR_SOURCE)},
     }
 
 

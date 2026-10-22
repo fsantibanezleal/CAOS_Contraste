@@ -8,6 +8,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable, alignTo, unionX } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
+import { platformText } from '../c08/notes';
 import { NOT_SWAP, UnavailableCard, cell, years, DEFS_STYLE, Nw } from './C12Common';
 import { BASIS_TEXT, CASE_ORDER, CASE_TEXT, VARIANT_TEXT, axisOf, gridOf, outputsOf, sensitivityOf, text, type C12Profile, type C12Sel } from './selection';
 
@@ -72,8 +73,8 @@ export function ProfileView({ sel }: { sel: C12Sel | null }) {
               {ore.status === 'reconciled' && ore.eepe_agreement && ore.cva_agreement
                 ? pick(
                     {
-                      en: `reconciled on ${ore.platform ?? ''}: EEPE ${cell(ore.eepe_agreement.python, 'en')} against ${cell(ore.eepe_agreement.ore, 'en')}, CVA ${cell(ore.cva_agreement.python, 'en')} against ${cell(ore.cva_agreement.ore, 'en')}; every point within two combined standard errors: ${ore.all_within_two_se ? 'yes' : 'no'}`,
-                      es: `conciliada en ${ore.platform ?? ''}: EEPE ${cell(ore.eepe_agreement.python, 'es')} contra ${cell(ore.eepe_agreement.ore, 'es')}, CVA ${cell(ore.cva_agreement.python, 'es')} contra ${cell(ore.cva_agreement.ore, 'es')}; todos los puntos dentro de dos errores estándar combinados: ${ore.all_within_two_se ? 'sí' : 'no'}`,
+                      en: `reconciled on ${platformText(ore.platform, 'en')}: EEPE ${cell(ore.eepe_agreement.python, 'en')} against ${cell(ore.eepe_agreement.ore, 'en')}, CVA ${cell(ore.cva_agreement.python, 'en')} against ${cell(ore.cva_agreement.ore, 'en')}; every point within two combined standard errors: ${ore.all_within_two_se ? 'yes' : 'no'}`,
+                      es: `conciliada en ${platformText(ore.platform, 'es')}: EEPE ${cell(ore.eepe_agreement.python, 'es')} contra ${cell(ore.eepe_agreement.ore, 'es')}, CVA ${cell(ore.cva_agreement.python, 'es')} contra ${cell(ore.cva_agreement.ore, 'es')}; todos los puntos dentro de dos errores estándar combinados: ${ore.all_within_two_se ? 'sí' : 'no'}`,
                     },
                     lang,
                   )
@@ -156,7 +157,7 @@ export function CollateralView({ sel }: { sel: C12Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: grid, ...YEARS_AXIS }}
-              y={{ label: { en: `Expected exposure (${pick(axis.unit, 'en')})`, es: `Exposición esperada (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
+              y={{ label: { en: `EE (${pick(axis.unit, 'en')})`, es: `EE (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
               series={[
                 ...docs.map((d) => ({ label: MPOR_LABEL[d.id], values: line(d.o.exposure.time_grid_years, d.o.exposure.ee.values), color: MPOR_COLOR[d.id], width: d.id === 'netting-set' ? 2.6 : 2, ...(d.id === 'csa-mpor-20d' ? { dash: [6, 3] } : {}) })),
                 ...(dim && withIm ? [{ label: { en: 'Dynamic initial margin (regression proxy)', es: 'Margen inicial dinámico (proxy por regresión)' } as BiText, values: line(withIm.exposure.time_grid_years, dim.values), color: '--color-fg-subtle' as const, width: 1.6, dash: [2, 3] }] : []),
@@ -252,7 +253,7 @@ export function NettingView({ sel }: { sel: C12Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: grid, ...YEARS_AXIS }}
-              y={{ label: { en: `Expected exposure (${pick(axis.unit, 'en')})`, es: `Exposición esperada (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
+              y={{ label: { en: `EE (${pick(axis.unit, 'en')})`, es: `EE (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
               series={[
                 ...nb.per_trade_ee.map((t, i) => ({ label: { en: `EE of ${t.trade_id}`, es: `EE de ${t.trade_id}` } as BiText, values: div(t.ee), color: (['--color-fg-subtle', '--color-fg-faint', '--color-magenta', '--color-warn'] as const)[i % 4], width: 1.3, dash: [3, 3] })),
                 ...(single ? [] : [{ label: { en: 'Sum of single-trade EE', es: 'Suma de EE individuales' } as BiText, values: div(nb.sum_of_single_trade_ee), color: '--color-accent' as const, width: 2.4 }]),

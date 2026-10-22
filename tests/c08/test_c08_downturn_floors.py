@@ -37,7 +37,9 @@ def test_the_add_on_uses_only_the_downturn_cohorts(tables, annual):
         assert (r["covered"], r["shortfall"]) == (covered, shortfall)
     assert plan.coverage == {"n_cohorts": len(plan.rows), "share_covered": sum(r["covered"] for r in plan.rows) / len(plan.rows)}
     assert len(plan.tests) == len(plan.rows) and all(t["test_id"] == "lgd_ead.downturn_coverage" for t in plan.tests)
-    assert "annual charge-off rate" in plan.period["indicator"] and "no macro path" in plan.period["macro_source"]
+    # the indicator and the macro source are bilingual texts since c08-outputs 2.0.0 (U16-R2 b04 B5)
+    assert "annual charge-off rate" in plan.period["indicator"]["en"] and "no macro path" in plan.period["macro_source"]["en"]
+    assert "tasa anual de castigos" in plan.period["indicator"]["es"]
 
 
 def test_the_downturn_block_is_the_same_in_every_variant_and_committed_rows_follow_the_period(docs):
