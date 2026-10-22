@@ -205,7 +205,7 @@ export function CapsView({ sel }: { sel: C14Sel | null }) {
                 <th className="ct-text">{pick({ en: 'Category', es: 'Categoría' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: `Balance (${unit})`, es: `Saldo (${unit})` }, lang)}</th>
                 <th>{pick({ en: 'Core share requested', es: 'Parte estable pedida' }, lang)}</th>
-                <th>{pick({ en: 'Cap', es: 'Tope' }, lang)}</th>
+                <th>{pick({ en: 'Share cap', es: 'Tope de la parte' }, lang)}</th>
                 <th>{pick({ en: 'Used', es: 'Usada' }, lang)}</th>
                 <th>{pick({ en: 'Maturity requested (years)', es: 'Plazo pedido (años)' }, lang)}</th>
                 <th>{pick({ en: 'Cap (years)', es: 'Tope (años)' }, lang)}</th>

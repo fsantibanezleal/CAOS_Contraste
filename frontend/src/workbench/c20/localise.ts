@@ -62,6 +62,7 @@ const TEXT: Map = {
 export const C20_RULES: ReadonlyArray<Rule> = [
   ...exact(TEXT),
   [/^(\d+) to (\d+)$/, (g) => `${g[1]} a ${g[2]}`],
+  [/^(.+), seed (\d+)$/, (g) => `${g[1]}, semilla ${g[2]}`],
 ];
 
 /** The Spanish of a document string, or the string itself in English or when no entry knows it. */

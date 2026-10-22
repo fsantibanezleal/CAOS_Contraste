@@ -58,7 +58,7 @@ export function InterpolationRule({ rule, lang }: { rule: string; lang: Lang }) 
 }
 
 /** The words an absent block says when the view is given a document of another kind. */
-export const NOT_SCENARIO: BiText = { en: 'Not available: this document is not a scenario variant, so it has no capital plan, satellites or back-cast.', es: 'No disponible: este documento no es una variante de escenario, así que no tiene plan de capital, satélites ni back-cast.' };
+export const NOT_SCENARIO: BiText = { en: 'Not available: this document is not a scenario variant, so it has no capital plan, satellites or back-cast.', es: 'No disponible: este documento no es una variante de escenario, así que no tiene plan de capital, satélites ni prueba retrospectiva.' };
 export const NOT_AGGREGATION: BiText = { en: 'Not available: this document carries no aggregation block.', es: 'No disponible: este documento no trae un bloque de agregación.' };
 export const NOT_AGG_VARIANT: BiText = { en: 'Not available: this view reads the t-copula aggregation variant, which holds the stressed matrix, the copula sensitivity and the reference.', es: 'No disponible: esta vista lee la variante de agregación con cópula t, que trae la matriz bajo estrés, la sensibilidad a la cópula y la referencia.' };
 export const NOT_REVERSE: BiText = { en: 'Not available: this document is not the reverse-stress variant.', es: 'No disponible: este documento no es la variante de estrés inverso.' };

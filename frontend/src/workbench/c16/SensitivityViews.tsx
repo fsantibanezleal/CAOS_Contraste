@@ -8,7 +8,7 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
-import { BASE_ORDER, BASE_TEXT, axisOf, baseOf, outputsOf, reverseOf, survivalDay, survivalText, text, type C16Sel, type C16Survival } from './selection';
+import { BASE_ORDER, BASE_TEXT, baseOf, outputsOf, reverseOf, survivalDay, survivalText, text, type C16Sel, type C16Survival } from './selection';
 import { MONEY_UNIT, NOT_REVERSE, NOT_SCENARIO, SHARE, SurvivalCell, UnavailableCard, cell, digits } from './C16Common';
 
 const NO_DRAWN_DAY: BiText = { en: 'Every point survives its horizon: there is no survival day to draw. The table gives each point and the horizon it survived.', es: 'Todo punto sobrevive su horizonte: no hay día de supervivencia que dibujar. La tabla da cada punto y el horizonte que sobrevivió.' };
@@ -99,7 +99,6 @@ export function HtmLossView({ sel }: { sel: C16Sel | null }) {
   if (!rows) return <UnavailableCard sel={sel} title={title} reason={o.sensitivities.htm_loss_reason ?? { en: 'Not available: this variant has no daily path.', es: 'No disponible: esta variante no tiene trayectoria diaria.' }} />;
   const days = rows.map((r) => survivalDay(r.survival));
   const drawn = days.some((d) => d !== null);
-  const axis = axisOf(rows.flatMap((r) => [r.cbc, r.unrealised_loss]));
   return (
     <ViewsRow>
       <PlotCard
@@ -146,7 +145,7 @@ export function HtmLossView({ sel }: { sel: C16Sel | null }) {
               ))}
             </tbody>
           </table>
-          <p className="ct-note">{pick({ en: `The axis of the CBC is ${pick(axis.unit, 'en')} when scaled; the table keeps the whole amounts.`, es: `El eje del CBC es ${pick(axis.unit, 'es')} cuando se escala; la tabla conserva los montos completos.` }, lang)}</p>
+          <p className="ct-note">{pick({ en: 'The chart draws the survival period of each multiple; the table keeps the whole amounts of the loss and the CBC.', es: 'El gráfico dibuja el periodo de supervivencia de cada múltiplo; la tabla conserva los montos completos de la pérdida y del CBC.' }, lang)}</p>
           <SurvivorsNote survivals={rows.map((r) => ({ label: formatNumber(r.multiple, lang, { digits: 3 }), s: r.survival }))} />
         </ChartOverTable>
       </PlotCard>

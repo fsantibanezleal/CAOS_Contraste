@@ -279,7 +279,7 @@ export function useInstrument(data: CaseData | null, onPick: (id: string) => voi
           [
             { id: 'paths', label: { en: 'Scenario path', es: 'Trayectoria' }, content: <PathsView sel={sel} /> },
             { id: 'satellites', label: { en: 'Satellites', es: 'Satélites' }, content: <SatellitesView sel={sel} /> },
-            { id: 'backcast', label: { en: 'Back-cast', es: 'Back-cast' }, content: <BackcastView sel={sel} /> },
+            { id: 'backcast', label: { en: 'Back-cast', es: 'Retrospectiva' }, content: <BackcastView sel={sel} /> },
             { id: 'severity', label: { en: 'Severity', es: 'Severidad' }, content: <SeverityView sel={sel} /> },
             { id: 'losses', label: { en: 'Losses', es: 'Pérdidas' }, content: <LossesView sel={sel} /> },
           ],

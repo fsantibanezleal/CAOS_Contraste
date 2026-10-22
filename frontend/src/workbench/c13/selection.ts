@@ -62,12 +62,15 @@ export const ZONE_TEXT: Record<string, Bi> = {
 
 export const text = (map: Record<string, Bi>, id: string): Bi => map[id] ?? { en: id, es: id };
 
-/** A desk level in words: "1% tail (99% VaR)". */
-export function levelLabel(alpha: number, lang: 'en' | 'es'): string {
+/** A desk level in words: "1% tail (99% VaR)"; `midSentence` keeps the Spanish noun in lower case inside a title. */
+export function levelLabel(alpha: number, lang: 'en' | 'es', midSentence = false): string {
   const f = (v: number) => (v === 0.025 ? (lang === 'es' ? '2,5' : '2.5') : String(Math.round(v * 100)));
   const g = (v: number) => (v === 0.025 ? (lang === 'es' ? '97,5' : '97.5') : String(Math.round((1 - v) * 100)));
-  return lang === 'es' ? `Cola de ${f(alpha)} % (VaR al ${g(alpha)} %)` : `${f(alpha)}% tail (${g(alpha)}% VaR)`;
+  return lang === 'es' ? `${midSentence ? 'cola' : 'Cola'} de ${f(alpha)} % (VaR al ${g(alpha)} %)` : `${f(alpha)}% tail (${g(alpha)}% VaR)`;
 }
+
+/** A seed is an identifier, not an amount: written whole, never grouped ("14000", not "14,000"). */
+export const seedText = (v: number, lang: 'en' | 'es'): string => formatNumber(v, lang, { decimals: 0, grouping: false });
 
 /** A desk level in a few words, for a chip of the narrow rail: "2.5% tail". */
 export function levelShort(alpha: number, lang: 'en' | 'es'): string {
@@ -190,5 +193,5 @@ export const GENERATOR_TEXT: Record<string, Bi> = {
 /** A named parameter with its value and unit in the language. */
 export function parameterText(p: { name: string; value: number; unit: string }, lang: 'en' | 'es', digits: number): string {
   const unit = UNIT_TEXT[p.unit]?.[lang] ?? p.unit;
-  return `${(PARAMETER_TEXT[p.name] ?? { en: p.name, es: p.name })[lang]} ${formatNumber(p.value, lang, { digits })} ${unit}`.trim();
+  return `${(PARAMETER_TEXT[p.name] ?? { en: p.name, es: p.name })[lang]} ${formatNumber(p.value, lang, { digits })} ${p.unit === 'days' && p.value === 1 ? (lang === 'es' ? 'día' : 'day') : unit}`.trim();
 }

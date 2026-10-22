@@ -46,10 +46,11 @@ export function GapView({ sel }: { sel: C14Sel | null }) {
               orientation="vertical"
               values={false}
               data={ladder.repricing_gap.map((g) => ({ id: String(g.bucket), label: { en: String(g.bucket), es: String(g.bucket) }, value: g.gap / axis.div, tone: g.gap >= 0 ? ('accent' as const) : ('warn' as const), hint: labels.get(g.bucket) ?? { en: `${g.midpoint_years} years`, es: `${g.midpoint_years} años` } }))}
-              axis={{ label: { en: 'Gap, assets minus liabilities (buckets 1 to 19, overnight to over 20 years)', es: 'Brecha, activos menos pasivos (tramos 1 a 19, a la vista a más de 20 años)' }, unit: axis.unit, format: { digits: 4 } }}
+              axis={{ label: { en: 'Gap, assets minus liabilities', es: 'Brecha, activos menos pasivos' }, unit: axis.unit, format: { digits: 4 } }}
             />
           }
         >
+          <p className="ct-note" data-category-axis="buckets">{pick({ en: 'Horizontal axis: time bucket, 1 (overnight) to 19 (over 20 years).', es: 'Eje horizontal: tramo de tiempo, de 1 (a la vista) a 19 (más de 20 años).' }, lang)}</p>
           <dl className="ct-defs" data-table="duration-gap">
             <dt>{pick({ en: 'Asset duration', es: 'Duración de activos' }, lang)}</dt>
             <dd>{`${digits(d.asset_duration_years, lang)} ${pick({ en: 'years', es: 'años' }, lang)}`}</dd>

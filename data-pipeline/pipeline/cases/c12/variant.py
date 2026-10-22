@@ -301,7 +301,7 @@ def outputs(c: Core, ctx: dict[str, Any], stress_eepe: float, sens: list[dict[st
 def not_applicable_ore() -> dict[str, Any]:
     reason = text("ORE's wrong-way example is a different model (a correlated credit LGM), not the Hull and White (2012) hazard on the "
                   "portfolio value, so this variant has no ORE reconciliation.",
-                  "El ejemplo de riesgo de dirección equivocada de ORE es otro modelo (un LGM de crédito correlacionado), no el "
+                  "El ejemplo de riesgo de correlación adversa de ORE es otro modelo (un LGM de crédito correlacionado), no el "
                   "hazard de Hull y White (2012) sobre el valor del portafolio, por lo que esta variante no tiene conciliación con ORE.")
     return {"status": "not-applicable", "ore_version": None, "platform": None, "run_seconds": None, "ore_ee": None,
             "ore_ee_discounted": None, "ore_eepe": None, "ore_cva": None, "ore_dim": None, "agreement": None, "eepe_agreement": None,
