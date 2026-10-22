@@ -552,16 +552,19 @@
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); dossier 05 G.1 (the aggregation ladder: simple sum, variance-covariance, copulas)",
        "policy": {
         "label": "contraste-aggregation-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of aggregation.simple_sum_and_variance_covariance is the rule 'aggregation_sum_vc', not a single direction",
+        "parameters": {
+         "amber": 0.1,
+         "tolerance": 1e-09
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -577,16 +580,19 @@
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); Rosenberg and Schuermann (2006), A general approach to integrated risk management with skewed, fat-tailed risks, J. Financial Economics 79(3):569-614, doi:10.1016/j.jfineco.2005.03.001 (dossier 05 G.2)",
        "policy": {
         "label": "contraste-aggregation-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
-        "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction": "upper_bad",
+        "direction_reason": null,
+        "parameters": {
+         "amber": 0.05,
+         "red": 0.15
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -602,16 +608,18 @@
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); dossier 05 G.3 (VaR is not subadditive; worst-case VaR bounds by the rearrangement algorithm of Embrechts, Puccetti and Ruschendorf 2013, doi:10.1016/j.jbankfin.2013.03.014)",
        "policy": {
         "label": "contraste-aggregation-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of aggregation.worst_case_bracket is the rule 'red_if_positive:extras.rows_outside', not a single direction",
+        "parameters": {
+         "tolerance": 1e-09
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -627,16 +635,19 @@
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level)",
        "policy": {
         "label": "contraste-aggregation-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of aggregation.correlation_stress is the rule 'aggregation_corr_stress', not a single direction",
+        "parameters": {
+         "amber": 0.1,
+         "tolerance": 1e-09
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -652,16 +663,18 @@
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); dossier 05 G.3 (VaR is not subadditive; worst-case VaR bounds by the rearrangement algorithm of Embrechts, Puccetti and Ruschendorf 2013, doi:10.1016/j.jbankfin.2013.03.014)",
        "policy": {
         "label": "contraste-aggregation-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of aggregation.diversification_sign is the rule 'aggregation_diversification', not a single direction",
+        "parameters": {
+         "tolerance": 1e-09
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -677,16 +690,19 @@
        "reference": "dossier 05 G.5 (validation tests of an economic capital model: benchmark the aggregation against the simple sum and the variance-covariance formula, the copula-choice sensitivity, worst-case bounds, the correlation stress, the sign of every diversification benefit, one horizon and confidence level); dossier 01 l.837-839 (one horizon and one confidence level for the aggregation)",
        "policy": {
         "label": "contraste-aggregation-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of aggregation.horizon_confidence_consistency is the rule 'red_if_positive:statistic', not a single direction",
+        "parameters": {
+         "expected_horizon": 1.0,
+         "expected_level": 0.999
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -702,16 +718,16 @@
        "reference": "Tasche (2008), Capital allocation to business units and sub-portfolios: the Euler principle, arXiv 0708.2542 (full allocation); dossier 05 G.5 (validation tests of an economic capital model: check the allocation sums to the total, the sensitivity checks)",
        "policy": {
         "label": "contraste-portfolio-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
-        "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
+        "direction": "upper_bad",
+        "direction_reason": null,
         "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -727,16 +743,16 @@
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
        "policy": {
         "label": "contraste-stress-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
+        "direction_reason": "the light of stress.sensitivity_monotonicity is the rule 'red_if_positive:statistic', not a single direction",
         "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -752,16 +768,20 @@
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
        "policy": {
         "label": "contraste-stress-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of stress.satellite_backcast is the rule 'stress_satellite', not a single direction",
+        "parameters": {
+         "peak_amber": 0.35,
+         "peak_red": 0.6,
+         "timing_quarters": 2.0
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -777,16 +797,20 @@
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
        "policy": {
         "label": "contraste-stress-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of stress.satellite_backcast is the rule 'stress_satellite', not a single direction",
+        "parameters": {
+         "peak_amber": 0.35,
+         "peak_red": 0.6,
+         "timing_quarters": 2.0
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -802,16 +826,20 @@
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
        "policy": {
         "label": "contraste-stress-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of stress.satellite_backcast is the rule 'stress_satellite', not a single direction",
+        "parameters": {
+         "peak_amber": 0.35,
+         "peak_red": 0.6,
+         "timing_quarters": 2.0
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -827,16 +855,20 @@
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
        "policy": {
         "label": "contraste-stress-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of stress.satellite_backcast is the rule 'stress_satellite', not a single direction",
+        "parameters": {
+         "peak_amber": 0.35,
+         "peak_red": 0.6,
+         "timing_quarters": 2.0
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -852,16 +884,20 @@
        "reference": "dossier 05 H.7 (Contraste initiative research): back-cast the satellites through 2008-2009 and 2020 with data ending before the episode, check the sign of macro sensitivities, the static balance-sheet rules, bottom-up against top-down, severity against history",
        "policy": {
         "label": "contraste-stress-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of stress.satellite_backcast is the rule 'stress_satellite', not a single direction",
+        "parameters": {
+         "peak_amber": 0.35,
+         "peak_red": 0.6,
+         "timing_quarters": 2.0
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -877,16 +913,18 @@
        "reference": "EBA 2025 EU-wide stress test, Methodological Note of 2025-01-20, paras 33, 34 and 90 (static balance sheet: constant total, no cure of stage 3); dossier 05 H.4 and H.7",
        "policy": {
         "label": "contraste-stress-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of stress.static_balance_sheet_rules is the rule 'red_if_positive:statistic', not a single direction",
+        "parameters": {
+         "tolerance": 0.006000000000000001
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -902,16 +940,18 @@
        "reference": "dossier 05 H.7: document severity relative to history (GDP and unemployment paths against the GFC, as the EBA does)",
        "policy": {
         "label": "contraste-stress-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of stress.scenario_severity is the rule 'stress_severity', not a single direction",
+        "parameters": {
+         "minimum": 0.75
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -927,16 +967,18 @@
        "reference": "dossier 05 H.7: document severity relative to history (GDP and unemployment paths against the GFC, as the EBA does)",
        "policy": {
         "label": "contraste-stress-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of stress.scenario_severity is the rule 'stress_severity', not a single direction",
+        "parameters": {
+         "minimum": 0.75
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       },
       {
@@ -952,16 +994,18 @@
        "reference": "dossier 05 H.7: document severity relative to history (GDP and unemployment paths against the GFC, as the EBA does)",
        "policy": {
         "label": "contraste-stress-battery 1.0.0",
-        "kind": null,
-        "kind_reason": "unresolved identity",
+        "kind": "metric",
+        "kind_reason": null,
         "alpha_amber": null,
         "alpha_red": null,
         "direction": null,
-        "direction_reason": "no policy file for an inline battery string",
-        "parameters": {},
-        "version": null,
-        "source": "unresolved",
-        "reason": "the policy string matches neither a packaged label nor an inline battery string"
+        "direction_reason": "the light of stress.scenario_severity is the rule 'stress_severity', not a single direction",
+        "parameters": {
+         "minimum": 0.75
+        },
+        "version": "1.0.0",
+        "source": "packaged-policy",
+        "reason": null
        }
       }
      ]

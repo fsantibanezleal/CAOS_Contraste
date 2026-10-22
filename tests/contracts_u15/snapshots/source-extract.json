@@ -3434,7 +3434,8 @@
     "rating.hhi": "p_value",
     "stability.csi": "p_value",
     "stability.psi": "p_value"
-   }
+   },
+   "packaged_policies": {}
   },
   "C07": {
    "fit_id": "banco-andino",
@@ -4701,6 +4702,62 @@
     "ifrs9.reconciliation_identities": "metric",
     "ifrs9.scenario_sensitivity": "metric",
     "ifrs9.sicr_effectiveness": "metric"
+   },
+   "packaged_policies": {
+    "contraste-ifrs9-battery 1.0.0": {
+     "version": "1.0.0",
+     "thresholds": {
+      "ifrs9.ecl_backtest": {
+       "kind": "upper_bad",
+       "rule": "ifrs9_ecl_backtest",
+       "parameters": {
+        "r_amber_high": 2.0,
+        "r_amber_low": 0.5,
+        "r_green_high": 1.25,
+        "r_green_low": 0.8
+       }
+      },
+      "ifrs9.nonlinearity": {
+       "kind": "upper_bad",
+       "rule": "ifrs9_nonlinearity",
+       "parameters": {
+        "gauss_hermite_tolerance": 1e-09
+       }
+      },
+      "ifrs9.overlay_diagnostics": {
+       "kind": "upper_bad",
+       "rule": "ifrs9_overlay",
+       "parameters": {
+        "share_amber": 0.1,
+        "share_red": 0.25
+       }
+      },
+      "ifrs9.reconciliation_identities": {
+       "kind": "upper_bad",
+       "rule": "red_if_nonempty:extras.failing_identities",
+       "parameters": {
+        "tolerance": 1e-06
+       }
+      },
+      "ifrs9.scenario_sensitivity": {
+       "kind": "upper_bad",
+       "rule": "ifrs9_scenario_sensitivity",
+       "parameters": {
+        "nl_amber": 1.0,
+        "nl_red": 3.0
+       }
+      },
+      "ifrs9.sicr_effectiveness": {
+       "kind": "lower_bad",
+       "rule": "ifrs9_sicr_effectiveness",
+       "parameters": {
+        "amber_ratio": 1.0,
+        "direct_share_amber": 0.5,
+        "green_ratio": 2.0
+       }
+      }
+     }
+    }
    }
   },
   "C18": {
@@ -6165,6 +6222,102 @@
     "stress.scenario_severity": "metric",
     "stress.sensitivity_monotonicity": "metric",
     "stress.static_balance_sheet_rules": "metric"
+   },
+   "packaged_policies": {
+    "contraste-aggregation-battery 1.0.0": {
+     "version": "1.0.0",
+     "thresholds": {
+      "aggregation.copula_choice_sensitivity": {
+       "kind": "upper_bad",
+       "rule": "upper_le:statistic",
+       "parameters": {
+        "amber": 0.05,
+        "red": 0.15
+       }
+      },
+      "aggregation.correlation_stress": {
+       "kind": "upper_bad",
+       "rule": "aggregation_corr_stress",
+       "parameters": {
+        "amber": 0.1,
+        "tolerance": 1e-09
+       }
+      },
+      "aggregation.diversification_sign": {
+       "kind": "upper_bad",
+       "rule": "aggregation_diversification",
+       "parameters": {
+        "tolerance": 1e-09
+       }
+      },
+      "aggregation.horizon_confidence_consistency": {
+       "kind": "upper_bad",
+       "rule": "red_if_positive:statistic",
+       "parameters": {
+        "expected_horizon": 1.0,
+        "expected_level": 0.999
+       }
+      },
+      "aggregation.simple_sum_and_variance_covariance": {
+       "kind": "upper_bad",
+       "rule": "aggregation_sum_vc",
+       "parameters": {
+        "amber": 0.1,
+        "tolerance": 1e-09
+       }
+      },
+      "aggregation.worst_case_bracket": {
+       "kind": "upper_bad",
+       "rule": "red_if_positive:extras.rows_outside",
+       "parameters": {
+        "tolerance": 1e-09
+       }
+      }
+     }
+    },
+    "contraste-portfolio-battery 1.0.0": {
+     "version": "1.0.0",
+     "thresholds": {
+      "portfolio.euler_additivity": {
+       "kind": "upper_bad",
+       "rule": "upper_le:metric",
+       "parameters": {}
+      }
+     }
+    },
+    "contraste-stress-battery 1.0.0": {
+     "version": "1.0.0",
+     "thresholds": {
+      "stress.satellite_backcast": {
+       "kind": "upper_bad",
+       "rule": "stress_satellite",
+       "parameters": {
+        "peak_amber": 0.35,
+        "peak_red": 0.6,
+        "timing_quarters": 2.0
+       }
+      },
+      "stress.scenario_severity": {
+       "kind": "lower_bad",
+       "rule": "stress_severity",
+       "parameters": {
+        "minimum": 0.75
+       }
+      },
+      "stress.sensitivity_monotonicity": {
+       "kind": "upper_bad",
+       "rule": "red_if_positive:statistic",
+       "parameters": {}
+      },
+      "stress.static_balance_sheet_rules": {
+       "kind": "upper_bad",
+       "rule": "red_if_positive:statistic",
+       "parameters": {
+        "tolerance": 0.006000000000000001
+       }
+      }
+     }
+    }
    }
   },
   "C22": {
@@ -7302,7 +7455,8 @@
     "pd.jeffreys": "p_value",
     "pd.spiegelhalter": "p_value",
     "stability.psi": "p_value"
-   }
+   },
+   "packaged_policies": {}
   }
  }
 }

@@ -536,7 +536,9 @@ def test_section_6_states_the_policy_identity_of_every_row_and_the_source_of_its
         assert p["source"] in ("packaged-policy", "packaged-policy-overridden", "inline-battery", "unresolved")
         if p["source"] == "unresolved":
             assert p["reason"]
-    assert any(r["policy"]["source"] == "inline-battery" and r["policy"]["parameters"] for r in block["rows"])
+    # the 1.0 documents carry packaged battery labels (contraste-<battery> X.Y.Z): the cut points are the committed policy file's entry
+    assert any(r["policy"]["source"] == "packaged-policy" and r["policy"]["label"].startswith("contraste-") and r["policy"]["parameters"]
+               for r in block["rows"])
     decisions = ex["cases"]["C07"]["spec_decisions"]
     assert re.fullmatch(r"[0-9a-f]{40}", ex["engine_commit"])
     for row in block["rows"]:
@@ -545,6 +547,9 @@ def test_section_6_states_the_policy_identity_of_every_row_and_the_source_of_its
         assert (p["kind"] is None) == (p["kind_reason"] is not None)
         if p["source"] == "inline-battery":
             assert p["direction"] is None and p["direction_reason"] == "no policy file for an inline battery string"
+        if p["source"] == "packaged-policy" and p["label"].startswith("contraste-"):
+            assert re.fullmatch(r"contraste-[a-z0-9-]+ \d+\.\d+\.\d+", p["label"]) and p["version"] == p["label"].rsplit(" ", 1)[1]
+            assert (p["direction"] is None) == (p["direction_reason"] is not None)
 
 
 # --- the appetite ------------------------------------------------------------------------------------------------------------------------
