@@ -119,10 +119,18 @@ QUOTES = {
                    "they typically cannot be attributed to a specific policy or criterion."),
 }
 
+#: the Spanish reading of each quotation (a translation by Contraste, not the text of the law; the quotation itself stays in `quote`)
+QUOTES_ES = {
+    "reg_b": "La Ley no dispone que la \"prueba de efectos\" se aplique para determinar si hay discriminación en violación de la Ley.",
+    "fha": "la Corte Suprema sostuvo que los reclamos por impacto dispar son procedentes bajo la Ley de Vivienda Justa (FHA).",
+    "procedures": "Las disparidades brutas de denegación o aprobación de HMDA no son apropiadas para el análisis de impacto adverso desproporcionado, "
+                  "porque típicamente no pueden atribuirse a una política o criterio específico.",
+}
+
 
 def legal_block() -> dict[str, Any]:
     def sentence(k: str) -> dict[str, Any]:
-        return {"citation": QUOTES[k][0], "quote": QUOTES[k][1], "text": t(QUOTES[k][1])}
+        return {"citation": QUOTES[k][0], "quote": QUOTES[k][1], "text": t(QUOTES[k][1], QUOTES_ES[k])}
 
     return {"label": {"en": "no legal claim", "es": "sin afirmación legal"}, "regulation_b": sentence("reg_b"),
             "fair_housing_act": sentence("fha"), "procedures": sentence("procedures"),

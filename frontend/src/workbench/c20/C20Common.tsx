@@ -14,6 +14,7 @@ import {
   DATASET_TEXT, KIND_TEXT, SCREEN_TEXT, asKind, blockRows, fitOf, kindOf, outputsOf, text,
   type C20Kind, type C20Outputs, type C20Sel,
 } from './selection';
+import { es, localParams } from './localise';
 
 type Notice = NonNullable<C20Outputs['sgcd_notice']>;
 
@@ -235,7 +236,7 @@ export function C20ContextView({ sel }: { sel: C20Sel | null }): ReactElement {
                   <tr key={d.id} data-dataset={d.id}>
                     <td className="ct-text">{pick(text(DATASET_TEXT, d.id), lang)}</td>
                     <td>{int(d.rows, lang)}</td>
-                    <td className="ct-text">{d.role}</td>
+                    <td className="ct-text">{es(d.role, lang)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -246,7 +247,7 @@ export function C20ContextView({ sel }: { sel: C20Sel | null }): ReactElement {
       ) : null}
       <PlotCard title={{ en: 'The named parameters', es: 'Los parámetros con nombre' }} {...card} note={{ en: 'Each is a convention of Contraste, never a regulatory threshold.', es: 'Cada uno es una convención de Contraste, nunca un umbral regulatorio.' }}>
         <div className="ct-scroll">
-          <ParamTable params={o.parameters as unknown as NamedParam[]} />
+          <ParamTable params={localParams(o.parameters as unknown as NamedParam[], lang)} />
         </div>
       </PlotCard>
     </div>

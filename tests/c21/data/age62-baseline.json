@@ -1,54 +1,54 @@
 {
- "models-hmda-de-2018-2023": {
-  "decision_models": "da1a977704c8bfefdd9af13062d2b8b0969bcb770f9a0d878feb8fe0d2168392",
-  "fields": "bd427ac81884cb8ea283d16d34ca95b41e10d5c3d49a043656ba5d50c5b04651"
- },
- "pair-2018-19": {
-  "attributes": "b0559cb85a0374a7a9b5820bd28887d7aeb56ab80b91014a7688f6013303089e",
-  "data_notes": "4ca7404172475fd1094ded662f8fb8e30d7806125052de9545e48e26d39d4b91",
-  "head": "acce1d8bfaddbeff649fc5921db90b89fda58e494ce5d9a72244cbf0d2072315",
-  "situation_testing": "6ae67e780ed31e4e5999d1ba5b8c4ee623228ec75ff63c4bcc723ff5358b0df6",
-  "situation_tests": "cafdcf52d3d59514d5febdda279f5b4aa5c1f942d4f5d539212d796d099c3a27",
-  "tests": "2acd99726d6734751e451d99a9db341edfacc1f738a2dbeafc847c9af930a31f"
- },
- "pair-2019-20": {
-  "attributes": "86838b4d78245c2ff3d1ca2025bcaa71f4dbc3ddc10dce83052274f46c5691af",
-  "data_notes": "92b1eb1f7c9ecf049da70bf0c480c796907f24898cfebb295f9343f8d8bbfed5",
-  "head": "121bee8d787c81d6998deb1d75a99217d5be2213d013c5b4b067b3cd23103a20",
-  "situation_testing": "fbadf771dd3c0f33c2bb02b5c165daf7db43fd2a7d2ddc9b000af19ada01c780",
-  "situation_tests": "165a0d94650b3a009efed77373e9a06bbdeb94de8f7972ab1652c302c3e927b8",
-  "tests": "44f7c86cd6b8f0fe01efe556337c963732107736a8877d7f210514436449c073"
- },
- "pair-2020-21": {
-  "attributes": "7372ac0ffb574c6620811b09cf2966f46de1c94160e237ad1bdd1e0c82252d12",
-  "data_notes": "a70786664692688187275288ee3f5631af53ea11d8a3904a108bd8e739461715",
-  "head": "dfdb3c4bac08b62409433b715ddf961a2431e5cd959972c158d7c2f8a38238a2",
-  "situation_testing": "a240bc1968dc97c0d4e0ff7747197e21addf2a00a2884768096a90f88fe38ac1",
-  "situation_tests": "7495b1e88dc2a35a227c6dbc2d7e378e94c450cdb80078edd0bb5401c13a4318",
-  "tests": "0f3e226a7c4014793667ffca9da530146a5c609d85e4cae763ebc82152bd4ac3"
- },
- "pair-2021-22": {
-  "attributes": "63c8b5d05001581d8342c686130a24466480f673376ed6bacd7d3c7544b9ef30",
-  "data_notes": "9295cb9b8ce0d114b81e15bc371f743be962415c9cf101dbb544fe20c2ebb15c",
-  "head": "c770c8d0cf5a1ad8e7c0cc2e5d366465e5087669422d3cea5931bc9bafbe8858",
-  "situation_testing": "3801cd6412f68a014a300e54216fcb28cba0332e91bd440705a9c3134882b3f8",
-  "situation_tests": "1c4f5159dfbbc6ad9997f54372f3d7dba4340226732930b24cf34a6f55001840",
-  "tests": "a112b3feb1ce33ed828099beba677ce89dcb9768af3d77be06ec883a1dda2f56"
- },
- "pair-2022-23": {
-  "attributes": "2064a1f7c7e2ae4a0b2498ac123bc062f33a9cada989ad78fec587f00f1aa2ad",
-  "data_notes": "e6ad0512c88c1129cdda5d5de8f946da911bfef342c45d06a3975b9e84b1b7fc",
-  "head": "3e8e1ca212812d0b373440e8c0bfbc7f90a5cb7028de23d61a0c61e6fce4c236",
-  "situation_testing": "e68646330a8c0dbbe80f28973846ab14493266dc8ab43e479dea5c119e2bc9b9",
-  "situation_tests": "2f52a1b43bad5869fd4b831881633e03d0cb6a16f3ff3ba7b8d615b7f437dcad",
-  "tests": "53aa0214a82a8fc14e9e9e1214cd237aca3c3a5d43dc56f352ba1daa571c15cb"
- },
- "pair-2023-24": {
-  "attributes": "3448570b6a15c5a2e31deaf72fde8b8e3cf9023560af41eaa5e3e434c9e33284",
-  "data_notes": "94d0cdb60712bccc0a31b610a0339013ce3bd2d1ab638903c5041c96350af96a",
-  "head": "0b3fa79b71be7defff3b074ca5cd1cb106b029dc29b4c282e545be9f832c1203",
-  "situation_testing": "26693c66b86b619c7bc45e2e41d7adbc294136893857ced99ea438932d791f4d",
-  "situation_tests": "356b4009bfafb2698e44282dd9f291b0cd26dde086dff245627f2b0e1f5ff045",
-  "tests": "65d58d5fdfef3f951762553a5336689d5fd2f99754168d9a8e4c89f66511ae46"
- }
+  "models-hmda-de-2018-2023": {
+    "decision_models": "3cff1b849bb8b48bb2ff4432d6f5cad90c25b8b4d3c4693bd51160e692895f23",
+    "fields": "bd427ac81884cb8ea283d16d34ca95b41e10d5c3d49a043656ba5d50c5b04651"
+  },
+  "pair-2018-19": {
+    "attributes": "a8334391ab5cf1f1636bdc68bf838b1520d61a5021b5beb53344864c12cccc8a",
+    "data_notes": "4ca7404172475fd1094ded662f8fb8e30d7806125052de9545e48e26d39d4b91",
+    "head": "787a4d845b5064f376ab0df3a3e9fd7fc8f65f9a4c24813be712fcb6268db7ed",
+    "situation_testing": "6ae67e780ed31e4e5999d1ba5b8c4ee623228ec75ff63c4bcc723ff5358b0df6",
+    "situation_tests": "0e87952b7f3a58c23ac922257db6031992485e9c1af23b610e1b5e3e96368dc8",
+    "tests": "3199f1f5340a2272dca7ecfc450e6d7a01fb167b0f3f641d03dc618eacffe821"
+  },
+  "pair-2019-20": {
+    "attributes": "cd263eae4ca5c43cdbb3f4043a249ccb89fc919b132c737b1ffecf128937d2e9",
+    "data_notes": "92b1eb1f7c9ecf049da70bf0c480c796907f24898cfebb295f9343f8d8bbfed5",
+    "head": "4053fb425a2dd6d81012e131e97d662cd0479d06715314760cc2b36cb0436256",
+    "situation_testing": "fbadf771dd3c0f33c2bb02b5c165daf7db43fd2a7d2ddc9b000af19ada01c780",
+    "situation_tests": "83ec528a5b3b7ba1687c154a78b4eafe55b9a5b92de85662ce7f72f10debfa4f",
+    "tests": "0c15e4a71833b4435b14e3fc7f680758e497318b3a7062d01d1db8c6c71f32ef"
+  },
+  "pair-2020-21": {
+    "attributes": "d54595e8aac70dbc24e566ba07e18ac9cc50b4190517f134b259dccf4ee18d96",
+    "data_notes": "a70786664692688187275288ee3f5631af53ea11d8a3904a108bd8e739461715",
+    "head": "87f206cb945ca06a1ecfe0de5ceaa9280e55d8726b72a01960e9caa03f0fc48d",
+    "situation_testing": "a240bc1968dc97c0d4e0ff7747197e21addf2a00a2884768096a90f88fe38ac1",
+    "situation_tests": "0dfe23d18936bff63d8ff7fcb001a6b12413bb1392c29066796d21873c0db427",
+    "tests": "8bae2b1bd9dc2b45ccbe63a8624c31c85ce8570cc31562cbc73077a9f69eb4da"
+  },
+  "pair-2021-22": {
+    "attributes": "5a0136e8ee5942bb7d6fc83bd7a153301b5f61b62057f14470f5dc886df8f3f8",
+    "data_notes": "9295cb9b8ce0d114b81e15bc371f743be962415c9cf101dbb544fe20c2ebb15c",
+    "head": "a5a52f5c15c3944bea7587772cf0574ae6cea1cbf584aceff4d88cb47dc359d1",
+    "situation_testing": "3801cd6412f68a014a300e54216fcb28cba0332e91bd440705a9c3134882b3f8",
+    "situation_tests": "51f894286e5404fc465a29a2883026164ad4a73684ebf5c9aa5f63b2df2ca959",
+    "tests": "23b62e01ee529b2b23e99cb48b279fb54f50c04220451595c788b825267c0df3"
+  },
+  "pair-2022-23": {
+    "attributes": "23c8f1c9351ff4fd3be0480a2f26f3314632c290c87c07f3a9f17aef716df2f9",
+    "data_notes": "e6ad0512c88c1129cdda5d5de8f946da911bfef342c45d06a3975b9e84b1b7fc",
+    "head": "3be80501f15a898401512d57ae2dbee9861efd6c9ec8b49a8f4b48149b8ba3fd",
+    "situation_testing": "e68646330a8c0dbbe80f28973846ab14493266dc8ab43e479dea5c119e2bc9b9",
+    "situation_tests": "3ab8861518a12ec972ece8da485be67a5acee6e5d9b7087826e8f30244907475",
+    "tests": "c3d969062600b8d0243e570e38b98e3fa570a241e40f1f5a3282db37d9969951"
+  },
+  "pair-2023-24": {
+    "attributes": "e32bc127dae3dd2f1785efb6ce1f690bc096838cc4c9f57bf06f467c2448d82c",
+    "data_notes": "94d0cdb60712bccc0a31b610a0339013ce3bd2d1ab638903c5041c96350af96a",
+    "head": "2ac8784a80767e709da94f02e6bbbbb8ab1795524c1fca2b86175aa492cb3d30",
+    "situation_testing": "26693c66b86b619c7bc45e2e41d7adbc294136893857ced99ea438932d791f4d",
+    "situation_tests": "2305eb7ed2a6cffe1ddd2add814adcc3939eea4d5eca2bddba95ce0f15cd143f",
+    "tests": "9978a97e4026947ebba040064550594a0ac886226d438e65501a44d271a6b79a"
+  }
 }

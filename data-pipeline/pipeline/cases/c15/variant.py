@@ -293,7 +293,7 @@ def bake_variant(vid: str, book: Book, fits: dict[str, c15_curves.CurveFit], sel
                            "evar": float(got.evar), "ear_se": float(err.ear_se), "evar_se": float(err.evar_se)})
         ear_legs.append({"leg": n, "method": "hw1f", "n_paths": n_paths, "seed": seed, "horizon_months": asm.HORIZON_MONTHS,
                          "parameters": [{"name": "a", "value": asm.HW1F_A, "unit": "per year"},
-                                        {"name": "sigma", "value": asm.HW1F_SIGMA[n], "unit": "per year"}],
+                                        {"name": "sigma", "value": asm.HW1F_SIGMA[n], "unit": "per square-root year"}],
                          "base_nii": float(b_nii), "base_eve": float(b_eve), "levels": levels, "mc_error_method": "batch-means",
                          "n_batches": asm.N_BATCHES})
     margin_12m = float(sum(leg["scenarios"][0]["total"] for leg in dyn_legs))

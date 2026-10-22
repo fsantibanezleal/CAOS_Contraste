@@ -20,6 +20,7 @@ import {
   aggDocOf, aggOf, amount, backcastOf, fitOf, marginalOf, outputsOf, planOf, reverseOf, text, yearOf, methodShort, methodText,
   type C18AggOutputs, type C18Fit, type C18Outputs, type C18Reverse, type C18Sel,
 } from './selection';
+import { phraseEs, unitEs } from './localise';
 
 type Lang = 'en' | 'es';
 const NA: BiText = { en: formatNumber(null, 'en'), es: formatNumber(null, 'es') };
@@ -65,6 +66,21 @@ export const NOT_REVERSE: BiText = { en: 'Not available: this document is not th
 // --- the tests table -------------------------------------------------------------------------------------------------
 
 /** The rows the engine returned for the tests of this variant; a test that did not run shows its reason, not a number. */
+/** The name of the segment of a test row: a loan type or a regressor of the satellites, else the id. */
+function segmentName(segment: string, lang: Lang): string {
+  const bi = LOAN_TEXT[segment] ?? REGRESSOR_TEXT[segment];
+  return bi ? bi[lang] : segment;
+}
+
+/** The notes the engine writes for a test that did not run, in the page's language. */
+function noteName(note: string, lang: Lang): string {
+  if (lang === 'en') return note;
+  if (note === 'not evaluated: not a stress path') return 'no evaluada: no es una trayectoria de estrés';
+  const m = /^the additive overestimate ([\d.]+) lies inside the published range \[([\d.]+), ([\d.]+)\]$/.exec(note);
+  const c = (x: string) => x.replace('.', ',');
+  return m ? `la sobreestimación aditiva ${c(m[1])} está dentro del rango publicado [${c(m[2])}; ${c(m[3])}]` : note;
+}
+
 export function C18TestsView({ sel }: { sel: C18Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -99,12 +115,12 @@ export function C18TestsView({ sel }: { sel: C18Sel | null }) {
                   const ran = t.light !== 'not_evaluated' && t.light !== 'error';
                   return (
                     <tr key={`${t.test_id}-${i}`} data-test={t.test_id} data-light={t.light}>
-                      <td className="ct-text" title={t.test_id}>{TEST_TEXT[t.test_id] ? pick(TEST_TEXT[t.test_id], lang) : t.test_id}</td>
+                      <td className="ct-text" title={t.test_id}>{`${TEST_TEXT[t.test_id] ? pick(TEST_TEXT[t.test_id], lang) : t.test_id}${t.segment ? ` (${segmentName(t.segment, lang)})` : ''}`}</td>
                       <td data-na={ran && t.statistic !== null ? undefined : 'true'}>{ran && t.statistic !== null ? formatNumber(t.statistic, lang, { digits: 4 }) : formatNumber(null, lang)}</td>
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                       </td>
-                      <td className="ct-text">{t.notes ?? t.reference}</td>
+                      <td className="ct-text">{t.notes ? noteName(t.notes, lang) : phraseEs(t.reference, lang)}</td>
                     </tr>
                   );
                 })}
@@ -275,7 +291,7 @@ function NamedRows({ fit }: { fit: C18Fit }) {
     { id: 'ppnr_cost_ratio', value: PCT(p.ppnr_cost_ratio.value, lang), label: p.ppnr_cost_ratio.label, basis: p.ppnr_cost_ratio.basis },
     { id: 'c_p2', value: PCT(p.c_p2.value, lang), label: p.c_p2.label, basis: p.c_p2.basis },
     { id: 'c_d', value: PCT(p.c_d.value, lang), label: p.c_d.label, basis: p.c_d.basis },
-    { id: 'operational_conversion_rate', value: `${formatNumber(p.operational_conversion_rate.value, lang, { digits: 5 })} ${p.operational_conversion_rate.unit}`, label: p.operational_conversion_rate.label, basis: p.operational_conversion_rate.basis },
+    { id: 'operational_conversion_rate', value: `${formatNumber(p.operational_conversion_rate.value, lang, { digits: 5 })} ${unitEs(p.operational_conversion_rate.unit, lang)}`, label: p.operational_conversion_rate.label, basis: p.operational_conversion_rate.basis },
     { id: 'asset_scaling', value: formatNumber(p.asset_scaling.value, lang, { digits: 4 }), label: p.asset_scaling.label, basis: p.asset_scaling.basis },
     { id: 'market_rwa_share', value: PCT(p.market_rwa_share.value, lang), label: p.market_rwa_share.label, basis: p.market_rwa_share.basis },
     { id: 'market_horizon_scaling', value: formatNumber(p.market_horizon_scaling.value, lang, { digits: 5 }), label: p.market_horizon_scaling.label, basis: p.market_horizon_scaling.basis },
@@ -374,7 +390,7 @@ function ModelBlocks({ fit, card }: { fit: C18Fit; card: ReturnType<typeof useCa
                   <td className="ct-text">{pick(text(PROVIDER_TEXT, s.provider), lang)}</td>
                   <td className="ct-text">{s.vintage_date}</td>
                   <td className="ct-text">{s.licence_class === 'derived-only' ? pick({ en: 'derived only', es: 'solo derivado' }, lang) : pick({ en: 'mirror allowed', es: 'espejo permitido' }, lang)}</td>
-                  <td className="ct-text ct-wide-only">{s.document}</td>
+                  <td className="ct-text ct-wide-only">{phraseEs(s.document, lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -452,7 +468,7 @@ export function C18ContextView({ sel }: { sel: C18Sel | null }) {
               <dt>{pick({ en: 'Adaptation', es: 'Adaptación' }, lang)}</dt>
               <dd data-adaptation={o.scenario.adaptation_label}>{`${pick(text(LABEL_TEXT, o.scenario.adaptation_label), lang)}. ${pick(US_ADAPTATION, lang)}`}</dd>
               <dt>{pick({ en: 'Source of the path', es: 'Fuente de la trayectoria' }, lang)}</dt>
-              <dd>{`${o.scenario.source_document} (${o.scenario.source_url})`}</dd>
+              <dd>{`${phraseEs(o.scenario.source_document, lang)} (${o.scenario.source_url})`}</dd>
               <dt>{pick({ en: 'Capital at the jump-off', es: 'Capital en el punto de partida' }, lang)}</dt>
               <dd>{`CET1 ${PCT(o.capital_start.cet1_ratio, lang)}; PE ${PCT(o.capital_start.pe_ratio, lang)}; ${pick({ en: 'RWA', es: 'APR' }, lang)} ${cell(o.capital_start.rwa_clp_m, lang)}. ${pick(o.capital_start.basis, lang)}`}</dd>
             </>
@@ -491,7 +507,7 @@ export function PathReadout({ sel }: { sel: C18Sel | null }) {
   const o = outputsOf(sel);
   const p = o?.scenario.paths[sel?.path ?? 0] ?? null;
   const s = p ? o?.severity.rows.find((r) => r.maps_to_regressor === p.maps_to_regressor) ?? null : null;
-  const unit: BiText | undefined = p ? { en: p.unit, es: p.unit } : undefined;
+  const unit: BiText | undefined = p ? { en: p.unit, es: unitEs(p.unit, 'es') } : undefined;
   return (
     <LiveReadout
       variant={sel?.data.variant}
@@ -590,7 +606,7 @@ export function FactorReadout({ sel }: { sel: C18Sel | null }) {
   const f = r?.factor_space.factors[i] ?? null;
   const g = r?.loss_model.gradient_clp_m_per_unit?.[i] ?? null;
   const gm = amount(g);
-  const unit: BiText | undefined = f ? { en: f.unit, es: f.unit } : undefined;
+  const unit: BiText | undefined = f ? { en: f.unit, es: unitEs(f.unit, 'es') } : undefined;
   return (
     <LiveReadout
       variant={sel?.data.variant}

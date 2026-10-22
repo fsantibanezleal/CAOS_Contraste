@@ -13,6 +13,7 @@ import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
 import { LiveReadout, useCard, type Bi } from '../c03/U6Shared';
 import { UnavailableCard } from '../c14/C14Common';
+import { bankName, es, nameOf } from './localise';
 import {
   BASE_TEXT, CLASS_TEXT, COMPARED_AT_TEXT, DENOMINATOR_LONG, DENOMINATOR_SHORT, FAMILY_TEXT, HAIRCUT_RULE_TEXT, PHASE_TEXT, ROLE_TEXT, SEGMENT_TEXT, SOURCE_KIND_TEXT,
   amount, axisOf, baseOf, denominatorOf, dayIndex, fitOf, ladderOf, outputsOf, reverseOf, rowOf, survivalDay, survivalText, text,
@@ -128,7 +129,7 @@ export function C16TestsView({ sel }: { sel: C16Sel | null }) {
                       <td className={`ct-text ct-light ct-light-${t.light}`}>
                         <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                       </td>
-                      <td className="ct-text">{t.notes ?? t.reference}</td>
+                      <td className="ct-text">{t.notes === null || t.notes === undefined ? t.reference : es(t.notes, lang)}</td>
                     </tr>
                   );
                 })}
@@ -326,7 +327,7 @@ export const conventionsOf = (sel: C16Sel | null): Conventions | null => outputs
 
 const unitWord = (unit: string, lang: Lang): string => {
   const words: Record<string, Bi> = { days: { en: 'days', es: 'días' }, ratio: { en: 'ratio', es: 'razón' } };
-  return words[unit] ? pick(words[unit], lang) : unit;
+  return words[unit] ? pick(words[unit], lang) : es(unit, lang);
 };
 
 function ConventionRows({ c }: { c: Conventions }) {
@@ -340,12 +341,12 @@ function ConventionRows({ c }: { c: Conventions }) {
     }),
     ...GRID_KEYS.map((k) => ({ id: k, label: CONVENTION_TEXT[k], value: `${values(c[k])} ${unitWord(c[k].unit, lang)}`, basis: c[k].basis, status: c[k].status })),
     { id: 'deposit_category_mapping', label: { en: 'Deposit mapping to the LCR categories', es: 'Mapeo de depósitos a las categorías del LCR' }, value: c.deposit_category_mapping.rows.map((r) => pick(r.label, lang)).join('; '), basis: c.deposit_category_mapping.basis, status: c.deposit_category_mapping.status },
-    { id: 'variant_scenarios', label: { en: 'Scenario family and phase of each variant', es: 'Familia de escenario y fase de cada variante' }, value: c.variant_scenarios.rows.map((r) => `${r.variant}: ${pick(text(FAMILY_TEXT, r.scenario_family), lang)}, ${pick(text(PHASE_TEXT, r.phase), lang)}, ${r.horizon_days}`).join('; '), basis: c.variant_scenarios.basis, status: c.variant_scenarios.status },
+    { id: 'variant_scenarios', label: { en: 'Scenario family and phase of each variant', es: 'Familia de escenario y fase de cada variante' }, value: c.variant_scenarios.rows.map((r) => `${nameOf(r.variant, lang)}: ${pick(text(FAMILY_TEXT, r.scenario_family), lang)}, ${pick(text(PHASE_TEXT, r.phase), lang)}, ${r.horizon_days}`).join('; '), basis: c.variant_scenarios.basis, status: c.variant_scenarios.status },
     { id: 'day_calendar', label: { en: 'Day calendar of the ladder', es: 'Calendario de días de la escalera' }, value: `${pick({ en: 'US business days from', es: 'días hábiles de EE. UU. desde' }, lang)} ${c.day_calendar.first_day}`, basis: c.day_calendar.basis, status: c.day_calendar.status },
     { id: 'cbc_securities_mapping', label: { en: 'Securities classes and haircuts of the CBC', es: 'Clases de valores y recortes del CBC' }, value: c.cbc_securities_mapping.rows.map((r) => `${pick(text(CLASS_TEXT, r.class_id), lang)} ${SHARE(r.haircut, lang)}`).join('; '), basis: c.cbc_securities_mapping.basis, status: c.cbc_securities_mapping.status },
     { id: 'monetisation_schedule', label: { en: 'Monetisation schedule of the CBC', es: 'Calendario de monetización del CBC' }, value: c.monetisation_schedule.points.map((p) => `${pick({ en: 'day', es: 'día' }, lang)} ${p.day}: ${SHARE(p.cumulative_share, lang)}`).join('; '), basis: c.monetisation_schedule.basis, status: c.monetisation_schedule.status },
-    { id: 'fast_run_calibration_rule', label: { en: 'Rule of the fast-run calibration', es: 'Regla de la calibración de la corrida rápida' }, value: c.fast_run_calibration_rule.rule, basis: c.fast_run_calibration_rule.basis, status: c.fast_run_calibration_rule.status },
-    { id: 'cliff_days', label: { en: 'Days of the cliff diagnostic', es: 'Días del diagnóstico del acantilado' }, value: `${c.cliff_days.near} / ${c.cliff_days.far}, ${c.cliff_days.day_basis}`, basis: c.cliff_days.basis, status: c.cliff_days.status },
+    { id: 'fast_run_calibration_rule', label: { en: 'Rule of the fast-run calibration', es: 'Regla de la calibración de la corrida rápida' }, value: nameOf(c.fast_run_calibration_rule.rule, lang), basis: c.fast_run_calibration_rule.basis, status: c.fast_run_calibration_rule.status },
+    { id: 'cliff_days', label: { en: 'Days of the cliff diagnostic', es: 'Días del diagnóstico del acantilado' }, value: `${c.cliff_days.near} / ${c.cliff_days.far}, ${nameOf(c.cliff_days.day_basis, lang)}`, basis: c.cliff_days.basis, status: c.cliff_days.status },
   ];
   return (
     <tbody>
@@ -376,7 +377,7 @@ function DepositsBlock({ d }: { d: C16Outputs['balance_sheet']['deposits'] }) {
       <dt>{pick({ en: 'Uninsured share of DEPDOM', es: 'Parte no asegurada de DEPDOM' }, lang)}</dt>
       <dd data-denominator="DEPDOM">{SHARE(d.uninsured_share_of_depdom, lang)}</dd>
       <dt>{pick({ en: 'Size fields, DEPSMAMT and DEPLGAMT', es: 'Campos por tamaño, DEPSMAMT y DEPLGAMT' }, lang)}</dt>
-      <dd>{`${cell(d.depsmamt, lang)} / ${cell(d.deplgamt, lang)}; ${pick({ en: 'threshold', es: 'umbral' }, lang)} ${formatNumber(d.size_threshold.value, lang, { decimals: 0 })} ${d.size_threshold.unit}`}</dd>
+      <dd>{`${cell(d.depsmamt, lang)} / ${cell(d.deplgamt, lang)}; ${pick({ en: 'threshold', es: 'umbral' }, lang)} ${formatNumber(d.size_threshold.value, lang, { decimals: 0 })} ${es(d.size_threshold.unit, lang)}`}</dd>
     </dl>
   );
 }
@@ -406,9 +407,9 @@ function ModelBlocks({ fit, card }: { fit: C16Fit; card: ReturnType<typeof useCa
             <tbody>
               {fit.parameter_sets.map((p) => (
                 <tr key={p.set_id} data-parameter-set={p.set_id} data-source-kind={p.source_kind}>
-                  <td className="ct-text">{p.set_id}</td>
+                  <td className="ct-text">{nameOf(p.set_id, lang)}</td>
                   <td className="ct-text">{pick(text(SOURCE_KIND_TEXT, p.source_kind), lang)}</td>
-                  <td className="ct-text ct-wide-only">{p.source}</td>
+                  <td className="ct-text ct-wide-only">{es(p.source, lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -425,7 +426,7 @@ function ModelBlocks({ fit, card }: { fit: C16Fit; card: ReturnType<typeof useCa
             <tbody>
               {lp.open_maturity_daily.map((r) => (
                 <tr key={r.item}>
-                  <td className="ct-text">{r.item}</td>
+                  <td className="ct-text">{nameOf(r.item, lang)}</td>
                   <td>{formatNumber(r.baseline, lang, { percent: true, digits: 4 })}</td>
                   <td>{formatNumber(r.adverse, lang, { percent: true, digits: 4 })}</td>
                   <td>{formatNumber(r.extreme, lang, { percent: true, digits: 4 })}</td>
@@ -490,7 +491,7 @@ function ModelBlocks({ fit, card }: { fit: C16Fit; card: ReturnType<typeof useCa
             <tbody>
               {fit.sources.map((s) => (
                 <tr key={s.source_id} data-source={s.source_id} data-unverified={s.licence_basis === 'unverified' ? 'true' : undefined}>
-                  <td className="ct-text" title={s.publisher}>{s.source_id}</td>
+                  <td className="ct-text" title={s.publisher}>{nameOf(s.source_id, lang)}</td>
                   <td className="ct-text">{pick(text(LICENCE_TEXT, s.licence_class), lang)}</td>
                   <td className="ct-text">{s.licence_basis === 'unverified' ? pick({ en: 'unverified', es: 'no verificada' }, lang) : pick({ en: 'notice read', es: 'aviso leído' }, lang)}</td>
                   <td className="ct-text ct-wide-only">{pick(s.statement, lang)}</td>
@@ -526,7 +527,7 @@ export function C16ContextView({ sel }: { sel: C16Sel | null }) {
         </p>
         <dl className="ct-defs" data-table="c16-bank" data-bank-aggregates={base.bank.aggregates} data-bank-behaviour={base.bank.behaviour} data-bank-deposits={base.bank.deposits}>
           <dt>{pick({ en: 'Bank', es: 'Banco' }, lang)}</dt>
-          <dd>{base.bank.name}</dd>
+          <dd>{bankName(base.bank.name, lang)}</dd>
           <dt>{pick({ en: 'What is real and what is synthetic', es: 'Qué es real y qué es sintético' }, lang)}</dt>
           <dd>{pick({ en: 'The balance-sheet aggregates are real, from the FDIC call reports; the behaviour of the depositors and the deposits are synthetic, from a generator with a known truth.', es: 'Los agregados del balance son reales, de los reportes de condición de la FDIC; el comportamiento de los depositantes y los depósitos son sintéticos, de un generador con verdad conocida.' }, lang)}</dd>
           <dt>{pick({ en: 'Notice of the document', es: 'Aviso del documento' }, lang)}</dt>
@@ -568,7 +569,7 @@ export function C16ContextView({ sel }: { sel: C16Sel | null }) {
                     <td className="ct-text">{pick(i.label, lang)}</td>
                     <td className="ct-text ct-wide-only">{i.source_field}</td>
                     <td>{cell(i.amount, lang)}</td>
-                    <td className="ct-text">{i.reason_missing ? pick(i.reason_missing, lang) : i.assumption}</td>
+                    <td className="ct-text">{i.reason_missing ? pick(i.reason_missing, lang) : es(i.assumption, lang)}</td>
                   </tr>
                 ))}
               </tbody>

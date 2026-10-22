@@ -9,6 +9,7 @@ import { SgcdNotice } from './C20Common';
 import { Labelled, LabelledOverTable, barMin, f3, int, pc1, type NamedParam } from './U14Common';
 import { ATTRIBUTE_TEXT, FAIR_TESTS, outputsOf, text, type C20Sel } from './selection';
 import { testName } from './U14Common';
+import { es } from './localise';
 
 /** The battery rows of the document: the gap per test and protected attribute, and the value of each group behind it. */
 export function FairnessView({ sel }: { sel: C20Sel | null }) {
@@ -71,7 +72,7 @@ export function FairnessView({ sel }: { sel: C20Sel | null }) {
                   <td className="ct-text">{pick(text(ATTRIBUTE_TEXT, r.attribute), lang)}</td>
                   <td data-na={r.value === null ? 'true' : undefined}>{r.value === null ? formatNumber(null, lang) : f3(r.value, lang)}</td>
                   <td className={`ct-text ct-light ct-light-${r.light}`}><span className="ct-light-word">{pick(LIGHT_TEXT[r.light], lang)}</span></td>
-                  <td className="ct-text">{r.groups.map((g) => `${g.group} (${int(g.n, lang)}, ${g.value === null ? formatNumber(null, lang) : f3(g.value, lang)})`).join('; ')}</td>
+                  <td className="ct-text">{r.groups.map((g) => `${es(g.group, lang)} (${int(g.n, lang)}, ${g.value === null ? formatNumber(null, lang) : f3(g.value, lang)})`).join('; ')}</td>
                 </tr>
               ))}
             </tbody>
@@ -84,6 +85,13 @@ export function FairnessView({ sel }: { sel: C20Sel | null }) {
 }
 
 /** The Impact view: the share of decisions that flip at the stated cut-off under each shift. */
+/** The name of a shift of the decision-flip view: the shipped shocks of the German data and Contraste's own application of each family. */
+export function shiftName(id: string): BiText {
+  const m = /^(shipped|applied)-(F\d)$/.exec(id);
+  if (!m) return { en: id, es: id };
+  return m[1] === 'shipped' ? { en: `Shipped, ${m[2]}`, es: `Provisto, ${m[2]}` } : { en: `Applied by Contraste, ${m[2]}`, es: `Aplicado por Contraste, ${m[2]}` };
+}
+
 export function DecisionFlipView({ sel }: { sel: C20Sel | null }) {
   const lang = useShellLang();
   const card = useCard(sel?.data.variant);
@@ -114,8 +122,8 @@ export function DecisionFlipView({ sel }: { sel: C20Sel | null }) {
                 title={{ en: 'Share of decisions that flip', es: 'Parte de las decisiones que cambian' }}
                 height="fill"
                 orientation="horizontal"
-                data={d.rows.map((r) => ({ id: r.shift_id, label: { en: r.shift_id, es: r.shift_id } as BiText, value: r.flip_share, tone: 'warn' as const }))}
-                axis={{ label: { en: 'Decisions that flip', es: 'Decisiones que cambian' }, format: { percent: true, decimals: 1 } }}
+                data={d.rows.map((r) => ({ id: r.shift_id, label: shiftName(r.shift_id), value: r.flip_share, tone: 'warn' as const }))}
+                axis={{ label: { en: 'Decisions that flip', es: 'Decisiones que cambian' }, format: { percent: true, decimals: 2 } }}
               />
             )
           }
@@ -131,7 +139,7 @@ export function DecisionFlipView({ sel }: { sel: C20Sel | null }) {
             <tbody>
               {d.rows.map((r) => (
                 <tr key={r.shift_id} data-shift={r.shift_id}>
-                  <td className="ct-text">{r.shift_id}</td>
+                  <td className="ct-text">{pick(shiftName(r.shift_id), lang)}</td>
                   <td>{int(r.n_decisions, lang)}</td>
                   <td>{pc1(r.flip_share, lang)}</td>
                 </tr>
@@ -140,7 +148,7 @@ export function DecisionFlipView({ sel }: { sel: C20Sel | null }) {
           </table>
           <p className="ct-note" data-cutoff={d.cutoff.rule} data-status={d.cutoff.label}>
             {pick({ en: `Cut-off rule (convention): decline ${pc1(d.cutoff.reject_share, 'en')} of the baseline decisions.`, es: `Regla del corte (convención): rechazar ${pc1(d.cutoff.reject_share, 'es')} de las decisiones base.` }, lang)}
-            {param ? ` ${param.basis}` : ''}
+            {param ? ` ${es(param.basis, lang)}` : ''}
           </p>
           <SgcdNotice sel={sel} />
         </LabelledOverTable>

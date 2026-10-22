@@ -12,9 +12,10 @@ import { Marked } from '../c21/Marked';
 import { Defs, NOT_SCENARIO, PCT, UnavailableCard, cell } from './C18Common';
 import { HWaterfall, stackRows } from './Waterfall';
 import {
-  ANNEX3_EN, CELL_TEXT, LABEL_TEXT, MONEY_UNIT, P2G_LABEL, PLAN_LONG, PLAN_ORDER, PLAN_TEXT, REQUIREMENT_TEXT, axisOf, fitOf, outputsOf, planOf, text,
+  ANNEX3_EN, ANNEX3_ES, CELL_TEXT, LABEL_TEXT, MONEY_UNIT, P2G_LABEL, PLAN_LONG, PLAN_ORDER, PLAN_TEXT, REQUIREMENT_TEXT, axisOf, fitOf, outputsOf, planOf, text,
   type C18Cell, type C18Sel,
 } from './selection';
+import { phraseEs } from './localise';
 
 const PLAN_COLOR = { base: '--color-accent', 'stress-without-mitigation': '--color-bad', 'stress-with-mitigation': '--color-good' } as const;
 
@@ -228,7 +229,7 @@ const LEGAL_TEXT: Record<string, BiText> = {
   c_ccob: { en: 'Conservation buffer', es: 'Colchón de conservación' },
   c_ccyb: { en: 'Countercyclical buffer', es: 'Colchón contracíclico' },
   c_dsib: { en: 'D-SIB buffer', es: 'Colchón D-SIB' },
-  p2r: { en: 'Pillar 2 requirement', es: 'Requerimiento de Pilar 2' },
+  p2r: { en: 'CET1 share of Pillar 2', es: 'Parte CET1 del Pilar 2' },
 };
 const REGULATORY: BiText = { en: 'regulatory', es: 'regulatorio' };
 
@@ -266,9 +267,11 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
   ];
   const refRows = refs.flatMap((r) => (r.v === null ? [] : [{ id: r.id, label: r.label, from: 0, to: r.v, tone: '--color-good' as const, value: pctNo(r.v) }]));
   const legal = fit?.bank_anchors.chilean_stack ?? null;
+  // the CET1 legal stack carries the CET1 share of Pillar 2 (reverse_p2_cet1), as the failure-point finding does; the whole P2R is the PE stack's
+  const legalShare = (k: 'cet1_min' | 'c_ccob' | 'c_ccyb' | 'c_dsib' | 'p2r'): number => (legal ? (k === 'p2r' ? (fit?.named_parameters.reverse_p2_cet1.value ?? legal.p2r) : legal[k]) : 0);
   const legalRows = legal
     ? stackRows(
-        (['cet1_min', 'c_ccob', 'c_ccyb', 'c_dsib', 'p2r'] as const).map((k) => ({ id: k, label: LEGAL_TEXT[k], size: legal[k], tone: '--color-magenta' as const, value: PCT(legal[k], lang, k === 'p2r' ? 3 : 2) })),
+        (['cet1_min', 'c_ccob', 'c_ccyb', 'c_dsib', 'p2r'] as const).map((k) => ({ id: k, label: LEGAL_TEXT[k], size: legalShare(k), tone: '--color-magenta' as const, value: PCT(legalShare(k), lang, k === 'p2r' ? 3 : 2) })),
       )
     : null;
   const rowsAll = oiRows.length + refRows.length;
@@ -332,7 +335,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
               </tr>
             </tbody>
           </table>
-          <p className="ct-note">{t.formula}</p>
+          <p className="ct-note">{phraseEs(t.formula, lang)}</p>
           <table className="caos-table ct-wrap-head" data-table="c18-stack-refs">
             <thead>
               <tr>
@@ -361,7 +364,7 @@ export function StackView({ sel }: { sel: C18Sel | null }) {
                 {(['cet1_min', 'c_ccob', 'c_ccyb', 'c_dsib', 'p2r'] as const).map((k) => (
                   <tr key={k} data-legal-layer={k}>
                     <td className="ct-text">{pick(LEGAL_TEXT[k], lang)}</td>
-                    <td>{PCT(legal[k], lang, k === 'p2r' ? 3 : 2)}</td>
+                    <td>{PCT(legalShare(k), lang, k === 'p2r' ? 3 : 2)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -408,7 +411,7 @@ export function Annex3View({ sel }: { sel: C18Sel | null }) {
   if (!o) return <UnavailableCard sel={sel} title={title} reason={NOT_SCENARIO} />;
   const a = o.annex3;
   const rows = a.rows;
-  const label = (r: (typeof rows)[number]) => (lang === 'es' ? r.label_cmf : ANNEX3_EN[r.row_id] ?? r.label_cmf);
+  const label = (r: (typeof rows)[number]) => (lang === 'es' ? ANNEX3_ES[r.row_id] ?? r.label_cmf : ANNEX3_EN[r.row_id] ?? r.label_cmf);
   const get = (id: string) => rows.find((r) => r.row_id === id);
   const bars = ['4.1.1', '4.1.2', '4.2', '4.3', '4.4.1', '4.4.2', '4.4.3', '4.5', '4.6', '4.7', '4.8'].flatMap((id) => {
     const r = get(id);
@@ -438,7 +441,7 @@ export function Annex3View({ sel }: { sel: C18Sel | null }) {
               orientation="horizontal"
               data={bars.map(({ r, col }) => ({
                 id: `${r.row_id}-${col}`,
-                label: { en: `${ANNEX3_EN[r.row_id] ?? r.label_cmf}, ${pick(COLUMN_TEXT[col], 'en')}`, es: `${r.label_cmf}, ${pick(COLUMN_TEXT[col], 'es')}` },
+                label: { en: `${ANNEX3_EN[r.row_id] ?? r.label_cmf}, ${pick(COLUMN_TEXT[col], 'en')}`, es: `${ANNEX3_ES[r.row_id] ?? r.label_cmf}, ${pick(COLUMN_TEXT[col], 'es')}` },
                 value: r[col].status === 'value' && r[col].value !== null ? r[col].value / scale.div : null,
                 tone: col === 'c' ? ('accent' as const) : ('warn' as const),
                 hint: text(CELL_TEXT, r[col].status),

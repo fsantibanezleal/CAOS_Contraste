@@ -10,6 +10,7 @@ import { Labelled, LabelledOverTable, U14TestsTable, barMin, f3, f4, int, pc, pc
 import { NotInVariant, SgcdNotice } from './C20Common';
 import { RULE_OF_THUMB } from './ShockViews';
 import { PORTFOLIO_TEXT, asKind, text, type C20Sel } from './selection';
+import { localTests } from './localise';
 
 const TITLE_REAL: BiText = { en: 'Real drift between the portfolios', es: 'Deriva real entre las carteras' };
 const TITLE_SYNTH: BiText = { en: 'Synthetic shift', es: 'Cambio sintético' };
@@ -91,7 +92,7 @@ export function RealDriftView({ sel }: { sel: C20Sel | null }) {
               )}
             </tbody>
           </table>
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('stability.')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('stability.')} />
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>
@@ -166,7 +167,7 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
               </tr>
             </tbody>
           </table>
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('ml.shift')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.shift')} />
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>
@@ -236,7 +237,7 @@ export function ConformalView({ sel }: { sel: C20Sel | null }) {
               </tr>
             </tbody>
           </table>
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('ml.conformal')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.conformal')} />
         </LabelledOverTable>
       </PlotCard>
     </ViewsRow>
@@ -288,7 +289,7 @@ export function CbpeView({ sel }: { sel: C20Sel | null }) {
               <li key={a.id} data-assumption={a.id}>{pick(a.text, lang)}</li>
             ))}
           </ul>
-          <U14TestsTable tests={sel.data.variant.tests} only={testsOf('ml.cbpe')} />
+          <U14TestsTable tests={localTests(sel.data.variant.tests, lang)} only={testsOf('ml.cbpe')} />
           <SgcdNotice sel={sel} />
           <p className="ct-note">{pick({ en: `Share of rows in the worst subsample: ${pc(s.worst_subsample.share, 'en')}.`, es: `Parte de las filas en la peor submuestra: ${pc(s.worst_subsample.share, 'es')}.` }, lang)}</p>
         </LabelledOverTable>

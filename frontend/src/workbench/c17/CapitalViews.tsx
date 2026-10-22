@@ -10,6 +10,7 @@ import { Pending } from '../Pending';
 import { KeyTable } from './KeyTable';
 import { C17TestsTable } from './Tests';
 import { RUNG_ORDER, SCENARIO_KIND_TEXT, UNVERIFIED, capitalOf, cellLabel, cellOf, METHOD_TEXT, outputsOf, rungName, scenarioOf, text, whole, type C17Capital, type C17Sel } from './selection';
+import { es } from './localise';
 
 const ratio = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { digits: 3 });
 const pct = (v: number, lang: 'en' | 'es', decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
@@ -73,7 +74,7 @@ export function ByMethodView({ sel }: { sel: C17Sel | null }) {
         {...card}
         note={{
           en: 'The 99.9 percent capital each method gives, as the median over the independent histories of the cell, beside the true quantile of the generator (grey). A method below the grey bar underestimates the capital. Amber is the mean-corrected approximation, kept UNVERIFIED until it is checked against its primary text. A method with no bar was not evaluated for this cell, and the table says why.',
-          es: 'El capital al 99,9 por ciento que da cada método, como la mediana sobre las historias independientes de la celda, junto al cuantil verdadero del generador (gris). Un método bajo la barra gris subestima el capital. Ámbar es la aproximación corregida por la media, que sigue UNVERIFIED hasta que se verifique contra su texto primario. Un método sin barra no se evaluó para esta celda, y la tabla dice por qué.',
+          es: 'El capital al 99,9 por ciento que da cada método, como la mediana sobre las historias independientes de la celda, junto al cuantil verdadero del generador (gris). Un método bajo la barra gris subestima el capital. Ámbar es la aproximación corregida por la media, que sigue SIN VERIFICAR hasta que se verifique contra su texto primario. Un método sin barra no se evaluó para esta celda, y la tabla dice por qué.',
         }}
       >
         <ChartOverTable
@@ -126,7 +127,7 @@ export function ByMethodView({ sel }: { sel: C17Sel | null }) {
                     ) : (
                       <td colSpan={8} data-na="true" className="ct-text">
                         {na}
-                        <span className="ct-note">{` (${r.reason ?? ''})`}</span>
+                        <span className="ct-note">{` (${es(r.reason, lang)})`}</span>
                       </td>
                     )}
                   </tr>
@@ -191,6 +192,7 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
                 <th className="ct-text" style={{ minWidth: '11rem' }}>{pick({ en: 'Cell', es: 'Celda' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Histories', es: 'Historias' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Failed fits', es: 'Ajustes fallidos' }, lang)}</th>
+                <th className="ct-wide-only">{pick({ en: 'Defined for this method', es: 'Definido para este método' }, lang)}</th>
                 <th className="ct-wide-only">{pick({ en: 'Losses per history, median', es: 'Pérdidas por historia, mediana' }, lang)}</th>
                 <HeadCells lang={lang} />
               </tr>
@@ -201,13 +203,14 @@ export function ByYearsView({ sel }: { sel: C17Sel | null }) {
                   <td className="ct-text">{pick(cellLabel(c.years, c.collection_threshold_eur), lang)}</td>
                   <td className="ct-wide-only">{whole(c.replications.n_replications, lang)}</td>
                   <td className="ct-wide-only">{whole(c.replications.n_failed, lang)}</td>
+                  <td className="ct-wide-only" data-n-defined={summary ? summary.n_defined : undefined}>{summary ? whole(summary.n_defined, lang) : na}</td>
                   <td className="ct-wide-only">{whole(c.replications.n_losses_median, lang)}</td>
                   {summary ? (
                     <SummaryCells s={summary} lang={lang} />
                   ) : (
                     <td colSpan={7} data-na="true" className="ct-text">
                       {na}
-                      <span className="ct-note">{` (${reason ?? ''})`}</span>
+                      <span className="ct-note">{` (${es(reason, lang)})`}</span>
                     </td>
                   )}
                 </tr>
@@ -270,7 +273,7 @@ export function ScenarioView({ sel }: { sel: C17Sel | null }) {
                   lang,
                 ),
               },
-              { id: 'reference', label: { en: 'Reference', es: 'Referencia' }, value: s.reference },
+              { id: 'reference', label: { en: 'Reference', es: 'Referencia' }, value: es(s.reference, lang) },
             ]}
           />
           <table className="caos-table ct-wrap-head" data-table="scenarios">

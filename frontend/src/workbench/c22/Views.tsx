@@ -61,24 +61,38 @@ function numbers(x: unknown): number[] | null {
 
 /** "key value" for each entry of a generator's configuration or truth: a value repeated across an array once with its
  * count, a short list in full, a square matrix by its size, a long list by its range; text and flags as they are. */
-function describeRecord(rec: unknown, lang: 'en' | 'es'): string[] {
+function describeRecord(rec: unknown, lang: 'en' | 'es'): Array<{ k: string; v: string }> {
   const fmt = (v: number) => formatNumber(v, lang, { digits: 4 });
-  const out: string[] = [];
+  const out: Array<{ k: string; v: string }> = [];
   for (const [k, x] of Object.entries((rec ?? {}) as Record<string, unknown>)) {
-    if (x === null) out.push(`${k} -`);
-    else if (typeof x === 'string') out.push(`${k} ${x}`);
-    else if (typeof x === 'boolean') out.push(`${k} ${pick(x ? { en: 'yes', es: 'sí' } : { en: 'no', es: 'no' }, lang)}`);
+    if (x === null) out.push({ k, v: '-' });
+    else if (typeof x === 'string') out.push({ k, v: x });
+    else if (typeof x === 'boolean') out.push({ k, v: pick(x ? { en: 'yes', es: 'sí' } : { en: 'no', es: 'no' }, lang) });
     else {
       const f = numbers(x);
       if (!f || f.length === 0) continue;
       const square = Array.isArray(x) && x.length > 2 && x.every((r) => Array.isArray(r) && r.length === x.length);
-      if (f.every((v) => v === f[0])) out.push(f.length > 1 ? `${k} ${fmt(f[0])} (×${f.length})` : `${k} ${fmt(f[0])}`);
-      else if (square) out.push(`${k} ${pick({ en: `${x.length} by ${x.length} matrix`, es: `matriz de ${x.length} por ${x.length}` }, lang)}`);
-      else if (f.length <= 7) out.push(`${k} ${f.map(fmt).join('; ')}`);
-      else out.push(`${k} ${fmt(Math.min(...f))} ${pick({ en: 'to', es: 'a' }, lang)} ${fmt(Math.max(...f))} (${f.length})`);
+      if (f.every((v) => v === f[0])) out.push({ k, v: f.length > 1 ? `${fmt(f[0])} (×${f.length})` : fmt(f[0]) });
+      else if (square) out.push({ k, v: pick({ en: `${x.length} by ${x.length} matrix`, es: `matriz de ${x.length} por ${x.length}` }, lang) });
+      else if (f.length <= 7) out.push({ k, v: f.map(fmt).join('; ') });
+      else out.push({ k, v: `${fmt(Math.min(...f))} ${pick({ en: 'to', es: 'a' }, lang)} ${fmt(Math.max(...f))} (${f.length})` });
     }
   }
   return out;
+}
+
+/** A record of keys and values for a cell: the generator's own keys are code (they are identifiers, not words), the values are read in the language. */
+function RecordText({ items }: { items: Array<{ k: string; v: string }> }) {
+  return (
+    <>
+      {items.map((it, i) => (
+        <span key={it.k}>
+          {i > 0 ? ', ' : ''}
+          <code translate="no">{it.k}</code> {it.v}
+        </span>
+      ))}
+    </>
+  );
 }
 
 export function GeneratorsView({ sel }: { sel: C22Sel | null }) {
@@ -87,12 +101,12 @@ export function GeneratorsView({ sel }: { sel: C22Sel | null }) {
   const v = c22Of(sel);
   if (!sel || !v) return <Pending />;
   const o = v.outputs;
-  const config = (cfg: unknown) => describeRecord(cfg, lang).join(', ');
+  const config = (cfg: unknown) => describeRecord(cfg, lang);
   // the truth beyond what the configuration already states, without the bibliographic reference
   const truth = (g: { config: unknown; truth: unknown }) => {
     const cfg = (g.config ?? {}) as Record<string, unknown>;
     const rest = Object.fromEntries(Object.entries((g.truth ?? {}) as Record<string, unknown>).filter(([k, x]) => k !== 'reference' && JSON.stringify(cfg[k]) !== JSON.stringify(x)));
-    return describeRecord(rest, lang).join(', ');
+    return describeRecord(rest, lang);
   };
   const users = (ref: string) => [...new Set(o.simulations.filter((s) => s.generator === ref).map((s) => pick(s.label, lang)))].join(', ');
   return (
@@ -124,8 +138,8 @@ export function GeneratorsView({ sel }: { sel: C22Sel | null }) {
                 <tr key={ref} data-generator={ref}>
                   <td className="ct-text">{ref}</td>
                   <td className="ct-text">{g.name}</td>
-                  <td className="ct-text">{config(g.config)}</td>
-                  <td className="ct-text ct-wide-only">{truth(g)}</td>
+                  <td className="ct-text"><RecordText items={config(g.config)} /></td>
+                  <td className="ct-text ct-wide-only"><RecordText items={truth(g)} /></td>
                   <td className="ct-text ct-wide-only">{users(ref)}</td>
                 </tr>
               ))}
@@ -757,11 +771,12 @@ export function C22FindingsView({ sel }: { sel: C22Sel | null }) {
         <UPlotChart
           height="fill"
           x={{ values: xs, label: { en: 'Cited rate (the number in the table)', es: 'Tasa citada (el número de la tabla)' }, format: { decimals: 0 } }}
-          y={{ label: { en: 'Rejection rate', es: 'Tasa de rechazo' }, format: { percent: true, decimals: 0 }, range: [0, 1] }}
+          y={{ label: { en: 'Rejection rate', es: 'Tasa de rechazo' }, format: { percent: true, decimals: 0 }, range: [0, Math.min(1, Math.max(sel.level, ...points.map((x) => (x.s ? rateOf(x.s, r).hi : 0))) * 1.1)] }}
           series={[
-            { label: { en: 'Rate', es: 'Tasa' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).rate : null))), color: '--color-accent', mode: 'points' },
-            { label: { en: 'Wilson 95%, low', es: 'Wilson 95%, inferior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).lo : null))), color: '--color-fg-subtle', mode: 'points' },
-            { label: { en: 'Wilson 95%, high', es: 'Wilson 95%, superior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).hi : null))), color: '--color-fg-subtle', mode: 'points' },
+            // the interval ends are small dots drawn first; the rate is the larger accent dot drawn last, so the interval never covers it
+            { label: { en: 'Wilson 95%, low', es: 'Wilson 95%, inferior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).lo : null))), color: '--color-fg-subtle', mode: 'points', size: 5 },
+            { label: { en: 'Wilson 95%, high', es: 'Wilson 95%, superior' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).hi : null))), color: '--color-fg-subtle', mode: 'points', size: 5 },
+            { label: { en: 'Rate', es: 'Tasa' }, values: pad(points.map((x) => (x.s ? rateOf(x.s, r).rate : null))), color: '--color-accent', mode: 'points', size: 9 },
           ]}
           yMarks={[{ ...NOMINAL(sel.level), tone: 'warn' }]}
         />
