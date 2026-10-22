@@ -5,9 +5,9 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { ReactElement } from 'react';
 import type { ModelsArtifact, VariantArtifact } from '../../lib/contract.types';
 import { committedDoc, englishLeaks, fixtureData, html, setLang, visibleText } from '../c14/testkit';
-import { defaultSel, type C21Sel } from './selection';
+import { attributeFor, defaultSel, type C21Sel } from './selection';
 import { C21ContextView, C21FindingsView } from './C21Common';
-import { ControlledView, RateSpreadView, ReplicationView, SituationView } from './EstimateViews';
+import { ControlledView, RateSpreadView, ReplicationView, SituationView, groupAxis } from './EstimateViews';
 import { FourFifthsView, RatesView, TestsView } from './RateViews';
 
 const VIEWS: Array<[string, (p: { sel: C21Sel | null }) => ReactElement]> = [
@@ -51,5 +51,27 @@ describe('U16-F4 C21: the Spanish view', () => {
         expect(text, `${name} ${lang}`).not.toMatch(/\d - -\d/);
       }
     }
+  });
+});
+
+describe('b10 m3: the group charts name each group on the axis, never 1 to 5', () => {
+  it('one named tick per group, labels unique, the table names, half a step of room at each end', () => {
+    const a = attributeFor(selOf(NAMES[0]));
+    expect(a).not.toBeNull();
+    const ax = groupAxis(a!.contrasts);
+    expect(ax.values).toEqual(a!.contrasts.map((_, i) => i + 1));
+    expect(ax.ticks.map((t) => t.value)).toEqual(ax.values);
+    for (const lang of ['en', 'es'] as const) {
+      const labels = ax.ticks.map((t) => t.label[lang]);
+      expect(new Set(labels).size, lang).toBe(labels.length);
+      for (const l of labels) expect(l, lang).not.toMatch(/^\d+$/);
+    }
+    expect(ax.range).toEqual([0.5, a!.contrasts.length + 0.5]);
+  });
+
+  it('a group that two contrasts share is named with its reference', () => {
+    const ax = groupAxis([{ group: 'black', reference_group: 'white' }, { group: 'black', reference_group: 'asian' }]);
+    expect(ax.ticks[0].label.en).not.toBe(ax.ticks[1].label.en);
+    expect(ax.ticks[0].label.en).toContain('/');
   });
 });
