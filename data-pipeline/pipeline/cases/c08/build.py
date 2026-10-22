@@ -19,7 +19,9 @@ CURRENCY = "USD"
 CASE_ID = "C08"
 PRIMARY_SOURCE = "sba-7a-chargeoff-twin"
 REGIME = "basel-iii-final"
-FLOOR_SOURCE = "dossier 01 section A.5 (Basel III final, CRE32.16, CRE32.17 and CRE32.58 to CRE32.59); the retail secured order is UNVERIFIED"
+FLOOR_SOURCE = {
+    "en": "dossier 01 section A.5 (Basel III final, CRE32.16, CRE32.17 and CRE32.58 to CRE32.59); the retail secured order is UNVERIFIED",
+    "es": "dossier 01, sección A.5 (Basilea III final, CRE32.16, CRE32.17 y CRE32.58 a CRE32.59); el orden de los minoristas garantizados está NO VERIFICADO"}
 #: the cell rung used where one rung must stand for the ladder (calibration buckets for the floors, the floors): chosen before
 #: seeing a test cohort, in this order, the first fitted
 REFERENCE_RUNGS = ("L2-fractional-logit", "L1-ols")
@@ -76,8 +78,24 @@ def lgd_proxy_block() -> dict[str, Any]:
     }
 
 
+#: the declared absence of the Freddie Mac slot (``pipeline.io.sba.FREDDIE_REASON``) in both languages; any other reason is an error, so
+#: a Spanish view never prints an English sentence (U16-R2 b04 B5)
+FREDDIE_REASONS_ES = {
+    "Freddie Mac: the owner's account is missing; the SBA twin is published":
+        "Freddie Mac: falta la cuenta del propietario; se publica el gemelo SBA",
+}
+
+
+def freddie_reason_block(reason: str) -> dict[str, str]:
+    """The Freddie Mac reason as the bilingual text the documents carry."""
+    try:
+        return t(reason, FREDDIE_REASONS_ES[reason])
+    except KeyError:
+        raise ValueError(f"the Freddie Mac reason {reason!r} has no Spanish text: add it to FREDDIE_REASONS_ES") from None
+
+
 def data_status_block(freddie_reason: str) -> dict[str, Any]:
-    return {"primary_source": PRIMARY_SOURCE, "freddie_mac_available": False, "freddie_mac_reason": freddie_reason,
+    return {"primary_source": PRIMARY_SOURCE, "freddie_mac_available": False, "freddie_mac_reason": freddie_reason_block(freddie_reason),
             "notice": NOTICE}
 
 
@@ -85,7 +103,8 @@ def workout_block() -> dict[str, Any]:
     return {
         "discount_rate_convention": "none-proxy", "discount_rate": None,
         "incomplete_workouts": {"treatment": "not-applicable", "n_excluded": 0, "n_projected": 0,
-                                "reason": "the SBA file has no workout cash flows to discount or to project; the charge-off is the whole record"},
+                                "reason": t("the SBA file has no workout cash flows to discount or to project; the charge-off is the whole record",
+                                            "el archivo SBA no tiene flujos de recuperación que descontar ni proyectar; el castigo es todo el registro")},
         "note": t("No discounting applies to a charge-off proxy; a workout LGD would use the EBA/GL/2017/16 rate (paragraph UNVERIFIED).",
                   "No se descuenta un proxy de castigo; una LGD de recuperación usaría la tasa de EBA/GL/2017/16 (párrafo NO VERIFICADO)."),
     }

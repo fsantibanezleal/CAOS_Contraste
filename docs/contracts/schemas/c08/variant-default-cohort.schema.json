@@ -247,8 +247,7 @@
               "const": false
             },
             "freddie_mac_reason": {
-              "type": "string",
-              "minLength": 1
+              "$ref": "../common/text.schema.json"
             },
             "notice": {
               "$ref": "../common/text.schema.json"
@@ -367,7 +366,7 @@
             "reason": {
               "anyOf": [
                 {
-                  "type": "string"
+                  "$ref": "../common/text.schema.json"
                 },
                 {
                   "type": "null"
@@ -757,10 +756,10 @@
           "minimum": 1990
         },
         "indicator": {
-          "type": "string"
+          "$ref": "../common/text.schema.json"
         },
         "macro_source": {
-          "type": "string"
+          "$ref": "../common/text.schema.json"
         }
       }
     },

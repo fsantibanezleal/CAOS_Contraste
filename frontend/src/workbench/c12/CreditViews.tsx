@@ -49,7 +49,7 @@ export function CvaView({ sel }: { sel: C12Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: ends, ...YEARS_AXIS }}
-              y={{ label: { en: `Accumulated CVA and DVA (${pick(axis.unit, 'en')})`, es: `CVA y DVA acumulados (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
+              y={{ label: { en: `CVA and DVA (${pick(axis.unit, 'en')})`, es: `CVA y DVA (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
               series={[
                 { label: { en: 'CVA, accumulated', es: 'CVA acumulado' }, values: cumCva.map((v) => v / axis.div), color: '--color-accent', width: 2.8 },
                 { label: { en: 'DVA, accumulated', es: 'DVA acumulado' }, values: cumDva.map((v) => v / axis.div), color: '--color-good', width: 2, dash: [6, 3] },

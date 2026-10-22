@@ -5,6 +5,7 @@
 import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import { ChartOverTable, MaybeNumber } from '../c06/format';
 import { Pending } from '../Pending';
+import { noteText } from '../c08/notes';
 import { useCard } from '../c03/U6Shared';
 import { ConventionLine, rowsMin } from './MarketCommon';
 import { DIRECTION_TEXT, LOSS_TEXT, championOf, fitOf, modelLabel, outputsOf, rungOf, text, type C11Sel } from './selection';
@@ -58,7 +59,7 @@ export function ChampionView({ sel }: { sel: C11Sel | null }) {
           <ConventionLine />
           <p className="ct-note" data-state={champion === null ? 'unavailable' : undefined}>
             {champion === null
-              ? `${formatNumber(null, lang)} (${champ?.reason ?? ''})`
+              ? `${formatNumber(null, lang)} (${noteText(champ?.reason, lang)})`
               : pick({ en: `Champion at this level: ${modelLabel(sel, champion).en}, the lowest average FZ0 among the eligible models.`, es: `Campeón en este nivel: ${modelLabel(sel, champion).es}, el menor FZ0 medio entre los modelos elegibles.` }, lang)}
           </p>
           {mcs ? (
@@ -94,7 +95,7 @@ export function ChampionView({ sel }: { sel: C11Sel | null }) {
                     <td className="ct-wide-only">{rungOf(sel, m.model_id)}</td>
                     <td className="ct-text">{m.eligible ? pick({ en: 'yes', es: 'sí' }, lang) : pick({ en: 'no', es: 'no' }, lang)}</td>
                     <td>
-                      <MaybeNumber value={lv?.fz0_mean ?? null} reason={lv?.fz0_reason ?? null} format={(v) => formatNumber(v, lang, { digits: 4 })} />
+                      <MaybeNumber value={lv?.fz0_mean ?? null} reason={lv?.fz0_reason ? noteText(lv.fz0_reason, lang) : null} format={(v) => formatNumber(v, lang, { digits: 4 })} />
                     </td>
                     <td className="ct-wide-only">{lv ? formatNumber(lv.tick_loss_mean, lang, { digits: 3 }) : formatNumber(null, lang)}</td>
                     <td data-na={member ? undefined : 'true'}>{member ? formatNumber(member.p_value, lang, { digits: 2 }) : formatNumber(null, lang)}</td>
@@ -178,7 +179,7 @@ export function DmView({ sel }: { sel: C11Sel | null }) {
                   <td className="ct-wide-only">{d.n_common === null ? formatNumber(null, lang) : formatNumber(d.n_common, lang, { decimals: 0 })}</td>
                   <td className="ct-text">
                     {pick(text(DIRECTION_TEXT, d.direction), lang)}
-                    {d.not_evaluated_reason ? <span className="ct-note" style={{ display: 'block' }}>{d.not_evaluated_reason}</span> : null}
+                    {d.not_evaluated_reason ? <span className="ct-note" style={{ display: 'block' }}>{noteText(d.not_evaluated_reason, lang)}</span> : null}
                   </td>
                 </tr>
               ))}

@@ -8,6 +8,8 @@ import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
 import { useCard } from '../c03/U6Shared';
 import { Pending } from '../Pending';
+import { rangeText } from '../c08/words';
+import { useMedia } from '../../lib/useMedia';
 import { Fragment } from 'react';
 import { BA_CVA_DS, SECTORS, baCvaMismatches, riskWeight } from './bacva';
 import { saCcr, saCcrInputFrom, saCcrMismatches } from './saccr';
@@ -77,7 +79,7 @@ export function ComparisonView({ sel }: { sel: C12Sel | null }) {
                 <td colSpan={2}>{formatNumber(r.sa_ccr_over_alpha_eepe, lang, { digits: 4 })}</td>
               </tr>
               <tr data-row="stressed">
-                <td className="ct-text">{pick({ en: `Stressed effective EPE, ${r.stressed.window_start} to ${r.stressed.window_end} (${r.stressed.label === 'convention' ? 'convention' : r.stressed.label}; ${r.stressed.paragraph})`, es: `EPE efectiva en estrés, ${r.stressed.window_start} a ${r.stressed.window_end} (${r.stressed.label === 'convention' ? 'convención' : r.stressed.label}; ${r.stressed.paragraph})` }, lang)}</td>
+                <td className="ct-text">{pick({ en: `Stressed effective EPE, ${r.stressed.window_start} to ${r.stressed.window_end} (${r.stressed.label === 'convention' ? 'convention' : r.stressed.label}; ${r.stressed.paragraph})`, es: `EPE efectiva en estrés, ${r.stressed.window_start} a ${r.stressed.window_end} (${r.stressed.label === 'convention' ? 'convención' : r.stressed.label}; ${rangeText(r.stressed.paragraph, 'es')})` }, lang)}</td>
                 <td data-na="true">{formatNumber(null, lang)}</td>
                 <td data-stressed-epe={r.stressed.effective_epe.amount}>{cell(r.stressed.effective_epe.amount, lang)}</td>
               </tr>
@@ -335,6 +337,8 @@ export function BaCvaView({ sel }: { sel: C12Sel | null }) {
 /** The GIRR delta charge by tenor: the sensitivities, the risk weights of MAR21.42, the weighted sensitivities and the three correlation scenarios. */
 export function GirrView({ sel }: { sel: C12Sel | null }) {
   const lang = useShellLang();
+  // at a phone width the value labels of twelve tenors run together: the table under the chart holds the values (U16-R2 b06 M3)
+  const narrow = useMedia('(max-width: 600px)');
   const card = useCard(sel?.data.variant);
   const o = outputsOf(sel);
   const title: BiText = { en: 'The GIRR delta charge', es: 'El cargo delta GIRR' };
@@ -364,6 +368,7 @@ export function GirrView({ sel }: { sel: C12Sel | null }) {
               title={{ en: 'Weighted sensitivities by tenor', es: 'Sensibilidades ponderadas por plazo' }}
               height="fill"
               orientation="vertical"
+              values={!narrow}
               data={g.weighted_sensitivities.map((v, i) => ({ id: `t${i}`, label: label(i), value: v / axis.div, tone: v < 0 ? ('bad' as const) : ('accent' as const) }))}
               axis={{ label: { en: `Weighted sensitivity (${pick(axis.unit, 'en')})`, es: `Sensibilidad ponderada (${pick(axis.unit, 'es')})` }, format: { digits: 4 } }}
             />

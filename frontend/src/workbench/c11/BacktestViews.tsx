@@ -6,6 +6,7 @@ import { BarChart, PlotCard, ViewsRow, formatNumber, pick, useShellLang, type Bi
 import { UPlotChart } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
+import { noteText } from '../c08/notes';
 import { useCard } from '../c03/U6Shared';
 import { ConventionLine, MarketTestsTable, lightWord, rowsMin } from './MarketCommon';
 import { alphaLabel, fitOf, levelOf, modelLabel, outputsOf, testName, testsOf, type C11Sel } from './selection';
@@ -98,7 +99,7 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
           <ConventionLine />
           <p className="ct-note" data-state="unavailable">
             {row
-              ? `${formatNumber(null, lang)} (${row.notes ?? row.reference})`
+              ? `${formatNumber(null, lang)} (${row.notes ? noteText(row.notes, lang) : row.reference})`
               : sel.alpha === 0.01
                 ? pick({ en: 'The expected shortfall back-test (Z2) is defined at the 2.5 percent tail, the FRTB expected shortfall level; pick the 2.5% tail on the rail.', es: 'El backtest de la pérdida esperada (Z2) se define en la cola de 2,5 por ciento, el nivel de pérdida esperada de FRTB; elija la cola de 2,5% en el riel.' }, lang)
                 : level && level.es_status === 'not-forecast'
@@ -114,13 +115,13 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
   const ref = fit?.es_reference ?? null;
   const fmt = (v: number) => formatNumber(v, lang, { digits: 4 });
   const marks = [
-    { x: es.realised, label: { en: `Realised Z2 ${formatNumber(es.realised, 'en', { digits: 4 })}`, es: `Z2 realizado ${formatNumber(es.realised, 'es', { digits: 4 })}` } },
-    { x: es.critical_5pct, label: { en: 'Model 5% critical value', es: 'Valor crítico del modelo, 5%' } },
-    { x: es.critical_0_01pct, label: { en: 'Model 0.01% critical value', es: 'Valor crítico del modelo, 0,01%' } },
+    { x: es.realised, label: { en: `Z2 ${formatNumber(es.realised, 'en', { digits: 3 })}`, es: `Z2 ${formatNumber(es.realised, 'es', { digits: 3 })}` } },
+    { x: es.critical_5pct, label: { en: 'Crit. 5%', es: 'Crít. 5 %' } },
+    { x: es.critical_0_01pct, label: { en: 'Crit. 0.01%', es: 'Crít. 0,01 %' } },
     ...(ref
       ? [
-          { x: ref.yellow, label: { en: `Published reference ${formatNumber(ref.yellow, 'en', { decimals: 2 })}`, es: `Referencia publicada ${formatNumber(ref.yellow, 'es', { decimals: 2 })}` } },
-          { x: ref.red, label: { en: `Published reference ${formatNumber(ref.red, 'en', { decimals: 2 })}`, es: `Referencia publicada ${formatNumber(ref.red, 'es', { decimals: 2 })}` } },
+          { x: ref.yellow, label: { en: `Ref. ${formatNumber(ref.yellow, 'en', { decimals: 2 })}`, es: `Ref. ${formatNumber(ref.yellow, 'es', { decimals: 2 })}` } },
+          { x: ref.red, label: { en: `Ref. ${formatNumber(ref.red, 'en', { decimals: 2 })}`, es: `Ref. ${formatNumber(ref.red, 'es', { decimals: 2 })}` } },
         ]
       : []),
   ];
@@ -148,7 +149,7 @@ export function EsBacktestView({ sel }: { sel: C11Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: xs, label: { en: 'Z2 statistic', es: 'Estadístico Z2' }, format: { decimals: 2 } }}
-              y={{ label: { en: 'Simulated draws per bin', es: 'Simulaciones por tramo' }, format: { decimals: 0 } }}
+              y={{ label: { en: 'Draws per bin', es: 'Simulaciones' }, format: { decimals: 0 } }}
               series={[{ label: { en: 'Null distribution', es: 'Distribución nula' }, values: counts, color: '--color-accent', width: 2 }]}
               marks={marks}
             />

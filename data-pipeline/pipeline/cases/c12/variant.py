@@ -20,6 +20,7 @@ from riskvalidation.ccr import swaps as sw
 from riskvalidation.validation import ccr as vc
 from scipy.stats import norm
 
+from ...core.text import number
 from . import book, credit
 from . import exposure as xp
 from . import regulatory as rg
@@ -319,6 +320,11 @@ WHAT = {
     "ccr.ore_cva_agreement": ("the CVA against ORE 1.8.17.0", "el CVA frente a ORE 1.8.17.0"),
     "ccr.ore_dim_agreement": ("the mean initial margin against ORE's dim_cube", "el margen inicial medio frente al dim_cube de ORE"),
 }
+#: the measures of a finding ("book", "risk factor", a reconciliation case) in Spanish (U16-R2 b06 B2: "(book)" in a Spanish title)
+MEASURE_ES = {"book": "cartera", "risk factor": "factor de riesgo", "risk-factor": "factor de riesgo",
+              "minimum-transfer-amount-0": "monto mínimo de transferencia 0"}
+#: the light of a finding as a feminine adjective of "fila", singular and plural
+ROW_LIGHT_ES = {"red": ("roja", "rojas"), "amber": ("ámbar", "ámbar")}
 _SEG = re.compile(r"-(10bd|20bd|1m|3m|6m|12m)(-q\d+)?$")
 SEVERITY = {"red": "S2", "amber": "S3"}
 
@@ -339,6 +345,10 @@ def findings_of(tests: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for n, ((tid, light, measure), ids) in enumerate(sorted(groups.items()), start=1):
         en, es = WHAT.get(tid, (tid, tid))
         tag = f" ({measure})" if measure else ""
+        tag_es = f" ({MEASURE_ES.get(measure, measure)})" if measure else ""
+        n_rows = len(ids)
+        row_es = "fila" if n_rows == 1 else "filas"
+        light_es = ROW_LIGHT_ES[light][0 if n_rows == 1 else 1]
         out.append({"id": f"C12-F{n:02d}", "severity": SEVERITY[light], "status": "open", "evidence": ids,
-                    "title": text(f"{len(ids)} {light} row(s) on {en}{tag}", f"{len(ids)} fila(s) {light} sobre {es}{tag}")})
+                    "title": text(f"{len(ids)} {light} row(s) on {en}{tag}", f"{number(n_rows, 0, lang='es')} {row_es} {light_es} sobre {es}{tag_es}")})
     return out

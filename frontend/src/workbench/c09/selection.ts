@@ -3,7 +3,7 @@
 // helpers find, name and map. The known CCF of the generator is always read beside the estimates, and a CCF outside
 // [0, 1] is never clipped: the contract flags it and the views print the flag.
 import { formatNumber } from '@fasl-work/caos-app-shell';
-import type { Bi } from '../c03/U6Shared';
+import { humanize, type Bi } from '../c03/U6Shared';
 import type { CaseData } from '../../api/artifacts';
 import type { components } from '../../lib/contract.gen';
 
@@ -63,6 +63,23 @@ const KIND_TEXT: Record<string, Bi> = {
   'utilisation-change': { en: 'Utilisation change', es: 'Cambio de utilización' },
 };
 export const text = (map: Record<string, Bi>, id: string): Bi => map[id] ?? { en: id, es: id };
+
+/** What the generator of a document is shaped on. */
+export const SHAPED_ON_TEXT: Record<string, Bi> = {
+  'fed-2025-cards-hypothetical-portfolios': { en: 'The Federal Reserve 2025 hypothetical credit-card portfolios', es: 'Las carteras hipotéticas de tarjetas de crédito de la Reserva Federal 2025' },
+};
+
+/** The facility classes of the EAD floor and the items of the supervisory CCF table (framework terms). */
+export const FACILITY_TEXT: Record<string, Bi> = {
+  'unconditionally-cancellable': { en: 'Unconditionally cancellable', es: 'Cancelable sin condiciones' },
+  commitments: { en: 'Commitments', es: 'Compromisos' },
+  'direct-credit-substitutes': { en: 'Direct credit substitutes', es: 'Sustitutos directos de crédito' },
+  'nifs-rufs-transaction-related-contingents': { en: 'Transaction-related contingents (NIFs and RUFs)', es: 'Contingentes relacionados con transacciones (NIF y RUF)' },
+  'short-term-self-liquidating-trade-letters-of-credit': { en: 'Short-term self-liquidating trade letters of credit', es: 'Cartas de crédito comerciales de corto plazo que se autoliquidan' },
+};
+
+/** The words for a facility class or a supervisory item; the id in words when the map lacks it. */
+export const facilityLabel = (id: string): Bi => FACILITY_TEXT[id] ?? { en: humanize(id), es: humanize(id) };
 
 /** The treatments the document carries for a design, in document order. */
 export function treatmentsOf(o: C09Outputs, design: string): string[] {

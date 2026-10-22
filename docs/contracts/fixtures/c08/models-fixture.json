@@ -44,7 +44,10 @@
     "data_status": {
       "primary_source": "sba-7a-chargeoff-twin",
       "freddie_mac_available": false,
-      "freddie_mac_reason": "fixture: the owner's Freddie Mac registration does not exist yet; the SBA charge-off twin carries this case",
+      "freddie_mac_reason": {
+        "en": "fixture: the owner's Freddie Mac registration does not exist yet; the SBA charge-off twin carries this case",
+        "es": "ejemplo: falta el registro del propietario en Freddie Mac; el gemelo de castigos SBA lleva el caso"
+      },
       "notice": {
         "en": "Fixture, not a result. The Freddie Mac slot stays empty until the account exists; no number stands in for it.",
         "es": "Ejemplo, no es un resultado. El espacio de Freddie Mac queda vacio hasta que exista la cuenta; ningun numero lo reemplaza."
@@ -122,7 +125,10 @@
         "treatment": "not-applicable",
         "n_excluded": 0,
         "n_projected": 0,
-        "reason": "fixture: the SBA file has no workout cash flows to discount or to project"
+        "reason": {
+          "en": "fixture: the SBA file has no workout cash flows to discount or to project",
+          "es": "ejemplo: el archivo SBA no tiene flujos de recuperación que descontar ni proyectar"
+        }
       },
       "note": {
         "en": "No discounting applies to a charge-off proxy; a workout LGD would use the EBA/GL/2017/16 rate (paragraph UNVERIFIED).",
@@ -202,13 +208,22 @@
       "period": {
         "first_year": 2007,
         "last_year": 2010,
-        "indicator": "unemployment rate (fixture path)",
-        "macro_source": "fixture: a constructed path, not BLS data"
+        "indicator": {
+          "en": "unemployment rate (fixture path)",
+          "es": "tasa de desempleo (trayectoria de ejemplo)"
+        },
+        "macro_source": {
+          "en": "fixture: a constructed path, not BLS data",
+          "es": "ejemplo: una trayectoria construida, no datos del BLS"
+        }
       }
     },
     "floors": {
       "regime": "basel-iii-final",
-      "source": "dossier 01 section A.5 (CRE32.16, CRE32.58 to CRE32.59); the collateral order of the retail secured floors (financial, receivables, real estate, other physical) is read as the corporate order, UNVERIFIED",
+      "source": {
+        "en": "dossier 01 section A.5 (CRE32.16, CRE32.58 to CRE32.59); the collateral order of the retail secured floors (financial, receivables, real estate, other physical) is read as the corporate order, UNVERIFIED",
+        "es": "dossier 01, sección A.5 (CRE32.16, CRE32.58 a CRE32.59); el orden de garantías de los pisos minoristas garantizados (financiera, cuentas por cobrar, bienes raíces, otra física) se lee como el corporativo, NO VERIFICADO"
+      },
       "cells": [
         {
           "id": "corporate-unsecured",

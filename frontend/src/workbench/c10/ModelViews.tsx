@@ -8,7 +8,8 @@ import { Pending } from '../Pending';
 import { barMin } from './format';
 import { useCard } from '../c03/U6Shared';
 import { IllustrativeNotice } from './C10Common';
-import { ESTIMATOR_KIND_TEXT, ESTIMATOR_TEXT, INTERVAL_TEXT, IRB_CLASS_TEXT, METHOD_TEXT, SECTOR_TEXT, fitOf, outputsOf, text, type C10Sel } from './selection';
+import { noteText } from '../c08/notes';
+import { ESTIMATOR_KIND_TEXT, ESTIMATOR_TEXT, INTERVAL_TEXT, IRB_CLASS_TEXT, METHOD_TEXT, PARAMETER_TEXT, SECTOR_TEXT, fitOf, measureText, outputsOf, rungOf, text, type C10Sel } from './selection';
 
 const count = (v: number, lang: 'en' | 'es') => formatNumber(v, lang, { decimals: 0 });
 
@@ -18,7 +19,16 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
   const card = useCard(sel?.data.variant);
   const fit = fitOf(sel);
   if (!sel || !fit) return <Pending />;
-  const data = fit.ladder.map((r) => ({ id: r.id, label: { en: r.label.en, es: r.label.es } as BiText, value: r.n_scenarios, tone: 'accent' as const, hint: r.n_scenarios === null ? ({ en: 'Analytic: no scenarios.', es: 'Analítico: sin escenarios.' } as BiText) : undefined }));
+  const o = outputsOf(sel);
+  // the scenarios a rung ran: the variant's own simulation when it carries the rung (a rung that did not run has none, whatever the
+  // ladder plans for it), the planned count of the models artifact for a document that does not (U16-R2 b05 B2)
+  const ran = (id: string, planned: number | null): { n: number | null; why: BiText | undefined } => {
+    const rung = o ? rungOf(o, id) : undefined;
+    if (!rung) return { n: planned, why: planned === null ? ({ en: 'Analytic: no scenarios.', es: 'Analítico: sin escenarios.' } as BiText) : undefined };
+    if (!rung.evaluated) return { n: null, why: { en: noteText(rung.reason, 'en'), es: noteText(rung.reason, 'es') } };
+    return { n: rung.simulation?.n_scenarios ?? null, why: rung.simulation ? undefined : ({ en: 'Analytic: no scenarios.', es: 'Analítico: sin escenarios.' } as BiText) };
+  };
+  const data = fit.ladder.map((r) => ({ id: r.id, label: { en: r.label.en, es: r.label.es } as BiText, value: ran(r.id, r.n_scenarios).n, tone: 'accent' as const, hint: ran(r.id, r.n_scenarios).why }));
   return (
     <ViewsRow>
       <PlotCard
@@ -52,10 +62,10 @@ export function LadderView({ sel }: { sel: C10Sel | null }) {
                   <td className="ct-text">{`${r.rung}: ${pick(r.label, lang)}`}</td>
                   <td className="ct-text">{pick(text(METHOD_TEXT, r.method), lang)}</td>
                   <td className="ct-text ct-wide-only">{pick(text(ESTIMATOR_KIND_TEXT, r.estimator), lang)}</td>
-                  <td className="ct-wide-only" data-na={r.n_scenarios === null ? 'true' : undefined}>{r.n_scenarios === null ? formatNumber(null, lang) : count(r.n_scenarios, lang)}</td>
+                  <td className="ct-wide-only" data-na={ran(r.id, r.n_scenarios).n === null ? 'true' : undefined}>{ran(r.id, r.n_scenarios).n === null ? formatNumber(null, lang) : count(ran(r.id, r.n_scenarios).n as number, lang)}</td>
                   <td className="ct-text ct-wide-only" translate="no"><code>{r.engine_function}</code></td>
                   <td className="ct-text">{r.reference}</td>
-                  <td className="ct-text ct-wide-only">{r.parameters.map((p) => `${p.name} ${formatNumber(p.value, lang, { digits: 4 })} ${p.unit === '-' ? '' : p.unit}`.trim()).join('; ')}</td>
+                  <td className="ct-text ct-wide-only">{r.parameters.map((p) => measureText(PARAMETER_TEXT, p.name, p.value, p.unit, lang)).join('; ')}</td>
                 </tr>
               ))}
             </tbody>

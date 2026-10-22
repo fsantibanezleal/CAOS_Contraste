@@ -170,7 +170,7 @@ def bake_all(output_root: Path, data_root: Path, cache_dir: Path, *, workers: in
                              impact=d["impact"], findings=d["findings"], lineage=lineage, lane=lane)
         rel = f"{CASE_ID}/{w.window_id}.json"
         e_v = write_artifact(root, rel, art, engines=ENGINES, run_ms=RUN_MS)
-        entries.append({"role": "variant", "variant_id": w.window_id, "title": _t(w.en, w.es), "short_title": _t(w.window_id, w.window_id),
+        entries.append({"role": "variant", "variant_id": w.window_id, "title": _t(w.en, w.es), "short_title": _t(w.en.split(":")[0], w.es.split(":")[0]),
                         "regime": regime, "truth_status": "real-outcomes", "models_ref": rel_m, **e_v})
         o = d["outputs"]
         values[f"n_forecast_days@{w.window_id}"] = float(o["window"]["n_forecast_days"])

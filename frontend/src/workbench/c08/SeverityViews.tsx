@@ -174,10 +174,10 @@ export function ProxyView({ sel }: { sel: C08Sel | null }) {
             <dt>{pick({ en: 'Discounting', es: 'Descuento' }, lang)}</dt>
             <dd data-convention={w.discount_rate_convention}>{pick(WORKOUT_CONVENTION[w.discount_rate_convention], lang)}</dd>
             <dt>{pick({ en: 'Open workouts', es: 'Recuperaciones abiertas' }, lang)}</dt>
-            <dd data-treatment={w.incomplete_workouts.treatment}>{`${pick(INCOMPLETE_TEXT[w.incomplete_workouts.treatment], lang)}${w.incomplete_workouts.reason ? `: ${w.incomplete_workouts.reason}` : ''}`}</dd>
+            <dd data-treatment={w.incomplete_workouts.treatment}>{`${pick(INCOMPLETE_TEXT[w.incomplete_workouts.treatment], lang)}${w.incomplete_workouts.reason ? `: ${pick(w.incomplete_workouts.reason, lang)}` : ''}`}</dd>
             <dt>Freddie Mac</dt>
             <dd data-freddie-mac={String(d.freddie_mac_available)}>
-              {d.freddie_mac_available ? pick({ en: 'available', es: 'disponible' }, lang) : `${pick({ en: 'not available', es: 'no disponible' }, lang)}: ${d.freddie_mac_reason ?? ''}`}
+              {d.freddie_mac_available ? pick({ en: 'available', es: 'disponible' }, lang) : `${pick({ en: 'not available', es: 'no disponible' }, lang)}: ${d.freddie_mac_reason ? pick(d.freddie_mac_reason, lang) : ''}`}
             </dd>
           </dl>
           <Callout variant="honest" title={pick({ en: 'How the workout is treated', es: 'Cómo se trata la recuperación' }, lang)}>

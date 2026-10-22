@@ -6,6 +6,7 @@ import { PlotCard, ViewsRow, formatNumber, pick, useShellLang } from '@fasl-work
 import { UPlotChart, type ChartSeries } from '@fasl-work/caos-app-shell/chart';
 import { ChartOverTable } from '../c06/format';
 import { Pending } from '../Pending';
+import { noteText } from '../c08/notes';
 import { useCard } from '../c03/U6Shared';
 import { ConventionLine, zoneText } from './MarketCommon';
 import { fitOf, levelOf, lossPct, modelLabel, outputsOf, rollingCounts, seconds, spanLine, zoneStart, type C11Sel } from './selection';
@@ -69,7 +70,7 @@ export function TimelineView({ sel }: { sel: C11Sel | null }) {
             <ConventionLine />
             {loss === null ? (
               <p className="ct-note" data-state="unavailable">
-                {`${formatNumber(null, lang)} (${grid.realised_loss.reason ?? ''}) ${pick({ en: 'The exceedances are marked on the VaR.', es: 'Las excedencias se marcan sobre el VaR.' }, lang)}`}
+                {`${formatNumber(null, lang)} (${noteText(grid.realised_loss.reason, lang)}) ${pick({ en: 'The exceedances are marked on the VaR.', es: 'Las excedencias se marcan sobre el VaR.' }, lang)}`}
               </p>
             ) : null}
             {lv.es_status === 'not-forecast' ? (
@@ -176,7 +177,7 @@ export function ZonesView({ sel }: { sel: C11Sel | null }) {
               />
             ) : (
               <p className="ct-note" data-state="unavailable">
-                {`${formatNumber(null, lang)} (${tl.reason ?? ''})`}
+                {`${formatNumber(null, lang)} (${noteText(tl.reason, lang)})`}
               </p>
             )
           }
@@ -199,7 +200,7 @@ export function ZonesView({ sel }: { sel: C11Sel | null }) {
               {tl.reason ? (
                 <>
                   <dt>{pick({ en: 'Why not evaluated', es: 'Por qué no se evalúa' }, lang)}</dt>
-                  <dd>{tl.reason}</dd>
+                  <dd>{noteText(tl.reason, lang)}</dd>
                 </>
               ) : null}
             </dl>

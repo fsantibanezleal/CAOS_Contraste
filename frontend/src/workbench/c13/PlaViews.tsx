@@ -40,7 +40,7 @@ export function RanksView({ sel }: { sel: C13Sel | null }) {
             <UPlotChart
               height="fill"
               x={{ values: x, label: { en: 'Rank of the hypothetical P&L (HPL)', es: 'Rango del P&L hipotético (HPL)' }, format: { decimals: 0 } }}
-              y={{ label: { en: 'Rank of the risk-theoretical P&L (RTPL)', es: 'Rango del P&L teórico del riesgo (RTPL)' }, format: { decimals: 0 } }}
+              y={{ label: { en: 'Rank of the RTPL', es: 'Rango del RTPL' }, format: { decimals: 0 } }}
               series={[
                 { label: { en: 'Days', es: 'Días' }, values: y, mode: 'points', color: '--color-accent', size: 5 },
                 { label: { en: 'Same rank', es: 'Mismo rango' }, values: x, color: '--color-fg-faint', width: 1, dash: [4, 3] },
