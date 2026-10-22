@@ -9,7 +9,7 @@ import { formatNumber, pick, useShellLang } from '@fasl-work/caos-app-shell';
 import type { BiText } from '@fasl-work/caos-app-shell';
 import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { P, useT } from '../content/bi';
-import { Loading, Table, money, num, pct, useVariants } from './U6Sections';
+import { Loading, Table, money, num, pct, pval, useVariants } from './U6Sections';
 import { DEFICIENCY_TEXT, INTENDED_TEXT, type C13Outputs } from '../workbench/c13/selection';
 import { SHOCK_TEXT as C14_SHOCK_TEXT, scenarioOf, type C14Outputs } from '../workbench/c14/selection';
 import { SHOCK_TEXT as C15_SHOCK_TEXT, type C15Outputs, type C15Pair } from '../workbench/c15/selection';
@@ -373,7 +373,7 @@ function c11Ladder(name: string, v: Variant, lang: Lang): W2Table {
       if (isChamp) versus = t('Champion', 'Campeón');
       else if (!dm) versus = na(lang);
       else if (dm.p_value === null || dm.p_value === undefined) versus = na(lang, dm.not_evaluated_reason);
-      else versus = `${bi(c11Text(DIRECTION_TEXT, dm.direction), lang)} (p ${num(dm.p_value, lang, 3)})`;
+      else versus = `${bi(c11Text(DIRECTION_TEXT, dm.direction), lang)} (p ${pval(dm.p_value, lang)})`;
       return [
         bi(alphaShort(l.alpha), lang),
         `${m.rung} ${modelTitle(v, m.model_id, lang)}`,

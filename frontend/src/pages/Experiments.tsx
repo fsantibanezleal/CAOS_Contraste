@@ -98,7 +98,7 @@ function CaseFacts({ m }: { m: CaseManifest }) {
   return (
     <P
       en={`The case was baked with seed ${m.seed} by ${engine || 'the pipeline'} and holds ${variants.length} variants (${titles}). ${m.sources.length ? `It reads ${m.sources.join(', ')}, and the` : 'It reads no outside file (its data are generated), and the'} ${expected} expected ranges it declared before the bake all held when it ran. Every number below is read from those committed artifacts when the page opens, and none is typed into this page.`}
-      es={`El caso se generó con la semilla ${m.seed} por ${engine || 'el pipeline'} y contiene ${variants.length} variantes (${titles}). ${m.sources.length ? `Lee ${m.sources.join(', ')}, y los` : 'No lee ningún archivo externo (sus datos se generan), y los'} ${expected} rangos esperados que declaró antes de la generación se cumplieron todos cuando corrió. Cada número de abajo se lee de esos artefactos comprometidos cuando se abre la página, y ninguno está escrito en esta página.`}
+      es={`El caso se generó con la semilla ${m.seed} por ${engine || 'el pipeline'} y contiene ${variants.length} variantes (${titles}). ${m.sources.length ? `Lee ${m.sources.join(', ')}, y los` : 'No lee ningún archivo externo (sus datos se generan), y los'} ${expected} rangos esperados que declaró antes de la generación se cumplieron todos cuando corrió. Cada número de abajo se lee de esos artefactos versionados cuando se abre la página, y ninguno está escrito en esta página.`}
     />
   );
 }
@@ -121,7 +121,7 @@ function CaseTopic({ m }: { m: CaseManifest }) {
     <DocSection
       area="question"
       title={{ en: `${m.case_id}: ${m.title.en}`, es: `${m.case_id}: ${m.title.es}` }}
-      noRefsReason={{ en: 'Read from the committed artifacts; the methods are cited in Methodology.', es: 'Leído de los artefactos comprometidos; los métodos se citan en Metodología.' }}
+      noRefsReason={{ en: 'Read from the committed artifacts; the methods are cited in Methodology.', es: 'Leído de los artefactos versionados; los métodos se citan en Metodología.' }}
     >
       <P en={m.question.en} es={m.question.es} />
       <CaseFacts m={m} />
@@ -133,7 +133,7 @@ function CaseTopic({ m }: { m: CaseManifest }) {
       ) : (
       <P
         en="Each variant of a case is the same question asked of different data, and the tables and charts below are read from its artifacts: the number of records, the default rate, the discrimination of the champion and of the best challenger, and the policy light of its calibration and stability tests under the committed thresholds. A variant that perturbs the data has a known effect, and a sound test must detect it or must not, as the case declares."
-        es="Cada variante de un caso es la misma pregunta hecha a datos distintos, y las tablas y gráficos de abajo se leen de sus artefactos: el número de registros, la tasa de incumplimiento, la discriminación del campeón y del mejor retador, y la luz de política de sus pruebas de calibración y estabilidad bajo los umbrales comprometidos. Una variante que perturba los datos tiene un efecto conocido, y una prueba sana debe detectarlo o no, según declara el caso."
+        es="Cada variante de un caso es la misma pregunta hecha a datos distintos, y las tablas y gráficos de abajo se leen de sus artefactos: el número de registros, la tasa de incumplimiento, la discriminación del campeón y del mejor retador, y la luz de política de sus pruebas de calibración y estabilidad bajo los umbrales versionados. Una variante que perturba los datos tiene un efecto conocido, y una prueba sana debe detectarlo o no, según declara el caso."
       />
       )}
       {kind === 'c04' ? <C04Experiments manifest={m} /> : kind === 'c05' ? <C05ExperimentsSection manifest={m} /> : kind === 'c22' ? <C22ExperimentsSection manifest={m} /> : kind === 'u6' ? <U6ExperimentsSection manifest={m} /> : kind === 'wave2' ? <W2ExperimentsSection manifest={m} /> : kind === 'batch3' ? <B3ExperimentsSection manifest={m} /> : kind === 'scorecard' ? <CaseVariants manifest={m} /> : <ImpactSection manifest={m} />}
@@ -302,7 +302,7 @@ export function Experiments() {
       title={{ en: 'Experiments', es: 'Experimentos' }}
       lede={t(
         'The coverage of the 22 cases, the held-out protocol every experiment follows, the metrics it reads, and every built case variant by variant, all read from the committed artifacts: no number on this page is typed in, and a case that is planned says so.',
-        'La cobertura de los 22 casos, el protocolo con muestra reservada que sigue todo experimento, las métricas que lee, y cada caso construido variante por variante, todo leído de los artefactos comprometidos: ningún número de esta página está escrito a mano, y un caso planificado lo dice.',
+        'La cobertura de los 22 casos, el protocolo con muestra reservada que sigue todo experimento, las métricas que lee, y cada caso construido variante por variante, todo leído de los artefactos versionados: ningún número de esta página está escrito a mano, y un caso planificado lo dice.',
       )}
     >
       <TabGroups

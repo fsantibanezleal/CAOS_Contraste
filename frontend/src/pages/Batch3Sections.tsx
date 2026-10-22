@@ -14,7 +14,7 @@ import type { CaseManifest, VariantArtifact } from '../lib/contract.types';
 import { COMMITTED, LIGHT_TEXT } from '../lib/policy';
 import { P, useT } from '../content/bi';
 import { Marked } from '../workbench/c21/Marked';
-import { Loading, Table, money, num, pct, useVariants } from './U6Sections';
+import { Loading, Table, money, num, pct, pval, useVariants } from './U6Sections';
 
 type Lang = 'en' | 'es';
 type Cell = string | ReactElement;
@@ -104,13 +104,13 @@ function c02Ladder(name: string, v: Variant, lang: Lang): B3Table {
   const rows = o.rungs.map((r): Cell[] => {
     const pair = o.challenger.find((c) => c.challenger === r.model_id);
     const d = r === champ ? t('Champion', 'Campeón') : pair ? signed(pair.auc_diff, lang) : na(lang, t('the document holds no paired test for this rung', 'el documento no contiene prueba pareada para este peldaño'));
-    const p = r === champ ? '' : pair ? num(pair.delong_p_value, lang, 3) : na(lang);
+    const p = r === champ ? '' : pair ? pval(pair.delong_p_value, lang) : na(lang);
     return [
       `${r.rung} ${modelTitle(r.model_id)}`,
       `${num(r.discrimination.auc, lang, 3)} (${num(r.discrimination.auc_ci.lo, lang, 3)} ${t('to', 'a')} ${num(r.discrimination.auc_ci.hi, lang, 3)})`,
       num(r.calibration.brier, lang, 4),
       num(r.calibration.ece, lang, 4),
-      num(r.calibration.hosmer_lemeshow.p_value, lang, 3),
+      pval(r.calibration.hosmer_lemeshow.p_value, lang),
       d,
       p,
     ];
@@ -477,7 +477,7 @@ export function batch3ExperimentTables(manifest: CaseManifest, vs: Variant[], la
         c02Row,
         t(
           'The AUC is read on the locked holdout; the calibration light applies the committed policy to the Hosmer-Lemeshow p of the champion; the transfer change is the AUC of the champion fitted on one horizon and scored on another, minus its holdout AUC, and is exploratory because the firm overlap across the files is unknown.',
-          'El AUC se lee en la muestra reservada bloqueada; la luz de calibración aplica la política comprometida al p de Hosmer-Lemeshow del campeón; el cambio en la transferencia es el AUC del campeón ajustado con un horizonte y evaluado en otro, menos su AUC reservado, y es exploratorio porque se desconoce el solapamiento de empresas entre los archivos.',
+          'El AUC se lee en la muestra reservada bloqueada; la luz de calibración aplica la política versionada al p de Hosmer-Lemeshow del campeón; el cambio en la transferencia es el AUC del campeón ajustado con un horizonte y evaluado en otro, menos su AUC reservado, y es exploratorio porque se desconoce el solapamiento de empresas entre los archivos.',
         ),
         2,
       );

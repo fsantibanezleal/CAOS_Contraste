@@ -22,8 +22,13 @@ export const U6_CASES = new Set(['C03', 'C06', 'C07', 'C08', 'C09']);
 /** The cases with a rung comparison for the Benchmark (the provisions cases compare regimes, in the App). */
 export const U6_BENCHMARK_CASES = new Set(['C03', 'C08', 'C09']);
 
-export const num = (v: number | null | undefined, lang: Lang, decimals = 3) => formatNumber(v, lang, { decimals });
-export const pct = (v: number | null | undefined, lang: Lang, decimals = 2) => formatNumber(v, lang, { percent: true, decimals });
+/** A value that rounds to zero at the digits shown is zero, never "-0.000" (U16-R2 b11 m4). `scale` is 100 for a percent. */
+const unsignedZero = (v: number | null | undefined, decimals: number, scale = 1): number | null | undefined =>
+  typeof v === 'number' && Math.abs(v * scale) < 0.5 * 10 ** -decimals ? 0 : v;
+export const num = (v: number | null | undefined, lang: Lang, decimals = 3) => formatNumber(unsignedZero(v, decimals), lang, { decimals });
+export const pct = (v: number | null | undefined, lang: Lang, decimals = 2) => formatNumber(unsignedZero(v, decimals, 100), lang, { percent: true, decimals });
+/** A p-value: three significant digits, so 1.0e-91 never reads 0.000 (U16-R2 b11 m5); the same format as the C01 rows. */
+export const pval = (v: number | null | undefined, lang: Lang, digits = 3) => formatNumber(v, lang, { digits });
 
 /** An amount for a table cell: scaled to billions or millions with its unit, never an eleven-digit number. */
 export function money(v: number | null | undefined, currency: string, lang: Lang): string {
