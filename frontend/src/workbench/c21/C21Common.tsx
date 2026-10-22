@@ -205,7 +205,7 @@ export function C21ContextView({ sel }: { sel: C21Sel | null }) {
           <dt>{pick({ en: 'State', es: 'Estado' }, lang)}</dt>
           <dd>{o.scope.state}</dd>
           <dt>{pick({ en: 'Source', es: 'Fuente' }, lang)}</dt>
-          <dd>{o.scope.source}</dd>
+          <dd>{o.scope.source === 'hmda' ? 'HMDA' : o.scope.source}</dd>
           <dt>{pick({ en: 'Rows', es: 'Filas' }, lang)}</dt>
           <dd>{`${int(o.scope.rows_fit, lang)} / ${int(o.scope.rows_confirm, lang)}`}</dd>
         </dl>

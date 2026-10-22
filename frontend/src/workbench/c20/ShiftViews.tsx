@@ -108,8 +108,8 @@ export function SyntheticShiftView({ sel }: { sel: C20Sel | null }) {
   if (!o) return <NotInVariant sel={sel} title={TITLE_SYNTH} needs="shift" />;
   const s = o.synthetic_shift;
   const rows = [
-    ...s.shifts.map((x) => ({ id: x.shift_id, label: { en: x.shift_id, es: x.shift_id } as BiText, value: -x.metric.auc_delta, highlight: x.shift_id === sel.shift })),
-    { id: 'worst', label: { en: `Worst ${pc1(s.worst_subsample.share, 'en')} of the rows`, es: `Peor ${pc1(s.worst_subsample.share, 'es')} de las filas` } as BiText, value: -s.worst_subsample.metric.auc_delta, highlight: false },
+    ...s.shifts.map((x) => ({ id: x.shift_id, label: { en: x.shift_id, es: x.shift_id } as BiText, value: 0 - x.metric.auc_delta, highlight: x.shift_id === sel.shift })),
+    { id: 'worst', label: { en: `Worst ${pc1(s.worst_subsample.share, 'en')} of the rows`, es: `Peor ${pc1(s.worst_subsample.share, 'es')} de las filas` } as BiText, value: 0 - s.worst_subsample.metric.auc_delta, highlight: false },
   ];
   return (
     <ViewsRow>
