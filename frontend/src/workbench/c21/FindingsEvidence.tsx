@@ -104,7 +104,7 @@ export function FindingsEvidenceCard({ variant, footer }: { variant: VariantArti
           <p className="ct-note" data-state="unavailable">{pick({ en: 'No finding of this variant cites a controlled or rate-spread row.', es: 'Ningún hallazgo de esta variante cita una fila controlada o de diferencial de tasa.' }, lang)}</p>
         ) : null}
         {kinds.map((kind) => (
-          <div key={kind} className="ct-stack-chart" data-evidence-chart={kind} data-reference-line={KIND_TEXT[kind].at} style={{ minHeight: '15rem', '--ct-chart-min': '15rem' } as CSSProperties}>
+          <div key={kind} className="ct-stack-chart" data-evidence-chart={kind} data-reference-line={KIND_TEXT[kind].at} style={{ minHeight: '21rem', '--ct-chart-min': '21rem' } as CSSProperties}>
             <p className="ct-note">{pick(KIND_TEXT[kind].title, lang)}</p>
             <div style={{ flex: '1 1 0', minHeight: 0, display: 'flex', flexDirection: 'column' }}>
               <EvidenceChart kind={kind} rows={rows.filter((r) => r.kind === kind)} findings={findings} lang={lang} />
