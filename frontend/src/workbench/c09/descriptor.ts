@@ -73,7 +73,7 @@ export const C09_OUTPUTS: Kind = { object: {
   } },
   ead_floor: { object: {
     currency: 'string',
-    rule: 'string',
+    rule: 'text',
     off_balance_share: 'number',
     rows: { array: { object: {
       facility_class: 'string',

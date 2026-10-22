@@ -46,8 +46,8 @@ const COHORT: Kind = { object: {
 const PERIOD: Kind = { object: {
   first_year: 'integer',
   last_year: 'integer',
-  indicator: 'string',
-  macro_source: 'string',
+  indicator: 'text',
+  macro_source: 'text',
 } };
 
 export const C08_OUTPUTS: Kind = { object: {
@@ -162,6 +162,6 @@ export const C08_FIT: Kind = { object: {
   floors: { object: {
     regime: 'string',
     cells: { array: 'json' },
-    source: 'string',
+    source: 'text',
   } },
 } } satisfies { object: Record<keyof components['schemas']['c08Fit'], Kind> };
