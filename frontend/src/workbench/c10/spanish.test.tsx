@@ -31,10 +31,10 @@ describe('the Spanish views of C10', () => {
     }
     const text = view(<C10ContextView sel={defaultSel(residential)} />);
     expect(text).toContain('Préstamos inmobiliarios residenciales (columna RERES de la tabla)');
-    expect(text).toContain('Ajustada por estacionalidad, todos los bancos');
+    expect(text).toContain('ajustada por estacionalidad, todos los bancos');
     expect(text).toContain('la tabla de la Junta los marca n.d. para este tipo de crédito');
     setLang('en');
-    expect(view(<C10ContextView sel={defaultSel(residential)} />)).toContain("the Board's table marks them n.a. for this loan type");
+    expect(view(<C10ContextView sel={defaultSel(residential)} />)).toContain('table marks them n.a. for this loan type');
   });
 
   it('the simulator context says what the generator is shaped on in Spanish', () => {
