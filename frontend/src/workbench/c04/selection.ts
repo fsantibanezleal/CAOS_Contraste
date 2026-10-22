@@ -172,6 +172,13 @@ export function makeSel(data: CaseData, over: Partial<C04Sel> = {}): C04Sel {
  * exist for it. */
 const SCOPE_ES: Record<string, string> = { 'corporate, long-term, categories': 'corporativas, de largo plazo, por categoría' };
 
+/** ESMA's attribution in each language (U16-F2, ruling of 2026-10-22): the source name verbatim, the words around it in the language of
+ * the view. The English is the source registry's own wording (data-pipeline/config/sources.json); any other attribution is kept as it is. */
+const ATTRIBUTION_TEXT: Record<string, string> = {
+  'Source: ESMA CEREP; tables transformed by Contraste': 'Fuente: ESMA CEREP; tablas transformadas por Contraste',
+};
+export const attributionIn = (declared: string, l: 'en' | 'es'): string => (l === 'en' ? declared : (ATTRIBUTION_TEXT[declared] ?? declared));
+
 /** The close of every card whose numbers come from an agency's CEREP pages (CT-407): the agency's EU entity, its code,
  * the scope of the ratings, the period of the annual cohorts and ESMA's attribution (the variant's own string, kept as
  * declared in both languages). */
@@ -181,7 +188,7 @@ export function cerepSource(o: C04AgencyOutputs, l: 'en' | 'es'): string {
   const scope = l === 'en' ? o.agency.scope : (SCOPE_ES[o.agency.scope] ?? o.agency.scope);
   return l === 'en'
     ? `${o.agency.name} (${o.agency.code}; ${scope}), annual cohorts ${first} to ${last}. ${o.attribution}.`
-    : `${o.agency.name} (${o.agency.code}; ${scope}), cohortes anuales ${first} a ${last}. ${o.attribution}.`;
+    : `${o.agency.name} (${o.agency.code}; ${scope}), cohortes anuales ${first} a ${last}. ${attributionIn(o.attribution, 'es')}.`;
 }
 
 /** The entities of several agencies on one card (CT-407): each with its code, then the scope and the period of the

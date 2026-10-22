@@ -1,6 +1,6 @@
 // C07's validation views: how well the synthetic bank was calibrated to its public aggregates, the transcribed CMF B-1
 // tables the standard method reads (PE = PI x PDI), and the rows of the tests the engine returned.
-import { PlotCard, formatNumber, pick, useShellLang, useWorkbenchState } from '@fasl-work/caos-app-shell';
+import { PlotCard, formatNumber, pick, useShellLang, useWorkbenchState, type BiText } from '@fasl-work/caos-app-shell';
 import { TestRowsCard } from '../c06/ValidationViews';
 import { MaybeNumber, pct } from '../c06/format';
 import { REPLAY, provenanceOf } from '../model';
@@ -57,6 +57,24 @@ export function CalibrationView({ sel }: { sel: C07Sel | null }) {
 }
 
 /** The transcribed B-1 tables with their cells, and the default categories of the individual assessment. */
+/** The words for the ids of the B-1 tables (U16-R2 b04 B2): never a bare id in a Spanish caption or cell. */
+const TABLE_TEXT: Record<string, BiText> = {
+  'mortgage-pe': { en: 'Residential mortgage', es: 'Vivienda' },
+  'consumer-pi': { en: 'Consumer', es: 'Consumo' },
+  'individual-categories': { en: 'Individually assessed commercial', es: 'Comercial de evaluación individual' },
+  'commercial-generic-pe': { en: 'Commercial, group assessment', es: 'Comercial, evaluación grupal' },
+};
+const AXIS_TEXT: Record<string, BiText> = {
+  default: { en: 'default', es: 'incumplimiento' },
+  category: { en: 'category', es: 'categoría' },
+  'mortgage-no-arrears': { en: 'mortgage, no arrears', es: 'con hipotecario, sin mora' },
+  'mortgage-arrears': { en: 'mortgage, arrears', es: 'con hipotecario, con mora' },
+  'no-mortgage-no-arrears': { en: 'no mortgage, no arrears', es: 'sin hipotecario, sin mora' },
+  'no-mortgage-arrears': { en: 'no mortgage, arrears', es: 'sin hipotecario, con mora' },
+  'no-guarantee': { en: 'no guarantee', es: 'sin garantía' },
+};
+const axisText = (id: string): BiText => AXIS_TEXT[id] ?? { en: id, es: id };
+
 export function TablesView({ sel }: { sel: C07Sel | null }) {
   const lang = useShellLang();
   const stateKey = useWorkbenchState()?.stateKey;
@@ -78,7 +96,7 @@ export function TablesView({ sel }: { sel: C07Sel | null }) {
         <div className="ct-scroll">
           {fit.b1_tables.map((t) => (
             <table key={t.table_id} className="caos-table ct-wrap-head" data-table-id={t.table_id}>
-              <caption className="ct-note">{`${t.table_id}: ${t.portfolio}. ${t.source}`}</caption>
+              <caption className="ct-note">{`${pick(TABLE_TEXT[t.table_id] ?? { en: t.table_id, es: t.table_id }, lang)}. ${pick(t.source, lang)}`}</caption>
               <thead>
                 <tr>
                   <th className="ct-text">{pick({ en: 'Row', es: 'Fila' }, lang)}</th>
@@ -91,8 +109,8 @@ export function TablesView({ sel }: { sel: C07Sel | null }) {
               <tbody>
                 {t.cells.map((c) => (
                   <tr key={`${c.row}|${c.column}`} data-cell={`${c.row}|${c.column}`}>
-                    <td className="ct-text">{c.row}</td>
-                    <td className="ct-text">{c.column}</td>
+                    <td className="ct-text">{pick(axisText(c.row), lang)}</td>
+                    <td className="ct-text">{pick(axisText(c.column), lang)}</td>
                     <td>{pct(c.pi, lang, 4)}</td>
                     <td>
                       <MaybeNumber value={c.pdi} reason={pick({ en: 'the table gives no PDI for this cell', es: 'la tabla no da PDI para esta celda' }, lang)} format={(v) => pct(v, lang, 4)} />

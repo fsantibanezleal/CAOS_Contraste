@@ -50,6 +50,7 @@ import {
   type Estimator,
   type GradeIntervals,
   type StartPortfolio,
+  attributionIn,
 } from './selection';
 
 const LIVE = 'live' as const;
@@ -102,7 +103,7 @@ export function sourceNote(sel: C04Sel, pd = false): Both {
   const att = sel.data.manifest.source_details?.['esma-cerep']?.attribution;
   return {
     en: `Known truth: the EM generator of S&P's pooled CEREP counts${att ? ` (${att})` : ''}.`,
-    es: `Verdad conocida: el generador EM de los conteos agrupados de S&P en CEREP${att ? ` (atribución: "${att}")` : ''}.`,
+    es: `Verdad conocida: el generador EM de los conteos agrupados de S&P en CEREP${att ? ` (atribución: "${attributionIn(att, 'es')}")` : ''}.`,
   };
 }
 

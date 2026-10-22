@@ -8,7 +8,7 @@ import type { Finding, TestRow, VariantArtifact } from '../../lib/contract.types
 import { LIGHT_TEXT, LIGHT_TONE, relight } from '../../lib/policy';
 import { REPLAY, provenanceOf } from '../model';
 import { Pending } from '../Pending';
-import { CASE1, approachShort, averageRiskWeight, isLdp, isSp, useLiveBounds, useLiveCurve, type C05Sel, type LdpVariant, type SpVariant } from './selection';
+import { CASE1, approachShort, averageRiskWeight, isLdp, isSp, sourceText, truthStatusText, useLiveBounds, useLiveCurve, type C05Sel, type LdpVariant, type SpVariant } from './selection';
 
 const LIVE = 'live' as const;
 const pct = (lang: 'en' | 'es', v: number | null | undefined, decimals = 3) => formatNumber(v, lang, { percent: true, decimals });
@@ -53,7 +53,7 @@ export function C05FindingsView({ sel }: { sel: C05Sel | null }) {
               <tr>
                 <th>{pick({ en: 'Severity', es: 'Severidad' }, lang)}</th>
                 <th className="ct-text">{pick({ en: 'Finding', es: 'Hallazgo' }, lang)}</th>
-                <th className="ct-wide-only">{pick({ en: 'Status', es: 'Estado' }, lang)}</th>
+                <th>{pick({ en: 'Status', es: 'Estado' }, lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -74,7 +74,7 @@ export function C05FindingsView({ sel }: { sel: C05Sel | null }) {
                       })}
                     </ul>
                   </td>
-                  <td className="ct-wide-only">{pick(STATUS_TEXT[f.status], lang)}</td>
+                  <td>{pick(STATUS_TEXT[f.status], lang)}</td>
                 </tr>
               ))}
             </tbody>
@@ -261,9 +261,9 @@ export function C05ContextView({ sel }: { sel: C05Sel | null }) {
                     <a href={s.landing} target="_blank" rel="noreferrer">{s.name}</a>
                   </td>
                   <td className="caos-col-text">
-                    {s.licence} <em>({pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})</em>
+                    {sourceText(id, 'licence', s.licence, lang)} <em>({pick(CLASS_TEXT[s.class] ?? { en: s.class, es: s.class }, lang)})</em>
                   </td>
-                  <td className="caos-col-text">{s.attribution}</td>
+                  <td className="caos-col-text">{sourceText(id, 'attribution', s.attribution, lang)}</td>
                 </tr>
               );
             })}
@@ -277,8 +277,8 @@ export function C05ContextView({ sel }: { sel: C05Sel | null }) {
         <p className="ct-note">
           {pick(
             {
-              en: `Truth status of this variant: ${v.provenance.truth_status}. The readers check each paper against its own print (Table 2's grades add up to its All row; every printed rate is the counts' ratio; every low-default table has its six levels and named rows) and refuse the bake otherwise. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
-              es: `Estado de verdad de esta variante: ${v.provenance.truth_status}. Los lectores verifican cada artículo contra su propia impresión (los grados de la Tabla 2 suman su fila All; cada tasa impresa es la razón de los conteos; cada tabla de bajo incumplimiento tiene sus seis niveles y sus filas nombradas) y si no, rechazan el horneado. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              en: `Truth status of this variant: ${truthStatusText(v.provenance.truth_status).en}. The readers check each paper against its own print (Table 2's grades add up to its All row; every printed rate is the counts' ratio; every low-default table has its six levels and named rows) and refuse the bake otherwise. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
+              es: `Estado de verdad de esta variante: ${truthStatusText(v.provenance.truth_status).es}. Los lectores verifican cada artículo contra su propia impresión (los grados de la Tabla 2 suman su fila All; cada tasa impresa es la razón de los conteos; cada tabla de bajo incumplimiento tiene sus seis niveles y sus filas nombradas) y si no, rechazan el horneado. riskvalidation ${m.engine.riskvalidation ?? ''}.`,
             },
             lang,
           )}

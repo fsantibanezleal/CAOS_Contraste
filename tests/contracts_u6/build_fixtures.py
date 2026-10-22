@@ -157,7 +157,7 @@ def build_c03() -> tuple[dict, dict]:
         "data_status": C03_STATUS,
         "vintage_curves": curves,
         "vintage_summary": {"currency": "USD", "rows": rows},
-        "calibration": {"rung_id": "P1-woe-scorecard", "scope": "vintages with an observed 5-year mark", "rows": deciles},
+        "calibration": {"rung_id": "P1-woe-scorecard", "scope": txt("vintages with an observed 5-year mark", "cosechas con marca de 5 años observada"), "rows": deciles},
         "rung_comparison": [
             {"rung_id": "P1-woe-scorecard", "auc": 0.71, "auc_ci_low": 0.69, "auc_ci_high": 0.73, "brier": 0.07,
              "calibration_gap_5y": 0.005, "reason": None},

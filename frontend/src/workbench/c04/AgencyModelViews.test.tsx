@@ -37,7 +37,7 @@ import {
 } from './AgencyModelViews';
 import { emptyDefaultYears } from './AgencyValidationViews';
 import { MatrixDrawing } from './MatrixMap';
-import { DEFINITION_LABEL, ESMA_DEFINITIONS, ESTIMATOR_LABEL, GENERATOR_KEYS, GRADES, isAgency, makeSel, type AgencyVariant, type C04Sel, type GeneratorKey } from './selection';
+import { DEFINITION_LABEL, ESMA_DEFINITIONS, attributionIn, ESTIMATOR_LABEL, GENERATOR_KEYS, GRADES, isAgency, makeSel, type AgencyVariant, type C04Sel, type GeneratorKey } from './selection';
 
 /** A value the artifact must hold: a null fails the test instead of reaching a comparison as 0. */
 const nn = (x: number | null | undefined): number => {
@@ -157,9 +157,9 @@ function pdSentence(markup: string, lang: Lang) {
   return m ? { grade: m[1], keep: m[2], d4: m[3], rated: m[4] } : null;
 }
 
-/** No English left in a Spanish render, no Spanish in an English one (the attribution is verbatim, in English). */
+/** No English left in a Spanish render, no Spanish in an English one (the attribution is removed first: its source name is verbatim). */
 function oneLanguage(markup: string, o: C04AgencyOutputs, lang: Lang, where: string) {
-  const t = text(markup).replace(o.attribution, '');
+  const t = text(markup).replace(attributionIn(o.attribution, lang), '');
   if (lang === 'es') expect(t, `${where}: English in the Spanish view`).not.toMatch(/\b(the|and|of|under|over|with)\b/);
   else expect(t, `${where}: Spanish in the English view`).not.toMatch(/\b(el|los|las|del|año|con|sobre)\b/);
 }
@@ -186,7 +186,7 @@ describe('the agency Model group of C04', () => {
           for (const card of found) {
             expect(card.lane).toBe('replay');
             expect(card.provenance).toBe('real');
-            expect(card.markup).toContain(esc(o.attribution));
+            expect(card.markup).toContain(esc(attributionIn(o.attribution, lang)));
             expect(card.markup).toContain(esc(o.agency.name));
           }
           expect(found[0].title).toBe(
@@ -446,7 +446,7 @@ describe('the agency Model group of C04', () => {
           for (const card of found) {
             expect(card.lane).toBe('replay');
             expect(card.provenance).toBe('real');
-            expect(card.markup).toContain(esc(o.attribution));
+            expect(card.markup).toContain(esc(attributionIn(o.attribution, lang)));
             expect(card.markup).toContain(esc(o.agency.name));
             expect(card.note).toContain(`Israel, Rosenthal ${and(lang)} Wei`);
           }
@@ -671,9 +671,9 @@ describe('the agency Model group of C04', () => {
 
   it("names the entity whose tables these are and CEREP's attribution, in both languages", () => {
     const o = outputsOf(agencies[0].data);
-    // the entity, its code, the scope and the period of the annual cohorts, then ESMA's attribution verbatim (CT-407)
+    // the entity, its code, the scope and the period of the annual cohorts, then ESMA's attribution, the source name verbatim and the words around it in the language of the view (CT-407, ruling of 2026-10-22)
     expect(sourceText(o).en).toBe("Standard & Poor's Credit Market Services Europe Limited (STPGB; corporate, long-term, categories), annual cohorts 2000 to 2025. Source: ESMA CEREP; tables transformed by Contraste.");
-    expect(sourceText(o).es).toBe("Standard & Poor's Credit Market Services Europe Limited (STPGB; corporativas, de largo plazo, por categoría), cohortes anuales 2000 a 2025. Source: ESMA CEREP; tables transformed by Contraste.");
+    expect(sourceText(o).es).toBe("Standard & Poor's Credit Market Services Europe Limited (STPGB; corporativas, de largo plazo, por categoría), cohortes anuales 2000 a 2025. Fuente: ESMA CEREP; tablas transformadas por Contraste.");
     expect(['S&P', "Moody's", 'Fitch'].map(possessive)).toEqual(["S&P's", "Moody's", "Fitch's"]);
   });
 

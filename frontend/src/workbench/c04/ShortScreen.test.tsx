@@ -12,7 +12,7 @@ import type { CaseManifest, ModelsArtifact, VariantArtifact } from '../../lib/co
 import { DefinitionsView } from './AgencyValidationViews';
 import { C04FindingsView } from './C04Common';
 import { DriftView } from './LiveViews';
-import { ESMA_DEFINITIONS, makeSel } from './selection';
+import { ESMA_DEFINITIONS, attributionIn, makeSel } from './selection';
 
 vi.mock('../../lib/useMedia', () => ({ useMedia: () => false, useFindingsShares: () => [2, 1] }));
 
@@ -50,7 +50,7 @@ describe('C04 on a short screen', () => {
       const n = notes(m);
       expect(n[0]).toContain(pick(ESMA_DEFINITIONS, lang));
       expect(n[1]).not.toContain(pick(ESMA_DEFINITIONS, lang));
-      expect(n[1]).toContain('Source: ESMA CEREP; tables transformed by Contraste');
+      expect(n[1]).toContain(attributionIn('Source: ESMA CEREP; tables transformed by Contraste', lang));
     }
     // Moody's has no default column: the mix is its view, and it keeps the statement
     const moodys = html(<DriftView sel={makeSel(dataOf('moodys'))} />);

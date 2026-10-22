@@ -305,6 +305,7 @@
       "cells": [
         {
           "rung": "P1",
+          "model_id": "fixture-p1",
           "fitted_on_years": 1,
           "scored_on_years": 2,
           "auc": 0.78,
@@ -357,14 +358,20 @@
         "es": "ECL effect of the horizon PDs on an illustrative exposure"
       },
       "source": "engine-provisions-api",
-      "pd_basis": "P1 horizon PDs, fixture",
+      "pd_basis": {
+        "en": "P1 horizon PDs, fixture",
+        "es": "PD por horizonte de P1, fixture"
+      },
       "lgd": {
         "value": 0.45,
         "label": "assumption"
       },
       "ecl_12m_effect": 1.0,
       "ecl_lifetime_effect": 2.5,
-      "unit": "index, fixture",
+      "unit": {
+        "en": "index, fixture",
+        "es": "índice, fixture"
+      },
       "reason_if_null": null
     },
     "parameters": [

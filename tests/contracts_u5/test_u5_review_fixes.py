@@ -200,7 +200,8 @@ def test_group_max_rule_internal_is_nullable_with_a_reason() -> None:
         g = d["outputs"]["b1_detail"]["group_max_rule"][0]
         g["internal"], g["internal_reason"], g["method"], g["applied"] = None, reason, "standard", g["standard"]
 
-    assert mutated(C07, lambda d: no_internal(d, "no internal method")) == []
+    assert mutated(C07, lambda d: no_internal(d, {"en": "no internal method", "es": "sin método interno"})) == []   # U16-F2: a bilingual text
+    assert mutated(C07, lambda d: no_internal(d, "no internal method")) != []
     assert mutated(C07, lambda d: no_internal(d, None)) != []
     assert mutated(C07, lambda d: d["outputs"]["b1_detail"]["group_max_rule"][0].__setitem__("internal", None)) != []
 

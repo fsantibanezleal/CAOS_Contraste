@@ -75,7 +75,7 @@ const CHALLENGER: Kind = { object: {
 const TRANSFER: Kind = { object: {
   label: 'string',
   reason: 'text',
-  cells: { array: { object: { rung: 'string', fitted_on_years: 'integer', scored_on_years: 'integer', auc: 'number', n: 'integer', events: 'integer' } } },
+  cells: { array: { object: { rung: 'string', model_id: 'string', fitted_on_years: 'integer', scored_on_years: 'integer', auc: 'number', n: 'integer', events: 'integer' } } },
 } };
 
 const TERM: Kind = { object: {
@@ -90,12 +90,12 @@ const IMPACT: Kind = { object: {
   label: 'string',
   reason: 'text',
   source: 'string',
-  pd_basis: 'string',
+  pd_basis: 'text',
   lgd: { object: { value: 'number', label: 'string' } },
   ecl_12m_effect: { nullable: 'number' },
   ecl_lifetime_effect: { nullable: 'number' },
-  unit: 'string',
-  reason_if_null: { nullable: 'string' },
+  unit: 'text',
+  reason_if_null: { nullable: 'text' },
 } };
 
 export const C02_OUTPUTS = { object: {

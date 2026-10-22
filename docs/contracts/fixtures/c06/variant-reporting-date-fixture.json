@@ -62,7 +62,10 @@
     "data_status": {
       "primary_source": "sba-7a",
       "freddie_mac_available": false,
-      "freddie_mac_reason": "fixture: no Freddie Mac registration, the SBA 7(a) public twin carries this variant",
+      "freddie_mac_reason": {
+        "en": "fixture: no Freddie Mac registration, the SBA 7(a) public twin carries this variant",
+        "es": "ejemplo: sin registro de Freddie Mac, el gemelo público de la SBA 7(a) lleva esta variante"
+      },
       "notice": {
         "en": "Fixture, not a result. Round numbers for three accounts.",
         "es": "Ejemplo, no es un resultado. Numeros redondos para tres cuentas."
@@ -1634,7 +1637,10 @@
         "c_index": null,
         "integrated_brier": 0.02,
         "calibration_gap_12m": 0.001,
-        "reason": "fixture: Kaplan-Meier has no covariates, no c-index"
+        "reason": {
+          "en": "fixture: Kaplan-Meier has no covariates, no c-index",
+          "es": "ejemplo: Kaplan-Meier no tiene covariables, no hay índice c"
+        }
       },
       {
         "rung_id": "L1-dth",

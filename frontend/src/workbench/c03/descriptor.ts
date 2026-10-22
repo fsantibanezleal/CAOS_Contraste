@@ -54,7 +54,7 @@ export const C03_OUTPUTS: Kind = { object: {
   } },
   calibration: { object: {
     rung_id: 'string',
-    scope: 'string',
+    scope: 'text',
     rows: { array: { object: {
       decile: 'integer',
       n: 'integer',

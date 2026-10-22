@@ -8,6 +8,28 @@ export type C06Outputs = components['schemas']['c06Outputs'];
 export type C06Fit = components['schemas']['c06Fit'];
 export type C06Models = { fit?: C06Fit };
 
+/** The words for the ids the documents carry (U16-R2 b03 B3): never an id inside a Spanish sentence or cell. */
+export const COHORT_TEXT: Record<string, { en: string; es: string }> = { all: { en: 'all', es: 'todas' }, older: { en: 'older', es: 'anteriores' } };
+export const cohortText = (id: string): { en: string; es: string } => COHORT_TEXT[id] ?? { en: id, es: id };
+export const MOVEMENT_TEXT: Record<string, { en: string; es: string }> = {
+  originations: { en: 'originations', es: 'originaciones' },
+  derecognition: { en: 'derecognition', es: 'baja en cuentas' },
+  'write-off': { en: 'write-off', es: 'castigo' },
+  remeasurement: { en: 'remeasurement', es: 'remedición' },
+  'macro-update': { en: 'macro update', es: 'actualización macro' },
+  'transfer-1-2': { en: 'transfer 1 to 2', es: 'traspaso de 1 a 2' },
+  'transfer-2-1': { en: 'transfer 2 to 1', es: 'traspaso de 2 a 1' },
+  'transfer-2-3': { en: 'transfer 2 to 3', es: 'traspaso de 2 a 3' },
+};
+export const movementText = (id: string): { en: string; es: string } => MOVEMENT_TEXT[id] ?? { en: id, es: id };
+export const SETTING_TEXT: Record<string, { en: string; es: string }> = {
+  'mid-period': { en: 'mid-period', es: 'a mitad de período' },
+  original: { en: 'original', es: 'original' },
+  current: { en: 'current', es: 'vigente' },
+  'end-of-period': { en: 'end of period', es: 'a fin de período' },
+};
+export const settingText = (id: string): { en: string; es: string } => SETTING_TEXT[id] ?? { en: id, es: id };
+
 export type Measure = 'cumulative' | 'marginal' | 'hazard';
 export type Staging = 'recomputed' | 'frozen';
 export type Surface = 'ecl' | 'stage2';
