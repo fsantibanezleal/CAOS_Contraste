@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 DOCS = sorted(glob.glob(str(ROOT / "data" / "derived" / "C06" / "rd-*.json")))
 ENGLISH_LIGHT = re.compile(r"\((red|amber|green)\)|\b(red|amber|green)\b")
-ENGLISH_NUMBER = re.compile(r"\d,\d{3}\b|\b\d+\.\d+\b")
+ENGLISH_NUMBER = re.compile(r"0\.\d+|\d+\.\d+ (puntos|veces|%)|\d,\d{3},\d{3}|[1-9]\d{0,2},\d{3} (cuentas|puntos)")  # 0,966 and 67.420 are Spanish
 
 
 def _bitext(x: object) -> bool:
