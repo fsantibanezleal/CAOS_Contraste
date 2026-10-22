@@ -62,6 +62,24 @@ def registry_decisions(src: Path) -> dict[str, str]:
     return out
 
 
+def packaged_policies(src: Path, rows: list[dict]) -> dict[str, dict]:
+    """label -> the entries of the packaged battery policy file (``riskvalidation/policies/<id>-<version>.json``) for the test ids of the rows
+    that carry that label (``contraste-<battery> X.Y.Z``, the 1.0 form): ``kind``, ``rule`` and ``parameters`` as the file states them. A copy
+    of the file's fields, so the builder reads the direction and the cut points of a row from the committed policy and not from the engine code."""
+    out: dict[str, dict] = {}
+    for r in rows:
+        m = re.fullmatch(r"(contraste-[a-z0-9-]+) (\d+\.\d+\.\d+)", r.get("policy_version") or "")
+        if not m:
+            continue
+        doc = json.loads((src / "riskvalidation" / "policies" / f"{m.group(1)}-{m.group(2)}.json").read_text(encoding="utf-8"))
+        assert doc["policy_id"] == m.group(1) and doc["version"] == m.group(2), r["policy_version"]
+        entry = out.setdefault(r["policy_version"], {"version": doc["version"], "thresholds": {}})
+        t = doc["thresholds"].get(r["test_id"])
+        if t is not None:
+            entry["thresholds"][r["test_id"]] = {"kind": t["kind"], "rule": t.get("rule", ""), "parameters": t.get("parameters", {})}
+    return {k: {"version": v["version"], "thresholds": dict(sorted(v["thresholds"].items()))} for k, v in sorted(out.items())}
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--engine-src", required=True, help="the src folder of the engine checkout (the batch 3 integration head) whose registry gives spec(test_id).decision")
@@ -125,6 +143,7 @@ def main() -> None:
             entry["named_parameters_count"] = len(named)
         default_rows = next(v for v in entry["variants"] if v["variant_id"] == default)["tests"]
         entry["spec_decisions"] = {t: decisions.get(t) for t in sorted({r["test_id"] for r in default_rows})}
+        entry["packaged_policies"] = packaged_policies(Path(args.engine_src), default_rows)
         out["cases"][case] = entry
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
