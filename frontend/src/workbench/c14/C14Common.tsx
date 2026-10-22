@@ -16,7 +16,7 @@ import {
   CALIBRATION_TEXT, CATEGORY_TEXT, NMD_LONG, NMD_TEXT, ORIGIN_TEXT, SOURCE_KIND_TEXT, SHOCK_TEXT, amount, axisOf, cell, categoriesOf, fitOf, nmdModelOf,
   outputsOf, scaleUnit, scenarioFor, scenarioOf, shockOf, text, type C14Outputs, type C14Sel,
 } from './selection';
-import { IRRBB_SOURCE_RULES, TEST_NOTE_RULES, localise } from './localise';
+import { IRRBB_SOURCE_RULES, TEST_NOTE_RULES, TEST_REFERENCE_RULES, localise } from './localise';
 
 /** The words of the tests the IRRBB engine returns for C14 and C15; an id without an entry is shown as it is. */
 const TEST_TEXT: Record<string, BiText> = {
@@ -63,7 +63,7 @@ export function IrrbbTestsTable({ variant, only }: { variant: VariantArtifact; o
                   <td className={`ct-text ct-light ct-light-${t.light}`}>
                     <span className="ct-light-word">{pick(LIGHT_TEXT[t.light], lang)}</span>
                   </td>
-                  <td className="ct-text">{t.notes === null || t.notes === undefined ? t.reference : localise(t.notes, lang, TEST_NOTE_RULES)}</td>
+                  <td className="ct-text">{t.notes ? localise(t.notes, lang, TEST_NOTE_RULES) : localise(t.reference, lang, TEST_REFERENCE_RULES)}</td>
                 </tr>
               );
             })}
